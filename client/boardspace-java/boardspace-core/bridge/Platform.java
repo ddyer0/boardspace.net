@@ -251,6 +251,18 @@ public static Object MakeInstance(String classname)
 		return(stream.toString());
 	}
 	
+	public static void printThreadSummary()
+	{	
+		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces() ;
+		for(Thread t : traces.keySet())
+		{
+			StackTraceElement tr[] = traces.get(t);
+			G.print(getStackTrace(t,tr));
+		}
+	}
+	
+	
+	
 	   /** get the current stack trace as a String */
     public static String getStackTrace()
     {
@@ -270,8 +282,12 @@ public static Object MakeInstance(String classname)
 		return(th.getStackTrace());
 	}
 	public static String getStackTrace(Thread th)
-	{	StringBuffer p = new StringBuffer();
+	{	
 		StackTraceElement[]trace = getStackTraceElements(th);
+		return getStackTrace(th,trace);
+	}
+	public static String getStackTrace(Thread th,StackTraceElement trace[])
+	{	StringBuffer p = new StringBuffer();
 		p.append(th);
 		p.append('\n');
 		if(trace!=null)

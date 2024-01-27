@@ -16,8 +16,10 @@ public class Cheerpj implements AudioClip
      * @return
      */
     public static int getScreenWidth()
-    {	
-    	return getInstance().getWidth();
+    {	//G.print("getScreenWidth");
+    	int w = getInstance().getWidth();
+    	//G.print("getScreenWidth=",w);
+    	return w;
     }
     /**
      * screen width and height are used to trigger rescaling the windows
@@ -25,9 +27,10 @@ public class Cheerpj implements AudioClip
      * @return
      */
     public static int getScreenHeight()
-    {	
-    	return getInstance().getHeight();
- 
+    {	//G.print("getScreenHeight");
+    	int w = getInstance().getHeight();
+    	//G.print("getScreenHeight=",w);
+    	return w;
     }
     private Cheerpj() {}
     private static Cheerpj instance = null;
@@ -57,8 +60,9 @@ public class Cheerpj implements AudioClip
     public String toString() { return "<cheerpj "+clipName+">"; }
 	public void play() {
 		
-		//G.print("Actual Play "+this);
+		//G.print("Actual Play "+clipName);
 		getInstance().playSound(clipName);
+		//G.print("Actual Play ok");
 	}
 	public void loop() {}
 	public void stop() {}

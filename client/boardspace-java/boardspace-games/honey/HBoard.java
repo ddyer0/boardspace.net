@@ -175,8 +175,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	Random r = new Random(randomKey+100);
     	for(HoneyCell c = allCells; c!=null; c=c.next)
     	{
-    		int n = r.nextInt(HoneyChip.letters.length-1);	// 25 letter alphabet
-    		if(n=='q'-'a') { n++; }	// skip q
+    		int n = r.nextInt(HoneyChip.letters.length);	// 25 letter alphabet
     		c.addChip(HoneyChip.letters[n]);
     	}
     	

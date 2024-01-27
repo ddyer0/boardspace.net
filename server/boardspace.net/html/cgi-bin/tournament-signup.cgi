@@ -485,7 +485,7 @@ sub showTournaments
 	     	 #
 	 # show the "add me" form if this is a signup tournament
 	 #
-	 &findByEmail($dbh,$admin,$playeremails);
+	 &findByEmail($dbh,$admin,$tid,$playeremails);
 
 	 if($admin || $activestatus)
 	 {   print "<hr>\n";
@@ -655,34 +655,41 @@ sub elgibleParticipant()
 
 sub findByEmail()
 {
-	my ($dbh,$admin,$playeremails) = @_;
+	my ($dbh,$admin,$tid,$playeremails) = @_;
 
 	if($admin && $playeremails)
 	{
-	print "<table>";
+	print "<table  border=1>";
+	print "<tr><td>in</td><td>nickname</td><td>real name</td><td>email</td></tr>\n";
 	my (@names) = split /,/,$playeremails;
+	my $qtid = $dbh->quote($tid);
 	while(@names)
 	{
 	my $name = pop(@names);
 	$name =~ s/^\s+|\s+$//g; # trim spaces
 	my $qname = $dbh->quote($name);
-	my $q = "select player_name,full_name,e_mail,if(e_mail_bounce,'<b>(bouncing)</b>','') from players where status='ok' && e_mail = $qname";
+	my $q = "select player_name,full_name,e_mail,e_mail_bounce,participant.pid from players "
+		. "left join participant on participant.pid=uid and participant.tid=$qtid "
+		. "where status='ok' && e_mail = $qname";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	if($nr > 0)
 	{
 	while($nr-- > 0)
 		{
-		my ($pname,$name,$em,$bo) = &nextArrayRow($sth);
+		my ($pname,$name,$em,$bo,$pid) = &nextArrayRow($sth);
 		$name = encode_entities(&utfDecode($name));
 		print "<tr>";
+		my $pidmessage = $pid>0 ? "yes" : "";
+		print "<td>$pidmessage</td>";
 		print "<td><b>$pname</b></td>";
 		print "<td>'$name'</td>";
-		print "<td>$em$bo</td>";
+		my $bomessage = $bo ? "(bouncing)" : "";
+		print "<td>$em$bomessage</td>";
 		print "</tr>\n";
 		}}
 	else { 
-	 print "<tr><td></td><td></td><td><b>$name</b></td><td></td></tr>\n";
+	 print "<tr><td></td><td></td><td></td><td><b>$name</b></td></tr>\n";
 	}
 	&finishQuery($sth);
 	}

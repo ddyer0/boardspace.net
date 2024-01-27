@@ -31,7 +31,6 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
     private JMenu options = null;
     private JMenu actions = null;
 	private TopFrameProtocol myFrame = null;
-
     private InternationalStrings s = null;
 	String name="Unnamed";
 	/** constructor */

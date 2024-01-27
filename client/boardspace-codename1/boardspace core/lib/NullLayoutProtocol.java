@@ -15,7 +15,17 @@
     If not, see https://www.gnu.org/licenses/.
  */
 package lib;
-
+/**
+ * standard java layouts are pretty much a disaster IMO, so consequently 
+ * boardspace doesn't use them for much of anything.  Instead, windows
+ * typically implement NullLayoutProtocol and use new NullLayout(this)
+ * as their layout manager.
+ * 
+ * Boardspace also typically uses a single "canvas" window for each major frame,
+ * and the canvas lays itself up using a setLocalBounds.
+ * Frames that contain a single window typically make that subwindow full sized.
+ * Frames that contain multiple real windows not typically used. 
+ */
 public interface NullLayoutProtocol {
 	public void doNullLayout();
 }

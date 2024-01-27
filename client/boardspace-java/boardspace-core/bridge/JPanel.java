@@ -6,11 +6,12 @@ import java.awt.Panel;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
+import lib.ImageConsumer;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
 
 @SuppressWarnings({ "serial", "serial" })
-public class JPanel extends Panel implements NullLayoutProtocol
+public class JPanel extends Panel implements NullLayoutProtocol,ImageConsumer
 {
 	String title = "";
 	private Container contentPane = null;
@@ -111,6 +112,11 @@ public class JPanel extends Panel implements NullLayoutProtocol
 		super.revalidate();
 		doLayout();
 		if(contentPane!=null) { contentPane.doLayout(); }
+	}
+	public void setLowMemory(String string) {
+	}
+	public Component getMediaComponent() {
+		return this;
 	}
 
 }

@@ -18,6 +18,7 @@ package lib;
 
 import bridge.AccessControlException;
 import bridge.ActionEvent;
+import bridge.Config;
 import bridge.Container;
 import bridge.Frame;
 import bridge.JMenu;
@@ -28,15 +29,17 @@ import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
 public class TabFrame extends Frame 
-	implements TopFrameProtocol,SizeProvider 
+	implements TopFrameProtocol,SizeProvider,Config
 {
-	
+	ImageLoader loader = new ImageLoader(this);
 	public TabFrame() 
 		{ super(); 
+		  StockArt.preloadImages(loader,IMAGEPATH);
 		}
 	public Container getParentContainer() { return (Container)getParent(); }
 	public TabFrame(String tab) 
 		{ super(tab); 
+		  StockArt.preloadImages(loader,IMAGEPATH);
 		}
 	// support for rotater buttons
 	private CanvasRotater rotater = new CanvasRotater();
@@ -203,5 +206,4 @@ public class TabFrame extends Frame
 	public void setTitle(String n) {
 		MasterForm.getMasterPanel().setTabName(this,n,getIconAsImage());
 	}
-
 }

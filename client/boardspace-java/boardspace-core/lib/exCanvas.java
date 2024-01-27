@@ -1233,7 +1233,6 @@ graphics when using a touch screen.
 
         public void drawClientCanvas(Graphics offGC,boolean complete,HitPoint pt)
         {	resetLocalBoundsIfNeeded();
-        	//Plog.log.addLog("Draw");
         	boolean logging = (l.logGraphicsStart>0 && l.logGraphicsStart<G.Date());
         	if(logging)
         	{
@@ -1246,7 +1245,6 @@ graphics when using a touch screen.
 	       	pt.spriteColor = null;
 	       	pt.hitObject = null;
         	drawCanvas(offGC,complete,pt);
-
 
         	if(logging)
         	{
@@ -2064,7 +2062,7 @@ graphics when using a touch screen.
 
     
 	public void resetLocalBoundsIfNeeded()
-	{
+	{	
 		if(l.needLocalBounds) 
 		{ 	l.needLocalBounds = false;
 			G.runInEdt(new Runnable() { public void run() { realNullLayout();}});

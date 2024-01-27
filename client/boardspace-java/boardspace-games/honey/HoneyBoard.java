@@ -337,7 +337,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         			{	if(p!=pb)
         				{
         				HWord w = p.findWord(word);
-        				if(w!=null) { common = w; isCommon=true; }
+        				if(w!=null) { common = w; isCommon=true; pb.makeMyCommon(w); }
         				}
         			}
            			if(isCommon) 

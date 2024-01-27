@@ -1968,11 +1968,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  		  }}
 
 		    GC.setFont(offGC,basicFont);
-		    if(complete)
-		    {
 		    GC.setColor(offGC,getBackground());
 		    GC.fillRect(offGC,fullRect);
-		    }
 	  		GC.translate(offGC,-xp,-yp);		    
 		    drawGames(offGC,hp);
 		    drawOwner(offGC);

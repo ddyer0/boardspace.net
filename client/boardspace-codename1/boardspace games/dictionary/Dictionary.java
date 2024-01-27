@@ -113,14 +113,28 @@ public class Dictionary implements Config
 		}}).start();
 	}
 	public void waitForLoaded() 
-	{
+	{	int n = 0;
 		while(!loaded) 
-			{ G.doDelay(100); 
+			{ if(n>0) { G.print("Wait for loaded "+n); }
+			  G.doDelay(100); 
+			  n++;
+			}
+		if(n>1)
+	{
+			G.print("done waiting");
 			}
 	}
 	public void waitForDefinitions()
+	{	int n = 0;
+		while(!definitionsAllLoaded) 
+			{ if(n>0) { G.print("Wait for definitions "+n); }
+			  G.doDelay(100);  
+			  n++;
+			}
+		if(n>1)
 	{
-		while(!definitionsAllLoaded) { G.doDelay(100); }
+			G.print("done waiting");
+		}
 	}
 	public int size() { 
 		waitForLoaded();
@@ -206,7 +220,6 @@ public class Dictionary implements Config
 		G.print("loading definitions");
 		long loadtime = 0;	//  1374mS
 		long inctime = 0;
-		boolean cheer = G.isCheerpj();
 		ByteOutputStream def = new ByteOutputStream();
 		long now = G.nanoTime();
 		while( (word = stream.readToWhitespace(true))!=null)

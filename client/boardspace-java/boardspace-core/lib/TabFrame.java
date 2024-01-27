@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.security.AccessControlException;
 import javax.swing.JMenuBar;
 
+import bridge.Config;
 import bridge.JMenu;
 import bridge.JPanel;
 import bridge.JPopupMenu;
@@ -30,16 +31,18 @@ import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
 @SuppressWarnings("serial")
-public class TabFrame extends JPanel 
-	implements TopFrameProtocol,SizeProvider
+public class TabFrame extends JPanel
+	implements TopFrameProtocol,SizeProvider,Config
 {
-	
+	ImageLoader loader = new ImageLoader(this);
 	public TabFrame() 
 		{ super(); 
+		  StockArt.preloadImages(loader,IMAGEPATH);
 		}
 	public Container getParentContainer() { return (Container)getParent(); }
 	public TabFrame(String tab) 
 		{ super(tab);
+		  StockArt.preloadImages(loader,IMAGEPATH);
 		}
 	// support for rotater buttons
 	private CanvasRotater rotater = new CanvasRotater();
@@ -206,5 +209,4 @@ public class TabFrame extends JPanel
 	public void setTitle(String n) {
 		MasterForm.getMasterPanel().setTabName(this,n,getIconAsImage());
 	}
-
 }

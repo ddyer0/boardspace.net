@@ -34,13 +34,14 @@ import lib.G;
 import lib.Graphics;
 import lib.Http;
 import lib.Image;
-import lib.NullLayoutProtocol;
+import lib.ImageConsumer;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
+import lib.ImageLoader;
 
 @SuppressWarnings("serial")
 class JBar extends JMenuBar
-{
+{	
 	public void paint(java.awt.Graphics gc)
 	{
 		super.paint(gc);
@@ -58,8 +59,9 @@ class JBar extends JMenuBar
 	}
 }
 @SuppressWarnings("serial")
-public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeProvider,Config,WindowListener
-{	
+public class JFrame extends javax.swing.JFrame 
+	implements TopFrameProtocol,SizeProvider,Config,WindowListener,ImageConsumer
+{	ImageLoader loader = new ImageLoader(this);
 	private boolean useMenuBar = true;		// if true, use the local menu bar
 	private boolean closeable = true;
 	public void setCloseable(boolean v) { closeable = v; }
@@ -311,6 +313,11 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 
  	public void moveToFront() {
 		MasterForm.moveToFront(this);
+	}
+	public void setLowMemory(String string) {
+	}
+	public Component getMediaComponent() {
+		return this;
 	}
 
 

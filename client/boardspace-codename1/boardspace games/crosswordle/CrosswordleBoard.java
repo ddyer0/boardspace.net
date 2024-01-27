@@ -240,8 +240,11 @@ package crosswordle;
  
 	 /** create a copy of this board */
 	 public CrosswordleBoard cloneBoard() 
-	 { CrosswordleBoard dup = new CrosswordleBoard(gametype,players_in_game,randomKey,getColorMap(),dictionary,revision); 
+	 { 
+ 
+	   CrosswordleBoard dup = new CrosswordleBoard(gametype,players_in_game,randomKey,getColorMap(),dictionary,revision); 
 	   dup.copyFrom(this);
+	   
 	   return(dup); 
 	   }
 	 public void copyFrom(BoardProtocol b) { copyFrom((CrosswordleBoard)b); }

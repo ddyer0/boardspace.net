@@ -220,7 +220,6 @@ public class Dictionary implements Config
 		G.print("loading definitions");
 		long loadtime = 0;	//  1374mS
 		long inctime = 0;
-		boolean cheer = G.isCheerpj();
 		ByteOutputStream def = new ByteOutputStream();
 		long now = G.nanoTime();
 		while( (word = stream.readToWhitespace(true))!=null)

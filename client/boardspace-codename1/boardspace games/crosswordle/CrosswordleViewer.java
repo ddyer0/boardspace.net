@@ -76,7 +76,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	implements CrosswordleConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 	static final String Crosswordle_SGF = "Crosswordle"; // sgf game name
-	boolean useKeyboard = G.isCodename1();
+	boolean useKeyboard = G.isCodename1()||G.isJavadroid();
 	KeyboardLayout Minimal =new KeyboardLayout(0.085,0.085*3,new String[][]
 			{				
 		 {"Q","W","E","R","T","Y","U","I","O","P"},
@@ -170,6 +170,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,1);
         painter.useBackgroundBitmap = false;
+        
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -729,6 +730,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        {
     	   drawStats(gc,selectPos,boardRect);
        }
+ 
     }
     public void drawStats(Graphics gc,HitPoint hit,Rectangle r)
     {
@@ -1421,7 +1423,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     
  public void ViewerRun(int wait)
    {	
+
+
         super.ViewerRun(wait);
+        
         if(ourActiveMove()) { updateInput(); }
         if(urlResult!=null && urlResult.text!=null)
         {

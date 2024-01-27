@@ -4057,7 +4057,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	} 
 
             if(G.isCheerpj())
-            { newsStack.push(cheerpjTextFile); }
+            { newsStack.push(cheerpjTextFile); 
+            }
 
             if (!chatOnly && !G.offline())
             {	String pfile1 = my.isSpectator() 

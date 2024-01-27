@@ -81,7 +81,10 @@ public class DeadlockDetector implements Runnable
     if(monitorThreadIds!=null) { noDeadLocks = false; report("stall",monitorThreadIds); }
     return(noDeadLocks);
   }
-  
+  public void report(String msg)
+  {	ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+  	report(msg,bean.getAllThreadIds());
+  }
   public void report(String msg,long threadIds[])
   {
 	  System.out.println("Deadlock detected!");

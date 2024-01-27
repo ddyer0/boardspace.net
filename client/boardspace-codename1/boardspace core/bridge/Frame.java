@@ -18,6 +18,7 @@ package bridge;
 
 import lib.G;
 import lib.Http;
+import lib.ImageConsumer;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
 import lib.PinchEvent;
@@ -27,8 +28,8 @@ import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.Layout;
 
-public class Frame extends Window implements NullLayoutProtocol,
-	MouseMotionListener,MouseListener
+public class Frame extends Window 
+		implements NullLayoutProtocol,MouseMotionListener,MouseListener,ImageConsumer
 {	boolean resizable = false;
 	public void setResizable(boolean n) { resizable = n; }
 	Container glassPane = new FullscreenPanel();
@@ -214,6 +215,9 @@ public class Frame extends Window implements NullLayoutProtocol,
 	public com.codename1.ui.Container add(Component c)
 	{
 		return glassPane.add(c);
+	}
+
+	public void setLowMemory(String string) {
 	}
 
 }
