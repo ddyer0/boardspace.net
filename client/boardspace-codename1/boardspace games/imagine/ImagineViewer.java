@@ -427,7 +427,6 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
       	
     }
 
-    
     /**
      * translate the mouse coordinate x,y into a size-independent representation
      * presumably based on the cell grid.  This is used to transmit our mouse
@@ -455,8 +454,6 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	}
         return (super.encodeScreenZone(x,y,p));
     }
-    /** true if the current player is a spectator in a live game */
-    public boolean isSpectator() { return(isSpectator()); }
     
     private void drawStoryBox(Graphics gc,ImagineBoard gb,int who,Rectangle r,Rectangle legend,HitPoint highlight0)
     {	ImagineState state = gb.getState();

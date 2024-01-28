@@ -154,14 +154,29 @@ public class DateSelector extends Rectangle implements ActionListener
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		if(menu.selectMenuTarget(target))
-		{	changed = true;
+		{	
 			int m = menu.value;
 			date.setHours(0);	// changing the date. set hours to 0 to avoid
 								// timezone problems.
 			switch(selection)
-			{ case Year: date.setYear(m-1900); break; 
-			case Month: date.setMonth(m); break;
-			case Day: date.setDate(m); break;
+			{ case Year: 
+				{ int oldyear = date.getYear();
+				  date.setYear(m-1900); 
+				  changed |= date.getYear()!=oldyear;
+				  break; 
+				}
+			case Month: 
+				{	int oldMonth = date.getMonth();
+					date.setMonth(m);
+					changed |= date.getMonth()!=oldMonth;
+					break;
+				}
+			case Day:
+				{ int oldDay = date.getDate();
+				  date.setDate(m); 
+				  changed |= date.getDate()!=oldDay;
+				  break;
+				}
 			default: G.Error("Not expecting ",selection);
 			}
 		}

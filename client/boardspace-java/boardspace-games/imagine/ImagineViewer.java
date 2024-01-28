@@ -450,8 +450,6 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	}
         return (super.encodeScreenZone(x,y,p));
     }
-    /** true if the current player is a spectator in a live game */
-    public boolean isSpectator() { return(isSpectator()); }
  
     private void drawStoryBox(Graphics gc,ImagineBoard gb,int who,Rectangle r,Rectangle legend,HitPoint highlight0)
     {	ImagineState state = gb.getState();

@@ -1127,7 +1127,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 		boolean done = bb.canBeGuessed(theWord);
 		if(done) 
 			{ 
-			if(allowed_to_edit || !isSpectator()) { PerformAndTransmit("Play "+theWord); } 
+			if(allowed_to_edit || (!isSpectator() && !reviewMode())) { PerformAndTransmit("Play "+theWord); } 
 			inputField.setText("");
 			}
 	}
@@ -1176,7 +1176,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 			  repaint();
 			}			
 	}
-
+	private void restartDate()
+	{	dateRect.changed = false;
+       	PerformAndTransmit(G.concat("Restart ",dateRect.getTime()/MILLIS_PER_DAY," ",hardButton.isOn()));
+	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1193,6 +1196,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         if(id instanceof CalculatorButton.id)
 		{	if(id==CalculatorButton.id.Guess)
 			{
+			if(reviewMode() && !allowed_to_edit)
+			{
+				performReset();
+			}
 			maybeSendGuess();
 			}
 		}
@@ -1225,9 +1232,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	break;
         case ToggleEasy:
         	hardButton.toggle();
+        	restartDate();
         	break;
         case Restart:
-        	PerformAndTransmit(G.concat("Restart ",dateRect.getTime()/MILLIS_PER_DAY," ",hardButton.isOn()));
+        	restartDate();
         	break;
         case Playword:
         	PerformAndTransmit("Play "+(String)(hp.hitObject));
@@ -1437,6 +1445,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         {	triggerEndStats = 0;
         	doShowStats();
         
+        }
+        if(dateRect.changed)
+        {
+        	restartDate();
         }
    }
     /**
