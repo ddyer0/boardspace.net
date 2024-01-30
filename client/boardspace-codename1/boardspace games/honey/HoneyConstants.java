@@ -25,43 +25,26 @@ import online.game.BaseBoard.BoardState;
 public interface HoneyConstants
 {	static String InvalidExplanation = "The current letter placement is invalid because: #1";
 	
-	static String NonWordsMessage = "Non Words";
-	static String SharedWordsMessage = "Shared Words";
+	static String NonWordsMessage = "#1 Non Words";
+	static String SharedWordsMessage = "#1 Shared Words";
+	static String ShowSummaryMessage = "Show all the words found";
 	
 	static String NotAdjacentExplanation = "Not a continuous word";
 	static String HoneyVictoryCondition = "score the most points";
-	static String ResolveBlankState = "Assign a value to the blank tile";
-	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
 	static String HoneyPlayState = "Find the most value in Words";
-	static String TilesLeft = "#1{##no tiles, tile, tiles}";
-	static String LastTurnMessage = "No More Tiles!";
-	static String NotWords = "Some are not words";
-	static String NotConnected = "Some letters are not connected";
-	static String NotAllPlaced = "Not all tiles have been placed";
-	static String AddWordMessage = "\"#1\" #2{ points, point, points}";
 	static String GetDefinitionMessage = "click for defintion of #1";
-	static String SelectBlankMessage = "Select the blank letter";
-	static String JustWordsMessage = "Words";
+	static String JustWordsMessage = "#1 Words";
 	static String JustWordsHelp = "Check for good words";
 	static String VocabularyMessage = "Vocabulary";
-	static String WordsMessage = "Best Words";
 	static String EndGameMessage = "Time Left";
-	static String NextDrawMessage = "Next Draw";
-	static String PullAction = "Pull";
 	static String EndGameAction = "End Game";
 	static String EndGameDescription = "Click on End Game to end the game with the current score";
 	static String EndingGameDescription = "Waiting for the other players stop";
 	static String SwitchExplanation = "Switch to viewing this player";
 	static final String[] HoneyGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	static final int MAX_PLAYERS = 12;
-	static final int rackSize = 5;		// the number of filled slots in the rack.  Actual rack has some empty slots
-	static final int rackSpares = 0;	// no extra spaces
-	static final int TileIncrement = 2;	// tiles to take at a time
-	static final int InitialDrawTime = 5*60*1000;	// 5 minutes
-	static final int FinalDrawTime = 5*60*1000;		// 1 minute
-	static final int NextDrawTime =  1*60*1000;	// 1 minute
+	static final int InitialDrawTime = (3*60+5)*1000;	// 3 minutes plus 5 second countdown
 	static final int EndGameTime = 1*60*1000;	// 1 minute
-	static final int WordPenalty = 2;	// negative points per word
 	class StateStack extends OStack<HoneyState>
 	{
 		public HoneyState[] newComponentArray(int n) { return(new HoneyState[n]); }
@@ -110,7 +93,7 @@ public interface HoneyConstants
     	Lock,
     	Switch,
     	Definition,
-
+    	ShowSummary,
     	Blank, InvisibleDragBoard, ZoomSlider;
     	public String shortName() { return(name()); }
 
@@ -161,32 +144,22 @@ public interface HoneyConstants
     	
     	String HoneyStrings[] = 
     		{  "HoneyComb",
-    			SelectBlankMessage,
     			NotAdjacentExplanation,
     			GetDefinitionMessage,
-    			WordsMessage,
     			NonWordsMessage,
     			SharedWordsMessage,
     			VocabularyMessage,
     			JustWordsMessage,
     			JustWordsHelp,
     			InvalidExplanation,
-    			AddWordMessage,
-    			NotConnected,
-    			NotAllPlaced,
     			EndGameAction,
-    			DiscardTilesState,
-    			ResolveBlankState,
     			EndGameDescription,
-    			NotWords,
+    			ShowSummaryMessage,
     			SwitchExplanation,
-    			PullAction,
     	    	EndGameMessage,
-    	    	NextDrawMessage,
     			HoneyPlayState,
     	        HoneyVictoryCondition,
     	        EndingGameDescription,
-    	        TilesLeft,
 
     		};
     		String HoneyStringPairs[][] = 

@@ -48,6 +48,7 @@ class ChipStack extends OStack<HoneyChip>
 
 public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
 {
+
 	private int index = 0;
 	public static String BACK = "_back_";
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
@@ -101,7 +102,7 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
     /* plain images with no mask can be noted by naming them -nomask */
     static public HoneyChip backgroundTile = new HoneyChip("background-tile-nomask",null,null,0);
     static public HoneyChip backgroundReviewTile = new HoneyChip("background-review-tile-nomask",null,null,0);
-   	
+    static public HoneyChip SummarySheet = new HoneyChip("words-nomask",new double[]{0.5,0.5,1.0},null,0);
     
    static private double letterScale[]  = new double[] {0.55,0.52,1.25 };
 

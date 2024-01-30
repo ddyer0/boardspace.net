@@ -63,6 +63,8 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
     String word = null;
     String path = null;
     String gameEvents[] = null;
+    boolean isCommon;
+    boolean notNew;
     public String[] gameEvents() { return(gameEvents); }
     
     public Honeymovespec()
@@ -110,6 +112,9 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
         to.chip = chip;
         to.word = word;
         to.path = path;
+        to.notNew = notNew;
+        to.isCommon = isCommon;
+        
      }
 
     public commonMove Copy(commonMove to)

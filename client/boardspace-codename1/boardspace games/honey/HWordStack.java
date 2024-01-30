@@ -35,49 +35,15 @@ public class HWordStack extends OStack<HWord> implements Digestable,SequenceStac
 		for(int lim=size(),i=0; i<lim; i++) { v += elementAt(i).Digest(r)*(i+1);  }
 		return v;
 	}
-	public int bestScore = 0;				// best score so far
-	public int leastScore = 0;				// the lowest score currently in the stack
-	
-	public static final double trimSize = 0.8;			// size to trim to
-	public static final double threshold = 0.5;			// threshold from current best to allow addition
-	public static int sizeLimit = 10;					// max entries
-	int accepted = 0;
-	int declined = 0;
-	int prevLeastScore = 0;
-	int prevBestScore = 0;
+	public void copyFrom(HWordStack other)
+	{
+		super.copyFrom(other);
+	}
 	public void clear()
 	{
 		super.clear();
-		bestScore = 0;
-		leastScore = 0;
-		accepted = 0;
-		declined = 0;
-		prevLeastScore = 0;
-		prevBestScore = 0;
-	}
-	public void unAccept(HWord w)
-	{	if(w==top())
-		{
-		accepted--;
-		leastScore = prevLeastScore;
-		bestScore = prevBestScore;
-		pop();
-		}
-	else {
-		remove(w,true);
-		}
 	}
 
-	public void trimToSize()
-	{
-		if(size()>=sizeLimit)
-		{
-			sort(true);
-			setSize((int)(sizeLimit*trimSize));
-			leastScore = top().points;
-			prevLeastScore = leastScore;
-		}
-	}
 	// causes pushnew to match on same word
 	public boolean eq(HWord o,HWord x) 
 	{ return(o.name==null 

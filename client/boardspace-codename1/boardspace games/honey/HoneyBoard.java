@@ -337,7 +337,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         			{	if(p!=pb)
         				{
         				HWord w = p.findWord(word);
-        				if(w!=null) { common = w; isCommon=true; }
+        				if(w!=null) { common = w; isCommon=true; pb.makeMyCommon(w); }
         				}
         			}
            			if(isCommon) 
@@ -348,6 +348,10 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
            				// a new word
            				pb.Execute(mm,replay);
            			}}
+          		else {
+          			// previously known to be a common word, we just added it
+          			pb.makeMyCommon(common);
+          		}
         		}
         	break;
          default:
@@ -361,10 +365,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         
         return (true);
     }
- public void restartTimer()
- {
- 	drawTimer = G.Date()+ FinalDrawTime;
- }
  
  public HBoard getPlayerBoard(int p)
  {

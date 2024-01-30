@@ -490,6 +490,10 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
+	  put(new GameInfo(784,ES.test,118,"AC",AncientGames,"Chess","Atomic Chess",OneBotPlus,
+				new double[]{0.5,0.05},
+				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
+				null,false, WhiteOverBlack));	  
 	}
 	{
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
@@ -573,7 +577,12 @@ synchronized(allGames) {
 			"checkerboard.CheckerGameViewer","/checkers/english/International%20Checkers%20Rules.html","about_checkers.html",
 			null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
-
+	 g = put(new GameInfo(764,ES.game,76,"CK",AncientGames,"Checkers","antidraughts",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/Antidraughts%20Rules.html","about_checkers.html",
+				null,false, WhiteOverBlack));
+		 g.distinctVariations = true;
 	 g =put(new GameInfo(761,ES.game,76,"CK",AncientGames,"Checkers","Checkers-turkish",
 			OneBotPlus,
 			new double[]{1.0,0.01},
@@ -587,6 +596,8 @@ synchronized(allGames) {
 			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf","about_checkers.html",
 			 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
+	 
+
 
 	}
 	{

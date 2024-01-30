@@ -16,7 +16,6 @@
  */
 package honey;
 
-import dictionary.Entry;
 import lib.CompareTo;
 import lib.Digestable;
 import lib.G;
@@ -43,7 +42,6 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	CellStack seed = new CellStack();	// starting point
 	int points=-1;			// the value of the word when played
 	String comment = null;	// for the word search
-	Entry entry;
 	public String toString() 
 	{ StringBuilder b = new StringBuilder();
 	  b.append("<word ");
@@ -54,10 +52,6 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		  b.append(comment);
 		  b.append(" points:");
 		  b.append(points);
-		  if(entry!=null)
-		  {	b.append(" Order:");
-		    b.append(entry.order);
-		  }
 	  }
 	  b.append(">");
 	  return(b.toString());
@@ -99,11 +93,11 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	}
 
 	public int compareTo(HWord o) {
-		return G.signum(points-o.points);
+		return G.compareTo(name,o.name);
 	}
 
 	public int altCompareTo(HWord o) {
-		return G.signum(o.points-points);
+		return -compareTo(o);
 	}
 	
 	public long Digest(Random r) {

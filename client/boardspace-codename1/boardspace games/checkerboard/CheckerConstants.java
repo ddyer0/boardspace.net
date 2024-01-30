@@ -29,6 +29,7 @@ public interface CheckerConstants
 	static String AmericanCheckersRules = "american checkers rules";
 	static String TurkishCheckersRules = "turkish checkers rules";
 	static String InternationalCheckersRules = "international checkers rules";
+	static String AntiDraughtsRules = "antidraughts rules";
 	static String FrisianCheckersRules = "frisian checkers rules";
 	static String EndgameDescription = "The game will be a draw after #1 moves";
 	static enum Variation
@@ -36,9 +37,11 @@ public interface CheckerConstants
 		Checkers_Turkish(CheckerChip.turkish,TurkishCheckersRules,"checkers-turkish",8,true),
 		Checkers_International(CheckerChip.international,InternationalCheckersRules,"checkers-international",10,true),
 		Checkers_American(CheckerChip.american,AmericanCheckersRules,"checkers-american",8,false),
+		AntiDraughts(CheckerChip.anti,AntiDraughtsRules,"antidraughts",10,true),
 		Checkers_10(null,null,"checkers-10",10,false),	// empty checkers board size 10
 		Checkers_8(null,null,"checkers-8",8,false),		// empty checkers board size 8
-		Checkers_6(null,null,"checkers-6",6,false);		// empty checkers board size 6
+		Checkers_6(null,null,"checkers-6",6,false),		// empty checkers board size 6
+		;
 		int size;
 		boolean hasFlyingKings = false;
 		String name;
@@ -128,6 +131,8 @@ static void putStrings()
 	// add them for debugging purposes.
 		String CheckerStringPairs[][] = 
 		{   {"Checkers_family","Checkers"},
+			{"antidraughts","Anti Draughts"},
+			{"antidraughts_variation","Anti Draughts"},
 			{"Checkers_variation","Standard Checkers"},
 			{"Checkers-frisian","Frisian Checkers"},
 			{"Checkers-frisian_variation","Frisian Checkers"},
@@ -140,6 +145,7 @@ static void putStrings()
 			{AmericanCheckersRules,"move forward 1 space diagonally\nmandatory capture forward diagonally\nkings move and capture forward and backward"},
 			{TurkishCheckersRules,"move forward or sideways orthogonally\nmandatory captures forward or sideways\nflying kings move and capture orthoginally\nmaximal captures are required"},
 			{InternationalCheckersRules,"move forward diagonally\nmandatory captures forward or backwards diagonally\nflying kings move and capture diagonally\nmaximal captures are required"},
+			{AntiDraughtsRules,"same as International Checkers, except the goal is to lose"},
 			{FrisianCheckersRules,"move forward diagonally\nmandatory captures in all 8 directions\nflying kings move and capture in all directions, captures are required"}
 		};
 		InternationalStrings.put(CheckerStrings);

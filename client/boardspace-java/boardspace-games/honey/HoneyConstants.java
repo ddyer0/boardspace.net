@@ -27,6 +27,7 @@ public interface HoneyConstants
 	
 	static String NonWordsMessage = "#1 Non Words";
 	static String SharedWordsMessage = "#1 Shared Words";
+	static String ShowSummaryMessage = "Show all the words found";
 	
 	static String NotAdjacentExplanation = "Not a continuous word";
 	static String HoneyVictoryCondition = "score the most points";
@@ -92,7 +93,7 @@ public interface HoneyConstants
     	Lock,
     	Switch,
     	Definition,
-
+    	ShowSummary,
     	Blank, InvisibleDragBoard, ZoomSlider;
     	public String shortName() { return(name()); }
 
@@ -153,6 +154,7 @@ public interface HoneyConstants
     			InvalidExplanation,
     			EndGameAction,
     			EndGameDescription,
+    			ShowSummaryMessage,
     			SwitchExplanation,
     	    	EndGameMessage,
     			HoneyPlayState,

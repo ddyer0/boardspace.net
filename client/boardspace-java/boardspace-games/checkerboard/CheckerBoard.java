@@ -109,6 +109,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		case Checkers_6:
 		case Checkers_American:
  		case Checkers_International:
+ 		case AntiDraughts:
  		case Checkers_Turkish:
  			return super.dxs();
  		case Checkers_Frisian:
@@ -122,6 +123,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		default: throw G.Error("Not expecting %s",variation);
 		case Checkers_American:
  		case Checkers_International:
+ 		case AntiDraughts:
  		case Checkers_Turkish:
  		case Checkers_10:
  		case Checkers_8:
@@ -369,6 +371,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      	{
      	default:  throw G.Error(WrongInitError,gtype);
      	case Checkers_Turkish:
+     	case AntiDraughts:
      	case Checkers_International:
      	case Checkers_Frisian:
      	case Checkers_American:
@@ -398,6 +401,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    {
 	    default: break;
 	    case Checkers_Frisian:
+	    case AntiDraughts:
 	    case Checkers_International:
 	    	nRows++;
 			//$FALL-THROUGH$
@@ -458,7 +462,14 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 
     public double simpleScore(int who)
     {	// range is 0.0 to 0.8
-    	return((0.8*occupiedCells[who].size())/initialStacks[who]);
+    	double v = (0.8*occupiedCells[who].size())/initialStacks[who];
+    	switch(variation)
+    	{
+    	case AntiDraughts:
+    		return -v;
+    	default: 
+    		return v;
+    	}
     }
     //
     // change whose turn it is, increment the current move number
@@ -542,10 +553,23 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	setState(CheckerState.Gameover);
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }
+    
+    public boolean winForPlayer(int player)
+    {
+    	switch(variation)
+    	{
+    	case AntiDraughts:
+    		return !win[player];
+    	default: 
+    		return win[player];
+    	}
+    }
     public boolean winForPlayerNow(int player)
     {	// return true if the conditions for a win exist for player right now
     	// we maintain the wins in doDone so no logic is needed here.
-    	if(board_state.GameOver()) { return(win[player]); }
+    	if(board_state.GameOver()) 
+    		{ return winForPlayer(player);
+    		}
     	return(false);
     }
     // estimate the value of the board position.
@@ -894,6 +918,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {	
     	switch(variation)
     	{
+    	case AntiDraughts:
     	case Checkers_International:
     	   	// if you have 2 kings, you have 7 moves to win of else the game is drawn
     	{
@@ -1508,6 +1533,7 @@ public boolean hasSimpleMoves()
 	 		return(isKing ? AllOrthogonals[who] : ForwardOrthogonals[who]);
 	 	case Checkers_Frisian:
 	 		return AllDirections;
+	 	case AntiDraughts:
 	 	case Checkers_International:
 	 		return(AllDiagonals[who]);		// international checkers go forward and backward
 	 	case Checkers_American:
@@ -1583,6 +1609,7 @@ public boolean hasSimpleMoves()
 	 	case Checkers_Turkish:
 	 		return(isKing?AllOrthogonals[who] : ForwardOrthogonals[who]);
 	 	case Checkers_International:
+	 	case AntiDraughts:
 	 	case Checkers_Frisian:
 	 	case Checkers_American:
 	 		return(isKing ? AllDiagonals[who]:ForwardDiagonals[who]);
@@ -1691,6 +1718,7 @@ public boolean hasSimpleMoves()
 		 {
 		 default: throw G.Error("not expecting variation %s",variation);
 		 case Checkers_Turkish:
+	 	 case AntiDraughts:
 		 case Checkers_International:
 			 depth = maximalCaptureDepth(to,isKing,	who,empty);
 			 break;
@@ -1712,6 +1740,7 @@ public boolean hasSimpleMoves()
 	 {
 	 default: throw G.Error("Not expecting %s",variation); 
  	 case Checkers_International:
+ 	 case AntiDraughts:
  	 case Checkers_Frisian:
  	 case Checkers_American:
  	 case Checkers_Turkish:
@@ -1759,6 +1788,7 @@ public boolean hasSimpleMoves()
  			 {
  			 case Checkers_Turkish:
  			 case Checkers_Frisian:
+ 			 case AntiDraughts:
  			 case Checkers_International:
  				 if(all.size()>1) { removeShortCaptures(all,pickedObject==null,whoseTurn); }
  				 break;

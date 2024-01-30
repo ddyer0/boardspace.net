@@ -45,6 +45,7 @@ public class GameLog implements Opcodes
 {
 	commonCanvas canvas;	// the associated canvas for the game
 	public String banner = null;
+	public int nColumns = 0;
 	ScrollArea scrollbar = new ScrollArea();	// the scrollbar for the display
 	
 	// these are set by positionTheChat so the color scheme is uniform by default
@@ -197,7 +198,7 @@ public class GameLog implements Opcodes
     		Font playerFont,Font lineFont,SequenceStack history)
     {	
     	BoardProtocol b = canvas.getBoard();
-        int numPlayers = (b==null) ? 0 : b.nPlayers();
+        int numPlayers = nColumns >0 ? nColumns : (b==null) ? 0 : b.nPlayers();
         if(numPlayers>0 && (G.Height(r)>0))
         {
         if(highlight!=null) { scrollbar.doMouseMotion(G.Left(highlight),G.Top(highlight),highlight.upCode); }

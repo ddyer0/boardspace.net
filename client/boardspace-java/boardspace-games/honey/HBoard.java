@@ -542,9 +542,9 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		seed.push(getCell(col,row));
     	}
     	HWord newword = new HWord(seed,m.word);
-    	if(rejectCommon && commonWords.contains(newword)) {}
+    	if(rejectCommon && commonWords.contains(newword)) { m.isCommon = true; }
     	else { 
-    		which.pushNew(newword); 
+    		if(!which.pushNew(newword)) { m.notNew = true; }
     		if(which==words)
     		{
     		int ss = scoreWord(newword.seed); 
@@ -629,49 +629,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         return (true);
     }
 
-    // legal to hit the chip storage area
-    public boolean LegalToHitChips(HoneyCell c)
-    {
-        switch (board_state)
-        {
-        default:
-        	throw G.Error("Not expecting Legal Hit state " + board_state);
-        case Confirm:
-		case EndingGame:
-        case Endgame:
-        case Play:
-        	return ( (c!=null) 
-        			 && ((pickedObject==null) ? (c.topChip()!=null) : true)
-        			);
- 		case Resign:
-		case Gameover:
-			return(false);
-        case Puzzle:
-            return ((c!=null) && ((pickedObject==null) == (c.topChip()!=null)));
-        }
-    }
-
-    public boolean LegalToHitBoard(HoneyCell c,boolean picked)
-    {	if(c==null) { return(false); }
-        switch (board_state)
-        {
- 		case Confirm:
-		case EndingGame:
- 		case Endgame:
-		case Play:
-			return(picked ? c.isEmpty() : (c.topChip()!=null));
-
-		case Gameover:
-		case Resign:
-			return(false);
-        default:
-        	throw G.Error("Not expecting Hit Board state " + board_state);
-        case Puzzle:
-            return (picked == (c.topChip()==null));
-        }
-    }
-
-    
+  
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before

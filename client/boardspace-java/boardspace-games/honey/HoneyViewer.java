@@ -23,6 +23,7 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import bridge.Config;
 import bridge.JMenuItem;
 import common.GameInfo;
 import dictionary.Dictionary;
@@ -37,13 +38,12 @@ import lib.LFrameProtocol;
 import lib.MouseState;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.game.sgf.sgf_reader;
 import online.search.SimpleRobotProtocol;
-
-
 
 /**
  *  Initial work May 2023
@@ -68,7 +68,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private GameLog gameLog1 = new GameLog(this);
     private GameLog gameLog2 = new GameLog(this);
     private GameLog gameLog3 = new GameLog(this);
-   
+    private GameLog[] playerLogs = null;
     // private state
     private HoneyBoard bb = null; //the board from which we are displaying
     
@@ -84,6 +84,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private Rectangle wordsRect = addRect("words");
     private Rectangle nonwordsRect = addRect("nonwords");
     private Rectangle commonWordsRect = addRect("commonWords");
+    private Toggle summaryRect = new Toggle(this,"summary",HoneyChip.SummarySheet,HoneyId.ShowSummary,
+    			true,s.get(ShowSummaryMessage));
     
 	private TextButton endgameButton = addButton(EndGameAction,HoneyId.EndGame,EndGameDescription,
 			HighlightColor, rackBackGroundColor,boardBackgroundColor);
@@ -100,6 +102,12 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
  
     public boolean WinForPlayer(commonPlayer p)
     {	return bb.winForPlayer(p.boardIndex);
+    }
+    public void adjustPlayers(int n)
+    {
+    	super.adjustPlayers(n);
+    	playerLogs = new GameLog[n];
+    	for(int i=0;i<n;i++) { playerLogs[i]=new GameLog(this); }
     }
 	/**
 	 * 
@@ -256,7 +264,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,summaryRect,annotationMenu,noChatRect);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect,boardX,boardY+boardH-stateH,boardW,stateH);
@@ -532,8 +540,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
         HoneyCell closestCell = gb.closestCell(all,brect);
-        boolean moving = getOurMovingObject(highlight)>=0;
-        boolean hitCell = canHit && gb.LegalToHitBoard(closestCell,moving);
+        boolean hitCell = canHit && closestCell!=null;
         if(hitCell)
         { // note what we hit, row, col, and cell
           highlight.hitCode = HoneyId.BoardLocation;
@@ -618,10 +625,56 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     
     private boolean iAmSpectator() { return isSpectator(); }
 
+    public void showWordSummary(Graphics gc,HoneyBoard gb,Rectangle r,HitPoint hp)
+    {
+    	HBoard pbs[] = gb.pbs;
+    	int np = pbs.length;
+    	int w = G.Width(r);
+    	int h = G.Height(r);
+       	int margin = w/20;
+    	w -= margin*2;
+    	h -= margin*3;
+    	int playerw = G.Width(wordsRect);
+    	int nAcross = w/playerw;
+    	int nDown = (np+nAcross-1)/nAcross;
+     	int playerh = (h-margin)/nDown;
+    	
+    	
+    	int x = G.Left(r)+margin;
+    	int y = G.Top(r)+margin;
+    	StockArt.Scrim.image.stretchImage(gc,new Rectangle(x,y,w,h));
+    	y += margin/2;  	
+    	x+= +(w-(nAcross*playerw))/2;
+    	int x0 = x;
+    	HWordStack copy = new HWordStack();
+    	for(HBoard pb : pbs)
+    	{	Rectangle pr = new Rectangle(x,y,playerw,playerh);
+    		HWordStack words = pb.words;
+    		playerLogs[pb.boardIndex].banner = prettyName(pb.boardIndex);
+    		playerLogs[pb.boardIndex].nColumns = 1;
+        	GC.setFont(gc,largeBoldFont());
+        	copy.copyFrom(words);
+        	copy.sort(true);
+        	playerLogs[pb.boardIndex].redrawGameLog(gc,hp,pr,Color.black,null,
+    				standardBoldFont(),standardBoldFont(),copy);
+    		x += playerw;
+    		if((x+playerw)>x0+w) { x = x0; y+= playerh; }
+    	}
+    	
+    	
+    	
+    	
+    }
     public void drawGameLog(Graphics gc,GameLog log,String caption,HitPoint hp,Rectangle r,HWordStack words)
     {   log.banner = s.get(caption,words.size());
-    	log.redrawGameLog(gc, hp, r, Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont(),words);
+    	log.nColumns = 1;
+    	GC.setFont(gc,largeBoldFont());
+    	log.redrawGameLog(gc, hp, r, Color.black, boardBackgroundColor,
+    			standardBoldFont(),standardBoldFont(),words);
     }
+    HWord definedWord = null;
+    long definedTime = 0;
+    
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  HoneyBoard gb = disB(gc);
        HBoard pboard = currentPlayerBoard(gb);
@@ -653,9 +706,17 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        standardGameMessage(gc,gb,stateRect,state);
       	
        
-       String msg = pboard.invalidReason==null ? s.get(HoneyVictoryCondition) : s.get(pboard.invalidReason);
-       String goalmsg = pboard.invalidReason==null ? GoalExplanation : InvalidExplanation;
-       goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
+       String msg = s.get(HoneyVictoryCondition);
+       if(definedWord!=null)
+       {
+    	   if(G.Date()>definedTime) { definedWord = null; }
+    	   else { Entry e = dictionary.get(definedWord.name);
+    	          if(e!=null) 
+    	        	  { msg = e.word + ":" +e.getDefinition(); 
+    	        	  }
+    	   }
+       }
+       goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,msg);
        }
        drawPullTimer(gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
@@ -700,6 +761,13 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        drawGameLog(gc, gameLog2,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
        drawGameLog(gc,gameLog3,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
   
+       if(reviewOnly || allowed_to_edit || G.debug() || (state==HoneyState.Gameover))
+    		   { summaryRect.draw(gc,selectPos); 
+    		   }
+       if(summaryRect.isOnNow())
+       {
+    	   showWordSummary(gc,gb,boardRect,selectPos);
+       }
        GC.setFont(gc,standardBoldFont());
        
 
@@ -830,14 +898,22 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 //     	}
 //        	bb.animationStack.clear();
 //     } 
-
+     
+ String badHintSoundName = SOUNDPATH + "badhint" + Config.SoundFormat;
+ String takeBackSoundName = SOUNDPATH + "pick-3" + Config.SoundFormat;
+ 
  void playSounds(Honeymovespec mm)
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_REJECTWORD:
+		 playASoundClip(badHintSoundName,100);
+		 break;
 	 case MOVE_PLAYWORD:
 	 case MOVE_SELECT:
-		 playASoundClip(light_drop,100);
+		 if(mm.notNew) { playASoundClip(badHintSoundName,100); }
+		 else if (mm.isCommon) {  playASoundClip(takeBackSoundName,100); }
+		 else  { playASoundClip(light_drop,100); }
 		 break;
 	 default: break;
 	 }
@@ -959,8 +1035,14 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     {
         CellId id = hp.hitCode;
         bigString = null;
-
-       	if(!(id instanceof HoneyId))  
+        if((id == GameId.HitGameRecord) 
+        		&& (hp.hitObject instanceof HWord))
+        		{
+        		HWord word = (HWord)hp.hitObject;
+        		definedWord = word;
+        		definedTime = G.Date()+5*1000;
+        		}
+        else if(!(id instanceof HoneyId))  
        		{   missedOneClick = performStandardActions(hp,missedOneClick);
        		}
         else {
@@ -978,7 +1060,9 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
             	throw G.Error("Hit Unknown object %s" , hp);
             }
         	break;
-        	
+        case ShowSummary:
+        	summaryRect.toggle();
+        	break;
         case Switch:
         	// switch point of view to a different player
         	PerformAndTransmit("switch "+hp.hit_index,mutable_game_record,replayMode.Live);
@@ -1162,6 +1246,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	case Gameover:
         		break;
         	case EndingGame:
+        		summaryRect.setValue(true);
         		PerformAndTransmit("Ended "+getViewPlayer()); 
         		break;
           	case Play: 
@@ -1347,4 +1432,3 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	   }
    }
 }
-

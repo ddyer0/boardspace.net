@@ -112,6 +112,7 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 	
 	public static CheckerChip liftIcon = new CheckerChip( "lift-icon-nomask",null,null,allChips);	
 	public static CheckerChip international = new CheckerChip("international",null,null,allArt);
+	public static CheckerChip anti = new CheckerChip("antidraughts",null,null,allArt);
 	public static CheckerChip frisian = new CheckerChip("frisian",null,null,allArt);
 	public static CheckerChip turkish = new CheckerChip("turkish",null,null,allArt);
 	public static CheckerChip american = new CheckerChip("american",null,null,allArt);

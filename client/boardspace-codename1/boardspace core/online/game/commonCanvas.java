@@ -96,7 +96,8 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,VncEventInterface
+	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,
+		VncEventInterface
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -3307,24 +3308,22 @@ public abstract class commonCanvas extends exCanvas
 	  /**
      *  call this from your StopDragging method to handle the VCR control.
      * 
-     * @param hitObject
+     * @param hitCode
      * @param hp
      * @return true if the hitObject was handled.
      */
-    public boolean performVcrButton(CellId hitObject, HitPoint hp)
-    {	if(hitObject==GameId.HitGameRecord)
+    public boolean performVcrButton(CellId hitCode, HitPoint hp)
+    {	if((hitCode==GameId.HitGameRecord)
+    		&& (hp.hitObject instanceof commonMove))
     	{	commonMove m = (commonMove)hp.hitObject;
-    		if(m!=null)  
-    			{ 
     			 doScrollTo(m.index());   			 
-    			}
     		return(true);
     	}
     	else {
-        boolean rval = (hitObject instanceof VcrId);
+        boolean rval = (hitCode instanceof VcrId);
         if(rval && hasControlToken())	// only actually do the scrolling if we have control
         {
-        VcrId ho = (VcrId)hitObject;
+        VcrId ho = (VcrId)hitCode;
         switch(ho)
         {
         case sliderAnimSpeedButton:
@@ -3423,7 +3422,7 @@ public abstract class commonCanvas extends exCanvas
         case noVcrButton:
         	break;
         default:
-        	throw G.Error("Hit unknown vcr token %s",hitObject);
+        	throw G.Error("Hit unknown vcr token %s",hitCode);
         	}
         }
         saveDisplayBoard();

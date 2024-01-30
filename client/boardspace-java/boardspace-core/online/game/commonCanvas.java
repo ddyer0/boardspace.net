@@ -3318,24 +3318,22 @@ public abstract class commonCanvas extends exCanvas
 	  /**
      *  call this from your StopDragging method to handle the VCR control.
      * 
-     * @param hitObject
+     * @param hitCode
      * @param hp
      * @return true if the hitObject was handled.
      */
-    public boolean performVcrButton(CellId hitObject, HitPoint hp)
-    {	if(hitObject==GameId.HitGameRecord)
+    public boolean performVcrButton(CellId hitCode, HitPoint hp)
+    {	if((hitCode==GameId.HitGameRecord)
+    		&& (hp.hitObject instanceof commonMove))
     	{	commonMove m = (commonMove)hp.hitObject;
-    		if(m!=null)  
-    			{ 
-    			 doScrollTo(m.index());   			 
-    			}
+    		doScrollTo(m.index());   			 
     		return(true);
     	}
     	else {
-        boolean rval = (hitObject instanceof VcrId);
+        boolean rval = (hitCode instanceof VcrId);
         if(rval && hasControlToken())	// only actually do the scrolling if we have control
         {
-        VcrId ho = (VcrId)hitObject;
+        VcrId ho = (VcrId)hitCode;
         switch(ho)
         {
         case sliderAnimSpeedButton:
@@ -3434,7 +3432,7 @@ public abstract class commonCanvas extends exCanvas
         case noVcrButton:
         	break;
         default:
-        	throw G.Error("Hit unknown vcr token %s",hitObject);
+        	throw G.Error("Hit unknown vcr token %s",hitCode);
         	}
         }
         saveDisplayBoard();

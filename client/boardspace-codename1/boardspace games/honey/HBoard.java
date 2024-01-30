@@ -90,10 +90,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	{	return mapTarget;
 	}
 
-	private int rackMap[] = new int[rackSize+rackSpares];
-	public int[] getRackMap()
-	{	return rackMap;
-	}
 
 	public boolean hiddenVisible = false;
 	int score = 0;
@@ -179,8 +175,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	Random r = new Random(randomKey+100);
     	for(HoneyCell c = allCells; c!=null; c=c.next)
     	{
-    		int n = r.nextInt(HoneyChip.letters.length-1);	// 25 letter alphabet
-    		if(n=='q'-'a') { n++; }	// skip q
+    		int n = r.nextInt(HoneyChip.letters.length);	// 25 letter alphabet
     		c.addChip(HoneyChip.letters[n]);
     	}
     	
@@ -233,7 +228,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         words.copyFrom(from_b.words);
         nonWords.copyFrom(from_b.nonWords);
         commonWords.copyFrom(from_b.commonWords);
-        
+        myCommonWords.copyFrom(from_b.myCommonWords);
         sameboard(from_b); 
     }
 
@@ -495,6 +490,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	HWordStack words = new HWordStack();
 	HWordStack nonWords = new HWordStack();
 	HWordStack commonWords = new HWordStack();
+	HWordStack myCommonWords = new HWordStack();
 	
 	public String invalidReason=null;
 
@@ -524,12 +520,11 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         if (board_state==HoneyState.Resign)
         {
             win[nextPlayer()] = true;
-    		setState(HoneyState.Gameover);
+    		setGameOver();
         }
         else
         {	
-         setState(HoneyState.Gameover);
- 
+         setGameOver();
          }
     }
 	public boolean notStarted()
@@ -547,13 +542,16 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		seed.push(getCell(col,row));
     	}
     	HWord newword = new HWord(seed,m.word);
-    	if(rejectCommon && commonWords.contains(newword)) {}
+    	if(rejectCommon && commonWords.contains(newword)) { m.isCommon = true; }
     	else { 
-    		which.pushNew(newword); 
+    		if(!which.pushNew(newword)) { m.notNew = true; }
+    		if(which==words)
+    		{
     		int ss = scoreWord(newword.seed); 
     		newword.points = ss;
     		score += ss;	
     	}
+ 	}
  	}
 	public void makeCommon(HWord w)
 	{
@@ -561,9 +559,15 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		if(a!=null)
 		{
 			score -= a.points;
+			myCommonWords.pushNew(w);
 		}
 		commonWords.pushNew(w);
 	}
+	// we tried to add a previously know common word
+	public void makeMyCommon(HWord w)
+	{	myCommonWords.pushNew(w);
+	}
+
 	public HWord findWord(String w)
 	{	return words.find(w);
 	}
@@ -623,48 +627,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
-    }
-
-    // legal to hit the chip storage area
-    public boolean LegalToHitChips(HoneyCell c)
-    {
-        switch (board_state)
-        {
-        default:
-        	throw G.Error("Not expecting Legal Hit state " + board_state);
-        case Confirm:
-		case EndingGame:
-        case Endgame:
-        case Play:
-        	return ( (c!=null) 
-        			 && ((pickedObject==null) ? (c.topChip()!=null) : true)
-        			);
- 		case Resign:
-		case Gameover:
-			return(false);
-        case Puzzle:
-            return ((c!=null) && ((pickedObject==null) == (c.topChip()!=null)));
-        }
-    }
-
-    public boolean LegalToHitBoard(HoneyCell c,boolean picked)
-    {	if(c==null) { return(false); }
-        switch (board_state)
-        {
- 		case Confirm:
-		case EndingGame:
- 		case Endgame:
-		case Play:
-			return(picked ? c.isEmpty() : (c.topChip()!=null));
-
-		case Gameover:
-		case Resign:
-			return(false);
-        default:
-        	throw G.Error("Not expecting Hit Board state " + board_state);
-        case Puzzle:
-            return (picked == (c.topChip()==null));
-        }
     }
 
     
