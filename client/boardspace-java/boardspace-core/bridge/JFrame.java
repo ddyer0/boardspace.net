@@ -58,6 +58,7 @@ class JBar extends JMenuBar
 		
 	}
 }
+
 @SuppressWarnings("serial")
 public class JFrame extends javax.swing.JFrame 
 	implements TopFrameProtocol,SizeProvider,Config,WindowListener,ImageConsumer
@@ -73,6 +74,14 @@ public class JFrame extends javax.swing.JFrame
 		canSavePanZoom = v;		
 	}
 
+public void validate()
+{
+	super.validate();
+}
+public void validateTree()
+{
+	super.validateTree();
+}
 	public boolean hasSavePanZoom = false;
 	public void setHasSavePanZoom(boolean v) {
 		hasSavePanZoom = v;		
@@ -320,5 +329,5 @@ public class JFrame extends javax.swing.JFrame
 		return this;
 	}
 
-
 }
+

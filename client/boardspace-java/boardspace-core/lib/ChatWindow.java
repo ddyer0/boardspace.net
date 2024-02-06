@@ -27,6 +27,7 @@ public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 	{	
 		init(sharedInfo,frame);
 		theChat = chat;
+		painter.drawLockRequired = false;
 		theChat.setCanvas(this);
 		this.setTheChat(theChat,true);
 		setVisible(true);

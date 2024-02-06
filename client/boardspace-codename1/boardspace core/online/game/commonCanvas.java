@@ -883,6 +883,16 @@ public abstract class commonCanvas extends exCanvas
 	    	}
 	   						while(var!=null)
 	   						{	// add the moves in this solution
+	   							if((lastMove.player!=var.player)
+	   									&& (lastMove.op!=MOVE_DONE))
+	   							{	// insert a "done" before a turn change
+	   								commonMove don = lastMove.Copy(null);
+	   								don.op = MOVE_DONE;
+	   								don.setIndex(lastMove.index()+1);
+	   								lastMove.next = don;
+	   								hist.push(don);
+	   								lastMove = don;
+	   							}
 	   							var.setIndex(lastMove.index()+1);
 	   							lastMove.next = var;
 	   							lastMove = var;
@@ -4031,6 +4041,7 @@ public abstract class commonCanvas extends exCanvas
     	{ 
     	  Chained,		/** chained movement of a single piece or a stack of pieces */
     	  Simultaneous, /** everything moves at the same time */
+    	  SimultaneousAfterOne,	/** first move is alone, them all together */
     	  Stack,		/** everything moves at the same time, as a stack */
     	  StackFromStart, /** sequential stacks start one at a time, but launch sequentially */
     	  Sequential,	/** pieces move separately, one at a time. */
@@ -8076,7 +8087,6 @@ public void verifyGameRecord()
     
     public void paintSprites(Graphics g,HitPoint hp)
     { 	
-    	if(!chatHasRun) { redrawChat(g,hp); }
     	super.paintSprites(g, hp);
     	drawUnseenChat(g);		// draw a popup bubble with incoming chat
     	
@@ -8514,10 +8524,11 @@ public void verifyGameRecord()
     	// draw the board contents and changing elements.
      	int hx = G.Left(hp);
      	int hy = G.Top(hp);
-     	chatHasRun = false;
+     	if(offGC!=null) { chatHasRun = false; }
+     	else { nullChatHasRun = false; }
  
      	redrawClientBoard(offGC,k==null ? hp : null);		// no mouse activity if keyboard is up      
-        if(!chatHasRun) 
+        if(!((offGC==null) ? nullChatHasRun : chatHasRun))
         	{ // this draws the chat window if it wasn't explicitly drawn during the redraw
         	redrawChat(offGC,hp); 
         	}

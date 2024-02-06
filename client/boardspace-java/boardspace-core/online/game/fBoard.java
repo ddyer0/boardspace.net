@@ -19,7 +19,6 @@ package online.game;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Enumeration;
-
 import lib.CompareTo;
 import lib.G;
 import lib.Sort;
@@ -164,11 +163,13 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 	Itype type;
 	boolean invalid = false;		// set to true to force this to be discarded
 	int seq = 0;
-	public void reset() 
-	{ 	if(type==Itype.ANY) { current = allCells; }
-		else 
-		{ seq = 0; 
-		}
+
+	BoardIterator(BoardIterator b)
+	{	type = b.type;
+		currentCell = b.currentCell;
+		if(type==Itype.ANY) 
+			{ current = allCells; 
+			}
 	}
 	public String toString() { return("<boardIterator "+type+">"); }
 
@@ -185,9 +186,11 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 		}
 		else
 		{
-		CELLTYPE[] cells = (CELLTYPE[])getCellArray();
+		// get a cell array only for us to use.  Very important since
+		// the sorter will disturb the array contents which would greatly
+		// confuse any threads already using it.
+		CELLTYPE[] cells = (CELLTYPE[])getNewCellArray();
 		int len = cells.length;
-		forgetCellArray();
 		cellSorter[] sort = new cellSorter[len];
 		
 		for(int i=0;i<len;i++)
@@ -450,11 +453,10 @@ public class BoardIterator implements Enumeration<CELLTYPE>
  		{
 	 	boardIterator = new BoardIterator(e);
  		}
-	 else
-	 {
-		 boardIterator.reset();
-	 }
- 	return(boardIterator);
+	// boardIterator is the prototype, containing the sorted cell array
+	// we still need to return a unique copy so parallel users don't
+	// share state
+ 	return(new BoardIterator(boardIterator));
  }
  public void foregetIterator()
  {

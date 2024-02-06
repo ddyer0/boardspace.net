@@ -649,6 +649,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_DROP:
         	switch(dest)
         	{
+        	case StartPlayer:
         	case WineBin: return "";
         	default: return dest.shortName();
         	}

@@ -642,7 +642,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     public boolean Execute(commonMove mm,replayMode replay)
     {	CannonMovespec m = (CannonMovespec)mm;
 
-        System.out.println("E "+m+" for "+whoseTurn);
+        //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
         case MOVE_DONE:

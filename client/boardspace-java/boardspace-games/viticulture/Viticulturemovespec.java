@@ -629,7 +629,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     public String shortMoveString()
     {
         switch (op)
-        {
+        {        	
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{
@@ -649,6 +649,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_DROP:
         	switch(dest)
         	{
+        	case StartPlayer:
         	case WineBin: return "";
         	default: return dest.shortName();
         	}

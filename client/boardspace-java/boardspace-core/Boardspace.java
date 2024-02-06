@@ -853,35 +853,37 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		int setupIndex = args.length;
 		for(int i=0;i<args.length;i++)
 		{	//log("arg "+i+" "+args[i]);
+			String arg = args[i];
+			String arg1 = i+1<args.length ? args[i+1] : "";
 			if("-v".equals(args[i])) 		// verbose output as a pop-up
 				{ CacheInfo.verbose = verbose = true; }
-			else if("-setup".equals(args[i]))
+			else if("-setup".equals(arg))
 			{
 				setupIndex = i+1;
 				i = args.length;
 			}
-			else if("-vt".equals(args[i])) 	// verbose output to terminal 
+			else if("-vt".equals(arg)) 	// verbose output to terminal 
 				{ CacheInfo.verbose = verbose = true; out = System.out; }
-			else if("-testserver".equals(args[i]))	// connect to the test server instead of the main server
+			else if("-testserver".equals(arg))	// connect to the test server instead of the main server
 				{ testserver = testversion = true; 
 				}
-			else if("-testversion".equals(args[i]))
+			else if("-testversion".equals(arg))
 				{	// only the class version is test, the connection will be to 
 					// the regular server
 					testversion = true;	
 				}
-			else if("-foreground".equals(args[i])) 	// force all downloading to happen before we begin
+			else if("-foreground".equals(arg)) 	// force all downloading to happen before we begin
 				{ foregroundMode = true; }
-			else if("-uncache".equals(args[i])) 	// flush the cache before beginning
+			else if("-uncache".equals(arg)) 	// flush the cache before beginning
 				{ CacheInfo.uncache = uncache = true; }
-			else if("-slow".equals(args[i])) 		// copy no more than 1 file at a time
+			else if("-slow".equals(arg)) 		// copy no more than 1 file at a time
 				{ fastMode = false; }
-			else if("-server".equals(args[i])) 		// server to connect to
-				{ hostName = runtimeServer = args[i+1];  i++; }
-			else if("-preload".equals(args[i]))		// allow classes in a separate thread.  overrides the default
-				{ allowPreload = "true".equalsIgnoreCase(args[i+1]); i++; }
-			else if("-debug".equals(args[i])) 		// more debugging
-				{ debug="swat".equalsIgnoreCase(args[i+1]); i++; }
+			else if("-server".equals(arg)) 		// server to connect to
+				{ hostName = runtimeServer = arg1;  i++; }
+			else if("-preload".equals(arg))		// allow classes in a separate thread.  overrides the default
+				{ allowPreload = "true".equalsIgnoreCase(arg1); i++; }
+			else if("-debug".equals(arg)) 		// more debugging
+				{ debug="swat".equalsIgnoreCase(arg1); i++; }
 			else 
 			{
 			String msg = "Options are -v -vt -slow -testserver -testversion -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host> -setup <rest of args>";

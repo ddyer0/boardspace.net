@@ -153,8 +153,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     //
     // note that this has to work correctly both when "picked" has been picked
     // up, and when it is still sitting on top of "source"
-    //
-    private int legalDests(ExxitCell source,ExxitPiece picked,ExxitCell dests[])
+    // this has to be synchronized because it makes "temporary" unpick/pick contrary
+    // to the usual customs of boardspace games.
+    private synchronized int legalDests(ExxitCell source,ExxitPiece picked,ExxitCell dests[])
     {	
        	int nadded = 0;
        	switch(board_state)
@@ -162,13 +163,13 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
      	case DISTRIBUTE_STATE:
     		if(source!=null) 
     			{	// source already picked
+    			G.Assert(pickedObject!=null,"should be");
+    			G.Assert(picked==pickedObject,"should be 2");
     			unPickObject();				// temporarily undo the pick
     			dests[nadded++] = source;
     			CommonMoveStack  all = GetListOfMoves();
     			for(int i=0;i<all.size();i++)
     			{	Exxitmovespec sp = (Exxitmovespec)all.elementAt(i);
-    				if(source!=null)
-    				{
     					if((sp.from_col == source.col) && (sp.from_row==source.row))
 	    				{	
 	    					int dir = sp.direction;
@@ -182,7 +183,6 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
 	    					}
 	    				}
     				}
-    			}
     			pickObject(source);
     			}
     			else 

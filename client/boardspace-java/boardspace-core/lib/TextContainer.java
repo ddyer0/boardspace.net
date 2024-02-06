@@ -544,7 +544,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	private void drawFocusLine(Graphics g,FontMetrics fm,int lineX,int lineY,String line,int caratInLine)
 	{
 		{ // draw a blinking bar for the character position
-		  int caratBeforeLine = line.length()-caratInLine;
+		  int caratBeforeLine = line.length()-Math.max(0,caratInLine);
 		  if(caratBeforeLine>=0)
 			  {	// if the carat position is in the last line
 				  Rectangle beforeCarat = GC.getStringBounds(g,fm, line,0,caratBeforeLine);

@@ -124,7 +124,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	boolean SIMULATE_LOW_MEMORY = false;
 	public boolean deferSprites = true;
 	public boolean hasRunLoop = true;			// client has its own run loop
-	public boolean drawLockRequired = G.isCodename1();		// lock is required for direct drawing
+	public boolean drawLockRequired = true;		// lock is required for direct drawing
 	private int repaintReadyCount = 0;
 	public boolean deferSprites() { return(deferSprites && (repaintStrategy!=RepaintStrategy.Deferred)); }
 	public boolean useBackgroundBitmap = true; 
@@ -366,8 +366,10 @@ public class RepaintManager implements VncScreenInterface,Config
 	private PTStack timers = new PTStack();
 	private boolean paintedAFrame = false;
 
-	private synchronized void addTimer(long now,int increment,RefreshReason why,String call)
-	{	if(now==0) { now = G.Date(); }
+	private void addTimer(long now,int increment,RefreshReason why,String call)
+	{	synchronized (this)
+		{
+		if(now==0) { now = G.Date(); }
 		if(!hasRunLoop) { startRunLoop(); }
 		long future = now + increment;
 		PaintTimer newtime = new PaintTimer(future,increment,why,call);
@@ -410,7 +412,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		if(!some)
 		{
 		timers.insertElementAt(newtime,0);
-		}
+		}}
 		if(sleeping()) 
 		{ 
 		  wakeMe(); 
@@ -736,6 +738,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	}
     public void paint(Graphics g)
     { 	if(shutdown) { return; }
+    	boolean didit = false;
       	if(G.canRepaintLocally(client)
 				|| GC.canRepaintLocally(g))
     	{
@@ -767,6 +770,7 @@ public class RepaintManager implements VncScreenInterface,Config
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;
    						pbuffer.setWritten(when);
+   						didit = true;
    						}
    					else { pbuffer = null; }
     				}
@@ -809,6 +813,7 @@ public class RepaintManager implements VncScreenInterface,Config
     				{ 
     				  return; 
     			}
+    			didit = true;
     			}
      			}}
 			if(write_needed) 
@@ -865,6 +870,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	    	long fintime = G.Date();
   	   	    	long when = fintime+repaintStrategy.delayBeforeReading;
        	    	back.setWritten(when);
+       	    	didit = true;
   	   	    	drawBufferIfReady(g,back); 
        			}
    			else if(back.readyToSee(now) && back.seenCount<3)
@@ -903,7 +909,9 @@ public class RepaintManager implements VncScreenInterface,Config
  
  
      }
-
+      	if(!didit) { 
+      		//G.print("no paint");
+      	}
     }
 
     /** create a blank image with the specified size.

@@ -37,7 +37,16 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
 	int lastCaptured = -1;
 	ChessChip lastContents;
 
-
+    public ChessCell(ChessCell from)
+    {
+    	copyAllFrom(from);
+    }
+    public int activeAnimationHeight()
+    {	if(height()<=1) 
+    		{ return 0; 
+    		}
+    	return super.activeAnimationHeight();
+    }
 	public void copyFrom(ChessCell ot)
 	{	super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;

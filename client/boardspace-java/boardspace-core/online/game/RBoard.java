@@ -19,6 +19,7 @@ package online.game;
 import java.awt.Rectangle;
 
 import lib.Random;
+import lib.AR;
 import lib.G;
 import lib.HitPoint;
 import lib.IStack;
@@ -142,20 +143,22 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
  		}
  		return(v);
     }
-
+    /** get a cached array of all cells */
 	public cell<CELLTYPE>[] getCellArray()
-    {
-    	if((hiddenCellArray==null) && (allCells!=null))
-    	{
-    	int nc = 0;
-    	for(CELLTYPE c = allCells; c!=null; c=c.next) {nc++; }
-    	hiddenCellArray = allCells.newSelfArray(nc);
-    	nc = 0;
-    	for(CELLTYPE c = allCells; c!=null; c=c.next) { hiddenCellArray[nc++] = c; };  
-    	}
-    	return(hiddenCellArray);
+    {	if(hiddenCellArray==null) { hiddenCellArray = getNewCellArray(); }
+    	return hiddenCellArray;
+    }
+	/** get a newly created array of all cells */
+	public cell<CELLTYPE>[] getNewCellArray()
+    {	int nc = 0;
+		for(CELLTYPE c = allCells; c!=null; c=c.next) {nc++; }
+		cell<CELLTYPE>ar[] = allCells.newSelfArray(nc);
+		nc = 0;
+		for(CELLTYPE c = allCells; c!=null; c=c.next) { ar[nc++] = c; };  
+		return ar;
     }
 	
+
 	/**
 	 * this implements valid for 1d boards.  Mostly this is overridden by 2d methods in gBoard
 	 * @param col

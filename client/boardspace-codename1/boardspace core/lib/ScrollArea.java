@@ -198,9 +198,14 @@ public class ScrollArea
         bigJumpValue = bigjump;
         setImageOffset(currentImageOffset);
 }
-    
     public void drawScrollBar(Graphics gc)
-    {   if(scrollBarVisible() && gc!=null)
+    {
+    	drawScrollBar(gc,false,false);
+    }
+    public void drawScrollBar(Graphics gc,boolean above,boolean below)
+    {   if(gc!=null)
+    	{
+    	if(scrollBarVisible())
     	{
     	GC.setColor(gc,backgroundColor);
         GC.fillRect(gc,scrollbarRect);
@@ -216,6 +221,15 @@ public class ScrollArea
         GC.setColor(gc,Color.black);
         downTriangle.fillPolygon(gc);
         GC.frameRect(gc,Color.black,scrollbarRect);
+    	}
+    	if(above)
+    	{
+    		upTriangle.fillPolygon(gc);
+    	}
+    	if(below)
+    	{
+    		downTriangle.fillPolygon(gc);
+    	}
     	}
   }
 

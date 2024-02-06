@@ -33,7 +33,9 @@ public interface ChessConstants
 		
 		Chess(ChessChip.standard,null,"chess",8),		// empty chess board size 8
 		Ultima(ChessChip.ultima,null,"ultima",8),		// ultima chess
-		Chess960(ChessChip.chess960,null,"chess960",8);	// chess 960
+		Chess960(ChessChip.chess960,null,"chess960",8),
+		Atomic(ChessChip.atomic,null,"atomic",8),
+		;	// chess 960
 		int size;
 		String name;
 		ChessChip banner;
@@ -146,6 +148,7 @@ public interface ChessConstants
     		String ChessStringPairs[][] = 
     		{   {"Chess_family","Chess"},
     			{"Chess_variation","Standard Chess"},
+    			{"Atomic_variation","Atomic Chess"},
     			{"Ultima_variation","Ultima Chess"},
     			{"Ultima_family","Ultima"},
     			{"Chess960_variation","Chess 960"},

@@ -39,7 +39,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
-import lib.Keyboard;
 import lib.Bitset;
 import lib.CanvasProtocol;
 import lib.CellId;
@@ -374,6 +373,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  { super.init(info,frame);
 	    Image icon = Image.getImage(IMAGEPATH+CommonConfig.lobby_icon_image_name);
 	    myFrame.setIconAsImage(icon);
+	    painter.drawLockRequired = false;
 	    if(G.isIOS()) 
 	    	{ 
 	    	// is is not really necessary except as a stopgap to make the pop up menus pretty
@@ -1951,23 +1951,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    startPoly = poly;
 	  }
 	  public void drawCanvas(Graphics offGC,boolean complete,HitPoint hp)
-	  {		Keyboard k = theChat.getKeyboard(); 
+	  {		
 	  		if(complete) { fillUnseenBackground(offGC); }
 	  		int xp = getScrollXPos();
 	  		int yp = getScrollYPos();
-	  		if(!complete)
-	  		{ 
-	  		  if(k!=null)
-	  		  {
-	  	      // chat window doesn't pan
-	  		  GC.translate(offGC, xp, 0);
-	  		  theChat.redrawBoard(offGC, hp); 
-	  		  GC.translate(offGC, -xp, 0);
-	  		  drawKeyboard(offGC,hp);
-	  		  return;
-	  		  }}
 
-		    GC.setFont(offGC,basicFont);
+	  		GC.setFont(offGC,basicFont);
 		    GC.setColor(offGC,getBackground());
 		    GC.fillRect(offGC,fullRect);
 	  		GC.translate(offGC,-xp,-yp);		    

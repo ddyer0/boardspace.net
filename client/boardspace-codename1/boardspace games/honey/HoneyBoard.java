@@ -42,8 +42,8 @@ import honey.HoneyConstants.HoneyState;
  *
  */
 class HoneyBoard extends BaseBoard implements BoardProtocol
-{	static int REVISION = 100;			// 100 represents the initial version of the game
-
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// 101 changes the distribution of letters to be witout replacement
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	/**
@@ -95,10 +95,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 
-    // intermediate states in the process of an unconfirmed move should
-    // be represented explicitly, so unwinding is easy and reliable.
-    public HoneyChip lastPicked = null;
-    public HoneyChip lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
 	public HoneyCell newcell(char c,int r)
@@ -148,7 +144,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     	}
     	for(HBoard h : pbs)
     		{
-    			h.doInit(h.gametype,h.randomKey,h.players_in_game,h.revision);
+    			h.doInit(h.gametype,h.randomKey,h.players_in_game,rev);
     		}
      	win = new boolean[players];
 		variation = HoneyVariation.findVariation(gtype);
@@ -160,7 +156,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    drawTimer = -1;
 	    lastActivePlayer = -1;
-	    lastDroppedObject = null;
 	    // set the initial contents of the board to all empty cells
         moveNumber = 1;
 
@@ -189,7 +184,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         board_state = from_b.board_state;
         lastActivePlayer = from_b.lastActivePlayer;
-        lastPicked = null;
         drawTimer = from_b.drawTimer;
         sameboard(from_b); 
     }
@@ -281,15 +275,16 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     // to draw when tracking the mouse.
     // caution! this method is called in the mouse event process
     public int movingObjectIndex()
-    { HoneyChip ch = pbs[whoseTurn].pickedObject;
-      if(ch!=null)
-    	{	return(ch.chipNumber()); 
-    	}
+    { 
       	return (NothingMoving);
     }
 
    HBoard pbs[] = null;
 
+   public HBoard getPlayerBoard(int p)
+   {
+  	 return pbs[p];
+   }
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Honeymovespec m = (Honeymovespec)mm;
@@ -342,7 +337,10 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         			}
            			if(isCommon) 
            				{ // a previously seen word for someone
-           				for(HBoard p : pbs) { p.makeCommon(common); }
+           				for(HBoard p : pbs) 
+           					{ p.makeCommon(common); 
+           					  m.isCommon = true;
+           					}
            				}
            			else {
            				// a new word
@@ -351,6 +349,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
           		else {
           			// previously known to be a common word, we just added it
           			pb.makeMyCommon(common);
+          			m.isCommon=true;
           		}
         		}
         	break;
@@ -366,10 +365,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         return (true);
     }
  
- public HBoard getPlayerBoard(int p)
- {
-	 return pbs[p];
- }
 
 
 }

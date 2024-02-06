@@ -263,6 +263,7 @@ public class GameLog implements Opcodes
             String rowMoveNumber = "";
             int maxEverLineHeight = rowHeight;
             int p1Index = 0;
+            boolean needMore = false;
             for (int first = 0, idx = 0; (idx <= sz) ; idx++)
             {
                 SequenceElement sp = (idx == sz) ? null
@@ -375,7 +376,9 @@ public class GameLog implements Opcodes
             }
             maxEverLineHeight = Math.max(maxLineH,maxEverLineHeight);
             // take care of the trailing line if we didn't fill the last line
-            if(needLineNumber && ((boxPos+maxLineH)<boxH))
+            if(needLineNumber)
+            { 
+            if((boxPos+maxLineH)<boxH)
         	{	
         		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,rowMoveNumber))
         		{	
@@ -387,6 +390,8 @@ public class GameLog implements Opcodes
         		lastSeenY = ypos+maxLineH;
 
         	}
+            else { needMore = true; }
+            }
             ypos += maxLineH;
             totalHeight = ypos;
             maxLineH = 0;
@@ -403,7 +408,7 @@ public class GameLog implements Opcodes
         int big = boxH/2;
         // the scroll bar, if visible, overlays the right part of the log area
         // the vertical parameters of the scroll bar are in pixel units
-        drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight+rowHeight*2-boxH);
+        drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight+rowHeight*2-boxH,needMore);
         if(recalc && (gc!=null))
         {	// if we made a big jump and are recaclulating, draw again with no graphics to 
         	// do the recalculation in advance of the next real repaint.  This avoids a double
@@ -490,7 +495,6 @@ public class GameLog implements Opcodes
        int scrollY = scrolled ? scrollbar.getScrollPosition() : gameLogScrollY;
        int highlightYPos = -1;
        int hr = G.Height(r);
-          
        // basic layout, 1 cell for the row number, then two columns for the moves
        GC.setColor(gc,textColor);
        GC.setFont(gc,bold);
@@ -499,6 +503,7 @@ public class GameLog implements Opcodes
        int rownumWidth = Math.min(myFM.stringWidth("XXXXXXXXXXXX"),width/2);
        int x = G.Left(r) + rownumWidth;
        int y = G.Top(r);
+       boolean sawEnd = false;
        int mid = (width - rownumWidth);
 
        GC.setFont(gc,normal);
@@ -710,7 +715,7 @@ public class GameLog implements Opcodes
         } // end of linebreak
 
        } // end of while
-
+       sawEnd = idx>=sz;
        GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.min(y+lastSeenY,hr));
        boolean recalc = false;
        if(!scrolled)
@@ -722,7 +727,7 @@ public class GameLog implements Opcodes
        // the scroll bar, if visible, overlays the right part of the log area
        // the vertical parameters of the scroll bar are in pixel units
        int big = hr/2;
-       drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight-hr+rowHeight);
+       drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight-hr+rowHeight,!sawEnd);
 
        if(recalc && (gc!=null))
        	{
@@ -796,7 +801,7 @@ public class GameLog implements Opcodes
         * @param bigJump
         * @param scrollMax
         */
-       public void drawScrollbar(Graphics gc,Rectangle r,int scrollPos,int smallJump,int bigJump,int scrollMax)
+       public void drawScrollbar(Graphics gc,Rectangle r,int scrollPos,int smallJump,int bigJump,int scrollMax,boolean moreUnseen)
        {
            int scrollw = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
            scrollbar.InitScrollDimensions(G.Right(r)-scrollw, r , scrollw,scrollMax, smallJump, bigJump);
@@ -808,7 +813,8 @@ public class GameLog implements Opcodes
            scrollbar.setScrollPosition(scrollPos); 
            scrollbar.backgroundColor = backgroundColor;
            scrollbar.foregroundColor = foregroundColor;
-           scrollbar.drawScrollBar(gc);
+           scrollbar.drawScrollBar(gc,scrollPos>0,moreUnseen);
+           
        }
 
        /**

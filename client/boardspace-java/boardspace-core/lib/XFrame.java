@@ -316,10 +316,6 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config
 		
 	}
 
-	public void revalidate() {
-		myFrame.revalidate();
-		
-	}
 	public void setIconAsImage(Image icon) {
 		myFrame.changeImageIcon(icon);
 	}
@@ -367,7 +363,6 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config
 	public void setCloseable(boolean b) {
 		myFrame.setCloseable(b);
 	}
-	public void setEnableRotater(boolean v) { myFrame.setEnableRotater(v); }
 	public void packAndCenter() 
 	{	// finish, position and center the frame.
 		myFrame.packAndCenter();

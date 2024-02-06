@@ -35,9 +35,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
-import lib.MouseState;
 import lib.StockArt;
-import lib.TextButton;
 import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -48,9 +46,10 @@ import online.search.SimpleRobotProtocol;
 /**
  *  Initial work May 2023
 */
-public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyConstants, GameLayoutClient
+public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> 
+		implements HoneyConstants, GameLayoutClient,Config
 {	static final long serialVersionUID = 1000;
-	static final String Sprint_SGF = "honey"; // sgf game name
+	static final String Honey_Sgf = "honey"; // sgf game name
 
 	// file names for jpeg images and masks
 	static final String ImageDir = "/honey/images/";
@@ -61,10 +60,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
     @SuppressWarnings("unused")
-	private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
     private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
     private Dictionary dictionary = Dictionary.getInstance();
-    public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
     private GameLog gameLog1 = new GameLog(this);
     private GameLog gameLog2 = new GameLog(this);
     private GameLog gameLog3 = new GameLog(this);
@@ -86,9 +83,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private Rectangle commonWordsRect = addRect("commonWords");
     private Toggle summaryRect = new Toggle(this,"summary",HoneyChip.SummarySheet,HoneyId.ShowSummary,
     			true,s.get(ShowSummaryMessage));
-    
-	private TextButton endgameButton = addButton(EndGameAction,HoneyId.EndGame,EndGameDescription,
-			HighlightColor, rackBackGroundColor,boardBackgroundColor);
 
   
 /**
@@ -227,9 +221,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	//layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
-       	layout.alwaysPlaceDone = false;
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect);
-       	layout.alwaysPlaceDone = true;
       	layout.placeRectangle(wordsRect,buttonW*4,buttonW*4,BoxAlignment.Center);
       	// split it into two side by side rectangles
       	int w = G.Width(wordsRect);
@@ -594,35 +585,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
      }
     
-    
-    public void drawDefinition(Graphics gc,HWord word,HitPoint hp,Rectangle brect)
-    {	
-    	StringBuilder message = new StringBuilder();
-    	Entry e = dictionary.get(word.name);
-    	if(e!=null)
-    	{
-    		message.append(word.name);
-    		message.append(": ");
-    		String def = e.getDefinition();
-    		if(def!=null)
-    		{	FontMetrics fm = GC.getFontMetrics(gc);
-    			String split = s.lineSplit(def,fm,G.Width(brect));
-    			message.append(split);
-    		}
-    		else 
-    		{ 
-    		message.append("No definition available"); }
-    		message.append("\n\n");
-
-    	String m = message.toString();
-    	hp.setHelpText(m);
-    	}
-    }
-
-    private String bigString = null;
-    private int bigX = 0;
-    private int bigY = 0;
-    
+   
     private boolean iAmSpectator() { return isSpectator(); }
 
     public void showWordSummary(Graphics gc,HoneyBoard gb,Rectangle r,HitPoint hp)
@@ -700,8 +663,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        // animations and sprites.
        boolean planned = plannedSeating();
      
-       commonPlayer pl = getPlayerOrTemp(pboard.whoseTurn);
-       double messageRotation = pl.messageRotation();
        {    
        standardGameMessage(gc,gb,stateRect,state);
       	
@@ -771,23 +732,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        GC.setFont(gc,standardBoldFont());
        
 
-       if (state != HoneyState.Puzzle)
-        {	// if in any normal "playing" state, there should be a done button
-			// we let the board be the ultimate arbiter of if the "done" button
-			// is currently active.
-			if(!planned)
-				{
-				boolean done = pboard.DoneState();
-				if(done)
-					{
-					endgameButton.draw(gc,buttonSelect);
-					}
-				}
-			
-			
-			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-        }
-       
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
@@ -795,11 +739,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
           
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
-        
-        if(bigString!=null)
-        {	GC.setFont(gc,largeBoldFont());
-        	GC.drawBubble(gc,bigX,bigY,bigString,fullRect,messageRotation);
-        }
  
     }
     public void standardGameMessage(Graphics gc,HoneyBoard gb,Rectangle stateRect,HoneyState state)
@@ -858,16 +797,8 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         HBoard gb = currentPlayerBoard(bb);
         startBoardAnimations(replay,gb.animationStack,gb.cellSize(),MovementStyle.Simultaneous);
         
-		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay!=replayMode.Replay) { playSounds((Honeymovespec)mm); }
 		return (true);
-    }
-    
-    public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
-    {	//gameLog1.doMouseMotion(eventX, eventY, upcode);
-    	//gameLog2.doMouseMotion(eventX, eventY, upcode);
-    	//gameLog3.doMouseMotion(eventX, eventY, upcode);
-    	return super.MouseMotion(eventX,eventY,upcode);
     }
      HBoard currentPlayerBoard(HoneyBoard gb)
      {
@@ -912,7 +843,9 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	 case MOVE_PLAYWORD:
 	 case MOVE_SELECT:
 		 if(mm.notNew) { playASoundClip(badHintSoundName,100); }
-		 else if (mm.isCommon) {  playASoundClip(takeBackSoundName,100); }
+		 else if (mm.isCommon) 
+		 	{  playASoundClip(takeBackSoundName,100); 
+		 	}
 		 else  { playASoundClip(light_drop,100); }
 		 break;
 	 default: break;
@@ -1034,7 +967,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-        bigString = null;
         if((id == GameId.HitGameRecord) 
         		&& (hp.hitObject instanceof HWord))
         		{
@@ -1090,17 +1022,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	PerformAndTransmit("SetBlank "+getViewPlayer()+" "+ch.letter);
         	}
         	break;
-        case EmptyBoard:
-        	{
-        		HoneyCell hitObject = hitCell(hp);
-        		HBoard pb = currentPlayerBoard(bb);
-        		if(pb.pickedObject==null)
-            	{	
-            		PerformAndTransmit(G.concat("Select ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
-            	}
-        	}
-        	break;
-        	
+       	
         case BoardLocation:	// we hit an occupied part of the board 
         	{
             HBoard h = bb.getPlayerBoard(getActivePlayer().boardIndex);
@@ -1153,7 +1075,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Sprint_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Honey_Sgf); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -1270,18 +1192,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	}
         }
    }
-    /**
-     * returns true if the game is over "right now", but also maintains 
-     * the gameOverSeen instance variable and turns on the reviewer variable
-     * for non-spectators.
-     */
-    //public boolean GameOver()
-    //{	// the standard method calls b.GameOver() and maintains
-    	// two variables.  
-    	// "reviewer=true" means we were a player and the end of game has been reached.
-    	// "gameOverSeen=true" means we have seen a game over state 
-    //	return(super.GameOver());
-    //}
     
     /** this is used by the stock parts of the canvas machinery to get 
      * access to the default board object.
@@ -1289,14 +1199,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     public BoardProtocol getBoard()  
     {    return (bb);   
     }
-
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
-
 
 
       /** factory method to create a robot */

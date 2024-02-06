@@ -476,8 +476,17 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
       ChessState vstate = gb.getState();
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
    		
-       Hashtable<ChessCell,ChessMovespec>targets = gb.getTargets();
-
+      Hashtable<ChessCell,ChessMovespec>targets = new Hashtable<ChessCell,ChessMovespec>();//gb.getTargets();
+      
+      /**
+      try { 
+    	  targets = gb.getTargets();
+      }
+      catch (Throwable err)
+      {	G.print("err "+err);
+    	  targets = new Hashtable<ChessCell,ChessMovespec>();
+      }
+       */
        GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
        drawBoardElements(gc, gb, boardRect, ot,targets);
        GC.unsetRotatedContext(gc,highlight);
@@ -573,7 +582,10 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         handleExecute(b,mm,replay);
 		numberMenu.recordSequenceNumber(b.moveNumber());
 		
-        startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Sequential);
+        startBoardAnimations(replay,b.animationStack,SQUARESIZE,
+        		b.variation==Variation.Atomic
+        			? MovementStyle.SimultaneousAfterOne
+        			: MovementStyle.Sequential);
         if(replay!=replayMode.Replay) { playSounds(mm); }
  
         return (true);

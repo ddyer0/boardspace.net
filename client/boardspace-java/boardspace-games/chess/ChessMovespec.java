@@ -59,6 +59,8 @@ public class ChessMovespec extends commonMove implements ChessConstants
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
+    int level;
+    long dig;
     ChessChip chip = null;
     public ChessMovespec() // default constructor
     {

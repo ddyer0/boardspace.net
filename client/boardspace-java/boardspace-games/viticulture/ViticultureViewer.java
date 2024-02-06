@@ -4353,6 +4353,8 @@ private void drawPlayerBoard(Graphics gc,
   			break;
   		default: break;
     	}
+       	if(pb.hasWorkshop()) { discount+=1; }
+       	
        	if(showBuildings) { nBuilds = pb.buildable.length;}
        	else {
     	for(int lim=pb.buildable.length-1; lim>=0; lim--)

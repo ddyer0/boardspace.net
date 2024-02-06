@@ -805,6 +805,7 @@ graphics when using a touch screen.
   	   return(setHighlightPoint(p));
    }
    protected boolean chatHasRun = false;
+   protected boolean nullChatHasRun = false;
    /**
     * call redrawChat at any appropriate point in redrawBoard, or if you never do,
     * it will be called afterward (ie; last).  Usually it doesn't matter, but if the
@@ -818,7 +819,8 @@ graphics when using a touch screen.
 	   if(runTheChat())
 	   	{ 
 		  theChat.redrawBoard(gc,hp); 
-	   	  chatHasRun = true; 
+	   	  if(gc!=null) { chatHasRun = true; } 
+	   	  else { nullChatHasRun = true; }
 	   	}
    }
 
@@ -838,11 +840,9 @@ graphics when using a touch screen.
    public void redrawBoard(HitPoint p)
    {
 	   if(menu!=null) { drawMenu(null,p); }
-	   else { chatHasRun = false;
+	   else { nullChatHasRun = false;
 	          redrawClientBoard(null,p);
-	   		  if(!chatHasRun) 
-	   		  	{ redrawChat(null,p); 	// draw the chat if it didn't happen
-	   		  	}
+	          if(!nullChatHasRun) { redrawChat(null,p); } 	// draw the chat if it didn't happen
 	   		  drawUnmagnifier(null,p);
 	   	}
    }
@@ -1239,7 +1239,6 @@ graphics when using a touch screen.
 	        pt.spriteColor = null;
 	        pt.hitObject = null;
         	drawCanvas(offGC,complete,pt);
-       	
         	if(logging)
         	{
         		Graphics.logging = false;
@@ -2086,21 +2085,31 @@ graphics when using a touch screen.
 		}
   	  	
 	}
-	
     /**
      * this captures the normal java "paint" request, but doesn't
      * do any painting in regular java.  On codename1 a cached bitmap
      * is drawn
      */
     public void paint(Graphics g)
-    {   
+    {   //GC.setColor(g,Color.red);
+    	//Rectangle bounds = GC.getClipBounds(g);
+    	//GC.fillRect(g,bounds);
+    	//GC.drawLine(g,0,0,getWidth(),getHeight());
     	GC.setFont(g,getDefaultFont());
+    	
     	painter.paint(g);
+    	//GC.setColor(g,Color.red);
+    	//GC.drawLine(g,100,0,getWidth(),getHeight());
     }
     public void update(Graphics g)
-    {
+    {	//GC.setColor(g,Color.blue);
+    	//Rectangle bounds = GC.getClipBounds(g);
+    	//GC.fillRect(g,bounds);
+    	//GC.drawLine(g,getWidth(),0,0,getHeight());
     	GC.setFont(g,getDefaultFont());
     	painter.update(g);
+    	//GC.setColor(g,Color.blue);
+		//GC.drawLine(g,getWidth()-100,0,0,getHeight());
     }
     /** request a normal refresh of the window
      * some background elements may not be repainted.
@@ -2168,7 +2177,6 @@ graphics when using a touch screen.
     
     public void paintSprites(Graphics g,HitPoint hp)
     {	
-    	if(!chatHasRun) { redrawChat(g,hp); }
 		drawCanvasSprites(g,hp);
 		drawVirtualMouse(g,hp);		// also draws tooltips
 		drawMenu(g,hp);

@@ -41,7 +41,8 @@ import dictionary.Dictionary;
  *
  */
 class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// revision 101 changes the letters to be without replacement
 
 	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -80,17 +81,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		setState(HoneyState.Gameover);
 	}
 
-	private int mapPick = -1;
-	private int mapTarget = -1;		// which actual cell is picked (per player)
-	
-	public int getMapPick()
-	{	return mapPick;
-	}
-	public int getMapTarget()
-	{	return mapTarget;
-	}
-
-
 	public boolean hiddenVisible = false;
 	int score = 0;
 	
@@ -110,13 +100,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
-    public HoneyChip pickedObject = null;
-    public HoneyChip lastPicked = null;
-    private HoneyCell pickedSource = null; 
-    private HoneyCell droppedDest= null;
     private HoneyState resetState = HoneyState.Puzzle; 
-    public HoneyChip lastDroppedObject = null;	// for image adjustment logic
-    public HoneyCell getSource() { if(pickedObject!=null) { return pickedSource; } else return null; }
 	// factory method to generate a board cell
 	public HoneyCell newcell(char c,int r)
 	{	HoneyCell cd = new HoneyCell(HoneyId.BoardLocation,c,r,Geometry.Hex);
@@ -173,22 +157,30 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  		
  		construct(variation.firstincol,variation.nincol);
     	Random r = new Random(randomKey+100);
+    	if(revision<101)
+    	{
     	for(HoneyCell c = allCells; c!=null; c=c.next)
     	{
     		int n = r.nextInt(HoneyChip.letters.length);	// 25 letter alphabet
     		c.addChip(HoneyChip.letters[n]);
     	}
-    	
-    	mapPick = -1;
-       	mapTarget = -1;
-        
+    	}
+    	else
+    	{	HoneyChip letters[] = new HoneyChip[HoneyChip.letters.length];
+    		AR.copy(letters,HoneyChip.letters);
+    		r.shuffle(letters);
+    		int i=0;
+    		for(HoneyCell c = allCells; c!=null; c=c.next)
+    		{
+    			c.addChip(letters[i++]);
+    		}  		
+    	}
  		setState(HoneyState.Puzzle);
 		robotState.clear();		
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    acceptPlacement();
 	    resetState = HoneyState.Puzzle;
-	    lastDroppedObject = null;
 	    // set the initial contents of the board to all empty cells
         animationStack.clear();
         moveNumber = 1;
@@ -218,13 +210,9 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         robotState.copyFrom(from_b.robotState);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
-        droppedDest = getCell(from_b.droppedDest);
-        pickedSource = getCell(from_b.pickedSource);
-        pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         score=from_b.score;
         robotVocabulary = from_b.robotVocabulary;
-        lastPicked = null;
         words.copyFrom(from_b.words);
         nonWords.copyFrom(from_b.nonWords);
         commonWords.copyFrom(from_b.commonWords);
@@ -245,7 +233,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
-        G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(score==from_b.score,"score mismatch");
         // this is a good overall check that all the copy/check/digest methods
@@ -298,7 +285,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         // G.print("d0 "+v);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
-		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,revision);
 
 		//G.print("d1b "+v);
@@ -392,34 +378,15 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     //
     public void acceptPlacement()
     {	
-        droppedDest = null;
-        pickedSource = null;
-        pickedObject = null;
-     }
     
-    public HoneyCell lastDropped()
-    {
-    	return(droppedDest);
     }
 
-
-    //
-    // true if c is the place where something was dropped and not yet confirmed.
-    // this is used to mark the one square where you can pick up a marker.
-    //
-    public boolean isADest(HoneyCell c)
-    {
-    	return droppedDest==c;
-    }
 	//get the index in the image array corresponding to movingObjectChar 
     // or HitNoWhere if no moving object.  This is used to determine what
     // to draw when tracking the mouse.
     // caution! this method is called in the mouse event process
     public int movingObjectIndex()
-    { HoneyChip ch = pickedObject;
-      if(ch!=null)
-    	{	return(ch.chipNumber()); 
-    	}
+    { 
       	return (NothingMoving);
     }
    /**
@@ -449,14 +416,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
     }
 
-    //	
-    //true if cell is the place where something was picked up.  This is used
-    // by the board display to provide a visual marker where the floating chip came from.
-    //
-    public boolean isASource(HoneyCell c)
-    {	return(pickedSource==c);
-    }
- 
 
     public void setVocabulary(double value) {
     	Dictionary dict = Dictionary.getInstance();
@@ -506,7 +465,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	{	HoneyCell c = from.elementAt(i);
     		HoneyChip top = c.topChip();
     		if(top==null) {  break; }
-    		isNew |= isADest(c);
     		score += top.value;
      	}
     	return(score);
@@ -527,10 +485,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
          setGameOver();
          }
     }
-	public boolean notStarted()
-	{
-		return((droppedDest==null) && (pickedSource==null));
-	}
+
 	private void addWordTo(HWordStack which,Honeymovespec m,boolean rejectCommon)
 	{
     	CellStack seed = new CellStack();
@@ -542,7 +497,9 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		seed.push(getCell(col,row));
     	}
     	HWord newword = new HWord(seed,m.word);
-    	if(rejectCommon && commonWords.contains(newword)) { m.isCommon = true; }
+    	if(rejectCommon && commonWords.contains(newword))
+    		{ m.isCommon = true;
+    		}
     	else { 
     		if(!which.pushNew(newword)) { m.notNew = true; }
     		if(which==words)

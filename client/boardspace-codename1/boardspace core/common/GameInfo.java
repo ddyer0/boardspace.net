@@ -462,7 +462,7 @@ synchronized(allGames) {
 	{ 
 		// note: for random uncontrolled reasons, kingscolor has to come before chess so
 		// the offline reviewer will find regular chess properly.
-		 GameInfo m =  put(new GameInfo(781,ES.game,104,"KC",AncientGames,"Chess","KingsColor",TwoBotsPlus,
+		 GameInfo m =  put(new GameInfo(786,ES.game,104,"KC",AncientGames,"Chess","KingsColor",TwoBotsPlus,
 					new double[]{0.5,1.0,0.05},
 					"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
 					null,false, WhiteOverBlack));	
@@ -490,7 +490,7 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
-	  put(new GameInfo(784,ES.test,118,"AC",AncientGames,"Chess","Atomic Chess",OneBotPlus,
+	  put(new GameInfo(784,ES.test,118,"AC",AncientGames,"Chess","Atomic",OneBotPlus,
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
 				null,false, WhiteOverBlack));	  

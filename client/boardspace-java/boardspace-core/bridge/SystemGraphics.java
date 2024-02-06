@@ -370,5 +370,7 @@ public abstract class SystemGraphics
     {
     	java.awt.Toolkit.getDefaultToolkit().sync();
     }
-
+    public void dispose()
+    {	if(graphics!=null) { graphics.dispose(); }
+    }	
 }
