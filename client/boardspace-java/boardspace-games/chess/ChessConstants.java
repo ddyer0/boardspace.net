@@ -142,6 +142,7 @@ public interface ChessConstants
     		{	"Chess",
     			"Ultima",
     			"Chess960",
+    			"Atomic",
     			ChessMoveDescription,
     			VictoryCondition,
     		};

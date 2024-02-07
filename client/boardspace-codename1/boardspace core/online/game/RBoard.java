@@ -20,7 +20,6 @@ package online.game;
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Random;
-import lib.AR;
 import lib.G;
 import lib.HitPoint;
 import lib.IStack;

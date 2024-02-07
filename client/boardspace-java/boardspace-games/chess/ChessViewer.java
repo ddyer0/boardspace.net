@@ -476,7 +476,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
       ChessState vstate = gb.getState();
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
    		
-      Hashtable<ChessCell,ChessMovespec>targets = new Hashtable<ChessCell,ChessMovespec>();//gb.getTargets();
+      Hashtable<ChessCell,ChessMovespec>targets = gb.getTargets();
       
       /**
       try { 

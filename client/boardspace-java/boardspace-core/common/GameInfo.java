@@ -490,7 +490,7 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
-	  put(new GameInfo(784,ES.test,118,"AC",AncientGames,"Chess","Atomic",OneBotPlus,
+	  put(new GameInfo(784,ES.game,118,"AC",AncientGames,"Chess","Atomic",OneBotPlus,
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
 				null,false, WhiteOverBlack));	  

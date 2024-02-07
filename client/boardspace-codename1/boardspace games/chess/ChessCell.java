@@ -37,7 +37,16 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
 	int lastCaptured = -1;
 	ChessChip lastContents;
 
-
+    public ChessCell(ChessCell from)
+    {
+    	copyAllFrom(from);
+    }
+    public int activeAnimationHeight()
+    {	if(height()<=1) 
+    		{ return 0; 
+    		}
+    	return super.activeAnimationHeight();
+    }
 	public void copyFrom(ChessCell ot)
 	{	super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
@@ -46,6 +55,12 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
 		lastContents = ot.lastContents;
 
 	}
+// note that although usually there are no stacks on the board, there is an 
+// interim stack that is never seen if a pawn promotion is also a capture
+// public void addChip(ChessChip ch)
+//	{	G.Assert(!onBoard || topChip()==null,"empty");
+//		super.addChip(ch);
+//	}
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;

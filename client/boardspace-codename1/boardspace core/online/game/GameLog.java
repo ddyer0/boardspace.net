@@ -313,7 +313,9 @@ public class GameLog implements Opcodes
                     if ( (newplayer<(column+1)) || ((column+1)>=numPlayers))
                     {   // emit a complete line
                     	maxEverLineHeight = Math.max(maxLineH,maxEverLineHeight);
-                    	if(needLineNumber && ((boxPos+maxLineH)<boxH))
+                    	if(needLineNumber)
+                    	{
+                    	if((boxPos+maxLineH)<boxH)
                     	{	
                     		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,rowMoveNumber))
                     		{	int ind = highlight.hit_index;
@@ -322,6 +324,8 @@ public class GameLog implements Opcodes
                      		}
                     		lastSeenY = ypos+maxLineH;
                     		boxPos+= maxLineH;
+                    	}
+                    	else { needMore = true; }
                     	}
                     	ypos += maxLineH;
                     	needLineNumber = false;

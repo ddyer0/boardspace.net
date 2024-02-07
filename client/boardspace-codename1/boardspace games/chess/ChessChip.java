@@ -250,6 +250,7 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	public static ChessChip standard = new ChessChip("standard",noscale);
 	public static ChessChip ultima = new ChessChip("ultima",noscale);
 	public static ChessChip chess960 = new ChessChip("chess960",noscale);
+	public static ChessChip atomic = new ChessChip("atomic",noscale);
 	public static ChessChip QueenChip[] = new ChessChip[]{whiteQueen,blackQueen};
 	public static ChessChip PawnChip[] = new ChessChip[]{whitePawn,blackPawn};
 	public static ChessChip PromotedPawnChip[] = new ChessChip[]{whitePromotedPawn,blackPromotedPawn};

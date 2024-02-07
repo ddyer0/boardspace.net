@@ -19,7 +19,6 @@ package online.game;
 import java.awt.Rectangle;
 
 import lib.Random;
-import lib.AR;
 import lib.G;
 import lib.HitPoint;
 import lib.IStack;
