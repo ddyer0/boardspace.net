@@ -24,7 +24,7 @@ public interface Config extends CommonConfig
    static final String IMAGEPATH = "/online/images/";
    static boolean REMOTEVNC = false;
    static boolean REMOTERPC = true;
- 
+   
    // this is intended only fordebugging event triggering, not for actual use.
    static boolean WAITFOREVER = false;
    

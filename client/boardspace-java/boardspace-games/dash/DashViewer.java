@@ -23,7 +23,6 @@ import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -263,8 +262,112 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
       gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
+    /* draw the board and the chips on it. */
+     private void drawBoardElements(Graphics gc, DashBoard gb, Rectangle brect, HitPoint highlight)
+     {
+      	int liftdiv = 40;
+      	Hashtable<DashCell,DashCell> riverDests = gb.riverMoveDests();		// can be a river move cell
+       	DashCell flipped = gb.flippedCell;
+      	boolean dolift = doLiftAnimation();
+  
+      	//
+         // now draw the contents of the board and anything it is pointing at
+         //
+      	DashCell hitCell = null;
+      	int CSQ = SQUARESIZE/3;
+      	int cx = G.centerX(boardRect);
+      	int cy = G.centerY(boardRect);
+      	int top = G.Bottom(brect);
+      	int left = G.Left(brect);
+        for(Enumeration<DashCell> cells= gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
+         	{
+        	 DashCell cell = cells.nextElement();
+             boolean isARiverDest = riverDests.get(cell)!=null;
+             int ypos0 = top - gb.cellToY(cell);
+             int xpos0 = left + gb.cellToX(cell);
+             int topindex = cell.stackTopLevel()-1;
+             cell.rotateCurrentCenter(contextRotation, xpos0, ypos0,cx,cy);
+             if(topindex>=0)
+                 {
+                 for(int cindex = 0; cindex<=topindex; cindex++)
+                 {
+                 DashChip cup = cell.chipAtIndex(cindex);
+                 int liftYval = ((cindex-1)*SQUARESIZE)/10
+ 					+(dolift?((liftSteps*SQUARESIZE)/(2*liftdiv))*cindex : 0);
+                 int liftXval =  ((cindex-1)*SQUARESIZE)/40;
+                 int xpos = xpos0 + liftXval;
+                 int ypos = ypos0 - liftYval;
+                 if(cup!=null)
+                 {	
+                 	if(gc!=null) 
+                 		{
+                 		cup.drawChip(gc,this,SQUARESIZE,xpos,ypos, null);
+                 		//this puts the region size in each cell of each region
+                 		//String msg = (cell!=null) ? ""+cell.region_size : null;
+                 		//G.Text(gc,false,xpos+SQUARESIZE/3,ypos-SQUARESIZE,SQUARESIZE,SQUARESIZE,Color.yellow,null,msg);
+  
+                 		if(cindex==0) 
+                 			{ 
+                 			  if(cell==flipped)
+                 				{
+                 				GC.frameRect(gc,Color.red,xpos-CSQ,ypos-CSQ,CSQ*2-1,CSQ*2-1);
+                 				}
+                 			  if(cell.isBase)
+                 			  {GC.frameRect(gc,Color.white,xpos+(int)(SQUARESIZE*0.25),ypos-(int)(SQUARESIZE*0.6),CSQ,CSQ);
+                 			  }
+                 			}
+                 		}
+                 }
+                 
+                 
+                 if((cindex==topindex) && (gc!=null))
+                 {
+                 if(isARiverDest)
+                 	{ GC.cacheAACircle(gc,xpos+(int)(DOT_X_SCALE*SQUARESIZE),ypos-(int)(DOT_Y_SCALE*SQUARESIZE),Math.max(2,SQUARESIZE/10),Color.red,Color.red,true);
+                 	}
+ 
+                 }
+                 
+               if(highlight!=null)
+               {
+               boolean hitpoint = 
+             		  gb.LegalToHitBoard(cell)
+             		  && cell.closestPointToCell(highlight,SQUARESIZE/2, xpos, ypos)
+                    			;
+
+               if(cindex==topindex)
+               {
+             	if(hitpoint) 
+               	{	hitCell = cell;
+               	}
+               else
+               {	  int corner = (int)(0.4*SQUARESIZE);
+               	  if(gb.LegalToHitIntersection(cell)
+               			  && cell.closestPointToCell(highlight, SQUARESIZE/2,xpos+corner, ypos-corner)
+             		  	)
+             		  	{
+               		    hitCell = cell;
+              		  	} 	
+               }
+               }
+               }
+               }
+              }
+         }
+         
+  
+         if(hitCell!=null)
+         {	highlight.hitCode = (hitCell.chipIndex>0) ? DashId.BoardLocation : DashId.EmptyBoard;
+        		highlight.arrow =hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
+       		highlight.awidth = SQUARESIZE/2;
+       		highlight.spriteColor = Color.red;
+          }
+
+     }
+     
+
    /* draw the board and the chips on it. */
-    private void drawBoardElements(Graphics gc, DashBoard gb, Rectangle brect, HitPoint highlight)
+    private void xdrawBoardElements(Graphics gc, DashBoard gb, Rectangle brect, HitPoint highlight)
     {
      	int liftdiv = 40;
      	Hashtable<DashCell,DashCell> riverDests = gb.riverMoveDests();		// can be a river move cell
@@ -548,7 +651,6 @@ private void playSounds(DashMovespec m)
         if(!(id instanceof DashId)) {  missedOneClick = performStandardActions(hp,missedOneClick); }
     	else {
     	DashId hitObject = (DashId)hp.hitCode;
-        DashState state = b.getState();
 		DashCell cell = hitCell(hp);
 		DashChip cup = (cell==null) ? null : cell.topChip();
         switch (hitObject)
@@ -557,22 +659,19 @@ private void playSounds(DashMovespec m)
         	throw G.Error("Hit Unknown: %s", hitObject);
         case EmptyBoard:
         case BoardLocation:	// we hit the board 
-		 switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case CONFIRM_STATE:
-			case PUZZLE_STATE:
 				if(b.movingObjectIndex()>=0)
 				{ if(cell!=null) { PerformAndTransmit("Dropb "+cell.col+" "+cell.row); }
 				}
-				else if((cup!=null)&&(hitObject!=DashId.EmptyBoard))
+				else if(hitObject==DashId.EmptyBoard)
+				{
+					
+				}
+				else
 				{
 				PerformAndTransmit( "Pickb "+cell.col+" "+cell.row+" "+cup.chipNumber);
 				}
 				break;
 			}
-			break;
-         	}
  
         }
     }

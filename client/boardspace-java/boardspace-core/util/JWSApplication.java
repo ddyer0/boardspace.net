@@ -164,14 +164,19 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
             XFrame fr = new XFrame(rootname);
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
-            // create the free standing frame
-            //new LPanel(rootname, fr,myL);
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
             		RpcReceiver.start(server,sharedInfo,myL,fr);
+            	  }
+            	  if(G.turnBased())
+            	  {
+            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance("online.common.TurnBasedViewer");
+            	   // init first, then add to the frame, to avoid races in lockAndLoadImages
+            	   viewer.init(sharedInfo,fr);
+            	   myL.setCanvas(viewer);           		  
             	  }
             	  else 
             	  {
@@ -303,12 +308,17 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 	    	if(!gb &&  vc==null)
 	        {	
 	    		boolean startoff = isTable || offline;
+	    		boolean startTurn = G.turnBased();
 	    		G.setOffline(startoff);
 			  	do { 
 			  		startoff = G.offline();
+			  		startTurn = G.turnBased();
 			  		if(startoff) { runOffline(serverName); }
 			  		else { runLogin(serverName); }
-			  	} while(startoff!=G.offline() || G.isCheerpj() || G.isJavadroid());
+			  	} while((startTurn!=G.turnBased())
+			  			|| (startoff!=G.offline())
+			  			|| G.isCheerpj() 
+			  			|| G.isJavadroid());
 	        }
 	        else 
 	        { 	

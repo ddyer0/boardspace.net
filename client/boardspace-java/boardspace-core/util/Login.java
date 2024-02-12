@@ -95,7 +95,7 @@ public class Login implements SimpleObserver,Config
     				  val = val.substring(0,val.length()-"Strings".length());
     			  }
     			  G.putGlobal(key,val);			// load into the applet parameter table
-     			  System.out.println("K "+key+" V '"+val+"'");
+     			  //System.out.println("K "+key+" V '"+val+"'");
     			}
     		if(eol>0) { prev = eol+1; } else { prev = next+1; }
     	}
@@ -143,7 +143,13 @@ public class Login implements SimpleObserver,Config
 		G.putGlobal(G.VNCCLIENT,false);
 		String lang = PasswordCollector.language;
 		G.putGlobal(G.LANGUAGE,lang);
-		if(PasswordCollector.ReviewMessage.equals(collector.exitValue))
+		if(PasswordCollector.TurnBasedMessage.equals(collector.exitValue))
+		{
+			G.setOffline(true);
+			G.setTurnBased(true);
+			exit=captured=true;
+		}
+		else if(PasswordCollector.ReviewMessage.equals(collector.exitValue))
 		{	G.setOffline(true);
 			exit=captured=true;
 		}
@@ -222,7 +228,8 @@ public class Login implements SimpleObserver,Config
 					 }
 				}
 		}
-		else if(PasswordCollector.cancel.equals(collector.exitValue)) { exit = true; }
+		else if(PasswordCollector.cancel.equals(collector.exitValue)) 
+			{ exit = true; }
 		else 
 		{	
 			G.print("Unexpected termination: " + collector.exitValue); exit=true; 

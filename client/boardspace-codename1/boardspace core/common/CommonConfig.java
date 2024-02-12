@@ -25,6 +25,7 @@ public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	static final String cheerpjTextFile = "cheerpj.txt";
+	static boolean TURNBASED = false;
 	
 	static String PRELOAD = "preload";		// key for a "preload" option passed from the miniloader
 	static boolean PRELOAD_DEFAULT = true;	// still true

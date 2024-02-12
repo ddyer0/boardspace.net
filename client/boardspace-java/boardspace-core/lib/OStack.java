@@ -335,6 +335,11 @@ public abstract class OStack<T> implements StackIterator<T>
 		{
 			for(int lim = other.size()-1; lim>=0; lim--) { push(other.elementAt(lim)); }
 		}
+		public void unionNew(OStack<T> other)
+		{
+			for(int lim = other.size()-1; lim>=0; lim--) { pushNew(other.elementAt(lim)); }
+		}
+
 		/**
 		 * compare two OStacks.  Comparison of the elements is with EQ
 		 * @param other

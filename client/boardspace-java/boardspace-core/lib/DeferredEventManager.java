@@ -22,8 +22,6 @@ import java.util.Vector;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-// TODO: invent a scheme to allow recording crosswordle stats from offline play
-
 /**
  * one of the rules for a well behaved application is that the actions resulting
  * from buttons and menus should be handled by the main process thread rather than
@@ -74,7 +72,7 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
     {  	
     	deferActionEvent(e);
     }
-
+    public Thread eventThread = null;
     /**
      * call the deferredEventManager method of the cp object.
      * This will call G.Error if the event is not handled.
@@ -82,6 +80,9 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
      */
 	public boolean handleDeferredEvent(DeferredEventHandler cp)
 	{	handler = cp;
+		Thread thread = eventThread;
+		Thread newThread = eventThread = Thread.currentThread();
+		G.Advise(thread==null || thread==newThread,"deferredEvent thread unsafe %s and %s",thread,newThread);
 		if(!deferredEvents.isEmpty())
 		{
 		  Object e = deferredEvents.elementAt(0);

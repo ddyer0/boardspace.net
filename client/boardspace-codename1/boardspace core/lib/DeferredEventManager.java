@@ -69,7 +69,7 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
     {  	
     	deferActionEvent(e);
     }
-
+    public Thread eventThread = null;
     /**
      * call the deferredEventManager method of the cp object.
      * This will call G.Error if the event is not handled.
@@ -77,6 +77,9 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
      */
 	public boolean handleDeferredEvent(DeferredEventHandler cp)
 	{	handler = cp;
+		Thread thread = eventThread;
+		Thread newThread = eventThread = Thread.currentThread();
+		G.Advise(thread==null || thread==newThread,"deferredEvent thread unsafe %s and %s",thread,newThread);
 		if(!deferredEvents.isEmpty())
 		{ 
 		  Object e = deferredEvents.elementAt(0);

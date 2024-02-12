@@ -29,6 +29,7 @@ public class DashCell extends stackCell<DashCell,DashChip> implements DashConsta
 	// constructor
 	public int sweep_counter=0;
 	public int region_size = -1;
+	public boolean isBase = false;
 	// constructor
 	public DashCell(char c,int r) 
 	{	super(cell.Geometry.Oct,c,r);
@@ -45,6 +46,7 @@ public class DashCell extends stackCell<DashCell,DashChip> implements DashConsta
 	public void copyFrom(DashCell other)
 	{	super.copyFrom(other);
 		region_size = other.region_size;
+		isBase = other.isBase;
 	}
 
 

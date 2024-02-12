@@ -793,7 +793,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	{   	
     	case Deferred_Unbuffered:
     	case Deferred:
-    		setComplete(true);		// say we need it
+       		setComplete(true);		// say we need it
     		addTimer(0,0,RefreshReason.DeferredComplete,"Paint");
             break;
             

@@ -23,7 +23,7 @@ package lib;
 public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 {	
 	ExtendedHashtable info;
-	public ChatWindow(LFrameProtocol frame,ExtendedHashtable sharedInfo,ChatInterface chat)
+	public ChatWindow(LFrameProtocol frame,ExtendedHashtable sharedInfo,ChatInterface chat,boolean useOwnThread)
 	{	
 		init(sharedInfo,frame);
 		theChat = chat;
@@ -31,7 +31,7 @@ public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 		theChat.setCanvas(this);
 		this.setTheChat(theChat,true);
 		setVisible(true);
-		new Thread(this).start();
+		if(useOwnThread) { new Thread(this).start(); }
 	}
 
 	public void ViewerRun(int w)

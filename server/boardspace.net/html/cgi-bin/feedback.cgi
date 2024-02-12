@@ -76,7 +76,7 @@ param();
 
   if(&check_timestamp($stamp))
   {
-  $message = "from email: $email\ninfo: $info\n\n$message";
+  $message = "from: $fromname\nfrom email: $email\ninfo: $info\n\n$message";
 
   #($toemail,$toname,$to,$from,$date,$subj,$body)
   &send_email($'supervisor_email,"feedback form",$'supervisor_email,$subject,$message);

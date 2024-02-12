@@ -125,16 +125,10 @@ public class Login implements SimpleObserver,Config
 	public boolean initFromWebStart()
     {	boolean captured = false;
     	boolean exit = false;
-    	boolean show = false;
     	{
     	while(!exit)
     	{
 		PasswordCollector collector = PasswordCollector.createAndShowGUI(this);
-		if(show) 
-			{ show = false; 
-			// do this after the respawn, so we hope this window will appear on top
-			G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
-			}
 		// note than in the codename1 port, createAndShowGui operates as
 		// a modal dialog, so this is allready complete and this waiting
 		// is superfluous.
@@ -149,7 +143,13 @@ public class Login implements SimpleObserver,Config
 		G.putGlobal(G.VNCCLIENT,false);
 		String lang = PasswordCollector.language;
 		G.putGlobal(G.LANGUAGE,lang);
-		if(PasswordCollector.ReviewMessage.equals(collector.exitValue))
+		if(PasswordCollector.TurnBasedMessage.equals(collector.exitValue))
+		{
+			G.setOffline(true);
+			G.setTurnBased(true);
+			exit=captured=true;
+		}
+		else if(PasswordCollector.ReviewMessage.equals(collector.exitValue))
 		{	G.setOffline(true);
 			exit=captured=true;
 		}
@@ -168,6 +168,7 @@ public class Login implements SimpleObserver,Config
 				+Http.escape(name)
 				+"&language="+Http.escape(lang)
 				+ (test ? "&test=true" : "")
+				+ (G.isCheerpj() ? "&cheerpj=true" : "")
 					+(guestName.equals(name)?"":"&cookie=1");
 
 			// the name of the password parameter is a minor difference between boardspace and tantrix
@@ -194,7 +195,8 @@ public class Login implements SimpleObserver,Config
 					String v = G.optionBox("Login error","User name and password were not accepted",
 							"Try again","Recover lost password");
 					if("Recover lost password".equals(v))
-					{	show = true;
+					{
+						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
 					}
 				 }
 				 else if(result.text.startsWith("unavailable")) 

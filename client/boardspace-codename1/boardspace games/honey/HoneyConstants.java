@@ -26,7 +26,7 @@ public interface HoneyConstants
 {	static String InvalidExplanation = "The current letter placement is invalid because: #1";
 	
 	static String NonWordsMessage = "#1 Non Words";
-	static String SharedWordsMessage = "#1 Shared Words";
+	static String SharedWordsMessage = "#1 Shared";
 	static String ShowSummaryMessage = "Show all the words found";
 	
 	static String NotAdjacentExplanation = "Not a continuous word";
@@ -34,7 +34,8 @@ public interface HoneyConstants
 	static String HoneyPlayState = "Find the most value in Words";
 	static String GetDefinitionMessage = "click for defintion of #1";
 	static String JustWordsMessage = "#1 Words";
-	static String JustWordsHelp = "Check for good words";
+	static String AvailableWordsMessage = "FindableMessage";
+	static String FoundWordsMessage = "FoundMessage";
 	static String VocabularyMessage = "Vocabulary";
 	static String EndGameMessage = "Time Left";
 	static String EndGameAction = "End Game";
@@ -86,15 +87,11 @@ public interface HoneyConstants
 	enum HoneyId implements CellId
 	{
     	BoardLocation,
-     	EmptyBoard,
     	EndGame,
-    	EyeOption,
-    	Rotate,
-    	Lock,
     	Switch,
     	Definition,
     	ShowSummary,
-    	Blank, InvisibleDragBoard, ZoomSlider;
+    	ZoomSlider, Vocabulary;
     	public String shortName() { return(name()); }
 
 	}
@@ -103,18 +100,6 @@ public interface HoneyConstants
 	// this would be a standard board with 4-per-side
 	    static final int[] ZfirstInCol4 = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
 	    static final int[] ZnInCol4 = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.
-
-	// this would be a standard board with 5-per-side
-	    static final int[] ZfirstInCol5 = { 4, 3, 2, 1, 0, 1, 2, 3, 4 };
-	    static final int[] ZnInCol5 =     {5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
-	  //this would be a standard board with 6-per-side
-	    static final int[] ZfirstInCol6 = {  5, 4, 3,  2,   1,  0,  1,  2,  3, 4, 5 };
-	    static final int[] ZnInCol6 =     {  6, 7, 8, 9, 10, 11, 10, 9, 8, 7, 6}; // depth of columns, ie A has 4, B 5 etc.
-	//
-	// this would be a standard board with 7-per-side
-	    static final int[] ZfirstInCol7 = { 6, 5, 4, 3,  2,   1,  0,  1,  2,  3, 4, 5 ,6};
-		static final int[] ZnInCol7 =     { 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7 }; // depth of columns, ie A has 4, B 5 etc.
-
 
 		
 	enum HoneyVariation
@@ -150,7 +135,6 @@ public interface HoneyConstants
     			SharedWordsMessage,
     			VocabularyMessage,
     			JustWordsMessage,
-    			JustWordsHelp,
     			InvalidExplanation,
     			EndGameAction,
     			EndGameDescription,
@@ -160,11 +144,13 @@ public interface HoneyConstants
     			HoneyPlayState,
     	        HoneyVictoryCondition,
     	        EndingGameDescription,
-
+ 
     		};
     		String HoneyStringPairs[][] = 
     		{   {"HoneyComb_family","HoneyComb"},
     				{"HoneyComb_variation","Standard HoneyComb"},
+    			{FoundWordsMessage,"#1 Found\nBy Any Player"},
+    			{AvailableWordsMessage,"#1 Findable\nin #2 words"},
     		};
 
     		InternationalStrings.put(HoneyStringPairs);

@@ -571,6 +571,7 @@ public class ScrollArea
      	}
     
     }
+    public boolean mouseIsDown() { return mouseIsDown; }
     /**
      * do mouse wheel activity if the mouse is over an area of interest
      * 

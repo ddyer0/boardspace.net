@@ -51,6 +51,7 @@ import udp.PlaytableStack;
 	 public String toString() { return name;}
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
+
  public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
@@ -113,10 +114,13 @@ import udp.PlaytableStack;
 	 public static final String VersionPreferredMessage = "Preferred version is #1";
 	 public static final String VersionRejectedMessage = "This version is too old.  Please visit the app store and update it";
 	 public static final String ReviewMessage = "Play Offline";
+	 public static final String TurnBasedMessage = "Play Turn Based";
+	 
 	 public static final String PlaytableMessage = "Join #1";
 	 public static String LoginStrings [] = 
 		 {
 		 OK,
+		 TurnBasedMessage,
 		 PlaytableMessage,
 		 VisitSite,
 		 SiteLinks,
@@ -208,6 +212,7 @@ import udp.PlaytableStack;
 	 private JPanel passPane;				// passpane can appear and disappear depending on "guest"
 	 private JButton registerAccountButton;	// switch to registeration
 	 private JButton reviewButton;
+	 private JButton turnBasedButton;		// play turn based games
 	 private JButton visitSiteButton;	// visit the web site
 	 private JButton appstoreButton;	// visit the app store
 	 private JButton feedbackButton;
@@ -742,7 +747,15 @@ import udp.PlaytableStack;
 	 }
 	 public Component createReviewPanel()
 	 {	
-		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER)); 
+		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+		 if(G.TURNBASED())
+		 {
+			 String tb = s.get(TurnBasedMessage);
+			 turnBasedButton = new JButton(tb);
+			 turnBasedButton.setActionCommand(tb);
+			 turnBasedButton.addActionListener(this);
+			 p.add(turnBasedButton);
+		 }
  		 String rega = s.get(ReviewMessage);
  		 reviewButton = new JButton(rega);
  		 reviewButton.setActionCommand(rega);
@@ -990,6 +1003,12 @@ import udp.PlaytableStack;
         	 return;
          }
    		}
+        if(source==turnBasedButton)
+        {
+        	exitValue = TurnBasedMessage;
+        	G.setOffline(true);
+        	exit();
+        }
         if((source==reviewButton) || ReviewMessage.equals(cmd1))
         {
         	exitValue = ReviewMessage;

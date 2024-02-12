@@ -111,8 +111,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
 
         doInit(init,key,players,rev); // do the initialization 
 
-
- 
     }
     public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
     
@@ -364,7 +362,16 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         
         return (true);
     }
- 
-
+    public HWordStack findWords()
+    {	return pbs[0].findWords();
+    }
+    public HWordStack commonWords()
+    {
+    	return pbs[0].commonWords;
+    }
+    public int robotVocabulary = 0;
+    public void setVocabulary(double n)
+    {	for(HBoard b : pbs) { robotVocabulary = b.robotVocabulary = (int)(n*dictionary.size()); }
+    }
 
 }

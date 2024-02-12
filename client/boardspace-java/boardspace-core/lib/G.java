@@ -65,8 +65,12 @@ public class G extends Platform implements Timestamp
 	}
 	
 	private static boolean offline = false;
+	private static boolean turnbased = false;
 	public static boolean offline() { return(offline); }
 	public static void setOffline(boolean v) { offline=v; }
+	public static void setTurnBased(boolean v) { turnbased = v; }
+	public static boolean turnBased() { return turnbased; }
+	
 	private static boolean remoteViewer = false;
 	public static boolean remoteViewer() { return(remoteViewer); }
 	public static void setRemoteViewer(boolean v) { remoteViewer=v; }
@@ -2341,5 +2345,9 @@ public static String expandClassName(String classname)
 					: l1<l2 ? -1 : 1;
 		
 		}
-}
+		// feature test for turnbased included
+		public static boolean TURNBASED()
+		{	return TURNBASED || debug();
+		}
+	}
  	

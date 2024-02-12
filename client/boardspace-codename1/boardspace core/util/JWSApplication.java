@@ -151,7 +151,6 @@ public class JWSApplication implements Config,LobbyConstants
         G.print("Myl "+myL);
         if (myL != null)
         {
-    	 	
             String rootname = isVNC
             					? server.getHostName()
             					: isTable 
@@ -164,13 +163,19 @@ public class JWSApplication implements Config,LobbyConstants
         	XFrame fr = new XFrame(rootname);
         	ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
-            fr.setContentPane(myL);
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
             		RpcReceiver.start(server,sharedInfo,myL,fr);
+            	  }
+            	  if(G.turnBased())
+            	  {
+            	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance("online.common.TurnBasedViewer");
+            	   // init first, then add to the frame, to avoid races in lockAndLoadImages
+            	   viewer.init(sharedInfo,fr);
+            	   myL.setCanvas(viewer);           		  
             	  }
             	  else 
             	  {
@@ -198,9 +203,9 @@ public class JWSApplication implements Config,LobbyConstants
             fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
             fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
             }
+            fr.setContentPane(myL);
             fr.setInitialBounds(fx,fy,fw,fh );
-                      
-      	 	if(fr!=null) { fr.setVisible(true); } 
+            fr.setVisible(true);
       	 	G.print("running "+myL);
             myL.run();
             //System.out.println("root start");

@@ -121,7 +121,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	}
 
 	public Text shortMoveText(commonCanvas canvas) {
-		return TextChunk.create(name+" ("+points+")");
+		return TextChunk.create(name+((points>0) ? " ("+points+")" : ""));
 	}
 
 	public int nVariations() {

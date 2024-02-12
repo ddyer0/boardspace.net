@@ -35,6 +35,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.Slider;
 import lib.StockArt;
 import lib.Toggle;
 import online.game.*;
@@ -66,6 +67,9 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     private GameLog gameLog2 = new GameLog(this);
     private GameLog gameLog3 = new GameLog(this);
     private GameLog[] playerLogs = null;
+    HWordStack allWords = null;
+    HWordStack foundWords = new HWordStack();
+    
     // private state
     private HoneyBoard bb = null; //the board from which we are displaying
     
@@ -79,12 +83,14 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     private Rectangle scoreRects[] = addZoneRect("playerScore",MAX_PLAYERS);
     private Rectangle pullTimer = addRect("pull");
     private Rectangle wordsRect = addRect("words");
+    private Rectangle statsRect = addRect("stats");
     private Rectangle nonwordsRect = addRect("nonwords");
     private Rectangle commonWordsRect = addRect("commonWords");
     private Toggle summaryRect = new Toggle(this,"summary",HoneyChip.SummarySheet,HoneyId.ShowSummary,
     			true,s.get(ShowSummaryMessage));
 
-  
+    private Slider vocabularyRect = new Slider(VocabularyMessage,HoneyId.Vocabulary,0,1,0);
+
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -102,6 +108,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     	super.adjustPlayers(n);
     	playerLogs = new GameLog[n];
     	for(int i=0;i<n;i++) { playerLogs[i]=new GameLog(this); }
+        allWords = bb.findWords();
+ 
     }
 	/**
 	 * 
@@ -135,6 +143,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
         // some problems with the animation
         useDirectDrawing(true);
         doInit(false);
+        vocabularyRect.setValue((double)dictionary.orderedSize()/dictionary.size());
+        bb.setVocabulary(vocabularyRect.value);
         adjustPlayers(players_in_game);
         
         if(G.debug()) { saveScreen = myFrame.addAction("Save Board Image",deferredEvents); }
@@ -154,6 +164,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     	{ 
         	// the color determines the first player
         	startFirstPlayer();
+        	allWords = null;
         	//
         	// alternative where the first player is just chosen
         	//startFirstPlayer();
@@ -220,16 +231,30 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
-    	//layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
-      	layout.placeRectangle(wordsRect,buttonW*4,buttonW*4,BoxAlignment.Center);
-      	// split it into two side by side rectangles
-      	int w = G.Width(wordsRect);
-      	G.SetWidth(wordsRect,w/2-1);
-      	G.AlignTop(commonWordsRect,G.Right(wordsRect),wordsRect);
-      	
-      	layout.placeRectangle(nonwordsRect,buttonW*2,buttonW*3/2,BoxAlignment.Edge);
-      	layout.placeRectangle(pullTimer,buttonW*2,buttonW,BoxAlignment.Center);
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+ 
+    	// box will be subdivided
+    	layout.placeRectangle(wordsRect,buttonW*4,buttonW*7,BoxAlignment.Center);
+    	{
+    	int l = G.Left(wordsRect);
+    	int t = G.Top(wordsRect);
+    	int w = G.Width(wordsRect);
+    	int h = G.Height(wordsRect);
+    	int bw = buttonW*2;
+    	G.SetRect(statsRect,l,t,w,fh*3);
+    	t+= fh*3;
+    	h -= fh*3;
+    	G.SetRect(wordsRect,l,t,bw,bw*2+buttonW);
+    	G.SetRect(commonWordsRect,l+bw,t,bw,bw*2);
+    	t += bw*2;
+    	h -= bw*2;
+    	G.SetRect(nonwordsRect,l+bw,t,bw,h);
+    	G.SetRect(pullTimer,l,t+buttonW+3,bw-3,h-buttonW-3);
+    	}
+
+    	G.copy(vocabularyRect,nonwordsRect);
+      	G.SetHeight(vocabularyRect,buttonW/2);
+ 
+      	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
        	       	
     	Rectangle main = layout.getMainRectangle();
@@ -602,6 +627,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	int nDown = (np+nAcross-1)/nAcross;
      	int playerh = (h-margin)/nDown;
     	
+     	foundWords.copyFrom(gb.commonWords());
     	
     	int x = G.Left(r)+margin;
     	int y = G.Top(r)+margin;
@@ -613,24 +639,30 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	for(HBoard pb : pbs)
     	{	Rectangle pr = new Rectangle(x,y,playerw,playerh);
     		HWordStack words = pb.words;
-    		playerLogs[pb.boardIndex].banner = prettyName(pb.boardIndex);
+    		playerLogs[pb.boardIndex].banner = words.size()+" - "+prettyName(pb.boardIndex);
     		playerLogs[pb.boardIndex].nColumns = 1;
         	GC.setFont(gc,largeBoldFont());
         	copy.copyFrom(words);
+        	foundWords.unionNew(words);
         	copy.sort(true);
+        	playerLogs[pb.boardIndex].rememberScrollPosition = true;
         	playerLogs[pb.boardIndex].redrawGameLog(gc,hp,pr,Color.black,null,
     				standardBoldFont(),standardBoldFont(),copy);
     		x += playerw;
     		if((x+playerw)>x0+w) { x = x0; y+= playerh; }
     	}
+    	foundWords.sort(true);
     	
     	
     	
     	
     }
     public void drawGameLog(Graphics gc,GameLog log,String caption,HitPoint hp,Rectangle r,HWordStack words)
-    {   log.banner = s.get(caption,words.size());
+    {   log.banner = AvailableWordsMessage.equals(caption)
+    					? s.get(caption,words.size(),bb.robotVocabulary)
+    					: s.get(caption,words.size());
     	log.nColumns = 1;
+    	log.rememberScrollPosition = true;
     	GC.setFont(gc,largeBoldFont());
     	log.redrawGameLog(gc, hp, r, Color.black, boardBackgroundColor,
     			standardBoldFont(),standardBoldFont(),words);
@@ -677,7 +709,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	        	  }
     	   }
        }
-       goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,msg);
+       goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect);
        }
        drawPullTimer(gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
@@ -711,24 +743,29 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
   		// and is pretty expensive, so we shouldn't do it in the mouse-only case  
   		   setDisplayParameters(pboard,boardRect,false);
   		}
-     	
-       if(!planned)
-       {
+       boolean summary = summaryRect.isOnNow();
        // draw using the home board, not one of the copies.
-       drawBoardElements(gc, bb.getPlayerBoard(pboard.boardIndex), boardRect, ourTurnSelect,selectPos);
-       }
+       drawBoardElements(gc, bb.getPlayerBoard(pboard.boardIndex), boardRect, ourTurnSelect,summary ? null : selectPos);
        GC.setFont(gc,standardBoldFont());
-       drawGameLog(gc,gameLog1,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
-       drawGameLog(gc, gameLog2,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
-       drawGameLog(gc,gameLog3,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
   
        if(reviewOnly || allowed_to_edit || G.debug() || (state==HoneyState.Gameover))
     		   { summaryRect.draw(gc,selectPos); 
     		   }
-       if(summaryRect.isOnNow())
+       if(summary)
        {
     	   showWordSummary(gc,gb,boardRect,selectPos);
+    	   if(allWords!=null)
+    	   {   vocabularyRect.draw(gc, selectPos);
+    	       drawGameLog(gc,gameLog1,AvailableWordsMessage,nonDragSelect,wordsRect,allWords);
+    	       drawGameLog(gc,gameLog2,FoundWordsMessage,nonDragSelect,commonWordsRect,foundWords);
+    	   }
        }
+       else {
+    	   GC.Text(gc,true,statsRect,null,null,s.get("Words for #1",prettyName(pboard.boardIndex)));
+           drawGameLog(gc,gameLog1,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
+           drawGameLog(gc, gameLog2,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
+           drawGameLog(gc,gameLog3,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
+      }
        GC.setFont(gc,standardBoldFont());
        
 
@@ -947,7 +984,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	    	hp.dragging = true;
 	    	break;
 	    case ZoomSlider:
-        case InvisibleDragBoard:
 			break;
 
         } 
@@ -992,6 +1028,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
             	throw G.Error("Hit Unknown object %s" , hp);
             }
         	break;
+        case Vocabulary:
+        	bb.setVocabulary(vocabularyRect.value);
+        	allWords = bb.findWords();
+        	break;
         case ShowSummary:
         	summaryRect.toggle();
         	break;
@@ -1003,24 +1043,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	PerformAndTransmit("EndGame "+getViewPlayer());
         	break;
         case ZoomSlider:
-        case InvisibleDragBoard:
 			break;
  
         case Definition:
         	G.Error("%s Not expected",hitCode);
-        	break;
-        case EyeOption:
-        	{
-         	String op = (String)hp.hitObject;
-         	int rm = remoteWindowIndex(hp);
-        	PerformAndTransmit((rm<0 ? "show ":"see ")+getViewPlayer()+" "+op);
-        	}
-        	break;
-        case Blank:
-        	{
-        	HoneyChip ch = (HoneyChip)hp.hitObject;
-        	PerformAndTransmit("SetBlank "+getViewPlayer()+" "+ch.letter);
-        	}
         	break;
        	
         case BoardLocation:	// we hit an occupied part of the board 

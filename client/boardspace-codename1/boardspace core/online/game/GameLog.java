@@ -48,7 +48,8 @@ public class GameLog implements Opcodes
 	public String banner = null;
 	public int nColumns = 0;
 	ScrollArea scrollbar = new ScrollArea();	// the scrollbar for the display
-	
+	public boolean rememberScrollPosition = false;
+	public int preferredScrollPosition = 0;
 	// these are set by positionTheChat so the color scheme is uniform by default
 	Color backgroundColor = Color.lightGray;
 	Color foregroundColor = Color.darkGray;
@@ -138,6 +139,7 @@ public class GameLog implements Opcodes
     private int lastHistorySize = -1;
     private int lastHistoryStep = -1;
     private int totalHeight = -1;
+    private int lastSize = -1;
     
     /**
      * draw the standard game log
@@ -194,6 +196,16 @@ public class GameLog implements Opcodes
         	redrawGameLog_internal(gc,canvas.disableForSpectators(highlight),r,textColor,highlightColor,playerFont,lineFont,history);
         }}
     }
+    private int drawBanner(Graphics gc,String banner,int x,int y,int w,int h)
+    {	int size = 0;
+    	for(String str : G.split(banner,'\n'))
+		{
+		GC.Text(gc, false, x, y+size,w,h, null, null, str);
+		size += h;
+		}
+    	return size;
+    }
+    
     private void redrawGameLog_internal(Graphics gc,HitPoint highlight, Rectangle r, 
     		Color textColor, Color highlightColor,
     		Font playerFont,Font lineFont,SequenceStack history)
@@ -202,7 +214,7 @@ public class GameLog implements Opcodes
         int numPlayers = nColumns >0 ? nColumns : (b==null) ? 0 : b.nPlayers();
         if(numPlayers>0 && (G.Height(r)>0))
         {
-        if(highlight!=null) { scrollbar.doMouseMotion(G.Left(highlight),G.Top(highlight),highlight.upCode); }
+        if(highlight!=null) { scrollbar.doMouseMotion(G.Left(highlight),G.Top(highlight),highlight.upCode);} 
       	boolean barvisible = scrollbar.scrollBarVisible();
       	boolean baractive = scrollbar.mouseIsActive();
       	boolean scrolled = baractive;
@@ -217,9 +229,19 @@ public class GameLog implements Opcodes
             	  lastHistoryStep = historyStep;
             	  lastHistorySize = sz;
             	}
-            int scrollY = scrolled 
+      	boolean sizechange = sz!=lastSize;
+      	lastSize = sz;
+      	boolean down = !rememberScrollPosition 
+      					|| (G.pointInRect(highlight,r)
+      							&& scrollbar.mouseIsDown());
+       	int scrollY = 
+       			scrolled && down
             				? scrollbar.getScrollPosition() 
+      			  : rememberScrollPosition && !down && !sizechange
+      			  	? preferredScrollPosition 
             				: gameLogScrollY;
+       	if(down) { preferredScrollPosition = scrollY; }
+        
         HitPoint mainHighlight = scrollbar.thumbScrolling() ? null : highlight;
             int highlightYPos = -1;
             int maxLineH = 0;
@@ -232,17 +254,19 @@ public class GameLog implements Opcodes
             int y = G.Top(r);
         int w = G.Width(r);
         int mid = (w - rownumWidth) / numPlayers;
-            
+        int boxPos = 0;
+        GC.setColor(gc,textColor);
         if(banner==null)
         {
             for(int i=0;i<numPlayers;i++)
             {
             	String name = canvas.prettyName(i);
-            	GC.Text(gc, false, x+i*mid, y, mid, rowHeight, textColor, null, name);
+            	GC.Text(gc, false, x+i*mid, y+boxPos, mid, rowHeight, null, null, name);
+                boxPos = rowHeight;
             }
         }
         else {
-        	GC.Text(gc, false, x, y,w,rowHeight, textColor, null, banner);
+        	boxPos = drawBanner(gc,banner,x,y,w,rowHeight);
         }
 
             GC.setFont(gc,lineFont);
@@ -250,7 +274,6 @@ public class GameLog implements Opcodes
             String moven = null;
             Text p1 = TextChunk.create("");
             int column = 0;
-            int boxPos = rowHeight;
             int ypos = 0;
             int lastSeenY = 0;
             int boxH = G.Height(r);
@@ -401,7 +424,7 @@ public class GameLog implements Opcodes
             totalHeight = ypos;
             maxLineH = 0;
             // finally, frame the whole thing
-            GC.frameRect(gc, Color.blue, G.Left(r),G.Top(r), G.Width(r), Math.min(ypos-scrollY+rowHeight,boxH-1));
+            GC.frameRect(gc, Color.blue, G.Left(r),G.Top(r), G.Width(r), Math.max(G.Height(r),Math.min(ypos-scrollY+rowHeight,boxH-1)));
             boolean recalc = false;
             if(!scrolled)
             {
@@ -496,8 +519,18 @@ public class GameLog implements Opcodes
                	}
            	// scrolled means the scroll bar was changed from inside
        		// in which case we use the scrolled value
-           
-           int scrollY = scrolled ? scrollbar.getScrollPosition() : gameLogScrollY;
+       boolean sizechange = sz!=lastSize;
+       lastSize = sz;
+       boolean down = !rememberScrollPosition 
+    		   			|| (G.pointInRect(highlight,r)		   			
+    		   					&& scrollbar.mouseIsDown());
+       int scrollY = scrolled && down
+    		   		? scrollbar.getScrollPosition() 
+    		   		: rememberScrollPosition && !down && !sizechange
+    		   			? preferredScrollPosition
+    		   			: gameLogScrollY;
+       
+       if(down) { preferredScrollPosition = scrollY; }
            int highlightYPos = -1;
            int hr = G.Height(r);
            // basic layout, 1 cell for the row number, then two columns for the moves
@@ -539,6 +572,11 @@ public class GameLog implements Opcodes
                	lastSeenY = ypos = startingYpos;
                	maxLineHeight = startingMaxLineheight;
                }
+       GC.setColor(gc,textColor);
+       if(banner!=null)
+       {
+    	   y += drawBanner(gc,banner,x,y,width,rowHeight);
+       }
 
                int smsidx = idx;
                int smsypos = ypos;
@@ -721,7 +759,7 @@ public class GameLog implements Opcodes
 
            } // end of while
        sawEnd = idx>=sz;
-           GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.min(y+lastSeenY,hr));
+       GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.max(G.Height(r),Math.min(y+lastSeenY,hr)));
        boolean recalc = false;
            if(!scrolled)
              {

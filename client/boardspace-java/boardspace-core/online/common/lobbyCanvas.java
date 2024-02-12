@@ -56,6 +56,7 @@ import lib.PopupManager;
 import online.common.Session.JoinMode;
 import udp.UDPService;
 import lib.Random;
+import lib.RepaintManager.RepaintStrategy;
 import lib.ScrollArea;
 import lib.Sort;
 import lib.SoundManager;
@@ -373,6 +374,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  { super.init(info,frame);
 	    Image icon = Image.getImage(IMAGEPATH+CommonConfig.lobby_icon_image_name);
 	    myFrame.setIconAsImage(icon);
+	    if(painter.repaintStrategy==RepaintStrategy.Deferred)
+	    	{ painter.setRepaintStrategy(RepaintStrategy.Direct_SingleBuffer);
+	    	}
 	    painter.drawLockRequired = false;
 	    if(G.isIOS()) 
 	    	{ 

@@ -554,8 +554,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }
     
-    public boolean winForPlayer(int player)
-    {
+    public boolean WinForPlayer(int player)
+    {	
     	switch(variation)
     	{
     	case AntiDraughts:
@@ -568,7 +568,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {	// return true if the conditions for a win exist for player right now
     	// we maintain the wins in doDone so no logic is needed here.
     	if(board_state.GameOver()) 
-    		{ return winForPlayer(player);
+    		{ return WinForPlayer(player);
     		}
     	return(false);
     }

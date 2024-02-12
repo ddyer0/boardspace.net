@@ -243,7 +243,9 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
         board_state = from_b.board_state;
         unresign = from_b.unresign;
        	pickedRiverMoves = from_b.pickedRiverMoves;
-  
+       	pickedObject = from_b.pickedObject;
+       	pickedSource = getCell(from_b.pickedSource);
+       	droppedDest= getCell(from_b.droppedDest);
         sameboard(from_b);
     }
 
@@ -344,8 +346,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
     // look for a win for player.  This algorithm should work for Gobblet Jr too.
     public boolean WinForPlayerNow(int player)
     {	if(board_state==DashState.GAMEOVER_STATE) { return(win[player]); }
- 
-     	throw G.Error("Not implemented");
+    	return false;
      }
 
     // look for a win for player.  This algorithm should work for Gobblet Jr too.
@@ -408,6 +409,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
     private void dropObject(DashCell dest)
     {	droppedDest = dest;
     	droppedDest.addChip(pickedObject);
+    	pickedObject = null;
     }
     //
     // true if col,row is the place where something was dropped and not yet confirmed.
@@ -528,6 +530,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
     {
      DashCell c = getCell(m.from_col,m.from_row);
    	 flipCell(c);
+   	
    	 switch(board_state)
    	 {	
    	 default: throw G.Error("not expecting flip in state %s",board_state);
@@ -592,8 +595,10 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
          	doDone(replay);
             break;
         case MOVE_FLIP:
-          	 G.Assert((pickedObject==null),"can't flip; something is moving");
-        	doFlip(m);
+        	{
+  	    	DashCell c = getCell(m.from_col,m.from_row);
+   	    	flipCell(c);
+        	}
         	break;
         case MOVE_BOARD_BOARD:
         	// used by the robot
@@ -729,6 +734,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
     	{
      	switch(board_state)
     	{
+     	case FLIP_STATE:
     	case MOVE_STATE:
        		if((cell.topChip()==playerChip[whoseTurn]) 
        			&& (getRiverMovesFrom(cell,null)>0)
@@ -784,6 +790,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
 			return(isDest(cell));
         default:
         	throw  G.Error("Not expecting state %s", board_state);
+       case FLIP_STATE:
  	   case MOVE_STATE:
        case PUZZLE_STATE:
         	return((pickedObject==null) && flippable(cell));
@@ -1068,6 +1075,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
 	 	{
 		default: break;
 		case MOVE_STATE:
+		case PUZZLE_STATE:
 		  DashCell tempDests[]=getTempDest();
  		  int dests = legalRiverMoveDests(null,cell,tempDests,0,null);
   		  for(int i=0;i<dests;i++) { dd.put(tempDests[i],tempDests[i]); }

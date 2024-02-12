@@ -149,7 +149,7 @@ public class commonPanel extends FullscreenPanel
         {
 	    	if(useChat)
 	    	{
-	    		setCanvas(new ChatWindow(myFrame,sharedInfo,theChat));
+	    		setCanvas(new ChatWindow(myFrame,sharedInfo,theChat,false));
 	    	}
 	    	else 
 	    	{// codename1 chat only
@@ -165,7 +165,7 @@ public class commonPanel extends FullscreenPanel
 			f.setIconAsImage(StockArt.Chat.image);
 			if(useChat)
 	    	{	
-	    		ChatWindow cw = new ChatWindow(myFrame,sharedInfo,theChat);
+	    		ChatWindow cw = new ChatWindow(myFrame,sharedInfo,theChat,false);
 	    		commonPanel panel = new commonPanel();
 	    		panel.setCanvas(cw);
 	    		f.addC(panel);
