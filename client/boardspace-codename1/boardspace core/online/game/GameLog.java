@@ -47,6 +47,7 @@ public class GameLog implements Opcodes
 	commonCanvas canvas;	// the associated canvas for the game
 	public String banner = null;
 	public int nColumns = 0;
+	public boolean rowNumbers = true;
 	ScrollArea scrollbar = new ScrollArea();	// the scrollbar for the display
 	public boolean rememberScrollPosition = false;
 	public int preferredScrollPosition = 0;
@@ -249,7 +250,7 @@ public class GameLog implements Opcodes
             GC.setColor(gc,textColor);
             GC.setFont(gc,playerFont);
 
-            int rownumWidth = myFM.stringWidth("XXX");
+        int rownumWidth = rowNumbers ? myFM.stringWidth("XXX") : 2;
             int x = G.Left(r) + rownumWidth;
             int y = G.Top(r);
         int w = G.Width(r);
@@ -262,9 +263,9 @@ public class GameLog implements Opcodes
             {
             	String name = canvas.prettyName(i);
             	GC.Text(gc, false, x+i*mid, y+boxPos, mid, rowHeight, null, null, name);
+           }
                 boxPos = rowHeight;
             }
-        }
         else {
         	boxPos = drawBanner(gc,banner,x,y,w,rowHeight);
         }
@@ -340,7 +341,8 @@ public class GameLog implements Opcodes
                     	{
                     	if((boxPos+maxLineH)<boxH)
                     	{	
-                    		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,rowMoveNumber))
+                    		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,
+                    				rowNumbers ? rowMoveNumber : ""))
                     		{	int ind = highlight.hit_index;
                      			highlight.hitObject = history.elementAt(indexes[ind]);
                     			highlight.hitCode = GameId.HitGameRecord;
@@ -408,7 +410,8 @@ public class GameLog implements Opcodes
             { 
             if((boxPos+maxLineH)<boxH)
         	{	
-        		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,rowMoveNumber))
+        		if(emitLine(gc,mainHighlight,barWidth,r,boxPos,x,maxLineH,mid,textColor,columns,bgColors,
+        				rowNumbers ? rowMoveNumber : ""))
         		{	
         			int ind = highlight.hit_index;
          			highlight.hitObject = history.elementAt(indexes[ind]);

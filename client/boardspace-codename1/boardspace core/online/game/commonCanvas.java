@@ -8338,7 +8338,10 @@ public void verifyGameRecord()
     		contextRotation = 0;
     		// bs is a score, nominally the number of pixels in the board.
     		double bs = setLocalBoundsA(x,y,width,height,as);
-    		if(bs>=bestsize)
+    		if(bs>=bestsize 
+    				// avoid selecting layouts with failed allocaions
+    				&& (selectedLayout.fails==0)
+    				)
     		{
     			best = as;
     			bestsize = bs;

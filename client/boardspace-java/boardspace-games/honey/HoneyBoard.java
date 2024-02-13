@@ -298,6 +298,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         	for(HBoard p : pbs) { p.Execute(m,replay); }
         	break;
         case MOVE_SWITCH:
+        	whoseTurn = m.player;
         	break;
         case MOVE_ENDGAME:
 	    	{

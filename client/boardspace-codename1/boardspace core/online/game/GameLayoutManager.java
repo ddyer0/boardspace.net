@@ -96,9 +96,17 @@ public class GameLayoutManager  implements Opcodes
 		
 	private int xthirdLeft;			// in the tightest fit, space will be zero
 	private int xthirdRight;
-	
+	int fails = 0;				// counts allocation failures on this cycle
 	int positions[][] = null;	// the x,y coordinates of the player boxes
 	double rotations[] = null;	// the rotations of the player boxes
+	
+	/*
+	 * player boxes are placed around the edges of the window, and these
+	 * "addskinny" functions return the bits and pieces inbetween the player
+	 * areas to the pool of unallocated space.   Some layouts are functionally
+	 * the same but partition the returned space into different shapes, leaving
+	 * a different shaped main rectangle etc.
+	 */
 	
 	// add spare rectangles for skinny margins at left or left and right, from top to bottom
 	private void addSkinnyLeft(boolean addSkinnyRight,boolean fromtop,boolean tobottom)
@@ -113,7 +121,7 @@ public class GameLayoutManager  implements Opcodes
 		addSkinnyLeftFrom(false,spareY,true,fromtop,tobottom);
 	}
 
-	public void addSkinnyLeftFrom(boolean addSkinnyLeft,int spareY,boolean addSkinnyRight,boolean fromtop,boolean tobottom)
+	private void addSkinnyLeftFrom(boolean addSkinnyLeft,int spareY,boolean addSkinnyRight,boolean fromtop,boolean tobottom)
 	{
 		int spareYT = fromtop ? top : top+playerHM;
 		int spareYH = spareY-spareYT;
@@ -1266,6 +1274,7 @@ public class GameLayoutManager  implements Opcodes
 			G.print(rects.messages.getLog());
 		}
 		//G.print("Select ",width,"x",height,"=",selectedSeating()," ",selectedCellSize());
+		fails = 0;
 		return v;
 	}
 
@@ -1307,6 +1316,7 @@ public class GameLayoutManager  implements Opcodes
 			G.print(rects.messages.getLog());
 		}
 		//G.print("Select ",fullwidth,"x",fullheight,"=",selectedSeating()," ",selectedCellSize());
+		fails = 0;
 		return v;
 	}
 
@@ -1449,6 +1459,7 @@ public class GameLayoutManager  implements Opcodes
     	//}
         doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-margin,fullheight-margin));
         rects.specs.clear();
+        fails = 0;
 	    return(selectedPercent);	    
 	}
 	
@@ -2090,7 +2101,13 @@ public class GameLayoutManager  implements Opcodes
 		//G.print("final size "+seating+cellSize+" "+minSize+" = "+selectedCellSize);
     	return(boardPercent);
     }
-    
+    /**
+     * get the main rectangle "as of now".  This is intended to be used
+     * as a hint to decide how to place other boxes - for example if 
+     * some other box should be horizontal or vertically oriented.
+     *  
+     * @return
+     */
     public Rectangle peekMainRectangle() { return(rects.peekMainRectangle()); }
    /** get the main rectangle, nominally designated to contain the board
      * 
@@ -2100,7 +2117,7 @@ public class GameLayoutManager  implements Opcodes
     {	return rects.allocateMainRectangle();
     }
 
-    public void addToSpare(Rectangle r)
+    private void addToSpare(Rectangle r)
     {	if(G.debug())
     		{
     		if ((G.Width(r)<0 || G.Height(r)<0))
@@ -2113,7 +2130,13 @@ public class GameLayoutManager  implements Opcodes
     		rects.addToSpare(r);
     }
 
-
+/**
+ * place the standard VCR group of rectangles
+ * @param client
+ * @param minW
+ * @param maxW
+ * @return
+ */
     public boolean placeTheVcr(GameLayoutClient client,int minW,int maxW)
     {	Rectangle vcr = new Rectangle();
         if(boardMax) { G.SetRect(vcr,0,0,0,0); client.SetupVcrRects(0,0,0,0);  return true; }
@@ -2128,6 +2151,15 @@ public class GameLayoutManager  implements Opcodes
     	return(false);
     }
     }
+    /**
+     * place the chat within the desired range of sizes.  
+     * @param chatRect
+     * @param minW
+     * @param minH
+     * @param maxW
+     * @param maxH
+     * @return true if successfully placed
+     */
     public boolean placeTheChat(Rectangle chatRect, int minW,int minH,int maxW,int maxH)
     {	
     	RectangleSpec ok = rects.placeInMainRectangle(Purpose.Chat,chatRect,minW,minH,maxW,maxH,BoxAlignment.Edge,false,preferredAspectRatio);
@@ -2143,14 +2175,34 @@ public class GameLayoutManager  implements Opcodes
     	{
     		ok.client = client;
     	}
+    	else if(minW>0 && minH>0)
+    	{ fails++; 
+    	}
     	return ok!=null;
+    	
     }
     private RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,int maxW,int maxH,
 			BoxAlignment align,boolean preserveAspectRatio)
-    {	RectangleSpec spec = rects.placeInMainRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,
+    	{
+    	RectangleSpec spec = rects.placeInMainRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,
     		preferredAspectRatio);
+    	if(spec==null && minW>0 && minH>0)
+    		{ fails++; }
     	return spec;
+    	
     }
+    /** 
+     * place a rectangle within the desired range of sizes.  If "preserve" is true
+     * then keep the asptect ratio of minw/minh.
+     * @param targetRect
+     * @param minW
+     * @param minH
+     * @param maxW
+     * @param maxH
+     * @param align
+     * @param preserveAspectRatio
+     * @return true if successfully placed
+     */
     public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,
 			BoxAlignment align,boolean preserveAspectRatio)
     {	return (placeRectangle(Purpose.Other,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio)!=null);
@@ -2164,6 +2216,24 @@ public class GameLayoutManager  implements Opcodes
     		 minW1,minH1,maxW1,maxH1,
     		 align,preserveAspectRatio,preferredAspectRatio));
      }
+    /**
+     * place the rectangle with one or the other set of constraints.  Normally the two sets
+     * would be a horizontal format and a vertical format shape.  It's up to the caller to
+     * work correctly with whatever dimensions were used.
+     * 
+     * @param targetRect
+     * @param minW
+     * @param minH
+     * @param maxW
+     * @param maxH
+     * @param minW1
+     * @param minH1
+     * @param maxW1
+     * @param maxH1
+     * @param align
+     * @param preserveAspectRatio
+     * @return true if the rectangle was successfully placed.
+     */
     public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,
     		int minW1,int minH1,int maxW1,int maxH1,
  			BoxAlignment align,boolean preserveAspectRatio)
@@ -2171,11 +2241,14 @@ public class GameLayoutManager  implements Opcodes
     		 minW,minH,maxW,maxH,
     		 minW1,minH1,maxW1,maxH1,
     		 align,preserveAspectRatio);
+     	if(spec==null && minW>0 && minH>0) 
+     		{ fails++; }
      	return spec!=null;
+ 
      }
 
-    public RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,BoxAlignment align)
-     {	return (rects.placeInMainRectangle(purpose,targetRect,minW,minH,minW,minH,align,true,preferredAspectRatio));
+    public boolean placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,BoxAlignment align)
+     {	return (rects.placeInMainRectangle(purpose,targetRect,minW,minH,minW,minH,align,true,preferredAspectRatio)!=null);
      }
     public boolean placeRectangle(Rectangle targetRect,int minW,int minH,BoxAlignment align)
     {	return (placeRectangle(Purpose.Other,targetRect,minW,minH,minW,minH,align,true)!=null);
@@ -2278,10 +2351,17 @@ public class GameLayoutManager  implements Opcodes
     }
     
    
-    //
-    // place done-edit-rep in a situation where the done rect doesn't need to be
-    // placed, as is typically true for offline games.
-    //
+    /**
+     place done-edit-rep in a situation where the done rect doesn't need to be
+     placed, as is typically true for offline games.
+     additional rectangles the same size as the repetition rectangle can be added.
+     * 
+     * @param boxW
+     * @param maxW
+     * @param done
+     * @param edit
+     * @param rep
+     */
     public void placeDoneEditRep(int boxW,int maxW,Rectangle done,Rectangle edit,Rectangle... rep)
     {
     	if(plannedSeating()) 
@@ -2297,6 +2377,11 @@ public class GameLayoutManager  implements Opcodes
     		placeUnplannedDoneEditRep(boxW,maxW,done,edit,rep);
     	}
     }
+    /**
+     * place two boxes indended as the "done" and "edit" button as either left-right or over-under pair.
+     * special considerations apply - the "done" button is not placed in planned seating configurations,
+     * where each user's info block is expected to have its own "done" button.  
+     */
     public void placeDoneEdit(int boxW,int maxW,Rectangle done,Rectangle edit)
     {		boolean canUseDone =  client.canUseDone();
     		if((done!=null)
@@ -2339,7 +2424,14 @@ public class GameLayoutManager  implements Opcodes
     		rects.split2(spec);
     		}}}
    }
-
+    /** place a group intended to be the offer/accept/decline draw group.  The
+     * buttons are sized to the translated size of the standard offerdraw/acceptdraw/declinedraw
+     * phrases.
+     * 
+     * @param fm
+     * @param acceptDraw
+     * @param declineDraw
+     */
     public void placeDrawGroup(FontMetrics fm,Rectangle acceptDraw,Rectangle declineDraw)
     {	InternationalStrings s = G.getTranslations();
     	int len1 = fm.stringWidth(s.get(OFFERDRAW));
@@ -2375,14 +2467,31 @@ public class GameLayoutManager  implements Opcodes
      */
     public boolean plannedSeating() { return((seatingFaceToFace()||seatingAround())); }
 
+    /**
+     * optimize the allocated rectangles by expanding them into the unused spaces
+     * that are adjacent and still unallocated.  This allows some expandable boxes
+     * to be enlarged if they were initially allocated at their minimum size.
+     */
     public void optimize()
     {
     	rects.optimize();
     }
+    /**
+     * return an allocated rectangle to the pool of available space.
+     * 
+     * @param r
+     */
     public void deallocate(Rectangle r)
     {
     	rects.deallocate(r);
     }
+    /**
+     * return space from the main rectangle to the pool, which will be
+     * available in the optimization phase to expand adjacent rectangles
+     * 
+     * @param extraW
+     * @param extraH
+     */
     public void returnFromMain(int extraW,int extraH)
     {	Rectangle main = rects.centerRectangle;
     	int mainX = G.Left(main);
