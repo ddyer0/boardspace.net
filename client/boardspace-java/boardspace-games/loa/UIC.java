@@ -19,6 +19,7 @@ package loa;
 import java.awt.Color;
 
 import lib.CellId;
+import lib.InternationalStrings;
 import online.game.BaseBoard.BoardState;
 import online.game.Opcodes;
 
@@ -67,6 +68,8 @@ public interface UIC extends Opcodes
 			{	"LOA-12","Loa 12x12"},
 			{	"LOA_variation","8x8 board"},
 			{	"LOAP_variation","contest variation"},
+			{	"Scrambled-Eggs_variation", "Loa Scrambled Eggs"},
+			{	"Scrambled-Eggs","Scrambled Eggs"},
 			{	"LOA-12_variation","12x12 board"},
 			{	"LOARANDOM_variation","Random symmetric start"}
 		};
@@ -192,5 +195,10 @@ public interface UIC extends Opcodes
     	Ok,From_Empty,Off_Board,Land_On_Friend,Bad_Direction,
     	Wrong_Count,Wrong_Color,Bad_Coordinates,Skip_Enemy,Blocked_Square
     }
-    
+    public static void putStrings()
+    {
+    	InternationalStrings.put(loa.UIC.LoaStrings);
+    	InternationalStrings.put(loa.UIC.LoaStringPairs);
+
+    }
 }

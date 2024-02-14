@@ -383,6 +383,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         long randomKey = stuff.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new Loa_Board(sharedInfo.getString(GameInfo.GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
         useDirectDrawing(true);
+        if(G.debug()) { UIC.putStrings(); }
         doInit(false);
    }
 

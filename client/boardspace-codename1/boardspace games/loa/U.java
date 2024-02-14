@@ -21,12 +21,12 @@ import com.codename1.ui.geom.Point;
 
 import java.io.*;
 import lib.G;
-
+import online.game.Opcodes;
 
 
 
 /* utilities, static functions shared between both the viewer and player */
-public class U implements UIC
+public class U implements UIC,Opcodes
 {
     static public String LocationToString(int x, int y)
     {
@@ -173,16 +173,16 @@ public class U implements UIC
 }
 
 /*
-$Id: U.java,v 1.1.2.18.2.14 2023/09/22 06:41:33 ddyer Exp $
+$Id: U.java,v 1.1.2.28 2023/09/26 21:56:07 ddyer Exp $
 $Log: U.java,v $
-Revision 1.1.2.18.2.14  2023/09/22 06:41:33  ddyer
+Revision 1.1.2.28  2023/09/26 21:56:07  ddyer
 add copyright and license
 
-Revision 1.1.2.18.2.13  2021/11/15 18:55:15  ddyer
-rearrangement of constants and interfaces
+Revision 1.1.2.27  2023/09/22 04:01:37  ddyer
+add copyright and license
 
-Revision 1.1.2.18.2.12  2021/05/24 17:43:09  ddyer
-remove unused parts of robot classes
+Revision 1.1.2.26  2021/11/15 18:52:40  ddyer
+rearrangement of constants and interfaces
 
 Revision 1.1.2.25  2021/03/04 18:14:10  ddyer
 add "gameoverontime" opcode to all games.

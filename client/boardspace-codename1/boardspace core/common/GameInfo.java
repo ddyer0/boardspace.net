@@ -1143,6 +1143,11 @@ synchronized(allGames) {
 			new double[]{0.06,1,1,0.01},
 			loaClass,loaRules,"about_loa.html",
 			loaVideo,false, BlackOverWhite));
+	put(new GameInfo(123,ES.game,1,"L",ConnectionGames,"LOA","Scrambled-Eggs",
+			ThreeBotsPlus,
+			new double[]{0.06,1,1,0.01},
+			loaClass,loaRules,"about_loa.html",
+			loaVideo,false, BlackOverWhite));
 	
 	put(new GameInfo(130,ES.game,1,"LP",ConnectionGames,"LOA","LOAP",
 			ThreeBotsPlus,

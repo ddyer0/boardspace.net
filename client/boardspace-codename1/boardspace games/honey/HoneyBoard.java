@@ -59,12 +59,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     
     long drawTimer = -1;
     int lastActivePlayer  = -1;
- 	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
- 		}
- 	}
+
     public int scoreForPlayer(int idx)
     {
     	return(getPlayerBoard(idx).score());

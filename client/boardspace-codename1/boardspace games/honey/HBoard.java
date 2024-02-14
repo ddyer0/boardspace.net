@@ -54,7 +54,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	HoneyVariation variation = HoneyVariation.HoneyComb;
 	private HoneyState board_state = HoneyState.Puzzle;	
 	private HoneyState unresign = null;	// remembers the orignal state when "resign" is hit
-	private StateStack robotState = new StateStack();
 	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
 	public HoneyState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
@@ -83,9 +82,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		setState(HoneyState.Gameover);
 	}
 
-	public boolean hiddenVisible = false;
 	int score = 0;
-	
 	public int score() { return score; }
 	Dictionary dictionary ;				// the current dictionary
 	
@@ -125,8 +122,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         robotVocabulary = dictionary.orderedSize();
  
     }
-    
-    public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
     
     private void construct(int n[],int k[])
     {	
@@ -178,7 +173,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		}  		
     	}
  		setState(HoneyState.Puzzle);
-		robotState.clear();		
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    resetState = HoneyState.Puzzle;
@@ -208,7 +202,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     public void copyFrom(HBoard from_b)
     {
         super.copyFrom(from_b);
-        robotState.copyFrom(from_b.robotState);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         resetState = from_b.resetState;
@@ -319,15 +312,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     }
 
 
-
-    public boolean gameOverNow() { return(board_state.GameOver()); }
-    public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
-    	boolean win = false;
-    	return(win);
-    }
-
-     
 	//get the index in the image array corresponding to movingObjectChar 
     // or HitNoWhere if no moving object.  This is used to determine what
     // to draw when tracking the mouse.
@@ -367,42 +351,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	Dictionary dict = Dictionary.getInstance();
     	robotVocabulary = (int)(dict.size()*value);
     }
-    private void setNextStateAfterDone(replayMode replay)
-    {	
-       	switch(board_state)
-    	{
-    	default: throw G.Error("Not expecting after Done state "+board_state);
-    	case Gameover: break;
-    	case Puzzle:
-			//$FALL-THROUGH$
-		case Confirm:
-    	case Play:
-    		{
-    			setState( HoneyState.Play);
-    		}
-    		
-    		break;
-    	}
-       	resetState = board_state;
-    }
-    public int nextPlayer()
-    {
-    	return((whoseTurn+1)%players_in_game);
-    }
      
-    boolean isNew = false;	// the word in the builder includes a new letter
-	Hashtable<String,HWord> wordsUsed = new Hashtable<String,HWord>();
 	HWordStack words = new HWordStack();
 	HWordStack nonWords = new HWordStack();
 	HWordStack commonWords = new HWordStack();
 	HWordStack myCommonWords = new HWordStack();
 	
-	public String invalidReason=null;
-
-
-   	CellStack endCaps = new CellStack();	// cells at the end of words
-   	CellStack startCaps = new CellStack(); 	// cells at the start of words
-
    	// score a word on the board.  wordMultiplier and wordBonus are
     // used as scratch variables during the scoring.
     private int scoreWord(CellStack from)
@@ -419,16 +373,8 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     private void doDone(replayMode replay)
     {       
          
-        if (board_state==HoneyState.Resign)
-        {
-            win[nextPlayer()] = true;
-    		setGameOver();
-        }
-        else
-        {	
          setGameOver();
         }
-    }
 
     private void addWordTo(HWordStack which,Honeymovespec m,boolean rejectCommon)
 	{
@@ -492,8 +438,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
             setWhoseTurn(m.player);
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
-            setState(HoneyState.Puzzle);	// standardize the current state
-            setNextStateAfterDone(replay);
+            setState(HoneyState.Play);	// standardize the current state
 
             break;
         case MOVE_ENDED:
@@ -528,99 +473,28 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         return (true);
     }
 
-  
- /** assistance for the robot.  In addition to executing a move, the robot
-    requires that you be able to undo the execution.  The simplest way
-    to do this is to record whatever other information is needed before
-    you execute the move.  It's also convenient to automatically supply
-    the "done" confirmation for any moves that are not completely self
-    executing.
+    /** find a particular word starting from a particular cell.  If stack
+     * is supplied it's loaded with the precise sequence of cells.
+     * @param from
+     * @param word
+     * @param stack
+     * @return
     */
-    public void RobotExecute(Honeymovespec m)
-    {
-        robotState.push(board_state); //record the starting state. The most reliable
-        // to undo state transistions is to simple put the original state back.
-        
-        //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
-        if (Execute(m,replayMode.Replay))
-        {
-            if (m.op == MOVE_DONE)
-            {
-            }
-            else if (DoneState())
-            {
-                doDone(replayMode.Replay);
-            }
-            else
-            {
-            	throw G.Error("Robot move should be in a done state");
-            }
-        }
-    }
- 
-
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(Honeymovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	HoneyState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
-
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
-    recordProgress(0);
-    switch(board_state)
-    {
-    default: throw G.Error("Not expecting ", board_state);
-    case Confirm:
-    	all.push(new Honeymovespec(MOVE_DONE,whoseTurn));
-    	break;
-    case Play:
-     	if(all.size()==0)
-     	{
-     		all.push(new Honeymovespec(MOVE_PASS,whoseTurn));
-     	}
-     	break;
-    }
- 	recordProgress(0);
- 	return(all);
- }
- HoneyPlay robot = null;
- private void recordProgress(double v)
- {	
-	 if(robot!=null) { robot.setProgress(v); }
- }
- public void initRobotValues(HoneyPlay rob,int vocab)
- {	robot = rob;
- 	robotVocabulary = vocab;
- }
-
  public boolean findWord(HoneyCell from,String word,CellStack stack)
  {
  	sweep_counter++;
  	return findWordFrom(from,word,0,stack);
  }
-
- public boolean findWordFrom(HoneyCell from,String word,int idx,CellStack stack)
+ /**
+  * find a word starting at a particular index in the word, skipping cells 
+  * that have already been used in the word (marked by sweep_counter)
+  * @param from
+  * @param word
+  * @param idx
+  * @param stack
+  * @return
+  */
+ private boolean findWordFrom(HoneyCell from,String word,int idx,CellStack stack)
  {
  	if(from.sweep_counter==sweep_counter) { return false; }
  	from.sweep_counter = sweep_counter;
@@ -628,6 +502,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  	HoneyChip top = from.topChip();
  	if(top.lcChar!=match) { return false; }
  	if(match=='q') {
+ 		// special case, our "Q" is actually a "QU"
  		idx++;
  		if(! ((idx<word.length() && (word.charAt(idx)=='u')))) { return false; }
  	}
@@ -642,6 +517,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  	if(stack!=null) { stack.pop(); }
  	return false;
  }
+ /**
+  * find the word in some cell of the grid
+  * 
+  * @param word
+  * @return the starting cell
+  */
  public HoneyCell findWord(Entry word)
  {
 	 for(HoneyCell c = allCells; c!=null; c=c.next)
@@ -650,7 +531,11 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	    }
 	 return null;
  }
- 
+ /** find all the words.  This is so amazingly fast that there's
+  * no need to be fancy; just feed in the dictionary and check
+  * against all the starting cells.
+  * @return
+  */
  public HWordStack findWords()
  {
  	HWordStack all = new HWordStack();
@@ -677,5 +562,4 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  	all.sort(true);
  	return all;
  }
- 
 }

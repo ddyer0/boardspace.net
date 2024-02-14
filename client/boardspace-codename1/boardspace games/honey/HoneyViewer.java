@@ -177,18 +177,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
 
     	}
     }
-    /** this is called by the game controller when all players have connected
-     * and the first player is about to be allowed to make his first move. This
-     * may be a new game, or a game being restored, or a player rejoining a game.
-     * You can override or encapsulate this method.
-     */
 
-
-    public double aspects[] = {0.7,1.0,1.4};
-    public void setLocalBounds(int x,int y,int w,int h)
-    {
-    		setLocalBoundsV(x,y,w,h,aspects);
-    }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
 	 * use swing or any other standard widget kit, or any of the standard layout managers.
@@ -206,7 +195,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
 
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
+    public void setLocalBounds(int x, int y, int width, int height)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
        	boolean planned = plannedSeating();
@@ -227,7 +216,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
     			planned ? 0 : 0.75,	// 60% of space allocated to the board
-    			aspect,	// aspect ratio for the board
+    			1.0,	// aspect ratio for the board
     			fh*2,	// min cell size
     			fh*2,	// maximum cell size
     			planned ? 0 : 0.4		// preference for the designated layout, if any
@@ -239,14 +228,15 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
  
     	// box will be subdivided
     	{
-    	boolean horizontal = aspect<=1;
     	int bw = buttonW*3/2;
     	int bh = buttonW*4;
-    	layout.placeRectangle(wordsRect,bw*(horizontal ? 4 : 2),bh*(horizontal?1:2),BoxAlignment.Center);
+    	layout.placeRectangle(wordsRect, bw*4,bh,bw*4,bh,
+    				bw*2,bh*2,bw*2,bh*2,BoxAlignment.Center,true);
     	int l = G.Left(wordsRect);
     	int t = G.Top(wordsRect);
       	int w = G.Width(wordsRect);
     	int h = G.Height(wordsRect);
+    	boolean horizontal = w>h;
     	G.SetRect(statsRect,l,t,w,fh*3);
     	t+= fh*3;
     	h -= fh*3;
@@ -306,7 +296,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         labelFont = largeBoldFont();
-        return(boardW*boardH);
     }
     
     public void updatePlayerTime(long inc,commonPlayer p)
@@ -676,9 +665,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     		if((x+playerw)>x0+w) { x = x0; y+= playerh; }
     	}
     	foundWords.sort(true);
-    	
-    	
-    	
     	
     }
     public void drawGameLog(Graphics gc,GameLog log,String caption,HitPoint hp,Rectangle r,HWordStack words)
@@ -1255,7 +1241,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
       /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
-    {  return(new HoneyPlay());
+    {  throw G.Error("Not expected");
     }
 
     /** replay a move specified in SGF format.  

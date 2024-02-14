@@ -410,7 +410,7 @@ public class masterStrings extends InternationalStrings
         put(online.game.commonCanvas.commonStringPairs);
         put(online.game.BaseBoard.BoardState.StateStrings);
         put(lib.XFrame.XFrameMessages);
-        put(online.common.exCanvas.CanvasMessages);
+        put(lib.exCanvas.CanvasMessages);
         put(online.common.commonLobby.LobbyMessages);
         put(online.common.commonLobby.LobbyMessagePairs);
         put(online.common.lobbyCanvas.LCStrings);
@@ -433,9 +433,7 @@ public class masterStrings extends InternationalStrings
         
         // loa strings
         setContext("loa");
-        put(loa.UIC.LoaStrings);
-        put(loa.UIC.LoaStringPairs);
-        
+        loa.UIC.putStrings();        
  
         // plateau strings
         setContext("plateau");
