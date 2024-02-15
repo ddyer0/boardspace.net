@@ -63,6 +63,10 @@ public interface CommonConfig extends UniversalConstants {
 	// this url is used to post errors to be logged by the server when there is no connection
 	// and also to fetch various types of information from the server
 	static final String getEncryptedURL = "/cgi-bin/bs_query.cgi";
+	//
+	// ops to support offline turn based games
+	//
+	static final String getTurnbasedURL = "/cgi-bin/bs_offline_ops.cgi";
 	static final String editURL = "/cgi-bin/edit.cgi";
 	static final String getPicture = "/cgi-bin/tlib/getpicture.cgi";
 	static final String uploadPicture = defaultProtocol + "//boardspace.net/english/pictureupload.html";

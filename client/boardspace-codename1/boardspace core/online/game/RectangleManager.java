@@ -175,6 +175,11 @@ public class RectangleManager
 				}
 			}
 			if(!done) { spareRects.push(r); } 
+			if(G.debug())
+	    	{
+			checkRectangles(r);
+	    	}
+
 			}
 	}
 	//
@@ -731,8 +736,10 @@ public class RectangleManager
     {	int fromLeft = G.Left(fromRect);
     	int fromTop = G.Top(fromRect);
     	int fromBottom = G.Bottom(fromRect);
-	    
-		if(G.Left(chipLeftOrRight)<fromLeft) { G.splitLeft(fromRect, targetRect, actualW-G.Width(chipLeftOrRight)); }
+	    //int fromRight = G.Right(fromRect);
+	    int chipLeft = G.Left(chipLeftOrRight);
+	    //int chipRight = G.Right(chipLeftOrRight);
+		if(chipLeft<fromLeft) { G.splitLeft(fromRect, targetRect, actualW-G.Width(chipLeftOrRight)); }
 		else { G.splitRight(fromRect, targetRect, actualW-G.Width(chipLeftOrRight)); }
 		// targetRect is now a strip from top to bottom of fromRect. 
 		int dtop;
@@ -1125,6 +1132,16 @@ public class RectangleManager
 			spareRects.push(right);
 			dissect(target_left,target_top,target_right,target_bottom,right);
 		}
+		else if(target_top<chip_bottom)
+		{	Rectangle bottom = G.splitBottom(chip,null,chip_bottom-target_top);
+			spareRects.push(bottom);
+			dissect(target_left,target_top,target_right,target_bottom,bottom);
+		}
+		else if(target_bottom>chip_top)
+		{	Rectangle top = G.splitTop(chip,null,chip_top-target_bottom);
+			spareRects.push(top);
+			dissect(target_left,target_top,target_right,target_bottom,top);
+		}
 		else { G.Error("shouldn't get here"); }
 	}
 
@@ -1202,6 +1219,7 @@ public class RectangleManager
 		if(allocatedMainRectangle!=null)
 		{
 		//G.print("\nMain ",G.Width(allocatedMainRectangle),"x",G.Height(allocatedMainRectangle));
+		checkRectangles();
 		for(int i=0;i<specs.size();i++)
 		{	RectangleSpec spec = specs.elementAt(i);
 			switch(spec.name)
