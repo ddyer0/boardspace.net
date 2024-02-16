@@ -29,7 +29,6 @@ import lib.UniversalConstants;
  *
  */
 public interface PlayConstants extends UniversalConstants {
-	public enum BoxAlignment { Top,Center,Bottom,Edge,Left,Right }
     static final String KEYWORD_START_STORY = "story";		// new "story" format
     static final String KEYWORD_TRACKMOUSE = "trackMouse";
     static final String KEYWORD_SCROLL = "scroll";

@@ -38,7 +38,7 @@ Change History
 Nov 12 2004  Iniital work in progress, support for Yinsh
 July 2005        Lightspeed progress toward a working version
 */
-public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants, GameLayoutClient,PlacementProvider
+public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants,PlacementProvider
 {
      /**
 	 * 

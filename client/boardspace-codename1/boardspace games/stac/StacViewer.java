@@ -35,6 +35,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Image;
 import lib.InternationalStrings;
@@ -46,7 +47,7 @@ import static stac.StacMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConstants, GameLayoutClient
+public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConstants
 {
      /**
 	 * 

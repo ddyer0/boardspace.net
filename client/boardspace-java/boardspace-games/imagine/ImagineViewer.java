@@ -33,6 +33,7 @@ import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Keyboard;
 import lib.LFrameProtocol;
@@ -54,7 +55,7 @@ import online.search.SimpleRobotProtocol;
  *  
 */
 
-public class ImagineViewer extends CCanvas<ImagineCell,ImagineBoard> implements  ImagineConstants,  GameLayoutClient
+public class ImagineViewer extends CCanvas<ImagineCell,ImagineBoard> implements  ImagineConstants
 {	static final long serialVersionUID = 1000;
 
 	static final String Imagine_SGF = "imagine"; // sgf game name

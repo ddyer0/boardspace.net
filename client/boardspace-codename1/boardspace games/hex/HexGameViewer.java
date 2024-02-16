@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -118,7 +119,7 @@ import static hex.Hexmovespec.*;
  *  <li> do a cvs update on the original hex hierarchy to get back the original code.
  *  
 */
-public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants, GameLayoutClient,PlacementProvider
+public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants,PlacementProvider
 {	 	
     static final String Hex_SGF = "11"; // sgf game name
 

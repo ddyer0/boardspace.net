@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.StockArt;
 import lib.TextButton;
@@ -97,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements TrenchConstants, GameLayoutClient, PlacementProvider
+public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements TrenchConstants, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

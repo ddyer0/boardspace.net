@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -48,7 +49,7 @@ import online.search.SimpleRobotProtocol;
  * TODO: needs rotation options like crosswords
  *  
 */
-public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants, GameLayoutClient
+public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants
 {		
     static final String Mbrane_SGF = "MBrane"; // sgf game number allocated for Mbrane
 

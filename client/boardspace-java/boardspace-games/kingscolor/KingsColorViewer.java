@@ -28,6 +28,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 
 import lib.TextButton;
@@ -42,7 +43,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * 
  */
-public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> implements KingsColorConstants, GameLayoutClient
+public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> implements KingsColorConstants
 {	static final String KingsColor_SGF = "kingscolor"; // sgf game name
 
 	// file names for jpeg images and masks

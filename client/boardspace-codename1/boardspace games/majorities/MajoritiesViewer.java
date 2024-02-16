@@ -27,6 +27,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -89,7 +90,7 @@ import static majorities.MajoritiesMovespec.*;
  *  <li> do a cvs update on the original majorities hierarchy to get back the original code.
  *  
 */
-public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> implements MajoritiesConstants, GameLayoutClient, PlacementProvider
+public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> implements MajoritiesConstants, PlacementProvider
 {	
     static final String Majorities_SGF = "Majorities"; 				// sgf game type allocated for majorities
 

@@ -37,6 +37,7 @@ import lib.SimpleSprite;
 import lib.StockArt;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Image;
 import lib.LFrameProtocol;
@@ -97,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original magnet hierarchy to get back the original code.
  *  
 */
-public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements MagnetConstants, GameLayoutClient
+public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements MagnetConstants
 {		
     static final String Magnet_SGF = "Magnet"; // sgf game number allocated for magnet
 

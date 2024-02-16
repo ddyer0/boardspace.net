@@ -41,7 +41,7 @@ import rpc.RpcService;
 import vnc.VNCService;
 
 
-public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants, GameLayoutClient
+public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
 {	static final long serialVersionUID = 1000;
 
 /** the user interface uses getUIState instead of bb.getState()

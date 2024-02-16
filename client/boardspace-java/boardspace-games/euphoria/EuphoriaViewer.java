@@ -39,6 +39,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -123,7 +124,7 @@ import vnc.VNCService;
  *  <p>
  * *  
 */
-public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants, GameLayoutClient
+public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants
 {	
     // file names for jpeg images and masks
     static final String SoundDir = G.isCodename1() ? "/appdata/euphoria-other/data/" : "/euphoria/sounds/";

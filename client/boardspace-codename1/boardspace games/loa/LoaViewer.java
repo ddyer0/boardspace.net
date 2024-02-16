@@ -34,8 +34,8 @@ import lib.LFrameProtocol;
 import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
-import online.game.GameLayoutClient;
-import online.game.GameLayoutManager;
+import lib.GameLayoutClient;
+import lib.GameLayoutManager;
 
 import online.game.commonCanvas;
 import online.game.commonMove;

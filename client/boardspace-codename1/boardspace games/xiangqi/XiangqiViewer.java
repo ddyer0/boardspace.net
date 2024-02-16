@@ -31,6 +31,7 @@ import lib.ChatInterface;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -47,7 +48,7 @@ import online.search.SimpleRobotProtocol;
  * 
  *
 */
-public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements XiangqiConstants, GameLayoutClient
+public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements XiangqiConstants
 {
      /**
 	 * 

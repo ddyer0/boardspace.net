@@ -65,7 +65,7 @@ import viticulture.PlayerBoard.ScoreEvent;
 import viticulture.PlayerBoard.ScoreStack;
 import vnc.VNCService;
 
-public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard> implements ViticultureConstants, GameLayoutClient
+public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard> implements ViticultureConstants
 {	static final long serialVersionUID = 1000;
      // colors
 	int BX_CELLS = 28;

@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -64,7 +65,7 @@ import lib.StockArt;
 /**
  * Change History
  */
-public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements PalagoConstants, GameLayoutClient,ColorNames
+public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements PalagoConstants,ColorNames
 {	   // file names for jpeg images and masks
     static final String ImageDir = "/palago/images/";
     static final String Palago_SGF = "Palago"; // sgf game name

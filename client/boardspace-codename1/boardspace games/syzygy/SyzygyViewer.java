@@ -54,7 +54,7 @@ import online.search.SimpleRobotProtocol;
  * 
  * Change History
  */
-public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements SyzygyConstants, GameLayoutClient
+public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements SyzygyConstants
 {	
     static final String Syzygo_SGF = "Syzygy"; // sgf game number allocated for Cookie Disco
 

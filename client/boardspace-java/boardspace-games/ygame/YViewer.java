@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.Image;
@@ -41,7 +42,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLayoutClient
+public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

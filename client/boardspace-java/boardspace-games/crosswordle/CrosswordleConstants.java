@@ -17,7 +17,6 @@
 package crosswordle;
 
 import lib.InternationalStrings;
-import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -26,12 +25,9 @@ public interface CrosswordleConstants
 {	
     static final String statsURL = "/cgi-bin/bs_uni1_stats.cgi";
 
-	static String CrosswordsVictoryCondition = "complete the puzzle";
+	static String CrosswordleVictoryCondition = "complete the puzzle";
 	static String ProbeMessage = "Guess";
 	static String CrosswordsPlayState = "Make a guess";
-	static String LastTurnMessage = "Last Turn!";
-	static String LockMessage = "Lock auto-rotation of the board";
-	static String UnlockMessage = "allow auto-rotation of the board";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 	static String PuzzleFor = "Puzzle for";
@@ -55,10 +51,6 @@ public interface CrosswordleConstants
 	  
 	};
 
-	class StateStack extends OStack<CrosswordleState>
-	{
-		public CrosswordleState[] newComponentArray(int n) { return(new CrosswordleState[n]); }
-	}
 	//
     // states of the game
     //
@@ -67,7 +59,6 @@ public interface CrosswordleConstants
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
 	Play(CrosswordsPlayState,false,false),
 	;
 	CrosswordleState(String des,boolean done,boolean digest)
@@ -92,15 +83,11 @@ public interface CrosswordleConstants
 	{
     	BoardLocation,
      	EmptyBoard,
-    	SetOption,
-    	EyeOption,
     	ShowStats,
-    	Rotate,
-    	Lock,
     	Definition,
     	Restart,
     	GetApp,
-    	Blank, InputField, Playword, ToggleEasy, CloseStats;
+    	InputField, Playword, ToggleEasy, CloseStats;
     	public String shortName() { return(name()); }
 
 	}
@@ -150,10 +137,8 @@ public interface CrosswordleConstants
     		{  "Crosswords",
     			WordsMessage,
     			VocabularyMessage,
-    			LockMessage,
-    			UnlockMessage,
     			CrosswordsPlayState,
-    	        CrosswordsVictoryCondition,
+    	        CrosswordleVictoryCondition,
     	        PuzzleFor,
     	    	SolvedType,
     	    	SolutionsFor,

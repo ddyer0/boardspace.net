@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -116,7 +117,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original Kulami hierarchy to get back the original code.
  *  
 */
-public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements KulamiConstants, GameLayoutClient
+public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements KulamiConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);

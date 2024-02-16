@@ -18,14 +18,13 @@ package online.game;
 
 import lib.CellId;
 import lib.InternationalStrings;
+import lib.UniversalConstants;
 
-public interface Opcodes {
+public interface Opcodes extends UniversalConstants 
+{
 	   static final String WrongInitError = "game type %s is not this game";	// not a translated string
 	static final int NothingMoving = -2;
 	static final String GAMEOVERONTIME = "WinOnTime";
-	static final String OFFERDRAW = "OfferDraw";
-	static final String DECLINEDRAW = "DeclineDraw";
-	static final String ACCEPTDRAW = "AcceptDraw";
 	static final String EDIT = "Edit";		// stop playing and allow rearrangement of the board
 	static final String SWAP = "Swap";
 	static String RESET = "Reset";

@@ -33,6 +33,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Slider;
@@ -48,7 +49,7 @@ import online.search.SimpleRobotProtocol;
  *  Initial work May 2023
 */
 public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> 
-		implements HoneyConstants, GameLayoutClient,Config
+		implements HoneyConstants,Config
 {	static final long serialVersionUID = 1000;
 	static final String Honey_Sgf = "honey"; // sgf game name
 

@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -46,7 +47,7 @@ import online.search.SimpleRobotProtocol;
 
  
 */
-public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implements QyshinsuConstants, GameLayoutClient
+public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implements QyshinsuConstants
 {	
      /**
 	 * 

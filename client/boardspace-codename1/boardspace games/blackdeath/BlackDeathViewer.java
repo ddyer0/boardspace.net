@@ -38,6 +38,7 @@ import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Image;
 import lib.LFrameProtocol;
@@ -97,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original blackdeath hierarchy to get back the original code.
  *  
 */
-public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> implements BlackDeathConstants, GameLayoutClient
+public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> implements BlackDeathConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

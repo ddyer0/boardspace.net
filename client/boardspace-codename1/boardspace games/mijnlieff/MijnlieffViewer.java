@@ -28,6 +28,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.StockArt;
 import lib.Image;
@@ -89,7 +90,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> implements MijnlieffConstants, GameLayoutClient
+public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> implements MijnlieffConstants
 {	static final long serialVersionUID = 1000;
      // colors
 // file names for jpeg images and masks

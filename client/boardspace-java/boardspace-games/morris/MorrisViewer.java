@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.Image;
 import lib.HitPoint;
 import lib.InternationalStrings;
@@ -44,7 +45,7 @@ import static morris.MorrisMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements MorrisConstants, GameLayoutClient
+public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements MorrisConstants
 {
      /**
 	 * 

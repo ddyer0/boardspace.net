@@ -37,7 +37,7 @@ import static takojudo.TakojudoMovespec.*;
  *
  * Oct 2012 Initial release.
 */
-public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants, GameLayoutClient
+public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants
 {
      /**
 	 * 

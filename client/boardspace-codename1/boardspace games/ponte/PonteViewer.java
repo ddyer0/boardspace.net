@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -44,7 +45,7 @@ import static ponte.PonteMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteConstants, GameLayoutClient
+public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteConstants
 {
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);

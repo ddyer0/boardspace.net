@@ -43,12 +43,9 @@ package crosswordle;
  	CrosswordleVariation variation = CrosswordleVariation.Crosswordle_55;
  	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
  	public int getMaxRevisionLevel() { return(REVISION); }
- 	static final int MAX_PLAYERS = 6;
  	private CrosswordleState board_state = CrosswordleState.Puzzle;	
  	private CrosswordleState unresign = null;	// remembers the orignal state when "resign" is hit
- 	private StateStack robotState = new StateStack();
  	public CrosswordleState getState() { return(board_state); }
- 	StringStack gameEvents = new StringStack();
  	InternationalStrings s = G.getTranslations();
 	public StringStack guesses = new StringStack();
 	public String usedLetters()
@@ -56,12 +53,7 @@ package crosswordle;
 		for(int i=0;i<guesses.size();i++) { b.append(guesses.elementAt(i)); }
 		return b.toString();
 	}
-   void logGameEvent(String str,String... args)
-   {	//if(!robotBoard)
-	 {String trans = s.get(str,args);
-	  gameEvents.push(trans);
-	 }
-   }
+ 
    public int scoreForPlayer(int i)
    {
    	return(score[i]);
@@ -78,12 +70,8 @@ package crosswordle;
 			 }
 	 }
 
-	 public boolean hiddenVisible[] = null;
 	 int score[] = null;
-	 int chipsOnBoard = 0;
-	 boolean openRack[];					// per player open rack
 	 Dictionary dictionary ;				// the current dictionary
-	 CellStack occupiedCells = new CellStack();
 	 
  // this is required even if it is meaningless for this game, but possibly important
  // in other games.  When a draw by repetition is detected, this function is called.
@@ -94,16 +82,7 @@ package crosswordle;
  // other parts of this mechanism: the Viewer ought to have a "repRect" and call
  // DrawRepRect to warn the user that repetitions have been seen.
 	 public void SetDrawState() {throw G.Error("not expected"); };	
-	 CellStack animationStack = new CellStack();
  
-	 // intermediate states in the process of an unconfirmed move should
-	 // be represented explicitly, so unwinding is easy and reliable.
-	 public CrosswordleChip pickedObject = null;
-	 public CrosswordleChip lastPicked = null;
-	 private CellStack pickedSourceStack = new CellStack(); 
-	 private CellStack droppedDestStack = new CellStack();
-	 private StateStack stateStack = new StateStack();
-	 public CellStack lastLetters = new CellStack();
 	 private CrosswordleState resetState = CrosswordleState.Puzzle; 
 	 public CrosswordleChip lastDroppedObject = null;	// for image adjustment logic
  
@@ -118,8 +97,6 @@ package crosswordle;
 		 drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
 		 Grid_Style = CrosswordsGRIDSTYLE;
 		 setColorMap(map, players);
-		 hiddenVisible = new boolean[MAX_PLAYERS];
-		 openRack = new boolean[MAX_PLAYERS];		// part of the user interface
 		 if(rev>=101)
 		 {
 			key &= ~1;	// start with easy puzzles
@@ -200,8 +177,6 @@ package crosswordle;
 		 G.Assert(variation!=null,WrongInitError,gtype);
 		 score = new int[players];
 		 gametype = gtype;
-		 lastLetters.clear();
-		 occupiedCells.clear();
 		 guesses.setSize(0);
 	 switch(variation)
 		 {
@@ -218,12 +193,10 @@ package crosswordle;
 	 //getSolition(randomKey);
 	 //loadSolution();
 			 
-	 chipsOnBoard = 1;    
 		 Random r = new Random(randomKey+100);
 		 r.nextLong();//  use one random, for compatibility
 			 
 		 setState(CrosswordleState.Puzzle);
-		 robotState.clear();		
 				 
 		 whoseTurn = FIRST_PLAYER_INDEX;
 		 
@@ -231,8 +204,6 @@ package crosswordle;
  
 		 resetState = CrosswordleState.Puzzle;
 		 lastDroppedObject = null;
-		 // set the initial contents of the board to all empty cells
-		 animationStack.clear();
 		 moveNumber = 1;
  
 		 // note that firstPlayer is NOT initialized here
@@ -256,21 +227,13 @@ package crosswordle;
 	 public void copyFrom(CrosswordleBoard from_b)
 	 {
 		 super.copyFrom(from_b);
-		 robotState.copyFrom(from_b.robotState);
 		 unresign = from_b.unresign;
 		 board_state = from_b.board_state;
-		 chipsOnBoard = from_b.chipsOnBoard;
-		 getCell(droppedDestStack,from_b.droppedDestStack);
-		 getCell(pickedSourceStack,from_b.pickedSourceStack);
-		 stateStack.copyFrom(from_b.stateStack);
-		 pickedObject = from_b.pickedObject;
 		 resetState = from_b.resetState;
 		 AR.copy(score,from_b.score);
 		 guesses.copyFrom(from_b.guesses);
-		 lastPicked = null;
 		 solution = from_b.solution;
 		 solutionKey = from_b.solutionKey;
-		 getCell(occupiedCells,from_b.occupiedCells);
 		 sameboard(from_b); 
 	 }
  
@@ -289,8 +252,6 @@ package crosswordle;
 		 super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
 		 G.Assert(unresign==from_b.unresign,"unresign mismatch");
 		 G.Assert(variation==from_b.variation,"variation matches");
-		 G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
-		 G.Assert(chipsOnBoard==from_b.chipsOnBoard,"chipsOnBoard mismatch");
 		 G.Assert(AR.sameArrayContents(score,from_b.score),"score mismatch");
 		 G.Assert(guesses.sameContents(from_b.guesses),"guesses mismatch");
 		 
@@ -338,9 +299,7 @@ package crosswordle;
 		 long v = super.Digest(r);
 		 // many games will want to digest pickedSource too
 		 // v ^= cell.Digest(r,pickedSource);
-		 v ^= chip.Digest(r,pickedObject);
 		 v ^= Digest(r,revision);
-		 v ^= Digest(r,chipsOnBoard);
 		 v ^= Digest(r,score);
 		 v ^= guesses.Digest(r);
 		 v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
@@ -359,26 +318,7 @@ package crosswordle;
 				 && (dictionary.get(word)!=null));
 	 }
  
-	 //
-	 // change whose turn it is, increment the current move number
-	 //
-	 public void setNextPlayer(replayMode replay)
-	 {
-		 switch (board_state)
-		 {
-		 default:
-			 throw G.Error("Move not complete, can't change the current player");
-		 case Puzzle:
-			 break;
-		 case Play:
-		 case Confirm:
-		 case Resign:
-			 moveNumber++; //the move is complete in these states
-			 setWhoseTurn(nextPlayer());
-			 return;
-		 }
-	 }
- 
+
 	 /** this is used to determine if the "Done" button in the UI is live
 	  *
 	  * @return
@@ -403,70 +343,14 @@ package crosswordle;
 		 boolean win = false;
 		 return(win);
 	 }
- 
- 
-	 // set the contents of a cell, and maintain the books
-	 public CrosswordleChip SetBoard(CrosswordleCell c,CrosswordleChip ch)
-	 {	CrosswordleChip old = c.topChip();
-		 if(c.onBoard)
-		 {
-		 if(ch==null) 
-			 { if(c.topChip()!=null) { chipsOnBoard--; }
-			   c.reInit();
-			   occupiedCells.remove(c,false);
-			 }
-		 else { G.Assert(c.isEmpty(),"not expecting to make stacks");
-			 c.addChip(ch);
-			 occupiedCells.push(c);
-			 chipsOnBoard++;
-			 }
-		 }
-		 else {
-			 if(ch==null) 
-				 { 
-				   c.reInit();
-				 }
-			 else { G.Assert(c.isEmpty(),"not expecting to make stacks");
-				 c.addChip(ch);
-				 }
-		 }
-		 return(old);
-	 }
+
 	 //
 	 // accept the current placements as permanent
 	 //
 	 public void acceptPlacement()
 	 {	
-		 droppedDestStack.clear();
-		 pickedSourceStack.clear();
-		 stateStack.clear();
-		 pickedObject = null;
 	  }
-	 //
-	 // undo the drop, restore the moving object to moving status.
-	 //
-	 private CrosswordleCell unDropObject(CrosswordleCell c)
-	 {	CrosswordleCell rv = droppedDestStack.remove(c,false);
-		 setState(stateStack.pop());
-		 CrosswordleChip po = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
-		 if(po.isBlank()) { po = CrosswordleChip.Blank; }
-		 pickedObject = po;
-		 return(rv);
-	 }
-	 // 
-	 // undo the pick, getting back to base state for the move
-	 //
-	 private void unPickObject(CrosswordleCell rv)
-	 {	pickedSourceStack.remove(rv);
-		 setState(stateStack.pop());
-		 SetBoard(rv,pickedObject);
-		 pickedObject = null;
-	 }
 	 
-	 public CrosswordleCell lastDropped()
-	 {
-		 return(droppedDestStack.top());
-	 }
 	 // collect a word if all it's letters are exposed
 	 public String collectWord(CrosswordleCell from,int direction)
 	 {
@@ -485,43 +369,12 @@ package crosswordle;
 		 return b.toString();
 	 }
 	 
-	 // 
-	 // drop the floating object.
-	 //
-	 private void dropObject(CrosswordleCell c)
-	 {
-		 
-		switch (c.rackLocation())
-		 {
-		 default:
-			 throw G.Error("Not expecting dest " + c.rackLocation);
-		 case BoardLocation:	// already filled board slot, which can happen in edit mode
-		 case EmptyBoard:
-			 droppedDestStack.push(c);
-			 stateStack.push(board_state);
-				   SetBoard(c,pickedObject);
-			 lastDroppedObject = pickedObject;
-			 pickedObject = null;
-			 break;
-		 }
-	  }
-	 //
-	 // true if c is the place where something was dropped and not yet confirmed.
-	 // this is used to mark the one square where you can pick up a marker.
-	 //
-	 public boolean isADest(CrosswordleCell c)
-	 {
-		 return droppedDestStack.contains(c);
-	 }
 	 //get the index in the image array corresponding to movingObjectChar 
 	 // or HitNoWhere if no moving object.  This is used to determine what
 	 // to draw when tracking the mouse.
 	 // caution! this method is called in the mouse event process
 	 public int movingObjectIndex()
-	 { CrosswordleChip ch = pickedObject;
-	   if(ch!=null)
-		 {	return(ch.chipNumber()); 
-		 }
+	 { 
 			 return (NothingMoving);
 	 }
 	/**
@@ -550,36 +403,8 @@ package crosswordle;
 	 {
 		 return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
 	 }
-	 // pick something up.  Note that when the something is the board,
-	 // the board location really becomes empty, and we depend on unPickObject
-	 // to replace the original contents if the pick is cancelled.
-	 private void pickObject(CrosswordleCell c)
-	 {	pickedSourceStack.push(c);
-		 stateStack.push(board_state);
-		 switch (c.rackLocation())
-		 {
-		 default:
-			 throw G.Error("Not expecting rackLocation " + c.rackLocation);
-  
-		 case BoardLocation:
-			 {
-			 CrosswordleChip po = c.topChip();
-			 if(po.isBlank()) { po = CrosswordleChip.Blank; }
-			 lastPicked = pickedObject = po;
-			   lastDroppedObject = null;
-			 SetBoard(c,null);
-			 }
-			 break;
- 
-		 }
-	 }
-	 //	
-	 //true if cell is the place where something was picked up.  This is used
-	 // by the board display to provide a visual marker where the floating chip came from.
-	 //
-	 public boolean isASource(CrosswordleCell c)
-	 {	return(pickedSourceStack.contains(c));
-	 }
+
+
 	 //
 	 // in the actual game, picks are optional; allowed but redundant.
 	 //
@@ -604,7 +429,6 @@ package crosswordle;
 		 {
 		 default:
 			 throw G.Error("Not expecting drop in state " + board_state);
-		 case Confirm:
 		 case Play:
 			 if(gameOver()) { setState(CrosswordleState.Gameover); }
 			 else {	 setState(CrosswordleState.Play);} 
@@ -622,8 +446,6 @@ package crosswordle;
 		 default: throw G.Error("Not expecting after Done state "+board_state);
 		 case Gameover: break;
 		 case Puzzle:
-			 //$FALL-THROUGH$
-		 case Confirm:
 		 case Play:
 
     			setState( CrosswordleState.Play);
@@ -637,33 +459,7 @@ package crosswordle;
     	return((whoseTurn+1)%players_in_game);
     }
 
-    StringBuilder builder = new StringBuilder();
-    boolean isNew = false;	// the word in the builder includes a new letter
-	
-	public String invalidReason=null;
-	public int scoreChange = 0;
-   
-    private void doDone(replayMode replay)
-    {
-    	score[whoseTurn]+=scoreChange;
-    	lastLetters.copyFrom(droppedDestStack);
-        acceptPlacement();
 
-        
-        if (board_state==CrosswordleState.Resign)
-        {
-            win[nextPlayer()] = true;
-    		setState(CrosswordleState.Gameover);
-        }
-        else
-        {	setNextPlayer(replay);
-        	setNextStateAfterDone(replay);
-         }
-    }
-	public boolean notStarted()
-	{
-		return((droppedDestStack.size()==0) && (pickedSourceStack.size()==0));
-	}
 	public void scoreWord(CrosswordleMovespec m,String w)
 	{	CrosswordleCell col = getCell('A',nrows);
 		CrosswordleCell row = col;
@@ -721,15 +517,9 @@ package crosswordle;
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	CrosswordleMovespec m = (CrosswordleMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
-        case MOVE_DONE:
-        	//(replay==replayMode.Live) { G.print(Plog.log.finishLog()); }
-         	doDone(replay);
-
-            break;
         case MOVE_PLAYWORD:
         	{
         	String w = m.word;
@@ -744,92 +534,7 @@ package crosswordle;
         case MOVE_PASS:
         	setState(CrosswordleState.Play);
         	break;
-        case MOVE_SELECT:
-        	{
-        	CrosswordleCell last = lastDropped();
-        	G.Assert(last.topChip().isBlank(),"must be a blank");
-        	SetBoard(last,null);
-        	CrosswordleChip po = CrosswordleChip.assignedBlanks[m.to_col-'A'];
-        	SetBoard(last,po);
-        	setNextStateAfterDrop(last,po,replay);
-        	}
-        	break;
-        case MOVE_DROPB:
-        	{
-			CrosswordleCell src = pickedSourceStack.top();
 
-			CrosswordleChip po = pickedObject;
-			CrosswordleCell dest =  getCell(CrosswordleId.BoardLocation,m.to_col,m.to_row);
-			
-			if(isASource(dest)) 
-				{ unPickObject(dest); 
-				}
-				else 
-				{
-				m.chip = po;
-	            dropObject(dest);
-	           
-	            /**
-	             * if the user clicked on a board space without picking anything up,
-	             * animate a stone moving in from the pool.  For Hex, the "picks" are
-	             * removed from the game record, so there are never picked stones in
-	             * single step replays.
-	             */
-	            if(replay!=replayMode.Replay && (po==null))
-	            	{ animationStack.push(src);
-	            	  animationStack.push(dest); 
-	            	}
-	            setNextStateAfterDrop(dest,po,replay);
-				}
-        	}
-             break;
-
-        case MOVE_PICK:		// pick from the draw pile
- 		case MOVE_PICKB:	// pick from the board
-        	// come here only where there's something to pick, which must
- 			{
- 			CrosswordleCell src = getCell(m.dest,m.to_col,m.to_row);
- 			if(isADest(src)) { unDropObject(src); }
- 			else
- 			{
-        	// be a temporary p
-        	pickObject(src);
-        	m.chip = pickedObject;
-        	switch(board_state)
-        	{
-        	case Confirm:
-        		setState(CrosswordleState.Play);
-				//$FALL-THROUGH$
-           	case Puzzle:
-			case Play:
-        		break;
-        	default: ;
-        	}}}
-    		break;
-
- 
-        case MOVE_DROP: // drop on chip pool;
-        	if(pickedObject!=null)
-        	{
-        	CrosswordleCell dest = getCell(m.dest,m.to_col,m.to_row);
-        	if(isASource(dest)) 
-        		{ CrosswordleChip po = pickedObject;
-        		  unPickObject(dest);
-        		  setNextStateAfterDrop(dest,po,replay);
-        		}
-	            else 
-	            { dropObject(dest); 
-	            }
-	  		  switch(dest.rackLocation())
-	  		  {
-	  		  default: break;
-
-	  		  }
-
-        	}
- 
-            break;
- 
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
@@ -859,99 +564,10 @@ package crosswordle;
        default:
         	cantExecute(m);
         }
-
-        if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
+       //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 
-    
- /** assistance for the robot.  In addition to executing a move, the robot
-    requires that you be able to undo the execution.  The simplest way
-    to do this is to record whatever other information is needed before
-    you execute the move.  It's also convenient to automatically supply
-    the "done" confirmation for any moves that are not completely self
-    executing.
-    */
-    public void RobotExecute(CrosswordleMovespec m)
-    {
-        robotState.push(board_state); //record the starting state. The most reliable
-        // to undo state transistions is to simple put the original state back.
-        
-        //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
 
-        if (Execute(m,replayMode.Replay))
-        {
-            if (m.op == MOVE_DONE)
-            {
-            }
-            else if (DoneState())
-            {
-                doDone(replayMode.Replay);
-            }
-            else
-            {
-            	throw G.Error("Robot move should be in a done state");
-            }
-        }
-    }
- 
-
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(CrosswordleMovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	CrosswordleState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-            
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
-
-
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
-    recordProgress(0);
-    switch(board_state)
-    {
-    default: throw G.Error("Not expecting ", board_state);
-    case Confirm:
-    	all.push(new CrosswordleMovespec(MOVE_DONE,whoseTurn));
-    	break;
-
-    case Play:
-    	G.Error("Not implemented");
-     	break;
-    }
- 	recordProgress(0);
- 	return(all);
- }
- CrosswordlePlay robot = null;
- private void recordProgress(double v)
- {	
-	 if(robot!=null) { robot.setProgress(v); }
- }
- public void initRobotValues(CrosswordlePlay rob,int vocab)
- {	robot = rob;
- }
- 
 
 }

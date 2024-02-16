@@ -61,7 +61,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * Change History
  */
-public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements CookieConstants, GameLayoutClient
+public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements CookieConstants
 {	
 	static final String ImageDir = "/cookie/images/";
     static final String Cookie_SGF = "Cookie-Disco"; // sgf game number allocated for Cookie Disco

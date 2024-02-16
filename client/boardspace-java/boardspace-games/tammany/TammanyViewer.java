@@ -30,6 +30,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -54,7 +55,7 @@ import static tammany.TammanyMovespec.*;
 /**
  * 
 */
-public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements TammanyConstants, GameLayoutClient,ColorNames
+public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements TammanyConstants,ColorNames
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);

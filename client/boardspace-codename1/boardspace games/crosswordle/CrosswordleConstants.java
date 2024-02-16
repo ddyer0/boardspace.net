@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,11 +12,11 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package crosswordle;
 
-import lib.OStack;
+import lib.InternationalStrings;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -25,12 +25,9 @@ public interface CrosswordleConstants
 {	
     static final String statsURL = "/cgi-bin/bs_uni1_stats.cgi";
 
-	static String CrosswordsVictoryCondition = "complete the puzzle";
+	static String CrosswordleVictoryCondition = "complete the puzzle";
 	static String ProbeMessage = "Guess";
 	static String CrosswordsPlayState = "Make a guess";
-	static String LastTurnMessage = "Last Turn!";
-	static String LockMessage = "Lock auto-rotation of the board";
-	static String UnlockMessage = "allow auto-rotation of the board";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 	static String PuzzleFor = "Puzzle for";
@@ -54,10 +51,6 @@ public interface CrosswordleConstants
 	  
 	};
 
-	class StateStack extends OStack<CrosswordleState>
-	{
-		public CrosswordleState[] newComponentArray(int n) { return(new CrosswordleState[n]); }
-	}
 	//
     // states of the game
     //
@@ -66,7 +59,6 @@ public interface CrosswordleConstants
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
 	Play(CrosswordsPlayState,false,false),
 	;
 	CrosswordleState(String des,boolean done,boolean digest)
@@ -91,15 +83,11 @@ public interface CrosswordleConstants
 	{
     	BoardLocation,
      	EmptyBoard,
-    	SetOption,
-    	EyeOption,
     	ShowStats,
-    	Rotate,
-    	Lock,
-       	Definition,
+    	Definition,
     	Restart,
     	GetApp,
-    	Blank, InputField, Playword, ToggleEasy, CloseStats;
+    	InputField, Playword, ToggleEasy, CloseStats;
     	public String shortName() { return(name()); }
 
 	}
@@ -144,19 +132,17 @@ public interface CrosswordleConstants
 
     static void putStrings()
     {
-    	/*
+    	
     	String CrosswordsStrings[] = 
     		{  "Crosswords",
     			WordsMessage,
     			VocabularyMessage,
-    			LockMessage,
-    			UnlockMessage,
     			CrosswordsPlayState,
-    	        CrosswordsVictoryCondition,
+    	        CrosswordleVictoryCondition,
     	        PuzzleFor,
-    	        SolvedType,
-    			SolutionsFor,
-    			SolvedMessage,
+    	    	SolvedType,
+    	    	SolutionsFor,
+    	    	SolvedMessage,
     	    	YouSolved,
     	    	LoadMessage,
     	    	Sofar,
@@ -172,13 +158,12 @@ public interface CrosswordleConstants
     			{"Crosswordle-65","Crosswordle 6x5"},
     			{"Crosswordle-66","Crosswordle 6x6"},
     			{"Crosswordle_family","Crosswordle"},
-    				{"Crosswordle-55_variation","Crosswordle 5x5"},
-    				{"Crosswordle-65_variation","Crosswordle 6x5"},
-    				{"Crosswordle-66_variation","Crosswordle 6x6"},
+    			{"Crosswordle-55_variation","Crosswordle 5x5"},
+    			{"Crosswordle-65_variation","Crosswordle 6x5"},
+    			{"Crosswordle-66_variation","Crosswordle 6x6"},
     		};
 
     		InternationalStrings.put(CrosswordsStringPairs);
     		InternationalStrings.put(CrosswordsStrings);
-    */
-	}
+    }
 }

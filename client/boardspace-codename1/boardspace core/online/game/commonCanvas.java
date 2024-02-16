@@ -97,7 +97,7 @@ July 2006 added repeatedPositions related functions
 //
 public abstract class commonCanvas extends exCanvas 
 	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,
-		VncEventInterface
+		VncEventInterface,GameLayoutClient
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";

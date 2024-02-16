@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -47,7 +48,7 @@ import lib.StockArt;
 
  
 */
-public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConstants, GameLayoutClient
+public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConstants
 {
      /**
 	 * 

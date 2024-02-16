@@ -37,6 +37,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -50,7 +51,7 @@ import lib.StockArt;
  * June 2006  initial work in progress.  
 
 */
-public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConstants, GameLayoutClient
+public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConstants
 {
      /**
 	 * 

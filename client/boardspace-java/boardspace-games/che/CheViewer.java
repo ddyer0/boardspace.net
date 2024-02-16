@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Random;
@@ -65,7 +66,7 @@ import lib.StockArt;
  * 
  * Change History
  */
-public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants, GameLayoutClient
+public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 {	static final String Che_SGF = "che"; // sgf game name
 		// file names for jpeg images and masks
 	static final String ImageDir = "/che/images/";

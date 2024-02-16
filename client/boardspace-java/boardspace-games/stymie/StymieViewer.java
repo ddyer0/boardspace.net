@@ -28,6 +28,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.Image;
@@ -43,7 +44,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * Stymie, initial work 3/2021 
 */
-public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants, GameLayoutClient
+public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

@@ -42,6 +42,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Slider;
@@ -57,7 +58,7 @@ import lib.Text;
  * March 2010  initial work in progress.  
 
 */
-public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoard> implements BreakingAwayConstants, GameLayoutClient
+public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoard> implements BreakingAwayConstants
 {
      /**
 	 * 

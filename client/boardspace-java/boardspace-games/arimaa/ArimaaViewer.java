@@ -34,6 +34,7 @@ import lib.Image;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
@@ -43,8 +44,6 @@ import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
 import online.game.CCanvas;
-import online.game.GameLayoutClient;
-import online.game.GameLayoutManager;
 import online.game.PlacementProvider;
 import online.game.commonMove;
 import online.game.commonPlayer;
@@ -66,7 +65,7 @@ import online.search.SimpleRobotProtocol;
  *  
 */
 @SuppressWarnings("serial")
-public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants, GameLayoutClient, PlacementProvider
+public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants, PlacementProvider
 {
     static final String Arimaa_SGF = "Arimaa"; // sgf game name
 

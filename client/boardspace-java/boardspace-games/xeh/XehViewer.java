@@ -1269,5 +1269,10 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
     	    	}
         }
     }
+
+	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) {
+		throw G.Error("Not needed with manual layout");
+	}
+
 }
 

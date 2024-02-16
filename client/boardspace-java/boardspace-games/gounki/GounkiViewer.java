@@ -37,7 +37,7 @@ import lib.*;
  * Sept 2011 Initial work in progress. 
  *
 */
-public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements GounkiConstants, GameLayoutClient
+public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements GounkiConstants
 {	
      /**
 	 * 

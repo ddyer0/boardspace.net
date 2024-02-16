@@ -33,6 +33,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -47,7 +48,7 @@ import lib.StockArt;
  * May 2007 initial work in progress. 
  *
 */
-public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements DipoleConstants, GameLayoutClient
+public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements DipoleConstants
 {
      /**
 	 * 

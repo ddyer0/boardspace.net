@@ -29,8 +29,7 @@ import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
-import lib.Graphics;
-import lib.Image;
+
 import lib.*;
 
 
@@ -1287,6 +1286,10 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
+	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) {
+		throw G.Error("Not needed with manual layout");
+	}
 
 
 }

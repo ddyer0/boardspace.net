@@ -34,6 +34,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -67,7 +68,7 @@ import lib.StockArt;
  * 
  * Change History
  */
-public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implements MicropulConstants, GameLayoutClient
+public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implements MicropulConstants
 {
      /**
 	 * 

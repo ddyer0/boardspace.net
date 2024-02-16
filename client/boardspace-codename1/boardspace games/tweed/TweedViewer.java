@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -48,7 +49,7 @@ import online.search.SimpleRobotProtocol;
  * Tumbleweed implementation for Boardspace
  *  
 */
-public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, GameLayoutClient, PlacementProvider
+public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

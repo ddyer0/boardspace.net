@@ -14,15 +14,14 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/.
  */
-package online.game;
+package lib;
 
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.FontMetrics;
-import lib.G;
-import lib.InternationalStrings;
+import lib.GameLayoutClient.BoxAlignment;
+import lib.GameLayoutClient.Purpose;
 import online.common.SeatingChart.DefinedSeating;
-import online.game.PlayConstants.BoxAlignment;
 
 
 /**
@@ -42,14 +41,8 @@ import online.game.PlayConstants.BoxAlignment;
  * @author Ddyer
  *
  */
-public class GameLayoutManager  implements Opcodes
+public class GameLayoutManager  implements UniversalConstants
 {	
-	public enum Purpose
-	{
-		Chat,Done,DoneEdit,DoneEditRep,Edit,
-		Log,Banner,Vcr,Draw,
-		Other;
-	}
 	public GameLayoutManager(boolean max) { boardMax = max; }
 	GameLayoutClient client = null;
 	int nPlayers;
@@ -96,7 +89,7 @@ public class GameLayoutManager  implements Opcodes
 		
 	private int xthirdLeft;			// in the tightest fit, space will be zero
 	private int xthirdRight;
-	int fails = 0;				// counts allocation failures on this cycle
+	public int fails = 0;				// counts allocation failures on this cycle
 	int positions[][] = null;	// the x,y coordinates of the player boxes
 	double rotations[] = null;	// the rotations of the player boxes
 	
@@ -1217,9 +1210,9 @@ public class GameLayoutManager  implements Opcodes
 		if(G.debug())
 			{
 			Rectangle playerRectc = G.copy(null, playerRect);
-			G.setRotation(playerRectc, -(window.getPlayerOrTemp(i).displayRotation));
+		//	G.setRotation(playerRectc, -(window.getPlayerOrTemp(i).displayRotation));
 			if(!full.contains(playerRectc)) 
-				{G.print("player rectangle runs off screen\n",playerRectc,"\n",full);
+				{//G.print("player rectangle runs off screen\n",playerRectc,"\n",full);
 				}
 			}
 		}

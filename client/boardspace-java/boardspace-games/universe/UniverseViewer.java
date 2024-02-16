@@ -42,7 +42,7 @@ import lib.*;
  * Change History
  *
 */
-public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implements UniverseConstants, GameLayoutClient
+public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implements UniverseConstants
 {
     /**
 	 * 

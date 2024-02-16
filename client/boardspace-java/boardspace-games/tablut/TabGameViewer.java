@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -82,7 +83,7 @@ import online.search.SimpleRobotProtocol;
  *  3) fix the package names in the clones
  *  4) rename each of the classes in the clones, using refactor/rename
 */
-public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants, GameLayoutClient
+public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants
 {
      /**
 	 * 

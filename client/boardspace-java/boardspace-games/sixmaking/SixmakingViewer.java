@@ -35,6 +35,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.Image;
 import lib.HitPoint;
 import lib.InternationalStrings;
@@ -46,7 +47,7 @@ import static sixmaking.SixmakingMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> implements SixmakingConstants, GameLayoutClient
+public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> implements SixmakingConstants
 {
      /**
 	 * 

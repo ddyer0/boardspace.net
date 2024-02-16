@@ -39,6 +39,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Slider;
@@ -57,7 +58,7 @@ import lib.TextGlyph;
  * July 2011 Initial work in progress. 
  *
  */
-public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements YspahanConstants,GameLayoutClient
+public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements YspahanConstants
 {
      /**
 	 * 

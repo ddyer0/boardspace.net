@@ -36,6 +36,7 @@ import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
@@ -48,7 +49,7 @@ import static checkerboard.CheckerMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, GameLayoutClient, PlacementProvider
+public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, PlacementProvider
 {
 	static final String Checker_SGF = "Checker"; // sgf game name
 	static final String ImageDir = "/checkerboard/images/";

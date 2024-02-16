@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
@@ -53,7 +54,7 @@ import lib.Toggle;
  *
  * 
  */
-public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnConstants, GameLayoutClient
+public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnConstants
 {	
     /**
 	 * 

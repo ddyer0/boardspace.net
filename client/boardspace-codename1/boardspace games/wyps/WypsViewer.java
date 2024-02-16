@@ -36,6 +36,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -52,7 +53,7 @@ import online.search.SimpleRobotProtocol;
 /**
  *  Initial work Sept 2020 
 */
-public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConstants, GameLayoutClient
+public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConstants
 {	static final long serialVersionUID = 1000;
 	boolean DRAWBACKGROUNDTILES = true;
      // colors

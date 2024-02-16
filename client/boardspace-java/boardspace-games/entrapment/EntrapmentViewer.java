@@ -43,7 +43,7 @@ import lib.*;
  *
 */
 
-public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> implements EntrapmentConstants, GameLayoutClient
+public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> implements EntrapmentConstants
 {	
      /**
 	 * 

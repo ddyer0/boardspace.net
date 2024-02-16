@@ -37,7 +37,7 @@ import static rithmomachy.RithmomachyMovespec.*;
  * This code shows the overall structure appropriate for a game view window.
  * TODO: when rotated, also rotate the tiles so they appear upright
 */
-public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard> implements RithmomachyConstants, GameLayoutClient
+public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard> implements RithmomachyConstants
 {
      /**
 	 * 

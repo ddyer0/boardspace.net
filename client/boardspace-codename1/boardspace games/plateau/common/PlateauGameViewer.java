@@ -33,6 +33,7 @@ import lib.Image;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -101,7 +102,7 @@ the server will give up his escrowed master key to the opponent, which
 allows the robot to take over and reconstruct as above.
 
 */
-public class PlateauGameViewer extends commonCanvas implements PlateauConstants,GameLayoutClient
+public class PlateauGameViewer extends commonCanvas implements PlateauConstants
 {
     /**
 	 * 

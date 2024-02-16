@@ -36,6 +36,7 @@ import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Image;
 import lib.InternationalStrings;
@@ -47,7 +48,7 @@ import lib.SimpleSprite.Movement;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConstants, GameLayoutClient
+public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConstants
 {
      /**
 	 * 

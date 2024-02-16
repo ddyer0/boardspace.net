@@ -36,6 +36,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -47,7 +48,7 @@ import lib.StockArt;
  * April 2010 added "reverse y" option
  *
 */
-public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements MedinaConstants, GameLayoutClient
+public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements MedinaConstants
 {
      // colors
 

@@ -29,6 +29,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.PopupManager;
@@ -48,7 +49,7 @@ Feb 29 2004  Iniital work in progress, support for Zertz
 Oct 2004 Added simple variations branching and scrolling
   Split some sharable elements into commonCanvas
 */
-public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants, GameLayoutClient,PlacementProvider
+public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants,PlacementProvider
 {
     /**
 	 * 

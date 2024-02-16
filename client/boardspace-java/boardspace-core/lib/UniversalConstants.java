@@ -27,6 +27,9 @@ public interface UniversalConstants {
     static final int MINCHATHEIGHT = 80;
     static final String KEYWORD_SUICIDE = "suicide";
     static final String EXTRAACTIONS = "extraactions";
+	static final String OFFERDRAW = "OfferDraw";
+	static final String DECLINEDRAW = "DeclineDraw";
+	static final String ACCEPTDRAW = "AcceptDraw";
 
 
 }

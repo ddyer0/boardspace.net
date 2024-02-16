@@ -39,6 +39,7 @@ import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -47,7 +48,7 @@ import lib.Toggle;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConstants, GameLayoutClient
+public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConstants
 {
 	static final String Ordo_SGF = "Ordo"; // sgf game name
 	static final String ImageDir = "/ordo/images/";

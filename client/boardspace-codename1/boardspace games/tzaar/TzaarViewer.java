@@ -42,7 +42,7 @@ import tzaar.TzaarChip.ChipColor;
  *
  * 
  */
-public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarConstants, GameLayoutClient
+public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarConstants
 {
      /**
 	 * 

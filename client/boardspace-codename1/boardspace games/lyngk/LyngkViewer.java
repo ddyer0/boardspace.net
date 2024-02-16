@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -92,7 +93,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original lyngk hierarchy to get back the original code.
  *  
 */
-public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkConstants, GameLayoutClient
+public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkConstants
 {		
 	// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers

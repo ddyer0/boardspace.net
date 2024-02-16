@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/.
  */
-package online.game;
+package lib;
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -23,8 +23,14 @@ import online.common.SeatingChart.DefinedSeating;
 
 public interface GameLayoutClient 
 {
+	public enum BoxAlignment { Top,Center,Bottom,Edge,Left,Right }
+	public enum Purpose
+	{
+		Chat,Done,DoneEdit,DoneEditRep,Edit,
+		Log,Banner,Vcr,Draw,
+		Other;
+	}
 	Rectangle createPlayerGroup(int player, int x, int y, double rotation,int unit);	
-	commonPlayer getPlayerOrTemp(int n);
 	DefinedSeating seatingChart();
 	int standardFontSize();
 	void SetupVcrRects(int left, int top, int width, int height);

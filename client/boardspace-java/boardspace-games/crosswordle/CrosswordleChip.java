@@ -129,10 +129,6 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     private static double dscale[] = {0.5,0.5,1};
     
 	public static CrosswordleChip Icon = new CrosswordleChip("icon-nomask",dscale,null,null);
-
-
-	public static CrosswordleChip LockRotation = new CrosswordleChip("lock-nomask",dscale,LockMessage,null);
-	public static CrosswordleChip UnlockRotation = new CrosswordleChip("unlock-nomask",dscale,UnlockMessage,null);
 	
 	static public CrosswordleChip assignedBlanks[];
 	public boolean isBlank() { return (this==Blank); }

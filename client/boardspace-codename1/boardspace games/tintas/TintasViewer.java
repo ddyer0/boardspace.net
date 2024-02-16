@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -48,7 +49,7 @@ import online.search.SimpleRobotProtocol;
  * 
  *  
 */
-public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements TintasConstants, GameLayoutClient
+public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements TintasConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);

@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.TextButton;
 import lib.Toggle;
@@ -94,7 +95,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants, GameLayoutClient
+public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

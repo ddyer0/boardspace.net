@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -117,7 +118,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original twixt hierarchy to get back the original code.
  *  
 */
-public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants, GameLayoutClient,PlacementProvider
+public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants,PlacementProvider
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);

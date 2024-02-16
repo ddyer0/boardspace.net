@@ -24,6 +24,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -41,7 +42,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * Change History
  */
-public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implements SpanglesConstants, GameLayoutClient
+public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implements SpanglesConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(120,175,147);

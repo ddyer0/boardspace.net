@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -41,7 +42,7 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
 
-public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadConstants, GameLayoutClient
+public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(0.7f,0.7f,0.7f);

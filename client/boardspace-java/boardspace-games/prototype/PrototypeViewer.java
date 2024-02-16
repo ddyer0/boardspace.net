@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -94,7 +95,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, GameLayoutClient, PlacementProvider
+public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

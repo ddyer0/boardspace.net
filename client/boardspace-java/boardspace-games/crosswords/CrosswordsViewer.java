@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Slider;
@@ -57,7 +58,7 @@ import vnc.VNCService;
 /**
  *  Initial work Sept 2020 
 */
-public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> implements CrosswordsConstants, GameLayoutClient
+public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> implements CrosswordsConstants
 {	static final long serialVersionUID = 1000;
 	static final String Crosswords_SGF = "crosswords"; // sgf game name
 

@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -49,7 +50,7 @@ import online.common.*;
  
  *
 */
-public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> implements SantoriniConstants, GameLayoutClient
+public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> implements SantoriniConstants
 {
      /**
 	 * 

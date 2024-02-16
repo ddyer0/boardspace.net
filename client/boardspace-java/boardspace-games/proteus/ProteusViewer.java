@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -45,7 +46,7 @@ import static proteus.ProteusMovespec.*;
  * This code shows the overall structure appropriate for a game view window.
  * todo: rotate board for ftf portrait mode
 */
-public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants, GameLayoutClient
+public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants
 {
     static final String Proteus_SGF = "Proteus"; // sgf game name
     static final String ImageDir = "/proteus/images/";

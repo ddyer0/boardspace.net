@@ -39,7 +39,7 @@ import static java.lang.Math.*;
  * Dec 2012 initial work in progress. 
  *
 */
-public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesConstants, GameLayoutClient
+public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesConstants
 {
      /**
 	 * 

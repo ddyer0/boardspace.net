@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -92,7 +93,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard> implements DayAndNightConstants, GameLayoutClient
+public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard> implements DayAndNightConstants
 {		
     static final String DayAndNight_sgf = "dayandnight"; // sgf game name
 

@@ -39,6 +39,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -50,7 +51,7 @@ import lib.Toggle;
  * TODO: make castling more intuitive by moving the rook at the "confirm" stage
  * 
 */
-public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, GameLayoutClient, PlacementProvider
+public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, PlacementProvider
 {
 	static final String Chess_SGF = "Chess"; // sgf game number allocated for lyngk
     static final String ImageDir = "/chess/images/";
@@ -212,7 +213,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
    	layout.placeDoneEditRep(buttonW,3*buttonW/2,doneRect,editRect,repRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
-	layout.placeRectangle(GameLayoutManager.Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
+	layout.placeRectangle(Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();
 	int mainX = G.Left(main);
 	int mainY = G.Top(main);

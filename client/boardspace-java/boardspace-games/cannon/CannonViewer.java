@@ -38,7 +38,7 @@ import lib.*;
  * May 2007 initial work in progress. 
  *
 */
-public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements CannonConstants, GameLayoutClient
+public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements CannonConstants
 {
     // file names for jpeg images and masks
     static final String Cannon_SGF = "Cannon"; // sgf game name

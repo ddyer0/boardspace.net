@@ -821,5 +821,10 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
+	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) {
+		throw G.Error("Not needed with manual layout");
+	}
+
 }
 

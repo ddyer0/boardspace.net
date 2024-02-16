@@ -35,6 +35,7 @@ import lib.ErrorX;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.OStack;
@@ -46,7 +47,7 @@ import static goban.GoMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, GameLayoutClient
+public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
 {	
     static final String Go_SGF = "Go"; // sgf game name
     static final String ImageDir = "/goban/images/";

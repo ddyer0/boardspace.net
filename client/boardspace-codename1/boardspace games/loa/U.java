@@ -173,8 +173,11 @@ public class U implements UIC,Opcodes
 }
 
 /*
-$Id: U.java,v 1.1.2.28 2023/09/26 21:56:07 ddyer Exp $
+$Id: U.java,v 1.1.2.18.2.15 2024/02/16 02:38:36 ddyer Exp $
 $Log: U.java,v $
+Revision 1.1.2.18.2.15  2024/02/16 02:38:36  ddyer
+*** empty log message ***
+
 Revision 1.1.2.28  2023/09/26 21:56:07  ddyer
 add copyright and license
 

@@ -35,6 +35,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Random;
@@ -49,7 +50,7 @@ import lib.Toggle;
  * December 2006  Initial version, derived from Hive  
 
 */
-public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implements ExxitConstants, GameLayoutClient
+public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implements ExxitConstants
 {
      /**
 	 * 

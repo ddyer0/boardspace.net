@@ -32,6 +32,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -49,7 +50,7 @@ import static octiles.OctilesMovespec.*;
  *
 */
 
-public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements OctilesConstants, GameLayoutClient
+public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements OctilesConstants
 {
 	 
     // file names for jpeg images and masks

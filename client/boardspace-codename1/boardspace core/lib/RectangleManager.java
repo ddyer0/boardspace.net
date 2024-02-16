@@ -14,16 +14,12 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/.
  */
-package online.game;
+package lib;
 
 import com.codename1.ui.geom.Rectangle;
 
-import lib.G;
-import lib.OStack;
-import lib.Plog;
-import lib.RectangleStack;
-import online.game.GameLayoutManager.Purpose;
-import online.game.PlayConstants.BoxAlignment;
+import lib.GameLayoutClient.BoxAlignment;
+import lib.GameLayoutClient.Purpose;
 
 /**
  * this manages the actual splitting and placement of rectangles.  The key concepts
@@ -46,21 +42,21 @@ public class RectangleManager
 {	static boolean allowChips = true;
 	static int MinCoord = 0;
 	static int MaxCoord = 999999;
-	int failedPlacements = 0;
-	double zoom = 1.0;
+	public int failedPlacements = 0;
+	public double zoom = 1.0;
 	public RectangleManager(double zoomto) { zoom = zoomto; }
 	
 	// other unused rectangles found between the player boxes.  These
 	// are the exact unused area which can be completely filled.
-	RectangleStack spareRects = new RectangleStack();
+	public RectangleStack spareRects = new RectangleStack();
 	RectangleStack allocatedRects = new RectangleStack();
-	RectangleSpecStack specs = new RectangleSpecStack();
+	public RectangleSpecStack specs = new RectangleSpecStack();
 	Rectangle mainRectangle = null;
-	Rectangle centerRectangle = null;
+	public Rectangle centerRectangle = null;
 	Rectangle allocatedMainRectangle = null;
 	Rectangle fullRect = null;
 	public int marginSize = 0;
-	Plog messages = new Plog(20);
+	public Plog messages = new Plog(20);
 	public void setMainRectangle(Rectangle r) 
 	{   
 	  if(r==null) 
@@ -1083,7 +1079,7 @@ public class RectangleManager
 
 		if((target_left<=chip_left) && (target_right>=chip_right))
 		{
-			// all the way through horizontally, split above or below
+			// target absorbs the entire width of the chip
 			if(target_top<=chip_top)
 			{	// top absorbed
 				if(target_bottom>=chip_bottom) { spareRects.remove(chip); }	// all gone
@@ -1102,7 +1098,7 @@ public class RectangleManager
 			}
 		}
 		else if((target_top<=chip_top) && (target_bottom>=chip_bottom))
-		{	// all the way through vertically, split left or right
+		{	// target absorbs the entire height of the chip
 			if((target_left<=chip_left) && (target_right>=chip_left))
 			{	// left edge absorbed
 				if(target_right>=chip_right) { spareRects.remove(chip); }	// completely absorbed
@@ -1121,24 +1117,26 @@ public class RectangleManager
 			}			
 		}
 		else if(target_left<=chip_left)
-		{
+		{	// chip is partially left of the target
 			Rectangle left = G.splitLeft(chip,null,target_right-chip_left);
 			spareRects.push(left);
 			dissect(target_left,target_top,target_right,target_bottom,left);
 		}
 		else if(target_right>=chip_right)
-		{
+		{	// chip is partially right of the target
 			Rectangle right = G.splitRight(chip,null,chip_right-target_left);
 			spareRects.push(right);
 			dissect(target_left,target_top,target_right,target_bottom,right);
 		}
 		else if(target_top<chip_bottom)
-		{	Rectangle bottom = G.splitBottom(chip,null,chip_bottom-target_top);
+		{	// chip is partially below the target
+			Rectangle bottom = G.splitBottom(chip,null,chip_bottom-target_top);
 			spareRects.push(bottom);
 			dissect(target_left,target_top,target_right,target_bottom,bottom);
 		}
 		else if(target_bottom>chip_top)
-		{	Rectangle top = G.splitTop(chip,null,chip_top-target_bottom);
+		{	// chip is partially above the target
+			Rectangle top = G.splitTop(chip,null,chip_top-target_bottom);
 			spareRects.push(top);
 			dissect(target_left,target_top,target_right,target_bottom,top);
 		}
@@ -1370,6 +1368,7 @@ class RectangleSpec
 		preferredAspectRatio = ratio;
 	}
 }
+
 class RectangleSpecStack extends OStack<RectangleSpec>
 {
 

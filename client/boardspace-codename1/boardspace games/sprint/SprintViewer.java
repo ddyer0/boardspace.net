@@ -39,6 +39,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -55,7 +56,7 @@ import online.search.SimpleRobotProtocol;
 /**
  *  Initial work May 2023
 */
-public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements SprintConstants, GameLayoutClient
+public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements SprintConstants
 {	static final long serialVersionUID = 1000;
 	static final String Sprint_SGF = "sprint"; // sgf game name
 

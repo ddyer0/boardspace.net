@@ -36,6 +36,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Image;
 import lib.LFrameProtocol;
@@ -55,7 +56,7 @@ import vnc.VNCService;
  *  Initial work Sept 2020 
  *  
  */
-public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> implements JumbulayaConstants, GameLayoutClient
+public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> implements JumbulayaConstants
 {	static final long serialVersionUID = 1000;
 
 	

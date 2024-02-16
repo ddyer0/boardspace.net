@@ -43,6 +43,7 @@ import lib.ExtendedHashtable;
 import lib.Base64;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Keyboard;
 import lib.KeyboardLayout;
@@ -73,7 +74,7 @@ import online.search.SimpleRobotProtocol;
  *   The basic puzzle is to solve de densely packed crossword grid
 */
 public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> 
-	implements CrosswordleConstants, GameLayoutClient
+	implements CrosswordleConstants
 {	static final long serialVersionUID = 1000;
 	static final String Crosswordle_SGF = "Crosswordle"; // sgf game name
 	boolean useKeyboard = G.isCodename1()||G.isJavadroid();
@@ -140,15 +141,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     //
     private Rectangle guessRect = addRect("guess");
     
-    private boolean lockOption = false;
-    private Rectangle lockRect = addRect("lock");
-    private Rectangle largerBoardRect = addRect(".largerBoard");
     private Rectangle altNoChatRect = addRect("nochat");
     private Rectangle restartRect = addRect("restart");	// not needed for pushfight
-    int boardRotation = 0;
-    double effectiveBoardRotation = 0.0;
-    private Rectangle dupsRect = addRect("duplicates");
-    private Rectangle openRect = addRect("openrack");
   
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -258,7 +252,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int minLogW = fh*12;	
     	int logow = fh*30;
     	int crossw = fh*40;
-       	int minChatW = Math.min(fh*55,width-fh*2);
+       	int minChatW = Math.min(fh*45,width-fh*2);
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
@@ -317,8 +311,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	
        	       	
     	Rectangle main = layout.getMainRectangle();
-    	int mainX = G.Left(main);
-    	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main)-stateH*2;
     	
@@ -326,7 +318,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean planned = plannedSeating();
     	int nrows =  bb.nrows;
         int ncols =  bb.ncols;
   	
@@ -335,31 +326,24 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
+       	int mainX = G.Left(main);
+    	int mainY = G.Top(main);
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
-    	int boardX = mainX+extraW+(planned?stateH:0);
-    	int boardY = mainY+extraH+(planned?stateH:0);
        	layout.returnFromMain(extraW,extraH);
-    	//
+      	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
+    	int boardX = mainX+extraW;
+    	int boardY = mainY+extraH;
         int stateY = boardY;
         int stateX = boardX;
-    	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,lockRect,altNoChatRect);
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
-    	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
-
-    	int stripeLeft = G.Right(largerBoardRect)-stripeW-CELLSIZE/3;
-    	int stripeTop = boardY+boardH-9*stripeW;
-    	G.SetRect(dupsRect,stripeLeft,stripeTop,stripeW,stripeW);
-       	stripeTop += stripeW+stateH/2;
-    	G.SetRect(openRect,stripeLeft,stripeTop,stripeW,stripeW);
-  
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -420,9 +404,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// use the board cell size rather than the window cell size
        	// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        	// being displayed on hidden windows
-       	if(xp>=-100) { GC.setRotation(g, effectiveBoardRotation,xp,yp); }
        	drawPrerotatedSprite(g,obj,xp,yp);
-       	if(xp>=-1000) { GC.setRotation(g,effectiveBoardRotation,xp,yp); }
     }
     public void drawPrerotatedSprite(Graphics g,int obj,int xp,int yp)
     { 
@@ -607,43 +589,26 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
        Font f = G.getFont("monospaced",Style.Bold,G.getFontSize(standardBoldFont()));
        gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),f);
-       GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.black, logRect);
-       // this does most of the work, but other functions also use contextRotation to rotate
-       // animations and sprites.
-       boolean planned = plannedSeating();
      
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,gb,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
 
-       String msg = bb.invalidReason==null ? s.get(CrosswordsVictoryCondition) : s.get(bb.invalidReason);
+       String msg = s.get(CrosswordleVictoryCondition);
        String goalmsg = GoalExplanation;
        goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
-       if(planned) 
-       	{ 
-       	  CrosswordleChip chip = lockOption ? CrosswordleChip.UnlockRotation : CrosswordleChip.LockRotation;
-       	  chip.drawChip(gc, this,lockRect, selectPos, CrosswordleId.Lock,s.get(chip.overlay)); 
-       	}
        drawNoChat(gc,altNoChatRect,selectPos);
-       GC.unsetRotatedContext(gc,selectPos);
        }
        for(int player=0;player<bb.players_in_game;player++)
        	{ commonPlayer pl1 = getPlayerOrTemp(player);
        	  pl1.setRotatedContext(gc, selectPos,false);
        	   GC.setFont(gc,standardBoldFont());
-       	   if(planned && gb.whoseTurn==player)
-    	   {
-    		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
-   					HighlightColor, rackBackGroundColor);
-    	   }
     	   GC.setFont(gc, largeBoldFont());
        	   pl1.setRotatedContext(gc, selectPos,true);
        	}
@@ -651,12 +616,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        {
     	   buttonSelect.hitCode = CrosswordleId.Restart;
        }
-       if(!planned)
-      	{  
-    	   //int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
-    	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   //boolean censorSpectator =  !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
-      	}
+
      
        GC.setFont(gc,standardBoldFont());
        
@@ -665,8 +625,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
-				{
 				String theWord = inputField.getText().trim().toLowerCase();
 				boolean done = gb.canBeGuessed(theWord);
 				if(gb.DoneState())
@@ -680,7 +638,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 					buttonSelect.hitCode = CrosswordleId.Playword;
 					buttonSelect.hitObject = theWord;
 					}	
-				}
 			
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
@@ -922,15 +879,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		 return true;
     		}
         handleExecute(bb,mm,replay);
-        /**
-         * animations are handled by a simple protocol between the board and viewer.
-         * when stones are moved around on the board, it pushes the source and destination
-         * cells onto the animationStck.  startBoardAnimations converts those points into
-         * animation sprites.  drawBoardElements arranges for the destination stones, which
-         * are already in place, to disappear until the animation finishes.  The actual drawing
-         * is done by drawSprites at the end of redrawBoard
-         */
-        startBoardAnimations(replay,bb.animationStack,CELLSIZE,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay!=replayMode.Replay) { playSounds((CrosswordleMovespec)mm); }
@@ -971,12 +919,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 		 	{ playASoundClip(light_drop,150);
 		 	}
 		 break;		 
-	 case MOVE_DROPB:
-	 case MOVE_PICKB:
-	 case MOVE_PICK:
-	 case MOVE_DROP:
-		 playASoundClip(light_drop,100);
-		 break;
 	 default: break;
 	 }
  }
@@ -1257,56 +1199,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         case Definition:
         	definitionCell = hitCell(hp);
         	break;
-        case Lock:
-        	lockOption = !lockOption;
-        	break;
-        case Rotate:
-        	effectiveBoardRotation = (effectiveBoardRotation+Math.PI/2);
-        	boardRotation = (boardRotation+1)%4;
-        	contextRotation = 0;
-        	generalRefresh();
-        	break;
-        case EyeOption:
-        	{
-         	String op = (String)hp.hitObject;
-         	int rm = remoteWindowIndex(hp);
-        	PerformAndTransmit((rm<0 ? "show ":"see ")+op);
-        	}
-        	break;
-        case SetOption:
-        	{
-        	String m = (String)hp.hitObject;
-        	PerformAndTransmit(m);
-        	}
-        	break;
-        case Blank:
-        	{
-        	CrosswordleChip ch = (CrosswordleChip)hp.hitObject;
-        	PerformAndTransmit("SetBlank "+ch.letter);
-        	}
-        	break;
- 
-         case EmptyBoard:
-        	{
-        		CrosswordleCell hitObject = hitCell(hp);
-        		if(bb.pickedObject==null)
-            	{	
-            		{
-            			PerformAndTransmit(G.concat("Pick ",hitCode.name()," ",hitObject.col," ",hitObject.row));
-            		}
-            	}
-        		else {
-        			PerformAndTransmit(G.concat("Dropb ",hitObject.col," ",hitObject.row)); 
-        		}
-        	}
-        	break;
-        case BoardLocation:	// we hit an occupied part of the board 
-        	{
-            CrosswordleCell hitObject = hitCell(hp);
- 			PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-        	}
-			break;
-			
         }
         }
     }
@@ -1480,7 +1372,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 
       /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
-    {  return(new CrosswordlePlay());
+    {  throw new Error("not expected");
     }
 
     /** replay a move specified in SGF format.  

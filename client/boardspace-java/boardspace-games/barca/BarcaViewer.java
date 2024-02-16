@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -41,7 +42,7 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 // TODO think about "consistent" and "3 player" variants
 // TODO annotations with perspective are placed a little oddly
-public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants, GameLayoutClient,PlacementProvider
+public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants,PlacementProvider
 {	 	
     static final String Barca_SGF = "Barca"; // sgf game number allocated for barca
 

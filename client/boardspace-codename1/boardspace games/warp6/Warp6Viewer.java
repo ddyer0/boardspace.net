@@ -30,6 +30,7 @@ import lib.ExtendedHashtable;
 import lib.Graphics;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
@@ -49,7 +50,7 @@ import online.search.SimpleRobotProtocol;
  * 
  * 
 */
-public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6Constants, GameLayoutClient
+public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6Constants
 {	// colors
 
 	/**

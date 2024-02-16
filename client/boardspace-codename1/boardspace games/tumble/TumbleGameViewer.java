@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -45,7 +46,7 @@ import lib.StockArt;
  *
  * April 2010 added ReverseView option
 */
-public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements TumbleConstants, GameLayoutClient
+public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements TumbleConstants
 {
      /**
 	 * 

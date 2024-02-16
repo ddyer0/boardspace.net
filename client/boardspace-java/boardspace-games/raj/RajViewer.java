@@ -35,6 +35,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -67,7 +68,7 @@ import vnc.VNCService;
  *  
 */
 
-public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants, GameLayoutClient
+public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 {	static final long serialVersionUID = 1000;
 
 	//if true, run the UI with simultaneous plays. Otherwise, run the moves serially

@@ -31,6 +31,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.Image;
 import lib.HitPoint;
 import lib.InternationalStrings;
@@ -87,7 +88,7 @@ import online.search.SimpleRobotProtocol;
  *  <p>
  *  
 */
-public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> implements PushfightConstants, GameLayoutClient
+public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> implements PushfightConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

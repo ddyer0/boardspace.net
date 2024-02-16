@@ -35,8 +35,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.CellId;
 import online.game.BoardProtocol;
-import online.game.GameLayoutClient;
-import online.game.GameLayoutManager;
+import lib.GameLayoutManager;
 import online.game.commonCanvas;
 import online.game.commonMove;
 import online.game.commonPlayer;
@@ -53,7 +52,7 @@ import online.search.SimpleRobotProtocol;
  * 
  * TODO trax needs a board and iterator upgrade to use the standard methods
 */
-public class TraxGameViewer extends commonCanvas implements TraxConstants, GameLayoutClient
+public class TraxGameViewer extends commonCanvas implements TraxConstants
 {
      /**
 	 * 

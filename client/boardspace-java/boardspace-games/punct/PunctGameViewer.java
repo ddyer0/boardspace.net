@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -44,7 +45,7 @@ import online.search.SimpleRobotProtocol;
  * 
 */
 @SuppressWarnings("unused")
-public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implements PunctConstants, GameLayoutClient
+public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implements PunctConstants
 {
  
 	/**

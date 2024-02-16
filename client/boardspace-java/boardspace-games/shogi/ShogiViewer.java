@@ -39,7 +39,7 @@ import lib.*;
  * 
  *
 */
-public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiConstants, GameLayoutClient
+public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiConstants
 {
      /**
 	 * 

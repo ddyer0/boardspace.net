@@ -40,6 +40,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -57,7 +58,7 @@ import static mogul.MogulMovespec.*;
  * Feb 2013 initial work in progress. 
  *
  */
-public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulConstants, GameLayoutClient
+public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulConstants
 {
      /**
 	 * 

@@ -26,6 +26,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Random;
@@ -46,7 +47,7 @@ import online.search.SimpleRobotProtocol;
 /**
  *  Volo 
  */
-public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConstants, GameLayoutClient
+public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);

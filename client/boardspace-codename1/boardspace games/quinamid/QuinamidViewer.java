@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
@@ -48,7 +49,7 @@ import lib.TextButton;
  * May 2007 initial work in progress. 
  *
 */
-public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implements QuinamidConstants, GameLayoutClient
+public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implements QuinamidConstants
 {
      /**
 	 * 

@@ -32,6 +32,7 @@ import lib.ChatInterface;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
@@ -46,7 +47,7 @@ import lib.StockArt;
  * May 2006 Complete version released
  *
 */
-public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobConstants, GameLayoutClient
+public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobConstants
 {
      /**
 	 * 

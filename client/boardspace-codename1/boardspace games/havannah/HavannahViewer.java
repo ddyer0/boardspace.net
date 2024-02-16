@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
@@ -113,7 +114,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original havannah hierarchy to get back the original code.
  *  
 */
-public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants, GameLayoutClient, PlacementProvider
+public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants, PlacementProvider
 {	 	
     static final String Havannah_SGF = "Havannah"; // sgf game name
 

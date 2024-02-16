@@ -36,7 +36,7 @@ Change History
 
 Nov 12 2004  Iniital work in progress, support for Gipf
 */
-public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConstants, GameLayoutClient
+public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConstants
 {	//public void verifyGameRecord(){}; // temporarily disable verify
     /**
 	 * 

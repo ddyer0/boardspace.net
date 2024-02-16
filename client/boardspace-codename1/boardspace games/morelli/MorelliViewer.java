@@ -34,6 +34,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -44,7 +45,7 @@ import static morelli.MorelliMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants, GameLayoutClient,PlacementProvider
+public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants,PlacementProvider
 {
      /**
 	 * 

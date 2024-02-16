@@ -43,7 +43,7 @@ import lib.*;
  *
  * 
  */
-public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConstants, GameLayoutClient
+public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConstants
 {
      /**
 	 * 

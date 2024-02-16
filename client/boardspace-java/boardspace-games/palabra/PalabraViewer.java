@@ -34,6 +34,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -61,7 +62,7 @@ import online.search.SimpleRobotProtocol;
  *  
 */
 
-public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements PalabraConstants, GameLayoutClient
+public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements PalabraConstants
 {	static final long serialVersionUID = 1000;
 
 

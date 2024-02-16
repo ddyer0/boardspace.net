@@ -29,6 +29,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -82,7 +83,7 @@ import online.search.SimpleRobotProtocol;
  *  drawn.
  *  
 */
-public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements BloomsConstants, GameLayoutClient
+public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements BloomsConstants
 {	
 	static final String Blooms_SGF = "blooms"; // sgf game number
 

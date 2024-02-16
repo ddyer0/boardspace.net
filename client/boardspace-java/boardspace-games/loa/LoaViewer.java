@@ -31,14 +31,12 @@ import common.GameInfo;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
-import online.game.GameLayoutClient;
-import online.game.GameLayoutManager;
-
 import online.game.commonCanvas;
 import online.game.commonMove;
 import online.game.commonPlayer;
@@ -48,7 +46,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
+public class LoaViewer extends commonCanvas implements UIC
 {	
 	static int REVISION = 100;			// revision numbers start at 100
 										// revision 100 adds revision numbers and randomkeys

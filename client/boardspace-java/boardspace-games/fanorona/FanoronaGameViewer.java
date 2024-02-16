@@ -33,6 +33,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -48,7 +49,7 @@ import lib.Toggle;
  * todo: add the ReverseView feature
  * 
 */
-public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> implements FanoronaConstants, GameLayoutClient
+public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> implements FanoronaConstants
 {	/**
 	 * 
 	 */
