@@ -27,13 +27,13 @@
     <argument>framewidth</argument><argument>720</argument>
     <argument>frameheight</argument><argument>400</argument>
     <argument>rootname</argument><argument>the Players World Map</argument>
-    <argument>zertz.classname</argument><argument>online.common.MapViewer</argument>
+    <argument>mainclass</argument><argument>online.common.MapViewer</argument>
+    <argument>viewerclass</argument><argument>none</argument>
     <argument>mapcenter_x</argument><argument>0.747</argument>
     <argument>mapcenter_y</argument><argument>0.0</argument>
     <argument>imagelocation</argument><argument>https://boardspace.net/images/earthshadelow.jpg</argument>
     <argument>datalocation</argument><argument>/cgi-bin/tlib/gs_locations.cgi</argument>
-    <argument>reviewonly</argument><argument>true</argument>
-    <argument>rootreviewer</argument><argument>true</argument>
+    <argument>offline</argument><argument>true</argument>
     <argument>final</argument><argument>true</argument>
     </application-desc>
 </jnlp>

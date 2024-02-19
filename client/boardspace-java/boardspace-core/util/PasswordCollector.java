@@ -40,9 +40,9 @@ import lib.TopFrameProtocol;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.XXTEA;
+import online.common.OnlineConstants;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
-
  //import java.util.prefs.BackingStoreException;
  //import java.util.prefs.Preferences;
 
@@ -56,7 +56,7 @@ import udp.PlaytableStack;
 
  public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,
-						   Config
+						   Config,OnlineConstants
 {
 	 static final long serialVersionUID = 1L;
 	 

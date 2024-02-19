@@ -44,8 +44,6 @@ public interface OnlineConstants extends Config {
 	}
 	static final long CONNECTIONTIMEOUTINTERVAL = 63000;    /* give up after 1 minute plus a little */
 	static final String EXTRAMOUSE = "extramouse";
-	static final String TESTVERSION = "testversion";
-	
     static final String turnChangeSoundName = SOUNDPATH + "turnch"  + SoundFormat;
     static final String UNKNOWNPLAYER = "(unknown)";
     static final String RandomPlayerMessage = "No Robot, Random first player";
@@ -151,16 +149,11 @@ public interface OnlineConstants extends Config {
     static final String FRAMENAME = "framename";
     static final String REVIEWERDIR = "reviewerdir";
     static final String GAME = "game";
-    static final String FRAMEWIDTH = "framewidth";
-    static final String FRAMEHEIGHT = "frameheight";
     static final String PLAYERS_IN_GAME = "playersingame";
     static final String PICTURE = "picture";
     static final String HOSTUID = "hostuid";		// unique host id string, generated at launch
     static final String AutoDoneEverywhere = "Automatic \"Done\"";
     static final String BoardMaxEverywhere = "Maximize Board Size";
-    static final String VIEWERCLASS = "viewerclass";
-    static final String OFFLINE = "offline";
-    static final String REVIEWONLY = "reviewonly";
 	static final String PREFERREDGAME = "PreferredGame";
     
 	// these are expected parameters from the login transaction
@@ -210,4 +203,11 @@ public interface OnlineConstants extends Config {
 	// if true, chat windows are created in a separate frame or tab.  This is the
 	// default only for very small screen mobiles
 	String CHATFRAMED = "chatframed";	// put the lobby chat in a separate frame
+	String REVIEWONLY = "reviewonly";
+	String VIEWERCLASS = "viewerclass";
+	String CLASSDIR = "classdir";
+	String LauncherName = "Launcher";
+	String LobbyName = "Lobby";
+	int DEFAULTWIDTH = 620;	// also the minimum width and height
+	int DEFAULTHEIGHT = 660;
  }

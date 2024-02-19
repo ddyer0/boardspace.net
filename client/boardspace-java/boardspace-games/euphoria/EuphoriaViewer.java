@@ -2376,7 +2376,7 @@ private Color playerBackground[] = {
     }
     public Text colorize(String str)
     {
-    	return TextChunk.colorize(str,s,gameEventText);
+    	return TextChunk.colorize(str,null,gameEventText);
     }
 
     String getStateDescription(EuphoriaState state,EuphoriaBoard gb)

@@ -218,6 +218,7 @@ public class RpcTransmitter implements Runnable,RpcConstants,SimpleObserver
 		{	stop(err.toString());
 		}
 		}
+		//printLog();
 }
 	public void sendUpdateRequired() { sendMessage(Command.UpdateRequired.name()); }
 	
@@ -231,7 +232,9 @@ public class RpcTransmitter implements Runnable,RpcConstants,SimpleObserver
 			processMessages();
 			if(!serviceProvider.rpcIsActive())
 				{  if(serviceProvider!=initialProvider) { switchServiceProviders(initialProvider); }
-					else { stop("server stopped"); }
+					else 
+						{ stop("server stopped"); 
+						}
 				}
 		}
 		switchServiceProviders(null);

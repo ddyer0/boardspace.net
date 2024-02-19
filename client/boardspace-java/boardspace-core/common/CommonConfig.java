@@ -135,8 +135,6 @@ public interface CommonConfig extends UniversalConstants {
 	String SERVERNAME = "serverName";
 	String GAMESERVERNAME = "gameservername";
 	String TESTVERSION = "testversion";
-	String CLASSDIR = "classdir";
-	String TESTSERVER = "testserver";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";
 	String icon_image_name = "boardspace-icon-small.png";

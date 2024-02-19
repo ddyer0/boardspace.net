@@ -99,8 +99,8 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 		 exitRequest = true;
 		}
 	}
-
-	public RpcReceiver()
+	// don't call, use RpcReceiver.getInstance();
+	private RpcReceiver()
 	{	
 	}
 

@@ -38,7 +38,9 @@ import lib.InternationalStrings;
 import lib.Utf8Reader;
 
 /**
- * this is the uploader that uploads the contents of masterStrings to a database.
+ * this is the uploader that uploads the contents of masterStrings to a database.  
+ * it's only relevant to maintaining the translation strings for a live web site
+ * and using it requires that you have an active mysql server set up somewhere.
  * 
  * @author ddyer
  *

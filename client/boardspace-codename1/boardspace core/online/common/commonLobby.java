@@ -167,16 +167,17 @@ public class commonLobby extends commonPanel
 	implements Runnable, LobbyConstants, DeferredEventHandler
 { 
 	static String [] shared_lobby_info = {
-		    OnlineConstants.PREFERREDGAME,
-		    OnlineConstants.FAVORITES,
-		    OnlineConstants.PICTURE,
-		    OnlineConstants.COUNTRY,
-		    OnlineConstants.LATITUDE,
-		    OnlineConstants.LOGITUDE,
+		    PREFERREDGAME,
+		    FAVORITES,
+		    PICTURE,
+		    COUNTRY,
+		    LATITUDE,
+		    LOGITUDE,
 		    G.LANGUAGE,
-		    OnlineConstants.IDENT_INFO,OnlineConstants.CHALLENGE,
+		    IDENT_INFO,
+		    CHALLENGE,
 		    ConnectionManager.UID,
-		    OnlineConstants.HOSTUID,
+		    HOSTUID,
 		};
 
 	private static final String CoinFlipMessage = "Coin flip from #1 : #2";
@@ -379,7 +380,7 @@ private void ReStarting(boolean recon)
   movingToSess=-1;
   myNetConn.Connect("Lobby "+G.getPlatformName(),
 		  			sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
-		  			sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1));
+		  			sharedInfo.getInt(LOBBYPORT,-1));
 
   PutInSess(users.primaryUser(),null,0);
   }
@@ -389,17 +390,17 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
   {  
 	//G.startDeadlockDetector(); //never stops
 
-	info.putString(OnlineConstants.VIEWERCLASS,"L:-common.lobbyCanvas");
+	info.putString(VIEWERCLASS,"L:-common.lobbyCanvas");
     info.putInt(ConnectionManager.SESSION,0);
     isTestServer = info.getBoolean(TESTSERVER,false);
     info.put(exCanvas.NETCONN,myNetConn);	// for debugging
 	super.init(info,frame);
-    CreateChat(info.getBoolean(OnlineConstants.CHATFRAMED,false) || G.smallFrame());
+    CreateChat(info.getBoolean(CHATFRAMED,false) || G.smallFrame());
 
 	CanvasProtocol can = myCanvas;
     if ((can == null) && !chatOnly )
     {
-    String classname = info.getString(OnlineConstants.VIEWERCLASS,"");
+    String classname = info.getString(VIEWERCLASS,"");
     if (classname!=null && !"".equals(classname) && !"none".equals(classname))
         {
     	 can = (CanvasProtocol) G.MakeInstance(classname);
@@ -429,7 +430,7 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     prim.isNewbie = played<10;
 
     
-    String fr = G.getString(OnlineConstants.FRAMENAME,DEFAULTFRAMENAME);
+    String fr = G.getString(FRAMENAME,DEFAULTFRAMENAME);
     frameName = G.isCodename1()? fr :  s.get(WebsiteMessage,fr);
         
     
@@ -701,8 +702,8 @@ private boolean process_ECHO_INTRO_SELF(String messType,StringTokenizer localSTx
       me.sessionKey = myNetConn.sessionKey;
       me.localIP=myNetConn.ip;
       String host = G.getHostUID();
-      me.setInfo(OnlineConstants.HOSTUID,host);
-      sharedInfo.putString(OnlineConstants.HOSTUID,host);
+      me.setInfo(HOSTUID,host);
+      sharedInfo.putString(HOSTUID,host);
       SetMyName(me.name,false,me.uid);
 
       
@@ -720,7 +721,7 @@ private boolean process_ECHO_INTRO_SELF(String messType,StringTokenizer localSTx
       sendMessage(NetConn.SEND_PING);
       }
       String idstring = localip  + "-"+me.localIP;
-      sharedInfo.putString(OnlineConstants.IDENT_INFO,idstring);
+      sharedInfo.putString(IDENT_INFO,idstring);
       return(true);
     }
     return(false);
@@ -1037,7 +1038,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
            while(localST.hasMoreTokens()) 
                { val += ((val==empty)?empty:" ") + localST.nextToken(); }
           user.setInfo(tok,val);
-          if(OnlineConstants.IDENT_INFO.equals(tok)
+          if(IDENT_INFO.equals(tok)
              && !user.ignored
              && "true".equals(IgnoredUsers.get(val)))
             {
@@ -1835,7 +1836,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     
 
     //after robot and self are added as users, use the ranking string supplied from the login
-    setUIDRankings(new StringTokenizer(sharedInfo.getString(OnlineConstants.UIDRANKING,"")),false);
+    setUIDRankings(new StringTokenizer(sharedInfo.getString(UIDRANKING,"")),false);
     PreloadClass("G:game.Game");	// load the game support stuff
     try 
     {
@@ -1873,8 +1874,8 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
       
       if(noChallengeState!=noChallenge.getState())     // maybe turned off challenges
         { noChallengeState = !noChallengeState;
-          sharedInfo.putBoolean(OnlineConstants.CHALLENGE,noChallengeState);
-          SendMyInfo(OnlineConstants.CHALLENGE);  //tell the world
+          sharedInfo.putBoolean(CHALLENGE,noChallengeState);
+          SendMyInfo(CHALLENGE);  //tell the world
         }
        boolean sound = myFrame.doSound();
        if(sound!=soundState)

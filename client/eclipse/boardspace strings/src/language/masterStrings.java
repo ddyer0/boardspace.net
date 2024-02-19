@@ -134,6 +134,14 @@ import barca.BarcaConstants;
 import blackdeath.BlackDeathConstants;
 import static online.game.Game.GameStrings;
 import static online.game.Game.GameStringPairs;
+
+/**
+ * this is the master list of places to grab strings to feed into the
+ * translation database.   In some legacy cases, it contains the actual
+ * translations.  The preferred "modern" method is that a "putStrings()"
+ * method with no parameters does the work.
+ * 
+ */
 //
 // available font families: 
 //  serif (timesroman)

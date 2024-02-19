@@ -25,10 +25,6 @@ public interface LobbyConstants extends OnlineConstants
 {	
 	static final int MAJOR_VERSION = 4;
 	static final int MINOR_VERSION = 0;
-    static final int DEFAULTWIDTH = 620;	// also the minimum width and height
-    static final int DEFAULTHEIGHT = 660;
-
-	static final String DEFAULTFRAMENAME = "Lobby";
 
     static final Color lightBlue = new Color(153, 153, 255);
     static final Color rose = new Color(140, 204, 204);
@@ -65,8 +61,6 @@ public interface LobbyConstants extends OnlineConstants
     static final String WebsiteMessage = "website";
     static final String RestartMessage = "Restart";
     static final String DiscardGameMessage = "Discard This Game";
-    static final String LobbyName = "Lobby";
-    static final String LauncherName = "Launcher";
     static final String ConnectionErrorMessage = "Connection error";
     
     static final String LobbyMessagePairs[][] = 

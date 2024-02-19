@@ -45,7 +45,7 @@ public class Session implements LobbyConstants
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,
-        OnlineConstants.CHATFRAMED,
+        CHATFRAMED,
     	};
 
 	public static final int MAXPLAYERSPERGAME = 12;
@@ -687,8 +687,8 @@ public class Session implements LobbyConstants
 		  String gamename = GI.gameName;
 		  String gametypeid = GI.id;
 		 ExtendedHashtable myInfo = new ExtendedHashtable();
-		 myInfo.putInt(OnlineConstants.SAVE_GAME_INDEX,GI.dirNum);
-		 myInfo.putObj(OnlineConstants.SEATINGCHART,
+		 myInfo.putInt(SAVE_GAME_INDEX,GI.dirNum);
+		 myInfo.putObj(SEATINGCHART,
 				 seatingChart==null
 				 	?SeatingChart.defaultSeatingChart(startingNplayers)
 				 	:seatingChart);
@@ -728,46 +728,46 @@ public class Session implements LobbyConstants
 			 	}
 			 	    activeColorMap = ci;
 		 	};
-		 myInfo.put(OnlineConstants.TIMECONTROL,startingTimeControl);
+		 myInfo.put(TIMECONTROL,startingTimeControl);
 		 myInfo.put(KEYWORD_COLORMAP,activeColorMap);
-		 myInfo.putInt(OnlineConstants.NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
-		 myInfo.putInt(OnlineConstants.PLAYERS_IN_GAME,
+		 myInfo.putInt(NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
+		 myInfo.putInt(PLAYERS_IN_GAME,
 				 			Math.max(spectator
 				 				?numActivePlayers
 				 				:numOpps+((robotGame!=null)?1:0),GI.minPlayers));
-		 myInfo.putBoolean(OnlineConstants.SPECTATOR,spectator);
+		 myInfo.putBoolean(SPECTATOR,spectator);
 		 myInfo.putInt(ConnectionManager.SESSION,gameIndex);
 		 myInfo.putString(ConnectionManager.SESSIONPASSWORD,password);
 	
-		 myInfo.putInt(OnlineConstants.RANDOMSEED,seedValue);  //seed for random sequence
-		 myInfo.putBoolean(OnlineConstants.GUEST,primaryUser.isGuest);
-		 myInfo.putBoolean(OnlineConstants.NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
-		 myInfo.putString(OnlineConstants.GAMEUID,startingName);
+		 myInfo.putInt(RANDOMSEED,seedValue);  //seed for random sequence
+		 myInfo.putBoolean(GUEST,primaryUser.isGuest);
+		 myInfo.putBoolean(NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
+		 myInfo.putString(GAMEUID,startingName);
 		 
-		 myInfo.putObj(OnlineConstants.MODE,mode.modeName);
-		 myInfo.putBoolean(OnlineConstants.TOURNAMENTMODE,tournamentMode);
-		 myInfo.putBoolean(OnlineConstants.SOUND,sound);
-		 myInfo.putInt(OnlineConstants.ROTATION,rotation);
+		 myInfo.putObj(MODE,mode.modeName);
+		 myInfo.putBoolean(TOURNAMENTMODE,tournamentMode);
+		 myInfo.putBoolean(SOUND,sound);
+		 myInfo.putInt(ROTATION,rotation);
 		 myInfo.copyFrom(sharedInfo,sharedValues);
 		 
 		 if(robotGame!=null)
 		 {
-		 myInfo.putObj(OnlineConstants.ROBOTGAME,robotGame);
+		 myInfo.putObj(ROBOTGAME,robotGame);
 		 if(startingPlayer!=null)
 			 {
-			 myInfo.putInt(OnlineConstants.ROBOTMASTERORDER, startingPlayer.order);
+			 myInfo.putInt(ROBOTMASTERORDER, startingPlayer.order);
 			 }
-		 myInfo.putInt(OnlineConstants.ROBOTPOSITION,startingRobotPosition);
-		 myInfo.putInt(OnlineConstants.ROBOTORDER,startingRobotOrder);
+		 myInfo.putInt(ROBOTPOSITION,startingRobotPosition);
+		 myInfo.putInt(ROBOTORDER,startingRobotOrder);
 		 }
 		 else {
-			 myInfo.put(OnlineConstants.ROBOTGAME,null);
+			 myInfo.put(ROBOTGAME,null);
 		 }
-		 myInfo.put(OnlineConstants.WEAKROBOT, weakestRobot());
+		 myInfo.put(WEAKROBOT, weakestRobot());
 		 myInfo.putString(GameInfo.GAMETYPE,gametype);
 		 myInfo.putString(GameInfo.GAMENAME,gamename);
-		 myInfo.putString(OnlineConstants.GAMETYPEID,gametypeid);
-		 myInfo.putString(OnlineConstants.VIEWERCLASS,(GI.viewerClass==null)?"none":GI.viewerClass);
+		 myInfo.putString(GAMETYPEID,gametypeid);
+		 myInfo.putString(VIEWERCLASS,(GI.viewerClass==null)?"none":GI.viewerClass);
 		 myInfo.putObj(ConnectionManager.BANNERMODE,sharedInfo.getString(ConnectionManager.BANNERMODE,"N"));
 	
 		 // provide the user ids and host ids to the game, used if we're in pass-n-play mode
@@ -781,7 +781,7 @@ public class Session implements LobbyConstants
 		 // the game itself will treat the slave clients similar to robots.
 		 myInfo.put(ConnectionManager.LAUNCHUSERS,launchUsers);
 		 myInfo.put(ConnectionManager.LAUNCHUSER,launchUser);
-		 myInfo.putInt(OnlineConstants.FIRSTPLAYER, selectedFirstPlayerIndex);
+		 myInfo.putInt(FIRSTPLAYER, selectedFirstPlayerIndex);
 		 theGame.init(myInfo,frame);
 		 
 		 if(G.isCodename1()) 

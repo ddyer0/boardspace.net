@@ -4905,9 +4905,9 @@ public abstract class commonCanvas extends exCanvas
     }
     */
     public boolean singlePlayer() 
-    {	int nPlayers = sharedInfo.getInt(OnlineConstants.PLAYERS_IN_GAME,0);
+    {	int nPlayers = sharedInfo.getInt(PLAYERS_IN_GAME,0);
     	return ( (nPlayers<2) || 
-    				( sharedInfo.get(OnlineConstants.ROBOTGAME)!=null)
+    				( sharedInfo.get(ROBOTGAME)!=null)
     					&& nPlayers==2);	
     }
     
@@ -4953,7 +4953,7 @@ public abstract class commonCanvas extends exCanvas
     	if(gameInfo!=null)
     	{
     	if(gameInfo.variableColorMap)
-    		{ first = sharedInfo.getInt(OnlineConstants.FIRSTPLAYER,0); }
+    		{ first = sharedInfo.getInt(FIRSTPLAYER,0); }
        	if(first<0 && (gameInfo.colorMap!=null)) 
 		{ // if the first player is not specified explicitly, find the player playing color 0
        	  BoardProtocol b = getBoard();
@@ -5042,7 +5042,7 @@ public abstract class commonCanvas extends exCanvas
     {
         super.init(info,frame);
         
-        SeatingChart chart = (SeatingChart)sharedInfo.get(OnlineConstants.SEATINGCHART);
+        SeatingChart chart = (SeatingChart)sharedInfo.get(SEATINGCHART);
         
         if(chart!=null)
         {
@@ -5050,15 +5050,15 @@ public abstract class commonCanvas extends exCanvas
         }
         else if(G.isTable()) { currentViewset = ViewSet.Reverse; }
  
-        TimeControl tc = (TimeControl)info.get(OnlineConstants.TIMECONTROL);
+        TimeControl tc = (TimeControl)info.get(TIMECONTROL);
         if(tc==null) { tc = new TimeControl(TimeControl.Kind.None);}
         timeControl = tc;
         futureTimeControl = tc.copy();
         datePlayed = "";
-        setCanvasRotation(info.getInt(OnlineConstants.ROTATION,0));
+        setCanvasRotation(info.getInt(ROTATION,0));
         if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
-        gameMode = Session.Mode.findMode(info.getString(OnlineConstants.MODE,gameMode.modeName));
-        l.tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
+        gameMode = Session.Mode.findMode(info.getString(MODE,gameMode.modeName));
+        l.tournamentMode = info.getBoolean(TOURNAMENTMODE,false);
 
         Random.setNextIntCompatibility(false);
         gameInfo = info.getGameInfo();
@@ -5168,7 +5168,7 @@ public abstract class commonCanvas extends exCanvas
         
         hidden.showSgf = myFrame.addAction(ShowSGFMessage,deferredEvents);
         hidden.emailSgf = myFrame.addAction(EmailSGFMessage,deferredEvents);
-        setActivePlayer((commonPlayer)info.get(OnlineConstants.MYPLAYER));
+        setActivePlayer((commonPlayer)info.get(MYPLAYER));
         G.Assert(getActivePlayer()!=null,"my player not supplied");
 
         if (canUseDone())
@@ -5189,9 +5189,9 @@ public abstract class commonCanvas extends exCanvas
 
         
         }
-        seatingChart = (SeatingChart)info.get(OnlineConstants.SEATINGCHART);
+        seatingChart = (SeatingChart)info.get(SEATINGCHART);
         if(seatingChart==null) 
-        	{ seatingChart = SeatingChart.defaultSeatingChart(info.getInt(OnlineConstants.PLAYERS_IN_GAME,2)); 
+        	{ seatingChart = SeatingChart.defaultSeatingChart(info.getInt(PLAYERS_IN_GAME,2)); 
         	}
 
         SoundManager.loadASoundClip(turnChangeSoundName);
@@ -6460,9 +6460,9 @@ public abstract class commonCanvas extends exCanvas
 		p.setPlayerName(G.trimQuotes(G.decodeAlphaNumeric(name)),false,this);
 		return(true);
     	}
-    	else if(OnlineConstants.TIME.equals(first)
+    	else if(TIME.equals(first)
    				|| RANKING.equals(first) 
-   				|| OnlineConstants.COUNTRY.equals(first))
+   				|| COUNTRY.equals(first))
     	{
     		p.setPlayerInfo(first,G.restof(tokens)); 
     		return(true);
@@ -6703,11 +6703,11 @@ public abstract class commonCanvas extends exCanvas
                 }
 
                 {
-                    String ct = p.getPlayerInfo(OnlineConstants.COUNTRY);
+                    String ct = p.getPlayerInfo(COUNTRY);
 
                     if ((ct != null) && !("".equals(ct)))
                     {
-                        root.set_property(p.playerString(), OnlineConstants.COUNTRY+" " + ct);
+                        root.set_property(p.playerString(), COUNTRY+" " + ct);
                     }
                 }
                 // properties are being built backwards, so do the name last, which will be first.
@@ -6742,11 +6742,11 @@ public abstract class commonCanvas extends exCanvas
 
             if (p != null)
             {
-                String timestring = p.getPlayerInfo(OnlineConstants.TIME);
+                String timestring = p.getPlayerInfo(TIME);
 
                 if (!"".equals(timestring))
                 {
-                    timestring = " "+OnlineConstants.TIME+" " + timestring;
+                    timestring = " "+TIME+" " + timestring;
                     curr.set_property(p.playerString(), timestring);
                 }
             }
@@ -6836,11 +6836,11 @@ public abstract class commonCanvas extends exCanvas
             }
 
             {
-                String ct = p.getPlayerInfo(OnlineConstants.COUNTRY);
+                String ct = p.getPlayerInfo(COUNTRY);
 
                 if ((ct != null) && !("".equals(ct)))
                 {
-                    ps.println(p.playerString() + "["+OnlineConstants.COUNTRY+" " + ct + "]");
+                    ps.println(p.playerString() + "["+COUNTRY+" " + ct + "]");
                 }
             }
         }
@@ -6878,7 +6878,7 @@ public abstract class commonCanvas extends exCanvas
             int col = p.colourIndex();
             if ((col >= 0))
             {
-                ps.println(p.playerString() + "["+OnlineConstants.TIME+" " +
+                ps.println(p.playerString() + "["+TIME+" " +
                     G.timeString(p.elapsedTime) + " ]");
             }
         }
@@ -7053,7 +7053,7 @@ public abstract class commonCanvas extends exCanvas
     // do time related things for the board.
     private void doTime(commonPlayer whoseTurn,boolean doSound)
     { boolean turnChange = whoseTurn!=hidden.lastPlayer;
-      boolean tournamentMode = sharedInfo.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
+      boolean tournamentMode = sharedInfo.getBoolean(TOURNAMENTMODE,false);
       long currentT = G.Date();
       if(turnChange)
       {	hidden.lastPlayer = whoseTurn;
@@ -7453,7 +7453,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 public String rulesUrl()
 {
 	String ruledefault = gameInfo!=null ? gameInfo.rules : G.debug() ? "rules" : null;
-	return sharedInfo.getString(OnlineConstants.RULES,ruledefault);
+	return sharedInfo.getString(RULES,ruledefault);
 }
 /**
  * display the standard "goal of the game" message, or if there is a 
@@ -8715,7 +8715,7 @@ public void verifyGameRecord()
 	    }
 	    public Bot salvageRobot()
 	    {
-	    	return ((Bot)sharedInfo.get(OnlineConstants.WEAKROBOT));
+	    	return ((Bot)sharedInfo.get(WEAKROBOT));
 	    }
 	    private double currentPlayerRotation()
 		{	commonPlayer wt = whoseTurn();

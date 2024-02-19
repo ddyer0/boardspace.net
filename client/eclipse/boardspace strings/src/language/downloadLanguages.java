@@ -37,7 +37,14 @@ import com.jcraft.jsch.Session;
 
 import lib.G;
 
-
+/**
+ * this is the downloader that downloads the contents of masterStrings from a database.  
+ * it's only relevant to maintaining the translation strings for a live web site
+ * and using it requires that you have an active mysql server set up somewhere.
+ * 
+ * @author ddyer
+ *
+ */
 public class downloadLanguages {
 	static Session session = null;
 

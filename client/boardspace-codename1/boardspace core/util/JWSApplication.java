@@ -33,7 +33,6 @@ import lib.SoundManager;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.commonPanel;
-import online.common.LobbyConstants;
 import online.common.OnlineConstants;
 import rpc.RpcReceiver;
 import udp.PlaytableServer;
@@ -70,14 +69,18 @@ import vnc.VNCService;
  * @author ddyer
  *
  */
-public class JWSApplication implements Config,LobbyConstants
+public class JWSApplication implements Config,OnlineConstants
 {
 
 	// this should be the complete set of applet parameters that
 	// can ever be supplied, except for an indefinite number of
 	// reviewer directories
 	static final String DATALOCATION = "datalocation";
-
+	static final String MAINCLASS = "mainclass";
+	static final String ROOTNAME = "rootname";
+    static final String OFFLINE = "offline";
+    static final String FRAMEWIDTH = "framewidth";    
+    static final String FRAMEHEIGHT = "frameheight";
   
 	private static void init()
     {
@@ -140,18 +143,20 @@ public class JWSApplication implements Config,LobbyConstants
         PlaytableServer server = isVNC ? PlaytableStack.getSelectedServer() : null;
     	boolean offlineLauncher = !isVNC && offline && !isViewer && offlineTableLauncher;
         boolean isTable = offline && !offlineLauncher && G.isTable() ;
-        String classname = isViewer
+        String classname = G.getString(MAINCLASS,
+        					isViewer
         					? "G:game.Game" 
         					: isVNC|isTable|offlineLauncher
         						? "lib.commonPanel"
-        					: G.getString(DefaultGameClass,"online.common.commonLobby");
+        					: G.getString(DefaultGameClass,"online.common.commonLobby"));
         G.print("StartLframe "+classname);
         G.setIdString(""+G.getCodeBase());
         commonPanel myL = (commonPanel) G.MakeInstance(classname);
         G.print("Myl "+myL);
         if (myL != null)
         {
-            String rootname = isVNC
+            String rootname = G.getString(ROOTNAME,
+            				isVNC
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
@@ -159,29 +164,30 @@ public class JWSApplication implements Config,LobbyConstants
             							? gt 
             							: gn!=null
             								? gn 
-            								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName);
+            								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
         	XFrame fr = new XFrame(rootname);
         	ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
+            	String vc = G.getString(OnlineConstants.VIEWERCLASS,
+              		  isVNC ? "vnc.AuxViewer" : "online.common.SeatingViewer");
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
             		RpcReceiver.start(server,sharedInfo,myL,fr);
             	  }
-            	  if(G.turnBased())
+            	  else if(G.turnBased())
             	  {
             	   CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance("online.common.TurnBasedViewer");
             	   // init first, then add to the frame, to avoid races in lockAndLoadImages
             	   viewer.init(sharedInfo,fr);
             	   myL.setCanvas(viewer);           		  
             	  }
-            	  else 
+            	  else if(!"none".equals(vc))
             	  {
-            	  CanvasProtocol viewer = isVNC 
-            			  					? (CanvasProtocol)G.MakeInstance("vnc.AuxViewer")
-            			  					: (CanvasProtocol)G.MakeInstance("online.common.SeatingViewer");
+                      
+                      CanvasProtocol viewer = (CanvasProtocol)G.MakeInstance(vc);
             	  // init first, then add to the frame, to avoid races in lockAndLoadImages
             	  viewer.init(sharedInfo,fr);
             	  myL.setCanvas(viewer);
@@ -200,8 +206,8 @@ public class JWSApplication implements Config,LobbyConstants
             double sc = G.getDisplayScale();
             fx = 100;
             fy = 50;
-            fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
-            fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
+            fw = (int)(sc*G.getInt(FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
+            fh = (int)(sc*G.getInt(FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
             }
             fr.setContentPane(myL);
             fr.setInitialBounds(fx,fy,fw,fh );
@@ -327,7 +333,7 @@ public class JWSApplication implements Config,LobbyConstants
 	    	G.setOffline(offline);
 	    	if(offline) { OfflineGames.pruneOfflineGames(90);}
 	    	
-	        if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
+	        if(G.getString(VIEWERCLASS,null)==null)
 	        {	
 			  	do { 
 			  		boolean wasOff = G.offline();

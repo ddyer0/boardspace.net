@@ -49,6 +49,7 @@ import lib.PopupManager;
 import online.common.Session.JoinMode;
 import udp.UDPService;
 import lib.Random;
+import lib.RepaintManager.RepaintStrategy;
 import lib.ScrollArea;
 import lib.Sort;
 import lib.SoundManager;
@@ -366,6 +367,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  { super.init(info,frame);
 	    Image icon = Image.getImage(IMAGEPATH+CommonConfig.lobby_icon_image_name);
 	    myFrame.setIconAsImage(icon);
+	    if(painter.repaintStrategy==RepaintStrategy.Deferred)
+	    	{ painter.setRepaintStrategy(RepaintStrategy.Direct_SingleBuffer);
+	    	}
 	    painter.drawLockRequired = false;
 	    if(G.isIOS()) 
 	    	{ 
@@ -374,7 +378,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	painter.setRepaintStrategy(lib.RepaintManager.RepaintStrategy.SingleBuffer); 
 	    	}
 	    /* test here to see what shape of polygon to create */
-	    isTestServer = info.getBoolean(Config.TESTSERVER,false);
+	    isTestServer = info.getBoolean(TESTSERVER,false);
 	    GameInfo.adjustGameEnables();
 	    setBackground(Color.white);
 	    adjustFonts(1.0);
@@ -667,7 +671,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  	 if(mouse.getIdleTime()>idleTimeout)
 	  	 {
   		 // draw a bubble with the player's favorite games
-		 String fav = user.getInfo(OnlineConstants.FAVORITES);
+					 String fav = user.getInfo(FAVORITES);
 		 if("".equals(fav) || (fav==null)) { fav = s.get(NoGamesMessage); }
 		 else { StringTokenizer tok = new StringTokenizer(fav);
 		 		fav = "";
@@ -903,12 +907,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      for (int sidx=0;sidx<numberOfUsers;sidx++) 
 	      {  User user = uarr[sidx];
 	        if(user!=null)
-	        { String lat = user.getInfo(OnlineConstants.LATITUDE);
-	          String lon = user.getInfo(OnlineConstants.LOGITUDE);
+	        { String lat = user.getInfo(LATITUDE);
+	          String lon = user.getInfo(LOGITUDE);
 	          mapper.addPlayer(lat,lon,user.publicName);
 	        }
 	      }
-	      mapper.addPlayer(G.getString(OnlineConstants.LATITUDE,null),G.getString(OnlineConstants.LOGITUDE,null),
+	      mapper.addPlayer(G.getString(LATITUDE,null),G.getString(LOGITUDE,null),
 	    		  	users.primaryUser().publicName);
 	      mapper.setDataReady();
 	    if(!mapper.MapDraw(inG,(int)(SCALE*8),(int)(SCALE*50),(int)(SCALE*256),(int)(SCALE*128)))
@@ -2918,7 +2922,7 @@ private void DoMute(User user,int ex,int ey)
 	  					user.publicName),1);
    muteMenu.addMenuItem(s.get(ShowInfoMessage, user.publicName),3);								
    int sessn=users.primaryUser().inviteSession;
-   if((sessn>0) && !"true".equals(user.getInfo(OnlineConstants.CHALLENGE)) && !user.nochallengeMe)
+   if((sessn>0) && !"true".equals(user.getInfo(CHALLENGE)) && !user.nochallengeMe)
 		{ muteMenu.addMenuItem(s.get(InviteMessage,user.publicName,""+sessn),2);
 		}
    muteMenu.show(ex,ey);
@@ -2930,7 +2934,7 @@ private void changeMute(int index)
 		{
 		case 0:	
 				muteUser.ignored = !muteUser.ignored;
-				String id = muteUser.getInfo(OnlineConstants.IDENT_INFO);
+				String id = muteUser.getInfo(IDENT_INFO);
 				String ignored = muteUser.ignored?"true":"false";
 				if(id!=null)
 					{ lobby.IgnoredUsers.put(id,ignored); 

@@ -63,6 +63,7 @@ class JBar extends JMenuBar
 public class JFrame extends javax.swing.JFrame 
 	implements TopFrameProtocol,SizeProvider,Config,WindowListener,ImageConsumer
 {	ImageLoader loader = new ImageLoader(this);
+	static final String FIXEDSIZE = "fixedsize";
 	private boolean useMenuBar = true;		// if true, use the local menu bar
 	private boolean closeable = true;
 	public void setCloseable(boolean v) { closeable = v; }
@@ -281,7 +282,9 @@ public void validateTree()
 		int fh = inh;
         Preferences prefs = Preferences.userRoot();
         String suffix ="-"+getTitle();
-        String bounds = prefs.get(FRAMEBOUNDS+suffix,null);
+        String bounds = G.getBoolean(FIXEDSIZE,false)
+        					? null 
+        					: prefs.get(FRAMEBOUNDS+suffix,null);
         if(bounds!=null) { 
         	String split[] = G.split(bounds,',');
         	if(split!=null && split.length==4)

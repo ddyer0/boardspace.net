@@ -72,6 +72,7 @@ public class RpcListener implements Runnable,Config
 	public void start()
 	{	if(isSupported())
 		{	
+		RpcService.services.dead = false;
 		new Thread(this,"Rpc Listener on "+port).start();
 		}
 	else { G.print("Server sockets are not supported here");

@@ -94,7 +94,7 @@ public class User implements LobbyConstants,CompareTo<User>
     }
     public String getHostUID()
     {
-    	String host = getInfo(OnlineConstants.HOSTUID);
+    	String host = getInfo(HOSTUID);
     	return((host == null) ? "unknown" : host);
     }
     

@@ -8,7 +8,7 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/boardspace"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/boardspace core"/>
-	<classpathentry kind="lib" path="F:/java/jsch-0.1.55/jsch-0.1.55.jar"/>
-	<classpathentry kind="lib" path="F:/java/mysql-connector-java-5.1.10/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="F:/github/boardspace.net/client/eclipse/jars/jsch-0.1.55.jar"/>
+	<classpathentry kind="lib" path="F:/github/boardspace.net/client/eclipse/jars/mysql-connector-java-8.0.20.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -24,6 +24,7 @@ import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.UrlResult;
 import lib.XXTEA;
+import online.common.OnlineConstants;
 
 
 /**
@@ -35,7 +36,7 @@ import lib.XXTEA;
  *
  */
 @SuppressWarnings("deprecation")
-public class Login implements SimpleObserver,Config
+public class Login implements SimpleObserver,Config,OnlineConstants
 {
 
     

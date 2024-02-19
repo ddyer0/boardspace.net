@@ -2378,7 +2378,7 @@ private Color playerBackground[] = {
     }
     public Text colorize(String str)
     {
-    	return TextChunk.colorize(str,s,gameEventText);
+    	return TextChunk.colorize(str,null,gameEventText);
     }
 
     String getStateDescription(EuphoriaState state,EuphoriaBoard gb)
@@ -2554,7 +2554,6 @@ private Color playerBackground[] = {
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       
        gameLog.redrawGameLog2(gc, selectPos, logRect,
     		   Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardBoldFont());
@@ -3345,11 +3344,10 @@ private Color playerBackground[] = {
     // 	return(super.gameProgressString());
     // }
 
+
     public int PrettyScoreForPlayer(BoardProtocol gb, commonPlayer p)
     {	return(((EuphoriaBoard)gb).PrettyScoreForPlayer(p.boardIndex));
     }
-
-
 
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 

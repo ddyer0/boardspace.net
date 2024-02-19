@@ -418,7 +418,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     	robotTime = v.timeControl().copy();
      	robotStrategy = strategy;
      	
-        RANDOMIZE = G.getBoolean(OnlineConstants.RANDOMIZEBOT,RANDOMIZE);
+        RANDOMIZE = G.getBoolean(RANDOMIZEBOT,RANDOMIZE);
         RANDOMSEED = G.getInt(OnlineConstants.RANDOMSEED,0);
         rand = (RANDOMIZE && (RANDOMSEED==0)) ? new Random() : new Random(RANDOMSEED);
         search_summary = null;

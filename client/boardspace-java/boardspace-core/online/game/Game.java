@@ -684,12 +684,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	boolean offline = G.offline();
     	gameInfo = info.getGameInfo();
     	int defPlayers = gameInfo==null ? 2 : gameInfo.minPlayers;
-    	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,defPlayers);
-        numberOfPlayerConnections = info.getInt(OnlineConstants.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
+    	int playersInGame = info.getInt(PLAYERS_IN_GAME,defPlayers);
+        numberOfPlayerConnections = info.getInt(NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
     	playerConnections = new commonPlayer[playersInGame];
-    	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(OnlineConstants.MODE,Session.Mode.Game_Mode.modeName));
+    	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(MODE,Session.Mode.Game_Mode.modeName));
         chatOnly = gameMode==Session.Mode.Chat_Mode;
-        gameTypeId = info.getString(OnlineConstants.GAMETYPEID,gameInfo==null ? "xx" : gameInfo.id);
+        gameTypeId = info.getString(GAMETYPEID,gameInfo==null ? "xx" : gameInfo.id);
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	LaunchUser lu = my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
@@ -699,7 +699,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         reviewOnly = (gameMode==Session.Mode.Review_Mode) || info.getBoolean(REVIEWONLY,false);
        
 
-        my.setIsSpectator(reviewOnly || info.getBoolean(OnlineConstants.SPECTATOR,false));
+        my.setIsSpectator(reviewOnly || info.getBoolean(SPECTATOR,false));
         //
         // the online lobby and offline launcher both provide LaunchUsers, but the direct
         // launch does not.  We want the commonPlayer to look the same regardless how it
@@ -733,19 +733,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	launchUsers = ls.toArray();
         }
         
-    	info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
+    	info.put(MYPLAYER,my);			// required by the viewer
        
  
         
         super.init(info,frame);		// viewer is created here
         
-        CreateChat(info.getBoolean(OnlineConstants.CHATFRAMED,false) || G.smallFrame());
+        CreateChat(info.getBoolean(CHATFRAMED,false) || G.smallFrame());
 
         CanvasProtocol can = myCanvas;
         if ((can == null) && !chatOnly )
         {
         String defaultclass = gameInfo==null ? "" : gameInfo.viewerClass;
-        String classname = info.getString(OnlineConstants.VIEWERCLASS,defaultclass);
+        String classname = info.getString(VIEWERCLASS,defaultclass);
         if(gameInfo!=null )
         {	// this is to assure that games started directly, without going through
         	// the launcher, don't have to specify a default color map
@@ -768,9 +768,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         recordedHistory = "";
         
 
-       	if (info.get(OnlineConstants.RANDOMSEED) == null)
+       	if (info.get(RANDOMSEED) == null)
     	{
-     	info.putInt(OnlineConstants.RANDOMSEED,(int)G.Date());
+     	info.putInt(RANDOMSEED,(int)G.Date());
     	}
  
 
@@ -798,15 +798,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
          
         unrankedMode = gameMode==Session.Mode.Unranked_Mode;
         masterMode = gameMode==Session.Mode.Master_Mode;
-		tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
-        isGuest = info.getBoolean(OnlineConstants.GUEST,false);
-        UIDstring = info.getString(OnlineConstants.GAMEUID,"");
+		tournamentMode = info.getBoolean(TOURNAMENTMODE,false);
+        isGuest = info.getBoolean(GUEST,false);
+        UIDstring = info.getString(GAMEUID,"");
         if("".equals(UIDstring) && offline)
         {
         	UIDstring = "UU!"+gameTypeId+"-offline-"+playersInGame;
         }
-        doNotRecord = G.getBoolean(OnlineConstants.DONOTRECORD, false);
-        doSound = info.getBoolean(OnlineConstants.SOUND,true);
+        doNotRecord = G.getBoolean(DONOTRECORD, false);
+        doSound = info.getBoolean(SOUND,true);
         myFrame.setDoSound(doSound);
         serverName = info.getString(SERVERNAME);
 
@@ -821,7 +821,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         // G.print("init "+my);
  
-        robot = (Bot)info.get(OnlineConstants.ROBOTGAME);
+        robot = (Bot)info.get(ROBOTGAME);
         if (!my.isSpectator() && robot!=null)
         {	
 
@@ -829,9 +829,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	// as the "robot master" who will actually run the robot.  That player sends
         	// messages that the robot would have sent if he were real.  The tricky bit
         	// is if the robot master quits.
-        	robotMasterOrder = info.getInt(OnlineConstants.ROBOTMASTERORDER);
-            robotPosition = info.getInt(OnlineConstants.ROBOTPOSITION);
-            robotOrder = info.getInt(OnlineConstants.ROBOTORDER);
+        	robotMasterOrder = info.getInt(ROBOTMASTERORDER);
+            robotPosition = info.getInt(ROBOTPOSITION);
+            robotOrder = info.getInt(ROBOTORDER);
             numberOfPlayerConnections++;
         }
                 
@@ -866,7 +866,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
     {	
-    	String key = REVIEWERDIR + sharedInfo.getInt(OnlineConstants.SAVE_GAME_INDEX,-1);
+    	String key = REVIEWERDIR + sharedInfo.getInt(SAVE_GAME_INDEX,-1);
     	String dir = G.getString(key,null);
     	return(dir);
     }
@@ -1357,7 +1357,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     // send a player a time string he needs
     private void sendOneTime(commonPlayer p)
-    {	sendMessage(NetConn.SEND_AS_ROBOT_ECHO+p.channel+" "+OnlineConstants.TIME+" "+p.elapsedTime);
+    {	sendMessage(NetConn.SEND_AS_ROBOT_ECHO+p.channel+" "+TIME+" "+p.elapsedTime);
  
     }
     private void sendMyName(int toindex)
@@ -1742,7 +1742,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {   int val = G.IntToken(myST);
                     if(!iRunThisRobot(player)) { player.UpdateProgress(val / 100.0); }
                 }
-                else if (commandStr.equals(OnlineConstants.TIME))
+                else if (commandStr.equals(TIME))
                 {
                     if(!iRunThisRobot(player)) { GetTime(player, myST); }
                 }
@@ -2893,7 +2893,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
    		 //G.print("Reg "+otherUser);
     	 sendRegister(order,pos /* eliminate seat as a consideration */,otherUser.user.publicName,otherUser.user.uid,chan,getGameRevision());
-    	 v.addLocalPlayer(otherUser);
+    	 if(v!=null) { v.addLocalPlayer(otherUser); }
     	 // register the robot before we register our color, so the bot
     	 // will echo and be set up before we become ready to play.
     	 if(otherUser.order==robotMasterOrder)
@@ -2931,7 +2931,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
            setPlayerName(p,name,true);
            p.setOrder(order);
            p.uid = uid;
-           v.changePlayerList(p,null);		// should replace no player
+           if(v!=null) { v.changePlayerList(p,null);}		// should replace no player
            return (p); /* already exists */
         }
 
@@ -3072,7 +3072,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             else if ((myNetConn!=null) && myNetConn.haveConn())
             {
                 GameResultString = NetConn.SEND_GAME_SGF +
-                sharedInfo.getInt(OnlineConstants.SAVE_GAME_INDEX) + " " +
+                sharedInfo.getInt(SAVE_GAME_INDEX) + " " +
                     filename + " " + grs;
 
                 if (sendMessage(GameResultString))
@@ -3261,7 +3261,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
 
         urlStr += ("&key=" + myNetConn.sessionKey + "&session=" + sessionNum +
-        "&sock=" + sharedInfo.getInt(OnlineConstants.LOBBYPORT) + "&mode=" + mode + tm);
+        "&sock=" + sharedInfo.getInt(LOBBYPORT) + "&mode=" + mode + tm);
         //add fraud detection hacks
         {
             int focus = focusPercent();
@@ -3423,7 +3423,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	}
         }
         urlStr += ("&key=" + myNetConn.sessionKey + "&session=" + sessionNum +
-        "&sock=" + sharedInfo.getInt(OnlineConstants.LOBBYPORT) + "&mode=" + mode + tm);
+        "&sock=" + sharedInfo.getInt(LOBBYPORT) + "&mode=" + mode + tm);
         //add fraud detection hacks
         {
             int focus = focusPercent();
@@ -3791,7 +3791,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
     	if (!my.isSpectator())
         {
-    		boolean robo = G.getBoolean(OnlineConstants.ROBOT, false);
+    		boolean robo = G.getBoolean(ROBOT, false);
             if (robo)
             { //start a robot as the primary player
                 System.out.println("Starting primary player bot");
@@ -3865,7 +3865,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	if((p==my && !p.isSpectator()) || iRunThisRobot(p))
     	{
 		String tmsg = ((p==my) ? NetConn.SEND_GROUP : NetConn.SEND_AS_ROBOT_ECHO+p.channel+" ")
-								+ OnlineConstants.TIME+" " + p.elapsedTime + " " + p.clock + " " + p.ping;
+								+ TIME+" " + p.elapsedTime + " " + p.clock + " " + p.ping;
 		// send always, the other players use it to notice we're still alive
 		sendMessage(tmsg);
 		}
@@ -3888,7 +3888,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         msg.append(" ");
         if(v!=null)
         {	
-        	TimeControl tc = (TimeControl)sharedInfo.get(OnlineConstants.TIMECONTROL);
+        	TimeControl tc = (TimeControl)sharedInfo.get(TIMECONTROL);
         	if(tc!=null)
             	{
             		msg.append(sgf_names.timecontrol_property);

@@ -39,7 +39,7 @@ import online.search.SimpleRobotProtocol;
  * by the game's {@link lib.exCanvas#setLocalBounds} method
  *
  */
-public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
+public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.common.OnlineConstants
 { //the main properties
     public int boardIndex = -1; //index in board data structures
     public int channel = -1; 	//communication channel, or fake channel for robots
@@ -778,7 +778,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     public void setPlayerInfo(String key, String val)
     {	
         info.put(key, val);
-        if(OnlineConstants.TIME.equals(key)) 
+        if(TIME.equals(key)) 
         { setElapsedTime(val);
         }
     }

@@ -29,11 +29,11 @@ import lib.UniversalConstants;
  *
  */
 public interface PlayConstants extends UniversalConstants {
-	
     static final String KEYWORD_START_STORY = "story";		// new "story" format
     static final String KEYWORD_TRACKMOUSE = "trackMouse";
     static final String KEYWORD_SCROLL = "scroll";
     static final String KEYWORD_END_HISTORY = ".end.";
+	static final String IdNotFoundError = "Id %s not found";	// not a translated string
 	
  
 
