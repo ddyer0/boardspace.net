@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="palabra/decks/" kind="src" path="boardspace-games"/>
+	<classpathentry kind="src" path="boardspace-games"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/boardspace core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bsh"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/joi"/>
