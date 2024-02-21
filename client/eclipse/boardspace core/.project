@@ -22,7 +22,7 @@
 		<link>
 			<name>boardspace-core</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-java/boardspace-core</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-java/boardspace-core</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

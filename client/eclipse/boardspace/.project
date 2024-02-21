@@ -19,7 +19,7 @@
 		<link>
 			<name>boardspace-games</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-java/boardspace-games</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-java/boardspace-games</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

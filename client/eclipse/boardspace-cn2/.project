@@ -28,37 +28,32 @@
 		<link>
 			<name>boardspace core</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace core</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/boardspace%20core</locationURI>
 		</link>
 		<link>
 			<name>boardspace games</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace games</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/boardspace%20games</locationURI>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/codename1</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/codename1</locationURI>
 		</link>
 		<link>
 			<name>dev-icons</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/dev-icons</location>
+			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/dev-icons</locationURI>
 		</link>
 		<link>
 			<name>java</name>
 			<type>2</type>
-			<location>G:/share/projects/jzlib-codename1/jzlib-1.1.3/src/main/java</location>
-		</link>
-		<link>
-			<name>jazzlib</name>
-			<type>2</type>
-			<location>G:/share/projects/jazzlib/codename1</location>
+			<locationURI>projects/jzlib-codename1/jzlib-1.1.3/src/main/java</locationURI>
 		</link>
 		<link>
 			<name>native2</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/native</location>
+			<locationURI>projects/boardspace-codename1/native</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
@@ -72,4 +67,10 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>projects</name>
+			<value>file:/G:/share/projects</value>
+		</variable>
+	</variableList>
 </projectDescription>
