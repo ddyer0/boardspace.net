@@ -1,0 +1,243 @@
+Apache Maven 3.9.3 (21122926829f1ead511c958d89bd2f672198ae9f)
+Maven home: F:\programs\apache-maven-3.9.3
+Java version: 18, vendor: Oracle Corporation, runtime: F:\java\jdk-18
+Default locale: en_US, platform encoding: UTF-8
+OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
+[DEBUG] Created new class realm maven.api
+[DEBUG] Importing foreign packages into class realm maven.api
+[DEBUG]   Imported: javax.annotation.* < plexus.core
+[DEBUG]   Imported: javax.annotation.security.* < plexus.core
+[DEBUG]   Imported: javax.inject.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.artifact < plexus.core
+[DEBUG]   Imported: org.apache.maven.classrealm < plexus.core
+[DEBUG]   Imported: org.apache.maven.cli < plexus.core
+[DEBUG]   Imported: org.apache.maven.configuration < plexus.core
+[DEBUG]   Imported: org.apache.maven.exception < plexus.core
+[DEBUG]   Imported: org.apache.maven.execution < plexus.core
+[DEBUG]   Imported: org.apache.maven.execution.scope < plexus.core
+[DEBUG]   Imported: org.apache.maven.graph < plexus.core
+[DEBUG]   Imported: org.apache.maven.lifecycle < plexus.core
+[DEBUG]   Imported: org.apache.maven.model < plexus.core
+[DEBUG]   Imported: org.apache.maven.monitor < plexus.core
+[DEBUG]   Imported: org.apache.maven.plugin < plexus.core
+[DEBUG]   Imported: org.apache.maven.profiles < plexus.core
+[DEBUG]   Imported: org.apache.maven.project < plexus.core
+[DEBUG]   Imported: org.apache.maven.reporting < plexus.core
+[DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.util < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[DEBUG]   Imported: org.fusesource.jansi.* < plexus.core
+[DEBUG]   Imported: org.slf4j.* < plexus.core
+[DEBUG]   Imported: org.slf4j.event.* < plexus.core
+[DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[DEBUG] Populating class realm maven.api
+[DEBUG] Created adapter factory; available factories [file-lock, rwlock-local, semaphore-local, noop]; available name mappers [discriminating, file-gav, file-hgav, file-static, gav, static]
+[INFO] Error stacktraces are turned on.
+[DEBUG] Message scheme: color
+[DEBUG] Message styles: debug info warning error success failure strong mojo project
+[DEBUG] Reading global settings from F:\programs\apache-maven-3.9.3\conf\settings.xml
+[DEBUG] Reading user settings from C:\Users\ddyer\.m2\settings.xml
+[DEBUG] Reading global toolchains from F:\programs\apache-maven-3.9.3\conf\toolchains.xml
+[DEBUG] Reading user toolchains from C:\Users\ddyer\.m2\toolchains.xml
+[DEBUG] Using local repository at C:\Users\ddyer\.m2\repository
+[DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for C:\Users\ddyer\.m2\repository
+[INFO] Scanning for projects...
+[DEBUG] Extension realms for project com.boardspace:boardspacerelease-common:jar:1.0-SNAPSHOT: (none)
+[DEBUG] Looking up lifecycle mappings for packaging jar from ClassRealm[plexus.core, parent: null]
+[DEBUG] Extension realms for project com.boardspace:boardspacerelease:pom:1.0-SNAPSHOT: (none)
+[DEBUG] Looking up lifecycle mappings for packaging pom from ClassRealm[plexus.core, parent: null]
+[DEBUG] Resolving plugin prefix boardspacerelease from [org.apache.maven.plugins, org.codehaus.mojo]
+[DEBUG] Creating adapter using nameMapper 'gav' and factory 'rwlock-local'
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for ossrh-snapshots (http://oss.sonatype.org/content/repositories/snapshots).
+[DEBUG] Resolving artifact org.eclipse.m2e:lifecycle-mapping:pom:1.0.0 from [central (https://repo.maven.apache.org/maven2, default, releases)]
+[WARNING] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[DEBUG] Resolving artifact org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 from [central (https://repo.maven.apache.org/maven2, default, releases)]
+[WARNING] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 (absent): org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 was not found in https://repo.maven.apache.org/maven2 during a previous attempt. This failure was cached in the local repository and resolution is not reattempted until the update interval of central has elapsed or updates are forced
+org.apache.maven.plugin.PluginResolutionException: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 (absent): org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 was not found in https://repo.maven.apache.org/maven2 during a previous attempt. This failure was cached in the local repository and resolution is not reattempted until the update interval of central has elapsed or updates are forced
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:140)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.lambda$getPluginDescriptor$0 (DefaultMavenPluginManager.java:183)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.lambda$get$0 (DefaultPluginDescriptorCache.java:72)
+    at java.util.concurrent.ConcurrentHashMap.computeIfAbsent (ConcurrentHashMap.java:1740)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.get (DefaultPluginDescriptorCache.java:70)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:181)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.loadPlugin (DefaultBuildPluginManager.java:81)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:126)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:115)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolve (DefaultPluginPrefixResolver.java:80)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.findPluginForPrefix (MojoDescriptorCreator.java:247)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.getMojoDescriptor (MojoDescriptorCreator.java:209)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:94)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:76)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:84)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:577)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
+Caused by: org.eclipse.aether.resolution.ArtifactResolutionException: The following artifacts could not be resolved: org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 (absent): org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 was not found in https://repo.maven.apache.org/maven2 during a previous attempt. This failure was cached in the local repository and resolution is not reattempted until the update interval of central has elapsed or updates are forced
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolve (DefaultArtifactResolver.java:459)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifacts (DefaultArtifactResolver.java:259)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifact (DefaultArtifactResolver.java:242)
+    at org.eclipse.aether.internal.impl.DefaultRepositorySystem.resolveArtifact (DefaultRepositorySystem.java:277)
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:138)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.lambda$getPluginDescriptor$0 (DefaultMavenPluginManager.java:183)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.lambda$get$0 (DefaultPluginDescriptorCache.java:72)
+    at java.util.concurrent.ConcurrentHashMap.computeIfAbsent (ConcurrentHashMap.java:1740)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.get (DefaultPluginDescriptorCache.java:70)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:181)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.loadPlugin (DefaultBuildPluginManager.java:81)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:126)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:115)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolve (DefaultPluginPrefixResolver.java:80)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.findPluginForPrefix (MojoDescriptorCreator.java:247)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.getMojoDescriptor (MojoDescriptorCreator.java:209)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:94)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:76)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:84)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:577)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
+Caused by: org.eclipse.aether.transfer.ArtifactNotFoundException: org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 was not found in https://repo.maven.apache.org/maven2 during a previous attempt. This failure was cached in the local repository and resolution is not reattempted until the update interval of central has elapsed or updates are forced
+    at org.eclipse.aether.internal.impl.DefaultUpdateCheckManager.newException (DefaultUpdateCheckManager.java:223)
+    at org.eclipse.aether.internal.impl.DefaultUpdateCheckManager.checkArtifact (DefaultUpdateCheckManager.java:199)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.gatherDownloads (DefaultArtifactResolver.java:571)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.performDownloads (DefaultArtifactResolver.java:510)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolve (DefaultArtifactResolver.java:435)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifacts (DefaultArtifactResolver.java:259)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifact (DefaultArtifactResolver.java:242)
+    at org.eclipse.aether.internal.impl.DefaultRepositorySystem.resolveArtifact (DefaultRepositorySystem.java:277)
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:138)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.lambda$getPluginDescriptor$0 (DefaultMavenPluginManager.java:183)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.lambda$get$0 (DefaultPluginDescriptorCache.java:72)
+    at java.util.concurrent.ConcurrentHashMap.computeIfAbsent (ConcurrentHashMap.java:1740)
+    at org.apache.maven.plugin.DefaultPluginDescriptorCache.get (DefaultPluginDescriptorCache.java:70)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:181)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.loadPlugin (DefaultBuildPluginManager.java:81)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:126)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolveFromProject (DefaultPluginPrefixResolver.java:115)
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolve (DefaultPluginPrefixResolver.java:80)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.findPluginForPrefix (MojoDescriptorCreator.java:247)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.getMojoDescriptor (MojoDescriptorCreator.java:209)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:94)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:76)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:84)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:577)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
+[DEBUG] Could not find metadata org.apache.maven.plugins/maven-metadata.xml in local (C:\Users\ddyer\.m2\repository)
+[DEBUG] Skipped remote request for org.apache.maven.plugins/maven-metadata.xml, locally cached metadata up-to-date
+[DEBUG] Could not find metadata org.codehaus.mojo/maven-metadata.xml in local (C:\Users\ddyer\.m2\repository)
+[DEBUG] Skipped remote request for org.codehaus.mojo/maven-metadata.xml, locally cached metadata up-to-date
+[DEBUG] Could not find metadata org.apache.maven.plugins/maven-metadata.xml in local (C:\Users\ddyer\.m2\repository)
+[DEBUG] Could not find metadata org.codehaus.mojo/maven-metadata.xml in local (C:\Users\ddyer\.m2\repository)
+[DEBUG] Using transporter HttpTransporter with priority 5.0 for https://repo.maven.apache.org/maven2
+[DEBUG] Using transporter HttpTransporter with priority 5.0 for https://repo.maven.apache.org/maven2
+[DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for https://repo.maven.apache.org/maven2
+[DEBUG] Using connector BasicRepositoryConnector with priority 0.0 for https://repo.maven.apache.org/maven2
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
+Progress (1): maven-metadata.xml (1.4/21 kB)Progress (2): maven-metadata.xml (1.4/21 kB) | maven-metadata.xml (1.4/14 kB)Progress (2): maven-metadata.xml (1.4/21 kB) | maven-metadata.xml (2.8/14 kB)Progress (2): maven-metadata.xml (2.8/21 kB) | maven-metadata.xml (2.8/14 kB)Progress (2): maven-metadata.xml (2.8/21 kB) | maven-metadata.xml (4.1/14 kB)Progress (2): maven-metadata.xml (4.1/21 kB) | maven-metadata.xml (4.1/14 kB)Progress (2): maven-metadata.xml (4.1/21 kB) | maven-metadata.xml (5.5/14 kB)Progress (2): maven-metadata.xml (5.5/21 kB) | maven-metadata.xml (5.5/14 kB)Progress (2): maven-metadata.xml (5.5/21 kB) | maven-metadata.xml (6.9/14 kB)Progress (2): maven-metadata.xml (6.9/21 kB) | maven-metadata.xml (6.9/14 kB)Progress (2): maven-metadata.xml (6.9/21 kB) | maven-metadata.xml (8.3/14 kB)Progress (2): maven-metadata.xml (8.3/21 kB) | maven-metadata.xml (8.3/14 kB)Progress (2): maven-metadata.xml (8.3/21 kB) | maven-metadata.xml (9.7/14 kB)Progress (2): maven-metadata.xml (9.7/21 kB) | maven-metadata.xml (9.7/14 kB)Progress (2): maven-metadata.xml (9.7/21 kB) | maven-metadata.xml (11/14 kB) Progress (2): maven-metadata.xml (11/21 kB) | maven-metadata.xml (11/14 kB) Progress (2): maven-metadata.xml (11/21 kB) | maven-metadata.xml (12/14 kB)Progress (2): maven-metadata.xml (12/21 kB) | maven-metadata.xml (12/14 kB)Progress (2): maven-metadata.xml (12/21 kB) | maven-metadata.xml (14/14 kB)Progress (2): maven-metadata.xml (14/21 kB) | maven-metadata.xml (14/14 kB)Progress (2): maven-metadata.xml (14/21 kB) | maven-metadata.xml (14 kB)   Progress (2): maven-metadata.xml (15/21 kB) | maven-metadata.xml (14 kB)Progress (2): maven-metadata.xml (17/21 kB) | maven-metadata.xml (14 kB)Progress (2): maven-metadata.xml (18/21 kB) | maven-metadata.xml (14 kB)Progress (2): maven-metadata.xml (19/21 kB) | maven-metadata.xml (14 kB)Progress (2): maven-metadata.xml (21 kB) | maven-metadata.xml (14 kB)                                                                        Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 66 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 96 kB/s)
+[DEBUG] Writing tracking file 'C:\Users\ddyer\.m2\repository\org\apache\maven\plugins\resolver-status.properties'
+[DEBUG] Writing tracking file 'C:\Users\ddyer\.m2\repository\org\codehaus\mojo\resolver-status.properties'
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.788 s
+[INFO] Finished at: 2023-12-04T09:58:06-08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] No plugin found for prefix 'boardspacerelease' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo] available from the repositories [local (C:\Users\ddyer\.m2\repository), central (https://repo.maven.apache.org/maven2)] -> [Help 1]
+org.apache.maven.plugin.prefix.NoPluginFoundForPrefixException: No plugin found for prefix 'boardspacerelease' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo] available from the repositories [local (C:\Users\ddyer\.m2\repository), central (https://repo.maven.apache.org/maven2)]
+    at org.apache.maven.plugin.prefix.internal.DefaultPluginPrefixResolver.resolve (DefaultPluginPrefixResolver.java:90)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.findPluginForPrefix (MojoDescriptorCreator.java:247)
+    at org.apache.maven.lifecycle.internal.MojoDescriptorCreator.getMojoDescriptor (MojoDescriptorCreator.java:209)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:94)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleTaskSegmentCalculator.calculateTaskSegments (DefaultLifecycleTaskSegmentCalculator.java:76)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:84)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:577)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:283)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:226)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:407)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:348)
+[ERROR] 
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/NoPluginFoundForPrefixException
+[DEBUG] Shutting down adapter factory; available factories [file-lock, rwlock-local, semaphore-local, noop]; available name mappers [discriminating, file-gav, file-hgav, file-static, gav, static]
+[DEBUG] Shutting down 'file-lock' factory
+[DEBUG] Shutting down 'rwlock-local' factory
+[DEBUG] Shutting down 'semaphore-local' factory
+[DEBUG] Shutting down 'noop' factory

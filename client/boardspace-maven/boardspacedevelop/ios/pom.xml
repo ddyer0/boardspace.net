@@ -23,7 +23,7 @@
     <build>
         <resources>
             <resource>
-                <directory>../../../boardspace-codename1/native/ios/</directory>
+                <directory>src/main/objectivec</directory>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>

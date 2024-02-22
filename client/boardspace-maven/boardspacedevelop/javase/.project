@@ -22,7 +22,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>javase</name>
+			<name>src</name>
 			<type>2</type>
 			<location>G:/share/projects/boardspace-codename1/native/javase</location>
 		</link>

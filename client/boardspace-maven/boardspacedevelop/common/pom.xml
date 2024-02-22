@@ -308,86 +308,8 @@
     </profiles>
 
     <build>
-		<!-- 
-		Notes on converting the standard maven build for boardspace.  The main goal is
-		to make a project that shares sources with the canonical sources in boardpace-codename1.
-		This can't be done by just adding additional source directories because of the way the
-		compliance-check phase works.  So instead, we effectivly make the "src" directory
-		from scratch as part of the build.  These definitions copy the real sources into
-		the local source directory as part of the build, and copy the resources to the 
-		target directory as part of the build, and delete the src directory as part of
-		the clean phase.
-		
-		also note, the eclipse project has to be tweaked to include linked sources to the
-		real source directories, and to ignore anyting it finds in the src directory, 
-		
-		and warning! undetermined triggers cause eclipse to modify the build path
-		and target directory.  I think it works to disable the "maven builder"
-		
-		finally, the same but simpler things need to be done to the android and ios pom.xml files
-		
-		-->
-		<resources>
-			<resource>
-				<!-- copy the res files tot he dest -->
-				<directory>g:/share/projects/boardspace-maven/boardspacedevelop/common/src/main/java/</directory>
-				<includes>
-					<include>**/*.res</include>
-				</includes>
-			</resource>
-		</resources>
         <plugins>
 
-       <plugin>
-       <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
-        <executions>
-          <execution>
-			  <!-- copy the real sources to the src directory -->
-            <id>copy-respources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>src/main/java/</outputDirectory>  
-              <resources>
-                <resource>
-                  <directory>../../../boardspace-codename1/codename1/</directory>
-                  <include>**/*.java</include>
-                  <include>**/*.res</include>
-                </resource>
-                <resource>
-                  <directory>../../../boardspace-codename1/boardspace core/</directory>
-                  <include>**/*.java</include>
-                  <include>**/*.res</include>
-                </resource>
-                <resource>
-                  <directory>../../../boardspace-codename1/boardspace games/</directory>
-                  <include>**/*.java</include>
-                    <include>**/*.res</include>
-               </resource>
-              </resources>
-
-            </configuration>
-          </execution>         
-        </executions>
-      </plugin>
-
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <!-- delete the shadow src directory -->
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            
-<!--
-	this is the process that ought to have worked, but doesn't because of the way the compliance-check phase works
 	     <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -408,13 +330,15 @@
                     </execution>
                 </executions>
             </plugin>
--->
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             					
                 <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<fork>true</fork>
 					<source>1.8</source>
                     <target>1.8</target>
                 </configuration>

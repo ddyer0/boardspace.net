@@ -11,13 +11,8 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-			<triggers>full,incremental,</triggers>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
-				<dictionary>
-					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder.launch</value>
-				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -29,22 +24,22 @@
 		<link>
 			<name>boardspace core</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace core</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20core</locationURI>
 		</link>
 		<link>
 			<name>boardspace games</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace games</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20games</locationURI>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/codename1</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/codename1</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1701368684575</id>
+			<id>1708553032082</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
@@ -53,7 +48,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1701368684582</id>
+			<id>1708553032087</id>
 			<name></name>
 			<type>10</type>
 			<matcher>
@@ -95,15 +90,6 @@
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-cvs</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1701851956559</id>
-			<name>src</name>
-			<type>14</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

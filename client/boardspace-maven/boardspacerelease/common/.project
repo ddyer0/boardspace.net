@@ -11,13 +11,8 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-			<triggers>full,incremental,</triggers>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
-				<dictionary>
-					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder (4).launch</value>
-				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -29,17 +24,17 @@
 		<link>
 			<name>boardspace core</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace core</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20core</locationURI>
 		</link>
 		<link>
 			<name>boardspace games</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace games</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20games</locationURI>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/codename1</location>
+			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/codename1</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

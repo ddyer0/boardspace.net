@@ -11,13 +11,8 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-			<triggers>full,incremental,</triggers>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
-				<dictionary>
-					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder (5).launch</value>
-				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -25,13 +20,6 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>ios</name>
-			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/native/ios</location>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1643353187703</id>
