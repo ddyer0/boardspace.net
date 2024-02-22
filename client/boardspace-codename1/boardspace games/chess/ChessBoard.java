@@ -1893,7 +1893,6 @@ public boolean hasEscapeCheckMoves()
 {	CommonMoveStack all = new CommonMoveStack();
 	addMoves(all,whoseTurn);
 	filterCheckMoves(all,whoseTurn); 
-	filterCheckMoves(all,whoseTurn);
 	return(all.size()>0);
 }
 private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
@@ -2161,7 +2160,6 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  
  private boolean add960CastlingMoves(CommonMoveStack all,ChessCell king_src,int who,char king_col,char rook_col,int direction)
  {	
- 	ChessCell king_dest = getCell(king_col,king_src.row);
  	// find the rook
  	ChessCell rook_src = king_src;
  	ChessChip myRook = null;
@@ -2180,23 +2178,27 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  	if(rook_src==null) { return false; }	// rook captured
  	
  	// spaces between the king source and dest must be empty and not en prise
+ 	int other = nextPlayer[who];
  	boolean fail = false;
+	
 	if(king_src.col!=king_col)	// if the king doesn't move, it's all ok
  	{
- 	int move_dir = king_src.col>king_col ? CELL_LEFT : CELL_RIGHT;
- 	int other = nextPlayer[who];
+	// this is where the king will really end up
+	char king_dest_col = (rook_col>king_col) ? OOO_KING : OO_KING;
+	int move_dir = king_src.col>king_dest_col ? CELL_LEFT : CELL_RIGHT;
  	ChessCell step = king_src.exitTo(move_dir);
- 	while(!fail && step!=king_dest && step!=null)
+ 	boolean ended = false;
+ 	while(!fail && !ended && step!=null)
  	{	if(step!=rook_src)
  		{
- 			ChessChip top = step.topChip();
- 			if(top!=null) 
- 				{ fail = true; }	// must be empty
- 			else if(attackingSquare(step,other))
- 				{ fail = true; }
+ 			fail |= step.topChip()!=null;
  		}
+ 		fail |= attackingSquare(step,other); 		
+ 		ended = step.col==king_dest_col;
  		step = step.exitTo(move_dir);
  	}}
+
+	
  	if(!fail && (all!=null))
  	{	
  		all.push(new ChessMovespec(MOVE_CASTLE,king_src,rook_src,who));

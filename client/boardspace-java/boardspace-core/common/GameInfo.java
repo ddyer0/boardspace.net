@@ -1684,34 +1684,35 @@ synchronized(allGames) {
 	{
 	String zclass = "zertz.common.ZertzGameViewer";
 	String zrules = "/zertz/english/rules.htm";
+	String zvid = "https://boardgamegeek.com/video/482393/zertz/how-play-zertz";
 	GameInfo m = put(new GameInfo(270,ES.game,0,"Z",GipfGames,"Zertz","Zertz",
 			TwoBotsPlus,
 			new double[]{0.133,1,0.01},
 			zclass,zrules,"about_zertz.html",
-			null,true, null));
+			zvid,true, null));
 	m.robotTimed = true;
 	m = put(new GameInfo(280,ES.game,0,"Z11",GipfGames,"Zertz","Zertz+11",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
 			zclass,zrules,"about_zertz.html",
-			null,true, null));
+			zvid,true, null));
 	m.robotTimed = true;
 	put(new GameInfo(290,ES.game,0,"Z24",GipfGames,"Zertz","Zertz+24",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
 			zclass,zrules,"about_zertz.html",
-			null,true, null));
+			zvid,true, null));
 	m = put(new GameInfo(300,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+xx",
 			NoBots,
 			null,
 			zclass,zrules,"about_zertz.html",
-			null,true, null));
+			zvid,true, null));
 	m.robotTimed = true;
 	GameInfo hc = put(new GameInfo(301,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+H",
 			TwoBotsPlus,
 			null,
 			zclass,zrules,"about_zertz.html",
-			null,true, null));
+			zvid,true, null));
 	hc.robotTimed = true;
 	hc.unrankedOnly = true;
 
@@ -2096,7 +2097,8 @@ synchronized(allGames) {
 		double ctimes[] = {0.05, 1.0,0.01};
 		String crules = "/kulami/english/Kulami-EN.pdf";
 		String cview = "kulami.KulamiViewer"; 
-		String cvideo = "/kulami/english/kulami-video.html";
+		String cvideo = "https://boardgamegeek.com/video/482259/kulami/how-play-kulami";
+						//"/kulami/english/kulami-video.html";
 		put(new GameInfo(8011,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami",
 				TwoBotsPlus,ctimes,
 				cview,crules,"about_kulami.html",

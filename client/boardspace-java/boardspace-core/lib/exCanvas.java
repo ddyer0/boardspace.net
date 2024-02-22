@@ -1434,7 +1434,7 @@ graphics when using a touch screen.
          */
         public boolean changeZoomAndRecenter(double z,double r,int realX,int realY)
         {	
-           	int sx = getSX();
+        	int sx = getSX();
         	int sy = getSY();
         	double startingZoom = getGlobalZoom();
         	//Plog.log.addLog("Change Zoom ",startingZoom," - ",z,"@",realX,",",realY);
@@ -1442,13 +1442,11 @@ graphics when using a touch screen.
          	boolean change = changeZoom(z,r);
         	if(change)
         	{   
-         	double cx = (realX-sx);
-        	double cy = (realY-sy);	// visible point
         	double finalZoom = getGlobalZoom();
-        	int newX = (int)(realX/startingZoom*finalZoom);
-        	int newY = (int)(realY/startingZoom*finalZoom);
-        	int newcx = (int)(newX-cx);
-        	int newcy = (int)(newY-cy);
+        	int newX = (int)((sx+realX)/startingZoom*finalZoom);
+        	int newY = (int)((sy+realY)/startingZoom*finalZoom);
+        	int newcx = newX-realX;
+        	int newcy = newY-realY;
             	setSX(newcx);
             	setSY(newcy);
         		//Plog.log.addLog("Z ",startingZoom," ",sx,",",sy,"  - ",finalZoom," ",newcx,",",newcy," @",realX,",",realY);
@@ -1463,7 +1461,7 @@ graphics when using a touch screen.
 						&& (theChat.doMouseWheel(x, y,amount));
 			if(!moved)
 			{	double step = G.isCodename1() ? 1.05 : 1.1;	
-				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? step : 1/step),getRotation(),x,y);
+				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? step : 1/step),getRotation(),x-getSX(),y-getSY());
 			}
 
 		}

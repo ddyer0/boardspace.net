@@ -1359,6 +1359,11 @@ public class GameLayoutManager implements UniversalConstants
 	{	// playtable has a deep bezil that makes the extreme edge hard to get to
 		//G.print("\nselect ",minSize,maxCellSize);
 		client = client0;
+		// the idea of zoom is that we always allocate windows based on the canonical
+		// size of the window, rather than the zoomed multiple, with no other changes
+		// on the client size.  The math for this doesn't quite work out yet. so we nuke
+		// the option for now.
+		zoom = 1.0;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);
 		int extramargin = G.isRealLastGameBoard()||G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
@@ -1372,6 +1377,7 @@ public class GameLayoutManager implements UniversalConstants
 		double targetPreference = targetLayoutHysterisis;
 		DefinedSeating best = null;
 		DefinedSeating currentSeating = client.seatingChart();
+		margin = (int)((margin+0.49)/zoom);
     	rects.marginSize = margin;
     	preferredAspectRatio = desiredAspectRatio;
 	    if(currentSeating!=DefinedSeating.Undefined)

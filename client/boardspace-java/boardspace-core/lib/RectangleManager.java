@@ -380,7 +380,10 @@ public class RectangleManager
 		} 
 		return(newBest);
 	}
-    
+    private int unzoom(int w)
+    {
+    	return (int)((w+0.49)/zoom);
+    }
     /** place one of two rectangles, whichever is more efficient.  When placing in the main rectangle, 
      * the efficiency of the remaining main rectangle is the criterion.  When placing in the existing
      * smaller rectangles, the amount of waste (smaller rectangles) generated is the criterion.
@@ -401,20 +404,20 @@ public class RectangleManager
      * @param preserveAspectRatio
      * @return
      */
-    RectangleSpec placeInSpareRectangle(Purpose purpose,Rectangle targetRect, 
+    private RectangleSpec placeInSpareRectangle(Purpose purpose,Rectangle targetRect, 
     		int minWX0,int minHX0,int maxWX0,int maxHX0,
     		int minWX1,int minHX1,int maxWX1,int maxHX1,
     		BoxAlignment align,boolean preserveAspectRatio,double preferredAspectRatio)
     {	int m2 = marginSize*2;
-    	int minWM0 = minWX0+m2;
-    	int minWM1 = minWX1+m2;
-    	int maxWM0 = maxWX0+m2;
-    	int maxWM1 = maxWX1+m2;
+    	int minWM0 = unzoom(minWX0+m2);
+    	int minWM1 = unzoom(minWX1+m2);
+    	int maxWM0 = unzoom(maxWX0+m2);
+    	int maxWM1 = unzoom(maxWX1+m2);
     	
-    	int minHM0 = minHX0+m2;
-    	int minHM1 = minHX1+m2;
-    	int maxHM0 = maxHX0+m2;
-    	int maxHM1 = maxHX1+m2;
+    	int minHM0 = unzoom(minHX0+m2);
+    	int minHM1 = unzoom(minHX1+m2);
+    	int maxHM0 = unzoom(maxHX0+m2);
+    	int maxHM1 = unzoom(maxHX1+m2);
     	Rectangle alloc = null;		// allocated new rectangle
     	placeInSpare_best = null;
     	placeInSpare_score = 0;
@@ -1151,6 +1154,7 @@ public class RectangleManager
 				spec.preserveAspectRatio,spec.align);
 		spec.allocated = alloc;
 		G.copy(spec.actual,alloc);
+		zoomRectangle(spec.actual);
 		G.insetRect(spec.actual,marginSize);
 		//G.print("Reallocated "+spec);
 		switch(spec.name)

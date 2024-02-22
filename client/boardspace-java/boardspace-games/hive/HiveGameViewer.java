@@ -245,7 +245,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	G.SetRect(fullRect, x, y, width, height);
 		int fh = standardFontSize();
     	double zoom = getGlobalZoom();
-   
     	gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, (int)(zoom*(fh)));
     	gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,(int)(zoom*(fh)));
     	GameLayoutManager layout = selectedLayout;
