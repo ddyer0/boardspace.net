@@ -605,7 +605,7 @@ public abstract class Platform implements Config{
     	return v;
     	}
     	screendpi = codename1;
-    	if(G.isIOS()) { screendpi = Math.min(200,screendpi); }
+    	if(G.isIOS()) { screendpi = Math.min(265,screendpi); }
     	return codename1;
     }
     
@@ -895,11 +895,14 @@ public abstract class Platform implements Config{
     	return(home);
     	
     }
-    
+    //
+    // recent troublesome case, ipad pro which measured this way
+    // [Java cpu=13% screen=2732x2048 ppi=200 deviceDPI=200 scale =2.083333 platform =Ios sometable 7.88 Codename1  os.name=Ios] ip=0.0.0.0 "
+    // fixed by allowing getscreen dpi to be 285 instead of 200, and increasing diagonal from 13 to 13.9
+    //
     public static boolean isTable()
-    {	
-    	return(G.getBoolean(G.PLAYTABLE,false)
-    			|| ((screenDiagonal()>13) 
+    {	    	return(G.getBoolean(G.PLAYTABLE,false)
+    			|| ((screenDiagonal()>13.9) 
     							|| isRealPlaytable() 
     							|| isRealInfinityTable()
     							|| isRealLastGameBoard()));

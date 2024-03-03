@@ -47,6 +47,11 @@ public class User implements LobbyConstants,CompareTo<User>
     private int playLocation;
     GameInfo preferredGame;
     
+    public User(String myName) 
+    {
+    	name=myName;
+   	    publicName=myName;
+    }
     public void setSession(Session s,int pl) 
     {	if(session!=null) { session.setPlayer(this,-1); }
     	session = s; 

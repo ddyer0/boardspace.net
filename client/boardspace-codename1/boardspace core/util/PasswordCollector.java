@@ -747,7 +747,7 @@ import udp.PlaytableStack;
 	 }
 	 public Component createReviewPanel()
 	 {	
-		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER)); 
 		 if(G.TURNBASED())
 		 {
 			 String tb = s.get(TurnBasedMessage);

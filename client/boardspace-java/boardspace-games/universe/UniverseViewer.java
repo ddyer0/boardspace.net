@@ -354,7 +354,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		if(aspect>1) 
 			{	
 			int area = rackw*rackh;
-			rackh = (int)(unit*rows*2);
+			rackh = Math.max(G.Height(box),(int)(unit*rows*2));
 			rackw = area/rackh;
 			}
 		else if (aspect<1)
@@ -411,7 +411,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     			fh*3.5,		// maximum cell size based on font size
     			0.1		// preference for the designated layout, if any
     			);
-    	
+   	
         layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,resignRect);
     	// place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.

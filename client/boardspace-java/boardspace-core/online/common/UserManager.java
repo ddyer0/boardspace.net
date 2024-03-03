@@ -30,7 +30,7 @@ public class UserManager implements LobbyConstants
 {	
 	private int numberOfUsers=0;
 	private User[]Users = new User[0];
-	private User primary = new User();
+	private User primary = new User("Player 1");
 	public User primaryUser() { return(primary); }
 	public int numberOfUsers() { return(numberOfUsers); }
 	public User[] getUsers() { return(Users); }
@@ -40,7 +40,7 @@ public class UserManager implements LobbyConstants
 	
 	public User addUser(int playerID,String name,String uid,boolean local)
 	  { 
-	    User user = playerID==-1 ? primary : new User();
+	    User user = playerID==-1 ? primary : new User(name);
 	    user.isLocal = local;
 	    //System.out.println("add ("+name+")");
 	    user.name=name;

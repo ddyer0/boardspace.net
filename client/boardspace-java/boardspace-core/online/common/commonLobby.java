@@ -2266,25 +2266,8 @@ public void setTimeControl(Session sess,TimeControl.Kind k,int newfixed,int newd
 		sess.setTimeControl(timer = new TimeControl(k));
 		change = true;
 	}
-	if(newfixed>=0 && newfixed!=timer.fixedTime)
-	{
-		timer.fixedTime = newfixed;
-		change = true;
-	}
-	if(newdif>=0)
-	{	if(k==TimeControl.Kind.Differential)
-		{
-		if(timer.differentialTime!=newdif)
-			{timer.differentialTime = newdif;
-			 change = true;
-			}
-		}
-		else if(timer.moveIncrement!=newdif)
-		{
-		timer.moveIncrement = newdif;
-		change = true;
-		}
-	}
+	change |= timer.setTimeControl(k,newfixed,newdif);
+
 	if(change) { sendLobbyInfo(sess,KEYWORD_IMIN,true); }
 }
 public void setPreferredGame(GameInfo game)

@@ -137,7 +137,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	int chipW = unitsize*3;
+    	int chipW = unitsize*5/2;
     	int chipH = unitsize*5;
     	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
@@ -168,10 +168,10 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     			0.75,	// space allocated to the board
     			1,		// aspect ratio for the board
     			fh*2.0,
-    			fh*3.5,	// maximum cell size
+    			fh*3.0,	// maximum cell size
     			0.5		// preference for the designated layout, if any
     			);
-    	int minLogW = fh*18;	
+    	int minLogW = fh*16;	
     	int vcrw = fh*16;
        	int minChatW = fh*35;	
         int minLogH = fh*15;	

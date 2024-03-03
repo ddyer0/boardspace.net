@@ -23,9 +23,8 @@ import javax.swing.JMenuItem;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
-
+import lib.SeatingChart.DefinedSeating;
 import online.common.*;
-import online.common.SeatingChart.DefinedSeating;
 import lib.*;
 import online.game.*;
 import online.game.sgf.*;

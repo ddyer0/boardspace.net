@@ -43,7 +43,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public static final String PolyominoGames = "Polyomino Games";
 	public boolean hasHiddenInformation = false;
 	public boolean okForPlaytable = true;
-	public boolean okForPassAndPlay = true;
+	public boolean okForOnline = true;
 	// allow the robot to participate in timed games
 	public boolean robotTimed = false;
 	// allow timed games unconditionally.  How it works is up to the game.
@@ -103,7 +103,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		Hive,
 	};
 	
-	public enum ScoringMode { SM_Normal, SM_Multi, SM_Single }
+	public enum ScoringMode { SM_Normal, SM_Multi, SM_Single, SM_None }
 	
 	public enum ES 
 		{
@@ -244,7 +244,6 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				&& startable
 				&& (groupName!=null)
 				&& (okForPlaytable || !includedTypes.test(ES.playtable))
-				&& (okForPassAndPlay || !includedTypes.test(ES.passandplay))
 				&& (maxPlayers>=3 || !includedTypes.test(ES.multiplayer))
 				&& (!unrankedOnly || includedTypes.test(ES.unranked))
 				);
@@ -408,7 +407,26 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	}
 
 	static Bot ThreeBotsPlus[] = { Bot.Dumbot,Bot.Smartbot,Bot.Bestbot,Bot.Weakbot};
-	
+
+	public static GameInfo GameTimer = 
+		new GameInfo(2105,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
+				null,
+				new double[]{0.1,1.0,1.0,0.01},
+				"gametimer.GameTimerViewer",null,null,
+				null,true, 
+				new Color[]{  Color.black, Color.white, Color.blue, Color.green, Color.yellow, Color.red});
+	static {
+		GameTimer.maxPlayers = 6;
+		GameTimer.minPlayers = 2;
+		GameTimer.groupSortKey = "1091";
+		GameTimer.robotTimed = true;
+		GameTimer.randomizeFirstPlayer = true;
+		GameTimer.hasHiddenInformation = false;
+		GameTimer.okForOnline = false;
+		GameTimer.okForPlaytable = true;
+		GameTimer.scoringMode = ScoringMode.SM_None;
+		}
+
 static  {
 	
 	Bot NoBots[] = null;
@@ -434,6 +452,7 @@ static  {
 	Color WhiteOverBlue[] = { Color.white,Color.blue};
 	Color RedOverGreen[] = {Color.red,Color.green};
 	
+
 synchronized(allGames) {	
 	//
 	// note that these directory numbers (second arg in each entry) have to agree with
@@ -640,7 +659,6 @@ synchronized(allGames) {
 		// not a good candidate for playtable, the piece powers are 
 		// hard to hide, and if I made a compantion window, the main
 		// table would be either irrelevant or an annoyance
-		g.okForPassAndPlay = false;
 		g.okForPlaytable=false;
 	}
 	// capturing games
@@ -812,7 +830,6 @@ synchronized(allGames) {
 	 mm.maxPlayers = 8;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = true;
-	 mm.okForPassAndPlay = false;
 	 mm.okForPlaytable=false;
 	 mm.longMessage = mmside;
 	}
@@ -1412,7 +1429,7 @@ synchronized(allGames) {
 	 mm.okForPlaytable = false;
 
 	}
-	
+
 	{
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  
@@ -2282,7 +2299,6 @@ synchronized(allGames) {
 	  mm.hasHiddenInformation = true;
 	  mm.alternateName="oneday";
 	  // needs a companion app for your current rack
-	  mm.okForPassAndPlay = false;
 	  mm.okForPlaytable=false;
 
 	}
@@ -2294,7 +2310,6 @@ synchronized(allGames) {
 			null,false, null));
 	  mm.maxPlayers = 6;
 	  mm.hasHiddenInformation = true;
-	  mm.okForPassAndPlay = false;
 	  mm.okForPlaytable=false;
 
 	}
@@ -2313,7 +2328,6 @@ synchronized(allGames) {
 	  g.groupSortKey = "01010";	// mutton is first in "other games" menu. This forces other games to be last
 	  g.hasHiddenInformation = true;
 	  g.okForPlaytable = false;
-	  g.okForPassAndPlay = false;
 	
 	GameInfo m1 = put(new GameInfo(670,ES.game,28,"MU",OtherGames,"Mutton","Mutton-shotgun",
 			OneBot,
@@ -2322,7 +2336,6 @@ synchronized(allGames) {
 				null,true, null));
 	m1.hasHiddenInformation = true;
 	m1.okForPlaytable = false;
-	m1.okForPassAndPlay = false;
 	}
 	
 	

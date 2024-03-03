@@ -19,7 +19,7 @@ package lib;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-import online.common.SeatingChart.DefinedSeating;
+import lib.SeatingChart.DefinedSeating;
 
 public interface GameLayoutClient 
 {

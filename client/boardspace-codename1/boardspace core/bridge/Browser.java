@@ -21,6 +21,7 @@ import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.events.BrowserNavigationCallback;
 import lib.G;
+import lib.Http;
 import lib.XFrame;
 /**
  * this hack implements a minimal but pretty satisfactory browser
@@ -133,32 +134,44 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 	}
 	
 	public boolean shouldNavigate(String urlS) {
+		try {
+		G.print("should navigate to "+urlS);
 		String rr = reWrite(urlS);
 		url.setText(urlS);
 		if(rr == urlS) { return true; }
 		G.print("switch "+urlS+" to "+rr);
 		b.setURL(rr);
+		return true;
+		}
+		catch(Throwable err)
+		{
+			Http.postError(this,"error in browser action",err);
+		}
 		return false;
 	}
 	public void actionPerformed(ActionEvent evt) {
 		
 		// source will be a "Command" object which prints as the original string we fed in.
+		try {
 		Object source = evt.getSource();
-		
-		if(OK.equals(source)||(source==url))
-		{
-			b.setURL(reWrite(url.getText()));
-			b.repaint();
-		}
-		else if(BACK.equals(""+source))
-		{
-			b.back();
-			url.setText(b.getURL());
-		}
-		else 
-			{ G.print("unexpected browser action: "+source+" "+evt);
+		if(OK.equals(""+source)||(source==url))
+			{
+				b.setURL(reWrite(url.getText()));
+				b.repaint();
 			}
-	}
+			else if(BACK.equals(""+source))
+			{
+				b.back();
+				url.setText(b.getURL());
+			}
+			else 
+				{ G.print("unexpected browser action: "+source+" "+evt);
+				}
+		}
+		catch (Throwable err)
+		{	Http.postError(this,"error in browser action",err);
+		}
+		}
 
 
 }

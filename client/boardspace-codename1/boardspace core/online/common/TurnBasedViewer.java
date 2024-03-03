@@ -33,6 +33,7 @@ import lib.MouseState;
 import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
+import lib.SeatingChart;
 import lib.StockArt;
 import lib.TextButton;
 import lib.TextContainer;

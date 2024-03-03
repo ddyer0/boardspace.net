@@ -577,7 +577,6 @@ public class RepaintManager implements VncScreenInterface,Config
     // this is a debugging utility to inset a postage stamps of the backing bitmaps
     // that are used to construct the main image.
     //
-    // TODO: show bitmaps doesnt work if rotation is 180
     static int step = 0;
     public void showBitmaps(Graphics g,String msg)
     {

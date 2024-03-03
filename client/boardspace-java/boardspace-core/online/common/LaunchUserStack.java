@@ -23,7 +23,7 @@ public class LaunchUserStack extends OStack<LaunchUser>
 	public LaunchUser addUser(User u,int seat,int order)
 	{
 		LaunchUser lu = new LaunchUser();
-		lu.user = u;
+		lu.user = u==null ? new User("Player "+(seat+1)) : u;
 		lu.seat = seat;
 		lu.order = order;
 		push(lu);

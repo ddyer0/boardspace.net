@@ -395,6 +395,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
     }
+    /**
+     * create all per-player boxes.  Nothing is required, but the standard methods
+     * create a player name, clocks, and a box for an avatar.  Standard practice
+     * is to include a private "done" box if using a planned seating chart.
+     * 
+     * The layout manager tries many values for "unitsize" so effectively the rest of
+     * the boxes should use it as a standard unit.
+     */
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];

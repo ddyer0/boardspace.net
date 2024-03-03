@@ -14,14 +14,16 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package online.common;
-
-import lib.G;
-import lib.InternationalStrings;
-
+package lib;
+/**
+ * 
+ * these are the templates for player seating which are used by gamelayoutmanager and seatingviewer.
+ * 
+ */
 public class SeatingChart {
-
-	// communication setting up the lobby or games
+	//
+	// these are possible seat positions, along the sides of the board
+	//
 	public enum Seating
 	{	
 		Bottom_Left(0.2,0),
@@ -43,8 +45,8 @@ public class SeatingChart {
 
 		Left_End(0,0.5),
 		Right_End(1,0.5);
-		double x_position;
-		double y_position;
+		public double x_position;
+		public double y_position;
 		Seating(double xpos,double ypos)
 		{
 			x_position = xpos;
@@ -83,7 +85,7 @@ public class SeatingChart {
 
 	public DefinedSeating id;
 	Seating seats[] = null;
-	String explanation = null;
+	public String explanation = null;
 	public SeatingChart(DefinedSeating idd,Seating[]specs,String expl)
 	{	id=idd;
 		seats = specs==null ? new Seating[0] : specs;
@@ -117,7 +119,7 @@ public class SeatingChart {
 	private static SeatingChart default4P = new SeatingChart(DefinedSeating.FourAcross,fourAcross,FourPlayerExplanation);
 	private static SeatingChart default5P = new SeatingChart(DefinedSeating.FiveAcross,fiveAcross,FivePlayerExplanation);
 	private static SeatingChart default6P = new SeatingChart(DefinedSeating.SixAcross,sixAcross,SixPlayerExplanation);
-	private static SeatingChart facePortrait = new SeatingChart(DefinedSeating.FaceToFacePortrait,faceToFacePortrait,TwoPlayerExplanation);
+	public static SeatingChart facePortrait = new SeatingChart(DefinedSeating.FaceToFacePortrait,faceToFacePortrait,TwoPlayerExplanation);
 	private static SeatingChart leftCorner2P = new SeatingChart(DefinedSeating.LeftCorner,leftCorner,TwoPlayerExplanation);
 	private static SeatingChart rightCorner2P = new SeatingChart(DefinedSeating.RightCorner,rightCorner,TwoPlayerExplanation);
 	private static SeatingChart leftCorner3P = new SeatingChart(DefinedSeating.ThreeLeftL,leftL,ThreePlayerExplanation);
@@ -204,22 +206,25 @@ public class SeatingChart {
 		ThreeRightL(false,true,true,ThreeRightLW),
 		ThreeAroundLeft(false,true,true,null),
 		ThreeAroundRight(false,true,true,null),
-		ThreeAroundL(false,true,true,ThreeAroundLeft),
-		ThreeAroundR(false,true,true,ThreeAroundRight),
+		ThreeAroundLH(false,true,true,ThreeAroundLeft),
+		ThreeAroundL(false,true,true,ThreeAroundLH),
+		ThreeAroundRH(false,true,true,ThreeAroundRight),
+		ThreeAroundR(false,true,true,ThreeAroundRH),
 		ThreeWideLeft(false,true,true,null),
 		ThreeWide(false,true,true,ThreeWideLeft),
 		ThreeAcrossLeftCenter(false,false,true,null),
 		ThreeAcrossLeft(false,false,true,ThreeAcrossLeftCenter),
 		ThreeAcross(false,false,true,ThreeAcrossLeft),
 		FourAroundEdgeRect(false,true,true,null),
-		FourAroundEdge(false,true,true,FourAroundEdgeRect),
-		FourAround(false,true,true,FourAroundEdge),
+		FourAroundW(false,true,true,FourAroundEdgeRect),
+		FourAround(false,true,true,FourAroundW),
 		FourAroundUW(false,true,true,null),
 		FourAroundU(false,true,true,FourAroundUW),
 		FourAcrossEdge(false,false,true,null),
 		FourAcross(false,false,true,FourAcrossEdge),
 		FiveAroundEdge(false,true,true,null),
-		FiveAround(false,true,true,FiveAroundEdge),
+		FiveAroundEdgeFirst(false,true,true,FiveAroundEdge),
+		FiveAround(false,true,true,FiveAroundEdgeFirst),
 		FiveAround1EdgeCenter(false,true,true,null),
 		FiveAround1Edge(false,true,true,FiveAround1EdgeCenter),
 		FiveAcrossEdge(false,false,true,null),

@@ -79,9 +79,8 @@ public interface OnlineConstants extends Config {
     	public User getUser() {
     		if(botUser==null)
     		{
-    			botUser = new User();
+    			botUser = new User(name);
     			botUser.uid = uid;
-    			botUser.name = botUser.publicName = name;
     			botUser.isRobot = true;
     		}
     		return(botUser);
@@ -203,6 +202,8 @@ public interface OnlineConstants extends Config {
 	// if true, chat windows are created in a separate frame or tab.  This is the
 	// default only for very small screen mobiles
 	String CHATFRAMED = "chatframed";	// put the lobby chat in a separate frame
+	String NOCHAT = "nochat";			// special flag to prevent creation of a chat window
+	String DONOTSAVE = "donotsave";		// special flag to inhibit saving the game after gameover
 	String REVIEWONLY = "reviewonly";
 	String VIEWERCLASS = "viewerclass";
 	String TESTSERVER = "testserver";

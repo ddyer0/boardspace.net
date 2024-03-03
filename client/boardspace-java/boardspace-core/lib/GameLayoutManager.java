@@ -21,7 +21,7 @@ import java.awt.Rectangle;
 
 import lib.GameLayoutClient.BoxAlignment;
 import lib.GameLayoutClient.Purpose;
-import online.common.SeatingChart.DefinedSeating;
+import lib.SeatingChart.DefinedSeating;
 
 
 /**
@@ -801,7 +801,7 @@ public class GameLayoutManager implements UniversalConstants
 		
 	case ThreeAroundL:	// ok 2/4/2020
 		/* three around in a U shape, leaving the right unoccupied
-		
+		 * clip from top and bottom first
 		......_.....
 		|...........
 		......_.....
@@ -839,9 +839,79 @@ public class GameLayoutManager implements UniversalConstants
 		bottom -= playerHM;
 		}
 		break;
+	case ThreeAroundLH:	// ok 2/4/2020
+		/* three around in a U shape, leaving the right unoccupied
+		 * clip from top and bottom first
+		......_.....
+		|...........
+		......_.....
 		
+	 	*/
+		{
+		int xpos = Math.max(xmid,left+playerHM);
+		rotations = fourAroundRotation;
+		positions = new int[][] { {xpos,ybot},		// bottom ..X..
+								{xsideLeft,ymid},	// left 
+								{xpos,ytop}};	// right
+		addToSpare(new Rectangle(left,top,playerHM,ymid-ytop));
+		addToSpare(new Rectangle(left,ymid+playerWM,playerHM,bottom-ymid-playerWM));
+		int leftW = xpos-left-playerHM;
+		addToSpare(new Rectangle(left+playerHM,top,leftW,playerHM));
+	    addToSpare(new Rectangle(left+playerHM,bottom-playerHM,leftW,playerWM));
+	    int rightx = xpos+playerWM;
+	    int rightw = right-xpos-playerWM;
+	    addToSpare(new Rectangle(rightx,top,rightw,playerHM));
+	    addToSpare(new Rectangle(rightx,bottom-playerHM,rightw,playerHM));
+
+		left += playerHM;
+		top += playerHM;
+		bottom -= playerHM;
+		}
+		break;
+
+	case FourAroundW:
+		/* four around, but clip top and bottom first	
+		......_.....
+		|..........|
+		......_.....
+		
+	 	*/
+		{
+		rotations = fourAroundRotation;
+		positions = new int[][] { {xmid,ybot},		// bottom ..X..
+								{xsideLeft,ymid},	// left 
+								{xmid,ytop},		// top ..X..
+								{xsideRight,ymid}};	// right
+		{
+		int wleft = xmid-left;
+		int wright = right-xmid-playerWM;
+		int xright = xmid+playerWM;
+	   addToSpare(new Rectangle(left,top,wleft,playerHM));
+	   addToSpare(new Rectangle(xright,top,wright,playerHM));
+	   addToSpare(new Rectangle(left,ybot,wleft,playerHM));
+	   addToSpare(new Rectangle(xright,ybot,wright,playerHM));
+		}
+		{
+		int topabove = top+playerHM;
+		int heightabove = ymid-top-playerHM;
+		int heightbelow = ybot-ymid-playerWM;
+		int topbelow = ymid+playerWM;
+		int xright = right-playerHM;
+	   addToSpare(new Rectangle(left,topabove,playerHM,heightabove));
+	   addToSpare(new Rectangle(left,topbelow,playerHM,heightbelow));
+	   addToSpare(new Rectangle(xright,topabove,playerHM,heightabove));
+	   addToSpare(new Rectangle(xright,topbelow,playerHM,heightbelow));
+		}
+	
+		right -= playerHM;
+		left += playerHM;
+		top += playerHM;
+		bottom -= playerHM;
+		}
+		break;
+
 	case ThreeAroundR:	// ok 10/5/2022
-		/* three around in a U shape, leaving the left unoccupied
+		/* three around in a U shape, leaving the right unoccupied
 		
 		......_.....
 		|...........
@@ -873,6 +943,52 @@ public class GameLayoutManager implements UniversalConstants
 		bottom -= playerHM;
 		}
 		break;
+		
+	case ThreeAroundRH:	// ok 10/5/2022
+		/* three around in a U shape, leaving the right unoccupied
+		
+		......_.....
+		|...........
+		......_.....
+		
+	 	*/
+		{
+		int xpos = Math.min(xmid,right-playerHM-playerWM);
+		rotations = new double[] {0,-Math.PI/2,Math.PI};
+		positions = new int[][] { {xpos,ybot},		// bottom ..X..
+								  {xsideRight,ymid},
+								  {xpos,ytop}};		// top ..X..};	// right
+	
+		addToSpare(new Rectangle(left,top,xpos,playerHM));
+		addToSpare(new Rectangle(left,bottom-playerHM,xpos,playerHM));
+		int xright = xpos+playerWM;
+		int rightw = right-xpos-playerWM;
+		int rightw2 = right-xright-playerHM;
+		addToSpare(new Rectangle(xright,top,rightw,ymid-top));
+		addToSpare(new Rectangle(xright,ymid+playerWM,rightw,bottom-ymid-playerWM));
+		addToSpare(new Rectangle(xright,ymid,rightw2,playerHM-ymid));
+		addToSpare(new Rectangle(xright,bottom-playerHM,rightw2,ymid+playerWM-(bottom-playerHM)));
+		/*		int spareY = ycenter-playerWM/2;
+		int spareX = xmid+playerWX;
+		int spareH = Math.min(playerHM,spareY-ytop);
+		
+		// this is like addx1across, but takes into account that the 
+		// sideways recangles at the left and right might eat into it.
+		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
+		addToSpare(new Rectangle(left,top,xmid-left,spareH));
+		int yb = bottom-spareH;
+		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
+		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+
+		// rectangles ok 8/2/2021
+		*/		
+		right -= playerHM;
+		top += playerHM;
+		bottom -= playerHM;
+		}
+		break;
+		
+
 	case FourAroundEdgeRect:		// ok 2/4/2020
 		{	/* like four around, but place the top and bottom rectangles near the left and right
 			   and make the central rectangle more rectangular
@@ -881,66 +997,44 @@ public class GameLayoutManager implements UniversalConstants
 					..........._  
 			*/
 			rotations = fourAroundRotation;
+			{
 			int boxY2 = ybot-(playerWM-playerHM)/2;
 			positions = new int[][] { {xleft,ybot}, 	// bottom X....
 									{ xsideLeft,ytop+(playerWM-playerHM)/2}, 	// left, aligned to box top
 									{ xright,ytop},		// top ....X 
 								{xsideRight,boxY2}};	// right, aligned to box bottom
 			// ok 3/27/2023
-			{				
-			int spareY = top+playerWM;
-			int spareX = left+playerHM;
-			int spareXW = playerWM-spareX;		
-			addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
-			addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
-			}	
-			right -= playerWM;
-			left += playerWM;
-
-			{
-			int spareY = top+playerHM;
-			int spareH = bottom-playerWM-spareY;
-			addToSpare(new Rectangle(right,spareY,playerWM,spareH));
-			addToSpare(new Rectangle(right,spareY+spareH,playerWM-playerHM,playerWM));
-			}
-		}
-		break;
-
-	case FourAroundEdge:	// ok 2/4/2020
-		{	/* like four around, but place the top and bottom rectangles near the left and right
-					_...........
-					|..........|
-					..........._  
+			if(w>h)
+				{
+				{int spareY = top+playerWM;
+				int spareX = left+playerHM;
+				int spareXW = playerWM-spareX;		
+				addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
+				addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
+				}
+					
+				right -= playerWM;
+				left += playerWM;
+				
+				{
+				int spareY = top+playerHM;
+				int spareH = bottom-playerWM-spareY;
+				addToSpare(new Rectangle(right,spareY,playerWM,spareH));
+				addToSpare(new Rectangle(right,spareY+spareH,playerWM-playerHM,playerWM));
+				}
+				
+				}
+				else {
+				addToSpare(new Rectangle(left,bottom-playerWM,right-left-playerHM,playerWM-playerHM));
+				addToSpare(new Rectangle(left+playerHM,top+playerHM,right-left-playerHM,playerWM-playerHM));
+				addToSpare(new Rectangle(left+playerWM,bottom-playerHM,right-left-playerWM-playerHM,playerHM));
+				addToSpare(new Rectangle(left+playerHM,top,right-left-playerWM-playerHM,playerHM));
+				top += playerWM;
+				bottom -= playerWM;
+				}
 		
-		 	*/
-			rotations = fourAroundRotation;
-			int boxY2 = ybot-(playerWM-playerHM+2)/2;
-			positions = new int[][] { {xleft,ybot}, 	// bottom X....
-									{ xsideLeft,ytop+(playerWM-playerHM)/2}, 	// left, aligned to box top
-									{ xright,ytop},		// top ....X 
-								{xsideRight,boxY2}};	// right, aligned to box bottom
-			// in this layout we clip left and right margins only
-			// and the spare rectangles are in the new left and right spaces
-			// ok 2/26
+			}
 
-			int spareY = top+playerWM;
-									
-			// between horizontal bottom and vertical right
-			addToSpare(new Rectangle(playerWM+margin,bottom-playerHM,right-playerHM-playerWM-margin*2,playerHM));
-			
-			// between vertical left and horizontal bottom
-			addToSpare(new Rectangle(left,spareY,playerHM,ybot-spareY));
-			spareY = top+playerHM;
-			int spareY2 = bottom - playerWM;
-			// between horizontal top and vertical right
-			addToSpare(new Rectangle(right-playerHM,spareY,playerHM,spareY2-spareY));
-			// between left vertical and top horizontal
-			addToSpare(new Rectangle(playerHM,top,right-playerWM-playerHM-margin,playerHM));
-
-			left += playerHM;
-			right -= playerHM;
-			top += playerHM;
-			bottom -= playerHM;
 		}
 		break;
 		
@@ -1078,6 +1172,42 @@ public class GameLayoutManager implements UniversalConstants
 		bottom -= playerHM;
 		right -= playerHM;
 		}
+		break;
+	case FiveAroundEdgeFirst:
+		{	// take the left and right edges first
+	   		/*
+			  ....._.....
+			  |.... ....|
+			  ..._..._...
+			  
+			  */
+		rotations = fiveAroundRotation;
+		
+
+		addSkinnyLeft(true,true,true);
+		left += playerHM;
+		right -= playerHM;
+
+		// spare rects ok 2/26
+		add1XAcross(top);
+		int spare = right-left-playerWM*2;
+		int spareX = spare/3;
+		int bx1 = left+spareX;
+		int bx2 = bx1 + playerWM + spareX;
+		addToSpare(new Rectangle(left,ybot,spareX,playerHM));
+		addToSpare(new Rectangle(bx1+playerWM,ybot,spareX,playerHM));
+		addToSpare(new Rectangle(bx2+playerWM,ybot,spare-spareX*2,playerHM));
+		
+		top += playerHM;
+		bottom -= playerHM;
+	
+		positions = new int[][] { {bx2,ybot}, {bx1,ybot}, 	// bottom .x.x.
+			{ xsideLeft,ymid},						// left side
+			{xmid,ytop},							// top  ..X..
+			{xsideRight,ymid}};						// right side
+	
+		}
+
 		break;
 	case FiveAround1Edge: // ok 2/4/2020
 		{
@@ -1392,7 +1522,7 @@ public class GameLayoutManager implements UniversalConstants
 	    	{
 	    	double currentPercent = sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
 	    	double currentCellSize = selectedCellSize;
-	    	double currentScore = currentPercent*currentCellSize;
+	    	double currentScore = (minBoardShare>0 ? currentPercent : 1-currentPercent ) *currentCellSize;
 	    	//G.print("S "+currentSeating+" "+currentPercent+" "+currentScore+" "+currentPercent+" "+currentCellSize);
 	    	if(currentCellSize>1 && (best==null || currentScore>bestScore))
 	    	{	//G.print("Better "+currentPercent+" score ",currentScore," ",currentSeating);
@@ -1413,7 +1543,7 @@ public class GameLayoutManager implements UniversalConstants
 		for(DefinedSeating s : tryThese)	// also try the generic layouts 
 		{
 			double v = sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
-			double score = v*selectedCellSize;
+			double score = (minBoardShare>0 ? v : 1-v)*selectedCellSize;
 			//G.print(""+s+" board "+v+" cell "+selectedCellSize+" = "+score);
 	    	//G.print("S "+s+" "+v+" "+score);
 	    	if(selectedCellSize>1 && 
@@ -1443,16 +1573,19 @@ public class GameLayoutManager implements UniversalConstants
 		selectedPercent = bestPercent;
 		}
 		//G.print("Resize ");
-	    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
+	    double finalSize = sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
 
 	    if(selectedCellSize<=0)
 	    {
 	    	// in the rare case that the best layout still didn't produce a valid cell size,
 	    	// try once more with no minimum
 	    	if(G.debug()) { G.print("Emergency resize"); }
-		    sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
+		    finalSize = sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
 	    }
-	    		
+	    if(finalSize*2 < minBoardShare)
+	    {
+	    	if(G.debug()) { G.print("bad layout, board share "+finalSize+" wanted "+minBoardShare); }
+	    }
 		int halfMargin = extramargin/2;
 		//G.print("Make ",selectedSeating);
 		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
@@ -1623,8 +1756,33 @@ public class GameLayoutManager implements UniversalConstants
 			
 		 	*/
 
-    		unitsX = playerW;
-    		unitsY = playerH*2+playerW;
+    		unitsX = playerH+playerW;
+    		unitsY = playerW+playerH*2;
+	   		fixedW = marginSize*2;
+	   		fixedH = marginSize*2;
+    		edgeUnitsX = playerH;
+    		edgeUnitsY = playerH*2;
+    		break;
+
+		case ThreeAroundRH:
+			/* three around in a U shape, leaving the left unoccupied
+			
+				......_.....
+				...........|
+				......_.....
+			
+		 	*/
+		case ThreeAroundLH:
+			/* three around in a U shape, leaving the right unoccupied
+			
+				......_.....
+				|...........
+				......_.....
+			
+		 	*/
+
+    		unitsX = playerH+playerW;
+    		unitsY = Math.max(playerH*2,playerW);
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*2;
     		edgeUnitsX = playerH;
@@ -1639,28 +1797,24 @@ public class GameLayoutManager implements UniversalConstants
 					|..........|
 					..........._  
 			*/
+			if(width>height)
+			{
        		unitsX = playerW*2;
     		unitsY = playerH+playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*3;
     		edgeUnitsX = playerW*2;
     		edgeUnitsY = 0;
-    		break;
-	
-		case FourAroundEdge:
-			/* like four around, but place the top and bottom rectangles near the left and right
-			 
-			_...........
-			|..........|
-			..........._  
-			 
-			 */
-       		unitsX = playerW*2;
-    		unitsY = playerH;
-	   		fixedW = marginSize*2;
-	   		fixedH = marginSize*3;
-    		edgeUnitsX = playerW*2;
-    		edgeUnitsY = playerH;
+			}
+			else
+			{
+	      		unitsY = playerW*2;
+	    		unitsX = playerH+playerW;
+		   		fixedW = marginSize*2;
+		   		fixedH = marginSize*3;
+	    		edgeUnitsY = playerW*2;
+	    		edgeUnitsX = 0;
+			}
     		break;
 		case FourAcrossEdge:
 			/*
@@ -1734,7 +1888,22 @@ public class GameLayoutManager implements UniversalConstants
     		
     	 	*/
     		unitsX = playerW+playerH*2;
-    		unitsY = playerW*2;
+    		unitsY = Math.max(playerW,playerH*2);
+	   		fixedW = marginSize*2;
+	   		fixedH = marginSize*2;
+    		edgeUnitsX = playerH*2;
+    		edgeUnitsY = playerH*2;
+    		break;
+    	case FourAroundW:
+    		/* four around
+    		
+    		......_.....
+    		|..........|
+    		......_.....
+    		
+    	 	*/
+    		unitsX = Math.max(playerW,playerH*2);
+    		unitsY = playerW+playerH*2;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*2;
     		edgeUnitsX = playerH*2;
@@ -1814,6 +1983,21 @@ public class GameLayoutManager implements UniversalConstants
     		edgeUnitsX = playerW*2;
     		edgeUnitsY = 0;
     		break;
+    	case FiveAroundEdgeFirst:
+			/* in this layout we take the left and right edges first, then top and bottom   		
+			_........
+			|.......|
+			_......._
+			*/
+   			unitsX = playerH*2+playerW;
+    		unitsY = playerH*2;
+	   		fixedW = marginSize*2;
+	   		fixedH = marginSize*4;
+
+    		edgeUnitsX = playerH*2;
+    		edgeUnitsY = playerH*2;
+    		break;
+ 
     	case FiveAcrossEdge:
     		/*
     		 	_......._
@@ -2079,7 +2263,7 @@ public class GameLayoutManager implements UniversalConstants
 			//G.print(""+seating+" "+boardPercent+" "+cell);
 			}
 		} while((!sizeok && (cell>minSize/2))
-				|| ((cell>minSize) &&  (boardPercent<minBoardShare)));
+				|| ((cell>minSize) &&  (minBoardShare<=0 || (boardPercent<minBoardShare))));
 		boolean downsize = false;
 		//G.print("accepted size "+seating+" "+cellSize+" "+minSize+" = "+acceptedSize);
 		 

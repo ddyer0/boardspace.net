@@ -22,8 +22,8 @@ import common.GameInfo;
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
-import online.common.SeatingChart.DefinedSeating;
 import lib.*;
+import lib.SeatingChart.DefinedSeating;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;

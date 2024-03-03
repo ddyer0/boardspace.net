@@ -27,6 +27,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.IStack;
 import lib.PopupManager;
+import lib.SeatingChart;
 import lib.StringStack;
 import lib.TimeControl;
 import lib.commonPanel;
@@ -423,10 +424,7 @@ public class Session implements LobbyConstants
     		}
     	return(null);
     }
-    public boolean okForPassAndPlay()
-    {
-    	return((currentGame!=null) && currentGame.okForPassAndPlay);
-    }
+ 
     public boolean okForPlaytable()
     {
     	return((currentGame!=null)&&currentGame.okForPlaytable);
@@ -822,9 +820,10 @@ public class Session implements LobbyConstants
 		{
 	    String bar = "";
 	    StringStack uids = new StringStack();
-	    for(int i=0,limit=Math.min(currentMaxPlayers(),players.length);i<limit;i++) 
+	    for(int i=0,limit=Math.min(offline ? startingNplayers : currentMaxPlayers(),players.length);i<limit;i++) 
 	    	{User pl = players[i];
-	    	 if(pl!=null) { uids.push(offline ? pl.name : pl.uid); } 
+	    	 if(pl==null && offline) { uids.push("Player "+(i+1)); } 
+	    	 else if(pl!=null) { uids.push(offline ? pl.name : pl.uid); } 
 	    	}
 	    uids.sort();
 	    while(uids.size()>0)

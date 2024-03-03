@@ -46,7 +46,6 @@ import lib.Toggle;
  *
  * May 2007 initial work in progress. 
  *
- * todo: add the ReverseView feature
  * 
 */
 public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> implements FanoronaConstants

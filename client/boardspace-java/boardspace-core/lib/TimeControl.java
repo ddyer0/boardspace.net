@@ -50,7 +50,44 @@ public class TimeControl implements Config
 		moveIncrement = i;
 		
 	}
-
+	/**
+	 * set the time control, and change fixed and differential times approriateluy
+	 * @param k
+	 * @param newfixed
+	 * @param newdif
+	 * @return true if there is any change
+	 */
+	public boolean setTimeControl(Kind k,int newfixed,int newdif)
+	{
+		boolean change = false;
+		
+		if(k!=kind) 
+			{ kind = k; change=true; 
+			}
+		
+		//timer.set(kind,fixed,)
+		if(newfixed>=0 && newfixed!=fixedTime)
+		{
+			fixedTime = newfixed;
+			change = true;
+		}
+		if(newdif>=0)
+		{	if(k==Kind.Differential)
+			{
+			if(differentialTime!=newdif)
+				{differentialTime = newdif;
+				 change = true;
+				}
+			}
+			else if(moveIncrement!=newdif)
+			{
+			moveIncrement = newdif;
+			change = true;
+			}
+		}	
+		return change;
+	}
+	
 	private static String SecondsMessage = "#1{ seconds, second, seconds}";
 	private static String MinutesMessage = "#1{##zero minutes, minute, minutes}";
 	private static String PrettyFixedTimeMessage = "Time: #1 minutes";
@@ -60,7 +97,7 @@ public class TimeControl implements Config
 	private static String PrettyPlusTimeMessage = "Time: #1 minutes plus #2 per move";
 	private static String FixedTime = "fixed time";
 	public static String TimeControlToolTip = "timecontroltip";
-	private static String NoTime = "No time control";
+	private static String NoTime = "Clocks count Up";
 	public static String []TimeControlStrings = {
 		FixedTime,
 		SecondsMessage,
@@ -251,8 +288,8 @@ public class TimeControl implements Config
 		int h = G.Height(main);
 
 		G.SetRect(modeRect ,l,  t,  w*11/20, h);
-		G.SetRect(mainRect,l+w*3/5, t, w/5, h);
-		G.SetRect(extraRect,l+w*4/5, t, w/5, h);
+		G.SetRect(mainRect,G.Right(modeRect), t, w*9/40, h);
+		G.SetRect(extraRect,G.Right(mainRect), t, w*9/40, h);
 
 	}
 	//
@@ -264,7 +301,9 @@ public class TimeControl implements Config
 	  {	
 		partitionTimeControlRect(timeControlRect);
 		InternationalStrings s = G.getTranslations();
-	  	  int h = G.Height(timeControlRect);
+	  	int h = G.Height(timeControlRect);
+	  	int top = G.Top(timeControlRect);
+	  	int cy = G.centerY(timeControlRect);
 	  	  {
 	      boolean hit = G.pointInRect(hitPoint,modeRect);
 	      if(hit)
@@ -274,15 +313,18 @@ public class TimeControl implements Config
 	    	  hitPoint.spriteColor = Color.red;
 	    	  hitPoint.hitCode = TimeId.ChangeMode;
 	      }
-	  	  int wt = GC.Text(inG, false, modeRect,Color.black,null, s.get(kind.TimeMessage)+"   ");
+	  	  int wt = GC.Text(inG, false, G.Left(modeRect),top,G.Width(modeRect)-h,h,
+	  			  Color.black,null, s.get(kind.TimeMessage));
 	  	  if(writable)
 	  	  { int sz = h*(hit?4:3)/5;
 	  		StockArt.Pulldown.drawChip(inG,canvas,sz,
-	      			G.Left(modeRect)+wt,
+	      			G.Left(modeRect)+wt+sz/2,
 	      			G.centerY(modeRect),"");
 	  	  }}
 	  	  {
 	  	  boolean main = true;
+	  	  int lexx = G.Left(extraRect);
+	  	  int lexw = G.Width(extraRect)-h;
 	  	  switch(kind)
 	  	  {
 	  	  default: G.Error("Not expecting %s",kind);
@@ -298,13 +340,14 @@ public class TimeControl implements Config
 	  	  		  hitPoint.spriteColor = Color.red;
 	  	  		  hitPoint.hitCode = TimeId.ChangeIncrementalTime;
 	  	  	  }
-	  	  	  int wt = GC.Text(inG, false, extraRect, Color.black, null,
-	  				  	G.briefTimeString(moveIncrement)+"   ");
+	  	  	  int wt = GC.Text(inG, false, lexx,top,lexw,h,
+	  	  			  	Color.black, null,
+	  				  	G.briefTimeString(moveIncrement));
 	  	  	if(writable)
 	  	  		{int sz = h*(hit?4:3)/5;
 	  	  		 StockArt.Pulldown.drawChip(inG,canvas,sz,
-	      			G.Left(extraRect)+wt-h/4,
-	      			G.centerY(extraRect),"");
+	      			lexx+wt+sz/2,
+	      			cy,"");
 	  	  		}
 	  	  	}
 	  		  break;
@@ -318,11 +361,13 @@ public class TimeControl implements Config
 	  	  		hitPoint.spriteColor = Color.red;
 	  	  		hitPoint.hitCode = TimeId.ChangeDifferentialTime;
 	  	  	}
-	  	  	int wt = GC.Text(inG, false, extraRect, Color.black, null,
-	  				  		G.briefTimeString(differentialTime)+"   ");
+	  	  	int wt = GC.Text(inG, false, lexx,top,lexw,h,
+	  	  				Color.black, null,
+	  	  				G.briefTimeString(differentialTime));
 	  		if(writable)
-	  			{StockArt.Pulldown.drawChip(inG,canvas,h*(hit?4:3)/5,
-	      			G.Left(extraRect)+wt-h/4,
+	  			{int sz = h*(hit?4:3)/5;
+	  			 StockArt.Pulldown.drawChip(inG,canvas,sz,
+	      			G.Left(extraRect)+wt+sz/2,
 	      			G.centerY(extraRect),"");
 	  			}
 	  	  	}
@@ -340,12 +385,14 @@ public class TimeControl implements Config
 	  		  hitPoint.spriteColor = Color.red;
 	  		  hitPoint.hitCode = TimeId.ChangeFixedTime;
 	  	  }
-		  int wt = GC.Text(inG, false, mainRect, Color.black, null,
-				  	G.briefTimeString(fixedTime)+"   ");
+	  	  int mainLeft = G.Left(mainRect);
+		  int wt = GC.Text(inG, false, mainLeft,top,G.Width(mainRect)-h,h, Color.black, null,
+				  	G.briefTimeString(fixedTime));
 		  if(writable)
-			{StockArt.Pulldown.drawChip(inG,canvas,h*(hit?4:3)/5,
-			G.Left(mainRect)+wt-h/4,
-			G.centerY(mainRect),"");
+			{int sz = h*(hit?4:3)/5;
+			 StockArt.Pulldown.drawChip(inG,canvas,sz,
+			 mainLeft+wt+sz/2,
+			 cy,"");
 			}
 	  	  }}
 	  }
@@ -416,8 +463,14 @@ public class TimeControl implements Config
 	  public boolean handleDeferredEvent(Object target, String command)
 		{
 			if(timeControlMenu!=null && timeControlMenu.selectMenuTarget(target))
-			{
+			{	Kind pk = kind;
 				kind = (Kind)timeControlMenu.rawValue;
+				if(kind!=pk)
+				{
+					if(fixedTime==0) { fixedTime = kind.defaultFixedTime; }
+					if(moveIncrement==0) { moveIncrement = kind.defaultMoveTime; }
+					if(differentialTime==0) { differentialTime = kind.defaultDifTime; }
+				}
 				timeControlMenu = null;
 				return(true);
 			}
@@ -447,6 +500,27 @@ public class TimeControl implements Config
 	  	return((kind!=TimeControl.Kind.None)
 	  			? prettyPrint()
 	  			: null);
+	  }
+	  public boolean handleMenus(TimeId id,int left,int top,MenuParentInterface canvas,ActionListener ac)
+	  {
+		switch(id)
+		{
+		// the rest of these pop up menus
+		case ChangeMode:
+			changeTimeControlKind(left,top,canvas,ac);
+			return(true);
+		case ChangeIncrementalTime:
+			changeSeconds(left,top,canvas,ac);
+			return(true);
+		case ChangeFixedTime:
+			changeMinutes(left,top,canvas,ac,2);
+			return(true);
+		case ChangeDifferentialTime:
+			changeMinutes2(left,top,canvas,ac);
+			return(true);
+		default: 
+			return false;
+	  }
 	  }
 }
 

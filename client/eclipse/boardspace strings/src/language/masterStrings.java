@@ -40,6 +40,7 @@ import magnet.MagnetConstants;
 import lib.FileSelector;
 import lib.FileSource;
 import lib.InternationalStrings;
+import lib.SeatingChart;
 import crossfire.CrossfireConstants;
 import crosswordle.CrosswordleConstants;
 import dayandnight.DayAndNightConstants;
@@ -72,7 +73,6 @@ import mutton.MuttonConstants;
 import euphoria.EuphoriaConstants;
 import octiles.OctilesConstants;
 import online.common.LobbyConstants;
-import online.common.SeatingChart;
 import online.common.SeatingViewer;
 import online.common.Session;
 import online.game.AnnotationMenu;
@@ -125,6 +125,7 @@ import yspahan.YspahanConstants;
 import blooms.BloomsConstants;
 import che.CheConstants;
 import frogs.FrogConstants;
+import gametimer.GameTimerConstants;
 import warp6.Warp6Constants;
 
 import static util.PasswordCollector.LoginStrings;
@@ -175,6 +176,8 @@ public class masterStrings extends InternationalStrings
         put(LoginStrings);
         put(InternationalStrings.languages)
         ;
+        setContext("Game Timer");
+        GameTimerConstants.putStrings();
         
         setContext("Trench");
         TrenchConstants.putStrings();

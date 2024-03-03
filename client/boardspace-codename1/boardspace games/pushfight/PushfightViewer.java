@@ -23,7 +23,6 @@ import bridge.Color;
 import bridge.JCheckBoxMenuItem;
 import common.GameInfo;
 import online.common.*;
-import online.common.SeatingChart.DefinedSeating;
 
 import java.util.*;
 import lib.Graphics;
@@ -37,6 +36,7 @@ import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.SeatingChart.DefinedSeating;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;

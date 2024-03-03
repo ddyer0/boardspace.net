@@ -519,11 +519,11 @@ public class GC {
 	    }
 	
 	    setColor(inG,fore);
-	
-	    if (filled && (x < 0))
+	    
+	    if (filled && (x <= 0))
 	    {
-	        inG.drawRect(centerX + x, centerY - fromY, (x * -2) + 1, 1);
-	        inG.drawRect(centerX + x, centerY + fromY, (x * -2) + 1, 1);
+	        inG.drawRect(centerX + x, centerY - y, (x * -2) + 1, 1);
+	        inG.drawRect(centerX + x, centerY + y, (x * -2) + 1, 1);
 	    }
 	}
 
@@ -568,6 +568,7 @@ public class GC {
 	        drawAASymline(inG, y, x, centerX, centerY, radius + 0.55, fg, bg,
 	            filled);
 	    }
+	    if(filled) { fillRect(inG,centerX-radius+1,centerY-1,radius*2-1,3); }
 		}
 	}
 
@@ -1032,13 +1033,33 @@ public class GC {
 	public static void setRotatedContext(Graphics gc,Rectangle rect,HitPoint select,double rotation)
 	{	if(rotation!=0)
 		{
+		int cx = G.centerX(rect);
+		int cy = G.centerY(rect);
+		setRotatedContext(gc,cx,cy,select,rotation);
+		}
+	}
+
+	/**
+	 * rotate items to be painted near the mouse.  This is done in
+	 * a context where "select" is an unrotated point in x,y but the
+	 * item being drawn should be rotated.
+	 *
+	 * @param gc
+	 * @param cx
+	 * @param cy
+	 * @param select
+	 * @param rotation
+	 */
+	public static void setRotatedContext(Graphics gc,int cx,int cy,HitPoint select,double rotation)
+	{	if(rotation!=0)
+		{
 		if(gc!=null)
 		{
-			gc.setRotatedContext(rect,select,rotation);
+			gc.setRotatedContext(cx,cy,select,rotation);
 	}
 		else if(select!=null)
 		{
-			select.setRotatedContext(rotation,G.centerX(rect),G.centerY(rect));
+			select.setRotatedContext(rotation,cx,cy);
 		}}
 	}
 

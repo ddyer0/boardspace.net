@@ -115,16 +115,18 @@ public class commonPanel extends FullscreenPanel
 
         int localChatHeight = 0;
 
+        if(theChat!=null)
+        {
         if (chatOnly && theChat.isWindow())
         {	// this is correct for the old "commonChatApplet"
         	// not for the new "ChatWidget"
             localChatHeight = inHeight - inY;
         }
 
-        if ((theChat != null) && (localChatHeight > 0))
+        if (localChatHeight > 0)
         { //System.out.println("chat " +  + inX + " " + inY + " " + inWidth + " " + localChatHeight);
         	theChat.setBounds( inX, inY, inWidth, localChatHeight);
-        }
+        }}
 
         CanvasProtocol can =myCanvas;
         if (can != null)
@@ -233,16 +235,6 @@ public class commonPanel extends FullscreenPanel
         	requestShutdown();
         }
 
-
-	      {  // print a news file
-		      if((newsReader!=null) && newsReader.finished) { newsReader=null; }
-		      else if(newsStack.size()>0)
-		      {   String showNews=newsStack.pop(); 
-		          newsReader = new NewsReader(theChat,"/"+G.getString(G.LANGUAGE,DefaultLanguageName)+"/"+showNews,null);
-		          newsReader.postMessageHost=showHostMessages;
-		          newsReader.start(); 
-		        }
-		      }
 	      { // give a welcome message
 		      String sv=showVoice;
 		      if(sv!=null)
@@ -259,6 +251,14 @@ public class commonPanel extends FullscreenPanel
   
 	    if(theChat!=null)
 	    {	// try hard to notice messages being posted to the web site
+		      if((newsReader!=null) && newsReader.finished) { newsReader=null; }
+		      else if(newsStack.size()>0)
+		      {   String showNews=newsStack.pop(); 
+		          newsReader = new NewsReader(theChat,"/"+G.getString(G.LANGUAGE,DefaultLanguageName)+"/"+showNews,null);
+		          newsReader.postMessageHost=showHostMessages;
+		          newsReader.start(); 
+		        }
+
         	String err = G.getPostedError();
         	if(err!=null)
         	{

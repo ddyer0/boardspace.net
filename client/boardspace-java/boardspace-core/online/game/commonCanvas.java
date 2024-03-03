@@ -42,13 +42,12 @@ import javax.swing.JFileChooser;
 
 import lib.*;
 import lib.RepaintManager.RepaintStrategy;
+import lib.SeatingChart.DefinedSeating;
 import lib.SimpleSprite.Movement;
 import lib.TimeControl.TimeId;
 import online.common.LaunchUser;
 import online.common.LaunchUserStack;
 import online.common.OnlineConstants;
-import online.common.SeatingChart;
-import online.common.SeatingChart.DefinedSeating;
 import online.common.Session;
 import online.game.BaseBoard.BoardState;
 import online.game.export.ViewerProtocol;
@@ -595,7 +594,6 @@ public abstract class commonCanvas extends exCanvas
     	if(KEYWORD_SPARE.equals(cmdStr))
     	{
     		// this is sent to indicate handling timecontrols
-    		l.gameOverlayEnabled = fullMessage.indexOf(KEYWORD_TIMECONTROLS)>0;
     		return(true);
     	}
     	if(annotationMenu.processSpareMessage(cmdStr,fullMessage))
@@ -761,6 +759,7 @@ public abstract class commonCanvas extends exCanvas
 	    
 	    private JMenuItem resignAction = null;
 	    private JMenuItem passMove = null;
+	    private JMenuItem editMove = null;
 	    private JMenuItem saveAndCompare = null;
 	    private boolean separateChat = false;		// chat in a separate window
 	    private boolean hiddenChat = false;			// chat in current window, but hidden
@@ -813,6 +812,13 @@ public abstract class commonCanvas extends exCanvas
 	    private void doPassMove()
 	    {	// not usually used in the game, but available in debugging situations to just toggle the player.
 	    	PerformAndTransmit(PASS);
+	    }
+	    /**
+	     * switch to the other player for the next move.
+	     */
+	    private void doEditMove()
+	    {	// not usually used in the game, but available in debugging situations to just toggle the player.
+	    	PerformAndTransmit(EDIT);
 	    }
 	 
 	    //
@@ -957,6 +963,10 @@ public abstract class commonCanvas extends exCanvas
 	        }
 	        else if (target == passMove)
 	        {   doPassMove();
+	        }
+	        else if (target == editMove)
+	        {
+	        	doEditMove();
 	        }
 	        else if (target == robotLevel0) 
 	        	{   selectRobot(robotLevel0.getX(),robotLevel0.getY());
@@ -1227,8 +1237,8 @@ public abstract class commonCanvas extends exCanvas
 	    {
 	    	return((G.Date()-pl.lastInputTime)<3*60*1000);
 	    }
-	    
-	    
+
+		
 	    /**
 	     * draw the player name, clock, and network activity spinner.  If hp
 	     * is not null, draw the player name as a "start" button.
@@ -1245,7 +1255,8 @@ public abstract class commonCanvas extends exCanvas
 	    		Color highlightColor,Color backgroundColor)
 	    {	pl.setRotatedContext(gc, hp, false);
 	        String p0Name1 = prettyName(pl.boardIndex);
-	        GC.setFont(gc,standardBoldFont());
+	        Font nameFont = largeBoldFont();
+	        GC.setFont(gc,nameFont);
 	        boolean active = playerIsActive(pl);
 	        if(code!=null)
 	        {
@@ -1281,23 +1292,23 @@ public abstract class commonCanvas extends exCanvas
 		    	}
     
 	    	String timeString = G.timeString(ptime);
+	    	Font timeFont = G.getFont(nameFont,G.Height(pl.timeRect));
 	    	GC.printTimeC(gc, pl.timeRect,timeString, 
-	    				   review?Color.blue:Color.black,null, standardBoldFont());
+	    				   review?Color.blue:Color.black,null, timeFont);
 	    	 
 	    	if(G.Height(pl.extraTimeRect)>0)
 	    	{
-    			printExtraTime(gc,pl,pl.extraTimeRect,timeControl);
+    			printExtraTime(gc,pl,pl.extraTimeRect,timeControl,timeFont);
     	    }
     		pl.setRotatedContext(gc, hp, true);
 	    }
-	    private void printExtraTime(Graphics gc,commonPlayer pl,Rectangle r,TimeControl time)
+	    private void printExtraTime(Graphics gc,commonPlayer pl,Rectangle r,TimeControl time,Font timeFont)
 	    {	TimeControl.Kind kind = time==null ? TimeControl.Kind.None : time.kind;
  			boolean review = reviewMode();
 	    	long ptime = review ? pl.reviewTime : pl.elapsedTime;
  	    	long ftime = time==null ? 0 : time.fixedTime;
 	    	int warntime = 30*1000;
 	    	Color col = Color.blue;
-	    	Font f = standardBoldFont();
 	    	StringBuilder b = new StringBuilder();
 	    	int dtime = 0;
 	    	switch(kind)
@@ -1341,14 +1352,14 @@ public abstract class commonCanvas extends exCanvas
     	
 	    	b.append(G.briefTimeString(Math.abs(dtime)));
 	    	if(col==Color.yellow) 
-	    		{	f = largeBoldFont();
+	    		{
 	    			b.append(".");
 	    			b.append((dtime%1000)/100);
 	    			repaint(100);	// don't miss any ticks
 	    		}
 	    	GC.printTimeC(gc, pl.extraTimeRect,
 	    			b.toString(),	// round up
-	    			col,null, f);
+	    			col,null,timeFont);
 	
 	    }
 	    private int numberOfCompletedMoves(commonPlayer pl)
@@ -2042,7 +2053,7 @@ public abstract class commonCanvas extends exCanvas
     private commonPlayer otherPlayerTimeExpired(commonPlayer my)
     {	my.setTimeIsInactive(false);
     	for(int i = 0;i<nPlayers();i++)
-    	{	if(i!=my.boardIndex) 
+    	{	if(G.offline() ? (i!=whoseTurn().boardIndex) : (i!=my.boardIndex))
     		{
     		commonPlayer p = getPlayerOrTemp(i);
     		if(p!=null)
@@ -2137,25 +2148,14 @@ public abstract class commonCanvas extends exCanvas
 		TimeId tid = (TimeId)id;
 		int left = G.Left(hp);
 		int top = G.Top(hp);
+		if(time.handleMenus(tid,left,top,this,this)) { return true; }
+		else
 		switch(tid)
 		{	case ChangeTimeControl:
 			case GameOverOnTime:
 	  			canvas.performClientMessage("+" + id.shortName(),true,true);
 	  			return(true);
-	  			
-	  		// the rest of these pop up menus
-			case ChangeMode:
-				time.changeTimeControlKind(left,top,canvas,canvas);
-				return(true);
-			case ChangeIncrementalTime:
-				time.changeSeconds(left,top,canvas,canvas);
-				return(true);
-			case ChangeFixedTime:
-				time.changeMinutes(left,top,canvas,canvas,2);
-				return(true);
-			case ChangeDifferentialTime:
-				time.changeMinutes2(left,top,canvas,canvas);
-				return(true);
+	
 			default: G.Error("not handled %s", tid);
 		}}
 		return(false);
@@ -2183,11 +2183,11 @@ public abstract class commonCanvas extends exCanvas
     	int top = G.Top(boardRect);
     	int width = G.Width(boardRect);
     	int inside = (int)(width*0.05);
+       	int h = inside*7;
     	int l =left+inside;
-    	int t = top+inside;
+    	int t = top+(G.Height(boardRect)-h)/2;
     	int w = width-inside*2;
-    	int h = inside*7;
-    	Rectangle ir = new Rectangle(l,t,w,h);
+     	Rectangle ir = new Rectangle(l,t,w,h);
     	StockArt.Scrim.getImage().stretchImage(gc, ir);  
     	GC.setFont(gc,canvas.largeBoldFont());
     	String pname = expired.prettyName("");
@@ -2208,7 +2208,7 @@ public abstract class commonCanvas extends exCanvas
     	}
     	Rectangle timeControlRect = new Rectangle(l+w/6,t+inside*5,4*w/6,inside);
     	time.drawTimeControl(gc,canvas,hitPoint!=null,hitPoint,timeControlRect);
-    	
+    	GC.frameRect(gc,Color.black,ir);
     }
 
     /**
@@ -4782,18 +4782,23 @@ public abstract class commonCanvas extends exCanvas
     	commonMove m = History.elementAt(idx);
     	switch(newmove.op)
     	{
-    	case MOVE_EDIT:
+    	// MOVE_EDIT isn't included here, so if you have start+edit you continue to see the 
+    	// edit until you hit start again.  This prevents "whoseturn mismatch".
     	case MOVE_START:
-    		switch(m.op)
+    		while(idx>=0)
     		{
-    		default: break;
+    		// in a start, remove any number of previous start/edit/resign
+    		switch(History.elementAt(idx).op)
+    		{
+    		default:
+    			idx=-1; 
+    			break;
     		case MOVE_START:
     		case MOVE_EDIT:
     		case MOVE_RESIGN:
-    			// multiple starts or edits, remove previous
-    			popHistoryElement(); 
-    			break;
-    		}
+    			popHistoryElement();
+    			idx--;
+    			}}
     		break;
     	case MOVE_DONE:
     		break;
@@ -5148,6 +5153,7 @@ public abstract class commonCanvas extends exCanvas
         	}
         	hidden.startShell = myFrame.addAction("start shell",deferredEvents);
             hidden.passMove = myFrame.addAction("pass this move",deferredEvents);
+            hidden.editMove = myFrame.addAction("edit this game",deferredEvents);
             l.auxSliders = myFrame.addOption("Use aux sliders",false,deferredEvents);
            	hidden.alternateBoard = myFrame.addOption("Show Alternate Board", false,deferredEvents);
             hidden.saveAndCompare = myFrame.addAction("Save/Compare Position",deferredEvents);
@@ -5227,6 +5233,7 @@ public abstract class commonCanvas extends exCanvas
     	commonPlayer pl = players[i];
     	if(pl!=null) { pl.setReviewTime(-1); }
     }
+    l.gameOverlayEnabled = true;
     repeatedPositions.clear();
     }
     public void stopRobots()
@@ -5843,8 +5850,24 @@ public abstract class commonCanvas extends exCanvas
 
         return (true);
     }
+    /**
+     * return true if the player's clocks ought to be ticking.
+     * 
+     * @return
+     */
+    public boolean timersActive()
+    {
+       	BoardProtocol bb = getBoard();
+    	if(bb!=null)
+    	{
+    	BaseBoard.BoardState state = bb.getState();
+    	return(! ( state.Puzzle() || state.GameOver()));
+    	}
+    	return false;
+    }
+    
     public void updatePlayerTime(long increment,commonPlayer p)
-    {	if(p!=null)
+    {	if((p!=null) && timersActive())
     	{
      	long newtime = (p.elapsedTime + increment);
         p.setElapsedTime(newtime);
@@ -7010,6 +7033,10 @@ public abstract class commonCanvas extends exCanvas
         	{ // handle incoming messages from the main screen
         		l.handleDeferredMessages();	
         	}
+        if((timeControl!=null) && (timeControl.kind!=TimeControl.Kind.None))
+        {
+        	waitTime = Math.min(waitTime,250);
+        }
         super.ViewerRun(waitTime);
         
     }
@@ -8953,5 +8980,6 @@ public void verifyGameRecord()
 		VNCTransmitter transmitter = null;
 		private JMenuItem setNetConsole = null;
 		public void setTransmitter(VNCTransmitter m) { transmitter = m; }
+
 
 }

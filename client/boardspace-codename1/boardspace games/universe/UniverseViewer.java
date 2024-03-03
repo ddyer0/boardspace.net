@@ -355,7 +355,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		if(aspect>1) 
 			{	
 			int area = rackw*rackh;
-			rackh = (int)(unit*rows*2);
+			rackh = Math.max(G.Height(box),(int)(unit*rows*2));
 			rackw = area/rackh;
 			}
 		else if (aspect<1)

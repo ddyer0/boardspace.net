@@ -119,10 +119,16 @@ public class Graphics extends SystemGraphics
 	
 	public void setRotatedContext(Rectangle rect,HitPoint select,double rotation)
 	{	if(rotation!=0)
-		{if(rotatedAmount==0)
 		{
-		int cx = rotatedCenterX = G.centerX(rect);
-		int cy = rotatedCenterY = G.centerY(rect);
+		setRotatedContext(G.centerX(rect),G.centerY(rect),select,rotation);
+		}
+	}
+	public void setRotatedContext(int cx,int cy,HitPoint select,double rotation)
+	{
+		if(rotatedAmount==0)
+		{
+		rotatedCenterX = cx;
+		rotatedCenterY = cy;
 		rotatedAmount = rotation;
 		rotatedPoint = select;
 		setRotation(rotation,cx,cy);
@@ -130,7 +136,7 @@ public class Graphics extends SystemGraphics
 		}
 		else {
 		G.Error("already rotated");
-		}}
+		}
 	}
  
 	public void unsetRotatedContext()

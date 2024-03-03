@@ -19,7 +19,7 @@ package lib;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import online.common.SeatingChart.DefinedSeating;
+import lib.SeatingChart.DefinedSeating;
 
 public interface GameLayoutClient 
 {  
