@@ -788,11 +788,30 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}
 		return(true);
 	}
+	private SeatingChart[] portaitCharts(SeatingChart[]charts)
+	{	int n = 0;
+		for(SeatingChart c : charts) { if(!c.id.landscapeOnly) { n++; }}
+		SeatingChart res[] = new SeatingChart[n];
+		n = 0;
+		for(SeatingChart c : charts) { if(!c.id.landscapeOnly) { res[n++] = c; }}
+		return res;
+	}
+	private SeatingChart[] landscapeCharts(SeatingChart[]charts)
+	{	int n = 0;
+		for(SeatingChart c : charts) { if(!c.id.portraitOnly) { n++; }}
+		SeatingChart res[] = new SeatingChart[n];
+		n = 0;
+		for(SeatingChart c : charts) { if(!c.id.portraitOnly) { res[n++] = c; }}
+		return res;
+	}
 	private void drawSeatingCharts(Graphics gc,Rectangle r,HitPoint hp)
 	{	SeatingChart charts[] = serviceRunning() ? SeatingChart.ServerCharts : SeatingChart.NonServerCharts;
-		int ncharts = charts.length;
 		int w = G.Width(r);
 		int h = G.Height(r);
+		if(w>h*1.6) { charts = landscapeCharts(charts); }
+		else if(w*1.6<h) { charts = portaitCharts(charts); }
+	
+		int ncharts = charts.length;
 		boolean portrait = w<h;
 		int majorAxis = portrait ? h : w;
 		int minorAxis = portrait ? w : h;

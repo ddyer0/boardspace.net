@@ -371,7 +371,20 @@ public class G extends Platform implements Timestamp
     						if(ind<fieldWidth) { outp = outp.substring(0,fieldWidth); }
     						len = fieldWidth;
     					}
-    				if(fieldWidth<len) { outp = outp.substring(0,Math.max(1,fieldWidth-3))+"..."; }
+    				if(fieldWidth<len) 
+    					{ 
+    					if(next=='F'||next=='f')
+    					{	int ind = outp.indexOf('.');
+    						if(ind<fieldWidth)
+    						{
+    							outp = outp.substring(0,fieldWidth);
+    						}
+    						else {
+    							outp = outp.substring(0,Math.max(1,fieldWidth-3))+"...";
+    						}
+    					}
+    					else { outp = outp.substring(0,Math.max(1,fieldWidth-3))+"..."; }
+    					}
     				}
     				out.append(outp);
     				idx++;
@@ -1658,6 +1671,7 @@ static public String getSystemProperties()
     String ss = G.concat("[Java",
     		G.speedString,
     		" screen=",	G.getScreenSize(),
+    		G.format(" diag=%4F",G.screenDiagonal()),
     		" ppi=",G.getPPI(),
     		" deviceDPI=",G.getRealScreenDPI(),
     		" scale =",G.getDisplayScale(),

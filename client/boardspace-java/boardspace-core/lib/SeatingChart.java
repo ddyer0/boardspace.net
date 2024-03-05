@@ -188,68 +188,77 @@ public class SeatingChart {
 		  default6P,
 		};
 	public static enum DefinedSeating 
-	{	Undefined(false,false,false,null),
-		Portrait(true,false,false,null),		// down, with spare rects at the right
-		SideBySide(false,false,false,Portrait),				// two player game with side by side seating
-		FaceToFaceLandscapeTop(false,false,true,null),		// two player,  across the top and bottom
-		FaceToFaceLandscapeSide(false,false,true,FaceToFaceLandscapeTop),			// two player, over and under on the side
-		LeftCornerWide(false,true,true,null),
-		RightCornerWide(false,true,true,null),
-		LeftCorner(false,true,true,LeftCornerWide),
-		RightCorner(false,true,true,RightCornerWide),
-		FaceToFacePortraitSide(true,false,true,null),
-		FaceToFacePortrait(true,false,true,FaceToFacePortraitSide),
-		RightEnd(true,true,false,null),
-		ThreeLeftLW(false,true,true,null),
-		ThreeLeftL(false,true,true,ThreeLeftLW),
-		ThreeRightLW(false,true,true,null),
-		ThreeRightL(false,true,true,ThreeRightLW),
-		ThreeAroundLeft(false,true,true,null),
-		ThreeAroundRight(false,true,true,null),
-		ThreeAroundLH(false,true,true,ThreeAroundLeft),
-		ThreeAroundL(false,true,true,ThreeAroundLH),
-		ThreeAroundRH(false,true,true,ThreeAroundRight),
-		ThreeAroundR(false,true,true,ThreeAroundRH),
-		ThreeWideLeft(false,true,true,null),
-		ThreeWide(false,true,true,ThreeWideLeft),
-		ThreeAcrossLeftCenter(false,false,true,null),
-		ThreeAcrossLeft(false,false,true,ThreeAcrossLeftCenter),
-		ThreeAcross(false,false,true,ThreeAcrossLeft),
-		FourAroundEdgeRect(false,true,true,null),
-		FourAroundW(false,true,true,FourAroundEdgeRect),
-		FourAround(false,true,true,FourAroundW),
-		FourAroundUW(false,true,true,null),
-		FourAroundU(false,true,true,FourAroundUW),
-		FourAcrossEdge(false,false,true,null),
-		FourAcross(false,false,true,FourAcrossEdge),
-		FiveAroundEdge(false,true,true,null),
-		FiveAroundEdgeFirst(false,true,true,FiveAroundEdge),
-		FiveAround(false,true,true,FiveAroundEdgeFirst),
-		FiveAround1EdgeCenter(false,true,true,null),
-		FiveAround1Edge(false,true,true,FiveAround1EdgeCenter),
-		FiveAcrossEdge(false,false,true,null),
-		FiveAcross(false,false,true,FiveAcrossEdge),
-		SixAroundEdge(false,true,true,null),
-		SixAround(false,true,true,SixAroundEdge),
-		SixAcross(false,false,true,null),
+	{	Undefined(false,false,false,null,false,false),
+		Portrait(true,false,false,null,false,false),		// down, with spare rects at the right
+		SideBySide(false,false,false,Portrait,false,false),				// two player game with side by side seating
+		FaceToFaceLandscapeTop(false,false,true,null,true,false),		// two player,  across the top and bottom
+		FaceToFaceLandscapeSide(false,false,true,FaceToFaceLandscapeTop,false,false),			// two player, over and under on the side
+
+		LeftCornerTall(false,true,true,null,true,false),
+		LeftCornerWide(false,true,true,LeftCornerTall,false,true),
+		LeftCorner(false,true,true,LeftCornerWide,false,false),
+		
+		RightCornerTall(false,true,true,null,true,false),
+		RightCornerWide(false,true,true,RightCornerTall,false,true),
+		RightCorner(false,true,true,RightCornerWide,false,false),
+		
+		FaceToFacePortraitSide(true,false,true,null,false,false),
+		FaceToFacePortrait(true,false,true,FaceToFacePortraitSide,false,false),
+		RightEnd(true,true,false,null,false,false),
+		ThreeLeftLW(false,true,true,null,false,true),
+		ThreeLeftL(false,true,true,ThreeLeftLW,false,true),
+		ThreeRightLW(false,true,true,null,false,true),
+		ThreeRightL(false,true,true,ThreeRightLW,false,true),
+		ThreeAroundLeft(false,true,true,null,false,false),
+		ThreeAroundRight(false,true,true,null,false,false),
+		ThreeAroundLH(false,true,true,ThreeAroundLeft,false,false),
+		ThreeAroundL(false,true,true,ThreeAroundLH,false,false),
+		ThreeAroundRH(false,true,true,ThreeAroundRight,false,false),
+		ThreeAroundR(false,true,true,ThreeAroundRH,false,false),
+		ThreeWideLeft(false,true,true,null,false,true),
+		ThreeWide(false,true,true,ThreeWideLeft,false,true),
+		ThreeAcrossLeftCenter(false,false,true,null,false,true),
+		ThreeAcrossLeft(false,false,true,ThreeAcrossLeftCenter,false,true),
+		ThreeAcross(false,false,true,ThreeAcrossLeft,false,true),
+		FourAroundEdgeRect(false,true,true,null,false,false),
+		FourAroundW(false,true,true,FourAroundEdgeRect,false,false),
+		FourAround(false,true,true,FourAroundW,false,false),
+		FourAroundUW(false,true,true,null,false,true),
+		FourAroundU(false,true,true,FourAroundUW,false,true),
+		FourAcrossEdge(false,false,true,null,false,true),
+		FourAcross(false,false,true,FourAcrossEdge,false,true),
+		FiveAroundEdge(false,true,true,null,false,true),
+		FiveAroundEdgeFirst(false,true,true,FiveAroundEdge,false,true),
+		FiveAround(false,true,true,FiveAroundEdgeFirst,false,true),
+		FiveAround1EdgeCenter(false,true,true,null,false,true),
+		FiveAround1Edge(false,true,true,FiveAround1EdgeCenter,false,true),
+		FiveAcrossEdge(false,false,true,null,false,true),
+		FiveAcross(false,false,true,FiveAcrossEdge,false,true),
+		SixAroundEdge(false,true,true,null,false,true),
+		SixAround(false,true,true,SixAroundEdge,false,true),
+		SixAcross(false,false,true,null,false,true),
 		// seating charts not represented in the seating viewer
 		
-		Landscape(false,false,false,null),		// down, with spare rects below
-		Across(false,false,false,null),			// across, with spare rects at the right
-		Portrait2X(true,false,false,null),		// two column portrait, spare rects at right
-		Landscape2X(false,false,false,null),	// two column landscape, spare rects below
-		Portrait3X(true,false,false,null),		// three column portrait, spare rects at right
-		Landscape3X(false,false,false,null), 
+		Landscape(false,false,false,null,false,false),		// down, with spare rects below
+		Across(false,false,false,null,false,false),			// across, with spare rects at the right
+		Portrait2X(true,false,false,null,false,false),		// two column portrait, spare rects at right
+		Landscape2X(false,false,false,null,false,false),	// two column landscape, spare rects below
+		Portrait3X(true,false,false,null,false,false),		// three column portrait, spare rects at right
+		Landscape3X(false,false,false,null,false,false), 
 		;
-		DefinedSeating(boolean port,boolean ar,boolean ftf,DefinedSeating alter)
+		DefinedSeating(boolean port,boolean ar,boolean ftf,DefinedSeating alter,boolean ponly,boolean lonly)
 		{	portrait = port;
 			seatingFaceToFace = ftf;
 			seatingAround = ar;
 			alternate=alter;
+			portraitOnly = ponly;
+			landscapeOnly = lonly;
 		}
 		boolean portrait;
 		boolean seatingAround;
 		boolean seatingFaceToFace;
+		public boolean portraitOnly;
+		public boolean landscapeOnly;
 		public DefinedSeating alternate;
 		public boolean seatingPortrait() { return(portrait); }
 		public boolean seatingAround() { return(seatingAround); }

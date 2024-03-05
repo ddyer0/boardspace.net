@@ -922,6 +922,7 @@ public abstract class commonCanvas extends exCanvas
 	    	   TextDisplayFrame w = new TextDisplayFrame("Text of Game");        
 	    	   w.setText(gameRecordString());
 	       }
+	       
 	    private boolean handleDeferredEvent(Object target)
 	    {	if(target==l.zoomButton)
 	    	{
@@ -3678,8 +3679,13 @@ public abstract class commonCanvas extends exCanvas
     			  GC.frameRect(gc, Color.green,G.Left(r),G.Top(r),G.Width(r),G.Height(r));
     			  HitPoint.setHelpText(pt,r,G.concat(G.Left(r),",",G.Top(r)," - ",G.Right(r),",",G.Bottom(r)));
     			}
+ 
        	}}
        	super.showRectangles(gc,pt,cellsize);
+   	    if(G.pointInRect(pt,goalRect))
+	    {
+	    	pt.setHelpText(""+selectedLayout.selectedSeating());
+	    }
     }
     /**
      * This is called to display the current move's associated comments, in the chat window.

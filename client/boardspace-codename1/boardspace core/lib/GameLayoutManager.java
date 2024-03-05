@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,9 +12,11 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package lib;
+
+
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -27,7 +29,7 @@ import lib.SeatingChart.DefinedSeating;
 /**
  * this is the expert for constructing board layouts.  In this version of the algorithm,
  * the player boxes are placed first, around the periphery of the screen, so as to leave
- * a large unused area for the board.  The contstraints try to provide both a reasonable
+ * a large unused area for the board.  The constraints try to provide both a reasonable
  * size for the player box, and as large as practical an area for the board and other
  * controls.   Second, all the auxiliary controls are placed, and finally the main
  * rectangle for the board, all that's left over, is used.
@@ -38,11 +40,15 @@ import lib.SeatingChart.DefinedSeating;
  *  a playtable, or alternatively generic seating intended for online play which 
  *  accommodate any number of players.
  * 
+ * The intended entry points for this are the variations of  "doLayout" "placeRectangle" and "getMainRetangle"
+ *  
  * @author Ddyer
  *
  */
-public class GameLayoutManager  implements UniversalConstants
+public class GameLayoutManager implements UniversalConstants
 {	
+	/** these purpose codes are used to customized the optimization phase */
+
 	public GameLayoutManager(boolean max) { boardMax = max; }
 	GameLayoutClient client = null;
 	int nPlayers;
@@ -57,7 +63,7 @@ public class GameLayoutManager  implements UniversalConstants
 
 	public String toString() { return("<GamelayoutManager "+selectedSeating+">"); }
 	public boolean boardMax = false;
-
+	
 	// left top right and bottom include necessary margins, so new content
 	// can exactly reach the given values
 	private int left;				// these define the central rectangle that is still unallocated
@@ -125,29 +131,18 @@ public class GameLayoutManager  implements UniversalConstants
 		{
 		if(addSkinnyLeft)
 			{
-			addToSpare(new Rectangle(left,spareYT,playerHM,spareYH));
-			addToSpare(new Rectangle(left,spareYB,playerHM,spareYBH));
+			addToSpare(left,spareYT,playerHM,spareYH);
+			addToSpare(left,spareYB,playerHM,spareYBH);
 			}
 		if(addSkinnyRight)
 			{	int spareX = right-playerHM;
-				addToSpare(new Rectangle(spareX,spareYT,playerHM,spareYH));
-				addToSpare(new Rectangle(spareX,spareYB,playerHM,spareYBH));
+				addToSpare(spareX,spareYT,playerHM,spareYH);
+				addToSpare(spareX,spareYB,playerHM,spareYBH);
 			}
 		}
 	}
 	
-	// add spare rectangles for skinny margins at left or left and right
-	private void addSkinnyRight(boolean addSkinnyRight,boolean tall)
-	{
-		int spareY = ycenter-playerWM/2;
-		int spareYT = tall ? top : top+playerHM;
-		int spareYH = spareY-spareYT;
-		int spareYB = spareY+playerWM;
-		int spareYBH = bottom-spareYB;
-		int spareX = right-playerHM;
-		addToSpare(new Rectangle(spareX,spareYT,playerHM,spareYH));
-		addToSpare(new Rectangle(spareX,spareYB,playerHM,spareYBH));
-	}
+
 	// add spare rectangles for skinny margins at left or left and right
 	private void addSkinnyOffset(int spareX)
 	{
@@ -155,8 +150,8 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareYH = spareY-top;
 		int spareYB = spareY+playerWM;
 		int spareYBH = ybot-spareYB;
-		addToSpare(new Rectangle(spareX,top,playerHM,spareYH));
-		addToSpare(new Rectangle(spareX,spareYB,playerHM,spareYBH));
+		addToSpare(spareX,top,playerHM,spareYH);
+		addToSpare(spareX,spareYB,playerHM,spareYBH);
 	}
 	// add spare rectangles for fat margins at left or left and right, with the side box centered
 	// this is used only by FiveAroundEdge and SixAroundEdge
@@ -166,23 +161,23 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareY2 = spareY+playerWM;
 		if(addLeft)
 		{
-		addToSpare(new Rectangle(left,spareY0,playerWM,spareY-spareY0));
-		addToSpare(new Rectangle(left,spareY2,playerWM,ybot-spareY2));
+		addToSpare(left,spareY0,playerWM,spareY-spareY0);
+		addToSpare(left,spareY2,playerWM,ybot-spareY2);
 		int spareX = playerHM;
-		addToSpare(new Rectangle(spareX,spareY,playerWM-playerHM,spareY2-spareY));
+		addToSpare(spareX,spareY,playerWM-playerHM,spareY2-spareY);
 		}
 		// rectangles ok 2/26
 		if(addRight)
 		{
 		if(six)
 		{	// the right-top rectangle starts at the true top.
-			addToSpare(new Rectangle(xright,spareY0,playerWM,spareY-spareY0));
+			addToSpare(xright,spareY0,playerWM,spareY-spareY0);
 		}
 		else {
-			addToSpare(new Rectangle(xright,ytop,playerWM,spareY-ytop));
+			addToSpare(xright,ytop,playerWM,spareY-ytop);
 		}
-			addToSpare(new Rectangle(xright,spareY2,playerWM,ybot-spareY2));
-			addToSpare(new Rectangle(xright,spareY,playerWM-playerHM,spareY2-spareY));
+			addToSpare(xright,spareY2,playerWM,ybot-spareY2);
+			addToSpare(xright,spareY,playerWM-playerHM,spareY2-spareY);
 		}
 	}
 
@@ -190,19 +185,19 @@ public class GameLayoutManager  implements UniversalConstants
 	// add spare rectangles for .X.X. spacing 
 	private void add2XAcross(int ycoord)
 	{	
-		addToSpare(new Rectangle(left,ycoord,xthirdLeft-left,playerHM));
+		addToSpare(left,ycoord,xthirdLeft-left,playerHM);
 		int spareX = xthirdRight+playerWX;
-		addToSpare(new Rectangle(spareX,ycoord,right-spareX,playerHM));
+		addToSpare(spareX,ycoord,right-spareX,playerHM);
 		spareX = xthirdLeft+playerWX;
-		addToSpare(new Rectangle(spareX,ycoord,xthirdRight-spareX,playerHM));
+		addToSpare(spareX,ycoord,xthirdRight-spareX,playerHM);
 	}
 	
 	// add spare rectangles for ..X.. spacing
 	private void add1XAcross(int ycoord)
 	{
 		int spareX = xmid+playerWX;
-		addToSpare(new Rectangle(spareX,ycoord,right-spareX,playerHM));
-		addToSpare(new Rectangle(left,ycoord,xmid-left,playerHM));
+		addToSpare(spareX,ycoord,right-spareX,playerHM);
+		addToSpare(left,ycoord,xmid-left,playerHM);
 	}
 
 
@@ -210,45 +205,45 @@ public class GameLayoutManager  implements UniversalConstants
 	private void add3XAcross(int ycoord)
 	{
 		int spareX = left+playerWM;
-		addToSpare(new Rectangle(spareX,ycoord,xmid-spareX-1,playerHM));
+		addToSpare(spareX,ycoord,xmid-spareX-1,playerHM);
 		spareX = xmid+playerWX;
-		addToSpare(new Rectangle(spareX,ycoord,xright-spareX-1,playerHM));
+		addToSpare(spareX,ycoord,xright-spareX-1,playerHM);
 	}
 	private void addSidebar(int xcoord)
 	{	int spareY = ycenter-playerWX/2;
-		addToSpare(new Rectangle(xcoord,top,playerHM,spareY-top));
+		addToSpare(xcoord,top,playerHM,spareY-top);
 		int spareYB = ycenter+playerWM/2;
-		addToSpare(new Rectangle(xcoord,spareYB,playerHM,bottom-spareYB));
+		addToSpare(xcoord,spareYB,playerHM,bottom-spareYB);
 	}
 	private void addTopToBottom(int xcoord,boolean topTop)
 	{
 		int spareY = topTop?0:ytop+playerHX;
 		// extra space between the top and bottom on the right side
-		addToSpare(new Rectangle(xcoord,spareY,playerWM,ybot-spareY));
+		addToSpare(xcoord,spareY,playerWM,ybot-spareY);
 	}
 	private void addSideToSide(int top)
 	{
-		addToSpare(new Rectangle(left+playerWM,top,right-left-playerWM*2,playerHM));
+		addToSpare(left+playerWM,top,right-left-playerWM*2,playerHM);
 	}
 	
 	// add as horizontal segments for corner-edge arrangements
 	private void addSpareVStrip(int spareX,int spareX2)
 	{	int stripH = (bottom-playerWM-playerHM)/2;
-		addToSpare(new Rectangle(spareX,0,playerWM,stripH));
-		addToSpare(new Rectangle(spareX,bottom-playerHM-stripH,playerWM,stripH));
-		if(playerWM>playerHM) { addToSpare(new Rectangle(spareX2,stripH,playerWM-playerHM,playerWM)); }
+		addToSpare(spareX,0,playerWM,stripH);
+		addToSpare(spareX,bottom-playerHM-stripH,playerWM,stripH);
+		if(playerWM>playerHM) { addToSpare(spareX2,stripH,playerWM-playerHM,playerWM); }
 	}
 	
 	// add as horizontal segments for corner-edge arrangements
 	private void addSpareVStripFrom(int stripY,int spareX,int spareX2)
 	{	
-		addToSpare(new Rectangle(spareX,0,playerWM,stripY));
+		addToSpare(spareX,0,playerWM,stripY);
 		int strip2H = (bottom-playerHM)-(stripY+playerWM);
 		if(strip2H>0)
 		{
-		addToSpare(new Rectangle(spareX,stripY+playerWM,playerWM,strip2H));
+		addToSpare(spareX,stripY+playerWM,playerWM,strip2H);
 		}
-		if(playerWM>playerHM) { addToSpare(new Rectangle(spareX2,stripY,playerWM-playerHM,playerWM)); }
+		if(playerWM>playerHM) { addToSpare(spareX2,stripY,playerWM-playerHM,playerWM); }
 	}
 	static double fourAcrossRotation[] = {0,0,Math.PI,Math.PI,Math.PI};	//extra pi for fivearound
 	static double fourAroundRotation[] = {0,Math.PI/2,Math.PI,-Math.PI/2};
@@ -317,8 +312,10 @@ public class GameLayoutManager  implements UniversalConstants
 	xmid = xcenter-playerWX/2;			// not the true mid line, but offset by half a box
 	ymid = ycenter-playerHX/2;
 	ymidUp = ycenter-playerHX;
-	xsideLeft = left+playerHM/2-playerWX/2;		// so when rotated will center on left
-	xsideRight = right-(playerHM+playerWM)/2;	// so when rotated will center on right
+	int rotationYoffset = (playerWX-playerHX)/2;
+	
+	xsideLeft = left+(playerHM-playerWX)/2;		// so when rotated will center on left
+	xsideRight = right-(playerHM+playerWM)/2;//right-rotationXoffset;	// so when rotated will center on right
 	
 	// points for the seated layouts with two per side
 	int extra = right-left-playerWM*2;		// extra space with 2 boxes across
@@ -376,8 +373,8 @@ public class GameLayoutManager  implements UniversalConstants
 	case FaceToFaceLandscapeTop:
 		rotations = new double[]{Math.PI,0};
 		positions = new int[][]{{xright,ytop},{xright,ybot}};
-		addToSpare(new Rectangle(left,top,xright-left,playerHM));
-		addToSpare(new Rectangle(left,ybot,xright-left,playerHM));
+		addToSpare(left,top,xright-left,playerHM);
+		addToSpare(left,ybot,xright-left,playerHM);
 		top += playerHM;
 		bottom -= playerHM;
 		break;
@@ -401,21 +398,18 @@ public class GameLayoutManager  implements UniversalConstants
 		/*
 		 * face to face players with the board below them
 		 * 
-		 * |....|
+		 * |ssss|
 		 * ......
 		 * ......
 		 * ......
 		 */
-			int yt = margin+(playerWM-playerHM)/2;
 			rotations = new double[]{Math.PI/2,-Math.PI/2};
-			positions = new int[][]{{xsideLeft,yt},	// left 
-				{xsideRight,yt},		// right
+			positions = new int[][]{{xsideLeft,top+rotationYoffset},	// left 
+				{xsideRight,top+rotationYoffset},		// right
 				};
 
-		addToSpare(new Rectangle(left,playerWM,playerHM,bottom-playerWM));
-		addToSpare(new Rectangle(right-playerHM,playerWM,playerHM,bottom-playerWM));
-		left += playerHM;
-		right -= playerHM;
+		addToSpare(left+playerHM,top,w-playerHM*2-left,playerWM);
+		top+= playerWM;
 		}
 		break;
 	case FaceToFacePortrait: // ok 2/4/2020
@@ -431,29 +425,94 @@ public class GameLayoutManager  implements UniversalConstants
 		}
 		break;
 	case LeftCornerWide: // ok 2/4/2020
+		{
 		// left corner, with the chip from left and right, leavinbg
 		// the full height available in the center
 		rotations = new double[]{ 0,Math.PI/2};
-		positions = new int[][] { {xright,ybot},		// bottom ..X..
-								  {xsideLeft,ymid}};
+		positions = new int[][] { {xleft,ybot},		// bottom ..X..
+								  {xsideLeft,top+rotationYoffset}};
+		if(playerWM>playerHM)
+		{
+		addToSpare(left+playerHM,top,playerWM-playerHM,playerWM);
+		addToSpare(left,top+playerWM,playerWM,ybot-playerWM-top);
+		}
+		else
+		{
+		addToSpare(left,top+playerWM,playerHM,bottom-top-playerWM-playerHM);
+		addToSpare(left+playerWM,bottom-playerHM,playerHM-playerWM,playerHM);
+		}
 		// ok 8/2/2021
-		addSkinnyLeft(false,true,true);
-		addTopToBottom(xright,true);
-		left += playerHM;
-		right -= playerWM;
+		//addSkinnyLeft(false,true,true);
+		//addTopToBottom(xright,true);
+		left += Math.max(playerWM,playerHM);
+		}
 		break;
 		
+	case LeftCornerTall: //
+		// left corner, with the chip from left and right, leavinbg
+		// the full height available in the center
+		{
+		rotations = new double[]{ 0,Math.PI/2};
+		positions = new int[][] { 		// bottom ..X..
+								  {right-playerWM,ybot},
+								  {xsideLeft,ybot-rotationYoffset}};
+		// ok 8/2/2021
+		if(playerWM>playerHM)
+		{
+		addToSpare(left+playerHM,bottom-playerWM,right-left-playerHM,playerWM-playerHM);
+		addToSpare(left+playerHM,bottom-playerHM,right-left-playerWM-playerHM,playerHM);
+		}
+		else
+		{
+		addToSpare(left,ybot,right-left-playerWM,playerHM-playerWM);	
+		addToSpare(left+playerHM,bottom-playerWM,right-left-playerWM-playerHM,playerWM);
+		}
+		bottom -= Math.max(playerHM,playerWM);
+		}
+		break;
+	case RightCornerTall: //
+		// right corner, with the chip from left and right, leavinbg
+		// the full height available in the center
+		{
+		rotations = new double[]{ 0,-Math.PI/2};
+		positions = new int[][] { 		// bottom ..X..
+								  {left,ybot},
+								  {xsideRight,ybot-rotationYoffset}};
+		// ok 8/2/2021
+		if(playerWM>playerHM)
+		{
+		addToSpare(left,bottom-playerWM,right-left-playerHM,playerWM-playerHM);
+		addToSpare(left+playerWM,bottom-playerHM,right-left-playerWM-playerHM,playerHM);
+		}
+		else
+		{
+		addToSpare(left+playerWM,ybot,right-left-playerWM,playerHM-playerWM);	
+		addToSpare(left+playerWM,ybot+playerHM-playerWM,right-playerHM-playerWM,playerWM);
+		}
+		bottom -= Math.max(playerHM,playerWM);
+		}
+		break;
+	
 	case RightCornerWide: // ok 2/4/2020
+		{
 		// right corner with the chop from left and right, leaving 
 		// the full height available in the center
 		rotations = new double[]{ 0,-Math.PI/2};
-		positions = new int[][] { {xleft,ybot},		// bottom ..X..
-								  {xsideRight,ymid}};
-		// ok 8/2/2021
-		addSkinnyRight(false,true);
-		addTopToBottom(left,true);
-		right -= playerHM;
-		left += playerWM;
+		positions = new int[][] { {xright,ybot},		// bottom ..X..
+								  {xsideRight,top+rotationYoffset}};
+		if(playerWM>playerHM)
+		{
+		addToSpare(xright,playerWM,playerWM,bottom-top-playerWM-playerHM);
+		addToSpare(xright,top,right-xright-playerHM,playerWM);
+		}
+		else {
+		addToSpare(right-playerHM,ybot,playerHM-playerWM,playerHM);	
+		addToSpare(right-playerHM,top+playerWM,playerHM,ybot-playerWM-top);
+		}
+		//addSkinnyRight(false,true);
+		//addTopToBottom(left,true);
+		right -= Math.max(playerHM,playerWM);
+		}
 		break;		
 		
 	case LeftCorner:
@@ -553,11 +612,11 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareH = playerHM*(rows+1);
 		bottom -= spareH;
 		// rectangles ok 2/26
-		addToSpare(new Rectangle(spareX,bottom,right-spareX,spareH));
+		addToSpare(spareX,bottom,right-spareX,spareH);
 		int rem = nPlayers%3;
 		if(rem!=0)
 			{
-			addToSpare(new Rectangle(left+rem*playerWM,bottom+playerHX,playerWM*(3-rem),playerHM+marginSize));
+			addToSpare(left+rem*playerWM,bottom+playerHX,playerWM*(3-rem),playerHM+marginSize);
 			}
 		}
 	break;
@@ -575,10 +634,10 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareH = playerHM*(rows+1);
 		bottom -= spareH;
 		int spareW = right-spareX;
-		if(spareW>10) { addToSpare(new Rectangle(spareX,bottom,spareW,spareH)); }
+		if(spareW>10) { addToSpare(spareX,bottom,spareW,spareH); }
 		if((nPlayers&1)!=0)
 			{
-			addToSpare(new Rectangle(left+playerWM,bottom+(nPlayers>4?playerHM:0)+playerHX,playerWM,playerHM+marginSize));
+			addToSpare(left+playerWM,bottom+(nPlayers>4?playerHM:0)+playerHX,playerWM,playerHM+marginSize);
 			}
 		}
 		break;
@@ -775,9 +834,9 @@ public class GameLayoutManager  implements UniversalConstants
 
 		// add the space beween the left and right player strips
 		int spareX = left+playerHM;
-		addToSpare(new Rectangle(spareX,ybot,xmid-spareX,playerHM));
+		addToSpare(spareX,ybot,xmid-spareX,playerHM);
 		int spareX2 = xmid+playerWM;
-		addToSpare(new Rectangle(spareX2,ybot,right-playerHM-spareX2,playerHM));
+		addToSpare(spareX2,ybot,right-playerHM-spareX2,playerHM);
 
 		addSidebar(left);
 		addSidebar(right-playerHM);
@@ -818,11 +877,11 @@ public class GameLayoutManager  implements UniversalConstants
 		// sideways recangles at the left and right might eat into it.
 		if(spareH>0)
 			{
-			addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
-			addToSpare(new Rectangle(left,top,xmid-left,spareH));
+			addToSpare(spareX,top,right-spareX,spareH);	
+			addToSpare(left,top,xmid-left,spareH);
 			int yb = bottom-spareH;
-			addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
-			addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+			addToSpare(spareX,yb,right-spareX,spareH);	
+			addToSpare(left,yb,xmid-left,spareH);
 			}
 		// rectangles ok 8/2/2021
 		addSkinnyLeft(seating==DefinedSeating.FourAround,false,false);				
@@ -849,15 +908,15 @@ public class GameLayoutManager  implements UniversalConstants
 		positions = new int[][] { {xpos,ybot},		// bottom ..X..
 								{xsideLeft,ymid},	// left 
 								{xpos,ytop}};	// right
-		addToSpare(new Rectangle(left,top,playerHM,ymid-ytop));
-		addToSpare(new Rectangle(left,ymid+playerWM,playerHM,bottom-ymid-playerWM));
+		addToSpare(left,top,playerHM,ymid-ytop);
+		addToSpare(left,ymid+playerWM,playerHM,bottom-ymid-playerWM);
 		int leftW = xpos-left-playerHM;
-		addToSpare(new Rectangle(left+playerHM,top,leftW,playerHM));
-	    addToSpare(new Rectangle(left+playerHM,bottom-playerHM,leftW,playerWM));
+		addToSpare(left+playerHM,top,leftW,playerHM);
+	    addToSpare(left+playerHM,bottom-playerHM,leftW,playerWM);
 	    int rightx = xpos+playerWM;
 	    int rightw = right-xpos-playerWM;
-	    addToSpare(new Rectangle(rightx,top,rightw,playerHM));
-	    addToSpare(new Rectangle(rightx,bottom-playerHM,rightw,playerHM));
+	    addToSpare(rightx,top,rightw,playerHM);
+	    addToSpare(rightx,bottom-playerHM,rightw,playerHM);
 
 		left += playerHM;
 		top += playerHM;
@@ -882,10 +941,10 @@ public class GameLayoutManager  implements UniversalConstants
 		int wleft = xmid-left;
 		int wright = right-xmid-playerWM;
 		int xright = xmid+playerWM;
-	   addToSpare(new Rectangle(left,top,wleft,playerHM));
-	   addToSpare(new Rectangle(xright,top,wright,playerHM));
-	   addToSpare(new Rectangle(left,ybot,wleft,playerHM));
-	   addToSpare(new Rectangle(xright,ybot,wright,playerHM));
+	   addToSpare(left,top,wleft,playerHM);
+	   addToSpare(xright,top,wright,playerHM);
+	   addToSpare(left,ybot,wleft,playerHM);
+	   addToSpare(xright,ybot,wright,playerHM);
 		}
 		{
 		int topabove = top+playerHM;
@@ -893,10 +952,10 @@ public class GameLayoutManager  implements UniversalConstants
 		int heightbelow = ybot-ymid-playerWM;
 		int topbelow = ymid+playerWM;
 		int xright = right-playerHM;
-	   addToSpare(new Rectangle(left,topabove,playerHM,heightabove));
-	   addToSpare(new Rectangle(left,topbelow,playerHM,heightbelow));
-	   addToSpare(new Rectangle(xright,topabove,playerHM,heightabove));
-	   addToSpare(new Rectangle(xright,topbelow,playerHM,heightbelow));
+	   addToSpare(left,topabove,playerHM,heightabove);
+	   addToSpare(left,topbelow,playerHM,heightbelow);
+	   addToSpare(xright,topabove,playerHM,heightabove);
+	   addToSpare(xright,topbelow,playerHM,heightbelow);
 		}
 	
 		right -= playerHM;
@@ -905,7 +964,7 @@ public class GameLayoutManager  implements UniversalConstants
 		bottom -= playerHM;
 		}
 		break;
-		
+
 	case ThreeAroundR:	// ok 10/5/2022
 		/* three around in a U shape, leaving the right unoccupied
 		
@@ -926,11 +985,11 @@ public class GameLayoutManager  implements UniversalConstants
 		
 		// this is like addx1across, but takes into account that the 
 		// sideways recangles at the left and right might eat into it.
-		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,top,xmid-left,spareH));
+		addToSpare(spareX,top,right-spareX,spareH);	
+		addToSpare(left,top,xmid-left,spareH);
 		int yb = bottom-spareH;
-		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+		addToSpare(spareX,yb,right-spareX,spareH);	
+		addToSpare(left,yb,xmid-left,spareH);
 
 		// rectangles ok 8/2/2021
 		addSkinnyRightOnly(false,false);				
@@ -955,29 +1014,16 @@ public class GameLayoutManager  implements UniversalConstants
 								  {xsideRight,ymid},
 								  {xpos,ytop}};		// top ..X..};	// right
 	
-		addToSpare(new Rectangle(left,top,xpos,playerHM));
-		addToSpare(new Rectangle(left,bottom-playerHM,xpos,playerHM));
+		addToSpare(left,top,xpos,playerHM);
+		addToSpare(left,bottom-playerHM,xpos,playerHM);
 		int xright = xpos+playerWM;
 		int rightw = right-xpos-playerWM;
 		int rightw2 = right-xright-playerHM;
-		addToSpare(new Rectangle(xright,top,rightw,ymid-top));
-		addToSpare(new Rectangle(xright,ymid+playerWM,rightw,bottom-ymid-playerWM));
-		addToSpare(new Rectangle(xright,ymid,rightw2,playerHM-ymid));
-		addToSpare(new Rectangle(xright,bottom-playerHM,rightw2,ymid+playerWM-(bottom-playerHM)));
-		/*		int spareY = ycenter-playerWM/2;
-		int spareX = xmid+playerWX;
-		int spareH = Math.min(playerHM,spareY-ytop);
-		
-		// this is like addx1across, but takes into account that the 
-		// sideways recangles at the left and right might eat into it.
-		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,top,xmid-left,spareH));
-		int yb = bottom-spareH;
-		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+		addToSpare(xright,top,rightw,ymid-top);
+		addToSpare(xright,ymid+playerWM,rightw,bottom-ymid-playerWM);
+		addToSpare(xright,ymid,rightw2,playerHM-ymid);
+		addToSpare(xright,bottom-playerHM,rightw2,ymid+playerWM-(bottom-playerHM));
 
-		// rectangles ok 8/2/2021
-		*/		
 		right -= playerHM;
 		top += playerHM;
 		bottom -= playerHM;
@@ -1001,34 +1047,34 @@ public class GameLayoutManager  implements UniversalConstants
 								{xsideRight,boxY2}};	// right, aligned to box bottom
 			// ok 3/27/2023
 			if(w>h)
-			{				
+				{
 				{int spareY = top+playerWM;
-			int spareX = left+playerHM;
-			int spareXW = playerWM-spareX;		
-			addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
-			addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
-			}	
+				int spareX = left+playerHM;
+				int spareXW = playerWM-spareX;		
+				addToSpare(spareX,top,spareXW,spareY-top);
+				addToSpare(left,spareY,playerWM,ybot-spareY);
+				}
 					
-			right -= playerWM;
-			left += playerWM;
-
-			{
-			int spareY = top+playerHM;
-			int spareH = bottom-playerWM-spareY;
-			addToSpare(new Rectangle(right,spareY,playerWM,spareH));
-			addToSpare(new Rectangle(right,spareY+spareH,playerWM-playerHM,playerWM));
-			}
+				right -= playerWM;
+				left += playerWM;
+				
+				{
+				int spareY = top+playerHM;
+				int spareH = bottom-playerWM-spareY;
+				addToSpare(right,spareY,playerWM,spareH);
+				addToSpare(right,spareY+spareH,playerWM-playerHM,playerWM);
+				}
 				
 				}
 				else {
-				addToSpare(new Rectangle(left,bottom-playerWM,right-left-playerHM,playerWM-playerHM));
-				addToSpare(new Rectangle(left+playerHM,top+playerHM,right-left-playerHM,playerWM-playerHM));
-				addToSpare(new Rectangle(left+playerWM,bottom-playerHM,right-left-playerWM-playerHM,playerHM));
-				addToSpare(new Rectangle(left+playerHM,top,right-left-playerWM-playerHM,playerHM));
+				addToSpare(left,bottom-playerWM,right-left-playerHM,playerWM-playerHM);
+				addToSpare(left+playerHM,top+playerHM,right-left-playerHM,playerWM-playerHM);
+				addToSpare(left+playerWM,bottom-playerHM,right-left-playerWM-playerHM,playerHM);
+				addToSpare(left+playerHM,top,right-left-playerWM-playerHM,playerHM);
 				top += playerWM;
 				bottom -= playerWM;
-		}
-
+				}
+		
 			}
 
 		}
@@ -1147,6 +1193,8 @@ public class GameLayoutManager  implements UniversalConstants
 	case FiveAround:	// ok 2/4/2020
 		{
 	   		/*
+	   		 * five seated around the table chip from top and bottom first
+	   		 * 
   		  ....._.....
   		  |.... ....|
   		  ..._..._...
@@ -1190,9 +1238,9 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareX = spare/3;
 		int bx1 = left+spareX;
 		int bx2 = bx1 + playerWM + spareX;
-		addToSpare(new Rectangle(left,ybot,spareX,playerHM));
-		addToSpare(new Rectangle(bx1+playerWM,ybot,spareX,playerHM));
-		addToSpare(new Rectangle(bx2+playerWM,ybot,spare-spareX*2,playerHM));
+		addToSpare(left,ybot,spareX,playerHM);
+		addToSpare(bx1+playerWM,ybot,spareX,playerHM);
+		addToSpare(bx2+playerWM,ybot,spare-spareX*2,playerHM);
 		
 		top += playerHM;
 		bottom -= playerHM;
@@ -1259,7 +1307,7 @@ public class GameLayoutManager  implements UniversalConstants
 		int spareW = right-spareX;
 			if(spareW>10)
 			{
-				addToSpare(new Rectangle(spareX,bottom,spareW,playerHM));
+				addToSpare(spareX,bottom,spareW,playerHM);
 			}
 		}
 		break;
@@ -1269,7 +1317,7 @@ public class GameLayoutManager  implements UniversalConstants
 		bottom -= playerHM*nPlayers;
 		positions = stackedPositions(nPlayers,bottom,playerHM,xleft) ;
 		int spareX = xleft+playerWM;
-		addToSpare(new Rectangle(spareX,bottom,right-spareX,playerHM*nPlayers));
+		addToSpare(spareX,bottom,right-spareX,playerHM*nPlayers);
 		}
 		break;
 	case Landscape3X:
@@ -1279,11 +1327,11 @@ public class GameLayoutManager  implements UniversalConstants
 		right -= playerWM*3;
 		int spareY = top+(playerHM*((nPlayers+2)/3));
 		// rectangles ok 2/26
-		addToSpare(new Rectangle(right,spareY,playerWM*3,bottom-spareY));
+		addToSpare(right,spareY,playerWM*3,bottom-spareY);
 		int rem = (nPlayers%3);
 		if(rem!=0)
 			{
-			addToSpare(new Rectangle(right+rem*playerWM-marginSize,spareY-playerHM,(3-rem)*playerWM+marginSize,playerHM));
+			addToSpare(right+rem*playerWM-marginSize,spareY-playerHM,(3-rem)*playerWM+marginSize,playerHM);
 			}
 		}
 		break;
@@ -1294,10 +1342,10 @@ public class GameLayoutManager  implements UniversalConstants
 		right -= playerWM*2;
 		int spareY = top+(playerHM*((nPlayers+1)/2));
 		// rectangles ok 2/26
-		addToSpare(new Rectangle(right,spareY,playerWM*2,bottom-spareY));
+		addToSpare(right,spareY,playerWM*2,bottom-spareY);
 		if((nPlayers&1)!=0)
 		{
-			addToSpare(new Rectangle(right+playerWX,spareY-playerHM,playerWM+marginSize,playerHM));
+			addToSpare(right+playerWX,spareY-playerHM,playerWM+marginSize,playerHM);
 		}
 		}
 		break;
@@ -1307,7 +1355,7 @@ public class GameLayoutManager  implements UniversalConstants
 		positions = new int[nPlayers][2];
 		for(int i=0;i<nPlayers;i++) { positions[i][0] = xright; positions[i][1]=ytop+i*playerHM; }
 		int spareY =ytop+playerHM*nPlayers-marginSize+1;	// spare rects ok 2/26
-		addToSpare(new Rectangle(xright,spareY,right-xright,bottom-spareY));
+		addToSpare(xright,spareY,right-xright,bottom-spareY);
 		right -= playerWM;
 		break;
 		}
@@ -1490,6 +1538,8 @@ public class GameLayoutManager  implements UniversalConstants
 		// on the client size.  The math for this doesn't quite work out yet. so we nuke
 		// the option for now.
 		zoom = 1.0;
+		boolean portraitMode = fullwidth*1.5<fullheight;
+		boolean landscapeMode = fullwidth>fullheight*1.5;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);
 		int extramargin = G.isRealLastGameBoard()||G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
@@ -1503,6 +1553,7 @@ public class GameLayoutManager  implements UniversalConstants
 		double targetPreference = targetLayoutHysterisis;
 		DefinedSeating best = null;
 		DefinedSeating currentSeating = client.seatingChart();
+		if(G.debug()) { G.print("initial ",currentSeating); }
 		margin = (int)((margin+0.49)/zoom);
     	rects.marginSize = margin;
     	preferredAspectRatio = desiredAspectRatio;
@@ -1527,7 +1578,12 @@ public class GameLayoutManager  implements UniversalConstants
 	    		best = currentSeating;
 	    		//sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height);
 		    	}}
-	    	currentSeating = currentSeating.alternate;
+	    	do { currentSeating = currentSeating.alternate; }
+	    	while (currentSeating!=null 
+	    			&& (portraitMode 
+	    					? currentSeating.landscapeOnly
+	    					: landscapeMode ? currentSeating.portraitOnly : false));
+	    		
 	    	if(currentSeating==originalSeating) { currentSeating=null; }
 	    	}
 	    }
@@ -1535,7 +1591,7 @@ public class GameLayoutManager  implements UniversalConstants
 	    { targetPreference = 1.0; 	// no target to prefer
 	      best = currentSeating;
 	    }
-	    
+	    if(G.debug() ) { G.print("after primary ",best," ",bestScore," ",bestPercent,"% ",selectedCellSize);}
 		for(DefinedSeating s : tryThese)	// also try the generic layouts 
 		{
 			double v = sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
@@ -1569,18 +1625,21 @@ public class GameLayoutManager  implements UniversalConstants
 		selectedPercent = bestPercent;
 		}
 		//G.print("Resize ");
-	    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
+	    double finalSize = sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
 
 	    if(selectedCellSize<=0)
 	    {
 	    	// in the rare case that the best layout still didn't produce a valid cell size,
 	    	// try once more with no minimum
 	    	if(G.debug()) { G.print("Emergency resize"); }
-		    sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
+		    finalSize = sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
 	    }
-	    		
+	    if(finalSize*2 < minBoardShare)
+	    {
+	    	if(G.debug()) { G.print("bad layout, board share "+finalSize+" wanted "+minBoardShare); }
+	    }
 		int halfMargin = extramargin/2;
-		//G.print("Make ",selectedSeating);
+	    if(G.debug() ) { G.print("final ",selectedSeating," ",selectedPercent,"% ",selectedCellSize);}
 		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
     	//if(G.debug())
     	//{
@@ -1803,8 +1862,8 @@ public class GameLayoutManager  implements UniversalConstants
 			{
 	      		unitsY = playerW*2;
 	    		unitsX = playerH+playerW;
-	   		fixedW = marginSize*2;
-	   		fixedH = marginSize*3;
+		   		fixedW = marginSize*2;
+		   		fixedH = marginSize*3;
 	    		edgeUnitsY = playerW*2;
 	    		edgeUnitsX = 0;
 			}
@@ -1963,19 +2022,19 @@ public class GameLayoutManager  implements UniversalConstants
     		break;
     	case FiveAroundEdge:
 			/* in this layout we take the left and right margins, not the top and bottom
+			 * 
     		
 			_........
 			|.......|
 			_......._
 			*/
-   			unitsX = playerW*2;
-    		unitsY = playerH*2+playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*4;
-
+   			unitsX = playerW*2;
+    		unitsY = playerH*2+playerW;
     		edgeUnitsX = playerW*2;
     		edgeUnitsY = 0;
-    		break;
+      		break;
     	case FiveAroundEdgeFirst:
 			/* in this layout we take the left and right edges first, then top and bottom   		
 			_........
@@ -2030,14 +2089,25 @@ public class GameLayoutManager  implements UniversalConstants
     		edgeUnitsX = 0;
     		edgeUnitsY = playerH*2;
     		break;
- 		// seating charts not represented in the seating viewer
-    	case RightCornerWide:
+    	
+    	case RightCornerTall:
+    	case LeftCornerTall:
+      		unitsX = playerW+playerH;
+      		unitsY = Math.max(playerH,playerW);
+      		fixedW = 2*marginSize;
+      		fixedH = marginSize;
+      		edgeUnitsX = 0;
+      		edgeUnitsY = Math.max(playerW,playerW);
+      		break;
+     		 
+     	
+     	case RightCornerWide:
       	case LeftCornerWide:
-       		unitsX = playerW+playerH;
-      		unitsY = playerW;
+       		unitsY = playerW+playerH;
+      		unitsX = Math.max(playerH,playerW);
       		fixedW = 2*marginSize;
       		fixedH = 2*marginSize;
-      		edgeUnitsX = playerH+playerW;
+      		edgeUnitsX = Math.max(playerW,playerH);
       		edgeUnitsY = 0;
       		break;
      		
@@ -2147,8 +2217,8 @@ public class GameLayoutManager  implements UniversalConstants
 			unitsY = playerW;
 			fixedW = marginSize*2;
 			fixedH = 2*marginSize;
-			edgeUnitsX = playerH*2;
-			edgeUnitsY = 0;
+			edgeUnitsX = 0;
+			edgeUnitsY = playerW;
 			}
 	   		break;
 	     		
@@ -2256,7 +2326,7 @@ public class GameLayoutManager  implements UniversalConstants
 			//G.print(""+seating+" "+boardPercent+" "+cell);
 			}
 		} while((!sizeok && (cell>minSize/2))
-				|| ((cell>minSize) &&  (minBoardShare<=0 || (boardPercent<minBoardShare))));
+				|| ((cell>minSize) &&  (minBoardShare>0 && (boardPercent<minBoardShare))));
 		boolean downsize = false;
 		//G.print("accepted size "+seating+" "+cellSize+" "+minSize+" = "+acceptedSize);
 		 
@@ -2309,7 +2379,10 @@ public class GameLayoutManager  implements UniversalConstants
     		}
     		rects.addToSpare(r);
     }
-
+    private void addToSpare(int left,int top,int w,int h)
+    {
+    	addToSpare(new Rectangle(left,top,w,h));
+    }
 /**
  * place the standard VCR group of rectangles
  * @param client
@@ -2329,7 +2402,7 @@ public class GameLayoutManager  implements UniversalConstants
     		return true;
     	}
     	return(false);
-    }
+        }
     }
     /**
      * place the chat within the desired range of sizes.  
@@ -2363,7 +2436,7 @@ public class GameLayoutManager  implements UniversalConstants
     }
     private RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,int maxW,int maxH,
 			BoxAlignment align,boolean preserveAspectRatio)
-    	{
+    {	
     	RectangleSpec spec = rects.placeInMainRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,
     		preferredAspectRatio);
     	if(spec==null && minW>0 && minH>0)
@@ -2473,7 +2546,7 @@ public class GameLayoutManager  implements UniversalConstants
     		// pull back space for the log rectangle, then allocate it normally.
     		// this might result in the log going where we don't expect it.
     		G.SetHeight(chatRect,logY-chatY-marginSize);
-    		addToSpare(new Rectangle(chatX-marginSize,logY,actualChatW+marginSize*2,actualChatH+chatY+marginSize-logY));
+    		addToSpare(chatX-marginSize,logY,actualChatW+marginSize*2,actualChatH+chatY+marginSize-logY);
     	  }
       if(boardMax) { G.SetRect(logRect,0,0,0,0); return true; }
    	  return(placeRectangle(Purpose.Log,logRect,minLogW,minLogH,maxLogW,maxLogH,BoxAlignment.Edge,false)!=null);  
@@ -2490,7 +2563,7 @@ public class GameLayoutManager  implements UniversalConstants
      */
     public void placeUnplannedDoneEditRep(int boxW,int maxW,Rectangle done,Rectangle edit,Rectangle... rep)
     {		int nrep = rep.length;
-    		if(nrep==0 || (rep[0]==null)) { placeDoneEdit(boxW,maxW,done,edit); }
+     		if(nrep==0 || (rep[0]==null)) { placeDoneEdit(boxW,maxW,done,edit); }
     		else
     		{
     		boolean canUseDone = client.canUseDone();
@@ -2568,14 +2641,14 @@ public class GameLayoutManager  implements UniversalConstants
     				&& (edit!=null) 
     				&& (plannedSeating() || !canUseDone)
     				&& !alwaysPlaceDone) 
-    {		
+    		{ 
     			G.SetRect(done, 0,0,0,0);
     			// spectators don't need an edit (or undo) button
     			if(!canUseDone) { G.SetRect(edit,0,0,0,0); }
     			else {
-    			int undoW = boxW*2/3;
-    			placeRectangle(Purpose.Edit,edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
-    		} 
+    	   			int undoW = boxW*2/3;
+    	   			placeRectangle(Purpose.Edit,edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
+    			}
     		}
     		else
     		{

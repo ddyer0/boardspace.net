@@ -55,6 +55,7 @@ import lib.TextStack;
 import lib.Base64;
 import lib.Toggle;
 import lib.Random;
+import lib.RepaintManager.RepaintStrategy;
 import online.game.*;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_node;
@@ -375,6 +376,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         scoreRect.setValue(true);	// turn it on
         //believed to work, but the display on android is too glitchy
         //useDirectDrawing(!G.isAndroid()); 
+        if(G.isAndroid()) { painter.setRepaintStrategy(RepaintStrategy.DoubleBuffer); }
         doInit(false);
         adjustPlayers(players_in_game);
         ready = true;

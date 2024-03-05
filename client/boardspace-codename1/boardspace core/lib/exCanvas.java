@@ -1001,7 +1001,6 @@ graphics when using a touch screen.
         String smallkey = "";
         int mx = mouse.last_mouse_x;
         int my = mouse.last_mouse_y;
-        
         for (Enumeration<String> e = allRects.keys(); e.hasMoreElements();)
         {
             String key = e.nextElement();

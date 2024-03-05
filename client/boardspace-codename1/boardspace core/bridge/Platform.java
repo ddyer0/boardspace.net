@@ -605,7 +605,8 @@ public abstract class Platform implements Config{
     	return v;
     	}
     	screendpi = codename1;
-    	if(G.isIOS()) { screendpi = Math.min(265,screendpi); }
+    	// note that allowing this to increase messes up the layouts for small screens on old iphones
+    	if(G.isIOS()) { screendpi = Math.min(200,screendpi); }
     	return codename1;
     }
     
@@ -899,10 +900,16 @@ public abstract class Platform implements Config{
     // recent troublesome case, ipad pro which measured this way
     // [Java cpu=13% screen=2732x2048 ppi=200 deviceDPI=200 scale =2.083333 platform =Ios sometable 7.88 Codename1  os.name=Ios] ip=0.0.0.0 "
     // fixed by allowing getscreen dpi to be 285 instead of 200, and increasing diagonal from 13 to 13.9
-    //
+    // -- which broke small screen iphone layouts.
+    // ipad pro diagonal is 3408 pixels.  17 inches @ 200  12 inches @ 285
+    // my phone screen=1080x2194 diag=5.43 (actually 6.5) ppi=300 deviceDPI=450 scale =1.875 
+    // my giant tablet screen=1920x972 diag=8.96 (actually 13.5) ppi=240 (actually 160) deviceDPI=240 scale =1.5 
+    // my large tablet screen=1280x728 diag=9.20 (actually 10.0) ppi=160 deviceDPI=160 scale =1.0 
+    // lastgameboard screen=1920x1842 diag=22.1 (actually 22) ppi=120 deviceDPI=120 
+    // ipad screen=2048x1536 diag=12.8 (actual 9.5) ppi=200 deviceDPI=200 scale =2.083333 
     public static boolean isTable()
     {	    	return(G.getBoolean(G.PLAYTABLE,false)
-    			|| ((screenDiagonal()>13.9) 
+    			|| ((screenDiagonal()>17.1) 
     							|| isRealPlaytable() 
     							|| isRealInfinityTable()
     							|| isRealLastGameBoard()));

@@ -518,8 +518,8 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         setProgressRect(progressRect,goalRect);
         	
         positionTheChat(chatRect,Color.white,Color.white);
-        
-        return(boardW*boardH);
+        Rectangle box = getPlayerOrTemp(0).playerBox;
+        return(boardW*boardH+G.Width(box)*G.Height(box));
     }
 
     
