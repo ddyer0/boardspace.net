@@ -33,7 +33,7 @@ public class NamedClasses {
     	classes.put("vnc.AuxViewer",vnc.AuxViewer.class);
     	classes.put("online.common.SeatingViewer",online.common.SeatingViewer.class);
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);
-    	classes.put("online.common.commonPanel", lib.commonPanel.class);
+    	classes.put("lib.commonPanel", lib.commonPanel.class);
     	classes.put("online.common.commonLobby",online.common.commonLobby.class);
     	classes.put("online.game.Game",online.game.Game.class);
     	classes.put("online.common.lobbyCanvas",online.common.lobbyCanvas.class);

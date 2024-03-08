@@ -218,10 +218,11 @@ public abstract class Platform implements Config{
 			return(fd);
 		}
 		private static Font defaultFont = null;
+		public static int defaultFontSize() { return (int)(14*G.getDisplayScale()); }
 		public static Font getGlobalDefaultFont()
 		{
 			if(defaultFont==null) 
-			{ defaultFont = G.getFont("fixed", Style.Plain, (int)(14*G.getDisplayScale()));
+			{ defaultFont = G.getFont("fixed", Style.Plain, defaultFontSize());
 			}
 			return(defaultFont);
 		}

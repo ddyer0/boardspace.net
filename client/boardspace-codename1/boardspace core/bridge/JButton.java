@@ -17,26 +17,107 @@
 package bridge;
 
 import com.codename1.ui.Command;
+import com.codename1.ui.Font;
+import com.codename1.ui.geom.Dimension;
+
+import bridge.SystemImage.ScaleType;
+import lib.G;
 import lib.Image;
 
 public class JButton extends Button 
 {	Command command = null;
-	public JButton(String label) { super(label); }
-
-	public JButton(Image label) { super(label); }
+	public JButton(String label) 
+	{ super(label); 
+	}
+	public JButton(String label,int fontsize)
+	{
+		this(label);
+		setFont(G.getFont(getFont(),fontsize));
+	}
+	public JButton(Image label)
+		{ 
+		super(label); 
+		}
 	
-	public JButton(String com,Image image) { super(image); command = new Command(com); }
+	static Image prepareIconImage(Image image,double setsize)
+	{	// scale icon images to the desired size, which is intended to be
+		// compatible with text images in the same line
+		if(setsize>0)
+		{
+		int w = image.getWidth();
+		int h = image.getHeight();
+		Font def = G.getGlobalDefaultFont();
+		double sz = G.getFontSize(def)*setsize;
+		int neww = (int)(sz*w/h);
+		int newh = (int)sz;
+		return image.getScaledInstance(neww,newh,ScaleType.SCALE_SMOOTH);
+		}
+		return image;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public JButton(String com,Image image,double setsize) 
+	{ 	super(prepareIconImage(image,setsize)); 
+		command = new Command(com); 
+	}
 	
 	public Command getCommand() 
 	{	if(command!=null) { return(command); } 
 		return super.getCommand(); 
 	}
-	public String toString() { return("<button "+getCommand()+" "+isVisible()+">"); }
+	public String toString() 
+	{ 	Command com = getCommand();
+	    String lbl = (com==null) ? getLabel() : ""+com; 
+	    return("<button "+lbl+" "+isVisible()+">"); 
+	}
+	public void setHeight(int h)
+	{
+		super.setHeight(h);
+		//G.print("set h ",this," ",h);
+	}
 	public void setVisible(boolean v)
 	{
 		boolean change = v!=isVisible();
 		super.setVisible(v);
 		if(change) 
-			{ repaint(); }
+			{ repaint(); 
+			}
 	}
+	public Dimension getPreferredSize()
+	{	Image im = theImage;
+		String label = getLabel();
+		Font f = getFont();
+		Dimension dim = null;
+		if(im!=null)
+		{	// images prefer to be the size of the font
+			double sz = G.getFontSize(f);
+			int w = im.getWidth();
+			int h = im.getHeight();
+			dim = new Dimension((int)(sz*w/h),(int)sz);
+		}
+		else if(label!=null)
+		{	// use the actual font metrics to specify the size
+			FontMetrics fm = G.getFontMetrics(f);
+			int w = fm.stringWidth(label);
+			int h = fm.getHeight();
+			dim = new Dimension(w+h,h);
+		}
+		else
+		{
+		 dim = super.getPreferredSize();
+		}
+		//G.print("\nbutton pref ",this," ",dim," ",getUIID()," ",getStyle().getVerticalMargins());
+		//G.print("Pref ",this,dim);
+		return dim;
+	}
+	/*
+	public Dimension calcPreferredSize()
+	{
+		Dimension s = super.calcPreferredSize();
+		return s;
+	}
+	public void setHeight(int h)
+	{	super.setHeight(h);
+	}
+	*/
 }

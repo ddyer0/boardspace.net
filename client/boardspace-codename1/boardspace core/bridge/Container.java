@@ -51,14 +51,15 @@ public class Container extends Component
 		}
 		
 	public void supadd(com.codename1.ui.Component c) 
-	{	try { super.add(c);  }
+	{	try { super.add(c); 
+			setShouldCalcPreferredSize(true);
+		}
 		catch (Throwable err) { Http.postError(this,"adding component "+c,err); }
 	}
 	
 	public void addC(com.codename1.ui.Component c)
 	{ 
 		G.runInEdt(new Runnable() { public void run() { supadd(c); }});
-		setShouldCalcPreferredSize(true);
 	}
 
 	public void suprem(com.codename1.ui.Component c) 

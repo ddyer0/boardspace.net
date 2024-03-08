@@ -38,9 +38,8 @@ public class Frame extends Window
 	public void setJMenuBar(JMenuBar m){}
 	
 	// tabname appears in the master frame, as the selectable name of the frame.
-	public String tabName = null;
-	public String tabName() { return(tabName); }
-	public void setTabName(String g) { tabName = g; }
+	public String tabName() { return(getName()); }
+	public void setTabName(String g) { setName(g); }
 	public void init()
 	{	super.setLayout((Layout)new NullLayout(this));
 		setOpaque(true);
@@ -54,7 +53,7 @@ public class Frame extends Window
 	}
 	public Frame(String n) 
 	{ 	super();
-		tabName=n;
+		setName(n);
 		init();
 	}
 	public void doNullLayout()

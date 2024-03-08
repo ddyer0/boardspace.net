@@ -53,13 +53,13 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	Image rotateImage = Image.getImage(IMAGEPATH+"rotate-nomask.png");
 	Image rotateQImage = Image.getImage(IMAGEPATH+"rotateq-nomask.png");
 	Image rotate3QImage = Image.getImage(IMAGEPATH+"rotateqc-nomask.png");
-	JButton menuButton = new JButton("actionmenu",menuImage);
-	JButton closeButton = new JButton("close",closeImage);
-	JButton paperclipButton = new JButton("savepanzoom",paperClipImage);
-	JButton paperclipSideButton = new JButton("restorepanzoom",paperClipSideImage);
-	JButton rotateButton = new JButton("rotate",rotateImage);
-	JButton twistButton = new JButton("twist",rotateQImage);
-	JButton twist3Button = new JButton("twist3",rotate3QImage);
+	JButton menuButton = new JButton("actionmenu",menuImage,1);
+	JButton closeButton = new JButton("close",closeImage,1);
+	JButton paperclipButton = new JButton("savepanzoom",paperClipImage,1);
+	JButton paperclipSideButton = new JButton("restorepanzoom",paperClipSideImage,1);
+	JButton rotateButton = new JButton("rotate",rotateImage,1);
+	JButton twistButton = new JButton("twist",rotateQImage,1);
+	JButton twist3Button = new JButton("twist3",rotate3QImage,1);
 	// the order here defines the order from left to right
 	// clipsidebutton is leftmost so it can appear and disappear and look natural
 	JButton playtableButtons[] = { paperclipSideButton,paperclipButton,twist3Button,rotateButton,twistButton,menuButton,closeButton };
@@ -372,11 +372,12 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		if(im!=null)
 		{	
 			b = new JButton(im);
-			b.setUIID("ButtonMasterForm");
+			
 		}
 		else
-		{	b = new JButton(newName==null ? newName : "");
+		{	b = new JButton(newName!=null ? newName : "",G.defaultFontSize());
 		}
+		b.setUIID("ButtonMasterForm");
 		return b;
 	}
 
@@ -391,7 +392,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		tabFrames.put(f,b);
 		b.addActionListener(this);
 		adjustTabStyles();
-		masterForm.getTabs().revalidate();		
+		//masterForm.getTabs().revalidate();		
 	}
 	// 
 	// when we click on one of the tab buttons, select the corresponding frame
@@ -461,6 +462,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		else {
 			for(JButton b :  playtableButtons ) { b.setVisible(false); }
 		}
+		masterForm.adjustTabStyles();
 	}
 
 	public void actionPerformed(ActionEvent evt) 

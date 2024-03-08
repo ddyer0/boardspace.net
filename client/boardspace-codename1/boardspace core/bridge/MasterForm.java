@@ -26,39 +26,156 @@ import java.util.Vector;
 
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
+import com.codename1.ui.Toolbar;
+
 import lib.Graphics;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
-import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 
-class FixedTopLayout extends BorderLayout
+class FixedTopLayout extends com.codename1.ui.layouts.BorderLayout
 {
 	FixedTopLayout() {  }
 	public void layoutContainer(com.codename1.ui.Container parent)
-	{	
-	super.layoutContainer(parent);
+	{	//G.print("Layout master, scale ",isScaleEdges());
+		MasterToolBar.getSafeAreaHeight();
+		super.layoutContainer(parent);
+	}
+}
+class MasterToolBar extends Toolbar
+{
+	MasterToolBar()
+	{
+		super();
+		setLayout(new FixedTopLayout());
+		setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
+
+	}
+	static int savedNotch = -1;
+	
+	static int getSafeAreaHeight()
+	{
+		Rectangle rect = Display.getInstance().getDisplaySafeArea(new Rectangle());
+		int current = rect.getY();
+		if(G.isIOS())
+		{
+			// this is a kludge to paper over a codenameone bug, that iphones
+			// return an impossible dissonant safe area when held horizontally
+			// it also fails to swap displaywidth and displayheight
+		MasterForm mf = MasterForm.masterForm;
+		if (mf!= null)
+		{
+		int disw = mf.getWidth();
+		int dish = mf.getHeight();
+		int rw = rect.getWidth();
+		int rh = rect.getHeight();
+		boolean dissonent = (rw<rh != disw<dish);
+		// G.print("disw=",disw," dish=",dish," ",dissonent);
+		
+		if(dissonent) { 
+			current = (disw>dish) ? 0 : savedNotch;
+			rect.setY(current);
+			rect.setX(current==0 ? savedNotch : 0);
+			rect.setWidth(rh);
+			rect.setHeight(rw);
+			G.print("safe area dissonent, ",rw,"x",rh," vs ",disw,"x",dish);
+			}
+			else
+			{
+			savedNotch = Math.max(rect.getX(),current);
+			}
+		}}
+		// this is a hack for the simulator, set the safe area by modding the official rect
+		// rect.setY(150);
+		//G.print("safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
+		//G.print("current ",current);
+		return current;
+	}
+	int remembered = -1;
+	public Dimension getPreferredSize()
+	{	// this is the essential repair to the toolbar logic.  Include
+		// the height of the safe area in the toolbar size.  Other kludgery
+		// in com.codename1.ui.Container will add a margin corresponding to
+		// the safe area.
+		Style s = getStyle();
+		s.setPaddingUnitTop(Style.UNIT_TYPE_PIXELS);
+		s.setPaddingTop(getSafeAreaHeight());
+		Dimension sz = super.getPreferredSize();
+		if(G.isIOS() && savedNotch>=0)
+		{
+		// this is complete kludgery - iphones get it rigth the firstt time
+		// so remember the answer and reuse it. At least until codename1's notch
+		// logic is fixed.
+		if(remembered<0) { remembered = sz.getHeight()-savedNotch; }
+		else {
+			int oldsize = sz.getHeight();
+			int newsize = remembered+getSafeAreaHeight();
+			if(oldsize!=newsize)
+			{
+				sz.setHeight(newsize);
+				G.print("kludge:  toolbar size changed from ",oldsize," to ",newsize);
+			}
+		}}
+		return sz;
 	}
 }
 @SuppressWarnings("rawtypes")
-public class MasterForm extends Form implements com.codename1.ui.events.ActionListener
-	,Config
-{	private static MasterForm masterForm = null;
+public class MasterForm extends Form implements com.codename1.ui.events.ActionListener,Config
+{	static MasterForm masterForm = null;
 	private static MasterPanel masterPanel = null;
-	bridge.Container tabs = new bridge.Container();
-	bridge.Container menus = new bridge.Container();
-	bridge.Container centers = new bridge.Container();
-	Spacer spacer = new Spacer();
+	JPanel tabs = new JPanel(new TabLayout(),"ContainerMasterForm");
+	JPanel menus = new JPanel(new TabLayout(),"ContainerMasterForm");
+	JPanel centers = new JPanel(new TabLayout(),"ContainerMasterForm");
+	Spacer spacer = null;
 	String appname = "unnamed";
-	private com.codename1.ui.Container titleBar;
+	private MasterToolBar toolBar;
 	boolean recordEvents = true;
-	
+	public void adjustTabStyles()
+	{
+		toolBar.setShouldCalcPreferredSize(true);
+	}
 	public com.codename1.ui.Container add(com.codename1.ui.Component c)
 	{
 		return super.add(c);
+	}
+	@SuppressWarnings("deprecation")
+	public void initGlobalToolbar()
+	{
+		toolBar = new MasterToolBar();
+		setToolBar(toolBar);
+	}
+	public void showStyles()
+	{
+		Rectangle rect = Display.getInstance().getDisplaySafeArea(new Rectangle());
+		int w = Display.getInstance().getDisplayWidth();
+		int h = Display.getInstance().getDisplayHeight();
+		G.print("Display w=",w," h=",h," safe l=",G.Left(rect)," t=",G.Top(rect)," r=",G.Right(rect)," b=",G.Bottom(rect));
+		{
+		Rectangle bounds = getBounds();
+		G.print("form l=",G.Left(bounds)," t=",G.Top(bounds)," r=",G.Right(bounds)," b=",G.Bottom(bounds));
+		}
+		
+		{
+			Style c = menus.getStyle();
+			G.print("Menus Style ",c," margin ",c.getMarginTop()," ",c.getMarginBottom(),
+					  	" pad ",c.getPaddingTop(),"+",c.getPaddingBottom());
+		}
+		{
+			Style c = toolBar.getStyle();
+			Rectangle bounds = toolBar.getBounds(new Rectangle());
+			G.print("toolbar l=",G.Left(bounds)," t=",G.Top(bounds)," r=",G.Right(bounds)," b=",G.Bottom(bounds));
+			G.print("Toolbar Style ",c," margin ",c.getMarginTop()," ",c.getMarginBottom(),
+					" pad ",c.getPaddingTop(),"+",c.getPaddingBottom());
+		}
+		{
+			Style c = getStyle();
+			G.print("Form Style ",c," margin ",c.getMarginTop()," ",c.getMarginBottom(),
+					" pad ",c.getPaddingTop(),"+",c.getPaddingBottom());
+		}
+
 	}
 	//
 	// this is for an experiment in progress, to catch keys by pulling
@@ -71,10 +188,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  new BoxLayout(this,BoxLayout.Y_AXIS);
 	  UIManager man = UIManager.getInstance();
 	  man.setLookAndFeel(new BSLookAndFeel(man));
-	  spacer.setUIID("ContainerMasterForm");
-	  tabs.setUIID("ContainerMasterForm");
-	  menus.setUIID("ContainerMasterForm");
-	  centers.setUIID("ContainerMasterForm");
+	  showStyles();
 	  setAllowEnableLayoutOnPaint(true);	// 1/2020 added this incantation to avoid "blank screen" on startup
 	  //G.print("Display drag "+Display.getInstance().getDragStartPercentage());
 	  // note the codename1 default was 3 = 3% of the screen
@@ -85,34 +199,27 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 
 	  appname = app; 
 	  //new BoxLayout(this,BoxLayout.Y_AXIS);
-	  tabs.setLayout(new TabLayout());
-	  menus.setLayout(new TabLayout());
-	  centers.setLayout(new TabLayout());
 	  Display.getInstance().addEdtErrorHandler(this);
-	  titleBar = getTitleArea();
 	  // there is some bug related to the status bar, present at the top of IOS devices.
 	  // constant "paintsTitleBarBool" inhibits adding a spacer to compensate for it.
 	  // but there's a bug induced by clicking on the chat "to user" button that puts it
 	  // there anyway, and messes up the status bar.  Hence we avoid the whole mess and
 	  // add our own status bar spacer.
-	  titleBar.setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
 	  if(!G.isIOS())
 	  {
-		Style s = titleBar.getStyle();
+		Style s = toolBar.getStyle();
 		s.setMargin(0,0,0,0);			// remove the margin except on ios
 		s.setPadding(0,0,0,0);
 	  }
-	  titleBar.setLayout(new FixedTopLayout());
-	  com.codename1.ui.Label l = getTitleComponent();
-	  setTitle("");
-	  
-	  l.setUIID("LabelMasterForm");
+//	  com.codename1.ui.Label l = getTitleComponent();
+//	  setTitle("");	  
+//	  l.setUIID("LabelMasterForm");
 	  //l.getStyle().setOpacity(255);
 	  //l.getStyle().setBgColor(Config.FrameBackgroundColor.getRGB());
-	  titleBar.add("North",spacer);
-	  titleBar.add("West",tabs);
-	  titleBar.add("East",menus);
-	  titleBar.add("Center",centers);  
+	  //toolBar.add("North",spacer);
+	  toolBar.add("West",tabs);
+	  toolBar.add("East",menus);
+	  toolBar.add("Center",centers);  
 	}
 	public void setFocused(com.codename1.ui.Component p)
 	{	//G.print("set focused ",p);
@@ -161,8 +268,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		int w = getWidth();
 		// paint the space above the top bar with its own background color
 		// this covers the bug in ios that we avoid by creating our own spacer.
-		g.setColor(titleBar.getStyle().getBgColor());
-		g.fillRect(0,0,w,titleBar.getY());
+		g.setColor(toolBar.getStyle().getBgColor());
+		g.fillRect(0,0,w,toolBar.getY());
 		super.paint(g);
 
 	}
@@ -180,17 +287,15 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  title.setText(name);
 	}
 	public void setWidth(int n)
-	{	adjustSpacer();
+	{	
 		super.setWidth(n);
 	}
 	public void setHeight(int n)
 	{	//G.print("master set height "+n);
-		adjustSpacer();
 		super.setHeight(n);
 	}
 	public void setSize(Dimension d)
 	{	//G.print("master set size "+d);
-		adjustSpacer();
 		super.setSize(d);
 	}
 	private Rectangle oldbounds = null; 
@@ -199,7 +304,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		if(!newbounds.equals(oldbounds))
 		{
 		oldbounds = newbounds;
-		adjustSpacer();
+		//adjustSpacer();
 		super.layoutContainer();
 		}
 	}
@@ -230,6 +335,7 @@ public bridge.Container getMenus() { return(menus); }
 public void addToMenus(JButton m)
 {	m.setUIID("ButtonMasterForm");
 	masterForm.getMenus().addC(m);
+	masterForm.adjustTabStyles();
 }
 	
 	public void show()
@@ -239,7 +345,9 @@ public void addToMenus(JButton m)
 	}
 	public static synchronized MasterForm getMasterForm()
 	{
-		if(masterForm==null) { masterForm=new MasterForm(Config.APPNAME); 	  masterForm.adjustSpacer(); }
+		if(masterForm==null) 
+			{ masterForm=new MasterForm(Config.APPNAME); 
+			}
 		return(masterForm);
 	}
 	private void addMasterPanel()
@@ -296,7 +404,7 @@ public void addToMenus(JButton m)
 	{	// this will never create the masters.  It's intended to return true if
 		// we're still in the process of initialization.
 		if((masterForm ==null) || (masterPanel==null)) { return(true); }
-		if(masterForm.titleBar!=null) { if(getMyChildContaining(masterForm.titleBar,c)!=null) { return(true); }}
+		if(masterForm.toolBar!=null) { if(getMyChildContaining(masterForm.toolBar,c)!=null) { return(true); }}
 		return(masterPanel.canRepaintLocally(c));
 	}
 	public static boolean canRepaintLocally(Graphics g)
@@ -597,16 +705,15 @@ public void addToMenus(JButton m)
 	    public void paintComponentBackground(Graphics g)
 	    { //G.print("master paintComponentBackground" );
 	    }
-	public com.codename1.ui.Container getTitleBar() { return titleBar; }
+	public com.codename1.ui.Container getTitleBar() { return toolBar; }
 	
 	// the spacer is an invisible window on the top of iphone-X screens, meant to occupy
 	// the divot which contains the status bar.  When switching to landscape mode, the 
 	// divot moves to the left instead of top, and it's accounted for by the way the 
 	// masterpanel does it's layout.
 	public void adjustSpacer()
-	{	if(spacer!=null)
-		{
-		Rectangle safe = MasterForm.getMasterForm().getSafeArea();
+	{	if(spacer==null) { spacer = new Spacer(); }
+		Rectangle safe = getSafeArea();
 		//int sx = safe.getX();
 		int sy = (int)(safe.getY()*0.66);
 		int sw = safe.getWidth();
@@ -618,11 +725,10 @@ public void addToMenus(JButton m)
 			//G.print("layout title safe "+sx+" "+sy+" "+sw+"x"+sh);
 			spacer.setWidth(sw);
 			spacer.setHeight(sy); 
-			titleBar.setShouldCalcPreferredSize(true);
+			toolBar.setShouldCalcPreferredSize(true);
 			Container mp = masterPanel;
 			if(mp!=null) { mp.setShouldCalcPreferredSize(true); }
 			setShouldCalcPreferredSize(true);
 			}
-		}
 	}
 }

@@ -22,4 +22,5 @@ public class BoxLayout extends com.codename1.ui.layouts.BoxLayout
 		{ super(form);
 		  c.setLayout(this);
 		}
+	public BoxLayout(int form) { super(form); }
 }

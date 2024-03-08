@@ -706,6 +706,10 @@ public static Object MakeInstance(String classname)
 	}
 
 	private static Font defaultFont = null;
+	public static int defaultFontSize() 
+	{ 
+		return Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(G.defaultFontSize)));
+	}
 	public static Font getGlobalDefaultFont()
 	{
 		if(defaultFont==null)
@@ -736,7 +740,7 @@ public static Object MakeInstance(String classname)
      * set a global default font scaled to the size of the and resolution of the screen
      */
     public static void setGlobalDefaultFont()
-    {	int fontHeight = Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(G.defaultFontSize)));
+    {	int fontHeight = defaultFontSize();
 		Font f = G.getFont("Arial Unicode MS"/*"sansserif"*/, G.Style.Plain, fontHeight);
     	setGlobalDefaultFont (f);
     }

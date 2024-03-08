@@ -27,7 +27,9 @@ import com.codename1.ui.geom.Point;
 public class Button extends com.codename1.ui.Button implements ActionProvider,AwtComponent
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
-	public Button(Image image) { super(image.getImage()); }
+	Image theImage = null;
+	public Button(Image image) { super(image.getImage()); theImage = image; }
+	public Image getImage() { return theImage; }
 	public Button(String label)
 	{ super(label);
 	}

@@ -29,6 +29,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import common.CommonConfig;
 import common.GameInfo;
 import common.GameInfoStack;
 import common.GameInfo.ES;
@@ -165,6 +166,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
+    	Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
+    	frame.setIconAsImage(icon);
+
         users.loadOfflineUsers();
         painter.drawLockRequired = false;
         sess.setMode(Session.Mode.Review_Mode,isPassAndPlay());
