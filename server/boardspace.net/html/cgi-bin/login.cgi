@@ -126,6 +126,9 @@ sub print_jws_applet()
   my $language=$languageName."Strings";
   my $use_class_dir = param('classes');
   my $cheerpj = lc(param('cheerpj')) eq 'true';
+  my $guestnamepar = param('guestname');
+  my ($guestname) = split(' ',$guestnamepar);
+  if(length($guestname)>9) { $guestname = substr $guestname,0,9; }
   my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
   my $testserver = $test ? "testserver=true\n" : "";
   my $stealth = (($bannermode eq 'S')&&(param('stealth') eq 'true'))
@@ -167,6 +170,7 @@ sub print_jws_applet()
    my $port = $cheerpj
 		? ($test ? $'cheerpj_test_server_port : $'cheerpj_game_server_port)
 		: $actualPort;
+   my $guestnameout = (($pname eq 'guest') && $guestname) ? "guestname=$guestname" : "";
    my $msg = utfEncode("$banner$fav$testserver$dd
 codebase=/$'java_dir/$use_class_dir/
 documentbase=/$languageName/
@@ -191,6 +195,7 @@ logitude=$logitude
 language=$language
 $gameparams
 extramouse=$extra
+$guestnameout
 $feat
 final=true
 ");

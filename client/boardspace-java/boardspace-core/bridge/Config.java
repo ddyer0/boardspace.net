@@ -19,7 +19,7 @@ package bridge;
 import common.CommonConfig;
 
 public interface Config extends CommonConfig
-{
+{  static boolean NAMEGUESTS = true;
    static final String SOUNDPATH = "/bfms/";
    static final String IMAGEPATH = "/online/images/";
    static boolean REMOTEVNC = false;

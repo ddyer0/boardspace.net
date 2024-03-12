@@ -136,29 +136,34 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		return((menu!=null) ? menu.getHeight() : 100);
 	}
 
-	private void showMenu(com.codename1.ui.Container parent ,Menu jMenu,int atX,int atY)
+	private void showMenu(com.codename1.ui.Component parent ,Menu jMenu,int atX,int atY)
 	{	
 		try {
 		//showing = true;
+		  MasterForm form = MasterForm.getMasterForm();
+		  int ax = parent.getAbsoluteX();
+		  int ay = parent.getAbsoluteY();
 		  ComboBox<JMenuItem>m = getMenu();
-		  m.calcPreferredSize();
+		 // m.setShouldCalcPreferredSize(true);
+		 // m.calcPreferredSize();
 		  Dimension menuSize = m.getPreferredSize();
-		  showingOn = parent;
-		  showingX = Math.max(0,Math.min(atX,parent.getWidth()-G.Width(menuSize)));
-		  showingY = Math.max(G.minimumFeatureSize(),Math.min(atY,parent.getHeight()-G.Height(menuSize)));
-		  m.setX(showingX);
-		  m.setY(showingY);
+		  showingOn = form;
+		  showingX = Math.max(0,Math.min(ax+atX,form.getWidth()-G.Width(menuSize)));
+		  showingY = Math.max(G.minimumFeatureSize(),Math.min(ay+atY,form.getHeight()-G.Height(menuSize)));
 		 // menu.setSize(menuSize);
 		 // G.print("Menu "+menu.getX()+" "+menu.getY() +" "+ menu.getWidth()+" "+menu.getHeight());
 		  MouseAdapter ma = getMouse();
-		  parent.removeComponent(m);	// just in case
-		  parent.add(m);
 		  m.addActionListener(ma);
 		  ma.addActionListener(jMenu);
-		  
+		  form.removeComponent(m);	// just in case
+		  form.add(m);
+		  m.setX(showingX);
+		  m.setY(showingY);
+		  m.setWidth(menuSize.getWidth());
+		  m.setHeight(menuSize.getHeight());
 		  m.setVisible(true);
 		  m.pointerReleased(showingX,showingY);
-		  parent.removeComponent(m);  
+		  form.removeComponent(m);  
 		  showingOn = null; 
 		}
     	catch (ThreadDeath err) { throw err;}
@@ -290,9 +295,9 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	
 	public NativeMenuItemInterface getMenuItem(int n) { return((NativeMenuItemInterface)getItem(n)); }
 
-	public void show(bridge.Component window, int x, int y) throws AccessControlException {
+	public void show(Object window, int x, int y) throws AccessControlException {
 		final Menu jMenu = this;
-		 final com.codename1.ui.Container parent = (com.codename1.ui.Container)window;
+		 final com.codename1.ui.Component parent = (com.codename1.ui.Component)window;
 		 final int atX = x;
 		 final int atY = y;
 		 Runnable m = new Runnable() 

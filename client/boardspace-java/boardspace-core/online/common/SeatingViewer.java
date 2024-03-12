@@ -687,8 +687,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			if(colorIndex!=null && i<colorIndex.length)
 				{
 				int xo1 = xc + (int)(colorStep*0.4);
-				int yo1 = yo-(int)(colorStep*0.75);
-				Rectangle r = new Rectangle(xo1,yo1,colorStep*2,colorStep*2);
+				int yo1 = yo-(int)(colorStep);
+				Rectangle r = new Rectangle(xo1,yo1,colorStep*3,colorStep*3);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
 
 				}
@@ -710,7 +710,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				double ps[] = pos[idx];
 				int xo = centerX+(int)(ps[0]*tableSize*(square?0.8:1));
 				int yo = centerY+(int)(ps[1]*tableSize);
-				Rectangle r = new Rectangle(xo,yo,colorStep*2,colorStep*2);
+				Rectangle r = new Rectangle(xo,yo,colorStep*3,colorStep*3);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
 				yo += colorStep*3;
 			}}}
@@ -1195,7 +1195,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	{	if(selectedChart!=null)
 		{
 		drawSeatingSchematic(gc,selectedChart,null,
-				(int)(Math.min(G.Width(mainr),G.Height(mainr))*(portrait?0.8:1)),
+				(int)(Math.min(G.Width(mainr),G.Height(mainr))),
 				G.centerX(mainr),
 				G.centerY(mainr) - ((serviceRunning()|portrait) ? 0 : G.Height(mainr)/6),
 				hp,portrait);

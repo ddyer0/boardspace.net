@@ -59,7 +59,6 @@ import udp.PlaytableStack;
 						   Config,OnlineConstants
 {
 	 static final long serialVersionUID = 1L;
-	 
 	 public static final String passKey = loginKeyPrefix + "passKey";
 	 public static final String savePassKey = loginKeyPrefix + "savePassKey";
 	 public static final String countryKey = regPrefix + "countryKey";
@@ -73,6 +72,7 @@ import udp.PlaytableStack;
 	 public static final String COUNTRY = "Home Country";
 	 public static final String SALT = "oheorh";
 	 public static final String YourName = "Your user name: ";
+	 public static final String YourGuestName = "Guest name: ";
 	 public static final String YourPassword = "Your password: ";
 	 public static final String LogInTo = "Log in to #1";
 	 public static final String SavePassword = "Save Password";
@@ -145,6 +145,7 @@ import udp.PlaytableStack;
 		 cancel,
 		 PREFERREDLANGUAGE,
 		 YourName,
+		 YourGuestName,
 		 NoUserMessage,
 		 UnexpectedResponseMessage,
 		 BadPasswordMessage,
@@ -204,6 +205,7 @@ import udp.PlaytableStack;
 	 private JComboBox<StringPair> linkField;				// site links
 	 private Choice countryField;			// home country
 	 private XTextField nameField;			// user name
+	 private JLabel nameLabel;
 	 private XTextField realNameField;		// real name, or whatever
 	 private XTextField emailField;			// email address
 	 private JPanel passPane;				// passpane can appear and disappear depending on "guest"
@@ -539,7 +541,7 @@ import udp.PlaytableStack;
 	 private JPanel createUsernamePanel(boolean includeGuest)
 	 {
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		 JLabel nameLabel = new JLabel(s.get(YourName));
+		 nameLabel = new JLabel(s.get(YourName));
 		 nameField = new XTextField(13);
 		 nameField.setActionCommand(OK);
 		 panel.add(nameLabel);
@@ -870,7 +872,7 @@ import udp.PlaytableStack;
 	 
     public String exitValue=null;
 
-    private static boolean isGuest = false;
+    public static boolean isGuest = false;
     public static String password=null;
     public static String name = "";
     public static String language = null;
@@ -1080,11 +1082,21 @@ import udp.PlaytableStack;
 	{
 		isGuest = beGuest;
 		if(passPane!=null) { passPane.setVisible(!beGuest); }	
+		if(NAMEGUESTS)
+		{
+			nameField.setEditable(true);
+			nameField.setName(name);
+			passwordField.setText(password);
+			nameLabel.setText(s.get(beGuest ? YourGuestName : YourName));
+		}
+		else
+		{
 		nameField.setEditable(!beGuest);
-		if(reset || beGuest) 
+		if(reset || beGuest)
 			{ nameField.setText( beGuest ?  guestName : name); 
 			  passwordField.setText(beGuest? guestName : password); 
 			}
+		}
 		if(loginAsGuestField!=null) { loginAsGuestField.setSelected(beGuest); }
 	}
 	

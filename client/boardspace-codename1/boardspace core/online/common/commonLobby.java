@@ -645,7 +645,12 @@ private void SetMyName(String theName,boolean nomsg,String uid)
       if(!G.offline()) { newsStack.push(guestTextFile); }
       shownGuest=true;
       }
-      guestname=(s.get(GuestNameMessage)+me.serverIndex); 
+      String gname = G.getString(KEYWORD_GUESTNAME,null);
+      guestname = s.get(GuestNameMessage) 
+  		  		+ ((gname==null) 
+  		  		   || (GuestNameMessage.equals(gname))
+  		  		   	? me.serverIndex 
+  		  		   	: "."+gname);   
     }
   G.setUniqueName(guestname);
 

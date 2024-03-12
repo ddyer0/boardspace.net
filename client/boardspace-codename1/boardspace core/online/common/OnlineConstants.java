@@ -116,7 +116,8 @@ public interface OnlineConstants extends Config {
     static final String PlayerNumber = "Player #1";
     static final String ShowRulesMessage = "view the rules for this game";
     static final String GuestNameMessage = "guest";
-
+    static final String KEYWORD_GUESTNAME = "guestname";
+ 
     static final String NoLaunchMessage =  "nolaunch"; 
 
 

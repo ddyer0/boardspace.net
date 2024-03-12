@@ -163,15 +163,23 @@ public class Login implements SimpleObserver,Config,OnlineConstants
 		// use the exit command
 		else if(PasswordCollector.OK.equals(collector.exitValue))
 		{	String name = PasswordCollector.name;
+			String guestName = name;
 			String pass = PasswordCollector.password;
+			boolean guest = PasswordCollector.isGuest;
 			boolean test = G.getBoolean(TESTSERVER,false);
+			if(guest)
+			{
+				guestName = "".equals(name) ? PasswordCollector.guestName : name;
+				name = PasswordCollector.guestName;
+				pass = PasswordCollector.guestName;
+			}
 			String params = "&jws=1&pname="
 				+Http.escape(name)
 				+"&language="+Http.escape(lang)
 				+ (test ? "&test=true" : "")
 				+ (G.isCheerpj() ? "&cheerpj=true" : "")
-					+(guestName.equals(name)?"":"&cookie=1");
-
+				+ (guest ? "&guestname="+Http.escape(guestName) : "&cookie=1")
+				;
 			// the name of the password parameter is a minor difference between boardspace and tantrix
 			int socks[] = {80};
 			params = "&" + PasswordParameterName + "="+Http.escape(pass)+ params;

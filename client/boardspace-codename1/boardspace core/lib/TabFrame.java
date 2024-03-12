@@ -139,8 +139,8 @@ public class TabFrame extends Frame
 			{if(popupMenuBar!=null)
 			{ 	
 			try 
-			{ 
-				popupMenuBar.show(this,
+			{ 	
+				popupMenuBar.show(evt.getSource(),
 						MasterForm.translateX(this, x),
 						MasterForm.translateY(this, y)
 						);

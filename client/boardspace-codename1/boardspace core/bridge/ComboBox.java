@@ -22,26 +22,27 @@ import lib.Image;
 import lib.SizeProvider;
 
 import com.codename1.ui.Command;
+import com.codename1.ui.Component;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.Font;
+import com.codename1.ui.Form;
 import com.codename1.ui.List;
 import com.codename1.ui.animations.CommonTransitions;
-import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.layouts.BorderLayout;
+import com.codename1.ui.plaf.Style;
 
 //
 // this is a workaround to keep pop-ups from apprearing too close to the top
 //
-class ComboDialog extends Dialog implements SizeProvider
+class BComboDialog extends Dialog implements SizeProvider
 {
-	ComboDialog(String uu,String lm)
+	BComboDialog(String uu,String lm)
 	{ super();
 	  setTitleComponent(new Label(Image.createImage(1,1)));
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public Command show(int top,int bot,int left,int right,boolean title,boolean modal)
-	{	
+	{
 		return super.show(Math.max(top, G.minimumFeatureSize()),bot,left,right,title,modal);
 	}
 	public void paint(com.codename1.ui.Graphics g0)
@@ -62,11 +63,14 @@ class ComboDialog extends Dialog implements SizeProvider
 }
 
 public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComponent
-{
+{	public boolean centerMenu = false;
 	public ComboBox(String s) 
-		{ super(s); }
+		{ super(s);
+		}
 	public ComboBox() 
-		{ super(); }
+		{ super(); 
+		}
+
 	public Font getFont()
 	{ return(G.getFont(getStyle())); 
 	}
@@ -77,33 +81,21 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 	// workaround to keep the pop-ups from appearing too close to the top
     protected Dialog createPopupDialog(List<T> l) 
     {
-    	Dialog popupDialog = new ComboDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
+
+    	Dialog popupDialog = new BComboDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
             popupDialog.setScrollable(false);
-            popupDialog.getContentPane().setAlwaysTensile(false);
             popupDialog.setAlwaysTensile(false);
-            popupDialog.getContentPane().setUIID("PopupContentPane");
+            com.codename1.ui.Container content = popupDialog.getContentPane();
+            content.setAlwaysTensile(false);
+            content.setUIID("PopupContentPane");
             popupDialog.setDisposeWhenPointerOutOfBounds(true);
             popupDialog.setTransitionInAnimator(CommonTransitions.createEmpty());
             popupDialog.setTransitionOutAnimator(CommonTransitions.createEmpty());
-            popupDialog.setLayout(new BorderLayout());
-            popupDialog.add(BorderLayout.CENTER, l);
+             
+            popupDialog.add(l);
             return popupDialog;
      }
-	@SuppressWarnings("rawtypes")
-	protected Command showPopupDialog(Dialog popupDialog, List l) 
-	{	Command result = super.showPopupDialog(popupDialog,l);
-		
-		return(result);
-	}
-	public void setWidth(int n) 
-	{ super.setWidth(n); 
-	}
-	public Dimension calcPreferredSize()
-	{
-		Dimension sz = super.calcPreferredSize();
-		//sz.setWidth(sz.getWidth()+100);
-		return(sz);
-	}
+
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
@@ -113,4 +105,76 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 		super.paint(g0);
 		if(rotated) { MasterForm.unrotateNativeCanvas(this, g0); }
 	}
+	boolean showingPopupDialog = false;
+	
+	public Command showPopupDialog(Dialog popupDialog, @SuppressWarnings("rawtypes") List l) {
+		if(centerMenu) { return super.showPopupDialog(popupDialog,l); }
+		else {
+	            int top, bottom, left, right;
+	            Form parentForm = getComponentForm();
+
+	            int listW = Math.max(getWidth() , l.getPreferredW());
+	            listW = Math.min(listW + l.getSideGap(), parentForm.getContentPane().getWidth());
+
+
+	            Component content = popupDialog.getDialogComponent();
+	            Style contentStyle = content.getStyle();
+
+	            int listH = content.getPreferredH()
+	                    + contentStyle.getVerticalMargins();
+
+	            @SuppressWarnings("deprecation")
+				Component title = popupDialog.getTitleArea();
+	            listH += title.getPreferredH()
+	                    + title.getStyle().getVerticalMargins();
+
+	            bottom = 0;
+	            top = getAbsoluteY();
+	            int formHeight = parentForm.getHeight();
+	            if(parentForm.getSoftButtonCount() > 1) {
+	                Component c = parentForm.getSoftButton(0).getParent();
+	                formHeight -= c.getHeight();
+	                Style s = c.getStyle();
+	                formHeight -= (s.getVerticalMargins());
+	            }
+
+	            if(listH < formHeight) {
+	                // pop up or down?
+	            	if(centerMenu)
+	            	{
+	            		if(top > formHeight / 2) {
+	                        bottom = formHeight - top;
+	                        top = top - listH;
+	                    } else {
+	                        top +=  getHeight();
+	                        bottom = formHeight - top - listH;
+	                    }
+	            	}
+	            	else {
+	            		// leave top at the top
+	            		bottom = formHeight - top - listH;
+	            		if(bottom<0) { top += bottom; bottom = 0; }
+	            	}
+	            } else {
+	                top = 0;
+	            }
+
+	            left = getAbsoluteX();
+	            right = parentForm.getWidth() - left - listW;
+	            if(right < 0) {
+	                left += right;
+	                right = 0;
+	            }
+	            showingPopupDialog = true;
+	            @SuppressWarnings("deprecation")
+				Command out =  popupDialog.show(Math.max(top, 0),
+	                    Math.max(bottom, 0),
+	                    Math.max(left, 0),
+	                    Math.max(right, 0), false, true);
+	            showingPopupDialog = false;
+	            return out;
+	        
+	    }
+	}
+
 }

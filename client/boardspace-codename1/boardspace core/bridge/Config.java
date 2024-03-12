@@ -19,6 +19,7 @@ package bridge;
 import common.CommonConfig;
 
 public interface Config extends CommonConfig{
+    static boolean NAMEGUESTS = true;
     static final String LANGUAGEPATH = "/languages/translations/";
     static final String SOUNDPATH = "/bsdata/data/";
     static final String IMAGEPATH = "/bsdata/images/";
