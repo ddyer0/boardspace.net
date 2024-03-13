@@ -354,6 +354,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{	
 			Container tabs = masterForm.getTabs();
 			int h = tabs.getHeight()*2/3;
+			if(h>0)
+			{
 			Runnable r = new Runnable(){ public void run() 
 			{
 			int imw = im.getWidth();
@@ -362,6 +364,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			res[0] = im.getScaledInstance(neww, h,Image.ScaleType.SCALE_SMOOTH);	
 			}};
 			G.runInEdt(r);	
+			}
+			else { res[0] = im; }
 		}
 		return res[0];		
 	}

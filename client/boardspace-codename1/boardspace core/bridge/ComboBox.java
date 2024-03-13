@@ -33,9 +33,9 @@ import com.codename1.ui.plaf.Style;
 //
 // this is a workaround to keep pop-ups from apprearing too close to the top
 //
-class BComboDialog extends Dialog implements SizeProvider
+class ComboDialog extends Dialog implements SizeProvider
 {
-	BComboDialog(String uu,String lm)
+	ComboDialog(String uu,String lm)
 	{ super();
 	  setTitleComponent(new Label(Image.createImage(1,1)));
 	}
@@ -59,7 +59,10 @@ class BComboDialog extends Dialog implements SizeProvider
 	{	
 		super.pointerReleased(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
 	}
-
+	public void pointerDragged(int x,int y)
+	{	
+		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
+	}
 }
 
 public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComponent
@@ -77,25 +80,21 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 
-	
 	// workaround to keep the pop-ups from appearing too close to the top
     protected Dialog createPopupDialog(List<T> l) 
     {
-
-    	Dialog popupDialog = new BComboDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
+    	Dialog popupDialog = new ComboDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
             popupDialog.setScrollable(false);
+            popupDialog.getContentPane().setAlwaysTensile(false);
             popupDialog.setAlwaysTensile(false);
-            com.codename1.ui.Container content = popupDialog.getContentPane();
-            content.setAlwaysTensile(false);
-            content.setUIID("PopupContentPane");
+            popupDialog.getContentPane().setUIID("PopupContentPane");
             popupDialog.setDisposeWhenPointerOutOfBounds(true);
             popupDialog.setTransitionInAnimator(CommonTransitions.createEmpty());
             popupDialog.setTransitionOutAnimator(CommonTransitions.createEmpty());
-             
-            popupDialog.add(l);
+            popupDialog.setLayout(new BorderLayout());
+            popupDialog.addComponent(BorderLayout.CENTER, l);
             return popupDialog;
      }
-
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
@@ -107,6 +106,9 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 	}
 	boolean showingPopupDialog = false;
 	
+	public boolean isShowingPopupDialog() {
+	        return showingPopupDialog || super.isShowingPopupDialog();
+	}
 	public Command showPopupDialog(Dialog popupDialog, @SuppressWarnings("rawtypes") List l) {
 		if(centerMenu) { return super.showPopupDialog(popupDialog,l); }
 		else {
@@ -153,7 +155,9 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 	            	else {
 	            		// leave top at the top
 	            		bottom = formHeight - top - listH;
-	            		if(bottom<0) { top += bottom; bottom = 0; }
+	            		if(bottom<0) 
+	            			{ top += bottom; bottom = 0;
+	            			}
 	            	}
 	            } else {
 	                top = 0;

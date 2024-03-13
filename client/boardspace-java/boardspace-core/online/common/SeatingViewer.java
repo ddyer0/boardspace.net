@@ -564,15 +564,26 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		else { G.print("Hit unknown "+hitCode); }
 	}
 	
-	private void drawColorBox(Graphics gc,int index,HitPoint bubbleSelect,Color targetColor,Rectangle r)
-	{
-		boolean myColor = G.pointInRect(bubbleSelect, r);
+	private void drawColorBox(Graphics gc,int index,HitPoint bubbleSelect,Color targetColor,Rectangle r,boolean expand)
+	{	int left = G.Left(r);	
+		int top = G.Top(r);
+		int width = G.Width(r);
+		int height = G.Height(r);
+		//
+		// if expand is true, expand the sensitive area by 50%.  Useful when
+		// there's known to be nothing else in the neighborhood that might be
+		// selectable.
+		//
+		int ll = left + (expand ? -width/2 : 0);
+		int tt = top + (expand ? -height/2 : 0);
+		int ww = width + (expand ? width : 0);
+		int hh = height + (expand ? height : 0);
+
+		boolean myColor = G.pointInRect(bubbleSelect, ll,tt,ww,hh);
 		if(myColor) 
-			{ int colorStep = G.Width(r);
-			  int inc = colorStep/10; 
-			  int xo = G.Left(r);
-			  int yo = G.Top(r);
-			  G.SetRect(r,xo-inc,yo-inc,(colorStep+2*inc),(colorStep+2*inc)); 
+			{ 
+			  int inc = width/10; 
+			  G.SetRect(r,left-inc,top-inc,width+2*inc,height+inc*2); 
 			}
 		GC.fillRect(gc, (index==pickedSource)?Color.gray:targetColor,r);
 		GC.frameRect(gc, Color.black,r);
@@ -689,7 +700,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				int xo1 = xc + (int)(colorStep*0.4);
 				int yo1 = yo-(int)(colorStep);
 				Rectangle r = new Rectangle(xo1,yo1,colorStep*3,colorStep*3);
-				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
+				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r,pickedSource>0);
 
 				}
 			}
@@ -711,7 +722,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				int xo = centerX+(int)(ps[0]*tableSize*(square?0.8:1));
 				int yo = centerY+(int)(ps[1]*tableSize);
 				Rectangle r = new Rectangle(xo,yo,colorStep*3,colorStep*3);
-				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
+				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r,true);
 				yo += colorStep*3;
 			}}}
 			

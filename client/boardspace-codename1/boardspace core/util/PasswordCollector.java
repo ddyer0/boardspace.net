@@ -494,13 +494,7 @@ import udp.PlaytableStack;
 			 savePasswordField = new Checkbox(passw,"true".equals(prefs.get(savePassKey,"true")));
 			 Component.setSameSize(passwordField,savePasswordField);
 			 passwordField.setUIID("LoginLabel");
-			 passwordField.setText(unobfuscate(prefs.get(passKey,""),name+SALT));
-			 String pass = password;
-			 if(pass==null)
-		 		{ String p = prefs.get(passKey,"");
-		 		if(!"".equals(p)) { pass = unobfuscate(p,name+SALT); }
-		 		}
-			 if(pass!=null) { passwordField.setText(pass); }
+			 passwordField.setText(password = unobfuscate(prefs.get(passKey,""),name+SALT));
 			 pane.addC(savePasswordField);
 		 }
 		 return(pane);
@@ -1091,8 +1085,6 @@ import udp.PlaytableStack;
         //
         frame.setEnableRotater(false);
         //Create and set up the content pane.
-        Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
-        frame.setIconAsImage(icon);
         final PasswordCollector newContentPane = new PasswordCollector(frame.getFrame(),parent);
         newContentPane.getInsets();
         newContentPane.setOpaque(true); //content panes must be opaque
@@ -1114,6 +1106,9 @@ import udp.PlaytableStack;
 
         //Display the window.
         frame.setVisible(true);
+        // set the icon after the frame is visible, so it's icon can be scaled appropriately
+        Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
+        frame.setIconAsImage(icon);
         frame.repaint();
 
         result[0]=newContentPane;
