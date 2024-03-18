@@ -1293,14 +1293,16 @@ public abstract class commonCanvas extends exCanvas
 		    	}
     
 	    	String timeString = G.timeString(ptime);
-	    	Font timeFont = G.getFont(nameFont,G.Height(pl.timeRect));
+	    	int hgt = G.Height(pl.timeRect);
+	    	if(hgt>0)
+	    	{
+	    	Font timeFont = G.getFont(nameFont,hgt);
 	    	GC.printTimeC(gc, pl.timeRect,timeString, 
 	    				   review?Color.blue:Color.black,null, timeFont);
-	    	 
 	    	if(G.Height(pl.extraTimeRect)>0)
 	    	{
     			printExtraTime(gc,pl,pl.extraTimeRect,timeControl,timeFont);
-    	    }
+    	    }}
     		pl.setRotatedContext(gc, hp, true);
 	    }
 	    private void printExtraTime(Graphics gc,commonPlayer pl,Rectangle r,TimeControl time,Font timeFont)
@@ -1309,6 +1311,7 @@ public abstract class commonCanvas extends exCanvas
 	    	long ptime = review ? pl.reviewTime : pl.elapsedTime;
  	    	long ftime = time==null ? 0 : time.fixedTime;
 	    	int warntime = 30*1000;
+	    	Font font = timeFont;
 	    	Color col = Color.blue;
 	    	StringBuilder b = new StringBuilder();
 	    	int dtime = 0;
@@ -1328,15 +1331,33 @@ public abstract class commonCanvas extends exCanvas
 	     		dtime = (int)(ptime-mintime);
 	    		
 	    		if(kind==TimeControl.Kind.Differential)
-	    		{
+	    		{	
 	    			col = ! ((ptime>time.fixedTime) &&	(dtime>time.differentialTime))
-							? ((ptime+warntime<time.fixedTime)||(dtime+warntime<time.differentialTime))
-    								? Color.blue 
-    								: Color.yellow
-    							: Color.red;
+								? ((ptime+warntime<time.fixedTime)||(dtime+warntime<time.differentialTime))
+										? Color.blue 
+												: Color.yellow
+												: Color.red;
 	    		}
+	    		else if(gameInfo==GameInfo.GameTimer)
+	    			{ col = Color.gray; font=largeBoldFont(); 
+	    			}
 	    		b.append("+ ");
 	    		}
+	    		break;
+	    	case Incremental:
+	    		{
+	    		int otime = numberOfOvertimeMoves(pl);
+	    		ftime += otime*time.moveIncrement;
+	    		{
+	    		dtime = (int)(ftime -ptime);
+	    		col = (dtime>0) 
+	    					? dtime<warntime 
+	    							? Color.yellow
+	    							: otime>0 ? new Color(0.3f,0.4f,1.0f) : Color.blue 
+	    					: Color.red;
+	    		if(dtime<0) { b.append("-"); }
+	    		
+	    		}}
 	    		break;
 	    	case PlusTime:
 	    		ftime += numberOfCompletedMoves(pl)*time.moveIncrement;
@@ -1360,9 +1381,19 @@ public abstract class commonCanvas extends exCanvas
 	    		}
 	    	GC.printTimeC(gc, pl.extraTimeRect,
 	    			b.toString(),	// round up
-	    			col,null,timeFont);
+	    			col,null,font);
 	
 	    }
+	    private int numberOfOvertimeMoves(commonPlayer pl)
+	    {	// this might seem be more complicated than strictly necessary,
+	    	// but with multiple actions per move (as in zertz) it's not simple.
+	    	int timeex = pl.principleTimeExpired;
+	    	if(timeex<=0) { return 0; }
+	    	int completed = numberOfCompletedMoves(pl);
+	    	int over = completed-timeex+1;
+	    	return over;
+	    }
+	    
 	    private int numberOfCompletedMoves(commonPlayer pl)
 	    {	// this might seem be more complicated than strictly necessary,
 	    	// but with multiple actions per move (as in zertz) it's not simple.
@@ -2076,6 +2107,12 @@ public abstract class commonCanvas extends exCanvas
     {
     	return(timeRemaining(getPlayerOrTemp(pl)));
     }
+    private boolean principleTimeExpired(commonPlayer pl)
+    {
+    	boolean review = reviewMode();
+    	long ptime = review ? pl.reviewTime : pl.elapsedTime;
+    	return timeControl.timeRemaining(ptime,-1)<0;
+    }
     /**
      * return this player's time remaining
      * @param pl
@@ -2091,7 +2128,14 @@ public abstract class commonCanvas extends exCanvas
     	case Fixed:
     		return(timeControl.timeRemaining(ptime,0));
     		
+    	case Incremental:
+    		{
+       		int nmoves = hidden.numberOfOvertimeMoves(pl);
+    		int rem = timeControl.timeRemaining(ptime,timeControl.moveIncrement*nmoves);
+    		return rem;
+    		}
     	case Differential:
+    		{
     		long mintime = ptime;
      		for(commonPlayer p : players)
 	    	{
@@ -2104,10 +2148,13 @@ public abstract class commonCanvas extends exCanvas
 	    	}
 
     		return(timeControl.timeRemaining(ptime,ptime-mintime));
+    		}
     		
     	case PlusTime:
+    		{
     		int nmoves = hidden.numberOfCompletedMoves(pl);
     		return(timeControl.timeRemaining(ptime,timeControl.moveIncrement*nmoves));
+    		}
     	}
     }
     /**
@@ -5877,6 +5924,13 @@ public abstract class commonCanvas extends exCanvas
     	{
      	long newtime = (p.elapsedTime + increment);
         p.setElapsedTime(newtime);
+        if(principleTimeExpired(p)) 
+        	{
+        	if(p.principleTimeExpired<0)
+        		{ p.principleTimeExpired = hidden.numberOfCompletedMoves(p); 
+        		}
+        	}
+        else { p.principleTimeExpired = -1; }
         if(!p.isSpectator()) { doTime(p,myFrame.doSound()); }
     	}
     }

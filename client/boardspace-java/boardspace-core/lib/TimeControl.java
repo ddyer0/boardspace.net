@@ -93,7 +93,9 @@ public class TimeControl implements Config
 	private static String PrettyFixedTimeMessage = "Time: #1 minutes";
 	private static String PlusTimeMessage = "fixed + per move";
 	private static String TimeDifMessage = "fixed + more than opponent";
+	private static String TimeIncMessage = "fixed, then per move";
 	private static String PrettyDifTimeMessage = "Time: #1 minutes, and #2 more than opponent";
+	private static String TimeIncrementMessage = "Time: #1 minutes, then #2 per move";	// byo-yomi for go
 	private static String PrettyPlusTimeMessage = "Time: #1 minutes plus #2 per move";
 	private static String FixedTime = "fixed time";
 	public static String TimeControlToolTip = "timecontroltip";
@@ -101,10 +103,12 @@ public class TimeControl implements Config
 	public static String []TimeControlStrings = {
 		FixedTime,
 		SecondsMessage,
+		TimeIncMessage,
 		MinutesMessage,
 		PrettyDifTimeMessage,
 		PrettyPlusTimeMessage,
 		PrettyFixedTimeMessage,
+		TimeIncrementMessage,
 		NoTime,
 		PlusTimeMessage,
 		TimeDifMessage,
@@ -123,9 +127,12 @@ public class TimeControl implements Config
 		case None: 
 			return(s.get(kind.TimeMessage));
 		case Fixed: 
-			return(s.get(PrettyFixedTimeMessage,G.briefTimeString(fixedTime)));
+			return(s.get(PrettyFixedTimeMessage,G.briefTimeString(fixedTime)));	
 		case Differential: 
 			return(s.get(PrettyDifTimeMessage,G.briefTimeString(fixedTime),G.briefTimeString(differentialTime)));
+
+		case Incremental:
+			return(s.get(TimeIncrementMessage,G.briefTimeString(fixedTime),G.briefTimeString(moveIncrement)));
 		case PlusTime: 
 			return(s.get(PrettyPlusTimeMessage,G.briefTimeString(fixedTime),G.briefTimeString(moveIncrement)));
 		}
@@ -139,6 +146,7 @@ public class TimeControl implements Config
 		case None: break;
 		case Fixed: times = " "+fixedTime; break;
 		case Differential: times = " "+fixedTime+" "+differentialTime; break;
+		case Incremental:
 		case PlusTime: times = " "+fixedTime+" "+moveIncrement; break;
 		}
 		return(kind.name()+times);
@@ -167,6 +175,7 @@ public class TimeControl implements Config
 			val.differentialTime = G.IntToken(tok);
 			break;
 		case PlusTime:
+		case Incremental:
 			val.fixedTime = G.IntToken(tok);
 			val.moveIncrement = G.IntToken(tok);
 			break;
@@ -180,7 +189,9 @@ public class TimeControl implements Config
 		None(NoTime,0,0,0),
 		Fixed(FixedTime,10*60*1000,0,0),
 		PlusTime(PlusTimeMessage,10*60*1000,30*1000,0),
-		Differential(TimeDifMessage,10*60*1000,0,10*60*1000);
+		Differential(TimeDifMessage,10*60*1000,0,10*60*1000),
+		Incremental(TimeIncMessage,10*60*1000,30*1000,0),
+		;
 		public String TimeMessage="";
 		public int defaultFixedTime = 0;
 		public int defaultDifTime = 0;
@@ -246,6 +257,7 @@ public class TimeControl implements Config
 		case Differential:
 			return(time>fixedTime && dif>differentialTime);
 		case PlusTime:
+		case Incremental:
 			return(time>fixedTime+dif);
 		}
 	}
@@ -268,6 +280,9 @@ public class TimeControl implements Config
 			return((int)(fixedTime-time));
 		case Differential:
 			return((int)(Math.max(fixedTime-time,differentialTime-dif)));
+		case Incremental:
+			if(fixedTime>=time) { return (int)(fixedTime-time); }
+			return (int)((fixedTime+dif)-time);
 		case PlusTime:
 			return((int)((fixedTime+dif)-time));
 		}
@@ -332,6 +347,7 @@ public class TimeControl implements Config
 	  		  main = false;
 	  		  break;
 	  	  case PlusTime:
+	  	  case Incremental:
 	  	  	{ boolean hit = G.pointInRect(hitPoint, extraRect);
 	  	  	  if(hit)
 	  	  	  {	  // it may seem unnecessary to copy, but this rectangle is reshaped multiple times

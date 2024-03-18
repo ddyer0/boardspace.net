@@ -569,6 +569,11 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int top = G.Top(r);
 		int width = G.Width(r);
 		int height = G.Height(r);
+		//
+		// if expand is true, expand the sensitive area by 50%.  Useful when
+		// there's known to be nothing else in the neighborhood that might be
+		// selectable.
+		//
 		int ll = left + (expand ? -width/2 : 0);
 		int tt = top + (expand ? -height/2 : 0);
 		int ww = width + (expand ? width : 0);

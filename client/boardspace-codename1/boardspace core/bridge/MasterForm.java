@@ -75,6 +75,8 @@ class MasterToolBar extends Toolbar
 		boolean dissonent = (rw<rh != disw<dish);
 		// G.print("disw=",disw," dish=",dish," ",dissonent);
 		
+		G.print("initial safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
+
 		if(dissonent) { 
 			current = (disw>dish) ? 0 : savedNotch;
 			rect.setY(current);
@@ -90,8 +92,8 @@ class MasterToolBar extends Toolbar
 		}}
 		// this is a hack for the simulator, set the safe area by modding the official rect
 		// rect.setY(150);
-		//G.print("safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
-		//G.print("current ",current);
+		G.print("final safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
+		G.print("current ",current);
 		return current;
 	}
 	int remembered = -1;

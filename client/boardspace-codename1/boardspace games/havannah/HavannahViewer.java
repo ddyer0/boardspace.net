@@ -20,10 +20,10 @@ import static havannah.HavannahMovespec.*;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import common.GameInfo;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;

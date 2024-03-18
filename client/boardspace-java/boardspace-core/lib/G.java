@@ -290,7 +290,8 @@ public class G extends Platform implements Timestamp
         	Plog.log.appendNewLog("Advisory: ");
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
-        	if(G.debug()) { G.print(Plog.log.finishLog()); }
+        	if(G.debug()) 
+        		{ G.print(Plog.log.finishLog()); }
         	return(false);
         }
         return (true);

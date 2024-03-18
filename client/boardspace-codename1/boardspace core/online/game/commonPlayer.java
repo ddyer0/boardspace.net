@@ -104,6 +104,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     public int progress = 0;					// progress (used for robots)
     public double qprogress = 0.0;
     public long elapsedTime = 0;				// time used on the user's clock in milliseconds
+    public int principleTimeExpired = -1;		// move number at which time expired
     public long elapsedTimeWhenInactive = 0;		// time used before the last time it was changed
     public boolean elapsedTimeFrozen = false;	// true of time is on pause
     public boolean timeIsInactive = false;		// true if this time is for an inactive player
@@ -316,6 +317,8 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
         order = p.order;		//order of play, lowest goes first
         mouseObj = NothingMoving;			// not tracking anything
         elapsedTime = p.elapsedTime;
+        principleTimeExpired = p.principleTimeExpired;
+        
         elapsedTimeFrozen = p.elapsedTimeFrozen;
         elapsedTimeWhenInactive = p.elapsedTimeWhenInactive;
         timeIsInactive = p.timeIsInactive;

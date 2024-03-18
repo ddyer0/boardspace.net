@@ -80,11 +80,6 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
     private double BETA = 0.25;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive
-    private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
-    private int MAX_DEPTH = 5;						// search depth.
-    private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 
     private int Strategy = DUMBOT_LEVEL;
@@ -177,76 +172,6 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
     {
         return(board.GetListOfMoves());
     }
-    /**
-    * this is the static evaluation used by Dumbot.  When testing a better
-    * strategy, leave this untouched as a reference point.  The real meat
-    * of the evaluation is the "blobs" class which is constructed by the
-    * board.  The blobs structure aggregates the stones into chains and
-    * keeps some track of how close the chains are to each other and to
-    * the edges of the board.
-    *
-    * @param evboard
-     * @param blobs
-     * @param player
-     * @param print
-     * @return
-     */
-     double dumbotEval(HavannahBoard evboard,OStack<HavannahBlob> blobs,int player,boolean print)
-    {	// note we don't need "player" here because the blobs variable
-    	// contains all the information, and was calculated for the player
-    	// there was an evaluator for hex, based on increasing the span, which is not applicable to Havannah
-    	 
-    	 G.Error("Not implemented");
- 
-    	return(0);
-    }
-
-
-
-    /** return a value of the current board position for the specified player.
-     * this should be greatest for a winning position.  The evaluations ought
-     * to be stable and greater scores should indicate some degree of progress
-     * toward winning.
-     * @param player
-     * @return
-     */
-    double ScoreForPlayer(HavannahBoard evboard,int player,boolean print)
-    {	BlobStack blobs = new BlobStack();
-		double val = 0.0;
-		// is this a won position? If so that's the evaluation.
-		// note that for some games, the current position might be a win
-		// for the other player and that would have be be accounted for too.
-     	boolean win = evboard.winForPlayerNow(player,blobs);
- 
-     	// make wins in fewer moves look slightly better. Nothing else matters.
-     	// note that without this little tweak, the robot might appear to "give up"
-     	// when a loss is inevitable a few moves down the road, and take an unnecessary
-     	// loss now rather than prolonging the game.
-     	if(win) 
-     		{ val = VALUE_OF_WIN+(1.0/(1+boardSearchLevel));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
-     	
-     	// if the position is not a win, then estimate the value of the position
-    	switch(Strategy)
-    	{	default: throw G.Error("Not expecting strategy %s",Strategy);
-    		case DUMBOT_LEVEL: 
-    			// betterEval based on "two lines" developed by Adam Shepherd, Oct 2009
-      			val = dumbotEval(evboard,blobs,player,print);
-       	  		break;
-    		case SMARTBOT_LEVEL: 
-    		case BESTBOT_LEVEL: 	// both the same for now
-    		case MONTEBOT_LEVEL:
-    			// this is the old dumbot based on connections
-       			val = dumbotEval(evboard,blobs,player,print);
-       			break;
-     	}
-    	// we're going to subtract two values, and the result must be inside the
-    	// bounds defined by +-WIN
-    	G.Assert((val<(VALUE_OF_WIN/2))&&(val>=(VALUE_OF_WIN/-2)),"value out of range");
-     	return(val);
-    }
 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
@@ -261,18 +186,7 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
      *  for each and sorts the result to preorder the tree for further evaluation
      */
     public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
+    {	throw G.Error("Not expected");
     }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -280,10 +194,7 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
      * */
     public void StaticEval()
     {
-            HavannahBoard evboard = GameBoard.cloneBoard();
-            double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
-            double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-            System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
+    	G.Error("Not expected");
     }
 
 
@@ -382,64 +293,7 @@ public void PrepareToMove(int playerIndex)
 }
 
  public commonMove DoAlphaBetaFullMove()
- {
-        HavannahMovespec move = null;
-        try
-        {
-       	
-            if (board.DoneState())
-            { // avoid problems with gameover by just supplying a done
-                move = new HavannahMovespec("Done", board.whoseTurn);
-            }
-
-            // it's important that the robot randomize the first few moves a little bit.
-            int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
-            boardSearchLevel = 0;
-
-            int depth = MAX_DEPTH;	// search depth
-            double dif = 0.0;		// stop randomizing if the value drops this much
-            // if the "dif" and "randomn" arguments to Find_Static_Best_Move
-            // are both > 0, then alpha-beta will be disabled to avoid randomly
-            // picking moves whose value is uncertain due to cutoffs.  This makes
-            // the search MUCH slower so depth ought to be limited
-            // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games where there are no "fools mate" type situations
-            // the best solution is to use dif=0.0;  For games with fools mates,
-            // set dif so the really bad choices will be avoided
-            Search_Driver search_state = Setup_For_Search(depth, false);
-            search_state.save_all_variations = SAVE_TREE;
-            search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-            search_state.verbose = verbose;
-            search_state.allow_killer = KILLER;
-            search_state.allow_best_killer = false;
-            search_state.save_top_digest = true;	// always on as a background check
-            search_state.save_digest=false;	// debugging only
-            search_state.check_duplicate_digests = false; 	// debugging only
-
-           if (move == null)
-            {	// randomn takes the a random element among the first N
-            	// to provide variability.  The second parameter is how
-            	// large a drop in the expectation to accept.  For some games this
-            	// doesn't really matter, but some games have disasterous
-            	// opening moves that we wouldn't want to choose randomly
-                move = (HavannahMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-            }
-        }
-        finally
-        {
-            Accumulate_Search_Summary();
-            Finish_Search_In_Progress();
-        }
-
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
+ {	G.Error("Not expected");
         return (null);
     }
 

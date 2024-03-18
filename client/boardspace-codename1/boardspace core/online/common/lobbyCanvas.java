@@ -2323,7 +2323,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			 break;
 		 case highlight_changeExtraTime:
 		 	{	TimeControl tc = sess.timeControl();
-		 		if(tc.kind==TimeControl.Kind.PlusTime) 
+		 		if((tc.kind==TimeControl.Kind.PlusTime)
+		 				|| (tc.kind==TimeControl.Kind.Incremental))
 		 			{ secondsMenu = tc.changeSeconds(inX,inY,this,deferredEvents);
 		 			}
 		 			else

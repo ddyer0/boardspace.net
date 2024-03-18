@@ -409,7 +409,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	static Bot ThreeBotsPlus[] = { Bot.Dumbot,Bot.Smartbot,Bot.Bestbot,Bot.Weakbot};
 	
 	public static GameInfo GameTimer = 
-		new GameInfo(2105,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
+		new GameInfo(21050,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
 				null,
 				new double[]{0.1,1.0,1.0,0.01},
 				"gametimer.GameTimerViewer",null,null,

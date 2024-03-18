@@ -43,6 +43,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements
 	HavannahBlob blob;			// the blob which contains this cell
 	HavannahCell nextInBlob;		// a link to the next cell in this blob
 	int sweep_counter;		// the sweep counter for which blob is accurate
+	int edge_sweep_counter;			// sweep counter for which edge contact is valid
 	boolean edgeContact = false;
 	private int borders = -1;		// bitmask of possible borders
 	private int sideMask = 0;

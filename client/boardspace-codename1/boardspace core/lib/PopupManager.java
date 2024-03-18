@@ -270,7 +270,12 @@ public class PopupManager extends SimpleObservable implements ActionListener
    // on Windows, awt menus have problems with chinese and japanese
    // on Windows, swing menus have reliability problems due to multi threading
    // pick your poison. [ddyer 1/2023]
-   public static boolean useSwing = !G.isUnix();	// default to using swing menus
+   // Note: 12/28/2023 cheerpj has problems with both flavors of menus.  AWT menus can overrun
+   // the visible window (and are clipped), whereas Swing menus sometimes fail to 
+   // appear at all.  Cheerpj was accidentally classified as a unix platform and so defaulted
+   // to using awt, which works better.
+   //
+   public static boolean useSwing = G.isCheerpj() ? false : !G.isUnix();	// default to using swing menus
    private static Object nullValue=new Object();	// make it an object rather than a string
    public int showAtX = 0;
    public int showAtY = 0;

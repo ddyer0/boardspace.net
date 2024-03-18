@@ -453,7 +453,8 @@ public class Http implements Config {
     static public boolean postError(Object caller, String message, Throwable err)
     	    {
     		if(G.isCheerpj())
-    			{ G.infoBox(message,""+err+err.getStackTrace()); }
+    			{ G.infoBox(message,err==null ? "no error caught" : ""+err+err.getStackTrace()); 
+    			}
     		try {
     			G.setPostedError(message+":"+err);
     	        if (!(err instanceof ThreadDeath) 	// don't post ThreadDeath events

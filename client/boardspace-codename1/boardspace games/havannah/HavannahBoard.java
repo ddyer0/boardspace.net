@@ -18,9 +18,9 @@ package havannah;
 
 import static havannah.HavannahMovespec.*;
 
-import java.util.*;
-
 import bridge.Color;
+
+import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -101,6 +101,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
     private int sweep_counter=0;			// used when scanning for blobs
+    private int edge_sweep_counter = 0;		// used when checking for edge connection
     private int startingPlayer = 0;
     private boolean swapped = false;
     // intermediate states in the process of an unconfirmed move should
@@ -355,74 +356,24 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     {	
     	return(board_state.digestState());
     }
-    //
-    // flood fill to make this blob as large as possible.  This is more elaborate
-    // than it needs to be for scoring purposes, but it is also used by the robot
-    //
-    private void expandHexBlob(HavannahBlob blob,HavannahCell cell)
-    {	if(cell==null) {}
-    	else if((cell.sweep_counter!=sweep_counter))
-    	{
-    	cell.sweep_counter = sweep_counter;
-    	cell.blob = blob;
-    	     	
-    	if(cell.topChip()==blob.color)
-    	  {
-    	   	blob.addCell(cell);
-    	   	for(int dir = 0; dir<6; dir++)
-    		{	expandHexBlob(blob,cell.exitTo(dir));
-    		}
-    	  }
-    	}
-    	else if(cell.topChip()==null)
-    	{	// cell was previously encountered on this sweep
-    		HavannahBlob other = cell.blob;
-    		if((other!=blob)&&(other.color==blob.color))
-    		{	// a connection
-    			other.addConnection(blob,cell);
-    			blob.addConnection(other,cell);
-    		}
-    	}
-    }
-
-    
-    //
-    // flood fill to make this blob as large as possible.  This is more elaborate
-    // than it needs to be for scoring purposes, but it is also used by the robot
-    //  OStack<HavannahBlob> findBlobs(int forplayer,OStack<HavannahBlob> all)
-    BlobStack findBlobs(int forplayer,BlobStack all)
-    {	sweep_counter++;
-    	HavannahChip pch = playerChip[forplayer];
-    	for(HavannahCell cell = allCells;  cell!=null; cell=cell.next)
-    	{	if((cell.sweep_counter!=sweep_counter) && (cell.topChip()==pch))
-    		{
-    		HavannahBlob blob = new HavannahBlob(pch);
-    		all.push(blob);
-    		expandHexBlob(blob,cell);
-     		}
-    	}
-       	return(all);
-    }
-
 
     // flood fill the blob to make it as large as possible, but don't
     // look for connections.  This is used when the blob os only being
     // checked as a possible win
     private void expandBlobForWin(HavannahBlob blob,HavannahCell cell)
     {	if(cell==null) {}
-    	else if((cell.sweep_counter!=sweep_counter))
-    	{
-      	if(cell.topChip()==blob.color)
+    	else if((cell.topChip()==blob.color) 
+    			&& (cell.sweep_counter!=sweep_counter))
     	  {
-        	cell.sweep_counter = sweep_counter;
+        	//cell.sweep_counter = sweep_counter;
     	   	blob.addCell(cell);
+        	cell.sweep_counter = sweep_counter;
     	   	cell.blob = blob;
     	   	for(int dir = 0; dir<6; dir++)
     		{	expandBlobForWin(blob,cell.exitTo(dir));
     		}
     	  }
     	}
-    }
     
     // scan blobs only connected to the home row for the player
     // this is the fast version that only checks for a win
@@ -430,6 +381,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     {
     	HavannahChip pch = playerChip[player];
     	sweep_counter++;
+    	edge_sweep_counter++;
     	for(HavannahCell home=allCells; home!=null; home = home.next)
     	{	
        	if((home.topChip()==pch) && (home.sweep_counter!=sweep_counter))
@@ -444,34 +396,16 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     public boolean buildBlobForWin( HavannahBlob blob,HavannahCell home)
     {
     	expandBlobForWin(blob,home);
-    	blob.checkForRing(sweep_counter,revision>=101);
+    	blob.checkForRing(edge_sweep_counter,revision>=101);
     	return blob.isWin();
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }
+
     public boolean winForPlayerNow(int player)
     {	if(win[player]) { return(true); }
     	boolean win = findWinningBlob(player);
     	return(win);
     }
-    // this method is also called by the robot to get the blobs as a side effect
-    public boolean winForPlayerNow(int player,BlobStack blobs)
-    {
-     	findBlobs(player,blobs);
-    	return(someBlobWins(blobs,player));
-   	
-    }
-
-    public boolean someBlobWins(BlobStack blobs,int player)
-    {	// if the span of any blobs is the whole board, we have a winner
-    	// in Hex, there is only one winner.
-    	for(int i=0;i<blobs.size(); i++)
-    	{	HavannahBlob blob = blobs.elementAt(i);
-    		boolean win = blob.isWin();
-    		if(win)	{ return(true); }
-     	}
-        return (false);
-    }
-
 
     private int previousPlaced = 0;
     
