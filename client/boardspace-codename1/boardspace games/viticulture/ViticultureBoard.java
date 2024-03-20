@@ -1908,6 +1908,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(revision>=141) { v = false; }
     		}
     		break;
+    	case PlaySecondBlue:
+    	case PlaySecondYellow:
+    		return getCurrentPlayerBoard().selectedCards.size()==1;
+    		
     	case DiscardWineFor2VP:
     		if (revision>=151)
     		{
@@ -7400,6 +7404,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
         case Harvest1:
         case HarvestOrUproot:
         case BuildStructure:	// used bonus to force build
+        case PlaySecondBlue:
+        case PlaySecondYellow:
         	setState(ViticultureState.Confirm); 	// shouldn't be allowed, but it has happened 
         	break;
         case ChooseOptions:

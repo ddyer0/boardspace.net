@@ -59,6 +59,7 @@ public class HitPoint extends Point
 /** if not null, the help text to be draw in in a bubble.  Drawing is
 normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not moved for a while  */
 	private Text helpText = null;
+	private String rawHelpText = null;
 	private double helpDistance = -1;
 	
 	/** if not null, the object that is the focus of mouse help */
@@ -200,6 +201,7 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	{	if(G.pointInsideSquare(highlight,x,y,squaresize/2))
 			{
 			highlight.helpText = TextChunk.split(msg);
+			highlight.rawHelpText = msg;
 			return(true);
 			}
 		return(false);
@@ -217,20 +219,74 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	 * @param msg
 	 * @return true if the highlight point is in the rectangle
 	 */
-	static public boolean setHelpText(HitPoint highlight,int x,int y,int squarewidth,int squareheight,String msg)
+	static public boolean setHelpTextNear(HitPoint highlight,int x,int y,int squarewidth,int squareheight,String msg)
 	{	if(G.pointNearCenter(highlight,x,y,squarewidth/2,squareheight/2))
 			{
-			double dis = G.distance(x,y,G.Left(highlight),G.Top(highlight));
-			if(highlight.helpText==null || dis<highlight.helpDistance)
+			double dis = G.distance(x,y,G.Left(highlight),G.Top(highlight) );
+			String oldtext = highlight.rawHelpText;
+			if(oldtext==null || dis<highlight.helpDistance || !oldtext.equals(msg))
 				{ highlight.helpText = TextChunk.split(msg);
+				  highlight.rawHelpText = msg;
 				  highlight.helpDistance = dis;
 				}
 			return(true);
 			}
 		return(false);
 	}
+	
+	/**
+	 * Set the help text of "highlight" if the point is inside the rectangle x,y,w,h
+	 * highlight may be null.
+	 * 
+	 * @param highlight
+	 * @param x
+	 * @param y
+	 * @param squarewidth
+	 * @param squareheight
+	 * @param msg
+	 * @return true if the highlight point is in the rectangle
+	 */
+	static public boolean setHelpText(HitPoint highlight,int x,int y,int squarewidth,int squareheight,String msg)
+	{	if(G.pointInRect(highlight,x,y,squarewidth,squareheight))
+			{
+			highlight.helpText = TextChunk.split(msg);
+			highlight.rawHelpText = msg;
+			highlight.helpDistance = 0;
+			return(true);
+			}
+		return(false);
+	}
+	
 	/**
 	 * Set the help text of "highlight" if the point is inside the rectangle centered on x,y
+	 * and nearer than the previous help text
+	 * highlight may be null.
+	 * 
+	 * @param highlight
+	 * @param x
+	 * @param y
+	 * @param squarewidth
+	 * @param squareheight
+	 * @param msg
+	 * @return true if the highlight point is in the rectangle
+	 */
+	static public boolean setHelpTextNear(HitPoint highlight,int x,int y,int squarewidth,int squareheight,Text msg)
+	{	if(G.pointNearCenter(highlight,x,y,squarewidth/2,squareheight/2))
+			{
+			double dis = G.distance(x,y,G.Left(highlight),G.Top(highlight));
+			if(highlight.helpText==null || dis<highlight.helpDistance)
+			{
+			highlight.helpText = msg;
+			highlight.rawHelpText = msg==null ? null : msg.toString();
+			highlight.helpDistance = dis;
+			}
+			return(true);
+			}
+		return(false);
+	}
+	
+	/**
+	 * Set the help text of "highlight" if the point is inside the rectangle x,y,w,h
 	 * and nearer than the previous help text
 	 * highlight may be null.
 	 * 
@@ -243,24 +299,22 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	 * @return true if the highlight point is in the rectangle
 	 */
 	static public boolean setHelpText(HitPoint highlight,int x,int y,int squarewidth,int squareheight,Text msg)
-	{	if(G.pointNearCenter(highlight,x,y,squarewidth/2,squareheight/2))
-			{
-			double dis = G.distance(x,y,G.Left(highlight),G.Top(highlight));
-			if(highlight.helpText==null || dis<highlight.helpDistance)
+	{	if(G.pointInRect(highlight,x,y,squarewidth,squareheight))
 			{
 			highlight.helpText = msg;
-			highlight.helpDistance = dis;
-			}
+			highlight.rawHelpText = msg==null ? null : msg.toString();
+			highlight.helpDistance = 0;
 			return(true);
 			}
 		return(false);
 	}
+	
 	/**
 	 * set the help text
 	 * @param msg
 	 */
 	public void setHelpText(String msg)
-	{
+	{	rawHelpText = msg;
 		helpText = msg==null?null:TextChunk.split(msg);
 	}
 	/**
@@ -275,6 +329,7 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	public void setHelpText(Text msg)
 	{
 		helpText = msg;
+		rawHelpText = msg==null ? null : msg.toString();
 	}
 	/**
 	 * Set the help text of "highlight" if the point is inside the rectangle centered on x,y
@@ -289,6 +344,7 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	{	if(G.pointInsideRectangle(highlight,r))
 			{
 			highlight.helpText = TextChunk.split(msg);
+			highlight.rawHelpText = msg;
 			return(true);
 			}
 		return(false);
@@ -307,6 +363,7 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	{	if(G.pointInsideRectangle(highlight,rot,r))
 			{
 			highlight.helpText = msg;
+			highlight.rawHelpText = msg==null ? null : msg.toString();
 			return(true);
 			}
 		return(false);

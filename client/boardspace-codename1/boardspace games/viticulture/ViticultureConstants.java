@@ -20,6 +20,7 @@ import lib.G;
 import lib.InternationalStrings;
 import lib.OStack;
 import lib.Random;
+import bridge.Color;
 import bridge.Config;
 import lib.CellId;
 import lib.Digestable;
@@ -55,10 +56,23 @@ public interface ViticultureConstants
 
    	enum ScoreType
    	{
-   		WineOrder,WineSale,
-  		OrangeCard,Star,Other,  	
-   		ReceiveYellow,PlayYellow,ScoreYellow,
-   		ReceiveBlue,PlayBlue,ScoreBlue,
+   		WineOrder(Color.cyan),
+   		WineSale(Color.green),
+  		OrangeCard(Color.orange),
+   		Other(Color.black),  	
+   		ReceiveYellow(null),
+   		PlayYellow(null),
+   		ScoreYellow(Color.yellow),
+   		ReceiveBlue(null),
+   		PlayBlue(null),
+   		ScoreBlue(Color.blue),
+ 		Star(Color.pink),
+   		;
+   		Color color = null;
+   		ScoreType(Color c)
+   		{
+   			color = c;
+   		}
    	}
 	static String NextSeasons[] = {
 			VitiSummer,
@@ -273,6 +287,7 @@ public interface ViticultureConstants
     static String MakeWineFirstMessage = "Make Wine First";
     static String FillWineFirstMessage = "Fill Wine Order First";
     static String NoBuildMessage = "Do Not Build";
+    static String NoCardMessage = "Do Not play another card";
     static String NoDiscardMessage = "Do Not Discard";
     static String NoSellMessage = "Do Not Sell";
     static String NoPlantMessage = "Do Not Plant";
@@ -286,10 +301,15 @@ public interface ViticultureConstants
 	static String AcceptOptionsMessage = "click to accept these options";
 	static String VetoMessage = "Veto";
 	static String AcceptMessage = "Accept";
+	static String ScoringFor = "Scoring for #1";
+	static String PointsFrom = "#1{ points, point} from #2";
 	static String ScoreSummaryMessage = "Summary of Scoring";
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
+		PointsFrom,
 		ScoreSummaryMessage,
+		ScoringFor,
+		NoCardMessage,
 		AcceptOptionsMessage,
 		VetoMessage,
 		AcceptMessage,

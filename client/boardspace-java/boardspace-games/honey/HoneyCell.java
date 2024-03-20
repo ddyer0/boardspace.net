@@ -17,7 +17,6 @@
 package honey;
 
 import lib.Random;
-import lib.StackIterator;
 import honey.HoneyConstants.HoneyId;
 import lib.Digestable;
 import lib.OStack;
@@ -68,24 +67,10 @@ class CellStack extends OStack<HoneyCell> implements Digestable
 public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	boolean nonWord = false;
-	StackIterator<HWord> wordHead;
-	Object parent = null;
-	int displayRow = 0;
-	boolean selected = false;
-	public void addWordHead(HWord w)
-	{
-		wordHead = (wordHead==null) ? w : wordHead.push(w); 
-	}
-	
 	public HoneyChip animationChip(int idx)
 	{	HoneyChip ch = chipAtIndex(idx);
 		if(!onBoard && ch!=null && ch.back!=null ) { ch = ch.back; }
 		return(ch);
-	}
-
-	public void initRobotValues() 
-	{
 	}
 	public HoneyCell(Random r,HoneyId rack) { super(r,rack); }		// construct a cell not on the board
 	public HoneyCell(HoneyId rack,char c,int r,Geometry g) 		// construct a cell on the board
@@ -96,15 +81,6 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 	public HoneyId rackLocation() { return((HoneyId)rackLocation); }
 
 
-	/**
-	 * reset back to the same state as when newly created.  This is used
-	 * when reinitializing a board.
-	 */
-	public void reInit()
-	{	super.reInit();
-		nonWord = false;
-		selected = false;
-	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public HoneyCell(HoneyChip cont)
 	{	super();
@@ -120,12 +96,6 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 		geometry = Geometry.Standalone;
 	}
 	
-	public void copyFrom(HoneyCell other)
-	{
-		super.copyFrom(other);
-		nonWord = other.nonWord;
-		selected = other.selected;
-	}
 	
 	public HoneyChip[] newComponentArray(int size) {
 		return(new HoneyChip[size]);

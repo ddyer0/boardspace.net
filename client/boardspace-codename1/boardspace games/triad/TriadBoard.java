@@ -123,7 +123,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     /**
      * return a score for the player in a multiplayer game. 
      */
-    public int ScoreForPlayer(int p)
+    public int scoreForPlayer(int p)
     {	G.Assert(board_state==TriadState.GAMEOVER_STATE,"gameover");
     	return(chips_on_board[p]);
     }
@@ -228,7 +228,6 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
      */
     public long Digest()
     {
-        Random r = new Random(64 * 1000); // init the random number generator
     	long v = 0;
  
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -236,6 +235,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
+        Random r = new Random(64 * 1000); // init the random number generator
         for(int i=0;i<3;i++)
         	{ long r1 = r.nextLong();
         	  long r2 = r.nextLong();
@@ -1038,11 +1038,11 @@ int getListOfMovesFrom(TriadCell from,TriadChip top,int who,TriadCell to,int dir
 public boolean WinForPlayer(int player)
 {	if(board_state==TriadState.GAMEOVER_STATE)
 	{
-	int best = ScoreForPlayer(player);
+	int best = scoreForPlayer(player);
 	int second = -1;
 	for(int i=0;i<3;i++)
 	{	if(i!=player)
-			{int sc = ScoreForPlayer(i);
+			{int sc = scoreForPlayer(i);
 			 if(sc>second) { second=sc; }
 			}
 	}
@@ -1052,7 +1052,7 @@ public boolean WinForPlayer(int player)
 }
 
 public void getScores(TriadMovespec m)
-{	for(int i=0;i<3; i++) { m.playerScores[i] = ScoreForPlayer(i); }
+{	for(int i=0;i<3; i++) { m.playerScores[i] = scoreForPlayer(i); }
 }
 double dumbotEval(int player,boolean print)
 {	// note we don't need "player" here because the blobs variable

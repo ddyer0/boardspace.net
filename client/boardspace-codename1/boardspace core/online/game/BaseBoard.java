@@ -41,9 +41,9 @@ import lib.Random;
  * @see circBoard
  */
 public abstract class BaseBoard implements Opcodes,Digestable
-{	public Object clone() { throw G.Error("Do not call"); }
+{	public Object clone() { throw G.Error("Do not call for %s",this); }
     /**
-     * the index of the current player
+     * this is used to distinguish the true board from copies
      */
 	private String name = "main";
 	public String getName() { return(name); }
@@ -102,7 +102,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
     public boolean WinForPlayer(int pl) { return(win[pl]); }
     public int scoreForPlayer(int pl)
     {
-    	throw G.Error("should be defined for multiplayer games");
+    	throw G.Error("should be defined for multiplayer games of %s",gametype);
     }
     /**
      * the type of the current game, which is printed into game records
@@ -354,12 +354,12 @@ public abstract class BaseBoard implements Opcodes,Digestable
    }
    
 	public void cantExecute(commonMove m)
-	{	throw G.Error("Can't execute %s", m);
+	{	throw G.Error("Can't execute %s for %s", m,this);
 	}
  
 	public void cantUnExecute(commonMove m)
 	{	
-		throw G.Error("Can't unExecute %s", m);
+		throw G.Error("Can't unExecute %s for %s", m,this);
 	}
 	
 	/*

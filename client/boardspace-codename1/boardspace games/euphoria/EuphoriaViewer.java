@@ -937,7 +937,7 @@ private Color playerBackground[] = {
   
     	String desc = rack.defaultDescription;
     	if((desc!=null) && !"".equals(desc))
-    		{HitPoint.setHelpText(tip, xpos,ypos, cell.defaultScale,cell.defaultScale,
+    		{HitPoint.setHelpTextNear(tip, xpos,ypos, cell.defaultScale,cell.defaultScale,
    					s.get0or1(desc,cell.height()));
     		}
 
@@ -1589,7 +1589,7 @@ private Color playerBackground[] = {
     		}
     	if((desc!=null) && !"".equals(desc))
     		{
-    		HitPoint.setHelpText(tip, xpos,ypos, cell.defaultScale,cell.defaultScale,TextChunk.colorize(desc,null,gameEventText));
+    		HitPoint.setHelpTextNear(tip, xpos,ypos, cell.defaultScale,cell.defaultScale,TextChunk.colorize(desc,null,gameEventText));
     		}
     	}
     }

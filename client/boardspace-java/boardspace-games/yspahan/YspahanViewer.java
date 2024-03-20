@@ -512,7 +512,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 			{	// fatten up the tool tip targets
 				int w2 = w*5/4;
 				int h2 = h*5/4;
-				HitPoint.setHelpText(anyone,xpos,ypos,w2,h2,count); 
+				HitPoint.setHelpTextNear(anyone,xpos,ypos,w2,h2,count); 
 			}
 		// leave the sprite center at the center, even if nothing drawn
     	if(showCount) { GC.Text(gc,true,xpos-w/2,ypos+h-h/5,w*2,h/5,Color.black,null,count); }
@@ -535,7 +535,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	if(c.helpText!=null) 
     		{ Text text = TextChunk.split(s.get0or1(c.helpText,c.height()));
     		  text.colorize(s,icons);
-    		  HitPoint.setHelpText(anyone,xpos,ypos,size,size,text); 
+    		  HitPoint.setHelpTextNear(anyone,xpos,ypos,size,size,text); 
     		} 
     	return(val);
     }
@@ -583,7 +583,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     			highlight.spriteColor = Color.red;
     			highlight.arrow = StockArt.UpArrow;
     		}
-    		HitPoint.setHelpText(highlight,x,y,SZ,SZ*2,s.get(card.helpText));
+    		HitPoint.setHelpTextNear(highlight,x,y,SZ,SZ*2,s.get(card.helpText));
     		x += dx;
     	}
      }
@@ -780,7 +780,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		{	highlight.spriteColor = Color.red;
     			highlight.awidth = CELLSIZE;
     		}
-    		HitPoint.setHelpText(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will be rolled"));
+    		HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will be rolled"));
     		i++;
     		}
     	for(YspahanCell d : extra)
@@ -794,7 +794,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 				{ highlight.spriteColor = Color.red;
 				  highlight.awidth = CELLSIZE;
 				}
-			HitPoint.setHelpText(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will not be rolled"));
+			HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will not be rolled"));
     		}
     }
    /* draw the board and the chips on it. */

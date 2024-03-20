@@ -17,13 +17,13 @@
 package triad;
 
 import bridge.*;
-import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import online.common.*;
 import lib.Graphics;
 import lib.Image;
@@ -698,6 +698,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
+
 
 
     /** factory method to create a robot */

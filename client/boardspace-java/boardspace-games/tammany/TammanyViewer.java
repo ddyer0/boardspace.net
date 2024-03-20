@@ -683,7 +683,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             	TammanyChip card = TammanyChip.getRoleCard(cell.rackLocation());
             	if((bb.pickedObject==null) 
             		&& (any.hitCode == DefaultId.HitNoWhere)
-            		&& HitPoint.setHelpText(any,xpos-CELLSIZE,ypos-CELLSIZE,CELLSIZE*4,CELLSIZE*2,
+            		&& HitPoint.setHelpTextNear(any,xpos,ypos,CELLSIZE*4,CELLSIZE*2,
             			card.helpText))
             	{
             		any.hitCode = TammanyId.RoleCard;

@@ -40,7 +40,6 @@ class CellStack extends OStack<HavannahCell>
  */
 public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements PlacementProvider
 {	
-	HavannahBlob blob;			// the blob which contains this cell
 	HavannahCell nextInBlob;		// a link to the next cell in this blob
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int edge_sweep_counter;			// sweep counter for which edge contact is valid

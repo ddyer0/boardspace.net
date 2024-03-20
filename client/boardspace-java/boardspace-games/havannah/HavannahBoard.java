@@ -368,7 +368,6 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
         	//cell.sweep_counter = sweep_counter;
     	   	blob.addCell(cell);
     	   	cell.sweep_counter = sweep_counter;
-    	   	cell.blob = blob;
     	   	for(int dir = 0; dir<6; dir++)
     		{	expandBlobForWin(blob,cell.exitTo(dir));
     		}

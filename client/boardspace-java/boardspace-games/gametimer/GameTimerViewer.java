@@ -72,14 +72,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
 		gameIcon = GameTimerChip.Icon.image;
     }
 
-    /**
-     * this is the hook for substituting alternate tile sets.  This is called at a low level
-     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
-     * a different chip.
-     */
-    public int getAltChipset() { return(0); }
-    
- 
+
 	/**
 	 * 
 	 * this is the real instance initialization, performed only once.
@@ -249,19 +242,6 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     {	return;
     }
     
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
 
     /**
      * draw the main window and things on it.  
@@ -403,31 +383,6 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
 		if(replay!=replayMode.Replay) { playSounds(mm); }
        return (true);
     }
-     /**
-      * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
-      * for pushfight, this is normally just one chip moving.  Note that the interface to drawStack arranges to make the
-      * destination chip disappear until the animation is finished.
-      * @param replay
-      */
-//     void startBoardAnimations(replayMode replay)
-//     {
-//        if(replay!=replayMode.Replay)
-//     	{
-//     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
-//        	while(bb.animationStack.size()>1)
-//     		{
-//     		PushfightCell dest = bb.animationStack.pop();
-//     		PushfightCell src = bb.animationStack.pop();
-//    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
-//    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
-    		//
-    		// in cases where multiple chips are flying, topChip() may not be the right thing.
-    		//
-//     		startAnimation(src,dest,dest.topChip(),bb.cellSize(),0,endTime);
-//     		}
-//     	}
-//        	bb.animationStack.clear();
-//     } 
 
  void playSounds(commonMove mm)
  {
@@ -452,77 +407,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     {
         return (new GameTimerMovespec(st, pl));
     }
-/**
- * prepare to add nmove to the history list, but also edit the history
- * to remove redundant elements, so that indecisiveness by the user doesn't
- * result in a messy game log.  
- * 
- * For all ordinary cases, this is now handled by the standard implementation
- * in commonCanvas, which uses the board's Digest() method to distinguish new
- * states and reversions to past states.
- * 
- */
-      public commonMove EditHistory(commonMove nmove)
-      {	  return super.EditHistory(nmove);
-      }
-      /**
-       *  the default behavior is if there is a picked piece, unpick it
-       *  but if no picked piece, undo all the way back to the done.
-       */
-      //public void performUndo()
-      //{
-      //	if(allowBackwardStep()) { doUndoStep(); }
-      //	else if(allowUndo()) { doUndo(); }
-      //
-      //}
-
-    
-    /** 
-     * this method is called from deep inside PerformAndTransmit, at the point
-     * where the move has been executed and the history has been edited.  It's
-     * purpose is to verify that the history accurately represents the current
-     * state of the game, and that the fundamental game machinery is in a consistent
-     * and reproducible state.  Basically, it works by creating a duplicate board
-     * resetting it and feeding the duplicate the entire history, and then verifying 
-     * that the duplicate is the same as the original board.  It's perfectly ok, during
-     * debugging and development, to temporarily change this method into a no-op, but
-     * be warned if you do this because it is throwing an error, there are other problems
-     * that need to be fixed eventually.
-     */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
-    
+   
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 
@@ -537,15 +422,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
  
     }
 
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
+
 	 public boolean timersActive()
 	 {
 		 return (super.timersActive() && (bb.getState()!=GameTimerState.Paused));
@@ -588,50 +465,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
         }
     }
 
-
-    /** this is the place where the canvas is actually repainted.  We get here
-     * from the event loop, not from the normal canvas repaint request.
-     * <p>
-     * if complete is true, we definitely want to start from scratch, otherwise
-     * only the known changed elements need to be painted.  Exactly what this means
-     * is game specific, but for pushfight the underlying empty board is cached as a deep
-     * background, but the chips are painted fresh every time.
-     * <p>
-     * this used to be very important to optimize, but with faster machines it's
-     * less important now.  The main strategy we employ is to paint EVERYTHING
-     * into a background bitmap, then display that bitmap to the real screen
-     * in one swell foop at the end.
-     * 
-     * @param gc the graphics object.  If gc is null, don't actually draw but do check for mouse location anyay
-     * @param complete if true, always redraw everything
-     * @param hp the mouse location.  This should be annotated to indicate what the mouse points to.
-     */
-  //  public void drawCanvas(Graphics gc, boolean complete,HitPoint hp)
-  //  {	
-       	//drawFixedElements(gc,complete);	// draw the board into the deep background
-   	
-    	// draw the board contents and changing elements.
-        //redrawBoard(gc,hp);
-        //      draw clocks, sprites, and other ephemera
-        //drawClocksAndMice(gc, null);
-        //DrawArrow(gc,hp);
- //    }
-    /**
-     * draw any last-minute items, directly on the visible canvas. These
-     * items may appear to flash on and off, if so they probably ought to 
-     * be drawn in {@link #drawCanvas}
-     * @param offGC the gc to draw
-     * @param hp the mouse {@link HitPoint} 
-     */
-  // public void drawCanvasSprites(Graphics offGC,HitPoint hp)
-  //  {
-  //     DrawTileSprite(offGC,hp); //draw the floating tile we are dragging, if present
-       //
-       // draw any animations that are in progress
-       //
-  //     drawSprites(offGC);       
-  //  }
-    
+  
     /**
      * this is a token or tokens that initialize the variation and
      * set immutable parameters such as the number of players
@@ -669,73 +503,17 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     }
 
 
-    /** handle action events from menus.  Don't do any real work, just note
-     * state changes and if necessary set flags for the run loop to pick up.
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-        boolean handled = super.handleDeferredEvent(target, command);
-
-        return (handled);
-    }
-
     public void ViewerRun(int wait)
       {	   // reduce the cycle time so the timers tick regularly
            super.ViewerRun(Math.min(wait,250));
       }
-    /**
-     * returns true if the game is over "right now", but also maintains 
-     * the gameOverSeen instance variable and turns on the reviewer variable
-     * for non-spectators.
-     */
-    //public boolean GameOver()
-    //{	// the standard method calls b.GameOver() and maintains
-    	// two variables.  
-    	// "reviewer=true" means we were a player and the end of game has been reached.
-    	// "gameOverSeen=true" means we have seen a game over state 
-    //	return(super.GameOver());
-    //}
+
     
     /** this is used by the stock parts of the canvas machinery to get 
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-
-/** this is used by the scorekeeper to determine who won. Draws are indicated
- * by both players returning false.  Be careful not to let both players return true!
- */
-   // public boolean WinForPlayer(commonPlayer p)
-   // { // this is what the standard method does
-      // return(getBoard().WinForPlayer(p.index));
-   //   return (super.WinForPlayer(p));
-   // }
-
-    /** start the robot.  This is used to invoke a robot player.  Mainly this needs 
-     * to know the class for the robot and any initialization it requires.  The return
-     * value is the player actually started, which is normally the same as requested,
-     * but might be different in some games, notably simultaneous play games like Raj
-     *  */
-   // public commonPlayer startRobot(commonPlayer p,commonPlayer runner,Bot bot)
-   // {	// this is what the standard method does:
-    	// int level = sharedInfo.getInt(sharedInfo.ROBOTLEVEL,0);
-    	// RobotProtocol rr = newRobotPlayer();
-    	// rr.InitRobot(sharedInfo, getBoard(), null, level);
-    	// p.startRobot(rr);
-    //	return(super.startRobot(p,runner,bot));
-    //}
-    // this is conventionally used as the game state message above the board,
-    // but it is also inserted into the game record as the RE property
-    //
-    //public String gameOverMessage()
-    //{
-    //	return super.gameOverMessage();
-    //}
-    /** factory method to create a robot */
-    public SimpleRobotProtocol newRobotPlayer() 
-    {  throw G.Error("Not Expected");
-    }
 
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
@@ -776,102 +554,10 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
             setComment(comments);
         }
     }
-    /**
-     *****		 Simultaneous moves support *****
-     * 
-     * Games where all the players move at the same time cause a lot of problems, but
-     * it's the right thing to do in some cases.  The current games that use at least
-     * some simultaneous moves are:
-     *  Euphoria, Magnet, Raj, One Day In London, Q.E., Breaking Away, Tammany Hall, and Imagine
-     * 
-     * The root of the problem is that players WILL disagree about the order of arrival of 
-     * asynchronous moves. This causes their game records to be different from one another,
-     * and causes the server's incremental bookkeeping of the game state to be seen as
-     * inconsistent.
-     * 
-     * The overall strategy for dealing with his problem is to segregate the simultaneous
-     * moves to the end of the game record, and anchor the server's record of the game at
-     * the beginning of the ephemeral block.   At appropriate points, the ephemeral moves
-     * are replaced in the game record by equivalent non-ephemeral moves in canonical order.
-     * 
-     * 
-     * Another problem is time accounting - while in simultaneous mode, the clocks for all 
-     * the players who have not completed their move should tick.
-     * 
-     * Tendrils to support this are all over the place, which made support difficult; but
-     * the most common solutions are embodied in requirements for move specs, states, and
-     * in overridable methods of commonCanvas 
-     * 
-     * the xxMovespec class will use pairs of ephemeral/normal moves, and implement
-     * and board states which allow asynchronous moves will be distinct from the states
-     * that do not.
-     *  
-     * Reviews of games which originally had simultaneous moves will have all synchronous
-     * moves, so the game engine ought to function perfectly with any ephemeral moves.
-     * 
-     *  
-     */
-    /* for debugging and initial development, leave this false */
-    boolean SIMULTANEOUS_PLAY = false;		
-    /** true if this game ever has simultaneous moves.  If true, formEphemeralHistoryString
-     * will do a second pass to collect the ephemeral moves, and {@link #useEphemeraBuffer} will
-     * expect there to be one.
-     */
-    public boolean gameHasEphemeralMoves() { return(SIMULTANEOUS_PLAY); }
-    // these related methods can be wrapped or overridden to customize the behavior of the ephemeral part game records.
-    //
-    // public String formEphemeralHistoryString()
-    // public void useEphemeraBuffer(StringTokenizer h)
-    // public String formEphemeralMoveString() {} 
-    // public void useEphemeralMoves(StringTokenizer his) {}
-    // -- the top level --
-    // public void useStoryBuffer(String tok,StringTokenizer his) {}
-    // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
-    // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneous_turns_allowed()
-    {	return super.simultaneous_turns_allowed();
-    }
-  // public RecordingStrategy gameRecordingMode()
-  //  {	return(super.gameRecordingMode());
-  //  }
-    private String vprogressString()
-    {	return super.gameProgressString()+" score score";
-    }
-    public String gameProgressString()
-    {	// this is what the standard method does
-    	 return(mutable_game_record 
-    			? Reviewing
-    			: vprogressString());
-    }
-    // if there are simultaneous turns, robot start/stop can be tricky
-    // by default, not allowed in simultaneous phases.  Return true 
-    // to let them run "in their normal turn", but this will not allow
-    // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
-    }
-
-	public int getLastPlacement(boolean empty) {
-		return (bb.moveNumber);
+	public SimpleRobotProtocol newRobotPlayer() {
+		return null;
 	}
+
 }
 

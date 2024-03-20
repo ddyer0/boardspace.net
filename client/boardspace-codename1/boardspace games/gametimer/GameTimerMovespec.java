@@ -56,24 +56,6 @@ public class GameTimerMovespec
     {
         parse(new StringTokenizer(str), p);
     }
-    public GameTimerMovespec(int opc , int p)
-    {
-    	op = opc;
-    	player = p;
-    }
-    /** constructor for robot moves.  Having this "binary" constor is dramatically faster
-     * than the standard constructor which parses strings
-     */
-    public GameTimerMovespec(int opc,char col,int row,int who)
-    {
-    	op = opc;
-    	player = who;
-    }
-    /* constructor */
-    public GameTimerMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so

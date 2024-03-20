@@ -55,7 +55,6 @@ import lib.TextStack;
 import lib.Base64;
 import lib.Toggle;
 import lib.Random;
-import lib.RepaintManager.RepaintStrategy;
 import online.game.*;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_node;
@@ -376,7 +375,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         scoreRect.setValue(true);	// turn it on
         //believed to work, but the display on android is too glitchy
         //useDirectDrawing(!G.isAndroid()); 
-        if(G.isAndroid()) { painter.setRepaintStrategy(RepaintStrategy.DoubleBuffer); }
+        if(G.debug()) { useDirectDrawing(true); }
         doInit(false);
         adjustPlayers(players_in_game);
         ready = true;
@@ -810,7 +809,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
      		}
      	else if(c.toolTip!=null) 
      	{ 	
-     		HitPoint.setHelpText(highlightAll,xpos,ypos,sz*2,sz*2,s.get0or1(c.toolTip,c.height()));
+     		HitPoint.setHelpTextNear(highlightAll,xpos,ypos,sz*2,sz*2,s.get0or1(c.toolTip,c.height()));
       	} 
      	
      	if(c.isSelected())
@@ -3050,8 +3049,7 @@ private void drawPlayerBoard(Graphics gc,
 		scoreSummary.clear();
 		for(PlayerBoard pb : gb.pbs)
 			{scoreSummary.append("\n");
-			scoreSummary.append("Scoring for ");
-			scoreSummary.append(prettyName(pb.boardIndex));
+			scoreSummary.append(s.get(ScoringFor,prettyName(pb.boardIndex)));
 			scoreSummary.append("\n");
 			pb.buildStatString();
 			scoreSummary.append(pb.scoreString.toString());			
@@ -3080,6 +3078,51 @@ private void drawPlayerBoard(Graphics gc,
     		if(!scoreSummaryPrepared) { buildScoreSummary(mainBoard); }
     	}
     	return(over);
+    }
+    private void showScoreGraph(Graphics gc,HitPoint hp,ViticultureBoard gb,Rectangle br)
+    {	GC.fillRect(gc,Color.gray,br);
+    	GC.frameRect(gc,Color.black,br);
+    	int width = G.Width(br);
+    	int xscale = width/40;
+    	int yscale = G.Height(br)/7;
+    	int top = G.Top(br);
+    	int left = G.Left(br);
+    	int y = top+yscale;
+    	int x0 = left+xscale*2;
+    	GC.setFont(gc,standardPlainFont());
+    	int tleft = left+yscale;
+    	for(ScoreType e : ScoreType.values()) 
+    	{
+    		Color c = e.color;
+    		if(c!=null)
+    		{	
+    			int dx = GC.Text(gc,false,tleft,top,width,yscale,c,null,""+e);
+    			tleft += dx+yscale/2;
+    		}
+    		
+    	}
+	
+
+				
+    	for(PlayerBoard pb : gb.pbs)
+    	{	int x = x0;
+    	    pb.getRooster().drawChip(gc,this,yscale*3/2,left+xscale,y+yscale/2,null);
+   		for(ScoreType e : ScoreType.values()) 
+    		{
+    			Color c = e.color;
+    			if(c!=null)
+    			{	int points = pb.statSummary[e.ordinal()];
+    				int w = points*xscale;
+    				GC.fillRect(gc,c,x,y,w,yscale);
+    				GC.frameRect(gc,Color.gray,x,y,w,yscale);
+    				HitPoint.setHelpText(hp,x,y,w,yscale,
+    						s.get(PointsFrom,""+points,""+e));
+    				x += w;
+    			}
+    		}
+    		GC.frameRect(gc,Color.black,x0,y,x-x0,yscale);
+    		y += yscale;
+    	}
     }
     // show scoring information at the endgame
     public void showScoreSheet(Graphics gc,ViticultureBoard gb,Rectangle br,
@@ -3193,7 +3236,9 @@ private void drawPlayerBoard(Graphics gc,
      		}
      		}
      	}
-    	scoreSummary.setBounds(x+xstep/3,y+h/10,xstep*6,2*h/3);
+ 		showScoreGraph(gc,highlightAll,gb,new Rectangle(x+w/6+xstep,y+ystep*5,w/2,2*ystep*7));
+ 		
+    	scoreSummary.setBounds(x+xstep/3,y+h/10,xstep*4,2*h/3);
      	scoreSummary.setVisible(true);
     	scoreSummary.redrawBoard(gc,null);
     }
@@ -3478,6 +3523,7 @@ private void drawPlayerBoard(Graphics gc,
         
      	switch(state)
      	{
+     	
         case DiscardCards: 
         	nToDiscard = pb.cards.height()-7;
         	break;
@@ -3949,6 +3995,18 @@ private void drawPlayerBoard(Graphics gc,
        	int csize = totalW/20;
        	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,csize, xp+totalW-csize,yp+csize,null);
 		}
+		switch(state)
+		{
+		default: break;
+		case PlaySecondBlue:
+		case PlaySecondYellow:
+		if((gb.getState()!=ViticultureState.Confirm)
+			&& GC.handleRoundButton(gc,new Rectangle(w-w/3,h-h/10,w/3-h/15,h/15),
+       					highlight,NoCardMessage,HighlightColor,rackBackGroundColor))
+       	{
+       		highlight.hitCode = GameId.HitDoneButton;
+       	}}
+    
     }
     // show cards and/or fields
     public void showMarket(Graphics gc, ViticultureBoard gb, Rectangle br,
@@ -4889,7 +4947,7 @@ private void drawPlayerBoard(Graphics gc,
     	overlayClosedFor = -1;
     	break;	// done if we want the main UI
     case ScoreSheet:
-    	showScoreSheet(gc,gb,brect,highlight,highlightAll,targets);
+    	showScoreSheet(gc,mainBoard,brect,highlight,highlightAll,targets);
     	break;
     case ShowWinesSale:
     	showWinesSale(gc,gb,brect,highlight,highlightAll,targets);

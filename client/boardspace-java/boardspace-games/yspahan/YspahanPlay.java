@@ -86,24 +86,6 @@ public class YspahanPlay extends commonRobot<YspahanBoard> implements Runnable, 
     	return(board.GetListOfMoves());
     }
     
-    
-
-    
-    /** return a value of the current board position for the specified player.
-     * this should be greatest for a winning position.  The evaluations ought
-     * to be stable and greater scores should indicate some degree of progress
-     * toward winning.
-     * @param player
-     * @return
-     */
-    double ScoreForPlayer(YspahanBoard evboard,int player,boolean print)
-    {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN); }
-    	return(evboard.ScoreForPlayer(player,print));
-
-    }
- 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy

@@ -638,7 +638,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
        		}
        		GC.setFont(gc,standardPlainFont());
        		c.drawBrick(gc,alloww,true,x,y,this,awid,ahgt,across,false,2.0,1.0,msg);
-       		HitPoint.setHelpText(any,x+awid/2,y-ystep/2,awid,ystep,helpMsg);
+       		HitPoint.setHelpTextNear(any,x+awid/2,y-ystep/2,awid,ystep,helpMsg);
        		if(moving && isAllowed(allowed,any,c)!=null)
    			{	
        		  drawLandingPad(gc,awid,1.0,x+awid/2,y-ahgt);
@@ -701,7 +701,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
        	HitPoint hit =  isAllowed(allowed,highlight,c);
    		c.drawChip(gc, this ,alt,hit, cellw,aheight, xpos, ypos, msg);
  		if(alt!=null) 
- 			{ HitPoint.setHelpText(any,xpos,ypos,cellw,aheight/2,s.get(ShipMessage,s.get(ship.getColor()))); 
+ 			{ HitPoint.setHelpTextNear(any,xpos,ypos,cellw,aheight/2,s.get(ShipMessage,s.get(ship.getColor()))); 
  			} 
    		
 		if(ship!=null)

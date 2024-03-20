@@ -103,7 +103,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	// factory method to generate a board cell
 	public HoneyCell newcell(char c,int r)
 	{	HoneyCell cd = new HoneyCell(HoneyId.BoardLocation,c,r,Geometry.Hex);
-		cd.parent = this;
 		return cd;
 	}
 	

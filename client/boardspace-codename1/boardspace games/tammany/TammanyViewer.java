@@ -686,7 +686,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             	TammanyChip card = TammanyChip.getRoleCard(cell.rackLocation());
             	if((bb.pickedObject==null) 
             		&& (any.hitCode == DefaultId.HitNoWhere)
-            		&& HitPoint.setHelpText(any,xpos-CELLSIZE,ypos-CELLSIZE,CELLSIZE*4,CELLSIZE*2,
+            		&& HitPoint.setHelpTextNear(any,xpos,ypos,CELLSIZE*4,CELLSIZE*2,
             			card.helpText))
             	{
             		any.hitCode = TammanyId.RoleCard;
@@ -824,10 +824,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     }
 
     public Text censoredMoveText(SequenceElement sp,int idx)
-    {	return censoredMoveText((TammanyMovespec) sp,idx);
+    {	return censoredMoveText(((TammanyMovespec)sp),idx);
+   
     }
     public Text censoredMoveText(TammanyMovespec sp,int idx)
-    {	String str = sp.censoredMoveString(History,idx,bb);
+    {	String str = (sp).censoredMoveString(History,idx,bb);
             String votestring = "vote ward";
     	if(str.startsWith(votestring))
             {	
@@ -845,7 +846,6 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 
     	return(colorize(str)); 
                 }
-
 
     public void showVoteButton(Graphics gc,TammanyPlayer p,HitPoint hp,Rectangle r,Rectangle eyeR,boolean eyeState,boolean onlyifactive)
     {	HitPoint select = ((p.allVotesSet

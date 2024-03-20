@@ -20,6 +20,7 @@ import static viticulture.ViticultureConstants.*;
 
 import java.util.StringTokenizer;
 
+import lib.AR;
 import lib.Bitset;
 import lib.Digestable;
 import lib.G;
@@ -279,11 +280,11 @@ public class PlayerBoard
 	private int playerSeason;
 	public int season() { return playerSeason; }
 	public void setSeason(int n) { playerSeason = n; }
-	
+	public int statSummary[] = new int[ScoreType.values().length];
 	StringBuilder scoreString = new StringBuilder();
 	public void buildStatString()
 	{	
-		int statSummary[] = new int[ScoreType.values().length];
+		AR.setValue(statSummary,0);	
 		int statCount[] = new int[ScoreType.values().length];
 		for(int lim=scoreEvents.size()-1; lim>=0; lim--)
 		{	
@@ -611,6 +612,7 @@ public class PlayerBoard
 		colorIndex = other.colorIndex;
 		scoreEvents.copyFrom(other.scoreEvents);
         cashDisplay.copyFrom(other.cashDisplay);
+        AR.copy(statSummary,other.statSummary);
 		papaResolved = other.papaResolved;
 		wakeupPosition = bb.getCell(other.wakeupPosition);
 		activeWakeupPosition = bb.getCell(other.activeWakeupPosition);

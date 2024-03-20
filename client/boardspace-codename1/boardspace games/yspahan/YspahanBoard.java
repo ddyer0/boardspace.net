@@ -1417,12 +1417,6 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		throw G.Error("not implemented");
 	}
 
-	// look for a win for player. This algorithm should work for Gobblet Jr too.
-	public double ScoreForPlayer(int player, boolean print)
-	{
-		throw G.Error("not implemented");
-	}
-
 	public int scoreForPlayer(int pl) {
 		return (playerBoards[pl].getVP());
 	}

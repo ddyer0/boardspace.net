@@ -92,7 +92,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
         return(board.List_Of_Legal_Moves(null));
    }
 
-    public double ScoreForPlayer(YinshBoard b, int player)
+    private double ScoreForPlayer(YinshBoard b, int player)
     {
         double ringscore = RING_SCORE * b.captured_rings[player]; // 100 points for each ring
         double movescore = MOVE_SCORE * b.moves[player];
