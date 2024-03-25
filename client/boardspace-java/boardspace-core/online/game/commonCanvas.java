@@ -151,7 +151,7 @@ public abstract class commonCanvas extends exCanvas
 	private String RANKING = "ranking";
 
 	/**
-	 * board cell iterator types. 
+	 * board cell iterator types, used to iterate over all cells of a game board.
 	 * @author Ddyer
 	 *
 	 */

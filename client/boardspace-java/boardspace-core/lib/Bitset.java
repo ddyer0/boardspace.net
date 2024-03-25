@@ -16,34 +16,73 @@
  */
 package lib;
 
+/**
+ * Bitset implements sets of enums with up to 64 members, represented by integers
+ * 
+ * @param <P>
+ */
 public class Bitset <P extends Enum<?>> implements Digestable
 {	private long members = 0;
 	public long members() { return(members);}
 	public void setMembers(long v) { members = v; }
 	
-	public Bitset() { }
+	public Bitset() 
+	{ 
+	}
+	
 	@SafeVarargs
 	public Bitset(P... mods) 
 	{ 	set(mods);
 	}
+	/**
+	 * set val as a member of the set
+	 * @param val
+	 */
 	public void set(P val)
-	{
-		members |= 1L<<val.ordinal();
+	{	long v = 1L<<val.ordinal();
+		G.Assert(v!=0,"too many members in %s",val);
+		members |= v;
 	}
+	/**
+	 * 
+	 * @return the number of members of the set
+	 */
 	public int size() { return G.bitCount(members); }
+	/**
+	 * set values as members of the set
+	 * @param mods
+	 */
 	public void set(@SuppressWarnings("unchecked") P...mods)
 	{
 		for(P m : mods) { set(m); }
 	}
+	/**
+	 * remove a member of the set
+	 * @param val
+	 */
 	public void clear(P val)
 	{
 		members &= ~(1L<<val.ordinal());
 	}
+	/**
+	 * make the set an empty set
+	 * 
+	 */
 	public void clear() { members = 0;}
+	/**
+	 * remove members from the set
+	 * @param mods
+	 */
 	public void clear(@SuppressWarnings("unchecked") P...mods)
 	{
 		for(P m : mods) { clear(m); }
 	}
+	/**
+	 * represent the set as a String with spaces between members
+	 * 
+	 * @param val
+	 * @return
+	 */
 	public String memberString(P[] val)
 	{
 		StringBuilder b = new StringBuilder("");
@@ -54,15 +93,29 @@ public class Bitset <P extends Enum<?>> implements Digestable
 		}
 		return b.toString();
 	}
-	
+	/**
+	 * 
+	 * @param val
+	 * @return true if val is a member of the set 
+	 */
 	public boolean test(P val)
 	{
 		return(0!=(members & (1L<<val.ordinal())));
 	}
+	/**
+	 * copy from another instance
+	 * 
+	 * @param from
+	 */
 	public void copy(Bitset<P>from)
 	{
 		members = from.members;
 	}
+	/**
+	 * 
+	 * @param other
+	 * @return true if other has the same members
+	 */
 	public boolean equals(Bitset<P>other) { return members==other.members; }
 
 	public long Digest(Random r) {

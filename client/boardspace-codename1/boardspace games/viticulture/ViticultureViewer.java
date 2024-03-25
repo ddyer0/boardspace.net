@@ -3106,22 +3106,45 @@ private void drawPlayerBoard(Graphics gc,
 				
     	for(PlayerBoard pb : gb.pbs)
     	{	int x = x0;
+			int highx = x;
+    		int y0 = y;
     	    pb.getRooster().drawChip(gc,this,yscale*3/2,left+xscale,y+yscale/2,null);
    		for(ScoreType e : ScoreType.values()) 
     		{
     			Color c = e.color;
+    			int plusy = y;
     			if(c!=null)
     			{	int points = pb.statSummary[e.ordinal()];
     				int w = points*xscale;
-    				GC.fillRect(gc,c,x,y,w,yscale);
-    				GC.frameRect(gc,Color.gray,x,y,w,yscale);
-    				HitPoint.setHelpText(hp,x,y,w,yscale,
+    				int plusw = w;
+    				int ys = yscale;
+    				if(w<0) { x += w; plusw = 0; w = -w; ys=ys/3; plusy = y+yscale*2/3; }
+    				else { plusy = y0; ys = y0+yscale-y; }
+    				GC.fillRect(gc,c,x,y,w,ys);
+    				GC.frameRect(gc,Color.gray,x,y,w,ys);
+      				HitPoint.setHelpText(hp,x,y,w,ys,
     						s.get(PointsFrom,""+points,""+e));
-    				x += w;
+     				if(y!=y0)
+    				{
+    					if(x<highx)
+    					{
+    						int dif = highx-x;
+    						w -=dif;
+    						GC.fillRect(gc,c,highx,y0,w,yscale);
+    						GC.frameRect(gc,Color.gray,highx,y0,w,yscale);
+    						HitPoint.setHelpText(hp,highx,y0,w,yscale,
+    	    						s.get(PointsFrom,""+points,""+e));
+    					}
+    				}
+     				
+    				x += plusw;
+    				highx = Math.max(highx,x);
+    				y = plusy;
     			}
     		}
     		GC.frameRect(gc,Color.black,x0,y,x-x0,yscale);
-    		y += yscale;
+    		y0 += yscale;
+    		y = y0;
     	}
     }
     // show scoring information at the endgame
@@ -5524,10 +5547,10 @@ private void drawPlayerBoard(Graphics gc,
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-  public void verifyGameRecord()
-{	//DISABLE_VERIFY = true;
-   	super.verifyGameRecord();
- }
+//  public void verifyGameRecord()
+//{	//DISABLE_VERIFY = true;
+//   	super.verifyGameRecord();
+// }
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects

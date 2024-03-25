@@ -2509,10 +2509,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(formove!=null) { formove.cards = push(formove.cards,chip); }
     		String msg = DrawSomething;
     		if(pb!=pbs[whoseTurn]) { msg = pb.getRooster().colorPlusName()+" "+msg; }
-    		logRawGameEvent(msg,chip.type.name());
 
     		switch(chip.type)
     		{
+    		case PapaCard:
+    		case MamaCard:
+    			msg = null; 
+    			break;
     		case YellowCard:
     			pb.recordEvent("Take Yellow",chip,ScoreType.ReceiveYellow);
     			break;
@@ -2521,6 +2524,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		default: break;
     		}
+    		if(msg!=null) { logRawGameEvent(msg,chip.type.name()); }
     		
     		if(replay!=replayMode.Replay)
     		{
@@ -2599,6 +2603,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureCell dest = amount>0 ? pb.cashDisplay : sink;
     	ViticultureCell source = amount>0 ? sink : pb.cashDisplay;    	
     	int aa = Math.abs(amount);
+    	String ev = pb.getRooster().colorPlusName()+" "+(amount<0 ? "-" : "+")+aa+" $1";
     	while(aa>=5) 
     		{ animationStack.push(source); animationStack.push(dest); 
     		  aa -=5; 
@@ -2615,6 +2620,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		  aa -=1;
     		  dest.addChip(ViticultureChip.Coin_1);
     		}
+    	logRawGameEvent(ev);
     	}
     }
     
@@ -3470,7 +3476,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case 1:	//pisa
     			changeCash(pb,2,placement,replay);
-    			logRawGameEvent("+ $2");
     			break;
     		case 2: // firenze
     			nextState = drawCards(1,blueCards,pb,replay,m);
@@ -3481,7 +3486,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case 4:	// siena
     			changeCash(pb,1,placement,replay);
     			// extra spaces because of the spacing of the $1 icon
-    			logRawGameEvent("+    $1");
     			break;
     		case 5: // arezzo
     			nextState = drawCards(1,purpleCards,pb,replay,m);
@@ -6078,7 +6082,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		break;
     	case Cash:
     		changeCash(pb,-3,yokeCash,replay);
-    		logRawGameEvent("- $2 $1");
     		break;
     	case VP:
     		changeScore(pb,-1,replay,Trade,ViticultureChip.VictoryPoint_Minus,ScoreType.Other);
@@ -6102,7 +6105,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		break;
 		case Cash:
 			changeCash(pb,3,yokeCash,replay);
-			logRawGameEvent("+ $2 $1");
 			break;
 		case VP:
 			changeScore(pb,1,replay,Trade,ViticultureChip.VictoryPoint_1,ScoreType.Other);
@@ -7211,19 +7213,21 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		while(pb.selectedCards.size()>0)
     		{
     			ViticultureChip ch = pb.selectedCards.pop().card;
+    			
     			switch(ch.type)
     			{
     			default: throw G.Error("Not expecting ",ch);
     			case MamaCard:
     				pb.mama = ch;
-    				pb.resolveMama();
     				break;
     			case PapaCard:
     				pb.papa = ch;
-    				pb.resolvePapa(choiceA.isSelected());
     				break;
     			}
     		}
+    		// resolve mama then papa.  Papa records the events
+    		pb.resolveMama();
+    		pb.resolvePapa(choiceA.isSelected());
     		break;
     	default:
     		if(resetState.isWinemaking())

@@ -952,10 +952,10 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
+//    public void verifyGameRecord()
+//    {	//DISABLE_VERIFY=true;
+//   	super.verifyGameRecord();
+//   }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
  //   {	BoardProtocol ourB =  getBoard();

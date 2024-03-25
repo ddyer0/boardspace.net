@@ -25,6 +25,10 @@ import java.io.InputStream;
 import jzlib.ZipEntry;
 import jzlib.ZipInputStream;
 
+/**
+ * helper class for FileSelector
+ * 
+ */
 public class FileMapper 
 {
 	private String getType(String name)
@@ -59,9 +63,9 @@ public class FileMapper
         	}
 		}}
         catch (FileNotFoundException e) {
-			G.Error("file not found",e);
+			G.Error("file not found %s",e);
 		} catch (IOException e) {
-			G.Error("io exception", e);
+			G.Error("io exception %s", e);
 		}
         finally {
         try {

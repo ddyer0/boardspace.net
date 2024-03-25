@@ -58,9 +58,9 @@ public interface ViticultureConstants
 
    	enum ScoreType
    	{	
-   		WineOrder(Color.cyan),
-   		WineSale(Color.green),
-  		OrangeCard(Color.orange),
+   		WineOrder(new Color(200,10,10)),
+   		WineSale(new Color(220,40,100)),
+  		OrangeCard(new Color(250,197,37)),
    		Other(Color.black),  	
    		ReceiveYellow(null),
    		PlayYellow(null),

@@ -21,10 +21,10 @@ import static meridians.MeridiansMovespec.*;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-import common.GameInfo;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -145,9 +145,6 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	
-	// private menu items
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -226,45 +223,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
 
     	}
     }
-    /** this is called by the game controller when all players have connected
-     * and the first player is about to be allowed to make his first move. This
-     * may be a new game, or a game being restored, or a player rejoining a game.
-     * You can override or encapsulate this method.
-     */
-    //public void startPlaying()
-    //{	super.startPlaying();
-    //}
     
-	/**
-	 * 
-	 * this is a debugging hack to give you an event based on clicking in the player name
-	 * You can take whatever action you like, or no action.
-	 */
-    //public boolean inPlayRect(int eventX, int eventY)
-    //{	return(super.inPlayRect(eventX,eventY));
-    //}
-
-    /**
-     * update the players clocks.  The normal thing is to tick the clocks
-     * only for the player whose turn it is.  Games with a simtaneous action
-     * phase need to do something more complicated.
-     * @param inc the increment (in milliseconds) to add
-     * @param p the current player, normally the player to update.
-     */
-    //public void updatePlayerTime(long inc,commonPlayer p)
-    //{
-    //	super.updatePlayerTime(inc,p);
-    //}
-	/**
-	 * 
-	 * this is a debugging hack to give you an event based on clicking in the time
-	 * clock.  You can take whatever action you like, or no action.
-	 * */
-    //public boolean inTimeRect(int eventX, int eventY)
-    //{
-    //    boolean val = super.inTimeRect(eventX, eventY);
-    //    return (val);
-    //}
 
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -499,7 +458,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-          MeridiansChip tile = lastRotation?MeridiansChip.hexTile:MeridiansChip.hexTileNR;
+          MeridiansChip tile = MeridiansChip.hexTile;
           int left = G.Left(brect);
           int top = G.Bottom(brect);
           int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
@@ -808,10 +767,10 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
+//   public void verifyGameRecord()
+//    {	//DISABLE_VERIFY=true;
+//    	super.verifyGameRecord();
+//    }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
  //   {	BoardProtocol ourB =  getBoard();
@@ -875,36 +834,6 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         } 
         }
     }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
-	  
-	  public boolean allowUndo()
-	  {		return super.allowUndo();
-	  }
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
 	 
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
@@ -971,14 +900,9 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     private boolean setDisplayParameters(MeridiansBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-
       	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-          gb.SetDisplayParameters(0.95, 1.0, 0,0,0); // shrink a little and rotate 60 degrees
+        gb.SetDisplayParameters(0.95, 1.0, 0,0,0); // shrink a little and rotate 60 degrees
 
-      	}
       	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);

@@ -27,6 +27,10 @@ import net.sf.jazzlib.ZipInputStream;
 
 
 
+/**
+ * helper class for FileSelector
+ * 
+ */
 public class FileMapper 
 {
 	private String getType(String name)

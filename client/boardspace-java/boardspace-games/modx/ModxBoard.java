@@ -1442,6 +1442,10 @@ public boolean addInitialJokerMoves(CommonMoveStack all,int who)
 	 }
  	return(some);
  }
+ /*
+  TODO: From apl74:   MX-Dumbot-apl74-2024-03-23-2034 
+  From apl74:   I believe move 9 J-C6 is illegal 
+  */
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
  	addMoves(all,whoseTurn);

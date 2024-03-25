@@ -33,11 +33,18 @@ public abstract class OStack<T> implements StackIterator<T>
 		//{	
 		//	return( (T[])Array.newInstance(instanceClass, sz));
 		//}
+		/**
+		 * each subclass has to have an explicit newComponentArray method, rather than
+		 * a generic one, because the codename1 branch doesn't support the java reflection APIs
+		 * 
+		 * @param sz
+		 * @return an array of the component type
+		 */
 		public abstract T[]newComponentArray(int sz);
 		
 		/**
 		 * return an array with the same components as the stack
-		 * @return the components as an array
+		 * @return the components as an array in normal order, starting with 0'th element
 		 */
 		public T[] toArray()
 		{	int sz = size();
@@ -50,6 +57,10 @@ public abstract class OStack<T> implements StackIterator<T>
 			}
 			return(newdata);
 		}
+		/** 
+		 * 
+		 * @return all elements as an array in reverse order, ending with the 0'th element
+		 */
 		public T[] toReverseArray()
 		{	int sz = size();
 			
@@ -279,11 +290,18 @@ public abstract class OStack<T> implements StackIterator<T>
 			  index++;			// do this as a second operation so readers will never see an empty slot
 			  return(this);
 			}
+		/** remove an element from the stack, and shuffle the array contents 
+		 * return the stack (for compatibility with the StackInterator API)
+		 */
 		public StackIterator<T>remove(T da)
 		{
 			remove(da,true);
 			return(this);
 		}
+		/**
+		 * remove an element from the stack and shuffle the array contents
+		 * return the stack (for compatibility with the StackInterator API)
+		 */
 		public StackIterator<T>remove(int da)
 		{
 			remove(da,true);
@@ -331,10 +349,19 @@ public abstract class OStack<T> implements StackIterator<T>
 			{	push(other.elementAt(i));
 			}
 		}
+		/**
+		 * combine two stacks with no duplicate check
+		 * @param other
+		 */
 		public void union(OStack<T> other)
 		{
 			for(int lim = other.size()-1; lim>=0; lim--) { push(other.elementAt(lim)); }
 		}
+		/**
+		 * combine two stacks, with a check for duplicates
+		 * 
+		 * @param other
+		 */
 		public void unionNew(OStack<T> other)
 		{
 			for(int lim = other.size()-1; lim>=0; lim--) { pushNew(other.elementAt(lim)); }

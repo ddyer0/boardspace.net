@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 import bridge.Utf8Printer;
 
 /**
- * save, restore, look for, and prune junk for offline games.  The actual format
+ * save, restore, look for, and prune junk for incomplete offline games.  The actual format
  * of the offline game doesn't matter except that the entire game record is in
  * one line.  This is closely integrated with the game restart mechanism.
  * 
@@ -36,7 +36,12 @@ public class OfflineGames {
 	public static String GameKey = "V1";
 	public static String GameKeyPlus = GameKey+" ";	// includes the space
 	public static String Suffix = ".incomplete";
-
+/**
+ * delete incomplete offline games that are more than "daysold" old.  The intent
+ * of this is to keep abandoned games from sticking around forever
+ * 
+ * @param daysold
+ */
 	public static void pruneOfflineGames(int daysold)
 	{	String dir = OfflineGames.incompleteGameDirectory();
 		File fdir = new File(dir);
@@ -81,6 +86,15 @@ public class OfflineGames {
 		});
 	
 	}
+	/**
+	 * get a gamedescription from a file.  The content and meaning of the string are
+	 * not defined, but ought to be known to the caller.  There's a minimal check that
+	 * the file is actually a game description and not some other random file.
+	 * 
+	 * @param UIDstring the name of the file which ought to contain a game description
+	 * 
+	 * @return a game description string or null
+	 */
 	public static String restoreOfflineGame(String UIDstring)
 	{
 		String body = readOfflineGame(UIDstring);
@@ -99,7 +113,7 @@ public class OfflineGames {
 	}
 	
 	// read the raw text
-	public static String readOfflineGame(String UIDstring)
+	private static String readOfflineGame(String UIDstring)
 	{	
 		if("".equals(UIDstring)) { return(null); }
 		String dir = OfflineGames.incompleteGameDirectory();
@@ -115,8 +129,12 @@ public class OfflineGames {
 		return(body);
 		}
 		catch (IOException e) { return(null); }
-	
 	}
+	/**
+	 * remove an offline game, normally when it has been completed
+	 * 
+	 * @param UIDstring
+	 */
 	public static void removeOfflineGame(String UIDstring)
 	{
 		String dir = OfflineGames.incompleteGameDirectory();
@@ -125,7 +143,14 @@ public class OfflineGames {
 					+(UIDstring.endsWith(Suffix) ? "" : Suffix));
 		f.delete();
 	}
-
+	/**
+	 * record an offline game in progress.  Normally this is called for every move
+	 * by a human in an offline games.
+	 * 
+	 * @param UIDstring
+	 * @param msg
+	 * @return
+	 */
 	public static String recordOfflineGame(String UIDstring, String msg)
 	{	
 		G.Assert(!"".equals(UIDstring),"game UIDString not set");
@@ -147,13 +172,21 @@ public class OfflineGames {
 		}
 		return(filename);
 	}
-
-	public static String safeFileName(String str)
+	/**
+	 * convert a game id to something acceptable as a file name.
+	 * 
+	 * @param str
+	 * @return
+	 */
+	private static String safeFileName(String str)
 	{
 		return str.replace('|','-').replace(' ', '+');
 	}
-
-	public static String incompleteGameDirectory()
+	/**
+	 * 
+	 * @return the directory where incomplete offline games will be stored
+	 */
+	private static String incompleteGameDirectory()
 	{
 		String base = G.documentBaseDir();
 		String dir = base+"incomplete-games/";
