@@ -644,6 +644,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         copyFrom(rack,from_b.rack);
         AR.copy(score,from_b.score);
         robotVocabulary = from_b.robotVocabulary;
+        getCell(lastLetters,from_b.lastLetters);
         lastPicked = null;
         isPass = from_b.isPass;
         nPasses = from_b.nPasses;

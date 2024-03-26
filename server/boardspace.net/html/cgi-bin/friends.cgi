@@ -9,6 +9,7 @@ require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
 require "tlib/getLocation.pl";
+require "tlib/favorite-games.pl";
 
 sub hstring()
 {my ($center) = @_;
@@ -66,7 +67,8 @@ sub printRow()
 	print "<tr>";
 	while($#args>=0)
 		{ my $a = shift(@args);
-		  print "<td align=right>$a</td>";
+		  if($#args < 0) { print "<td align=left>$a</td>"; }
+		  else { print "<td align=right>$a</td>"; }
 		}
 	print "</tr>\n";
 }
@@ -111,7 +113,7 @@ sub show_friends()
 				
 	if($mylat && $mylon)
 		{
-		 my $sth = &query($dbh,"SELECT latitude,logitude,player_name,full_name,e_mail,last_played FROM players "
+		 my $sth = &query($dbh,"SELECT latitude,logitude,player_name,full_name,e_mail,last_played,uid FROM players "
 														. "where (abs(logitude-$mylon)+abs(latitude-$mylat))<$degrees "
 																	. " and player_name!=$qpname"
 																	. " and last_played > $sunset "
@@ -127,11 +129,12 @@ sub show_friends()
 			  my $emtrans = &trans("E-Mail");
 			  my $kmtrans = &trans("Kilometers");
 			  my $lptrans = &trans("Last Played");
+			  my $favs = &trans("Most Played Games");
 			  &printRow("<b>$pltrans</b>" , "<b>$rntrans</b>" ,
 				    "<b><center>$emtrans</center></b>" ,
-				    "<b>&nbsp;$kmtrans&nbsp;</b>","<b>$lptrans</b>");
+				    "<b>&nbsp;$kmtrans&nbsp;</b>","<b> $lptrans</b>","&nbsp;<b>$favs</b>");
 				while($numr>0)
-			{ my ($lat,$lon,$who,$full,$em,$last) = &nextArrayRow($sth);
+			{ my ($lat,$lon,$who,$full,$em,$last,$uid) = &nextArrayRow($sth);
 			my $lodis = $lon-$mylon;
 			my $ladis = $lat-$mylat;
 			my $dis = sqrt($ladis*$ladis+$lodis*$lodis);	#degrees away
@@ -139,8 +142,9 @@ sub show_friends()
 			my $ago = &timeago($last);
 			my $wholink = "<a href=\"javascript:editlink('$who',0)\">$who</a>";
 			my $elink = &obfuscateHTML("<a href=\"mailto:$em\">$em</a>");
+			my $fav = &favorite_games($dbh,$uid,$months*30,3);
 			$numr--;
-			&printRow("$wholink",&encode_entities(&utfDecode($full)),"$elink","$kdis",$ago);
+			&printRow("$wholink",&encode_entities(&utfDecode($full)),"$elink","$kdis",$ago,"&nbsp;$fav");
 			}
 			print "</table></center>";
 			}

@@ -71,8 +71,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
-    private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
-    private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
+    private Color newLetterColor = new Color(0.20f,0.00f,0.9f);
+    private Color tempLetterColor = new Color(0.0f,0.5f,0.1f);
 	private Color middleGray = new Color(0x64,0x64,0x64);
     private Dictionary dictionary = Dictionary.getInstance();
     private boolean robotGame = false;
@@ -919,7 +919,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     			? middleGray 
     				: gb.lastLetters.contains(cell) 
     					? newLetterColor 
-    					: (isDest = gb.isADest(cell)) ? tempLetterColor : Color.black
+    					: (isDest = gb.isADest(cell)) ?  tempLetterColor : Color.black
     					;
     cell.isFixed = isDest;
 	labelColor = col;

@@ -23,8 +23,7 @@ or <br>
 if you're not sure the status of java on your computer, Java.com also
 has a&nbsp;&nbsp;<a href="https://java.com/en/download/help/version_manual.xml">Troubleshooting
 page</a>&nbsp; .<br>
-using 
-<a href=<!--#include virtual="/cgi-bin/applettag.cgi?tagname=jwsrawlink" --> >
+using <a href="%3C%21--#include%20virtual=%22/cgi-bin/applettag.cgi?tagname=jwsrawlink%22%20--%3E">
 <img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="/images/java-web-star-icon.jpg">
 </a>
 When you click on the  link from your browser, you should
@@ -193,7 +192,7 @@ that's the place to look. &nbsp;Information about java web start
 programs is found under "temporary internet files". &nbsp;<br>
 <img style="width: 1224px; height: 367px;" alt="java control panel" src="../images/java-control-panel.jpg"><br>
 <br>
-<h1>On Macintosh</h1>
+<h1>On Very Old Windows:</h1>Boardspace still runs, even on dinosaurs such as Windows-XP, it's only a matter of finding a correspondingly<br>old version of Java. &nbsp; &nbsp;The "old old" version of Java I recommend is <span style="font-weight: bold;">jre-8u20-windows-i586.exe</span><br><h1>On Macintosh</h1>
 Macs have a security setting that prevents "downloaded programs" from
 running, which you have to turn off to install the boardspace<br>
 application. <br>

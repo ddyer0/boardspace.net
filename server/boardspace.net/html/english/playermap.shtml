@@ -1,13 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <title>BoardSpace.net Login Page</title>
-  <script src="/js/site.js">
-  </script>
+<html><head><title>BoardSpace.net Player Map</title>
+
+<script src="/js/site.js">
+</script>
 </head>
+
 <body style="background-image: url(/images/background-image.jpg);">
-<h1 style="text-align: center;"><img src="/images/master-logo.jpg"
- title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg" title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
 <h1 style="text-align: center;">World Map of Players<br>
 </h1>
 <p>
@@ -17,17 +16,19 @@ Here is how it works:<br>
 <br>
 </p>
 <ul>
-  <li> <font color="#000080">The core service for the map is to match
+<li> <font color="#000080">The core service for
+the map is to match
 IP
-addresses with geographic locations. The <a
- href="http://www.networldmap.com/">NetWorldMap</a> project is
+addresses with geographic locations. The <a href="http://www.networldmap.com/">NetWorldMap</a>
+project is
 collecting the data and making some nifty services, based on that data,
 available for free. Among the free services is an API webmasters can
 use to ask for latitude and longitude associated with a particular IP
 address.</font><br>
-    <br>
-  </li>
-  <li> <font color="#000080">When a player logs in, the login process
+<br>
+</li>
+<li> <font color="#000080">When a player logs in,
+the login process
 asks
 NetWorldMap to guess his location, and if it is known with reasonable
 certainty, updates the database with "last known" location for the
@@ -35,48 +36,70 @@ player. The latitude and longitude are also passed into the game lobby,
 which can display a realtime map of the locations of the players
 currently connected. If you would like to see the realtime map, log
 into the game as a <a href="login.shtml">guest</a>.</font><br>
-    <br>
-  </li>
-  <li> <font color="#000080">The Map viewer is a small Java
+<br>
+</li>
+<li> <font color="#000080">The Map viewer is a
+small Java
 application,
 which interrogates the player database to get the last known locations
 of all players who have played recently. The java applet digests
 the raw data and draws circles on the map, based on number of players
 near a given location. Obviously, this on-demand process is only
 satisfactory if the amount of data involved is fairly small.</font><br>
-    <br>
-  </li>
+<br>
+</li>
 </ul>
+<script src="https://cjrtnc.leaningtech.com/3.0rc2/cj3loader.js"></script>
+<script src="/js/cheerpj.js"></script>
+<center>
+<table id="theframe" height="300" width="500">
+</table>
+</center>
+<script>
+async function myInit() {
+await initNatives();
+cheerpjCreateDisplay(500,300,document.getElementById("theframe")); 
+touchTest();
+var server = window.location.host;
+cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
+"servername",server,
+"framewidth","900",
+"frameheight","500",
+"offline","true",
+"mainclass","online.common.MapViewer",
+"viewerclass","none",
+"rootname","Map of Boardspace players",
+"fixedsize","true"
+); }
+myInit();
+</script>
+<br>
+<form action="/java/boardspacemap.jnlp" method="post">
+<input value="Launch player location map" type="submit"></form>
 <br>
 <br>
-<form action="/java/boardspacemap.jnlp" method=post>
-<input type=submit value="Launch player location map">
-</form>
-
-<br>
-<br>
-See the <a href="/cgi-bin/gs_rankings5.cgi"><b>World Popularity Table</b></a>
+See the <a href="/cgi-bin/gs_rankings5.cgi"><b>World
+Popularity Table</b></a>
 for different view of this data.
 <br>
 If you would
-like to find players who are near you, try the <a
- href="/cgi-bin/friends.cgi">
+like to find players who are near you, try the <a href="/cgi-bin/friends.cgi">
 Friend Finder</a> page.
 <hr style="width: 100%; height: 2px;"><br>
 <table style="width: 100%;">
-  <tbody>
-    <tr>
-      <td align="left"> <font size="-1">E-mail:
-      <script language="javascript">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
 document.write("<a href='mailto:gamemaste");
 document.write("r\@board");
 document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
-      </script></font>
-      </td>
-      <td align="right">Go to <a href="/">Boardspace.net home
+</script></font>
+</td>
+<td align="right">Go to <a href="/">Boardspace.net
+home
 page</a> </td>
-    </tr>
-  </tbody>
+</tr>
+</tbody>
 </table>
-</body>
-</html>
+</body></html>
