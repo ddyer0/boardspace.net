@@ -19,7 +19,6 @@ package online.common;
 import lib.Graphics;
 import common.GameInfo;
 import common.GameInfoStack;
-import lib.AR;
 import lib.CellId;
 import lib.DefaultId;
 import lib.ExtendedHashtable;
@@ -30,7 +29,6 @@ import lib.InternationalStrings;
 import lib.Keyboard;
 import lib.LFrameProtocol;
 import lib.MouseState;
-import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
 import lib.SeatingChart;
@@ -59,42 +57,37 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String FAVORITES = "SeatingFavorites";
 	static final String RECENTS = "SeatingRecents";
 	static final int RECENT_LIST_SIZE = 12;
-	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
-	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
-	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
-	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
-	Color chartEven = new Color(0.7f,0.7f,0.7f);
-	Color chartOdd = new Color(0.65f,0.65f,0.65f);
+	private Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
+	private Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
 	private JCheckBoxMenuItem autoDone=null;          		//if on, chat up a storm
 	boolean portraitLayout = false;
-	Rectangle seatingSelectRect = addRect("seating select");
-	Rectangle seatingChart = addRect("seatingChart");
-	Rectangle gameSelectionRect = addRect("gameSelection");
-	Rectangle startStopRect = addRect("StartStop");
-	TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
-	TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
+	private Rectangle seatingSelectRect = addRect("seating select");
+	private Rectangle seatingChart = addRect("seatingChart");
+	private Rectangle gameSelectionRect = addRect("gameSelection");
+	private Rectangle startStopRect = addRect("StartStop");
+	private TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
+	private TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor);
-	Rectangle tableNameRect = addRect("TableName");
-	Rectangle addNameTextRect = addRect("AddName");
-	Rectangle versionRect = addRect("version");
-	Rectangle gearRect = addRect("Gear");
-	TextContainer selectedInputField = null;
+	private Rectangle tableNameRect = addRect("TableName");
+	private Rectangle versionRect = addRect("version");
+	private Rectangle gearRect = addRect("Gear");
+	private TextContainer selectedInputField = null;
 	private int respawnNewName = 0;
-	TextContainer messageArea = new TextContainer(SeatId.MessageArea);
-	GameInfoStack recentGames = new GameInfoStack();
-	GameInfoStack favoriteGames = new GameInfoStack();
+	private TextContainer messageArea = new TextContainer(SeatId.MessageArea);
+	private GameInfoStack recentGames = new GameInfoStack();
+	private GameInfoStack favoriteGames = new GameInfoStack();
 	
-	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
-	UserManager users = new UserManager();
-	int numberOfUsers = 0;
+	private SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
+	private UserManager users = new UserManager();
 	Session sess = new Session(1);
-	int changeSlot = 0;
-	int firstPlayerIndex = 0;
-	int colorIndex[] = null;
-	boolean changeRecurse = false;
-	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
-					AZ(A_ZMode,SeatId.A_Zselected),
-					Recent(RecentMode,SeatId.RecentSelected);
+	private int firstPlayerIndex = 0;
+	private int colorIndex[] = null;
+	enum MainMode { MyGames("My Games",SeatId.MyGames),
+		AllGames("All Games",SeatId.AllGames),
+		OpenGames("Open Games",SeatId.OpenGames),
+		NewGame("Start Game",SeatId.NewGame) 
+	;
+	
 		String title = "";
 		SeatId id;
 		MainMode(String m,SeatId i)
@@ -102,29 +95,18 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		  id = i;
 		}
 	};
-	MainMode mainMode = MainMode.Category;
+	MainMode mainMode = MainMode.MyGames;
 	
-	String selectedCategory = "";
-	String selectedLetter = "*";
-	GameInfo selectedGame = null;
-	GameInfo selectedVariant = null;
-	int pickedSource = -1;
-	int colorW = -1;
-	boolean square = G.isRealLastGameBoard();
+	private GameInfo selectedGame = null;
+	private GameInfo selectedVariant = null;
+	private int pickedSource = -1;
+	private int colorW = -1;
 	
 	enum SeatId implements CellId
 	{	ShowRules,
 		ShowVideo,
-		CategoriesSelected,
-		A_Zselected,
-		SelectCategory,
-		SelectLetter,
-		SelectGame,
-		SelectVariant,
 		SelectFirst,
 		SelectColor,
-		StartButton,
-		DiscardButton,
 		GearMenu,
 		Exit,
 		Feedback,
@@ -133,8 +115,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		PlayOnline,
 		PlayOffline,
 		HelpButton,
-		MessageArea, RecentSelected, ShowPage;
+		MessageArea,
+		ShowPage,
+		AllGames,
+		NewGame,
+		OpenGames,
+		MyGames,
+		;
+		
 		public String shortName() {
+			// TODO Auto-generated method stub
 			return(name());
 		}
 	}
@@ -160,14 +150,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
         
-        if(G.isTable() && !G.isCheerpj())
-        {
-        UDPService.start(true);	// listen for tables
-        if(REMOTEVNC) { VNCService.runVNCServer(true); }
-        if(REMOTERPC) { RpcService.runRpcServer(true); }
-        G.timedWait(this, 200);
-        }
-        
     }
 	public void selectGame(GameInfo g)
 	{	if(g!=selectedGame)
@@ -189,8 +171,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		G.SetRect(fullRect,l,t,w,h); 
 		// to benefit lastgameboard, don't switch to portrait if the board is nearly square
 		boolean portrait = w<(h*0.9);	
-		double ratio = Math.abs((double)w/h);
-		square = !portrait && ratio>0.9 && ratio<1.1;
 		portraitLayout = portrait;
 		int stripHeight ;
 		int fh = G.getFontSize(standardPlainFont());
@@ -346,23 +326,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			case SelectFirst:
 				firstPlayerIndex = hp.row;
 				break;
-			case StartButton:
-				prepareLaunch();
-				User user = sess.players[0];
-				User players[] = new User[sess.players.length];
-				AR.copy(players,sess.players);
-				
-				recentGames.recordRecentGame(sess.currentGame,RECENTS,RECENT_LIST_SIZE);
-				if(mainMode==MainMode.Recent)
-				{	// if you select something from the recent tab, it becomes a favorite
-					favoriteGames.recordRecentGame(sess.currentGame,FAVORITES,RECENT_LIST_SIZE);
-				}
-				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame);
-				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
-				break;
-			case DiscardButton:
-				OfflineGames.removeOfflineGame(sess.launchName(null,true));
-				break;
 			case ShowVideo:
 				{
 				GameInfo g = (GameInfo)hp.hitObject;
@@ -394,30 +357,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				  G.showDocument(u);
 		 		  }}
 				break;
-			case SelectVariant:
-				selectedVariant = (GameInfo)hp.hitObject;
-				break;
-			case SelectGame:
-				selectGame((GameInfo)hp.hitObject);				
-				break;
-			case SelectLetter:
-				selectedLetter = (String)hp.hitObject;
-				selectGame(null);
-				break;
-			case SelectCategory:
-				selectedCategory = (String)hp.hitObject;
-				selectGame(null);
-				break;
-			case CategoriesSelected:
-				mainMode = MainMode.Category;
-				break;
-			case A_Zselected:
-				mainMode = MainMode.AZ;
-				break;
-			case RecentSelected:
-				mainMode = MainMode.Recent;
-				break;
-				
 			default:
 				G.print("Hit unknown target "+id);
 			}
@@ -665,9 +604,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
   
 		 AuxViewer v = vncViewer;
      	 if(v!=null) { vncViewer = null; v.shutDown(); }
-
-		 if(REMOTEVNC) { VNCService.stopVNCServer(); }
-		 if(REMOTERPC) { RpcService.stopRpcServer(); }	
 		 LFrameProtocol f = myFrame;
 		 if(f!=null) { f.killFrame(); }
 	 }

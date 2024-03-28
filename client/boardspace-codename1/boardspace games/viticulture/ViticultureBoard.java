@@ -2598,12 +2598,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     {	//G.print("Cash "+pb+amount+" = "+(pb.cash+amount));
     	Assert(pb.cash+amount>=0,"cash can't be negative");
     	pb.cash += amount;
+    	int aa = Math.abs(amount);
+       	String ev = pb.getRooster().colorPlusName()+" "+(amount<0 ? "-" : "+")+aa+" $1";
+    	logRawGameEvent(ev);
+        
     	if(replay!=replayMode.Replay)
     	{
     	ViticultureCell dest = amount>0 ? pb.cashDisplay : sink;
     	ViticultureCell source = amount>0 ? sink : pb.cashDisplay;    	
-    	int aa = Math.abs(amount);
-    	String ev = pb.getRooster().colorPlusName()+" "+(amount<0 ? "-" : "+")+aa+" $1";
     	while(aa>=5) 
     		{ animationStack.push(source); animationStack.push(dest); 
     		  aa -=5; 
@@ -2620,7 +2622,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		  aa -=1;
     		  dest.addChip(ViticultureChip.Coin_1);
     		}
-    	logRawGameEvent(ev);
     	}
     }
     

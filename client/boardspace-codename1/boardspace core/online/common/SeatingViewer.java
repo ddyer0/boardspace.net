@@ -68,49 +68,46 @@ import static util.PasswordCollector.VersionMessage;
 @SuppressWarnings("serial")
 public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParentInterface,ActionListener
 {	
-	static final String FAVORITES = "SeatingFavorites";
-	static final String RECENTS = "SeatingRecents";
-	static final String GameTimerMessage = "Game Timer";
-	static final String GameTimerHelpMessage = "Use this device as a game timer";
-	static final int RECENT_LIST_SIZE = 12;
-	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
-	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
-	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
-	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
-	Color chartEven = new Color(0.7f,0.7f,0.7f);
-	Color chartOdd = new Color(0.65f,0.65f,0.65f);
+	private static final String FAVORITES = "SeatingFavorites";
+	private static final String RECENTS = "SeatingRecents";
+	private static final String GameTimerMessage = "Game Timer";
+	private static final String GameTimerHelpMessage = "Use this device as a game timer";
+	private static final int RECENT_LIST_SIZE = 12;
+	private Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
+	private Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
+	private Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
+	private Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
+	private Color chartEven = new Color(0.7f,0.7f,0.7f);
+	private Color chartOdd = new Color(0.65f,0.65f,0.65f);
 	private JCheckBoxMenuItem autoDone=null;          		//if on, chat up a storm
-	boolean portraitLayout = false;
-	Rectangle seatingSelectRect = addRect("seating select");
-	Rectangle seatingChart = addRect("seatingChart");
-	Rectangle gameSelectionRect = addRect("gameSelection");
-	Rectangle startStopRect = addRect("StartStop");
-	TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
-	TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
+	private Rectangle seatingSelectRect = addRect("seating select");
+	private Rectangle seatingChart = addRect("seatingChart");
+	private Rectangle gameSelectionRect = addRect("gameSelection");
+	private Rectangle startStopRect = addRect("StartStop");
+	private TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
+	private TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor);
-	Rectangle tableNameRect = addRect("TableName");
-	Rectangle addNameTextRect = addRect("AddName");
-	Rectangle versionRect = addRect("version");
-	Rectangle gearRect = addRect("Gear");
-	Rectangle clockRect = addRect("Clock");
-	TextContainer selectedInputField = null;
+	private Rectangle tableNameRect = addRect("TableName");
+	private Rectangle versionRect = addRect("version");
+	private Rectangle gearRect = addRect("Gear");
+	private Rectangle clockRect = addRect("Clock");
+	private TextContainer selectedInputField = null;
 	private int respawnNewName = 0;
-	TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
-	TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
-	TextContainer messageArea = new TextContainer(SeatId.MessageArea);
-	TextButton timerMode = new TextButton(GameTimerMessage, SeatId.GameTimer, GameTimerHelpMessage,
+	private TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
+	private TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
+	private TextContainer messageArea = new TextContainer(SeatId.MessageArea);
+	private TextButton timerMode = new TextButton(GameTimerMessage, SeatId.GameTimer, GameTimerHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor, buttonBackgroundColor);
-	GameInfoStack recentGames = new GameInfoStack();
-	GameInfoStack favoriteGames = new GameInfoStack();
-	boolean portrait = false;
-	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
-	UserManager users = new UserManager();
-	int numberOfUsers = 0;
-	Session sess = new Session(1);
-	int changeSlot = 0;
-	int firstPlayerIndex = 0;
-	int colorIndex[] = null;
-	boolean changeRecurse = false;
+	private GameInfoStack recentGames = new GameInfoStack();
+	private GameInfoStack favoriteGames = new GameInfoStack();
+	private boolean portrait = false;
+	private SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
+	private UserManager users = new UserManager();
+	private Session sess = new Session(1);
+	private int changeSlot = 0;
+	private int firstPlayerIndex = 0;
+	private int colorIndex[] = null;
+	private boolean changeRecurse = false;
 	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
 					AZ(A_ZMode,SeatId.A_Zselected),
 					Recent(RecentMode,SeatId.RecentSelected);
@@ -121,19 +118,19 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		  id = i;
 		}
 	};
-	MainMode mainMode = MainMode.Category;
+	private MainMode mainMode = MainMode.Category;
 	
-	String selectedCategory = "";
-	String selectedLetter = "*";
-	GameInfo selectedGame = null;
-	GameInfo selectedVariant = null;
-	boolean gameTimerMode = false;
-	boolean needNewLayout = false;
+	private String selectedCategory = "";
+	private String selectedLetter = "*";
+	private GameInfo selectedGame = null;
+	private GameInfo selectedVariant = null;
+	private boolean gameTimerMode = false;
+	private boolean needNewLayout = false;
 	
-	int pickedSource = -1;
-	int colorW = -1;
-	boolean square = G.isRealLastGameBoard();
-	PopupManager userMenu = new PopupManager();
+	private int pickedSource = -1;
+	private int colorW = -1;
+	private boolean square = G.isRealLastGameBoard();
+	private PopupManager userMenu = new PopupManager();
 	
 	enum SeatId implements CellId
 	{	ShowRules,
@@ -160,6 +157,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		HelpButton,
 		TableName,
 		NewName, MessageArea, RecentSelected, ShowPage, GameTimer;
+	
 		public String shortName() {
 			return(name());
 		}
@@ -233,7 +231,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		portrait = w<(h*0.9);	
 		double ratio = Math.abs((double)w/h);
 		square = !portrait && ratio>0.9 && ratio<1.1;
-		portraitLayout = portrait;
 		int stripHeight ;
 		int fh = G.getFontSize(standardPlainFont());
 		int clockHeight = fh*3;

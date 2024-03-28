@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,12 +12,9 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package modx;
-/**
- * TODO: needs to be more willing to accept draws
- */
 import online.game.*;
 
 import static modx.ModxMovespec.*;
@@ -236,7 +233,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long rv,int np,int rev)
     {  	drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
-		adjustRevision(rev);
+    	adjustRevision(rev);
     	Grid_Style = GRIDSTYLE; //coordinates left and bottom
     	randomKey = rv;
     	nonJokersPlaced = 0;
@@ -276,7 +273,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
      		break;
      	}
 
-	    setState(ModxState.Puzzle);
+ 	    setState(ModxState.Puzzle);
 	    
 
 	    switch(variation)
@@ -704,7 +701,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     			}
     		else { G.Error("wrong color chip"); }
     	}
-    	}	
+    	}
     }
     
     private void scoreCellsRevised(ModxChip chip,int sweep,replayMode replay)
@@ -1041,68 +1038,58 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     }
    
    private boolean hasHLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = (forchip.matches(center,filled)
+   {
+   		boolean prelim = (forchip.matches(center,filled)
 		   					&& center.hasTwo(forchip,CELL_LEFT,filled)
 		   					&& center.hasTwo(forchip,CELL_RIGHT,filled));
-   		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-   					? prelim ? false : hasHLine(center,ModxChip.getChip(whoseTurn),filled)
-   					: prelim);
+   		return(prelim);
    }
    
    private boolean hasVLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP,filled)
 		    && center.hasTwo(forchip, CELL_DOWN,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-				? prelim ? false : hasVLine(center,ModxChip.getChip(whoseTurn),filled)
-				: prelim);
+   		return( prelim);
    }
    
    private boolean hasDUpLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP_LEFT,filled)
 		    && center.hasTwo(forchip, CELL_DOWN_RIGHT,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-			? prelim ? false : hasDUpLine(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+  		return( prelim);
    }
    private boolean hasDDownLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP_RIGHT,filled)
 		    && center.hasTwo(forchip, CELL_DOWN_LEFT,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-			? prelim ? false : hasDDownLine(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+   		return( prelim);
    }
   
    private boolean hasPlus(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   && center.hasOne(forchip,CELL_UP,filled)
 		   && center.hasOne(forchip,CELL_DOWN,filled)
 		   && center.hasOne(forchip, CELL_LEFT,filled)
 		   && center.hasOne(forchip, CELL_RIGHT,filled);
-	// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-		return((forchip==ModxChip.Blind)
-		? prelim ? false : hasPlus(center,ModxChip.getChip(whoseTurn),filled)
-		: prelim);
+		return( prelim);
    }
    private boolean hasX(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = (forchip.matches(center,filled))
+   {	
+	   boolean prelim = (forchip.matches(center,filled))
 		   && center.hasOne(forchip,CELL_UP_LEFT,filled)
 		   && center.hasOne(forchip,CELL_DOWN_LEFT,filled)
 		   && center.hasOne(forchip, CELL_UP_RIGHT,filled)
 		   && center.hasOne(forchip, CELL_DOWN_RIGHT,filled);
-	// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-	return((forchip==ModxChip.Blind)
-			? prelim ? false : hasX(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+	   return( prelim);
   
    }
-   
+
+ 
+
    private boolean markHLine(ModxCell center,ModxChip forchip,int sweep,ModxCell filled)
    {	if(hasHLine(center,forchip,filled))
 	   	{	center.sweep_counter = sweep;
@@ -1368,11 +1355,8 @@ public boolean hasMoves()
  { 
 	boolean some = false;
  	for(ModxCell c = allCells; c!=null; c=c.next)
- 	{	ModxChip chip = c.topChip();
- 		// ModxChip.Blind is a special matcher that is blind to 
- 		// patterns containing only jokers.  This allows the instant
- 		// win with 5 jokers to be constructed.
- 		if(!ModxChip.isXorJoker(chip) && !hasScoringPattern(ModxChip.Blind,c))
+ 	{	
+ 		if(hasJokerScoringPattern(c))
  		{	if(all==null) { return(true); }
  			all.push(new ModxMovespec(MOVE_RACK_BOARD,source.rackLocation(),c,who));
  			some = true;
@@ -1380,7 +1364,16 @@ public boolean hasMoves()
  	}
  	return(some);
  }
- 
+ private boolean hasJokerScoringPattern(ModxCell c)
+ {	ModxChip chip = c.topChip();
+ 	if(!ModxChip.isXorJoker(chip))
+ 	{
+	 boolean has = !hasScoringPattern(playerChip[0],c)
+			 		&& !hasScoringPattern(playerChip[1],c);
+	 return has;
+ 	}
+ 	return false;
+ }
  
 // place initial jokers
 public boolean addInitialJokerMoves(CommonMoveStack all,int who)
@@ -1445,6 +1438,10 @@ public boolean addInitialJokerMoves(CommonMoveStack all,int who)
 	 }
  	return(some);
  }
+ /*
+  TODO: From apl74:   MX-Dumbot-apl74-2024-03-23-2034 
+  From apl74:   I believe move 9 J-C6 is illegal 
+  */
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
  	addMoves(all,whoseTurn);

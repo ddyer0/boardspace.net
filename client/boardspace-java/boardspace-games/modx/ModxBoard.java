@@ -1038,67 +1038,57 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     }
    
    private boolean hasHLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = (forchip.matches(center,filled)
+   {
+   		boolean prelim = (forchip.matches(center,filled)
 		   					&& center.hasTwo(forchip,CELL_LEFT,filled)
 		   					&& center.hasTwo(forchip,CELL_RIGHT,filled));
-   		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-   					? prelim ? false : hasHLine(center,ModxChip.getChip(whoseTurn),filled)
-   					: prelim);
+   		return(prelim);
    }
    
    private boolean hasVLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP,filled)
 		    && center.hasTwo(forchip, CELL_DOWN,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-				? prelim ? false : hasVLine(center,ModxChip.getChip(whoseTurn),filled)
-				: prelim);
+   		return( prelim);
    }
    
    private boolean hasDUpLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP_LEFT,filled)
 		    && center.hasTwo(forchip, CELL_DOWN_RIGHT,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-			? prelim ? false : hasDUpLine(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+  		return( prelim);
    }
    private boolean hasDDownLine(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   	&& center.hasTwo(forchip,CELL_UP_RIGHT,filled)
 		    && center.hasTwo(forchip, CELL_DOWN_LEFT,filled);
-		// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-   		return((forchip==ModxChip.Blind)
-			? prelim ? false : hasDDownLine(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+   		return( prelim);
    }
   
    private boolean hasPlus(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = forchip.matches(center,filled)
+   {	
+   		boolean prelim = forchip.matches(center,filled)
 		   && center.hasOne(forchip,CELL_UP,filled)
 		   && center.hasOne(forchip,CELL_DOWN,filled)
 		   && center.hasOne(forchip, CELL_LEFT,filled)
 		   && center.hasOne(forchip, CELL_RIGHT,filled);
-	// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-		return((forchip==ModxChip.Blind)
-		? prelim ? false : hasPlus(center,ModxChip.getChip(whoseTurn),filled)
-		: prelim);
+		return( prelim);
    }
    private boolean hasX(ModxCell center,ModxChip forchip,ModxCell filled)
-   {	boolean prelim = (forchip.matches(center,filled))
+   {	
+	   boolean prelim = (forchip.matches(center,filled))
 		   && center.hasOne(forchip,CELL_UP_LEFT,filled)
 		   && center.hasOne(forchip,CELL_DOWN_LEFT,filled)
 		   && center.hasOne(forchip, CELL_UP_RIGHT,filled)
 		   && center.hasOne(forchip, CELL_DOWN_RIGHT,filled);
-	// ModxChip.Blind matches jokers only, which means "no match" when we ask for it here.
-	return((forchip==ModxChip.Blind)
-			? prelim ? false : hasX(center,ModxChip.getChip(whoseTurn),filled)
-			: prelim);
+	   return( prelim);
   
    }
+
+ 
 
    private boolean markHLine(ModxCell center,ModxChip forchip,int sweep,ModxCell filled)
    {	if(hasHLine(center,forchip,filled))
@@ -1365,11 +1355,8 @@ public boolean hasMoves()
  { 
 	boolean some = false;
  	for(ModxCell c = allCells; c!=null; c=c.next)
- 	{	ModxChip chip = c.topChip();
- 		// ModxChip.Blind is a special matcher that is blind to 
- 		// patterns containing only jokers.  This allows the instant
- 		// win with 5 jokers to be constructed.
- 		if(!ModxChip.isXorJoker(chip) && !hasScoringPattern(ModxChip.Blind,c))
+ 	{	
+ 		if(hasJokerScoringPattern(c))
  		{	if(all==null) { return(true); }
  			all.push(new ModxMovespec(MOVE_RACK_BOARD,source.rackLocation(),c,who));
  			some = true;
@@ -1377,7 +1364,16 @@ public boolean hasMoves()
  	}
  	return(some);
  }
- 
+ private boolean hasJokerScoringPattern(ModxCell c)
+ {	ModxChip chip = c.topChip();
+ 	if(!ModxChip.isXorJoker(chip))
+ 	{
+	 boolean has = !hasScoringPattern(playerChip[0],c)
+			 		&& !hasScoringPattern(playerChip[1],c);
+	 return has;
+ 	}
+ 	return false;
+ }
  
 // place initial jokers
 public boolean addInitialJokerMoves(CommonMoveStack all,int who)

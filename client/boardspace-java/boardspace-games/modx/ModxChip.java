@@ -35,7 +35,7 @@ class ChipStack extends OStack<ModxChip> implements Digestable
 }
 public class ModxChip extends chip<ModxChip> implements ModxConstants
 	{	
-	enum PieceType { Joker, X, Flat, Blind }
+	enum PieceType { Joker, X, Flat }
 	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
 	private static ChipStack allChips = new ChipStack();
 	private static boolean imagesLoaded = false;
@@ -93,7 +93,6 @@ public class ModxChip extends chip<ModxChip> implements ModxConstants
 		};
 	
 	static public ModxChip Joker = new ModxChip("joker",chipPos,ModxId.Joker_Pool,PieceType.Joker);
-	static public ModxChip Blind = new ModxChip("joker",chipPos,ModxId.Blind_Pool,PieceType.Blind);
 	
 	static public boolean isJoker(ModxChip c) { return(c==Joker); }
 	public boolean isJoker() { return(this==Joker); }
@@ -133,7 +132,6 @@ public class ModxChip extends chip<ModxChip> implements ModxConstants
 		{
 		case Flat: throw G.Error("Not expected");
 		case Joker:
-		case Blind:return(top==Joker);
 		case X: return((top==this) || (top==Joker));
 		default: return(false);
 		}

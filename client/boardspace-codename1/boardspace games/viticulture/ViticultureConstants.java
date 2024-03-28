@@ -1155,7 +1155,7 @@ public interface ViticultureConstants
     	DrawPurpleWorker("Purple Cards"),
     	HarvestWorker("Harvest"),
     	MakeWineWorker("Make Wine"),
-    	BuildTourWorker("Build or $"),
+    	BuildTourWorker("Build or Give Tour"),
     	
     	PlayBlueWorker("Play Blue Card"),
     	RecruitWorker("Train Worker"),
