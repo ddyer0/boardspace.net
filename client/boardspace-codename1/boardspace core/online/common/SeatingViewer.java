@@ -157,7 +157,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		HelpButton,
 		TableName,
 		NewName, MessageArea, RecentSelected, ShowPage, GameTimer;
-	
 		public String shortName() {
 			return(name());
 		}
@@ -235,7 +234,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int fh = G.getFontSize(standardPlainFont());
 		int clockHeight = fh*3;
 		int clockWidth = fh*25;
-		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
 		if(portrait)
 		{
 			stripHeight = w/7;
@@ -243,8 +241,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int gameH = 3*h/5;
 			int left = l+stripHeight;
 			int margin = stripHeight/4;
-			G.SetRect(gameSelectionRect, l+stripHeight,t,w-l-stripHeight-margin,gameH);
+			int gamew = w-l-stripHeight-margin;
+			G.SetRect(gameSelectionRect, l+stripHeight,t,gamew,gameH);
 			int seatingWidth =  w-left-margin;
+			G.SetRect(versionRect,l+fh,t+h-fh*3,fh*30,fh*3);
 			if(gameTimerMode)
 				{
 				G.SetRect(seatingChart, left+margin, t+stripHeight,seatingWidth-margin*2, h-t-stripHeight*2);
@@ -266,6 +266,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}
 		else 
 		{
+		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
 		stripHeight = h/7;
 		G.SetRect(seatingSelectRect, l, t, w,stripHeight);
 		G.SetRect(gameSelectionRect, l,t+stripHeight,w/2,h-stripHeight);
@@ -674,8 +675,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				yc += tableSize/8;
 			}
 
-			if(StockArt.SmallO.drawChip(gc,this,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
-					(int)(tableSize*0.8),xc,yc,
+			if(StockArt.SmallO.drawChip(gc,this,(int)(tableSize*0.8),xc,
+					yc,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
 					bubbleSelect==null ? null : name,0.3,1.2)
 					)
 			{
@@ -687,7 +688,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
 			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.SelectFirst,tableSize/4,xo,yo,s.get(OrdinalSelector,playerNumber),0.3,1.2))
+				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				bubbleSelect.row = i;
 				}
@@ -949,19 +950,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}}
 		return hit;
 	}
-	private void adHocButton(Graphics gc,HitPoint hp,SeatId id,int left,int top,int w,int h,String message,String help)
-	{
-		Rectangle variantRect = new Rectangle(left,top,w,h);
-		if(GC.handleRoundButton(gc, variantRect,hp,
-			s.get(message),
-			buttonHighlightColor, buttonBackgroundColor)
-			)
-		{
-		hp.hitCode = id;
-		hp.hitObject = selectedVariant;
-		}
-		HitPoint.setHelpText(hp,variantRect,s.get(help));
-	}
 	
 	private CellId lastButton = null;
 	private void drawGameSelector(Graphics gc,Rectangle r,HitPoint hp)
@@ -1178,26 +1166,41 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				}
 				}
 			variantY += half/3;
-			if(selectedGame.rules!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowRules,variantX,variantY,gameColumnWidth,half,RulesMessage,RulesExplanation);
+			drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY,gameColumnWidth,half),selectedGame);
 			variantY+= half*4/3;
-			}
-			if(selectedGame.howToVideo!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowVideo,variantX,variantY,gameColumnWidth,half,VideoMessage,VideoExplanation);
-			variantY+= half*4/3;
-			}
-			
-			if(selectedGame.website!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowPage,variantX,variantY,gameColumnWidth,half,WebInfoMessage,WebInfoExplanation);
-			variantY+= half*4/3;
-			}
-			
+
 		}
-		}
+	  }
 	  if(hp!=null) { lastButton = hp.hitCode; }
+			}
+	
+	static public void drawAuxGameLinks(Graphics gc,exCanvas drawOn,HitPoint hp,Rectangle r,GameInfo game)
+	{	int xstep = G.Width(r)/3;
+		int ystep = G.Height(r);
+		int left = G.Left(r)+xstep*2/3;
+		int centery = G.Top(r)+ystep/2;
+		
+		if(game.rules!=null)
+			{
+			if(StockArt.Rules.drawChip(gc,drawOn,hp,SeatId.ShowRules,RulesExplanation,ystep,left,centery))
+			{
+				hp.hitObject = game;	
+			}
+			}
+		if(game.howToVideo!=null)
+		{
+			if(StockArt.Video.drawChip(gc,drawOn,hp,SeatId.ShowVideo,VideoExplanation,ystep,left+xstep+xstep/5,centery))
+			{
+				hp.hitObject = game;
+			}
+			}
+		if(game.website!=null)
+		{
+		if(StockArt.Homepage.drawChip(gc,drawOn,hp,SeatId.ShowPage,WebInfoExplanation,ystep,left+xstep*2,centery))
+			{
+			hp.hitObject = game;
+		}
+		}
 	}
 	private void drawMainSelector(Graphics gc,Rectangle mainr,Rectangle gamer,HitPoint hp,boolean portrait)
 	{	if(selectedChart!=null)
@@ -1242,26 +1245,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	{	GC.setFont(gc,largeBoldFont());
 		sess.timeControl().drawTimeControl(gc,this,true,hp,r);
 	}
-	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
-	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
-		if(needNewLayout)
-		{
-			setLocalBounds(0,0,getWidth(),getHeight());
-		}
-		Keyboard kb = getKeyboard();
-		HitPoint pt = pt0;
-		if(kb!=null )
-	        {  pt = null;
-	        }
-		HitPoint unPt = pickedSource>=0 ? null : pt;
 
-		if(complete) { fillUnseenBackground(gc); }
 		
-		GC.fillRect(gc, Color.lightGray,fullRect);
-		
-		String appversion = G.getAppVersion();
+	static public void drawVersion(Graphics gc,Rectangle versionRect)
+	{	String appversion = G.getAppVersion();
 	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
+	 	InternationalStrings s = G.getTranslations();
 		String va = s.get(VersionMessage,appversion);
 
 		if((prefVersion!=null)
@@ -1279,9 +1269,28 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			}
 	 	}
 		va += " "+G.build;
-
-
 		GC.Text(gc,false,versionRect,Color.black,null,va);
+	}
+
+	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
+	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
+		if(needNewLayout)
+		{
+			setLocalBounds(0,0,getWidth(),getHeight());
+		}
+		Keyboard kb = getKeyboard();
+		HitPoint pt = pt0;
+		if(kb!=null )
+	        {  pt = null;
+	        }
+		HitPoint unPt = pickedSource>=0 ? null : pt;
+		
+		if(complete) { fillUnseenBackground(gc); }
+		
+		GC.fillRect(gc, Color.lightGray,fullRect);
+		GC.setFont(gc,largePlainFont());
+		drawVersion(gc,versionRect);
+
 		drawSeatingCharts(gc,seatingSelectRect,unPt);
 		int w = G.Width(seatingSelectRect);
 		int h = G.Height(seatingSelectRect);
@@ -1496,12 +1505,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	static String RecentMode = "Recent";
 	static String A_ZMode = "Games A-Z";
 	static String VariantMsg = "#1 has #2 variations";
-	static String RulesMessage = "read the rules";
 	static String RulesExplanation = "visit a web page to read the rules of the game";
-	static String WebInfoMessage = "home page";
 	static String WebInfoExplanation = "visit a web page to read more about the game";
-	
-	static String VideoMessage = "\"how to\" video";
 	static String VideoExplanation = "watch a \"how to play\" video";
 	
 	static String SelectChartMessage = "select the seating arrangement";
@@ -1539,16 +1544,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			StartTableServerMessage,
 			StopTableServerMessage,
 			OrdinalSelector,
-			VideoMessage,
 			VideoExplanation,
 			SideScreenMessage,
 			StartMessage,
 			NamePlayersMessage,
 			SelectGameMessage,
 			SoloMode,
-			RulesMessage,
 			RulesExplanation,
-			WebInfoMessage,
 			WebInfoExplanation,
 			NPlayerMode,
 			VariantMsg,

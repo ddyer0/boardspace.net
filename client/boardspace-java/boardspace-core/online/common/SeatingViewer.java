@@ -68,49 +68,46 @@ import static util.PasswordCollector.VersionMessage;
 @SuppressWarnings("serial")
 public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParentInterface,ActionListener
 {	
-	static final String FAVORITES = "SeatingFavorites";
-	static final String RECENTS = "SeatingRecents";
-	static final String GameTimerMessage = "Game Timer";
-	static final String GameTimerHelpMessage = "Use this device as a game timer";
-	static final int RECENT_LIST_SIZE = 12;
-	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
-	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
-	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
-	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
-	Color chartEven = new Color(0.7f,0.7f,0.7f);
-	Color chartOdd = new Color(0.65f,0.65f,0.65f);
+	private static final String FAVORITES = "SeatingFavorites";
+	private static final String RECENTS = "SeatingRecents";
+	private static final String GameTimerMessage = "Game Timer";
+	private static final String GameTimerHelpMessage = "Use this device as a game timer";
+	private static final int RECENT_LIST_SIZE = 12;
+	private Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
+	private Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
+	private Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
+	private Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
+	private Color chartEven = new Color(0.7f,0.7f,0.7f);
+	private Color chartOdd = new Color(0.65f,0.65f,0.65f);
 	private JCheckBoxMenuItem autoDone=null;          		//if on, chat up a storm
-	boolean portraitLayout = false;
-	Rectangle seatingSelectRect = addRect("seating select");
-	Rectangle seatingChart = addRect("seatingChart");
-	Rectangle gameSelectionRect = addRect("gameSelection");
-	Rectangle startStopRect = addRect("StartStop");
-	TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
-	TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
+	private Rectangle seatingSelectRect = addRect("seating select");
+	private Rectangle seatingChart = addRect("seatingChart");
+	private Rectangle gameSelectionRect = addRect("gameSelection");
+	private Rectangle startStopRect = addRect("StartStop");
+	private TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
+	private TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor);
-	Rectangle tableNameRect = addRect("TableName");
-	Rectangle addNameTextRect = addRect("AddName");
-	Rectangle versionRect = addRect("version");
-	Rectangle gearRect = addRect("Gear");
-	Rectangle clockRect = addRect("Clock");
-	TextContainer selectedInputField = null;
+	private Rectangle tableNameRect = addRect("TableName");
+	private Rectangle versionRect = addRect("version");
+	private Rectangle gearRect = addRect("Gear");
+	private Rectangle clockRect = addRect("Clock");
+	private TextContainer selectedInputField = null;
 	private int respawnNewName = 0;
-	TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
-	TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
-	TextContainer messageArea = new TextContainer(SeatId.MessageArea);
-	TextButton timerMode = new TextButton(GameTimerMessage, SeatId.GameTimer, GameTimerHelpMessage,
+	private TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
+	private TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
+	private TextContainer messageArea = new TextContainer(SeatId.MessageArea);
+	private TextButton timerMode = new TextButton(GameTimerMessage, SeatId.GameTimer, GameTimerHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor, buttonBackgroundColor);
-	GameInfoStack recentGames = new GameInfoStack();
-	GameInfoStack favoriteGames = new GameInfoStack();
-	boolean portrait = false;
-	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
-	UserManager users = new UserManager();
-	int numberOfUsers = 0;
-	Session sess = new Session(1);
-	int changeSlot = 0;
-	int firstPlayerIndex = 0;
-	int colorIndex[] = null;
-	boolean changeRecurse = false;
+	private GameInfoStack recentGames = new GameInfoStack();
+	private GameInfoStack favoriteGames = new GameInfoStack();
+	private boolean portrait = false;
+	private SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
+	private UserManager users = new UserManager();
+	private Session sess = new Session(1);
+	private int changeSlot = 0;
+	private int firstPlayerIndex = 0;
+	private int colorIndex[] = null;
+	private boolean changeRecurse = false;
 	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
 					AZ(A_ZMode,SeatId.A_Zselected),
 					Recent(RecentMode,SeatId.RecentSelected);
@@ -121,19 +118,19 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		  id = i;
 		}
 	};
-	MainMode mainMode = MainMode.Category;
+	private MainMode mainMode = MainMode.Category;
 	
-	String selectedCategory = "";
-	String selectedLetter = "*";
-	GameInfo selectedGame = null;
-	GameInfo selectedVariant = null;
-	boolean gameTimerMode = false;
-	boolean needNewLayout = false;
+	private String selectedCategory = "";
+	private String selectedLetter = "*";
+	private GameInfo selectedGame = null;
+	private GameInfo selectedVariant = null;
+	private boolean gameTimerMode = false;
+	private boolean needNewLayout = false;
 	
-	int pickedSource = -1;
-	int colorW = -1;
-	boolean square = G.isRealLastGameBoard();
-	PopupManager userMenu = new PopupManager();
+	private int pickedSource = -1;
+	private int colorW = -1;
+	private boolean square = G.isRealLastGameBoard();
+	private PopupManager userMenu = new PopupManager();
 	
 	enum SeatId implements CellId
 	{	ShowRules,
@@ -233,12 +230,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		portrait = w<(h*0.9);	
 		double ratio = Math.abs((double)w/h);
 		square = !portrait && ratio>0.9 && ratio<1.1;
-		portraitLayout = portrait;
 		int stripHeight ;
 		int fh = G.getFontSize(standardPlainFont());
 		int clockHeight = fh*3;
 		int clockWidth = fh*25;
-		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
 		if(portrait)
 		{
 			stripHeight = w/7;
@@ -246,8 +241,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int gameH = 3*h/5;
 			int left = l+stripHeight;
 			int margin = stripHeight/4;
-			G.SetRect(gameSelectionRect, l+stripHeight,t,w-l-stripHeight-margin,gameH);
+			int gamew = w-l-stripHeight-margin;
+			G.SetRect(gameSelectionRect, l+stripHeight,t,gamew,gameH);
 			int seatingWidth =  w-left-margin;
+			G.SetRect(versionRect,l+fh,t+h-fh*3,fh*30,fh*3);
 			if(gameTimerMode)
 				{
 				G.SetRect(seatingChart, left+margin, t+stripHeight,seatingWidth-margin*2, h-t-stripHeight*2);
@@ -269,6 +266,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}
 		else 
 		{
+		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
 		stripHeight = h/7;
 		G.SetRect(seatingSelectRect, l, t, w,stripHeight);
 		G.SetRect(gameSelectionRect, l,t+stripHeight,w/2,h-stripHeight);
@@ -677,8 +675,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			yc += tableSize/8; 
 			}
 
-			if(StockArt.SmallO.drawChip(gc,this,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
-					(int)(tableSize*0.8),xc,yc,
+			if(StockArt.SmallO.drawChip(gc,this,(int)(tableSize*0.8),xc,
+					yc,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
 					bubbleSelect==null ? null : name,0.3,1.2)
 					)
 			{
@@ -690,7 +688,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
 			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.SelectFirst,tableSize/4,xo,yo,s.get(OrdinalSelector,playerNumber),0.3,1.2))
+				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				bubbleSelect.row = i;
 				}
@@ -952,20 +950,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}}
 		return hit;
 	}
-	private void adHocButton(Graphics gc,HitPoint hp,SeatId id,int left,int top,int w,int h,String message,String help)
-	{
-		Rectangle variantRect = new Rectangle(left,top,w,h);
-		if(GC.handleRoundButton(gc, variantRect,hp,
-			s.get(message),
-			buttonHighlightColor, buttonBackgroundColor)
-			)
-		{
-		hp.hitCode = id;
-		hp.hitObject = selectedVariant;
-		}
-		HitPoint.setHelpText(hp,variantRect,s.get(help));
-	}
-	
+
 	private CellId lastButton = null;
 	private void drawGameSelector(Graphics gc,Rectangle r,HitPoint hp)
 	{	GC.setFont(gc,largeBoldFont());
@@ -1181,26 +1166,41 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				}
 			}
 			variantY += half/3;
-			if(selectedGame.rules!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowRules,variantX,variantY,gameColumnWidth,half,RulesMessage,RulesExplanation);
+			drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY,gameColumnWidth,half),selectedGame);
 			variantY+= half*4/3;
-			}
-			if(selectedGame.howToVideo!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowVideo,variantX,variantY,gameColumnWidth,half,VideoMessage,VideoExplanation);
-			variantY+= half*4/3;
-			}
-			
-			if(selectedGame.website!=null)
-			{
-			adHocButton(gc,hp,SeatId.ShowPage,variantX,variantY,gameColumnWidth,half,WebInfoMessage,WebInfoExplanation);
-			variantY+= half*4/3;
-			}
-			
+
 		}
 	  }
 	  if(hp!=null) { lastButton = hp.hitCode; }
+	}
+	
+	static public void drawAuxGameLinks(Graphics gc,exCanvas drawOn,HitPoint hp,Rectangle r,GameInfo game)
+	{	int xstep = G.Width(r)/3;
+		int ystep = G.Height(r);
+		int left = G.Left(r)+xstep*2/3;
+		int centery = G.Top(r)+ystep/2;
+		
+		if(game.rules!=null)
+		{
+			if(StockArt.Rules.drawChip(gc,drawOn,hp,SeatId.ShowRules,RulesExplanation,ystep,left,centery))
+			{
+				hp.hitObject = game;	
+			}
+		}
+		if(game.howToVideo!=null)
+		{
+			if(StockArt.Video.drawChip(gc,drawOn,hp,SeatId.ShowVideo,VideoExplanation,ystep,left+xstep+xstep/5,centery))
+			{
+				hp.hitObject = game;
+			}
+		}			
+		if(game.website!=null)
+		{
+		if(StockArt.Homepage.drawChip(gc,drawOn,hp,SeatId.ShowPage,WebInfoExplanation,ystep,left+xstep*2,centery))
+			{
+			hp.hitObject = game;
+			}
+		}
 	}
 	private void drawMainSelector(Graphics gc,Rectangle mainr,Rectangle gamer,HitPoint hp,boolean portrait)
 	{	if(selectedChart!=null)
@@ -1245,6 +1245,33 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	{	GC.setFont(gc,largeBoldFont());
 		sess.timeControl().drawTimeControl(gc,this,true,hp,r);
 	}
+	
+	
+	static public void drawVersion(Graphics gc,Rectangle versionRect)
+	{	String appversion = G.getAppVersion();
+	 	String platform = G.getPlatformPrefix();
+	 	String prefVersion = G.getString(platform+"_version",null);
+	 	InternationalStrings s = G.getTranslations();
+		String va = s.get(VersionMessage,appversion);
+		
+		if((prefVersion!=null)
+	 		&&	G.isCodename1())
+	 	{
+	 	Double prefVersionD = G.DoubleToken(prefVersion);
+	 	double appversionD = G.DoubleToken(appversion);
+		// 
+		// 8/2017 apple is now in a snit about prompting for updates
+		//
+		if(prefVersion!=null && !appversion.equals(prefVersion) 
+				&& (!G.isIOS() || (appversionD<prefVersionD)))
+			{
+			va += " ("+s.get(util.PasswordCollector.VersionPreferredMessage,prefVersion)+")";
+			}
+	 	}
+		va += " "+G.build;
+		GC.Text(gc,false,versionRect,Color.black,null,va);
+	}
+	
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
 	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
 		if(needNewLayout)
@@ -1261,30 +1288,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		if(complete) { fillUnseenBackground(gc); }
 		
 		GC.fillRect(gc, Color.lightGray,fullRect);
-		
-		String appversion = G.getAppVersion();
-	 	String platform = G.getPlatformPrefix();
-	 	String prefVersion = G.getString(platform+"_version",null);
-		String va = s.get(VersionMessage,appversion);
+		GC.setFont(gc,largePlainFont());
+		drawVersion(gc,versionRect);
 
-		if((prefVersion!=null)
-	 		&&	G.isCodename1())
-	 	{
-	 	Double prefVersionD = G.DoubleToken(prefVersion);
-	 	double appversionD = G.DoubleToken(appversion);
-		// 
-		// 8/2017 apple is now in a snit about prompting for updates
-		//
-		if(prefVersion!=null && !appversion.equals(prefVersion) 
-				&& (!G.isIOS() || (appversionD<prefVersionD)))
-			{
-			va += " ("+s.get(util.PasswordCollector.VersionPreferredMessage,prefVersion)+")";
-			}
-	 	}
-		va += " "+G.build;
-
-
-		GC.Text(gc,false,versionRect,Color.black,null,va);
 		drawSeatingCharts(gc,seatingSelectRect,unPt);
 		int w = G.Width(seatingSelectRect);
 		int h = G.Height(seatingSelectRect);
@@ -1499,12 +1505,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	static String RecentMode = "Recent";
 	static String A_ZMode = "Games A-Z";
 	static String VariantMsg = "#1 has #2 variations";
-	static String RulesMessage = "read the rules";
 	static String RulesExplanation = "visit a web page to read the rules of the game";
-	static String WebInfoMessage = "home page";
 	static String WebInfoExplanation = "visit a web page to read more about the game";
-	
-	static String VideoMessage = "\"how to\" video";
 	static String VideoExplanation = "watch a \"how to play\" video";
 	
 	static String SelectChartMessage = "select the seating arrangement";
@@ -1542,16 +1544,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			StartTableServerMessage,
 			StopTableServerMessage,
 			OrdinalSelector,
-			VideoMessage,
 			VideoExplanation,
 			SideScreenMessage,
 			StartMessage,
 			NamePlayersMessage,
 			SelectGameMessage,
 			SoloMode,
-			RulesMessage,
 			RulesExplanation,
-			WebInfoMessage,
 			WebInfoExplanation,
 			NPlayerMode,
 			VariantMsg,

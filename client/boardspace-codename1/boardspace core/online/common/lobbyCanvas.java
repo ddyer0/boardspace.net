@@ -2316,13 +2316,14 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_changeBaseTime:
 		 	{	TimeControl tc = sess.timeControl();
 		 		int min = tc.kind==TimeControl.Kind.Differential ? 0 : 1;
-		 		changeMinutesMenu = tc.changeMinutes(inX,inY,this,deferredEvents,min); 
 				changeRoom = sess;
+		 		changeMinutesMenu = tc.changeMinutes(inX,inY,this,deferredEvents,min); 
 				highlightedItem=LobbyId.highlight_none;
 		 	}
 			 break;
 		 case highlight_changeExtraTime:
 		 	{	TimeControl tc = sess.timeControl();
+		 		changeRoom = sess;
 		 		if((tc.kind==TimeControl.Kind.PlusTime)
 		 				|| (tc.kind==TimeControl.Kind.Incremental))
 		 			{ secondsMenu = tc.changeSeconds(inX,inY,this,deferredEvents);
@@ -2336,8 +2337,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			 break;
 		 case highlight_changeTimeControl:
 		 	{
-			timeControlKindMenu = sess.timeControl().changeTimeControlKind(inX,inY,this,deferredEvents); 
 		 	changeRoom = sess;
+			timeControlKindMenu = sess.timeControl().changeTimeControlKind(inX,inY,this,deferredEvents); 
 			highlightedItem=LobbyId.highlight_none;
 		 	}
 			break; 

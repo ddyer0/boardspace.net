@@ -211,6 +211,15 @@ public interface OnlineConstants extends Config {
 	String CLASSDIR = "classdir";
 	String LauncherName = "Launcher";
 	String LobbyName = "Lobby";
+	String LoginMessage = "Login";
+	String LoginFailedMessage = "Login Failed";
+	String LoginFailedHost = "Can't Log in to #1";
+	String LoginFailedExplanation = "User name and password were not accepted";
+	String TryAgainMessage = "Try again";
+	String RecoverPasswordMessage = "Recover lost password";
+	String ServerUnavailableMessage = "server unavailable";
+	String ServerUnavailableExplanation = "The game server is not running.  Please try again later.";
+	
 	int DEFAULTWIDTH = 620;	// also the minimum width and height
 	int DEFAULTHEIGHT = 660;
  }

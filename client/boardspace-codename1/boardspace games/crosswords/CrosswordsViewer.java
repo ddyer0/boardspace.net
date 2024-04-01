@@ -446,8 +446,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, CrosswordsId.DrawPile,cs,dx,dy,
-    				hide ? CrosswordsChip.BACK : null))
+    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, CrosswordsId.DrawPile,hide ? CrosswordsChip.BACK : null,cs,dx,
+    				dy))
     		{
     			highlight.hitObject = gb.drawPile;
     		}
@@ -1094,7 +1094,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	int cy = yp+CELLSIZE+CELLSIZE/7;
     	for(CrosswordsChip ch : CrosswordsChip.assignedBlanks)
     	{
-    		ch.drawChip(gc,this, highlight, CrosswordsId.Blank, CELLSIZE, cx, cy,null,1.3,1.3);
+    		ch.drawChip(gc,this, CELLSIZE, cx,cy, highlight, CrosswordsId.Blank, null,1.3,1.3);
     		cx += CELLSIZE;
     		if(cx>=xp+w) { cx = xp+CELLSIZE; cy += CELLSIZE; }
     	}}

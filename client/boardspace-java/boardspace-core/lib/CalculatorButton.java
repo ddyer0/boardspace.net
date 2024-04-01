@@ -208,10 +208,10 @@ public class CalculatorButton {
 		if(button!=null)
 		{	if((buttonRight!=null) && (buttonLeft!=null))
 			{	// stretched button like the spacebar
-				buttonLeft.drawChip(gc, showOn, null, value, hh, xp , yp,null,1.0,1.0);
-				buttonRight.drawChip(gc, showOn, null, value, hh, xp + ww-hh, yp,null,1.0,1.0);
+				buttonLeft.drawChip(gc, showOn, hh, xp, yp, null , value,null,1.0,1.0);
+				buttonRight.drawChip(gc, showOn, hh, xp + ww-hh, yp, null, value,null,1.0,1.0);
 				for(int off=hh/2; off<ww-hh; off+=hh/2)
-					{ if(button.drawChip(gc,showOn,hit,value,hh,xp+off,yp,null,1.0,1.0))
+					{ if(button.drawChip(gc,showOn,hh,xp+off,yp,hit,value,null,1.0,1.0))
 						{
 						// flash blue when the key is activated, red for ordinary rollover
 						hit.spriteColor = hit.down ? Color.blue : Color.red;
@@ -219,7 +219,7 @@ public class CalculatorButton {
 						}
 					}
 			}
-			else if(button.drawChip(gc,showOn,hit,value,ww,xp,yp,null,1.0,1.0))
+			else if(button.drawChip(gc,showOn,ww,xp,yp,hit,value,null,1.0,1.0))
 			{	
 				// flash blue when the key is activated, red for ordinary rollover
 				hit.spriteColor = hit.down ? Color.blue : Color.red;

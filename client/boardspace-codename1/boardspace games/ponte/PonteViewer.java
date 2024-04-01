@@ -345,7 +345,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
             {
             	if(alternateDests.get(cell)!=null)
             	{
-            	if(StockArt.SmallO.drawChip(gc,this,highlight,PonteId.BridgeEnd,SQUARESIZE,xpos,ypos,null))
+            	if(StockArt.SmallO.drawChip(gc,this,highlight,PonteId.BridgeEnd,null,SQUARESIZE,xpos,ypos))
             	{
             		hitCell = cell;
             	highlight.hitObject = cell;

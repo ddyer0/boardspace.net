@@ -42,6 +42,8 @@ public class StockArt extends DrawableImage<StockArt> {
 		image = im;
 	}
 	static double defaultAdjust[] = {0.5,0.5,1.0};
+	/** a homepage icon */
+	static public StockArt Homepage = new StockArt("homepage.png",defaultAdjust);
 	
 	/** a large, semi-transparent down arrow */
 	static public StockArt DownArrow=new StockArt("downarrow",new double[]{1.1,1.1,1.0});

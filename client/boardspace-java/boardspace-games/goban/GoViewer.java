@@ -362,7 +362,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
 	
     private void DrawNumberMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	int width = G.Width(r);
-    	if(GoChip.white.drawChip(gc,this,highlight,GoId.NumberViewButton,width,G.centerX(r),G.centerY(r),"#"))
+    	if(GoChip.white.drawChip(gc,this,highlight,GoId.NumberViewButton,"#",width,G.centerX(r),G.centerY(r)))
     	{	highlight.spriteRect = r;
     		highlight.spriteColor = Color.red;
 			highlight.setHelpText(s.get(NumberViewExplanation));

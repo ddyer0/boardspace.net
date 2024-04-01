@@ -60,65 +60,64 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 {	/**
 	 * 
 	 */
-    static final String ReconOkMessage = "reconok"; //ok, we did it
-    static final String LocalGames = "Local Games";
+    private static final String ReconOkMessage = "reconok"; //ok, we did it
+    private static final String LocalGames = "Local Games";
 
-	static final long serialVersionUID = 1L;
-	static final String ROBOTSTART = "robotstart";
-	static final String ROBOTEXIT = "robotexit";
-	static final String ROBOTLEVEL = "robotLevel";
-    static final String KEYWORD_SERVER = "server";
-    static final String KEYWORD_SPECTATE = "spectate";
-    static final String KEYWORD_ROBOT_PLAYING = "robot_playing";
-    static final String KEYWORD_ROBOT_QUIT = "robot_quit";
-    static final String KEYWORD_PLAYING = "playing";
-    static final String KEYWORD_STARTED = "started";
-    static final String KEYWORD_PROGRESS = "progress";	// robot progress
-    static final String KEYWORD_TIMEOUT = "timeout";
-    static final String KEYWORD_FOCUS = "focus";
-    static final String KEYWORD_CHANGE_GAME = "changeGame";
-    static final String KEYWORD_CONTROL = "control";
-    static final String KEYWORD_NOCONTROL = "nocontrol";
-    static final String KEYWORD_UNRESERVE =  "<no_password>";	// these strings are known to the server
-    static final String KEYWORD_RESERVE = "<private>";
-    static final String KEYWORD_VIEWER = "viewer";		// command to be passed to the viewer
+    private static final long serialVersionUID = 1L;
+    private static final String ROBOTSTART = "robotstart";
+    private static final String ROBOTEXIT = "robotexit";
+    private static final String ROBOTLEVEL = "robotLevel";
+    private static final String KEYWORD_SERVER = "server";
+    private static final String KEYWORD_SPECTATE = "spectate";
+    private static final String KEYWORD_ROBOT_PLAYING = "robot_playing";
+    private static final String KEYWORD_ROBOT_QUIT = "robot_quit";
+    private static final String KEYWORD_PLAYING = "playing";
+    private static final String KEYWORD_STARTED = "started";
+    private static final String KEYWORD_PROGRESS = "progress";	// robot progress
+    private static final String KEYWORD_TIMEOUT = "timeout";
+    private static final String KEYWORD_FOCUS = "focus";
+    private static final String KEYWORD_CHANGE_GAME = "changeGame";
+    private static final String KEYWORD_CONTROL = "control";
+    private static final String KEYWORD_NOCONTROL = "nocontrol";
+    private static final String KEYWORD_UNRESERVE =  "<no_password>";	// these strings are known to the server
+    private static final String KEYWORD_RESERVE = "<private>";
+    private static final String KEYWORD_VIEWER = "viewer";		// command to be passed to the viewer
 
-    public static final String NEWSPECTATOR = "#1 Joining as a spectator";
-    public static final String CHATSPECTATOR = "#1 has entered the room";
+    private static final String NEWSPECTATOR = "#1 Joining as a spectator";
+    private static final String CHATSPECTATOR = "#1 has entered the room";
 
-    static final String CallServerMessage = "Calling server...";
-    static final String SAVEDMSG = "savedmsg";
-    static final String RobotPlayMessage = "Let The Robot Play";
-    static final String ResumeGameMessage = "the game has resumed";
-    static final String GameSelectorMessage = "Game Selector";
-    static final String MessageMessage = "Messages";
-    static final String SeePlayerComments = "See Player Comments";
-    static final String SeeSpectatorComments = "See Spectator Comments";
-    static final String JointReview = "Joint Review";
-    static final String TakeOverMessage = "Take Over Playing";
-    static final String WaitForOpponents = "Wait for opponents to arrive.";
-    static final String VacancyMessage = "(vacancy)";
-    static final String GameInProgress = "Game in progress...";
-    static final String ToSpectatorMessage = "#1 has quit and become a spectator";
-    static final String QuitMessage = "#1 deliberately quit";
-    static final String PrivateRoomMessage = "This is now a private room";
-    static final String PublicRoomMessage = "This is now a public room";
-    static final String AQuitMessage = "#1 quit";
-    static final String StartJointReview = "#1 starts Joint review";
-    static final String RequestJointReview = "#1 requests Joint review";
-    static final String TimeOutWarning = "Timeout in 1 minute.";
-    static final String TimedOutMessage = "Game timed out.  Session has ended.";
-    static final String TakeOverDetail = "#1 is taking over playing #2 for #3";
-    static final String KilledByMessage = "#1 killed due to #2";
-    static final String SelectingGameMessage = "Selecting game: #1";
-    static final String PlayForMessage = "playfor";
-    static final String WelcomeGameMessage = "Welcome to Game client, version #1";
-    static final String BeSpectatorMessage = "Become a Spectator";
-    static final String ProblemSavingMessage = "Problem saving #1";
+    private static final String CallServerMessage = "Calling server...";
+    private static final String SAVEDMSG = "savedmsg";
+    private static final String RobotPlayMessage = "Let The Robot Play";
+    private static final String ResumeGameMessage = "the game has resumed";
+    private static final String GameSelectorMessage = "Game Selector";
+    private static final String MessageMessage = "Messages";
+    private static final String SeePlayerComments = "See Player Comments";
+    private static final String SeeSpectatorComments = "See Spectator Comments";
+    private static final String JointReview = "Joint Review";
+    private static final String TakeOverMessage = "Take Over Playing";
+    private static final String WaitForOpponents = "Wait for opponents to arrive.";
+    private static final String VacancyMessage = "(vacancy)";
+    private static final String GameInProgress = "Game in progress...";
+    private static final String ToSpectatorMessage = "#1 has quit and become a spectator";
+    private static final String QuitMessage = "#1 deliberately quit";
+    private static final String PrivateRoomMessage = "This is now a private room";
+    private static final String PublicRoomMessage = "This is now a public room";
+    private static final String AQuitMessage = "#1 quit";
+    private static final String StartJointReview = "#1 starts Joint review";
+    private static final String RequestJointReview = "#1 requests Joint review";
+    private static final String TimeOutWarning = "Timeout in 1 minute.";
+    private static final String TimedOutMessage = "Game timed out.  Session has ended.";
+    private static final String TakeOverDetail = "#1 is taking over playing #2 for #3";
+    private static final String KilledByMessage = "#1 killed due to #2";
+    private static final String SelectingGameMessage = "Selecting game: #1";
+    private static final String PlayForMessage = "playfor";
+    private static final String BeSpectatorMessage = "Become a Spectator";
+    private static final String ProblemSavingMessage = "Problem saving #1";
 	private static String LaunchFailedMessage = "launchfailed";
-	static final String CantReconnectMessage = "Can't reconnect";
-	static final String CantReconnectExplanation = "Close this game window and restart the game";
-	static final String WonOutcome = "Game won by #1";
+	private static final String CantReconnectMessage = "Can't reconnect";
+	private static final String CantReconnectExplanation = "Close this game window and restart the game";
+	private static final String WonOutcome = "Game won by #1";
 
 	ViewerProtocol v;
 	public ViewerProtocol getGameViewer() { return(v); }
@@ -314,8 +313,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendFocusMessage = true;
         }}
     }
-    // note when our opponent pops up or down
-    public void doReceiveFocus(int from, StringTokenizer mySt)
+    // note when our opponent pops up or down.  
+    private void doReceiveFocus(int from, StringTokenizer mySt)
     {
         focusChangedCount++;
         String token = mySt.nextToken();
@@ -342,6 +341,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     }
 
+    /* %of times when we receive focus just as the opponent abandons it.
+     * this indicates possibly playing on the same screen. or playing while
+     * distracted and switching rapidly to another program.
+     */
     private int focusPercent()
     {
         return ((int) ((100.0 * focusChangedCoincidence) / Math.max(focusChangedCount,
@@ -577,20 +580,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	        selectorFrame = null;
 	        ss.dispose();
 	    }
- 
-        continue_kill();
-    }
+	
+	    G.doDelay(500); // this delay gives the viewer thread time to notice and exit
 
-    public void continue_kill()
-    {
-        G.doDelay(500); // this delay gives the viewer thread time to notice and exit
+	    if (myNetConn != null)
+	    {
+	    	myNetConn.setExitFlag("game killed");
+	    }
 
-        if (myNetConn != null)
-        {
-            myNetConn.setExitFlag("game killed");
-        }
-
-        super.kill();
     }
 
     public void set(String name, String val)
@@ -3243,87 +3240,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return (str);
     }
 
-    /*
-    // get the scoring string for a 2 player game
-    private String getUrlStrOld()
-    {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
-        int realPCtr = 1;
-        int digest = (int)v.Digest();		// digest is int for downstream use
-        int mid = (int)midDigest;
-        boolean allwin = true;
-        String gametype = gameTypeString;
-        String mode = modeString();
-        String tm = tournamentMode ? "&tournament=1" : "";
-        String urlStr = "&de=" + digest + "&dm=" + mid + "&game=" + gametype 
-        				+   (masterMode ? "&mm=true" : "") 
-        				;
 
-        for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
-                p = commonPlayer.nextPlayer(playerConnections, p))
-        {
-            String name = p.trueName;
-            String uid = p.uid;
-
-            if (uid == null)
-            {
-                uid = "";
-            }
-
-            if (name != null)
-            {	boolean wp = v.WinForPlayer(p);
-                String scor = (wp ? "=1" : "=0");
-                allwin &= wp;
-                urlStr += ("&u" + realPCtr + "=" + uid + "&s" + realPCtr +
-                scor 
-             // register the possible follower fraud with the game
-             + ((follow_state_warning>1) 
-                 ? ("&fsw="+follow_state_warning)
-                 : "")
-             + ((p.focuschanged > 10)
-                ? ("&fch" + realPCtr + "=" + p.focuschanged) : "")
-             +   ((unrankedMode) ? ("&nr" + realPCtr + "=true") : "")
-             + "&t" +
-                realPCtr + "=" + ((int) (p.elapsedTime / 1000)));
-                realPCtr++;
-            }
-        }
-
-        urlStr += ("&key=" + myNetConn.sessionKey + "&session=" + sessionNum +
-        "&sock=" + sharedInfo.getInt(LOBBYPORT) + "&mode=" + mode + tm);
-        //add fraud detection hacks
-        {
-            int focus = focusPercent();
-
-            if (focus > 25)
-            {
-                urlStr += ("&focus=" + focus);
-            }
-        }
-
-        if (robot==null)
-        {
-            if (my.sameIP(playerConnections))
-            {
-                urlStr += "&samepublicip=1";
-            }
-
-            if (my.sameHost(playerConnections))
-            {
-                urlStr += "&samelocalip=1";
-            }
-
-            if (my.sameClock(playerConnections))
-            {
-                urlStr += "&sameclock=1";
-            }
-        }
-        String fn = fileNameString();
-        urlStr += ("&fname=" + fn);
-        urlStr += ("&xx=xx");	// dummy at the end to avoid "gord's problem"
-        G.Assert(!allwin,"all players won! game %s",fileNameString());
-        return (urlStr);
-    }
-*/
     // get the scoring string for a more than 2 player game
     private String getUrlStr4()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
@@ -3795,7 +3712,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
          }
     }
-    boolean isTournamentPlayer()
+    private boolean isTournamentPlayer()
     {
     	return tournamentMode && !my.isSpectator();
     }
@@ -3957,7 +3874,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	{  disConnected("lost connection"); }
     }
 
-     private void DoTime()
+    private void DoTime()
     {
         long currentT = G.Date();
         int timeindex = (my.isSpectator() || GameOver() || (gameState == ConnectionState.LIMBO))

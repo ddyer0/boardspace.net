@@ -20,6 +20,7 @@ import bridge.*;
 import lib.Base64;
 import lib.G;
 import lib.Http;
+import lib.InternationalStrings;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.UrlResult;
@@ -190,27 +191,25 @@ public class Login implements SimpleObserver,Config,OnlineConstants
 			params = "params="+XXTEA.combineParams(params,XXTEA.getTeaKey());
 			
 			UrlResult result = Http.postURL(Http.getHostName(),loginURL,params,socks);
-			
+			InternationalStrings s = G.getTranslations();
 			if(result.error!=null)
-				{ G.infoBox("Login error","Can't Log in to "+Http.getHostName()
-					// +" " + loginURL+" "+params
-						); 
+				{ G.infoBox(s.get(LoginFailedMessage),s.get(LoginFailedHost,Http.getHostName())); 
 				}
 			else if(result.text!=null)
 				{
 
 				if(result.text.startsWith("failed"))
-				 {
-					String v = G.optionBox("Login error","User name and password were not accepted",
-							"Try again","Recover lost password");
-					if("Recover lost password".equals(v))
+				 {	String recover = s.get(RecoverPasswordMessage);
+					String v = G.optionBox(s.get(LoginFailedMessage),s.get(LoginFailedExplanation),
+							s.get(TryAgainMessage),recover);
+					if(recover.equals(v))
 					{
 						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
 					}
 				 }
 				 else if(result.text.startsWith("unavailable")) 
 				 {
-					 G.infoBox("server unavailable","The game server is not running.  Please try again later.");
+					 G.infoBox(s.get(ServerUnavailableMessage),s.get(ServerUnavailableExplanation));
 				 }
 				 else if(result.text.startsWith("message"))
 				 {	captured = true;

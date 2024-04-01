@@ -26,7 +26,6 @@ import javax.swing.JMenuItem;
 import common.GameInfo;
 import common.GameInfoStack;
 import lib.CellId;
-import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -36,7 +35,6 @@ import lib.InternationalStrings;
 import lib.Keyboard;
 import lib.LFrameProtocol;
 import lib.MouseState;
-import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
 import lib.SeatingChart;
@@ -52,62 +50,92 @@ import rpc.RpcService;
 import udp.UDPService;
 import util.PasswordCollector;
 import vnc.VNCService;
-import static util.PasswordCollector.VersionMessage;
 
 @SuppressWarnings("serial")
 public class TurnBasedViewer extends exCanvas implements LobbyConstants
 {	
-	static final String FAVORITES = "SeatingFavorites";
-	static final String RECENTS = "SeatingRecents";
-	static final int RECENT_LIST_SIZE = 12;
-	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
-	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
-	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
-	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
-
-	boolean portraitLayout = false;
-	Rectangle startStopRect = addRect("StartStop");
-	TextButton onlineButton = addButton(PlayOnlineMessage,TurnId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
-	TextButton loginButton = addButton("login",TurnId.Login,ExplainLogin,
-			buttonHighlightColor, buttonBackgroundColor);
-	Rectangle versionRect = addRect("version");
-	Rectangle gearRect = addRect("Gear");
-	TextContainer selectedInputField = null;
-	private int respawnNewName = 0;
-	TextContainer messageArea = new TextContainer(TurnId.MessageArea);
-	GameInfoStack recentGames = new GameInfoStack();
-	GameInfoStack favoriteGames = new GameInfoStack();
-	
-	Session sess = new Session(1);
-	int changeSlot = 0;
-	int firstPlayerIndex = 0;
-	int colorIndex[] = null;
-	boolean changeRecurse = false;
-
-	GameInfo selectedGame = null;
-	GameInfo selectedVariant = null;
-	int pickedSource = -1;
-	int colorW = -1;
-	boolean square = G.isRealLastGameBoard();
 	
 	enum TurnId implements CellId
 	{	ShowRules,
 		ShowVideo,
-		StartButton,
-		DiscardButton,
+		SelectFirst,
+		SelectColor,
 		GearMenu,
 		Exit,
 		Feedback,
+		DrawersOff,
+		DrawersOn,
 		PlayOnline,
 		PlayOffline,
 		HelpButton,
-		MessageArea, RecentSelected, ShowPage,
-		Login	,	
+		MessageArea,
+		ShowPage,
+		AllGames,
+		NewGame,
+		OpenGames,
+		MyGames, Login, LoginName, PasswordName,Logout,
+		;
 
-;	public String shortName() {
+		public String shortName() {
 			return(name());
 		}
 	}
+	static private Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
+	static private Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
+	static private Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
+	static private Color buttonSelectedColor = new Color(0.8f,0.8f,0.9f);
+	
+	boolean loggedIn = false;
+	boolean portraitLayout = false;
+	private Rectangle startStopRect = addRect("StartStop");
+	private TextButton onlineButton = addButton(PlayOnlineMessage,TurnId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
+	private TextButton loginButton = 
+			addButton(LogoutMessage,TurnId.Logout,ExplainLogout,
+					  LoginMessage, TurnId.Login,ExplainLogin,
+					   buttonHighlightColor, buttonBackgroundColor);
+
+	private Rectangle loggedInRect = addRect("loggedIn");
+	private TextContainer loginName = new TextContainer(TurnId.LoginName);
+	private TextContainer passwordName = new TextContainer(TurnId.PasswordName); 
+	private Rectangle versionRect = addRect("version");
+	private Rectangle gearRect = addRect("Gear");
+	private Rectangle mainRect = addRect("main");
+	
+	private TextContainer selectedInputField = null;
+	private int respawnNewName = 0;
+	private TextContainer messageArea = new TextContainer(TurnId.MessageArea);
+	private GameInfoStack favoriteGames = new GameInfoStack();
+	GameInfo selectedVariant = null;
+	
+	Session sess = new Session(1);
+	private int firstPlayerIndex = 0;
+	static InternationalStrings s = G.getTranslations();
+	
+	enum MainMode {
+		MyGames("My Games",TurnId.MyGames,"View your games in progress or waiting for players"),
+		AllGames("All Games",TurnId.AllGames,"View all games in progress"),
+		OpenGames("Open Games",TurnId.OpenGames,"View all games looking for players"),
+		NewGame("New Game",TurnId.NewGame,"Set up a new game"), 
+	;
+	
+		String title = "";
+		String help = "";
+		TurnId id;
+		TextButton button;
+		static MainMode find(TurnId id) 
+		{
+			for (MainMode m : values()) if(m.id==id) { return m; }
+			return null;
+		}
+		MainMode(String m,TurnId i,String hel)
+		{ title = m;
+		  id = i;
+		  help = hel;
+		  button = new TextButton(s.get(title),id,s.get(help),buttonHighlightColor,buttonBackgroundColor,buttonEmptyColor);
+		}
+	};
+	MainMode mainMode = MainMode.MyGames;
+
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
         painter.drawLockRequired = false;
@@ -121,37 +149,49 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
         }
         startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
 
+        String pname = PasswordCollector.getSavedPname();
+        loginName.setText(pname);
+        loginName.singleLine = true;
+        passwordName.setIsPassword(true);
+        passwordName.singleLine = true;
+        passwordName.setText(PasswordCollector.getSavedPassword(pname));
+       
         favoriteGames.reloadGameList(FAVORITES);
-        recentGames.reloadGameList(RECENTS);
-        
+        login(false);
     }
-	public void selectGame(GameInfo g)
-	{	if(g!=selectedGame)
-		{
-		selectedGame = selectedVariant = g;
-		colorIndex = null;
-		pickedSource = -1;
-		if(g!=null)
-		{	if(g.colorMap!=null)
-			{
-			colorIndex = new int[g.colorMap.length];
-			for(int i=0;i<colorIndex.length;i++) { colorIndex[i]=i; }
-			}
-		if(g.variableColorMap) { firstPlayerIndex = 0; }
-		}}
-	}
+
 	public void setLocalBounds(int l, int t, int w, int h) 
 	{
 		G.SetRect(fullRect,l,t,w,h); 
 		// to benefit lastgameboard, don't switch to portrait if the board is nearly square
 		boolean portrait = w<(h*0.9);	
-		double ratio = Math.abs((double)w/h);
-		square = !portrait && ratio>0.9 && ratio<1.1;
+		int fh = standardFontSize();
+		int buttonh = fh*4;
+		int buttonw = Math.min(fh*15,w/5);
+		int hspace = buttonw/4;
+		int left = l+hspace/2;
+		int left0 = left;
+		int top = t+hspace/2;
+		G.SetRect(loginButton,left,top,buttonw,buttonh);
+		G.SetRect(loggedInRect,left+hspace+buttonw,top,buttonw*2,buttonh);
+		G.SetRect(loginName,left+hspace+buttonw,top,buttonw,buttonh);
+		G.SetRect(passwordName,left+hspace*2+buttonw*2,top,buttonw,buttonh);
+		G.SetRect(gearRect,l+w-fh-buttonh,top,buttonh,buttonh);
+
+		top += buttonh+buttonh/2;
+		for(MainMode mode : MainMode.values())
+		{
+			G.SetRect(mode.button,left,top,buttonw,buttonh);
+			left += buttonw+hspace;
+		}
+		
+		top += buttonh+fh;
 		portraitLayout = portrait;
-		int fh = G.getFontSize(standardPlainFont());
-		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
-		int buttonw = w/10;
-		int buttonh = fh*4; 
+		int vrtop = t+h-fh*2;
+		
+		G.SetRect(mainRect,left0,top,w-hspace,vrtop-top-fh*3);
+		
+		G.SetRect(versionRect,l+fh,vrtop,w/3,fh*2);
 		int buttonspace = buttonw/5;
 		int btop = h-buttonh;
 		int buttonX = w/2;
@@ -161,9 +201,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		buttonX += buttonw+buttonspace;
 		btop += buttonh/8;
 		buttonh -= buttonh/4;
-		G.SetRect(loginButton,buttonX,btop,buttonw*2/3,buttonh);
-		buttonX += buttonw*2/3;
-        if(keyboard!=null) { keyboard.resizeAndReposition(); }
+       if(keyboard!=null) { keyboard.resizeAndReposition(); }
 
 	}
 	public void MouseDown(HitPoint p)
@@ -220,11 +258,28 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		sess.startingName = sess.launchName(null,true);
 	}
 
+	private void selectInput(TextContainer b)
+	{	TextContainer old = selectedInputField;
+		selectedInputField = b;
+		if(old!=null && old!=b)
+			{
+			old.setFocus(false);
+			}
+		if(b!=null)
+		{
+		if(useKeyboard) {
+			keyboard = new Keyboard(this,b);
+		}
+		else 
+		{	requestFocus(b);
+			repaint(b.flipInterval);
+		}}
+	}
 	
 	@Override
 	public void StopDragging(HitPoint hp) {
 		CellId hitCode = hp.hitCode;
-		if(hitCode==DefaultId.HitNoWhere) { pickedSource = -1; }
+		TextContainer focus = null;
 		if(performStandardButtons(hitCode, hp)) {}
 		else if(keyboard!=null && keyboard.StopDragging(hp)) {  } 
 		else if(hitCode instanceof TurnId)
@@ -232,14 +287,31 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			TurnId id = (TurnId)hitCode;
 			switch(id)
 			{
+			case LoginName:
+				focus = loginName;
+				break;
+			case PasswordName:
+				focus = passwordName;
+				break;
+				
 			case HelpButton:
 				{
 				URL u = G.getUrl(seatingHelpUrl,true);
 				G.showDocument(u);
 				}
 				break;
+			case MyGames:
+			case AllGames:
+			case OpenGames:
+			case NewGame:
+				mainMode = MainMode.find(id);
+				break;
+			case Logout:
+				loggedIn = false;
+				loginButton.setValue(false);
+				break;
 			case Login:
-				login();
+				login(true);
 				break;
 			case PlayOffline:
 				G.setTurnBased(false);
@@ -253,9 +325,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				doGearMenu(G.Left(hp),G.Top(hp));
 				break;
 
-			case DiscardButton:
-				OfflineGames.removeOfflineGame(sess.launchName(null,true));
-				break;
 			case ShowVideo:
 				{
 				GameInfo g = (GameInfo)hp.hitObject;
@@ -291,6 +360,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				G.print("Hit unknown target "+id);
 			}
 		}
+		selectInput(focus);
 	}
 	PopupManager gearMenu = new PopupManager();
 	public void doGearMenu(int x,int y)
@@ -300,6 +370,22 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		gearMenu.addMenuItem(SendFeedbackMessage,TurnId.Feedback);
 		gearMenu.show(x,y);
 	}
+
+	public void drawMyGames(Graphics gc,HitPoint pt,Rectangle r)
+	{
+
+	}
+	public void drawAllGames(Graphics gc,HitPoint pt,Rectangle r)
+	{
+	}
+	public void drawOpenGames(Graphics gc,HitPoint pt,Rectangle r)
+	{
+
+	}
+	public void drawNewGame(Graphics gc,HitPoint pt,Rectangle r)
+	{
+
+	}
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
 	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
 		Keyboard kb = getKeyboard();
@@ -307,35 +393,66 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		if(kb!=null )
 	        {  pt = null;
 	        }
-		HitPoint unPt = pickedSource>=0 ? null : pt;
+		HitPoint unPt = pt;
 		
 		if(complete) { fillUnseenBackground(gc); }
 		
 		GC.fillRect(gc, Color.lightGray,fullRect);
 		
-		String appversion = G.getAppVersion();
-	 	String platform = G.getPlatformPrefix();
-	 	String prefVersion = G.getString(platform+"_version",null);
-		String va = s.get(VersionMessage,appversion);
 
-		if((prefVersion!=null)
-	 		&&	G.isCodename1())
-	 	{
-	 	Double prefVersionD = G.DoubleToken(prefVersion);
-	 	double appversionD = G.DoubleToken(appversion);
-		// 
-		// 8/2017 apple is now in a snit about prompting for updates
-		//
-		if(prefVersion!=null && !appversion.equals(prefVersion) 
-				&& (!G.isIOS() || (appversionD<prefVersionD)))
-			{
-			va += " ("+s.get(util.PasswordCollector.VersionPreferredMessage,prefVersion)+")";
-			}
-	 	}
-		va += " "+G.build;
-
-
-		GC.Text(gc,false,versionRect,Color.black,null,va);
+		GC.setFont(gc,largeBoldFont());
+		
+		// top line of the screen, login or logged in notice
+		loginButton.draw(gc,pt);
+		if(loggedIn)
+		{
+			GC.Text(gc,false,loggedInRect,Color.black,null,s.get("Logged in as #1",loginName.getText()));
+		}
+		else
+		{
+			loginName.setVisible(true);
+			loginName.setEditable(this,true);
+			loginName.setFont(largeBoldFont());
+			loginName.redrawBoard(gc,pt);
+			//GC.frameRect(gc,Color.black,loginName);
+			passwordName.setVisible(true);
+			passwordName.setFont(largeBoldFont());
+			passwordName.setEditable(this,true);
+			passwordName.redrawBoard(gc,pt);
+			//GC.frameRect(gc,Color.black,passwordName);
+			
+		}
+		
+		// main tab of the screen select the major activity
+		for(MainMode mode : MainMode.values())
+		{
+			TextButton button = mode.button;
+			button.backgroundColor = (mainMode==mode) ? buttonSelectedColor : buttonBackgroundColor;
+			GC.setFont(gc,largeBoldFont());
+			button.draw(gc,pt);
+		}
+		
+		switch(mainMode)
+		{
+		default: G.Error("Not expecting mainmode %s",mainMode);
+			break;
+		case MyGames:
+			drawMyGames(gc,pt,mainRect);
+			break;
+		case AllGames:
+			drawAllGames(gc,pt,mainRect);
+			break;
+		case OpenGames:
+			drawOpenGames(gc,pt,mainRect);
+			break;
+		case NewGame:
+			drawNewGame(gc,pt,mainRect);
+			break;
+		}
+		
+		
+		SeatingViewer.drawVersion(gc,versionRect);
+		
 
 		if(G.debug()||G.isTable()) 
 			{ StockArt.Gear.drawChip(gc, this, gearRect, unPt,TurnId.GearMenu,s.get(ExitOptions)); 
@@ -349,7 +466,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			}
 		
 		onlineButton.draw(gc,unPt);
-		loginButton.draw(gc,unPt);
 		if(kb!=null)
 		{
 			kb.draw(gc, pt0);
@@ -360,12 +476,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) 
 	{
-		if(pickedSource>=0)
-		{
-			Rectangle r = new Rectangle(G.Left(pt),G.Top(pt),colorW,colorW);
-			GC.fillRect(gc, selectedGame.colorMap[colorIndex[pickedSource]],r);
-			GC.frameRect(gc, Color.black, r);
-		}
+
 		if(mouseTrackingAvailable(pt) || pt.down) 
 			{ drawTileSprite(gc,pt); 
 			}
@@ -421,24 +532,27 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static String VideoMessage = "\"how to\" video";
 	static String VideoExplanation = "watch a \"how to play\" video";
 	
-	static String SelectGameMessage = "select the game to play";
-	static String NamePlayersMessage = "set the player names";
-	static String SideScreenMessage = "use the boardspace.net app on any mobile as a side screen";
-	static String OrdinalSelector = "#1{,'st,'nd,'rd,'th}";
-	static String PlayOfflineMessage = "Play Offline";
-	static String PlayOnlineMessage = "Play Online";
-	static String PlayOnlineExplanation = "Log in to play online at Boardspace";
-	static String SeatPositionMessage = "SeatPositionMessage";
-	static String ExitOptions = "Options";
-	static String TypeinMessage = "type the name here";
-	static String SendFeedbackMessage = "Send Feedback";
-	static String MessageAreaMessage = "MessageAreaMessage";
-	static String HelpMessage = "Get More Help";
-	static String ExplainHelpMessage = "show the documentation for this screen";
-	static String ExplainLogin = "Login as yourself";
+	private static String SelectGameMessage = "select the game to play";
+	private static String NamePlayersMessage = "set the player names";
+	private static String SideScreenMessage = "use the boardspace.net app on any mobile as a side screen";
+	private static String OrdinalSelector = "#1{,'st,'nd,'rd,'th}";
+	private static String PlayOfflineMessage = "Play Offline";
+	private static String PlayOnlineMessage = "Play Online";
+	private static String PlayOnlineExplanation = "Log in to play online at Boardspace";
+	private static String SeatPositionMessage = "SeatPositionMessage";
+	private static String ExitOptions = "Options";
+	private static String TypeinMessage = "type the name here";
+	private static String SendFeedbackMessage = "Send Feedback";
+	private static String MessageAreaMessage = "MessageAreaMessage";
+	private static String HelpMessage = "Get More Help";
+	private static String ExplainHelpMessage = "show the documentation for this screen";
+	private static String ExplainLogout = "Disconnect from the server";
+	private static String ExplainLogin = "Log into the server";
+	private static String LogoutMessage = "Logout";
 	public static String[]SeatingStrings =
-		{	
+		{	LogoutMessage,
 			ExplainLogin,
+			ExplainLogout,
 			HelpMessage,
 			PlayOnlineExplanation,
 			ExplainHelpMessage,
@@ -571,16 +685,20 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	public int uid = -1;
 	public String pname ;
 	public String password ;
-	public boolean login()
-	{	pname = PasswordCollector.getSavedPname();
-		password = PasswordCollector.getSavedPassword(pname);
+	
+	public boolean login(boolean complain)
+	{	pname = loginName.getText();
+		password = passwordName.getText();
 		UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
 								G.concat("&tagname=login&password=",password, "&pname=",pname),
 								null);
 		if(res.error!=null) { G.print("error "+res.error); }
 		G.print(res.text);
 		parseResult(res);
-		if(uid<=0) { G.infoBox("Login","Login Failed"); }
+		loggedIn = uid>0;
+		loginButton.setValue(loggedIn);
+		if(complain && uid<=0) { G.infoBox(LoginMessage,LoginFailedMessage); }
+		
 		return true;
 	}
 	

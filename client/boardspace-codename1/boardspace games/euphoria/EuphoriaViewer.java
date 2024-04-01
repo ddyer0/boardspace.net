@@ -988,10 +988,10 @@ private Color playerBackground[] = {
     	{
     	EuphoriaChip recruit = c.chipAtIndex(idx);
     	EuphoriaId rack = c.rackLocation();
-    	boolean hit = recruit.drawChip(gc,this,null,rack,sz,xp,yp,test);
+    	boolean hit = recruit.drawChip(gc,this,null,rack,test,sz,xp,yp);
     	somehit |= hit;
     	// draw the eye box
-		  if(StockArt.Eye.drawChip(gc,this,tip,EuphoriaId.ShowChip,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),null,1,1.33))
+		  if(StockArt.Eye.drawChip(gc,this,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),tip,EuphoriaId.ShowChip,null,1,1.33))
 		  {
 			  tip.hitObject = recruit;
 			  tip.hit_index = pl.boardIndex;
@@ -1524,7 +1524,7 @@ private Color playerBackground[] = {
     			}
     			if(cell.ignoredForPlayer!=null) {
     				// lionel the cook
-    				if(EuphoriaChip.Food.drawChip(gc,this,lionel ? highlight : null,cell.rackLocation(),CELLSIZE,xpos,ypos,null))
+    				if(EuphoriaChip.Food.drawChip(gc,this,lionel ? highlight : null,cell.rackLocation(),null,CELLSIZE,xpos,ypos))
     				{
     					highlight.spriteColor = Color.red;
     					highlight.hitObject =cell;
@@ -1749,7 +1749,7 @@ private Color playerBackground[] = {
     	}
      	if(cell.height()==1)
      	{
-			  if(StockArt.Eye.drawChip(gc,this,highlight,EuphoriaId.ShowChip,size/8,xpos+(int)(size*0.43),ypos-(int)(size*0.26),null,1,1.33))
+			  if(StockArt.Eye.drawChip(gc,this,size/8,xpos+(int)(size*0.43),ypos-(int)(size*0.26),highlight,EuphoriaId.ShowChip,null,1,1.33))
 			  {
 				  highlight.hitObject = cell.topChip();
 				  highlight.awidth = size/10;
@@ -1765,7 +1765,7 @@ private Color playerBackground[] = {
     	{	int xpos = (int)(cx+i*sz*xo);
     		int ypos = (int)(cy+i*sz*yo);
     		EuphoriaChip ch = c.chipAtIndex(i);
-    		if(ch.drawChip(gc,this,hitEye?null:hp,c.rackLocation,sz,xpos,ypos,null,1,1))
+    		if(ch.drawChip(gc,this,sz,xpos,ypos,hitEye?null:hp,c.rackLocation,null,1,1))
     		{	
     		hp.hit_index = PlayerView.Normal.ordinal(); 
 			hp.hitCode = EuphoriaId.ShowPlayerView;
@@ -1773,7 +1773,7 @@ private Color playerBackground[] = {
 			hp.spriteRect = null;
 			hp.spriteColor = null;
     		}
-    		if(StockArt.Eye.drawChip(gc,this,hp,EuphoriaId.ShowChip,sz/10,xpos+(int)(sz*0.42),ypos-(int)(sz*0.25),null,1,1.33))
+    		if(StockArt.Eye.drawChip(gc,this,sz/10,xpos+(int)(sz*0.42),ypos-(int)(sz*0.25),hp,EuphoriaId.ShowChip,null,1,1.33))
     		{	hitEye = true;
     			hp.hitObject = ch;
     			hp.hit_index = p.boardIndex;
@@ -1801,7 +1801,7 @@ private Color playerBackground[] = {
     	Rectangle r = new Rectangle(G.Left(br),G.Top(br),w/20,h/20);
     	GC.fillRect(gc,rackBackGroundColor,r); 
     	GC.frameRect(gc, Color.black, r);
-    	StockArt.Checkmark.drawChip(gc, this, highlight,EuphoriaId.CloseBox,w/20,G.centerX(r),G.centerY(r),null);
+    	StockArt.Checkmark.drawChip(gc, this, highlight,EuphoriaId.CloseBox,null,w/20,G.centerX(r),G.centerY(r));
     }
     
     boolean useEphemeralPick = false;
@@ -1859,7 +1859,7 @@ private Color playerBackground[] = {
     			  int yy = yp+ystep/2;
     			  int sz = xstep+xstep/2;
     			  recruit.drawChip(gc,this,sz,xx,yy,null); 
-				  if(StockArt.Eye.drawChip(gc,this,anySelect,EuphoriaId.ShowChip,sz/12,xx+(int)(sz*0.45),yy-(int)(sz*0.28),null,1,1.33))
+				  if(StockArt.Eye.drawChip(gc,this,sz/12,xx+(int)(sz*0.45),yy-(int)(sz*0.28),anySelect,EuphoriaId.ShowChip,null,1,1.33))
 				  {
 					  anySelect.hitObject = recruit;
 					  anySelect.hit_index = pl;
@@ -1880,7 +1880,7 @@ private Color playerBackground[] = {
     				  {
     					  StockArt.SmallO.drawChip(gc,this,CELLSIZE*14,rx,ry,null);
     				  }
-    				  ch.drawChip(gc,this,highlight,DieRolls[i-1],CELLSIZE*3,rx,ry,null);
+    				  ch.drawChip(gc,this,highlight,DieRolls[i-1],null,CELLSIZE*3,rx,ry);
     				  rx += CELLSIZE*3;
     			  }
     		  }
@@ -2934,10 +2934,10 @@ private Color playerBackground[] = {
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY = true;
-    	super.verifyGameRecord();
-    }
+ // public void verifyGameRecord()
+ // {	//DISABLE_VERIFY = true;
+ // 	super.verifyGameRecord();
+ // }
     
     private void doDrop(EuphoriaCell target,replayMode replay)
     {

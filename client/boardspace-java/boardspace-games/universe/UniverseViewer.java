@@ -551,20 +551,20 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	// mark the attachment point on the floating chip
     	StockArt.SmallO.drawChip(gc,this,ss,drawX,drawY,null);
     	if((ch.getVariation(ch.rotated+1,ch.flipped)!=ch) 
-    		&& images[ROTATECW_INDEX].drawChip(gc,this,highlight,ch.flipped?UniverseId.RotateCCW:UniverseId.RotateCW,arrowSize/2,
-    				G.Right(r)-arrowSize/2,G.Top(r)+arrowSize/2,null,2.5,1.33))
+    		&& images[ROTATECW_INDEX].drawChip(gc,this,arrowSize/2,G.Right(r)-arrowSize/2,G.Top(r)+arrowSize/2,
+    				highlight,ch.flipped?UniverseId.RotateCCW:UniverseId.RotateCW,null,2.5,1.33))
     	{	
     		GC.frameRect(gc,HighlightColor,G.Right(r)-arrowSize,G.Top(r)+1,arrowSize-2,arrowSize-2);
      	}
     	if((ch.getVariation(ch.rotated+3,ch.flipped)!=ch)
-    			&& images[ROTATECCW_INDEX].drawChip(gc,this,highlight,ch.flipped?UniverseId.RotateCW:UniverseId.RotateCCW,arrowSize/2,
-    					G.Left(r)+arrowSize/2,G.Top(r)+arrowSize/2,null,2.5,1.33))
+    			&& images[ROTATECCW_INDEX].drawChip(gc,this,arrowSize/2,G.Left(r)+arrowSize/2,G.Top(r)+arrowSize/2,
+    					highlight,ch.flipped?UniverseId.RotateCW:UniverseId.RotateCCW,null,2.5,1.33))
     	{
     		GC.frameRect(gc,HighlightColor,G.Left(r)+1,G.Top(r)+1,arrowSize-2,arrowSize-2);
     	}
     	if(gb.LegalToFlip() && ch.getFlippedPattern(!ch.flipped)!=ch)
     	{
-    	if(images[FLIP_INDEX].drawChip(gc,this,highlight,UniverseId.FlipCell,arrowSize/2,G.Left(r)+G.Width(r)/2,G.Top(r)+arrowSize/2,null,2.5,1.33))
+    	if(images[FLIP_INDEX].drawChip(gc,this,arrowSize/2,G.Left(r)+G.Width(r)/2,G.Top(r)+arrowSize/2,highlight,UniverseId.FlipCell,null,2.5,1.33))
     	{
             GC.frameRect(gc,HighlightColor,G.centerX(r)-arrowSize/2,G.Top(r)+1,arrowSize-2,arrowSize-2);
     	}}
@@ -800,7 +800,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         	{	int ypos =bottom - gb.cellToY(c);
             	int xpos = left + gb.cellToX(c);
             	
-        		if(given.drawChip(gc,this,high,UniverseId.GivenOnBoard,SQUARE, xpos,ypos,null))
+        		if(given.drawChip(gc,this,high,UniverseId.GivenOnBoard,null, SQUARE,xpos,ypos))
         		{	hitCell = c;
         			high.hitObject = c;
         		}

@@ -788,8 +788,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     			GC.Text(gc,true,xp,yp,xs,ys,amount<0 ? Color.blue : Color.black,null,hidden?"?":""+Math.abs(amount));
     			if(adjust!=null && drawClose)
     			{
-    				if(StockArt.CloseBox.drawChip(gc, this, adjust,BreakId.HidePlayerInfoButton,buttonSize,right-buttonSize,
-    							bottom-buttonSize,null))
+    				if(StockArt.CloseBox.drawChip(gc, this, adjust,BreakId.HidePlayerInfoButton,null,buttonSize,
+    							right-buttonSize,bottom-buttonSize))
     				{
     					any.hit_index = pla;
     				}
@@ -855,7 +855,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
    	       	int top = G.Top(currentRect);
    	       	int buttonSize = G.Width(currentRect)/12;
    	       	button.drawChip(gc,this,selectPos,BreakId.HideInfoButton,
-   	       			3*buttonSize/2,left-buttonSize,top+buttonSize,null);
+   	       			null,3*buttonSize/2,left-buttonSize,top+buttonSize);
    	       	}
    			drawPlayerMovements(gc,pl,gb,currentRect,adjusting,!show,selectPos,true,false);	
    		}

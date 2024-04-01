@@ -136,30 +136,6 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 
 
 
-    /**
-     * draw the image (or it's alternate) and a text string to label it. The string is drawn
-	 * centered according to the x,y offset. The image is drawn centered at the x,y
-	 * specified, and scaled to fill the specified square size, as adjusted by the
-	 * image's internal offset and scale factors.
-     * @param gc a graphics or null
-     * @param canvas the canvas to draw on
-     * @param SQUARESIZE
-     * @param cx
-     * @param cy
-     * @param label the string label, or null
-     * @param artCenter if true, draw text at teh artwork center rather than the image center.
- 	 * @see exCanvas#drawImage drawImage
-    */
-	public void drawChipFancyText(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label,boolean artCenter)
-	{	if(gc!=null)
-		{
-		  DrawableImage<T> alt = getAltChip(canvas.getAltChipset());
-	 	  double pscale[]=alt.getScale();
-	      // use this to tune piece position
-	      canvas.adjustScales(pscale,alt);
-	      alt.drawChipImage(gc,canvas,cx,cy,pscale,SQUARESIZE,1.0,0.0,label,artCenter);
-		}
-	}
 	/** 
 	 * 
 	 * @param can a canvas
@@ -379,12 +355,12 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param r
 	 * @param highlight
 	 * @param rackLocation
-	 * @param sscale  sensitive area scale factor
 	 * @param tooltip
+	 * @param sscale  sensitive area scale factor
 	 * @return true if the highlight point was hit
 	 */
-	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,double sscale,String tooltip)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,sscale,TextChunk.create(tooltip));
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,TextChunk.create(tooltip),sscale);
 	}
 	
 
@@ -397,11 +373,11 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param r
 	 * @param highlight
 	 * @param rackLocation
-	 * @param sscale  sensitive area scale factor
 	 * @param tooltip
+	 * @param sscale  sensitive area scale factor
 	 * @return true if the highlight point was hit
 	 */
-	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,double sscale,Text tooltip)
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
 	{
 		boolean val = findChipHighlight(rackLocation,highlight,G.centerX(r),G.centerY(r),G.Width(r),G.Height(r),sscale);
 		drawChip(gc,canvas,r,null);
@@ -426,7 +402,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return true if the highlight point was hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,(Text)null);
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,(Text)null,1.3);
 	}
 
 	/**
@@ -442,7 +418,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return true if the highlight point was hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,tooltip);
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
 	}
 
 	/**
@@ -458,7 +434,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return true if the highlight point was hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,tooltip);
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
 	}
 
 	/**
@@ -468,16 +444,16 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param drawOn		// the canvas to do the drawing
 	 * @param highlight		// the mouse point, or null.  Receives hit information
 	 * @param rackLocation	// the cellId to use for this if hit
+	 * @param helptext		// label to print on top
 	 * @param squareWidth	// the overall scale of the object
 	 * @param e_x			// the center of the object
 	 * @param e_y			// the center y of the object
-	 * @param thislabel		// label to print on top
 	 * @return true if this chip is hit
 	 */
-	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,
-			int squareWidth,int e_x,int e_y,String thislabel)
+	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,int e_y,HitPoint highlight,CellId rackLocation,
+			String helptext)
 	{
-		return(drawChip(gc,drawOn,highlight,rackLocation,squareWidth,e_x,e_y,thislabel,0.66,1.33));
+		return(drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,helptext,0.66,1.33));
 	}
 	
 	/**
@@ -487,17 +463,17 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param drawOn		// the canvas to do the drawing
 	 * @param highlight		// the mouse point, or null.  Receives hit information
 	 * @param rackLocation	// the cellId to use for this if hit
-	 * @param tooltip		// the tool tip to show
 	 * @param squareWidth	// the overall scale of the object
 	 * @param e_x			// the center of the object
 	 * @param e_y			// the center y of the object
+	 * @param tooltip		// the tool tip to show
 	 * @param thislabel		// label to print on top
 	 * @return true if this chip is hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,String toolTip,
-			int squareWidth,int e_x,int e_y,String thislabel)
+			int squareWidth,int e_x,int e_y)
 	{
-		if(drawChip(gc,drawOn,highlight,rackLocation,squareWidth,e_x,e_y,thislabel,0.66,1.33))
+		if(drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,toolTip,0.66,1.33))
 		{
 			highlight.setHelpText(toolTip);
 			return(true);
@@ -510,22 +486,26 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.
 	 * @param gc			// the graphics to draw with
 	 * @param drawOn		// the canvas to do the drawing
-	 * @param highlight		// the mouse point, or null.  Receives hit information
-	 * @param rackLocation	// the cellId to use for this if hit
 	 * @param squareWidth	// the overall scale of the object
 	 * @param e_x			// the center of the object
 	 * @param e_y			// the center y of the object
-	 * @param thislabel		// label to print on top
+	 * @param highlight		// the mouse point, or null.  Receives hit information
+	 * @param rackLocation	// the cellId to use for this if hit
+	 * @param helptext		// label to print on top
 	 * @param sscale		// sensitive area scale factor, default 0.66
 	 * @param expansion		// 	size expansion factor
 	 * @return true if this chip is hit
 	 */
-	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,
-							int squareWidth,int e_x,int e_y,String thislabel,double sscale,double expansion)
+	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
+							int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
 	{ 
       double aspect = getAspectRatio(drawOn);
       boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,(int)(squareWidth*aspect),squareWidth,sscale);
-      drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,thislabel);
+      drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,null);
+      if(val)
+      	{
+    	  highlight.setHelpText(helptext);
+      	}
       return(val);
  	}	
 
@@ -574,7 +554,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	  * 
 	  * @return true if this is the first hit
 	  */
-	    public boolean findChipHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight,double sscale)
+    public boolean findChipHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight,double sscale)
 	 	{	
 	        if(pointInsideCell(highlight, e_x, e_y, squareWidth,squareHeight,sscale))
 	        {	// this is carefully balanced so we do not re-evaluate the selection if it is

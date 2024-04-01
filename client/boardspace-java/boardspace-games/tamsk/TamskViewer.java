@@ -598,7 +598,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	}
     	TamskChip draw = chip==null ? timer.id.chip : chip;
     	labelColor = Color.white;
-    	draw.drawChip(gc,this,highlight,code,size,xpos,ypos,time);
+    	draw.drawChip(gc,this,highlight,code,time,size,xpos,ypos);
     	labelColor = Color.yellow;
     	if(sand && time==null)
     	{	sandTimer.barColor = Color.yellow;

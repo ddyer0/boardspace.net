@@ -822,13 +822,13 @@ import udp.PlaytableStack;
 	 }
 
 	 
-	 private String unobfuscate(String password,String salt)
+	 static private String unobfuscate(String password,String salt)
 	 {
 		 byte []bytes = Base64.decode(password);
 		 for(int i=0;i<bytes.length;i++) { bytes[i]=bytes[i] ^= ((salt.charAt(i%salt.length()))+(((i+163)*17253))&0xff); }
 		 return(new String(bytes));
 	 }
-	 private String obfuscate(String password,String salt)
+	 static private String obfuscate(String password,String salt)
 	 {	byte []bytes = password.getBytes();
 		 for(int i=0;i<bytes.length;i++) { bytes[i]=bytes[i] ^= ((salt.charAt(i%salt.length()))+(((i+163)*17253))&0xff); }
 		 return(Base64.encode(bytes,true));
@@ -1206,6 +1206,18 @@ import udp.PlaytableStack;
 			doLink();
 		}
 		repaint();
+	}
+	  
+	public static String getSavedPname()
+	{	return prefs.get(loginNameKey,null);
+	}
+	
+	public static String getSavedPassword(String forname)
+	{
+		 String p = prefs.get(passKey,"");
+		 if(!"".equals(p))
+		 	{ p = password = unobfuscate(p,forname+SALT); }	
+		 return p;
 	}
 
 }

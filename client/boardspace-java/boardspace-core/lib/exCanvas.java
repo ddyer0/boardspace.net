@@ -269,6 +269,11 @@ public abstract class exCanvas extends Canvas
 	public Font standardPlainFont() {
 		return l.standardPlainFont;
 	}
+	
+    public int standardFontSize() 
+    { 	int v = G.getFontSize(standardPlainFont());
+    	return v; 
+    }
 
 	public Font largePlainFont() {
 		return l.largePlainFont;
@@ -2369,7 +2374,7 @@ graphics when using a touch screen.
     		{
     		in = true;
     		}
-    	StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,x,y,null);
+    	StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,null,size,x,y);
     	return in;
     }
 	/**

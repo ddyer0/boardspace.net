@@ -115,7 +115,7 @@ public class NumberMenu extends Rectangle {
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
-	    	if(base.drawChip(gc,drawOn,highlight,id,width,G.centerX(this),G.centerY(this),text))
+	    	if(base.drawChip(gc,drawOn,highlight,id,text,width,G.centerX(this),G.centerY(this)))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 				highlight.setHelpText(G.getTranslations().get(helpText));

@@ -522,7 +522,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		{	ImagineChip chip = buttons[i];
     			int cx = left+step*i+sz/2;
     		    if(chip.drawChip(gc, this, ready ? null : highlight,chip.id,
-    		    		sz,cx,cy,null)) 
+    		    		null,sz,cx,cy)) 
     		    	{ highlight.hit_index = who*100+i; 
     		    	}
     		    if(!spectator && i==stake) 
@@ -553,11 +553,11 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	G.insetRect(inset,step);
      StockArt.Scrim.getImage().stretchImage(gc, cards);
     	ImagineChip bigTop = bigChip.topChip();
-    	if(bigTop.drawChip(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,1,(String)null))
+    	if(bigTop.drawChip(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,(String)null,1))
     	{
     		highlight.hitObject = bigChip; 
     	}
-    	if(StockArt.FancyCloseBox.drawChip(gc, this, highlight, ImagineId.Eye,step*2,G.Right(inset),G.Top(inset),null,1.0,1.33)
+    	if(StockArt.FancyCloseBox.drawChip(gc, this, step*2, G.Right(inset),G.Top(inset),highlight,ImagineId.Eye,null,1.0,1.33)
     			|| (appreciate && G.pointInRect(highlight,inset))
     			)
     	{
@@ -688,13 +688,13 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		{
     		Rectangle r = topchip.getSnugRectangle(this,xp,yp,sstepx,sstepy);
     		
-    		if( topchip.drawChip(gc, this,r,ready ? null : highlight,pic.rackLocation(),1.0,debug ? ""+topchip : null))
+    		if( topchip.drawChip(gc, this,r,ready ? null : highlight,pic.rackLocation(),debug ? ""+topchip : null,1.0))
     		{	hitmain = true;
     		}
     		if(!spectator && pb.isSelected(pic)) {
     			pb.color.checkMark.drawChip(gc, this, checksize, G.Left(r)+checksize/2,G.Bottom(r)-checksize/2,null);
     			}
-    		if(StockArt.Magnifier.drawChip(gc, this, anyHighlight, ImagineId.Eye,checksize, G.Right(r)-checksize/2, G.Bottom(r),null,1.0,1.33))
+    		if(StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
     			{ 
     			anyHighlight.hitObject = pic;
     			anyHighlight.spriteRect = null;
@@ -754,7 +754,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		HitPoint notMine = (gb.isStoryTeller(apIndex) || appreciate || gb.isReady(apIndex) || (topchip==myCard)) ? null : highlight;
 
     		boolean hitmain = false;
-    		if(topchip.drawChip(gc, this,r,notMine,pic.rackLocation(),1.0, debug ? ""+topchip : null))
+    		if(topchip.drawChip(gc, this,r,notMine,pic.rackLocation(),debug ? ""+topchip : null, 1.0))
     		{	hitmain = true;
     			notMine.spriteColor =Color.red;
     		}
@@ -769,7 +769,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		if(!isArchitect && !appreciate && (picn==selectedPres)) {
     			pb.color.checkMark.drawChip(gc, this, checksize, lr+checksize/2,br-checksize/2,null);
     		}
-    		if(StockArt.Magnifier.drawChip(gc, this, anyHighlight, ImagineId.Eye,checksize, G.Right(r)-checksize/2, G.Bottom(r),null,1.0,1.33))
+    		if(StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
 			{ 
     		anyHighlight.hitObject = pic;
 			anyHighlight.spriteRect = null;
@@ -841,7 +841,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     			int sz = stepx/5;
     			chip.drawChip(gc, this, sz,ll, tr, null);    	
     			
-        		if(isArchitect && StockArt.Magnifier.drawChip(gc, this, anyHighlight, ImagineId.Eye,checksize, G.Right(r)-checksize/2, G.Bottom(r),null,1.0,1.33))
+        		if(isArchitect && StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
     			{ 
         		anyHighlight.hitObject = card;
     			anyHighlight.spriteRect = null;

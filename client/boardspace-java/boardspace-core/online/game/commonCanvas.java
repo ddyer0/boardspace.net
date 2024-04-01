@@ -7591,7 +7591,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
     		{
     		int cx = G.Right(goalRect)-h/2;
     		int cy = G.centerY(goalRect);
-    		if(StockArt.Rules.drawChip(gc,this,highlight,GameId.HitRulesButton,h,cx,cy,null,1,1))
+    		if(StockArt.Rules.drawChip(gc,this,h,cx,cy,highlight,GameId.HitRulesButton,null,1,1))
     			{
     			highlight.setHelpText(s.get(ShowRulesMessage));
     			highlight.awidth = h; 
@@ -8793,10 +8793,7 @@ public void verifyGameRecord()
 	    	double rotation = p!=null ? p.displayRotation : 0;
 	    	return(rotation);
 	    }
-	    public int standardFontSize() 
-	    { 	int v = G.getFontSize(standardPlainFont());
-	    	return v; 
-	    }
+
 	    public String getErrorReport()
 	    {	return(gameRecordString());
 	    }

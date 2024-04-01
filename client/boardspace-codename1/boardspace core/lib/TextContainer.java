@@ -184,6 +184,10 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(canvas!=null) { canvas.repaint(0,"new text"); }
 
 	}
+	private boolean isPassword = false;
+	public boolean isPassword() { return isPassword; }
+	public void setIsPassword(boolean v) { isPassword = v; }
+	
 	public boolean editable() 
 	{ return(editable); 
 	}
@@ -384,6 +388,15 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	//
 	public boolean drawAsSingleLine(Graphics g,HitPoint hp,Rectangle r,String originalLine,int lineStart)
 	{	String line = originalLine;
+		if(isPassword)
+		{
+			StringBuilder b = new StringBuilder();
+			for(int lim=originalLine.length(); lim>0; lim--)
+			{
+				b.append('*');
+			}
+			line = b.toString();
+		}
 		if(!mouseSelecting) { setCaratPosition(visibleCaratPosition); }
 		int lineLen = line.length();
 		boolean isIn = G.pointInRect(hp,this);

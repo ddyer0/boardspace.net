@@ -24,6 +24,7 @@ import lib.InternationalStrings;
 import lib.PopupManager;
 import lib.Sort;
 import lib.exCanvas;
+import util.PasswordCollector;
 
 public class UserManager implements LobbyConstants
 {
@@ -63,7 +64,7 @@ public class UserManager implements LobbyConstants
 	public void loadOfflineUsers()
 	{
 		Preferences prefs = Preferences.userRoot();
-		String primaryname = prefs.get(loginNameKey,null);
+		String primaryname = PasswordCollector.getSavedPname();
 		if(primaryname!=null) 
 			{ changeOfflineUser(primaryname,false);
 			}
@@ -172,6 +173,7 @@ public void changeOfflineUser(String newname,boolean remove)
 	for(int i=0;i<UserManager.MAX_OFFLINE_USERS;i++)
 	{
 		String name = prefs.get(loginNameKey+"-"+i,null);
+		
 		if(name!=null)
 		{	if(name.equalsIgnoreCase(newname))
 			{

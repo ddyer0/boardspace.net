@@ -343,7 +343,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
 		boolean showNow = !showChips
 				&& (G.offline() || (pl.myIndex==gb.whoseTurn))
 				&& (remoteWindowIndex(any)<0)
-				&& (StockArt.Eye.drawChip(gc, this, highlight,MogulId.SeeChips,  chipsiz, xstart,top+chipsiz/2+xstep/8,null))
+				&& (StockArt.Eye.drawChip(gc, this,  chipsiz, xstart,top+chipsiz/2+xstep/8,highlight,MogulId.SeeChips,null))
 				;
 		HitPoint hitChip = gb.LegalToHitBoard(pl.chips) ? highlight : null;
 		if(showNow) 

@@ -374,8 +374,8 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
     		WypsChip chip = gb.drawPile.chipAtIndex(i);
     		if(rand.nextInt(2)==1) { chip = chip.getAltChip(); }
-    		if(chip.drawChip(gc, this, canHit?highlight:null, WypsId.DrawPile,cs,dx,dy,
-    				hide ? WypsChip.BACK : null))
+    		if(chip.drawChip(gc, this, canHit?highlight:null, WypsId.DrawPile,hide ? WypsChip.BACK : null,cs,dx,
+    				dy))
         		{
         			highlight.hitObject = gb.drawPile;
         		}

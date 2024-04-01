@@ -430,8 +430,8 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             	}
             // draw a magnifier for the player stuff
             int cs = CELLSIZE/2;
-            if(StockArt.Magnifier.drawChip(gc, this, highlightAll, BlackDeathId.Magnify, cs,
-            		l, t+cs/2,null))
+            if(StockArt.Magnifier.drawChip(gc, this, highlightAll, BlackDeathId.Magnify, null,
+            		cs, l,t+cs/2))
             	{
             		highlightAll.hitObject = r;
             	}
@@ -501,7 +501,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	
     	if(icon!=null)
     	{
-    		if(icon.drawChip(gc, this,hp,BlackDeathId.Link, CELLSIZE*3/4,(fx+tx)/2,(fy+ty)/2,null))
+    		if(icon.drawChip(gc, this,hp,BlackDeathId.Link, null,CELLSIZE*3/4,(fx+tx)/2,(fy+ty)/2))
     		{
     			hp.hitObject = m;
     		}
@@ -715,12 +715,12 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         }
         int sh = G.Height(stateRect);
         if(StockArt.Magnifier.drawChip(gc, this, highlightAll, BlackDeathId.MagnifyBoard,
-        		sh,G.Right(mortalityRect)-sh/2,G.Bottom(mortalityRect)-sh/2,null))
+        		null,sh,G.Right(mortalityRect)-sh/2,G.Bottom(mortalityRect)-sh/2))
         	{
         		highlightAll.hitObject = rotatedMortalityRect;
         	}
         if(StockArt.Magnifier.drawChip(gc, this, highlightAll, BlackDeathId.MagnifyBoard,
-        		sh,G.Right(boardRect)-sh/2,G.Bottom(boardRect)-sh/2,null))
+        		null,sh,G.Right(boardRect)-sh/2,G.Bottom(boardRect)-sh/2))
         	{
         		highlightAll.hitObject = boardRect;
         	}
@@ -730,13 +730,13 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	int scrimW = wid-margin*2;
         	Rectangle marginRect = new Rectangle(bleft+margin,btop+margin,scrimW,height-margin*2);
         StockArt.Scrim.image.stretchImage(gc, marginRect);
-        	if(bc.drawChip(gc, this, highlightAll, BlackDeathId.Eye, (int)(wid*0.7),G.centerX(brect), G.centerY(brect),null,1,1))
+        	if(bc.drawChip(gc, this, (int)(wid*0.7), G.centerX(brect),G.centerY(brect), highlightAll, BlackDeathId.Eye, null,1,1))
         	{
         		highlightAll.hitObject = null;
     }
 
         	if(StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, BlackDeathId.Eye,
-        			margin/2,bleft+scrimW+margin-margin/2,btop+margin*3/2,null))
+        			null,margin/2,bleft+scrimW+margin-margin/2,btop+margin*3/2))
         	{
         		highlightAll.hitObject = null;
         	}

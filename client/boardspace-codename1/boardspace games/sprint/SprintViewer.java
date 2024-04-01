@@ -424,8 +424,8 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = true;
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, SprintId.DrawPile,cs,dx,dy,
-    				hide ? SprintChip.BACK : null))
+    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, SprintId.DrawPile,hide ? SprintChip.BACK : null,cs,dx,
+    				dy))
     		{
     			highlight.hitObject = gb.drawPile;
     		}
