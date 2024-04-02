@@ -940,7 +940,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()," ",hp.hit_index));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()," ",hp.hit_index));
 	    	break;
 	    case BoardLocation:
 	        TrenchCell hitCell = hitCell(hp);

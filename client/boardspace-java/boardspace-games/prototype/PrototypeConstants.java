@@ -41,7 +41,6 @@ public interface PrototypeConstants
 		ToggleEye, 
 		;
 		PrototypeChip chip;
-		public String shortName() { return(name()); }
 	
 	}
 

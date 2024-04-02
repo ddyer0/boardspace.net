@@ -126,7 +126,6 @@ public enum ArimaaId implements CellId
 		for(ArimaaId id : values()) { if (wp.equalsIgnoreCase(id.name())) { return(id); }}
 		throw G.Error("Id %s not found",wp);
 	}
-	public String shortName() { return(name()); }
 }
 
 	static void putStrings()

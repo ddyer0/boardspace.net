@@ -39,7 +39,6 @@ public interface TweedConstants
 		BoardLocation,
 		EmptyBoard, ToggleEye, Numbers, Captures, ;
 		TweedChip chip;
-		public String shortName() { return(name()); }
 	
 	}
 

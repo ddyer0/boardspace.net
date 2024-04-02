@@ -30,7 +30,6 @@ public interface SpanglesConstants
     	EmptyBoard,
     	InvisibleDragBoard,
     	ZoomSlider,;
-	public String shortName() { return(name()); }
    }
     // init strings for variations of the game.
     static final String Spangles_INIT = "spangles"; //init for standard game

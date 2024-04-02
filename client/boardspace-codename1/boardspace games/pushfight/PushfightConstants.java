@@ -91,16 +91,13 @@ public interface PushfightConstants
 	//  they represent places you can click to pick up or drop a stone
 	enum PushfightId implements CellId
 	{
-		HoldingCell(null),
-    	BoardLocation(null),
-    	ReverseViewButton(null),
-    	EmptyBoard(null),;
-    	String shortName = name();
-    	public String shortName() { return(shortName); }
-    	PushfightId(String sn) { if(sn!=null) { shortName = sn; }}
+		HoldingCell,
+    	BoardLocation,
+    	ReverseViewButton,
+    	EmptyBoard,;
     	static public PushfightId find(String s)
     	{	
-    		for(PushfightId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}
+    		for(PushfightId v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}
     		return(null);
     	}
     	static public PushfightId get(String s)

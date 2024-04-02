@@ -581,7 +581,6 @@ public interface GoConstants
 				ResumePlayMessage,
 				NumberViewExplanation,
 				ConfirmHandicapStateDescription,
-				AnnotationViewExplanation,
 				NumberView,
 
 			};

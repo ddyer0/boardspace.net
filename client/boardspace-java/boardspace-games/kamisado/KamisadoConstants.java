@@ -32,7 +32,6 @@ public interface KamisadoConstants
     	BoardLocation,
     	LiftRect,
     	ReverseViewButton,;
-    	public String shortName() { return(name()); }
 	}
 
 	public class StateStack extends OStack<KamisadoState>

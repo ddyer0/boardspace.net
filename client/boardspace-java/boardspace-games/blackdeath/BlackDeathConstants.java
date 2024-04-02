@@ -214,30 +214,28 @@ public boolean simultaneousTurnsAllowed() { return false; }
 //they represent places you can click to pick up or drop a stone
 enum BlackDeathId implements CellId
 {	
-BoardLocation(null),
-EmptyBoard(null),
-PlayerHome(null),
-Cards(null),
-TemporaryCards(null),
-DrawPile(null),
-DiscardPile(null),
-PlayerChips(null),
-PlayerVirulence(null),
-PlayerMortality(null),
-Roll(null),
-PerfectRoll(null),
-Magnify(null),
-MagnifyBoard(null),
-Escape(null),
-Eye(null),
-Link(null),
+BoardLocation,
+EmptyBoard,
+PlayerHome,
+Cards,
+TemporaryCards,
+DrawPile,
+DiscardPile,
+PlayerChips,
+PlayerVirulence,
+PlayerMortality,
+Roll,
+PerfectRoll,
+Magnify,
+MagnifyBoard,
+Escape,
+Eye,
+Link,
 ;
-String shortName = name();
-public String shortName() { return(shortName); }
-BlackDeathId(String sn) { if(sn!=null) { shortName = sn; }}
+
 static public BlackDeathId find(String s)
 {	
-	for(BlackDeathId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}
+	for(BlackDeathId v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}
 	return(null);
 }
 

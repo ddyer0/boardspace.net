@@ -21,6 +21,8 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -45,7 +47,7 @@ import lib.RepaintManager.RepaintStrategy;
 
 public abstract class exCanvas extends Canvas 
 	implements SimpleObserver,DeferredEventHandler, 
-		CanvasProtocol,Config,
+		CanvasProtocol,Config,ActionListener,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
 		MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,
 		TouchMagnifierClient
@@ -59,7 +61,6 @@ public abstract class exCanvas extends Canvas
     	HitZoomSlider,
 		HitMagnifier,
 		;
-		public String shortName() { return(name());	}
     };
 
     // the codename1 simulator supplies mouse move events, which is not
@@ -2410,6 +2411,10 @@ graphics when using a touch screen.
      */
 	public int getAltChipset() {	
 		return 0;
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		deferredEvents.deferActionEvent(e);
 	}
   
 }

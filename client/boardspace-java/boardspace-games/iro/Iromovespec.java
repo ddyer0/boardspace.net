@@ -325,7 +325,7 @@ public class Iromovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.shortName()," ",to_row);
+            return G.concat(opname , source.name()," ",to_row);
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

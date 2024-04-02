@@ -46,7 +46,6 @@ public interface TamskConstants
 		StopTime,RestartTime, ToggleSand,
 		;
 		TamskChip chip;
-		public String shortName() { return(name()); }
 	
 	}
 static final int NRINGS = 32;

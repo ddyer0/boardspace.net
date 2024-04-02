@@ -51,7 +51,6 @@ public interface UIC extends Opcodes
 	{
 		HitBoard,
 		;
-		public String shortName() { return(name()); }
 	}
 	static String LoaStrings[] = {
 	

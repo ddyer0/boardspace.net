@@ -31,7 +31,6 @@ import lib.SimpleObservable;
 import lib.SimpleObserver;
 
 enum DispatchId implements CellId {  selection ;
-	public String shortName() { return(name()); }
 };
 /**
  * this is a generic dispatch window that allows a client to select one of the

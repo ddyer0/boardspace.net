@@ -113,8 +113,7 @@ public interface SprintConstants
     	Definition,
     	PullAction,
     	Blank, InvisibleDragBoard, ZoomSlider;
-    	public String shortName() { return(name()); }
-
+ 
 	}
 
  public int SprintGridSpan = 15;		// the visible size of the board

@@ -1165,7 +1165,9 @@ import udp.PlaytableStack;
 			parseInfoGroup(new StringTokenizer(result.text));
 		}
 		else {
-	    		G.infoBox("Login error","Can't contact "+host);
+	    		G.infoBox("network error","Can't contact "+host
+	    				// + " "+getInfoUrl+" "+params
+	    				);
 	    	}
 	}
 	public void itemStateChanged(ItemEvent e) {

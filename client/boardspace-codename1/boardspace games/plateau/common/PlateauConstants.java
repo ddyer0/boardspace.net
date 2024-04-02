@@ -141,7 +141,6 @@ public interface PlateauConstants
     {
     	HitAChip, 		// some chip
     	HitEmptyRack, NoShow, Show,; 	// hit one of the other racks
-    	public String shortName() { return(name()); }
    }
     public enum PlateauState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),

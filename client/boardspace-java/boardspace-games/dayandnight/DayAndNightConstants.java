@@ -80,10 +80,9 @@ public interface DayAndNightConstants
     	BoardLocation,
     	EmptyBoard,;
     	DayAndNightChip chip;
-    	public String shortName() { return(name()); }
-    	static public DayAndNightId find(String s)
+     	static public DayAndNightId find(String s)
     	{	
-    		for(DayAndNightId v : values()) { if(s.equalsIgnoreCase(v.shortName())) { return(v); }}
+    		for(DayAndNightId v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}
     		return(null);
     	}
     	static public DayAndNightId get(String s)

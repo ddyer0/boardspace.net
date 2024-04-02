@@ -57,10 +57,7 @@ public class ChatWidget
 		Pencil,				// toggle input mode
 		MessageLabel;
 			
-	@Override
-	public String shortName() {
-		return(name());
-	}};
+	};
 	
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.defaultUseKeyboard();

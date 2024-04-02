@@ -821,7 +821,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
 	        MeridiansCell hitCell = hitCell(hp);
@@ -887,7 +887,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
 			}
            break;
  

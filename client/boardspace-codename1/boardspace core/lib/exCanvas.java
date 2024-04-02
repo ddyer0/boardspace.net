@@ -39,7 +39,7 @@ import lib.RepaintManager.RepaintStrategy;
 
 public abstract class exCanvas extends ProxyWindow 
 	implements SimpleObserver,DeferredEventHandler, 
-		CanvasProtocol,Config,
+		CanvasProtocol,Config,ActionListener,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
 		MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,
 		TouchMagnifierClient
@@ -53,7 +53,6 @@ public abstract class exCanvas extends ProxyWindow
     	HitZoomSlider,
 		HitMagnifier,
 		;
-		public String shortName() { return(name());	}
     };
 
     // the codename1 simulator supplies mouse move events, which is not
@@ -2406,4 +2405,8 @@ graphics when using a touch screen.
 		return 0;
 	}
 	
+	public void actionPerformed(ActionEvent e) {
+		deferredEvents.deferActionEvent(e);
+	}
+  
 }

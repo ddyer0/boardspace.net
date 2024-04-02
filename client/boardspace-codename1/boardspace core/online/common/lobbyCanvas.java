@@ -303,8 +303,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  highlight_changeBaseTime,
 	  highlight_changeExtraTime,
 	  
-	  ;
-	  public String shortName() { return(name()); }
+	  ;		  
 		  
 	  static public LobbyId playerId[] = 
 		  { highlight_player1,highlight_player2,highlight_player3,highlight_player4,highlight_player5,highlight_player6,

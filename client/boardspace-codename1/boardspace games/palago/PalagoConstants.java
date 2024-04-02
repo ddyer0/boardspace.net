@@ -35,7 +35,6 @@ public interface PalagoConstants
     	InvisibleDragBoard,
     	RotateTile,
     	ZoomSlider,;
-		public String shortName() { return(name()); }
 	}
     // init strings for variations of the game.
     static final String Palago_INIT = "palago"; //init for standard game

@@ -35,9 +35,7 @@ public interface GameTimerConstants
 		Resume, 
 		SetPlayer,
 		Endgame
-		;
-		public String shortName() { return(name()); }
-	
+		;	
 	}
 
 //

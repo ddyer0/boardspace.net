@@ -113,7 +113,6 @@ public interface SprintConstants
     	Definition,
     	PullAction,
     	Blank, InvisibleDragBoard, ZoomSlider;
-    	public String shortName() { return(name()); }
 
 	}
 

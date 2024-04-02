@@ -38,7 +38,6 @@ public interface MeridiansConstants
 		BoardLocation,
 		ToggleEye,;
 		MeridiansChip chip;
-		public String shortName() { return(name()); }
 	
 	}
 

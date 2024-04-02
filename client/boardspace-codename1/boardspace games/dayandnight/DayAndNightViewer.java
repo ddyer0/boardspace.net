@@ -779,7 +779,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
 	        DayAndNightCell hitCell = hitCell(hp);
@@ -801,13 +801,13 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
 		DayAndNightChip mo = bb.pickedObject;
 		if(mo==null) { mo=bb.lastPicked; }
 		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+		PerformAndTransmit(G.concat("dropb ",mo.id.name()," ",col," ",row));
 		}
 		break;
 		case Confirm:
 		case Play:
 			DayAndNightChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+			PerformAndTransmit(G.concat("dropb ",mo.id.name()," ",col," ",row));
 			break;
 					                 
 		
@@ -867,7 +867,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
 			}
            break;
  

@@ -483,7 +483,10 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	
 	/**
 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
-	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.
+	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
+	 * hack, if the help text start with | it is drawn instead of used as help text. This
+	 * is used by a few widgets to display text inside icons
+	 * 
 	 * @param gc			// the graphics to draw with
 	 * @param drawOn		// the canvas to do the drawing
 	 * @param squareWidth	// the overall scale of the object
@@ -501,10 +504,12 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	{ 
       double aspect = getAspectRatio(drawOn);
       boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,(int)(squareWidth*aspect),squareWidth,sscale);
-      drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,null);
+      String draw = helptext!=null && helptext.startsWith("|") ? helptext.substring(1) : null;
+      String help = draw==null ? helptext : null;
+      drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,draw);
       if(val)
       	{
-    	  highlight.setHelpText(helptext);
+    	  highlight.setHelpText(help);
       	}
       return(val);
  	}	

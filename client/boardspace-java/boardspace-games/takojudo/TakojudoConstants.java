@@ -54,7 +54,6 @@ public interface TakojudoConstants
         AcceptDraw, ToggleEye
 
     	;
-    	public String shortName() { return(name()); }
 
    }
     public enum TakojudoState implements BoardState

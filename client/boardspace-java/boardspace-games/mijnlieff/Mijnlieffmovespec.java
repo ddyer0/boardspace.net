@@ -221,7 +221,7 @@ public class Mijnlieffmovespec
             return icon(v,to_col ,to_row);
 
         case MOVE_DROP:
-            return icon(v,source.shortName());
+            return icon(v,source.name());
 
         case MOVE_FROM_TO:
         	return icon(v,to_col,to_row);
@@ -256,13 +256,13 @@ public class Mijnlieffmovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname,source.shortName());
+            return G.concat(opname,source.name());
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
 
         case MOVE_FROM_TO:
-        	return G.concat(opname,source.shortName()," ",to_col," ",to_row);
+        	return G.concat(opname,source.name()," ",to_col," ",to_row);
         	
         default:
             return G.concat(opname);

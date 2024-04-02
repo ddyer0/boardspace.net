@@ -1094,7 +1094,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	int cy = yp+CELLSIZE+CELLSIZE/7;
     	for(CrosswordsChip ch : CrosswordsChip.assignedBlanks)
     	{
-    		ch.drawChip(gc,this, CELLSIZE, cx,cy, highlight, CrosswordsId.Blank, null,1.3,1.3);
+    		ch.drawChip(gc,this, CELLSIZE, cx, cy, highlight, CrosswordsId.Blank,null,1.3,1.3);
     		cx += CELLSIZE;
     		if(cx>=xp+w) { cx = xp+CELLSIZE; cy += CELLSIZE; }
     	}}

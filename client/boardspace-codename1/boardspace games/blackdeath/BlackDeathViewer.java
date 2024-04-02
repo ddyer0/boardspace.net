@@ -730,7 +730,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	int scrimW = wid-margin*2;
         	Rectangle marginRect = new Rectangle(bleft+margin,btop+margin,scrimW,height-margin*2);
         StockArt.Scrim.image.stretchImage(gc, marginRect);
-        	if(bc.drawChip(gc, this, (int)(wid*0.7), G.centerX(brect),G.centerY(brect), highlightAll, BlackDeathId.Eye, null,1,1))
+        	if(bc.drawChip(gc, this, (int)(wid*0.7), G.centerX(brect), G.centerY(brect),highlightAll, BlackDeathId.Eye,null,1,1))
         	{
         		highlightAll.hitObject = null;
     }
@@ -1596,7 +1596,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     }
     public Text censoredMoveText(SequenceElement m,int idx)
     {
-    	Text str = ((BlackDeathMovespec)m).censoredMoveText(this,bb);
+    	Text str = m.censoredMoveText(this,bb);
     	str.colorize(null,gameMoveText());
     	return(str);
     }

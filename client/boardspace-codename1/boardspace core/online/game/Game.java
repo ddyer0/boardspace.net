@@ -312,8 +312,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendFocusMessage = true;
         }}
     }
-    // note when our opponent pops up or down
-    public void doReceiveFocus(int from, StringTokenizer mySt)
+    // note when our opponent pops up or down.  
+    private void doReceiveFocus(int from, StringTokenizer mySt)
     {
         focusChangedCount++;
         String token = mySt.nextToken();
@@ -340,6 +340,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     }
 
+    /* %of times when we receive focus just as the opponent abandons it.
+     * this indicates possibly playing on the same screen. or playing while
+     * distracted and switching rapidly to another program.
+     */
     private int focusPercent()
     {
         return ((int) ((100.0 * focusChangedCoincidence) / Math.max(focusChangedCount,
@@ -576,11 +580,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	        ss.dispose();
 	    }
  
-        continue_kill();
-    }
-
-    public void continue_kill()
-    {
         G.doDelay(500); // this delay gives the viewer thread time to notice and exit
 
         if (myNetConn != null)
@@ -588,7 +587,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             myNetConn.setExitFlag("game killed");
         }
 
-        super.kill();
     }
 
     public void set(String name, String val)
@@ -3241,87 +3239,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return (str);
     }
 
-    /*
-    // get the scoring string for a 2 player game
-    private String getUrlStrOld()
-    {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
-        int realPCtr = 1;
-        int digest = (int)v.Digest();		// digest is int for downstream use
-        int mid = (int)midDigest;
-        boolean allwin = true;
-        String gametype = gameTypeString;
-        String mode = modeString();
-        String tm = tournamentMode ? "&tournament=1" : "";
-        String urlStr = "&de=" + digest + "&dm=" + mid + "&game=" + gametype 
-        				+   (masterMode ? "&mm=true" : "") 
-        				;
 
-        for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
-                p = commonPlayer.nextPlayer(playerConnections, p))
-        {
-            String name = p.trueName;
-            String uid = p.uid;
-
-            if (uid == null)
-            {
-                uid = "";
-            }
-
-            if (name != null)
-            {	boolean wp = v.WinForPlayer(p);
-                String scor = (wp ? "=1" : "=0");
-                allwin &= wp;
-                urlStr += ("&u" + realPCtr + "=" + uid + "&s" + realPCtr +
-                scor 
-             // register the possible follower fraud with the game
-             + ((follow_state_warning>1) 
-                 ? ("&fsw="+follow_state_warning)
-                 : "")
-             + ((p.focuschanged > 10)
-                ? ("&fch" + realPCtr + "=" + p.focuschanged) : "")
-             +   ((unrankedMode) ? ("&nr" + realPCtr + "=true") : "")
-             + "&t" +
-                realPCtr + "=" + ((int) (p.elapsedTime / 1000)));
-                realPCtr++;
-            }
-        }
-
-        urlStr += ("&key=" + myNetConn.sessionKey + "&session=" + sessionNum +
-        "&sock=" + sharedInfo.getInt(LOBBYPORT) + "&mode=" + mode + tm);
-        //add fraud detection hacks
-        {
-            int focus = focusPercent();
-
-            if (focus > 25)
-            {
-                urlStr += ("&focus=" + focus);
-            }
-        }
-
-        if (robot==null)
-        {
-            if (my.sameIP(playerConnections))
-            {
-                urlStr += "&samepublicip=1";
-            }
-
-            if (my.sameHost(playerConnections))
-            {
-                urlStr += "&samelocalip=1";
-            }
-
-            if (my.sameClock(playerConnections))
-            {
-                urlStr += "&sameclock=1";
-            }
-        }
-        String fn = fileNameString();
-        urlStr += ("&fname=" + fn);
-        urlStr += ("&xx=xx");	// dummy at the end to avoid "gord's problem"
-        G.Assert(!allwin,"all players won! game %s",fileNameString());
-        return (urlStr);
-    }
-*/
     // get the scoring string for a more than 2 player game
     private String getUrlStr4()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
@@ -3793,7 +3711,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
          }
     }
-    boolean isTournamentPlayer()
+    private boolean isTournamentPlayer()
     {
     	return tournamentMode && !my.isSpectator();
     }

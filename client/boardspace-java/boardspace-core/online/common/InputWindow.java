@@ -33,10 +33,7 @@ public class InputWindow  extends exCanvas
 	Keyboard keyboard = null;
 	enum InputId implements CellId
 	{	InputField;
-	@Override
-	public String shortName() {
-		return(name());
-	}};
+	};
 	
 	TextContainer input = new TextContainer(InputId.InputField);
 	TextContainer label = null;

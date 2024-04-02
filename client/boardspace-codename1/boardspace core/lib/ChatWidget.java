@@ -58,11 +58,8 @@ public class ChatWidget
 		Comments,			// comments from the current move
 		Pencil,				// toggle input mode
 		MessageLabel;
-		
-	@Override
-	public String shortName() {
-		return(name());
-	}};
+			
+	};
 	
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.defaultUseKeyboard();

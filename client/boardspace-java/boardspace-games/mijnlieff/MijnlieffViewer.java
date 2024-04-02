@@ -866,7 +866,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
         case Light_Diagonal:
 		if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
 			}
            break;
  

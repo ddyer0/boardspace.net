@@ -30,7 +30,6 @@ import java.awt.event.ActionListener;
 @SuppressWarnings("serial")
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId { Year,Month,Day;
-		public String shortName() { return name(); }
 	}
 	int minYear = 0;		// defaults to whatever the initial year is
 	int maxYear = 0;		// defaults to minYear+1

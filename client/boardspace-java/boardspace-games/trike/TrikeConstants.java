@@ -38,9 +38,7 @@ public interface TrikeConstants
 		BoardLocation,
 		ToggleEye, Pawn, 
 		;
-		TrikeChip chip;
-		public String shortName() { return(name()); }
-	
+		TrikeChip chip;	
 	}
 
 class StateStack extends OStack<TrikeState>

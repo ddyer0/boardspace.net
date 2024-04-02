@@ -101,7 +101,7 @@ public enum BreakId implements CellId
 	HidePlayerInfoButton,
   	PlayerDone,
        	;
-	public String shortName() { return(name()); }
+
 }
  
      static void putStrings()

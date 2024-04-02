@@ -82,10 +82,9 @@ public interface KingsColorConstants
     	Reverse,
     	EmptyBoard,;
     	KingsColorChip chip;
-    	public String shortName() { return(name()); }
     	static public ColorId find(String s)
     	{	
-    		for(ColorId v : values()) { if(s.equalsIgnoreCase(v.shortName())) { return(v); }}
+    		for(ColorId v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}
     		return(null);
     	}
     	static public ColorId get(String s)

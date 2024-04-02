@@ -88,7 +88,6 @@ public interface CrosswordleConstants
     	Restart,
     	GetApp,
     	InputField, Playword, ToggleEasy, CloseStats;
-    	public String shortName() { return(name()); }
 
 	}
  enum Option

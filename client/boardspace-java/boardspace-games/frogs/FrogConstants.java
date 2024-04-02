@@ -37,7 +37,6 @@ public interface FrogConstants
     	Frog_Hand0,Frog_Hand1,Frog_Hand2,Frog_Hand3,	// + 0-3
     	Frog_Bag; // positive numbers are trackable
 	public int handNum() { return(ordinal()-FrogId.Frog_Hand0.ordinal()); }
-	public String shortName() { return(name()); }
 	}
 	static FrogId Frog_Hands[] = {FrogId.Frog_Hand0,FrogId.Frog_Hand1,FrogId.Frog_Hand2,FrogId.Frog_Hand3,FrogId.Frog_Bag};
     static final String Frogs_INIT = "frogs"; //init for standard game

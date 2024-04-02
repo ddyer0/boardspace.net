@@ -16,8 +16,11 @@
  */
 package common;
 import bridge.Color;
+import bridge.URL;
 
 import java.util.*;
+
+import com.codename1.ui.geom.Rectangle;
 
 import lib.*;
 import online.common.LobbyConstants;
@@ -102,7 +105,13 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		OtherGames,
 		Hive,
 	};
+	public static void putStrings()
+	{
+		InternationalStrings.put(GameInfo.GameFamilies);
+		for(GameLink l : GameLink.values()) { InternationalStrings.put(l.helpText); }
+		InternationalStrings.put(GameInfoStringPairs);
 	
+	}
 	public enum ScoringMode { SM_Normal, SM_Multi, SM_Single, SM_None }
 	
 	public enum ES 
@@ -344,6 +353,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	 * @param speed requirements for the bots
 	 * @param viewer the main viewer class 
 	 * @param rul link to the rules
+	 * @param web web site link
 	 * @param howto how to play video
 	 * @param fir true if any player can be first
 	 * @param map color map for players chosen colors
@@ -885,8 +895,10 @@ synchronized(allGames) {
 	{ GameInfo m = put(new GameInfo(1560,ES.game,80,"MX",NInARowGames,"Modx","Modx",
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
-			"modx.ModxViewer","/modx/english/MODX_Rule_Book_Final.pdf",
-			"/modx/english/modx-video.html","about.modx.html",
+			"modx.ModxViewer",
+			"/modx/english/MODX_Rule_Book_Final.pdf",
+			"about_modx.html",
+			"/modx/english/modx-video.html",
 			true, new Color[]{Color.red,Color.black}));
 		m.groupSortKey = "00052";	// n-in-a-row games after euro games, first in n-in-a-row-games
 
@@ -896,7 +908,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(852,ES.game,53,"DB",PolyominoGames,"Diagonal Blocks","Diagonal-Blocks",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"universe.UniverseViewer","/english/about_diagonal-blocks.html","about_universe.html",
+				"universe.UniverseViewer","/english/about_diagonal-blocks.html",null,
 				null,true, UniverseColor));
 		 mm.minPlayers = 3;
 		 mm.maxPlayers = 4;
@@ -2406,6 +2418,12 @@ synchronized(allGames) {
 		adjustGameEnables("test_games",ES.test);
 		adjustGameEnables("enable_games",ES.game);
 	}
+	/**
+	 * check that the viewer class is present and might be disabled by the startup
+	 * 
+	 * @param key
+	 * @param state
+	 */
 	public static void adjustGameEnables(String key,ES state)
 	{	String prop = G.getString(key,null);
 		if(prop!=null)
@@ -2425,7 +2443,6 @@ synchronized(allGames) {
 		}
 	
 	}
-
 	// this provides a minimal capability to add a new game to the lobby game 
 	// menu.  It's intended only for development.
 	public static void parseInfo(String info)
@@ -2438,6 +2455,89 @@ synchronized(allGames) {
 		put(new GameInfo(999999,ES.game,999999,name,OtherGames,name,name,
 				ThreeBotsPlus,null,cl,null,null,null,false, null));
 		}
+	}
+	
+	enum GameLink implements CellId
+	{
+		ShowRules( "visit a web page to read the rules of the game"),
+		ShowVideo( "watch a \"how to play\" video"),
+		ShowPage(  "visit a web page to read more about the game")	;
+		String helpText = null;
+		GameLink(String help)
+		{
+			helpText = help;
+		}
+	}
+	/**
+	 * draw links for rules, help video and homepage
+	 * 
+	 * @param gc
+	 * @param drawOn
+	 * @param hp
+	 * @param r
+	 */
+	public void drawAuxGameLinks(Graphics gc,exCanvas drawOn,HitPoint hp,Rectangle r)
+	{	int xstep = G.Width(r)/3;
+		int ystep = G.Height(r);
+		int left = G.Left(r)+xstep*2/3;
+		int centery = G.Top(r)+ystep/2;
+		InternationalStrings s = G.getTranslations();
+		if(rules!=null)
+		{
+			StockArt.Rules.drawChip(gc,drawOn,hp,GameLink.ShowRules,s.get(GameLink.ShowRules.helpText),ystep,left,centery);
+		}
+		if(website!=null)
+		{
+			StockArt.Homepage.drawChip(gc,drawOn,hp,GameLink.ShowPage,s.get(GameLink.ShowPage.helpText),ystep,left+xstep*4/5,centery);
+		}			
+		if(howToVideo!=null)
+		{
+			StockArt.Video.drawChip(gc,drawOn,hp,GameLink.ShowVideo,s.get(GameLink.ShowVideo.helpText),ystep,left+xstep*2,centery);
+		}
+	}
+	/**
+	 * call from StopDragging
+	 * @param hp
+	 * @return true if handled
+	 */
+	public boolean handleGameLinks(HitPoint hp)
+	{
+		if(hp.hitCode instanceof GameLink)
+		{
+			switch((GameLink)hp.hitCode)
+			{
+			default: throw G.Error("Not expecting %s",hp.hitCode);
+			
+			case ShowVideo:
+				{
+				if(howToVideo!=null)
+		 		  {
+		 		  URL u = G.getUrl(howToVideo,true);
+				  G.showDocument(u);
+		 		  }}
+				break;
+			case ShowPage:
+				{
+				if(website!=null)
+		 		  {
+				  String myLanguage=G.getString(G.LANGUAGE,DefaultLanguageName);
+		 		  URL u = G.getUrl(myLanguage+"/"+website,true);
+				  G.showDocument(u);
+		 		  }}
+				break;
+			case ShowRules:
+				{
+				if(rules!=null)
+		 		  {
+		 		  URL u = G.getUrl(rules,true);
+				  G.showDocument(u);
+		 		  }}
+				break;
+
+			}
+			return true;
+		}
+		return false;
 	}
 	public static String GameInfoStringPairs[][] =
 			{	{"PlateauGameInfoMessage","side screens are needed to conceal your rack"},

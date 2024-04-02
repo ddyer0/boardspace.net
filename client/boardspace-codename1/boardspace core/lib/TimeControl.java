@@ -226,7 +226,6 @@ public class TimeControl implements Config
 		ChangeDifferentialTime,
 		ChangeIncrementalTime,
 		;
-		public String shortName() { return(name()); }
 		public static TimeId find(String name)
 		{	if(name.charAt(0)=='+') { name = name.substring(1); }
 			for(TimeId v : values()) { if(v.name().equals(name)) { return(v); }}

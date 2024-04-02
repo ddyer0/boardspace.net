@@ -92,8 +92,6 @@ public interface HoneyConstants
     	Definition,
     	ShowSummary,
     	ZoomSlider, Vocabulary;
-    	public String shortName() { return(name()); }
-
 	}
 
 

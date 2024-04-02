@@ -22,7 +22,6 @@ package lib;
  *
  */
 public interface CellId {
-	public static final String IdNotFoundError = "Id %s not found";	// not a translated string
+	static final String IdNotFoundError = "Id %s not found";	// not a translated string
 	public String name();
-	public String shortName();
 }

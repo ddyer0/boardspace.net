@@ -86,7 +86,6 @@ public interface MijnlieffConstants
     	BoardLocation,
     	EmptyBoard,;
     	MijnlieffChip chip;
-    	public String shortName() { return(name()); }
     	static public MijnlieffId find(String s)
     	{	
     		for(MijnlieffId v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}

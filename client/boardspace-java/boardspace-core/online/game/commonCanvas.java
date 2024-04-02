@@ -2201,7 +2201,7 @@ public abstract class commonCanvas extends exCanvas
 		switch(tid)
 		{	case ChangeTimeControl:
 			case GameOverOnTime:
-	  			canvas.performClientMessage("+" + id.shortName(),true,true);
+	  			canvas.performClientMessage("+" + tid.name(),true,true);
 	  			return(true);
 	
 			default: G.Error("not handled %s", tid);
@@ -2508,9 +2508,7 @@ public abstract class commonCanvas extends exCanvas
     	expandButton,
     	shrinkButton,
     	noVcrButton,
-        ;
-    	public String shortName() { return(name()); }
-    
+        ;    
     }
     public boolean use_grid = false; //maintained by this class
     public JCheckBoxMenuItem gridOption = null;
@@ -5357,7 +5355,7 @@ public abstract class commonCanvas extends exCanvas
         {
         if(futureTimeControl.handleDeferredEvent(target,command)) 
         {	//update the other client
-        	performClientMessage("+" + TimeId.ChangeFutureTimeControl.shortName()+" "+futureTimeControl.print(),false,true);
+        	performClientMessage("+" + TimeId.ChangeFutureTimeControl.name()+" "+futureTimeControl.print(),false,true);
         	handled = true;
         }
         else if(numberMenu.selectMenu(target,this)) { return true; }

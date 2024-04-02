@@ -147,7 +147,6 @@ public interface UniverseConstants
     	GivensRack,		// numbers given in the current puzzle
     	TakensRack,		// polys taken out of the current puzzle
     	GivenOnBoard,;
-    	public String shortName() { return(name()); }
    }
     class StateStack extends OStack<UniverseState>
     {

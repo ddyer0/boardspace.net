@@ -945,7 +945,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()," ",hp.hit_index));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()," ",hp.hit_index));
 	    	break;
 	    case BoardLocation:
 	        IroCell hitCell = hitCell(hp);
@@ -1216,6 +1216,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
+
 
 /** this is used by the scorekeeper to determine who won. Draws are indicated
  * by both players returning false.  Be careful not to let both players return true!

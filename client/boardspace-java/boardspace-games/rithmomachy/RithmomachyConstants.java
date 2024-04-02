@@ -61,7 +61,6 @@ public interface RithmomachyConstants
     	LeftNumber,
     	RightNumber,
     	;
-    	public String shortName() { return(name()); }
    }
     static final int White_Chip_Index = 0;
     static final int Black_Chip_Index = 1;

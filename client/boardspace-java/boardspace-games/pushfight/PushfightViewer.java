@@ -712,12 +712,12 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
 		PushfightChip mo = bb.pickedObject;
 		if(mo==null) { mo=bb.lastPicked; }
 		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit("dropb "+mo.id.shortName+" "+(char)(col-1)+" "+row);
+		PerformAndTransmit("dropb "+mo.id.name()+" "+(char)(col-1)+" "+row);
 		}
 		break;
 		case Confirm:
 			PushfightChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit("dropb "+mo.id.shortName	+ " "+(char)(col-1)+" "+row);
+			PerformAndTransmit("dropb "+mo.id.name()+ " "+(char)(col-1)+" "+row);
 			break;
 					                 
 		

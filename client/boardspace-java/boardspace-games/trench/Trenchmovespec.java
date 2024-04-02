@@ -255,7 +255,7 @@ public class Trenchmovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.shortName());
+            return icon(v,source.name());
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -288,7 +288,7 @@ public class Trenchmovespec
 
 		case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.shortName()," ",to_row);
+            return G.concat(opname , source.name()," ",to_row);
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

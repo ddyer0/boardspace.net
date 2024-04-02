@@ -288,7 +288,7 @@ public class Tamskmovespec
 		case MOVE_DROPRING:
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.shortName());
+            return icon(v,source.name());
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -332,7 +332,7 @@ public class Tamskmovespec
 		case MOVE_DROPRING:
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.shortName()," ",gameTime);
+            return G.concat(opname , source.name()," ",gameTime);
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player," ",gameTime);

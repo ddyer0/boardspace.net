@@ -763,7 +763,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
 	        KingsColorCell hitCell = hitCell(hp);
@@ -786,13 +786,13 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
 		KingsColorChip mo = bb.pickedObject;
 		if(mo==null) { mo=bb.lastPicked; }
 		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.colorId.shortName()," ",col," ",row));
+		PerformAndTransmit(G.concat("dropb ",mo.colorId.name()," ",col," ",row));
 		}
 		break;
 		case Confirm:
 		case Play:
 			KingsColorChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.colorId.shortName()," ",col," ",row));
+			PerformAndTransmit(G.concat("dropb ",mo.colorId.name()," ",col," ",row));
 			break;
 					                 
 		
@@ -855,7 +855,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.colorId.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.colorId.name()));
 			}
            break;
  

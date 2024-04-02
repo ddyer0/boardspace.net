@@ -40,7 +40,6 @@ public interface TrenchConstants
 		ToggleEye, 
 		Single, Reverse, ToggleArrow
 		;
-		public String shortName() { return(name()); }
 	
 	}
 

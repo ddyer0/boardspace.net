@@ -37,7 +37,6 @@ public interface IroConstants
 		White,
 		BoardLocation,
 		EmptyBoard, Tile, Rotate, ClearColorBlind, SetColorBlind, RotateCW,RotateCCW,;
-		public String shortName() { return(name()); }
 	
 	}
 

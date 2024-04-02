@@ -92,7 +92,6 @@ public class UCTTreeViewer extends TreeViewer
 			}
 	}
 	enum UCTID implements CellId { hitRoot, hitNode, hitChild ;
-		public String shortName() { return(name()); }
 	} ;
 	int nameW = 430;
 	int lineW = 200;

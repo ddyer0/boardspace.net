@@ -18,7 +18,6 @@ package modx;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import common.GameInfo;
 
 /* below here should be the same for codename1 and standard java */
 
@@ -30,6 +29,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;

@@ -41,7 +41,6 @@ public interface KnockaboutConstants
     	HitPlusCode,
     	WhiteDie,BlackDie,
     	HitMinusCode;
-    	public String shortName() { return(name()); }
 	}
     // indexes into the balls array, usually called the rack
     static final int NUMPLAYERS = 2;				// maybe someday...

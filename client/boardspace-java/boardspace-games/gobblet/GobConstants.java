@@ -36,7 +36,6 @@ public interface GobConstants
     	White_Chip_Pool,
     	BoardLocation;
     	public int IID() { return(0x1000+ordinal()); }
-    	public String shortName() { return(name()); }
     	static public GobbletId get(int i) 
     		{ 
     		for(GobbletId v : values()) { if(v.IID()==i) { return(v); }}

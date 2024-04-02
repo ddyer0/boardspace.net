@@ -167,7 +167,6 @@ public class masterStrings extends InternationalStrings
         put(FileSelector.FileSelectorStrings);
         put(LobbyConstants.LobbyMessages);
         put(LobbyConstants.LobbyMessagePairs);
-        put(GameInfo.GameInfoStringPairs);
         SeatingChart.putStrings();
         RpcListener.putStrings();
         put(Session.SessionStrings);
@@ -398,7 +397,7 @@ public class masterStrings extends InternationalStrings
         put("Spangles_variation","standard Spangles");
         put("Spangles","Spangles");
   
-        put(GameInfo.GameFamilies);
+        GameInfo.putStrings();
 
  
         //lobby messages

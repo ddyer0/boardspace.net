@@ -1006,7 +1006,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	    
  	    case BlackRing:
  	    case WhiteRing:
-	    	PerformAndTransmit(G.concat("PickRing " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("PickRing " , hitObject.name()));
 	    	break;
 	    case BoardRing:
 	        TamskCell hitCell = hitCell(hp);

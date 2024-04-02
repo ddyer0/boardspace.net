@@ -98,7 +98,6 @@ public interface CarnacConstants
     	FlatViewButton,
     	ZoomSlider,
     	;
-    	public String shortName() { return(name()); }
     }
     
     static void putStrings()

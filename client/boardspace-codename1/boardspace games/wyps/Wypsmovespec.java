@@ -363,19 +363,19 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
 		case MOVE_SELECT:
 	        return G.concat(opname, to_col," ",to_row);
 		case MOVE_MOVETILE:
-	        return (G.concat(opname,source.shortName()," ", from_col," ", from_row,
-	        		" ",dest.shortName()," ", to_col," ", to_row));
+	        return (G.concat(opname,source.name()," ", from_col," ", from_row,
+	        		" ",dest.name()," ", to_col," ", to_row));
 
 		case MOVE_LIFT:
 		case MOVE_REMOTELIFT:
         case MOVE_PICK:
-        	 return G.concat(opname,dest.shortName()," ",to_col," ",to_row," ",mapped_row);
+        	 return G.concat(opname,dest.name()," ",to_col," ",to_row," ",mapped_row);
 
 			
 			
 		case MOVE_REPLACE:
         case MOVE_DROP:
-            return G.concat(opname,dest.shortName()," ",to_col," ",to_row," ",mapped_row);
+            return G.concat(opname,dest.name()," ",to_col," ",to_row," ",mapped_row);
         case MOVE_PLAYWORD:
         	return G.concat(opname,to_col," ",to_row," ",directionMap," ",word," ",from_col," ",from_row);
         case MOVE_START:

@@ -34,7 +34,6 @@ public interface SnakesConstants
     	PatternLocation,
     	HeadsLocation,
     	SaveGivensLocation,;
-    	public String shortName() { return(name()); }
     }
     public enum SnakeState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),

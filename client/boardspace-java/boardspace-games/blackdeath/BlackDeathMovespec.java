@@ -397,12 +397,12 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
             return G.concat( " " ,to_name);
 
 		case MOVE_PLAYCARD:
-            return G.concat(D.findUniqueTrans(op) , " ",color," ",source.shortName," ",to_row," ",from_name);
+            return G.concat(D.findUniqueTrans(op) , " ",color," ",source.name()," ",to_row," ",from_name);
 			
 			
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(D.findUniqueTrans(op) ," ",color," ",source.shortName);
+            return G.concat(D.findUniqueTrans(op) ," ",color," ",source.name());
 
         case MOVE_DONE:
             return ("");
@@ -487,13 +487,13 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
 		case MOVE_INFECT:
 			return G.concat(opname,to_name);
 		case MOVE_DROP:
-            return G.concat(opname, color.name()," ",source.shortName);
+            return G.concat(opname, color.name()," ",source.name());
 
 		case MOVE_PLAYCARD:
-	           return G.concat(opname,color.name()," ",source.shortName," "+to_row," ",from_name);
+	           return G.concat(opname,color.name()," ",source.name()," "+to_row," ",from_name);
 		
 		case MOVE_PICK:
-            return G.concat(opname, color.name()," ",source.shortName," "+to_row);
+            return G.concat(opname, color.name()," ",source.name()," "+to_row);
 
         case MOVE_START:
             return (G.concat(indx,"Start P" ,player));

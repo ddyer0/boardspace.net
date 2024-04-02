@@ -40,6 +40,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GearMenu;
 import lib.HitPoint;
 import lib.Image;
 import lib.InternationalStrings;
@@ -89,7 +90,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			buttonHighlightColor, buttonBackgroundColor);
 	private Rectangle tableNameRect = addRect("TableName");
 	private Rectangle versionRect = addRect("version");
-	private Rectangle gearRect = addRect("Gear");
 	private Rectangle clockRect = addRect("Clock");
 	private TextContainer selectedInputField = null;
 	private int respawnNewName = 0;
@@ -108,6 +108,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	private int firstPlayerIndex = 0;
 	private int colorIndex[] = null;
 	private boolean changeRecurse = false;
+	private GearMenu gearMenu = new GearMenu(this);
+	
 	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
 					AZ(A_ZMode,SeatId.A_Zselected),
 					Recent(RecentMode,SeatId.RecentSelected);
@@ -126,15 +128,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	private GameInfo selectedVariant = null;
 	private boolean gameTimerMode = false;
 	private boolean needNewLayout = false;
-	
 	private int pickedSource = -1;
 	private int colorW = -1;
 	private boolean square = G.isRealLastGameBoard();
 	private PopupManager userMenu = new PopupManager();
 	
 	enum SeatId implements CellId
-	{	ShowRules,
-		ShowVideo,
+	{	
 		ChartSelected,
 		NameSelected,
 		CategoriesSelected,
@@ -148,18 +148,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		ToggleServer,
 		StartButton,
 		DiscardButton,
-		GearMenu,
-		Exit,
-		Feedback,
-		DrawersOff,
-		DrawersOn,
 		PlayOnline,
 		HelpButton,
 		TableName,
-		NewName, MessageArea, RecentSelected, ShowPage, GameTimer;
-		public String shortName() {
-			return(name());
-		}
+		NewName, MessageArea, RecentSelected, GameTimer;
 	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
@@ -171,7 +163,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         sess.setMode(Session.Mode.Review_Mode,isPassAndPlay());
         sess.setCurrentGame(GameInfo.firstGame,false,isPassAndPlay());
         if(G.debug()) {
-        	InternationalStrings.put(GameInfo.GameInfoStringPairs);
+        	GameInfo.putStrings();
         	SeatingChart.putStrings();
         	InternationalStrings.put(SeatingViewer.SeatingStrings);
         	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
@@ -261,7 +253,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			 {
 			G.SetRect(clockRect,left,G.Bottom(seatingChart),Math.min(clockWidth,seatingWidth),clockHeight);
 			 }
-			G.SetRect(gearRect,gearLeft,t+margin,margin*2,margin*2);
+			G.SetRect(gearMenu,gearLeft,t+margin,margin*2,margin*2);
 			G.SetRect(helpRect,gearLeft-w/4+w/30,t+(int)(stripHeight*0.43),w/5,stripHeight/2);
 		}
 		else 
@@ -284,7 +276,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}
 		int gearLeft = w-margin*2;
 		int gearTop = t+stripHeight;
-		G.SetRect(gearRect,gearLeft,gearTop,margin,margin);
+		G.SetRect(gearMenu,gearLeft,gearTop,margin,margin);
 		if(gameTimerMode)
 		{
 
@@ -389,7 +381,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		CellId hitCode = hp.hitCode;
 		if(hitCode==DefaultId.HitNoWhere) { pickedSource = -1; }
 		if(performStandardButtons(hitCode, hp)) {}
+		else if(gearMenu.StopDragging(hp)) {}
 		else if(keyboard!=null && keyboard.StopDragging(hp)) {  } 
+		else if(selectedVariant!=null && selectedVariant.handleGameLinks(hp)) {}
 		else if(hitCode instanceof TimeControl.TimeId)
 		{
 			TimeControl.TimeId id = (TimeControl.TimeId)hitCode;
@@ -446,9 +440,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				G.setOffline(false);
 				shutDown();
 				break;
-			case GearMenu:
-				doGearMenu(G.Left(hp),G.Top(hp));
-				break;
 			case ToggleServer:
 				{boolean running = serviceRunning();   	  
 				 if(!running) { UDPService.start(true); } else { UDPService.stop(); }
@@ -489,37 +480,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				break;
 			case DiscardButton:
 				OfflineGames.removeOfflineGame(sess.launchName(null,true));
-				break;
-			case ShowVideo:
-				{
-				GameInfo g = (GameInfo)hp.hitObject;
-				String rules = g.howToVideo;
-				if(rules!=null)
-		 		  {
-		 		  URL u = G.getUrl(rules,true);
-				  G.showDocument(u);
-		 		  }}
-				break;
-			case ShowPage:
-				{
-				GameInfo g = (GameInfo)hp.hitObject;
-				String site = g.website;
-				if(site!=null)
-		 		  {
-				  String myLanguage=G.getString(G.LANGUAGE,DefaultLanguageName);
-		 		  URL u = G.getUrl(myLanguage+"/"+site,true);
-				  G.showDocument(u);
-		 		  }}
-				break;
-			case ShowRules:
-				{
-				GameInfo g = (GameInfo)hp.hitObject;
-				String rules = g.rules;
-				if(rules!=null)
-		 		  {
-		 		  URL u = G.getUrl(rules,true);
-				  G.showDocument(u);
-		 		  }}
 				break;
 			case SelectVariant:
 				selectedVariant = (GameInfo)hp.hitObject;
@@ -666,6 +626,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			}
 			String name = (bubbleSelect==null) ? null : User.prettyName(sess.players[i]);
 			if(name==null) { name = s.get(PlayerNumber,playerNumber); color = Color.red; } 
+			
 			labelColor = color;
 			boolean bubbleOffset = (i==0) 
 					&& (bubbleSelect!=null) 
@@ -677,7 +638,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
 			if(StockArt.SmallO.drawChip(gc,this,(int)(tableSize*0.8),xc,
 					yc,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
-					bubbleSelect==null ? null : name,0.3,1.2)
+					bubbleSelect==null ? null : "|"+name,0.3,1.2)
 					)
 			{
 				bubbleSelect.row = i;
@@ -688,7 +649,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
 			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,s.get(OrdinalSelector,playerNumber),0.3,1.2))
+				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,"|"+s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				bubbleSelect.row = i;
 				}
@@ -1166,42 +1127,17 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				}
 				}
 			variantY += half/3;
-			drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY,gameColumnWidth,half),selectedGame);
+			if(selectedVariant!=null)
+				{ 
+				selectedVariant.drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY,gameColumnWidth,half));
 			variantY+= half*4/3;
+				}
 
 		}
 	  }
 	  if(hp!=null) { lastButton = hp.hitCode; }
 			}
 	
-	static public void drawAuxGameLinks(Graphics gc,exCanvas drawOn,HitPoint hp,Rectangle r,GameInfo game)
-	{	int xstep = G.Width(r)/3;
-		int ystep = G.Height(r);
-		int left = G.Left(r)+xstep*2/3;
-		int centery = G.Top(r)+ystep/2;
-		
-		if(game.rules!=null)
-			{
-			if(StockArt.Rules.drawChip(gc,drawOn,hp,SeatId.ShowRules,RulesExplanation,ystep,left,centery))
-			{
-				hp.hitObject = game;	
-			}
-			}
-		if(game.howToVideo!=null)
-		{
-			if(StockArt.Video.drawChip(gc,drawOn,hp,SeatId.ShowVideo,VideoExplanation,ystep,left+xstep+xstep/5,centery))
-			{
-				hp.hitObject = game;
-			}
-			}
-		if(game.website!=null)
-		{
-		if(StockArt.Homepage.drawChip(gc,drawOn,hp,SeatId.ShowPage,WebInfoExplanation,ystep,left+xstep*2,centery))
-			{
-			hp.hitObject = game;
-		}
-		}
-	}
 	private void drawMainSelector(Graphics gc,Rectangle mainr,Rectangle gamer,HitPoint hp,boolean portrait)
 	{	if(selectedChart!=null)
 		{
@@ -1221,19 +1157,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		changeSlot = slot;
 	  	users.changeUserMenu(userMenu,!recurse,this,slot,ex,ey);
 	  }
-	PopupManager gearMenu = new PopupManager();
-	public void doGearMenu(int x,int y)
-	{
-		gearMenu.newPopupMenu(this,deferredEvents);
-		gearMenu.addMenuItem("Exit",SeatId.Exit);
-		gearMenu.addMenuItem(SendFeedbackMessage,SeatId.Feedback);
-		if(G.isRealLastGameBoard())
-		{
-			gearMenu.addMenuItem(DrawerOffMessage,SeatId.DrawersOff);
-			gearMenu.addMenuItem(DrawersOnMessage,SeatId.DrawersOn);
-		}
-		gearMenu.show(x,y);
-	}
+
 	private boolean serviceRunning()
 	{
 		return (VNCService.isVNCServer()||RpcService.isRpcServer());
@@ -1298,7 +1222,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
 		drawMainSelector(gc,seatingChart,gameSelectionRect,pt,portrait);
 		if(G.debug()||G.isTable()) 
-			{ StockArt.Gear.drawChip(gc, this, gearRect, unPt,SeatId.GearMenu,s.get(ExitOptions)); 
+			{ 
+			gearMenu.draw(gc,unPt);
 			}
 		
 		drawTimeControl(gc,clockRect,unPt);
@@ -1436,32 +1361,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	    	Default.setBoolean((Default.autodone),autoDone.getState());
 	    	return true;
 		}
-		if(gearMenu.selectMenuTarget(target))
-		{
-			SeatId me = (SeatId)gearMenu.rawValue;
-			if(me!=null)
-			{
-				switch(me)
-				{
-				default: G.Error("Hit unexpected gear item %s",me);
-					break;
-				case Feedback:
-				  	G.getFeedback();
-				  	break;
-				case DrawersOff:
-					G.setDrawers(false);
-					break;
-				case DrawersOn:
-					G.setDrawers(true);
-					break;
 				
-				case Exit:	
-						G.hardExit();
-						break;
-				}
-			}
+		if(gearMenu.handleDeferredEvent(target,command)) { }
 			
-		}
 	    if (target == startserver)  
 	 			{ 
 	    	   	 boolean running = VNCService.isVNCServer()||RpcService.isRpcServer(); 
@@ -1505,9 +1407,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	static String RecentMode = "Recent";
 	static String A_ZMode = "Games A-Z";
 	static String VariantMsg = "#1 has #2 variations";
-	static String RulesExplanation = "visit a web page to read the rules of the game";
-	static String WebInfoExplanation = "visit a web page to read more about the game";
-	static String VideoExplanation = "watch a \"how to play\" video";
 	
 	static String SelectChartMessage = "select the seating arrangement";
 	static String SelectGameMessage = "select the game to play";
@@ -1522,9 +1421,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	static String SeatPositionMessage = "SeatPositionMessage";
 	static String ExitOptions = "Options";
 	static String TypeinMessage = "type the name here";
-	static String SendFeedbackMessage = "Send Feedback";
-	static String DrawerOffMessage = "Player Drawers OFF";
-	static String DrawersOnMessage = "Player Drawers ON";
 	static String MessageAreaMessage = "MessageAreaMessage";
 	static String HelpMessage = "Get More Help";
 	static String ExplainHelpMessage = "show the documentation for this screen";
@@ -1535,23 +1431,17 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			PlayOnlineExplanation,
 			ExplainHelpMessage,
 			TableNameMessage,
-			SendFeedbackMessage,
-			DrawerOffMessage,
-			DrawersOnMessage,
 			TypeinMessage,
 			ExitOptions,
 			PlayOnlineMessage,
 			StartTableServerMessage,
 			StopTableServerMessage,
 			OrdinalSelector,
-			VideoExplanation,
 			SideScreenMessage,
 			StartMessage,
 			NamePlayersMessage,
 			SelectGameMessage,
 			SoloMode,
-			RulesExplanation,
-			WebInfoExplanation,
 			NPlayerMode,
 			VariantMsg,
 			CategoriesMode,
@@ -1677,8 +1567,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			// note that this is passed through the canvas because in live games, it needs
 			// to be passed on to the other players.
 		}
-		else { G.print("action "+e);
-		}
+		else { super.actionPerformed(e); }
 		
 	}
 

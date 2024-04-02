@@ -62,7 +62,6 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	LFrameProtocol frame;
 	
 	enum DispatchId implements CellId { Select; ;
-		public String shortName() { return(name()); }
 	}
 	
 	public RpcServiceClient(ExtendedHashtable info, commonPanel p, LFrameProtocol f) {

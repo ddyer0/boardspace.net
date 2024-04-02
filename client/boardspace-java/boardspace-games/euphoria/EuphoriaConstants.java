@@ -1346,7 +1346,6 @@ public interface EuphoriaConstants
 	    ;	
 	    String prettyName = "";
 	    Allegiance allegiance;
-		public String shortName() { return(name()); }
 	    
 
 	    boolean isResourceCell() 

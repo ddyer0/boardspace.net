@@ -62,7 +62,6 @@ public interface MuttonConstants
 	HIT_FARMER_FACE,
 	MuttonDoneButton,
 	;
-		public String shortName() { return(name()); }
 	
 	}
 	// other things you can point at.  Negative numbers are fixed objects such as buttons

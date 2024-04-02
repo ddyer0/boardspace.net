@@ -34,7 +34,6 @@ public interface TicTacNineConstants
     	BoardLocation,
     	LiftRect,
     	ReverseViewButton,;
-    	public String shortName() { return(name()); }
    }
     
     public enum TictacnineState implements BoardState

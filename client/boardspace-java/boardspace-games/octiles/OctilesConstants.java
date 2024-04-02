@@ -35,7 +35,6 @@ public interface OctilesConstants
     	RotateRight,
     	RotateLeft, ToggleEye,
     	;
-    	public String shortName() { return(name()); }
 
    }
     

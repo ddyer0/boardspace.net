@@ -102,7 +102,6 @@ public interface WypsConstants
     	CheckWords,
     	Vocabulary,
     	Blank;
-    	public String shortName() { return(name()); }
 
 	}
  enum Option

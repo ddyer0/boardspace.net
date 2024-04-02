@@ -43,7 +43,6 @@ public interface CheConstants
     	InvisibleDragBoard,
     	ZoomSlider,
     	RotateTile;
-		public String shortName() { return(name()); }
 	}
 	
     static CheId ChipPool[] = { CheId.ChipPool0,CheId.ChipPool1,CheId.ChipPool2,CheId.ChipPool3};

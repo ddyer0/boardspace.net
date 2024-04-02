@@ -57,7 +57,6 @@ import vnc.VncScreenInterface;
 enum RepaintId implements CellId
 {
 	FrameTime, ReleaseTime;
-	public String shortName() { return(name()); }
 }
 enum RefreshReason  {
 	GeneralRefresh ,	// repaint immediately and draw completely

@@ -883,7 +883,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
 	    
  	    case White:
  	    case Red:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
 	    	break;
@@ -900,14 +900,14 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
 		TweedChip mo = bb.pickedObject;
 		if(mo==null) { mo=bb.lastPicked; }
 		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+		PerformAndTransmit(G.concat("dropb ",mo.id.name()," ",col," ",row));
 		}
 		break;
 		case Confirm:
 		case Play:
 		case PlayOrSwap:
 			TweedChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+			PerformAndTransmit(G.concat("dropb ",mo.id.name()," ",col," ",row));
 			break;
 					                 
 		
@@ -1004,7 +1004,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         case Red:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
 			}
            break;
  

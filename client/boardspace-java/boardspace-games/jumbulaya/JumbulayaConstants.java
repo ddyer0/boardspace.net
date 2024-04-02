@@ -122,7 +122,6 @@ public interface JumbulayaConstants
     	StartJumbulaya,
     	EndJumbulaya,
     	Blank;
-     	public String shortName() { return(name()); }
  
 	}
  enum Option

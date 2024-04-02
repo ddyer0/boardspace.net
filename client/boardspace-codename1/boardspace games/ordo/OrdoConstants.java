@@ -110,6 +110,7 @@ static void putStrings()
 		String CheckerStrings[] =
 			{	
 			"Ordo",
+			"OrdoX",
 			VictoryCondition,
 			SecondPlayDescription,
 			FirstPlayDescription,

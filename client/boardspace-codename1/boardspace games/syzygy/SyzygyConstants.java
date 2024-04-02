@@ -32,7 +32,6 @@ public interface SyzygyConstants
     	PlayerChip,
     	CrawlCell,
     	CHIP_OFFSET,;
-	public String shortName() { return(name()); }
    }
     // init strings for variations of the game.
      /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y

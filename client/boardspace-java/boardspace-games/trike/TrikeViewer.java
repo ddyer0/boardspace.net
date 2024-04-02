@@ -846,7 +846,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
  	    case Black:
  	    case White:
  	    case Pawn:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
 	        TrikeCell hitCell = hitCell(hp);
@@ -943,7 +943,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
 			}
            break;
  

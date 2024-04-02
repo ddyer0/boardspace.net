@@ -113,7 +113,6 @@ public interface CrosswordsConstants
     	Vocabulary,
     	Definition,
     	Blank;
-    	public String shortName() { return(name()); }
 
 	}
  enum Option

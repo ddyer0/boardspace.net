@@ -42,7 +42,6 @@ public interface CookieConstants
     ChipPool,// positive numbers are trackable plus n for chip
     PlayerChip ,
     CrawlCell;
-	public String shortName() { return(name()); }
    }
 	static final int CHIP_OFFSET = 300;
     // init strings for variations of the game.
@@ -102,7 +101,7 @@ public interface CookieConstants
     	
     	};
     		String[][] CookieStringPairs = {
-    		{"CookieDisco","Cookie Disco"},
+    		{"Cookie-Disco","Cookie Disco"},
     		{"Cookie-Disco_variation","Cookie Disco"},
     		{"CookieDisco_family", "Cookie Disco"},
     		{"Cookie-Disco-crawl","Cookie Disco + Expansion"},

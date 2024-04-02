@@ -127,7 +127,6 @@ public interface ContainerConstants
     	HideInfo,				// hide the hidden information
     	;
     
-	public String shortName() { return(name()); }
 	
 	static public ContainerId find(int l)
 	{	for(ContainerId v : values())  { if (v.IID()==l) { return(v); }}
