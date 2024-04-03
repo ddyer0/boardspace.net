@@ -295,9 +295,9 @@ public class RepaintManager implements VncScreenInterface,Config
     	// refresh caused by inserting the menu had better succeed, also to prevent
     	// the white frame.
     	//
-    	releaseDirectDrawingLock();
-    	parent.show(m,helper.unrotateCanvasX(x,y),helper.unrotateCanvasY(x,y)); 
-    	getDirectDrawingLock();
+    	boolean was = releaseDirectDrawingLock();
+    	parent.showNative(m,helper.unrotateCanvasX(x,y),helper.unrotateCanvasY(x,y)); 
+    	if(was) { getDirectDrawingLock(); }
     }
 
 	//

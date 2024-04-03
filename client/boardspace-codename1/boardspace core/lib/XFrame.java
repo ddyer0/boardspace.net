@@ -133,6 +133,10 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 
 	// for lframeprotocol
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException {
+		showNative(menu, x, y);		
+	}
+	// for lframeprotocol
+	public void showNative(MenuInterface menu, int x, int y) throws AccessControlException {
 		G.show((Component)myFrame, menu, x, y);		
 	}
 	int lastKnownWidth = -1;

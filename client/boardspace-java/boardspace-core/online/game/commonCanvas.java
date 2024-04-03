@@ -477,7 +477,6 @@ public abstract class commonCanvas extends exCanvas
 	private static String EditAction = "Edit";
 	private static String PlayedOnDate = "Played on #1";
 	private static final String TrackMice = "Track Mice";
-	private static final String SelectAGameMessage = "Select Game";
 	private static final String SaveSingleGame = "Save Single Game";
 	private static final String RecordOfGame = "Record of Game #1";
 	private static final String SaveGameCollection = "Save Game Collection";

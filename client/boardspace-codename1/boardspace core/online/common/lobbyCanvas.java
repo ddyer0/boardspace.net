@@ -28,7 +28,6 @@ import common.CommonConfig;
 import common.GameInfo;
 import common.GameInfo.ES;
 
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
@@ -40,7 +39,6 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.IStack;
 import lib.LFrameProtocol;
 import lib.MenuInterface;
 import lib.MouseState;
@@ -51,7 +49,6 @@ import udp.UDPService;
 import lib.Random;
 import lib.RepaintManager.RepaintStrategy;
 import lib.ScrollArea;
-import lib.Sort;
 import lib.SoundManager;
 import lib.StockArt;
 import lib.TimeControl;
@@ -63,7 +60,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     private static final String IgnoreChatMessage = "Ignore chat from #1";
     private static final String NoChallengeMessage = "No challenges from #1";
     private static final String MinMaxPlayers = "for #1-#2 players";
-    private static final String AllGames = "All Games";
     private static final String SlowBotMessage = "Slow CPU - no robots";
     private static final String NumberPlayers = "for #1 players";
     private static final String SpectatorsMessage = "Spectators"; //generic spectators in a game (plural noun)
@@ -117,7 +113,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     		ShowVideoMessage,
     		NoChallengeMessage,
     		MinMaxPlayers,
-    		AllGames,
     		SlowBotMessage,
     		NumberPlayers,
     		SpectatorsMessage,
@@ -1052,12 +1047,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private void changeSubmode(Session sess,int ex,int ey)
 	  {  changeRoom = sess;
 	     subroomMenu.newPopupMenu(this,deferredEvents);
-	     Session.JoinMode.getJoinMenu(s,subroomMenu);
-	     subroomMenu.show(ex,ey);
+	     subroomMenu.show(ex,ey,JoinMode.values());
 	  }
 
-	  private PopupManager gameTypeMenu = new PopupManager();;
-	  
 	  // build a menu of subgames.  This might be the standalone subgame menu or
 	  // the main game menu which is a 2-level accordian
 	  private String[] subGameMenu(PopupManager manager,GameInfo items[], MenuInterface myMenu,int n_games,int base)
@@ -1073,105 +1065,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  }  
 		  return(names);
 	  }
-	  private void addVariationMenu(Session sess,MenuInterface subm,String groupName,GameInfo var,Bitset<ES> typeClass)
-	  { int pc = sess.mode==Session.Mode.Review_Mode ? 0 : var.maxPlayers;
-  	  	GameInfo vars[] = var.variationMenu(var.gameName,typeClass,pc);
-	    String menuName = s.get(var.gameName+"_family");
-	  	if((vars==null) || (vars.length<=1)) 
-	  		{ gameTypeMenu.addMenuItem(subm,menuName,var.publicID);
-	  		}
-	  	else
-	  		{ MenuInterface sub2 = gameTypeMenu.newSubMenu(menuName);
-	  		  for(int j=0;j<vars.length;j++)
-	  		  {	GameInfo lastVar = vars[j];
-	  		    String mname = s.get(lastVar.variationName);
-	  		  	gameTypeMenu.addMenuItem(sub2,mname,lastVar.publicID);
-	  		  }
-	  		  gameTypeMenu.addMenuItem(subm,sub2);
-	  		}
-	  }
-	  private void addAZMenu(Session sess,String name,GameInfo[]games,Bitset<ES> typeClass)
-	  {		// build an a-z menu of games
-		  MenuInterface subm = gameTypeMenu.newSubMenu(name);
-    	  Hashtable<Character,MenuInterface>submenus=new Hashtable<Character,MenuInterface>();
-    	  IStack ch = new IStack();
-		  for(GameInfo var : games)
-		  {	String familyName = var.gameName+"_family";
-		    String menuName = s.get(familyName);
-		    // this is a bit of a hack - non-roman languages like Japanese create an alphabetical nightmare,
-		    // so alphabetize those languages according to the English name.
-		    char menuFirst = menuName.charAt(0);
-		    boolean romanName = (menuFirst<'z');
-			char menuChar = romanName ? menuFirst : familyName.charAt(0);
-			    // translated names don't necessarily alphabetize in the same letter
-			    // as the raw name, so assign to a menu for the correct letter
-			    MenuInterface sub = submenus.get(menuChar);
-			    if(sub==null) 
-			    	{ sub = gameTypeMenu.newSubMenu("  "+menuChar+"  "); 
-			    	  submenus.put(menuChar,sub);
-			    	  ch.push(menuChar);
-			    	}
-			    addVariationMenu(sess,sub,null,var,typeClass);
-		  }
-		  ch.sort();
-		  // add the a-z submenus to the main menu
-		  for(int i=0;i<ch.size();i++)
-		  {	   MenuInterface sub = submenus.get((char)ch.elementAt(i));
-		  	   gameTypeMenu.addMenuItem(subm,sub);
-		  }
-		  // add the main menu to the real menu
-		  gameTypeMenu.addMenuItem(subm);
- 	  }
-	  private void addGameMenu(Session sess,String name,String groupName,GameInfo[]games,Bitset<ES> typeClass)
-	  {	// groupName is null for the "all games" menu.
-    	  MenuInterface subm = gameTypeMenu.newSubMenu(name);
-          for(int gi=0;gi<games.length;gi++)
-        	  { GameInfo var = games[gi];
-        	    addVariationMenu(sess,subm,groupName,var,typeClass);
-        	  }
-          gameTypeMenu.addMenuItem(subm);  
-	  }
 
 	  private void changeGameType(Session sess,int ex,int ey)
-	  {	changeRoom = sess;
-	    gameTypeMenu.newPopupMenu(this,deferredEvents);
-	    GameInfo currentGame = sess.currentGame;
-	    Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false);
-	    GameInfo gameNames[] = currentGame.groupMenu(typeClass,0);
-	    int n_games = gameNames.length;
-	    
 	    {
-	    GameInfo games[] = currentGame.gameMenu(null,typeClass,0);
-	    String all = s.get(AllGames);
-	    Sort.sort(games);
-	    if(games.length>26)
-	    	{addAZMenu(sess,all,games,typeClass);
-	    	}
-	    	else 
-	    	{addGameMenu(sess,all,null,games,typeClass);
-	    	}
-	    }
-
-	    GameInfo.SortByGroup=true;
-	    Sort.sort(gameNames);
-	    GameInfo.SortByGroup=false;
-	    
-	    for(int i=0;i<n_games;i++) 
-	     { GameInfo item = gameNames[i];
-	       String groupName = item.groupName;
-	       String name = s.get(groupName);
-	       GameInfo games[]=currentGame.gameMenu(groupName,typeClass,0);
-	       if((games!=null) && (games.length>1))
-	          {
-	    	   	addGameMenu(sess,name,groupName,games,typeClass);
-	          }
-	          else
-	          {	addVariationMenu(sess,null,groupName,item,typeClass);
-	            //String m = s.get(item.variationName);
-	        	//gameTypeMenu.addMenuItem(m,item.publicID);
-	          }
-	     }
-	    gameTypeMenu.show(ex,ey);
+		  changeRoom = sess;
+		  sess.changeGameType(this,ex,ey,isTestServer);
 	  }
 	  
 	  private PopupManager variationMenu = new PopupManager();
@@ -2806,6 +2704,7 @@ private Session findOrMakeSession(GameInfo g)
 	}
 	return(null);
 }
+
 public boolean handleDeferredEvent(Object otarget, String command) 
 { 	if(super.handleDeferredEvent(otarget, command))  { return(true); }
 	if(roomMenu.selectMenuTarget(otarget))
@@ -2817,13 +2716,10 @@ public boolean handleDeferredEvent(Object otarget, String command)
 			
 			}
 	}
-	else 
-	if(gameTypeMenu.selectMenuTarget(otarget))
+	else if(changeRoom!=null && changeRoom.changeGame(otarget)) 
 	  { 
-	  	int newchoice = gameTypeMenu.value;
-	    if(newchoice>=0)
-	      {  
-	    	GameInfo game = GameInfo.findByNumber(newchoice);
+		GameInfo game = changeRoom.currentGame;	
+		
 	    	if(changeRoom==Sessions[0])
 			{
 				lobby.setPreferredGame(game);
@@ -2832,13 +2728,13 @@ public boolean handleDeferredEvent(Object otarget, String command)
 				{
 					scrollToSession(s);
 	      }
-			}else
+			}
+			else
 			{
-	      	 lobby.setRoomType(changeRoom,changeRoom.mode,game,false);
-	      }}
+				lobby.setRoomType(changeRoom,changeRoom.mode,game,true);
+			}
 	  } 
-	else 
-	if (variationMenu.selectMenuTarget(otarget))
+	else if (variationMenu.selectMenuTarget(otarget))
 	  {	int newchoice = variationMenu.value;
 	    if(newchoice>=0)
 	    { lobby.setRoomType(changeRoom,changeRoom.mode,GameInfo.findByNumber(newchoice),false);
@@ -2847,7 +2743,7 @@ public boolean handleDeferredEvent(Object otarget, String command)
 	else
 	if(subroomMenu.selectMenuTarget(otarget))
 	{	
-		Session.JoinMode newchoice = Session.JoinMode.findMode(subroomMenu.value);
+		Session.JoinMode newchoice = (Session.JoinMode)subroomMenu.rawValue;
 		int myloc = users.primaryUser().playLocation();
 		if((newchoice!=null)&&(myloc>=0))
 			{

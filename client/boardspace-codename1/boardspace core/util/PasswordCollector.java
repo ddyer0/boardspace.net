@@ -40,7 +40,6 @@ import lib.XXTEA;
 import online.common.OnlineConstants;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
-
  //import java.util.prefs.BackingStoreException;
  //import java.util.prefs.Preferences;
 
@@ -386,31 +385,30 @@ import udp.PlaytableStack;
 					 + "&country=" + Http.escape(country)
 					 + "&language=" + Http.escape(language)
 					 + "&" + RealnameParameterName + "=" + Http.escape(Http.encodeEntities(realName))
-					 + "&" + EmailParameterName +"=" + Http.escape(email)
+					 + "&" + EmailParameterName +"=" + Http.escape(Http.encodeEntities(email))
 					 +"&language="+Http.escape(language)
 					 +"&cookie=1";
 			 changeMessage(s.get(SendingRegMessage,Http.getHostName()));
 			 
 			 UrlResult posted = Http.postEncryptedURL(Http.getHostName(),postRegisterUrl,params,null);
-			 if(posted.error==null)
+			 // communication worked 
+			 String result = posted.text;
+			 if((posted.error==null) && result!=null && result.startsWith("ok"))
+			 	{ 
+			 	  return(true); 
+			 	}
+			 else if("Error".equals(posted.error))
 			 {
-				 // communication worked 
-				 String result = posted.text;
-				 if(result.startsWith("ok")) 
-				 	{ 
-				 	  return(true); 
-				 	}
-				 else if(result.startsWith("bad")) { errorMessage = result.substring(4); }
-				 else if(result.startsWith("nouser")) { errorMessage = s.get(NoUserMessage,name); }
-				 else if(result.startsWith("nopassword")) { errorMessage = s.get(BadPasswordMessage); }
-				 else { errorMessage = s.get(UnexpectedResponseMessage,result); }
+				if(result.startsWith("bad")) { errorMessage = result.substring(4); }
+				else if(result.startsWith("nouser")) { errorMessage = s.get(NoUserMessage,name); }
+				else if(result.startsWith("nopassword")) { errorMessage = s.get(BadPasswordMessage); }
+				else { errorMessage = s.get(UnexpectedResponseMessage,result); }
 			 }
 			 else { 
 				 // trouble communicating
 				 errorMessage = s.get(NocontactMessage,Http.getHostName());
-				 
 			 }
-			 
+
 		 }
 		 changeMessage(errorMessage);
 		 return(false);

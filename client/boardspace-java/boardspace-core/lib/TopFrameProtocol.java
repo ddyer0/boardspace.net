@@ -3,6 +3,7 @@ package lib;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
@@ -79,5 +80,7 @@ public interface TopFrameProtocol {
 	void moveToFront();
 
 	void setTitle(String n);
+
+	Insets getInsets();
 
 }

@@ -96,9 +96,13 @@ public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuPa
 	}
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException 
 	{
-		G.show(this, menu, x, y);
+		showNative(menu, x, y);
 	}
 	
+	public void showNative(MenuInterface menu, int x, int y) throws AccessControlException 
+	{
+		G.show(this, menu, x, y);
+	}
 
 	public void windowOpened(WindowEvent e) {
 		

@@ -381,29 +381,28 @@ import udp.PlaytableStack;
 					 + "&country=" + Http.escape(country)
 					 + "&language=" + Http.escape(language)
 					 + "&" + RealnameParameterName + "=" + Http.escape(Http.encodeEntities(realName))
-					 + "&" + EmailParameterName +"=" + Http.escape(email)
+					 + "&" + EmailParameterName +"=" + Http.escape(Http.encodeEntities(email))
 					 +"&language="+Http.escape(language)
 					 +"&cookie=1";
 			 changeMessage(s.get(SendingRegMessage,Http.getHostName()));
 			 
 			 UrlResult posted = Http.postEncryptedURL(Http.getHostName(),postRegisterUrl,params,null);
-			 if(posted.error==null)
-			 {
-				 // communication worked 
-				 String result = posted.text;
-				 if(result.startsWith("ok")) 
+			 // communication worked 
+			 String result = posted.text;
+			 if((posted.error==null) && result!=null && result.startsWith("ok"))
 				 	{ 
 				 	  return(true); 
 				 	}
-				 else if(result.startsWith("bad")) { errorMessage = result.substring(4); }
-				 else if(result.startsWith("nouser")) { errorMessage = s.get(NoUserMessage,name); }
-				 else if(result.startsWith("nopassword")) { errorMessage = s.get(BadPasswordMessage); }
-				 else { errorMessage = s.get(UnexpectedResponseMessage,result); }
+			 else if("Error".equals(posted.error))
+			 {
+				if(result.startsWith("bad")) { errorMessage = result.substring(4); }
+				else if(result.startsWith("nouser")) { errorMessage = s.get(NoUserMessage,name); }
+				else if(result.startsWith("nopassword")) { errorMessage = s.get(BadPasswordMessage); }
+				else { errorMessage = s.get(UnexpectedResponseMessage,result); }
 			 }
 			 else { 
 				 // trouble communicating
 				 errorMessage = s.get(NocontactMessage,Http.getHostName());
-				 
 			 }
 			 
 		 }
@@ -747,11 +746,11 @@ import udp.PlaytableStack;
 	 }
 	 private void autoSize()
 	 {
-       	//Insets ins = controllingFrame.getInsets();
+       	Insets ins = controllingFrame.getInsets();
     	Dimension ps = getPreferredSize();
-    	//Dimension newps = new Dimension((int)(ps.getWidth()+ins.left+ins.right),
-    	//						(int)(ps.getHeight()+ins.top+ins.bottom));
-    	controllingFrame.setSize(ps);
+    	Dimension newps = new Dimension((int)(ps.getWidth()+ins.left+ins.right),
+    							(int)(ps.getHeight()+ins.top+ins.bottom));
+     	controllingFrame.setSize(newps);
 	 }
 	 //
 	 // create the structure for a "login" panel

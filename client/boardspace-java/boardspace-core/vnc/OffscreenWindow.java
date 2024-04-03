@@ -398,6 +398,10 @@ public boolean DrawTileSprite(Graphics gc,HitPoint hp)
 	public SimpleMenu menu=null;
 	public void show(MenuInterface popup,int x,int y) throws AccessControlException
 	{	
+		showNative(popup,x,y);
+	}
+	public void showNative(MenuInterface popup,int x,int y) throws AccessControlException
+	{	
 		menu = new SimpleMenu(this,popup,x,y);
 	}
 	public void drawMenu(Graphics gc,HitPoint hp)

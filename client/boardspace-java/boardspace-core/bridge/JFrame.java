@@ -306,7 +306,7 @@ public void validateTree()
         fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
 		setBounds(fx,fy,fw,fh);   			
 	} 	
-
+	
 	public void windowClosing(WindowEvent e) {
         String suffix = "-"+ getTitle();
        	Preferences prefs = Preferences.userRoot();

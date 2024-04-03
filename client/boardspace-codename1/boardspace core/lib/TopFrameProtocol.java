@@ -3,6 +3,7 @@ package lib;
 import com.codename1.ui.Component;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.layouts.Insets;
 
 import bridge.Container;
 import bridge.JMenu;
@@ -79,5 +80,7 @@ public interface TopFrameProtocol {
 	void moveToFront();
 
 	void setTitle(String n);
+
+	Insets getInsets();
 
 }

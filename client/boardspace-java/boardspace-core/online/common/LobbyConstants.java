@@ -79,6 +79,7 @@ public interface LobbyConstants extends OnlineConstants
         	LoginFailedHost,
         	LoginFailedExplanation,
         	TryAgainMessage,
+        	SelectAGameMessage,
         	RecoverPasswordMessage,
         	ServerUnavailableMessage,
     		ServerUnavailableExplanation,

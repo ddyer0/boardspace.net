@@ -219,7 +219,8 @@ public interface OnlineConstants extends Config {
 	String RecoverPasswordMessage = "Recover lost password";
 	String ServerUnavailableMessage = "server unavailable";
 	String ServerUnavailableExplanation = "The game server is not running.  Please try again later.";
-	
+	String SelectAGameMessage = "Select Game";
+
 	int DEFAULTWIDTH = 620;	// also the minimum width and height
 	int DEFAULTHEIGHT = 660;
  }

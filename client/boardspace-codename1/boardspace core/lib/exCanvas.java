@@ -2244,9 +2244,14 @@ graphics when using a touch screen.
 			menu = new SimpleMenu(this,popup,sx,sy); 
 			}
 		 else { 
-			 painter.showMenu(popup,myFrame.getMenuParent(),sx,sy);
+			 painter.showMenu(popup,this,sx,sy);
 			 }
+			 }
+	public void showNative(MenuInterface popup,int x,int y) throws AccessControlException
+	{
+		G.show(getComponent(),popup,x,y);
 	}
+	
 	public SimpleMenu menu = null;
 	public static final String NETCONN = "netconn";			// network connection manager
 	public void drawMenu(Graphics gc,HitPoint hp)

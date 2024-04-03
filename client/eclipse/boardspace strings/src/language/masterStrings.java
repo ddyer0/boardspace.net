@@ -75,6 +75,7 @@ import octiles.OctilesConstants;
 import online.common.LobbyConstants;
 import online.common.SeatingViewer;
 import online.common.Session;
+import online.common.TurnBasedViewer;
 import online.game.AnnotationMenu;
 import online.game.NumberMenu;
 import online.game.Opcodes;
@@ -171,6 +172,9 @@ public class masterStrings extends InternationalStrings
         RpcListener.putStrings();
         put(Session.SessionStrings);
         put(SeatingViewer.SeatingStrings);
+        
+        TurnBasedViewer.putStrings();
+        
         put(SeatingViewer.SeatingStringPairs);
         put(LoginStrings);
         put(InternationalStrings.languages)

@@ -477,7 +477,21 @@ public class PopupManager extends SimpleObservable implements ActionListener
     {
     	newPopupMenu(window,listen,null);
     }
-    
+    /**
+     * show a memu consisting of all the enums in the list, normally
+     * derived from <class>.values()
+     * @param x
+     * @param y
+     * @param e some enum that implements EnumMenu
+     */
+    public void show(int x,int y,EnumMenu e[])
+    {	InternationalStrings s = G.getTranslations();
+    	for(EnumMenu m : e) { 
+    		String message = m.menuItem();
+    		addMenuItem(s.get(message),m);
+    	}
+    	show(x,y);
+    }
 
     /**
      * create a submenu to be added to the menu

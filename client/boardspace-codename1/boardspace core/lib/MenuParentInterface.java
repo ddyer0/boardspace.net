@@ -21,5 +21,5 @@ import bridge.AccessControlException;
 public interface MenuParentInterface
 {
 	public void show(MenuInterface menu,int x,int y) throws AccessControlException;
-
+	public void showNative(MenuInterface menu,int x,int y) throws AccessControlException;
 }

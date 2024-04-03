@@ -17,6 +17,7 @@
 package online.common;
 
 import java.awt.Color;
+import java.util.Hashtable;
 
 import common.GameInfo;
 import common.GameInfo.ES;
@@ -28,13 +29,18 @@ import lib.G;
 import lib.IStack;
 import lib.PopupManager;
 import lib.SeatingChart;
+import lib.Sort;
 import lib.StringStack;
 import lib.TimeControl;
 import lib.commonPanel;
+import lib.exCanvas;
 import lib.TimeControl.Kind;
 import lib.XFrame;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
+import lib.MenuInterface;
+import lib.EnumMenu;
+
 public class Session implements LobbyConstants
 {   
 	   
@@ -57,6 +63,8 @@ public class Session implements LobbyConstants
 	static final int CLIENTX = 215;
  
 	static final String GameRoom = "Play Games";
+	static final String TurnbasedRoom = "Turn Based Games";
+	static final String TurnbasedDescription = "Play asynchronous games";
 	static final String ChatRoom = "Chat Room";
 	static final String ReviewRoom = "Review Games";
 	static final String MasterRoom = "Master Games";
@@ -92,6 +100,7 @@ public class Session implements LobbyConstants
 			MapRoom,UnrankedRoom,UnrankedDescription,MasterRoom,MasterDescription,
 			TournamentRoom,TournamentDescription,
 			TournamentGame,SpectatorMessage,
+			TurnbasedRoom,TurnbasedDescription,
 	};
 	public boolean resumableGameType()
 	{
@@ -130,25 +139,25 @@ public class Session implements LobbyConstants
 
       
 	public enum Mode
-	{	Game_Mode("Game",GameRoom,GameRoomDescription,LaunchGameMessage,false), 
-		Chat_Mode("Chat",ChatRoom,"",LaunchChatMessage,false), 
-		Review_Mode("Review",ReviewRoom,ReviewRoomDescription,LaunchReviewMessage,true), 
-		Map_Mode("Map",MapRoom,"","",false), 
-		Unranked_Mode("Unranked",UnrankedRoom,UnrankedDescription,LaunchGameMessage,true), 
-		Master_Mode("Master",MasterRoom,MasterDescription,LaunchGameMessage,false),
-		Tournament_Mode("Tournament",TournamentRoom,TournamentDescription,LaunchGameMessage,false);
-		public boolean availableOffline;
+	{	Game_Mode("Game",GameRoom,GameRoomDescription,LaunchGameMessage), 
+		Chat_Mode("Chat",ChatRoom,"",LaunchChatMessage), 
+		Review_Mode("Review",ReviewRoom,ReviewRoomDescription,LaunchReviewMessage), 
+		Map_Mode("Map",MapRoom,"",""), 
+		Unranked_Mode("Unranked",UnrankedRoom,UnrankedDescription,LaunchGameMessage), 
+		Master_Mode("Master",MasterRoom,MasterDescription,LaunchGameMessage),
+		Tournament_Mode("Tournament",TournamentRoom,TournamentDescription,LaunchGameMessage),
+		Turnbased_Mode("Turn Based",TurnbasedRoom,TurnbasedDescription,LaunchGameMessage),
+		;
 		public String shortName;
 		public String modeName;
 		public String subHead;
 		public String launchMessage;
-		Mode(String shortname,String longname,String sub,String launch,boolean offline)
+		Mode(String shortname,String longname,String sub,String launch)
 		{
 		launchMessage = launch;
 		shortName = shortname;
 		modeName = longname;
 		subHead = sub;
-		availableOffline = offline;
 		}
 		public boolean isAGameMode()
 		{	switch(this)
@@ -157,6 +166,7 @@ public class Session implements LobbyConstants
 			case Game_Mode:
 			case Master_Mode:
 			case Unranked_Mode:
+			case Turnbased_Mode:
 			case Tournament_Mode: return(true);
 			}
 		}
@@ -168,6 +178,7 @@ public class Session implements LobbyConstants
 			default: return false;
 			case Game_Mode:
 			case Master_Mode:
+			case Turnbased_Mode:
 			case Tournament_Mode:
 				return(true);
 			}
@@ -177,7 +188,8 @@ public class Session implements LobbyConstants
 		{	
 			for(Mode el : values())
 			{
-			roomMenu.addMenuItem(s.get(el.modeName),el.ordinal());
+			// for now, you can't launch a turn based game from the live lobby
+			if(el!=Mode.Turnbased_Mode) { roomMenu.addMenuItem(s.get(el.modeName),el.ordinal()); }
 			}
 	 	}
 		public static Mode findMode(String n)
@@ -192,6 +204,7 @@ public class Session implements LobbyConstants
 		}
 		public static void putStrings()
 		{	for(Mode m : values()) { InternationalStrings.put(m.shortName); InternationalStrings.put(m.modeName); InternationalStrings.put(m.subHead); }
+			InternationalStrings.put(AllGames);
 		}
 	}
 	/** true if the game being launched will include a robot */
@@ -233,7 +246,7 @@ public class Session implements LobbyConstants
     public String toString() { return("<session "+gameIndex+">"); }
 
 
-    enum JoinMode
+    enum JoinMode  implements EnumMenu
     {
     	Open_Mode(PleaseJoinMessage),
     	Closed_Mode(JoinOnlyMessage),
@@ -245,17 +258,12 @@ public class Session implements LobbyConstants
     	{
     		name = n;
     	}
+    	public String menuItem() { return name;}
     	static public JoinMode findMode(int n)
     	{
     		for(JoinMode m : values()) { if(n==m.ordinal()) { return(m); }}
     		return(null);
     	}
-		public static void getJoinMenu(InternationalStrings s,PopupManager roomMenu)
-		{	for(JoinMode el : values())
-			{
-			roomMenu.addMenuItem(el.name,el.ordinal());
-			}
-	 	}
     }
     enum SessionState
     {
@@ -886,5 +894,159 @@ public class Session implements LobbyConstants
 			else if(sp[i]==user) { sp[i]=null; pn[i]=null; }
 		}}
 	}
+	
+	private PopupManager gameTypeMenu;
+	private static final String AllGames = "All Games";
+	
+	/**
+	 * a memu of  variations of a specific game.  sometimes different depending on
+	 * if we're reviewing verses playing
+	 * 
+	 * @param s
+	 * @param subm
+	 * @param groupName
+	 * @param var
+	 * @param typeClass
+	 */
+	private void addVariationMenu(InternationalStrings s,MenuInterface subm,String groupName,GameInfo var,Bitset<ES> typeClass)
+	  { int pc = mode==Session.Mode.Review_Mode ? 0 : var.maxPlayers;
+	  	GameInfo vars[] = var.variationMenu(var.gameName,typeClass,pc);
+	    String menuName = s.get(var.gameName+"_family");
+	  	if((vars==null) || (vars.length<=1)) 
+	  		{ gameTypeMenu.addMenuItem(subm,menuName,var.publicID);
+	  		}
+	  	else
+	  		{ MenuInterface sub2 = gameTypeMenu.newSubMenu(menuName);
+	  		  for(int j=0;j<vars.length;j++)
+	  		  {	GameInfo lastVar = vars[j];
+	  		    String mname = s.get(lastVar.variationName);
+	  		  	gameTypeMenu.addMenuItem(sub2,mname,lastVar.publicID);
+	  		  }
+	  		  gameTypeMenu.addMenuItem(subm,sub2);
+	  		}
+	  }
+	 
+	/**
+	 * a menu of all games sorted alphabetically
+	 * 
+	 * @param s
+	 * @param name
+	 * @param games
+	 * @param typeClass
+	 */
+	private void addAZMenu(InternationalStrings s,String name,GameInfo[]games,Bitset<ES> typeClass)
+	{		// build an a-z menu of games
+		MenuInterface subm = gameTypeMenu.newSubMenu(name);
+		Hashtable<Character,MenuInterface>submenus=new Hashtable<Character,MenuInterface>();
+		IStack ch = new IStack();
+		  for(GameInfo var : games)
+		  {	String familyName = var.gameName+"_family";
+		    String menuName = s.get(familyName);
+		    // this is a bit of a hack - non-roman languages like Japanese create an alphabetical nightmare,
+		    // so alphabetize those languages according to the English name.
+		    char menuFirst = menuName.charAt(0);
+		    boolean romanName = (menuFirst<'z');
+			char menuChar = romanName ? menuFirst : familyName.charAt(0);
+			    // translated names don't necessarily alphabetize in the same letter
+			    // as the raw name, so assign to a menu for the correct letter
+			    MenuInterface sub = submenus.get(menuChar);
+			    if(sub==null) 
+			    	{ sub = gameTypeMenu.newSubMenu("  "+menuChar+"  "); 
+			    	  submenus.put(menuChar,sub);
+			    	  ch.push(menuChar);
+			    	}
+			    addVariationMenu(s,sub,null,var,typeClass);
+		  }
+		  ch.sort();
+		  // add the a-z submenus to the main menu
+		  for(int i=0;i<ch.size();i++)
+		  {	   MenuInterface sub = submenus.get((char)ch.elementAt(i));
+		  	   gameTypeMenu.addMenuItem(subm,sub);
+		  }
+		  // add the main menu to the real menu
+		  gameTypeMenu.addMenuItem(subm);
+	  }
+	
+	  private void addGameMenu(InternationalStrings s,String name,String groupName,GameInfo[]games,Bitset<ES> typeClass)
+	  {	// groupName is null for the "all games" menu.
+		  MenuInterface subm = gameTypeMenu.newSubMenu(name);
+        for(int gi=0;gi<games.length;gi++)
+      	  { GameInfo var = games[gi];
+      	    addVariationMenu(s,subm,groupName,var,typeClass);
+      	  }
+        gameTypeMenu.addMenuItem(subm);  
+	  }
+	  
+	  /**
+	   * call from handlDeferredEvent to field menu events which might be changing the current game.
+	   * 
+	   * @param otarget
+	   * @return
+	   */
+	  public boolean changeGame(Object otarget)
+	  {
+		  if(gameTypeMenu!=null && gameTypeMenu.selectMenuTarget(otarget))
+		  { 
+		  	int newchoice = gameTypeMenu.value;
+		  	gameTypeMenu = null;
+		    if(newchoice>=0)
+		      {
+		    	GameInfo game = GameInfo.findByNumber(newchoice);
+		    	if(game!=null) { currentGame = game; }
+		    	return true;
+		      }
+		  }
+		  return false;
+	  }
+	/**
+	 * present the master game change menu.  
+	 * 
+	 * @param showOn
+	 * @param ex
+	 * @param ey
+	 * @param isTestServer
+	 */
+	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer)
+	  {	InternationalStrings s = G.getTranslations();
+	  	gameTypeMenu = new PopupManager();
+	    gameTypeMenu.newPopupMenu(showOn,showOn);
+	    Bitset<ES> typeClass = getGameTypeClass(isTestServer,false);
+	    GameInfo gameNames[] = currentGame.groupMenu(typeClass,0);
+	    int n_games = gameNames.length;
+	    
+	    {
+	    GameInfo games[] = currentGame.gameMenu(null,typeClass,0);
+	    String all = s.get(AllGames);
+	    Sort.sort(games);
+	    if(games.length>26)
+	    	{addAZMenu(s,all,games,typeClass);
+	    	}
+	    	else 
+	    	{addGameMenu(s,all,null,games,typeClass);
+	    	}
+	    }
+
+	    GameInfo.SortByGroup=true;
+	    Sort.sort(gameNames);
+	    GameInfo.SortByGroup=false;
+	    
+	    for(int i=0;i<n_games;i++) 
+	     { GameInfo item = gameNames[i];
+	       String groupName = item.groupName;
+	       String name = s.get(groupName);
+	       GameInfo games[]=currentGame.gameMenu(groupName,typeClass,0);
+	       if((games!=null) && (games.length>1))
+	          {
+	    	   	addGameMenu(s,name,groupName,games,typeClass);
+	          }
+	          else
+	          {	addVariationMenu(s,null,groupName,item,typeClass);
+	            //String m = s.get(item.variationName);
+	        	//gameTypeMenu.addMenuItem(m,item.publicID);
+	          }
+	     }
+	    gameTypeMenu.show(ex,ey);
+	  }
+
     
 }
