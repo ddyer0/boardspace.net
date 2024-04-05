@@ -63,7 +63,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		NewGame,
 		OpenGames,
 		SelectGame,
-		MyGames, Login, LoginName, PasswordName,Logout, SetComment, SetSpeed,
+		MyGames, Login, LoginName, PasswordName,Logout, SetComment, SetSpeed, SetFirstChoice, Invite,
 		;
 
 	}
@@ -94,7 +94,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	private TextContainer loginName = new TextContainer(TurnId.LoginName);
 	private TextContainer passwordName = new TextContainer(TurnId.PasswordName); 
 	private TextContainer commentRect = new TextContainer(TurnId.SetComment);
-	private Rectangle speedRect = addRect("play speed");
+	private TextContainer invitePlayerRect = new TextContainer(TurnId.Invite);
+	private Rectangle speedChoicesRect = addRect("play speed");
+	private Rectangle firstPromptRect = addRect("first player");
+	private Rectangle firstChoicesRect = addRect("first choices");
 	
 	private Rectangle versionRect = addRect("version");
 	GearMenu gearMenu = new GearMenu(this);
@@ -135,6 +138,18 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	};
 	MainMode mainMode = MainMode.MyGames;
 
+	enum FirstChoices implements EnumMenu
+	{
+		Random("Random"),
+		MeFirst("I play first"),
+		YouFirst("Opponent first");
+		String message;
+		FirstChoices(String m) { message = m; }
+		public String menuItem() { return message; }
+	}
+	FirstChoices firstChoice = FirstChoices.Random;
+	PopupManager firstChoiceMenu = new PopupManager();
+	
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
         painter.drawLockRequired = false;
@@ -188,8 +203,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		
 		// boxes for newgame
 		left = left0;
-		G.SetRect(gamePromptRect,left,top,buttonw/2,buttonh);
-		left += buttonw*3/4;
+		G.SetRect(gamePromptRect,left,top,buttonw*3/4,buttonh);
+		left += buttonw;
 		G.SetRect(selectGameRect,left,top,buttonw,buttonh);
 		left += buttonw*5/4;
 		G.SetRect(gamelinkRect,left,top,buttonw,buttonh);
@@ -197,23 +212,32 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		left = left0;
 		top += buttonh*4/3;
 		
-		G.SetRect(speedPromptRect,left,top,buttonw/2,buttonh);
-		left += buttonw*3/4;
-		G.SetRect(speedRect,left,top,buttonw*3/2,buttonh);
+		G.SetRect(speedPromptRect,left,top,buttonw*3/4,buttonh);
+		left += buttonw;
+		G.SetRect(speedChoicesRect,left,top,buttonw*3/2,buttonh);
 		
+		left = left0;
+		top += buttonh*4/3;
+
+		G.SetRect(firstPromptRect,left,top,buttonw*3/4,buttonh);
+		left += buttonw;
+		G.SetRect(firstChoicesRect,left,top,buttonw,buttonh);
 		
 		left = left0;
 		top += buttonh*4/3;
 	
-		G.SetRect(commentPromptRect,left,top,buttonw/2,buttonh);
-		left += buttonw*3/4;
+		G.SetRect(commentPromptRect,left,top,buttonw*3/4,buttonh);
+		left += buttonw;
 		G.SetRect(commentRect,left,top,w-l-left-fh,buttonh);
 
+		
 		left = left0;
 		top += buttonh*4/3;
-
 		
-		G.SetRect(playersPromptRect,left,top,buttonw/2,buttonh);
+		
+		G.SetRect(playersPromptRect,left,top,buttonw*3/4,buttonh);
+		left += buttonw;
+		G.SetRect(invitePlayerRect,left,top,buttonw,buttonh);
 		
 		// boxes for mygames
 		
@@ -323,9 +347,18 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			case SelectGame:
 				sess.changeGameType(this,G.Left(hp),G.Top(hp),G.debug());
 				break;
+				
+			case SetFirstChoice:
+				firstChoiceMenu.newPopupMenu(this,this);
+				firstChoiceMenu.show(G.Left(hp),G.Top(hp),FirstChoices.values());
+				break;
+				
 			case SetSpeed:
 				speedMenu.newPopupMenu(this,this);
 				speedMenu.show(G.Left(hp),G.Top(hp),PlaySpeed.values());
+				break;
+			case Invite:
+				focus = invitePlayerRect ;
 				break;
 			case SetComment:
 				focus = commentRect;
@@ -383,23 +416,29 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	}
 	public void drawNewGame(Graphics gc,HitPoint pt,Rectangle r)
-	{
+	{	/*
 		int left = G.Left(r);
 		int top = G.Top(r);
 		int width = G.Width(r);
 		int height = G.Height(r);
-		
+		*/
 		drawGameBox(gc,pt,selectedVariant);
 		
 		drawSpeedBox(gc,pt);
+		drawFirstBox(gc,pt);
 		
-		
-		GC.TextRight(gc,playersPromptRect,Color.black,null,PlayersMessage);
 		GC.TextRight(gc,commentPromptRect,Color.black,null,CommentsMessage);
 		commentRect.setVisible(true);
-		commentRect.setEditable(this,true);
+		commentRect.setEditable(this,commentRect==selectedInputField);
 		commentRect.setFont(largeBoldFont());
 		commentRect.redrawBoard(gc,pt);
+		
+		
+		GC.TextRight(gc,playersPromptRect,Color.black,null,InvitePlayersMessage);
+		invitePlayerRect.setVisible(true);
+		invitePlayerRect.setEditable(this,invitePlayerRect==selectedInputField);
+		invitePlayerRect.setFont(largeBoldFont());
+		invitePlayerRect.redrawBoard(gc,pt);
 		
 	}
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
@@ -427,13 +466,13 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		else
 		{
 			loginName.setVisible(true);
-			loginName.setEditable(this,true);
+			loginName.setEditable(this,loginName==selectedInputField);
 			loginName.setFont(largeBoldFont());
 			loginName.redrawBoard(gc,pt);
 			//GC.frameRect(gc,Color.black,loginName);
 			passwordName.setVisible(true);
 			passwordName.setFont(largeBoldFont());
-			passwordName.setEditable(this,true);
+			passwordName.setEditable(this,passwordName==selectedInputField);
 			passwordName.redrawBoard(gc,pt);
 			//GC.frameRect(gc,Color.black,passwordName);
 			
@@ -502,9 +541,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	public boolean handleDeferredEvent(Object target, String command)
 	{	if(super.handleDeferredEvent(target,command)) { return(true); }
-		if(gearMenu.handleDeferredEvent(target,command)) { return(true); }
-		if(sess.changeGame(target)) { selectedVariant = sess.currentGame; }
-		if(speedMenu.selectMenuTarget(target)) { currentSpeed = (PlaySpeed)speedMenu.rawValue; }
+		else if(gearMenu.handleDeferredEvent(target,command)) { return(true); }
+		else if(sess.changeGame(target)) { selectedVariant = sess.currentGame; return true; }
+		else if(speedMenu.selectMenuTarget(target)) { currentSpeed = (PlaySpeed)speedMenu.rawValue; return true; }
+		else if(firstChoiceMenu.selectMenuTarget(target)) { firstChoice = (FirstChoices)firstChoiceMenu.rawValue; return true; }
 		return(false);
 	}
 
@@ -659,7 +699,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	PlaySpeed currentSpeed = PlaySpeed.Day1;
 	
 	static private String GameMessage = "Game:";
-	static private String PlayersMessage = "Players:";
+	static private String InvitePlayersMessage = "Invite:";
 	static private String CommentsMessage = "Comments:";
 	
 private static String SelectGameMessage = "select the game to play";
@@ -679,12 +719,13 @@ private static String HelpMessage = "Get More Help";
 private static String ExplainLogout = "Disconnect from the server";
 private static String ExplainLogin = "Log into the server";
 private static String LogoutMessage = "Logout";
-private static String SpeedMessage = "Speed";
+private static String SpeedMessage = "Speed:";
+private static String FirstMessage = "First Player:";
 
 
 static public void putStrings()
 	{	String TurnStrings[] = {
-			GameMessage,PlayersMessage,CommentsMessage,SpeedMessage,
+			GameMessage,InvitePlayersMessage,CommentsMessage,SpeedMessage,FirstMessage,
 			LogoutMessage,	ExplainLogin,	ExplainLogout,	HelpMessage,
 			PlayOfflineExplanation,	PlayOnlineExplanation,	SendFeedbackMessage,
 			TypeinMessage,	ExitOptions,	PlayOnlineMessage,
@@ -702,6 +743,8 @@ static public void putStrings()
 			},
 		 };
 		for(PlaySpeed p : PlaySpeed.values()) { InternationalStrings.put(p.menuItem()); }
+		for(FirstChoices p : FirstChoices.values()) { InternationalStrings.put(p.menuItem()); }
+		
 		InternationalStrings.put(TurnStrings);
 		InternationalStrings.put(TurnStringPairs);
 	}
@@ -709,10 +752,21 @@ static public void putStrings()
 	public void drawSpeedBox(Graphics gc,HitPoint hp)
 	{
 		GC.TextRight(gc,speedPromptRect,Color.black,null,s.get(SpeedMessage));
-		if(GC.handleRoundButton(gc,speedRect,hp,s.get(currentSpeed.menuItem()),buttonHighlightColor, buttonBackgroundColor))
+		if(GC.handleRoundButton(gc,speedChoicesRect,hp,s.get(currentSpeed.menuItem()),buttonHighlightColor, buttonBackgroundColor))
 			{
 				hp.hitCode = TurnId.SetSpeed;
 			}
 
 	}
+
+	
+	public void drawFirstBox(Graphics gc,HitPoint hp)
+	{
+		GC.TextRight(gc,firstPromptRect,Color.black,null,s.get(FirstMessage));
+		if(GC.handleRoundButton(gc,firstChoicesRect,hp,s.get(firstChoice.menuItem()),buttonHighlightColor, buttonBackgroundColor))
+			{
+				hp.hitCode = TurnId.SetFirstChoice;
+			}
+	}
+	
 }

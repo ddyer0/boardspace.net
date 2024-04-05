@@ -39,6 +39,7 @@ import lyngk.LyngkConstants;
 import magnet.MagnetConstants;
 import lib.FileSelector;
 import lib.FileSource;
+import lib.GearMenu;
 import lib.InternationalStrings;
 import lib.SeatingChart;
 import crossfire.CrossfireConstants;
@@ -164,6 +165,7 @@ public class masterStrings extends InternationalStrings
         put(TimeControl.TimeControlStrings);
         put(TimeControl.TimeControlStringPairs);
         Session.Mode.putStrings();
+        GearMenu.putStrings();
         put(FileSource.FileSourceStrings);
         put(FileSelector.FileSelectorStrings);
         put(LobbyConstants.LobbyMessages);

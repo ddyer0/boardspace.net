@@ -467,7 +467,6 @@ public abstract class commonCanvas extends exCanvas
 	private static String EditAction = "Edit";
 	private static String PlayedOnDate = "Played on #1";
 	private static final String TrackMice = "Track Mice";
-	private static final String SelectAGameMessage = "Select Game";
 	private static final String SaveSingleGame = "Save Single Game";
 	private static final String RecordOfGame = "Record of Game #1";
 	private static final String SaveGameCollection = "Save Game Collection";
@@ -2794,7 +2793,7 @@ public abstract class commonCanvas extends exCanvas
         	if(mode!=replayMode.Replay)
         		{ showComments(); 	// save modified comments as a side effect
                 commentedMove = commentedMoveSeen = null;
-                if(reviewOnly) { theChat.clearMessages(true); }
+                if(reviewOnly && theChat!=null) { theChat.clearMessages(true); }
         		}
             doInit(true);	// reinitialize
             // showComments();
@@ -6328,7 +6327,9 @@ public abstract class commonCanvas extends exCanvas
     {
         if (ss != null)
         {
-            theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT, "Loading " + ss);
+            if(theChat!=null)
+            	{ theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT, "Loading " + ss);
+            	}
             hidden.selectedGame = null;
 
             PrintStream pw = Utf8Printer.getPrinter(System.out);
@@ -6605,12 +6606,14 @@ public abstract class commonCanvas extends exCanvas
             mutated_game_record = false;
             if (G.offline())
             {
-                theChat.clearMessages(true);
+                if(theChat!=null) { theChat.clearMessages(true); }
                 commentedMove = commentedMoveSeen = null;
             }
-
+            if(theChat!=null)
+            {
             theChat.setShortNameField("");
             theChat.setNameField("");
+            }
             Error theError = null;
             // this is to enhance replayability of archived games, 
             // where the rules may have evolved or old archives may
@@ -6635,8 +6638,11 @@ public abstract class commonCanvas extends exCanvas
                 datePlayed = "";
                 gameOver = false;
                 doInit(false);
+                if(theChat!=null)
+                {
                 theChat.setShortNameField("Game " + ga.sequence);
                 theChat.clearMessages(false);
+                }
                 //b.board_state=PUZZLE_STATE;			//temp
                 sgf_node root = ga.getRoot();
                 //
@@ -6674,7 +6680,7 @@ public abstract class commonCanvas extends exCanvas
             generalRefresh();
 
 
-            if ("".equals(theChat.nameField()))
+            if (theChat!=null && "".equals(theChat.nameField()))
             {
                 String sf = ga.source_file;
                 int idx = (sf==null)? 0 : sf.lastIndexOf("/");
@@ -6786,8 +6792,11 @@ public abstract class commonCanvas extends exCanvas
 
             }
         }
+        if(theChat!=null)
+        {
         root.set_property(gamename_property, theChat.shortNameField());
         root.set_property(gametitle_property, theChat.nameField());
+        }
         root.set_property(setup_property, gameType());
         if(G.offline()||USE_COLORMAP)
         {
@@ -7102,8 +7111,10 @@ public abstract class commonCanvas extends exCanvas
     public void doResign()
     {   
     if(!canResign()) 
-    	{theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+    	{if(theChat!=null) 
+    		{theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
             s.get(NoResignMessage));
+    		}
     	}
     	else
     	{ 
@@ -7111,7 +7122,7 @@ public abstract class commonCanvas extends exCanvas
         {
             PerformAndTransmit(RESIGN);
         }
-        else
+        else if(theChat!=null)
         {
             theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                 s.get(CantResign));
@@ -7212,7 +7223,7 @@ public boolean replayStandardProps(String name,String value)
 {	
     //System.out.println("prop " + name + " " + value);
     if (name.equalsIgnoreCase(gamename_property))
-    {   theChat.setShortNameField(value);
+    {   if(theChat!=null) { theChat.setShortNameField(value); }
         return(true);
     }
     else if (name.equalsIgnoreCase(game_property))
@@ -7221,13 +7232,13 @@ public boolean replayStandardProps(String name,String value)
     }
     else if (name.equalsIgnoreCase(gametitle_property))
     {
-        theChat.setNameField(value);
+    	if(theChat!=null) { theChat.setNameField(value); }
         return(true);
     }
     else if (name.equalsIgnoreCase(date_property))
     {
-        theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
-            s.get(PlayedOnDate,value));
+    	if(theChat!=null) { theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
+            s.get(PlayedOnDate,value));}
         datePlayed = value;
         return(true);
     }
@@ -7258,7 +7269,7 @@ public boolean replayStandardProps(String name,String value)
     	// fall through to print it into the chat
     }
     
-    theChat.addAMessage("prop " + name + " = " +  value);
+    if(theChat!=null) { theChat.addAMessage("prop " + name + " = " +  value); }
     return(false);
 	}
 //

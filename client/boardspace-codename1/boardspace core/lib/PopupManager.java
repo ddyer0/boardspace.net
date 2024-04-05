@@ -479,7 +479,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
     {	InternationalStrings s = G.getTranslations();
     	for(EnumMenu m : e) { 
     		String message = m.menuItem();
-    		addMenuItem(s.get(message),m);
+    		if(message!=null) { addMenuItem(s.get(message),m);}
     	}
     	show(x,y);
     }
