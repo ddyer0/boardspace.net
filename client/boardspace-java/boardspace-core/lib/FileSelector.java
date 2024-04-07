@@ -114,7 +114,7 @@ public class FileSelector extends FullscreenPanel
     
     public DeferredEventManager deferredEvents = new DeferredEventManager(this);
     InternationalStrings s;
-    public SimpleObservable observer = new SimpleObservable(); 	//list of observers
+    public SimpleObservable observer = new SimpleObservable(this); 	//list of observers
     private boolean inited = false;		//this is used to prevent game updates from firing during initialization
    
  

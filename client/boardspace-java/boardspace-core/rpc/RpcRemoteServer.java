@@ -193,7 +193,7 @@ public class RpcRemoteServer implements RpcInterface,SimpleObserver,PlayConstant
 
 	
 	// the observers will be the transmitter to the remote screen
-	SimpleObservable observers = new SimpleObservable();
+	SimpleObservable observers = new SimpleObservable(this);
 	public void removeObserver(SimpleObserver b) {
 		observers.removeObserver(b);
 	}

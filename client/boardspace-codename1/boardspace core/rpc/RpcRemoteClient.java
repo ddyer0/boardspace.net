@@ -166,7 +166,7 @@ public class RpcRemoteClient implements RpcInterface,SimpleObserver
 		canvas.updateProgress();
 	}
 
-	SimpleObservable observers = new SimpleObservable();
+	SimpleObservable observers = new SimpleObservable(this);
 
 	public void removeObserver(SimpleObserver b) {
 		observers.removeObserver(b);	

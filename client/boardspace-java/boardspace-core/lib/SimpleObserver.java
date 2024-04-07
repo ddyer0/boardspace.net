@@ -17,5 +17,5 @@
 package lib;
 
 public interface SimpleObserver {
-	    void update(SimpleObservable o, Object eventType, Object arg);
+	    public void update(SimpleObservable o, Object eventType, Object arg);
 }

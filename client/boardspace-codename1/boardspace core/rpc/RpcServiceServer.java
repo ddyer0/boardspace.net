@@ -58,7 +58,7 @@ public class RpcServiceServer implements RpcInterface
 		return("");
 	}
 
-	SimpleObservable observers = new SimpleObservable();
+	SimpleObservable observers = new SimpleObservable(this);
 	
 	public void removeObserver(SimpleObserver b) {		
 		observers.removeObserver(b);

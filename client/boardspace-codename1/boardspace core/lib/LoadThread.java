@@ -41,7 +41,7 @@ public class LoadThread extends Thread  {
 	public SimpleObservable addObserver(SimpleObserver o) {
 		if (o != null) {
 			if (observer == null) {
-				observer = new SimpleObservable();
+				observer = new SimpleObservable(this);
 			}
 
 			observer.addObserver(o);

@@ -105,11 +105,12 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			 if(v) { focusInstance = this; }
 			 else if(focusInstance==this) { focusInstance=null;}
 			 focusToggle = v;
+			 setChanged(v ? Op.GainFocus : Op.LoseFocus);
 			}
 		if(hasFocus() && clearBeforeAppend) { clear(); }	
 	}
 	public boolean clearBeforeAppend = false;
-	public enum Op  { Send,Repaint; }
+	public enum Op  { Send,Repaint,GainFocus,LoseFocus; }
 	
 	
 	/**
@@ -155,7 +156,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		Rectangle sz = GC.getStringBounds(null,fm,data.toString());
 		return(new Dimension(G.Width(sz),G.Height(sz)));
 	}
-	private SimpleObservable observer = new SimpleObservable();		// who to tell
+	private SimpleObservable observer = new SimpleObservable(this);		// who to tell
 	public void addObserver(SimpleObserver o) {	
 		observer.addObserver(o);
 	}
