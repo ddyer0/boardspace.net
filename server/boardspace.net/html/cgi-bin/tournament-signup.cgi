@@ -31,6 +31,9 @@ use URI::Escape;
 use HTML::Entities;
 use CGI::Cookie;
 
+# for notifications
+require "tlib/webhook.pl";
+
 require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
@@ -1909,6 +1912,19 @@ sub do_edit_match()
 
 }
 
+sub send_notification()
+{
+  my ($discord, $player, $email) = @_;
+  my $webhook = WebService::Discord::Webhook->new( $'webhook );
+  $webhook->get();
+  #
+  #print "Webhook posting as '" . $webhook->{name} . "' in channel " . $webhook->{channel_id} . "\n";
+  #<\@725833023119032460>
+  my $user = $discord ? "<\@$discord> ($player) " : "\@$player ";
+  my $content = "tournament activity $email";
+  $webhook->execute( content => $user . $content );
+
+}
 
 sub sendMatchNotify()
 {	my ($dbh,$matchid,$msg) = @_;
@@ -1916,7 +1932,7 @@ sub sendMatchNotify()
 	if($matchid>0)
 	{
 	my $qmid = $dbh->quote($matchid);
-	my $q = "select player_name,e_mail,language from matchparticipant "
+	my $q = "select player_name,e_mail,language,discorduid from matchparticipant "
 				. " left join players on matchparticipant.player = players.uid"
 				. " where matchparticipant.matchid = $qmid " ;
 	my $sth = &query($dbh,$q);
@@ -1925,16 +1941,17 @@ sub sendMatchNotify()
 	#print "Q: $nr $q<p>";
 	while($nr-- > 0)
 	{
-	my ($player_name,$e_mail,$language) = &nextArrayRow($sth);
+	my ($player_name,$e_mail,$language,$discord) = &nextArrayRow($sth);
 	#try to send the message translated to the appropriate language
 	if(!($lib'language eq $language)) { &readtrans_db($dbh,$language); }
-	my $tmsg = &trans("There is new activity in your tournament match at boardspace.net\nSee #1",
-						"http://$ENV{'HTTP_HOST'}/$ENV{'SCRIPT_NAME'}?matchid=$matchid&fromname=$player_name&operation=editmatch\n");
+	my $link = "http://$ENV{'HTTP_HOST'}/$ENV{'SCRIPT_NAME'}?matchid=$matchid&fromname=$player_name&operation=editmatch\n";
+	my $tmsg = &trans("There is new activity in your tournament match at boardspace.net\nSee #1",$link);
 	if($msg)
 	{ $tmsg = $tmsg . "\n\n" . $msg . "\n";
 	}
 	print "<br>mail to $player_name\n";
 	&send_mail($'from_email,$e_mail,&trans("Boardspace.net tournament activity"),$tmsg );
+	&send_notification($discord,$player_name,$link);
 	}
 	if(!($lib'language eq $lan)) { &readtrans_db($dbh,$lan); }
 	}

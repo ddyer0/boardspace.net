@@ -339,6 +339,7 @@ Footer
 	"Bahrain",
 	"Bangladesh",
 	"Barbados",
+	"Basque Country, Spain",
 	"Belarus",
 	"Belgium",
 	"Belize",
@@ -1079,7 +1080,7 @@ sub send_mail_to()
 	my $auth = &userAuthenticator($touser,1);
 	my $msg = 	"$auth\nSender: $from\nFrom: $from\nTo: \"$touser\" <$to>\nSubject: $sub\n\n$body\n";
 
-        #print "<br>send -f $from $to\n$msg\n";
+	#print "<br>send -f $from $to\n$msg\n";
 
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
 	print SENDMAIL $msg;
