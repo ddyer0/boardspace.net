@@ -47,8 +47,8 @@ class ChipStack extends OStack<WypsChip>
  *
  */
 public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConfig
-{
-	public static String BACK = "_back_";
+{	
+	public static String BACK = NotHelp + "_back_";
 	public static String SELECT = "_select_";
 	private int index = 0;
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()

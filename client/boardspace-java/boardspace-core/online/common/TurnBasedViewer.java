@@ -753,7 +753,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     {  
     	commonPanel panel = new commonPanel();
     	XFrame frame = new XFrame("Offline Launcher");
-    	TurnBasedViewer viewer = (TurnBasedViewer)G.MakeInstance("online.common.SeatingViewer");
+    	TurnBasedViewer viewer = new TurnBasedViewer();
     	if(viewer!=null)
     	{
     	viewer.init(sharedInfo,frame);

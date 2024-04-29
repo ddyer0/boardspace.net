@@ -181,7 +181,8 @@ public class BlackDeathChip extends chip<BlackDeathChip> implements OnlineConsta
 	}
 	public static BlackDeathChip cardBack = new BlackDeathChip("cards",null,defaultScale);
 	
-	public static String BACK = "_back_";
+	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
+	
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{   boolean isBack = BACK.equals(label);
 		if(cardBack!=null && isBack)

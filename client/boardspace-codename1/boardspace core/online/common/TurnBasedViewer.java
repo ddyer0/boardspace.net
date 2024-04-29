@@ -40,8 +40,9 @@ import lib.MouseState;
 import lib.PopupManager;
 import lib.Random;
 import lib.SimpleObservable;
+import lib.SimpleUser;
+import lib.SimpleUserStack;
 import lib.StockArt;
-import lib.StringStack;
 import lib.TextButton;
 import lib.TextContainer;
 import lib.Tokenizer;
@@ -162,7 +163,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	private TextContainer passwordName = new TextContainer(TurnId.PasswordName); 
 	private TextContainer commentRect = new TextContainer(TurnId.SetComment);
 	private TextContainer invitePlayerRect = new TextContainer(TurnId.Invite);
-	private StringStack invitedPlayers = new StringStack();		// names of the invited players (other than the owner)
+	private SimpleUserStack invitedPlayers = new SimpleUserStack();		// names of the invited players (other than the owner)
 	private boolean checkInviteName = false;					// true when the current invitee needs to be checked
 	
 	private Rectangle speedChoicesRect = addRect("play speed");
@@ -433,8 +434,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	 *  */
 	public void createTheGame()
 	{	 StringBuilder invited = new StringBuilder("|");
-		 G.append(invited,loginName.getText(),"|");
-		 for(int i=0;i<invitedPlayers.size(); i++) { G.append(invited,invitedPlayers.elementAt(i),"|"); }
+		 G.append(invited,loggedinUid,"|");
+		 for(int i=0;i<invitedPlayers.size(); i++) { G.append(invited,invitedPlayers.elementAt(i).channel(),"|"); }
 
 		 StringBuilder b = new StringBuilder();
 		 G.append(b,
@@ -442,7 +443,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				 versionParameter,
 				 "&pname=",loginName.getText(),
 				 "&password=",passwordName.getText(),
-				 "&owner=",loggedinUid,
+				 "&owner=",loggedinUid,	// this had better correspond to pname+password
 				 "&allowother=",allowOtherChoiceButton.isOn(),
 				 "&invitedplayers=",invited.toString(),
 				 "&variation=",selectedVariant.variationName,
@@ -594,7 +595,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			  {
 				  pt.hit_index = i;
 			  }
-			  GC.Text(gc,false,left+h,top,w-h,h,Color.black,null,invitedPlayers.elementAt(i));
+			  GC.Text(gc,false,left+h,top,w-h,h,Color.black,null,invitedPlayers.elementAt(i).name());
 			}
 			
 		int np = 1+invitedPlayers.size();
@@ -754,7 +755,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     {  
     	commonPanel panel = new commonPanel();
     	XFrame frame = new XFrame("Offline Launcher");
-    	TurnBasedViewer viewer = (TurnBasedViewer)G.MakeInstance("online.common.SeatingViewer");
+    	TurnBasedViewer viewer = new TurnBasedViewer();
     	if(viewer!=null)
     	{
     	viewer.init(sharedInfo,frame);
@@ -879,7 +880,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     			{ if(uid!=loggedinUid)
     				{inviteUid = uid;    			  
     				inviteName = name;
-    				invitedPlayers.pushNew(name);
+    				invitedPlayers.pushNew(new SimpleUser(uid,name));
     				invitePlayerRect.clear();
     				}
     			}

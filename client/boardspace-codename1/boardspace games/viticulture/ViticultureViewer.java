@@ -1050,7 +1050,7 @@ private boolean censor(PlayerBoard pb,HitPoint hp)
 		}
 	commonPlayer player = getActivePlayer();
 	PlayerBoard target = mainBoard.pbs[player.boardIndex];
-	return(player.isSpectator() ? !reviewOnly : target!=pb);
+	return(player.isSpectator() ? !reviewOnly : target.color!=pb.color);
 }
 
 private double residualLocs[][] = {

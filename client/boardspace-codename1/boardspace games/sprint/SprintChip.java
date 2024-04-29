@@ -49,7 +49,8 @@ class ChipStack extends OStack<SprintChip>
 public class SprintChip extends chip<SprintChip> implements SprintConstants
 {
 	private int index = 0;
-	public static String BACK = "_back_";
+	public static String BACK = NotHelp+ "_back_";	// the | causes it to be passed to drawchip rather than used as a tooltip
+	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;

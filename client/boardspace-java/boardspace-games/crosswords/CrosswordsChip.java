@@ -242,7 +242,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
             double xscale,
             int cx,
             int cy,
-            java.lang.String label)
+            String label)
     {	//if(lcChar=='o') { /* letter */scale = new double[] {0.51,0.365,1.45 };}
     	//if(lcChar=='i') { /* letter2 */scale = new double[] {0.495,0.365,1.45 };}
        	//if(lcChar=='a') { /* letter0 */scale = new double[] {0.51,0.365,1.45 };}

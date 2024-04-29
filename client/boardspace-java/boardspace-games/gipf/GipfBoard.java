@@ -1106,6 +1106,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 
  
         case MOVE_START:
+        	finalizePlacement();
         	whoseTurn = m.player;
         	setFirstState();
             break;

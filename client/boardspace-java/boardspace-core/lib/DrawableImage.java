@@ -473,19 +473,16 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,String toolTip,
 			int squareWidth,int e_x,int e_y)
 	{
-		if(drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,toolTip,0.66,1.33))
-		{
-			highlight.setHelpText(toolTip);
-			return(true);
-		}
-		return false;
+		return drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,toolTip,0.66,1.33);
 	}
-	
 	/**
 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
 	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
-	 * hack, if the help text start with | it is drawn instead of used as help text. This
-	 * is used by a few widgets to display text inside icons
+	 * hack, 
+	 * 	if the help text starts with NotHelpDraw the rest of the string is drawn instead of used as help text. 
+	 *    This is used by a few widgets to display text inside icons.
+	 *  if the help text starts with NotHelp, the string is passed through instead of used as help text.
+	 *    This is used in conjunction with drawChip methods to decorate or alter the images being drawn.
 	 * 
 	 * @param gc			// the graphics to draw with
 	 * @param drawOn		// the canvas to do the drawing
@@ -504,7 +501,9 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	{ 
       double aspect = getAspectRatio(drawOn);
       boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,(int)(squareWidth*aspect),squareWidth,sscale);
-      String draw = helptext!=null && helptext.startsWith("|") ? helptext.substring(1) : null;
+      String draw = helptext!=null && helptext.startsWith(NotHelp) 
+    		  			? helptext.startsWith(NotHelpDraw) ? helptext.substring(NotHelpDraw.length()) : helptext
+    		  			: null;
       String help = draw==null ? helptext : null;
       drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,draw);
       if(val)

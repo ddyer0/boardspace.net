@@ -49,7 +49,6 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
 {
 
 	private int index = 0;
-	public static String BACK = "_back_";
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
@@ -189,8 +188,7 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
             java.lang.String label)
     {	
 		super.drawChip(gc, canvas, SQUARESIZE*6/5, xscale, cx, cy, null);
-    	if(BACK.equals(label)) {}
-    	else if(letter!=null)
+		if(letter!=null)
     	{	// draw all letters with the same size
     		
     		Text ww = TextChunk.create("W");

@@ -104,7 +104,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     }
     
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {	enableAutoDone = true;
+    {	enableAutoDone = false;		// not suitable becuase of the remove phase
         super.init(info,frame);
         
         if (extraactions)

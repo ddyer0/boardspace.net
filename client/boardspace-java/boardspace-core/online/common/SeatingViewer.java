@@ -37,6 +37,7 @@ import lib.AR;
 import lib.Bitset;
 import lib.CellId;
 import lib.DefaultId;
+import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -638,7 +639,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
 			if(StockArt.SmallO.drawChip(gc,this,(int)(tableSize*0.8),xc,
 					yc,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
-					bubbleSelect==null ? null : "|"+name,0.3,1.2)
+					bubbleSelect==null ? null : DrawableImage.NotHelpDraw+name,0.3,1.2)
 					)
 			{
 				bubbleSelect.row = i;
@@ -649,7 +650,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
 			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,"|"+s.get(OrdinalSelector,playerNumber),0.3,1.2))
+				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,
+						DrawableImage.NotHelpDraw+s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				bubbleSelect.row = i;
 				}
@@ -1480,7 +1482,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     {  
     	commonPanel panel = new commonPanel();
     	XFrame frame = new XFrame("Offline Launcher");
-    	SeatingViewer viewer = (SeatingViewer)G.MakeInstance("online.common.SeatingViewer");
+    	SeatingViewer viewer = new SeatingViewer();
     	if(viewer!=null)
     	{
     	viewer.init(sharedInfo,frame);

@@ -529,8 +529,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	WypsCell drawPile = null;
 	int fullBoardSize = 0;
 	int chipsOnBoard = 0;
-	boolean openRacks = true;			// show all players racks
-	boolean openRack[];					// per player open rack
 	Dictionary dictionary ;				// the current dictionary
 	CellStack occupiedCells = new CellStack();
 	CellStack emptyCells = new CellStack();
@@ -582,7 +580,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	// only as part of the UI.
        	mapPick = new int[MAX_PLAYERS];
        	mapTarget = new int[MAX_PLAYERS];
-		openRack = new boolean[MAX_PLAYERS];		// part of the user interface
 
 
     	rackMap = new int[MAX_PLAYERS][rackSize+2];
@@ -664,7 +661,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	nPasses = 0;
     	isPass = false;
     	previousWord = null;
-		openRacks = true;
 	    for(Option o : Option.values()) { setOptionValue(o,false); }
 		lastLetters.clear();
 	    occupiedCells.clear();
@@ -1759,19 +1755,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         case MOVE_PASS:
         	setState((board_state==WypsState.ConfirmPass) ? resetState : WypsState.ConfirmPass);
         	isPass = board_state==WypsState.ConfirmPass;
-        	break;
-        case MOVE_SETOPTION:
-        	{
-        	Option o = Option.getOrd(m.to_row/2);
-        	boolean v = ((m.to_row&1)!=0);
-        	setOptionValue(o,v);
-        	
-        	}
-        	break;
-        case MOVE_SHOW:
-            {	
-            	openRack[m.to_col-'A'] = (m.to_row==0?false:true);
-            }
         	break;
         case MOVE_FLIP:
         	{

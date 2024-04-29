@@ -110,6 +110,7 @@ public abstract class Platform implements Config{
 	    {	expname = G.expandClassName(classname);
 	    	Class<?>cl = G.classForName(expname,false);
 	    	if(cl==null) { throw new ClassNotFoundException(); }
+	    	// this shouldn't be reached if we're in edt on codename1, deadly embrace can result
 	    	synchronized (makeObject)
 	    	{
 	        return (cl.newInstance()); //was clazz.newInstance()

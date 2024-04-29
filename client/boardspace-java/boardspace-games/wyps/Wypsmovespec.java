@@ -31,8 +31,6 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
     static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
-    static final int MOVE_SETOPTION = 209;	// set option
-    static final int MOVE_SHOW = 210;		// show tiles for a player
     static final int MOVE_PLAYWORD = 211;	// play a word from the rack
     static final int MOVE_SEE = 212;		// see tiles on the hidden rack
     static final int MOVE_LIFT = 213; 		// lift a tile in the user interface rack
@@ -51,8 +49,6 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
-        	"SetOption",MOVE_SETOPTION,
-        	"Show", MOVE_SHOW,
         	"Play",MOVE_PLAYWORD,
         	"See", MOVE_SEE,
         	"Lift", MOVE_LIFT,
@@ -268,7 +264,6 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
             player = D.getInt(msg.nextToken());
 
             break;
-        case MOVE_SHOW:
         case MOVE_SEE:
         	{
         	char pl = G.CharToken(msg);
@@ -277,13 +272,7 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
         	to_row = v ? 1 : 0;
         	}
         	break;
-        case MOVE_SETOPTION:
-        	{
-        	Option o = Option.valueOf(msg.nextToken());
-        	boolean v = G.BoolToken(msg);
-        	to_row = o.ordinal()*2|(v?1:0);
-        	}
-        	break;
+
         case MOVE_CANCELLED:
         case MOVE_SWAP:
         	break;
@@ -329,7 +318,6 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
 		case MOVE_LIFT:
 		case MOVE_REPLACE:
         case MOVE_DROP:
-        case MOVE_SHOW:
         case MOVE_SEE:
         case MOVE_PICK:
         case MOVE_DONE:
@@ -337,8 +325,6 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
         case MOVE_REMOTELIFT:
         case MOVE_REMOTEDROP:
             return TextChunk.create("");
-         case MOVE_SETOPTION:
-        	return TextChunk.create("Option "+Option.getOrd(to_row/2)+(((to_row&1)==0)?" false" : " true"));
         default:
             return TextChunk.create(D.findUniqueTrans(op));
 
@@ -381,11 +367,8 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
         case MOVE_START:
             return G.concat(indx,"Start P",player);
         case MOVE_SEE:
-        case MOVE_SHOW:
         	return G.concat(opname,to_col,((to_row==0)?" false" : " true"));
         	
-        case MOVE_SETOPTION:
-        	return G.concat(opname,Option.getOrd(to_row/2),(((to_row&1)==0)?" false" : " true"));
         default:
         case MOVE_CANCELLED:
         case MOVE_SWAP:

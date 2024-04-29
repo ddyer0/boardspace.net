@@ -95,8 +95,6 @@ public interface WypsConstants
     	DrawPile,
     	EmptyBoard,
      	Swap,
-    	SetOption,
-    	EyeOption,
     	Rotate,
     	Lock,
     	CheckWords,

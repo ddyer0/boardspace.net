@@ -21,12 +21,10 @@ import java.io.File;
 import lib.Digestable;
 import lib.DrawableImageStack;
 import lib.G;
-import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
-import lib.exCanvas;
 import online.game.chip;
 import java.util.Hashtable;
 import common.CommonConfig;
@@ -161,18 +159,6 @@ public class ImagineChip extends chip<ImagineChip> implements CommonConfig
 	public static ImagineChip cardBack = new ImagineChip("cardback-nomask",noscale,null);
     public static ImagineChip deck1[] = null;
     public static ImagineChip deck1a[] = null;
-	public static final String CardBacks = "--CARDBACKS--";
-
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
-	{   boolean isBack = CardBacks.equals(label);
-		if(isBack)
-		{
-		 cardBack.drawChip(gc,canvas,SQUARESIZE,xscale, cx,cy,null);
-		}
-		else
-		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, isBack?null:label);
-		}
-	}
 
     // deck1 is mostly collected from the fantasy landscapes found at pixabay.com
     public static String deck1Names[][] = {

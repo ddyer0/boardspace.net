@@ -61,7 +61,6 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     private Color newDarkLetterColor = new Color(239,66,75);
     private Color newLightLetterColor = new Color(212,5,25);
     private Dictionary dictionary = Dictionary.getInstance();
-    private boolean robotGame = false;
     private int rackSize = 2;
     
     // private state
@@ -139,7 +138,6 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new WypsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,WypsBoard.REVISION);
-        robotGame = sharedInfo.get(OnlineConstants.ROBOTGAME)!=null;
         // flickers background, keep off 5/13/2022
         useDirectDrawing(true);
         doInit(false);
@@ -316,24 +314,6 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	pl.displayRotation = rotation;
     	return(box);
     }
-    @SuppressWarnings("unused")
-	private void drawOptions(Graphics gc,HitPoint highlight,HitPoint highlightAll,WypsBoard gb)
-    {
-   	
-  
-    }
-    @SuppressWarnings("unused")
-	private void drawOptionIcon(Graphics gc,Option op,Rectangle r,HitPoint highlight,HitPoint highlightAll)
-    {	
-     	boolean value = bb.getOptionValue(op);
-    	WypsChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,WypsId.SetOption))
-    		{
-    		highlight.hitObject = "SetOption "+op.name()+" "+!value;
-    		}
-    	HitPoint.setHelpText(highlightAll, r, s.get(op.message));
-    	GC.frameRect(gc,Color.black,r);
-     }
     private void drawDrawPile(Graphics gc,HitPoint highlight,WypsBoard gb)
     {	Rectangle r = drawPileRect;
     	int boxw = G.Width(r);
@@ -390,8 +370,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
        	 
 
        	if(allowed_to_edit || ap==pl) { for(WypsCell c : gb.getPlayerRack(pidx)) { c.seeFlyingTiles=true; }}
-       	boolean open = gb.openRack[pidx];
-      	boolean showTiles = open || allowed_to_edit || bb.openRacks; 
+      	boolean showTiles = true;
        	boolean anyRack = G.offline() || allowed_to_edit || (ap==pl);
        	drawRack(gc,gb,rack,gb.getPlayerRack(pidx),gb.getPlayerMappedRack(pidx),gb.rackMap[pidx],gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
     	}
@@ -1145,7 +1124,6 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
     	  switch(nmove.op)
     	  {
-    	  case MOVE_SHOW:
     	  case MOVE_SEE:
     	  case MOVE_LIFT:
     	  case MOVE_REMOTELIFT:
@@ -1281,19 +1259,6 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         	boardRotation = (boardRotation+1)%4;
         	contextRotation = (boardRotation*Math.PI)/2;
         	generalRefresh();
-        	break;
-        case EyeOption:
-        	{
-         	String op = (String)hp.hitObject;
-         	HiddenGameWindow w = findHiddenWindow(hp);
-        	PerformAndTransmit(((w==null&&remoteViewer<0) ? "show ":"see ")+op);
-        	}
-        	break;
-        case SetOption:
-        	{
-        	String m = (String)hp.hitObject;
-        	PerformAndTransmit(m);
-        	}
         	break;
         case Blank:
         	{

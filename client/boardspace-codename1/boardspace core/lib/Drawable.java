@@ -26,6 +26,8 @@ package lib;
  *
  */
 public interface Drawable {
+	public static String NotHelp = "|";			// directive to pass the string through rather than draw it, instead of helptext
+	public static String NotHelpDraw = "||";	// directive to pass rest of the string through for drawing
 	/**
 	 * implements the drawing method, which is used to draw this object.
 	 *   

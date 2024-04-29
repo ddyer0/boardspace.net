@@ -931,8 +931,8 @@ public class ViticultureChip extends chip<ViticultureChip>
 		}
 
 	}
-	public static String BACK = "_back_";
-	public static String INDEX = "_index_";
+	public static String BACK = NotHelp + "_back_";		// the | causes the string to be passed in instead of used as a help text"
+	public static String INDEX = "_index_";		// index and top aren't passed to drawing at all
 	public static String TOP = "_top_";
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{   boolean isBack = BACK.equals(label);
