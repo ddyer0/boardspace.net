@@ -34,7 +34,6 @@ sub print_form_header()
 	print "<form action=$ENV{'REQUEST_URI'} method=POST>\n";
 	my $lan = &select_language(&param('language'));
 	my $elan = &encode_entities($lan);
-	if($lan) { print "<input type=hidden name='language' value='$elan'>\n"; }
 	my $test = &param('test');
 	if($test) { print "<input type=hidden name=test value='$test'>\n"; }
 }
@@ -409,19 +408,22 @@ param();
 	my $newtournament = param('newtournament');
 	my $newsuper = param('newsuper');
 	my $newtranslator = param('newtranslator');
+	my $newdiscord = &despace(param('discorduid'));
+	my $newlanguage = &despace(param('language'));
+
     my $hasNewStatus = 0;
   my $newnomail = param('nomail');
   if($newnomail eq 'on') { $newnomail='y'; } else { $newnomail=''; }
 	if(($passwd eq "") && !($newpname eq "") && !($newpname eq $pname)) { $pname = $newpname; $newpname=""; }
  
-	if($newcountry eq "No Change") { $newcountry = ""; }
+	if(($newcountry eq "No Change")||($newcountry eq "Select Country")) { $newcountry = ""; }
 	if($editable eq "") { $editable=($pname eq "") ? "yes" : "no"; }
 
  	my $slashname = $dbh->quote($pname);
 	my $q = "SELECT  timezone_offset,language,identity,players.comment,proposals.title,proposal,message,players.uid,locked,e_mail,e_mail_bounce,e_mail_bounce_date,full_name,country,city,date_joined,"
 					. "last_played,last_logon,"
           . "games_played,is_master,is_translator,is_tournament_manager,is_supervisor,"
-					. "players.status,last_ip,no_email "
+					. "players.status,last_ip,no_email,discorduid "
           . "FROM players left join proposals on players.proposal=proposals.uid "
           . "WHERE player_name=$slashname";
 	my $sth = &query($dbh,$q);
@@ -429,7 +431,7 @@ param();
 	#print "Q: $nr $q<p>";
 	my ($timezone_offset,$lang,$identity,$comment,$proposal_title,$proposal,$message,$uid,$locked,$email,$bounce,$bounce_date,$name,$country,$city,$date_joined,
       $last_played,$last_logon,
-			$games_played,$master,$translator,$istm,$issuper,$status,$last_ip,$nomail)
+			$games_played,$master,$translator,$istm,$issuper,$status,$last_ip,$nomail,$disid)
 			= $sth->fetchrow();
 	&finishQuery($sth);
 	$name = &utfDecode($name);
@@ -450,9 +452,9 @@ param();
 	   print "<br><b>password sent to $email</b>\n";
   	}
   {
-  # logged in segment    
+  # logged in segment,   
   if(&logon($dbh,$pname,$passwd,$supervisor,$spassword))
-  {   #trying to make changes
+  {   #trying to make changes, supplied the correct password
      my $opstr = "UPDATE players SET ";
      my $comma = "";
      my $superedit = ($readonly || !$supervisor)?0:1;
@@ -502,6 +504,23 @@ param();
         $opstr = $opstr . $comma . " country=$slashname";
         $comma = ", ";
         $country=$newcountry;
+      }
+      if(!($newlanguage eq "") && !($newlanguage eq $lang)) 
+	{
+	print "<br>changed language from $lang to $newlanguage\n";
+	my $slanguage = $dbh->quote($newlanguage); 
+	$opstr = $opstr . $comma . "language=$slanguage";
+	$comma = ", ";
+	$lang = $newlanguage;
+	}
+      
+      if(!($newdiscord eq $disid))
+	{
+	print "<br>changed discord id from $disid to $newdiscord\n";
+	my $sdis = $dbh->quote($newdiscord);
+	$disid = $newdiscord;
+	$opstr = $opstr . $comma . "discorduid=$sdis" ;
+	$comma = ", ";
       }
       if(!($city eq $newcity) && !($newcity eq ""))
             { print "<br>changed city from $city to $newcity\n";
@@ -625,7 +644,7 @@ param();
     # ready to make changes
       if(!($comma eq ""))
       {  $opstr = $opstr . " WHERE player_name='$pname'";
-      #print "Q: $opstr<br>";
+     # print "Q: $opstr<br>";
      &commandQuery($dbh,$opstr);
      if(!(lc($pname) eq lc($update_pname)))
        { __d("name change from $pname to $update_pname");
@@ -777,7 +796,18 @@ param();
 		   &print_country_selector($country);
 		   print "</td>\n";
         	}
-     print "<tr><td>" . &trans("Email address") . ":</td>\n";
+
+      my $tlang = &trans($lang);
+      print "<tr><td>" . &trans("Language:") . "</td>";
+      if($readonly)
+	{ print "<td>$tlang</td></tr>\n"; }
+	else
+	{ print "<td>" ;
+          &select_language_menu($lang,0) ;
+	  print "</td></tr>\n";
+	}
+
+   print "<tr><td>" . &trans("Email address") . ":</td>\n";
      
      my $bouncemess = $bounce_date
 						? &trans("Emails to this address are bouncing (at #1)",$bounce_date)
@@ -790,9 +820,11 @@ param();
        {my $nom = ($nomail eq 'y') ? "&nbsp;No newsletter emails will be sent" : "";
 	    my $hemail = &obfuscateHTML("$email");
         print "<td colspan=2>$hemail$nom$bb<td></tr>";
-    my $tlang = &trans($lang);
-	print "<tr><td>" . &trans("Language") . "</td><td>$tlang</td></tr>\n";
+  	my $tdis = ($disid eq "") ? &trans('(unknown)') : $disid;
+	print "<tr><td>" . &trans("Discord UID") . "</td><td>$tdis <a href=/english/about_discord.html>" 
+			. &trans("about discord") . "</a></td></tr>";
 
+  
 	print "<tr><td colspan=2>";
 	&print_form_header();
 	print "<input type=hidden name=pname value='$pname'>\n";
@@ -816,6 +848,12 @@ param();
         print "<input type=checkbox name=nomail $chk> If checked, send no announcements";
        print "</td></tr>\n";
    
+	print "<tr><td>" . &trans("Discord UID") . "</td><td>"
+			 . "<input type=text size=20 name=discorduid value='$disid'>" 
+			 . "<a href=/english/about_discord.html> " 
+			 . &trans("about discord") . "</a></td></tr>";
+ 
+	
      print "<tr><td>"
 	 . &trans("Current Password")
 	 . ":</td>\n";

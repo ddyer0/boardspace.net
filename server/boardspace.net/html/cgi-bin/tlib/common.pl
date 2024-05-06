@@ -93,7 +93,7 @@ sub select_language_menu()
 	foreach $key (keys(%'language_codes)) 
 	{	my $val = $'language_codes{$key};
 	    my $tval = &trans($val);
-		print &select_option($val,$tval,$def);
+		print &select_option($tval,$val,$def);
 	}
 	print "</select>\n";
 }
