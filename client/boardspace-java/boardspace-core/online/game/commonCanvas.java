@@ -1299,8 +1299,8 @@ public abstract class commonCanvas extends exCanvas
 	    	GC.printTimeC(gc, pl.timeRect,timeString, 
 	    				   review?Color.blue:Color.black,null, timeFont);
 	    	if(G.Height(pl.extraTimeRect)>0)
-	    	{
-    			printExtraTime(gc,pl,pl.extraTimeRect,timeControl,timeFont);
+	    	{	Font timeFont2 = G.getFont(nameFont,hgt*2/3);
+    			printExtraTime(gc,pl,pl.extraTimeRect,timeControl,timeFont2);
     	    }}
     		pl.setRotatedContext(gc, hp, true);
 	    }

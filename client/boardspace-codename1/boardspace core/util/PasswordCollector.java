@@ -748,7 +748,7 @@ import udp.PlaytableStack;
 			 turnBasedButton = new JButton(tb);
 			 turnBasedButton.setActionCommand(tb);
 			 turnBasedButton.addActionListener(this);
-			 p.add(turnBasedButton);
+			 p.addC(turnBasedButton);
 		 }
  		 String rega = s.get(ReviewMessage);
  		 reviewButton = new JButton(rega);

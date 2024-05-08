@@ -893,7 +893,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private LobbyMapViewer NewMapViewer()
 	{
 	  //System.out.println("language is " + sharedInfo.getString(info.LANGUAGENAME));
-	  LobbyMapViewer vr=(LobbyMapViewer)G.MakeInstance("online.common.LobbyMapViewer");
+	  LobbyMapViewer vr= new LobbyMapViewer();
 	  vr.init(sharedInfo,myFrame);
 	  return(vr);
 	}

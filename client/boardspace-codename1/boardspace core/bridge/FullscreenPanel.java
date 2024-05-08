@@ -35,11 +35,6 @@ public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuPa
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
-
-	public void addC(Component p)
-	{
-		add(p);
-	}
 	
 	//
     // these are still used by Tantrix. 

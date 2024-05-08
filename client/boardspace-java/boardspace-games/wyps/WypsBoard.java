@@ -1371,7 +1371,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	WypsCell mapped[] = mappedRack[whoseTurn];
     	int mymap[] = rackMap[whoseTurn];
     	int n=0;
-    	validateMap(whoseTurn);
     	for(WypsCell c : myrack) { if(c.topChip()!=null) { n++; }}
     	for(WypsCell c : myrack)
     		{ if(drawPile.height()==0 || n==handSize) break;

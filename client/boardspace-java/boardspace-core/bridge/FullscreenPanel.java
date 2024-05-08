@@ -42,6 +42,8 @@ public class FullscreenPanel extends Panel implements MenuParentInterface,NullLa
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public void addC(Component c) { add(c); }
 	public FullscreenPanel()
 	{
 		super();

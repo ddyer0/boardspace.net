@@ -83,6 +83,10 @@
                     really anti-nationalist, choose "Planet Earth".<br>
                   </td>
                 </tr>
+		<tr><td>Language</td>
+		<td><!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=language" --></td>
+		<td>your preferred language</td>
+		</tr>
                 <tr>
                   <td colspan="2" valign="top"><input value="register now" onclick="checkRegisterForm(this.form)" type="button"></td><td valign="top"><a href="file:///english/help-video.html"><img alt="help                  video" src="../images/video_icon.png" border="0" height="49" width="50"></a>View a short video to help
               get you started with the game lobby. </td></tr>

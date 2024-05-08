@@ -459,7 +459,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		else {
 			for(JButton b :  playtableButtons ) { b.setVisible(false); }
 		}
-		MasterForm.getMasterForm().getJMenuBar().repaint();
+		Component bar = MasterForm.getMasterForm().getJMenuBar();
+		if(bar!=null) { bar.repaint(); }
 	}
 
 	public void actionPerformed(ActionEvent evt) 

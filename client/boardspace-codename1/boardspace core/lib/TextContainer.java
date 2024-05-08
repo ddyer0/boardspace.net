@@ -52,8 +52,8 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class TextContainer extends Rectangle implements AppendInterface,KeyListener
 {	
-	static private TextContainer focusInstance = null;
-	public boolean hasFocus() { return (focusInstance == this); }
+	private boolean hasFocus = false;
+	public boolean hasFocus() { return (hasFocus); }
 	StringBuilder data=new StringBuilder();
 	private int lastLineHeight = 10;		// this is used to scale the amound of movement needed to start scrolling
 	
@@ -97,17 +97,19 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void setFocus(boolean v)
 	{	
-		if(editable && (v!=hasFocus()))
-			{if(canvas!=null) 
-				{ canvas.repaint(); 
+		if(editable)
+			{
+			boolean old = hasFocus();
+			if(v &&(canvas!=null))
+				{ 
+				canvas.repaint(); 
 				  canvas.requestFocus(this);
 				}
-			 if(v) { focusInstance = this; }
-			 else if(focusInstance==this) { focusInstance=null;}
+			hasFocus = v;		 		 
 			 focusToggle = v;
-			 setChanged(v ? Op.GainFocus : Op.LoseFocus);
+			if(old!=v) { setChanged(v ? Op.GainFocus : Op.LoseFocus); }
+			if(hasFocus() && clearBeforeAppend) { clear(); }	
 			}
-		if(hasFocus() && clearBeforeAppend) { clear(); }	
 	}
 	public boolean clearBeforeAppend = false;
 	public enum Op  { Send,Repaint,GainFocus,LoseFocus; }
@@ -222,13 +224,15 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		buttonColor = button;
 	}
 	public void setForeground(Color foreground) {
+		Color old = foregroundColor;
 		foregroundColor = foreground;
-		setChanged(Op.Repaint);
+		if(old!=foreground) { setChanged(Op.Repaint); }
 	}
 	public Font getFont() { return font; }
 	public void setFont(Font basicFont) {
+		Font old = font;
 		font = basicFont;
-		setChanged(Op.Repaint);
+		if(font!=old) { setChanged(Op.Repaint); }
 	}
 
 	public synchronized void clear()
@@ -293,7 +297,9 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		int cp = caratPosition;
 		visibleCaratPosition = caratPosition = Math.min(data.length(),Math.max(0, i));
 		autoScroll = true;
-		if(cp!=caratPosition) { setChanged(Op.Repaint); }
+		if(cp!=caratPosition) 
+			{ setChanged(Op.Repaint); 
+			}
 	}
 	public Point getLocation()
 	{
@@ -1029,7 +1035,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		case 40:
 			doDown();
 			break;
-		default: break;
+		default: 
+			break;
 		}
 	}
 	public void keyReleased(KeyEvent e) {

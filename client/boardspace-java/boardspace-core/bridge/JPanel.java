@@ -30,8 +30,7 @@ public class JPanel extends Panel implements NullLayoutProtocol,ImageConsumer
 	public void init()
 	{	setLayout(new NullLayout(this));
 	}
-
-	public void addC(Component p) {
+	public void addC(java.awt.Component p) {
 		if(contentPane==null) { add(p); } else  { contentPane.add(p); }
 	}
 

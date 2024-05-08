@@ -101,7 +101,11 @@ public class Container extends Component
 	}
 
 	public void add(ProxyWindow c) { addC(c.getComponent()); }
-
+	public com.codename1.ui.Container add(com.codename1.ui.Component c)
+	{	G.Assert(!G.debug() || G.isEdt(),"should be edt");
+		supadd(c);
+		return this;
+	}
 	 public void paintComponentBackground(Graphics g)
 	 {	//System.out.println("container paintcomponentbackground");
 	 }

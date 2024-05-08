@@ -48,7 +48,7 @@ class ChipStack extends OStack<CrosswordsChip>
 public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsConstants
 {
 	private int index = 0;
-	public static String BACK = "_back_";
+	public static String BACK = NotHelp + "_back_";
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;

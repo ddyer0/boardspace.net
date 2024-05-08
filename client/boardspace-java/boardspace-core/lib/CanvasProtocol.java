@@ -16,7 +16,6 @@
  */
 package lib;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.io.PrintStream;
 
@@ -58,7 +57,6 @@ public interface CanvasProtocol extends DeferredEventHandler
 	 */
 	public void printDebugInfo(PrintStream s);
 
-   public Component add(Component c);
    public void shutDown();
    public String statsForLog();
    public void wake();

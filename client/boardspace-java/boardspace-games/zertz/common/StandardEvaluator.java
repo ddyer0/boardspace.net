@@ -74,7 +74,7 @@ public class StandardEvaluator extends DefaultEvaluator implements Evaluator,Gam
 
             if (col >= 0)
             {
-                int ct = ballc.count;	// count of adjavent spaces still on the board
+                int ct = ballc.count;	// count of adjacent spaces still on the board
                 ballcounts[ct]++;		// count the balls with a particular count
 
                 if (ct == 6)			// not adjacent to any edge

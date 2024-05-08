@@ -50,7 +50,7 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
 	 // is a single bit, so we can convert known alpha by twiddling the bit
 	public static final char U2L = (char)('A'^'a');
 	private int index = 0;
-	public static String BACK = "_back_";
+	public static String BACK = NotHelp + "_back_";
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
@@ -130,8 +130,8 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     	};
     static public JumbulayaChip Post = new JumbulayaChip("post",postScale,null);
     // greenpost double letter
-    static public JumbulayaChip Blue = new JumbulayaChip("post-blue",postScale,"blue");
-    static public JumbulayaChip Yellow = new JumbulayaChip("post-yellow",postScale,"yellow");
+    static public JumbulayaChip Blue = new JumbulayaChip("post-blue",new double[]{ 0.62,0.44,1.38},"blue");
+    static public JumbulayaChip Yellow = new JumbulayaChip("post-yellow",new double[]{ 0.62,0.44,1.22},"yellow");
     static public JumbulayaChip Green = new JumbulayaChip("post-green",postScale,"green");
     static public JumbulayaChip Red = new JumbulayaChip("post-red",postScale,"red");
     static public JumbulayaChip Colors[] = {

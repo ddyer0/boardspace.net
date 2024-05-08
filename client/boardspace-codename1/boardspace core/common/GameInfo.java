@@ -2539,6 +2539,7 @@ synchronized(allGames) {
 		}
 		return false;
 	}
+
 	public static String GameInfoStringPairs[][] =
 			{	{"PlateauGameInfoMessage","side screens are needed to conceal your rack"},
 				{"MogulInfoMessage","side screens are needed to keep your stack of chips secret"},

@@ -195,16 +195,16 @@ public class FileSelector extends FullscreenPanel
     		if(fs!=null)
     		{
     		JButton b = new JButton(fs.name);
-    		sourcePanel.add(b);
+    		sourcePanel.addC(b);
     		b.addActionListener(deferredEvents);
     		b.setVisible(true);
     		sourceButtons.add(b);
         }
     	}
-    	sourcePanel.add(currentRoot);
+    	sourcePanel.addC(currentRoot);
     	currentRoot.setVisible(true);
         
-    	add(sourcePanel);
+    	addC(sourcePanel);
     	
         dirField = new XTextField(52);
         dirField.setBackground(Config.FrameBackgroundColor);
@@ -213,10 +213,10 @@ public class FileSelector extends FullscreenPanel
         dirPanel.setLayout(new BoxLayout(dirPanel,BoxLayout.X_AXIS));
         dirLabel = new Label("");
         dirLabel.setBackground(Config.FrameBackgroundColor);
-        dirPanel.add(dirLabel);
+        dirPanel.addC(dirLabel);
         dirPanel.setBackground(Config.FrameBackgroundColor);
         dirPanel.setOpaque(true);
-        dirPanel.add(dirField);
+        dirPanel.addC(dirField);
         dirPanel.setVisible(true);
 
         exitPanel = new JPanel();
@@ -227,13 +227,13 @@ public class FileSelector extends FullscreenPanel
         saveButton = new JButton(s.get(SaveGame));
         saveButton.setBackground(Config.FrameBackgroundColor);
         cancelButton.setBackground(Config.FrameBackgroundColor);
-        exitPanel.add(cancelButton);
+        exitPanel.addC(cancelButton);
         mkdirButton = new JButton(s.get(MakeDirectory));
         deleteButton = new JButton(s.get(Delete));
-        exitPanel.add(mkdirButton);
-        exitPanel.add(okButton);
-        exitPanel.add(saveButton);
-        exitPanel.add(deleteButton);
+        exitPanel.addC(mkdirButton);
+        exitPanel.addC(okButton);
+        exitPanel.addC(saveButton);
+        exitPanel.addC(deleteButton);
         exitPanel.setOpaque(true);
         gameList = new ScrollableList<ProxyString>(12, false);       
         dirList = new ScrollableList<ProxyString>(8, false);
@@ -248,7 +248,7 @@ public class FileSelector extends FullscreenPanel
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));
         JLabel matchLabel = new JLabel(s.get(MatchWords));
         matchLabel.setBackground(Config.FrameBackgroundColor);
-        filterPanel.add(matchLabel);
+        filterPanel.addC(matchLabel);
         filterField = new XTextField(40);
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
@@ -257,13 +257,13 @@ public class FileSelector extends FullscreenPanel
         //filterField.setMaximumSize(new Dimension(1000,30));
         filterPanel.setBackground(Config.FrameBackgroundColor);
         filterPanel.setOpaque(true);
-        filterPanel.add(filterField);
+        filterPanel.addC(filterField);
   
-        add(dirPanel);	// directory name
-        if(exitPanel!=null) { add(exitPanel); }
+        addC(dirPanel);	// directory name
+        if(exitPanel!=null) { addC(exitPanel); }
         if(G.isCodename1())
         {
-        	add(dirList);
+        	addC(dirList);
         }
         else {
         dirListPanel = new JPanel();
@@ -271,18 +271,18 @@ public class FileSelector extends FullscreenPanel
         add(dirListPanel);	// directory list
         dirListPanel.add(new JScrollPane(dirList));
         }
-        add(filterPanel);	// name filter     
+        addC(filterPanel);	// name filter     
         if(G.isCodename1())
         {
-        	add(gameList);        	
+        	addC(gameList);        	
         }
         else {
        	gameListPanel = new JPanel();
         gameListPanel.add(new JScrollPane(gameList));
         gameListPanel.setLayout(new BoxLayout(gameListPanel,BoxLayout.X_AXIS));
-        add(gameListPanel);
+        addC(gameListPanel);
         }
-        add(moveField);
+        addC(moveField);
 
         filterField.addActionListener(deferredEvents);
         gameList.addListSelectionListener(deferredEvents);

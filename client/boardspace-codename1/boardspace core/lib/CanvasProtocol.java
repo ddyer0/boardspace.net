@@ -16,10 +16,8 @@
  */
 package lib;
 
-import java.io.PrintStream;
-
-import bridge.Component;
 import bridge.Container;
+import java.io.PrintStream;
 
 public interface CanvasProtocol extends DeferredEventHandler
 {    /** do any pending tasks (on a time scale of fractions of a second). This will
@@ -59,7 +57,6 @@ public interface CanvasProtocol extends DeferredEventHandler
 	 */
 	public void printDebugInfo(PrintStream s);
 
-   public Component add(Component c);
    public void shutDown();
    public String statsForLog();
    public void wake();
