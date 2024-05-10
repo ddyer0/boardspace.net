@@ -19,6 +19,9 @@ package online.common;
 
 import lib.Graphics;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;

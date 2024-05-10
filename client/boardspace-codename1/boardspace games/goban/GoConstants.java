@@ -52,7 +52,7 @@ public interface GoConstants
 	 * enum also serves as a singleton class with a selected value
 	 * with the ability to display a menu of choices.
 	 */
-	enum NumberingMode implements NameProvider
+	enum NumberingMode implements EnumMenu
 	{ None, All, Last, Last_5, Last_Branch, From_Here;
 		public String getName() { return(toString()); }
 		static PopupManager menu = null;
@@ -65,8 +65,7 @@ public interface GoConstants
 			if(menu==null) { menu=new PopupManager(); }
 			viewer = v;
 			menu.newPopupMenu(v,v.deferredEvents);
-			menu.addMenuItem(values());
-			menu.show(x,y);
+			menu.show(x,y,values());
 		}
 		// handle the user clicking on one of the choices
 		static boolean selectMenu(Object target)
@@ -108,8 +107,11 @@ public interface GoConstants
 		}
 		public static void putStrings()
 		{	
-			InternationalStrings.put(G.getNames(values()));
+			InternationalStrings.put(values());
 			
+		}
+		public String menuItem() {			
+			return getName();
 		}
 	}
 	

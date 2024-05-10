@@ -27,6 +27,7 @@ import static com.codename1.util.MathUtil.atan2;
 import bridge.Color;
 import lib.CellId;
 import lib.DrawableImage;
+import lib.EnumMenu;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -93,9 +94,9 @@ public class NumberMenu extends Rectangle {
 	 * enum also serves as a singleton class with a selected value
 	 * with the ability to display a menu of choices.
 	 */
-	public enum NumberingMode implements NameProvider
+	public enum NumberingMode implements EnumMenu
 	{ None, All, Last, Last_2, Last_5, From_Here;
-	  public String getName() { return(toString().replace('_',' ')); }
+	  public String menuItem() { return(name().replace('_',' ')); }
 	}
 	/**
 	 * 
@@ -107,7 +108,7 @@ public class NumberMenu extends Rectangle {
 		drawOn = on;
 		base = ic;
 		id = i;
-		text = "#";
+		text = DrawableImage.NotHelpDraw + "#";
 		selectedProvider = (PlacementProvider)on;
 	}
 	/**
@@ -133,8 +134,7 @@ public class NumberMenu extends Rectangle {
 	{
 		if(menu==null) { menu=new PopupManager(); }
 		menu.newPopupMenu(drawOn,drawOn.deferredEvents);
-		menu.addMenuItem(NumberingMode.values());
-		menu.show(G.Left(this),G.Top(this));
+		menu.show(G.Left(this),G.Top(this),NumberingMode.values());
 	}
 	/**
 	 * called from the canvas handleDeferredEvent method, retrn true if an item
@@ -177,7 +177,7 @@ public class NumberMenu extends Rectangle {
 		}
 	public static void putStrings()
 	{	
-		InternationalStrings.put(G.getNames(NumberingMode.values()));			
+		InternationalStrings.put(NumberingMode.values());			
 	}
 	
 	/**

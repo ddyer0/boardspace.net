@@ -147,7 +147,9 @@ public abstract class InternationalStrings implements Config
         	}
         return (dat);
     }
-
+    public static void put(EnumMenu s[]) { 
+    	for(EnumMenu ss : s) { put(ss.menuItem()); }
+    }
     public static String put(String selfKey) { return(put(selfKey,selfKey)); }
     /**
      * add an array of strings as self keys

@@ -1089,6 +1089,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     			{ if(uid!=loggedinUid)
     				{inviteUid = uid;    			  
     				inviteName = name;
+    				uids.register(uid,name);	// add to the list of known names
     				invitedPlayers.pushNew(new SimpleUser(uid,name));
     				invitePlayerRect.clear();
     				}
@@ -1199,7 +1200,7 @@ static public void putStrings()
 		FirstChoices.putStrings();
 				
 		InternationalStrings.put(TurnStrings);
-		InternationalStrings.put(TurnStringPairs);
+		//InternationalStrings.put(TurnStringPairs);
 	}
 	
 	public void drawSpeedBox(Graphics gc,HitPoint hp)

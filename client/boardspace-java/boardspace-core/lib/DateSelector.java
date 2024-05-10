@@ -122,6 +122,7 @@ public class DateSelector extends Rectangle implements ActionListener
 		{
 		selection = (DateCode)hit;
 		menu.newPopupMenu(parent,this);
+		InternationalStrings s = G.getTranslations();
 		switch (selection)
 		{
 		case Year:
@@ -133,7 +134,7 @@ public class DateSelector extends Rectangle implements ActionListener
 		case Month:
 			for(int i=0; i<BSDate.months.length;i++)
 			{
-				menu.addMenuItem(BSDate.months[i],i);
+				menu.addMenuItem(s.get(BSDate.months[i]),i);
 			}
 			break;
 		case Day:
@@ -180,4 +181,6 @@ public class DateSelector extends Rectangle implements ActionListener
 			}
 		}
 	}
+
+	
 }

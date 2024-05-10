@@ -294,5 +294,8 @@ public class BSDate extends SystemDate
 		BSDate df = new BSDate(date);
 		return(df);
 	}
-
+	public static void putStrings()
+	{	InternationalStrings.put(months);
+		InternationalStrings.put(weekdays);
+	}
 }

@@ -16,6 +16,7 @@
  */
 package language;
 
+import lib.BSDate;
 import lib.ChatWidget;
 import colorito.ColoritoConstants;
 import common.GameInfo;
@@ -174,7 +175,7 @@ public class masterStrings extends InternationalStrings
         RpcListener.putStrings();
         put(Session.SessionStrings);
         put(SeatingViewer.SeatingStrings);
-        
+        BSDate.putStrings();
         TurnBasedViewer.putStrings();
         
         put(SeatingViewer.SeatingStringPairs);

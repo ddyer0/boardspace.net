@@ -116,7 +116,13 @@ public class UploadStrings
       System.out.println("Port Forwarded");
     	
       //mysql database connectivity
-      String url = "jdbc:mysql://localhost:"+lport+"/"+database;
+      //
+      // note may 8 2024, the getConnection started failing with a complaint
+      // about "CDT" being an undefined or ambigous time zone.  Adding ?serverTimeZone
+      // as suggested by StackOverflow seems to fix the problem.
+      //
+      String url = "jdbc:mysql://localhost:"+lport+"/"+database 
+    		  + "?serverTimezone=UTC";
       conn = DriverManager.getConnection(url, user, pass);
 
       System.out.println ("Database connection established");

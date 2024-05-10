@@ -185,7 +185,7 @@ public class TimeControl implements Config
 		if(val==null) { val = new TimeControl(Kind.None);}
 		return(val);
 	}
-	public enum Kind {
+	public enum Kind implements EnumMenu{
 		
 		None(NoTime,0,0,0),
 		Fixed(FixedTime,10*60*1000,0,0),
@@ -207,6 +207,9 @@ public class TimeControl implements Config
 		{
 			for(Kind k : values()) { if(k.name().equalsIgnoreCase(msg)) { return(k); }}
 			return(null);
+		}
+		public String menuItem() {
+			return TimeMessage;
 		}
 
 	}
@@ -417,12 +420,7 @@ public class TimeControl implements Config
 	  public PopupManager changeTimeControlKind(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	timeControlMenu = new PopupManager();
 	  	timeControlMenu.newPopupMenu(parent,deferredEvents);
-	  	InternationalStrings s = G.getTranslations();
-	  	for(TimeControl.Kind timer : TimeControl.Kind.values())
-	  	{
-	  		timeControlMenu.addMenuItem(s.get(timer.TimeMessage),timer);
-	  	} 	
-	  	timeControlMenu.show(ex,ey);
+	    timeControlMenu.show(ex,ey,TimeControl.Kind.values());
 	  	return(timeControlMenu);
 	  }
 	  private PopupManager minutesMenu;
