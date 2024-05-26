@@ -16,6 +16,10 @@
  */
 package lib;
 
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+
 /**
  * a image-based button that has standard button behavior and appearance.
  * This class extends Rectangle, so it can be positioned by the standard layout methods
@@ -28,6 +32,8 @@ public class Toggle extends ToggleButton
 {
 	private DrawableImage<?> onIcon;
 	private DrawableImage<?> offIcon;
+	public Color foregroundColor = Color.black;
+	public Color backgroundColor = Color.white;
 	/**
 	 * create a toggle represented by an icon that can be mouse active
 	 * @param can
@@ -73,7 +79,20 @@ public class Toggle extends ToggleButton
    		DrawableImage<?> ic = isOn ? onIcon : offIcon;
    		Text tip = isOn ? onToolTip : offToolTip;
    		CellId id = isOn ? onId : offId;
+   		int w = G.Width(this);
+   		int h = G.Height(this);
+   		if(w>h*3)
+   		{	
+   		int left = G.Left(this);
+   		int top = G.Top(this);
+   		boolean hit = ic.drawChip(gc,canvas,new Rectangle(left,top,h,h),hp,id,tip);
+   		GC.Text(gc,false,left+h,top,w-h,h,foregroundColor,backgroundColor,name);
+   		return hit;
+   		}
+   		else
+   		{
    		return ic.drawChip(gc,canvas,this,hp,id,tip);
+   		}
    		
    	}
 }

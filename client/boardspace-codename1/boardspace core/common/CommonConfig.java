@@ -66,6 +66,8 @@ public interface CommonConfig extends UniversalConstants {
 	// ops to support offline turn based games
 	//
 	static final String getTurnbasedURL = "/cgi-bin/bs_offline_ops.cgi";
+	static final String turnbasedHelpURL = "/english/about_turnbased.html";
+	
 	static final String editURL = "/cgi-bin/edit.cgi";
 	static final String getPicture = "/cgi-bin/tlib/getpicture.cgi";
 	static final String uploadPicture = defaultProtocol + "//boardspace.net/english/pictureupload.html";

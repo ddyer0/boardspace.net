@@ -26,22 +26,21 @@ sub init
 
 sub rank_header()
 {
-  my ($dbh,$variation,$myname,$vname)=@_;
+  my ($dbh,$variation,$myname,$vname,$mode)=@_;
   my $pvar = &trans("${variation}-pretty-name");
+  my $wmode = ($mode eq 'master') ? "Master " : ($mode eq 'turnbased') ? "Turn Based " : "";
   my $header=param('header');
-  my $altheader = &trans("Player Rankings","",$pvar);
-  my $stdheader = &trans("Master Player Rankings","",$pvar);
+  my $stdheader = &trans("#1 ${wmode}Player Rankings",$pvar);
 
   my $youcanget = &trans('youcanget');
 	
   if($header eq "") 
   {  
-	 $header = &trans("#1 Ranking Ladder",$pvar);
+	 $header = &trans("#1 ${wmode}Ranking Ladder",$pvar);
   };
-  my $link = &get_link($vname,$stdheader,$myname,"master");	
-  my $link1 = &get_link($vname,$altheader,$myname,'');	
-  my $dbmes=&trans("#1 game results database",$pvar);
-  my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a>";
+  my $link = &get_link($vname,$stdheader,$myname,$mode);
+  my $dbmes=&trans("#1 game database",$pvar);
+  my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation&mode=$mode\",0)'>$dbmes</a>";
   my $vlink = &gamecode_to_gameviewer($dbh,$vname);
   #http://boardspace.net/cgi-bin/player_analysis.cgi?game=hive
   #http://boardspace.net/hive/hive-viewer.shtml
@@ -65,7 +64,7 @@ Header
 
 print <<Header
 <p>
-<table border=1 cellpadding=3><tr><td>$link1</td><td>$link</td><td>$dblink</td></tr></table>
+<table border=1 cellpadding=3><tr><td>$link</td><td>$dblink</td></tr></table>
 <p>
 <HR SIZE="4" WIDTH="40%">
 Header
@@ -98,8 +97,11 @@ sub update_rankings
 	my $variation = &gamecode_to_gamename($dbh,$vname ? $vname : "Z");
 	my $t = &current_time_string();
 	my $qvar = $dbh->quote($variation);
+	my $mode = &param('mode');
+	my $qm = $dbh->quote(($mode eq '') ? "No" : ($mode eq 'master') ? "Yes" : "Turnbased");
+	my $qmode = " AND ranking.is_master=$qm ";
     
-	&rank_header($dbh,$variation,$myname,$vname);
+	&rank_header($dbh,$variation,$myname,$vname,$mode);
 	
 	print "<b>";
 	print &trans("howtheladderworks");
@@ -114,7 +116,7 @@ sub update_rankings
 	my $qlvl = $dbh->quote($currlvl);
 	my $qvar = $dbh->quote($variation);
 	my $q = "select ranking.uid,player_name,ladder_level,ladder_order from ranking left join players"
-		. " on players.uid=ranking.uid where variation=$qvar and ladder_level=$qlvl"
+		. " on players.uid=ranking.uid where variation=$qvar and ladder_level=$qlvl $qmode"
 		. " order by ladder_order";
 	#print "Q: $q";
 	my $sth = &query($dbh,$q);

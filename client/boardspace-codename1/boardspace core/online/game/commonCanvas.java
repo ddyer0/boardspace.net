@@ -39,6 +39,7 @@ import online.common.LaunchUser;
 import online.common.LaunchUserStack;
 import online.common.OnlineConstants;
 import online.common.Session;
+import online.common.TurnBasedViewer;
 import online.game.BaseBoard.BoardState;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_game;
@@ -550,6 +551,8 @@ public abstract class commonCanvas extends exCanvas
 	};
     public Bot robot = null; 
     public boolean isPassAndPlay = false;	// this game was created as a pass and play game
+    private TurnBasedViewer.AsyncGameInfo turnBasedGame = null;
+    public boolean isTurnBasedGame() { return turnBasedGame!=null; }
 
     class ScoreItem implements CompareTo<ScoreItem>
     {
@@ -1923,7 +1926,7 @@ public abstract class commonCanvas extends exCanvas
      * @return true if this player is using the same gui
      */
     private boolean isALocalPlayer(commonPlayer lp)
-    { 	if(lp!=null && (remoteViewer<0))
+    { 	if(lp!=null && (remoteViewer<0) && !isTurnBasedGame())
     	{
     	if(G.offline() || lp.isProxyPlayer) { return(true); } 
     	}
@@ -3246,6 +3249,17 @@ public abstract class commonCanvas extends exCanvas
 	  	}
 	  	return(false);
   }
+  //
+  // in turn based games, we don't want to allow a full undo
+  // when it's the player's regular move.  This requires that
+  // some move of his own be on top of the stack.
+  //
+  public boolean allowTurnBasedUndo()
+  {
+	  commonMove m = getCurrentMove();
+	  BoardProtocol b = getBoard();
+	  return m.player()==b.whoseTurn();
+  }
   public boolean handleEditButton(Graphics gc,double rotation,Rectangle r,HitPoint p,HitPoint any,Color highlightColor,Color backgroundColor)
   {
 	  //StockArt icon = p==null?StockArt.OffLight:StockArt.RedLight;
@@ -3253,16 +3267,26 @@ public abstract class commonCanvas extends exCanvas
 	  if((p!=null) && allowUndo())
 	  {	  
 	  	  commonPlayer pl = whoseTurn();
+	  	  if(!isTurnBasedGame() || allowTurnBasedUndo())
+	  	  {
 		  return handleUndoButton(gc,
 				  	G.isApproximatelySquare(r)
 				  		? pl.displayRotation
 				  		:rotation,
-				  	r,p,highlightColor,backgroundColor);
+				  	r,any,highlightColor,backgroundColor);
+	  	  }
 	  }
 	  else if((any!=null) && allowOpponentUndo())
 	  {
 	  	  commonPlayer pl = l.my;
+	  	  if(isTurnBasedGame())
+	  	  { // in turn based games, undos are handled locally with no "please" from the other player.
+	  		handleUndoButton(gc,G.isApproximatelySquare(r) ? pl.displayRotation:rotation,r,any,highlightColor,backgroundColor);  
+	  	  }
+	  	  else
+	  	  {
 		  return handlePleaseUndoButton(gc,G.isApproximatelySquare(r) ? pl.displayRotation:rotation,r,any,highlightColor,backgroundColor);		  
+	  }
 	  }
 	  else if(allowed_to_edit)
 	  {if (GC.handleRoundButton(gc, r, p,s.get(EditAction),highlightColor, backgroundColor))
@@ -5088,7 +5112,7 @@ public abstract class commonCanvas extends exCanvas
         super.init(info,frame);
         
         SeatingChart chart = (SeatingChart)sharedInfo.get(SEATINGCHART);
-        
+        turnBasedGame = (TurnBasedViewer.AsyncGameInfo)info.get(TURNBASEDGAME);
         if(chart!=null)
         {
         	if(chart.seatingFaceToFace()) { currentViewset = ViewSet.Reverse; }
@@ -6797,6 +6821,10 @@ public abstract class commonCanvas extends exCanvas
         root.set_property(gamename_property, theChat.shortNameField());
         root.set_property(gametitle_property, theChat.nameField());
         }
+        if(isTurnBasedGame())
+     		{	
+         	root.set_property(gamespeed_property , turnBasedGame.speed.menuItem()); 
+     		}
         root.set_property(setup_property, gameType());
         if(G.offline()||USE_COLORMAP)
         {
@@ -6878,6 +6906,9 @@ public abstract class commonCanvas extends exCanvas
         ps.println(setup_property+"[" + gameType() + "]");
         ps.println(date_property+ "[" + startingTime + "]");
         ps.println(gamename_property + "[" + nameString + "]");
+        if(isTurnBasedGame())
+        	{ ps.println(gamespeed_property + "[" + turnBasedGame.speed.menuItem() + "]"); 
+        	}
         if(History.size()>0)
         {
         History.elementAt(0).printProperties(ps);
@@ -7198,8 +7229,8 @@ public abstract class commonCanvas extends exCanvas
  {
  	if(name.equals(date_property))
 	{
- 	BSDate result = BSDate.parseDate(value,"EEE MMM dd kk:mm:ss z yyyy");
-	BSDate refdate = BSDate.parseDate(ref,"MMM dd yyyy");
+ 	BSDate result = BSDate.parseDate(value);
+	BSDate refdate = BSDate.parseDate(ref);
 	boolean newformat = result.getTime()<refdate.getTime();
 		
 	if(newformat!=Random.OLD_NEXTINT_COMPATABILITY) 

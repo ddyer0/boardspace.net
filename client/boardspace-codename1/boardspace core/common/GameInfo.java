@@ -257,7 +257,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				&& (!unrankedOnly || includedTypes.test(ES.unranked))
 				);
 	}
-	public GameInfo[] groupMenu(Bitset<ES> includedTypes,int playercount)
+	public static GameInfo[] groupMenu(Bitset<ES> includedTypes,int playercount)
 	{	Hashtable<String,GameInfo>included = new Hashtable<String,GameInfo>();
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo gi = allGames.elementAt(lim);
@@ -281,10 +281,10 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	
 	public static GameInfo nthGame(int n,Bitset<ES> included,int playercount)
 	{
-		GameInfo g[] = allGames.elementAt(0).gameMenu(null,included,playercount);
+		GameInfo g[] = GameInfo.gameMenu(null,included,playercount);
 		return((g!=null && g.length>n) ? g[n%g.length] : futureGame);
 	}
-	public GameInfo[] gameMenu(String name,Bitset<ES> includedTypes,int playercount)
+	public static GameInfo[] gameMenu(String name,Bitset<ES> includedTypes,int playercount)
 	{	Hashtable<String,GameInfo> included = new Hashtable<String,GameInfo>();
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo info = allGames.elementAt(lim);
@@ -2484,15 +2484,15 @@ synchronized(allGames) {
 		InternationalStrings s = G.getTranslations();
 		if(rules!=null)
 		{
-			StockArt.Rules.drawChip(gc,drawOn,hp,GameLink.ShowRules,s.get(GameLink.ShowRules.helpText),ystep,left,centery);
+			StockArt.Rules.drawChip(gc,drawOn,ystep,left,centery,hp,GameLink.ShowRules,s.get(GameLink.ShowRules.helpText));
 		}
 		if(website!=null)
 		{
-			StockArt.Homepage.drawChip(gc,drawOn,hp,GameLink.ShowPage,s.get(GameLink.ShowPage.helpText),ystep,left+xstep*4/5,centery);
+			StockArt.Homepage.drawChip(gc,drawOn,ystep,left+xstep*4/5,centery,hp,GameLink.ShowPage,s.get(GameLink.ShowPage.helpText));
 		}			
 		if(howToVideo!=null)
 		{
-			StockArt.Video.drawChip(gc,drawOn,hp,GameLink.ShowVideo,s.get(GameLink.ShowVideo.helpText),ystep,left+xstep*2,centery);
+			StockArt.Video.drawChip(gc,drawOn,ystep,left+xstep*2,centery,hp,GameLink.ShowVideo,s.get(GameLink.ShowVideo.helpText));
 		}
 	}
 	/**

@@ -1333,7 +1333,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	ch.drawChip(gc,this, topPart*2, xp,yp,null);
     	
     	StockArt icon = pl.hiddenShowCards ? StockArt.NoEye : StockArt.Eye;
-    	icon.drawChip(gc,this,hp,RajId.ShowCards,null,topPart,xp,yp+topPart*2);
+    	icon.drawChip(gc,this,topPart,xp,yp+topPart*2,hp,RajId.ShowCards,null);
     	GC.setFont(gc, myfont);
     	GC.Text(gc,true,l+w/2,t,w/2,topPart,Color.black,null,s.get(ServiceName,name));
     	RajState state = bb.getState();

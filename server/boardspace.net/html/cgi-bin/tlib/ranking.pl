@@ -2,10 +2,65 @@
 # common subroutines for all rankings
 #
 
+sub update_turnbased()
+{
+	my ($dbh,$session,$key) = @_;
+	my $qkey = $dbh->quote($key);
+	my $qsession = $dbh->quote($session);
+	my $q = "update offlinegame set scored=1 where gameuid=$qsession and variation=$qkey limit 1";
+	&commandQuery($dbh,$q);
+}
 # check to see if the server is up, and thinks this is a
 # legitimate result.  log problems!
 #
 $'reject_line='';
+sub contains()
+{  my ($value,$aref) = @_;
+   my @array = @{$aref};
+   for(my $i = 1; $i<=$#array; $i++)
+	{
+ 	if($array[$i] eq $value) { return 1; }
+	}
+  return 0;
+}
+sub check_turnbased
+{
+ my ($dbh,$session,$key,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12)=@_;
+ my $qsession = $dbh->quote($session);
+ my $qkey = $dbh->quote($key);
+ my $q = "select acceptedplayers,variation from offlinegame where gameuid=$qsession and variation=$qkey and status='complete' and scored=0 and (playmode='tournament' OR playmode='ranked')";
+ my $sth = &query($dbh,$q);
+ my $nr = &numRows($sth);
+ my $ok = 0;
+ #print "Q: ($nr) $q\n";
+ if($nr==1)
+ { my ($acceptedplayers,$variation) = &nextArrayRow($sth);
+   my @players = {};
+   my (@accepted) = split /\|/,$acceptedplayers;
+   if ($p1 && !&contains($p1,\@players) && &contains($p1,\@accepted) ) { push @players,$p1; }
+   if ($p2 && !&contains($p2,\@players) && &contains($p2,\@accepted) ) { push @players,$p2; }
+   if ($p3 && !&contains($p3,\@players) && &contains($p3,\@accepted) ) { push @players,$p3; }
+   if ($p4 && !&contains($p4,\@players) && &contains($p4,\@accepted) ) { push @players,$p4; }
+   if ($p5 && !&contains($p5,\@players) && &contains($p5,\@accepted) ) { push @players,$p5; }
+   if ($p6 && !&contains($p6,\@players) && &contains($p6,\@accepted) ) { push @players,$p6; }
+   if ($p7 && !&contains($p7,\@players) && &contains($p7,\@accepted) ) { push @players,$p7; }
+   if ($p8 && !&contains($p8,\@players) && &contains($p8,\@accepted) ) { push @players,$p8; }
+   if ($p9 && !&contains($p9,\@players) && &contains($p9,\@accepted) ) { push @players,$p9; }
+   if ($p10 && !&contains($p10,\@players) && &contains($p10,\@accepted) ) { push @players,$p10; }
+   if ($p11 && !&contains($p11,\@players) && &contains($p11,\@accepted) ) { push @players,$p11; }
+   if ($p12 && !&contains($p12,\@players) && &contains($p12,\@accepted) ) { push @players,$p12; }
+   $ok = ($#accepted==$#players);
+   if(!$ok) 
+	{ $'reject_line = "players list mismatch (@players) (@accepted)"; 
+          print "reject @players + @accepted\n";
+	}
+   }
+   else
+   { $'reject_line = "no game matches $q";
+   }
+ &finishQuery($sth);
+ return $ok;
+}
 
 sub check_server
 { # p3 .. p12 are optional
@@ -57,11 +112,17 @@ sub make_log()
  printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n",1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
  close F_OUT;
 }
-
+#
+# this gets the rank for a player/game/mode and if it doesn't exist, creates it.
+#
 sub getrank()
-{ my($dbh,$u1,$game,$master)=@_;
+{ my($dbh,$u1,$game,$master,$turnbased)=@_;
   my $qgame = $dbh->quote($game);
-  my $mstr = $master ? " AND ranking.is_master='yes'" : "AND ranking.is_master!='yes'";
+  my $mstr = $turnbased 
+		? " AND ranking.is_master='turnbased'"
+		: $master 
+			? " AND ranking.is_master='yes'" 
+			: " AND ranking.is_master='no'";
   my $q = "SELECT player_name,value,max_rank,is_robot,fixed_rank,games_won,ladder_level,ladder_order,ladder_mentor "
     . " FROM players left join ranking on players.uid=ranking.uid "
     . " WHERE players.uid='$u1' $mstr AND ranking.variation=$qgame ";
@@ -90,7 +151,7 @@ sub getrank()
  	  if( $oldrank <= 0 ) 
        {  $oldrank = 1500; 
           # create the missing ranking table
-		  my $mm = $master ? "'yes'" : "'no'";
+	  my $mm = $turnbased ? "'turnbased'" : $master ? "'yes'" : "'no'";
           &commandQuery($dbh,"replace into ranking set is_master=$mm,uid='$u1',value='$oldrank',variation='$game'");          
        }
 	  if($oldmax eq '') { $oldmax = '0'; }

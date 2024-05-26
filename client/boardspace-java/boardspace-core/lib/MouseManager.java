@@ -225,10 +225,13 @@ public class MouseManager
     	}
         // G.addLog("Add mouse event");
         CanvasMouseEvent prevEvent = lastMouseEvent;
+
         if(ev==MouseState.LAST_IS_DRAG)
         {	// if we get a drag event, itnore it unless it moves a significant distance.
         	// this takes care of lost clicks, lost because they were turned into drag
         	// events by some jitter in the mouse position.
+        	
+            
         	int dx = Math.abs(x-mouseDownX);
         	int dy = Math.abs(y-mouseDownY);
         	if(dx+dy<3)
@@ -254,7 +257,9 @@ public class MouseManager
     	  prevEvent.next = m; lastMouseEvent = m; 
     	}
         mouseSteps++;
+ 
         }
+
     	switch(ev)
     	{
         case LAST_IS_MOVE:
@@ -512,8 +517,7 @@ public class MouseManager
 	            // the wasdragging/amdragging logic implements the behavior
 	            // to "pick up" objects by clicking on them, so they don't have
 	            // to be dragged.  We don't want that behavior for the slider thumb
-	            boolean wasdragging = 
-	            		((hp != null) && hp.dragging );
+	            boolean wasdragging = ((hp != null) && hp.dragging );
 
 	            if (!wasdragging)
 	            {	// the mouse is down and hasn't moved.  Make sure a minimal motion is asserted

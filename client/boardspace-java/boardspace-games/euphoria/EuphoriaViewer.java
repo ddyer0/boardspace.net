@@ -986,7 +986,7 @@ private Color playerBackground[] = {
     	{
     	EuphoriaChip recruit = c.chipAtIndex(idx);
     	EuphoriaId rack = c.rackLocation();
-    	boolean hit = recruit.drawChip(gc,this,null,rack,test,sz,xp,yp);
+    	boolean hit = recruit.drawChip(gc,this,sz,xp,yp,null,rack,test);
     	somehit |= hit;
     	// draw the eye box
 		  if(StockArt.Eye.drawChip(gc,this,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),tip,EuphoriaId.ShowChip,null,1,1.33))
@@ -1522,7 +1522,7 @@ private Color playerBackground[] = {
     			}
     			if(cell.ignoredForPlayer!=null) {
     				// lionel the cook
-    				if(EuphoriaChip.Food.drawChip(gc,this,lionel ? highlight : null,cell.rackLocation(),null,CELLSIZE,xpos,ypos))
+    				if(EuphoriaChip.Food.drawChip(gc,this,CELLSIZE,xpos,ypos,lionel ? highlight : null,cell.rackLocation(),null))
     				{
     					highlight.spriteColor = Color.red;
     					highlight.hitObject =cell;
@@ -1799,7 +1799,7 @@ private Color playerBackground[] = {
     	Rectangle r = new Rectangle(G.Left(br),G.Top(br),w/20,h/20);
     	GC.fillRect(gc,rackBackGroundColor,r); 
     	GC.frameRect(gc, Color.black, r);
-    	StockArt.Checkmark.drawChip(gc, this, highlight,EuphoriaId.CloseBox,null,w/20,G.centerX(r),G.centerY(r));
+    	StockArt.Checkmark.drawChip(gc, this, w/20,G.centerX(r),G.centerY(r),highlight,EuphoriaId.CloseBox,null);
     }
     
     boolean useEphemeralPick = false;
@@ -1878,7 +1878,7 @@ private Color playerBackground[] = {
     				  {
     					  StockArt.SmallO.drawChip(gc,this,CELLSIZE*14,rx,ry,null);
     				  }
-    				  ch.drawChip(gc,this,highlight,DieRolls[i-1],null,CELLSIZE*3,rx,ry);
+    				  ch.drawChip(gc,this,CELLSIZE*3,rx,ry,highlight,DieRolls[i-1],null);
     				  rx += CELLSIZE*3;
     			  }
     		  }

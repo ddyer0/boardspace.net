@@ -2380,7 +2380,7 @@ graphics when using a touch screen.
     		{
     		in = true;
     		}
-    	StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,null,size,x,y);
+    	StockArt.UnMagnifier.drawChip(offGC,this,size,x,y,hp,OnlineId.HitMagnifier,null);
     	return in;
     }
 	/**

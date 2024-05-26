@@ -801,7 +801,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         	{	int ypos =bottom - gb.cellToY(c);
             	int xpos = left + gb.cellToX(c);
             	
-        		if(given.drawChip(gc,this,high,UniverseId.GivenOnBoard,null, SQUARE,xpos,ypos))
+        		if(given.drawChip(gc,this,SQUARE,xpos,ypos, high,UniverseId.GivenOnBoard,null))
         		{	hitCell = c;
         			high.hitObject = c;
         		}

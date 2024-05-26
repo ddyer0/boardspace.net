@@ -560,7 +560,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             switch(cell.rackLocation())
             {
             case Bag:
-            	some = TammanyChip.bag.drawChip(gc,this,hit,TammanyId.Bag,null,CELLSIZE,xpos,ypos);
+            	some = TammanyChip.bag.drawChip(gc,this,CELLSIZE,xpos,ypos,hit,TammanyId.Bag,null);
             	cell.rotateCurrentCenter(gc,xpos,ypos);
             	if(bb.getDest()==bb.bag)
             	{	// draw the chip we just dropped on top of the bag

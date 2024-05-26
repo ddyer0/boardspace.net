@@ -36,6 +36,7 @@ public class Tokenizer implements Enumeration<String>
 	int maxIndex = 0;
 	int index = 0;
 	int restIndex = 0;
+	boolean alphaNumeric = false;
 	public static String StandardDelimiters = " \n\t\r\"";
 	public static String StandardSingletons = "()[]{}";
 	String delimiters = StandardDelimiters;
@@ -54,6 +55,17 @@ public class Tokenizer implements Enumeration<String>
 	public Tokenizer(String str)
 	{	this(str,StandardDelimiters);
 	}
+	/**
+	 * a strict alphanumeric token
+	 * 
+	 * @param str
+	 * @param alpha
+	 */
+	public Tokenizer(String str,boolean alpha)
+	{
+		this(str);
+		alphaNumeric = alpha;
+	}
 	public boolean hasMoreElements() {
 		if(next==null) { next=parseNextElement(); }
 		return next!=null;
@@ -71,12 +83,24 @@ public class Tokenizer implements Enumeration<String>
 	public double doubleToken() { return G.DoubleToken(nextElement()); }
 	public String getRest() { return(basis.substring(restIndex)); }
 
+	private String parseNextAlpha()
+	{	builder.setLength(0);
+		boolean charsin = false;
+		while(index<maxIndex)
+		{
+			char ch = basis.charAt(index++);
+			if(G.isLetterOrDigit(ch)) { charsin=true; builder.append(ch);}
+			else if(charsin) { break; }
+		}
+		return charsin ? builder.toString() : null;
+	}
 	private String parseNextElement() {
+		if(alphaNumeric) { return parseNextAlpha(); }
 		restIndex = index;
 		boolean inquote = false;
 		boolean literal = false;
 		builder.setLength(0);
-		int charsin = 0;
+		boolean charsin = false;
 		while(index<maxIndex)
 		{
 			char ch = basis.charAt(index++);
@@ -92,20 +116,20 @@ public class Tokenizer implements Enumeration<String>
 			}
 			else if(singletons.indexOf(ch)>=0) 
 			{
-				if(charsin>0) { index--; }
-				else { builder.append(ch); charsin++; }
+				if(charsin) { index--; }
+				else { builder.append(ch); charsin = true; }
 				break;
 			}
 			else if(delimiters.indexOf(ch)>=0) 
-				{ 	if(charsin>0) { index--; break; }
+				{ 	if(charsin) { index--; break; }
 					if(ch=='\"') { inquote = true; }
 					
 					
 				}
-			else { builder.append(ch); charsin++; }
+			else { builder.append(ch); charsin=true; }
 		}
 		
-		return ((charsin>0)?builder.toString() : null); 
+		return ((charsin)?builder.toString() : null); 
 	}
 	/*
 	public static void main(String... args)

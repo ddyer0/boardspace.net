@@ -525,8 +525,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	for(int i=0;i<buttons.length;i++)
     		{	ImagineChip chip = buttons[i];
     			int cx = left+step*i+sz/2;
-    		    if(chip.drawChip(gc, this, ready ? null : highlight,chip.id,
-    		    		null,sz,cx,cy)) 
+    		    if(chip.drawChip(gc, this, sz,cx,
+    		    		cy,ready ? null : highlight,chip.id,null)) 
     		    	{ highlight.hit_index = who*100+i; 
     		    	}
     		    if(!spectator && i==stake) 

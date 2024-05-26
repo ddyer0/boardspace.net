@@ -34,6 +34,7 @@ import lib.StringStack;
 import lib.TimeControl;
 import lib.commonPanel;
 import lib.exCanvas;
+import online.common.TurnBasedViewer.AsyncGameInfo;
 import lib.TimeControl.Kind;
 import lib.XFrame;
 import lib.InternationalStrings;
@@ -138,6 +139,7 @@ public class Session implements LobbyConstants
 	}
 
       
+      
 	public enum Mode
 	{	Game_Mode("Game",GameRoom,GameRoomDescription,LaunchGameMessage), 
 		Chat_Mode("Chat",ChatRoom,"",LaunchChatMessage), 
@@ -146,7 +148,6 @@ public class Session implements LobbyConstants
 		Unranked_Mode("Unranked",UnrankedRoom,UnrankedDescription,LaunchGameMessage), 
 		Master_Mode("Master",MasterRoom,MasterDescription,LaunchGameMessage),
 		Tournament_Mode("Tournament",TournamentRoom,TournamentDescription,LaunchGameMessage),
-		Turnbased_Mode("Turn Based",TurnbasedRoom,TurnbasedDescription,LaunchGameMessage),
 		;
 		public String shortName;
 		public String modeName;
@@ -166,7 +167,6 @@ public class Session implements LobbyConstants
 			case Game_Mode:
 			case Master_Mode:
 			case Unranked_Mode:
-			case Turnbased_Mode:
 			case Tournament_Mode: return(true);
 			}
 		}
@@ -178,7 +178,6 @@ public class Session implements LobbyConstants
 			default: return false;
 			case Game_Mode:
 			case Master_Mode:
-			case Turnbased_Mode:
 			case Tournament_Mode:
 				return(true);
 			}
@@ -189,7 +188,7 @@ public class Session implements LobbyConstants
 			for(Mode el : values())
 			{
 			// for now, you can't launch a turn based game from the live lobby
-			if(el!=Mode.Turnbased_Mode) { roomMenu.addMenuItem(s.get(el.modeName),el.ordinal()); }
+			 roomMenu.addMenuItem(s.get(el.modeName),el.ordinal()); 
 			}
 	 	}
 		public static Mode findMode(String n)
@@ -207,6 +206,23 @@ public class Session implements LobbyConstants
 			InternationalStrings.put(AllGames);
 		}
 	}
+	// just the playing modes, not the auxiliary modes
+	public enum PlayMode implements EnumMenu
+	{	// case matters for these names - 'ranked' not 'Ranked'
+		// the menu names must be capitalized to avoid case conflicts in the translations
+		ranked("Ranked",Mode.Game_Mode), unranked("Unranked",Mode.Unranked_Mode), tournament("Tournament",Mode.Tournament_Mode);
+		public String menuItem() {
+			return menu;
+		}
+		Mode sessionMode;
+		String menu;
+		PlayMode(String m,Mode sm)
+			{ menu = m; 
+			  sessionMode = sm; 
+			}
+		public static void putStrings() { InternationalStrings.put(values()); }
+	}
+
 	/** true if the game being launched will include a robot */	
 	public Bot includeRobot()
 	{	
@@ -316,6 +332,7 @@ public class Session implements LobbyConstants
     public Mode mode = Mode.Game_Mode;
     public Mode pendingMode = Mode.Game_Mode;
     private JoinMode submode = JoinMode.Open_Mode;
+    public AsyncGameInfo turnBasedGame;
     public void setSubmode(JoinMode m)
     {
     	submode = m;
@@ -491,6 +508,10 @@ public class Session implements LobbyConstants
 				&& ((G.TimedRobots()&&(currentGame.robotTimed || currentGame.selfTimed)) || !submode.isTimed())
 					? currentGame.robots
 							: null);
+	}
+	public void setPlayMode(PlayMode m)
+	{
+		setMode(m.sessionMode,false);
 	}
     void setMode(Mode m,boolean isPassAndPlay)
     {
@@ -736,6 +757,7 @@ public class Session implements LobbyConstants
 			 	    activeColorMap = ci;
 		 	};
 		 myInfo.put(TIMECONTROL,startingTimeControl);
+		 myInfo.put(TURNBASEDGAME,turnBasedGame);	// null except for turn based games
 		 myInfo.put(KEYWORD_COLORMAP,activeColorMap);
 		 myInfo.putInt(NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
 		 myInfo.putInt(PLAYERS_IN_GAME,
@@ -848,6 +870,7 @@ public class Session implements LobbyConstants
 	    case Master_Mode: launchName += "|M"; break;
 	    default: break;
 	    }}
+		if(turnBasedGame!=null) { launchName += "|O"; }
 	    return(launchName);
 		}
 
@@ -988,16 +1011,18 @@ public class Session implements LobbyConstants
 		  if(gameTypeMenu!=null && gameTypeMenu.selectMenuTarget(otarget))
 		  { 
 		  	int newchoice = gameTypeMenu.value;
+		  	if(newchoice<0) { currentGame = null; }
+		  	else
+		  	{
 		  	gameTypeMenu = null;
-		    if(newchoice>=0)
-		      {
 		    	GameInfo game = GameInfo.findByNumber(newchoice);
 		    	if(game!=null) { currentGame = game; }
+		  	}
 		    	return true;
 		      }
-		  }
 		  return false;
 	  }
+
 	/**
 	 * present the master game change menu.  
 	 * 
@@ -1007,15 +1032,28 @@ public class Session implements LobbyConstants
 	 * @param isTestServer
 	 */
 	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer)
+	{
+	  changeGameType(showOn,ex,ey,isTestServer,null);
+	}
+/**
+ * 
+ * @param showOn
+ * @param ex
+ * @param ey
+ * @param isTestServer
+ * @param firstItem
+ */
+	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer,String firstItem)
 	  {	InternationalStrings s = G.getTranslations();
 	  	gameTypeMenu = new PopupManager();
 	    gameTypeMenu.newPopupMenu(showOn,showOn);
+	    if(firstItem!=null) { gameTypeMenu.addMenuItem("any game",null); }
 	    Bitset<ES> typeClass = getGameTypeClass(isTestServer,false);
-	    GameInfo gameNames[] = currentGame.groupMenu(typeClass,0);
+	    GameInfo gameNames[] = GameInfo.groupMenu(typeClass,0);
 	    int n_games = gameNames.length;
 	    
 	    {
-	    GameInfo games[] = currentGame.gameMenu(null,typeClass,0);
+	    GameInfo games[] = GameInfo.gameMenu(null,typeClass,0);
 	    String all = s.get(AllGames);
 	    Sort.sort(games);
 	    if(games.length>26)
@@ -1034,7 +1072,7 @@ public class Session implements LobbyConstants
 	     { GameInfo item = gameNames[i];
 	       String groupName = item.groupName;
 	       String name = s.get(groupName);
-	       GameInfo games[]=currentGame.gameMenu(groupName,typeClass,0);
+	       GameInfo games[]=GameInfo.gameMenu(groupName,typeClass,0);
 	       if((games!=null) && (games.length>1))
 	          {
 	    	   	addGameMenu(s,name,groupName,games,typeClass);

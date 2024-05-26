@@ -319,6 +319,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	}
 	public HitPoint MouseMotion(int eventX, int eventY,MouseState upcode)
 	{
+		HitPoint p = super.MouseMotion(eventX, eventY, upcode);
 		if(keyboard!=null && keyboard.containsPoint(eventX,eventY))
 		{	
 		keyboard.doMouseMove(eventX,eventY,upcode);
@@ -327,10 +328,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		{
 			messageArea.doMouseMove(eventX,eventY,upcode);
 		}
-		else if(selectedInputField!=null) { selectedInputField.doMouseMove(eventX, eventY, upcode); } 
+		else if(selectedInputField!=null)
+		{ selectedInputField.doMouseMove(eventX, eventY, upcode); 
+		  p.dragging = upcode==MouseState.LAST_IS_DRAG;
+		} 
 		
 		
-		HitPoint p = super.MouseMotion(eventX, eventY, upcode);
 		//if(upcode==MouseState.LAST_IS_DOWN && p!=null) { StartDragging(p); }
 		repaint(10,"mouse motion");
 		return(p);
@@ -927,7 +930,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int l = G.Left(r);
 		int t = G.Top(r);
 		int h = G.Height(r);
-		GameInfo categoryNames[] = game.groupMenu(typeClass,nplayers);
+		GameInfo categoryNames[] = GameInfo.groupMenu(typeClass,nplayers);
 		int az_cols = 3;
 		int rows = 1+ (mainMode==MainMode.Category ? categoryNames.length : (26+az_cols-1)/az_cols);
 		int step = Math.max(4, Math.min(G.getFontSize(largeBoldFont())*3,(h+rows-1)/rows));
@@ -996,7 +999,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				}
 			}}
 			{
-			GameInfo gameNames[] = game.gameMenu(selectedCategory,typeClass,nplayers);		
+			GameInfo gameNames[] = GameInfo.gameMenu(selectedCategory,typeClass,nplayers);		
 			gameListSeen = gameNames!=null && gameNames.length>0;
 			drawGameColumn(gc,hp,true,margin,gameNames,gameX,gameY,gameColumnWidth,h);
 			}
@@ -1005,7 +1008,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		
 		case AZ:
 		{	// a-z selection
-			GameInfo gameNames[] = game.gameMenu(null, typeClass,nplayers);
+			GameInfo gameNames[] = GameInfo.gameMenu(null, typeClass,nplayers);
 			char selection = selectedLetter.charAt(0);			
 			GameInfo sub[][] = new GameInfo['Z'-'A'+1][];
 			for(char ch = 'A'; ch<='Z'; ch++) { sub[ch-'A'] = subgames(gameNames,ch); }
@@ -1421,7 +1424,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	static String PlayOnlineExplanation = "Log in to play online at Boardspace";
 	static String TableNameMessage = "Table Name";
 	static String SeatPositionMessage = "SeatPositionMessage";
-	static String ExitOptions = "Options";
 	static String TypeinMessage = "type the name here";
 	static String MessageAreaMessage = "MessageAreaMessage";
 	static String HelpMessage = "Get More Help";
@@ -1434,7 +1436,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			ExplainHelpMessage,
 			TableNameMessage,
 			TypeinMessage,
-			ExitOptions,
 			PlayOnlineMessage,
 			StartTableServerMessage,
 			StopTableServerMessage,

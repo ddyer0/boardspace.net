@@ -11,7 +11,7 @@ public class GearMenu extends Rectangle {
 	public GearMenu(exCanvas p) { parent = p; parent.addRect("gear"); }	
 	PopupManager gearMenu = new PopupManager();
 	
-	enum GearId implements CellId
+	enum GearId implements CellId,EnumMenu
 	{	Exit("Exit"),
 		Feedback("Send Feedback"),
 		DrawersOff("Player Drawers OFF"),
@@ -22,7 +22,13 @@ public class GearMenu extends Rectangle {
 		String message;
 		GearId(String m) { message = m; }
 
-
+		static void putStrings()
+		{
+			InternationalStrings.put( values());
+		}
+		public String menuItem() {
+			return message;
+		}
 	}
 	
 	public void draw(Graphics gc,HitPoint hp)
@@ -77,7 +83,7 @@ public class GearMenu extends Rectangle {
 	}
 	
 	static public void putStrings()
-	{	for(GearId e : GearId.values()) { InternationalStrings.put(e.message); }
+	{	GearId.putStrings();
 	}
 
 	public boolean StopDragging(HitPoint hp) {

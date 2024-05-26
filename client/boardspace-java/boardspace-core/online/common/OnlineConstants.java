@@ -187,6 +187,7 @@ public interface OnlineConstants extends Config {
 	String GAMEUID = "gameUID";			// unique name constructed for this game
 	String MODE = "mode";
 	String TOURNAMENTMODE = "tournamentMode";	// true if a tournament game
+	String TURNBASEDGAME = "turnbasedgame";		// true if a turn based game
 	String ROTATION = "rotation";
 	String SOUND = "sound";					// true if sound is initially on
 	String ROBOTGAME = "robotgame";		// true if this game includes a robot

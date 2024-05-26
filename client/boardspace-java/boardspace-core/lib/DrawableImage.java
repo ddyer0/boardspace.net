@@ -455,26 +455,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	{
 		return(drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,helptext,0.66,1.33));
 	}
-	
-	/**
-	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
-	 * increased by 1/3 to give a visual "pop" to indicate the hit.
-	 * @param gc			// the graphics to draw with
-	 * @param drawOn		// the canvas to do the drawing
-	 * @param highlight		// the mouse point, or null.  Receives hit information
-	 * @param rackLocation	// the cellId to use for this if hit
-	 * @param squareWidth	// the overall scale of the object
-	 * @param e_x			// the center of the object
-	 * @param e_y			// the center y of the object
-	 * @param tooltip		// the tool tip to show
-	 * @param thislabel		// label to print on top
-	 * @return true if this chip is hit
-	 */
-	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,String toolTip,
-			int squareWidth,int e_x,int e_y)
-	{
-		return drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,toolTip,0.66,1.33);
-	}
+
 	/**
 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
 	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
@@ -493,7 +474,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param rackLocation	// the cellId to use for this if hit
 	 * @param helptext		// label to print on top
 	 * @param sscale		// sensitive area scale factor, default 0.66
-	 * @param expansion		// 	size expansion factor
+	 * @param expansion		// 	size expansion factor (if hit and rackLocation not null)
 	 * @return true if this chip is hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
@@ -505,7 +486,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
     		  			? helptext.startsWith(NotHelpDraw) ? helptext.substring(NotHelpDraw.length()) : helptext
     		  			: null;
       String help = draw==null ? helptext : null;
-      drawChip(gc,drawOn,(int)(val?expansion*squareWidth:squareWidth),1.0,e_x,e_y,draw);
+      drawChip(gc,drawOn,(int)((val&&rackLocation!=null)?expansion*squareWidth:squareWidth),1.0,e_x,e_y,draw);
       if(val)
       	{
     	  highlight.setHelpText(help);

@@ -52,9 +52,14 @@ public class Base64 implements CommonConfig {
     	return(buf.toByteArray());
     }
     public static String decodeString(String s) 
-    {	ByteArrayOutputStream raw = new Utf8OutputStream();
+    {	
+    	if(s!=null) 
+    		{  
+    		ByteArrayOutputStream raw = new Utf8OutputStream();
     	decodeStream(raw,s);
      	return(raw.toString());
+    }
+    	return null;
     }
     private static void decodeStream(OutputStream buf,String s)
     {

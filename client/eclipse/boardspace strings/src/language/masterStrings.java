@@ -166,6 +166,7 @@ public class masterStrings extends InternationalStrings
         put(TimeControl.TimeControlStrings);
         put(TimeControl.TimeControlStringPairs);
         Session.Mode.putStrings();
+        Session.PlayMode.putStrings();
         GearMenu.putStrings();
         put(FileSource.FileSourceStrings);
         put(FileSelector.FileSelectorStrings);

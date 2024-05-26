@@ -119,7 +119,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
-	    	if( base.drawChip(gc,drawOn,highlight,id,null,width,G.centerX(this),G.centerY(this)))
+	    	if( base.drawChip(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,null))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 				highlight.setHelpText(G.getTranslations().get(helpText));

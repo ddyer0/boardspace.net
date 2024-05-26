@@ -140,6 +140,13 @@ public class ScrollArea
 	{
 		return(G.Width(scrollbarRect));
 	}
+	/**
+	 * @return returns the Left of the scrollbar, whether or not it is visible.
+	 */
+	public int getScrollbarLeft()
+	{
+		return(G.Left(scrollbarRect));
+	}
 	public boolean inScrollbarPersistanceTime()
 	{
 		if(scrollBarInvisibleTime>0)

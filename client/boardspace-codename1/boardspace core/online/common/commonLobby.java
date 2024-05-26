@@ -292,6 +292,8 @@ public class commonLobby extends commonPanel
   public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
   
   public long lastInputTime;
+  private long startConnectTime;
+  
   public int progress = 0;
   public int lobbyIdleTimeoutInterval;
   public long lobbyIdleTimeout;
@@ -344,6 +346,15 @@ private ConnectionState myLobbyState=ConnectionState.IDLE;
 void setLobbyState(ConnectionState state)
 {	myLobbyState=state;
 	if(v!=null) { v.lobbyState=state; }
+	switch(state)
+	{
+	case IDLE:
+	case UNCONNECTED:
+		startConnectTime = 0;
+		break;
+	default:
+		break;
+	}
 }
 ConnectionState getLobbyState() { return(myLobbyState); }
 
@@ -378,6 +389,7 @@ private void ReStarting(boolean recon)
   ClearRefreshPending();
   updatePending=false;
   movingToSess=-1;
+  startConnectTime = G.Date();
   myNetConn.Connect("Lobby "+G.getPlatformName(),
 		  			sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
 		  			sharedInfo.getInt(LOBBYPORT,-1));
@@ -2112,22 +2124,21 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
          v.repaint("launch");    
           }
     
-    if (state == ConnectionState.UNCONNECTED) { v.repaint(1000); }	// keep things ticking over so the spinner will fade
+     long deadTime = (Math.max(startConnectTime,lastInputTime)+CONNECTIONTIMEOUTINTERVAL);
+     long pt = pingtime;
+     
+     if( (now>deadTime)
+     	|| (pt>0)&&((now-pt)>(3*refreshInterval)))
+       { String msg = "closing socket and reconnecting, no input "+G.briefTimeString(now-lastInputTime)+" "+(now-pt);
+     	G.print(this,msg);
+     	CloseConn(msg);
+         ReStarting(true); 
+         repaint(1000);
+       }
+     else if (state == ConnectionState.UNCONNECTED) { v.repaint(1000); }	// keep things ticking over so the spinner will fade
     else if (state == ConnectionState.MYTURN)
     {  
-    long deadTime = (lastInputTime+CONNECTIONTIMEOUTINTERVAL);
-    long pt = pingtime;
-    if( (now>deadTime)
-    	|| (pt>0)&&((now-pt)>(3*refreshInterval)))
-      { String msg = "closing socket and reconnecting, no input "+G.briefTimeString(now-lastInputTime)+" "+(now-pt);
-    	G.print(this,msg);
-    	CloseConn(msg);
-        ReStarting(true); 
-        repaint(1000);
-      }
-    else 
-    {
-    	User my = users.primaryUser();
+   	User my = users.primaryUser();
         boolean noPlayFrames = (my.playingLocation==null) && (my.spectatingLocation==null);
     	if (now > (lobbyIdleTimeout - 60000)) 
         {  /* 1 min. warning */
@@ -2152,7 +2163,6 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
    		sendMessage(pm);   //send as a noop
         v.repaint("ping");
       }
-    }
     
     if (sendMyInfo) 
       { sendMyInfo = false;

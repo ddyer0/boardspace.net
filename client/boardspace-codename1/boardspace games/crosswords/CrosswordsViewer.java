@@ -446,8 +446,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, CrosswordsId.DrawPile,hide ? CrosswordsChip.BACK : null,cs,dx,
-    				dy))
+    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, cs, dx,dy,canHit?highlight:null,CrosswordsId.DrawPile,
+    				hide ? CrosswordsChip.BACK : null))
     		{
     			highlight.hitObject = gb.drawPile;
     		}

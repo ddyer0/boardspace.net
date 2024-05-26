@@ -26,6 +26,7 @@ public interface sgf_names
     public static final String sgf_file_format = "4"; //we comply with format 4
     public static final String game_property = "GM"; //integer indicating the game type
     public static final String gamename_property = "GN"; //the name of this particular game
+    public static final String gamespeed_property = "GS";	// gamespeed
     public static final String gametitle_property = "GC"; //a comment describing the game as a whole
     public static final String size_property = "SZ"; //the size of the board
     public static final String tomove_property = "PL"; //the player to play next

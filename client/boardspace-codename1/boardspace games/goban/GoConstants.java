@@ -18,10 +18,10 @@ package goban;
 
 import lib.G;
 import lib.InternationalStrings;
-import lib.NameProvider;
 import lib.OStack;
 import lib.PopupManager;
 import lib.CellId;
+import lib.EnumMenu;
 import online.game.BaseBoard.BoardState;
 
 import online.game.commonMove;

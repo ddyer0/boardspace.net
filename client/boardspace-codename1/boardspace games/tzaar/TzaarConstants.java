@@ -44,7 +44,7 @@ public interface TzaarConstants
 			{"Tzaar-random_variation","random layout"},
 			{"Tzaar-standard_variation","standard layout"},
 			{"Tzaar-custom_variation","empty board"},
-			{"Tzaar-custom","Tzaar - Tournament"},
+			{"Tzaar-custom","Tzaar - tournament"},
 			{"Tzaar-random","Tzaar - random"},
 			{"Tzaar-standard","Tzaar - standard"},
 			{"Tzaar_variation","standard Tzaar"},

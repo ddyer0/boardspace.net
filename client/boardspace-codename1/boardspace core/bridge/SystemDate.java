@@ -42,6 +42,19 @@ public class SystemDate extends Date
 	public int getDate()
 	{	return calendar.get(java.util.Calendar.DAY_OF_MONTH)-1;
 	}
+	public int getHours()
+	{
+		return calendar.get(java.util.Calendar.HOUR_OF_DAY);
+	}
+	public int getMinutes()
+	{
+		return calendar.get(java.util.Calendar.MINUTE);
+	}
+	
+	public int getDay()
+	{
+		return calendar.get(java.util.Calendar.DAY_OF_WEEK);
+	}
 	public int getMonth()
 	{	return calendar.get(java.util.Calendar.MONTH);
 	}

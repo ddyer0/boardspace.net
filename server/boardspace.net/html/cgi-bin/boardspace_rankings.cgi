@@ -45,16 +45,22 @@ sub rank_header()
   my $vquery = &query($dbh,$qvar);
   my ($nplayers) = &nextArrayRow($vquery);
   &finishQuery($vquery);
-  #print "$nplayers = $qvar<p>";
+ 
+  my $normalstr = &trans(($retired==0)?"Player Rankings":"Retired Player Rankings",$ccode,$pvar);
+  my $masterstr = &trans(($retired==0)?"Master Player Rankings":"Retired Master Player Rankings",$ccode,$pvar);
+  my $turnstr =   &trans(($retired==0)?"#1 Turn Based #2 Player Rankings" : "Retired Turn Based Player Rankings",$ccode,$pvar);
+
   if($header eq "") 
-  {  my $normalstr = &trans(($retired==0)?"Player Rankings":"Retired Player Rankings",$ccode,$pvar);
-	 my $masterstr = &trans(($retired==0)?"Master Player Rankings":"Retired Master Player Rankings",$ccode,$pvar);
-	 $header = ($mode eq 'master') ? $masterstr : $normalstr;
-	 $altheader = ($mode eq 'master') ? $normalstr : $masterstr;
-  };
-  my $link = &get_link($vname,$country,$altheader,$myname,(($mode eq 'master') ? '' : "master"),$retired,$order);
-  my $ladder = "<td>" . &getLadderLink($vname,&trans("#1 Ranking Ladder",$pvar),$myname) . "</td>";
-  my $dbmes=&trans("#1 game results database",$pvar);
+  { 
+     $header = ($mode eq 'turnbased') ? $turnstr : ($mode eq 'master') ? $masterstr : $normalstr;
+   };
+ 
+  my $link1 = ($mode eq '') ? "" : &get_link($vname,$country,$normalstr,$myname,'',$retired,$order);
+  my $link2 = ($mode eq 'master') ? "" : &get_link($vname,$country,$masterstr,$myname,'master',$retired,$order);
+  my $link3 = ($mode eq 'turnbased') ? "" : &get_link($vname,$country,$turnstr,$myname,'turnbased',$retired,$order);
+  my $wmode = ($mode eq 'master') ? " Master" : ($mode eq 'turnbased') ? " Turn Based" : "";
+  my $ladder = &getLadderLink($vname,&trans("#1$wmode Ranking Ladder",$pvar),$myname,$mode);
+  my $dbmes=&trans("#1 game database",$pvar);
   my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a>";
   my $vlink = &gamecode_to_gameviewer($dbh,$vname);
   #http://boardspace.net/cgi-bin/player_analysis.cgi?game=hive
@@ -86,7 +92,7 @@ print "</td><td>";
 print "</td></tr></table>\n";
 print <<Header
 <p>
-<table border=1 cellpadding=3><tr>$ladder<td>$link</td><td>$dblink</td></tr></table>
+<table border=1 cellpadding=3><tr>$ladder$link1$link2$link3<td>$dblink</td></tr></table>
 <p>
 <HR SIZE="4" WIDTH="40%">
 Header
@@ -101,14 +107,14 @@ sub get_link()
 	if($mode) { $aux .= "&mode=$mode"; }
 	if($retired) { $aux .= "&retired=$retired"; }
 	if($ccode) { $aux .= "&country=$ccode"; }
-	return("<a href=\"javascript:link('$script$aux',0)\">$pretty</a>");
+	return("<td><a href=\"javascript:link('$script$aux',0)\">$pretty</a></td>");
 }
 sub getLadderLink()
-{	my ($variation,$pretty,$myname) = @_;
+{	my ($variation,$pretty,$myname,$mode) = @_;
 	my $script = '/cgi-bin/boardspace_ladder.cgi';
-	my $aux = "?game=$variation";
+	my $aux = "?game=$variation&mode=$mode";
 	if($myname) { $aux .= "&myname=$myname"; }
-	return("<a href=\"javascript:link('$script$aux',0)\">$pretty</a>");
+	return("<td><a href=\"javascript:link('$script$aux',0)\">$pretty</a></td>");
 }
 %'order_keys = 
 	('GroupUp' => 'advocate asc',
@@ -207,7 +213,7 @@ sub update_rankings
         my $lp = "ranking.last_played";
 	my $real_clause = $realplayers ? " AND (is_robot is NULL) " : " or (is_robot='y') ";
     my $qvar = $dbh->quote($variation);
-	my $mstat = ($mode eq 'master') ? 'yes' : 'no';
+	my $mstat = (($mode eq 'turnbased') ? 'turnbased' : ($mode eq 'master') ? 'yes' : 'no');
 	my $ladder_clause =  ""; #" AND ladder_level is not null "  this has the effect of excluding players who only play robots
 	my $query = "SELECT player_name, e_mail, $lp, value, country, "
 				. "max_rank,ranking.games_played as played, "
@@ -268,7 +274,7 @@ sub update_rankings
 # my ($variation,$pretty,$myname,$mode,$retired,$order) = @_;
 	  my $lclause =  "<TD><p align=left><b>$Ladder</b>";
     	  print "<TR><td></td><TD><b><P align=left>$Rank</b></TD>"
-	   				. "<TD><p align=left><b>$Player</b></TD>"
+	   			. "<TD><p align=left><b>$Player</b></TD>"
     				. "<TD><p align=left><b>$Ranking</b>"    
     				. $lclause
      				. "<TD><p align=left><b>$Group</b></TD>"

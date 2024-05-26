@@ -183,7 +183,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		selectionStart = selectionEnd = -1;
 		clearBeforeAppend = false; 
 		setScrollY(0);
-		setCaratPosition(0);
+		setCaratPosition(data.length());
 		if(canvas!=null) { canvas.repaint(0,"new text"); }
 
 	}
@@ -430,6 +430,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			}
 			else
 		{	
+			GC.fillRect(g,backgroundColor,this);
 			GC.frameRect(g,Color.black,x,y,width,height);		
 			Rectangle from = GC.getStringBounds(g,fm,line);
 			int maxx = (int)from.getWidth();
@@ -481,7 +482,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 							
 			}
 			selectEnd = Math.min(selectEnd,lineLen);
-		
 		// draw a gray background around the selection
 		if(select>=0 && selectEnd>select)
 		{	
@@ -681,7 +681,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			int linelen = line.length();
 			boolean isExtensionLine = extensionLines.contains(line);
 			if(!isExtensionLine) { charCount++; }
-			if((ypos+lineh>=scrollY) && ypos<=scrollY+availableH)
+			if(linen==0 || ((ypos+lineh>=scrollY) && ypos<=scrollY+availableH))
 			{
 			int localCharCount = charCount + (isExtensionLine ? -1 : 0);
 			boolean containsAny = localCharCount>=selectionStart && localCharCount<=selectionEnd;
@@ -902,6 +902,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 					doSend();
 					break;
 				case '\u007f':	// del
+					doDel(true);
+					break;
 				case '\b':	// backspace
 					doDel(false);
 					break;
@@ -941,13 +943,17 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			doDeleteSelection();
 		}
 		else
-		{	if(forward) { if(caratPosition>=data.length()) { return; }}
+		{	if(forward) 
+				{ if(caratPosition>=data.length()) { return; }
+				setChanged(Op.Repaint); 
+				}
 			else setCaratPosition(caratPosition-1);
 			data.deleteCharAt(caratPosition);
 			mlCache = null;
 		}
 		}
 	}
+	
 	public void doBack()
 	{	setCaratPosition(caratPosition-1);
 	}

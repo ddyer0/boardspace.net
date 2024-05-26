@@ -846,6 +846,7 @@ public class GameLog implements Opcodes
         * @param scrollPos
         * @param bigJump
         * @param scrollMax
+        * @param moreUnseen
         */
        public void drawScrollbar(Graphics gc,Rectangle r,int scrollPos,int smallJump,int bigJump,int scrollMax,boolean moreUnseen)
        {

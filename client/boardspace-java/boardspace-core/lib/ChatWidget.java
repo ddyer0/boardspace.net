@@ -409,18 +409,19 @@ public class ChatWidget
         boolean itsme = false;
     	// guess if our name is mentioned and maybe knock knock instead of ding ding
         SimpleUser my = users.getMyUser();
-    	if((my!=null) && fromRealUser)
+        long now = G.Date();
+    	if((my!=null) && fromRealUser && ((now-knockTimer)>KNOCKINTERVAL))
     		{
     		 String myName = my.name();
-    		 int me = theMessage.indexOf(myName+" ");
-    		 if(me>=0)
-    		 {
-    			long now = G.Date();;
-     	  	    if((now-knockTimer)>KNOCKINTERVAL) 
-     	  	    	{ itsme=true; }
-     	  	    knockTimer = now;
-    		 }
-        	}
+    		 Tokenizer tok = new Tokenizer(theMessage,true);
+    		 while(tok.hasMoreElements()) 
+    		    { if(myName.equalsIgnoreCase(tok.nextElement())) 
+	    		 	{ itsme=true; 
+	    		 	  knockTimer = now;
+	    		 	  break; 
+	    		    }
+	    		 }
+    		}
     	//System.out.println("c "+command+" "+theMessage);
         // translate message is asked
         if (command.equals(KEYWORD_TMCHAT))

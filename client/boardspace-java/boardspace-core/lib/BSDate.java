@@ -65,7 +65,24 @@ public class BSDate extends java.util.Date
 	 *  
 	 */
 	public static String weekdays[] = {"mon","tue","wed","thu","fri","sat","sun"};
+	public static String uweekdays[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
 	public static String months[] = {"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
+	
+	@SuppressWarnings("deprecation")
+	public String getDayString()
+	{
+		return uweekdays[getDay()-1];
+	}
+	@SuppressWarnings("deprecation")
+	public String getMonthString()
+	{
+		return months[getMonth()];
+	}
+	@SuppressWarnings("deprecation")
+	public String getDateString()
+	{
+		return ""+getDate();
+	}
 	
 	private static boolean isDayOfWeek(String d)
 	{
@@ -285,10 +302,9 @@ public class BSDate extends java.util.Date
 	 * only for non-critical uses - if there is any trouble with the 
 	 * parsing it returns the current date/time.
 	 * @param date
-	 * @param format
 	 * @return a Date
 	 */
-	public static BSDate parseDate(String date,String format)
+	public static BSDate parseDate(String date)
 	{	
 		BSDate df = new BSDate(date);
 		return(df);

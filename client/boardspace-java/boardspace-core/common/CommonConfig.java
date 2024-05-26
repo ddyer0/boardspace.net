@@ -26,7 +26,7 @@ public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	static final String cheerpjTextFile = "cheerpj.txt";
-	static boolean TURNBASED = false;
+	static boolean TURNBASED = true;
 
 	static String PRELOAD = "preload";		// key for a "preload" option passed from the miniloader
 	static boolean PRELOAD_DEFAULT = true;	// still true
@@ -67,6 +67,8 @@ public interface CommonConfig extends UniversalConstants {
 	// ops to support offline turn based games
 	//
 	static final String getTurnbasedURL = "/cgi-bin/bs_offline_ops.cgi";
+	static final String turnbasedHelpURL = "/english/about_turnbased.html";
+	
 	static final String editURL = "/cgi-bin/edit.cgi";
 	static final String getPicture = "/cgi-bin/tlib/getpicture.cgi";
 	static final String uploadPicture = defaultProtocol + "//boardspace.net/english/pictureupload.html";

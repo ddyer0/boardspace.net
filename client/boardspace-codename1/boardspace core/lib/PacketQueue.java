@@ -56,7 +56,7 @@ public class PacketQueue<TYPE>
 
 	public void reset()
 	{
-    lastqueueGettime = 0;
+    lastqueueGettime = G.Date();
     lastqueuePuttime = 0;
     countItems = 0;
     QueueRead = 0;

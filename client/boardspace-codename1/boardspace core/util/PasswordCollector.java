@@ -999,13 +999,13 @@ import udp.PlaytableStack;
    		}
         if(source==turnBasedButton)
         {
-        	exitValue = TurnBasedMessage;
+        	exitWith(TurnBasedMessage);
         	G.setOffline(true);
         	exit();
         }
         if((source==reviewButton) || ReviewMessage.equals(cmd1))
         {
-        	exitValue = ReviewMessage;
+        	exitWith(ReviewMessage);
         	G.setOffline(true);
          	exit();
         }
@@ -1014,29 +1014,35 @@ import udp.PlaytableStack;
         	for(int i=0;i<serverButtons.length;i++)
         	{
         		if(source==serverButtons[i])
-        		{	exitValue = PlaytableMessage;
+        		{	exitWith(PlaytableMessage);
         			PlaytableStack.setSelectedServer(i);
         		}
         	}
         }
         if((source==okButton) || OK.equals(cmd1))
-        	{boolean savePass = G.getState(savePasswordField);
-        	 if(!isGuest)
-        	 {
-        	 prefs.put(loginNameKey,name);
-        	 prefs.put(passKey,savePass? obfuscate(password,name+SALT) : "");
-        	 // use strings, because standard java doesn't support booleans
-        	 prefs.put(savePassKey,""+(savePass?"true":"false"));
-        	 }
-        	 captureValues(true);
-        	 exitValue = OK;
-        	 try { prefs.flush(); } 
-        			catch (BackingStoreException err) 
-        			{ System.out.println("E "+err.toString());};
+        	{
+        	 exitWith(OK);
+     
+        	 exit();
         	}
-         exit();
          
        }
+    }
+    private void exitWith(String val)
+    {
+    	boolean savePass = G.getState(savePasswordField);
+	   	 if(!isGuest)
+	   	 {
+	   	 prefs.put(loginNameKey,name);
+	   	 prefs.put(passKey,savePass? obfuscate(password,name+SALT) : "");
+	   	 // use strings, because standard java doesn't support booleans
+	   	 prefs.put(savePassKey,""+(savePass?"true":"false"));
+	   	 }
+	   	 captureValues(true);
+	   	 exitValue = OK;
+	   	 try { prefs.flush(); } 
+	   			catch (BackingStoreException err) 
+	   			{ System.out.println("E "+err.toString());};
     }
 	public void exit()
 	{	G.wake(observer);

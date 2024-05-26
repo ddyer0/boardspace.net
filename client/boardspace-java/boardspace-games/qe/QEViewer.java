@@ -896,7 +896,7 @@ public void ViewerRun(int wait)
      	if(pl.hasOfferedBid()||pl.hasMadeBid())
     		{
      		if(concealed)
-    		{	if(!witnessing) { QEChip.BidCard.drawChip(gc, this,null, QEId.HitWhiteBoard,	null,aw,cx,cy); }   			
+    		{	if(!witnessing) { QEChip.BidCard.drawChip(gc, this,aw, cx,	cy,null,QEId.HitWhiteBoard,null); }   			
     			if(pl.hasOfferedBid())
     			{	GC.setFont(gc, largeBoldFont());
 					GC.Text(gc, true, G.Right(r)-sz*2-sz/4,G.centerY(r)-sz/2,sz,sz, Color.blue, null, "?");

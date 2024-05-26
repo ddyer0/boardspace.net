@@ -546,19 +546,35 @@ public class G extends Platform implements Timestamp
     	return(val);
     }
 
+    static final int MillisPerSecond = 1000;
+    static final int MillisPerMinute = MillisPerSecond*60;
+    static final int MillisPerHour = MillisPerMinute*60;
+   
     /** convert a long integer time string to our standard form for elapsed time
      *
      * @param inVal
      * @return a string representing GMT
      */
     static public String timeString(long inVal)
-    {
-        int hours = (int)(inVal / 3600000);
-        int parthour = (int)(inVal%3600000);
-        int minutes = (parthour / 60000);
-        int seconds = (parthour - (minutes * 60000)) / 1000;
-        return (concat((hours%24),":",((minutes < 10) ? "0" : ""),
-        		minutes ,":", ((seconds < 10) ? "0" : "") , seconds));
+    {	
+        int hours = (int)(inVal / MillisPerHour);
+        int days = hours/24;
+        int hourDays = hours%24;
+        int parthour = (int)(inVal%MillisPerHour);
+        int minutes = (parthour / MillisPerMinute);
+        int seconds = (parthour - (minutes * MillisPerMinute)) / MillisPerSecond;
+        if(days>0 || hours>12)
+        {
+        	return concat(days,"d ",
+        			hourDays<10 ? "0" : "",hourDays,":",
+        			((minutes < 10) ? "0" : ""),
+        			minutes);
+        }
+        else 
+        { return concat((hours%24),":",
+        		((minutes < 10) ? "0" : ""),minutes ,":", 
+        		((seconds < 10) ? "0" : "") , seconds);
+        }
     }
     /** convert a long integer time string to our standard form for extra time
     *

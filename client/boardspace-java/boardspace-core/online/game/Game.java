@@ -266,25 +266,32 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     
    
     private String fileNameString()
-    {
-        String str = unrankedMode ? "U!" : masterMode ? "M!" : "";
-        String gameTypeString = gameTypeId;
-        if (tournamentMode)
-        {
-            str = "T" + ("".equals(str) ? "!" : str);
-        }
+    {	StringBuilder str = new StringBuilder();
+    	if(tournamentMode)
+    	{
+    		str.append("T");
+    	}
+    	if(unrankedMode) { str.append("U"); }
+    	if(masterMode) { str.append("M"); }
+    	if(str.length()>0) { str.append("!"); }
 
-        str += (gameTypeString + "-");
+    	if(turnBasedGame!=null) { str.append("A!"); }
+    	
+    	str.append(gameTypeId);
+    	str.append("-");
+    	
+
 
         for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
                 p = commonPlayer.nextPlayer(playerConnections, p))
         {
-            str += (p.trueName + "-");
+            str.append(p.trueName);
+            str.append("-");
         }
 
-        str += startingTime.DateString();
+        str.append(startingTime.DateString());
 
-        return (str.replace(' ', '+'));
+        return (str.toString().replace(' ', '+'));
     }
 
 
@@ -356,9 +363,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
     	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
     	if(G.offline())
-        {
-        	OfflineGames.removeOfflineGame(UIDstring);
-        }}
+        {	if(turnBasedGame!=null)
+        		{
+        		turnBasedGame.discardGame();
+        		}
+        		else
+        		{
+        			OfflineGames.removeOfflineGame(UIDstring);
+        		}
+        }
+    	}
     }
     private void ServerRemove()
     {
@@ -368,6 +382,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             int cpc = focusPercent();
 
             //this is a little hack to help detect cheaters.  Appears as "note from" in the logs
+            if(!G.offline())
+            {
             if (!unrankedMode)
             {
                 String tablestuff = "";
@@ -377,7 +393,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     (my.sameHost(playerConnections) ? " same local ip" : "") +
                     (my.sameClock(playerConnections) ? " same clock" : "") +
                     " ping " + my.clock + "+" + my.ping + tablestuff);
-            }
+            }}
         }
     }
 
@@ -662,7 +678,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         v.selectGame(file);
         SetWhoseTurn();
     }
-
+    private TurnBasedViewer.AsyncGameInfo turnBasedGame = null;
+    
 /**
  * the lobby initializes games it is about to start by calling this function.  Each client
  * will separately execute initialization with similar parameters, which will cause the
@@ -684,6 +701,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	gameInfo = info.getGameInfo();
     	int defPlayers = gameInfo==null ? 2 : gameInfo.minPlayers;
     	int playersInGame = info.getInt(PLAYERS_IN_GAME,defPlayers);
+    	turnBasedGame = (TurnBasedViewer.AsyncGameInfo)info.get(TURNBASEDGAME);
+    	G.Assert(turnBasedGame!=null ? offline : true,"should be offline");
         numberOfPlayerConnections = info.getInt(NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
     	playerConnections = new commonPlayer[playersInGame];
     	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(MODE,Session.Mode.Game_Mode.modeName));
@@ -710,7 +729,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         //
         if(lu!=null)
         {
-        my.uid = offline ? "D"+G.getIdentity()+"-"+lu.order : lu.user.uid;	// user id
+        my.uid = (offline && (turnBasedGame==null)) ? "D"+G.getIdentity()+"-"+lu.order : lu.user.uid;	// user id
         my.setPlayerName(lu.user.name,true,null); 	
         my.setPlayerName(lu.user.publicName,false,null);
         my.setOrder(lu.order); 	// move order
@@ -1409,8 +1428,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public boolean SetWhoseTurn()
     {
         if(v!=null)
-        { 
-        	return(SetWhoseTurn(v.whoseTurn())); 
+        { 	boolean newturn = SetWhoseTurn(v.whoseTurn());
+        	return(newturn); 
         }
         return(false);
     }
@@ -2955,6 +2974,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
            p.setOrder(order);
            p.uid = uid;
            if(v!=null) { v.changePlayerList(p,null);}		// should replace no player
+           addPlayerConnection(p,null);
            return (p); /* already exists */
         }
 
@@ -3074,7 +3094,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             String grs = gameRecordString(filename);
             String savedmsg = SAVEDMSG + " " + filename;
         	sendTheGame = false;		// only try once
-            if(G.offline())
+        	if(turnBasedGame!=null)
+        	{
+        		turnBasedGame.recordGame(filename,grs);
+        	}
+        	else if(G.offline())
             {	
             	String base = G.documentBaseDir();
             	String dir = base+localGameDirectory();
@@ -3191,7 +3215,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
         }
 
-        G.append(urlStr,"&key=" , myNetConn.sessionKey ,
+        G.append(urlStr,"&key=" , 
+        		turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey ,
+        		turnBasedGame!=null ? "&turnbased=true" : "",
         		"&session=",sessionNum ,
         		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
         		"&mode=" ,mode , tm);
@@ -3302,8 +3328,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		// realport and lobbyport are normally the same, but in cheerpj the lobby port
 		// may be a proxy port.  This port is used by the scoring script to connect
 		// and check if the game is actually in progress.
-        G.append(urlStr,"&key=" , myNetConn.sessionKey , "&session=" , sessionNum,
-        				"&sock=" , sharedInfo.getInt(REALPORT,-1) ,"&mode=" , mode , tm);
+        G.append(urlStr,"&key=" ,
+        		(turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey),
+        		(turnBasedGame!=null ? "&turnbased=true" : ""),
+        		"&session=" , sessionNum,
+        		"&sock=" , sharedInfo.getInt(REALPORT,-1) ,
+        		"&mode=" , mode , tm);
         appendNotes(urlStr);
         String str = urlStr.toString();
         /*
@@ -3471,30 +3501,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	if(sendit)
     	{	ScoringMode sm = gameInfo.scoringMode();
-    		if(G.offline())
-    		{
-        		
-        		switch(sm)
-        		{
-        		case SM_Single:
-		            String baseUrl = recordKeeper1OfflineURL;
-		            String urlStr = getUrlStr1();      
-		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
-		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);    			
-        			break;
-        		case SM_None:
-        		default: break;
-        		}
-    		}
-    		else {
+    		boolean scorable = (playerConnections.length>1) && (turnBasedGame!=null || !G.offline());
+    		
     		switch(sm)
     		{
-    		case SM_Multi:
-    			if(playerConnections.length>1)
+    		case SM_Multi:	// multiplayer games
+    			if(scorable)
 	    		{
 	            String baseUrl =recordKeeper4URL;
 	            String urlStr = getUrlStr4();
 	            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+	            if(G.debug()) { G.print("result "+urlStr); }
 	            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
 	    		}
 	    		break;
@@ -3503,6 +3520,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		            String baseUrl = recordKeeper1URL;
 		            String urlStr = getUrlStr1();      
 		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+    	            if(G.debug()) { G.print("result "+urlStr); }
 		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
 		    		
 		    	}
@@ -3510,18 +3528,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		case SM_None:
     			break;
     		case SM_Normal:
-    			if(playerConnections.length>1)
+    			if(scorable)
     			{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
 		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+    	            if(G.debug()) { G.print("result "+urlStr); }
 		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
 		    	}
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
     		}
-    		}
-    	}
+     	}
     	
     }
 
@@ -3989,7 +4007,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     	checkUrlLoaded();
     	if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
-    	SetWhoseTurn();
+    	boolean newturn = SetWhoseTurn();
+    	if(newturn && turnBasedGame!=null) { recordAsyncGame(); }
 
     	boolean some = (v!=null) && v.ParseMessage(null, -1);
     	if(some) 
@@ -4241,10 +4260,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public void shutDown()
     { 	//System.out.println("Game Shutdown");
        if(v!=null) 
-       	{  boolean discard = v.discardable();
+       	{  
     	   v.stopRobots(); 
     	   v.shutdownWindows(); 
-    	   if(discard) { discardGame(); }
+    	   if(turnBasedGame==null && v.discardable()) { discardGame(); }
        	}
        v = null;
        super.shutDown();
@@ -4520,16 +4539,27 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
 
     private void recordOfflineGame()
-    {	if(G.offline() && !reviewOnly)
-    {	
+    {	if(G.offline() && !reviewOnly && turnBasedGame==null)
+    	{	
     	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
     	String msg = v.fixedServerRecordMessage(fixedHist);
     	//G.print("Fixed "+msg);
 		
-			OfflineGames.recordOfflineGame(UIDstring,msg);
-		}
+    	OfflineGames.recordOfflineGame(UIDstring,msg);
+ 		}
     }
-
+    private void recordAsyncGame()
+    {
+    	if(turnBasedGame!=null && whoseTurn.uid!=null)
+    	{
+        	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
+        	String msg = v.fixedServerRecordMessage(fixedHist);
+        	//G.print("Fixed "+msg);
+    		
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg);
+   		
+    	}
+    }
     private String serverRecordString(RecordingStrategy mode)
     {	if(mode==RecordingStrategy.None) 
     		{ return ""; 
@@ -4634,10 +4664,23 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
          }
     }
     public void restoreOfflineGame()
-    {	String rec = OfflineGames.restoreOfflineGame(UIDstring);
+    {	String rec = turnBasedGame!=null 
+    					? turnBasedGame.getBody() 
+    					: OfflineGames.restoreOfflineGame(UIDstring);
     	if(rec!=null)
     	{	StringTokenizer tok = new StringTokenizer("1 "+rec);
     		restoreGame(tok,rec);
+    		if(turnBasedGame!=null)
+    		{
+    			// adjust the player time for the game
+    			BSDate da = BSDate.parseDate(turnBasedGame.lastTime);
+    			long start = da.getTime();
+    			String newdate = da.DateString();
+    			long now = G.Date();
+    			long dif = now-start;
+    			commonPlayer who = whoseTurn;
+    			v.updatePlayerTime(dif,who);
+    		}
     	}
     }
     

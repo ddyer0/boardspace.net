@@ -70,6 +70,7 @@ force install Mysql
 edit httpd.conf to allow server side includes
 perl cpan install GD GD::SVG GD::Graph
 procmail (contains lockfile)
+perl-LWP-Protocol-https
 
 CRON
 

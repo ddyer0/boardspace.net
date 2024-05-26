@@ -394,8 +394,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, JumbulayaId.DrawPile,hide ? JumbulayaChip.BACK : null,cs,dx,
-    				dy))
+    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, cs, dx,dy,canHit?highlight:null,JumbulayaId.DrawPile,
+    				hide ? JumbulayaChip.BACK : null))
     		{
     			highlight.hitObject = gb.drawPile;
     		}

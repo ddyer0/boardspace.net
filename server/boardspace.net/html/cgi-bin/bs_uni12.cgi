@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#
+# 5/2024 support for turnbased games
 # 9/2023 record results of game with up to 12 players
 # 9/2009 record results of game with up to 6 players
 # 1/2014 record results in the ranking ladder
@@ -31,7 +31,7 @@ sub main_score_routine()
   my $digest_mid = param('dm');
   my $digest_end = param('de');
   my $master = (param('mm') eq 'true');
-
+  my $turnbased = param('turnbased');
   my $hasGuest = 0;
   my $hasUnranked = 0;
   my $numPlayers = 0;
@@ -57,7 +57,7 @@ sub main_score_routine()
 	if($u[$low] ne "")
 		{ ($pname[$low],$oldrank[$low],$maxrank[$low],$robo[$low],$fixedrank[$low],
 		   $gameswon[$low],
-		   $ladder_level[$low],$ladder_order[$low])=&getrank($dbh,$u[$low],$game,$master);
+		   $ladder_level[$low],$ladder_order[$low])=&getrank($dbh,$u[$low],$game,$master,$turnbased);
 		   $numPlayers++;
 		   if($blank)
 		   		{ $error++;
@@ -96,8 +96,9 @@ sub main_score_routine()
 		my $key = param('key');
 		my $port = param('sock');
 		if($port<2240) { $port=$'game_server_port}
-
-		if(!&check_server($port,$session,$key,$u[1],$u[2],$u[3],$u[4],$u[5],$u[6],$u[7],$u[8],$u[9],$u[10],$u[11],$u[12]))
+		if($turnbased 
+			? !&check_turnbased($dbh,$session,$key,$u[1],$u[2],$u[3],$u[4],$u[5],$u[6],$u[7],$u[8],$u[9],$u[10],$u[11],$u[12])
+			: !&check_server($port,$session,$key,$u[1],$u[2],$u[3],$u[4],$u[5],$u[6],$u[7],$u[8],$u[9],$u[10],$u[11],$u[12]))
 		{
 		 __dm( __LINE__." scoring rejected: \"$'reject_line\" $ENV{'QUERY_STRING'}" );
 		 print "\n** Ranking update was rejected by the server **\n";
@@ -255,10 +256,11 @@ sub main_score_routine()
 	{	my $wins = $mostwins[$mw];
 		my $low = @$wins[1];
 		my $newmax = $maxrank[$low];
-		my $lowsm = $master ? 'yes' : 'no';
-    	my $mmstr = $master ? "Master " : "";
-	    my $plaism = $master ? "AND players.is_master='y'" : "";
+
+	    	my $mmstr = $master ? "Master " : "";
+		my $plaism = $master ? "AND players.is_master='y'" : "";
 		  $newrank[$low] = $oldrank[$low]+$change[$low];
+
 	  if( $nr[$low] )
 	  {
 	  $newrank[$low] = $oldrank[$low];
@@ -293,7 +295,7 @@ sub main_score_routine()
 	  if($newrank[$low]>$newmax) { $newmax= $newrank[$low]; }
   	  $newmax = $dbh->quote($newmax);
 	  my $qlow = $dbh->quote($u[ $low ]);
-	  my $qlowsm = $dbh->quote($lowsm);
+	  my $mast = $turnbased ? "'turnbased'" : $master ? "'yes'" : "'no'";
 	  my $command=
 	   "UPDATE players,ranking
 	   	SET players.last_played=$last_played, ranking.last_played=$last_played,
@@ -304,7 +306,7 @@ sub main_score_routine()
             players.games_played=players.games_played+1,
             ranking.games_played=ranking.games_played+1,
    		    max_rank = $newmax
-    		WHERE players.uid=$qlow $plaism AND ranking.is_master=$qlowsm
+    		WHERE players.uid=$qlow $plaism AND ranking.is_master=$mast
     		      AND ranking.uid=$qlow AND variation=$qgame";
 		#print "Q: $command\n";
 		&commandQuery($dbh,$command);
@@ -313,7 +315,10 @@ sub main_score_routine()
 			$logstr .= "$pname[$low]($newrank[$low])\t";
 			}
 
-
+    if($turnbased)
+	{
+	&update_turnbased($dbh,$session,$key);
+	}
     &make_log($logstr . $fname);
 	}
 
@@ -323,8 +328,9 @@ sub main_score_routine()
   #update mp_gamerecord set date=date,gmtdate=reverse(substring(reverse(gamename),1,15))
 	# if we have uids, record a game record
 	{
-	my $mode = $master ? 'master'
-				: ($hasUnranked? 'Unranked' : 'Normal');
+	my $mode = $master 
+			? 'master'
+			: ($hasUnranked? 'Unranked' : 'Normal');
   my $now = $dbh->quote(&ctime());
   my $qpl = "" ;
   for(my $low = 1; $low<=$numPlayers; $low++)
@@ -335,6 +341,7 @@ sub main_score_routine()
       $qpl .=
           "player${low}=$uv,time${low}=$tv,score${low}=$sv,rank${low}=$rv,";
 		}
+    my $qtb = $turnbased ? "turnbased='yes'," : "";
     my $qgame = $dbh->quote($game);
     my $qmode = $dbh->quote($mode);
     my $tmode = $dbh->quote($tourney);
@@ -344,6 +351,7 @@ sub main_score_routine()
     
     my $q = "INSERT INTO mp_gamerecord SET $qpl "
      . " variation=$qgame,mode=$qmode,tournament=$tmode,"
+     . $qtb
      . " digest_end=$dend,digest_mid=$dmid,"
      . " gmtdate=$now,"
      . " gamename=$gname";
@@ -365,6 +373,7 @@ sub main_score_routine()
 	&commandQuery($dbh,$ladder_update_query);
 	}
 	}
+
 	} #end of ranking update
   else
   {  print "Rejected: $es\n";

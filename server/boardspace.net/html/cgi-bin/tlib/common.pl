@@ -1081,18 +1081,23 @@ sub send_mail_to()
 	my $msg = 	"$auth\nSender: $from\nFrom: $from\nTo: \"$touser\" <$to>\nSubject: $sub\n\n$body\n";
 
 	#print "<br>send -f $from $to\n$msg\n";
-
+	if($'sendmail)
+	{
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
 	print SENDMAIL $msg;
-    close SENDMAIL;
+    	close SENDMAIL;
+	}
 }
 
 sub send_mail()
 {	my ($from,$to,$sub,$body) = @_;
 	my $msg = "Sender: $from\nFrom: $from\nTo: $to\nSubject: $sub\n$body\n";
+	if($'sendmail)
+	{
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
 	print SENDMAIL $msg;
-    close SENDMAIL;
+	close SENDMAIL;
+	}
 }
 
 sub edit_user_info_message()

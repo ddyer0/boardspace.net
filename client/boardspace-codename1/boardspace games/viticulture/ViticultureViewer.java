@@ -1976,7 +1976,7 @@ private void drawPlayerBoard(Graphics gc,
 
       	if(gb.triggerCard!=null)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/10,left+totalW-csize*2,top+totalH-csize*5/2);
+       		gb.triggerCard.drawChip(gc, this, w/10, left+totalW-csize*2, top+totalH-csize*5/2,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
     	GC.frameRect(gc, Color.black, tradeRect);
@@ -1992,7 +1992,7 @@ private void drawPlayerBoard(Graphics gc,
     		Viticulturemovespec m = e.nextElement();
     		while(m!=null) 
     		{ 	ViticultureChip chip = ViticultureChip.getChip(ChipType.values()[m.from_index],pb.color);
-    			if(chip.drawChip(gc,this,highlight,ViticultureId.WineSelection,null,mstep,xleft,ytop))
+    			if(chip.drawChip(gc,this,mstep,xleft,ytop,highlight,ViticultureId.WineSelection,null))
     			{
     				highlight.hitObject = m;
     			}
@@ -2024,7 +2024,7 @@ private void drawPlayerBoard(Graphics gc,
        		}
     	}
 
-    	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,left+totalW-csize,top+csize);
+    	StockArt.FancyCloseBox.drawChip(gc, this, csize, left+totalW-csize,top+csize, highlightAll,ViticultureId.CloseOverlay,null);
 
     }
     //
@@ -2054,7 +2054,7 @@ private void drawPlayerBoard(Graphics gc,
       	int csize = step/5;
       	if(gb.triggerCard!=null)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,left+totalW-csize,top+totalH-csize*3/2);
+       		gb.triggerCard.drawChip(gc, this, w/15, left+totalW-csize, top+totalH-csize*3/2,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
        	GC.frameRect(gc, Color.black, tradeRect);
@@ -2148,7 +2148,7 @@ private void drawPlayerBoard(Graphics gc,
            			highlight.hitCode = GameId.HitDoneButton;
            		}
     	}
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,left+totalW-csize,top+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, left+totalW-csize,top+csize, highlightAll,ViticultureId.CloseOverlay,null);
 
     }
     private boolean doneButton(Graphics gc,Rectangle r,HitPoint hgh)
@@ -2299,7 +2299,7 @@ private void drawPlayerBoard(Graphics gc,
     			}
     			if((gb.triggerCard!=null)&&(gb.triggerCard!=target))
     			{	
-    				gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,cx+w/4,y+w/5);
+    				gb.triggerCard.drawChip(gc, this, w/15, cx+w/4, y+w/5,highlightAll,ViticultureId.ShowBigChip,null);
     			}
     			break;
     		case PapaCard:
@@ -2310,7 +2310,7 @@ private void drawPlayerBoard(Graphics gc,
     		default: G.Error("Not expecting %s",target);
     		}
 
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,x+szw*2-csize,y+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, x+szw*2-csize,y+csize, highlightAll,ViticultureId.CloseOverlay,null);
 
 
     }
@@ -2588,7 +2588,7 @@ private void drawPlayerBoard(Graphics gc,
 
       	if(gb.triggerCard!=null)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,x+w-csize,y+h-csize*3/2);
+       		gb.triggerCard.drawChip(gc, this, w/15, x+w-csize, y+h-csize*3/2,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
        	GC.frameRect(gc,Color.black,tradeRect);
@@ -2676,7 +2676,7 @@ private void drawPlayerBoard(Graphics gc,
     				StockArt.Checkmark.drawChip(gc, this, grapew/2, xpos+grapew/4, ypos+grapew/4,null);
     			}
     			xpos+=step/2;
-    			if(ViticultureChip.Champagne.drawChip(gc, this, highlight, ViticultureId.Choice_B, null, grapew, xpos+step/7,ypos))
+    			if(ViticultureChip.Champagne.drawChip(gc, this, grapew, xpos+step/7, ypos, highlight, ViticultureId.Choice_B,null))
     			{	makeChampaign = false;
     				highlight.setHelpText(MakeChampagne);
     				highlight.hitObject = c;
@@ -2791,7 +2791,7 @@ private void drawPlayerBoard(Graphics gc,
     		highlight.hitObject = prev;
     	}
 		drawStack(gc,resetState,null, gb.boardMagnifier,highlight,highlightAll,step/2,x+w-step/4,y+h-step/4,0,0,0,null);
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,x+w-csize,y+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, x+w-csize,y+csize, highlightAll,ViticultureId.CloseOverlay,null);
 
     }
     
@@ -2826,8 +2826,8 @@ private void drawPlayerBoard(Graphics gc,
     			size, centerX, G.centerY(br),0,
     			1,0,null);
     
-    	StockArt.FancyCloseBox.drawChip(gc, this, highlight,
-     				 ViticultureId.CancelBigChip,null,w/20,left+xp+actualW-w/20,ytop+w/20);
+    	StockArt.FancyCloseBox.drawChip(gc, this, w/20,
+     				 left+xp+actualW-w/20,ytop+w/20,highlight,ViticultureId.CancelBigChip,null);
  
     }
     // show potential sales, also potential victims to be aged prematurely.
@@ -2855,7 +2855,7 @@ private void drawPlayerBoard(Graphics gc,
        	int csize = w/20;
       	if(gb.triggerCard!=null)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,x+w-csize*4/5,y+h-csize*5/4);
+       		gb.triggerCard.drawChip(gc, this, w/15, x+w-csize*4/5, y+h-csize*5/4,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
        	GC.frameRect(gc, Color.black, tradeRect);
@@ -2994,7 +2994,7 @@ private void drawPlayerBoard(Graphics gc,
 		G.SetLeft(wrect,wx);
 		G.SetWidth(wrect, w-(wx-x));
 		showWineOrders(gc,gb,pb,highlight,wrect,highlight==null);
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,x+w-csize,y+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, x+w-csize,y+csize, highlightAll,ViticultureId.CloseOverlay,null);
 		//G.frameRect(gc, Color.blue, wrect);
     }
     
@@ -3040,7 +3040,7 @@ private void drawPlayerBoard(Graphics gc,
     	Rectangle r = new Rectangle(G.Left(br),G.Top(br)+h/20,w/10,h/10);
     ViticultureChip.Scrim.image.stretchImage(gc, r); 
     	GC.frameRect(gc, Color.black, r);
-    	StockArt.Checkmark.drawChip(gc, this, highlight,ViticultureId.CloseOverlay,null,w/20,G.centerX(r),G.centerY(r));
+    	StockArt.Checkmark.drawChip(gc, this, w/20,G.centerX(r),G.centerY(r),highlight,ViticultureId.CloseOverlay,null);
     }
     private TextContainer scoreSummary = new TextContainer(ViticultureId.ScoreSummary);
     private boolean scoreSummaryPrepared = false;
@@ -3310,7 +3310,7 @@ private void drawPlayerBoard(Graphics gc,
        	int csize = w/20;
       	if(gb.triggerCard!=null)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,x+w-csize,y+h-csize*3/2);
+       		gb.triggerCard.drawChip(gc, this, w/15, x+w-csize, y+h-csize*3/2,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
     	GC.frameRect(gc, Color.black, tradeRect);
@@ -3412,7 +3412,7 @@ private void drawPlayerBoard(Graphics gc,
 		  drawStack(gc, state,null,gb.tradeRedGrape,highlight,highlightAll, step ,xright,yright, 0,0.05,0.05,null);
 
 		}
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,x+w-csize,y+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, x+w-csize,y+csize, highlightAll,ViticultureId.CloseOverlay,null);
        	
 
     }
@@ -3565,6 +3565,8 @@ private void drawPlayerBoard(Graphics gc,
      		destroyMode = true;
      		break;
      	case Pick2TopCards:
+     		nToDiscard = 2;
+			//$FALL-THROUGH$
      	case Pick2Discards:
      		uncensored = true;
      		break;
@@ -3743,14 +3745,14 @@ private void drawPlayerBoard(Graphics gc,
 		
        	if(G.offline() && !apCards && !cardBacks)
        	{	
-       		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, highlightAll, ViticultureId.Eye,
-       					null,totalW/20,xp+totalW/20,yp+totalW/20);
+       		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, totalW/20, xp+totalW/20,
+       					yp+totalW/20,highlightAll,ViticultureId.Eye,null);
        	}}
 		
 		}
       	if(gb.triggerCard!=null && !apCards)
        	{
-       		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,xp+totalW-w/25,yp+cardH-w/18);
+       		gb.triggerCard.drawChip(gc, this, w/15, xp+totalW-w/25, yp+cardH-w/18,highlightAll,ViticultureId.ShowBigChip,null);
        	}
 
 		if(nCards==0)
@@ -4006,8 +4008,8 @@ private void drawPlayerBoard(Graphics gc,
        	}
 		if(apCards)
 		{
-		if(StockArt.FancyCloseBox.drawChip(gc, this, highlightAll,
-				 ViticultureId.Eye,null,totalW/20,xp+totalW-totalW/20,yp+totalW/20))
+		if(StockArt.FancyCloseBox.drawChip(gc, this, totalW/20,
+				 xp+totalW-totalW/20,yp+totalW/20,highlightAll,ViticultureId.Eye,null))
 			{
 			highlightAll.hitObject = activePlayer.cards;
 			}
@@ -4016,7 +4018,7 @@ private void drawPlayerBoard(Graphics gc,
 		else
 		{
        	int csize = totalW/20;
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,xp+totalW-csize,yp+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, xp+totalW-csize,yp+csize, highlightAll,ViticultureId.CloseOverlay,null);
 		}
 		switch(state)
 		{
@@ -4024,7 +4026,7 @@ private void drawPlayerBoard(Graphics gc,
 		case PlaySecondBlue:
 		case PlaySecondYellow:
 		if((gb.getState()!=ViticultureState.Confirm)
-			&& GC.handleRoundButton(gc,new Rectangle(w-w/3,h-h/10,w/3-h/15,h/15),
+			&& GC.handleRoundButton(gc,new Rectangle(xp+totalW-totalW/3,h-h/10,totalW/3-totalW/15,h/15),
        					highlight,NoCardMessage,HighlightColor,rackBackGroundColor))
        	{
        		highlight.hitCode = GameId.HitDoneButton;
@@ -4104,7 +4106,7 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureChip ch = c.chipAtIndex(i);
 			if(ch.type==ChipType.GreenCard)
 			{
-				ch.drawChip(gc,this,censor ? null : highlightAll,ViticultureId.ShowBigChip,cardLabel,step/3,left,bot+step/20);
+				ch.drawChip(gc,this,step/3,left,bot+step/20,censor ? null : highlightAll,ViticultureId.ShowBigChip,cardLabel);
 				left += step/2;
 			}
 		}
@@ -4116,8 +4118,8 @@ private void drawPlayerBoard(Graphics gc,
 		
        	if(G.offline()  && !cardBacks)
        		{	
-       		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, highlightAll, ViticultureId.Eye,
-       					null,totalW/20,xp+totalW/20,yp+totalW/20);
+       		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, totalW/20, xp+totalW/20,
+       					yp+totalW/20,highlightAll,ViticultureId.Eye,null);
        		}	
 		}
  
@@ -4156,7 +4158,7 @@ private void drawPlayerBoard(Graphics gc,
   
 		
 		int csize = totalW/20;
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,xp+totalW-csize,yp+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, xp+totalW-csize,yp+csize, highlightAll,ViticultureId.CloseOverlay,null);
        	GC.frameRect(gc,Color.black,fieldRect);
     }
      // show cards and/or fields
@@ -4232,7 +4234,7 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureChip ch = p.getRooster();
 			boolean ready = p.isReady;
 			boolean me = G.offline() || ( p.boardIndex==getActivePlayer().boardIndex);
-			if(ch.drawChip(gc,this,me ? highlight:null,ViticultureId.SetReady,null,step*2,xp,y))
+			if(ch.drawChip(gc,this,step*2,xp,y,me ? highlight:null,ViticultureId.SetReady,null))
 			{
 				highlight.hitObject = p;
 				highlight.hit_index = ready ? 0 : 1;
@@ -4246,7 +4248,7 @@ private void drawPlayerBoard(Graphics gc,
 		}}
 		
 		int csize = w/20;
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,left+w-csize,top+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, left+w-csize,top+csize, highlightAll,ViticultureId.CloseOverlay,null);
        	GC.frameRect(gc,Color.black,fieldRect);
     }
     
@@ -4380,7 +4382,7 @@ private void drawPlayerBoard(Graphics gc,
 		gb.choiceB.selected = cb;
 		
 		int csize = totalW/20;
-       	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,null, csize,xp+totalW-csize,yp+csize);
+       	StockArt.FancyCloseBox.drawChip(gc, this, csize, xp+totalW-csize,yp+csize, highlightAll,ViticultureId.CloseOverlay,null);
        	GC.frameRect(gc,Color.black,fieldRect);
     }
     
@@ -4636,7 +4638,7 @@ private void drawPlayerBoard(Graphics gc,
            	{
            	if(gb.triggerCard!=null)
            	{
-           		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, null,w/15,xp0+frameW-csize,yp0+frameH-csize*3/2);
+           		gb.triggerCard.drawChip(gc, this, w/15, xp0+frameW-csize, yp0+frameH-csize*3/2,highlightAll,ViticultureId.ShowBigChip,null);
            	}
            	if(gb.DoneState() 
            			&& (gb.getState()!=ViticultureState.Confirm) 
@@ -4645,8 +4647,8 @@ private void drawPlayerBoard(Graphics gc,
            	{
            		highlight.hitCode = GameId.HitDoneButton;
            	}}
-           	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, 
-           			showBuildings ? ViticultureId.CancelBigChip: ViticultureId.CloseOverlay,null, csize,xp0+frameW-csize,yp0+csize);
+           	StockArt.FancyCloseBox.drawChip(gc, this, csize, 
+           			xp0+frameW-csize,yp0+csize, highlightAll,showBuildings ? ViticultureId.CancelBigChip: ViticultureId.CloseOverlay,null);
     	}
     }
     double decksLoc[][] = {
@@ -4774,14 +4776,14 @@ private void drawPlayerBoard(Graphics gc,
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn());
         boolean tempOff = currentZoomZone!=null;
         
-        ViticultureChip.NeutralBuilding.drawChip(gc,this,highlightAll,
-        			ViticultureId.ShowBuildings,s.get(ShowBuildingInfo),
-        			gb.pToS(0.04),gb.pToX(0.21),gb.pToY(0.570));
+        ViticultureChip.NeutralBuilding.drawChip(gc,this,gb.pToS(0.04),
+        			gb.pToX(0.21),gb.pToY(0.570),
+        			highlightAll,ViticultureId.ShowBuildings,s.get(ShowBuildingInfo));
         if(mainBoard.variation==ViticultureVariation.viticulturep)
         {
-        	ViticultureChip.GenericWine.drawChip(gc,this,highlightAll,
-        			ViticultureId.ShowOptions,s.get(ShowOptionInfo),
-        			gb.pToS(0.03),gb.pToX(0.212),gb.pToY(0.50));
+        	ViticultureChip.GenericWine.drawChip(gc,this,gb.pToS(0.03),
+        			gb.pToX(0.212),gb.pToY(0.50),
+        			highlightAll,ViticultureId.ShowOptions,s.get(ShowOptionInfo));
         	
         }
         
@@ -6641,7 +6643,7 @@ private void drawPlayerBoard(Graphics gc,
   	loadCoins(pb.cashDisplay,pb.cash);
   	labelFont = largeBoldFont();
   	pb.cashDisplay.drawStack(gc,this,null,lineH*3/2,coinX,coinY,0,0.3,0,""+pb.cash);
-  	ViticultureChip.playermat.drawChip(gc, this,hp, ViticultureId.ShowPlayerBoard, null, lineH*4/3,boardX,boardY);
+  	ViticultureChip.playermat.drawChip(gc, this,lineH*4/3, boardX, boardY, hp,ViticultureId.ShowPlayerBoard,null);
   	String stateMessage = (uistate==ViticultureState.Gameover)?gameOverMessage(mainBoard):gameStateMessage(mainBoard,uistate);
   	Text stateText = TextChunk.colorize(stateMessage, s, gameMoveText());
  	standardGameMessage(gc,0,Color.black,

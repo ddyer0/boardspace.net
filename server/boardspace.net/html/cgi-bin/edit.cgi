@@ -463,7 +463,7 @@ param();
        $comma = ","; 
        print "<br>email bounce count reset\n";
      }
-     if(!($passwd eq $newpasswd) && !($newpasswd eq "") && ($newpasswd eq $newpasswd2))
+     if(!($passwd eq $newpasswd) && !($newpasswd2 eq "") && ($newpasswd eq $newpasswd2))
        { print "<br>changed password\n"; # from $passwd to $newpasswd\n";
         my $slashname = $dbh->quote($newpasswd);
         $opstr = $opstr . $comma . " pwhash=MD5(concat($slashname,uid))";
@@ -820,9 +820,9 @@ param();
        {my $nom = ($nomail eq 'y') ? "&nbsp;No newsletter emails will be sent" : "";
 	    my $hemail = &obfuscateHTML("$email");
         print "<td colspan=2>$hemail$nom$bb<td></tr>";
-  	my $tdis = ($disid eq "") ? &trans('(unknown)') : $disid;
-	print "<tr><td>" . &trans("Discord UID") . "</td><td>$tdis <a href=/english/about_discord.html>" 
-			. &trans("about discord") . "</a></td></tr>";
+  	my $tdis = ($disid eq "") ? &trans('regular email') : &trans('somewhere else');
+	print "<tr><td>" . &trans("Notifications to:") . "</td><td>$tdis <a href=/english/about_discord.html>" 
+			. &trans("about notifications") . "</a></td></tr>";
 
   
 	print "<tr><td colspan=2>";
@@ -848,10 +848,10 @@ param();
         print "<input type=checkbox name=nomail $chk> If checked, send no announcements";
        print "</td></tr>\n";
    
-	print "<tr><td>" . &trans("Discord UID") . "</td><td>"
+	print "<tr><td>" . &trans("Notifications to:") . "</td><td>"
 			 . "<input type=text size=20 name=discorduid value='$disid'>" 
 			 . "<a href=/english/about_discord.html> " 
-			 . &trans("about discord") . "</a></td></tr>";
+			 . &trans("Notifications") . "</a></td></tr>";
  
 	
      print "<tr><td>"

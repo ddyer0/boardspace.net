@@ -742,8 +742,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	GC.frameRect(gc,Color.black,x,y,w,h);
     	int vspace = h/(personalCap.size()+everyoneCap.size()+extraLineCount);
     	GC.Text(gc,true,x,y,w,vspace,Color.white,null,statCaption);
-    	StockArt.FancyCloseBox.drawChip(gc, this, hit,
-				 CrosswordleId.CloseStats,null,stateh,x+w-stateh/2,y+stateh/2);
+    	StockArt.FancyCloseBox.drawChip(gc, this, stateh,
+				 x+w-stateh/2,y+stateh/2,hit,CrosswordleId.CloseStats,null);
     	if(G.pointInRect(hit,x,y,w,h))
     	{
     		hit.hitCode = CrosswordleId.CloseStats;

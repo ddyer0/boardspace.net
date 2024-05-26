@@ -36,19 +36,13 @@ require "tlib/show-recent.pl";
 require "tlib/messageboard.pl";
 require "tlib/ordinal-rankings.pl";
 require "tlib/params.pl";
-
+require "push/silentpush.pl";
 
 sub init {
 	$| = 1;				# force writes
 }
 
-sub make_log {
-	my ( $msg ) = @_;
-  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
-	open( F_OUT, ">>$'server_logon_log" );
- 	printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n", 1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
-        close F_OUT;
-}
+
 #
 # check the player name and password
 #
@@ -69,14 +63,21 @@ sub logon()
 	($uid) = &nextArrayRow($sth);
 	}
 	&finishQuery($sth);
-
+	if($uid>0)
+	{
+	my $last_logon = time();	# num seconds since Jan 1, 1970
+	my $qtime = $dbh->quote($last_logon);
+	my $quid = $dbh->quote($uid);
+	# update last login so player_analysis will notice games etc.
+	&commandQuery($dbh,"Update players set last_logon=$qtime where uid=$quid limit 1");
+	}
 	return $uid;
 
 }
 #
 # check that a player name exists, and is suitable to be an opponent
 #
-sub checkplayer()
+sub getPlayerUid()
 { 
 	my ($dbh, $pname) = @_;
  	my $myaddr = $ENV{'REMOTE_ADDR'};
@@ -96,55 +97,294 @@ sub checkplayer()
 	return "uid $uid\n";
 
 }
+sub recordgame()
+{
+	my ($dbh,$pname,$password) = @_;
+	my $uid = &logon($dbh,$pname,$password);
+	if($uid>0)
+	{
+	my $dirnum = &param('directory');
+	my $qdirnum = $dbh->quote($dirnum);
+	my $gamename = &param('gamename');
+	my $body = &decode64(&param('body'));
+
+	my $q = "select directory from variation where directory_index = $qdirnum";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	if($nr==1)
+		{
+		my ($dir) = &nextArrayRow($sth);
+		my $root = $ENV{'document_root'};
+		my $fullname = $root . $dir . $gamename . ".sgf";
+		if(open (FH, "> $fullname"))
+			{
+			print FH $body;
+			close(FH);
+			return "savedas $dir . $gamename";
+			}
+			else 
+			{
+			return "error problem writing $fullname";
+			}
+		}
+		else
+		{
+		return "error bad directory number";
+		}
+	}
+	else
+	{
+	return "error bad player+password";
+	}
+}
+#
+# create or updare game
+#
 sub creategame()
-{	my ($dbh, $pname) = @_;
-	my $password = &param('password');
+{	my ($dbh, $pname, $password) = @_;
 
+	my $uid = &logon($dbh,$pname,$password);
+
+	if($uid>0)
+	{
 	my $owner = &param('owner');
-
 	my $qowner = $dbh->quote($owner);
 
-	my $allowother = &param('allowother');
-	my $qallow = $dbh->quote($allowother);
+	my $gameuid = &param('gameuid');		#if gameuid is supplied, this is an update
+	my $qgameuid = $dbh->quote($gameuid);
 
-	my $variation = &param('variation');
-	my $qvar = $dbh->quote($variation);
+	my $status = &param('status');
+	my $qstatus = $dbh->quote($status);
 
-	my $invitedplayers = &param('invitedplayers');
-	my $qinvite = $dbh->quote($invitedplayers);
+	my $allow = &param('allowotherplayers');
+	my $qallow = $dbh->quote($allow);
+
+	my $var = &param('variation');
+	my $qvar = $dbh->quote($var);
+
+	my $mode = &param('playmode');
+	my $qmode = $dbh->quote($mode);
+
+	my $invite = &param('invitedplayers');
+	my $qinvite = $dbh->quote($invite);
+
+	my $accept = &param('acceptedplayers');
+	my $qaccept = $dbh->quote($accept);
 
 	# parameters for the body
 	my $comments = &param('comments');
 	my $qcomments = $dbh->quote($comments);
 
-	my $firstplayer = &param('firstplayer');
-	my $qfirst = $dbh->quote($firstplayer);
+	my $first = &param('firstplayer');
+	my $qfirst = $dbh->quote($first);
 
 	my $speed = &param('speed');
 	my $qspeed = $dbh->quote($speed);
 
-	my $body = "comments $qcomments\n"
-			. "firstplayer $qfirst\n"
-			. "speed $qspeed\n";
+	my $body = &param('body');
 	my $qbody = $dbh->quote($body);
 
-	my $uid = &logon($dbh,$pname,$password);
+	my $whoseturn = &param('whoseturn');
+	my $qwhoseturn = $dbh->quote($whoseturn);
+
 	my $gid = 0;
 	# verify that the owner is the same as the login credentials
-	if(($uid eq $owner) && $owner>0)
+	if(($gameuid>0) || ($uid eq $owner))
 	{
-	my $q = "insert into offlinegame set owner=$qowner"
-			. ",allowotherplayers=$qallow"
-			. ",invitedplayers=$qinvite"
-			. ",body=$qbody"
-			. ",variation=$qvar";
-
+	my $preamble = $gameuid>0 
+			? "update offlinegame set gameuid=$qgameuid" 
+			: "insert into offlinegame set created=now()";
+	my $postamble = $gameuid>0 
+			? " where gameuid= $qgameuid"
+			: "";
+	my $q = "$preamble "
+			. ($owner ? ",owner=$qowner" : "")
+			. ($allow ? ",allowotherplayers=$qallow" : "")
+			. ($invite ? ",invitedplayers=$qinvite" : "")
+			. ($accept ? ",acceptedplayers=$qaccept" : "")
+			. ($mode ? ",playmode=$qmode" : "")
+			. ($comments ? ",comments=$qcomments" : "")
+			. ($first ? ",firstplayer=$qfirst" : "")
+			. ($speed ? ",speed=$qspeed" : "")
+			. ($status ? ",status=$qstatus" : "")
+			. ($whoseturn ? ",whoseturn=$qwhoseturn" : "")
+			. ($body ? ",last=CURRENT_TIMESTAMP(),body=$qbody" : "")
+			. ($var ? ",variation=$qvar" : "")
+			. $postamble;
+	#print "\nQ: $q\n";
 	my $sth = &commandQuery($dbh,$q);
 	$gid = &last_insert_id($sth);
 	&finishQuery($sth);
 	}
-	return "gameuid $gid\n";
+	return $gameuid>0 
+		? "gameuid $gameuid\n" 
+		: "gameuid $gid\n";
+	}
+	else
+	{
+	return "error bad player+password";
+	}
 }
+#
+# users is a list of user ids separated by |
+# result os a list of user + name pairs
+#
+sub getusers()
+{	my ($dbh,$users) = @_;
+	my @us = split /\|/,$users;
+	my $ids = "where ";
+	my $comma = "";
+	foreach my $id (@us)
+	{my $qid = $dbh->quote($id);
+	 $ids .= "${comma}uid=$qid ";
+ 	 $comma = " or ";
+	}
+	my $q = "select player_name,uid from players $ids";
+	#print "Q: $q\n";
+	my $sth = &query($dbh,$q);
+	my $n = &numRows($sth);
+	my $msg = "";
+	while($n-- > 0)
+	{	
+	my ($u,$n) = &nextArrayRow($sth);
+	$msg .= "$u \"$n\"\n";
+	}
+	&finishQuery($sth);
+	#print "$msg<p>";
+	return $msg;
+}
+
+sub getbody()
+{
+	my ($dbh) = @_;
+	my $uid = &param('gameuid');
+	my $quid = $dbh->quote($uid);
+
+	my $q = "select body from offlinegame where gameuid=$quid";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	if($nr==1)
+	{
+	my ($msg) = &nextArrayRow($sth);
+	return "body " . $msg;
+	}
+	else
+	{
+	return "error game $quid not found";
+	}
+}
+#
+# get info for games in progress
+# return format is <field> <value>"
+# repeated as necessary, but gameuid starts each block
+#
+sub getgameinfo()
+{	my ($dbh, $owner, $invited, $status, $variation,$first,$limit) = @_;
+
+	#print "\n o=$owner i=$invited s=$status\n";
+	#
+	# construct the condition selector
+	#
+	my $cond = '';
+	my $comma = '';
+	# make damn sure any supplied parameters are integers
+        if (!$first) { $first = 0; } 
+        if (!$limit) { $limit = 100; };
+	$first = int($first);
+        $limit = int($limit);
+	if (!($owner eq '') && ($owner>0))
+		{
+		my $quid = $dbh->quote($owner);
+		my $cc = "${comma}owner=$owner";
+		if($invited)
+			{
+			my $qinvite = $dbh->quote("%|$invited|%");
+			$cc = "($cc or invitedplayers like $qinvite)";
+			}
+		$cond .= $cc;
+		$comma = " and ";
+		}
+
+	if (!($status eq ''))
+		{
+		#
+		# note that the status names in the database enum must be the same
+		# as the java AsyncStatus table
+		#
+		my $qstat = $dbh->quote($status);
+		$cond .= "${comma}status=$qstat";
+		$comma = " and ";	
+		}
+	if(!($variation eq ''))
+		{
+		my $qvariation = $dbh->quote($variation);
+		$cond .= "${comma}variation=$qvariation";
+		$comma = " and ";
+		}
+	if(!($cond eq '')) { $cond = "where $cond" ; }
+	my $index = ($status && $invited ) ? "use index (status)" : "";
+	my $q = "select owner,whoseturn,gameuid,status,variation,playmode,"
+		."comments,firstplayer,speed,"
+		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
+		."from offlinegame $index $cond order by status,last desc limit $limit offset $first";
+	#print "\nQ: $q\n";
+	my $sth = &query($dbh,$q);
+	my $n = &numRows($sth);
+	my $msg = "";
+
+	while($n-- > 0)
+	{
+	#
+	# note that these field names must match the expectations of the AsyncGameStack class
+	#
+	my ($owner,$whoseturn,$gameuid,$status,$variation,$playmode,
+		$comments,$firstplayer,$speed,
+		$invitedplayers,$acceptedplayers,$allow,$created,$last) = &nextArrayRow($sth);
+	$msg .= "gameuid \"$gameuid\"\n"
+		. "whoseturn \"$whoseturn\"\n"
+		. "owner \"$owner\"\n"
+		. "status \"$status\"\n"
+		. "speed \"$speed\"\n"
+		. "variation \"$variation\"\n"
+		. "playmode \"$playmode\"\n"
+		. "comments \"$comments\"\n"
+		. "firstplayer \"$firstplayer\"\n"
+		. "invitedplayers \"$invitedplayers\"\n"
+		. "acceptedplayers \"$acceptedplayers\""
+		. "allowotherplayers \"$allow\"\n"
+		. "created \"$created\"\n"
+		. "last \"$last\"\n";
+	
+	}
+	&finishQuery($sth);
+
+	return $msg;
+}
+sub sendNotifications($dbh)
+{	my ($dbh) = @_;
+	my $idx = 0;
+	#print "send not\n";
+	while(1)
+	 {
+	  my $notification = &param("notification$idx");
+	  #print "n=$notification\n";
+	  if(!$notification) { return; }
+	  $idx++;
+	  my ($uid,$message) = split ",",&decode64($notification);
+	  my $quid = $dbh->quote($uid);
+	  my $q = "select player_name,e_mail,discorduid from players where uid=$quid";
+	  my $sth = &query($dbh,$q);
+	  my $nr = &numRows($sth);
+          #print "Q $nr $q\n";
+	  if($nr==1)
+	  {
+	   my ($player_name,$e_mail,$discord) = &nextArrayRow($sth);
+	  &send_silent_notification($player_name,"Boardspace.net game activity",$'from_email,$e_mail,$discord,$message);
+	  }
+	  &finishQuery($sth);
+	}
+}
+
 #
 # the main program starts here
 # --------------------------------------------
@@ -180,12 +420,37 @@ if( param() )
 			{ my $uid = &logon($dbh,$pname,$passwd); 
 			  $msg = "uid $uid\n";
 			}
-		elsif('checkname' eq $tagname) { $msg = &checkplayer($dbh,$pname); }
-		elsif('creategame' eq $tagname) { $msg = &creategame($dbh,$pname); }
+		elsif('checkname' eq $tagname) { $msg = &getPlayerUid($dbh,$pname); }
+		elsif('creategame' eq $tagname) { $msg = &creategame($dbh,$pname,$passwd); }
+		elsif('getinfo' eq $tagname) 
+			{ my $own = &param('owner');
+		          my $inv = &param('invitedplayers');
+			  my $sta = &param('status');
+			  my $var = &param('variation');
+			  my $limit = &param('limit');
+			  my $first = &param('first');
+			  #print "\nget o=$own i=$inv s=$sta v=$var\n";
+                          $msg = &getgameinfo($dbh,$own,$inv,$sta,$var,$first,$limit); 
+			}
+		elsif('recordgame' eq $tagname)
+		{
+		  $msg = &recordgame($dbh,$pname,$passwd);
+		}
+		elsif('getusers' eq $tagname) { $msg = &getusers($dbh,&param('users')); }
+		elsif('getbody' eq $tagname) { $msg = &getbody($dbh); }
 		else { $msg = "error \"undefined request: $tagname\"" ; }
-		#print "$val<p>";
-	
-		&printResult("Ok",$msg);
+		
+		if( index($msg,"error ") == 0)
+			{
+			&printResult("Error",substr($msg,6));
+			}
+			else
+			{
+			&sendNotifications($dbh);
+			&printResult("Ok",$msg);
+			}
+		
+	#	print "$msg<p>";
 		}
 	else {
 		&printResult("Error","bad version, not 1");
