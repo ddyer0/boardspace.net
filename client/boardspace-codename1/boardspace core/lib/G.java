@@ -2372,7 +2372,7 @@ public static String expandClassName(String classname)
 		}
 		// feature test for turnbased included
 		public static boolean TURNBASED()
-		{	return TURNBASED || debug();
+		{	return TURNBASED ;
 		}
 	}
  	

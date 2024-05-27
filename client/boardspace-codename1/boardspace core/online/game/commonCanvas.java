@@ -6826,11 +6826,8 @@ public abstract class commonCanvas extends exCanvas
          	root.set_property(gamespeed_property , turnBasedGame.speed.menuItem()); 
      		}
         root.set_property(setup_property, gameType());
-        if(G.offline()||USE_COLORMAP)
-        {
         // only emit color map information if it's active in this environment
-         root.set_property(colormap_property,colorMapString());
-        }
+        root.set_property(colormap_property,colorMapString());
        	if(timeControl!=null)
     	{
        		root.set_property(timecontrol_property,timeControl.print()); 
@@ -6894,14 +6891,12 @@ public abstract class commonCanvas extends exCanvas
         ps.println("(;");
         ps.println(game_property+ "[" + sgfGameType() + "]" + version_property +"["+ sgfGameVersion()+"]");
         // colormap immediately after the game id, so it will be active when the setup happens
-        if(G.offline()||USE_COLORMAP)
-        	{
             // only emit color map information if it's active in this environment
         	String colormap = colorMapString();
         	if(colormap!=null) {  	ps.println(colormap_property+"["+colormap+"]"); }
         	if(timeControl!=null)
         	{
-        		ps.println(timecontrol_property+"["+timeControl.print()+"]"); }
+        		ps.println(timecontrol_property+"["+timeControl.print()+"]"); 
         	}
         ps.println(setup_property+"[" + gameType() + "]");
         ps.println(date_property+ "[" + startingTime + "]");
@@ -9001,7 +8996,7 @@ public void verifyGameRecord()
 
 	        String map = colorMapString();
 	        
-	        if (USE_COLORMAP&&map!=null) { G.append(playerinfo, KEYWORD_COLORMAP," ",map," " ); }
+	        if (map!=null) { G.append(playerinfo, KEYWORD_COLORMAP," ",map," " ); }
 	        
 	        TimeControl time = timeControl();
 	        

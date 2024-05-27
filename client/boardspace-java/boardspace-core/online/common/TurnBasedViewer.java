@@ -1964,10 +1964,10 @@ static public void putStrings()
 			OtherPlayersMessage,
 			StartedAndYou,StartedMessage,CancelledMessage,EndedMessage,
 			};
-		String[][] TurnStringPairs =
-		 {
-				 {}
-		 };
+		//String[][] TurnStringPairs =
+		// {
+		//		 {}
+		// };
 		PlaySpeed.putStrings();
 		FirstPlayer.putStrings();
 				

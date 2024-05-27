@@ -25,16 +25,11 @@ public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	static final String cheerpjTextFile = "cheerpj.txt";
-	static boolean TURNBASED = false;
+	static boolean TURNBASED = true;
 	
 	static String PRELOAD = "preload";		// key for a "preload" option passed from the miniloader
 	static boolean PRELOAD_DEFAULT = true;	// still true
 
-	// set TRUE oct 2018.  for 2.82
-	// This should be completely safe by now
-	// since approximately version 2.12 was the last version that
-	// didn't handle utf8 
-	static boolean USE_COLORMAP = true;	// if true, use colormap info in live games
 	static boolean USE_CHATWIDGET = true;	// if true, use the chat widget instead of a chat window
 	static boolean SHOW_SITE_MESSAGES = true;	// if true, show messages from the site database on login
 	static boolean offlineTableLauncher = true;	// present the table launcher for all offline games

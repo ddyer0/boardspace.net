@@ -4675,7 +4675,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			// adjust the player time for the game
     			BSDate da = BSDate.parseDate(turnBasedGame.lastTime+ " GMT");
     			long start = da.getTime();
-    			String newdate = da.DateString();
+    			//String newdate = da.DateString();
     			BSDate now = new BSDate();
     			long nowTime = now.getTime();
     			long dif = nowTime-start;
