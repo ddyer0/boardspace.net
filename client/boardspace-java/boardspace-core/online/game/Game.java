@@ -4673,11 +4673,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		if(turnBasedGame!=null)
     		{
     			// adjust the player time for the game
-    			BSDate da = BSDate.parseDate(turnBasedGame.lastTime);
+    			BSDate da = BSDate.parseDate(turnBasedGame.lastTime+ " GMT");
     			long start = da.getTime();
     			String newdate = da.DateString();
-    			long now = G.Date();
-    			long dif = now-start;
+    			BSDate now = new BSDate();
+    			long nowTime = now.getTime();
+    			long dif = nowTime-start;
     			commonPlayer who = whoseTurn;
     			v.updatePlayerTime(dif,who);
     		}

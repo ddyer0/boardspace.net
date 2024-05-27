@@ -18,7 +18,7 @@ use MIME::Base64 qw(encode_base64);
 use File::Spec;
  
 # better error messages
-use Carp qw(croak);
+# use Carp qw(croak);
  
 # PACKAGE VARS
 our $VERSION = '1.10';
@@ -26,6 +26,11 @@ our $VERSION = '1.10';
 # Base URL for all API requests
 our $BASE_URL = 'https://discord.com/api';
  
+sub log_error()
+{
+	my ($msg) = @_;
+	&::log_error($msg);
+}
 ##################################################
  
 # Create a new Webhook object.
@@ -55,17 +60,17 @@ sub new {
       $id    = $1;
       $token = $2;
     } else {
-      croak "PARAMETER ERROR: Failed to parse ID and Token from URL";
+      &log_error("PARAMETER ERROR: Failed to parse ID and Token from URL");
     }
   } elsif ( $params{id} && $params{token} ) {
     if ( $params{id} =~ m/^\d+$/ && $params{token} =~ m{^[^/?]+$} ) {
       $id    = $params{id};
       $token = $params{token};
     } else {
-      croak "PARAMETER ERROR: Failed to validate ID and Token";
+      &log_error("PARAMETER ERROR: Failed to validate ID and Token");
     }
   } else {
-    croak "PARAMETER ERROR: Must provide either URL, or ID and Token";
+    &log_error("PARAMETER ERROR: Must provide either URL, or ID and Token");
   }
  
   # Create an LWP UserAgent for REST requests
@@ -96,16 +101,16 @@ sub _parse_response {
  
   # sanity
   if ( $self->{id} ne $response->{id} ) {
-    croak "SERVICE ERROR: get() returned ID='"
+    &log_error("SERVICE ERROR: get() returned ID='"
       . $response->{id}
       . "', expected ID='"
-      . $self->{id} . "'";
+      . $self->{id} . "'");
   }
   if ( $self->{token} ne $response->{token} ) {
-    croak "SERVICE ERROR: get() returned Token='"
+    &log_error("SERVICE ERROR: get() returned Token='"
       . $response->{token}
       . "', expected Token='"
-      . $self->{token} . "'";
+      . $self->{token} . "'");
   }
  
   # store / update details
@@ -133,14 +138,14 @@ sub get {
   if ( !$response->{success} ) {
  
     # non-200 code returned
-    croak "HTTP ERROR: HTTP::Tiny->get($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->get($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   } elsif ( !$response->{content} ) {
  
     # empty result
-    croak "HTTP ERROR: HTTP::Tiny->get($url) returned empty response\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason};
+    &log_error("HTTP ERROR: HTTP::Tiny->get($url) returned empty response\n"
+      . "\tcode: " . $response->{status} . " " . $response->{reason});
   }
  
   # update internal structs and return
@@ -161,7 +166,7 @@ sub modify {
  
   # check params
   if ( !( $params{name} || exists $params{avatar} ) ) {
-    croak "PARAMETER ERROR: Modify request with no valid parameters";
+    &log_error("PARAMETER ERROR: Modify request with no valid parameters");
   }
  
   my %request;
@@ -185,8 +190,7 @@ sub modify {
       } elsif ( substr( $params{avatar}, 0, 4 ) eq 'GIF8' ) {
         $type = 'image/gif';
       } else {
-        croak
-          "PARAMETER ERROR: Could not determine image type from data (not a valid png, jpeg or gif image)";
+        &log_error("PARAMETER ERROR: Could not determine image type from data (not a valid png, jpeg or gif image)");
       }
  
       $request{avatar} =
@@ -210,14 +214,14 @@ sub modify {
   if ( !$response->{success} ) {
  
     # non-200 code returned
-    croak "HTTP ERROR: HTTP::Tiny->patch($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->patch($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   } elsif ( !$response->{content} ) {
  
     # empty result
-    croak "HTTP ERROR: HTTP::Tiny->patch($url) returned empty response\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason};
+    &log_error("HTTP ERROR: HTTP::Tiny->patch($url) returned empty response\n"
+      . "\tcode: " . $response->{status} . " " . $response->{reason});
   }
  
   # update internal structs and return
@@ -232,9 +236,9 @@ sub destroy {
  
   my $response = $self->{http}->delete($url);
   if ( !$response->{success} ) {
-    croak "HTTP ERROR: HTTP::Tiny->delete($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->delete($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   }
  
   # DELETE response is 204 NO CONTENT, so there is no return code.
@@ -267,11 +271,9 @@ sub execute {
  
   # test required fields
   if ( !( $params{content} || $params{files} || $params{embeds} ) ) {
-    croak
-      "PARAMETER ERROR: Execute request missing required parameters (must have at least content, embed, or file)";
+    &log_error("PARAMETER ERROR: Execute request missing required parameters (must have at least content, embed, or file)");
   } elsif ( $params{embeds} && $params{files} ) {
-    croak
-      "PARAMETER ERROR: Execute request cannot combine file and embed request in one call.";
+    &log_error("PARAMETER ERROR: Execute request cannot combine file and embed request in one call.");
   }
  
   # construct JSON request
@@ -350,9 +352,9 @@ sub execute {
   }
  
   if ( !$response->{success} ) {
-    croak "HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   }
  
   # return details, or just true if content is empty (wait=0)
@@ -378,9 +380,9 @@ sub execute_slack {
   my $response = $self->{http}->post( $url,
     { headers => { 'Content-Type' => 'application/json' }, content => $json } );
   if ( !$response->{success} ) {
-    croak "HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   }
  
   # return details, or just undef if content is empty (wait=0)
@@ -395,8 +397,7 @@ sub execute_github {
  
   # check params
   if ( !( $params{event} && $params{json} ) ) {
-    croak
-      "PARAMETER ERROR: execute_github missing required event and json parameters";
+    &log_error(    "PARAMETER ERROR: execute_github missing required event and json parameters");
   }
  
   # create a github-format post url
@@ -415,9 +416,9 @@ sub execute_github {
     }
   );
   if ( !$response->{success} ) {
-    croak "HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content};
+      . "\tcontent: " . $response->{content});
   }
  
   # return details, or just undef if content is empty (wait=0)

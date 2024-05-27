@@ -112,4 +112,7 @@ $checksum_version = 0;
 $checksum_salt1 = some salt for version 1';
 $checksum_saltx = 'the rest of them';
 $webhook = "https://discord.com/xxxxx";
+$turnhook = "https://discord.com/api/xxxx";
+
+
 

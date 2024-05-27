@@ -11,9 +11,23 @@ require "push/webhook.pl";
 # and if the user has supplied their discord uid, arranges
 # and @mention of them.
 #
+$'lastdiscord = 0;
 sub send_discord_notification()
 {
   my ($discord, $player, $subject, $email) = @_;
+
+ #
+  # a little dance to evade discord's rate limits, which seem to 
+  # kick in after 3 messages and one message per 0.1 seconds
+  #
+  my $now = time();
+  if($now<$'lastdiscord) 
+	{ my $rem = ($'lastdiscord-$now);
+          print "sleep $rem\n";
+          usleep($rem*1000); 
+        }
+  $'lastdiscord = $now+250;
+
   my $webhook = WebService::Discord::Webhook->new( $'webhook );
   $webhook->get();
   #

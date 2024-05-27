@@ -3215,6 +3215,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         G.append(urlStr,"&key=" , 
         		turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey ,
+        		turnBasedGame!=null ? "&turnbased=true" : "",
         		"&session=",sessionNum ,
         		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
         		"&mode=" ,mode , tm);
@@ -3327,6 +3328,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		// and check if the game is actually in progress.
         G.append(urlStr,"&key=" ,
         		(turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey),
+        		(turnBasedGame!=null ? "&turnbased=true" : ""),
         		"&session=" , sessionNum,
         		"&sock=" , sharedInfo.getInt(REALPORT,-1) ,
         		"&mode=" , mode , tm);
@@ -3497,56 +3499,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	if(sendit)
     	{	ScoringMode sm = gameInfo.scoringMode();
-    		if(G.offline())
-    		{
+    		boolean scorable = (playerConnections.length>1) && (turnBasedGame!=null || !G.offline());
         		
         		switch(sm)
         		{
-        		case SM_Single:
-        			{
-		            String baseUrl = recordKeeper1OfflineURL;
-		            String urlStr = getUrlStr1();      
-		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
-		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);    			
-        			}
-        			break;
-        		case SM_Multi:
-        			{
-        				if((turnBasedGame!=null) && (playerConnections.length>1))
-        	    		{
-        	            String baseUrl =recordKeeper4URL;
-        	            String urlStr = getUrlStr4() + "&turnbased=1";
-        	            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
-        	            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
-        	    		}
-        			}
-        			break;
-        		case SM_Normal:
-        			{
-        				if((turnBasedGame!=null) && (playerConnections.length>1))
-            			{
-        		            String baseUrl = recordKeeperURL;
-        		            String urlStr = getUrlStr() + "&turnbased=1";
-        		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
-        		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
-        		    	}
-         			}
-        			break;
-        		case SM_None:
-        		default: 
-        			G.Error("Scoring mode %s not expected",sm);
-        			break;
-        		}
-    		}
-    		else {
-    		switch(sm)
-    	{
-    		case SM_Multi:
-    			if(playerConnections.length>1)
+    		case SM_Multi:	// multiplayer games
+    			if(scorable)
 	    		{
 	            String baseUrl =recordKeeper4URL;
 	            String urlStr = getUrlStr4();
 	            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+	            if(G.debug()) { G.print("result "+urlStr); }
 	            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
 	    		}
 	    		break;
@@ -3555,6 +3518,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		            String baseUrl = recordKeeper1URL;
 		            String urlStr = getUrlStr1();      
 		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+    	            if(G.debug()) { G.print("result "+urlStr); }
 		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
             
 		    	}
@@ -3562,17 +3526,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		case SM_None:
     			break;
     		case SM_Normal:
-    			if(playerConnections.length>1)
+    			if(scorable)
 		    	{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
             urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());			
+    	            if(G.debug()) { G.print("result "+urlStr); }
             sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
     	}
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
     		}
-    	}
     	}
     	
     }
@@ -4704,6 +4668,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	if(rec!=null)
     	{	StringTokenizer tok = new StringTokenizer("1 "+rec);
     		restoreGame(tok,rec);
+    		if(turnBasedGame!=null)
+    		{
+    			// adjust the player time for the game
+    			BSDate da = BSDate.parseDate(turnBasedGame.lastTime+ " GMT");
+    			long start = da.getTime();
+    			String newdate = da.DateString();
+    			BSDate now = new BSDate();
+    			long nowTime = now.getTime();
+    			long dif = nowTime-start;
+    			commonPlayer who = whoseTurn;
+    			v.updatePlayerTime(dif,who);
+    		}
     	}
     }
     

@@ -296,10 +296,14 @@ sub getgameinfo()
 		{
 		my $quid = $dbh->quote($owner);
 		my $cc = "${comma}owner=$owner";
+		
 		if($invited)
 			{
-			my $qinvite = $dbh->quote("%|$invited|%");
-			$cc = "($cc or invitedplayers like $qinvite)";
+ 			my $qinvite = $dbh->quote("%|$invited|%");
+			my $sta = (($status eq '') || ($status eq 'setup')) 
+			 ? " or invitedplayers like $qinvite "
+			 : "";
+			$cc = "($cc or acceptedplayers like $qinvite $sta)";
 			}
 		$cond .= $cc;
 		$comma = " and ";
@@ -371,6 +375,7 @@ sub sendNotifications($dbh)
 	  if(!$notification) { return; }
 	  $idx++;
 	  my ($uid,$message) = split ",",&decode64($notification);
+	#print "not u=$uid m=$message\n";
 	  my $quid = $dbh->quote($uid);
 	  my $q = "select player_name,e_mail,discorduid from players where uid=$quid";
 	  my $sth = &query($dbh,$q);
@@ -397,7 +402,7 @@ if( param() )
     #__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated
-	my $ok = &useCombinedParams($'tea_key);
+	my $ok = &useCombinedParams($'tea_key,1);
 	if($ok && checkChecksumVersion())
 	{
 	my $ip = $ENV{'REMOTE_ADDR'};

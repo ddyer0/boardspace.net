@@ -182,7 +182,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     {
         if (observer == null)
         {
-            observer = new SimpleObservable();
+            observer = new SimpleObservable(this);
         }
 
         observer.addObserver(o);

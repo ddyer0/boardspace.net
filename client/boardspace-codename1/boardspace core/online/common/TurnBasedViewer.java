@@ -237,6 +237,45 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	// status of offline games.  Note that these names are shared with the back end script
 	enum AsyncStatus { setup, active, complete,canceled };
 
+	StringStack pendingNotifications = new StringStack();
+	public void appendNotifications(StringBuilder b)
+	{
+		for(int i=0,lim=pendingNotifications.size(); i<lim; i++)
+		 {	
+			 G.append(b,"&",NOTIFICATION,i,"=",pendingNotifications.elementAt(i));				
+		 }
+		 pendingNotifications.clear();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public String notificationMessage(int who,int gameuid,String variation,String message)
+	{
+		String id = "";
+		if(G.debug())
+		{
+			BSDate date = new BSDate();
+			int minutes = date.getMinutes();
+			id = G.concat(" ",date.getDayString()," ",date.getHours(),
+					minutes<10 ? ":0" : ":",
+					minutes);
+			
+		}
+		String msg = G.concat(
+				who,
+				",",
+				s.get(GameMessage),
+				" ",
+				variation,
+				" #",
+				gameuid,
+				" ",
+				message,
+				id
+				);
+		return Base64.encodeSimple(msg);
+	}
+
+	
 	/**
 	 * local cache for an async game on the server. 
 	 */
@@ -295,7 +334,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				potentialPlayers.pushNew(loggedinUid);
 			}
 				
-				
+			int playerW = G.Width(invitedPlayersRect);
 			for(int i=0;i<potentialPlayers.size();i++)
 			{	int uid = potentialPlayers.elementAt(i);
 				String name = users.getName(uid);
@@ -310,11 +349,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				
 				if(i!=0)
 					{ if(i%3==0) { top += lineH; l = l0; }
-					  else { l += promptW; }
+					  else { l += playerW; }
 					}
 
 				if(drawPlayerBox(gc,pt,canUnaccept ? id : null,help,
-					  l,top,buttonW,lineH,
+					  l,top,playerW,lineH,
 					  accepted 
 					  	? StockArt.FancyCheckBox 
 					  	: StockArt.FancyEmptyBox,name,i))
@@ -444,18 +483,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				
 			}
 			whoseturn = who;
-			StringStack notifications = new StringStack();
 			for(int i=0,lim=acceptedPlayers.size(); i<lim; i++)
 			{
-				notifications.push(NOTIFICATION+i);
 				int thispl = acceptedPlayers.elementAt(i);
 				String message = notificationMessage(thispl,(thispl==whoseturn)
 									? s.get(StartedAndYou)
 									: s.get(StartedMessage));
-				notifications.push(message);
+				pendingNotifications.push(message);
 			}
 					
-			updateGame(notifications,"status",AsyncStatus.active.name(),"whoseturn",""+who);
+			updateGame("status",AsyncStatus.active.name(),"whoseturn",""+who);
 		}
 		
 		public String getBody()
@@ -498,30 +535,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		public String notificationMessage(int who,String message)
 		{	
 			// the format is uid,base64encodedmessage
-			String id = "";
-			if(G.debug())
-			{
-				BSDate date = new BSDate();
-				int minutes = date.getMinutes();
-				id = G.concat(" ",date.getDayString()," ",date.getHours(),
-						minutes<10 ? ":0" : ":",
-						minutes);
-				
-			}
-			String msg = G.concat(
-					whoseturn,
-					",",
-					s.get(GameMessage),
-					" ",
-					variation,
-					" #",
-					gameuid,
-					" ",
-					message,
-					id
-					);
-			return Base64.encodeSimple(msg);
+			return TurnBasedViewer.this.notificationMessage(who,gameuid,variation,message);
 		}
+				
 		public void setBody(int who,String b)
 		{	G.Assert(loggedIn && acceptedPlayers.contains(who),"incorrect whoseTurn %s",who);
 			if(whoseturn!=who)
@@ -529,10 +545,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			whoseturn = who;
 			body = b;
 			String message = notificationMessage(whoseturn,s.get(YourTurnMessage));
-			updateGame(null,"whoseturn",""+who,BODY,Base64.encodeSimple(b),
+			updateGame("whoseturn",""+who,BODY,Base64.encodeSimple(b),
 					NOTIFICATION+0,message);	
 			}
 		}
+		/**
+		 * this saves the game as a text file in the public directory
+		 * @param name
+		 * @param body
+		 * @return
+		 */
 		public String recordGame(String name,String body)
 		{
 			StringBuilder b = new StringBuilder();
@@ -543,7 +565,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					 "&",DIRECTORY,"=",game.dirNum,
 					 "&",GAMENAME,"=",name,
 			 		 "&",BODY,"=",Base64.encodeSimple(body));
-			 
+			 appendNotifications(b);
 			 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
 						b.toString(),
 						null);
@@ -553,34 +575,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		public void discardGame()
 		{
 			G.Assert(loggedIn,"should be logged in");
-			StringStack messages = new StringStack();
 
 			for(int i=0;i<acceptedPlayers.size();i++)
 			{
-				messages.push(NOTIFICATION+i);
-				messages.push(notificationMessage(acceptedPlayers.elementAt(i),EndedMessage));	
+				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),EndedMessage));	
 			}
 			
-			updateGame(messages,"status",AsyncStatus.complete.name());	
+			updateGame("status",AsyncStatus.complete.name());	
 		}
 		/*
-		// create a game in the database, we need to record some information explicitly
-		// so it can be searched, then the rest as a blob
-		//
-		// explicitly: 
-			owner  
-			open/closed  
-			game variation
-		// 
-		// as blob:  
-			invited players 
-			comments
-			first player
-			playing speed
-		//	
-		//
-		 *  */
-		public void updateGame(StringStack extra,String... params)
+		 * update a game in the database, and send any pending notifications
+		 *  
+		 */
+		public void updateGame(String... params)
 		{
 			 StringBuilder b = new StringBuilder();
 			 G.append(b,versionParameter,
@@ -593,14 +600,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 {
 				 G.append(b,"&",params[i],"=",Http.encodeEntities(params[i+1]));
 			 }
-			 
-			 if(extra!=null)
-			 {
-				 for(int i=0, lim=extra.size(); i<lim; i+=2)
-				 {
-					 G.append(b,"&",extra.elementAt(i),"=",Http.encodeEntities(params[i+1]));				
-				 }
-			 }
+			 appendNotifications(b);
 
 			 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
 						b.toString(),
@@ -620,15 +620,20 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				startGame();
 				break;
 			case Accept:
+				boolean remove = false;
 				if(acceptedPlayers.contains(loggedinUid))
-						{
+						{	remove = true;
 							acceptedPlayers.removeValue(loggedinUid,false);
 						}
 				else {
 					acceptedPlayers.pushNew(loggedinUid);
 				}
 				allowOtherPlayers = (acceptedPlayers.size()<game.maxPlayers);
-				updateGame(null,
+				
+				String message = notificationMessage(owner,
+						s.get(remove ? DeclinedMessage : AcceptedMessage,uids.getName(loggedinUid)));
+				pendingNotifications.push(message);
+				updateGame(
 							ACCEPTEDPLAYERS,playersList(acceptedPlayers),
 							ALLOWOTHERPLAYERS,allowOtherPlayers?"true":"false");
 				break;
@@ -646,16 +651,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					break;
 				default: G.Error("not expecting %s",status);
 				}
-				StringStack notifications = new StringStack();
 				for(int i=0,lim=acceptedPlayers.size();i<lim;i++)
 				{
-					notifications.push("notification"+i);
-					String message = notificationMessage(acceptedPlayers.elementAt(i),CancelledMessage);
-					notifications.push(message);
+					pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),CancelledMessage));
 				}
-				updateGame(
-						notifications,
-						ACCEPTEDPLAYERS,playersList(acceptedPlayers),
+				updateGame(ACCEPTEDPLAYERS,playersList(acceptedPlayers),
 						"status",status.name());
 				}
 
@@ -775,7 +775,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 		
 		//
-		// ask the server for matching games.
+		// ask the server for matching games and send any pending notications.
 		//
 		public void getInfo(boolean forced,int uid)
 		{	
@@ -789,14 +789,17 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			if(forced || ! known)
 				{	
 				known = true;
+				StringBuilder b = new StringBuilder();
+				G.append(b,TurnBasedViewer.versionParameter,
+						"&",TAGNAME,"=getinfo");
+				if(myGames) { G.append(b,"&",OWNER,"=" , uid,"&",INVITEDPLAYERS,"=",uid); }
+				if(selectedVariant!=null) { G.append(b,"&",VARIATION,"=",selectedVariant.variationName); }
+				if(stat!=null) { G.append(b, "&",STATUS,"=",stat); }
+				
+				appendNotifications(b);
+				
 				UrlResult res = Http.postEncryptedURL(Http.getHostName(),
-						TurnBasedViewer.getTurnbasedURL,
-						G.concat(TurnBasedViewer.versionParameter,
-						"&",TAGNAME,"=getinfo",
-						(myGames ? ("&"+OWNER+"=" + uid + "&"+INVITEDPLAYERS+"="+uid) : ""),
-						 (selectedVariant!=null ? "&"+VARIATION+"="+selectedVariant.variationName : ""),
-						 (stat!=null ? "&"+STATUS+"="+stat : "")),
-						null);
+						TurnBasedViewer.getTurnbasedURL,b.toString(),null);
 				parseResult(res);
 				}
 			}
@@ -1171,7 +1174,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		top += lineH*4/3;
 		G.SetRect(playersRect,left,top,promptW,lineH);
 		left += buttonSpace;
-		G.SetRect(invitedPlayersRect,left,top,promptW,lineH);
+		G.SetRect(invitedPlayersRect,left,top,buttonW,lineH);
 		
 		left = left0;
 		top += lineH*4/3;
@@ -1298,6 +1301,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		return b.toString();
 	}
+	
+
 	public void createTheGame()
 	{	 StringBuilder invited = new StringBuilder("|");
 		 G.append(invited,loggedinUid,"|");
@@ -1320,23 +1325,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				 "&"+TFIRSTPLAYER+"=",FirstPlayer.firstChoice,
 				 "&"+SPEED+"=",PlaySpeed.currentSpeed);
 		 
-		 for(int i=0;i<invitedPlayers.size();i++)
-		 {
-			 b.append("&notification");
-			 b.append(i);
-			 b.append("=");
-			 b.append(invitedPlayers.elementAt(i).channel());
-			 b.append(",");
-			 b.append(Base64.encodeSimple("you're invited to a new game "+selectedVariant.variationName));
-		 }
+
 		 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
 					b.toString(),
 					null);
 		 int parsedGameUid = parseCreateGameResult(res);
-		 if(parsedGameUid>0) { 
+		 if(parsedGameUid>0) 
+		 { 
 			 newGameMode = false;
+			 for(int i=0;i<invitedPlayers.size();i++)
+			 {
+				 pendingNotifications.push(notificationMessage(invitedPlayers.elementAt(i).channel(),parsedGameUid,selectedVariant.variationName,InvitedMessage));
+			 }			 
 		 }
-
 	}
 	
 	PopupManager gameModeMenu = new PopupManager();
@@ -1508,18 +1509,17 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		GC.Text(gc,false,invitedPlayersRect,Color.black,null,loginName.getText());
 		int w = G.Width(invitedPlayersRect);
 		int h = G.Height(invitedPlayersRect);
-		int left = G.Left(invitedPlayersRect);
+		int left = G.Left(invitedPlayersRect)+hSpace/2;
 		int left0 = left;
 		int top = G.Top(invitedPlayersRect);
 		int maxPlayers = selectedVariant.maxPlayers-1;
 		for(int i=0,lim=Math.min(maxPlayers,invitedPlayers.size());i<lim;i++) 
 			{
 			  left += w;
+			  if(i%3==0 && i/3>0) { top += h; left = left0+w; }
 			  drawPlayerBox(gc,pt,TurnId.RemovePlayer,s.get(RemovePlayerMessage),
 					  left,top,w,h,
 					  StockArt.FancyCloseBox,invitedPlayers.elementAt(i).name(),i);
-			  
-			  if(i%3==0 && i/3>0) { top += h; left = left0+w; }
 
 			}
 			
@@ -1941,8 +1941,12 @@ static String StartedAndYou = "has started, and it's your turn";
 static String StartedMessage = "has started";
 static String CancelledMessage = "has been cancelled";
 static String EndedMessage = "had ended";
+static String AcceptedMessage = "#1 accepted your invitation to play";
+static String DeclinedMessage = "#1 removed themselves from your game";
+static String InvitedMessage = "You're invited to play";
 static public void putStrings()
 	{	String TurnStrings[] = {
+			AcceptedMessage,DeclinedMessage,InvitedMessage,
 			NewGameMessage,NewGameHelp,AnyGame,
 			GamesMessage,GamesHelp,HelpHelp,
 			StartGameMessage,MoveMessage,ToMoveMessage,ViewGameMessage,

@@ -66,13 +66,13 @@ public class BSDate extends SystemDate
 	 *  
 	 */
 	public static String weekdays[] = {"mon","tue","wed","thu","fri","sat","sun"};
-	public static String uweekdays[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
+	public static String uweekdays[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 	public static String months[] = {"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
 
 	@SuppressWarnings("deprecation")
 	public String getDayString()
-	{
-		return uweekdays[getDay()-1];
+	{	int day = getDay();
+		return uweekdays[day];
 	}
 	@SuppressWarnings("deprecation")
 	public String getMonthString()
@@ -241,16 +241,12 @@ public class BSDate extends SystemDate
 			{
 				dateformat += " a";
 			}
-			if(!"".equals(timezone))
-			{	// couldn't make timezones work, so punt
-				//dateformat += " z";
-				timezone = "";
-			}
 			SimpleDateFormat sd = new SimpleDateFormat(dateformat,Locale.ENGLISH);
 			String datestr = year+" "+month.substring(0,3)+" "+((day.length()==2)?day:("0"+day))
 					+ " "+hour + ":" + minute+":"+second+meridian+timezone;
 			
 			try { 
+				sd.setTimeZone(TimeZone.getTimeZone(timezone)); 
 				java.util.Date date = sd.parse(datestr);
 				return(date.getTime());
 				

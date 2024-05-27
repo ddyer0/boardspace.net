@@ -1039,7 +1039,7 @@ import udp.PlaytableStack;
 	   	 prefs.put(savePassKey,""+(savePass?"true":"false"));
 	   	 }
 	   	 captureValues(true);
-	   	 exitValue = OK;
+	   	 exitValue = val;
 	   	 try { prefs.flush(); } 
 	   			catch (BackingStoreException err) 
 	   			{ System.out.println("E "+err.toString());};
