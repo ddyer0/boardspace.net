@@ -25,7 +25,7 @@ sub send_discord_notification()
   my $now = time();
   if($now<$'lastdiscord) 
 	{ my $rem = ($'lastdiscord-$now);
-          print "sleep $rem\n";
+          #print "sleep $rem\n";
           usleep($rem*1000); 
         }
   $'lastdiscord = $now+250;
