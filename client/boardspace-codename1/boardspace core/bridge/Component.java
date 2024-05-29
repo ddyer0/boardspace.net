@@ -73,7 +73,16 @@ public class Component extends Container implements EventListener,AwtComponent,S
 	Vector<WindowListener> listeners = null;
 	public Dimension getMinimumSize() { return(new Dimension(100,100)); }
 	
-
+	public void windowActivated()
+	{
+		if(listeners!=null)
+		{	
+			for(WindowListener l : listeners)
+			{
+				l.windowActivated(new WindowEvent(this));
+			}
+		}
+	}
 	public void dispose() 
 	{ //G.print("Dispose "+this);
 		closingChildren();	// make sure all children know they're going away

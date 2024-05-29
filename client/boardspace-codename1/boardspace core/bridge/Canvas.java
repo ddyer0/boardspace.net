@@ -58,6 +58,7 @@ public class Canvas extends Component implements WindowListener,MouseListener,Mo
 		paint(Graphics.create(g));
 	}
 
+	/* dummy methods to be overridden */
 	public void windowOpened(WindowEvent e) { }
 	public void windowClosing(WindowEvent e) {	}
 	public void windowClosed(WindowEvent e) { }

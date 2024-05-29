@@ -107,7 +107,6 @@ sub recordgame()
 	my $qdirnum = $dbh->quote($dirnum);
 	my $gamename = &param('gamename');
 	my $body = &decode64(&param('body'));
-
 	my $q = "select directory from variation where directory_index = $qdirnum";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
@@ -184,6 +183,9 @@ sub creategame()
 	my $body = &param('body');
 	my $qbody = $dbh->quote($body);
 
+	my $chat = &param('chat');
+	my $qchat = $dbh->quote($chat);
+
 	my $whoseturn = &param('whoseturn');
 	my $qwhoseturn = $dbh->quote($whoseturn);
 
@@ -209,6 +211,7 @@ sub creategame()
 			. ($status ? ",status=$qstatus" : "")
 			. ($whoseturn ? ",whoseturn=$qwhoseturn" : "")
 			. ($body ? ",last=CURRENT_TIMESTAMP(),body=$qbody" : "")
+			. ($chat ? ",chat=$qchat" : "")
 			. ($var ? ",variation=$qvar" : "")
 			. $postamble;
 	#print "\nQ: $q\n";
@@ -260,13 +263,13 @@ sub getbody()
 	my $uid = &param('gameuid');
 	my $quid = $dbh->quote($uid);
 
-	my $q = "select body from offlinegame where gameuid=$quid";
+	my $q = "select body,chat from offlinegame where gameuid=$quid";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	if($nr==1)
 	{
-	my ($msg) = &nextArrayRow($sth);
-	return "body " . $msg;
+	my ($body,$chat) = &nextArrayRow($sth);
+	return "body " . $body . "\nchat " . $chat . "\n";
 	}
 	else
 	{

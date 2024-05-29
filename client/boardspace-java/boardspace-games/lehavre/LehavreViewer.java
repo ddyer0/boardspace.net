@@ -784,6 +784,11 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	@Override
+	public void setSeeChat(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 

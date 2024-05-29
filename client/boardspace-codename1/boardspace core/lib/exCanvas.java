@@ -38,7 +38,7 @@ import lib.RepaintManager.RepaintStrategy;
 // TODO: make font size menu appear in the designated size
 
 public abstract class exCanvas extends ProxyWindow 
-	implements SimpleObserver,DeferredEventHandler, 
+	implements SimpleObserver,DeferredEventHandler,
 		CanvasProtocol,Config,ActionListener,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
 		MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,

@@ -6891,7 +6891,7 @@ public abstract class commonCanvas extends exCanvas
         ps.println("(;");
         ps.println(game_property+ "[" + sgfGameType() + "]" + version_property +"["+ sgfGameVersion()+"]");
         // colormap immediately after the game id, so it will be active when the setup happens
-            // only emit color map information if it's active in this environment
+
         	String colormap = colorMapString();
         	if(colormap!=null) {  	ps.println(colormap_property+"["+colormap+"]"); }
         	if(timeControl!=null)
@@ -8693,7 +8693,7 @@ public void verifyGameRecord()
     	hidden.separateChat = framed;
     	
     }
-	private void setSeeChat(boolean v) 
+	public void setSeeChat(boolean v) 
 	{	
 		if(hidden.hiddenChat==v)
 		{   hidden.hiddenChat = !v;

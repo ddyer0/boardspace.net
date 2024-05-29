@@ -85,6 +85,25 @@ public class Http implements Config {
     	return(postURL(server,urlStr,data,sockets,new UrlResult()));
     }
     
+    
+    static public UrlResult postAsyncEncryptedURL(final String server,final String urlStr,final String data,final int sockets[])
+    {	final UrlResult result=new UrlResult();
+    	Runnable r = new Runnable() 
+    		{ public void run() 
+    			{ try { 
+    				postEncryptedURL( server,  urlStr,  data,sockets,result);
+    			}
+    			finally { result.isComplete = true;
+    				}   			  
+    			}
+    		};
+    	new Thread(r,httpProtocol).start();
+    	return(result);
+    }
+    static public UrlResult postEncryptedURL(String server,String urlStr,String data,int sockets[])
+    {
+    	return postEncryptedURL(server,urlStr,data,sockets,new UrlResult());
+    }
     /** 
      * post to a url with an encrypted payload, expect the result to be encrypted the same way.
      *
@@ -95,19 +114,32 @@ public class Http implements Config {
      * @param sockets
      * @return a UrlResult
      */
-    static public UrlResult postEncryptedURL(String server,String urlStr,String data,int sockets[])
+    static public UrlResult postEncryptedURL(String server,String urlStr,String data,int sockets[],UrlResult result)
     {
     	String params = data;
     	params = "params=" + XXTEA.combineParams(params, XXTEA.getTeaKey());
     	if(G.debug()) { G.print(params); }
-    	UrlResult result = Http.postURL(server,urlStr,params,sockets);
+    	Http.postURL(server,urlStr,params,sockets,result);
     	if(result.error==null)
     	{
     	String dec = XXTEA.Decode(result.text,XXTEA.getTeaKey());
     	String valid = XXTEA.validate(dec);
     	if(valid==null)
-    		{
+    		{	// this case corresponds to a result which is not internally consistent. 
+    			// the most common cause of this is if the result contained extra text left
+    			// over from some debugging print statement, or possible unexpected text from
+    			// some uncontrolled part of the perl script.  It would also correspond to 
+    			// where the result had been damaged or tampered with in transit.
+    			// In any case, these can be difficult to diagnose so it's important to try
+    			// to report them back to the server.
     			result.error = "result validation failed";
+    			String err = G.concat("postEncryped returned an invalid result\n",
+    					"url=",urlStr,
+    					"\nparams=",params,
+    					"\nresult=",result.text,
+    					"\ndecoded=",dec);
+    			postError(result,err,null);
+    			//logError
     		}
     		else
     		{
@@ -117,7 +149,9 @@ public class Http implements Config {
     			String msg = valid.substring(0,ind);
     			result.text = valid.substring(ind+1);
     			if(!"OK".equalsIgnoreCase(msg))
-    			{
+    			{	// these are the cases where there was a controlled error, reported 
+    				// through the expected and controlled mechanisms. and it's intended
+    				// that the user sees something about it.
     				result.error = msg;
     			}
     		}
@@ -504,7 +538,12 @@ static public UrlResult postAsyncUrl(final String server,final String urlStr,fin
 	result.getRawStream = raw;
 	Runnable r = new Runnable() 
 		{ public void run() 
-			{ postURL( server,  urlStr,  data,sockets,result); 
+			{ try {
+				postURL( server,  urlStr,  data,sockets,result); 
+				}
+				finally
+				{	result.isComplete = true;
+				}
 			}
 		};
 	new Thread(r,httpProtocol).start();

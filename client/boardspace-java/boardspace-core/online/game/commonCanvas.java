@@ -8703,7 +8703,7 @@ public void verifyGameRecord()
     	hidden.separateChat = framed;
     	
     }
-	private void setSeeChat(boolean v) 
+	public void setSeeChat(boolean v) 
 	{	
 		if(hidden.hiddenChat==v)
 		{   hidden.hiddenChat = !v;

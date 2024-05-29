@@ -637,6 +637,13 @@ public class ChatWidget
 		  	: s.get(MESSAGEPROMPT));
 		}
 
+    public void setSingleUser(String name)
+    {
+    	SimpleUser user =setUser(0,name);
+    	setSingleSend(user,false);
+    	messageLabel.setText(s.get(MESSAGEFROM,name));
+    }
+
 	/* below here definitely work in progress */
 	
     public void sendAndPostMessage(int channel, String how, String msg)
@@ -1040,7 +1047,9 @@ public class ChatWidget
 		String kind = contents.nextToken();
 		if(SIMPLETEXT.equals(kind))
 		{
-		activePane().setText(Base64.decodeString(contents.nextToken()));
+		String text = Base64.decodeString(contents.nextToken());
+		activePane().setText(text);
+		if(!"".equals(text)) { setHasUnseenContent(true);}
 		}
 	}
 

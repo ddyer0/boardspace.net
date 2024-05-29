@@ -37,7 +37,7 @@ import lib.NullLayoutProtocol;
 import lib.SizeProvider;
 
 // our component is a codename1 container, so it can have popup menus as children
-public abstract class ProxyWindow implements SizeProvider,EventListener,AwtComponent,NullLayoutProtocol,CanvasRotaterProtocol
+public abstract class ProxyWindow implements SizeProvider,EventListener,AwtComponent,NullLayoutProtocol,CanvasRotaterProtocol, WindowListener
 {	public Graphics getGraphics() { throw G.Error("Not implented, not implementedable"); }
 	protected ComponentProxy theComponent = new ComponentProxy(this);
 	public ComponentProxy getComponent() { return(theComponent); }
@@ -219,4 +219,14 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	public int getRotatedHeight() { return rotater.getRotatedHeight(this); }
 	public int getRotatedTop() { return rotater.getRotatedTop(this); }
 	public int getRotatedLeft() { return rotater.getRotatedLeft(this); }
+	
+	/* dummy methods to be overridden */
+	public void windowActivated(WindowEvent w) {}
+	public void windowClosed(WindowEvent w) {}
+	public void windowClosing(WindowEvent w) {}
+	public void windowOpened(WindowEvent w) {}
+	public void windowDeactivated(WindowEvent w) {}
+	public void windowIconified(WindowEvent w) {}
+	public void windowDeiconified(WindowEvent w) {}
+	
 }

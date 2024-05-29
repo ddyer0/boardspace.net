@@ -29,8 +29,10 @@
 package online.common;
 
 import java.awt.Color;
+
 import lib.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -68,8 +70,6 @@ import lib.TextContainer;
 import lib.Toggle;
 import lib.Tokenizer;
 import lib.UrlResult;
-import lib.XFrame;
-import lib.commonPanel;
 import lib.exCanvas;
 import online.common.Session.PlayMode;
 import util.PasswordCollector;
@@ -95,119 +95,21 @@ import util.PasswordCollector;
  * There are also some modifications to the scoring scripts (bs_uni12) to record turn based games
  * as a separate type of ranking.
  * 
- */
-/**
- * current definition of the table for offline games.
- * 
- * CREATE TABLE `offlinegame` (
-  `owner` int(11) NOT NULL,
-  `whoseturn` int(11) NOT NULL default '0',
-  `gameuid` int(11) NOT NULL AUTO_INCREMENT,
-  `status` enum('setup','active','complete') NOT NULL DEFAULT 'setup',
-  `variation` varchar(20) NOT NULL,
-  `playmode` ENUM('ranked','unranked','tournament') NOT NULL DEFAULT 'ranked',
-  `invitedplayers` tinytext,
-  `allowotherplayers` enum('true','false') DEFAULT NULL,
-  `body` text,
-  `created` datetime DEFAULT CURRENT_TIMESTAMP,
-  `last` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`gameuid`),
-  KEY `owner` (`owner`),
-  KEY `gameuid` (`gameuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+ 
+
 
 TODO: some kind of rate limit on the creation of offline games.
 
  */
 
-@SuppressWarnings("serial")
-/**
- * UidBank keeps track of the uid/playername association and queries the server
- * if the name for some unknown uid is reqired
- */
-class UidBank extends Hashtable<Integer,String>
-{	
-	String UNKNOWN = "**unknown**";
-	boolean needsUpdate = false;
-	
-	// add the uids separated by | to the table
-	public IStack require(String uids)
-	{
-		Tokenizer tok = new Tokenizer(uids,"|");
-		IStack val = new IStack();
-		while(tok.hasMoreElements())
-		{
-			int user = tok.intToken();
-			val.push(user);
-			if(get(user)== null) { put(user,UNKNOWN); needsUpdate = true; }
-		}
-		return val;
-	}
-	public String require(int uid)
-	{
-		String name = get(uid);
-		if(name==null) { put(uid,UNKNOWN); needsUpdate=true; name = UNKNOWN; }
-		return name;
-	}
-	public void register(int uid,String name)
-	{
-		put(uid,name);
-	}
-	//
-	// result is a list of id name pairs
-	//
-	private void parseResult(UrlResult res)
-	{
-		if(res.error!=null) { G.infoBox("Error ",res.error); }
-		else {
-			Tokenizer tok = new Tokenizer(res.text);
-			while(tok.hasMoreElements())
-			{
-				String name = tok.nextElement();
-				int user = tok.intToken();
-				put(user,name);
-			}
-		}
-	}
-	//
-	// if any user ids are currently unknown, fetch all of them from the server
-	//
-	private void update()
-	{	if(needsUpdate)
-		{
-		StringBuilder b = new StringBuilder();
-		int n = 0;
-		needsUpdate = false;
-		for(Enumeration<Integer>e = keys(); e.hasMoreElements();)
-		{	Integer user = e.nextElement();
-			String name = get(user);
-			if(UNKNOWN.equals(name)) { b.append("|"); b.append(user); n++; }
-		}
-		if(n>0)
-		{
-			UrlResult res = Http.postEncryptedURL(Http.getHostName(),
-					TurnBasedViewer.getTurnbasedURL,
-					G.concat(TurnBasedViewer.versionParameter,
-							"&",TurnBasedViewer.TAGNAME,"=getusers",
-							"&",TurnBasedViewer.USERS,"=", b.toString()),
-					null);
-			parseResult(res);
-		}
-		}
-	}
-	public String getName(int user)
-	{	String name = require(user);
-		if(UNKNOWN.equals(name)) { update(); name=get(user); }
-		return name;
-	}
-}
-
 
 @SuppressWarnings("serial")
 public class TurnBasedViewer extends exCanvas implements LobbyConstants
 {	
+
 	// these are string constants used in communication with the backend script
 	// but much better to use these constants to assure consistency and accuracy
+	public static final String PENDINGBODY = "pending";
 	static final String NOTIFICATION = "notification";
 	static final String ACCEPTEDPLAYERS = "acceptedplayers";
 	static final String INVITEDPLAYERS = "invitedplayers";
@@ -215,6 +117,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String CREATED = "created";
 	static final String LAST = "last";
 	static final String BODY = "body";
+	static final String CHAT = "chat";
 	static final String GAMENAME = "gamename";
 	static final String GAMEUID = "gameuid";
 	static final String UID = "uid";
@@ -234,8 +137,33 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	
 	// status of offline games.  Note that these names are shared with the back end script
 	enum AsyncStatus { setup, active, complete,canceled };
+	
+	/**
+	PendingStatus returns the stats of pending asynch transactions.
+	The general plan is that Yes means check again soon, and Complete means 
+	we're done and the screen should be repainted immediately.
+    */
+	enum PendingStatus { No, Yes, Complete;
+		
+	// combine and upgrade the status
+	PendingStatus combine(PendingStatus infoResult) {
+		return (infoResult.ordinal()>ordinal()) ? infoResult : this;
+		
+	} }
 
+	
+	/** the general strategy for immediate notifications is that they all get pushed
+	 * onto the pendingNotifications stack, then the actual notifications are tacked
+	 * onto the next available transaction.
+	 * @param b
+	 */
 	StringStack pendingNotifications = new StringStack();
+
+	/**
+	 * append all current notifications onto the request that's being built.
+	 * the notifications use keys "notification0" "notification1" etc.
+	 * @param b
+	 */
 	public void appendNotifications(StringBuilder b)
 	{
 		for(int i=0,lim=pendingNotifications.size(); i<lim; i++)
@@ -246,6 +174,14 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	}
 	
 	@SuppressWarnings("deprecation")
+	/** this should be used to build all notifications, so only this one place needs
+	 * to know the gory details.
+	 * @param who
+	 * @param gameuid
+	 * @param variation
+	 * @param message
+	 * @return
+	 */
 	public String notificationMessage(int who,int gameuid,String variation,String message)
 	{
 		String id = "";
@@ -278,24 +214,124 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	 * local cache for an async game on the server. 
 	 */
 	enum AsyncId implements CellId { Cancel, Accept, Start, Open };
+	
+	@SuppressWarnings("serial")
+	/**
+	 * UidBank keeps track of the uid/playername association and queries the server
+	 * if the name for some unknown uid is reqired
+	 */
+	class UidBank extends Hashtable<Integer,String>
+	{	
+		private String UNKNOWN = "**unknown**";
+		private boolean needsUpdate = false;
+		private UrlResult pendingUidResults = null;
+		
+		// add the uids separated by | to the table
+		public IStack require(String uids)
+		{
+			Tokenizer tok = new Tokenizer(uids,"|");
+			IStack val = new IStack();
+			while(tok.hasMoreElements())
+			{
+				int user = tok.intToken();
+				val.push(user);
+				if(get(user)== null) { put(user,UNKNOWN); needsUpdate = true; }
+			}
+			return val;
+		}
+		public String require(int uid)
+		{
+			String name = get(uid);
+			if(name==null) { put(uid,UNKNOWN); needsUpdate=true; name = UNKNOWN; }
+			return name;
+		}
+		public void register(int uid,String name)
+		{
+			put(uid,name);
+		}
+		//
+		// result is a list of id name pairs
+		//
+		private void parseUidResult(UrlResult res)
+		{
+			if(res.error!=null) { G.infoBox("Error ",res.error); }
+			else {
+				Tokenizer tok = new Tokenizer(res.text);
+				while(tok.hasMoreElements())
+				{
+					String name = tok.nextElement();
+					int user = tok.intToken();
+					put(user,name);
+				}
+			}
+		}
+		
+		//
+		// if any user ids are currently unknown, fetch all of them from the server
+		//
+		public PendingStatus update()
+		{	UrlResult pend = pendingUidResults;
+			if(pend!=null)
+			{	if(pend.isComplete())
+					{pendingUidResults = null;
+					parseUidResult(pend);
+					return PendingStatus.Complete;
+					}
+				return PendingStatus.Yes;
+			}
+			else if(needsUpdate)
+			{
+			StringBuilder b = new StringBuilder();
+			int n = 0;
+			needsUpdate = false;
+			for(Enumeration<Integer>e = keys(); e.hasMoreElements();)
+			{	Integer user = e.nextElement();
+				String name = get(user);
+				if(UNKNOWN.equals(name)) { b.append("|"); b.append(user); n++; }
+			}
+			if(n>0)
+			{	
+				pendingUidResults = Http.postAsyncEncryptedURL(Http.getHostName(),
+						TurnBasedViewer.getTurnbasedURL,
+						G.concat(TurnBasedViewer.versionParameter,
+								"&",TurnBasedViewer.TAGNAME,"=getusers",
+								"&",TurnBasedViewer.USERS,"=", b.toString()),
+						null);
+				return PendingStatus.Yes;
+			}
+			}
+			return PendingStatus.No;
+		}
+		public String getName(int user)
+		{	String name = require(user);
+			if(UNKNOWN.equals(name)) { update(); name=get(user); }
+			return name;
+		}
+	}
+
+	/** this class stores the state of a turn based game, mostly a mirror of the actual databse.
+	 * the main exception is the the body+chat are not fetched by default.
+	 */
 	public class AsyncGameInfo
 	{
-		int owner;
-		int gameuid;
-		int whoseturn;
-		AsyncStatus status;
-		public String variation;
-		GameInfo game;
-		PlayMode playMode;
-		public PlaySpeed speed;
-		FirstPlayer first;
-		IStack invitedPlayers;
-		IStack acceptedPlayers;
-		boolean allowOtherPlayers;
-		String createdTime;
-		public String lastTime;
-		String comments;
-		String body;
+		int owner;				// the player that owns this game.
+		int gameuid;			// the unique id for this game.
+		int whoseturn;			// who is currently to move (in active games)
+		AsyncStatus status;		// active, setup etc.
+		public String variation;// the game type being played
+		GameInfo game;			// the gameinfo that matches variation
+		PlayMode playMode;		// ranked, unranked, tournament
+		public PlaySpeed speed;	// playing speed (multiple days per move)
+		FirstPlayer first;		// first player (for games setting up)
+		IStack invitedPlayers;	// players explicitly invited to play
+		IStack acceptedPlayers;	// players accepted to play
+		boolean allowOtherPlayers;	// allow other players to join.  This is so strangers can be excluded from multiplayer games.
+		String createdTime;			// time when this game was created
+		public String lastTime;		// time when the last move was made
+		String comments;			// owner comments about the game setting up
+		String body;				// the actual game restart information
+		boolean bodyKnown = false;	// true if the body has been fetched
+		private String chat;		// the chat from the game
 		
 		public String toString() { return ("<game #"+gameuid+" "+status+" "+variation); }
 		
@@ -307,14 +343,24 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			GC.drawLine(gc,left,top,left+w,top);
 			UidBank users = uids;
 			AsyncId hitCode = null;
-			String banner = "#" + gameuid + " "+variation 
-					+", "+s.get(playMode.menuItem())
-					+", " +s.get(speed.menuItem())
-					+", " +s.get(first.menuItem())
-					+ ","+ status;
+			StringBuilder banner = new StringBuilder();
+			
+			G.append(banner,
+					"#" , gameuid, " ", variation ,
+					", ",s.get(playMode.menuItem()),
+					", ",s.get(speed.menuItem()));
+			switch(status)
+			{
+			case setup: G.append(banner,", ", s.get(first.menuItem()));
+				break;
+			case active:
+				break;
+			default:
+				G.append(banner,",", status);
+			}
 			left++;
 			w--;
-			GC.Text(gc,false,left,top,w,lineH,Color.black,null,banner);
+			GC.Text(gc,false,left,top,w,lineH,Color.black,null,banner.toString());
 			top += lineH;
 			
 			GC.Text(gc,false,left,top,promptW,lineH,Color.black,null,s.get(TurnBasedViewer.InvitedPlayersMessage));
@@ -411,10 +457,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			return top;
 		}
 		Session sess = new Session(1);
-		public void openGame()
+		public void launchGame()
 		{	
 			G.print("open "+this);
-			
+			getBody();	/// get started now
 			sess.password = "start";
 			sess.seedValue = new Random().nextInt();
 			//sess.seatingChart = selectedChart;
@@ -458,6 +504,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			}
 			for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }			
 		}
+		/**
+		 * move a game from setting up state to active state.
+		 */
 		public void startGame()
 		{	status = AsyncStatus.active;
 			int who = owner;
@@ -493,16 +542,35 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			updateGame("status",AsyncStatus.active.name(),"whoseturn",""+who);
 		}
 		
+		private UrlResult bodyResult = null;
+		// only valid after successfully fetching the body
+		public String getChat() { return chat; }
+		/**
+		 * get the body, return PENDING if it's not available yet.
+		 * 
+		 * @return
+		 */
 		public String getBody()
-		{
-			UrlResult res = Http.postEncryptedURL(Http.getHostName(),
+		{	UrlResult pend = bodyResult;
+			if(pend!=null)
+			{	if(pend.isComplete())
+				{
+				bodyResult = null;
+				parseBodyResult(pend);
+				bodyKnown = true;
+				}
+			}
+			if(bodyKnown) { return body; }
+			else if(bodyResult==null)
+			{
+			bodyResult = Http.postAsyncEncryptedURL(Http.getHostName(),
 							TurnBasedViewer.getTurnbasedURL,
 							G.concat(TurnBasedViewer.versionParameter,
 									"&",TAGNAME,"=getbody",
 									"&", GAMEUID,"=", gameuid),
 							null);
-			parseBodyResult(res);
-			return body;
+			}
+			return PENDINGBODY;
 		}
 		private void parseBodyResult(UrlResult res)
 		{
@@ -520,6 +588,15 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 								if("".equals(body) ) { body = null; }
 							}
 					}
+					else if(CHAT.equals(field))
+					{
+						String st = tok.nextElement();
+						if(st!=null)
+						{
+							chat = Base64.decodeString(st);
+							if("".equals(chat)) { chat = null; }
+						}
+					}
 				}
 			}
 		}
@@ -529,23 +606,45 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 * @param message the formatted message
 		 * @return
 		 */
-		@SuppressWarnings("deprecation")
 		public String notificationMessage(int who,String message)
 		{	
 			// the format is uid,base64encodedmessage
 			return TurnBasedViewer.this.notificationMessage(who,gameuid,variation,message);
 		}
 
-		public void setBody(int who,String b)
+		/**
+		 * this is called from the game when a move has been made
+		 * 
+		 * @param who
+		 * @param b
+		 * @param c
+		 */
+		public void setBody(int who,String b,String c)
 		{	G.Assert(loggedIn && acceptedPlayers.contains(who),"incorrect whoseTurn %s",who);
 			if(whoseturn!=who)
 			{
 			whoseturn = who;
 			body = b;
+			chat = c;
 			String message = notificationMessage(whoseturn,s.get(YourTurnMessage));
-			updateGame("whoseturn",""+who,BODY,Base64.encodeSimple(b),
+			updateGame("whoseturn",""+who,BODY,Base64.encodeSimple(b),CHAT,Base64.encodeSimple(c),
 					NOTIFICATION+0,message);	
 			}
+		}
+		
+		private UrlResult saveGameResult = null;
+		private PendingStatus parseSaveResult()
+		{	UrlResult save = saveGameResult;
+			if(save!=null) 
+			{	if(save.isComplete())
+				{
+				saveGameResult = null;
+				parseSaveGameResult(save);
+				return PendingStatus.Complete;
+				}
+				return PendingStatus.Yes;
+			}
+			return PendingStatus.No;
 		}
 		/**
 		 * this saves the game as a text file in the public directory
@@ -553,7 +652,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 * @param body
 		 * @return
 		 */
-		public String recordGame(String name,String body)
+		public void recordGame(String name,String body)
 		{
 			StringBuilder b = new StringBuilder();
 			 G.append(b,versionParameter,
@@ -564,11 +663,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					 "&",GAMENAME,"=",name,
 			 		 "&",BODY,"=",Base64.encodeSimple(body));
 			 appendNotifications(b);
-			 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
+			 saveGameResult = Http.postAsyncEncryptedURL(Http.getHostName(),getTurnbasedURL,
 						b.toString(),
 						null);
-			 return parseSaveGameResult(res);
-
 		}
 		public void discardGame()
 		{
@@ -581,12 +678,28 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			
 			updateGame("status",AsyncStatus.complete.name());	
 		}
+		
+		private UrlResult updateGameResult = null;
+		private PendingStatus parseUpdateGameResult()
+		{	UrlResult pend = updateGameResult;
+			if(pend!=null) 
+			{	if(pend.isComplete())
+				{
+				updateGameResult = null;
+				parseCreateGameResult(pend);
+				return PendingStatus.Complete;
+				}
+				return PendingStatus.Yes;
+			}
+			return PendingStatus.No;
+		}
+		
 		/*
 		 * update a game in the database, and send any pending notifications
 		 *  
 		 */
 		public void updateGame(String... params)
-		{
+		{	
 			 StringBuilder b = new StringBuilder();
 			 G.append(b,versionParameter,
 					 "&",TAGNAME,"=creategame",
@@ -600,10 +713,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 }
 			 appendNotifications(b);
 			 
-			 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
+			 updateGameResult  = Http.postAsyncEncryptedURL(Http.getHostName(),getTurnbasedURL,
 						b.toString(),
 						null);
-			 parseCreateGameResult(res);
 		}
 		
 		public void StopDragging(HitPoint hp) {
@@ -612,7 +724,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			switch(hitCode)
 			{
 			case Open:
-				openGame();
+				launchGame();
 				break;
 			case Start:
 				startGame();
@@ -771,7 +883,21 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		
 
-		
+		private UrlResult getInfoResult = null;
+		private PendingStatus parseInfoResult()
+		{
+			UrlResult pend = getInfoResult;
+			if(pend!=null)
+			{ if(pend.isComplete())
+				{
+				getInfoResult = null;
+				parseResult(pend);	
+				return PendingStatus.Complete;
+				}
+				return PendingStatus.Yes;
+			}
+			return PendingStatus.No;
+		}
 		//
 		// ask the server for matching games and send any pending notications.
 		//
@@ -796,9 +922,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				
 				appendNotifications(b);
 				
-				UrlResult res = Http.postEncryptedURL(Http.getHostName(),
+				getInfoResult = Http.postAsyncEncryptedURL(Http.getHostName(),
 						TurnBasedViewer.getTurnbasedURL,b.toString(),null);
-				parseResult(res);
 				}
 			}
 			else { known = false; }
@@ -882,11 +1007,44 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	        
 	    }
 
+	    // handle pending events
+		public int watchForUpdates(int waitTime) 
+		{	PendingStatus stat = PendingStatus.No;
+		
+			stat = stat.combine(parseInfoResult());
+			if(stat==PendingStatus.Complete) { rememberedScrollPosition = 0; }
+			
+			stat = stat.combine(uids.update());
+
+			
+			for(int lim = size()-1; lim>=0; lim--)
+			{	
+			 AsyncGameInfo e = elementAt(lim);
+			 {	stat = stat.combine(e.parseSaveResult());
+			 	stat = stat.combine(e.parseUpdateGameResult());
+			 }
+			}
+			
+			switch(stat)
+			{
+			default:
+			case No:	
+				break;
+			case Complete: 
+				waitTime = -1;
+			case Yes:
+				startSpin();
+				waitTime = Math.min(100,waitTime);
+			}
+			
+			return waitTime;
+			
+		}
 		
 	}
 	boolean newGameMode = false;
-	boolean reload = false;
-	
+	public boolean reload = false;
+	public long lastReloadTime = 0;
 
 	/** 
 	 * the main mode for the interface.
@@ -1044,7 +1202,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
-    
+    	frame.addWindowListener(this);
 		for(Filters f : Filters.values())
 		{
 			f.button = new Toggle(this,s.get(f.title),
@@ -1055,7 +1213,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		Filters.MyGames.button.toggle();
 		
         painter.drawLockRequired = false;
-        sess.setMode(Session.Mode.Review_Mode,isPassAndPlay());
+        sess.setMode(Session.Mode.Game_Mode,isPassAndPlay());
         sess.setCurrentGame(GameInfo.firstGame,false,isPassAndPlay());
         if(G.debug()) {
         	GameInfo.putStrings();
@@ -1299,7 +1457,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		return b.toString();
 	}
-	
 
 	public void createTheGame()
 	{	 StringBuilder invited = new StringBuilder("|");
@@ -1466,9 +1623,13 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	public void drawMyGames(Graphics gc,HitPoint pt,Rectangle r)
 	{
 		myGames.getInfo(reload,loggedinUid);		
-		myGames.drawGames(this,gc,pt,r);
+		if(reload)
+		{
+		lastReloadTime = G.Date();
 		reload = false;
-		
+		}
+		myGames.drawGames(this,gc,pt,r);
+
 	}
 
 	private boolean drawPlayerBox(Graphics gc,HitPoint pt,CellId id,String help,
@@ -1614,6 +1775,14 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			kb.draw(gc, pt0);
 		}
 		drawUnmagnifier(gc,pt0);
+		
+		if(spinner)
+		{	int ax = G.Left(pt0);
+			int ay = G.Top(pt0);
+			int sz = lineH*4/3;
+			Rectangle r = new Rectangle(ax-sz,ay-sz,sz,sz);
+			GC.draw_anim(gc,r,sz/2,spinTime,spinCount++);
+		}
 	}
 
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) 
@@ -1666,34 +1835,37 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 LFrameProtocol f = myFrame;
 		 if(f!=null) { f.killFrame(); }
 	 }
+	private boolean spinner =false;
+	private int spinCount = 0;
+	private long spinTime = 0;
+	void startSpin()
+	{
+		if(!spinner) {
+			spinTime = G.Date();
+			spinner = true;
+		}
+	}
 	
-    static public TurnBasedViewer doSeatingViewer(ExtendedHashtable sharedInfo)
-    {  
-    	commonPanel panel = new commonPanel();
-    	XFrame frame = new XFrame("Offline Launcher");
-    	TurnBasedViewer viewer = new TurnBasedViewer();
-    	if(viewer!=null)
-    	{
-    	viewer.init(sharedInfo,frame);
-    	panel.setCanvas(viewer);
-    	viewer.setVisible(true);
-    	double scale = G.getDisplayScale();
-    	frame.setContentPane(panel);
-    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
-    	frame.setVisible(true);
-    	panel.start();
-    	}
-    	return(viewer);
-    }
+	
     public void ViewerRun(int waitTime)
     {
-    	super.ViewerRun(waitTime);
-    	
-    	if(checkInviteName)
-    	{
-    		checkInviteName = false;
-    		checkInviteName();
+     	spinner = false;
+    	switch(checkInviteName())
+    	{ 	default: 
+    		case No:
+    			break;
+    		case Yes: 
+    			startSpin();
+    			waitTime = Math.min(waitTime,100);
+    			break;
+    		case Complete:
+    			repaint();
+    			waitTime = -1;
     	}
+    	// handle asynchronous completions and adjust the wait time
+    	int wait = myGames.watchForUpdates(waitTime);
+    	if(wait<=0) { repaint(); }
+    	super.ViewerRun(wait);
 
     }
     private Keyboard keyboard = null;
@@ -1801,32 +1973,46 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		
 		return true;
 	}
-    public void checkInviteName()
-    {
-    	String name = invitePlayerRect.getText().trim();
-    	if(!"".equals(name))
-    	{
-    		UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
-					G.concat(versionParameter,
-								"&",TAGNAME,"=checkname",
-								"&", PNAME, "=",name),
-					null);
-    		int parsedUid = parseCreateGameResult(res);
+	UrlResult pendingName = null;
+    public PendingStatus checkInviteName()
+    {	UrlResult pend = pendingName;
+    	if(pend!=null)
+    	{	if(pend.isComplete())
+    		{
+    		pendingName = null;
+    		String name = inviteName;
+    		int parsedUid = parseCreateGameResult(pend);
     		if(parsedUid>0) 
     			{ if(parsedUid!=loggedinUid)
     				{inviteUid = parsedUid;    			  
-    				inviteName = name;
     				uids.register(parsedUid,name);	// add to the list of known names
     				invitedPlayers.pushNew(new SimpleUser(parsedUid,name));
     				invitePlayerRect.clear();
     				}
     			}
-    		else 
-    		{ inviteUid = -1; inviteName = null;
-    		G.infoBox(s.get("Player not found"),s.get("Player #1 wasn't found",name));
+	    		else 
+	    		{ inviteUid = -1; inviteName = null;
+	    		G.infoBox(s.get("Player not found"),s.get("Player #1 wasn't found",name));
+	    		}
+    		return PendingStatus.Complete;
     		}
-    		repaint();
+    		return PendingStatus.Yes;
     	}
+    	if(checkInviteName)
+    	{
+    	String name = invitePlayerRect.getText().trim();
+    	checkInviteName = false;
+    	if(!"".equals(name))
+    	{	inviteName = name;
+    		pendingName = Http.postAsyncEncryptedURL(Http.getHostName(),getTurnbasedURL,
+					G.concat(versionParameter,
+								"&",TAGNAME,"=checkname",
+								"&", PNAME, "=",name),
+					null);
+    		return PendingStatus.Yes;
+ 
+    	}}
+    	return PendingStatus.No;
     }
 
     public void drawGameSelector(Graphics gc,HitPoint hp,GameInfo currentGame)
@@ -1998,6 +2184,13 @@ static public void putStrings()
 			}
 	}
 	
+	public void windowActivated(WindowEvent e)
+	{	long now = G.Date();
+		if((now-lastReloadTime)>10000)
+		{	G.print("auto reload");
+			reload = true;
+		}
+	}
 
 
 }

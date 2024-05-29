@@ -344,6 +344,7 @@ public void addToMenus(JButton m)
 	{	if(!isVisible()) 
 		{ 	G.runInEdt(new Runnable () {	public void run() { showInEdt(); } });
 		}
+		getMasterPanel().masterFrameShow();
 	}
 	public static synchronized MasterForm getMasterForm()
 	{

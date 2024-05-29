@@ -116,14 +116,25 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		if(par==null) { return(null); }
 		return(getMyParent(par));
 	}
-
+	
 	public void moveToFront(TopFrameProtocol cc)
 	{	if(cc!=getTopWindow())
 		{
 		suprem((Component)cc);
 		supadd((Component)cc);
 		adjustTabStyles();
+		windowActivated(cc);
 		repaint();
+		}
+	}
+	public void masterFrameShow()
+	{	
+		windowActivated(getTopWindow());
+	}
+	private void windowActivated(Object cc)
+	{
+		if(cc instanceof bridge.Component) 
+		{ ((bridge.Component)cc).windowActivated(); 
 		}
 	}
 	public Component getMyChildContaining(Component c)

@@ -797,4 +797,9 @@ public class commonChatApplet extends FullscreenPanel
 	public void MouseDown(HitPoint hp) {
 		
 	}
+	@Override
+	public void setSingleUser(String name) {
+		// TODO Auto-generated method stub
+		
+	}
 }

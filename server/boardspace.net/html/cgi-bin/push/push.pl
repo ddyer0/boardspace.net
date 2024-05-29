@@ -3,6 +3,7 @@ use LWP::UserAgent;
 use Mozilla::CA;
 use LWP::Protocol::https ;
 
+use Time::HiRes qw(time usleep);
 require "tlib/params.pl";
 require "push/webhook.pl";
 

@@ -212,6 +212,7 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 */
 	public RecordingStrategy gameRecordingMode();
 	public void resetBounds();
+	public void setSeeChat(boolean b);
 	
 
 }

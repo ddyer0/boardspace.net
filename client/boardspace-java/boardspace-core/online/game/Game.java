@@ -832,6 +832,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(sessionNum>0)
         {
         // setup a connected game
+        if(turnBasedGame!=null)
+        {	theChat.setSingleUser(my.trueName());
+        }
         if(!offline)
 	        {
 	        myNetConn = new ConnectionManager(info);
@@ -2893,14 +2896,21 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  
         	commonPlayer.reorderPlayers(playerConnections);			// make sure the players are properly ordered before 
 
+        	// this will change state to MYTURN if the game state is restored, 
+        	// of if it's known that it won't be restored.
         	if(offline) { restoreOfflineGame(); }
+        	else {
+        	   	// move on to the playing state even if no restoration
+            	setGameState(ConnectionState.NOTMYTURN);
+            	SetWhoseTurn();
+            	startPlaying();
+        	}
         	
-            setGameState(ConnectionState.NOTMYTURN);
-            SetWhoseTurn();
-            startPlaying();
+   
         }
-         //do the processing last, because the processing can change state to 
-        //turn/noturn
+        //do the processing last, because the processing can change state to 
+        //turn/noturn.  One of the outcomes is to receive the restoration news
+        //which will change the state
         StandardProcessing("doNOTMYCHOICE",cmd,localST,fullMsg);
     }
 
@@ -3815,7 +3825,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
           v.changePlayerList(my,commonPlayer.findPlayerByPosition(vplayers,robotPosition^1));
           }
         }
-        if (G.offline() && theChat!=null)
+        if (G.offline() && (turnBasedGame==null) && theChat!=null)
         {
             theChat.setHideInputField(true);
         }
@@ -4555,9 +4565,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);
         	//G.print("Fixed "+msg);
-    		
-        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg);
-   		
+        	StringBuilder b = new StringBuilder();
+        	theChat.getEncodedContents(b);
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString());		
     	}
     }
     private String serverRecordString(RecordingStrategy mode)
@@ -4664,9 +4674,35 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
          }
     }
     public void restoreOfflineGame()
-    {	String rec = turnBasedGame!=null 
-    					? turnBasedGame.getBody() 
-    					: OfflineGames.restoreOfflineGame(UIDstring);
+    {
+    	if(turnBasedGame!=null)
+    	{
+        	String rec = turnBasedGame.getBody() ;
+        	// the body is fetched asynchronously, PENDINGBODY is returned until the result is known
+        	if(!TurnBasedViewer.PENDINGBODY.equals(rec)) 
+        	{
+        	restoreGameRecord(rec);
+        	String chat = turnBasedGame.getChat();
+        	if(chat!=null)
+        	{
+        	theChat.setEncodedContents(new StringTokenizer(chat));
+        	if(theChat.hasUnseenContent())
+        		{
+        		v.setSeeChat(true);
+        		}
+        	}
+        	} 	
+    	}
+    	else
+    	{	// no deferrment, once through
+    		restoreGameRecord(OfflineGames.restoreOfflineGame(UIDstring));
+    	}
+
+    
+    }
+    
+    private void restoreGameRecord(String rec)
+    {
     	if(rec!=null)
     	{	StringTokenizer tok = new StringTokenizer("1 "+rec);
     		restoreGame(tok,rec);
@@ -4683,7 +4719,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			v.updatePlayerTime(dif,who);
     		}
     	}
-    }
+    	// move on to the playing state even if no restoration
+    	setGameState(ConnectionState.NOTMYTURN);
+    	SetWhoseTurn();
+    	startPlaying();
+     }
     
     // place a move for the robot companion
     public void makeRobotMove(commonPlayer p)

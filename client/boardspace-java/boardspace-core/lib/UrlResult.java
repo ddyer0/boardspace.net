@@ -71,9 +71,10 @@ public class UrlResult
     	inputStream=null;
     	}
 	}
+	boolean isComplete = false;
 	/** if true, the transaction is complete, otherwise it is
 	 * not started or in progress
 	 * @return true the operation is complete
 	 */
-	public boolean isComplete() { return((error!=null)||(inputStream!=null)||(text!=null)); } 
+	public boolean isComplete() { return(isComplete); } 
 }

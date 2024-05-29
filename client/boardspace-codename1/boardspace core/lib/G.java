@@ -576,6 +576,7 @@ public class G extends Platform implements Timestamp
         		((seconds < 10) ? "0" : "") , seconds);
         }
     }
+    
     /** convert a long integer time string to our standard form for extra time
     *
     * @param inVal
