@@ -72,7 +72,7 @@ class HistoryProperties
     String comment = null;
     String numString = null;
     boolean lineBreak = false;
-    int elapsedTime = -1;
+    long elapsedTime = -1;
     StackIterator<commonMove> variations;
     Hashtable<String,Object>properties;
     StackIterator<MoveAnnotation> annotations;
@@ -156,8 +156,8 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 		if(old==null) { old = an;} else { old = old.push(an); }
 		setAnnotations(old);
 	}
-	public int elapsedTime() { return(H().elapsedTime); }
-	public void setElapsedTime(int v)
+	public long elapsedTime() { return(H().elapsedTime); }
+	public void setElapsedTime(long v)
     { HistoryProperties h = H();
    	  //G.print("E "+this+" "+h.elapsedTime+"->"+v);
       h.elapsedTime = v; }
@@ -541,7 +541,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
             	os.print(" , ");
             	if(includeTimes)
             	{
-            	int time = root.elapsedTime();
+            	long time = root.elapsedTime();
             	if(time>=0) { os.print("+T "); os.print(time); os.print(" "); }
             	}
                 os.print(ms);
@@ -567,7 +567,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
                    	os.print(" , ");
                    	if(includeTimes)
                    	{
-                	int time = nx.elapsedTime();
+                	long time = nx.elapsedTime();
                 	if(time>=0) { os.print("+T "); os.print(time);os.print(" "); }
                    	}
                     os.print(ms2);

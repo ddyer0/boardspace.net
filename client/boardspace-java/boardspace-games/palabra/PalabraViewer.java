@@ -750,7 +750,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
   
  
         // draw the avatars
-    	int activePl = (simultaneous_turns_allowed())
+    	int activePl = (simultaneousTurnsAllowed())
     								? getActivePlayer().boardIndex
     								: gb.whoseTurn;
     							
@@ -837,7 +837,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
        case PlayerDiscards:
     	{
 	    	int cx = hp.hit_y;
-	    	boolean simultaneous = simultaneous_turns_allowed();
+	    	boolean simultaneous = simultaneousTurnsAllowed();
 	    	if(simultaneous)
 	    	{	int ord = hitCell.col-'A';
 	    		bb.setMyIndex(ord,true);
@@ -872,7 +872,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     {
     CellId id = hp.hitCode;
     if(!(id instanceof PalabraId))
-    	{	if((id==DefaultId.HitNoWhere) && !isSpectator() && simultaneous_turns_allowed())
+    	{	if((id==DefaultId.HitNoWhere) && !isSpectator() && simultaneousTurnsAllowed())
     		{
     			String dn = bb.unDropMove();
     			if(dn!=null) { PerformAndTransmit(dn); }
@@ -911,7 +911,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
         case PlayerCards:
         	{
         	int cx = hp.hit_y;
-        	String op = (simultaneous_turns_allowed()) ? ("edrop "+(hitObject.col-'A')+" ") : "Drop "; 
+        	String op = (simultaneousTurnsAllowed()) ? ("edrop "+(hitObject.col-'A')+" ") : "Drop "; 
         	PerformAndTransmit(op+ hitCode.shortName+" "+hitObject.col+" "+cx);
         	}
         	break;

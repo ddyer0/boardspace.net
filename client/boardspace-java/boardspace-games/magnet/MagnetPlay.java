@@ -221,8 +221,7 @@ public void PrepareToMove(int playerIndex)
     	// UI to change state only due to the human's actions.
     	board.asyncPlay = false;
     	if(board.pickedObject!=null) { board.unPickObject(); }	// undo the pick if any
-    	MagnetState state = board.getState();
-    	if(state.simultaneousTurnsAllowed())
+    	if(board.simultaneousTurnsAllowed())
     	{
     		changedToSynchronous = true;
         	board.whoseTurn = playerIndex;

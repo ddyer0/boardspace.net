@@ -433,7 +433,7 @@ public abstract class commonCanvas extends exCanvas
 	    private String loadUrlName = null;
 	    private String loadUrlGame = null;
 	    private boolean urlLoaded = false;
-	    private int parsedTime = -1;
+	    private long parsedTime = -1;
 	    private String parsedResult = null;
 	    private StackIterator<MoveAnnotation>parsedAnnotation = null;
 		private commonMove changeMove = null;
@@ -1948,8 +1948,9 @@ public abstract class commonCanvas extends exCanvas
      * 
      * @return
      */
+    boolean canUseDone = false;
     public boolean canUseDone() 
-    {	if(reviewOnly) { return true; }
+    {	if(canUseDone || reviewOnly) { return true; }
      	return !isSpectator();
     }
     public boolean isSpectator()
@@ -1968,7 +1969,7 @@ public abstract class commonCanvas extends exCanvas
     			&& (ap!=null)
     			&& !ap.isSpectator() 
     			&& (who!=null)
-    			&& (simultaneous_turns_allowed()
+    			&& (simultaneousTurnsAllowed()
     					|| isALocalPlayer(who)
     					|| (who==ap)
     					|| (who.boardIndex == ap.boardIndex)));
@@ -2376,8 +2377,11 @@ public abstract class commonCanvas extends exCanvas
   * and scoring activity has completed.  It's now safe to let the
   * players edit and rehash the game.   
   */
-    public void setEditable()
-    {	if(canUseDone()) { allowed_to_edit = true; }
+    public void setEditable(boolean always)
+    {	// a bit of a mess, turn based games that are viewed after completion
+    	// should be editable like they were immediately after play
+    	if(always) { canUseDone = true; }
+    	if(always || canUseDone()) { allowed_to_edit = true; }
     	mutable_game_record = true;
     }
     /**
@@ -3200,7 +3204,7 @@ public abstract class commonCanvas extends exCanvas
    */
   public boolean allowUndo() 
   {	if( !reviewMode()
-		  && !simultaneous_turns_allowed())
+		  && !simultaneousTurnsAllowed())
   	{	commonMove m = getCurrentMove();
   		BoardProtocol b = getBoard();
   		return ((m!=null) 
@@ -3242,7 +3246,7 @@ public abstract class commonCanvas extends exCanvas
   {
 	  if( !reviewMode()
 			  && allowOpponentUndoNow()
-			  && !simultaneous_turns_allowed()
+			  && !simultaneousTurnsAllowed()
 			  )
 	  	{	commonMove m = getCurrentMove();
 	  		// we will allow undo of the robot move if we're the player
@@ -4360,7 +4364,7 @@ public abstract class commonCanvas extends exCanvas
      int player =
     		 (mode==replayMode.Replay) 
     		 ? -1 
-    		 : ((mode!=replayMode.Replay) && simultaneous_turns_allowed())
+    		 : ((mode!=replayMode.Replay) && simultaneousTurnsAllowed())
    		  		? getActivePlayer().boardIndex
    		  		: getBoard().whoseTurn();
    	return(PerformAndTransmit(str,player,transmit,mode));
@@ -5136,12 +5140,12 @@ public abstract class commonCanvas extends exCanvas
         datePlayed = "";
         setCanvasRotation(info.getInt(ROTATION,0));
         if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
-        gameMode = Session.Mode.findMode(info.getString(MODE,gameMode.modeName));
+        gameMode =(Session.Mode)info.getObj(MODE,gameMode);
         l.tournamentMode = info.getBoolean(TOURNAMENTMODE,false);
 
         Random.setNextIntCompatibility(false);
         gameInfo = info.getGameInfo();
-        isPassAndPlay = isPassAndPlay();
+        isPassAndPlay = !(turnBasedGame==null && G.offline());
         if(G.isSimulator() || !G.isTouchInterface()) 
     	{ 
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
@@ -5273,7 +5277,6 @@ public abstract class commonCanvas extends exCanvas
         if(seatingChart==null) 
         	{ seatingChart = SeatingChart.defaultSeatingChart(info.getInt(PLAYERS_IN_GAME,2)); 
         	}
-
         SoundManager.loadASoundClip(turnChangeSoundName);
         SoundManager.loadASoundClip(beepBeepSoundName);
 
@@ -5583,6 +5586,10 @@ public abstract class commonCanvas extends exCanvas
         return (str);
     }
     
+    public void setSimultaneousTurnsAllowed(boolean v)
+    {
+    	getBoard().setSimultaneousTurnsAllowed(v);
+    }
 
     /**
      * return true if simultaneous game actions are allowed right now.  This is
@@ -5591,9 +5598,10 @@ public abstract class commonCanvas extends exCanvas
      *
      * @return true if simultaneous game actions are allowed right now
      */
-    public boolean simultaneous_turns_allowed()
-    {	BoardState state = getBoard().getState();
-    	return(state.simultaneousTurnsAllowed());
+    public boolean simultaneousTurnsAllowed()
+    {	
+    	return(getBoard().simultaneousTurnsAllowed());
+ 
     }
     /**
      * this should return true when out-of-sequence moves will
@@ -5607,7 +5615,7 @@ public abstract class commonCanvas extends exCanvas
     	// state can be null if in intialization
     	return(state==null
     			? RecordingStrategy.All 
-    			: state.simultaneousTurnsAllowed()
+    			: getBoard().simultaneousTurnsAllowed(state)
     				? RecordingStrategy.Fixed 
     				: RecordingStrategy.All );
     }
@@ -6758,7 +6766,7 @@ public abstract class commonCanvas extends exCanvas
             
             curr.set_property(annotation_property,MoveAnnotation.toReadableString(m.getAnnotations()));
              
-            int tm = m.elapsedTime();
+            long tm = m.elapsedTime();
             if(tm>=0) 
             {
             	curr.set_property(time_property, ""+tm);
@@ -6975,7 +6983,7 @@ public abstract class commonCanvas extends exCanvas
         	   ps.print(sgf_property.bracketedString(str));
         	   ps.print("]");
         	   MoveAnnotation.printAnnotations(ps,m);
-        	   int tm = m.elapsedTime();
+        	   long tm = m.elapsedTime();
         	   if(tm>=0)
         	   { ps.print(time_property);
         	     ps.print("[");
@@ -7296,7 +7304,7 @@ public boolean replayStandardProps(String name,String value)
     }
     else if(name.equalsIgnoreCase(time_property))
     {
-    	l.parsedTime = G.IntToken(value);
+    	l.parsedTime = G.LongToken(value);
     	return(true);
     }
     else if(result_property.equals(name))
@@ -7427,7 +7435,7 @@ public void drawPlayerStuff(Graphics gc,commonPlayer pl,boolean button,	HitPoint
  * @return
  */
 public boolean playerIsActive(commonPlayer pl) 
-{ return ((simultaneous_turns_allowed()&&!reviewOnly)||pl.boardIndex==getBoard().whoseTurn()); 
+{ return ((simultaneousTurnsAllowed()&&!reviewOnly)||pl.boardIndex==getBoard().whoseTurn()); 
 } 
 
 

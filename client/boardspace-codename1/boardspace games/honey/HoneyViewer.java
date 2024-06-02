@@ -300,7 +300,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     }
     
     public void updatePlayerTime(long inc,commonPlayer p)
-    {	if(simultaneous_turns_allowed())
+    {	if(simultaneousTurnsAllowed())
     	{	// update all players so the timestamps will reflect reality
     		if(!reviewMode()&&!reviewOnly)
     	    {for(commonPlayer pl : players)
@@ -794,7 +794,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     {
         standardGameMessage(gc,
    				state==HoneyState.Gameover?gameOverMessage(gb):s.get(state.description()),
-   				(state!=HoneyState.Puzzle) && !state.simultaneousTurnsAllowed(),
+   				(state!=HoneyState.Puzzle) && !gb.simultaneousTurnsAllowed(state),
    				bb.whoseTurn,
    				stateRect);
 

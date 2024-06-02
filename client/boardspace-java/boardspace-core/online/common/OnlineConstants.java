@@ -186,7 +186,7 @@ public interface OnlineConstants extends Config {
 	String GAMETYPEID = "GameTypeID";		// short id
 	String GAMEUID = "gameUID";			// unique name constructed for this game
 	String MODE = "mode";
-	String TOURNAMENTMODE = "tournamentMode";	// true if a tournament game
+	String TOURNAMENTMODE = "tournamentmode";	// true if a tournament game
 	String TURNBASEDGAME = "turnbasedgame";		// true if a turn based game
 	String ROTATION = "rotation";
 	String SOUND = "sound";					// true if sound is initially on
@@ -215,12 +215,13 @@ public interface OnlineConstants extends Config {
 	String LoginMessage = "Login";
 	String LoginFailedMessage = "Login Failed";
 	String LoginFailedHost = "Can't Log in to #1";
-	String LoginFailedExplanation = "User name and password were not accepted";
+	String LoginFailedExplanation = "User name and loggedInPassword were not accepted";
 	String TryAgainMessage = "Try again";
-	String RecoverPasswordMessage = "Recover lost password";
+	String RecoverPasswordMessage = "Recover lost loggedInPassword";
 	String ServerUnavailableMessage = "server unavailable";
 	String ServerUnavailableExplanation = "The game server is not running.  Please try again later.";
 	String SelectAGameMessage = "Select Game";
+	String SAVEDMSG =  "Game saved as #1";
 
 	int DEFAULTWIDTH = 620;	// also the minimum width and height
 	int DEFAULTHEIGHT = 660;

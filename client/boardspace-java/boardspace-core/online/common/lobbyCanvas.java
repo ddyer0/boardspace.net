@@ -1076,7 +1076,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private void changeGameType(Session sess,int ex,int ey)
 	  {			  
 		  changeRoom = sess;
-		  sess.changeGameType(this,ex,ey,isTestServer);
+		  sess.changeGameType(this,ex,ey,isTestServer,false,false);
 	  }
 	  
 	  private PopupManager variationMenu = new PopupManager();
@@ -1085,7 +1085,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  changeRoom=sess;
 	  variationMenu.newPopupMenu(this,deferredEvents);
 	  GameInfo currentGame = sess.currentGame;
-	  Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false);
+	  Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false,false);
 	  //(sess.mode == Session.Mode.Review_Mode)
 	   	//	? new ESet(GameInfo.ES.review,GameInfo.ES.game)
 	   	//	: new ESet(GameInfo.ES.game);  
@@ -2147,9 +2147,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private void changeRoom(Session sess,int ex,int ey)
 	{	changeRoom = sess;
 		roomMenu.newPopupMenu(this,deferredEvents);
-		Session.Mode.getRoomMenu(s,roomMenu);
-
-		roomMenu.show(ex,ey);
+		roomMenu.show(ex,ey,Session.Mode.values());
 	}	
 	private boolean iCanEnterRoom(Session sess)
 	{	return( sess.gameIsAvailable()
@@ -2381,7 +2379,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	        }
 	      else if(inSetPreferredGame(ex,ey))
 	      	{ Session sess = Sessions[0];
-	      	  sess.setMode(Session.Mode.Review_Mode,false); 
+	      	  sess.setMode(Session.Mode.Review_Mode,false,false); 
 	      	  changeGameType(sess,ex,ey);
 	      	}
 	      	else if((user=inAnyUserToken(ex,ey))!=null)
@@ -2716,7 +2714,7 @@ public boolean handleDeferredEvent(Object otarget, String command)
 { 	if(super.handleDeferredEvent(otarget, command))  { return(true); }
 	if(roomMenu.selectMenuTarget(otarget))
 	{	
-		Session.Mode newchoice = Session.Mode.findMode(roomMenu.value);
+		Session.Mode newchoice = (Session.Mode)roomMenu.rawValue;
 		if(newchoice!=null) 
 			{ 
 			 lobby.setRoomType(changeRoom,newchoice,changeRoom.currentGame,false);

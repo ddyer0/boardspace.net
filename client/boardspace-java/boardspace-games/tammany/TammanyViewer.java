@@ -149,7 +149,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);				// let commonViewer do it's things
         bb.doInit(bb.gametype);						// initialize the board
-        if(reviewOnly) { bb.setSimultaneousPlay(false); }
+        if(reviewOnly || isTurnBasedGame()) { bb.setSimultaneousPlay(false); }
         if(!preserve_history)
     	{   adjustPlayers(bb.nPlayers());
     		startFirstPlayer();
@@ -543,7 +543,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        	TammanyState state = gb.getState();
        	int whoseMove = gb.whoseTurn;
    	
-     	TammanyPlayer myPlayer = simultaneous_turns_allowed() ? gb.players[getActivePlayer().boardIndex] : gb.players[whoseMove];
+     	TammanyPlayer myPlayer = simultaneousTurnsAllowed() ? gb.players[getActivePlayer().boardIndex] : gb.players[whoseMove];
        	for(TammanyCell cell = gb.uiCells; cell!=null; cell=cell.next)
           {
             boolean hitCell = gb.LegalToHitBoard(cell,targets);
@@ -907,7 +907,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        int nPlayers = gb.nPlayers();
        TammanyState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
-       boolean simultaneous = !isSpectator() && state.simultaneousTurnsAllowed();
+       boolean simultaneous = !isSpectator() && gb.simultaneousTurnsAllowed(state);
        boolean ourMove = OurMove() || simultaneous;
   
        // 
@@ -956,7 +956,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 				}
 			if(!G.offline())
 			{
-				int whoseMove = simultaneous_turns_allowed() ? getActivePlayer().boardIndex : gb.whoseTurn;
+				int whoseMove = simultaneousTurnsAllowed() ? getActivePlayer().boardIndex : gb.whoseTurn;
 				TammanyPlayer p = gb.players[whoseMove];
 				showVoteButton(gc,p,selectPos,doneRect,null,false,false);
 			}}
@@ -1016,7 +1016,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 
             standardGameMessage(gc,messageRotation,
             		message,
-            				(state!=TammanyState.Puzzle)&&!simultaneous_turns_allowed(),
+            				(state!=TammanyState.Puzzle)&&!simultaneousTurnsAllowed(),
             				bb.whoseTurn,
             				r);
     }
@@ -1064,7 +1064,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 
  public void runAsyncRobots()
  {	
-   	if(bb.getState().simultaneousTurnsAllowed())
+   	if(bb.simultaneousTurnsAllowed())
  	{
  		{
  		for(commonPlayer pp : players)
@@ -1076,7 +1076,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
  }
  public void startRobotTurn(commonPlayer pp)
  {	if(!reviewMode() 
-		 && ( ((bb.getState().simultaneousTurnsAllowed()
+		 && ( ((bb.simultaneousTurnsAllowed()
 				 && bb.playerCanVote(pp.boardIndex)
 				 &&!bb.playerHasPlayed(pp.boardIndex)) || (bb.whoseTurn==pp.boardIndex))))
  	{
@@ -1393,7 +1393,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     public void ViewerRun(int wait)
     {
         super.ViewerRun(wait);
-        if(simultaneous_turns_allowed())
+        if(simultaneousTurnsAllowed())
         { 
         	runAsyncRobots();
         }

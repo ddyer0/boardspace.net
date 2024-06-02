@@ -188,6 +188,7 @@ public class commonLobby extends commonPanel
     private static final String LobbyShutdownMessage = "Lobby shutdown...";
     private static final String CoinFlipMenu = "Coin Flip";
     private static final String RobotSpeedMessage = "No Robot speed limits";
+    private static final String StartTurnBasedMessage = "start turn based room";
     private static final String MoveNumberMessage = "Move ##1";
     private static final String NoResponseMessage1 = "The server is not responding.";
     private static final String NoResponseMessage2 = "It may be down, or a firewall may be preventing the connection.";
@@ -222,6 +223,7 @@ public class commonLobby extends commonPanel
             NoChallengeMessage,  //seen in lobby player list
             CoinFlipMenu,
             RobotSpeedMessage,
+            StartTurnBasedMessage,
             EnterMessage,
   };
     public static final String LobbyMessagePairs[][] = {
@@ -327,6 +329,7 @@ public class commonLobby extends commonPanel
   private JCheckBoxMenuItem flushOutput = null;
   private JMenuItem doFlip = null;
   private JMenuItem startLauncher = null;
+  private JMenuItem startTurnbased = null;
   private long hearbeatTime=0;      //when we started the last ping
 
   public String frameName;
@@ -471,7 +474,9 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         flushInput = myFrame.addOption("flush input",false,deferredEvents);
         flushOutput = myFrame.addOption("flush output",false,deferredEvents);
+        // these are problematic because of the expectation that they are offline
         startLauncher = myFrame.addAction("start offline launcher",deferredEvents);
+        startTurnbased = myFrame.addAction(s.get(StartTurnBasedMessage),deferredEvents);
     }
     setGameTime();
     SetNumberOfUsers(serverNumberOfUsers);
@@ -1213,12 +1218,12 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
        }
        else if(sess!=null)
        {  GameInfo game = GameInfo.findByNumber(sessionGameID);
-          sess.setMode(theState,isPassAndPlay());
+          sess.setMode(theState,false,false);
           if((sessionGameID==0) && (sess.currentGame!=null))
           {	// when the server is freshly booted, it doesn't know what choices the applet made
         	  setRoomType(sess,sess.mode,sess.currentGame,true);
           }
-          sess.setCurrentGame(game,G.debug()||isTestServer,isPassAndPlay());
+          sess.setCurrentGame(game,G.debug()||isTestServer,false,false);
          if ((numOccupied == 0) && (passwordSet == 0)) 
          {
           User myUser = users.primaryUser();
@@ -1340,7 +1345,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       for(int i=0;i<oldnum;i++) { nn[i]=Sessions[i]; }
       for(int i=oldnum;i<numberOfSessions;i++) 
         { Session sess = nn[i]=new Session(i);           
-          sess.setCurrentGame(null,G.debug()||isTestServer,isPassAndPlay());
+          sess.setCurrentGame(null,G.debug()||isTestServer,false,false);
           sess.ClearSession(); 
         }
           Sessions=nn;
@@ -1778,9 +1783,9 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
   Session sess = getSession(toSess);
   if(sess!=null)
      {
-	  sess.setMode(toMode,isPassAndPlay());
+	  sess.setMode(toMode,false,false);
 	  GameInfo game = GameInfo.findByNumber(toGame);
-	  sess.setCurrentGame(game,G.debug()||isTestServer,isPassAndPlay());
+	  sess.setCurrentGame(game,G.debug()||isTestServer,false,true);
 
     //System.out.println("Setmode "+toSess+" "+toMode);
     v.repaint("setMode");
@@ -2322,7 +2327,7 @@ public void setRoomType(Session sess,Session.Mode mode,GameInfo g,boolean forced
     		 setRoomSubMode(sess,JoinMode.Open_Mode);
      	}
      }
-     sess.setCurrentGame(g,G.debug()||isTestServer,isPassAndPlay());
+     sess.setCurrentGame(g,G.debug()||isTestServer,false,false);
      
      if((g!=null) && (!G.allowRobots() || (g.nRobots() == 0))) 
      	{ sess.setCurrentRobot(sess.defaultNoRobot()); }
@@ -2380,9 +2385,12 @@ public void ClearOtherInviteBox(Session sess)
 	myNetConn.setFlushOutput(flushOutput.getState()); 
 	return(true);
 	}
-    else if(target==startLauncher)
+    else if(target==startTurnbased)
     {
-    	SeatingViewer.doSeatingViewer(sharedInfo);
+    	TurnBasedViewer.doTurnbasedViewer(sharedInfo);    	
+    }
+    else if(target==startLauncher)
+    {	SeatingViewer.doSeatingViewer(sharedInfo);
     }
     else if (target==autoDone)
     {

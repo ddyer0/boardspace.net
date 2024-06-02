@@ -258,6 +258,19 @@ public class ExtendedHashtable extends TreeMap<String,Object>
 
             put(key, val);
         }
+        /**
+         * get an object with a default
+         * 
+         * @param k
+         * @param def
+         * @return
+         */
+        public Object getObj(String k,Object def)
+        {
+        	Object o = get(k);
+        	if(o==null || o==NullObject) { return def; }
+        	return o;
+        }
     /**
      * get an object value, error if not found
      * @param k

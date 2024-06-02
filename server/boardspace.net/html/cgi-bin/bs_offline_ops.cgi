@@ -119,7 +119,16 @@ sub recordgame()
 			{
 			print FH $body;
 			close(FH);
-			return "savedas $dir . $gamename";
+			my $uid = &param('gameuid');
+			my $quid = $dbh->quote($uid);
+			my $comments = &param('comments');
+			my $qcomments = $dbh->quote($comments);
+			if($uid)
+			{
+			my $q = "update offlinegame set comments=$qcomments where gameuid=$quid limit 1";
+			&commandQuery($dbh,$q);
+			}
+			return "savedas \"$dir$gamename\"";
 			}
 			else 
 			{
@@ -189,13 +198,17 @@ sub creategame()
 	my $whoseturn = &param('whoseturn');
 	my $qwhoseturn = $dbh->quote($whoseturn);
 
+	my $nag = &param('nag');
+	my $qnag = $dbh->quote($nag);
+	my $nagtime = int(&param('nagtime'));
+	my $nextnag = ($nag and ($nagtime>0) && ($nagtime<9)) ? "DATE_ADD(utc_timestamp(),INTERVAL $nagtime DAY)" : "NULL";
 	my $gid = 0;
 	# verify that the owner is the same as the login credentials
 	if(($gameuid>0) || ($uid eq $owner))
 	{
 	my $preamble = $gameuid>0 
-			? "update offlinegame set gameuid=$qgameuid" 
-			: "insert into offlinegame set created=now()";
+			? "update offlinegame set last=utc_timestamp()" 
+			: "insert into offlinegame set last=utc_timestamp(),created=utc_timestamp()";
 	my $postamble = $gameuid>0 
 			? " where gameuid= $qgameuid"
 			: "";
@@ -210,9 +223,10 @@ sub creategame()
 			. ($speed ? ",speed=$qspeed" : "")
 			. ($status ? ",status=$qstatus" : "")
 			. ($whoseturn ? ",whoseturn=$qwhoseturn" : "")
-			. ($body ? ",last=CURRENT_TIMESTAMP(),body=$qbody" : "")
+			. ($body ? ",body=$qbody" : "")
 			. ($chat ? ",chat=$qchat" : "")
 			. ($var ? ",variation=$qvar" : "")
+			. ($nag ? ",nag=$qnag,nagtime=$nextnag" : "")
 			. $postamble;
 	#print "\nQ: $q\n";
 	my $sth = &commandQuery($dbh,$q);
@@ -269,7 +283,7 @@ sub getbody()
 	if($nr==1)
 	{
 	my ($body,$chat) = &nextArrayRow($sth);
-	return "body " . $body . "\nchat " . $chat . "\n";
+	return "body \"$body\"\nchat \"$chat\"\n";
 	}
 	else
 	{
@@ -367,10 +381,52 @@ sub getgameinfo()
 
 	return $msg;
 }
-sub sendNotifications($dbh)
+sub sendNotification()
+{
+   my ($dbh,$type,$uid,$message) = @_;
+
+   #print "not u=$uid m=$message\n";
+   my $quid = $dbh->quote($uid);
+   my $q = "select player_name,e_mail,discorduid from players where uid=$quid";
+   my $sth = &query($dbh,$q);
+   my $nr = &numRows($sth);
+   #print "Q $nr $q\n";
+   if($nr==1)
+	  {
+	   my ($player_name,$e_mail,$discord) = &nextArrayRow($sth);
+	  &send_silent_notification($player_name,$type,$'from_email,$e_mail,$discord,$message);
+	  }
+   &finishQuery($sth);
+}
+
+sub sendNags()
+{	my ($dbh) = @_;
+	my $q = "select nag,nagtime,utc_timestamp() from offlinegame where nag is not null and nagtime<utc_timestamp() and status='active'";
+	my $sth = &query($dbh,$q);
+	my $nrows = &numRows($sth);
+	if($nrows > 0)
+	{
+	my $orows = $nrows;
+	my $restamp;
+	while ($nrows-- > 0)
+	{
+	my ($nag,$nagtime,$stamp) = &nextArrayRow($sth);
+	$restamp = $stamp;
+	my ($uid,$message) = split ",",&decode64($nag);
+	&sendNotification($dbh,"Boardspace.net game reminder",$uid,$message);
+	}
+	&finishQuery($sth);
+	my $qrestamp = $dbh->quote($restamp);
+	&commandQuery($dbh,"update offlinegame set nagtime=date_add(nagtime,interval 1 day) where nag is not null and nagtime<$qrestamp and status='active' limit $orows");
+	}
+}
+
+sub sendNotifications()
 {	my ($dbh) = @_;
 	my $idx = 0;
+
 	#print "send not\n";
+
 	while(1)
 	 {
 	  my $notification = &param("notification$idx");
@@ -378,18 +434,7 @@ sub sendNotifications($dbh)
 	  if(!$notification) { return; }
 	  $idx++;
 	  my ($uid,$message) = split ",",&decode64($notification);
-	#print "not u=$uid m=$message\n";
-	  my $quid = $dbh->quote($uid);
-	  my $q = "select player_name,e_mail,discorduid from players where uid=$quid";
-	  my $sth = &query($dbh,$q);
-	  my $nr = &numRows($sth);
-          #print "Q $nr $q\n";
-	  if($nr==1)
-	  {
-	   my ($player_name,$e_mail,$discord) = &nextArrayRow($sth);
-	  &send_silent_notification($player_name,"Boardspace.net game activity",$'from_email,$e_mail,$discord,$message);
-	  }
-	  &finishQuery($sth);
+	  &sendNotification($dbh,"Boardspace.net game activity",$uid,$message);
 	}
 }
 
@@ -426,6 +471,7 @@ if( param() )
 		{
 		if('login' eq $tagname) 
 			{ my $uid = &logon($dbh,$pname,$passwd); 
+			  if($uid>0) { &sendNags($dbh); }
 			  $msg = "uid $uid\n";
 			}
 		elsif('checkname' eq $tagname) { $msg = &getPlayerUid($dbh,$pname); }

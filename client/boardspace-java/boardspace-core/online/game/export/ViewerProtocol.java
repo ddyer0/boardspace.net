@@ -158,7 +158,7 @@ public interface ViewerProtocol extends ViewGameProtocol
      * return true if the game is currently in "all play" mode.  This is used internally
      * for things such as marking the "current" player, and in communication with robots.    
      */
-    public boolean simultaneous_turns_allowed();
+    public boolean simultaneousTurnsAllowed();
 
     /**
      * this is called when the window will be closing, and should trigger 

@@ -231,6 +231,10 @@ public interface BoardProtocol extends Digestable
 	public String getName();
 	public void setName(String s);
 	public BoardState getState();
+	public boolean simultaneousTurnsAllowed();
+	public boolean simultaneousTurnsAllowed(BoardState state);
+	public void setSimultaneousTurnsAllowed(boolean v);
+	
 	public boolean canResign();
 	
 	/**

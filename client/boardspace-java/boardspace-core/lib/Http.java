@@ -150,7 +150,7 @@ public class Http implements Config {
     			{	// these are the cases where there was a controlled error, reported 
     				// through the expected and controlled mechanisms. and it's intended
     				// that the user sees something about it.
-    				result.error = msg;
+    				result.error = result.text;
     			}
     		}
     		}

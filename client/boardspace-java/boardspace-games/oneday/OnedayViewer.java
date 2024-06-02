@@ -1142,7 +1142,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
             		vstate==OnedayState.Gameover
             			?simpleGameOverMessage(gb)
             			:s.get(vstate.getDescription()),
-            				vstate!=OnedayState.Puzzle && !vstate.simultaneousTurnsAllowed(),
+            				vstate!=OnedayState.Puzzle && !gb.simultaneousTurnsAllowed(vstate),
             				gb.whoseTurn,
             				stateRect);
              goalAndProgressMessage(gc,ourSelect,Color.white,

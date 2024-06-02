@@ -373,6 +373,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         //useDirectDrawing(!G.isAndroid());
         if(G.debug()) { useDirectDrawing(true); }
         doInit(false);
+        if(reviewOnly || isTurnBasedGame()) { setSimultaneousTurnsAllowed(false); }
         adjustPlayers(players_in_game);
         ready = true;
         Plog.log.addLog("init finished");
@@ -6644,7 +6645,7 @@ private void drawPlayerBoard(Graphics gc,
   	Text stateText = TextChunk.colorize(stateMessage, s, gameMoveText());
  	standardGameMessage(gc,0,Color.black,
  			stateText,
-  					(uistate!=ViticultureState.Puzzle)&&!simultaneous_turns_allowed(),
+  					(uistate!=ViticultureState.Puzzle)&&!simultaneousTurnsAllowed(),
   					mainBoard.whoseTurn,
   					stateR);
   	String name = prettyName(index);
@@ -6687,7 +6688,7 @@ private void drawPlayerBoard(Graphics gc,
   	// flush them.  This can occur if there is a realtime race between confirming
   	// the setup and the other player changing his mind about the setup.
   	//
-  	if(!mainBoard.getState().simultaneousTurnsAllowed()
+  	if(!mainBoard.simultaneousTurnsAllowed()
   		&& m.isEphemeral()) 
   		{ return true;
   		}
@@ -6709,7 +6710,7 @@ private void drawPlayerBoard(Graphics gc,
 	  return null;
   }
   public void updatePlayerTime(long inc,commonPlayer p)
-  {	if(!reviewMode() && simultaneous_turns_allowed()) {}
+  {	if(!reviewMode() && simultaneousTurnsAllowed()) {}
   	else { super.updatePlayerTime(inc,p); }
   }
 }

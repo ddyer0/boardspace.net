@@ -186,7 +186,7 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	 
     public void runAsyncRobots()
     {	
-       	if(simultaneous_turns_allowed())
+       	if(simultaneousTurnsAllowed())
     	{
     		{
     		for(commonPlayer pp : players)
@@ -197,7 +197,7 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     	}
     }
     public void startRobotTurn(commonPlayer pp)
-    {	if(!reviewMode() && (simultaneous_turns_allowed() || (bb.whoseTurn==pp.boardIndex)))
+    {	if(!reviewMode() && (simultaneousTurnsAllowed() || (bb.whoseTurn==pp.boardIndex)))
     	{
     	super.startRobotTurn(pp);
     	}
@@ -495,7 +495,7 @@ private Color playerBackground[] = {
         bb.doInit(bb.gametype);						// initialize the board
         if(!preserve_history) { adjustPlayers(bb.nPlayers()); }	// adjust players causes hidden connections to reset
         bb.activePlayer = getActivePlayer().boardIndex;
-        if(reviewOnly) { bb.setSimultaneousPlay(false); }
+        if(reviewOnly  || isTurnBasedGame()) { setSimultaneousTurnsAllowed(false); }
         if(!preserve_history)
     	{ // must be start p0, we use the cycle of players to determine when all the players have chosen recruits.
         	PerformAndTransmit(reviewOnly?EDIT:"Start P0", false,replayMode.Replay);
@@ -522,7 +522,7 @@ private Color playerBackground[] = {
      * @param p the current player, normally the player to update.
      */
     public void updatePlayerTime(long inc,commonPlayer p)
-    {	if(simultaneous_turns_allowed())
+    {	if(simultaneousTurnsAllowed())
     	{
     		for(commonPlayer pl : players)
     		{
@@ -661,7 +661,7 @@ private Color playerBackground[] = {
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	if(simultaneous_turns_allowed() && (obj!=getMovingObject(null))) { return; }
+    	if(simultaneousTurnsAllowed() && (obj!=getMovingObject(null))) { return; }
     	EuphoriaBoard gb = disB(g);
     	EuphoriaCell src = gb.getSource();
     	int scale0 = src!=null ? src.defaultScale : 0;
@@ -1316,7 +1316,7 @@ private Color playerBackground[] = {
          			&& p.hasReducedRecruits()
          			// added 10/2/2023, don't allow peeking at other players recruits when they
          			// have decided but we're still in the selection phase
-         			&& ((p.boardIndex==getActivePlayer().boardIndex) || !simultaneous_turns_allowed())
+         			&& ((p.boardIndex==getActivePlayer().boardIndex) || !simultaneousTurnsAllowed())
          			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.activeRecruits;
@@ -1783,7 +1783,7 @@ private Color playerBackground[] = {
     private int selectedRecruitPlayer(EuphoriaBoard gb)
     {
     	return ( (G.offline()||reviewOnly)
-    				? (simultaneous_turns_allowed() ? gb.recruitPlayer : gb.whoseTurn)
+    				? (simultaneousTurnsAllowed() ? gb.recruitPlayer : gb.whoseTurn)
     				: getActivePlayer().boardIndex
     				);
     }
@@ -2446,7 +2446,7 @@ private Color playerBackground[] = {
     }
     private boolean useRecruitGui(EuphoriaState state,EuphoriaBoard gb)
     {
-        boolean simultaneous = !isSpectator() && state.simultaneousTurnsAllowed();
+        boolean simultaneous = !isSpectator() && gb.simultaneousTurnsAllowed(state);
         int pl = selectedRecruitPlayer(gb);
         boolean ourMove = OurMove() || simultaneous;
  
@@ -2527,7 +2527,7 @@ private Color playerBackground[] = {
        // if it is not our move, we can't click on the board or related supplies.
        // we accomplish this by suppressing the highlight pointer.
        //
-       boolean simultaneous = !reviewMode() && !isSpectator() && state.simultaneousTurnsAllowed();
+       boolean simultaneous = !reviewMode() && !isSpectator() && gb.simultaneousTurnsAllowed(state);
        boolean ourMove = OurMove() || simultaneous;
        boolean recruitGui = useRecruitGui(gb.getState(),gb);
        boolean recruitOverlay = globalRecruits!=null;
@@ -2542,7 +2542,7 @@ private Color playerBackground[] = {
        // player as "to move" in the prompts, and if the GUI cared the actual moves
        // display would become confused.
        //
-       int whoseMove = (simultaneous_turns_allowed())
+       int whoseMove = (simultaneousTurnsAllowed())
 				? getActivePlayer().boardIndex
 				: gb.whoseTurn;;
        //
@@ -2689,7 +2689,7 @@ private Color playerBackground[] = {
             		messageRotation,
             		Color.black,
             		tmsg,
-          				state!=EuphoriaState.Puzzle && !state.simultaneousTurnsAllowed(),
+          				state!=EuphoriaState.Puzzle && !gb.simultaneousTurnsAllowed(state),
           				whoseMove,
           				stateRect);
             EuphoriaChip.getAuthority(cp.color).drawChip(gc,this,iconRect,null);
@@ -2940,8 +2940,8 @@ private Color playerBackground[] = {
     private void doDrop(EuphoriaCell target,replayMode replay)
     {
  		EuphoriaId rack = target.rackLocation();
- 		EuphoriaState state = bb.getGuiState();
-        boolean simultaneous = state.simultaneousTurnsAllowed();
+		EuphoriaState state = bb.getGuiState();
+		boolean simultaneous = bb.simultaneousTurnsAllowed(state);
         if(bb.pickedObject!=null)
         {
  		PerformAndTransmit((rack.perPlayer
@@ -2970,7 +2970,7 @@ private Color playerBackground[] = {
         else if(mov<0)
         {  EuphoriaCell hitCell = bb.getCell(hitCell(hp));
            EuphoriaState state = bb.getGuiState();
-           boolean simultaneous = simultaneous_turns_allowed();
+           boolean simultaneous = simultaneousTurnsAllowed();
            boolean isDest = bb.isDest(hitCell);
            if(hitCell.topChip()!=null)
            {
@@ -3024,7 +3024,7 @@ private Color playerBackground[] = {
             		break;
         		default:
         		{
-        	        boolean simultaneous = state.simultaneousTurnsAllowed();
+        	        boolean simultaneous = bb.simultaneousTurnsAllowed(state);
         	        Hashtable<EuphoriaCell,EuphoriaMovespec>dests =  bb.getDests(simultaneous 
         	        			? getActivePlayer().boardIndex : bb.whoseTurn);
 		            if(dests.size()==1)
@@ -3042,7 +3042,7 @@ private Color playerBackground[] = {
      }
     private boolean activeReset = false;
     public void performReset()
-    {	if(simultaneous_turns_allowed()) 
+    {	if(simultaneousTurnsAllowed()) 
     		{ 
         	activeReset = true;
         	if(reviewMode()) { scrollFarForward(); }
@@ -3165,7 +3165,7 @@ private Color playerBackground[] = {
 					bigChip = null;
 					if((rack==EuphoriaId.ShowPlayerPeek)
 							&& !reviewMode()
-							&& !simultaneous_turns_allowed()
+							&& !simultaneousTurnsAllowed()
 							&& ourActiveMove()
 							) 
 						{
@@ -3212,7 +3212,7 @@ private Color playerBackground[] = {
 			}
 			else if(getMovingObject(hp)>=0)
 			{
-		        boolean simultaneous = simultaneous_turns_allowed();
+		        boolean simultaneous = simultaneousTurnsAllowed();
 		        EuphoriaCell hitObject = bb.getCell(hitCell(hp));
 		        if(simultaneous)
 		        {
@@ -3309,7 +3309,7 @@ private Color playerBackground[] = {
     public void ViewerRun(int wait)
     {
         super.ViewerRun(wait);
-        if(simultaneous_turns_allowed())
+        if(simultaneousTurnsAllowed())
         { if(! startSynchronousPlay())
         	{
         	runAsyncRobots();
@@ -3514,13 +3514,13 @@ private Color playerBackground[] = {
     	
     	GC.setFont(gc,efont);
     	Text tmsg = colorize(msg);
-        standardGameMessage(gc,0,Color.black,
+		boolean simul = bb.simultaneousTurnsAllowed(state);
+		standardGameMessage(gc,0,Color.black,
         		tmsg,
-      				state!=EuphoriaState.Puzzle && !state.simultaneousTurnsAllowed(),
+      				state!=EuphoriaState.Puzzle && !simul,
       					who,
         				stateRect);
-		boolean simul = state.simultaneousTurnsAllowed();
-    	if(!doneSelect && (who==index || simul))
+		if(!doneSelect && (who==index || simul))
     	{	switch(state)
     		{
     		default:

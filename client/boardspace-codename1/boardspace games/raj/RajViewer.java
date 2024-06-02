@@ -293,15 +293,12 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         }
         return(val);
     }
-    public Text censoredMoveText(SequenceElement sp,int idx)
-    {	return censoredMoveText((commonMove) sp,idx);
-    }
-    public Text censoredMoveText(commonMove sp,int idx)
+    public Text censoredMoveText(SequenceElement sp,int index)
     {
     	commonMove last = History.top();
     	String mv = last.getSliderNumString();
     	String spnum = sp.getSliderNumString();
-    	boolean censor = mv.equals(spnum) && (sp.op!=MOVE_AWARD);
+    	boolean censor = mv.equals(spnum) && (((commonMove)sp).op!=MOVE_AWARD);
     	Rajmovespec spc = (Rajmovespec)sp;
     	return(TextChunk.create(spc.shortMoveString(censor)));
      }
@@ -638,7 +635,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
   
  
         // draw the avatars
-    	int activePl = (simultaneous_turns_allowed())
+    	int activePl = (simultaneousTurnsAllowed())
     								? getActivePlayer().boardIndex
     								: gb.whoseTurn;
     								
@@ -665,7 +662,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     {	if(SIMULTANEOUS_PLAY)
     	{
     	BoardState st = reviewMode()?History.pre_review_state:bb.getState();
-    	if(st.simultaneousTurnsAllowed())
+    	if(bb.simultaneousTurnsAllowed(st))
     	{
     		for(commonPlayer pl : players)
     		{
@@ -764,7 +761,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
        case PlayerCards:
        case PlayerDiscards:
     	{
-	    	boolean simultaneous = simultaneous_turns_allowed();
+	    	boolean simultaneous = simultaneousTurnsAllowed();
 	    	if(remoteIndex>=0)
 	    	{	
 	    		int cx = hp.hit_index;
@@ -798,7 +795,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 	    	break;
 	    case BoardLocation:
 	    	{	RajChip obj = hitCell.topChip();
-	    	if(obj.isCard() && (G.offline() || (simultaneous_turns_allowed())))
+	    	if(obj.isCard() && (G.offline() || (simultaneousTurnsAllowed())))
 	    	{	int ord = bb.playerOwning(obj.cardColor());
 	    		bb.setMyIndex(ord,true);  
 	    		if(remoteIndex>=0)
@@ -836,7 +833,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     		else if((id==DefaultId.HitNoWhere)
     			&& !isSpectator() 
     			&& !G.offline() 
-    			&& simultaneous_turns_allowed())
+    			&& simultaneousTurnsAllowed())
     		{
     			String dn = bb.unDropMove();
     			if(dn!=null) { PerformAndTransmit(dn); }
@@ -867,7 +864,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 				case CONFIRM_STATE:
 				case PLAY_STATE:
 				case PUZZLE_STATE:
-					if(movingObject.isCard() && simultaneous_turns_allowed() )
+					if(movingObject.isCard() && simultaneousTurnsAllowed() )
 					{
 						PerformAndTransmit("edropb "+ bb.playerOwning(movingObject.cardColor())+" "+hitObject.col+" "+hitObject.row);
 					}
@@ -886,7 +883,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         	else
         	{
         	int cx = hp.hit_index;
-        	String op = (simultaneous_turns_allowed()) ? ("edrop "+(hitObject.col-'A')+" ") : "Drop "; 
+        	String op = (simultaneousTurnsAllowed()) ? ("edrop "+(hitObject.col-'A')+" ") : "Drop "; 
         	PerformAndTransmit(op+ hitCode.shortName+" "+hitObject.col+" "+cx);
         	}}
         	break;
@@ -910,7 +907,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         	if(remoteIndex>=0) {}
         	else
         	{	RajCell hitObject = hitCell(hp);
-        		boolean sim = simultaneous_turns_allowed();
+        		boolean sim = simultaneousTurnsAllowed();
         		int ord = hitObject.col-'A';
         		bb.setMyIndex(ord,true);
         		if(sim)
@@ -980,6 +977,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
+
 
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 

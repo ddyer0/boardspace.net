@@ -557,7 +557,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		
 	}
 
-	public void setEditable() {
+	public void setEditable(boolean always) {
 		
 	}
 
@@ -755,7 +755,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	public boolean processSpareMessage(String cmd, String fullmessage) {
 		return false;
 	}
-	public boolean simultaneous_turns_allowed() {
+	public boolean simultaneousTurnsAllowed() {
 		return false;
 	}
 	public RecordingStrategy gameRecordingMode() {

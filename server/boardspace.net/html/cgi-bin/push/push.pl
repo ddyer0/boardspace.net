@@ -27,7 +27,7 @@ sub send_discord_notification()
           #print "sleep $rem\n";
           usleep($rem*1000); 
         }
-  $'lastdiscord = $now+250;
+  $'lastdiscord = $now+350;
 
   my $webhook = WebService::Discord::Webhook->new( $'webhook );
   $webhook->get();

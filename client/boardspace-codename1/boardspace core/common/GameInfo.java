@@ -46,6 +46,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public static final String PolyominoGames = "Polyomino Games";
 	public boolean hasHiddenInformation = false;
 	public boolean okForPlaytable = true;
+	public boolean okForTurnbased = true;
 	public boolean okForOnline = true;
 	// allow the robot to participate in timed games
 	public boolean robotTimed = false;
@@ -123,6 +124,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		passandplay,// suitable for pass and play mode
 		playtable,	// suitable for playtable
 		multiplayer,	// multiplayer games
+		turnbased,		// suitable for turn based games
 		unranked;		// unranked games
 		
 		}
@@ -252,6 +254,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		return(includedTypes.test(enabled)
 				&& startable
 				&& (groupName!=null)
+				&& (okForTurnbased || !includedTypes.test(ES.turnbased))
 				&& (okForPlaytable || !includedTypes.test(ES.playtable))
 				&& (maxPlayers>=3 || !includedTypes.test(ES.multiplayer))
 				&& (!unrankedOnly || includedTypes.test(ES.unranked))
@@ -434,6 +437,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		GameTimer.hasHiddenInformation = false;
 		GameTimer.okForOnline = false;
 		GameTimer.okForPlaytable = true;
+		GameTimer.okForTurnbased = false;
 		GameTimer.scoringMode = ScoringMode.SM_None;
 		}
 
@@ -556,26 +560,31 @@ synchronized(allGames) {
 			null,false, BlackOverWhite));
 	}
 	{
-	put(new GameInfo(760,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-4",
+	boolean okTurnBased = false;	// not ok for turn based until we handle the preplay synchronously
+	String brules = "/blooms/english/rules.html";
+	String bviewer = "blooms.BloomsViewer";
+	String babout = "about_blooms.html";
+	String bfamily = "Blooms";
+	GameInfo m = put(new GameInfo(760,ES.game,89,"bl",TerritoryGames,bfamily,"Blooms-4",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
-			null,true, RedOverBlue));
-	put(new GameInfo(761,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-5",
+			bviewer,brules,babout,	null,true, RedOverBlue));
+	m.okForTurnbased = okTurnBased;
+	m = put(new GameInfo(761,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
-			null,true, RedOverBlue));
-	put(new GameInfo(762,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-6",
+			bviewer,brules,babout,	null,true, RedOverBlue));
+	m.okForTurnbased = okTurnBased;
+	m = put(new GameInfo(762,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
-			null,true, RedOverBlue));
-	put(new GameInfo(763,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-7",
+			bviewer,brules,babout,	null,true, RedOverBlue));
+	m.okForTurnbased = okTurnBased;
+	m = put(new GameInfo(763,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
-			null,true, RedOverBlue));
+			bviewer,brules,babout,	null,true, RedOverBlue));
+	m.okForTurnbased = okTurnBased;
 	}
 	
 	{
@@ -670,6 +679,7 @@ synchronized(allGames) {
 		// hard to hide, and if I made a compantion window, the main
 		// table would be either irrelevant or an annoyance
 		g.okForPlaytable=false;
+		g.okForTurnbased = true;
 	}
 	// capturing games
 	{ GameInfo g = put(new GameInfo(10,ES.game,85,"TS",CapturingGames,"Tintas","Tintas",
@@ -766,6 +776,7 @@ synchronized(allGames) {
 				
 		String euphoriaViewer =  "euphoria.EuphoriaViewer";
 		String euphoriaVideo = "/euphoria/english/euphoria-video.html";
+		boolean okTurnBased = false;
 		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},
@@ -775,6 +786,7 @@ synchronized(allGames) {
 		 mm.maxPlayers = 6;
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
+		 mm.okForTurnbased = okTurnBased;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 		}
@@ -788,6 +800,7 @@ synchronized(allGames) {
 		 m2.maxPlayers = 6;
 		 m2.groupSortKey = "00041";
 		 m2.hasHiddenInformation = true;
+		 m2.okForTurnbased = okTurnBased;
 		 m2.randomizeFirstPlayer = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 m2.longMessage = mmside;
@@ -803,6 +816,7 @@ synchronized(allGames) {
 		   	m3.maxPlayers = 6;
 		   	m3.groupSortKey = "00042";
 		   	m3.hasHiddenInformation = true;
+		    m3.okForTurnbased = okTurnBased;
 		   	m3.randomizeFirstPlayer = true;
 			 // only requires card concealment for the player cards and hidden recruits
 		   	m3.longMessage = mmside;
@@ -817,6 +831,7 @@ synchronized(allGames) {
 			m3.maxPlayers = 6;
 			m3.groupSortKey = "00043";
 			m3.hasHiddenInformation = true;
+			m3.okForTurnbased = okTurnBased;
 			m3.randomizeFirstPlayer = true;
 			 // only requires card concealment for the player cards and hidden recruits
 			m3.longMessage = mmside;
@@ -840,6 +855,7 @@ synchronized(allGames) {
 	 mm.maxPlayers = 8;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = true;
+	 mm.okForTurnbased = false;
 	 mm.okForPlaytable=false;
 	 mm.longMessage = mmside;
 	}
@@ -869,6 +885,7 @@ synchronized(allGames) {
 		 mm.groupSortKey = "00042";
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
+		 mm.okForTurnbased = false;		// parallel setup
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 
@@ -1419,6 +1436,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
+	 mm.okForTurnbased = false;
 	 mm.okForPlaytable = false;
 
 	}
@@ -1438,6 +1456,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
+	 mm.okForTurnbased = false;
 	 mm.okForPlaytable = false;
 
 	}
@@ -1456,6 +1475,7 @@ synchronized(allGames) {
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
+	 mm.okForTurnbased = false;
 	 mm.hasHiddenInformation = false;
 	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
@@ -1467,6 +1487,7 @@ synchronized(allGames) {
 		 mm.minPlayers = 1;
 		 mm.groupSortKey = "0091";
 		 mm.robotTimed = true;
+		 mm.okForTurnbased = false;
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = false;
 
@@ -1751,7 +1772,9 @@ synchronized(allGames) {
 			Color.yellow,Color.white,Color.green};
 	  String brules = "/breakingaway/english/rules.html";
 	  String bview = "breakingaway.BreakingAwayViewer";
+	  boolean okTurnBased = false;
 	  double bspeed[] = {0.4,0.04};
+	  {
 	  GameInfo mm = put(new GameInfo(320,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway",
 			OneBotPlus,bspeed,
 			bview,brules,"about_breakingaway.html",
@@ -1760,8 +1783,10 @@ synchronized(allGames) {
 	  mm.maxPlayers = 6;
 	  mm.randomizeFirstPlayer = true;
 	  mm.longMessage = "BreakingAwayInfoMessage";
+	  mm.okForTurnbased = okTurnBased;
 	  mm.hasHiddenInformation = true;
-	
+	  }
+	  {
 	  GameInfo m1 = put(new GameInfo(321,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway-ss",
 			OneBotPlus,bspeed,
 			bview,brules,"about_breakingaway.html",
@@ -1769,8 +1794,10 @@ synchronized(allGames) {
 	  m1.minPlayers = 3;
 	  m1.maxPlayers = 6;
 	  m1.randomizeFirstPlayer = true;
+	  m1.okForTurnbased = okTurnBased;
 	  m1.longMessage = "BreakingAwayInfoMessage";
 	  m1.hasHiddenInformation = true;
+	}
 	}
 	{
 	put(new GameInfo(330,ES.game,43,"GK",RacingGames,"Gounki","Gounki",
@@ -2283,6 +2310,7 @@ synchronized(allGames) {
 		 mm.maxPlayers = 5;
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
+		 mm.okForTurnbased = false;
 		 mm.longMessage = "RajInfoMessage";
 		 // needs a companion app for card played
 
@@ -2311,6 +2339,7 @@ synchronized(allGames) {
 	  mm.hasHiddenInformation = true;
 	  mm.alternateName="oneday";
 	  // needs a companion app for your current rack
+	  mm.okForTurnbased = false;
 	  mm.okForPlaytable=false;
 
 	}
@@ -2322,6 +2351,7 @@ synchronized(allGames) {
 			null,false, null));
 	  mm.maxPlayers = 6;
 	  mm.hasHiddenInformation = true;
+	  mm.okForTurnbased = false;
 	  mm.okForPlaytable=false;
 
 	}
@@ -2339,6 +2369,7 @@ synchronized(allGames) {
 				null,true, null));
 	  g.groupSortKey = "01010";	// mutton is first in "other games" menu. This forces other games to be last
 	  g.hasHiddenInformation = true;
+	  g.okForTurnbased = false;
 	  g.okForPlaytable = false;
 	
 	GameInfo m1 = put(new GameInfo(670,ES.game,28,"MU",OtherGames,"Mutton","Mutton-shotgun",
@@ -2347,6 +2378,7 @@ synchronized(allGames) {
 				"mutton.MuttonGameViewer","/mutton/english/rules.htm","about_mutton.html",
 				null,true, null));
 	m1.hasHiddenInformation = true;
+	m1.okForTurnbased = false;
 	m1.okForPlaytable = false;
 	}
 	
@@ -2356,6 +2388,7 @@ synchronized(allGames) {
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
+	 mm.okForTurnbased = false;
 	 mm.longMessage = "PlateauGameInfoMessage";
 	 // needs a compantion app for your played pieces and pool of available pieces
 
@@ -2375,6 +2408,7 @@ synchronized(allGames) {
 	 p.minPlayers = 3;
 	 p.randomizeFirstPlayer = true;
 	 p.hasHiddenInformation = true;
+	 p.okForTurnbased = false;
 	 p.longMessage = "QEInfoMessage";
 	 // needs a companion app for your bid and for inspecting the final bids
 	}

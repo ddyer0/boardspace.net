@@ -173,6 +173,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 		name = "copy "+b.name;
 		players_in_game = b.players_in_game;
 		revision = b.revision;
+		simultaneousTurnsAllowed = b.simultaneousTurnsAllowed;
 		clientRevisionLevel = b.clientRevisionLevel;
 		if(colorMap!=null && (colorMap.length!=b.colorMap.length)) { colorMap = new int[b.colorMap.length]; }
 		if(win.length!=b.win.length) { win = new boolean[b.win.length]; }
@@ -235,7 +236,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 		public boolean Puzzle();
 		public int ordinal();
 		public boolean simultaneousTurnsAllowed();
-		
+
 		public static  final  String[] StateStrings = {
 				ConfirmSwapDescription,
 				GameOverStateDescription,
@@ -433,7 +434,20 @@ public abstract class BaseBoard implements Opcodes,Digestable
 			}
 		return(false);
 	}
-
+	private boolean simultaneousTurnsAllowed = true;
+	
+	public void setSimultaneousTurnsAllowed(boolean v)
+	{
+		simultaneousTurnsAllowed = v;
+	}
+	public boolean simultaneousTurnsAllowed()
+	{
+		return simultaneousTurnsAllowed(getState());
+	}
+	public boolean simultaneousTurnsAllowed(BoardState state)
+	{
+		return simultaneousTurnsAllowed && state.simultaneousTurnsAllowed();
+	}
 	public boolean canResign()
 	{
 		return(players_in_game<=2);

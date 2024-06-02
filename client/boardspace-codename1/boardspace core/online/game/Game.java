@@ -84,7 +84,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private static final String CHATSPECTATOR = "#1 has entered the room";
 
     private static final String CallServerMessage = "Calling server...";
-    private static final String SAVEDMSG = "savedmsg";
     private static final String RobotPlayMessage = "Let The Robot Play";
     private static final String ResumeGameMessage = "the game has resumed";
     private static final String GameSelectorMessage = "Game Selector";
@@ -362,6 +361,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if(G.offline())
         {	if(turnBasedGame!=null)
         		{
+    			recordAsyncGame(true);
         		turnBasedGame.discardGame();
         		}
         		else
@@ -702,7 +702,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	G.Assert(turnBasedGame!=null ? offline : true,"should be offline");
         numberOfPlayerConnections = info.getInt(NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
     	playerConnections = new commonPlayer[playersInGame];
-    	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(MODE,Session.Mode.Game_Mode.modeName));
+    	Session.Mode gameMode = (Session.Mode)sharedInfo.getObj(MODE,Session.Mode.Game_Mode);
         chatOnly = gameMode==Session.Mode.Chat_Mode;
         gameTypeId = info.getString(GAMETYPEID,gameInfo==null ? "xx" : gameInfo.id);
     	my = new commonPlayer(0); 
@@ -4015,7 +4015,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	checkUrlLoaded();
 		if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
     	boolean newturn = SetWhoseTurn();
-    	if(newturn && turnBasedGame!=null) { recordAsyncGame(); }
+    	if(newturn && turnBasedGame!=null && !my.isSpectator()) { recordAsyncGame(false); }
 
     	boolean some = (v!=null) && v.ParseMessage(null, -1);
     	if(some) 
@@ -4216,7 +4216,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     {	
                     	if(!knownEditable)
                     		{knownEditable = true;
-                    		v.setEditable();
+                    		v.setEditable(false);
                     		if(!reviewOnly) 
                     		{ v.setControlToken(false,0); 
                     		  // start with no one has control
@@ -4555,16 +4555,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	OfflineGames.recordOfflineGame(UIDstring,msg);
 		}
     }
-    private void recordAsyncGame()
+    private void recordAsyncGame(boolean forced)
     {
-    	if(turnBasedGame!=null && whoseTurn.uid!=null)
+    	if(turnBasedGame!=null && (whoseTurn.uid!=null) && !my.isSpectator())
     	{
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);
         	//G.print("Fixed "+msg);
         	StringBuilder b = new StringBuilder();
         	theChat.getEncodedContents(b);
-        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString());		
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),forced);		
     	}
     }
     private String serverRecordString(RecordingStrategy mode)
@@ -4704,6 +4704,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	{	StringTokenizer tok = new StringTokenizer("1 "+rec);
     		restoreGame(tok,rec);
     		if(turnBasedGame!=null)
+    		{	if(turnBasedGame.isActive())
     		{
     			// adjust the player time for the game
     			BSDate da = BSDate.parseDate(turnBasedGame.lastTime+ " GMT");
@@ -4714,6 +4715,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			long dif = nowTime-start;
     			commonPlayer who = whoseTurn;
     			v.updatePlayerTime(dif,who);
+    		}
+    		else {
+    			v.setEditable(true);
+    		}
     		}
     	}
     	// move on to the playing state even if no restoration
@@ -4960,7 +4965,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {PlayForMessage, "play for #1"},//play for a player who has quit.  #1 is a player name
         {RequestJointReview,
         "#1 requests Joint review.  Please select \"Joint Review\" in the messages menu"},
-        {SAVEDMSG, "Game saved as #1"}, //announce saved game
         {LaunchFailedMessage,"The other player didn't start properly"},
 	};
 

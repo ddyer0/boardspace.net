@@ -164,8 +164,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     private StateStack stateStack = new StateStack();
     boolean asyncPlay = ALLOW_ASYNC_PLAY;
     boolean reinitAsyncPlay = ALLOW_ASYNC_PLAY;
-    public void setSimultaneousPlay(boolean val)
-    {
+    public void setSimultaneousTurnsAllowed(boolean val)
+    {	super.setSimultaneousTurnsAllowed(val);
     	asyncPlay = reinitAsyncPlay = val;
     }
     public MagnetChip lastDroppedObject = null;	// for image adjustment logic

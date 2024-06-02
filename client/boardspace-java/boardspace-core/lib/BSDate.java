@@ -190,7 +190,7 @@ public class BSDate extends java.util.Date
 		String nextTok = null;
 		String prevstr = " ";
 		String meridian = "";
-		String timezone = "";
+		String timezone = null;
 		do
 		{	prevstr = str;
 			if(nextTok!=null) { str = nextTok; nextTok = null; }
@@ -212,6 +212,7 @@ public class BSDate extends java.util.Date
 					{ 	
 						month = str; 
 					}
+			else if(year!=null && (month==null) && isMonthNumber(str)) { month = months[G.IntToken(str)-1]; }
 			else if(day==null && isDayNumber(str)) { day = ""+G.IntToken(str); }	// day as a number for sure, integerized and reprinted
 			else if(month==null && isMonthNumber(str))				// month as a number or a day number
 				{ month = months[G.IntToken(str)-1]; 
@@ -240,7 +241,11 @@ public class BSDate extends java.util.Date
 			{
 				dateformat += " a";
 			}
+			if(timezone!=null) { dateformat += " zzz"; }
+			else { timezone = ""; }
 			SimpleDateFormat sd = new SimpleDateFormat(dateformat,Locale.ENGLISH);
+			// at the end of our ad-hoc parsing, construct a completely predictable date/time
+			// and feed it to the system parser 
 			String datestr = year+" "+month.substring(0,3)+" "+((day.length()==2)?day:("0"+day))
 					+ " "+hour + ":" + minute+":"+second+meridian+timezone;
 			

@@ -71,6 +71,8 @@ import lib.TextContainer;
 import lib.Toggle;
 import lib.Tokenizer;
 import lib.UrlResult;
+import lib.XFrame;
+import lib.commonPanel;
 import lib.exCanvas;
 import online.common.Session.PlayMode;
 import util.PasswordCollector;
@@ -119,6 +121,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String LAST = "last";
 	static final String BODY = "body";
 	static final String CHAT = "chat";
+	static final String NAG = "nag";
+	static final String NAGTIME = "nagtime";
 	static final String GAMENAME = "gamename";
 	static final String GAMEUID = "gameuid";
 	static final String UID = "uid";
@@ -135,6 +139,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String WHOSETURN = "whoseturn";
 	static final String STATUS = "status";
 	static final String USERS = "users";
+	static final String ERROR = "error";
+	static final String SAVEDAS = "savedas";
 	
 	// status of offline games.  Note that these names are shared with the back end script
 	enum AsyncStatus { setup, active, complete,canceled };
@@ -255,7 +261,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	//
 		private void parseUidResult(UrlResult res)
 	{
-		if(res.error!=null) { G.infoBox("Error ",res.error); }
+			if(res.error!=null) { G.infoBox(s.get(ErrorCaption) ,res.error); }
 		else {
 			Tokenizer tok = new Tokenizer(res.text);
 			while(tok.hasMoreElements())
@@ -365,6 +371,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			top += lineH;
 			
 			GC.Text(gc,false,left,top,promptW,lineH,Color.black,null,s.get(TurnBasedViewer.InvitedPlayersMessage));
+			{
 			int l = left+promptW+hSpace;
 			int l0 = l;
 			
@@ -376,7 +383,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			if(allowOtherPlayers 
 					&& loggedIn)
 			{	
-				potentialPlayers.pushNew(loggedinUid);
+				potentialPlayers.pushNew(loggedInUid);
 			}
 				
 			int playerW = G.Width(invitedPlayersRect);
@@ -384,29 +391,33 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			{	int uid = potentialPlayers.elementAt(i);
 				String name = users.getName(uid);
 				boolean accepted = acceptedPlayers.contains(uid);
-				boolean canUnaccept = (status==AsyncStatus.setup || status==AsyncStatus.canceled);
+				boolean canchange = (status==AsyncStatus.setup || status==AsyncStatus.canceled);
 				String help = uid==owner 
 								? s.get(CancelGameMessage) 
 								: accepted ?  s.get(RemovePlayerMessage) : s.get(NotAcceptedMessage);
-				AsyncId id = uid==owner 
-							? uid==loggedinUid ? AsyncId.Cancel : null 
-							: uid==loggedinUid ? AsyncId.Accept : null;
+				AsyncId id = accepted ? AsyncId.Cancel : AsyncId.Accept;
 				
 				if(i!=0)
 					{ if(i%3==0) { top += lineH; l = l0; }
 					  else { l += playerW; }
 					}
-
-				if(drawPlayerBox(gc,pt,canUnaccept ? id : null,help,
+				if(drawPlayerBox(gc,pt,canchange
+										// you should always be able to add or remove yourself
+										// owner can remove anyone but not accept anyone else
+										&& ((uid==loggedInUid) || 
+												(accepted && (loggedInUid==owner)))
+											? id 
+											: null,help,
 					  l,top,playerW,lineH,
 					  accepted 
 					  	? StockArt.FancyCheckBox 
 					  	: StockArt.FancyEmptyBox,name,i))
 				{
 					hitCode =id;
+					pt.hit_index = uid;	// unconventional
 				}
 			}
-
+			}
 			top += lineH;
 
 			GC.Text(gc,false,left,top,w,lineH,Color.black,null,comments);
@@ -421,8 +432,14 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			case active:
 				{
 				String msg = s.get(ToMoveMessage,uids.getName(whoseturn));
-				GC.Text(gc,false,left+buttonW+hSpace,top,buttonW,lineH,Color.blue,null,msg);
-				button = (whoseturn==loggedinUid) ? MoveMessage : ViewGameMessage;
+				int l = left+buttonW+hSpace;
+				GC.Text(gc,false,l,top,buttonW,lineH,Color.blue,null,msg);
+				button = (whoseturn==loggedInUid) ? MoveMessage : ViewGameMessage;
+				BSDate last= new BSDate(lastTime+" GMT");
+				long late = G.Date()-last.getTime();
+				String el = G.timeString(late);
+				GC.Text(gc,false,l+buttonW+hSpace,top,buttonW,lineH,Color.black,null,el);
+				
 				}
 				// fall through
 			case complete:
@@ -435,7 +452,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				break;
 			case setup:
 				{
-				if((owner==loggedinUid) && (acceptedPlayers.size()>=game.minPlayers))
+				if((owner==loggedInUid) && (acceptedPlayers.size()>=game.minPlayers))
 				{
 					if(GC.handleSquareButton(gc,new Rectangle(left,top,buttonW,lineH),pt,s.get(StartGameMessage),Color.white,Color.lightGray))
 						{
@@ -460,7 +477,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		Session sess = new Session(1);
 		public void launchGame()
 		{	
-			G.print("open "+this);
 			getBody();	/// get started now
 			sess.password = "start";
 			sess.seedValue = new Random().nextInt();
@@ -487,12 +503,13 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			sess.selectedFirstPlayerIndex = 0;
 			sess.launchUser = sess.startingPlayer = lusers.elementAt(0);
 			sess.launchUsers = lusers.toArray();
-			sess.setCurrentGame(game, false,isPassAndPlay());
+			sess.setCurrentGame(game, false,false,false);
 			sess.turnBasedGame = this;
 			sess.startingName = sess.launchName(null,true);
-			sess.spectator = whoseturn!=loggedinUid;
+			sess.spectator = (whoseturn!=loggedInUid) || (status!=AsyncStatus.active);
 			sess.startingNplayers = lusers.size();
 			sess.seedValue = new Random(gameuid).nextInt();
+			sess.mode = playMode.sessionMode;
 			User players[] = new User[sess.players.length];
 			AR.copy(players,sess.players);
 			
@@ -521,7 +538,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			case youfirst:
 				players = new IStack();
 				players.copyFrom(acceptedPlayers);
-				players.removeValue(owner,false);
+				players.removeValue(owner,true);
 			case random:
 				int idx =  new Random().nextInt(players.size());
 				who = acceptedPlayers.elementAt(idx);
@@ -540,7 +557,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				pendingNotifications.push(message);
 			}
 					
-			updateGame("status",AsyncStatus.active.name(),"whoseturn",""+who);
+			updateGame(STATUS,AsyncStatus.active.name(),
+						WHOSETURN,""+who,
+						NAG,notificationMessage(whoseturn,YourTurnMessage),
+						NAGTIME,""+speed.firstNag
+					);
 		}
 		
 		private UrlResult bodyResult = null;
@@ -575,7 +596,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		private void parseBodyResult(UrlResult res)
 		{
-			if(res.error!=null) { G.infoBox("Error ",res.error); }
+			if(res.error!=null) { G.infoBox(s.get(ErrorCaption),res.error); }
 			else
 			{
 				Tokenizer tok = new Tokenizer(res.text);
@@ -613,6 +634,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			return TurnBasedViewer.this.notificationMessage(who,gameuid,variation,message);
 		}
 				
+		
 		/**
 		 * this is called from the game when a move has been made
 		 * 
@@ -620,15 +642,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 * @param b
 		 * @param c
 		 */
-		public void setBody(int who,String b,String c)
+		public void setBody(int who,String b,String c,boolean forced)
 		{	G.Assert(loggedIn && acceptedPlayers.contains(who),"incorrect whoseTurn %s",who);
-			if(whoseturn!=who)
+			if(forced || whoseturn!=who)
 			{
 			whoseturn = who;
 			body = b;
 			chat = c;
 			String message = notificationMessage(whoseturn,s.get(YourTurnMessage));
-			updateGame("whoseturn",""+who,BODY,Base64.encodeSimple(b),CHAT,Base64.encodeSimple(c),
+			updateGame(WHOSETURN,""+who,
+					BODY,Base64.encodeSimple(b),
+					CHAT,Base64.encodeSimple(c),
+					NAG,message,
+					NAGTIME,""+speed.firstNag,
 					NOTIFICATION+0,message);	
 			}
 		}
@@ -656,12 +682,15 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		public void recordGame(String name,String body)
 		{
 			StringBuilder b = new StringBuilder();
+			 comments = s.get(SAVEDMSG,name);
 			 G.append(b,versionParameter,
-					 "&"+TAGNAME+"=recordgame",
-					 "&",PNAME,"=",
-					 "&",PASSWORD,"=",Http.encodeEntities(passwordName.getText()),
+					 "&",TAGNAME,"=recordgame",
+					 "&",PNAME,"=",Http.encodeEntities(loggedInPname),
+					 "&",PASSWORD,"=",Http.encodeEntities(loggedInPassword),
 					 "&",DIRECTORY,"=",game.dirNum,
 					 "&",GAMENAME,"=",name,
+					 "&",GAMEUID,"=",gameuid,
+					 "&",COMMENTS,"=",Base64.encodeSimple(comments),
 			 		 "&",BODY,"=",Base64.encodeSimple(body));
 			 appendNotifications(b);
 			 saveGameResult = Http.postAsyncEncryptedURL(Http.getHostName(),getTurnbasedURL,
@@ -674,10 +703,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 			for(int i=0;i<acceptedPlayers.size();i++)
 			{
-				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),EndedMessage));	
+				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),s.get(EndedMessage)));	
 			}
 			
-			updateGame("status",AsyncStatus.complete.name());	
+			updateGame(STATUS,AsyncStatus.complete.name());	
 		}
 		
 		private UrlResult updateGameResult = null;
@@ -704,8 +733,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 StringBuilder b = new StringBuilder();
 			 G.append(b,versionParameter,
 					 "&",TAGNAME,"=creategame",			 
-					 "&",PNAME,"=",Http.encodeEntities(loginName.getText()),
-					 "&",PASSWORD,"=",Http.encodeEntities(passwordName.getText()),
+					 "&",PNAME,"=",Http.encodeEntities(loggedInPname),
+					 "&",PASSWORD,"=",Http.encodeEntities(loggedInPassword),
 					 "&",GAMEUID,"=",gameuid);
 			 
 			 for(int i=0;i<params.length;i+=2)
@@ -732,19 +761,20 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				break;
 			case Accept:
 				boolean remove = false;
-				if(acceptedPlayers.contains(loggedinUid))
+				if(acceptedPlayers.contains(loggedInUid))
 						{	remove = true;
-							acceptedPlayers.removeValue(loggedinUid,false);
+							acceptedPlayers.removeValue(loggedInUid,true);
 						}
 				else {
-					acceptedPlayers.pushNew(loggedinUid);
+					acceptedPlayers.pushNew(loggedInUid);
+					if(loggedInUid==owner) { status = AsyncStatus.setup; }
 				}
 				allowOtherPlayers = (acceptedPlayers.size()<game.maxPlayers);
-				
-				String message = notificationMessage(owner,
-						s.get(remove ? DeclinedMessage : AcceptedMessage,uids.getName(loggedinUid)));
+				String mess = s.get(remove ? DeclinedMessage : AcceptedMessage,uids.getName(loggedInUid));
+				String message = notificationMessage(owner,mess);
 				pendingNotifications.push(message);
 				updateGame(
+						STATUS,status.name(),
 							ACCEPTEDPLAYERS,playersList(acceptedPlayers),
 							ALLOWOTHERPLAYERS,allowOtherPlayers?"true":"false");
 				break;
@@ -753,8 +783,17 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				switch(status)
 				{
 				case setup: 
-					status = AsyncStatus.canceled;
-					acceptedPlayers.removeValue(owner,false);
+					{
+					int toRemove = hp.hit_index;	// unconventional use of hit_index
+					if(toRemove==owner) { status = AsyncStatus.canceled; }
+					else {
+						pendingNotifications.push(notificationMessage(toRemove,s.get(RemovedMessage)));
+					}
+					acceptedPlayers.removeValue(toRemove,true);
+					for(int i=0,lim=acceptedPlayers.size();i<lim;i++)
+					{	// if players had accepted, notify them of the cancellation
+						pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),s.get(CancelledMessage)));
+					}}
 					break;
 				case canceled:
 					status = AsyncStatus.setup;
@@ -762,17 +801,17 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					break;
 				default: G.Error("not expecting %s",status);
 				}
-				for(int i=0,lim=acceptedPlayers.size();i<lim;i++)
-				{
-					pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),CancelledMessage));
-				}
 				updateGame(ACCEPTEDPLAYERS,playersList(acceptedPlayers),
-						"status",status.name());
+						STATUS,status.name());
 				}
 
 				break;
 			default: G.Error("Hitcode %s not handled",hitCode);
 			}
+		}
+
+		public boolean isActive() {
+			return (status==AsyncStatus.active);
 		}
 
 	
@@ -806,7 +845,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		//
 		private void parseResult(UrlResult res)
 		{	clear();
-			if(res.error!=null) { G.infoBox("Error ",res.error); }
+			if(res.error!=null) { G.infoBox(s.get(ErrorCaption),res.error); }
 			else
 			{
 				Tokenizer tok = new Tokenizer(res.text);
@@ -1122,7 +1161,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			addButton(s.get(GamesMessage),TurnId.OldGame,s.get(GamesHelp),buttonHighlightColor,buttonBackgroundColor,buttonEmptyColor);
 
 
-	private TextButton doneButton = addButton(s.get("Create the game"),TurnId.PlayNow,s.get("Create the game"),
+	private TextButton doneButton = addButton(s.get(CreateGameMessage),TurnId.PlayNow,s.get(CreateGameMessage),
 			buttonHighlightColor, buttonBackgroundColor);
 	
 	private TextButton onlineButton = addButton(s.get(PlayOnlineMessage),TurnId.PlayOnline,PlayOnlineExplanation,
@@ -1135,7 +1174,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					   buttonHighlightColor, buttonBackgroundColor);
 
 
-	boolean loggedIn = false;	// true if the current login name and password are valid
+	boolean loggedIn = false;	// true if the current login name and loggedInPassword are valid
 	private TextContainer loginName = new TextContainer(TurnId.LoginName);
 	private TextContainer passwordName = new TextContainer(TurnId.PasswordName); 
 	private TextContainer commentRect = new TextContainer(TurnId.SetComment);
@@ -1214,8 +1253,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		Filters.MyGames.button.toggle();
 		
         painter.drawLockRequired = false;
-        sess.setMode(Session.Mode.Game_Mode,isPassAndPlay());
-        sess.setCurrentGame(GameInfo.firstGame,false,isPassAndPlay());
+        sess.setMode(Session.Mode.Game_Mode,false,true);
+        sess.setCurrentGame(GameInfo.firstGame,false,false,true);
         if(G.debug()) {
         	GameInfo.putStrings();
         }
@@ -1423,7 +1462,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		sess.selectedFirstPlayerIndex = firstPlayerIndex;
 		sess.launchUser = null;
 		sess.launchUsers = null;
-		sess.setCurrentGame(selectedVariant, false,isPassAndPlay());
+		sess.setCurrentGame(selectedVariant, false,false,true);
 		sess.setPlayMode(selectedPlayMode);
 		sess.startingName = sess.launchName(null,true);
 	}
@@ -1461,25 +1500,25 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	
 	public void createTheGame()
 	{	 StringBuilder invited = new StringBuilder("|");
-		 G.append(invited,loggedinUid,"|");
+		 G.append(invited,loggedInUid,"|");
 		 String accepted = invited.toString();
 		 for(int i=0;i<invitedPlayers.size(); i++) { G.append(invited,invitedPlayers.elementAt(i).channel(),"|"); }
 
 		 StringBuilder b = new StringBuilder();
 		 G.append(b,
 				 versionParameter,
-				 "&"+TAGNAME+"=creategame",
-				 "&",PNAME,"=",loginName.getText(),
-				 "&"+PASSWORD+"=",passwordName.getText(),
-				 "&",OWNER,"=",loggedinUid,	// this had better correspond to pname+password
+				 "&",TAGNAME,"=creategame",
+				 "&",PNAME,"=",Http.encodeEntities(loggedInPname),
+				 "&",PASSWORD,"=",Http.encodeEntities(loggedInPassword),
+				 "&",OWNER,"=",loggedInUid,	// this had better correspond to loggedInPname+loggedInPassword
 				 "&",ALLOWOTHERPLAYERS, "=",allowOtherChoiceButton.isOn(),
 				 "&",INVITEDPLAYERS,"=",invited.toString(),
 				 "&",ACCEPTEDPLAYERS,"=",accepted,
-				 "&"+VARIATION+"=",selectedVariant.variationName,
-				 "&"+PLAYMODE+"=",selectedPlayMode,
-				 "&"+COMMENTS+"=",Base64.encodeSimple(commentRect.getText()),
-				 "&"+TFIRSTPLAYER+"=",FirstPlayer.firstChoice,
-				 "&"+SPEED+"=",PlaySpeed.currentSpeed);
+				 "&",VARIATION,"=",selectedVariant.variationName,
+				 "&",PLAYMODE,"=",selectedPlayMode,
+				 "&",COMMENTS,"=",Base64.encodeSimple(commentRect.getText()),
+				 "&",TFIRSTPLAYER,"=",FirstPlayer.firstChoice,
+				 "&",SPEED,"=",PlaySpeed.currentSpeed);
 		 
 
 		 UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
@@ -1543,7 +1582,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				invitedPlayers.remove(hp.hit_index,true);
 				break;
 			case SelectGame:
-				sess.changeGameType(this,G.Left(hp),G.Top(hp),G.debug(),newGameMode ? null : s.get(AnyGame));
+				sess.changeGameType(this,G.Left(hp),G.Top(hp),G.debug(),
+						false,true,
+						newGameMode ? null : s.get(AnyGame));
 				break;
 			case SelectMode:
 				changeModeType(this,G.Left(hp),G.Top(hp));
@@ -1623,7 +1664,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	public void drawMyGames(Graphics gc,HitPoint pt,Rectangle r)
 	{
-		myGames.getInfo(reload,loggedinUid);		
+		myGames.getInfo(reload,loggedInUid);		
 		if(reload)
 		{
 		lastReloadTime = G.Date();
@@ -1728,7 +1769,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		loginButton.draw(gc,pt);
 		if(loggedIn)
 		{
-			GC.Text(gc,false,loggedInRect,Color.black,null,s.get("Logged in as #1",loginName.getText()));
+			GC.Text(gc,false,loggedInRect,Color.black,null,s.get(LoggedInMessage,loginName.getText()));
 		}
 		else
 		{
@@ -1847,7 +1888,25 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     	}
     }
 	
-	
+    static public TurnBasedViewer doTurnbasedViewer(ExtendedHashtable sharedInfo)
+    {  
+    	commonPanel panel = new commonPanel();
+    	XFrame frame = new XFrame(TurnBasedGamesMessage);
+    	TurnBasedViewer viewer = new TurnBasedViewer();
+    	if(viewer!=null)
+    	{
+    	viewer.init(sharedInfo,frame);
+    	panel.setCanvas(viewer);
+    	viewer.setVisible(true);
+    	double scale = G.getDisplayScale();
+    	frame.setContentPane(panel);
+    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
+    	frame.setVisible(true);
+    	panel.start();
+    	}
+    	return(viewer);
+    }
+
     public void ViewerRun(int waitTime)
     {
      	spinner = false;
@@ -1908,15 +1967,18 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     }
 	public String parseSaveGameResult(UrlResult res)
 	{	String gamename = null;
-		if(res.error!=null) { G.infoBox("Error ",res.error); }
+		if(res.error!=null) { G.infoBox(s.get(ErrorCaption),res.error); }
 		else
 		{
 			Tokenizer tok = new Tokenizer(res.text);
 			while(tok.hasMoreElements())
 			{
 				String cmd = tok.nextElement();
-				if(GAMENAME.equals(cmd)) {gamename = tok.nextElement(); }
-				if("error".equals(cmd)) { G.infoBox("error",tok.nextElement()); }
+				if(SAVEDAS.equals(cmd))
+					{
+					 gamename = tok.nextElement(); 
+					 }
+				else if(ERROR.equals(cmd)) { G.infoBox(s.get(ErrorCaption),tok.nextElement()); }
 				else
 				{
 					G.print("Unexpected result "+cmd);
@@ -1929,7 +1991,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	{
 		int parsedUid = -1;
 		int parsedGameUid = -1;
-		if(res.error!=null) { G.infoBox("Error ",res.error); }
+		if(res.error!=null) { G.infoBox(s.get(ErrorCaption),res.error); }
 		else
 		{
 			Tokenizer tok = new Tokenizer(res.text);
@@ -1939,8 +2001,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			{
 				String cmd = tok.nextElement();
 				if(UID.equals(cmd)) { parsedUid = G.IntToken(tok.nextElement()); }
-				if("error".equals(cmd)) { G.infoBox("error",tok.nextElement()); }
-				if(GAMEUID.equals(cmd)) { parsedGameUid = G.IntToken(tok.nextElement()); }
+				else if(ERROR.equals(cmd)) { G.infoBox(s.get(ErrorCaption),tok.nextElement()); }
+				else if(GAMEUID.equals(cmd)) { parsedGameUid = G.IntToken(tok.nextElement()); }
 				else
 				{
 					G.print("Unexpected result "+cmd);
@@ -1949,16 +2011,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		return parsedGameUid>0 ? parsedGameUid : parsedUid;
 	}
-	public int loggedinUid = -1;
+	public int loggedInUid = -1;
 	public int inviteUid = -1;
 	public String inviteName = null;
-	public String pname ;
-	public String password ;
+	public String loggedInPname ;
+	public String loggedInPassword ;
 	
 	// check the login credentials of a player
 	public boolean login(boolean complain)
-	{	pname = loginName.getText();
-		password = passwordName.getText();
+	{	String pname = loginName.getText();
+		String password = passwordName.getText();
 		UrlResult res = Http.postEncryptedURL(Http.getHostName(),getTurnbasedURL,
 								G.concat(versionParameter,
 										"&",TAGNAME,"=login",
@@ -1966,11 +2028,25 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 										"&",PNAME,"=",pname),
 								null);
 		int parsedUid = parseCreateGameResult(res);
-		loggedIn = parsedUid>0;
-		loggedinUid = loggedIn ? parsedUid : -1;
+		if(parsedUid>0)
+		{
+			loggedIn = true;
+			loggedInUid = parsedUid;
+			loggedInPname = pname;
+			loggedInPassword = password;
+			uids.put(loggedInUid,pname);
+		}
+		else
+		{
+			loggedIn = false;
+			loggedInUid = -1;
+			loggedInPname = "";
+			loggedInPassword = "";
+		}
 		loginButton.setValue(loggedIn);
-		uids.put(loggedinUid,pname);
-		if(complain && parsedUid<=0) { G.infoBox(LoginMessage,LoginFailedMessage); }
+		if(complain && parsedUid<=0)
+			{ G.infoBox(LoginMessage,LoginFailedMessage); 
+			}
 		
 		return true;
 	}
@@ -1984,7 +2060,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     		String name = inviteName;
     		int parsedUid = parseCreateGameResult(pend);
     		if(parsedUid>0) 
-    			{ if(parsedUid!=loggedinUid)
+    			{ if(parsedUid!=loggedInUid)
     				{inviteUid = parsedUid;    			  
     				uids.register(parsedUid,name);	// add to the list of known names
     				invitedPlayers.pushNew(new SimpleUser(parsedUid,name));
@@ -1993,7 +2069,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     			}
     		else 
     		{ inviteUid = -1; inviteName = null;
-    		G.infoBox(s.get("Player not found"),s.get("Player #1 wasn't found",name));
+	    		G.infoBox(s.get(PlayerNotFoundMessage),s.get(PlayerNotFoundName,name));
     		}
     		return PendingStatus.Complete;
     	}
@@ -2053,14 +2129,15 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 public enum PlaySpeed implements EnumMenu
 	{
 		
-		day1("Up to 1 day per move"),
-		day2("Up to 2 days per move"),
-		day4("Up to 4 days per move"),
-		day8("Up to 8 days per move"),;
+		day1("Up to 1 day per move",1),
+		day2("Up to 2 days per move",1),
+		day4("Up to 4 days per move",3),
+		day8("Up to 8 days per move",6),;
 		String message;
+		int firstNag = 0;
 		public String menuItem() { return message; }
 
-		PlaySpeed(String m) { message = m; }	
+		PlaySpeed(String m,int nt) { message = m; firstNag=nt;}	
 		static public void putStrings() { 	 
 			for(PlaySpeed p : values()) { InternationalStrings.put(p.menuItem()); }
 		}
@@ -2091,6 +2168,7 @@ private	static String InvitedPlayersMessage = "Players: ";
 private static String OtherPlayersMessage = "Other Players:";
 private	static String CommentsMessage = "Comments:";
 private static String PlayOfflineMessage = "Play Offline";
+private static String CreateGameMessage = "Create the game";
 private static String PlayOnlineMessage = "Play Online";
 private static String PlayOnlineExplanation = "Log in to play online at Boardspace";
 private static String PlayOfflineExplanation = "Play games locally on this device";
@@ -2125,13 +2203,22 @@ static String YourTurnMessage = "it's your turn";
 static String StartedAndYou = "has started, and it's your turn";
 static String StartedMessage = "has started";
 static String CancelledMessage = "has been cancelled";
-static String EndedMessage = "had ended";
+static String EndedMessage = "has ended";
 static String AcceptedMessage = "#1 accepted your invitation to play";
 static String DeclinedMessage = "#1 removed themselves from your game";
+static String RemovedMessage = "You were removed by the owner";
 static String InvitedMessage = "You're invited to play";
+static String ErrorCaption = "Error";
+static String LoggedInMessage = "Logged in as #1";
+static String TurnBasedGamesMessage = "Turn Based Games";
+static String PlayerNotFoundMessage = "Player not found";
+static String PlayerNotFoundName = "Player #1 wasn't found";
+
 static public void putStrings()
 	{	String TurnStrings[] = {
-			AcceptedMessage,DeclinedMessage,InvitedMessage,
+			PlayerNotFoundMessage,PlayerNotFoundName,
+			ErrorCaption,CreateGameMessage,LoggedInMessage,TurnBasedGamesMessage,
+			AcceptedMessage,DeclinedMessage,InvitedMessage,RemovedMessage,
 			NewGameMessage,NewGameHelp,AnyGame,
 			GamesMessage,GamesHelp,HelpHelp,
 			StartGameMessage,MoveMessage,ToMoveMessage,ViewGameMessage,

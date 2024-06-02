@@ -1045,9 +1045,10 @@ public class ChatWidget
 	/** change the text as shared over the network */
 	public void setEncodedContents(StringTokenizer contents) {
 		String kind = contents.nextToken();
-		if(SIMPLETEXT.equals(kind))
+		if(SIMPLETEXT.equals(kind) && contents.hasMoreTokens())
 		{
-		String text = Base64.decodeString(contents.nextToken());
+		String tok = contents.nextToken();
+		String text = Base64.decodeString(tok);
 		activePane().setText(text);
 		if(!"".equals(text)) { setHasUnseenContent(true);}
 		}

@@ -1394,8 +1394,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     }
     
     // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneous_turns_allowed()
-    {	return super.simultaneous_turns_allowed();
+    public boolean simultaneousTurnsAllowed()
+    {	return super.simultaneousTurnsAllowed();
     }
   // public RecordingStrategy gameRecordingMode()
   //  {	return(super.gameRecordingMode());

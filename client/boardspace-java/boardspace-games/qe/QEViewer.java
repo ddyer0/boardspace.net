@@ -50,7 +50,7 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
      */
     public QEState getUIState()
     {
-    	if(simultaneous_turns_allowed())
+    	if(simultaneousTurnsAllowed())
     	{	int myPlayer = getActivePlayer().boardIndex;
     		return(bb.getUIState(myPlayer));
 
@@ -59,7 +59,7 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
     }
     public QEState getUIState(int myPlayer)
     {
-    	if(simultaneous_turns_allowed())
+    	if(simultaneousTurnsAllowed())
     	{	return(bb.getUIState(myPlayer));
     	}
     	return(bb.getState());
@@ -69,7 +69,7 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
      * may also need to be run asynchronously.
      */
     public void runAsyncRobots()
-    {	if(simultaneous_turns_allowed() )
+    {	if(simultaneousTurnsAllowed() )
     	{	
     		for(commonPlayer pp : players)
     			{ startRobotTurn(pp);
@@ -96,7 +96,7 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
 			
     public void startRobotTurn(commonPlayer pp)
     {	if(!reviewMode() 
-    		&& (simultaneous_turns_allowed() 
+    		&& (simultaneousTurnsAllowed() 
     				? canRunNow(pp) 
     				: (bb.whoseTurn==pp.boardIndex)))
     	{
@@ -119,7 +119,7 @@ public commonMove convertToSynchronous(commonMove m)
 public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
 {
 	boolean val = super.PerformAndTransmit(m, transmit, mode);
-    if(simultaneous_turns_allowed())
+    if(simultaneousTurnsAllowed())
 	{ if(bb.readyToStartNormal())
 		{
 		bb.normalStart();
@@ -131,14 +131,14 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode
 public void ViewerRun(int wait)
 {
     super.ViewerRun(wait);
-    if(simultaneous_turns_allowed())
+    if(simultaneousTurnsAllowed())
 	{ 
 		runAsyncRobots();
 	}
 }
 	int whoseMove()
 	{
-		return(simultaneous_turns_allowed() 
+		return(simultaneousTurnsAllowed() 
 			? getActivePlayer().boardIndex
 			: bb.whoseTurn());
 	}
@@ -487,7 +487,7 @@ public void ViewerRun(int wait)
     	
     	if(done!=null) 
     	{	
-    		boolean simultaneous = simultaneous_turns_allowed();
+    		boolean simultaneous = simultaneousTurnsAllowed();
     		boolean itsme = (gb.whoseTurn==player) || simultaneous; 
             GC.setFont(gc,largeBoldFont());
             
@@ -1012,7 +1012,7 @@ public void ViewerRun(int wait)
             if (handleDoneButton(gc,doneRect,doneSelect,HighlightColor, rackBackGroundColor))
             {	// always display the done button, but only make it active in
             	// the appropriate states
-            	if(simultaneous_turns_allowed()) 
+            	if(simultaneousTurnsAllowed()) 
             		{ doneSelect.hitCode = QEId.HitEcommitButton;
             		  doneSelect.hit_index = whoseMove();
             		}
@@ -1033,7 +1033,7 @@ public void ViewerRun(int wait)
         
         standardGameMessage(gc,messageRotation,
             		state==QEState.Gameover?gameOverMessage(gb):s.get(state.description()),
-            				(state!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
+            				(state!=QEState.Puzzle)&&!simultaneousTurnsAllowed(),
             				gb.whoseTurn,
             				stateRect);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(QEVictoryCondition),progressRect, goalRect);
@@ -1656,7 +1656,7 @@ public void ViewerRun(int wait)
         // draw the game state
         standardGameMessage(gc,
             		uistate==QEState.Gameover?gameOverMessage(bb):s.get(uistate.description()),
-            				(uistate!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
+            				(uistate!=QEState.Puzzle)&&!simultaneousTurnsAllowed(),
             				bb.whoseTurn,
             				stateR);
  	    DrawChipPool(gc, playerIdRect, index, hp,bb,viewBidR,noQER,

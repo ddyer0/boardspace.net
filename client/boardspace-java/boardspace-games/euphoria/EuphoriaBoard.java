@@ -1044,8 +1044,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	//
 	public boolean REINIT_SIMULTANEOUS_PLAY = MASTER_SIMULTANEOUS_PLAY;
 	public boolean SIMULTANEOUS_PLAY = MASTER_SIMULTANEOUS_PLAY;
-	public void setSimultaneousPlay(boolean val)
-	{
+	public void setSimultaneousTurnsAllowed(boolean val)
+	{	super.setSimultaneousTurnsAllowed(val);
 		MASTER_SIMULTANEOUS_PLAY = REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = val; 
 	}
 	public int activePlayer = -1;
@@ -8099,7 +8099,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     }
  
  public boolean ephemeralRecruitMode() 
- 	{ return (board_state.hasRecruitGui()&&board_state.simultaneousTurnsAllowed()); 
+ 	{ return (board_state.hasRecruitGui()&&simultaneousTurnsAllowed(board_state)); 
  	}
  
  /** get all the destination moves for the current picked worker */

@@ -28,7 +28,7 @@ sub send_discord_notification()
           #&dprint "sleep $rem\n";
           usleep($rem*1000); 
         }
-  $'lastdiscord = $now+250;
+  $'lastdiscord = $now+350;
   
   # silent notifications use the hook for the turn based notification channel
   my $webhook = WebService::Discord::Webhook->new($'turnhook );

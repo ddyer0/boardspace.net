@@ -215,12 +215,13 @@ public interface OnlineConstants extends Config {
 	String LoginMessage = "Login";
 	String LoginFailedMessage = "Login Failed";
 	String LoginFailedHost = "Can't Log in to #1";
-	String LoginFailedExplanation = "User name and password were not accepted";
+	String LoginFailedExplanation = "User name and loggedInPassword were not accepted";
 	String TryAgainMessage = "Try again";
-	String RecoverPasswordMessage = "Recover lost password";
+	String RecoverPasswordMessage = "Recover lost loggedInPassword";
 	String ServerUnavailableMessage = "server unavailable";
 	String ServerUnavailableExplanation = "The game server is not running.  Please try again later.";
 	String SelectAGameMessage = "Select Game";
+	String SAVEDMSG =  "Game saved as #1";
 	
 	int DEFAULTWIDTH = 620;	// also the minimum width and height
 	int DEFAULTHEIGHT = 660;

@@ -146,8 +146,9 @@ public interface ViewGameProtocol
    /** declare now it is ok to edit the game record.  During normal play, editing
     * the game record is not allowed. After game end, players are free to go back
     * and play variations.  This method will be called after the game is over and
-    * scoring activity has completed. */ 
-   public void setEditable();	
+    * scoring activity has completed. 
+ * @param always TODO*/ 
+   public void setEditable(boolean always);	
    /** 
     * set who has control to make editing moves.  This is handled by the game controler.
     * There is no UI, but the viewer should respect hasControlToken()

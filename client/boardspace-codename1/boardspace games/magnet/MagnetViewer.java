@@ -185,7 +185,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         // for another game.
         bb = new MagnetBoard(type,players_in_game,randomKey,getActivePlayer(),MagnetBoard.REVISION);
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
-        if(reviewOnly) { bb.setSimultaneousPlay(false); }
+        if(reviewOnly || isTurnBasedGame()) { setSimultaneousTurnsAllowed(false); }	// this ought to be redundent, but good to keep it visible here.
         useDirectDrawing(true); 
         doInit(false);
 
@@ -661,7 +661,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 			if(!planned && !autoDoneActive() && handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor))
 			{
-				 buttonSelect.hitCode = simultaneous_turns_allowed()
+				 buttonSelect.hitCode = simultaneousTurnsAllowed()
  						? MagnetId.EphemeralDone 
  						: GameId.HitDoneButton;
 			}
@@ -675,7 +675,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
   
  
         // draw the avatars
-        boolean simultaneous = simultaneous_turns_allowed();
+        boolean simultaneous = simultaneousTurnsAllowed();
         standardGameMessage(gc,
             		state==MagnetState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=MagnetState.Puzzle && !simultaneous,
@@ -809,7 +809,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	}}
     	break;
     default:
-    	if(simultaneous_turns_allowed())
+    	if(simultaneousTurnsAllowed())
     	{	// ephemeral picks not transmitted
     		PerformAndTransmit("ePickb "+hitCell.col+" "+hitCell.row,false,replayMode.Live);
     	}
@@ -834,7 +834,6 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         {
         MagnetId hitObject =  (MagnetId)hp.hitCode;
         MagnetCell hitCell = bb.getCell(hitCell(hp));
-        MagnetState state = bb.getState();
  	    switch(hitObject)
 	    {
 	    default: break;
@@ -843,12 +842,12 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
  	    case Red_Chip_Pool:
  	    	{
  	    	// ephemeral picks not transmitted
-	    	PerformAndTransmit((state.simultaneousTurnsAllowed() ? "epick " : "Pick ") + hitObject.shortName+" "+hitCell.row,
+	    	PerformAndTransmit((bb.simultaneousTurnsAllowed() ? "epick " : "Pick ") + hitObject.shortName+" "+hitCell.row,
 	    			false,replayMode.Live);
  	    	}
 	    	break;
  	    case Magnet: 
- 	    	PerformAndTransmit((state.simultaneousTurnsAllowed() ? "epickb " : "Pickb ") + hitCell.col+" "+hitCell.row);
+ 	    	PerformAndTransmit((bb.simultaneousTurnsAllowed() ? "epickb " : "Pickb ") + hitCell.col+" "+hitCell.row);
  	    	break;
 	    case BoardLocation:
 	        { 
@@ -861,7 +860,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     
     public void sendDone()
     {
-    	if(simultaneous_turns_allowed()) { PerformAndTransmit("edone"); }
+    	if(simultaneousTurnsAllowed()) { PerformAndTransmit("edone"); }
     	else { PerformAndTransmit("done"); }
     }
 	/** 
@@ -900,7 +899,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
           	 break;
         case RandomRect:
         {	int pl = activePlayer();
-        	String move = simultaneous_turns_allowed() ? "emove" : "randommove";
+        	String move = simultaneousTurnsAllowed() ? "emove" : "randommove";
         	MagnetCell rack[] = bb.rack[pl];
         	CellStack from = new CellStack();
         	for(MagnetCell c : rack) { if(!c.isEmpty()) { from.push(c);} }
@@ -929,7 +928,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         case BoardLocation:	// we hit an occupied part of the board 
         	if(bb.movingObjectIndex()>=0)
         	{
-         	   if(simultaneous_turns_allowed())
+         	   if(simultaneousTurnsAllowed())
          	   {
          		
          		MagnetCell src = bb.getSource();
@@ -953,7 +952,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         case Red_Chip_Pool:
            if(bb.movingObjectIndex()>=0)
 			{//if we're dragging a chip around, drop it.
-        	   if(simultaneous_turns_allowed())
+        	   if(simultaneousTurnsAllowed())
         	   {
         		MagnetCell src = bb.getSource();
                	PerformAndTransmit("emove "+ src.rackLocation().shortName+" "+src.col+" "+src.row
@@ -1239,7 +1238,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     //
     public void runAsyncRobots()
     {	MagnetState state = activeGameState();
-       	if((state!=null) && state.simultaneousTurnsAllowed())
+       	if((state!=null) && bb.simultaneousTurnsAllowed(state))
     	{
     	
     		for(commonPlayer pp : players)

@@ -1029,7 +1029,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	// flush them.  This can occur if there is a realtime race between confirming
     	// the setup and the other player changing his mind about the setup.
     	//
-    	if(!bb.getState().simultaneousTurnsAllowed()
+    	if(!bb.simultaneousTurnsAllowed()
     		&& m.isEphemeral()) 
     		{ return true;
     		}
@@ -1055,8 +1055,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
      public void ViewerRun(int n)
         {
         	super.ViewerRun(n);
-        	BloomsState state = bb.getState();
-        	if(state.simultaneousTurnsAllowed())
+        	if(bb.simultaneousTurnsAllowed())
         	{
             if(!reviewOnly 
           	 && !reviewMode() 

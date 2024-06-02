@@ -329,7 +329,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     }
     
     public void updatePlayerTime(long inc,commonPlayer p)
-    {	if(simultaneous_turns_allowed())
+    {	if(simultaneousTurnsAllowed())
     	{	// update all players so the timestamps will reflect reality
     		if(!reviewMode()&&!reviewOnly)
     	    {for(commonPlayer pl : players)
@@ -1063,7 +1063,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
        commonPlayer pl = getPlayerOrTemp(pboard.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,stateRect,state,gb);
       	
        
        String msg = pboard.invalidReason==null ? s.get(SprintVictoryCondition) : s.get(pboard.invalidReason);
@@ -1168,11 +1168,11 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         }
  
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,SprintState state)
+    public void standardGameMessage(Graphics gc,Rectangle stateRect,SprintState state,SprintBoard gb)
     {
         standardGameMessage(gc,
    				state==SprintState.Gameover?gameOverMessage(bb):s.get(state.description()),
-   				(state!=SprintState.Puzzle) && !state.simultaneousTurnsAllowed(),
+   				(state!=SprintState.Puzzle) && !gb.simultaneousTurnsAllowed(state),
    				bb.whoseTurn,
    				stateRect);
 

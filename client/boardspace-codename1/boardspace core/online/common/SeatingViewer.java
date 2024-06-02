@@ -161,8 +161,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
         users.loadOfflineUsers();
         painter.drawLockRequired = false;
-        sess.setMode(Session.Mode.Review_Mode,isPassAndPlay());
-        sess.setCurrentGame(GameInfo.firstGame,false,isPassAndPlay());
+        sess.setMode(Session.Mode.Review_Mode,true,false);
+        sess.setCurrentGame(GameInfo.firstGame,false,true,false);
         if(G.debug()) {
         	GameInfo.putStrings();
         	SeatingChart.putStrings();
@@ -375,7 +375,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		sess.selectedFirstPlayerIndex = firstPlayerIndex;
 		sess.launchUser = sess.startingPlayer = lusers.size()>0 ? lusers.elementAt(0) : null;
 		sess.launchUsers = lusers.toArray();	 
-		sess.setCurrentGame(selectedVariant, false,isPassAndPlay());
+		sess.setCurrentGame(selectedVariant, false,true,false);
 		sess.startingName = sess.launchName(null,true);
 	}
 		
@@ -712,7 +712,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
 			if(mainMessage==StartMessage)
 			{
-			sess.setCurrentGame(selectedVariant,false,isPassAndPlay());
+			sess.setCurrentGame(selectedVariant,false,true,false);
 			String lname = sess.launchName(null,true);
 			boolean restartable = OfflineGames.restoreOfflineGame(lname)!=null; 
 			String finalMessage = nPlayers==0 ? Session.ReviewRoom : restartable ? RestartMessage : mainMessage;
@@ -925,7 +925,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		if(game!=null)
 		{
 		int nplayers = selectedChart.getNSeats();
-		Bitset<ES> typeClass = sess.getGameTypeClass(false,isPassAndPlay());
+		Bitset<ES> typeClass = sess.getGameTypeClass(false,true,false);
 		int w = G.Width(r);
 		int l = G.Left(r);
 		int t = G.Top(r);
@@ -938,7 +938,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int margin = half/10;
 		int vspace = half+half/4;
 		boolean gameListSeen = false;
-		sess.setMode(nplayers==0?Session.Mode.Review_Mode:Session.Mode.Unranked_Mode,isPassAndPlay());
+		sess.setMode(nplayers==0?Session.Mode.Review_Mode:Session.Mode.Unranked_Mode,true,false);
 		
 		String msg = (nplayers==0) 
 						? s.get(SoloMode) 

@@ -217,7 +217,7 @@ public void PrepareToMove(int playerIndex)
  	verbose = 0;
  	try {
        if (board.DoneState() 
-    		   || (viewer.simultaneous_turns_allowed() && (board.getUIState(movingForPlayer))==QEState.EphemeralConfirm))
+    		   || (viewer.simultaneousTurnsAllowed() && (board.getUIState(movingForPlayer))==QEState.EphemeralConfirm))
         { // avoid problems with gameover by just supplying a done
             move = new QEmovespec("Done", board.whoseTurn);
         }
@@ -266,7 +266,7 @@ public void PrepareToMove(int playerIndex)
  		}
       finally { ; }
       if(move==null) { continuous = false; }
-      if((move!=null) && viewer.simultaneous_turns_allowed())
+      if((move!=null) && viewer.simultaneousTurnsAllowed())
       {	// if we're in an asynchronous mode, use the async move equivalents.
     	  switch(move.op){
     	  	default: throw G.Error("Not expecting async move "+move);

@@ -55,15 +55,14 @@ sub rank_header()
      $header = ($mode eq 'turnbased') ? $turnstr : ($mode eq 'master') ? $masterstr : $normalstr;
    };
  
-  my $link1 = ($mode eq '') ? "" : &get_link($vname,$country,$normalstr,$myname,'',$retired,$order);
-  my $link2 = ($mode eq 'master') ? "" : &get_link($vname,$country,$masterstr,$myname,'master',$retired,$order);
-  my $link3 = ($mode eq 'turnbased') ? "" : &get_link($vname,$country,$turnstr,$myname,'turnbased',$retired,$order);
+  my $link1 = ($mode eq '') ? "" : "<td>" . &get_link($vname,$country,$normalstr,$myname,'',$retired,$order) . "</td>";
+  my $link2 = ($mode eq 'master') ? "" : "<td>" . &get_link($vname,$country,$masterstr,$myname,'master',$retired,$order) . "</td>";
+  my $link3 = ($mode eq 'turnbased') ? "" : "<td>" . &get_link($vname,$country,$turnstr,$myname,'turnbased',$retired,$order) . "</td>";
   my $wmode = ($mode eq 'master') ? " Master" : ($mode eq 'turnbased') ? " Turn Based" : "";
-  my $ladder = &getLadderLink($vname,&trans("#1$wmode Ranking Ladder",$pvar),$myname,$mode);
+  my $ladder = "<td>" . &getLadderLink($vname,&trans("#1$wmode Ranking Ladder",$pvar),$myname,$mode) . "</td>";
   my $dbmes=&trans("#1 game database",$pvar);
-  my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a>";
-  my $vlink = &gamecode_to_gameviewer($dbh,$vname);
-  #http://boardspace.net/cgi-bin/player_analysis.cgi?game=hive
+  my $dblink = "<td><a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a></td>";
+   #http://boardspace.net/cgi-bin/player_analysis.cgi?game=hive
   #http://boardspace.net/hive/hive-viewer.shtml
 &standard_header();
   
@@ -92,7 +91,7 @@ print "</td><td>";
 print "</td></tr></table>\n";
 print <<Header
 <p>
-<table border=1 cellpadding=3><tr>$ladder$link1$link2$link3<td>$dblink</td></tr></table>
+<table border=1 cellpadding=3><tr>$link2$ladder$link1$link2$link3$dblink</tr></table>
 <p>
 <HR SIZE="4" WIDTH="40%">
 Header
@@ -107,14 +106,14 @@ sub get_link()
 	if($mode) { $aux .= "&mode=$mode"; }
 	if($retired) { $aux .= "&retired=$retired"; }
 	if($ccode) { $aux .= "&country=$ccode"; }
-	return("<td><a href=\"javascript:link('$script$aux',0)\">$pretty</a></td>");
+	return("<a href=\"javascript:link('$script$aux',0)\">$pretty</a>");
 }
 sub getLadderLink()
 {	my ($variation,$pretty,$myname,$mode) = @_;
 	my $script = '/cgi-bin/boardspace_ladder.cgi';
 	my $aux = "?game=$variation&mode=$mode";
 	if($myname) { $aux .= "&myname=$myname"; }
-	return("<td><a href=\"javascript:link('$script$aux',0)\">$pretty</a></td>");
+	return("<a href=\"javascript:link('$script$aux',0)\">$pretty</a>");
 }
 %'order_keys = 
 	('GroupUp' => 'advocate asc',
@@ -272,22 +271,23 @@ sub update_rankings
 				(($order eq 'WinpDown')?'WinpUp':'WinpDown'));
 
 # my ($variation,$pretty,$myname,$mode,$retired,$order) = @_;
-	  my $lclause =  "<TD><p align=left><b>$Ladder</b>";
-    	  print "<TR><td></td><TD><b><P align=left>$Rank</b></TD>"
-	   			. "<TD><p align=left><b>$Player</b></TD>"
-    				. "<TD><p align=left><b>$Ranking</b>"    
-    				. $lclause
-     				. "<TD><p align=left><b>$Group</b></TD>"
-    				. "</TD><td><b>$winp</b></td><TD><b>$lastp</b></td>"
-    				. "<TD><p align=left><b>$Country</b></TD><TD align=center><b>$MaxRank</b></td>"
-    				. "<td><b>$played</b></td><td align=right></td>"
-    				. "<td align=right></td>";
-    	}
+  	  print "<TR>"
+		. "<TD align=left><b>$Rank</b></TD>"
+	   	. "<TD align=left><b>$Player</b></TD>"
+    		. "<TD align=left><b>$Ranking</b></TD>"    
+    		. "<TD align=left><b>$Ladder</b></TD>"
+     		. "<TD align=left><b>$Group</b></TD>" #advocate etc
+    		. "<TD><b>$winp</b></td>"
+		. "<TD><b>$lastp</b></TD>"
+    		. "<TD align=left><b>$Country</b></TD>"
+		. "<TD align=center><b>$MaxRank</b></TD>"
+    		. "<td><b>$played</b></td>";
+   	}
 
     if($useemail)
     { print "<td><b>email</b></td>";
     }
-       print "</td><TR>";
+       print "</TR>\n";
 	my $n = 0;
 	my $showall=0;
 	my @showback;
@@ -328,14 +328,18 @@ sub update_rankings
 		{ $group_description = "title='" . &trans("${group}-description") . "' ";
 		  $group = &trans("$group-group");
 		}
-		my $lclause = "<td><P align=left>$ladder</td>";
- 		my $line = "<TR><td></td><TD>$n</TD><TD><P ALIGN=left><A HREF=\"javascript:editlink('$curname',0)\">$bold$curname$nobold</A></TD>"
-					. "<TD><P ALIGN=left>$ranking</TD>"
-					. $lclause
-					. "<td $group_description><P align=left>$group</td>"
-					. "<td>$pcent</td><TD align=left>$daysago</TD>"
-					. "<TD><P ALIGN=center><img width=33 height=22 alt=\"$country\" src=\"$cflag\"></TD><TD align=center>$max_rank</td><td align=center>$played</td>"
-					. "";
+
+		my $line = "<TR>"
+				. "<TD ALIGN=center>$n</TD>"
+				. "<TD ALIGN=left><A HREF=\"javascript:editlink('$curname',0)\">$bold$curname$nobold</A></TD>"
+				. "<TD ALIGN=left>$ranking</TD>"
+				. "<td align=left>$ladder</td>"
+				. "<td $group_description>$group</td>"
+				. "<td>$pcent</td>"
+				. "<TD align=left>$daysago</TD>"
+				. "<TD ALIGN=center><img width=33 height=22 alt=\"$country\" src=\"$cflag\"></TD>"
+				. "<TD align=center>$max_rank</td>"
+				. "<td align=center>$played</td>";
 		if($useemail) { $line .= "<td>$email</td>"; }
 		$line .= "</TR>\n";
 		if(($n<=$nitems) || ($bold ne "") || ($showall>0))

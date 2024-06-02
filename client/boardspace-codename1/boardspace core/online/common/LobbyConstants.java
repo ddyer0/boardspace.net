@@ -74,6 +74,7 @@ public interface LobbyConstants extends OnlineConstants
  
     static final String LobbyMessages[] =
         {  	LobbyName,
+        	SAVEDMSG,
         	LoginMessage,
         	LoginFailedMessage,
         	LoginFailedHost,

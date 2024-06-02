@@ -140,7 +140,7 @@ public class Session implements LobbyConstants
 
       
       
-	public enum Mode
+	public enum Mode implements EnumMenu
 	{	Game_Mode("Game",GameRoom,GameRoomDescription,LaunchGameMessage), 
 		Chat_Mode("Chat",ChatRoom,"",LaunchChatMessage), 
 		Review_Mode("Review",ReviewRoom,ReviewRoomDescription,LaunchReviewMessage), 
@@ -183,27 +183,22 @@ public class Session implements LobbyConstants
 			}
 		
 		}
-		public static void getRoomMenu(InternationalStrings s,PopupManager roomMenu)
-		{	
-			for(Mode el : values())
-			{
-			// for now, you can't launch a turn based game from the live lobby
-			 roomMenu.addMenuItem(s.get(el.modeName),el.ordinal()); 
-			}
-	 	}
-		public static Mode findMode(String n)
-		{
-			for(Mode el:values()) { if(el.modeName.equalsIgnoreCase(n)) { return(el); }}
-			return null;
-		}
 		public static Mode findMode(int n)
 		{
 			for(Mode el:values()) { if(el.ordinal()==n) { return(el); }}
 			return(null);
 		}
 		public static void putStrings()
-		{	for(Mode m : values()) { InternationalStrings.put(m.shortName); InternationalStrings.put(m.modeName); InternationalStrings.put(m.subHead); }
+		{	for(Mode m : values()) 
+				{ InternationalStrings.put(m.shortName); 
+				  InternationalStrings.put(m.menuItem()); 
+				  InternationalStrings.put(m.subHead); 
+				  }
 			InternationalStrings.put(AllGames);
+		}
+
+		public String menuItem() {
+			return modeName;
 		}
 	}
 	// just the playing modes, not the auxiliary modes
@@ -235,7 +230,7 @@ public class Session implements LobbyConstants
 		return(null);
 	}
 
-	public Bitset<ES> getGameTypeClass(boolean isTestServer,boolean isPassAndPlay)
+	public Bitset<ES> getGameTypeClass(boolean isTestServer,boolean isPassAndPlay,boolean isTurnBased)
 	{	boolean review = (mode==Mode.Review_Mode );
 		Bitset<ES> typeClass = review
 					? new Bitset<ES>(GameInfo.ES.review,GameInfo.ES.game)
@@ -252,6 +247,11 @@ public class Session implements LobbyConstants
 		if(isPassAndPlay && !review) 
 			{ typeClass.set(GameInfo.ES.passandplay);
 		}
+		if(isTurnBased)
+		{
+			typeClass.set(GameInfo.ES.turnbased);
+		}
+			
 		return(typeClass);
 	}
 	public SeatingChart seatingChart = null;
@@ -311,8 +311,8 @@ public class Session implements LobbyConstants
     public boolean drewRules = false;
     public boolean drewVideo = false;
     
-    public void setCurrentGame(GameInfo n,boolean debug,boolean isPassAndPlay)
-    {	Bitset<ES> included = getGameTypeClass(debug,isPassAndPlay);
+    public void setCurrentGame(GameInfo n,boolean debug,boolean isPassAndPlay,boolean isTurnBased)
+    {	Bitset<ES> included = getGameTypeClass(debug,isPassAndPlay,isTurnBased);
     	if(!(isAGameOrReviewRoom()
     			&& (n!=null)
     			&& n.allowedBySet(included)
@@ -450,10 +450,7 @@ public class Session implements LobbyConstants
     	return(null);
     }
  
-    public boolean okForPlaytable()
-    {
-    	return((currentGame!=null)&&currentGame.okForPlaytable);
-    }
+ 
     public boolean isAGameRoom()
     {	return mode.isAGameMode();
     }
@@ -511,9 +508,9 @@ public class Session implements LobbyConstants
 	}
 	public void setPlayMode(PlayMode m)
 	{
-		setMode(m.sessionMode,false);
+		setMode(m.sessionMode,false,false);
 	}
-    void setMode(Mode m,boolean isPassAndPlay)
+    void setMode(Mode m,boolean isPassAndPlay,boolean isTurnBased)
     {
         if (mode != m)
             {
@@ -533,7 +530,7 @@ public class Session implements LobbyConstants
             }
             mode = m;
             if(isAGameRoom() && (currentGame!=null) && (currentGame.enabled!=GameInfo.ES.game))
-            { setCurrentGame(GameInfo.firstGame,true,isPassAndPlay);
+            { setCurrentGame(GameInfo.firstGame,true,isPassAndPlay,isTurnBased);
             }
             if(m==Mode.Tournament_Mode)
             {
@@ -547,10 +544,10 @@ public class Session implements LobbyConstants
 
         pendingMode = m;
     }
-    void setMode(int m,boolean isPassAndPlay)
+    void setMode(int m,boolean isPassAndPlay,boolean isTurnBased)
     {
     	Mode mm = Mode.findMode(m);
-    	if(mm!=null) { setMode(mm,isPassAndPlay); }
+    	if(mm!=null) { setMode(mm,isPassAndPlay,isTurnBased); }
     }
 
     boolean containsUser(User u)
@@ -687,7 +684,7 @@ public class Session implements LobbyConstants
 		Bot robotGame = ((startingRobot!=null) && (startingRobot.idx>=0 ))? startingRobot : null;
 		boolean chatmode = mode==Mode.Chat_Mode;
 		boolean tournamentMode = submode==Session.JoinMode.Tournament_Mode;
-		String roomType = s.get(mode.modeName);
+		String roomType = s.get(mode.name());
 		if(spectator) { numOpps=0;  }
 		else
 		{
@@ -773,7 +770,7 @@ public class Session implements LobbyConstants
 		 myInfo.putBoolean(NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
 		 myInfo.putString(GAMEUID,startingName);
 		 
-		 myInfo.putObj(MODE,mode.modeName);
+		 myInfo.putObj(MODE,mode);
 		 myInfo.putBoolean(TOURNAMENTMODE,tournamentMode);
 		 myInfo.putBoolean(SOUND,sound);
 		 myInfo.putInt(ROTATION,rotation);
@@ -1031,9 +1028,9 @@ public class Session implements LobbyConstants
 	 * @param ey
 	 * @param isTestServer
 	 */
-	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer)
+	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer,boolean isPassAndPlay,boolean isTurnBased)
 	{
-	  changeGameType(showOn,ex,ey,isTestServer,null);
+	  changeGameType(showOn,ex,ey,isTestServer,isPassAndPlay,isTurnBased,null);
 	}
 /**
  * 
@@ -1043,12 +1040,12 @@ public class Session implements LobbyConstants
  * @param isTestServer
  * @param firstItem
  */
-	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer,String firstItem)
+	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer,boolean isPassAndPlay,boolean isTurnBased,String firstItem)
 	  {	InternationalStrings s = G.getTranslations();
 	  	gameTypeMenu = new PopupManager();
 	    gameTypeMenu.newPopupMenu(showOn,showOn);
 	    if(firstItem!=null) { gameTypeMenu.addMenuItem("any game",null); }
-	    Bitset<ES> typeClass = getGameTypeClass(isTestServer,false);
+	    Bitset<ES> typeClass = getGameTypeClass(isTestServer,isPassAndPlay,isTurnBased);
 	    GameInfo gameNames[] = GameInfo.groupMenu(typeClass,0);
 	    int n_games = gameNames.length;
 	    

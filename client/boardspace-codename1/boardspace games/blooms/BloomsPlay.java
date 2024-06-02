@@ -143,7 +143,7 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	int player = board.getState().simultaneousTurnsAllowed() ? forPlayer : board.whoseTurn;
+    {	int player = board.simultaneousTurnsAllowed() ? forPlayer : board.whoseTurn;
     	switch(Strategy)
     	{
     	default: throw G.Error("Not expecting strategy %s",Strategy);

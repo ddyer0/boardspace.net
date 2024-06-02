@@ -357,7 +357,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param rackLocation
 	 * @param tooltip
 	 * @param sscale  sensitive area scale factor
-	 * @return true if the highlight point was hit
+	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
 	{	return drawChip(gc,canvas,r,highlight,rackLocation,TextChunk.create(tooltip),sscale);
@@ -375,7 +375,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param rackLocation
 	 * @param tooltip
 	 * @param sscale  sensitive area scale factor
-	 * @return true if the highlight point was hit
+	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
 	{
@@ -387,7 +387,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
     		highlight.spriteRect = r;
     		highlight.hitObject = this;
 		}
-		return(val);
+		return(val && (rackLocation!=null));
 	}
 	/**
 	 * draw stock art to fill the specified rectangle, return true if it is hit
@@ -399,7 +399,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param highlight
 	 * @param rackLocation
 	 * @param tooltip
-	 * @return true if the highlight point was hit
+	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
 	{	return drawChip(gc,canvas,r,highlight,rackLocation,(Text)null,1.3);
@@ -415,7 +415,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param highlight
 	 * @param rackLocation
 	 * @param tooltip
-	 * @return true if the highlight point was hit
+	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip)
 	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
@@ -431,7 +431,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param highlight
 	 * @param rackLocation
 	 * @param tooltip
-	 * @return true if the highlight point was hit
+	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip)
 	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
@@ -442,13 +442,14 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * increased by 1/3 to give a visual "pop" to indicate the hit.
 	 * @param gc			// the graphics to draw with
 	 * @param drawOn		// the canvas to do the drawing
+ 	 * @param squareWidth	// the overall scale of the object
+	 * @param e_x			// the center of the object
+	 * @param e_y			// the center y of the object
 	 * @param highlight		// the mouse point, or null.  Receives hit information
 	 * @param rackLocation	// the cellId to use for this if hit
 	 * @param helptext		// label to print on top
-	 * @param squareWidth	// the overall scale of the object
-	 * @param e_x			// the center of the object
-	 * @param e_y			// the center y of the object
-	 * @return true if this chip is hit
+
+	 * @return true if this chip is hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,int e_y,HitPoint highlight,CellId rackLocation,
 			String helptext)
@@ -475,7 +476,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @param helptext		// label to print on top
 	 * @param sscale		// sensitive area scale factor, default 0.66
 	 * @param expansion		// 	size expansion factor (if hit and rackLocation not null)
-	 * @return true if this chip is hit
+	 * @return true if this chip is hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
 							int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
@@ -491,7 +492,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
       	{
     	  highlight.setHelpText(help);
       	}
-      return(val);
+      return(val && (rackLocation!=null));
 	}
 
 

@@ -852,8 +852,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	}
 
     }
-    private String standardGameMessage(PlayerBoard pb,ImagineState state)
-    {	if(state.simultaneousTurnsAllowed() && pb.isReady()) 
+    private String standardGameMessage(PlayerBoard pb,ImagineState state,ImagineBoard gb)
+    {	if(gb.simultaneousTurnsAllowed(state) && pb.isReady()) 
     		{ String msg = state.readyDescription;
     		  if(msg!=null) { return s.get(msg); } 
     		}
@@ -987,8 +987,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         // draw the avatars
         PlayerBoard apb = gb.getPlayerBoard(ap.boardIndex);
         standardGameMessage(gc,messageRotation,
-            				state==ImagineState.Gameover?gameOverMessage(gb):standardGameMessage(apb,state),
-            				state!=ImagineState.Puzzle && !state.simultaneousTurnsAllowed(),
+            				state==ImagineState.Gameover?gameOverMessage(gb):standardGameMessage(apb,state,gb),
+            				state!=ImagineState.Puzzle && !gb.simultaneousTurnsAllowed(state),
             				gb.whoseTurn,
             				stateRect);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(ImagineVictoryCondition),progressRect, goalRect);
@@ -1123,9 +1123,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     }
     public commonPlayer nextActivePlayer(ImagineBoard gb)
     {
-    	ImagineState state = gb.getState();
     	int index = History.viewStep-1;
-    	if(state.simultaneousTurnsAllowed() && (index>=0) && (index<History.size()))
+    	if(gb.simultaneousTurnsAllowed() && (index>=0) && (index<History.size()))
     	{
     		commonMove m = History.elementAt(index);
     		return(getPlayerOrTemp(m.player));
@@ -1136,8 +1135,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     // player info area.
     public boolean playerIsActive(commonPlayer pl)
     {	if(reviewOrOffline()) { return nextActivePlayer(bb)==pl; }
-    	ImagineState state = bb.getState();
-    	if(state.simultaneousTurnsAllowed())
+    	if(bb.simultaneousTurnsAllowed())
     	{
        		PlayerBoard pb = bb.getPlayerBoard(pl.boardIndex);
        		return(!pb.isReady());
@@ -1220,7 +1218,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         case Stake_2:
         	int who = hp.hit_index/100;
         	int ind = hp.hit_index%100;
-        	String op = simultaneous_turns_allowed() ? "eSetStake " : "SetStake ";
+        	String op = simultaneousTurnsAllowed() ? "eSetStake " : "SetStake ";
         	PerformAndTransmit(op+(char)(who+'A') + " "+ind);
         	break;
 
@@ -1229,7 +1227,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		int sel = bb.getSelectedPresentation(ap.boardIndex);
         	ImagineChip card = bb.selectedPresentation[sel].topChip();
          	int stake = bb.getBet(ap.boardIndex);
-         	String opc = simultaneous_turns_allowed() ? "eSetChoice " : "SetChoice ";
+         	String opc = simultaneousTurnsAllowed() ? "eSetChoice " : "SetChoice ";
         	PerformAndTransmit(G.concat(opc,
         			(char)('A'+ap.boardIndex)," ",
         			stake," ",
@@ -1242,7 +1240,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         case SetReady:
         	{
     		commonPlayer pl = guiPlayer(bb);
-    		String opc = simultaneous_turns_allowed() ? "eSetReady " : "SetReady ";
+    		String opc = simultaneousTurnsAllowed() ? "eSetReady " : "SetReady ";
     		PerformAndTransmit(G.concat(opc,
     				(char)('A'+pl.boardIndex)
     				));
@@ -1255,7 +1253,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
             	if(card!=null)
             	{
              	int stake = bb.getStake(pl.boardIndex);
-             	String opc = simultaneous_turns_allowed() ? "eSetCandidate " : "SetCandidate ";
+             	String opc = simultaneousTurnsAllowed() ? "eSetCandidate " : "SetCandidate ";
             	PerformAndTransmit(G.concat(opc,
             			(char)('A'+pl.boardIndex)," ",
             			stake," ",
@@ -1294,7 +1292,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         	// same logic works for selecting player cards and selecting from
         	// the voter presentation. 
         	// do not allow selection when we are already ready
-        	String ops = simultaneous_turns_allowed() ? "eSelect " : "select ";
+        	String ops = simultaneousTurnsAllowed() ? "eSelect " : "select ";
         	PerformAndTransmit(G.concat(ops,
         								hitObject.rackLocation().shortName(),
         								" ",
@@ -1602,7 +1600,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	super.performReset();
     }
     public void updatePlayerTime(long inc,commonPlayer p)
-    {	if(simultaneous_turns_allowed())
+    {	if(simultaneousTurnsAllowed())
     	{
     		for(commonPlayer pl : players)
     		{	
@@ -1618,8 +1616,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     }
     public boolean playerChanging()
     {
-    	ImagineState state = bb.getState();
-    	if(state.simultaneousTurnsAllowed()) { return(false); }	
+    	if(bb.simultaneousTurnsAllowed()) { return(false); }	
     	return(super.playerChanging());
     	
     }
