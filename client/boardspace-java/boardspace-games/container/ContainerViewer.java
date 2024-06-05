@@ -1194,7 +1194,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
 					  boolean spectator = isSpectator();
 					  boolean inrect = G.pointInRect(any,xp-siz/2,yp-siz/2,siz,siz);
 					  boolean itsMe = allowed_to_edit || GameOver() || (!spectator && !isPassAndPlay && (ob==getCurrentPlayerBoard(gb)));
-					  boolean canShow = itsMe || G.offline() ;
+					  boolean canShow = itsMe || isOfflineGame() ;
 					  boolean showBig = inrect && canShow && any.down;
 					  boolean hideDetails = isPassAndPlay && !showBig;
 					  int size = showBig ? siz*3 : siz;

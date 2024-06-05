@@ -20,7 +20,6 @@ use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);
 use HTML::Entities;
 use URI::Escape;
-
 use Mysql;
 use Debug;
 use Socket;
@@ -117,9 +116,6 @@ sub check_server
 
   return 1;
 }
-
-
-
 sub print_jws_applet()
 { my ($dbh,$fav,$pname,$uid,$languageName,$uidrank,$haspicture,$country,$latitude,$logitude,
       $pclass,$played,$timec,$bannermode) = @_;
@@ -128,7 +124,6 @@ sub print_jws_applet()
   my $cheerpj = lc(param('cheerpj')) eq 'true';
   my $guestnamepar = param('guestname');
   my ($guestname) = split(' ',$guestnamepar);
-  if(length($guestname)>9) { $guestname = substr $guestname,0,9; }
   my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
   my $testserver = $test ? "testserver=true\n" : "";
   my $stealth = (($bannermode eq 'S')&&(param('stealth') eq 'true'))
@@ -170,7 +165,7 @@ sub print_jws_applet()
    my $port = $cheerpj
 		? ($test ? $'cheerpj_test_server_port : $'cheerpj_game_server_port)
 		: $actualPort;
-   my $guestnameout = (($pname eq 'guest') && $guestname) ? "guestname=$guestname" : "";
+   my $guestnameout = (($pname eq 'guest') && $guestname) ? "guestname=$guestname\n" : "";
    my $msg = utfEncode("$banner$fav$testserver$dd
 codebase=/$'java_dir/$use_class_dir/
 documentbase=/$languageName/
@@ -195,8 +190,7 @@ logitude=$logitude
 language=$language
 $gameparams
 extramouse=$extra
-$guestnameout
-$feat
+$guestnameout$feat
 final=true
 ");
 	my $cs = &simplecs($msg);

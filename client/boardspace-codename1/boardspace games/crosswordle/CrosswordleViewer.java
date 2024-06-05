@@ -1100,7 +1100,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         G.concat(
         		"&p1=",pl.trueName(),
          		"&u1=",pl.uid,
-         		"&offline=",G.offline(),
+         		"&offline=",isOfflineGame(),
     			"&puzzleid=",bb.getSolution(key),
     			"&variation=",vname,
     			"&hard=",hards);
@@ -1428,7 +1428,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     {	long key = bb.randomKey;
     	String v = G.concat(
     			"&puzzleid=",bb.getSolution(key),
-    			"&offline=",G.offline(),
+    			"&offline=",isOfflineGame(),
     			"&variation=",bb.variation.name(),
     			"&hard=",((key&1)==0?"false":"true"),
     			"&puzzledate=",dateRect.dateString(),

@@ -149,7 +149,7 @@ public void ViewerRun(int wait)
 	public boolean censoring(QEPlayer p)
 	{
 		return(censoring()
-				&& (G.offline() 
+				&& (isOfflineGame() 
 						? p.publicCensoring 
 						: (isSpectator()
 								|| (p.index!=getActivePlayer().boardIndex))));
@@ -298,7 +298,7 @@ public void ViewerRun(int wait)
     	int u2 = unit/2;
     	int chipW = 3*unit;
     	int chipH = 2*unit+u2;
-    	int donew = G.offline()? unit*8:0;
+    	int donew = isOfflineGame()? unit*8:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unit+u2);
     	int boxh = G.Height(box);
         G.SetRect(chip,	x,	y, chipW	,chipH	);
@@ -364,7 +364,7 @@ public void ViewerRun(int wait)
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-    	int spaceForDone = G.offline()?0:buttonW;
+    	int spaceForDone = isOfflineGame()?0:buttonW;
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)(mainW-spaceForDone)/ncols,(double)mainH/nrows);
     	CELLSIZE = (int)cs;
@@ -852,10 +852,10 @@ public void ViewerRun(int wait)
         		{	Rectangle r = new Rectangle(x,y,stepx,sizey);
         			commonPlayer ap = getActivePlayer();
         			QEState uis = getUIState(i);
-        			HitPoint select = (canHitCard(uis,i) && (G.offline() || (i==(ap.boardIndex))))?highlight:null;
+        			HitPoint select = (canHitCard(uis,i) && (isOfflineGame() || (i==(ap.boardIndex))))?highlight:null;
         			drawBidCard(gc,pl,select,r,witnessing,	
         					witnessing
-        						? ob==null || (G.offline() ? ob.publicCensoring : (ap.isSpectator() || (ap.boardIndex!=obIndex))) 
+        						? ob==null || (isOfflineGame() ? ob.publicCensoring : (ap.isSpectator() || (ap.boardIndex!=obIndex))) 
         						: censoring(pl)); 
         		}
 			x += stepx;
@@ -982,7 +982,7 @@ public void ViewerRun(int wait)
        HitPoint buttonSelect = moving||hasCalculator ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       boolean offline = G.offline();
+       boolean offline = isOfflineGame();
        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, (hasCalculator||bigChip!=null)?null:ourTurnSelect);
        for(int i=0;i<bb.players_in_game;i++)
@@ -994,7 +994,7 @@ public void ViewerRun(int wait)
        	   GC.frameRect(gc, Color.black, box);
     	   DrawChipPool(gc, chipRect[i], i, hasCalculator?null:ourTurnSelect,gb,viewBidCards[i],noqeCards[i],wonCards[i],
     			   offline ? doneRects[i] : null,censoring(pl));
-    	   if(G.offline()) { drawEye(gc,eyeCards[i],selectPos,pl.publicCensoring,i); }
+    	   if(isOfflineGame()) { drawEye(gc,eyeCards[i],selectPos,pl.publicCensoring,i); }
        	   p0.setRotatedContext(gc, selectPos, true);
        }
        GC.setFont(gc,standardBoldFont());

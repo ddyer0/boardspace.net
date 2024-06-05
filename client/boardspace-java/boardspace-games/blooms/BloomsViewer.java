@@ -164,6 +164,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new BloomsBoard(type,players_in_game,randomKey,getStartingColorMap(),BloomsBoard.REVISION);
+        setSimultaneousTurnsAllowed(!isTurnBasedGame()); 
         useDirectDrawing(true);
         doInit(false);
     }
@@ -447,7 +448,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     							HighlightColor,boardBackgroundColor,boardBackgroundColor);
     		b.textColor = Color.black;
     		G.SetRect(b,approveX,approveY,xstep*3/2,step);
-    		if(b.draw(gc,i==ap.boardIndex||G.offline() ? highlight : null))
+    		if(b.draw(gc,i==ap.boardIndex||allowed_to_edit||bb.simultaneousTurnsAllowed() ? highlight : null))
     		{	
     			highlight.hit_index = i;
     		}
@@ -790,12 +791,14 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         case Select:
         	{
         	commonPlayer ap = getActivePlayer();
-        	PerformAndTransmit("Eselect "+bb.playerColor(ap.boardIndex).id.shortName()+" "+hp.hitObject);
+        	PerformAndTransmit((simultaneousTurnsAllowed() ? "Eselect " : "select ")
+        				+bb.playerColor(ap.boardIndex).id.shortName()+" "+hp.hitObject);
         	}
         	break;
         case Approve:
         	{
-            	PerformAndTransmit("EApprove "+bb.playerColor(hp.hit_index).id.shortName());
+            	PerformAndTransmit((simultaneousTurnsAllowed() ? "EApprove " : "approve ")
+            				+bb.playerColor(hp.hit_index).id.shortName());
         	}
         	break;
         case BoardLocation:	// we hit an occupied part of the board 			
@@ -1060,7 +1063,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             if(!reviewOnly 
           	 && !reviewMode() 
           	 && (bb.allApproved())
-          	 && (G.offline()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+          	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
             	{	  
           	  	PerformAndTransmit("Select R "+bb.endgameCondition);
           	  	// test rejection of surplus ephemeral moves

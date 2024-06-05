@@ -1038,7 +1038,7 @@ private PlayerBoard showPlayerCards()
 
 private boolean censor(PlayerBoard pb,HitPoint hp)
 {	//if(allowed_to_edit) { return(false); }
-	if(G.offline())
+	if(isOfflineGame())
 		{ return((remoteWindowIndex(hp)<0) 
 			? (pb.showCards 
 					? false 
@@ -3740,7 +3740,7 @@ private void drawPlayerBoard(Graphics gc,
 			GC.Text(gc,false, mleft,top+step/5,step*3/2,step/3,Color.blue,null,msg);
 		}
 		
-       	if(G.offline() && !apCards && !cardBacks)
+       	if(isOfflineGame() && !apCards && !cardBacks)
        	{	
        		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, totalW/20, xp+totalW/20,
        					yp+totalW/20,highlightAll,ViticultureId.Eye,null);
@@ -4113,7 +4113,7 @@ private void drawPlayerBoard(Graphics gc,
 			GC.Text(gc,true, mleft+step/4,doneRowCenter,totalW-mleft-doneWidth*2,step/3,Color.yellow,null,s.get(TooExpensive,pb.cash));
 		}
 		
-       	if(G.offline()  && !cardBacks)
+       	if(isOfflineGame()  && !cardBacks)
        		{	
        		(censor ? StockArt.Eye : StockArt.NoEye).drawChip(gc, this, totalW/20, xp+totalW/20,
        					yp+totalW/20,highlightAll,ViticultureId.Eye,null);
@@ -4230,7 +4230,7 @@ private void drawPlayerBoard(Graphics gc,
 		{
 			ViticultureChip ch = p.getRooster();
 			boolean ready = p.isReady;
-			boolean me = G.offline() || ( p.boardIndex==getActivePlayer().boardIndex);
+			boolean me = isOfflineGame() || ( p.boardIndex==getActivePlayer().boardIndex);
 			if(ch.drawChip(gc,this,step*2,xp,y,me ? highlight:null,ViticultureId.SetReady,null))
 			{
 				highlight.hitObject = p;
@@ -6311,7 +6311,7 @@ private void drawPlayerBoard(Graphics gc,
         	 && !reviewMode() 
         	 && (mainBoard.getState()==ViticultureState.ChooseOptions)
         	 && (mainBoard.allPlayersReady())
-        	 && (G.offline()||(mainBoard.whoseTurn == getActivePlayer().boardIndex)))
+        	 && (isOfflineGame()||(mainBoard.whoseTurn == getActivePlayer().boardIndex)))
           {	  
         	  PerformAndTransmit("ECommence "+mainBoard.options.memberString(Option.values()));
           }
@@ -6660,7 +6660,7 @@ private void drawPlayerBoard(Graphics gc,
   	commonMove top = History.top();
   	
   	return((mainBoard.players_in_game>1) 
-  			&& (G.offline() || (who==getActivePlayer()))
+  			&& (isOfflineGame() || (who==getActivePlayer()))
   			&& (mainBoard.turnChangeSamePlayer ||
   					((top.op==MOVE_DONE)	
   					  || (who==null)

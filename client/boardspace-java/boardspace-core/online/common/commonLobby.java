@@ -476,8 +476,8 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
         flushOutput = myFrame.addOption("flush output",false,deferredEvents);
         // these are problematic because of the expectation that they are offline
         startLauncher = myFrame.addAction("start offline launcher",deferredEvents);
-        startTurnbased = myFrame.addAction(s.get(StartTurnBasedMessage),deferredEvents);
     }
+    startTurnbased = myFrame.addAction(s.get(StartTurnBasedMessage),deferredEvents);
     setGameTime();
     SetNumberOfUsers(serverNumberOfUsers);
     SetNumberOfSessions(serverNumberOfSessions);
@@ -551,11 +551,7 @@ private void setGameTime()
   private int sentMessages=0;
   /* return true of OK */
   public boolean sendMessage(String message)
-  { if(G.offline())
-  	{
-	  Plog.log.addLog("offline skip message ",message);
-  	}
-  else {
+  { 
 	myNetConn.na.getLock();
 	try {
 	if(myNetConn.hasSequence) 
@@ -579,7 +575,7 @@ private void setGameTime()
 	}
 	finally {
     myNetConn.na.Unlock();
-	}}
+	}
     return(true);
   }
 
@@ -658,7 +654,7 @@ private void SetMyName(String theName,boolean nomsg,String uid)
   if(isGuest) 
     { if(!shownGuest)
       {
-      if(!G.offline()) { newsStack.push(guestTextFile); }
+      newsStack.push(guestTextFile);
       shownGuest=true;
       }
     String gname = G.getString(KEYWORD_GUESTNAME,null);
@@ -1852,7 +1848,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
 
     if(!me.isGuest && !me.isNewbie) 
       {showHostMessages = Http.getHostName();
-       if(!G.offline()) { newsStack.push(newsTextFile); }
+       newsStack.push(newsTextFile); 
       }
     
 
@@ -2106,7 +2102,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     if(needRank) 
       { needRank=false;    //try again in 10 seconds
         doTouch();		   //we just closed a frame, make sure the lobby gets a new lease
-        if(!G.offline()) { SetMyRank(); } 
+        SetMyRank();
       }
      showRanking();        //update the displayed ranking if now available
      ConnectionState state = getLobbyState();
@@ -2116,7 +2112,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
      	startingSession= null;
      	clearedForLaunch=false;
      	User me = users.primaryUser();
-     	sess.launchGame(me,myFrame.doSound(),null,v!=null ? v.getCanvasRotation():0,sess.launchingGame);
+     	sess.launchGame(me,myFrame.doSound(),null,v!=null ? v.getCanvasRotation():0,sess.launchingGame,false);
      	movingToSess = -1;
     	sendMessage(NetConn.SEND_LOBBY_INFO+" 0 0 0");
     	sendMessage(NetConn.SEND_GROUP+KEYWORD_UIMIN+" 0 0 0");
@@ -2329,7 +2325,7 @@ public void setRoomType(Session sess,Session.Mode mode,GameInfo g,boolean forced
      }
      sess.setCurrentGame(g,G.debug()||isTestServer,false,false);
      
-     if((g!=null) && (!G.allowRobots() || (g.nRobots() == 0))) 
+     if((g!=null) && (g.nRobots() == 0))
      	{ sess.setCurrentRobot(sess.defaultNoRobot()); }
      if(sess.currentGame!=null && !forced) { PreloadClass(sess.currentGame.viewerClass); }; 
 }

@@ -449,7 +449,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     							HighlightColor,boardBackgroundColor,boardBackgroundColor);
     		b.textColor = Color.black;
     		G.SetRect(b,approveX,approveY,xstep*3/2,step);
-    		if(b.draw(gc,i==ap.boardIndex||G.offline() ? highlight : null))
+    		if(b.draw(gc,i==ap.boardIndex||isOfflineGame() ? highlight : null))
     		{	
     			highlight.hit_index = i;
     		}
@@ -1062,7 +1062,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             if(!reviewOnly 
           	 && !reviewMode() 
           	 && (bb.allApproved())
-          	 && (G.offline()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+          	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
             	{	  
           	  	PerformAndTransmit("Select R "+bb.endgameCondition);
           	  	// test rejection of surplus ephemeral moves

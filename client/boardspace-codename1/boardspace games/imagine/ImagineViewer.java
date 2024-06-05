@@ -1151,7 +1151,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     }
     public boolean reviewOrOffline()
 	{
-    	return (G.offline() || (allowed_to_edit && (reviewMode()||reviewOnly)) || isSpectator());
+    	return (isOfflineGame() || (allowed_to_edit && (reviewMode()||reviewOnly)) || isSpectator());
     }
 	public commonPlayer guiPlayer(ImagineBoard gb)
 	{

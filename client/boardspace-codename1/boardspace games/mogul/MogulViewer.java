@@ -341,7 +341,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	int chipw = (int)(chipsiz*1.4); 
     	int stackW = xstep;
 		boolean showNow = !showChips
-				&& (G.offline() || (pl.myIndex==gb.whoseTurn))
+				&& (isOfflineGame() || (pl.myIndex==gb.whoseTurn))
 				&& (remoteWindowIndex(any)<0)
 				&& (StockArt.Eye.drawChip(gc, this,  chipsiz, xstart,top+chipsiz/2+xstep/8,highlight,MogulId.SeeChips,null))
 				;

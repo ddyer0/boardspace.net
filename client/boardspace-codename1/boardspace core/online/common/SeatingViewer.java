@@ -479,7 +479,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 					favoriteGames.recordRecentGame(sess.currentGame,FAVORITES,RECENT_LIST_SIZE);
 				}
 				sess.startingTimeControl = sess.timeControl();
-				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame);
+				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame,true);
 				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
 				break;
 			case DiscardButton:
@@ -1228,6 +1228,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		drawMainSelector(gc,seatingChart,gameSelectionRect,pt,portrait);
 		if(G.debug()||G.isTable()) 
 			{ 
+			gearMenu.includeExit = !fromLobby;
 			gearMenu.draw(gc,unPt);
 			}
 		
@@ -1241,7 +1242,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			unPt.hitCode = SeatId.ToggleServer;
 			}
 		
-		onlineButton.draw(gc,unPt);
+		if(!fromLobby) { onlineButton.draw(gc,unPt); }
 
 		if(!G.isIOS())
 		{
@@ -1478,7 +1479,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		 LFrameProtocol f = myFrame;
 		 if(f!=null) { f.killFrame(); }
 	 }
-
+	boolean fromLobby = false;
     static public SeatingViewer doSeatingViewer(ExtendedHashtable sharedInfo)
     {  
     	commonPanel panel = new commonPanel();
@@ -1487,6 +1488,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     	if(viewer!=null)
     	{
     	viewer.init(sharedInfo,frame);
+    	viewer.fromLobby = true;
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);
     	double scale = G.getDisplayScale();

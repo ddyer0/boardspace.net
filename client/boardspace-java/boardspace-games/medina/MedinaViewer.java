@@ -92,7 +92,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     {
         return ((showAllRacks 
         		|| mutable_game_record 
-         		|| (G.offline() ? alwaysShow : getActivePlayer().boardIndex==idx)
+         		|| (isOfflineGame() ? alwaysShow : getActivePlayer().boardIndex==idx)
         		)
          		? false 
         		: true);
@@ -549,7 +549,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         drawRack(gc,pl,ot,player,playerPieceRect[player],gb,visibleChips[player]); 
         drawCards(gc,gb.cards[player],playerCardRect[player]);
         StockArt icon = visibleChips[player] ? StockArt.NoEye : StockArt.Eye;
-        if(G.offline())
+        if(isOfflineGame())
         {
         if(icon.drawChip(gc, this, eyeRect[player],any, MedinaId.VisibleChip))
         	{

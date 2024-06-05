@@ -1678,18 +1678,23 @@ synchronized(allGames) {
 			"/punct/english/punct-video.html","about_punct.html",
 			false, WhiteOverBlack));
 	
-	put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
+	{ GameInfo m = put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
-	put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
+	  m.okForTurnbased = false;
+	}
+	{
+	GameInfo m = put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
+	m.okForTurnbased = false;
+	}
 	put(new GameInfo(212,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-U",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},

@@ -34,7 +34,9 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
     static final int EPHEMERAL_SELECT = 208;	// select an endgame condition
     static final int EPHEMERAL_APPROVE = 210;	// start with current selection
     static final int SELECT = 211;				// start with current selection
-    
+    static final int SYNCHRONOUS_SELECT = 212;	// select an endgame condition
+    static final int SYNCHRONOUS_APPROVE = 213;	// start with current selection
+   
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -45,6 +47,8 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
         	"Dropb", MOVE_DROPB,
         	"ESelect",EPHEMERAL_SELECT,
         	"EApprove",EPHEMERAL_APPROVE,
+        	"SSelect",SYNCHRONOUS_SELECT,
+        	"SApprove",SYNCHRONOUS_APPROVE,
         	"Select",SELECT);
   }
     public boolean isEphemeral()
@@ -232,12 +236,14 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
     {  	switch (op)
     {
     	case SELECT:
+    	case SYNCHRONOUS_SELECT:
     	case EPHEMERAL_SELECT:
     		{
     		EndgameCondition option = EndgameCondition.values()[to_row];
     		String msg = "Win "+(option.ncaptured==0 ? "Territory" : "Capture "+option.ncaptured);
     		return TextChunk.create(msg);
     		}
+    	case SYNCHRONOUS_APPROVE:
     	case EPHEMERAL_APPROVE:
     		return TextChunk.join(TextGlyph.create("xxx",target,v,new double[] {1,1.25,0,-0.2}),
     					TextChunk.create("Approve"));
@@ -285,10 +291,12 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
         switch (op)
         {
         case EPHEMERAL_SELECT:
+        case SYNCHRONOUS_SELECT:
         case SELECT:
         	return(G.concat(opname,source.shortName," ",EndgameCondition.values()[to_row]));
         	
         case EPHEMERAL_APPROVE:
+        case SYNCHRONOUS_APPROVE:
         	return G.concat(opname,source.shortName);
 
         case MOVE_PICKB:

@@ -996,7 +996,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    
 	    boolean robo = ((session.mode==Session.Mode.Unranked_Mode)
 	    				|| (session.mode==Session.Mode.Game_Mode))
-	    				&& G.allowRobots()
 	    				&& (session.getSubmode()!=JoinMode.Tournament_Mode)
 	    				&& (session.includeRobot()!=null)
 	    				&& (playersInSession<maxp) 
@@ -1419,7 +1418,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    { 
 		  Color startcolor = Color.black;
 	      boolean canrobo = (playersInSession<maxPlayers);
-	      boolean robo =  G.allowRobots() && (bot!=null) && canrobo && session.canIUseThisRobot(bot);
+	      boolean robo =  (bot!=null) && canrobo && session.canIUseThisRobot(bot);
 	      if((highlightedSession==session)
 	    	 &&(highlightedItem==LobbyId.highlight_start))
 	        { startcolor = AttColor;
@@ -2260,7 +2259,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_spec:
 	      {	// launch a spectator or a review room
 	    	  if(!lobby.doNotReconnect)
-	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound(),getCanvasRotation(),sess.currentGame); 
+	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound(),getCanvasRotation(),sess.currentGame,false); 
 	   	       		lobby.startingSession = null;
 	   	       		lobby.clearedForLaunch = false; 	
 	   	       		lobby.startingSession = null;

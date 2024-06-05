@@ -92,7 +92,12 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     					  || ((val.startsWith("'") && (val.endsWith("'")))))
     			  	{ val = val.substring(1,val.length()-1); 		// trim enclosing quotes
     			  	}
-    			  if(G.LANGUAGE.equals(key) && val.endsWith("Strings"))
+    			  if(KEYWORD_GUESTNAME.equals(key))
+    			  	{ val = G.utfDecode(val); 	// if the guest name contained unicode it needs to be decoded
+    			  	  // and make sure it's a short name
+    			  	  if(val.length()>9 ) { val = val.substring(0,9); }
+    			  	}
+    			  else if(G.LANGUAGE.equals(key) && val.endsWith("Strings"))
     			  {
     				  val = val.substring(0,val.length()-"Strings".length());
     			  }
@@ -176,10 +181,12 @@ public class Login implements SimpleObserver,Config,OnlineConstants
 			}
 			String params = "&jws=1&pname="
 				+Http.escape(name)
-				+"&language="+Http.escape(lang)
+				+"&" + G.LANGUAGE+"="+Http.escape(lang)
 				+ (test ? "&test=true" : "")
 				+ (G.isCheerpj() ? "&cheerpj=true" : "")
-				+ (guest ? "&guestname="+Http.escape(guestName) : "&cookie=1")
+				// guestname is passed through the login process so it is presented on the 
+				// logged in side.  The escaping here ends up encoding the name with \u0000 if necessary
+				+ (guest ? "&"+KEYWORD_GUESTNAME+"="+Http.escape(guestName) : "&cookie=1")
 				;
 			// the name of the password parameter is a minor difference between boardspace and tantrix
 			int socks[] = {80};

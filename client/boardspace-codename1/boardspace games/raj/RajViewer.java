@@ -344,7 +344,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
      		double vsize = hscale+(stackHeight*vscale)*unit+unit*2;
      		double vstep = vsize/(stackHeight+1);
      		int boxtop = cy - (int)(vsize)+unit*2;
-            boolean canHitCards = (allowed_to_edit||(!isSpectator() && (G.offline()||(getActivePlayer().boardIndex==pl)))) 
+            boolean canHitCards = (allowed_to_edit||(!isSpectator() && (isOfflineGame()||(getActivePlayer().boardIndex==pl)))) 
             			? gb.LegalToHitCards(unplayed):false;    
             // a little assist for the robot
             Rectangle boxRect = new Rectangle(cx-unit,boxtop,unit*2,(int)(vstep*stackHeight));
@@ -421,7 +421,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	if(xp>0 && yp>0)
     	{
     	RajChip ch = RajChip.getChip(obj);
-    	if(ch.isCard() &&  (G.offline() || (reviewOnly || (!isSpectator() && (bb.playerOwning(ch.cardColor())==getActivePlayer().boardIndex)))))
+    	if(ch.isCard() &&  (isOfflineGame() || (reviewOnly || (!isSpectator() && (bb.playerOwning(ch.cardColor())==getActivePlayer().boardIndex)))))
     		{ drawCardFace(g,new Rectangle(xp-CELLSIZE,yp-5*CELLSIZE/3,CELLSIZE*2,CELLSIZE*3),ch);
     		}
     	else { ch.drawChip(g,this,CELLSIZE*2, xp, yp, null); }
@@ -507,7 +507,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         // because there will be no gaps or overlaps between cells.
         RajCell closestCell = gb.closestCell(highlight,brect);
         RajState state = gb.getState();
-        boolean anyhit = G.offline() 
+        boolean anyhit = isOfflineGame() 
         				|| (reviewOnly && ((state==RajState.CONFIRM_CARD_STATE) || (state==RajState.PLAY_STATE)));
         boolean hitCell = !isSpectator()
         					&& !isQuietTime(state)
@@ -795,7 +795,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 	    	break;
 	    case BoardLocation:
 	    	{	RajChip obj = hitCell.topChip();
-	    	if(obj.isCard() && (G.offline() || (simultaneousTurnsAllowed())))
+	    	if(obj.isCard() && (isOfflineGame() || (simultaneousTurnsAllowed())))
 	    	{	int ord = bb.playerOwning(obj.cardColor());
 	    		bb.setMyIndex(ord,true);  
 	    		if(remoteIndex>=0)
@@ -832,7 +832,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	{	if(remoteIndex>=0) {}
     		else if((id==DefaultId.HitNoWhere)
     			&& !isSpectator() 
-    			&& !G.offline() 
+    			&& !isOfflineGame()
     			&& simultaneousTurnsAllowed())
     		{
     			String dn = bb.unDropMove();

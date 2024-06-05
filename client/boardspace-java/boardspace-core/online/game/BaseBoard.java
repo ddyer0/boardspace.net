@@ -434,16 +434,28 @@ public abstract class BaseBoard implements Opcodes,Digestable
 			}
 		return(false);
 	}
+	
 	private boolean simultaneousTurnsAllowed = true;
 	
+	/**
+	 * set the general availability of simultaneous moves, which defaults to true
+	 * @param v
+	 */
 	public void setSimultaneousTurnsAllowed(boolean v)
 	{
 		simultaneousTurnsAllowed = v;
 	}
+	/**
+	 * @return true if simultaneous turns are allowed in the current state
+	 */
 	public boolean simultaneousTurnsAllowed()
 	{
 		return simultaneousTurnsAllowed(getState());
 	}
+	/**
+	 * @param state one of the game's states
+	 * @return true if simultaneous turns are allowed in a particular state, if they are allowed in general.
+	 */
 	public boolean simultaneousTurnsAllowed(BoardState state)
 	{
 		return simultaneousTurnsAllowed && state.simultaneousTurnsAllowed();

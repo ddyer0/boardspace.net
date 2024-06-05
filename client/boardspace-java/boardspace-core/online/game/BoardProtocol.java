@@ -229,10 +229,26 @@ public interface BoardProtocol extends Digestable
 	 * @return
 	 */
 	public String getName();
+	/**
+	 * set the name of this board; used to differentiate the main board from 
+	 * various copies used by different parts of the game.
+	 * @param s
+	 */
 	public void setName(String s);
 	public BoardState getState();
+	/**
+	 * @return true if simultaneous turns are allowed in the current state
+	 */
 	public boolean simultaneousTurnsAllowed();
+	/**
+	 * @param state one of the game's states
+	 * @return true if simultaneous turns are allowed in a particular state, if they are allowed in general.
+	 */
 	public boolean simultaneousTurnsAllowed(BoardState state);
+	/**
+	 * set the general availability of simultaneous moves, which defaults to true
+	 * @param v
+	 */
 	public void setSimultaneousTurnsAllowed(boolean v);
 	
 	public boolean canResign();

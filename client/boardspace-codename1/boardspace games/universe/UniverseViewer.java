@@ -1034,7 +1034,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
        gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
         drawBoardElements(gc, gb, boardRect, ot);
-    	boolean localDone = G.offline()&&!reviewOnly&&(G.Height(doneRects[0])>0);
+    	boolean localDone = isOfflineGame()&&!reviewOnly&&(G.Height(doneRects[0])>0);
         for(int idx = 0;idx<nPlayers;idx++)
         {
         	commonPlayer player = getPlayerOrTemp(idx);

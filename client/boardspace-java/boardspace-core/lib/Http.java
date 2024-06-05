@@ -565,15 +565,17 @@ public static void emailGame(String to,String subject,String body)
 /*  */
 /**
  * escape an arbitrary string for transmission as form data. This should be used on the data
- * portion of a parameter, ie; "?foo="+escape(bar)
+ * portion of a parameter, ie; "?foo="+escape(bar).  The previous version of this didn't 
+ * correctly handle unicode characters (so they never worked).  This version converts them
+ * to \u1234 which has to be expected by the eventual receiver.
  */
-static public String escape(String d)
+static public String escape(String in)
 {
+    String d = G.utfEncode(in);		// make sure everything is standard ascii
     int idx = 0;
     int len = d.length();
     ByteArrayOutputStream b = new Utf8OutputStream();
     PrintStream os = Utf8Printer.getPrinter(b);
-
     while (idx < len)
     {
         char c = d.charAt(idx++);
@@ -587,12 +589,10 @@ static public String escape(String d)
         }
         else 
         {	// this is not completely correct if some unicode sneaks in
-        	os.print("%" + Http.HexDig[(c&0xff) / 16] + Http.HexDig[c % 16]);
-         }
+        	os.print("%" + Http.HexDig[c / 16] + Http.HexDig[c % 16]);
+        }
     }
-
     os.flush();
-
     return (b.toString());
 }
 

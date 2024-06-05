@@ -1105,10 +1105,20 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 			break;
 
 		case EPHEMERAL_SELECT:
+		case SYNCHRONOUS_SELECT:
 			endgameCondition = EndgameCondition.values()[m.to_row];
 			AR.setValue(endgameApproved,false);
 			break;
 		case EPHEMERAL_APPROVE:
+			{
+			int ind = playerIndex(m.source);
+			endgameApproved[ind] = true;
+			m.target = playerColor(ind);
+			setNextPlayer(replay);
+			if(endgameApproved[whoseTurn]) { setNextStateAfterDone(replay); }
+			}
+			break;
+		case SYNCHRONOUS_APPROVE:
 			{
 			int ind = playerIndex(m.source);
 			endgameApproved[ind] = true;

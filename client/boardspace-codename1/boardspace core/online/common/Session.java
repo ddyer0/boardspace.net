@@ -222,8 +222,7 @@ public class Session implements LobbyConstants
 	public Bot includeRobot()
 	{	
 		Bot robo = currentRobot;
-		if( G.allowRobots()
-				&& (robo!=null)
+		if( (robo!=null)
 				&& (robo.idx>=0)
 				&& (numberOfPlayers()<currentMaxPlayers())
 				) return(robo);
@@ -656,8 +655,7 @@ public class Session implements LobbyConstants
     {
     	int playersInSession=numberOfPlayers();
 	  	int maxPlayers =currentMaxPlayers();
-	    boolean canAddRobot = G.allowRobots() 
-	    						&& (playersInSession < maxPlayers)
+	    boolean canAddRobot =  (playersInSession < maxPlayers)
 	    						&& (mode != Mode.Tournament_Mode)
 	    						&& (submode != JoinMode.Tournament_Mode)
 	    						&& (mode != Mode.Master_Mode);
@@ -671,7 +669,7 @@ public class Session implements LobbyConstants
      * @param activeColorMap
      * @param rotation
      */
-  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap,int rotation,GameInfo game) 
+  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap,int rotation,GameInfo game,boolean offline) 
 		{
   		currentGame = game;
 		InternationalStrings s = G.getTranslations();
@@ -755,6 +753,7 @@ public class Session implements LobbyConstants
 		 	};
 		 myInfo.put(TIMECONTROL,startingTimeControl);
 		 myInfo.put(TURNBASEDGAME,turnBasedGame);	// null except for turn based games
+		 myInfo.putBoolean(OFFLINEGAME,offline);
 		 myInfo.put(KEYWORD_COLORMAP,activeColorMap);
 		 myInfo.putInt(NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
 		 myInfo.putInt(PLAYERS_IN_GAME,
@@ -883,7 +882,7 @@ public class Session implements LobbyConstants
 	      }
 	  }
 
-	public void launchSpectator(User primaryUser,boolean sound,int rotation,GameInfo game)
+	public void launchSpectator(User primaryUser,boolean sound,int rotation,GameInfo game,boolean offline)
 	{
 	       password="";
 	       startingNplayers=0;
@@ -894,7 +893,7 @@ public class Session implements LobbyConstants
 	       startingName="";
 	       LaunchUser lu = launchUser = new LaunchUser();
 	       lu.user = primaryUser;
-	       launchGame(primaryUser,sound,null,rotation,game);
+	       launchGame(primaryUser,sound,null,rotation,game,offline);
 	     
 	}
 	public boolean canChangeGameInfo()

@@ -164,7 +164,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	Rectangle influence = playerInfluenceRect[pl];
     	Rectangle done = doneRects[pl];
     	Rectangle eye = playerEyeRect[pl];
-    	int doneW = G.offline() ? unit*3 : 0;		// we use the done rect even in unplanned seating
+    	int doneW = isOfflineGame() ? unit*3 : 0;		// we use the done rect even in unplanned seating
     	int px = x+unit*4+doneW;
     	int influenceW = unit*4;
     	int influenceY = y+unit*2;
@@ -376,7 +376,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	drawPlayerInfluence(gc,p,pl,gb,playerInfluenceRect[player],targets,highlight);
     	drawPlayerRole(gc,p,gb,playerRoleRect[player],highlight);
     	Rectangle done = doneRects[player];
-    	if(G.offline())
+    	if(isOfflineGame())
     	{	if(gb.getState().isElection())
     		{
 			showVoteButton(gc,p,highlight,done,playerEyeRect[player],p.normalShow,true);
@@ -615,11 +615,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             			if(diskPlayer!=null)
             			{
             			boolean show = reviewOnly 
-            					|| (G.offline() 
+            					|| (isOfflineGame()
             							? diskPlayer.normalShow 
             							: (cell.boss==myPlayer.myBoss));
             			boolean hasVoted = (bb.players[diskPlayer.myIndex].pendingVote!=null);
-            			boolean canvote = !hasVoted && (G.offline() ? show : true);
+            			boolean canvote = !hasVoted && (isOfflineGame() ? show : true);
             			drawElectionDisc(gc, show,canvote,highlight, diskPlayer,CELLSIZE, cell, xpos, ypos);
             			}
             		}
@@ -628,7 +628,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             	// bosses in the election grid display
             	if(state.isElection())
             	{	boolean show = reviewOnly 
-            				|| (G.offline()
+            				|| (isOfflineGame()
             						? bb.getPlayerNormalShow(cell.boss) 
             						: (cell.boss==myPlayer.myBoss));
             	    some = drawElectionStack(gc,show,CELLSIZE, cell,xpos,ypos);
@@ -954,7 +954,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 				AR.setValue(preparedVote , null);
 				AR.setValue(preparedVoteSent , false);
 				}
-			if(!G.offline())
+			if(!isOfflineGame())
 			{
 				int whoseMove = simultaneousTurnsAllowed() ? getActivePlayer().boardIndex : gb.whoseTurn;
 				TammanyPlayer p = gb.players[whoseMove];

@@ -13,6 +13,7 @@ import java.awt.*;
 import javax.swing.JPanel;
 
 
+
 /**
  * This class is based on "GUISpielfeld.java", which is a class of www.twixt.de,
  * Copyright (C) 2002 Agnes Gruber, Dennis Riegelbauer, Manuela Kinzel, Mike

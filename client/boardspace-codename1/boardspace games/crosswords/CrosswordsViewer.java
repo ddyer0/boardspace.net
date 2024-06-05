@@ -355,7 +355,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	boolean planned = plannedSeating();
-    	boolean showRacks = G.offline() || !boardMax;
+    	boolean showRacks = isOfflineGame() || !boardMax;
     	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
@@ -464,7 +464,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(G.offline() || (pl==ap))
+    	if(isOfflineGame() || (pl==ap))
     	{
     		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
     	}
@@ -474,7 +474,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	if(allowed_to_edit || ap==pl) { for(CrosswordsCell c : prack) { c.seeFlyingTiles=true; }}
        	boolean open = gb.openRack[pidx];
       	boolean showTiles = open || allowed_to_edit || bb.openRacks; 
-       	boolean anyRack = G.offline() || allowed_to_edit || (ap==pl);
+       	boolean anyRack = isOfflineGame() || allowed_to_edit || (ap==pl);
        	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
     	}}
     private void drawEye(Graphics gc,CrosswordsBoard gb,Rectangle er,boolean showing,HitPoint highlightAll,int who)
@@ -670,12 +670,12 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		if(c!=null) { return(c); }
     	}
     	else {
-    	{int ap = allowed_to_edit||G.offline() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||isOfflineGame() ? bb.whoseTurn : getActivePlayer().boardIndex;
     	 CrosswordsCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
  
-     	if(allowed_to_edit || G.offline())
+     	if(allowed_to_edit || isOfflineGame())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{CrosswordsCell c = getMovingTile(pl.boardIndex);
@@ -1214,7 +1214,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   int ap = allowed_to_edit|isOfflineGame() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
     	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
     	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.getRackMap(ap),gb.getMapPick(ap),

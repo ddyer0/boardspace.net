@@ -58,11 +58,6 @@ public class G extends Platform implements Timestamp
 	
 	public static boolean TimedRobots() { return(TIMEDROBOTS || debug()); }
 	
-	// TODO: implement robot setup in the offline launcher, still conditioned by AllowOfflineRobots
-	public static boolean allowRobots()
-	{
-		return(!offline() || getGlobals().getBoolean(G.ALLOWOFFLINEROBOTS,AllowOfflineRobots));
-	}
 	
 	private static boolean offline = false;
 	private static boolean turnbased = false;
@@ -70,7 +65,7 @@ public class G extends Platform implements Timestamp
 	public static void setOffline(boolean v) { offline=v; }
 	public static void setTurnBased(boolean v) { turnbased = v; }
 	public static boolean turnBased() { return turnbased; }
-	
+
 	private static boolean remoteViewer = false;
 	public static boolean remoteViewer() { return(remoteViewer); }
 	public static void setRemoteViewer(boolean v) { remoteViewer=v; }
@@ -2103,6 +2098,42 @@ public static String expandClassName(String classname)
     		}
     	return(null);
     }
+    /**
+     * encode strings with \ unnnn for unicode characters
+     * @param str
+     * @return
+     */
+	  static String utfEncode(String str)
+	  {		int nchars = str.length();
+	  		StringBuffer out = new StringBuffer();
+	  		int idx = 0;
+	  		while(idx < nchars)
+		  		{
+		  		char ch = str.charAt(idx++);
+		  		if((ch!='\\') && (ch<128)) { out.append(ch); }
+		  		else { 
+		  			//have a look at this chart (expand "latin 1 suppliment" and 
+		  			//"latin suppliment a"
+		  			//http://inamidst.com/stuff/unidata/
+		  			//the character you're using is this one:
+		  			//http://www.fileformat.info/info/unicode/char/009E/index.htm
+		  			//but I think you intended this one:
+		  			//http://www.fileformat.info/info/unicode/char/017E/index.htm
+		  			//they look much the same.  How does inputting these
+		  			//characters work for you?  I have no idea how to type them.
+
+		  			// ad hoc adjustment, unichode \u009e is used instead of \u017e
+		  			// this resulted in blobs in czech
+		  			   if(ch==0x009e) { ch=(char)(0x017e); }
+		  			   String chstring = Integer.toHexString(ch);
+			  	  	   out.append( "\\u0000".substring(0,6-chstring.length()));	// leading zeros 
+			  	  	   out.append(chstring);
+		  		}
+
+			 }
+			 return(out.toString());
+	  }  
+
 
     public static String globalUserid()
     {

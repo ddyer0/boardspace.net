@@ -74,7 +74,6 @@ public class commonPanel extends FullscreenPanel
     protected int pingseq = 0;		// seq at which ping was sent
     /* this somewhat complex bit is to make sure the set values are consistant */
     private Vector<String[]> deferredSetName = new Vector<String[]>();
-    public boolean isPassAndPlay() { return(G.offline() || G.isTable());}
 	public void killFrame(LFrameProtocol inTF)
     {
     	//    	overridden by Lobby and Game classes

@@ -762,7 +762,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
         			GC.handleSquareButton(gc, pleaseUndoRect, 
                     		null, s.get(UndoRequest),
                             HighlightColor, new Color(0.9f,0.9f,0.2f));
-        			HitPoint hit = G.offline()|reviewOnly|!undoRequest ? highlight : null;
+        			HitPoint hit = isOfflineGame()|reviewOnly|!undoRequest ? highlight : null;
         			if(GC.handleSquareButton(gc,okUndoRect,hit,s.get(YesUndoMessage),HighlightColor,rackBackGroundColor))
         				{ highlight.hitCode = GoId.HitUndoActionButton;
         				}

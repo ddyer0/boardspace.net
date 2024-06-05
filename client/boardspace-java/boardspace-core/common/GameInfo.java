@@ -558,7 +558,7 @@ synchronized(allGames) {
 			null,false, BlackOverWhite));
 	}
 	{
-	boolean okTurnBased = false;	// not ok for turn based until we handle the preplay synchronously
+	boolean okTurnBased = G.debug();	// not ok for turn based until we handle the preplay synchronously
 	String brules = "/blooms/english/rules.html";
 	String bviewer = "blooms.BloomsViewer";
 	String babout = "about_blooms.html";
@@ -1676,18 +1676,23 @@ synchronized(allGames) {
 			"/punct/english/punct-video.html","about_punct.html",
 			false, WhiteOverBlack));
 	
-	put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
+	{ GameInfo m = put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
-	put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
+	  m.okForTurnbased = false;
+	}
+	{
+	GameInfo m = put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
+	m.okForTurnbased = false;
+	}
 	put(new GameInfo(212,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-U",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},

@@ -563,7 +563,20 @@ public abstract class commonCanvas extends exCanvas
     public boolean isPassAndPlay = false;	// this game was created as a pass and play game
     private TurnBasedViewer.AsyncGameInfo turnBasedGame = null;
     public boolean isTurnBasedGame() { return turnBasedGame!=null; }
-   
+    private boolean offlineGame = true;
+    public boolean isOfflineGame() 
+    { return offlineGame; }
+    /** 
+     * should be the same as isOfflineGame() && !isAsyncGame()
+     * @return true if this is a local game (all players present)
+     */
+    public boolean isLocalGame() { return (offlineGame && (turnBasedGame==null)); }
+    /**
+     * 
+     * @return true if is an offline game, and not played on a table device 
+     */
+    public boolean isPassAndPlay() { return(isOfflineGame() || G.isTable());}
+
     class ScoreItem implements CompareTo<ScoreItem>
     {
     	int prettyScore;
@@ -1938,7 +1951,7 @@ public abstract class commonCanvas extends exCanvas
     private boolean isALocalPlayer(commonPlayer lp)
     { 	if(lp!=null && (remoteViewer<0) && !isTurnBasedGame())
     	{
-    	if(G.offline()  || lp.isProxyPlayer) { return(true); } 
+    	if(isOfflineGame() || lp.isProxyPlayer) { return(true); } 
     	}
     	return(false);
     }
@@ -2088,7 +2101,7 @@ public abstract class commonCanvas extends exCanvas
     private commonPlayer otherPlayerTimeExpired(commonPlayer my)
     {	my.setTimeIsInactive(false);
     	for(int i = 0;i<nPlayers();i++)
-    	{	if(G.offline() ? (i!=whoseTurn().boardIndex) : (i!=my.boardIndex))
+    	{	if(isOfflineGame() ? (i!=whoseTurn().boardIndex) : (i!=my.boardIndex))
     		{
     		commonPlayer p = getPlayerOrTemp(i);
     		if(p!=null)
@@ -2321,7 +2334,7 @@ public abstract class commonCanvas extends exCanvas
      */
     private boolean hasControlToken()
     {	// say we have control if we're not allowed to edit.
-    	return(allowed_to_edit?(G.offline()||hidden.controlToken||hidden.pendingControlExpired()||inLimbo):true);
+    	return(allowed_to_edit?(isOfflineGame()||hidden.controlToken||hidden.pendingControlExpired()||inLimbo):true);
     }
     /**
      * we have the control token or are expecting it. This is used by the game
@@ -2667,7 +2680,7 @@ public abstract class commonCanvas extends exCanvas
     
     public void addEvent(String str)
     {
-    	if(G.offline()) 
+    	if(isOfflineGame()) 
 		{
 			setChanged(str);
   		}
@@ -3210,7 +3223,7 @@ public abstract class commonCanvas extends exCanvas
   		return ((m!=null) 
   				&& (b!=null)
   				&& ((m.op!=MOVE_START) && (m.op!=MOVE_EDIT))
-  				&& (G.offline() || (m.player==b.whoseTurn())));
+  				&& (isOfflineGame() || (m.player==b.whoseTurn())));
   	}
   	return(false);
   }
@@ -5127,6 +5140,7 @@ public abstract class commonCanvas extends exCanvas
         
         SeatingChart chart = (SeatingChart)sharedInfo.get(SEATINGCHART);
         turnBasedGame = (TurnBasedViewer.AsyncGameInfo)info.get(TURNBASEDGAME);
+        offlineGame = info.getBoolean(OFFLINEGAME,true);
         if(chart!=null)
         {
         	if(chart.seatingFaceToFace()) { currentViewset = ViewSet.Reverse; }
@@ -5142,10 +5156,10 @@ public abstract class commonCanvas extends exCanvas
         if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
         gameMode =(Session.Mode)info.getObj(MODE,gameMode);
         l.tournamentMode = info.getBoolean(TOURNAMENTMODE,false);
-
+        
         Random.setNextIntCompatibility(false);
         gameInfo = info.getGameInfo();
-        isPassAndPlay = !(turnBasedGame==null && G.offline());
+        isPassAndPlay = (turnBasedGame==null) && isOfflineGame();
         if(G.isSimulator() || !G.isTouchInterface()) 
     	{ 
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
@@ -5183,7 +5197,7 @@ public abstract class commonCanvas extends exCanvas
         boolean viewer = reviewOnly;
 
 
-       if(viewer || singlePlayer() || G.offline()) { setSeeChat(false); }
+       if(viewer || singlePlayer() || isOfflineGame()) { setSeeChat(false); }
        if (viewer)
         {
         	if(G.isCodename1())
@@ -5235,7 +5249,7 @@ public abstract class commonCanvas extends exCanvas
             l.auxSliders = myFrame.addOption("Use aux sliders",false,deferredEvents);
            	hidden.alternateBoard = myFrame.addOption("Show Alternate Board", false,deferredEvents);
             hidden.saveAndCompare = myFrame.addAction("Save/Compare Position",deferredEvents);
-            if(G.offline())
+            if(isLocalGame())
             {
             if(REMOTEVNC) { 
             regService = new VncRemote(s.get(RemoteFor,gameName()),painter,this);
@@ -6646,7 +6660,7 @@ public abstract class commonCanvas extends exCanvas
             boolean sound = myFrame.doSound();
             Random.setNextIntCompatibility(false);
             mutated_game_record = false;
-            if (G.offline())
+            if (isOfflineGame())
             {
                 if(theChat!=null) { theChat.clearMessages(true); }
                 commentedMove = commentedMoveSeen = null;
@@ -7067,7 +7081,7 @@ public abstract class commonCanvas extends exCanvas
         	{ repaintSprites(); 
         	}
        
-        if(( ((reviewOnly || mutable_game_record) && extraactions)  || G.offline() ) && !reviewMode() && idle)
+        if(( ((reviewOnly || mutable_game_record) && extraactions)  || isOfflineGame()) && !reviewMode() && idle)
         {	
             commonPlayer who = currentRobotPlayer();
 	        if (who != null)
@@ -8036,7 +8050,7 @@ public void useEphemeraBuffer(StringTokenizer his)
 {	for(int i=0; i<players.length && his.hasMoreElements(); i++)
 	{	//commonPlayer pli = players[i];
 		commonPlayer plp = commonPlayer.findPlayerByPosition(players,i);
-		int tim = G.IntToken(his);
+		long tim = G.LongToken(his);
 		if(plp!=null) 
 		{ plp.setElapsedTime(tim); 
 		//G.print("Restore "+plp+" "+tim+ ((pli==plp)?"":" not "+pli));
@@ -8206,7 +8220,7 @@ public void verifyGameRecord()
     {
     	commonPlayer who = whoseTurn();
     	commonMove top = History.top();
-    	boolean changed = (G.offline() || (who==l.my)) && ((who==null) || (who.boardIndex!=top.player));
+    	boolean changed = (isOfflineGame() || (who==l.my)) && ((who==null) || (who.boardIndex!=top.player));
     	if(changed && (top==l.changeMove)) { return(false); }
     	else if(changed) { l.changeMove = top; }
     	return(changed);
@@ -8214,7 +8228,7 @@ public void verifyGameRecord()
     private void playTurnChangeSounds()
     {
         if (myFrame.doSound())
-        {	playASoundClip(G.offline()||hasGameFocus()
+        {	playASoundClip(isOfflineGame()||hasGameFocus()
 				? turnChangeSoundName 
 				: beepBeepSoundName,500);
         }

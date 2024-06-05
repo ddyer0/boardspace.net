@@ -335,7 +335,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle eye = eyeRects[player];
     	Rectangle jrect = startJrects[player];
      	boolean planned = plannedSeating();
-    	boolean showRacks = G.offline() || !boardMax;
+    	boolean showRacks = isOfflineGame() || !boardMax;
     	int scoreW = unitsize*5/2;
     	int scoreH = unitsize*5/2;
     	G.SetRect(score,x,y+unitsize*3/2,scoreW,scoreH);
@@ -416,7 +416,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(G.offline() || (pl==ap))
+    	if(isOfflineGame() || (pl==ap))
     	{
     		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
     	}
@@ -426,7 +426,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        	if(allowed_to_edit || ap==pl) { for(JumbulayaCell c : prack) { c.seeFlyingTiles=true; }}
        	boolean open = gb.openRack[pidx];
        	boolean showTiles = open || allowed_to_edit || bb.openRacks; 
-       	boolean anyRack = G.offline() || allowed_to_edit || (ap==pl);
+       	boolean anyRack = isOfflineGame() || allowed_to_edit || (ap==pl);
        	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),
        			gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles,anyRack ? highlightAll : null,!anyRack);  	
     	}}
@@ -639,12 +639,12 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	}
     	else
     	{
-    	{int ap = allowed_to_edit||G.offline() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||isOfflineGame() ? bb.whoseTurn : getActivePlayer().boardIndex;
     	 JumbulayaCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
  
-    	if(allowed_to_edit || G.offline())
+    	if(allowed_to_edit || isOfflineGame())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{JumbulayaCell c = getMovingTile(pl.boardIndex);
@@ -1093,7 +1093,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   int ap = allowed_to_edit|isOfflineGame() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
     	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
     	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),
