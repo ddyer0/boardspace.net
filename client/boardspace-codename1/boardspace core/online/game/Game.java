@@ -1430,7 +1430,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public boolean SetWhoseTurn()
     {
         if(v!=null)
-        { 	boolean newturn = SetWhoseTurn(v.whoseTurn());
+        { 	boolean newturn = SetWhoseTurn(v.currentGuiPlayer());
         	return(newturn); 
         }
         return(false);
@@ -4484,7 +4484,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	boolean midpoint = v.MoveStep() > (G.debug() ? 2 : v.midGamePoint());
     	if(midpoint)
     		{
-    		commonPlayer p = v.whoseTurn();
+    		commonPlayer p = v.currentGuiPlayer();
     		if(p!=whoseTurn)
     		{	// note we have to be careful not to disturb the sequence of events.
     			// record the game state for fraud detection before the turn changing

@@ -594,7 +594,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		
 	}
 
-	public commonPlayer whoseTurn() {
+	public commonPlayer currentGuiPlayer() {
 		return null;
 	}
 

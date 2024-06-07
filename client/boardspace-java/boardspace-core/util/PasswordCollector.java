@@ -117,12 +117,12 @@ import udp.PlaytableStack;
 	 public static final String VersionRejectedMessage = "This version is too old.  Please visit the app store and update it";
 	 public static final String ReviewMessage = "Play Offline";
 	 public static final String TurnBasedMessage = "Play Turn Based";
-	 
+	 public static final String YourTurnMessage = "Your turn in #1 games";
 	 public static final String PlaytableMessage = "Join #1";
 	 public static String LoginStrings [] = 
 		 {
 		 OK,
-		 TurnBasedMessage,
+		 TurnBasedMessage,YourTurnMessage,
 		 PlaytableMessage,
 		 VisitSite,
 		 SiteLinks,
@@ -265,6 +265,8 @@ import udp.PlaytableStack;
 	    		//G.print("ver "+next+" "+val);
 	    		};
 	    }
+	    
+	    static private int turnBasedMoves = -1;
 	    //
 	    // parse data from the applettag.cgi interaction, key/value pairs where the key is plain text and the 
 	    // value is encoded base64, not primarily for obfuscation, but so the internal contents are not restricted.
@@ -280,11 +282,12 @@ import udp.PlaytableStack;
 	    		else if("checksumversion".equals(next)) { XXTEA.loadChecksum(G.IntToken(val)); }
 	    		else if("versions".equals(next)) { parseVersionTokens(val); }
 	    		else if("message".equals(next)) { G.putGlobal(next,val); }
+	    		else if("turnbasedmoves".equals(next)) { turnBasedMoves = G.IntToken(val); }
 	    		else { G.print("Unexpected key "+next+" : "+val); }
 	    	}
 	    }
 
-
+	    
 	 private static void initLanguage()
 	 {
 		 String lang = language ;
@@ -714,12 +717,15 @@ import udp.PlaytableStack;
 		}
 	 	return(p);
 	 }
-	 public Component createReviewPanel()
+	 @SuppressWarnings("serial")
+	public Component createReviewPanel()
 	 {	
 		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
 		 if(G.TURNBASED())
 		 {
-			 String tb = s.get(TurnBasedMessage);
+			 String tb = (turnBasedMoves>0) 
+					 		? s.get(YourTurnMessage,turnBasedMoves)
+					 		: s.get(TurnBasedMessage);
 			 turnBasedButton = new JButton(tb);
 			 turnBasedButton.setActionCommand(tb);
 			 turnBasedButton.addActionListener(this);
@@ -972,6 +978,7 @@ import udp.PlaytableStack;
         		if(source==serverButtons[i])
         		{	exitWith(PlaytableMessage);
         			PlaytableStack.setSelectedServer(i);
+        			exit();
         		}
         	}
         }
@@ -1109,6 +1116,11 @@ import udp.PlaytableStack;
 	{	
 		String host = Http.getHostName();
 		String params = "&tagname=mobileinfo"+G.platformString();
+		String uid = prefs.get(loginUidKey,"");
+		if(!"".equals(uid))
+		{	// this will get us the number of moves pending
+			params += "&myuid="+uid;
+		}
 		UrlResult result = Http.postEncryptedURL(host,getEncryptedURL,params,null);
 		if((result!=null) && (result.error==null) && (result.text!=null))
 		{

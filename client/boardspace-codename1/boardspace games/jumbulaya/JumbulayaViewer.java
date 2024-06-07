@@ -140,6 +140,9 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         
         super.init(info,frame);
+        
+        resynchronizeOnUnbranch = false;
+        
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
@@ -416,19 +419,23 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(isOfflineGame() || (pl==ap))
-    	{
+    	if(!mutable_game_record 
+    			&& !isSpectator()
+    			&& (isTableGame() 
+    								|| (isPassAndPlay() 
+    										? pl==currentGuiPlayer()
+    										: pl==getActivePlayer())))
+    	{	// always for yourself, and also if this is an around-the-table game
     		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
     	}
     	JumbulayaCell prack[] = gb.getPlayerRack(pidx);
     	if(prack!=null)
     	{
-       	if(allowed_to_edit || ap==pl) { for(JumbulayaCell c : prack) { c.seeFlyingTiles=true; }}
-       	boolean open = gb.openRack[pidx];
-       	boolean showTiles = open || allowed_to_edit || bb.openRacks; 
-       	boolean anyRack = isOfflineGame() || allowed_to_edit || (ap==pl);
+       	boolean showTiles = explicitlyVisible(gb,pl.boardIndex); 
+       	for(JumbulayaCell c : prack) { c.seeFlyingTiles=showTiles; } 
+       	boolean anyRack = showTiles && (isTableGame() || allowed_to_edit || (ap==pl));
        	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),
-       			gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles,anyRack ? highlightAll : null,!anyRack);  	
+       			gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles,anyRack ? highlight : null,!anyRack);  	
     	}}
     
     private void drawEye(Graphics gc,JumbulayaBoard gb,Rectangle er,boolean showing,HitPoint highlightAll,int who)
@@ -639,7 +646,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	}
     	else
     	{
-    	{int ap = allowed_to_edit||isOfflineGame() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||(isOfflineGame()&&!isTurnBasedGame())? bb.whoseTurn : getActivePlayer().boardIndex;
     	 JumbulayaCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
@@ -1002,7 +1009,39 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     private String bigString = null;
     private int bigX = 0;
     private int bigY = 0;
+    private boolean explicitlyVisible(JumbulayaBoard gb,int who)
+    {
+       	return (mutable_game_record 	// endgame review or reviewonly
+       			|| gb.openRacks 		// always visible
+       			|| gb.openRack[who]);	// this player always visible;
+    }
+    private int mainRackVisibleFor = -1;
+    /**
+     * for pass-and-play games, the intended behavior is to conceal the main rack
+     * after every turn change.  So you make your move, pass the device to the next
+     * player, then they hit the eye button to see their tiles. If you use the VCR
+     * to look back, you can see your own current tiles when appropriate.
+     * @param gb
+     * @return if the main rack should be visible
+     */
+    private boolean rackCensored(JumbulayaBoard gb,int rack)
+    {	if(explicitlyVisible(gb,rack)) { return false; }
     
+    	if(isSpectator()) { return true; }  	
+    	if(isTurnBasedGame())
+    		{
+    		commonPlayer ap = getActivePlayer();
+    		return (ap.boardIndex!=rack);
+    		}
+    	if(!isOfflineGame())
+    		{ commonPlayer gui = getActivePlayer();
+    		  return gui.boardIndex!=rack;
+    		}
+    	if(!isPassAndPlay()) { return false; }
+    	if(rack==mainRackVisibleFor) { return false; }
+    	if(!reviewMode()) { mainRackVisibleFor = -1; }
+    	return true;
+    }
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  
        JumbulayaBoard gb = disB(gc);
@@ -1093,14 +1132,18 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|isOfflineGame() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
-    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),
-    			   gb.getRackMap(ap),gb.getMapPick(ap),
-    			   	censorSpectator,
-    			   	censorSpectator ? null : selectPos,
+    	   int who = isPassAndPlay() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   boolean censorRack = rackCensored(gb,who);
+    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(who),gb.getPlayerMappedRack(who),
+    			   gb.getRackMap(who),gb.getMapPick(who),
+    			   	censorRack,
+    			   	censorRack ? null : selectPos,	// always allow rearranging the primary rack
     			   	ourTurnSelect==null); 
+    	   if(isPassAndPlay() && !explicitlyVisible(gb,who) && (currentGuiPlayer().boardIndex==who))
+    	   {   Rectangle rackEye = new Rectangle(G.Left(bigRack),G.Top(bigRack),G.Height(bigRack)/3,G.Height(bigRack)/3);
+    		   StockArt.Eye.drawChip(gc,this,rackEye,selectPos,JumbulayaId.RevealRack,SeeYourTilesMessage);
+    	   }
       	}
      
        GC.setFont(gc,standardBoldFont());
@@ -1358,7 +1401,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
  * not setting the values when the gc is null.
  */
     public void StartDragging(HitPoint hp)
-    {
+    {	//G.print("Start "+hp);
         if (hp.hitCode instanceof JumbulayaId)// not dragging anything yet, so maybe start
         {
         JumbulayaId hitObject =  (JumbulayaId)hp.hitCode;
@@ -1433,7 +1476,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
  * not setting the values when the gc is null.
 	 */
     public void StopDragging(HitPoint hp)
-    {
+    {	//G.print("stop "+hp);
         CellId id = hp.hitCode;
         bigString = null;
        	if(!(id instanceof JumbulayaId))  
@@ -1462,6 +1505,9 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
         	PerformAndTransmit("StartJumbulaya "+chip.tip);
         	}
         	break;
+        case RevealRack:
+        		mainRackVisibleFor = mainRackVisibleFor<0 ? bb.whoseTurn : -1;
+        		break;
         case Vocabulary:
         	bb.setVocabulary(vocabularyRect.value);
         	break;

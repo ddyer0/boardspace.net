@@ -1135,7 +1135,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     // if multiplayer, it's the main player for this UI, no matter whose turn it is.
     public int getUIPlayerIndex()
     {
-    	return(allowed_to_edit|isPassAndPlay
+    	return(allowed_to_edit|isPassAndPlay()
     			? b.whoseTurn
     			: getActivePlayer().boardIndex ); 
     }

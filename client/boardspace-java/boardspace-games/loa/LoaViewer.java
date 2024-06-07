@@ -339,7 +339,7 @@ public class LoaViewer extends commonCanvas implements UIC
 
     public BoardProtocol getBoard()   {    return (b);   }
     
-    public commonPlayer whoseTurn()
+    public commonPlayer currentGuiPlayer()
     { // if(reviewMode())
       // { return(viewTurn);
       // }

@@ -397,6 +397,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         case Confirm:
         case Play1:
         case Play1Capture:
+        case SelectEnd:
         case Resign:
         case Draw:
             moveNumber++; //the move is complete in these states
@@ -1105,6 +1106,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 			break;
 
 		case EPHEMERAL_SELECT:
+		case SYNCHRONOUS_SELECT:
 			endgameCondition = EndgameCondition.values()[m.to_row];
 			AR.setValue(endgameApproved,false);
 			break;
@@ -1113,6 +1115,19 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 			int ind = playerIndex(m.source);
 			endgameApproved[ind] = true;
 			m.target = playerColor(ind);
+			}
+			break;
+		case SYNCHRONOUS_APPROVE:
+			{
+			int ind = playerIndex(m.source);
+			endgameApproved[ind] = true;
+			m.target = playerColor(ind);
+			setNextPlayer(replay);
+			if(endgameApproved[whoseTurn]) 
+				{ 			
+				endgameSelected = true;
+				setNextStateAfterDone(replay); 
+				}
 			}
 			break;
 		case SELECT:
@@ -1365,7 +1380,10 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  {
 		if(!endgameApproved[who])
 		{
-			all.push(new Bloomsmovespec(EPHEMERAL_APPROVE,playerColor(who).id,who));
+			all.push(new Bloomsmovespec(simultaneousTurnsAllowed() 
+										? EPHEMERAL_APPROVE
+										: SYNCHRONOUS_APPROVE,
+										playerColor(who).id,who));
 		}
 		else if(allApproved())
 		{

@@ -186,7 +186,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         // for another game.
         bb = new MagnetBoard(type,players_in_game,randomKey,getActivePlayer(),MagnetBoard.REVISION);
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
-        if(reviewOnly || isTurnBasedGame()) { setSimultaneousTurnsAllowed(false); }	
+        setSimultaneousTurnsAllowed(!isTurnBasedGame()); 
         useDirectDrawing(true); 
         doInit(false);
 

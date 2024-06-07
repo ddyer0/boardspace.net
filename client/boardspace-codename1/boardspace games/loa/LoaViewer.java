@@ -34,7 +34,6 @@ import lib.LFrameProtocol;
 import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
-import lib.GameLayoutClient;
 import lib.GameLayoutManager;
 
 import online.game.commonCanvas;
@@ -46,7 +45,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
+public class LoaViewer extends commonCanvas implements UIC
 {	
 	static int REVISION = 100;			// revision numbers start at 100
 										// revision 100 adds revision numbers and randomkeys
@@ -339,7 +338,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
 
     public BoardProtocol getBoard()   {    return (b);   }
     
-    public commonPlayer whoseTurn()
+    public commonPlayer currentGuiPlayer()
     { // if(reviewMode())
       // { return(viewTurn);
       // }

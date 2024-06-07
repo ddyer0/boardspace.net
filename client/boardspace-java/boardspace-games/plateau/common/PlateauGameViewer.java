@@ -752,7 +752,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         {
  
             if ((b.movingStack() != null) &&
-                    (allowed_to_edit || (whoseTurn() == getActivePlayer())))
+                    (allowed_to_edit || (currentGuiPlayer() == getActivePlayer())))
             {
                 PerformAndTransmit("Drop -1 0");
             }

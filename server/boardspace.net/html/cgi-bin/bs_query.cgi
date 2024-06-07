@@ -87,7 +87,8 @@ sub print_contact_log()
 # versions.
 #
 sub print_mobileinfo()
-{	my $val = "languages ";
+{	my ($dbh) = @_;
+	my $val = "languages ";
 	# no particular order is required, but start with languages
 	my @ll;
 	&print_contact_log("online");
@@ -108,6 +109,21 @@ sub print_mobileinfo()
 	#
 	$val .= "message " . &encode64long($'mobile_login_message) . "\n";
 	$val .= "versions " . &encode64long($'mobile_version_info) . "\n";
+	my $myuid = &param('myuid');
+	if($myuid)
+		{
+		# if the caller provided his uid, provide the number of waiting games
+		my $qmyuid = $dbh->quote($myuid);
+		my $q = "select count(whoseturn) from offlinegame where whoseturn = $qmyuid and status='active'";
+		my $sth = &query($dbh,$q);
+		my $numRows = &numRows($sth);
+		if($numRows eq 1)
+		{
+		my ($n) = &nextArrayRow($sth);
+		$val .= "turnbasedmoves " . &encode64long($n) ."\n";
+		}
+		&finishQuery($sth);
+		}
 	if($'checksum_version>0)
 	{
 	  $val .= "checksumversion " .&encode64long("$'checksum_version") . "\n";
@@ -168,7 +184,7 @@ sub process_form()
 	if($tagname eq "gamedir")  { &print_gamedir($dbh,param('game')); }
 	elsif($tagname eq 'messageboard') { &print_messageboard($dbh); }
 	elsif($tagname eq 'prereginfo') { &print_prereg_info(); }
-	elsif($tagname eq 'mobileinfo') { &print_mobileinfo(); }
+	elsif($tagname eq 'mobileinfo') { &print_mobileinfo($dbh); }
 	elsif($tagname eq 'postalert') { &postalert($dbh,param('name'),param('data')); }
 	elsif($tagname eq 'posterror') { &posterror($dbh,param('name'),param('data')); }
 	else { $'error = "undefine request $tagname"; }	

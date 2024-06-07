@@ -560,14 +560,40 @@ public abstract class commonCanvas extends exCanvas
 			{DECLINEDRAW,"Decline a Draw"},
 	};
     public Bot robot = null; 
-    public boolean isPassAndPlay = false;	// this game was created as a pass and play game
+    /**
+     * Many ways to play, with subtly different expectations in the GUI
+     * 
+     * The default mode is online/live play.  Here you have a private screen so displaying
+     * private information is always OK, and displaying the other player's private information
+     * is never ok.  Editing the game record (except by undo) is not allowed.
+     * 
+     * Turn based games are offline but otherwise very similar to live online games.  The
+     * main distinction is that no simultaneous moves are possible, so any phase of games
+     * that involves simultaneous moves has to be serialized.
+     * 
+     * Offline games are subdivided into two major categories "pass and play" games where
+     * the players will be sharing a screen, but not simultaneously.  So displaying private
+     * information shoudln't be automatic.  And "table games" where all players are seated
+     * around a table device, always sharing the screen, and possibly using tablets/phones
+     * as a secondary screen.
+     * 
+     * Cross product these with "Review" mode, where editing is possible and private
+     * information should be public, or at least always available.
+     * 
+     * Cross product with "spectator" mode where the spectators shouldn't be able to see 
+     * anything that any player shoudn't see.
+     * 
+     * also! mutable_game_record is true if either reviewOnly after game review
+     * allowed_to_edit is true if mutable_game_record and not a spectator in after game review
+     * 
+     */
     private TurnBasedViewer.AsyncGameInfo turnBasedGame = null;
     public boolean isTurnBasedGame() { return turnBasedGame!=null; }
     private boolean offlineGame = true;
     public boolean isOfflineGame() 
     { return offlineGame; }
     /** 
-     * should be the same as isOfflineGame() && !isAsyncGame()
+     * should be the same as isOfflineGame() && !isTurnBasedGame()
      * @return true if this is a local game (all players present)
      */
     public boolean isLocalGame() { return (offlineGame && (turnBasedGame==null)); }
@@ -575,8 +601,10 @@ public abstract class commonCanvas extends exCanvas
      * 
      * @return true if is an offline game, and not played on a table device 
      */
-    public boolean isPassAndPlay() { return(isOfflineGame() || G.isTable());}
+    public boolean isPassAndPlay() { return(isOfflineGame() && !isTurnBasedGame() && !G.isTable());}
 
+    public boolean isTableGame() { return G.isTable(); }
+    
     class ScoreItem implements CompareTo<ScoreItem>
     {
     	int prettyScore;
@@ -1052,7 +1080,7 @@ public abstract class commonCanvas extends exCanvas
 	        		}
 	        	}
 	        else if (target == startRobot)
-	        {  	commonPlayer who = whoseTurn();
+	        {  	commonPlayer who = currentGuiPlayer();
 	        	commonPlayer ap = getActivePlayer();
 	            commonPlayer started = startRobot(who,ap,robot);
 	            if(started!=null) { started.runRobot(true); }
@@ -1137,7 +1165,7 @@ public abstract class commonCanvas extends exCanvas
 	        	BoardProtocol bb = getBoard();
 	        	History.pre_review_state = bb.getState();
 	        	History.viewMoveNumber = bb.moveNumber();
-	            History.viewTurn = whoseTurn();
+	            History.viewTurn = currentGuiPlayer();
 	            History.viewStep = size;
 	            commentedMove = History.currentHistoryMove();
 	            commentedMoveSeen = null;
@@ -1416,7 +1444,7 @@ public abstract class commonCanvas extends exCanvas
 	    	int targetPlayer = pl.boardIndex;
 	    	int last = reviewMode() ? History.viewStep : History.size()-1;
 	    	int prevPlayer = -1;
-	    	if(pl==whoseTurn()) 
+	    	if(pl==currentGuiPlayer()) 
 	    		{ // this awards the "per move" time at the beginning of the player's turn
 	    		  // instead of at the end.  The reason for this is that when the overtime
 	    		  // event occurs, and the player moves anyway, he would go from slightly
@@ -1977,7 +2005,7 @@ public abstract class commonCanvas extends exCanvas
      */
     public boolean ourActiveMove()
     {	commonPlayer ap = getActivePlayer();
-    	commonPlayer who = whoseTurn();
+    	commonPlayer who = currentGuiPlayer();
     	return(!reviewMode()
     			&& (ap!=null)
     			&& !ap.isSpectator() 
@@ -2008,7 +2036,7 @@ public abstract class commonCanvas extends exCanvas
      */ 
     public boolean hiddenPlayerOrMainMove(HiddenGameWindow w)
     {
-     	return((w==null) || (w.getIndex()==whoseTurn().boardIndex));
+     	return((w==null) || (w.getIndex()==currentGuiPlayer().boardIndex));
     }
     /**
      * @return true of we are allowed to scroll the game record.
@@ -2101,7 +2129,7 @@ public abstract class commonCanvas extends exCanvas
     private commonPlayer otherPlayerTimeExpired(commonPlayer my)
     {	my.setTimeIsInactive(false);
     	for(int i = 0;i<nPlayers();i++)
-    	{	if(isOfflineGame() ? (i!=whoseTurn().boardIndex) : (i!=my.boardIndex))
+    	{	if(isOfflineGame() ? (i!=currentGuiPlayer().boardIndex) : (i!=my.boardIndex))
     		{
     		commonPlayer p = getPlayerOrTemp(i);
     		if(p!=null)
@@ -2239,7 +2267,7 @@ public abstract class commonCanvas extends exCanvas
 	 */
     public void drawGameOverlay(Graphics gc,TimeControl time,HitPoint hitPoint0,commonPlayer expired,commonCanvas canvas,Rectangle boardRect)
     {	InternationalStrings s = G.getTranslations();
-    	commonPlayer who = canvas.whoseTurn();
+    	commonPlayer who = canvas.currentGuiPlayer();
     	boolean robo = (who.robotRunner==expired);
     	HitPoint hitPoint = robo||canvas.ourActiveMove() ? hitPoint0 : null;
     	if(hitPoint!=null) { hitPoint.neutralize(); }
@@ -2291,7 +2319,7 @@ public abstract class commonCanvas extends exCanvas
     			&& !b.GameOver() 
     			&& !reviewMode()
     			&& !mutable_game_record)
-    	{	commonPlayer my = whoseTurn();
+    	{	commonPlayer my = currentGuiPlayer();
     		if(my!=null)
     		{ 	
     			commonPlayer expired = otherPlayerTimeExpired(my);
@@ -2315,7 +2343,7 @@ public abstract class commonCanvas extends exCanvas
      * to key sounds and other per player turn actions.  This does not change if the 
      * player goes into review mode.
      */
-    public commonPlayer whoseTurn()
+    public commonPlayer currentGuiPlayer()
     {	commonPlayer p = reviewMode() ? History.viewTurn : null;
     	if(p==null) { p = viewerWhoseTurn(); }
     	if(p==null) { p = getPlayerOrTemp(0); }	// during game setup and other rare circumstances
@@ -2665,7 +2693,7 @@ public abstract class commonCanvas extends exCanvas
      */
     public commonPlayer currentRobotPlayer()
     {
-    	commonPlayer who = whoseTurn();
+    	commonPlayer who = currentGuiPlayer();
     	if(who==null) { who=getActivePlayer(); }
     	return(who);
     }
@@ -2705,13 +2733,13 @@ public abstract class commonCanvas extends exCanvas
     	{
     		if(p!=null) { p.setTimeIsInactive(true); }
     	}
-    	startedOnce = started = true;
     	saveDisplayBoard();
         if((hidden.resignAction==null) && canUseDone()) 
         { hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);    	   
  	   	}
     	resetBounds();
     	wake();
+    	startedOnce = started = true;
     }
 
     private void doMouseTrackingInternal(commonPlayer player,commonPlayer[] plist,String zone,int inx,int iny,int ino,String intype)
@@ -3293,7 +3321,7 @@ public abstract class commonCanvas extends exCanvas
 	  //return(allowed_to_edit && icon.drawChip(gc,this,r,p,GameId.HitEditButton,s.get(ExplainEdit)));
 	  if((p!=null) && allowUndo())
 	  {	  
-	  	  commonPlayer pl = whoseTurn();
+	  	  commonPlayer pl = currentGuiPlayer();
 	  	  if(!isTurnBasedGame() || allowTurnBasedUndo())
 	  	  {
 		  return handleUndoButton(gc,
@@ -3871,7 +3899,7 @@ public abstract class commonCanvas extends exCanvas
   
     private boolean isRobotTurn()
     {
-    	commonPlayer p = whoseTurn();
+    	commonPlayer p = currentGuiPlayer();
     	return( p!=null && p.isRobot); 
     }
 
@@ -4465,7 +4493,7 @@ public abstract class commonCanvas extends exCanvas
       	if(m.op==MOVE_PLEASEUNDO)
        	{	// this when we hit the undo button, and we need to 
        		// pass the request to the opponent.
-       		commonPlayer p = whoseTurn();
+       		commonPlayer p = currentGuiPlayer();
        		if(p!=l.my)
        			{ if(transmit)
        				{ addEvent(m.moveString()); // out of turn undo
@@ -4945,14 +4973,18 @@ public abstract class commonCanvas extends exCanvas
     		    // if we have removed a branch and re-extended the history,
     		    // the state of the real board may be different from what we
     		    // expect, especially if the move that caused the merge was a 
-    		    // reset.  The symplest way to be sure it's all ok is to replay
-    		    // the game to this point.
-    		    { int step = History.viewStep;
-    		      rawHistory.addElement(new dummyMove("vcr:@"+sz+" edit rescroll"));
-    		      doWayBack(replayMode.Replay);
-    		      doScrollTo(step);
+    		    // reset.  The simplest way to be sure it's all ok is to replay
+    		    // the game to this point.  However, this also has consequences
+    		    // for games like Jumbulaya, where some GUI actions don't change
+    		    // the game record, but only prime the gui for the next action.
+    		    if(resynchronizeOnUnbranch)
+    		    {
+    		    	boolean changed = resynchronizeBoard(originalnewmove);
+    		    	if(changed && G.debug())
+    		    	{
+    		    		G.print("resynchronizeOnUnbranch did something good");
+    		    	}    		    
     		    }
-    		    generalRefresh();
     		  }
     	  }     
          if (History.viewStep >= History.size())
@@ -4988,6 +5020,30 @@ public abstract class commonCanvas extends exCanvas
         }
         return(newmove!=null);
     }
+    /**
+     * this is a conservative hack.  Resynchronizing "ought to" be unnecessary, but
+     * it was historically in place for a long time.  It can be turned off in cases
+     * where the resync causes harm, as is the case for Jumbulaya.
+     */
+    public boolean resynchronizeOnUnbranch = true;
+    /**
+     * rack back to the beggining and back to the current location.
+     * this can be called when the state of the board might be confused
+     * @param deletedMove
+     * @return true if the new digest differs, so we probably did some good.
+     */
+    public boolean resynchronizeBoard(commonMove deletedMove)
+    {
+    	int step = History.viewStep;
+    	long dig1 = getBoard().Digest();
+    	rawHistory.addElement(new dummyMove("vcr:@"+step+" edit rescroll"));
+    	doWayBack(replayMode.Replay);
+    	doScrollTo(step);
+    	long dig2 = getBoard().Digest();
+	    generalRefresh();
+	    return dig2!=dig1;
+    }
+    
     /* hack to verify that the entire tree has times associated
     private void verify(commonMove m,String w)
     {
@@ -5159,7 +5215,6 @@ public abstract class commonCanvas extends exCanvas
         
         Random.setNextIntCompatibility(false);
         gameInfo = info.getGameInfo();
-        isPassAndPlay = (turnBasedGame==null) && isOfflineGame();
         if(G.isSimulator() || !G.isTouchInterface()) 
     	{ 
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
@@ -8218,7 +8273,7 @@ public void verifyGameRecord()
 
     public boolean playerChanging()
     {
-    	commonPlayer who = whoseTurn();
+    	commonPlayer who = currentGuiPlayer();
     	commonMove top = History.top();
     	boolean changed = (isOfflineGame() || (who==l.my)) && ((who==null) || (who.boardIndex!=top.player));
     	if(changed && (top==l.changeMove)) { return(false); }
@@ -8859,7 +8914,7 @@ public void verifyGameRecord()
 	    	return ((Bot)sharedInfo.get(WEAKROBOT));
 	    }
 	    private double currentPlayerRotation()
-		{	commonPlayer wt = whoseTurn();
+		{	commonPlayer wt = currentGuiPlayer();
 			return wt==null ? 0 : wt.displayRotation;
 		}
 		boolean inBoardZoom = false;
@@ -8963,7 +9018,7 @@ public void verifyGameRecord()
 	    	// note that the exact text of this string has to be the same as generated
 	    	// by all players, otherwise mismatches will occur in appended game state
 	        String ephemera = formEphemeralHistoryString();
-	        commonPlayer pl = whoseTurn();
+	        commonPlayer pl = currentGuiPlayer();
 	        int order = (pl==null)?0:pl.getOrder();
 	        String msg = 
 	        	G.concat(

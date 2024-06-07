@@ -814,8 +814,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		GC.setFont(gc, largeBoldFont());
 		if(!G.arrayContains(charts,selectedChart)) 
 			{ selectedChart = charts[0];
-			  sess.startingNplayers = selectedChart.getNSeats();
 			}
+		if(selectedChart!=null) { sess.startingNplayers = selectedChart.getNSeats(); }
 		
 		GC.Text(gc, true,portrait ? slowAxisTop : fastAxisPos,portrait ? fastAxisPos : slowAxisTop,
 				step,step,Color.black,null,s.get(SeatPositionMessage));

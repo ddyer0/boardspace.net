@@ -171,7 +171,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     }
 
     ContainerBoard.playerBoard getCurrentPlayerBoard(ContainerBoard gb)
-    {	int ind = allowed_to_edit|isPassAndPlay ? b.whoseTurn : getActivePlayer().boardIndex;
+    {	int ind = allowed_to_edit|isPassAndPlay() ? b.whoseTurn : getActivePlayer().boardIndex;
     	return(gb.getPlayer(ind)); 
     }
 
@@ -1193,10 +1193,10 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
 					  ContainerChip card = selectedGoalSet().goals[ob.player]; 
 					  boolean spectator = isSpectator();
 					  boolean inrect = G.pointInRect(any,xp-siz/2,yp-siz/2,siz,siz);
-					  boolean itsMe = allowed_to_edit || GameOver() || (!spectator && !isPassAndPlay && (ob==getCurrentPlayerBoard(gb)));
+					  boolean itsMe = allowed_to_edit || GameOver() || (!spectator && !isPassAndPlay() && (ob==getCurrentPlayerBoard(gb)));
 					  boolean canShow = itsMe || isOfflineGame() ;
 					  boolean showBig = inrect && canShow && any.down;
-					  boolean hideDetails = isPassAndPlay && !showBig;
+					  boolean hideDetails = isPassAndPlay() && !showBig;
 					  int size = showBig ? siz*3 : siz;
 					  if(inrect) { setDraggingBoard(showBig); }
 					  if(inrect && !showBig) { any.setHelpText(s.get(SeeCashMessage,prettyName(ob.player))); }

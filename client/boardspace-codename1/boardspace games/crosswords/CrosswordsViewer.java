@@ -464,7 +464,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(isOfflineGame() || (pl==ap))
+    	if(isLocalGame() || (pl==ap))
     	{
     		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
     	}

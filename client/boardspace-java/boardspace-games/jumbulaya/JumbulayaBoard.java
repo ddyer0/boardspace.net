@@ -860,12 +860,18 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
             moveNumber++; //the move is complete in these states
             boolean repeat = false;
             do { setWhoseTurn(nextPlayer());
-                 repeat = skipTurn[whoseTurn] || resigned[whoseTurn];
-                 if(repeat)
+                 if(resigned[whoseTurn])
+                 {
+                	 logGameEvent(ResignedMessage,playerColor(whoseTurn).tip);
+                	 repeat = true;
+                 }
+                 else if(skipTurn[whoseTurn])
                  {
                 	 logGameEvent(SkipTurnMessage,playerColor(whoseTurn).tip);
+                     skipTurn[whoseTurn]=false;
+                     repeat = true;
                  }
-                 skipTurn[whoseTurn]=false;
+ 
             } while (repeat);
         }
     }
@@ -1681,7 +1687,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     {	Jumbulayamovespec m = (Jumbulayamovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
 
-//        G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
+        //G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+mapTarget[0]);
         switch (m.op)
         {
         case MOVE_DONE:
@@ -2021,7 +2027,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
-        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
+        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+mapTarget[0]);
         return (true);
     }
     public boolean LegalToHitPool(boolean picked)

@@ -184,11 +184,13 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
         switch (opcode)
         {
         case EPHEMERAL_SELECT:
+        case SYNCHRONOUS_SELECT:
         case SELECT:
         	source =BloomsId.find(msg.nextToken());
         	to_row = EndgameCondition.valueOf(msg.nextToken()).ordinal();
         	break;
         case EPHEMERAL_APPROVE:
+        case SYNCHRONOUS_APPROVE:
         	source =BloomsId.find(msg.nextToken());
         	break;
         case MOVE_DROPB:

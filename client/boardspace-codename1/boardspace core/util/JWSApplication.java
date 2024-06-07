@@ -81,7 +81,6 @@ public class JWSApplication implements Config,OnlineConstants
     static final String OFFLINE = "offline";
     static final String FRAMEWIDTH = "framewidth";    
     static final String FRAMEHEIGHT = "frameheight";
-  
 	private static void init()
     {
        //System.out.println("init");
@@ -171,7 +170,7 @@ public class JWSApplication implements Config,OnlineConstants
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
-            	String vc = G.getString(OnlineConstants.VIEWERCLASS,
+            	String vc = G.getString(VIEWERCLASS,
               		  isVNC ? "vnc.AuxViewer" : "online.common.SeatingViewer");
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection

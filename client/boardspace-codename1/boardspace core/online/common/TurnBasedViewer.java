@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
+import bridge.Preferences;
 import bridge.URL;
 import bridge.WindowEvent;
 import common.CommonConfig;
@@ -483,7 +484,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			sess.password = "start";
 			sess.seedValue = new Random().nextInt();
 			//sess.seatingChart = selectedChart;
-
+			int targetPlayerIndex = -1;
 			LaunchUserStack lusers = new LaunchUserStack();
 			{
 			IStack players = new IStack();
@@ -496,6 +497,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			{	int uid = players.pop();
 				User u = new User(uids.getName(uid));
 				u.uid = ""+uid;
+				if(uid==loggedInUid) { targetPlayerIndex = idx; }
 				lusers.addUser(u,idx,idx);
 				sess.players[idx] = u;
 				idx++;
@@ -503,12 +505,14 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			
 			sess.gameIndex = gameuid;
 			sess.selectedFirstPlayerIndex = 0;
-			sess.launchUser = sess.startingPlayer = lusers.elementAt(0);
+			sess.startingPlayer = lusers.elementAt(0);
 			sess.launchUsers = lusers.toArray();
 			sess.setCurrentGame(game, false,false,false);
 			sess.turnBasedGame = this;
 			sess.startingName = sess.launchName(null,true);
-			sess.spectator = (whoseturn!=loggedInUid) || (status!=AsyncStatus.active);
+			sess.spectator = (targetPlayerIndex<0) ||  (status!=AsyncStatus.active);
+			sess.launchUser = (targetPlayerIndex<0) ? null : lusers.elementAt(targetPlayerIndex);
+
 			sess.startingNplayers = lusers.size();
 			sess.seedValue = new Random(gameuid).nextInt();
 			sess.mode = playMode.sessionMode;
@@ -520,7 +524,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				sess.launchSpectator(players[0],true,getCanvasRotation(),sess.currentGame,true);
 			}
 			else {
-				sess.launchGame(players[0],true,null,getCanvasRotation(),sess.currentGame,true);
+				sess.launchGame(players[targetPlayerIndex],true,null,getCanvasRotation(),sess.currentGame,true);
 			}
 			for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }			
 		}
@@ -1655,6 +1659,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				break;
 			case PlayOnline:
 				G.setOffline(false);
+				G.setTurnBased(false);
 				shutDown();
 				break;
 			}
@@ -2022,6 +2027,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	public String inviteName = null;
 	public String loggedInPname ;
 	public String loggedInPassword ;
+	private static Preferences prefs = Preferences.userRoot();
 	
 	// check the login credentials of a player
 	public boolean login(boolean complain)
@@ -2041,6 +2047,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			loggedInPname = pname;
 			loggedInPassword = password;
 			uids.put(loggedInUid,pname);
+			// record this so the first screen can give a hint about moves to be made
+			prefs.put(loginUidKey,""+loggedInUid);
 		}
 		else
 		{

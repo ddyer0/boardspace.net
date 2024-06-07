@@ -40,7 +40,7 @@ import lib.*;
  *
  *TODO: add a top-down auxiliary view like in majorities
 */
-public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements CarnacConstants//,GameLayoutClient
+public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements CarnacConstants
 {
     // file names for jpeg images and masks
     static final String ImageDir = "/carnac/images/";

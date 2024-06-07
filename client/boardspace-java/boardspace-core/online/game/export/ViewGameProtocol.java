@@ -226,7 +226,7 @@ public interface ViewGameProtocol
    state of the game to new spectators) are only performed by the current player. 
    This is also the trigger for "turn change" sounds. 
    */
-   public commonPlayer whoseTurn();
+   public commonPlayer currentGuiPlayer();
    
    /** get the identity of the object being dragged by the mouse, or null.  This is
    an arbitrary integer which matters only to other instances of the same type of viewer. 

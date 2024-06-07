@@ -52,6 +52,7 @@ public interface JumbulayaConstants
 	static String PendingWordMessage = "New word \"#1\" : #2";
 	static String JumbulayaMessage = "Jumbulaya Word \"#1\" : #2";
 	static String SkipTurnMessage = "#1 Skipped turn (penalty)";
+	static String ResignedMessage = "#1 left the game";
 	static String PossibleMessage = "Possible Jumbulayas";
 	static String CheckJumbulayaHelp = "Check for Jumbulayas";
 	static String WordsMessage = "Best Words";
@@ -61,7 +62,7 @@ public interface JumbulayaConstants
 	static String JustWordsHelp = "Check for good words";
 	static String AbandonExplanation = "Abandon the Jumbulaya, and accept the penalty";
 	static String EndExplanation = "End the game with a Jumbulaya";
-	
+	static String SeeYourTilesMessage = "See Your Tiles";
 
 	class StateStack extends OStack<JumbulayaState>
 	{
@@ -120,7 +121,7 @@ public interface JumbulayaConstants
     	Definition,
     	StartJumbulaya,
     	EndJumbulaya,
-    	Blank;
+    	Blank, RevealRack;
 
 	}
  enum Option
@@ -160,6 +161,7 @@ public interface JumbulayaConstants
     	 String JumbulayaStrings[] = 
     		{  "Jumbulaya",
     			WordsMessage,
+    			ResignedMessage,SeeYourTilesMessage,
     			AbandonExplanation,
     			EndExplanation,
     			FewerTiles,

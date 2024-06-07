@@ -130,7 +130,7 @@ public static Object MakeInstance(String classname)
 {
 	String expname = "";
     expname = G.expandClassName(classname);
-    Plog.log.addLog("MakeInstance ",expname);
+    G.print("MakeInstance ",expname," from ",classname);
     if(makeObject==null) { makeObject = new Object(); }
     Class<?>cl = G.classForName(expname,false);
     if(cl==null) 
@@ -340,10 +340,15 @@ public static Object MakeInstance(String classname)
     public static boolean isEdt() { return(true); }
      
     public static Class<?>classForName(String name,boolean testOnly)
-    {	try {
-    	//Plog.log.addLog("classForName ",name);
-		return(Class.forName(name));
-			} catch (ClassNotFoundException e) {
+    {	
+    	try {
+    		//Plog.log.addLog("classForName ",name);
+    		G.print("classForName ",name," ",testOnly);
+    		ClassLoader loader = Platform.class.getClassLoader();
+    		return loader.loadClass(name);
+			} 
+    		catch (Throwable e) 
+    		{			
 				if(!testOnly)
 					{ System.out.println("classForName failed for "+name+" "+e);
 					  Plog.log.addLog("classForName failed for ",name," ",e);

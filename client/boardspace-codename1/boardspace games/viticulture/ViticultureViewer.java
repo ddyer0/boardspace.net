@@ -6660,7 +6660,7 @@ private void drawPlayerBoard(Graphics gc,
   
   public boolean playerChanging()
   {
-  	commonPlayer who = whoseTurn();
+  	commonPlayer who = currentGuiPlayer();
   	commonMove top = History.top();
   	
   	return((mainBoard.players_in_game>1) 

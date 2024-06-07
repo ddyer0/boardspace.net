@@ -560,7 +560,7 @@ synchronized(allGames) {
 			null,false, BlackOverWhite));
 	}
 	{
-	boolean okTurnBased = false;	// not ok for turn based until we handle the preplay synchronously
+	boolean okTurnBased = true;	// for turn based until we handle the pre play synchronously
 	String brules = "/blooms/english/rules.html";
 	String bviewer = "blooms.BloomsViewer";
 	String babout = "about_blooms.html";

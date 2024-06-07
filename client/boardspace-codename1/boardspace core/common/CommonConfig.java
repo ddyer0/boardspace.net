@@ -117,6 +117,7 @@ public interface CommonConfig extends UniversalConstants {
 	static final String loginKeyPrefix = "/login/";
 	public static final String langKey = loginKeyPrefix + "langKey";
 	public String loginNameKey = loginKeyPrefix + "namekey";
+	public String loginUidKey = loginKeyPrefix + "uidkey";
 
 	static final String regPrefix = "/register/";
     public static final int standardWindowHeight = 600; 	// used for scaling overall font size

@@ -48,6 +48,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+
 //TODO: add special handling for error is : java.io.IOException: write failed: ENOSPC (No space left on device)
 
 /**
@@ -306,10 +307,35 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	{	super(cache);
 	}
 	
+/* for really serious debugging 
+ // get the current stack trace as a String 
+ public static String getStackTrace()
+ {
+ 	ByteArrayOutputStream b = new ByteArrayOutputStream();
+    PrintStream os = new PrintStream(b);
+     try { throw new Error("Stack trace");
+     } catch (Error e)
+     {
+     	e.printStackTrace(os);
+     	os.flush();
+     }
+ 	return b.toString();
+}
+ public void track(String msg,String name0)
+ {
+	  if(name0.indexOf("GameLayoutClient")>=0 || name0.indexOf("HiveGameViewer")>=0  || name0.indexOf("BloomsViewer")>=0)
+	  {	  log(msg);
+		  log(getStackTrace());
+	  }
+ }
+ */
 	// name0 identifies a jar, a class, or a resource.
 	// return true if we got a valid file
 	public boolean assureCached(String name0)
-	{	if(verbose) { log("assureCached "+name0); }
+	{	if(verbose) 
+		{ log("assureCached "+name0); 
+		  //track("assurecached",name0);
+		}
 		String name = name0;
 		CacheInfo info = null;
 		if(name.endsWith(".jar")) { info = jarCache.get(name); }
@@ -389,6 +415,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		if(verbose) { log("findClass "+name); }
 		if(assureCached(name))
 		{
+		//track("findclass ",name);
 		Class<?>v  = (super.findClass(name));
 		if(verbose) { log("findClass found "+v); }
 		return v;

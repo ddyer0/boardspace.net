@@ -40,47 +40,12 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
 /**
+ * GUI for blooms.
  * 
- * This is intended to be maintained as the reference example how to interface to boardspace.
- * <p>
- * The overall structure here is a collection of classes specific to Hex, which extend
- * or use supporting online.game.* classes shared with the rest of the site.  The top level 
- * class is a Canvas which implements ViewerProtocol, which is created by the game manager.  
- * The game manager has very limited communication with this viewer class, but manages
- * all the error handling, communication, scoring, and general chatter necessary to make
- * the game part of the site.
- * <p>
- * The main classes are:
- * <br>BloomsViewer - this class, a canvas for display and mouse handling
- * <br>BloomsBoard - board representation and implementation of the game logic
- * <br>Bloomsmovespec - representation, parsing and printing of move specifiers
- * <br>BloomsPlay - a robot to play the game
- * <br>KulamiConstants - static constants shared by all of the above.  
- *  <p>
- *  The primary purpose of the KulamiViewer class is to do the actual
- *  drawing and to mediate the mouse gestures.  All the actual work is 
- *  done in an event loop, rather than in direct response to mouse or
- *  window events, so there is only one process involved.  With a single 
- *  process, there are no worries about synchronization among processes
- *  of lack of synchronization - both major causes of flakey user interfaces.
- *  <p>
- *  The actual mouse handling is done by the commonCanvas class, which simply 
- *  records the recent mouse activity, and triggers "MouseMotion" to be called
- *  while the main loop is executing.
- *  <p>
- *  Similarly, the actual "update" and "paint" methods for the canvas are handled
- *  by commonCanvas, which merely notes that a paint is needed and returns immediately.
- *  drawCanvas is called in the event loop.
- *  <p>
- *  The drawing methods here combine mouse handling and drawing in a slightly
- *  nonstandard way.  Most of the drawing routines also accept a "HitPoint" object
- *  which contains the coordinates of the mouse.   As objects are drawn, we notice
- *  if the current object contains the mouse point, and if so deposit a code for 
- *  the current object in the HitPoint.  the Graphics object for drawing can be null,
- *  in which case no drawing is actually done, but the mouse sensitivity is checked
- *  anyway.  This method of combining drawing with mouse sensitivity helps keep the
- *  mouse sensitivity accurate, because it is always in agreement with what is being
- *  drawn.
+ * 6/2024 ddyer
+ * added some new logic to handle the pre-game agreement on the endgame conditions synchronously, for turn based play.
+ * also fixed the pre-game overlay formatting for narrow screens.
+ * 
  *  
 */
 public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements BloomsConstants
@@ -388,24 +353,23 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     }
     private void showEndgameOptions(Graphics gc,BloomsBoard gb,Rectangle brect,HitPoint highlight)
     {
-    	Rectangle r = G.copy(null,brect);
-    	G.insetRect(r,G.Width(r)/5);
-    	StockArt.Scrim.image.stretchImage(gc, r);  
-    	GC.frameRect(gc,Color.black,r);
     	int step = G.Height(stateRect);
-    	int left = G.Left(r);
-    	int top = G.Top(r);
-    	int width = G.Width(r);
-    	int centerX = G.centerX(r);
+    	int centerX = G.centerX(brect);
+    	int centerY = G.centerY(brect);
     	GC.setFont(gc,largeBoldFont());
-    	GC.Text(gc,true,left,top,width,step, Color.black,null,s.get(SelectGoalMessage));
     	EndgameCondition current = gb.endgameCondition;
     	FontMetrics fm = G.getFontMetrics(largeBoldFont());
     	int xstep = fm.stringWidth(s.get(ShortGoalMessage,20));
-    	int optionY = top+step*3;
+    	int optionY = centerY-step*2;
     	int optionX = centerX-xstep*2;
     	int optionX0 = optionX;
     	int stepn = 0;
+    	Rectangle scrim = new Rectangle(optionX-step/2,optionY-step*2,xstep*4+step,step*7);
+    	StockArt.Scrim.image.stretchImage(gc, scrim);  
+    	
+    	GC.Text(gc,true,optionX,optionY-step*2,xstep*4,step*2, Color.black,null,s.get(SelectGoalMessage));
+    	GC.frameRect(gc,Color.black,scrim);
+
     	EndgameCondition options[] = EndgameCondition.values();
     	
     	for(EndgameCondition option : options)
@@ -791,13 +755,16 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         case Select:
         	{
         	commonPlayer ap = getActivePlayer();
-        	PerformAndTransmit((simultaneousTurnsAllowed() ? "Eselect " : "select ")
+        	// for turn based play, sselect is like eselect, it sets "ok" for the currently selected
+        	// endgame mode, then toggles to the next player's turn.
+        	PerformAndTransmit((simultaneousTurnsAllowed() ? "Eselect " : "Sselect ")
         				+bb.playerColor(ap.boardIndex).id.shortName()+" "+hp.hitObject);
         	}
         	break;
         case Approve:
-        	{
-            	PerformAndTransmit((simultaneousTurnsAllowed() ? "EApprove " : "approve ")
+        	{	// Eapprove and Sapprove select a new endgame condition and turn off "approved"
+        		// for both players.
+            	PerformAndTransmit((simultaneousTurnsAllowed() ? "EApprove " : "Sapprove ")
             				+bb.playerColor(hp.hit_index).id.shortName());
         	}
         	break;
@@ -921,33 +888,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
 
         return (handled);
     }
-/** handle the run loop, and any special actions we need to take.
- * The mouse handling and canvas painting will be called automatically.
- * <p>
- * This is a good place to make notes about threads.  Threads in Java are
- * very dangerous and tend to lead to all kinds of undesirable and/or flakey
- * behavior.  The fundamental problem is that there are three or four sources
- * of events from different system-provided threads, and unless you are very
- * careful, these threads will all try to use and modify the same data
- * structures at the same time.   Java "synchronized" declarations are
- * hard to get right, resulting in synchronization locks, or lack of
- * synchronization where it is really needed.
- * <p>
- * This toolkit addresses this problem by adopting the "one thread" model,
- * and this is where it is.  Any other threads should do as little as possible,
- * mainly leave breadcrumbs that will be picked up by this thread.
- * <p>
- * In particular:
- * GUI events do not respond in the native thread.  Mouse movement and button
- * events are noted for later.  Requests to repaint the canvas are recorded but
- * not acted upon.
- * Network I/O events, merely queue the data for delivery later.
- *  */
-    
-    //   public void ViewerRun(int wait)
-    //   {
-    //       super.ViewerRun(wait);
-    //   }
+
     /**
      * returns true if the game is over "right now", but also maintains 
      * the gameOverSeen instance variable and turns on the reviewer variable
@@ -1058,13 +999,15 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
      public void ViewerRun(int n)
         {
         	super.ViewerRun(n);
-        	if(bb.simultaneousTurnsAllowed())
+        	if(bb.simultaneousTurnsAllowed())	// if allowed in the current state
         	{
             if(!reviewOnly 
           	 && !reviewMode() 
           	 && (bb.allApproved())
           	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
-            	{	  
+            	{	 
+            	// this triggers the conversion from ephemeral state to running with a 
+            	// particular endgame condition.
           	  	PerformAndTransmit("Select R "+bb.endgameCondition);
           	  	// test rejection of surplus ephemeral moves
           	  	// PerformAndTransmit("ESelect R Capture5");

@@ -391,7 +391,7 @@ public double assignMonteCarloWeights(CommonMoveStack all)
       {	  // async move strategy is that we start the move as soon as
     	  // possible, but delay reporting the result until it is officially
     	  // our turn.  This waits for the viewer to say it's our turn.
-    	  while(myViewer.whoseTurn().boardIndex!=robotPlayer)
+    	  while(myViewer.currentGuiPlayer().boardIndex!=robotPlayer)
       		{
     	  	G.doDelay(1000);
       		}

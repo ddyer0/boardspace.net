@@ -102,7 +102,7 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     				  val = val.substring(0,val.length()-"Strings".length());
     			  }
     			  G.putGlobal(key,val);			// load into the applet parameter table
-     			  //System.out.println("K "+key+" V '"+val+"'");
+     			  System.out.println("K "+key+" V '"+val+"'");
     			}
     		if(eol>0) { prev = eol+1; } else { prev = next+1; }
     	}

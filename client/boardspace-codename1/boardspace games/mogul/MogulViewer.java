@@ -624,7 +624,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
 		for(int i=0;i<nPlayers;i++)
 		{	boolean isSpectator = isSpectator();
 			boolean show = allowed_to_edit
-							|| ((isSpectator||isPassAndPlay)
+							|| ((isSpectator||isPassAndPlay())
 								 ? false
 								 : (i==getActivePlayer().boardIndex));
 			commonPlayer pl0 = getPlayerOrTemp(i);
