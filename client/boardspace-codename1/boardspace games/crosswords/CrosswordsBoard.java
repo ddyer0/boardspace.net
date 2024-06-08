@@ -57,6 +57,7 @@ class WordStack extends OStack<Word>
 	int declined = 0;
 	int prevLeastScore = 0;
 	int prevBestScore = 0;
+
 	public void clear()
 	{
 		super.clear();
@@ -271,6 +272,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	public CrosswordsState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
+	boolean resigned[] = new boolean[MAX_PLAYERS];
+
     public int scoreForPlayer(int i)
     {
     	return(score[i]);
@@ -597,8 +600,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  
     	AR.setValue(mapPick,-1);
        	AR.setValue(mapTarget, -1);
-    	
-    	
+       	AR.setValue(resigned,false);
 
 		setState(CrosswordsState.Puzzle);
 		robotState.clear();		
@@ -643,6 +645,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         drawPile.copyFrom(from_b.drawPile);
         copyFrom(rack,from_b.rack);
         AR.copy(score,from_b.score);
+        AR.copy(resigned,from_b.resigned);
         robotVocabulary = from_b.robotVocabulary;
         getCell(lastLetters,from_b.lastLetters);
         lastPicked = null;
@@ -734,6 +737,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,seedLocation);
 		v ^= Digest(r,chipsOnBoard);
+		v ^= Digest(r,resigned);
 		v ^= Digest(r,score);
 		v ^= Digest(r,isPass);
 		v ^= Digest(r,nPasses);
@@ -763,6 +767,14 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         case DiscardTiles:
         case Resign:
             moveNumber++; //the move is complete in these states
+            boolean repeat = false;
+            do {
+            if(resigned[whoseTurn])
+            {
+           	 logGameEvent(ResignedMessage,""+whoseTurn);
+           	 repeat = true;
+            }
+        } while (repeat);
             setWhoseTurn(nextPlayer());
             return;
         }
@@ -1572,8 +1584,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         
         if (board_state==CrosswordsState.Resign)
         {
-            win[nextPlayer()] = true;
-    		setState(CrosswordsState.Gameover);
+        	doResignPlayer(replay);
         }
         else if(board_state==CrosswordsState.DiscardTiles)
         {
@@ -1621,6 +1632,29 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         	setNextStateAfterDone(replay);
          }
     }
+    
+    public void doResignPlayer(replayMode replay)
+    {
+    	resigned[whoseTurn] = true;
+    	score[whoseTurn] = -1;
+    	int res = 0;
+    	int playing = -1;
+    	
+    	for(int i=0;i<players_in_game;i++) { if(resigned[i]) { res++; } else { playing = i; }}
+    	if(res+1==players_in_game)
+    	{
+    		// sole remaining player is the winner
+    		win[playing] = true;
+    		setGameOver();
+    	}
+    	else { 
+    		setNextPlayer(replay);
+    		setNextStateAfterDone(replay);
+    	}
+    	
+    }
+ 
+    
 	public boolean notStarted()
 	{
 		return((droppedDestStack.size()==0) && (pickedSourceStack.size()==0));
@@ -2645,6 +2679,6 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  {	robot = rob;
  	robotVocabulary = vocab;
  }
-
+ public boolean canResign() { return(true); }
 
 }

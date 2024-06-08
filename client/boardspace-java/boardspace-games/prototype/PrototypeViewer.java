@@ -836,6 +836,31 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     }
 
     /**
+     * normally, no moves should be transmitted during in-game review.  This
+     * allows an override for particular moves. Presumably moves that only
+     * affect the global state, not the particular board position.  
+     */
+    public boolean canSendAnyTime(commonMove m)
+    {
+    	return super.canSendAnyTime(m);
+    			//|| (m.op==MOVE_SHOW);
+    }
+    
+    /**
+     * perform and optionally transmit a move, return true if ok.  Note, it's tempting
+     * to do any "auto move" that is needed in the continuation of this method, but don't.
+     * Doing so may separate the "perform" from the "transmit" which will lead to other
+     * players seeing the events out of order.  Instead, use the continuation of ViewerRun
+     * @param m
+     * @param transmit
+	 * @param mode replay mode
+     * @return true if successful
+     */
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    {
+    	return(super.PerformAndTransmit(m,transmit,mode));
+    }
+    /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
      * @param mm the parameter is a commonMove so the superclass commonCanvas can

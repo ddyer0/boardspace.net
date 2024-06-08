@@ -1169,6 +1169,11 @@ import udp.PlaytableStack;
 	{	
 		String host = Http.getHostName();
 		String params = "&tagname=mobileinfo"+G.platformString();
+		String uid = prefs.get(loginUidKey,"");
+		if(!"".equals(uid))
+		{	// this will get us the number of moves pending
+			params += "&myuid="+uid;
+		}
 		UrlResult result = Http.postEncryptedURL(host,getEncryptedURL,params,null);
 		if((result!=null) && (result.error==null) && (result.text!=null))
 		{

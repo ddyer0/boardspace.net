@@ -113,7 +113,7 @@ sub recordgame()
 	if($nr==1)
 		{
 		my ($dir) = &nextArrayRow($sth);
-		my $root = $ENV{'document_root'};
+		my $root = $ENV{'DOCUMENT_ROOT'};
 		my $fullname = $root . $dir . $gamename . ".sgf";
 		if(open (FH, "> $fullname"))
 			{
@@ -132,6 +132,8 @@ sub recordgame()
 			}
 			else 
 			{
+                         __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+			 __d("saving file ($fullname)");
 			return "error problem writing $fullname";
 			}
 		}
@@ -446,8 +448,8 @@ sub sendNotifications()
 print header;
 # print start_html('Logon');
 if( param() ) 
-{	&logForm("offlineops");
-    #__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+{	# &logForm("offlineops");
+	#__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated
 	my $ok = &useCombinedParams($'tea_key,1);

@@ -35,6 +35,7 @@ import java.util.Hashtable;
 
 import com.codename1.ui.geom.Rectangle;
 
+import bridge.BackingStoreException;
 import bridge.Color;
 import bridge.Preferences;
 import bridge.URL;
@@ -317,6 +318,24 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		if(UNKNOWN.equals(name)) { update(); name=get(user); }
 		return name;
 	}
+		public int find(String name)
+		{
+			for(Enumeration<Integer> k = keys(); k.hasMoreElements();)
+			{
+				int key = k.nextElement();
+				String v = get(key);
+				if(v.equalsIgnoreCase(name)) { return key; }
+			}
+			return -1;
+		}
+		public boolean contains(String name)
+		{
+			for(String v : values())
+			{
+				if(v.equalsIgnoreCase(name)) { return true; }
+			}
+			return false;
+		}
 	}
 
 	/** this class stores the state of a turn based game, mostly a mirror of the actual databse.
@@ -1507,6 +1526,24 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	
 	public void createTheGame()
 	{	 StringBuilder invited = new StringBuilder("|");
+	
+		// paper over a likely UI confusion, where the user types 
+		// a name in the invite box and hits "create" rather than return
+		// check the additional name in the box, and cancel the creation
+		// if that name doesn't exist.
+		 checkInviteName = true;
+		 PendingStatus pend = checkInviteName();
+		 if(pend==PendingStatus.Yes)	// checking a name
+		 {	 String pname = inviteName;
+			 do { G.doDelay(100);
+			 	  pend = checkInviteName();
+			 } while (pend==PendingStatus.Yes);
+			 if(uids.find(pname)<=0)
+			 {
+				 return;	// cancel
+			 }
+		 }
+		 
 		 G.append(invited,loggedInUid,"|");
 		 String accepted = invited.toString();
 		 for(int i=0;i<invitedPlayers.size(); i++) { G.append(invited,invitedPlayers.elementAt(i).channel(),"|"); }
@@ -2048,7 +2085,12 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			loggedInPassword = password;
 			uids.put(loggedInUid,pname);
 			// record this so the first screen can give a hint about moves to be made
-			prefs.put(loginUidKey,""+loggedInUid);
+			try {
+				prefs.put(loginUidKey,""+loggedInUid);
+				prefs.flush();
+			}
+			catch (BackingStoreException err) 
+			{ System.out.println("E "+err.toString());};
 		}
 		else
 		{
@@ -2094,13 +2136,23 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     	String name = invitePlayerRect.getText().trim();
     	checkInviteName = false;
     	if(!"".equals(name))
-    	{	inviteName = name;
+    	{	int uid = uids.find(name);
+    		if(uid>0)
+    		{
+    			invitedPlayers.pushNew(new SimpleUser(uid,name));
+    			invitePlayerRect.clear();
+    			return PendingStatus.No;
+    		}
+    		else
+    		{
+    		inviteName = name;
     		pendingName = Http.postAsyncEncryptedURL(Http.getHostName(),getTurnbasedURL,
 					G.concat(versionParameter,
 								"&",TAGNAME,"=checkname",
 								"&", PNAME, "=",name),
 					null);
     		return PendingStatus.Yes;
+    		}
  
     	}}
     	return PendingStatus.No;

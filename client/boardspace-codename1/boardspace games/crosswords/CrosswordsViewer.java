@@ -157,6 +157,11 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         
         super.init(info,frame);
+        
+        // the prevents racking back and forth when picking a tile from the
+        // rack in review mode.  See comments in commonCanvas
+        resynchronizeOnUnbranch = false;
+ 
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
@@ -464,19 +469,28 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(isLocalGame() || (pl==ap))
-    	{
+      	 
+   	if(!mutable_game_record 
+   			&& !isSpectator()
+   			&& (isTableGame() 
+   								|| (isPassAndPlay() 
+   										? pl==currentGuiPlayer()
+   										: pl==getActivePlayer())))
+   	{	// always for yourself, and also if this is an around-the-table game
     		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
     	}
     	CrosswordsCell prack[] = gb.getPlayerRack(pidx);
     	if(prack!=null)
     	{
-       	if(allowed_to_edit || ap==pl) { for(CrosswordsCell c : prack) { c.seeFlyingTiles=true; }}
-       	boolean open = gb.openRack[pidx];
-      	boolean showTiles = open || allowed_to_edit || bb.openRacks; 
-       	boolean anyRack = isOfflineGame() || allowed_to_edit || (ap==pl);
-       	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
-    	}}
+      	boolean showTiles = explicitlyVisible(gb,pl.boardIndex); 
+      	for(CrosswordsCell c : prack) { c.seeFlyingTiles=showTiles; } 
+      	boolean anyRack = showTiles && (isTableGame() || allowed_to_edit || (ap==pl));
+      	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),
+      			gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles,anyRack ? highlight : null,!anyRack);  	
+
+   		}
+   	}
+    
     private void drawEye(Graphics gc,CrosswordsBoard gb,Rectangle er,boolean showing,HitPoint highlightAll,int who)
     {
    		StockArt chip = showing ? StockArt.NoEye : StockArt.Eye;
@@ -1131,6 +1145,40 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	//setCanvasRotation(oldro);
     }
 
+    private boolean explicitlyVisible(CrosswordsBoard gb,int who)
+    {
+       	return (mutable_game_record 	// endgame review or reviewonly
+       			|| gb.openRacks 		// always visible
+       			|| gb.openRack[who]);	// this player always visible;
+    }
+    private int mainRackVisibleFor = -1;
+    /**
+     * for pass-and-play games, the intended behavior is to conceal the main rack
+     * after every turn change.  So you make your move, pass the device to the next
+     * player, then they hit the eye button to see their tiles. If you use the VCR
+     * to look back, you can see your own current tiles when appropriate.
+     * @param gb
+     * @return if the main rack should be visible
+     */
+    private boolean rackCensored(CrosswordsBoard gb,int rack)
+    {	if(explicitlyVisible(gb,rack)) { return false; }
+    	
+    	if(isSpectator()) { return true; }  	
+    	if(isTurnBasedGame())
+    		{
+    		commonPlayer ap = getActivePlayer();
+    		return (ap.boardIndex!=rack);
+    		}
+    	if(!isOfflineGame())
+    		{ commonPlayer gui = getActivePlayer();
+    		  return gui.boardIndex!=rack;
+    		}
+    	if(!isPassAndPlay()) { return false; }
+    	if(rack==mainRackVisibleFor) { return false; }
+    	if(!reviewMode()) { mainRackVisibleFor = -1; }
+    	return true;
+    }
+    
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  CrosswordsBoard gb = disB(gc);
     
@@ -1214,13 +1262,19 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|isOfflineGame() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
-    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.getRackMap(ap),gb.getMapPick(ap),
-    			   	censorSpectator,
-    			   	censorSpectator ? null : selectPos,
+    	   int who = isPassAndPlay() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   boolean censorRack = rackCensored(gb,who);
+    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(who),gb.getPlayerMappedRack(who),
+    			   gb.getRackMap(who),gb.getMapPick(who),
+    			   	censorRack,
+    			   	censorRack ? null : selectPos,	// always allow rearranging the primary rack
     			   	ourTurnSelect==null); 
+    	   if(isPassAndPlay() && !explicitlyVisible(gb,who) && (currentGuiPlayer().boardIndex==who))
+    	   {   Rectangle rackEye = new Rectangle(G.Left(bigRack),G.Top(bigRack),G.Height(bigRack)/3,G.Height(bigRack)/3);
+    		   StockArt.Eye.drawChip(gc,this,rackEye,selectPos,CrosswordsId.RevealRack,SeeYourTilesMessage);
+    	   }
+
       	}
      
        GC.setFont(gc,standardBoldFont());
@@ -1282,7 +1336,11 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 
     }
     public boolean allowResetUndo() { return(false); }
-    
+    public boolean canSendAnyTime(commonMove m)
+    {
+    	return super.canSendAnyTime(m)
+    			|| (m.op==MOVE_SHOW);
+    }
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
     {
 	   	 if(m.op==MOVE_DROPONRACK)
@@ -1592,6 +1650,9 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	contextRotation = 0;
         	generalRefresh();
         	break;
+        case RevealRack:
+    		mainRackVisibleFor = mainRackVisibleFor<0 ? bb.whoseTurn : -1;
+    		break;
         case EyeOption:
         	{
          	String op = (String)hp.hitObject;

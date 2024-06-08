@@ -4446,13 +4446,15 @@ public abstract class commonCanvas extends exCanvas
     		  truncateHistory();
     		}
     }
+    /**
+     * normally, no moves should be transmitted during in-game review.  Or
+     * when it is not your turn to play. This allows an override for particular
+     * moves. Presumably moves that only affect the global state, not the
+     * particular board position.  
+     */
     public boolean canSendAnyTime(commonMove m)
     {
     	return (m.op==MOVE_PLEASEUNDO);
-    }
-    public void TransmitAll(String str)
-    {
-    	addEvent("@"+str);
     }
     
     /**

@@ -137,6 +137,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         
         super.init(info,frame);
         
+        // the prevents racking back and forth when picking a tile from the
+        // rack in review mode.  See comments in commonCanvas
         resynchronizeOnUnbranch = false;
         
         if(G.debug())

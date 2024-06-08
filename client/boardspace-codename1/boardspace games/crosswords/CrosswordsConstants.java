@@ -57,6 +57,8 @@ public interface CrosswordsConstants
 	static String JustWordsHelp = "Check for good words";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
+	static String SeeYourTilesMessage = "See Your Tiles";
+	static String ResignedMessage = "#1 left the game";
 
 
 	class StateStack extends OStack<CrosswordsState>
@@ -111,7 +113,7 @@ public interface CrosswordsConstants
     	CheckWords,
     	Vocabulary,
     	Definition,
-    	Blank;
+    	Blank, RevealRack;
 
 	}
  enum Option
@@ -159,7 +161,7 @@ public interface CrosswordsConstants
     	/*
     	String CrosswordsStrings[] = 
     		{  "Crosswords",
-    			SelectBlankMessage,
+    			SelectBlankMessage,SeeYourTilesMessage,ResignedMessage,
     			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,
