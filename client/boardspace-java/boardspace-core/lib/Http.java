@@ -513,6 +513,9 @@ public class Http implements Config {
     	            G.setPostedError(message+":"+err);
     	            return(res.error==null);
     	            }
+    	            else {
+    	            	G.print("\n ",err,"\n");
+    	            }
     	            
     	        }
      	        return (false);

@@ -28,7 +28,7 @@ sub check_turnbased
  my ($dbh,$session,$key,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12)=@_;
  my $qsession = $dbh->quote($session);
  my $qkey = $dbh->quote($key);
- my $q = "select acceptedplayers,variation from offlinegame where gameuid=$qsession and variation=$qkey and status='complete' and scored=0 and (playmode='tournament' OR playmode='ranked')";
+ my $q = "select acceptedplayers,variation from offlinegame where gameuid=$qsession and variation=$qkey and status='complete' and scored=0 ";
  my $sth = &query($dbh,$q);
  my $nr = &numRows($sth);
  my $ok = 0;

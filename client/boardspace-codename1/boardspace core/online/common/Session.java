@@ -243,7 +243,7 @@ public class Session implements LobbyConstants
 			{
 			 typeClass.set(GameInfo.ES.unranked);
 			}
-		if(isPassAndPlay && !review) 
+		if(!(isPassAndPlay && !review)) 
 			{ typeClass.set(GameInfo.ES.passandplay);
 		}
 		if(isTurnBased)

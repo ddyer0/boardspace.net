@@ -107,7 +107,7 @@ sub recordgame()
 	my $qdirnum = $dbh->quote($dirnum);
 	my $gamename = &param('gamename');
 	my $body = &decode64(&param('body'));
-	my $q = "select directory from variation where directory_index = $qdirnum";
+	my $q = "select directory from variation where directory_index = $qdirnum limit 1";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	if($nr==1)
@@ -349,7 +349,7 @@ sub getgameinfo()
 	my $q = "select owner,whoseturn,gameuid,status,variation,playmode,"
 		."comments,firstplayer,speed,"
 		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
-		."from offlinegame $index $cond order by status,last desc limit $limit offset $first";
+		."from offlinegame $index $cond and marked is null order by status,last desc limit $limit offset $first";
 	#print "\nQ: $q\n";
 	my $sth = &query($dbh,$q);
 	my $n = &numRows($sth);
@@ -403,7 +403,7 @@ sub sendNotification()
 
 sub sendNags()
 {	my ($dbh) = @_;
-	my $q = "select nag,nagtime,utc_timestamp() from offlinegame where nag is not null and nagtime<utc_timestamp() and status='active'";
+	my $q = "select nag,nagtime,utc_timestamp() from offlinegame where nag is not null and nagtime<utc_timestamp() and status='active' and marked is null";
 	my $sth = &query($dbh,$q);
 	my $nrows = &numRows($sth);
 	if($nrows > 0)
@@ -448,7 +448,7 @@ sub sendNotifications()
 print header;
 # print start_html('Logon');
 if( param() ) 
-{	# &logForm("offlineops");
+{	#&logForm("offlineops");
 	#__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated

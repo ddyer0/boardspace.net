@@ -144,7 +144,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         b.doInit(b.gametype);
         if(!preserve_history)
     	{  	hasDones=false;		// for use by replayMove
-    		if(b.boardSetup!=Zvariation.Zertz_h) { startFirstPlayer(); }
+    		if(b.variation!=Zvariation.Zertz_h) { startFirstPlayer(); }
     		else 
     		{ PerformAndTransmit(EDIT,false,replayMode.Replay); 
     		}
@@ -192,7 +192,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        	Rectangle rack = rackRects[1];
        	G.copy(swapButton,rack);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-    	if(reviewOnly || (b.boardSetup==Zvariation.Zertz_h))
+    	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
     		}
     	else { G.SetHeight(variationRect,0); }

@@ -47,6 +47,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public boolean hasHiddenInformation = false;
 	public boolean okForPlaytable = true;
 	public boolean okForTurnbased = true;
+	public boolean okForPassAndPlay = true;
 	public boolean okForOnline = true;
 	// allow the robot to participate in timed games
 	public boolean robotTimed = false;
@@ -258,6 +259,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				&& (okForPlaytable || !includedTypes.test(ES.playtable))
 				&& (maxPlayers>=3 || !includedTypes.test(ES.multiplayer))
 				&& (!unrankedOnly || includedTypes.test(ES.unranked))
+				&& (okForPassAndPlay ||  includedTypes.test(ES.passandplay))
 				);
 	}
 	public static GameInfo[] groupMenu(Bitset<ES> includedTypes,int playercount)
@@ -560,31 +562,26 @@ synchronized(allGames) {
 			null,false, BlackOverWhite));
 	}
 	{
-	boolean okTurnBased = true;	// for turn based until we handle the pre play synchronously
 	String brules = "/blooms/english/rules.html";
 	String bviewer = "blooms.BloomsViewer";
 	String babout = "about_blooms.html";
 	String bfamily = "Blooms";
-	GameInfo m = put(new GameInfo(760,ES.game,89,"bl",TerritoryGames,bfamily,"Blooms-4",
+	put(new GameInfo(760,ES.game,89,"bl",TerritoryGames,bfamily,"Blooms-4",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			bviewer,brules,babout,	null,true, RedOverBlue));
-	m.okForTurnbased = okTurnBased;
-	m = put(new GameInfo(761,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-5",
+	put(new GameInfo(761,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			bviewer,brules,babout,	null,true, RedOverBlue));
-	m.okForTurnbased = okTurnBased;
-	m = put(new GameInfo(762,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-6",
+	put(new GameInfo(762,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			bviewer,brules,babout,	null,true, RedOverBlue));
-	m.okForTurnbased = okTurnBased;
-	m = put(new GameInfo(763,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-7",
+	put(new GameInfo(763,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			bviewer,brules,babout,	null,true, RedOverBlue));
-	m.okForTurnbased = okTurnBased;
 	}
 	
 	{
@@ -676,10 +673,10 @@ synchronized(allGames) {
 		g.groupSortKey = "00020";	// capturing games after ancient games, cannon first in capturing games
 		g.hasHiddenInformation = true;
 		// not a good candidate for playtable, the piece powers are 
-		// hard to hide, and if I made a compantion window, the main
+		// hard to hide, and if I made a companion window, the main
 		// table would be either irrelevant or an annoyance
 		g.okForPlaytable=false;
-		g.okForTurnbased = true;
+		g.okForPassAndPlay = false;
 	}
 	// capturing games
 	{ GameInfo g = put(new GameInfo(10,ES.game,85,"TS",CapturingGames,"Tintas","Tintas",
@@ -856,6 +853,7 @@ synchronized(allGames) {
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = true;
 	 mm.okForTurnbased = false;
+	 mm.okForPassAndPlay = false;
 	 mm.okForPlaytable=false;
 	 mm.longMessage = mmside;
 	}
@@ -886,6 +884,7 @@ synchronized(allGames) {
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
 		 mm.okForTurnbased = false;		// parallel setup
+		 mm.okForPassAndPlay = false;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 
@@ -1436,6 +1435,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
+	 mm.okForPassAndPlay = false;
 	 mm.okForTurnbased = false;
 	 mm.okForPlaytable = false;
 
@@ -1457,6 +1457,7 @@ synchronized(allGames) {
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
 	 mm.okForTurnbased = false;
+	 mm.okForPassAndPlay = false;
 	 mm.okForPlaytable = false;
 
 	}
@@ -1476,6 +1477,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.okForTurnbased = false;
+	 mm.okForPassAndPlay = false;
 	 mm.hasHiddenInformation = false;
 	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
@@ -1599,7 +1601,8 @@ synchronized(allGames) {
 		mm.maxRobotPlayers = 2;
 		mm.maxPlayers = 5;
 		mm.randomizeFirstPlayer = true;
-
+		mm.okForPassAndPlay = false;
+		mm.okForTurnbased = false;
 		mm.longMessage = "TammanyInfoMessage";
 		mm.hasHiddenInformation = true;
 
@@ -2345,6 +2348,7 @@ synchronized(allGames) {
 	  mm.alternateName="oneday";
 	  // needs a companion app for your current rack
 	  mm.okForTurnbased = false;
+	  mm.okForPassAndPlay = false;
 	  mm.okForPlaytable=false;
 
 	}

@@ -3,8 +3,6 @@ use LWP::UserAgent;
 use Mozilla::CA;
 use LWP::Protocol::https ;
 
-use Time::HiRes qw(time usleep);
-
 
 require "tlib/params.pl";
 require "push/webhook.pl";
@@ -14,22 +12,10 @@ require "push/webhook.pl";
 # and if the user has supplied their discord uid, arranges
 # and @mention of them.
 #
-$'lastdiscord = 0;
 sub send_discord_notification()
 {
   my ($discord, $player, $subject, $email) = @_;
-  #
-  # a little dance to evade discord's rate limits, which seem to 
-  # kick in after 3 messages and one message per 0.1 seconds
-  #
-  my $now = time();
-  if($now<$'lastdiscord) 
-	{ my $rem = ($'lastdiscord-$now);
-          #&dprint "sleep $rem\n";
-          usleep($rem*1000); 
-        }
-  $'lastdiscord = $now+350;
-  
+  #   
   # silent notifications use the hook for the turn based notification channel
   my $webhook = WebService::Discord::Webhook->new($'turnhook );
   $webhook->get();
@@ -141,7 +127,7 @@ sub send_silent_notification()
 		# and pushsafer.com JvEF3MqBGqd8h0TCfv7Y@pushsafer.com
 		#
 		#print "<br>send from $from<br> to $dest<br> su $subject<br> body $link<p>";
-		&send_mail($from,$dest,$subject,"\n$link\n" );
+		&send_mail_to($player_name,$from,$dest,$subject,"\n$link\n" );
 		}
 		else
 		{
@@ -152,7 +138,7 @@ sub send_silent_notification()
 	{
 	#print "email default<br>";
 	#print "send from $from<br> to $e_mail<br> su $subject<br> body $tmsg<p>";
-	&send_mail($from,$e_mail,$subject,$tmsg );
+	&send_mail_to($player_name,$from,$e_mail,$subject,$tmsg );
 	}
 	if($notifyDiscord==0)
 	{

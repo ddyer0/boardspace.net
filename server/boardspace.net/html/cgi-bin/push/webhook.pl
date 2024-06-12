@@ -7,7 +7,7 @@ use warnings;
  
 # Module for interacting with the REST service
 use HTTP::Tiny;
- 
+
 # JSON decode
 use JSON;
  
@@ -98,7 +98,9 @@ sub _parse_response {
   my $json = shift;
  
   my $response = decode_json($json);
- 
+
+# my @k = keys($response);
+# print "$#k @k\n";
   # sanity
   if ( $self->{id} ne $response->{id} ) {
     &log_error("SERVICE ERROR: get() returned ID='"
@@ -133,12 +135,25 @@ sub get {
   my $self = shift;
  
   my $url = $BASE_URL . '/webhooks/' . $self->{id} . '/' . $self->{token};
- 
-  my $response = $self->{http}->get($url);
+  my $retry = 0;
+  my $tries = 0;
+  my $response;
+  do {
+  $retry = 0;
+  $tries++;
+  $response = $self->{http}->get($url);
+  if($response->{status} eq 429)
+     {  #print "retry get $tries\n";
+	$retry = 1;
+        $tries++;
+        sleep(0.5*$tries);
+     }
+  } while ($retry && $tries<5);
+
   if ( !$response->{success} ) {
  
     # non-200 code returned
-    &log_error("HTTP ERROR: HTTP::Tiny->get($url) returned error\n"
+    &log_error("HTTP ERROR: HTTP::Tiny->get($url) returned error(from get)\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
       . "\tcontent: " . $response->{content});
   } elsif ( !$response->{content} ) {
@@ -152,98 +167,7 @@ sub get {
   return $self->_parse_response( $response->{content} );
 }
  
-# PATCH request
-#  Allows webhook to alter its Name or Avatar
-sub modify {
-  my $self = shift;
- 
-  my %params;
-  if ( @_ > 1 ) {
-    %params = @_;
-  } else {
-    $params{name} = shift;
-  }
- 
-  # check params
-  if ( !( $params{name} || exists $params{avatar} ) ) {
-    &log_error("PARAMETER ERROR: Modify request with no valid parameters");
-  }
- 
-  my %request;
- 
-  # retrieve the two allowed params and place in request if needed
-  if ( $params{name} ) { $request{name} = $params{name} }
- 
-  if ( exists $params{avatar} ) {
-    if ( $params{avatar} ) {
- 
-      # try to infer type from data string
-      my $type;
-      if (
-        substr( $params{avatar}, 0, 8 ) eq "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a" )
-      {
-        $type = 'image/png';
-      } elsif ( substr( $params{avatar}, 0, 2 ) eq "\xff\xd8"
-        && substr( $params{avatar}, -2 ) eq "\xff\xd9" )
-      {
-        $type = 'image/jpeg';
-      } elsif ( substr( $params{avatar}, 0, 4 ) eq 'GIF8' ) {
-        $type = 'image/gif';
-      } else {
-        &log_error("PARAMETER ERROR: Could not determine image type from data (not a valid png, jpeg or gif image)");
-      }
- 
-      $request{avatar} =
-        'data:' . $type . ';base64,' . encode_base64( $params{avatar} );
-    } else {
-      $request{avatar} = undef;
-    }
-  }
- 
-  my $url = $BASE_URL . '/webhooks/' . $self->{id} . '/' . $self->{token};
- 
-  # PATCH method not yet built-in as of 0.076
-  #my $response = $self->{http}->patch($url, \%request);
-  my $response = $self->{http}->request(
-    'PATCH', $url,
-    {
-      headers => { 'Content-Type' => 'application/json' },
-      content => encode_json( \%request )
-    }
-  );
-  if ( !$response->{success} ) {
- 
-    # non-200 code returned
-    &log_error("HTTP ERROR: HTTP::Tiny->patch($url) returned error\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content});
-  } elsif ( !$response->{content} ) {
- 
-    # empty result
-    &log_error("HTTP ERROR: HTTP::Tiny->patch($url) returned empty response\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason});
-  }
- 
-  # update internal structs and return
-  return $self->_parse_response( $response->{content} );
-}
- 
-# DELETE request - deletes the webhook
-sub destroy {
-  my $self = shift;
- 
-  my $url = $BASE_URL . '/webhooks/' . $self->{id} . '/' . $self->{token};
- 
-  my $response = $self->{http}->delete($url);
-  if ( !$response->{success} ) {
-    &log_error("HTTP ERROR: HTTP::Tiny->delete($url) returned error\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content});
-  }
- 
-  # DELETE response is 204 NO CONTENT, so there is no return code.
-}
- 
+
 # EXECUTE - posts the message.
 # Required parameters: one of
 #  content
@@ -254,6 +178,7 @@ sub destroy {
 #  avatar_url
 #  tts
 #  allowed_mentions
+
 sub execute {
   my $self = shift;
  
@@ -293,9 +218,14 @@ sub execute {
  
   # switch mode for request based on file upload or no
   my $response;
+  my $retry = 0;
+  my $tries = 0;
+  do 
+  {
+  $retry = 0;
+  $tries++;
   if ( !$params{files} ) {
- 
-    # This is a regular, no-fuss JSON request
+     # This is a regular, no-fuss JSON request
     if ( $params{embeds} ) { $request{embeds} = $params{embeds} }
  
     $response = $self->{http}->post(
@@ -350,7 +280,15 @@ sub execute {
       }
     );
   }
- 
+  if($response->{status} eq 429)
+  {
+   #print "retry $tries\n";
+   $retry = 1;
+   sleep(0.5*$tries);
+  }
+
+  } while($retry && $tries<5);
+
   if ( !$response->{success} ) {
     &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
       . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
@@ -360,71 +298,7 @@ sub execute {
   # return details, or just true if content is empty (wait=0)
   if ( $response->{content} ) { return decode_json( $response->{content} ) }
 }
- 
-sub execute_slack {
-  my $self = shift;
- 
-  my $json;
-  if ( @_ > 1 ) {
-    my %params = @_;
-    $json = encode_json( \%params );
-  } else {
-    $json = shift;
-  }
- 
-  # create a slack-format post url
-  my $url =
-    $BASE_URL . '/webhooks/' . $self->{id} . '/' . $self->{token} . '/slack';
-  if ( $self->{wait} ) { $url .= '?wait=true' }
- 
-  my $response = $self->{http}->post( $url,
-    { headers => { 'Content-Type' => 'application/json' }, content => $json } );
-  if ( !$response->{success} ) {
-    &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content});
-  }
- 
-  # return details, or just undef if content is empty (wait=0)
-  #  Slack request usually returns the string "ok"
-  if ( $response->{content} ) { return $response->{content} }
-}
- 
-sub execute_github {
-  my $self = shift;
- 
-  my %params = @_;
- 
-  # check params
-  if ( !( $params{event} && $params{json} ) ) {
-    &log_error(    "PARAMETER ERROR: execute_github missing required event and json parameters");
-  }
- 
-  # create a github-format post url
-  my $url =
-    $BASE_URL . '/webhooks/' . $self->{id} . '/' . $self->{token} . '/github';
-  if ( $self->{wait} ) { $url .= '?wait=true' }
- 
-  my $response = $self->{http}->post(
-    $url,
-    {
-      headers => {
-        'Content-Type'   => 'application/json',
-        'X-GitHub-Event' => $params{event}
-      },
-      content => $params{json}
-    }
-  );
-  if ( !$response->{success} ) {
-    &log_error("HTTP ERROR: HTTP::Tiny->post($url) returned error\n"
-      . "\tcode: " . $response->{status} . " " . $response->{reason} . "\n"
-      . "\tcontent: " . $response->{content});
-  }
- 
-  # return details, or just undef if content is empty (wait=0)
-  #  github request usually has no response
-  if ( $response->{content} ) { return $response->{content} }
-}
+
  
 1;
  

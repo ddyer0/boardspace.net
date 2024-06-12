@@ -52,7 +52,6 @@ public interface JumbulayaConstants
 	static String PendingWordMessage = "New word \"#1\" : #2";
 	static String JumbulayaMessage = "Jumbulaya Word \"#1\" : #2";
 	static String SkipTurnMessage = "#1 Skipped turn (penalty)";
-	static String ResignedMessage = "#1 left the game";
 	static String PossibleMessage = "Possible Jumbulayas";
 	static String CheckJumbulayaHelp = "Check for Jumbulayas";
 	static String WordsMessage = "Best Words";
@@ -161,7 +160,7 @@ public interface JumbulayaConstants
     	 String JumbulayaStrings[] = 
     		{  "Jumbulaya",
     			WordsMessage,
-    			ResignedMessage,SeeYourTilesMessage,
+    			SeeYourTilesMessage,
     			AbandonExplanation,
     			EndExplanation,
     			FewerTiles,

@@ -666,9 +666,10 @@ sub log_event()
 sub log_error_event()
 {	my ($logfile,$name,$message) = @_;
 	&log_event($logfile,$name,$message);
-	print "<br>\n<b>error from $name</b>:<blockquote> $message</blockquote><br>\n";
+	&dprint("<br>\n<b>error from $name</b>:<blockquote> $message</blockquote><br>\n");
 	&countEvent($logfile,$'perl_error_alert_level,$'perl_error_panic_level);
 }
+
 sub log_error()
 {	my ($message,$source)=@_;
 	my ($package, $filename, $line) = caller;
@@ -1075,12 +1076,13 @@ sub userAuthenticator()
     return("x-boardspace-user: $to $passon $salt $cs ");
 }
 
+# send with the authenticator line so we can detect bounces
 sub send_mail_to()
 {	my ($touser,$from,$to,$sub,$body) = @_;
 	my $auth = &userAuthenticator($touser,1);
 	my $msg = 	"$auth\nSender: $from\nFrom: $from\nTo: \"$touser\" <$to>\nSubject: $sub\n\n$body\n";
 
-	#print "<br>send -f $from $to\n$msg\n";
+	#print "<br>($auth)send -f $from $to\n$msg\n";
 	if($'sendmail)
 	{
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
@@ -1088,10 +1090,11 @@ sub send_mail_to()
     	close SENDMAIL;
 	}
 }
-
+# send without authenticator. No bounce detection
 sub send_mail()
 {	my ($from,$to,$sub,$body) = @_;
 	my $msg = "Sender: $from\nFrom: $from\nTo: $to\nSubject: $sub\n$body\n";
+	#print "<br>send -f $from $to\n$msg\n";
 	if($'sendmail)
 	{
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
@@ -1215,6 +1218,10 @@ sub readtrans_db()
     $lib'translations_loaded=1;
 	}
 	return(%lib'translations);
+}
+sub dprint()
+{  my ($msg) = @_;
+   if(&debugging()) { print($msg); }
 }
 sub debugging()
 {

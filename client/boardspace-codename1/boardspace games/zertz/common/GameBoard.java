@@ -58,7 +58,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     static double black_value = 1.0;
     private boolean swapped_state = false;
     public int placementIndex = 0;
-    public Zvariation boardSetup=Zvariation.Zertz;
+    public Zvariation boardSetup= null;
+    public Zvariation variation = Zvariation.Zertz;
     public int movingObjectIndex() { return(NothingMoving); }
  
     final int winning_total = 3; //number of balls needed to win
@@ -438,6 +439,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void sameboard(GameBoard from_b)
     {   super.sameboard(from_b);
     	G.Assert(boardSetup==from_b.boardSetup,"boardSetup mismatch");
+		G.Assert(variation==from_b.variation,"variation mismatch");
         G.Assert(balls_on_board == from_b.balls_on_board,"same balls on board");
         G.Assert(balls_in_play == from_b.balls_in_play,"same balls in play");
         G.Assert(rings_removed == from_b.rings_removed,"same rings removed");
@@ -510,6 +512,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             }
         v ^= Digest_Rack(r, balls[FIRST_PLAYER_INDEX]);
         v ^= Digest_Rack(r, balls[SECOND_PLAYER_INDEX]);
+        v ^= Digest(r,variation.ordinal());
+        v ^= Digest(r,boardSetup.ordinal());
         if(swapped_state) { v = ~v; }
         v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
@@ -518,10 +522,13 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     /* make a copy of a board */
     public void copyFrom(GameBoard from_b)
     {	
+    	
     	if(boardSetup!=from_b.boardSetup)
     	{
-    		doInit(from_b.gametype,from_b.boardSetup,from_b.randomKey);
+    		setBoardType(from_b.boardSetup);
     	}
+    	super.copyFrom(from_b);		// this might end up calling doinit
+    	variation = from_b.variation;
    		super.copyFrom(from_b);
  
     	needStart = from_b.needStart;
@@ -564,16 +571,22 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void doInit(String gtype,long key)
     {   Zvariation variation = Zvariation.find(gtype);
     	G.Assert(variation!=null,WrongInitError,gtype);
-    	doInit(gtype,variation.boardSetup,key);
+    	// 
+    	// this is delicate - this version os doInit is called from copyFrom
+    	// as part of copying the board, so it must use the current setup
+    	// but it is also called by standard initialization, so has to use the
+    	// setup of that variation.
+    	doInit(gtype,variation,boardSetup==null ? variation.boardSetup : boardSetup,key);
     }
     public void doInit()
     {
-    	doInit(gametype,boardSetup,randomKey);
+    	doInit(gametype,variation,boardSetup,randomKey);
     }
-    private void doInit(String gt,Zvariation bs,long k)
+    private void doInit(String gt,Zvariation bs,Zvariation bset,long k)
     {	gametype = gt;
     	randomKey = k;
-    	setBoardType(bs);
+    	setBoardType(bset);
+    	variation = bs;
     	
     	swapped_state = false;
     	needStart = true;
@@ -585,7 +598,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // the basic board shape changing after init
     public void doInit(GameBoard b,long randomv)
     {	
-    	doInit(b.gametype,b.boardSetup,b.randomKey);
+    	doInit(b.gametype,b.variation,b.boardSetup,b.randomKey);
     }
 
     // true if two adjacent sides are free, ie if it's an edge
@@ -1382,7 +1395,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         switch (m.op)
         {
         case MOVE_SETBOARD:
-     		doInit(Zvariation.values()[m.to_row].shortName,randomKey);
+     		doInit(gametype,variation,Zvariation.values()[m.to_row],randomKey);
         	break;
         case MOVE_BtoB:
             lastMove = new movespec(m.player, MOVE_BtoB, m.from_col,
@@ -1487,7 +1500,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             cantExecute(m);
         }
 
-
+        //G.print("X "+m+" "+Digest());
         return (true);
     }
 

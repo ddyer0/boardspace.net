@@ -769,13 +769,14 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
             moveNumber++; //the move is complete in these states
             boolean repeat = false;
             do {
+            repeat = false;
+            setWhoseTurn(nextPlayer());
             if(resigned[whoseTurn])
             {
-           	 logGameEvent(ResignedMessage,""+whoseTurn);
            	 repeat = true;
             }
         } while (repeat);
-            setWhoseTurn(nextPlayer());
+            
             return;
         }
     }
@@ -1140,6 +1141,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		case ConfirmFirstPlay:
     	case DiscardTiles:
        	case FirstPlay:
+       	case Resign:
     	case Play:
     		if(rackIsEmpty(whoseTurn)||allPassed()) 
     			{ setGameOver();
@@ -2679,6 +2681,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  {	robot = rob;
  	robotVocabulary = vocab;
  }
- public boolean canResign() { return(true); }
+ public boolean canResign() 
+ 	{ return(G.debug()); 	// not quite there yet, needs to handle closing the connection too
+ 	}
 
 }

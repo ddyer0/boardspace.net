@@ -860,9 +860,9 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
             moveNumber++; //the move is complete in these states
             boolean repeat = false;
             do { setWhoseTurn(nextPlayer());
+            	 repeat = false;
                  if(resigned[whoseTurn])
                  {
-                	 logGameEvent(ResignedMessage,playerColor(whoseTurn).tip);
                 	 repeat = true;
                  }
                  else if(skipTurn[whoseTurn])
@@ -3059,7 +3059,9 @@ CommonMoveStack  GetandomSteps()
    return(all);
  
 }
-public boolean canResign() { return(true); }
+public boolean canResign() 
+	{ return(true); 	// not quite there yet, needs to handle closing the connection too
+	}
 }
 
 

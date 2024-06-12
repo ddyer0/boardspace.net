@@ -58,7 +58,6 @@ public interface CrosswordsConstants
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 	static String SeeYourTilesMessage = "See Your Tiles";
-	static String ResignedMessage = "#1 left the game";
 
 
 	class StateStack extends OStack<CrosswordsState>
@@ -161,7 +160,7 @@ public interface CrosswordsConstants
     	/*
     	String CrosswordsStrings[] = 
     		{  "Crosswords",
-    			SelectBlankMessage,SeeYourTilesMessage,ResignedMessage,
+    			SelectBlankMessage,SeeYourTilesMessage,
     			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,
