@@ -826,6 +826,8 @@ param();
 
   
 	print "<tr><td colspan=2>";
+	if(!$locked)
+	{
 	&print_form_header();
 	print "<input type=hidden name=pname value='$pname'>\n";
         print &trans("Forgot your password? Tick this box #1 and press this #2 button to reset it",
@@ -835,6 +837,7 @@ param();
 		. "'>");
 
 	print "</form>";
+	}
 
        }else
        {

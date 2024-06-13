@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 #
-# logon     Validate user's Player Name and password CGI program!
+# logon     Validate user's Player Name and password CGI program!check
 #
 # major revision 1/2013 for java web start. The general philosophy is to
 # keep exactly the same logic and flow, except that the various outcomes
@@ -54,13 +54,14 @@ sub logon()
 	my $slashpwd = $dbh->quote($clearpasswd);
 
 	my $isok = 0;
-  	my $q = "SELECT uid FROM players WHERE player_name=$slashpname AND pwhash=MD5(concat($slashpwd,uid)) AND status='ok' and is_robot is null";
+  	my $q = "SELECT uid,e_mail_bounce FROM players WHERE player_name=$slashpname AND pwhash=MD5(concat($slashpwd,uid)) AND status='ok' and is_robot is null";
 	my $sth= &query($dbh,$q);
 	my $nr = &numRows($sth);
 	my $uid = 0;
+	my $e_mail_bounce = 0;
 	if($nr == 1)
 	{
-	($uid) = &nextArrayRow($sth);
+	($uid,$e_mail_bounce) = &nextArrayRow($sth);
 	}
 	&finishQuery($sth);
 	if($uid>0)
@@ -71,7 +72,7 @@ sub logon()
 	# update last login so player_analysis will notice games etc.
 	&commandQuery($dbh,"Update players set last_logon=$qtime where uid=$quid limit 1");
 	}
-	return $uid;
+	return ($uid,$e_mail_bounce);
 
 }
 #
@@ -79,28 +80,33 @@ sub logon()
 #
 sub getPlayerUid()
 { 
-	my ($dbh, $pname) = @_;
+	my ($dbh, $pname,$bounce) = @_;
  	my $myaddr = $ENV{'REMOTE_ADDR'};
 	my $slashpname = $dbh->quote($pname);
 
 	my $isok = 0;
-  	my $q = "SELECT uid FROM players WHERE player_name=$slashpname AND status='ok' and is_robot is null";
+  	my $q = "SELECT uid,e_mail_bounce FROM players WHERE player_name=$slashpname AND status='ok' and is_robot is null";
 	my $sth= &query($dbh,$q);
 	my $nr = &numRows($sth);
 	my $uid = 0;
+	my $e_mail_bounce;
 	if($nr == 1)
 	{
-	($uid) = &nextArrayRow($sth);
+	($uid,$e_mail_bounce) = &nextArrayRow($sth);
 	}
 	&finishQuery($sth);
-
+	if($bounce)
+	{
+	  my $eb = $e_mail_bounce ? "true" : "false";
+	  return "uidbounce $uid \"" . $pname . "\" \"$eb\"";
+	}
 	return "uid $uid\n";
-
 }
+
 sub recordgame()
 {
 	my ($dbh,$pname,$password) = @_;
-	my $uid = &logon($dbh,$pname,$password);
+	my ($uid) = &logon($dbh,$pname,$password);
 	if($uid>0)
 	{
 	my $dirnum = &param('directory');
@@ -153,7 +159,7 @@ sub recordgame()
 sub creategame()
 {	my ($dbh, $pname, $password) = @_;
 
-	my $uid = &logon($dbh,$pname,$password);
+	my ($uid) = &logon($dbh,$pname,$password);
 
 	if($uid>0)
 	{
@@ -249,7 +255,7 @@ sub creategame()
 # result os a list of user + name pairs
 #
 sub getusers()
-{	my ($dbh,$users) = @_;
+{	my ($dbh,$users,$bounce) = @_;
 	my @us = split /\|/,$users;
 	my $ids = "where ";
 	my $comma = "";
@@ -258,15 +264,17 @@ sub getusers()
 	 $ids .= "${comma}uid=$qid ";
  	 $comma = " or ";
 	}
-	my $q = "select player_name,uid from players $ids";
+	my $q = "select player_name,uid,e_mail_bounce from players $ids";
 	#print "Q: $q\n";
 	my $sth = &query($dbh,$q);
 	my $n = &numRows($sth);
 	my $msg = "";
 	while($n-- > 0)
 	{	
-	my ($u,$n) = &nextArrayRow($sth);
-	$msg .= "$u \"$n\"\n";
+	my ($u,$n, $b) = &nextArrayRow($sth);
+	my $bt = $b ? "true" : "false";
+	my $bb = $bounce ? " \"$bt\"" : "";
+	$msg .= "$u \"$n\" $bb\n";
 	}
 	&finishQuery($sth);
 	#print "$msg<p>";
@@ -344,12 +352,12 @@ sub getgameinfo()
 		$cond .= "${comma}variation=$qvariation";
 		$comma = " and ";
 		}
-	if(!($cond eq '')) { $cond = "where $cond" ; }
+	$cond = "where $cond $comma marked is null ";
 	my $index = ($status && $invited ) ? "use index (status)" : "";
 	my $q = "select owner,whoseturn,gameuid,status,variation,playmode,"
 		."comments,firstplayer,speed,"
 		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
-		."from offlinegame $index $cond and marked is null order by status,last desc limit $limit offset $first";
+		."from offlinegame $index $cond order by status,last desc limit $limit offset $first";
 	#print "\nQ: $q\n";
 	my $sth = &query($dbh,$q);
 	my $n = &numRows($sth);
@@ -427,12 +435,9 @@ sub sendNotifications()
 {	my ($dbh) = @_;
 	my $idx = 0;
 
-	#print "send not\n";
-
 	while(1)
 	 {
 	  my $notification = &param("notification$idx");
-	  #print "n=$notification\n";
 	  if(!$notification) { return; }
 	  $idx++;
 	  my ($uid,$message) = split ",",&decode64($notification);
@@ -471,12 +476,19 @@ if( param() )
 	#__d("pass $passwd");
 	if('1' eq $version)
 		{
-		if('login' eq $tagname) 
-			{ my $uid = &logon($dbh,$pname,$passwd); 
+		if('loginbounce' eq $tagname) 
+			{ my ($uid,$bounce) = &logon($dbh,$pname,$passwd); 
+			  if($uid>0) { &sendNags($dbh); }
+		          my $bb = $bounce ? "true" : "false";
+			  $msg = "uidbounce $uid \"$pname\" \"$bounce\"\n";
+			}
+		elsif('login' eq $tagname) # obsolete version, sunset with version 8.25
+			{ my ($uid,$bounce) = &logon($dbh,$pname,$passwd); 
 			  if($uid>0) { &sendNags($dbh); }
 			  $msg = "uid $uid\n";
 			}
-		elsif('checkname' eq $tagname) { $msg = &getPlayerUid($dbh,$pname); }
+		elsif('checkname' eq $tagname) { $msg = &getPlayerUid($dbh,$pname,0); }	# obsolete version, sunset with 8.25
+		elsif('checknamebounce' eq $tagname) { $msg = &getPlayerUid($dbh,$pname,1); }
 		elsif('creategame' eq $tagname) { $msg = &creategame($dbh,$pname,$passwd); }
 		elsif('getinfo' eq $tagname) 
 			{ my $own = &param('owner');
@@ -492,7 +504,8 @@ if( param() )
 		{
 		  $msg = &recordgame($dbh,$pname,$passwd);
 		}
-		elsif('getusers' eq $tagname) { $msg = &getusers($dbh,&param('users')); }
+		elsif('getusers' eq $tagname) { $msg = &getusers($dbh,&param('users'),0); }	# obsolete version, sunset with 8.25
+		elsif('getusersbounce' eq $tagname) { $msg = &getusers($dbh,&param('users'),1); }
 		elsif('getbody' eq $tagname) { $msg = &getbody($dbh); }
 		else { $msg = "error \"undefined request: $tagname\"" ; }
 		
