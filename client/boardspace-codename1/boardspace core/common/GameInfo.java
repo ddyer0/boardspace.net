@@ -773,7 +773,7 @@ synchronized(allGames) {
 				
 		String euphoriaViewer =  "euphoria.EuphoriaViewer";
 		String euphoriaVideo = "/euphoria/english/euphoria-video.html";
-		boolean okTurnBased = false;
+		boolean okTurnBased = true;
 		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},

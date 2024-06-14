@@ -97,7 +97,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 159;			// 100 represents the initial version of the game
+{	static int REVISION = 160;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -177,6 +177,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 157 fixes "professor" bug with unlimited workers option
 										// revision 158 fixes the interaction between oracle and green card market
 										// revision 159 fixes a problem where max points gained were incorrectly limited
+										// revision 160 introduces turn based games, which affects initialization
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -188,6 +189,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	public void clearOption(Option val) { options.clear(val); }
 	
 	boolean optionsResolved = false;
+	boolean playedAsTurnBased = false;
+	public boolean playedAsTurnBased() { return playedAsTurnBased; }
 	static int MarketSize = 2;
 	int reshuffleAt = 0;
 	// affected cards for limitPoints:
@@ -1046,12 +1049,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		for(ViticultureCell c = uiCells; c!=null; c=c.next) { c.selected = false; };
 	}
 	// constructor 
-    public ViticultureBoard(String init,int players,long key,int map[],int rev) // default constructor
+    public ViticultureBoard(String init,int players,long key,int map[],int rev,boolean turn) // default constructor
     {	//G.print("construct board ",rev);
         setColorMap(map, players);
     	cardDisplay.contentType = ChipType.Card;
     	cardDisplay1.contentType = ChipType.Card;
-
+    	playedAsTurnBased = turn;
         dollarWorker.parentRow = new ViticultureCell[] { dollarWorker };  
 
         
@@ -1106,10 +1109,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		yokeRoseWine.addFixedChip(ViticultureChip.RoseWine);
 		yokeChampaign.addFixedChip(ViticultureChip.Champagne);
 	  	
-        doInit(init,key,players,rev); // do the initialization 
+        doInit(init,key,players,rev,playedAsTurnBased); // do the initialization 
     }
     
-    public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
+    public String gameType() 
+    { return(gametype+" "+players_in_game+" "+randomKey+" "+revision+" "+playedAsTurnBased); 
+    }
     
     public void startNewYear(replayMode replay)
     {	seasonRow = 0;
@@ -1154,12 +1159,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
     	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
     	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
-    	doInit(typ,ran,np,rev);
+    	boolean turn = tok.hasMoreTokens() ? G.BoolToken(tok) : playedAsTurnBased;
+    	doInit(typ,ran,np,rev,turn);
     }
     /* initialize a board back to initial empty state */
-    public void doInit(String gtype,long key,int players,int rev)
+    public void doInit(String gtype,long key,int players,int rev,boolean turn)
     {	
 		variation = ViticultureVariation.findVariation(gtype);
+		playedAsTurnBased = turn;
 		Assert(variation!=null,WrongInitError,gtype);
 		gametype = gtype;
 		switch(variation)
@@ -1360,10 +1367,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     }
     private void setInitialWakeupPositions(int startPosition)
     {	int map[] = AR.intArray(players_in_game);
-    	if(revision>=128)
+    	if(!playedAsTurnBased() && revision>=128)
     	{	startPosition = 0;
-    		new Random(randomKey).shuffle(map);
-     		whoseTurn = map[0];
+    		new Random(randomKey).shuffle(map); 
+     		whoseTurn = map[0]; 
     	}
  	    for(int i=0;i<players_in_game;i++)
 	    {
@@ -1380,7 +1387,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 
     /** create a copy of this board */
     public ViticultureBoard cloneBoard() 
-	{ ViticultureBoard dup = new ViticultureBoard(gametype,players_in_game,randomKey,getColorMap(),revision); 
+	{ ViticultureBoard dup = new ViticultureBoard(gametype,players_in_game,randomKey,getColorMap(),revision,playedAsTurnBased); 
 	  dup.copyFrom(this);
 	  return(dup); 
    	}
@@ -1393,6 +1400,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     public void copyFrom(ViticultureBoard from_b)
     {
         super.copyFrom(from_b);
+        playedAsTurnBased = from_b.playedAsTurnBased;
         automa = from_b.automa;
         automaColor = from_b.automaColor;
         automaScore = from_b.automaScore;
@@ -1496,7 +1504,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         Assert(choiceB.selected==from_b.choiceB.selected,"choiceB different");
 		Assert(optionsResolved == from_b.optionsResolved,"optionsResolved mismatch");
 		Assert(options.equals(from_b.options),"options mismatch");
-
+		Assert(playedAsTurnBased==from_b.playedAsTurnBased,"playedAsTurnBased mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -1564,6 +1572,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v ^= Digest(r,optionsResolved);
 		v ^= Digest(r,choiceA.selected);
 		v ^= Digest(r,choiceB.selected);
+		v ^= Digest(r,playedAsTurnBased);
 		v ^= Digest(r,options);
 
 		if(pendingMoves.size()>0)
@@ -1629,6 +1638,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         case Play:
         case Confirm:
         case FullPass:
+        case ChooseOptions:
         case Resign:
         	boolean continuous = testOption(Option.ContinuousPlay);    	
         	PlayerBoard next = (continuous&&year>0) ? findNextPlayerAnySeason() : findNextPlayerInSeason();
@@ -8185,6 +8195,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{	// ignore strays that arrive late
         		PlayerBoard nn = pbs[m.from_col-'A'];
         		nn.isReady = m.from_row!=0;
+        		if(nn.isReady && playedAsTurnBased())
+        		{	// in turn based mode
+        			setNextPlayer(replay);
+        		}
         	}
         	break;
         case EPHEMERAL_OPTION:

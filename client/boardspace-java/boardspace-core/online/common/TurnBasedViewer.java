@@ -102,9 +102,26 @@ import util.PasswordCollector;
  * as a separate type of ranking.
  * 
  
+ ** Overview of Offline games. **
+ 
+The state of all offline games is kept in the "offlinegame" table of the database.  Games there
+move from "setup" to "active" to "completed", or sometimes to "suspended" if problems are encountered.
 
+games that have been inactive will be marked as "delinquent" after a while, and then "expired" and finally they are deleted.
+This aims to keep the overall size of the offlinegames table to reasonable levels, as nothing stays there forever.
+this maintenance is done by the bs_offline_maintenance.pl script, which is tied to the zoomers.pl script.
 
+the actual body of games in progress is kept in the database, and hooked into the same mechanisms that are used
+to restore offline games that are being resumed.  Consequently, very little change to the online/game/Game.java 
+class was needed, and only minimal changes to individual games, mainly to avoid "simultaneous move" states.
+
+TODO: some interlock against two players simultaneously updating a game.  For example when starting a game with non-final information about the player set.
 TODO: some kind of rate limit on the creation of offline games.
+TODO: some kind of reputation for completed vs abandoned games.
+TODO: some kind of summary mode to replace unrestricted "show me everything"
+TODO: some kind of meta-scrolling for queries that generate a lot of results.
+TODO: some kind of auto-center for boardless games
+TODO: remember some additional preferences for things like "last move" display.
 
  */
 
@@ -157,6 +174,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String SAVEDAS = "savedas";
 	static final String LOGIN = "loginbounce";
 	static final String CHECKNAME = "checknamebounce";
+	static final String LASTCHANGE = "lastknownchange";
 	static final String GETUSERS = "getusersbounce";
 	
 	// status of offline games.  Note that these names are shared with the back end script
@@ -784,6 +802,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			G.infoBox(s.get(ErrorCaption) ,s.get(RemainLogMessage));
 		}
 		}
+		//
+		// this is called from the game when it's over.  Normally this means
+		// that the game has completed normally, but it can also be called if
+		// reinitializing a game failed.
+		//
 		public void discardGame(boolean error)
 		{
 			G.Assert(loggedInUser!=null,"should be logged in");
@@ -822,8 +845,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					 "&",TAGNAME,"=creategame",
 					 "&",PNAME,"=",Http.escape(loggedInUser.name()),
 					 "&",PASSWORD,"=",Http.escape(loggedInUser.password()),
-					 "&",GAMEUID,"=",gameuid);
-			 
+					 "&",GAMEUID,"=",gameuid,
+					 "&",LASTCHANGE,"=",lastTime	// last time should match
+					 );
 			 for(int i=0;i<params.length;i+=2)
 			 {	 String key = params[i];
 			 	 String val = params[i+1];
@@ -912,7 +936,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					break;
 				default: G.Error("not expecting %s",status);
 				}
+				allowOtherPlayers = (acceptedPlayers.size()<game.maxPlayers);
+				
 				updateGame(ACCEPTEDPLAYERS,playersList(acceptedPlayers),
+						ALLOWOTHERPLAYERS,allowOtherPlayers?"true":"false",
 						STATUS,status.name());
 				}
 
@@ -1117,7 +1144,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			totalLines = (top/lineH)*2/3;
 
 		}
-		
+
 	    /**
 	     * hook from mouse scroll wheel events
 	     * @param ex
@@ -1126,7 +1153,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	     * @return
 	     */
 	    public boolean doMouseWheel(int ex,int ey,double amount)
-	    {	return scrollbar.doMouseWheel(ex,ey,amount);
+	    {	boolean v = scrollbar.doMouseWheel(amount);
+	    	rememberedScrollPosition = scrollbar.getScrollPosition(); 
+	    	return v;
 	    }
 	    
 	    /**
@@ -1602,7 +1631,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		{	//requestFocus(b);
 			b.setEditable(this,true);
 			b.setFocus(true);
-			repaint();
+			repaint(10,"mouse select");
 		}}
 	}
 
@@ -2022,7 +2051,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			
 			}
 		if(arg==TextContainer.Op.Repaint) 
-		{ repaint(); 
+		{ repaint(10,"update"); 
 		}
 	}
 	 public void shutDown()
@@ -2064,7 +2093,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     	}
     	return(viewer);
     }
-    
     public void ViewerRun(int waitTime)
     {
      	spinner = false;
@@ -2077,7 +2105,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     			waitTime = Math.min(waitTime,100);
     			break;
     		case Complete:
-    			repaint();
+    			repaint(10,"completed");
     			waitTime = -1;
     	}
     	// handle asynchronous completions and adjust the wait time
@@ -2120,9 +2148,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     }
 	public void Wheel(int x,int y,int button,double amount)
 	{
-			
-		super.Wheel(x,y,button,amount);
-    }
+	 	  myGames.doMouseWheel(x,y,amount);
+	 	  repaint(10,"wheel");
+	}
 	public String parseSaveGameResult(UrlResult res)
 	{	String gamename = null;
 		if(res.error!=null) { G.infoBox(s.get(ErrorCaption),res.error); }
@@ -2159,7 +2187,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				if(ERROR.equals(cmd)) { G.infoBox(s.get(ErrorCaption),tok.nextElement()); }
 				else if(GAMEUID.equals(cmd)) { parsedGameUid = G.IntToken(tok.nextElement()); }
 				else
-				{
+				{	if(G.debug())
+					{
+					G.infoBox("unexpected result from updategame",res.text);
+					}
 					G.print("Unexpected parseCreateGameResult "+cmd);
 				}
 			}
@@ -2483,6 +2514,8 @@ static public void putStrings()
 			reload = true;
 		}
 	}
+	
+	
 
 
 }

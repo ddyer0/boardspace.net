@@ -823,7 +823,8 @@ private Color playerBackground[] = {
     	}
     }
     
-    private void drawStackOnPlayer(Graphics gc,commonPlayer pl,EuphoriaBoard gb,HitPoint highlight,Rectangle r,EuphoriaCell cell,int xpos,int ypos,HitPoint tip,boolean fromHiddenWindow)
+    private void drawStackOnPlayer(Graphics gc,commonPlayer pl,EuphoriaBoard gb,HitPoint highlight,Rectangle r,
+    		EuphoriaCell cell,int xpos,int ypos,HitPoint tip,boolean fromHiddenWindow)
     {	
     	boolean hit = false;
     	int CELLSIZE = gb.CELLSIZE;
@@ -1087,7 +1088,7 @@ private Color playerBackground[] = {
     {	
     	boolean visible =
     			allowed_to_edit		// review or game over
-    			|| isOfflineGame()		// main table in offline mode
+    			|| (isOfflineGame()	&& !isTurnBasedGame())	// main table in offline mode
     			|| (player==getActivePlayer().boardIndex)	// our info
     			|| (remoteWindowIndex(highlight)>=0)
     			;
@@ -2033,7 +2034,7 @@ private Color playerBackground[] = {
        				{	boolean ephemeralRecruits = bb.ephemeralRecruitMode();
        					highlight.hitCode = ephemeralRecruits 
 								? EuphoriaId.EConfirmOneRecruit
-								: EuphoriaId.EConfirmRecruits;
+								: simultaneousTurnsAllowed() ? EuphoriaId.EConfirmRecruits : EuphoriaId.ConfirmRecruits;
        				}
        			}
       		}
@@ -3140,6 +3141,7 @@ private Color playerBackground[] = {
 				case EConfirmDiscard:
 				case EConfirmOneRecruit:
 				case EConfirmRecruits:
+				case ConfirmRecruits:
 					{
 					int pl = selectedRecruitPlayer(hp,bb);
 					PerformAndTransmit(rack.name()+" "+ bb.getPlayer(reviewOnly ? bb.whoseTurn : pl).color);

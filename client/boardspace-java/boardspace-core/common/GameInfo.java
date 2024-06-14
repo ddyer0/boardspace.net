@@ -771,7 +771,7 @@ synchronized(allGames) {
 				
 		String euphoriaViewer =  "euphoria.EuphoriaViewer";
 		String euphoriaVideo = "/euphoria/english/euphoria-video.html";
-		boolean okTurnBased = false;
+		boolean okTurnBased = true;
 		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},
@@ -881,8 +881,8 @@ synchronized(allGames) {
 		 mm.groupSortKey = "00042";
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
-		 mm.okForTurnbased = false;		// parallel setup
-		 mm.okForPassAndPlay = false;
+		 mm.okForTurnbased = G.debug();		// parallel setup
+		 mm.okForPassAndPlay = G.debug();
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 

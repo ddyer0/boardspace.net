@@ -451,6 +451,10 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	{
 		return simultaneousTurnsAllowed(getState());
 	}
+	public boolean simultaneousTurnsEverAllowed()
+	{
+		return simultaneousTurnsAllowed();
+	}
 	/**
 	 * @param state one of the game's states
 	 * @return true if simultaneous turns are allowed in a particular state, if they are allowed in general.

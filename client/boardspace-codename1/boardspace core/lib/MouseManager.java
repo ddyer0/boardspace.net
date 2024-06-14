@@ -592,6 +592,7 @@ public class MouseManager
 	    public void setMouseWheel(MouseState ev,int button,int x,int y,double amount)
 	    {
 	    	setMouseInternal(ev,button,x,y,amount,0);
+	    	canvas.wake();
 	    }
 	    public void setMouse(MouseState ev, int button, int x, int y)
         {	//G.startLog("set mouse "+button);

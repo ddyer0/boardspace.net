@@ -206,6 +206,9 @@ sub creategame()
 	my $whoseturn = &param('whoseturn');
 	my $qwhoseturn = $dbh->quote($whoseturn);
 
+	my $lastchange = &param('lastknownchange');
+	my $qlastchange = $dbh->quote($lastchange);
+
 	my $nag = &param('nag');
 	my $qnag = $dbh->quote($nag);
 	my $nagtime = int(&param('nagtime'));
@@ -217,8 +220,9 @@ sub creategame()
 	my $preamble = $gameuid>0 
 			? "update offlinegame set last=utc_timestamp()" 
 			: "insert into offlinegame set last=utc_timestamp(),created=utc_timestamp()";
+	my $andchange = $lastchange ? " and last=$qlastchange" : "";
 	my $postamble = $gameuid>0 
-			? " where gameuid= $qgameuid"
+			? " where gameuid= $qgameuid" . $andchange
 			: "";
 	my $q = "$preamble "
 			. ($owner ? ",owner=$qowner" : "")
@@ -238,7 +242,31 @@ sub creategame()
 			. $postamble;
 	#print "\nQ: $q\n";
 	my $sth = &commandQuery($dbh,$q);
-	$gid = &last_insert_id($sth);
+
+	if($gameuid>0)
+	{
+	  my $nr = &numRows($sth);
+	  if ($nr == 0)
+		{
+		# failed, most likely because the timestamp doesn't match
+		my $q2 = "select last from offlinegame where gameuid=$qgameuid";
+		my $sth2 = &query($dbh,$q2);
+		my $nr2 = &numRows($sth2);
+		if($nr2 eq 0)
+			{
+			return "error game $qgameuid doesn't exist";
+			}
+			else
+			{
+			my ($last) = &nextArrayRow($sth2);
+			my $qlast = $dbh->quote($last);
+			return "error out of sync: last change is $qlast not $qlastchange";
+			}
+		}
+	}
+	else {
+	  $gid = &last_insert_id($sth);
+	}
 	&finishQuery($sth);
 	}
 	return $gameuid>0 

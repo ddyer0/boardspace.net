@@ -17,7 +17,7 @@ use strict;
 require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
-
+require "bs_offline_maintenance.pl";
 
 { my $zoom_threshold=50;
   my $master_zoom_threshold=100;
@@ -82,8 +82,9 @@ require "tlib/common.pl";
   while ($num>0)
   { $num--;
     my ($id,$r1,$r2,$r3,$var,$uid) = $sth->fetchrow();
-	my $qid = $dbh->quote($uid);
-	my $qvar = $dbh->quote($var);
+    my $qid = $dbh->quote($uid);
+    my $qvar = $dbh->quote($var);
+
     print SENDMAIL "$id $var\t$r1 from $r2 or $r3\n";
 
 	# get the names of the most recent games
@@ -110,6 +111,11 @@ require "tlib/common.pl";
     #print SENDMAIL "$msg\n";
 
   }
+
+ # do maintenance on the offline games section
+  my $msg = &changemarks($dbh);
+  print SENDMAIL $msg . "\n";
+
   close SENDMAIL;
   
   }
@@ -121,5 +127,6 @@ require "tlib/common.pl";
   &commandQuery($dbh,"DELETE from messages WHERE (UNIX_TIMESTAMP(date)+60*60*24*365)<UNIX_TIMESTAMP()");
   &commandQuery($dbh,"UPDATE ranking SET prev_value_2=prev_value_1, prev_value_1=value");
 
+ 
   &disconnect($dbh);
 }

@@ -361,7 +361,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
-        mainBoard = new ViticultureBoard(type,players_in_game,randomKey,getStartingColorMap(),ViticultureBoard.REVISION);
+        mainBoard = new ViticultureBoard(type,players_in_game,randomKey,getStartingColorMap(),ViticultureBoard.REVISION,isTurnBasedGame());
         backgroundCells = new ViticultureCell[] {mainBoard.greenDiscards,mainBoard.yellowDiscards,
     		mainBoard.purpleDiscards,mainBoard.blueDiscards,
     		mainBoard.structureDiscards};
@@ -6255,15 +6255,16 @@ private void drawPlayerBoard(Graphics gc,
      public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
+    	int np = G.IntToken(his);
     	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int rev = G.IntToken(his);	
+    	boolean turn = G.BoolToken(his);
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
         // int rk = G.IntToken(his);
     	// bb.doInit(token,rk);
-        mainBoard.doInit(token,rv,np,rev);
+        mainBoard.doInit(token,rv,np,rev,turn);
         adjustPlayers(np);
 
     }
@@ -6688,8 +6689,9 @@ private void drawPlayerBoard(Graphics gc,
   	// flush them.  This can occur if there is a realtime race between confirming
   	// the setup and the other player changing his mind about the setup.
   	//
-  	if(!mainBoard.simultaneousTurnsAllowed()
-  		&& m.isEphemeral()) 
+  	if(mainBoard.simultaneousTurnsEverAllowed()		// if they are ever allowed
+  		&& !mainBoard.simultaneousTurnsAllowed()	// but not right now
+  		&& m.isEphemeral()) 						// and this is any ephemeral move
   		{ return true;
   		}
   
