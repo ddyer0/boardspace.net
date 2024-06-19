@@ -336,7 +336,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle eye = eyeRects[player];
     	Rectangle jrect = startJrects[player];
      	boolean planned = plannedSeating();
-    	boolean showRacks = isOfflineGame() || !boardMax;
+    	boolean showRacks = allPlayersLocal() || !boardMax;
     	int scoreW = unitsize*5/2;
     	int scoreH = unitsize*5/2;
     	G.SetRect(score,x,y+unitsize*3/2,scoreW,scoreH);
@@ -644,12 +644,12 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	}
     	else
     	{
-    	{int ap = allowed_to_edit||(isOfflineGame()&&!isTurnBasedGame())? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||(allPlayersLocal())? bb.whoseTurn : getActivePlayer().boardIndex;
     	 JumbulayaCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
   
-    	if(allowed_to_edit || isOfflineGame())
+    	if(allowed_to_edit || allPlayersLocal())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{JumbulayaCell c = getMovingTile(pl.boardIndex);
@@ -1031,7 +1031,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     		commonPlayer ap = getActivePlayer();
     		return (ap.boardIndex!=rack);
     		}
-    	if(!isOfflineGame())
+    	if(!allPlayersLocal())
     		{ commonPlayer gui = getActivePlayer();
     		  return gui.boardIndex!=rack;
     		}

@@ -596,7 +596,7 @@ public abstract class commonCanvas extends exCanvas
      * should be the same as isOfflineGame() && !isTurnBasedGame()
      * @return true if this is a local game (all players present)
      */
-    public boolean isLocalGame() { return (offlineGame && (turnBasedGame==null)); }
+    public boolean allPlayersLocal() { return (offlineGame && (turnBasedGame==null)); }
     /**
      * 
      * @return true if is an offline game, and not played on a table device 
@@ -2129,7 +2129,7 @@ public abstract class commonCanvas extends exCanvas
     private commonPlayer otherPlayerTimeExpired(commonPlayer my)
     {	my.setTimeIsInactive(false);
     	for(int i = 0;i<nPlayers();i++)
-    	{	if(isOfflineGame() ? (i!=currentGuiPlayer().boardIndex) : (i!=my.boardIndex))
+    	{	if(allPlayersLocal() ? (i!=currentGuiPlayer().boardIndex) : (i!=my.boardIndex))
     		{
     		commonPlayer p = getPlayerOrTemp(i);
     		if(p!=null)
@@ -3251,7 +3251,7 @@ public abstract class commonCanvas extends exCanvas
   		return ((m!=null) 
   				&& (b!=null)
   				&& ((m.op!=MOVE_START) && (m.op!=MOVE_EDIT))
-  				&& (isOfflineGame() || (m.player==b.whoseTurn())));
+  				&& (allPlayersLocal() || (m.player==b.whoseTurn())));
   	}
   	return(false);
   }
@@ -5306,7 +5306,7 @@ public abstract class commonCanvas extends exCanvas
             l.auxSliders = myFrame.addOption("Use aux sliders",false,deferredEvents);
            	hidden.alternateBoard = myFrame.addOption("Show Alternate Board", false,deferredEvents);
             hidden.saveAndCompare = myFrame.addAction("Save/Compare Position",deferredEvents);
-            if(isLocalGame())
+            if(allPlayersLocal())
             {
             if(REMOTEVNC) { 
             regService = new VncRemote(s.get(RemoteFor,gameName()),painter,this);
@@ -7264,7 +7264,8 @@ public abstract class commonCanvas extends exCanvas
       {	long elapsed = (currentT - hidden.startTurn); 
         if ( (hidden.startTurn > 0) 
         		&& (((hidden.doneAtTime>0)&& (elapsed>hidden.timePerDone)) 
-        		    || (elapsed > hidden.timePerTurn)))
+        		    || (elapsed > hidden.timePerTurn))
+        		&& !isTurnBasedGame())
            {
              SoundManager.playASoundClip(clockSound,5000);
              hidden.startTurn = currentT;	// restart the timer

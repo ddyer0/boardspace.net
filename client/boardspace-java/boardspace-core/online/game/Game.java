@@ -2604,7 +2604,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	catch (ThreadDeath err) { throw err;}
             catch (Throwable err)
             {
-                logExtendedError("RestoreState failed: ", err, true);
+                logExtendedError("\nRestoreState failed: "+restoringGame+"\n"+fullMsg+"\n", err, true);
 
                 //recover somewhat gracefully by putting him in limbo and 
                 //making sure it doesn't happen again
@@ -4675,10 +4675,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		sendMessageEtc(combined);
          }
     }
+    private Object restoringGame = "";
     public void restoreOfflineGame()
     {
     	if(turnBasedGame!=null)
-    	{
+    	{	restoringGame = turnBasedGame;
         	String rec = turnBasedGame.getBody() ;
         	// the body is fetched asynchronously, PENDINGBODY is returned until the result is known
         	if(!TurnBasedViewer.PENDINGBODY.equals(rec)) 
@@ -4696,7 +4697,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	} 	
     	}
     	else
-    	{	// no deferrment, once through
+    	{	// no deferment, once through
+    		restoringGame = UIDstring;
     		restoreGameRecord(OfflineGames.restoreOfflineGame(UIDstring));
     	}
 

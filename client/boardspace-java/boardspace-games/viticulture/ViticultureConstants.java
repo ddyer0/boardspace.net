@@ -141,6 +141,7 @@ public interface ViticultureConstants
 	static String Age2OnceMessage = "Select two wines to age";
 	static String Age1TwiceMessage = "Select a wine to age twice";
 	static String TimeLineDescription = "#1, Year #2";
+	static String TimeYearDescription = "Year #1";
 	static String YearDescription = "Year #1";
 	static String CantPlant = "Sorry, you can't plant anything";
 	static String HarvestMode = "Harvesting";
@@ -467,7 +468,7 @@ public interface ViticultureConstants
 		AvailableBuildingsMessage,
 		AllBuildingsMessage,
 		ViticultureVictoryCondition,
-		TimeLineDescription,
+		TimeLineDescription,TimeYearDescription,
 		FlipFieldBonus,
 		FillWineOrder,
 		WakeupTrack,

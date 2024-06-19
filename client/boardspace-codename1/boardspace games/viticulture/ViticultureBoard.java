@@ -97,7 +97,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 160;			// 100 represents the initial version of the game
+{	static int REVISION = 161;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -178,6 +178,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 158 fixes the interaction between oracle and green card market
 										// revision 159 fixes a problem where max points gained were incorrectly limited
 										// revision 160 introduces turn based games, which affects initialization
+										// revision 161 moves drawing residual cards to beginning of wakeup instead of end of residuals
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -344,7 +345,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			setState(resetState = ViticultureState.TakeCard);
 			break;
 		case SelectWakeup:
-       		{ ViticultureState nexts =  selectWakeup(pb,replay);    		
+       		{ 
+       		  if(revision>=161) { drawResidualCards(pb,replay,m); }
+       		  ViticultureState nexts =  selectWakeup(pb,replay);    		
        		  if(nexts!=null) { setState(resetState = nexts); }
        		  else { doContinuation(pb,replay,m); }
        		}
@@ -1367,9 +1370,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     }
     private void setInitialWakeupPositions(int startPosition)
     {	int map[] = AR.intArray(players_in_game);
-    	if(!playedAsTurnBased() && revision>=128)
+    	if(revision>=128)
     	{	startPosition = 0;
-    		new Random(randomKey).shuffle(map);
+    		if(!playedAsTurnBased()) { new Random(randomKey).shuffle(map); } 
      		whoseTurn = map[0];
     	}
  	    for(int i=0;i<players_in_game;i++)
@@ -1449,6 +1452,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    copyFrom(grapeDisplay,from_b.grapeDisplay);
 	    copyFrom(wineDisplay,from_b.wineDisplay);
 	    yokeCash.copyCurrentCenter(from_b.yokeCash);
+	    copyFrom(tradeCards,from_b.tradeCards);
+	    copyFrom(tradeCoins,from_b.tradeCoins);
+	    copyFrom(tradeWhiteGrape,from_b.tradeWhiteGrape);
+	    copyFrom(tradeRedGrape,from_b.tradeRedGrape);
+	    copyFrom(tradeVP,from_b.tradeVP);
+	    
 	    grapeDisplayCount = from_b.grapeDisplayCount;
 	    wineDisplayCount = from_b.wineDisplayCount;
 	    lastDroppedWorker = getCell(from_b.lastDroppedWorker);
@@ -3720,6 +3729,17 @@ public int getMaxRevisionLevel() { return(REVISION); }
     {
     	return testOption(Option.ContinuousPlay) ? pb.season() : season;
     }
+    private void drawResidualCards(PlayerBoard pb,replayMode replay,Viticulturemovespec m)
+    {
+    	if(pb.hasSilo())
+			{ ViticultureState ns = drawCards(1,greenCards,pb,replay,m);
+			  Assert(ns==null,"shouldn't be a next state");
+			}	
+    	if(pb.hasDock()) 
+			{ ViticultureState ns = drawCards(1,purpleCards,pb,replay,m);
+			  Assert(ns==null,"shouldn't be a next state");
+			}
+    }
     //
     // move the current player's rooster to the next season,
     // and award any applicable bonuses
@@ -3738,15 +3758,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
       		{
       		addContinuation(Continuation.SelectWakeup);
       		if(pb.cards.height()>7) { nextState = ViticultureState.DiscardCards; }
-      		// card residuals after discarding
-      		if(pb.hasSilo())
-      			{ ViticultureState ns = drawCards(1,greenCards,pb,replay,m);
-      			  Assert(ns==null,"shouldn't be a next state");
-      			}	
-      			if(pb.hasDock()) 
-      			{ ViticultureState ns = drawCards(1,purpleCards,pb,replay,m);
-      			  Assert(ns==null,"shouldn't be a next state");
-      			}
+      		// card residuals after discarding\
+      		if(revision<161) { drawResidualCards(pb,replay,m); }
+      		
       		}
       		else { 
       			ViticultureCell dcell = getCell(ViticultureId.RoosterTrack,'A',pb.boardIndex);
@@ -8185,6 +8199,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
         //G.print("E "+m+" for "+whoseTurn+" "+resetState); 
         switch (m.op)
         {
+        case MOVE_READY:
+        	{
+    		PlayerBoard nn = pbs[m.from_col-'A'];
+    		nn.isReady = m.from_row!=0;
+    		setNextPlayer(replay);
+    		if(allPlayersReady()) 
+    			{ doDone(replay,m); 
+    			}
+    		}
+        	break;
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	options.setMembers(m.from_row);
@@ -8195,12 +8219,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{	// ignore strays that arrive late
         		PlayerBoard nn = pbs[m.from_col-'A'];
         		nn.isReady = m.from_row!=0;
-        		if(nn.isReady && playedAsTurnBased())
-        		{	// in turn based mode
-        			setNextPlayer(replay);
-        		}
         	}
         	break;
+        case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	if(board_state==ViticultureState.ChooseOptions)
         	{// ignore strays that arrive late
@@ -8954,6 +8975,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		 Viticulturemovespec m = (Viticulturemovespec)all.elementAt(lim);
 		 switch(m.op) {
 		 	case EPHEMERAL_OPTION:
+	        case MOVE_SETOPTION:
+	        case MOVE_READY:
 		 	case EPHEMERAL_READY:
 		 		addToTargets(val,new ViticultureCell(),m);
 		 		break;
@@ -11300,7 +11323,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 	case ChooseOptions:
 		for(Option op : Option.values())
 		{
-			all.push(new Viticulturemovespec(EPHEMERAL_OPTION,op,testOption(op),whoseTurn));
+			all.push(new Viticulturemovespec(simultaneousTurnsAllowed()?EPHEMERAL_OPTION: MOVE_SETOPTION,op,testOption(op),whoseTurn));
 		}
 		break;
 	default:

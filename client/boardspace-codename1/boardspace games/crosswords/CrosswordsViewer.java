@@ -360,7 +360,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	boolean planned = plannedSeating();
-    	boolean showRacks = isOfflineGame() || !boardMax;
+    	boolean showRacks = allPlayersLocal() || !boardMax;
     	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
@@ -684,12 +684,12 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		if(c!=null) { return(c); }
     	}
     	else {
-    	{int ap = allowed_to_edit||isOfflineGame() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||allPlayersLocal() ? bb.whoseTurn : getActivePlayer().boardIndex;
     	 CrosswordsCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
  
-     	if(allowed_to_edit || isOfflineGame())
+     	if(allowed_to_edit || allPlayersLocal())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{CrosswordsCell c = getMovingTile(pl.boardIndex);

@@ -354,8 +354,8 @@ public class RepaintManager implements VncScreenInterface,Config
 			G.isCodename1() 
 				? (G.isIOS()
 						? RepaintStrategy.Direct_Unbuffered 
-						: RepaintStrategy.Direct_Unbuffered)// was DoubleBuffered
-					: G.isJavadroid()
+						: RepaintStrategy.DoubleBuffer)
+				: G.isJavadroid()
 						? RepaintStrategy.Direct_SingleBuffer
 						: RepaintStrategy.Deferred;//RepaintStrategy.Direct_SingleBuffer; //RepaintStrategy.Deferred;
 	private XImage allFixed = null; 		// for drawing unchanging elements of the board

@@ -385,7 +385,7 @@ sub getgameinfo()
 	my $q = "select owner,whoseturn,gameuid,status,variation,playmode,"
 		."comments,firstplayer,speed,"
 		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
-		."from offlinegame $index $cond order by status,last desc limit $limit offset $first";
+		."from offlinegame $index $cond order by last desc,status limit $limit offset $first";
 	#print "\nQ: $q\n";
 	my $sth = &query($dbh,$q);
 	my $n = &numRows($sth);

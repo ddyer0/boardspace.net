@@ -634,6 +634,10 @@ public class PlayerBoard
 		workerTypes.copyFrom(other.workerTypes);
 		pendingWorker.copyFrom(other.pendingWorker);
 		selectedCards.copyFrom(other.selectedCards);
+		vpDisplay.copyFrom(other.vpDisplay);
+		cashDisplay.copyFrom(other.cashDisplay);
+		redGrapeDisplay.copyFrom(other.redGrapeDisplay);
+		whiteGrapeDisplay.copyFrom(other.whiteGrapeDisplay);
 		oracleCards.copyFrom(other.oracleCards);
 		oracleColors = other.oracleColors;
 		roosterDisplay.selected = other.roosterDisplay.selected;

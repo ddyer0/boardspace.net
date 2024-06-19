@@ -60,43 +60,47 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     static final int EPHEMERAL_READY = 234;		// select option
     static final int EPHEMERAL_COMMENCE = 235;	// commence play (in game setup)
     static final int MOVE_COMMENCE = 236;	// commence play (in running game)
-   
+    static final int MOVE_READY = 237;
+    static final int MOVE_OK = 238;
+    static final int MOVE_SETOPTION = 239;
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
-    	addStandardMoves(D);	// this adds "start" "done" "edit" and so on.
-        D.putInt("Pick", MOVE_PICK);
-        D.putInt("Pickb", MOVE_PICKB);
-        D.putInt("Drop", MOVE_DROP);
-        D.putInt("Dropb", MOVE_DROPB);
-        D.putInt("Select",MOVE_SELECT);
-        D.putInt("SelectWakeup",MOVE_SELECTWAKEUP);
-        D.putInt("PlaceStar", MOVE_PLACE_STAR);
-        D.putInt("MoveStar", MOVE_STAR);
-        D.putInt("Place", MOVE_PLACE_WORKER);
-        D.putInt("Build",MOVE_BUILD);
-        D.putInt("Discard", MOVE_DISCARD);
-        D.putInt("Plant", MOVE_PLANT);
-        D.putInt("SkipSecondAction",MOVE_SKIP);
-        D.putInt("NewWakeup",MOVE_NEWWAKEUP);
-        D.putInt("Trade",MOVE_TRADE);
-        D.putInt("MakeWine",MOVE_MAKEWINE);
-        D.putInt("SellWine",MOVE_SELLWINE);
-        D.putInt("FillWine",MOVE_FILLWINE);
-        D.putInt("Uproot",MOVE_UPROOT);
-        D.putInt("Retrieve",MOVE_RETRIEVE);
-        D.putInt("Switch", MOVE_SWITCH);
-        D.putInt("TakeAction", MOVE_TAKEACTION);
-        D.putInt("AgeOne", MOVE_AGEONE);
-        D.putInt("nextSeason", MOVE_NEXTSEASON);
-        D.putInt("BuildCard", MOVE_BUILDCARD);
-        D.putInt("Train",MOVE_TRAIN);
-        D.putInt("PlaceBonus",MOVE_BONUS);
-        D.putInt("Unselect", MOVE_UNSELECT);
-        D.putInt("Option",EPHEMERAL_OPTION);
-        D.putInt("Ready",EPHEMERAL_READY);
-        D.putInt("Commence",MOVE_COMMENCE);
-        D.putInt("Ecommence",EPHEMERAL_COMMENCE);
+    	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
+        "Pick", MOVE_PICK,
+        "Pickb", MOVE_PICKB,
+        "Drop", MOVE_DROP,
+        "Dropb", MOVE_DROPB,
+        "Select",MOVE_SELECT,
+        "SelectWakeup",MOVE_SELECTWAKEUP,
+        "PlaceStar", MOVE_PLACE_STAR,
+        "MoveStar", MOVE_STAR,
+        "Place", MOVE_PLACE_WORKER,
+        "Build",MOVE_BUILD,
+        "Discard", MOVE_DISCARD,
+        "Plant", MOVE_PLANT,
+        "SkipSecondAction",MOVE_SKIP,
+        "NewWakeup",MOVE_NEWWAKEUP,
+        "Trade",MOVE_TRADE,
+        "MakeWine",MOVE_MAKEWINE,
+        "SellWine",MOVE_SELLWINE,
+        "FillWine",MOVE_FILLWINE,
+        "Uproot",MOVE_UPROOT,
+        "Retrieve",MOVE_RETRIEVE,
+        "Switch", MOVE_SWITCH,
+        "TakeAction", MOVE_TAKEACTION,
+        "AgeOne", MOVE_AGEONE,
+        "nextSeason", MOVE_NEXTSEASON,
+        "BuildCard", MOVE_BUILDCARD,
+        "Train",MOVE_TRAIN,
+        "PlaceBonus",MOVE_BONUS,
+        "Unselect", MOVE_UNSELECT,
+        "Option",EPHEMERAL_OPTION,
+        "SetOption",MOVE_SETOPTION,
+        "Ready",EPHEMERAL_READY,
+        "Ok",MOVE_READY,
+        "Commence",MOVE_COMMENCE,
+        "Ecommence",EPHEMERAL_COMMENCE);
     }
     public boolean isEphemeral()
     {
@@ -424,10 +428,12 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	from_row = (int) b.members();
         	G.Assert(from_row == b.members(),"option information lost");
         	break;
+        case MOVE_READY:
         case EPHEMERAL_READY:
         	from_col = G.CharToken(msg);
         	from_row = G.BoolToken(msg)?1:0;
         	break;
+        case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	from_col = G.CharToken(msg);
         	from_row = Option.valueOf(msg.nextToken()).ordinal();
@@ -640,8 +646,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_PICKB:
         	String name = currentWorkerName();
         	return(name==null ? source.shortName : "Retrieve "+name);
+        case MOVE_READY:
         case EPHEMERAL_READY:
            	return G.concat("Ready ",from_col," ",((from_row==0) ? "false" : "true"));     	
+        case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	{
         	return G.concat(Option.values()[from_row]," ",to_row==0 ? "false" : "true");
@@ -790,9 +798,11 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	return G.concat(opname,os);
         	}
 
+        case MOVE_READY:
         case EPHEMERAL_READY:
        	 	return G.concat(opname,from_col," ",(from_row==0 ? "false" : "true"));
        	 	
+        case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	 return G.concat(opname,from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
  

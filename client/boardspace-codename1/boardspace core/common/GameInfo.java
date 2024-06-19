@@ -873,6 +873,8 @@ synchronized(allGames) {
 	 mm.hasHiddenInformation = true;
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;
+	 mm.okForTurnbased = true;		// parallel setup
+	 mm.okForPassAndPlay = true;
 	
 	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
 				NoBots,null,
@@ -883,8 +885,8 @@ synchronized(allGames) {
 		 mm.groupSortKey = "00042";
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
-		 mm.okForTurnbased = false;		// parallel setup
-		 mm.okForPassAndPlay = false;
+		 mm.okForTurnbased = true;		// parallel setup
+		 mm.okForPassAndPlay = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 

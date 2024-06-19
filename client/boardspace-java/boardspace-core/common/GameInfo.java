@@ -871,6 +871,8 @@ synchronized(allGames) {
 	 mm.hasHiddenInformation = true;
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;
+	 mm.okForTurnbased = true;		// parallel setup
+	 mm.okForPassAndPlay = true;
 	
 	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
 				NoBots,null,
@@ -881,8 +883,8 @@ synchronized(allGames) {
 		 mm.groupSortKey = "00042";
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
-		 mm.okForTurnbased = G.debug();		// parallel setup
-		 mm.okForPassAndPlay = G.debug();
+		 mm.okForTurnbased = true;		// parallel setup
+		 mm.okForPassAndPlay = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 
@@ -1778,7 +1780,7 @@ synchronized(allGames) {
 			Color.yellow,Color.white,Color.green};
 	  String brules = "/breakingaway/english/rules.html";
 	  String bview = "breakingaway.BreakingAwayViewer";
-	  boolean okTurnBased = false;
+	  boolean okTurnBased = G.debug();
 	  double bspeed[] = {0.4,0.04};
 	  {
 	  GameInfo mm = put(new GameInfo(320,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway",
@@ -2395,7 +2397,7 @@ synchronized(allGames) {
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
-	 mm.okForTurnbased = false;
+	 mm.okForTurnbased = G.debug();
 	 mm.longMessage = "PlateauGameInfoMessage";
 	 // needs a compantion app for your played pieces and pool of available pieces
 
@@ -2415,7 +2417,7 @@ synchronized(allGames) {
 	 p.minPlayers = 3;
 	 p.randomizeFirstPlayer = true;
 	 p.hasHiddenInformation = true;
-	 p.okForTurnbased = false;
+	 p.okForTurnbased = G.debug();
 	 p.longMessage = "QEInfoMessage";
 	 // needs a companion app for your bid and for inspecting the final bids
 	}

@@ -116,6 +116,7 @@ sub print_mobileinfo()
 		my $qmyuid = $dbh->quote($myuid);
 		my $q = "select count(whoseturn) from offlinegame where whoseturn = $qmyuid and status='active'";
 		my $sth = &query($dbh,$q);
+		#print "Q: $q\n";
 		my $numRows = &numRows($sth);
 		if($numRows eq 1)
 		{

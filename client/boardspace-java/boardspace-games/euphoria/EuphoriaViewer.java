@@ -1086,7 +1086,7 @@ private Color playerBackground[] = {
     {	
     	boolean visible =
     			allowed_to_edit		// review or game over
-    			|| (isOfflineGame()	&& !isTurnBasedGame())	// main table in offline mode
+    			|| (allPlayersLocal())	// main table in offline mode
     			|| (player==getActivePlayer().boardIndex)	// our info
     			|| (remoteWindowIndex(highlight)>=0)
     			;
@@ -1149,7 +1149,8 @@ private Color playerBackground[] = {
     	Colors color = p.color;
      	Rectangle pr =  r;
      	EuphoriaState state = gb.getGuiState();
-     	boolean useFullScreen = !isOfflineGame() || (!fromHiddenWindow && !reviewMode() && (player==gb.whoseTurn));
+		// true to use the main screen in addition to the player area
+     	boolean useFullScreen = !allPlayersLocal() || (!fromHiddenWindow && !reviewMode() && (player==gb.whoseTurn));
      	int topR = G.Top(r);
      	int leftR = G.Left(r);
      	int heightR = G.Height(r);
@@ -1180,7 +1181,7 @@ private Color playerBackground[] = {
     			pr,p.authority,
     			xp-unitSize/3,G.Top(r)+(int)(unitSize*4),tip,fromHiddenWindow);
     	boolean hit =false;
-		boolean hide = isOfflineGame() && !fromHiddenWindow && (view==PlayerView.AutoArtifacts);
+		boolean hide = allPlayersLocal() && !fromHiddenWindow && (view==PlayerView.AutoArtifacts);
     	switch(view)
     	{
        	default: throw G.Error("Not expeting view %s",view);
@@ -1352,7 +1353,7 @@ private Color playerBackground[] = {
           	}
         	}}
    		
- 		if(isOfflineGame() && bb.ephemeralRecruitMode() && !p.hasReducedRecruits())
+ 		if(allPlayersLocal() && bb.ephemeralRecruitMode() && !p.hasReducedRecruits())
  		{	Rectangle subr = new Rectangle(leftR+widthR/4,topR+heightR/4,widthR/2,heightR/2);
  			GC.setFont(gc,largeBoldFont());
  			if(GC.handleSquareButton(gc, subr,  tip,
@@ -1385,7 +1386,7 @@ private Color playerBackground[] = {
     		tip.arrow = StockArt.NoEye;
 		}
     	
-    	if(isOfflineGame()
+    	if(allPlayersLocal()
     			&& !fromHiddenWindow 
     			&& enableDone(gb)
     			&& plannedSeating()
@@ -1783,7 +1784,7 @@ private Color playerBackground[] = {
     private boolean showHiddenUI = false;
     private int selectedRecruitPlayer(EuphoriaBoard gb)
     {
-    	return ( (isOfflineGame()||reviewOnly)
+    	return ( (allPlayersLocal()||reviewOnly)
     				? (simultaneousTurnsAllowed() ? gb.recruitPlayer : gb.whoseTurn)
     				: getActivePlayer().boardIndex
     				);
@@ -1811,7 +1812,7 @@ private Color playerBackground[] = {
     {	EuphoriaState state = gb.getGuiState();
     	EPlayer p = gb.getPlayer(pl);
     	commonPlayer cpl = getPlayerOrTemp(pl);
-    	boolean showHidden = reviewOnly || fromHidden || !isOfflineGame() || showHiddenUI;
+    	boolean showHidden = reviewOnly || fromHidden || !allPlayersLocal() || showHiddenUI;
     	double rotation = cpl.displayRotation;
     	EuphoriaChip epicked = p.ephemeralPickedObject;
     	if(useEphemeralPick) { ephemeralPick = epicked; }
@@ -2449,7 +2450,7 @@ private Color playerBackground[] = {
     {
         boolean simultaneous = !isSpectator() && gb.simultaneousTurnsAllowed(state);
         int pl = selectedRecruitPlayer(gb);
-        boolean ourMove = OurMove() || simultaneous;
+        boolean ourMove = pl==gb.whoseTurn() || simultaneous;
  
     	return ((startedPlaying||reviewOnly) 
     			&& state.hasRecruitGui() 

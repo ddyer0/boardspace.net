@@ -626,13 +626,17 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 			else if(i==ypmisc.card.index)
 			{	Rectangle r = new Rectangle(xpos-size/2,ypos-size,size,size*2);
 				boolean picked = gb.pickedObject!=null;
-				if(drawCardStack(gc,gb,c,r,highlight,anyone,true,
-						!picked 
-							&& !isSpectator()
-							&& (isOfflineGame()||(allowed_to_edit || hidden || (getUIPlayerIndex()==player)))))
+				boolean always = reviewOnly ||
+						(!picked 
+						&& !isSpectator()
+						&& (allPlayersLocal()||(allowed_to_edit || hidden || (getUIPlayerIndex()==player))));
+				if(drawCardStack(gc,gb,c,r,highlight,anyone,true,always))
 				{	// allow looking at cards at any time, but be careful not to make moves
 					// for the other player!
-					if((gb.whoseTurn!=player) || (gb.pickedObject==null)) { anyone.hitCode = yrack.HitShowCardsButton; }
+
+					if(always || (getUIPlayerIndex()==player))
+						{ anyone.hitCode = yrack.HitShowCardsButton; 
+						}
 				}
 				int nogold = pb.buildNoGold;
 				int nocam = pb.buildNoCamels;
@@ -1025,7 +1029,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	   	 	{ 
     	   		 commonPlayer pl = getPlayerOrTemp(i);
     	   		 pl.setRotatedContext(gc, highlight,false);
-    	   		 HitPoint sel = (i==gb.whoseTurn)?highlight:null;
+    	   		 HitPoint sel = (i==getUIPlayerIndex())?highlight:null;
     	   		 drawPlayerBoard(gc,false,gb,pb,r,sel,highlight); 
     	   		 if(planned && whoseTurn==i)
     	    	   {

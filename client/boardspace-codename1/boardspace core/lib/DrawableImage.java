@@ -385,7 +385,6 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 		{	highlight.setHelpText(tooltip);
 			highlight.spriteColor = Color.red;
     		highlight.spriteRect = r;
-    		highlight.hitObject = this;
 		}
 		return(val && (rackLocation!=null));
 	}

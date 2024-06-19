@@ -371,7 +371,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 
        	if(allowed_to_edit || ap==pl) { for(WypsCell c : gb.getPlayerRack(pidx)) { c.seeFlyingTiles=true; }}
       	boolean showTiles = true;
-       	boolean anyRack = isOfflineGame() || allowed_to_edit || (ap==pl);
+       	boolean anyRack = allPlayersLocal() || allowed_to_edit || (ap==pl);
        	drawRack(gc,gb,rack,gb.getPlayerRack(pidx),gb.getPlayerMappedRack(pidx),gb.rackMap[pidx],gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
     	}
 
@@ -517,7 +517,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     
     private WypsCell getPickedRackCell(HitPoint highlight)
     {
-    	{int ap = allowed_to_edit||isOfflineGame() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = allowed_to_edit||allPlayersLocal() ? bb.whoseTurn : getActivePlayer().boardIndex;
     	 WypsCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
@@ -526,7 +526,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	{	WypsCell c = getMovingTile(hidden.getIndex());
     		if(c!=null) { return(c); }
     	}
-    	if(allowed_to_edit || isOfflineGame())
+    	if(allowed_to_edit || allPlayersLocal())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{WypsCell c = getMovingTile(pl.boardIndex);
@@ -952,7 +952,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|isOfflineGame() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   int ap = allowed_to_edit|allPlayersLocal() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.rackMap[ap],gb.getMapPick(ap),false ,selectPos,ourTurnSelect==null); 
       	}
      

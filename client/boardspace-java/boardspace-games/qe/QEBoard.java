@@ -1381,7 +1381,9 @@ import online.game.*;
  	return(true);
  }
  public QEState getUIState(int forPlayer)
- {	switch(board_state)
+ {	if(simultaneousTurnsAllowed())
+ 	{
+	 switch(board_state)
 	 {
 	 default:	
 		 return(board_state);
@@ -1395,6 +1397,8 @@ import online.game.*;
 		 return((board_state==QEState.Rebid) ? QEState.EphemeralRebid : QEState.EphemeralSealedBid);
 	 }
 	 }
+ 	}
+ 	else { return board_state; }
  	
  }
  

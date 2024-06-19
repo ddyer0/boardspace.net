@@ -385,7 +385,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     {
         return ((showBothRacks 
         		|| mutable_game_record 
-        		|| isOfflineGame()
+        		|| allPlayersLocal()
         			? eyeRects[idx].isOn()
         			: (!isSpectator() && (getActivePlayer().boardIndex == idx)))
         		? idx 
@@ -403,7 +403,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
             		ourTurnSelect);
         bd.DrawExchangeSummary(gc, pl, exchangeRects[pl]);
         
-        if(isOfflineGame()) 
+        if(allPlayersLocal()) 
         	{ 
         	if(eyeRects[pl].draw(gc,any))
         		{

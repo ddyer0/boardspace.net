@@ -594,7 +594,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	 if(c!=null) { return(c); }
     	}
  
-     	if(allowed_to_edit || isOfflineGame())
+     	if(allowed_to_edit || allPlayersLocal())
     	{	commonPlayer pl = inPlayerBox(highlight);
     		if(pl!=null)
     			{SprintCell c = getMovingTile(pl.boardIndex);

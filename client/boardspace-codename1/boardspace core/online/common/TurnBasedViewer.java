@@ -180,7 +180,20 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String GETUSERS = "getusersbounce";
 	
 	// status of offline games.  Note that these names are shared with the back end script
-	enum AsyncStatus { setup, active, complete,canceled,suspended };
+	enum AsyncStatus 
+	{ 	setup("Only games where you are specifically invited"),
+		active("Only games you are playing"),
+		complete("Only games you played"),
+		canceled("Only games which were abandoned"),
+		suspended("Only games unexpectedly suspended") ;
+		String emptyPrompt = "";
+		AsyncStatus(String p) { emptyPrompt = p; }
+		static public void putStrings()
+		{
+			for(AsyncStatus s : values()) { InternationalStrings.put(s.emptyPrompt); }
+		}
+		
+	};
 	
 	/**
 	PendingStatus returns the stats of pending asynch transactions.
@@ -638,9 +651,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				players = new IStack();
 				players.copyFrom(acceptedPlayers);
 				players.removeValue(owner,true);
+				// fall through
 			case random:
 				int idx =  new Random().nextInt(players.size());
-				who = acceptedPlayers.elementAt(idx);
+				who = players.elementAt(idx);
 				break;
 			default:
 				G.Error("Not expecting %s",first);
@@ -1078,6 +1092,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			}
 			return PendingStatus.No;
 		}
+		private String emptyPrompt = null;
 		//
 		// ask the server for matching games and send any pending notications.
 		//
@@ -1091,6 +1106,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			else if(Filters.OpenGames.button.isOn()) { stat = AsyncStatus.setup; }
 			else if(Filters.ActiveGames.button.isOn()) { stat = AsyncStatus.active; }
 			boolean myGames = Filters.MyGames.button.isOn();
+			emptyPrompt = (stat==null || !myGames) ? null : stat.emptyPrompt; 
 			if(forced || ! known)
 				{	
 				known = true;
@@ -1134,6 +1150,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			int w = barLeft-left;
 			int h = G.Height(r);
 			
+			if(emptyPrompt!=null && size()<3)
+			{
+				GC.Text(gc,true,left,top,w,lineH,Color.blue,null,s.get(emptyPrompt));
+				top += lineH;
+			}
 			Rectangle oldclip = GC.setClip(gc,r);
 			for(int idx = 0,lim = size(); idx<lim; idx++)
 			{	AsyncGameInfo g = elementAt(idx);
@@ -2189,7 +2210,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				if(ERROR.equals(cmd)) { G.infoBox(s.get(ErrorCaption),tok.nextElement()); }
 				else if(GAMEUID.equals(cmd)) { parsedGameUid = G.IntToken(tok.nextElement()); }
 				else
+				{	if(G.debug())
 				{
+					G.infoBox("unexpected result from updategame",res.text);
+					}
 					G.print("Unexpected parseCreateGameResult "+cmd);
 				}
 			}
@@ -2248,7 +2272,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 			// record this so the first screen can give a hint about moves to be made
 			try {
-			prefs.put(loginUidKey,""+parsedUid);
+			prefs.put(loginUidKey,""+parsedUid.uid());
 			prefs.flush();
 			}
 			catch (BackingStoreException err) 
@@ -2446,6 +2470,7 @@ static String WaitingForStartMessage = "Waiting for #1 to start the game";
 static String LeaveGameMessage = "leave this game" ;
 static String JoinGameMessage = "join this game";
 static String RemoveAnyMessage = "remove a player by unchecking their box";
+
 static public void putStrings()
 	{	String TurnStrings[] = {
 			WaitingForStartMessage,RemoveAnyMessage,JoinGameMessage,LeaveGameMessage,
@@ -2478,7 +2503,7 @@ static public void putStrings()
 		// };
 		PlaySpeed.putStrings();
 		FirstPlayer.putStrings();
-				
+		AsyncStatus.putStrings();
 		InternationalStrings.put(TurnStrings);
 		//InternationalStrings.put(TurnStringPairs);
 	}

@@ -871,7 +871,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 			if(!allowed_to_edit)
 			{
 	       	StockArt button = showMovements ? StockArt.NoEye : StockArt.Eye;
-	       	if(isOfflineGame() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton))
+	       	if(allPlayersLocal() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton))
 	       		{
 	       		selectPos.hit_index = i;
 	       		}
@@ -1113,7 +1113,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         }
     }
     private boolean doneAdjusting()
-    {	if(isOfflineGame())
+    {	if(allPlayersLocal())
     	{
     	if(remoteViewer>=0) { return(false); }
     	for(int i=0;i<b.nPlayers();i++) { if(!b.doneAdjustingUI[i]) { return(false); }}
@@ -1165,9 +1165,9 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 		if ((state==BreakState.ADJUST_MOVEMENT_STATE) 
 			&& (id==GameId.HitDoneButton))
 			{	
-			if(isOfflineGame())
+			if(allPlayersLocal())
 				{
-				PerformAndTransmit("DoneAdjust "+playerIndex+" "+b.readyString(playerIndex),isOfflineGame(),replayMode.Live);
+				PerformAndTransmit("DoneAdjust "+playerIndex+" "+b.readyString(playerIndex),allPlayersLocal(),replayMode.Live);
 			}
 			else {
 				b.doneAdjusting(playerIndex);
@@ -1237,7 +1237,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         case MinusOne:
         	{
         	int col = hp.col-'A';;
-         	PerformAndTransmit(hitObject.name()+" "+cell.player+" "+cell.index+" "+col,isOfflineGame(),replayMode.Live);
+         	PerformAndTransmit(hitObject.name()+" "+cell.player+" "+cell.index+" "+col,allPlayersLocal(),replayMode.Live);
         	}
         	break;
         case HitAdjustButton:

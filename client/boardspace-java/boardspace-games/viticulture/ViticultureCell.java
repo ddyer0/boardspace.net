@@ -134,6 +134,12 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	{	
 		// copy any variables that need copying
 		super.copyFrom(ot);
+		selected = ot.selected;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		selected = false;
 	}
 	public void addChip(ViticultureChip ch)
 	{	switch(rackLocation())

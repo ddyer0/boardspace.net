@@ -651,7 +651,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        // we accomplish this by supressing the highlight pointer.
        //
        HitPoint ourTurnSelect = OurMove() ? selectPos : null;
-       HitPoint notMeSelect = (isOfflineGame()||(ourTurnSelect==null)) ? selectPos :null;
+       HitPoint notMeSelect = (allPlayersLocal()||(ourTurnSelect==null)) ? selectPos :null;
        //
        // even if we can normally select things, if we have already got a piece
        // moving, we don't want to hit some things, such as the vcr group
@@ -952,10 +952,10 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
+//    public void verifyGameRecord()
+//    {	//DISABLE_VERIFY=true;
+//   	super.verifyGameRecord();
+//   }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
  //   {	BoardProtocol ourB =  getBoard();

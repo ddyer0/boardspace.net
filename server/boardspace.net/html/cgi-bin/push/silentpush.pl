@@ -143,7 +143,7 @@ sub send_silent_notification()
 	if($notifyDiscord==0)
 	{
 	#print "discord blank<br>";
-	&send_push_notification('',$player_name,$link);
+	&send_push_notification('',$player_name,$subject,$link);
 	}
 }
 
