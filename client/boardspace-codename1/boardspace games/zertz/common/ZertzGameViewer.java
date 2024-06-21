@@ -141,6 +141,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     {
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);
+        b.handicap_setup = null;
         b.doInit(b.gametype);
         if(!preserve_history)
     	{  	hasDones=false;		// for use by replayMove
@@ -571,7 +572,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     private void drawVariation(Graphics gc,HitPoint highlight)
     {	if((b.getState()==ZertzState.PUZZLE_STATE) && G.Height(variationRect)>0)
     	{
-    		if(GC.handleSquareButton(gc, variationRect, highlight, s.get(BoardSetup,b.boardSetup.shortName),HighlightColor,rackBackGroundColor))
+    		if(GC.handleSquareButton(gc, variationRect, highlight, 
+    				s.get(BoardSetup,b.boardSetup.shortName),HighlightColor,rackBackGroundColor))
     		{
     			highlight.hitCode = ZertzId.HitChangeBoard;
     		}
@@ -865,7 +867,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         }}
         if(newmove!=null)
         {
-        	newmove = (movespec)super.EditHistory(newmove);
+        	newmove = (movespec)super.EditHistory(newmove,newmove.op==MOVE_SETBOARD);
         }
         return (newmove);
     }
@@ -1009,7 +1011,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	3975: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-ddyer-Qarl-2004-10-29-2141.sgf lib.ErrorX: Destination cell not empty!
     	4051: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-Qarl-ddyer-2004-10-29-2155.sgf lib.ErrorX: Destination is not empty
 
-    	74252 files visited 2 problems
+	82263 files visited 2 problems
     	*/
     public void ReplayMove(sgf_node no)
     {

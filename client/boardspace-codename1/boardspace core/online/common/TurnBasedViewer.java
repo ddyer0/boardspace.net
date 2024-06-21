@@ -117,7 +117,6 @@ the actual body of games in progress is kept in the database, and hooked into th
 to restore offline games that are being resumed.  Consequently, very little change to the online/game/Game.java 
 class was needed, and only minimal changes to individual games, mainly to avoid "simultaneous move" states.
 
-TODO: some interlock against two players simultaneously updating a game.  For example when starting a game with non-final information about the player set.
 TODO: some kind of rate limit on the creation of offline games.
 TODO: some kind of reputation for completed vs abandoned games.
 TODO: some kind of summary mode to replace unrestricted "show me everything"
@@ -142,9 +141,12 @@ class TurnBasedUser extends SimpleUser
 @SuppressWarnings("serial")
 public class TurnBasedViewer extends exCanvas implements LobbyConstants
 {	
-
+	//
 	// these are string constants used in communication with the backend script
 	// but much better to use these constants to assure consistency and accuracy
+	// note well that if you change any of these constants, you'll have to change
+	// something in bs_offline_ops.cgi too!
+	//
 	public static final String PENDINGBODY = "pending";
 	static final String NOTIFICATION = "notification";
 	static final String ACCEPTEDPLAYERS = "acceptedplayers";
@@ -176,11 +178,12 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String SAVEDAS = "savedas";
 	static final String LOGIN = "loginbounce";
 	static final String CHECKNAME = "checknamebounce";
-	static final String LASTCHANGE = "lastknownchange";
+	static final String LASTSEQUENCE = "lastknownsequence";
+	static final String SEQUENCE = "sequence";
 	static final String GETUSERS = "getusersbounce";
 	
 	// status of offline games.  Note that these names are shared with the back end script
-	enum AsyncStatus 
+	public enum AsyncStatus 
 	{ 	setup("Only games where you are specifically invited"),
 		active("Only games you are playing"),
 		complete("Only games you played"),
@@ -386,7 +389,18 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		int owner;				// the player that owns this game.
 		int gameuid;			// the unique id for this game.
 		int whoseturn;			// who is currently to move (in active games)
-		AsyncStatus status;		// active, setup etc.
+		//
+		// sequence number is the fundamental interlock that prevents two players from interfering with one
+		// another's game state.  Whenever we update the game state, we increment the sequence, and - importantly -
+		// we increment the sequence and know that we did so.
+		//
+		// an intermediate idea was to use the last modification time for this purpose, but it didn't
+		// quite work out because when we update the time, we don't know the new value.  This could have
+		// been resolved by handling the modification time in a more complex way, but adding a sequence
+		// number is very simple and easy to understand and get right.
+		//
+		int sequence;			// sequence state for this game
+		public AsyncStatus status;		// active, setup etc.
 		public String variation;// the game type being played
 		GameInfo game;			// the gameinfo that matches variation
 		PlayMode playMode;		// ranked, unranked, tournament
@@ -620,7 +634,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			sess.spectator = (targetPlayerIndex<0) ||  (status!=AsyncStatus.active);
 			sess.launchUser = (targetPlayerIndex<0) ? null : lusers.elementAt(targetPlayerIndex);
 
-			sess.startingNplayers = lusers.size();
+			sess.numActivePlayers = sess.startingNplayers = lusers.size();
 			sess.seedValue = new Random(gameuid).nextInt();
 			User players[] = new User[sess.players.length];
 			AR.copy(players,sess.players);
@@ -823,15 +837,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		// that the game has completed normally, but it can also be called if
 		// reinitializing a game failed.
 		//
-		public void discardGame(boolean error)
+		public void discardGame(boolean error,String message)
 		{
 			G.Assert(loggedInUser!=null,"should be logged in");
 
 			for(int i=0;i<acceptedPlayers.size();i++)
 			{
-				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),s.get(error?SuspendedMessage:EndedMessage)));	
+				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),
+						s.get(error?SuspendedMessage:EndedMessage)
+						+(message!=null?"\n"+message:"")));	
 			}
-			updateGame(STATUS,error?AsyncStatus.suspended.name() : AsyncStatus.complete.name());	
+			AsyncStatus newstat = error?AsyncStatus.suspended : AsyncStatus.complete;
+			updateGame(STATUS,newstat.name());
+			status = newstat;
 		}
 		
 		private UrlResult updateGameResult = null;
@@ -861,9 +879,13 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					 "&",TAGNAME,"=creategame",
 					 "&",PNAME,"=",Http.escape(loggedInUser.name()),
 					 "&",PASSWORD,"=",Http.escape(loggedInUser.password()),
-					 "&",GAMEUID,"=",gameuid,
-					 "&",LASTCHANGE,"=",lastTime	// last time should match
+					 "&",GAMEUID,"=",gameuid
 					 );
+			 if(sequence>=0)
+			 {	// match the sequence number for this transaction, and incremenet the sequence number for next time.
+				 G.append(b,"&",LASTSEQUENCE,"=",sequence,"&",SEQUENCE,"=",(sequence+1)); // last time should match
+				 sequence++;		 
+			 }
 			 for(int i=0;i<params.length;i+=2)
 			 {	 String key = params[i];
 			 	 String val = params[i+1];
@@ -1067,6 +1089,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 						{
 						info.lastTime = tok.nextElement();
 						}
+					else if(SEQUENCE.equals(field))
+						{
+						 info.sequence = tok.intToken();
+						}
 					else
 					{	String value = tok.nextElement();
 						G.print("Unexpected AsyncGame field ",field," : ",value);
@@ -1150,6 +1176,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			int w = barLeft-left;
 			int h = G.Height(r);
 			
+			if(size()<=1 && selectedVariant!=null)
+			{
+				GC.Text(gc,true,left,top,w,lineH,Color.blue,null,s.get(OnlyGamePrompt,s.get(selectedVariant.variationName)));
+				top += lineH;
+			}
 			if(emptyPrompt!=null && size()<3)
 			{
 				GC.Text(gc,true,left,top,w,lineH,Color.blue,null,s.get(emptyPrompt));
@@ -2208,7 +2239,9 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			{
 				String cmd = tok.nextElement();
 				if(ERROR.equals(cmd)) { G.infoBox(s.get(ErrorCaption),tok.nextElement()); }
-				else if(GAMEUID.equals(cmd)) { parsedGameUid = G.IntToken(tok.nextElement()); }
+				else if(GAMEUID.equals(cmd)) 
+					{ parsedGameUid = G.IntToken(tok.nextElement()); 
+					}
 				else
 				{	if(G.debug())
 				{
@@ -2285,6 +2318,15 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		
 		return true;
 	}
+	private void addInvitedName(TurnBasedUser uid)
+	{
+		invitedPlayers.pushNew(uid);
+		invitePlayerRect.clear();
+		if(uid.e_mail_bounce()) 
+		{
+			G.infoBox(s.get(BounceWarningCaption),s.get(BounceWarning,uid.name()));
+		}
+	}
 	
 	UrlResult pendingName = null;
     public PendingStatus checkInviteName()
@@ -2294,15 +2336,20 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     		{
     		pendingName = null;
     		String name = inviteName;
+    		inviteName = null;
     		TurnBasedUser parsedUid = parseUserNameResult(pend);
     		if(parsedUid==null)
     		{
     				G.infoBox(s.get(PlayerNotFoundMessage),s.get(PlayerNotFoundName,name));
     		}
-    		else if(parsedUid.e_mail_bounce()) 
+    		else {
+    			TurnBasedUser uid = uids.find(name);	// should be there now.
+    			if(uid!=null) { addInvitedName(uid); }
+    			if(parsedUid.e_mail_bounce()) 
     			{
     				G.infoBox(s.get(BounceWarningCaption),s.get(BounceWarning,name));
     			}
+    		}
     		return PendingStatus.Complete;
     		}
     		return PendingStatus.Yes;
@@ -2314,13 +2361,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
     	if(!"".equals(name))
     	{	TurnBasedUser uid = uids.find(name);
     		if(uid!=null)
-    		{
-    			invitedPlayers.pushNew(uid);
-    			invitePlayerRect.clear();
-    			if(uid.e_mail_bounce()) 
-    			{
-    				G.infoBox(s.get(BounceWarningCaption),s.get(BounceWarning,name));
-    			}
+    		{	addInvitedName(uid);
+    			
     			return PendingStatus.No;
     		}
     		else
@@ -2470,9 +2512,10 @@ static String WaitingForStartMessage = "Waiting for #1 to start the game";
 static String LeaveGameMessage = "leave this game" ;
 static String JoinGameMessage = "join this game";
 static String RemoveAnyMessage = "remove a player by unchecking their box";
-
+static String OnlyGamePrompt = "Showing only games of #1";
 static public void putStrings()
 	{	String TurnStrings[] = {
+			OnlyGamePrompt,
 			WaitingForStartMessage,RemoveAnyMessage,JoinGameMessage,LeaveGameMessage,
 			PlayerNotFoundMessage,PlayerNotFoundName,SuspendedMessage,
 			BounceWarning,RemainLogMessage,BounceWarningCaption,
@@ -2508,6 +2551,7 @@ static public void putStrings()
 		//InternationalStrings.put(TurnStringPairs);
 	}
 	
+	// draw the "expectedplaying speed" box in the new game dialog
 	public void drawSpeedBox(Graphics gc,HitPoint hp)
 	{
 		GC.TextRight(gc,speedPromptRect,Color.black,null,s.get(SpeedMessage));
@@ -2519,7 +2563,7 @@ static public void putStrings()
 			}
 	}
 
-	
+	// draw the "who moves first" button in the new game dialog
 	public void drawFirstBox(Graphics gc,HitPoint hp)
 	{
 		GC.TextRight(gc,firstPromptRect,Color.black,null,s.get(FirstMessage));

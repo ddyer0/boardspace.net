@@ -25,6 +25,7 @@ import bridge.*;
 import common.GameInfo;
 import common.GameInfo.ScoringMode;
 import online.common.*;
+import online.common.TurnBasedViewer.AsyncStatus;
 import online.game.export.ViewerProtocol;
 import online.game.export.ViewerProtocol.RecordingStrategy;
 import online.game.sgf.export.sgf_names;
@@ -87,7 +88,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private static final String CHATSPECTATOR = "#1 has entered the room";
 
     private static final String CallServerMessage = "Calling server...";
-    private static final String SAVEDMSG = "savedmsg";
+    private static final String TSAVEDMSG = "savedmsg";
     private static final String RobotPlayMessage = "Let The Robot Play";
     private static final String ResumeGameMessage = "the game has resumed";
     private static final String GameSelectorMessage = "Game Selector";
@@ -357,7 +358,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return ((int) ((100.0 * focusChangedCoincidence) / Math.max(focusChangedCount,
             10)));
     }
-    private void discardGame(boolean error)
+    private void discardGame(boolean error,String message)
     {	if(!my.isSpectator())
     	{
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
@@ -366,7 +367,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	if(turnBasedGame!=null)
         		{
     			recordAsyncGame(true);
-        		turnBasedGame.discardGame(error);
+        		turnBasedGame.discardGame(error,message+"\n"+s.get(SAVEDMSG,fileNameString())); 
         		}
         		else
         		{
@@ -375,10 +376,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     	}
     }
-    private void ServerRemove(boolean error)
+    private void ServerRemove(boolean error,String message)
     {
         if (!my.isSpectator())
-        {	discardGame(error);
+        {	discardGame(error,message);
             
             int cpc = focusPercent();
 
@@ -2560,7 +2561,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        if(!offline) { addPlayerConnection(my,my);	}	// force resorting 
         //G.print("A "+players[0]+players[1]);
         if(GameOver()) 
-        {	ServerRemove(false);
+        {	ServerRemove(false,gameResultMessage());
         	playedGameOverSound = true; 
         }
        started_playing=true;
@@ -2608,7 +2609,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                 //recover somewhat gracefully by putting him in limbo and 
                 //making sure it doesn't happen again
-                ServerRemove(true); //remove the game so we don't get here again
+                ServerRemove(true,"game restore failed"); //remove the game so we don't get here again
                 v.doInit(false);
                 if(playerConnections[0]==null)
 					{ addPlayerConnection(my,null);
@@ -2885,7 +2886,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     { // state 3
     	boolean offline = offlineGame;
         if (offline || allPlayersReady(false) || reviewOnly)
-        {    
+        {  
             if(offline && !reviewOnly)
         	{ // note 9/2021 
               // including this for review games had the conseqence of leaving
@@ -3103,7 +3104,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {
             String filename = fileNameString();
             String grs = gameRecordString(filename);
-            String savedmsg = SAVEDMSG + " " + filename;
+            String savedmsg = TSAVEDMSG + " " + filename;
         	sendTheGame = false;		// only try once
         	if(turnBasedGame!=null)
         	{
@@ -3593,6 +3594,57 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	return(false);
     }
+    private String gameResultMessage()
+    {	StringBuilder msg = new StringBuilder();
+    	if(gameInfo!=null)
+    	{
+        ScoringMode sm = gameInfo.scoringMode();
+   	
+        switch(sm)
+        {
+        case SM_Multi:
+            {
+            G.append(msg,s.get("Final Scores:"));
+            for(int i=0;i<playerConnections.length;i++)
+            {	commonPlayer pl = playerConnections[i];
+            	if(pl!=null)
+            	{	G.append(msg," ",pl.userName,"=",v.ScoreForPlayer(pl));
+            	}
+            }
+			// the extra check on playerConnect.length is so spectators
+			// don't report automa twice
+            if(v.UsingAutoma() && (playerConnections.length==1))
+	            {
+	            	G.append(msg," ",Bot.Automa.name,"=",v.ScoreForAutoma());
+	            }
+	        }
+        	break;
+        case SM_Normal:
+            {
+            // say who won
+            boolean somewin=false;
+            for (commonPlayer p = commonPlayer.firstPlayer(playerConnections);
+            		p != null;
+            		p = commonPlayer.nextPlayer(playerConnections, p))
+            {	boolean win = v.WinForPlayer(p);
+            	if(win) 
+            		{ 
+            		  G.append(msg,s.get(WonOutcome,p.userName));
+            		  somewin |= win;
+            		}
+            }
+            if(!somewin) { G.append(msg,s.get("The game is a draw")); }
+            }
+            break;
+        case SM_None:
+        case SM_Single:
+        	break;
+        default: G.Error("Not expecting scoring mode %s",sm);
+            }
+    	}
+    	return msg.toString();
+    }
+    
     private void FinishUp(boolean forme)
     { //myNetConn.LogMessage("finish " + forme + " " + my.id);
     	v.stopRobots();
@@ -3610,53 +3662,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 sendTheResult = sendTheGame = !doNotRecord && !sharedInfo.getBoolean(DONOTSAVE,false);
                 sentTheResult = sentTheGame = false;
             }
-
-            ServerRemove(false);
+            String msg = gameResultMessage();
+            ServerRemove(false,msg);
             if(theChat!=null)
             {
-            ScoringMode sm = gameInfo.scoringMode();
-            switch(sm)
-            {
-            case SM_Multi:
-	            {
-	            String msg = s.get("Final Scores:");
-	            for(int i=0;i<playerConnections.length;i++)
-	            {	commonPlayer pl = playerConnections[i];
-	            	if(pl!=null)
-	            	{	msg += " "+pl.userName+"="+v.ScoreForPlayer(pl);
-	            	}
-	            }
-				// the extra check on playerConnect.length is so spectators
-				// don't report automa twice
-	            if(v.UsingAutoma() && (playerConnections.length==1))
-	            {
-	            	msg += " "+Bot.Automa.name+"="+v.ScoreForAutoma();
-	            }
-	            theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,msg);
-	            }
-            	break;
-            case SM_Normal:
-	            {
-	            // say who won
-	            boolean somewin=false;
-	            for (commonPlayer p = commonPlayer.firstPlayer(playerConnections);
-	            		p != null;
-	            		p = commonPlayer.nextPlayer(playerConnections, p))
-	            {	boolean win = v.WinForPlayer(p);
-	            	if(win) 
-	            		{ 
-	            		  theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,s.get(WonOutcome,p.userName));
-	            		  somewin |= win;
-	            		}
-	            }
-	            if(!somewin) { theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,s.get("The game is a draw")); }
-	            }
-	            break;
-            case SM_None:
-            case SM_Single:
-            	break;
-            default: G.Error("Not expecting scoring mode %s",sm);
-	            }
+            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,msg);
             }
         }
     }
@@ -4275,7 +4285,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        	{  
     	   v.stopRobots(); 
     	   v.shutdownWindows(); 
-    	   if(turnBasedGame==null && v.discardable()) { discardGame(false); }
+    	   if(turnBasedGame==null && v.discardable()) { discardGame(false,""); }
        	}
        v = null;
        super.shutDown();
@@ -4562,7 +4572,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void recordAsyncGame(boolean forced)
     {
-    	if(turnBasedGame!=null && (whoseTurn.uid!=null) && !my.isSpectator())
+    	if(turnBasedGame!=null && (whoseTurn.uid!=null) && !my.isSpectator() && (turnBasedGame.status==AsyncStatus.active))
     	{
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);

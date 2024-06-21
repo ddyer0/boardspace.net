@@ -6651,6 +6651,8 @@ public abstract class commonCanvas extends exCanvas
    		try	{
    		while((root!=null) && (theError==null))
    		{	l.parsedTime = -1;
+   			l.parsedAnnotation = null;
+   			l.parsedResult=null;
   			ReplayMove(root);
   			if(l.parsedTime>=0) { History.top().setElapsedTime(l.parsedTime); }
   			if(l.parsedAnnotation!=null) { History.top().setAnnotations(l.parsedAnnotation); }

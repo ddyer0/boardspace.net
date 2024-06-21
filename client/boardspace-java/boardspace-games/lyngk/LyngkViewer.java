@@ -93,6 +93,8 @@ import online.search.SimpleRobotProtocol;
  *  	this will probably require a few edits to the init code.
  *  <li> do a cvs update on the original lyngk hierarchy to get back the original code.
  *  
+ *  TODO: add the logic for "last moves"
+ *  
 */
 public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkConstants
 {		

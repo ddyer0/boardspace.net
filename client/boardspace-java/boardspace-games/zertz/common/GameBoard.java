@@ -59,6 +59,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     private boolean swapped_state = false;
     public int placementIndex = 0;
     public Zvariation boardSetup= null;
+    public Zvariation handicap_setup = null;
     public Zvariation variation = Zvariation.Zertz;
     public int movingObjectIndex() { return(NothingMoving); }
  
@@ -439,6 +440,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void sameboard(GameBoard from_b)
     {   super.sameboard(from_b);
 		G.Assert(boardSetup==from_b.boardSetup,"boardSetup mismatch");
+		G.Assert(handicap_setup==from_b.handicap_setup,"handicap setup mismatch");
 		G.Assert(variation==from_b.variation,"variation mismatch");
         G.Assert(balls_on_board == from_b.balls_on_board,"same balls on board");
         G.Assert(balls_in_play == from_b.balls_in_play,"same balls in play");
@@ -514,22 +516,23 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         v ^= Digest_Rack(r, balls[SECOND_PLAYER_INDEX]);
         v ^= Digest(r,variation.ordinal());
         v ^= Digest(r,boardSetup.ordinal());
+        v ^= Digest(r,handicap_setup!=null ? handicap_setup.ordinal() : -1);
         if(swapped_state) { v = ~v; }
         v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
 
     /* make a copy of a board */
-    public void copyFrom(GameBoard from_b)
+    public synchronized void copyFrom(GameBoard from_b)
     {	
     	
-    	if(boardSetup!=from_b.boardSetup)
+    	variation = from_b.variation;
+    	if(boardSetup!=from_b.boardSetup || handicap_setup!=from_b.handicap_setup)
     	{
     		setBoardType(from_b.boardSetup);
     	}
     	super.copyFrom(from_b);		// this might end up calling doinit
-    	variation = from_b.variation;
-   		super.copyFrom(from_b);
+    	handicap_setup = from_b.handicap_setup;
  
    		needStart = from_b.needStart;
     	swapped_state = from_b.swapped_state;
@@ -563,10 +566,12 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void setBoardType(Zvariation v)
     {
     	boardSetup = v;
+    	handicap_setup = (variation==Zvariation.Zertz_h) ? v : null;
     	reInitBoard(v.firstInCol,v.nInCol,null);
     	moveNumber = 1;
         InitBallsAndBoard();
     }
+ 
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {   Zvariation variation = Zvariation.find(gtype);
@@ -576,7 +581,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	// as part of copying the board, so it must use the current setup
     	// but it is also called by standard initialization, so has to use the
     	// setup of that variation.
-    	doInit(gtype,variation,boardSetup==null ? variation.boardSetup : boardSetup,key);
+    	doInit(gtype,variation,handicap_setup!=null ? handicap_setup : variation.boardSetup,key);
     }
     public void doInit()
     {
@@ -585,8 +590,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     private void doInit(String gt,Zvariation bs,Zvariation bset,long k)
     {	gametype = gt;
     	randomKey = k;
-    	setBoardType(bset);
     	variation = bs;
+    	setBoardType(bset);
     	
     	swapped_state = false;
     	needStart = true;
@@ -1046,6 +1051,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	ZertzState nextstate = board_state;
         int oldcount = balls[movingRack][movingRackIndex];
         zCell c = getCell(movingBoardCol, movingBoardRow);
+        G.Assert(c!=null,"should exist ",movingBoardCol,movingBoardRow);
+        {
         if(replay==replayMode.Single)
         {
         	animationStack.push(rack[movingRack][movingRackIndex]);
@@ -1088,6 +1095,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         
         c.lastPlaced = placementIndex;
         placementIndex++;
+        }
 
         setState(nextstate);
     }
@@ -1396,6 +1404,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         {
         case MOVE_SETBOARD:
      		doInit(gametype,variation,Zvariation.values()[m.to_row],randomKey);
+     		needStart = false;
         	break;
         case MOVE_BtoB:
             lastMove = new movespec(m.player, MOVE_BtoB, m.from_col,

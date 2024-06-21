@@ -222,7 +222,7 @@ public interface OnlineConstants extends Config {
 	String ServerUnavailableMessage = "server unavailable";
 	String ServerUnavailableExplanation = "The game server is not running.  Please try again later.";
 	String SelectAGameMessage = "Select Game";
-	String SAVEDMSG =  "Game saved as #1";
+	String SAVEDMSG =  "savedmsg";	// yes, this needs to be this literal string so the chat can find it as a translation key
 
 	int DEFAULTWIDTH = 620;	// also the minimum width and height
 	int DEFAULTHEIGHT = 660;

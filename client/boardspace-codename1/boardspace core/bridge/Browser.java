@@ -110,9 +110,12 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		
 		b.setURL(eventualUrl);
 		b.setPinchToZoomEnabled(true);
-		b.setVisible(true);
-		setVisible(true);
 		b.addBrowserNavigationCallback(this);
+		b.waitForReady();
+		b.setVisible(true);
+		b.repaint();
+		setVisible(true);
+		repaint();
 	}
 	public static String GoogleRewrite = "https://docs.google.com/gview?embedded=true&url=";
 

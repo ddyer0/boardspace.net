@@ -65,6 +65,7 @@ public interface LobbyConstants extends OnlineConstants
     
     static final String LobbyMessagePairs[][] = 
         {        //hints
+        	{SAVEDMSG,"Game saved as #1"},
         	{UnsupportedGameMessage+"_variation","most likely, it will be available soon"},
             {NoLaunchMessage, "The server rejected a launch request, message is "},
             {WebsiteMessage, "#1 BoardSpace"}, //pretty name for the web site.. #1 is something like "Game Room" or "Lobby"
@@ -74,7 +75,6 @@ public interface LobbyConstants extends OnlineConstants
  
     static final String LobbyMessages[] =
         {  	LobbyName,
-        	SAVEDMSG,
         	LoginMessage,
         	LoginFailedMessage,
         	LoginFailedHost,

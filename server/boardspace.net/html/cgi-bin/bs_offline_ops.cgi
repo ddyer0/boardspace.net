@@ -209,6 +209,12 @@ sub creategame()
 	my $lastchange = &param('lastknownchange');
 	my $qlastchange = $dbh->quote($lastchange);
 
+	my $lastsequence = &param('lastknownsequence');
+	my $qlastsequence = $dbh->quote($lastsequence);
+
+	my $sequence = &param('sequence');
+	my $qsequence = $dbh->quote($sequence);
+
 	my $nag = &param('nag');
 	my $qnag = $dbh->quote($nag);
 	my $nagtime = int(&param('nagtime'));
@@ -221,6 +227,7 @@ sub creategame()
 			? "update offlinegame set last=utc_timestamp()" 
 			: "insert into offlinegame set last=utc_timestamp(),created=utc_timestamp()";
 	my $andchange = $lastchange ? " and last=$qlastchange" : "";
+	my $andsequence = $lastsequence ? " and sequence=$qlastsequence" : "";
 	my $postamble = $gameuid>0 
 			? " where gameuid= $qgameuid" . $andchange
 			: "";
@@ -239,6 +246,7 @@ sub creategame()
 			. ($chat ? ",chat=$qchat" : "")
 			. ($var ? ",variation=$qvar" : "")
 			. ($nag ? ",nag=$qnag,nagtime=$nextnag" : "")
+			. ($sequence ? ",sequence=$qsequence" : "")
 			. $postamble;
 	#print "\nQ: $q\n";
 	my $sth = &commandQuery($dbh,$q);
@@ -249,7 +257,7 @@ sub creategame()
 	  if ($nr == 0)
 		{
 		# failed, most likely because the timestamp doesn't match
-		my $q2 = "select last from offlinegame where gameuid=$qgameuid";
+		my $q2 = "select last,sequence from offlinegame where gameuid=$qgameuid";
 		my $sth2 = &query($dbh,$q2);
 		my $nr2 = &numRows($sth2);
 		if($nr2 eq 0)
@@ -258,9 +266,15 @@ sub creategame()
 			}
 			else
 			{
-			my ($last) = &nextArrayRow($sth2);
+			my ($last,$seq) = &nextArrayRow($sth2);
 			my $qlast = $dbh->quote($last);
-			return "error out of sync: last change is $qlast not $qlastchange";
+			my $qseq = $dbh->quote($seq);
+
+			my $msg = "";
+			if($lastsequence && !($lastsequence eq $seq)) { $msg .= " last sequence is $qseq not $qlastsequence"; }
+			if($lastchange && !($lastchange eq $last)) { $msg .= " last change is $qlast not $qlastchange"; }
+			if($msg eq "") { $msg = " failed for some unexpected reason"; }		
+			return "error$msg";
 			}
 		}
 	}
@@ -315,13 +329,13 @@ sub getbody()
 	my $uid = &param('gameuid');
 	my $quid = $dbh->quote($uid);
 
-	my $q = "select body,chat from offlinegame where gameuid=$quid";
+	my $q = "select body,chat,sequence from offlinegame where gameuid=$quid";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	if($nr==1)
 	{
-	my ($body,$chat) = &nextArrayRow($sth);
-	return "body \"$body\"\nchat \"$chat\"\n";
+	my ($body,$chat,$sequence) = &nextArrayRow($sth);
+	return "sequence \"$sequence\"\n body \"$body\"\nchat \"$chat\"\n";
 	}
 	else
 	{
@@ -382,7 +396,7 @@ sub getgameinfo()
 		}
 	$cond = "where $cond $comma marked is null ";
 	my $index = ($status && $invited ) ? "use index (status)" : "";
-	my $q = "select owner,whoseturn,gameuid,status,variation,playmode,"
+	my $q = "select owner,whoseturn,gameuid,sequence,status,variation,playmode,"
 		."comments,firstplayer,speed,"
 		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
 		."from offlinegame $index $cond order by last desc,status limit $limit offset $first";
@@ -396,11 +410,12 @@ sub getgameinfo()
 	#
 	# note that these field names must match the expectations of the AsyncGameStack class
 	#
-	my ($owner,$whoseturn,$gameuid,$status,$variation,$playmode,
+	my ($owner,$whoseturn,$gameuid,$sequence,$status,$variation,$playmode,
 		$comments,$firstplayer,$speed,
 		$invitedplayers,$acceptedplayers,$allow,$created,$last) = &nextArrayRow($sth);
 	$msg .= "gameuid \"$gameuid\"\n"
 		. "whoseturn \"$whoseturn\"\n"
+		. "sequence \"$sequence\"\n"
 		. "owner \"$owner\"\n"
 		. "status \"$status\"\n"
 		. "speed \"$speed\"\n"
@@ -455,7 +470,7 @@ sub sendNags()
 	}
 	&finishQuery($sth);
 	my $qrestamp = $dbh->quote($restamp);
-	&commandQuery($dbh,"update offlinegame set nagtime=date_add(nagtime,interval 1 day) where nag is not null and nagtime<$qrestamp and status='active' limit $orows");
+	&commandQuery($dbh,"update offlinegame set nagtime=date_add(nagtime,interval 1 day) where nag is not null and nagtime<$qrestamp and status='active' and marked is null limit $orows");
 	}
 }
 

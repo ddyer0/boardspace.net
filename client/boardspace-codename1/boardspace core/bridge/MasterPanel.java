@@ -407,7 +407,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		tabFrames.put(f,b);
 		b.addActionListener(this);
 		adjustTabStyles();
-		//masterForm.getTabs().revalidate();		
+		masterForm.getTabs().revalidate();		
 	}
 	// 
 	// when we click on one of the tab buttons, select the corresponding frame
