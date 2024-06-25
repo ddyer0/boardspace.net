@@ -6319,11 +6319,12 @@ private void drawPlayerBoard(Graphics gc,
 
           if(!reviewOnly
         	 && !reviewMode() 
+        	 && simultaneousTurnsAllowed()
         	 && (mainBoard.getState()==ViticultureState.ChooseOptions)
         	 && (mainBoard.allPlayersReady())
         	 && (allPlayersLocal() ||(mainBoard.whoseTurn == getActivePlayer().boardIndex)))
           {	  
-        	  PerformAndTransmit((simultaneousTurnsAllowed() ? "ECommence " : "Commence")+mainBoard.options.memberString(Option.values()));
+        	  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.values()));
           }
      }
     /**
@@ -6718,16 +6719,10 @@ private void drawPlayerBoard(Graphics gc,
 	  super.canonicalizeHistory();
   }
   public commonMove convertToSynchronous(commonMove m)
-  {	  if(m.isEphemeral())
-	  {switch(m.op)
-	  {
-	  	case EPHEMERAL_COMMENCE: { m.op = MOVE_COMMENCE; return m; }
-	  	case EPHEMERAL_READY: { m.op = MOVE_READY; return m; }
-	  	case EPHEMERAL_OPTION: { m.op = MOVE_SETOPTION; return m; }
-	  	default: G.Error("Not expecting %s",m);
-	  }}
+  {	  if(m.op==EPHEMERAL_COMMENCE) { m.op = MOVE_COMMENCE; return m; }
 	  return null;
   }
+
   public void updatePlayerTime(long inc,commonPlayer p)
   {	if(!reviewMode() && simultaneousTurnsAllowed()) {}
   	else { super.updatePlayerTime(inc,p); }

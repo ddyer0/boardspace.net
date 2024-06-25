@@ -4188,7 +4188,10 @@ public abstract class commonCanvas extends exCanvas
      * @param groupMovement
      */
     public void startBoardAnimations(replayMode replay,OStack<?>animationStack,int size,MovementStyle groupMovement)
-    {	try {
+    {	int sz =  animationStack.size();
+        if(sz>0)
+        {
+    	try {
     	boolean chained = (groupMovement==MovementStyle.Chained);
     	boolean stack = (groupMovement==MovementStyle.Stack)||(groupMovement==MovementStyle.StackFromStart);
     	boolean sequential = (groupMovement==MovementStyle.Sequential)||(groupMovement==MovementStyle.SequentialFromStart);
@@ -4198,7 +4201,7 @@ public abstract class commonCanvas extends exCanvas
     		cell <?> lastDest = null;
     		int depth = 0;
     		double lastTime = 0;
-    		for(int idx = 0,lim=animationStack.size()&~1; idx<lim;idx+=2)
+    		for(int idx = 0,lim=sz&~1; idx<lim;idx+=2)
     		{
 			cell<?> from = (cell<?>)animationStack.elementAt(idx);		// source and destination for the move
  			cell<?> to = (cell<?>)animationStack.elementAt(idx+1);
@@ -4242,7 +4245,11 @@ public abstract class commonCanvas extends exCanvas
     	}
     	finally {
        	animationStack.clear();
+       	// make sure we have the latest copy, ortherwise the active copy won't have 
+       	// the active animation stacks
+        saveDisplayBoard();	
     	}
+        }
     }    
 /**
  * start an animation step in the simplest way.  

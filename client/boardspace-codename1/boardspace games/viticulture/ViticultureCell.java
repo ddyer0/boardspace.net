@@ -127,20 +127,7 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 				// && (moveClaimed==other.moveClaimed)
 			); 
 	}
-	/** copyFrom is called when cloning boards
-	 * 
-	 */
-	public void copyFrom(ViticultureCell ot)
-	{	
-		// copy any variables that need copying
-		super.copyFrom(ot);
-		selected = ot.selected;
-	}
-	public void reInit()
-	{
-		super.reInit();
-		selected = false;
-	}
+
 	public void addChip(ViticultureChip ch)
 	{	switch(rackLocation())
 		{			

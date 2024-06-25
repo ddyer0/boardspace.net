@@ -42,6 +42,9 @@ import lib.*;
  * @see stackCell
  * @author ddyer
  *
+ * 6/21/2024 moved animations from ScreenData back to the main class.  This is
+ * necessary so the workaround of making a copy of the animation cell will succeed
+ * 
  */
 class ScreenData
 {
@@ -64,29 +67,6 @@ class ScreenData
 	/** for stack cells, the last y scale for spacing between chips */
 	public double lastYScale = 0.0;
 
-	public SpriteStack animations = null;	// if not null, could be an animation where we're the destination
-	public void addActiveAnimation(SpriteProtocol sprite)
-	{
-		if(animations==null) { animations = new SpriteStack(); }
-		animations.push(sprite);
-	}
-	public int activeAnimationHeight()
-	{	if(animations!=null)
-	  	{	int n = 0;
-	  		int skipped = 0;
-	  		long now = G.Date();
-	  		for(int lim = animations.size()-1; lim>=0; lim--)
-	  		{
-	  		SpriteProtocol an = animations.elementAt(lim);
-	  		if(an.isExpired(now)) { animations.remove(lim,false); }
-	  			else if(!an.isAlwaysActive() && (an.isOverlapped() || !an.isStarted(now))) { skipped++; }
-	  			else { n+=an.animationHeight(); }
-	  		}
-	  		if((n+skipped)==0) { animations=null; }
-	  		return(n);
-	  	}
-	  return(0);
-	}
 	public void copyFrom(ScreenData o)
 	{
 		current_center_x = o.current_center_x;
@@ -106,6 +86,42 @@ public abstract class cell<FINALTYPE
 	public int getWidth() { return lastSize(); }
 	public int getHeight() { return lastSize(); }
 	public static long classHash = 0;
+	
+	public SpriteStack animations = null;	// if not null, could be an animation where we're the destination
+	/**
+	 * add an animation to this cell.
+	 * @param sprite something that follows SpriteProtocol
+	 */
+	public void addActiveAnimation(SpriteProtocol sprite)
+	{
+		if(animations==null) { animations = new SpriteStack(); }
+		animations.push(sprite);
+	}
+	/**
+	 * the determines the number of animations which will end at this cell
+	 * are still pending.  Normally, these animations correspond to chips
+	 * that are already in place on this cell, but shouldn't be drawn yet
+	 * until the animation is complete.
+	 * @return an integer
+	 */
+	public int activeAnimationHeight()
+	{	if(animations!=null)
+	  	{	int n = 0;
+	  		int skipped = 0;
+	  		long now = G.Date();
+	  		for(int lim = animations.size()-1; lim>=0; lim--)
+	  		{
+	  		SpriteProtocol an = animations.elementAt(lim);
+	  		if(an.isExpired(now)) { animations.remove(lim,false); }
+	  			else if(!an.isAlwaysActive() && (an.isOverlapped() || !an.isStarted(now))) { skipped++; }
+	  			else { n+=an.animationHeight(); }
+	  		}
+	  		if((n+skipped)==0) { animations=null; }
+	  		return(n);
+	  	}
+	  return(0);
+	}
+
 	@SuppressWarnings("deprecation")
 	public long getClassHash()
 	{
@@ -352,6 +368,7 @@ public abstract class cell<FINALTYPE
 	// expect this to be encapsulated by specialized cell types
 	public void copyFrom(FINALTYPE from)
 	{	copyCurrentCenter(from);
+		animations = from.animations;
 	}
 	/**
 	 * the height of the stack of objects on this cell.  
@@ -543,7 +560,10 @@ public abstract class cell<FINALTYPE
 	 * clear the contents of the cell.  This method is normally wrapped
 	 * by subclasses to encapsulate the initialization process.
 	 */
-	public void reInit() { }
+	public void reInit() 
+	{
+		animations = null;
+	}
 	
 	public static void reInit(cell<?> c[])
 	{
@@ -863,23 +883,7 @@ public abstract class cell<FINALTYPE
 		setCurrentRotation(displayRotation);
 	}
 
-	/**
-	 * add an animation to this cell.
-	 * @param sprite something that follows SpriteProtocol
-	 */
-	public void addActiveAnimation(SpriteProtocol sprite)
-	{	getScreenData().addActiveAnimation(sprite);
-	}
-	/**
-	 * the determines the number of animations which will end at this cell
-	 * are still pending.  Normally, these animations correspond to chips
-	 * that are already in place on this cell, but shouldn't be drawn yet
-	 * until the animation is complete.
-	 * @return an integer
-	 */
-	public int activeAnimationHeight()
-	{	return getScreenData().activeAnimationHeight();
-	}
+
 	/**
 	 * the top level of a stack, where drawStack stops.  This can be altered to draw
 	 * partial stacks without actually removing the top chips.  It's used by sprite

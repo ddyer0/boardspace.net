@@ -35,10 +35,12 @@ class CellStack extends OStack<LyngkCell>
  * @author ddyer
  *
  */
-public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkConstants
+public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkConstants,PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-
+	int lastPlaced = -1;
+	int lastPicked = -1;
+	
 	public LyngkCell(Random r,LyngkId rack) { super(r,rack); }		// construct a cell not on the board
 	public LyngkCell(LyngkId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);
@@ -65,7 +67,18 @@ public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkCo
 		addChip(cont);
 		onBoard=false;
 	}
-
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = -1;
+		lastPicked = -1;
+	}
+	public void copyFrom(LyngkCell c)
+	{
+		super.copyFrom(c);
+		lastPlaced = c.lastPlaced;
+		lastPicked = c.lastPicked;
+	}
 	public int colorMask()
 	{	int mask = 0;
 		for(int i=height()-1; i>=0; i--)
@@ -75,8 +88,15 @@ public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkCo
 		}
 		return(mask);
 	}
+	
 	public LyngkChip[] newComponentArray(int size) {
 		return(new LyngkChip[size]);
 	}
+	// support for numberMenu
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastPlaced;
+	}
+
+
 
 }

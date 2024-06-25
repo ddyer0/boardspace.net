@@ -7424,7 +7424,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	stateChange++;
         	setState(ViticultureState.Confirm);
         	break;
-
         case Sell1Wine:			// mercado induced
         case ResolveCard:
         case Trade1:
@@ -8203,10 +8202,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{
     		PlayerBoard nn = pbs[m.from_col-'A'];
     		nn.isReady = m.from_row!=0;
-    		setNextPlayer(replay);
-    		if(allPlayersReady()) 
-    			{ doDone(replay,m); 
-    			}
+    		if(allPlayersReady()) { doDone(replay,m); }
+    		else { 	setNextPlayer(replay); }
     		}
         	break;
         case EPHEMERAL_COMMENCE:

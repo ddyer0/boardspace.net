@@ -97,6 +97,8 @@ import online.search.SimpleRobotProtocol;
  *  	this will probably require a few edits to the init code.
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
+ *   
+ *  TODO: add the logic for "last moves"
 */
 public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these

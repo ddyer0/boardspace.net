@@ -243,7 +243,9 @@ public abstract class stackCell
 	 * @return a screen coordinate
 	 */
 	public int animationChipXPosition(int depth)
-	{	return(centerX()+(int)(-depth*lastXScale()*lastSize()));
+	{	// 6/22/2024 made this depth-1, to fix the observation that stacks
+		// in lyngk seemed to jiggle backwards at the end.
+		return(centerX()+(int)(-(depth-1)*lastXScale()*lastSize()));
 	}
 	/**
 	 * starting Y position for animations of chips for this stack
@@ -252,7 +254,9 @@ public abstract class stackCell
 	 * @return a screen coordinate
 	 */
 	public int animationChipYPosition(int depth)
-	{	return(centerY()-(int)(-depth*lastYScale()*lastSize()));
+	{	// 6/22/2024 made this depth-1, to fix the observation that stacks
+		// in lyngk seemed to jiggle backwards at the end.
+		return(centerY()-(int)(-(depth-1)*lastYScale()*lastSize()));
 	}
 	
 	/**

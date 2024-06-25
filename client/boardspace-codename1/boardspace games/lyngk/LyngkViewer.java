@@ -37,6 +37,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
 import online.game.*;
+import online.game.NumberMenu.NumberingMode;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
@@ -302,7 +303,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-    	G.placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,annotationMenu,viewsetRect,rotateRect,eyeRect,liftRect,noChatRect);
+    	G.placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,annotationMenu,viewsetRect,rotateRect,eyeRect,numberMenu,liftRect,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -491,6 +492,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     public void drawBoardElements(Graphics gc, LyngkBoard gb, Rectangle brect, HitPoint highlight,Hashtable<LyngkCell,LyngkMovespec> targets)
     {	
     	boolean dolift = doLiftAnimation();
+     	numberMenu.clearSequenceNumbers();
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
@@ -499,12 +501,15 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	boolean perspective = usePerspective();
         Enumeration<LyngkCell>cells = gb.getIterator(Itype.TBRL);
         boolean show = eyeRect.isOnNow();
+        boolean numbers = numberMenu.selected()!=NumberingMode.None;
     	while(cells.hasMoreElements())
           { LyngkCell cell = cells.nextElement();
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
+            
             boolean canHit = !dolift && gb.LegalToHitBoard(cell,targets);
-            drawStack(perspective,gc, canHit ? highlight : null, gb,cell, xpos,ypos,CELLSPACING+0.01*liftSteps,(cell==last)?".":null);
+            drawStack(perspective,gc, canHit ? highlight : null, gb,cell, xpos,ypos,CELLSPACING+0.01*liftSteps,!numbers&&(cell==last)?".":null);
       		if(show && (targets.get(cell)!=null))
     		{
     			StockArt.SmallO.drawChip(gc, this, CELLSIZE*2,xpos,ypos,null);
@@ -516,6 +521,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     			}  
     		//StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
           }
+    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*3,labelFont,labelColor);
     }
 
     /**
@@ -626,6 +632,13 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         drawViewsetMarker(gc,viewsetRect,nonDragSelect);
     }
 
+    //
+    // support for the last move "numberMenu" logic
+    //
+	public int getLastPlacement(boolean empty) {
+		return (bb.dropStep);
+	}
+
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -638,7 +651,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     {	
         
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -646,9 +659,16 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
          * animation sprites.  drawBoardElements arranges for the destination stones, which
          * are already in place, to disappear until the animation finishes.  The actual drawing
          * is done by drawSprites at the end of redrawBoard
+         * 
+         * Lyngk uses a few slightly nonstandard tricks to animate the multiple bounces
+         * implied by "lyngk" moves and by the need to animate whole stacks moving.  The
+         * intermediate cells that are bounced over are presented by copies of the actual
+         * cell, which inherit the locations but leave the underlying cell with no active
+         * animations.  If they had active animations they would disappear!   Moving the
+         * stack instead of a single is accomplished by having multiple from-to pairs for
+         * each step.
          */
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Chained);
-        
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay!=replayMode.Replay) { playSounds(mm); }
        return (true);

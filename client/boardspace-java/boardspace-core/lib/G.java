@@ -701,6 +701,16 @@ public class G extends Platform implements Timestamp
 		SetWidth(r, Width(r)-w-h/2);
 		SetRect(to,Right(r)+h/2,Top(r),w,h);
 	}
+	/**
+	 * place a "stateRect" row with an icon at space at the left and a list of other rectangles
+	 * chipped off at the right.
+	 * @param l
+	 * @param t
+	 * @param w
+	 * @param h
+	 * @param icon
+	 * @param r
+	 */
     public static void placeStateRow(int l,int t,int w,int h,Rectangle icon,Rectangle... r)
     {
     	SetRect(icon, l, t, h, h);

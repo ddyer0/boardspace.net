@@ -1474,7 +1474,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public boolean allowRobotsToRun() {
     	return super.allowRobotsToRun();
     }
-
+    //
+    // support for the last move "numberMenu" logic
+    //
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);
 	}
