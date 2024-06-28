@@ -54,7 +54,7 @@ class MasterToolBar extends Toolbar
 		setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
 
 	}
-	static int savedNotch = -1;
+	static int savedNotch = 0;
 	
 	static int getSafeAreaHeight()
 	{
@@ -262,7 +262,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 			}
 	}
 	public void setVisible(boolean v)
-	{
+	{	
 		super.setVisible(v);
 	}
 	public void paint(com.codename1.ui.Graphics g)
@@ -339,7 +339,7 @@ public void addToMenus(JButton m)
 	masterForm.getMenus().addC(m);
 	masterForm.adjustTabStyles();
 }
-	
+
 	public void show()
 	{	if(!isVisible()) 
 		{ 	G.runInEdt(new Runnable () {	public void run() { showInEdt(); } });

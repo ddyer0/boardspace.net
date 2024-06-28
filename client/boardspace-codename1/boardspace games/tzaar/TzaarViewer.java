@@ -224,7 +224,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         int stateY = boardY-stateH;
         int stateX = boardX;
         int zoomW = stateH*4;
-        G.placeRow(stateX, stateY,boardW, stateH,stateRect,annotationMenu,viewsetRect,liftRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX, stateY,boardW, stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,liftRect,reverseViewRect,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
@@ -397,6 +397,8 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
      	lifting = doLiftAnimation();
      	int dotsize = Math.max(2,CELLSIZE/15);
      	
+    	numberMenu.clearSequenceNumbers();
+
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -415,6 +417,8 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
             int xpos = G.Left(brect) + rb.cellToX(cell);
             double zoom = zoomRect.value;
             int height = cell.chipIndex+1;
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
+            
             String msg = ((height>1) && (lifting || (zoom<=(MIN_CHIP_SCALE+0.01))))
             				? (""+height)
             				: null;
@@ -443,6 +447,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
              	
 	        	}
         }}
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);    	
     }
     
     public void drawAuxControls(Graphics gc,HitPoint highlight)
@@ -505,6 +510,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         				vstate!=TzaarState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
+        TzaarChip.getChip(0,gb.getColorMap()[gb.whoseTurn]).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
 
         // no repetitions are possible in tzaar
@@ -514,6 +520,14 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         drawVcrGroup(ourSelect, gc);
         drawViewsetMarker(gc,viewsetRect,ourSelect);
     }
+
+	   //
+ // support for the last move "numberMenu" logic
+ //
+	public int getLastPlacement(boolean empty) {
+		return (b.dropState);
+	}
+
 
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -526,6 +540,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
   
         startBoardAnimations(replay,b.animationStack,
         					CELLSIZE,MovementStyle.Stack);

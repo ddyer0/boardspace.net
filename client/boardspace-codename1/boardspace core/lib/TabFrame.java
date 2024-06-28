@@ -16,6 +16,8 @@
  */
 package lib;
 
+import com.codename1.ui.Component;
+
 import bridge.AccessControlException;
 import bridge.ActionEvent;
 import bridge.Config;
@@ -205,5 +207,9 @@ public class TabFrame extends Frame
 	}
 	public void setTitle(String n) {
 		MasterForm.getMasterPanel().setTabName(this,n,getIconAsImage());
+	}
+	public void removeC(Component c) {
+		remove(c);
+		
 	}
 }

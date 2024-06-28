@@ -84,6 +84,7 @@ public class JFrame extends Frame implements TopFrameProtocol
 		G.Error("Not expected");
 		
 	}
+
 	@Override
 	public void setInitialBounds(int inx, int iny, int inw, int inh) {
 		// TODO Auto-generated method stub
@@ -95,6 +96,11 @@ public class JFrame extends Frame implements TopFrameProtocol
 	}
 
 	public void setTitle(String n) {
+		
+	}
+
+	public void removeC(com.codename1.ui.Component c) {
+		G.Error("Not expected");
 		
 	}
 

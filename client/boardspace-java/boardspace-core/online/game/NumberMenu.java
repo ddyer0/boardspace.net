@@ -83,6 +83,10 @@ public class NumberMenu extends Rectangle {
 	int startingNumber = 0;
 	public boolean includePartialMoves = true;
 	double arrowOpacity = 0.7;		// opacity for arrows
+    public double lineWidthMultiplier = 0.05;		// cellsize multiplier for line width of the arrow
+    public double arrowOffsetMultiplier = 0.2;		// cellsize multiplier for the amount the point falls short of the arrow end target
+    public double arrowWidthMultiplier = 0.25;		// cellsize multiplier for the width of the arrowhead
+ 
 	
 	/**
 	 * NumberingMode encapsulates most of the behavior associated
@@ -390,13 +394,29 @@ public class NumberMenu extends Rectangle {
 	}
 	/**
 	 * call this to draw the sequence numbers that have been saved in the process of drawing
-	 * the board at large.   
+	 * the board at large.   This version draws the numbers just beyond the tip of the arrow.
+	 * 
 	 * @param gc
 	 * @param cellSize	used to scale the numbers and the arrowhead
 	 * @param pieceLabelFont the font for drawing the label
 	 * @param labelColor the color for drawing the label and arrows
 	 */
     public void drawSequenceNumbers(Graphics gc,int cellSize,Font pieceLabelFont,Color labelColor)
+    {
+    	drawSequenceNumbers(gc,cellSize,pieceLabelFont,labelColor,0);
+    }
+    /**
+     * call this to draw the sequence numbers that have been saved in the process of drawing
+	 * the board at large.   This version draws the numbers just beyond the tip of the arrow
+	 * if labelPosition is zero, but slides it down the shaft of the array with small positive
+	 * values.
+     * @param gc
+     * @param cellSize
+     * @param pieceLabelFont
+     * @param labelColor
+     * @param labelPosition
+     */
+    public void drawSequenceNumbers(Graphics gc,int cellSize,Font pieceLabelFont,Color labelColor,double labelPosition)
     {	  
 
     	for(Enumeration<Integer>destindex = dests.keys(); destindex.hasMoreElements();)
@@ -405,13 +425,13 @@ public class NumberMenu extends Rectangle {
     		LocationProvider dest = dests.get(idx);
        		if(dest!=null)
     		{
-           	drawNumber(gc,cellSize,dest,pieceLabelFont,labelColor,idx);
   
     		if(src!=null)
     		{
         	drawArrow(gc,src,dest,labelColor,cellSize);   		
-    		}}
- 
+    		}
+           	drawNumber(gc,cellSize,src,dest,labelPosition,pieceLabelFont,labelColor,idx);    		
+    		}
      	} 
     	for(Enumeration<Integer>srcindex = sources.keys(); srcindex.hasMoreElements();)
     	{
@@ -464,6 +484,7 @@ public class NumberMenu extends Rectangle {
     }
   /**
    * draw a number (nominally, a move number) associated with a location
+   * this draws the numbers just beyond the point of the arrow.
    * 
    * @param gc
    * @param cellSize
@@ -477,6 +498,46 @@ public class NumberMenu extends Rectangle {
    		GC.setFont(gc,pieceLabelFont);
      	GC.drawOutlinedText(gc,true,dest.getX()-cellSize/2,dest.getY()-cellSize/2,cellSize,cellSize,color,Color.black,
      			moveNumberString(idx));
+    }
+   
+    /**
+     * draw a number (nominally, a move number) associated with a location, somewhere
+     * along the line defined by the arrow from src to dest, offset from the dest
+     * by a percentage of the cell size.  Zero draws it just beyond the point.
+     * 
+     * @param gc
+     * @param cellSize
+     * @param src
+     * @param dest
+     * @param position
+     * @param pieceLabelFont
+     * @param color
+     * @param idx
+     */
+    public void drawNumber(Graphics gc,int cellSize,LocationProvider src,LocationProvider dest,double position,Font pieceLabelFont,Color color,int idx)
+    {
+    			
+		int x1 = src==null ? dest.getX() : src.getX();
+		int y1 = src==null ? dest.getY() : src.getY();
+		int x2 = dest.getX();
+		int y2 = dest.getY();
+		// a little basic trigonometry.  We want to shorten the 
+		// arrow by a fraction of the cell size, both at the beginning
+		// and the end, so the arrows don't overlap with the numbers.
+		double dx = x1-x2;
+		double dy = y1-y2;
+		double angle = atan2(dx,dy);
+		double sin = Math.sin(angle);
+		double cos = Math.cos(angle);
+		double sin2 = Math.sin(angle+Math.PI/2);
+		double cos2 = Math.cos(angle+Math.PI/2);
+		int xpos = (int)(x2+sin*cellSize*position+sin2*cellSize*lineWidthMultiplier);
+		int ypos = (int)(y2+cos*cellSize*position+cos2*cellSize*lineWidthMultiplier);
+ 		GC.setFont(gc,pieceLabelFont);
+     	GC.drawOutlinedText(gc,true,xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize,color,Color.black,
+     			moveNumberString(idx));
+	
+		
     }
     /**
      *  draw the arrow from src to dest 
@@ -492,12 +553,14 @@ public class NumberMenu extends Rectangle {
     {	Color lc = src.getColor();
 	    GC.setColor(gc,lc==null ? defaultColor : lc);
 		GC.setOpacity(gc,arrowOpacity);
+		double linew = cellSize*lineWidthMultiplier;
+		double shorten = cellSize*arrowOffsetMultiplier;
+
+		
 		int x1 = src.getX();
 		int y1 = src.getY();
 		int x2 = dest.getX();
 		int y2 = dest.getY();
-		double linew = cellSize/20.0;
-		double shorten = cellSize/5.0;
 		// a little basic trigonometry.  We want to shorten the 
 		// arrow by a fraction of the cell size, both at the beginning
 		// and the end, so the arrows don't overlap with the numbers.
@@ -515,7 +578,7 @@ public class NumberMenu extends Rectangle {
 		double cy = (cos*shorten);
 		double lx = (linew*sin2);
 		double ly = (linew*cos2);
-	 	GC.drawArrow(gc,(int)(x1-cx+lx),(int)(y1-cy+ly),(int)(x2+cx+lx),(int)(y2+cy+ly),cellSize/4,linew);
+	 	GC.drawArrow(gc,(int)(x1-cx+lx),(int)(y1-cy+ly),(int)(x2+cx+lx),(int)(y2+cy+ly),(int)(cellSize*arrowWidthMultiplier),linew);
 	 	GC.setOpacity(gc,1);
     }
 }

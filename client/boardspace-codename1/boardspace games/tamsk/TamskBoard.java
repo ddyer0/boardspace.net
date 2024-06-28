@@ -61,6 +61,7 @@ class TamskTimer implements Digestable
 	boolean active = false;
 	TamskCell location = null;
 	TamskTimer ghostCopy = null;
+    
 	// constructor
 	TamskTimer(TamskChip in,TamskId tid,long cap)
 	{	this(tid,cap);
@@ -208,6 +209,8 @@ class TamskBoard
 	private long robotDoneTime = FAST_TIMER_TIME;
 	public long robotDelayTime = 10*1000;
 	public boolean robotRandomPhase = false;
+    private int prevLastPicked = -1;
+    private int prevLastDropped = -1;
 	
 	public TamskState getState() { return(board_state); }
 	
@@ -442,6 +445,9 @@ class TamskBoard
 		variation = TamskVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
 		gametype = gtype;
+		prevLastPicked = -1;
+		prevLastDropped = -1;
+		
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
@@ -718,6 +724,8 @@ class TamskBoard
     {	TamskCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedTimer = rv.timer;
+    	rv.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	if(pickedTimer!=null) 
     	{ findTimer(pickedTimer).location = rv; 
     	  pickedObject = pickedTimer.chip;
@@ -740,6 +748,8 @@ class TamskBoard
     	setState(stateStack.pop());
     	if(pickedObject==TamskChip.Ring) { rv.addChip(pickedObject); }
     	rv.timer = pickedTimer;
+    	rv.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	if(pickedTimer!=null) { findTimer(pickedTimer).location = rv; pickedTimer = null; }
     	pickedObject = null;
     }
@@ -751,7 +761,8 @@ class TamskBoard
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
-       
+       prevLastDropped = c.lastDropped;
+       c.lastDropped = moveNumber;
        switch (c.rackLocation())
         {
         default:
@@ -866,6 +877,8 @@ class TamskBoard
         case BoardLocation:
         	pickedTimer = c.timer;
         	pickedObject = pickedTimer.chip;
+        	prevLastPicked = c.lastPicked;
+        	c.lastPicked = moveNumber;
         	c.timer = null;
         	if(pickedTimer!=null) { findTimer(pickedTimer).location = null; }
         	break;

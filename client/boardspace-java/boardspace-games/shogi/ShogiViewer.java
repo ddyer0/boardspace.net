@@ -37,7 +37,7 @@ import lib.*;
  *
  * March 2010 Initial work in progress. 
  * 
- *
+ * TODO: add # logic to shogi
 */
 public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiConstants
 {

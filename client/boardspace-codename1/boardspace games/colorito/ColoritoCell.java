@@ -19,6 +19,7 @@ package colorito;
 import lib.Random;
 import colorito.ColoritoConstants.ColoritoId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<ColoritoCell>
@@ -26,10 +27,25 @@ class CellStack extends OStack<ColoritoCell>
 	public ColoritoCell[] newComponentArray(int n) { return(new ColoritoCell[n]); }
 }
 
-public class ColoritoCell extends stackCell<ColoritoCell,ColoritoChip> 
+public class ColoritoCell extends stackCell<ColoritoCell,ColoritoChip> implements PlacementProvider
 {	
 	int number = 0;
 	int sweep_counter = 0;
+	
+	int lastPicked = -1;
+	int lastDropped = -1;
+
+	public void copyFrom(ColoritoCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
+	
 	public ColoritoChip[] newComponentArray(int n) { return(new ColoritoChip[n]); }
 	// constructor
 	public ColoritoCell(char c,int r) 
@@ -63,6 +79,8 @@ public class ColoritoCell extends stackCell<ColoritoCell,ColoritoChip>
 	public void reInit()
 	{	super.reInit();
 		sweep_counter = 0;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 
 }

@@ -18,7 +18,7 @@ package cannon;
 import cannon.CannonConstants.CannonId;
 import lib.OStack;
 import lib.Random;
-
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<CannonCell>
@@ -29,9 +29,28 @@ class CellStack extends OStack<CannonCell>
 	
 }
 
-public class CannonCell extends stackCell<CannonCell,CannonChip> 
+public class CannonCell extends stackCell<CannonCell,CannonChip> implements PlacementProvider
 {	public CannonChip[] newComponentArray(int n) { return(new CannonChip[n]); }
 	// constructor
+	int lastPicked = -1;
+	int lastDropped = -1;
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(CannonCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
+	
 	public CannonCell(CannonId loc)
 	{
 		super(Geometry.Standalone,loc);

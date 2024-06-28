@@ -23,8 +23,10 @@ class CellStack extends OStack<TzaarCell>
 {
 	public TzaarCell[] newComponentArray(int n) { return(new TzaarCell[n]); }
 }
-public class TzaarCell extends stackCell<TzaarCell,TzaarChip> implements TzaarConstants
+public class TzaarCell extends stackCell<TzaarCell,TzaarChip> implements TzaarConstants,PlacementProvider
 {	public TzaarChip[] newComponentArray(int n) { return(new TzaarChip[n]); }
+	int lastPicked = -1;
+	int lastDropped = -1;
 	// constructor
 	public TzaarCell(char c,int r,Geometry geom) 
 	{	super(geom,c,r);
@@ -34,6 +36,22 @@ public class TzaarCell extends stackCell<TzaarCell,TzaarChip> implements TzaarCo
 			}
 		else { onBoard=false; }
 	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(TzaarCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
+
 	public TzaarId rackLocation() { return((TzaarId)rackLocation); }
 	public TzaarCell(Random r,char c,int ro) 
 	{	super(r,Geometry.Standalone,c,ro);

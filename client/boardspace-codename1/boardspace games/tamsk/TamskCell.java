@@ -37,13 +37,14 @@ class CellStack extends OStack<TamskCell>
  */
 public class TamskCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<TamskCell,TamskChip>	
+	extends stackCell<TamskCell,TamskChip>	implements PlacementProvider
 {	
 	double xpos = 0;	// position relative to boardrect
 	double ypos = 0;	// position relative to boardrect
 	int maxRings = 0;
 	TamskId timer = null;
-	
+	int lastPicked = -1;
+	int lastDropped = -1;
 	public void initRobotValues() 
 	{
 	}
@@ -75,6 +76,8 @@ public class TamskCell
 		ypos = ot.ypos;
 		maxRings = ot.maxRings;
 		timer = ot.timer;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -83,6 +86,8 @@ public class TamskCell
 	public void reInit()
 	{	super.reInit();
 		timer = null;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public TamskCell(TamskChip cont)
@@ -104,6 +109,10 @@ public class TamskCell
 		return(new TamskChip[size]);
 	}
 	public boolean labelAllChips() { return(false); }
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 
 	
 }

@@ -1474,6 +1474,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  	case Check:
  		{	// if we are in check, only allow moves that relieve check
  			boolean some = getListOfMoves(v,occupied[who],who);
+ 			some |= getDropMoves(v,who);
  			if(some)
  			{	// filter out all the moves that don't eliminate check
  				boolean shortcut = v==null;

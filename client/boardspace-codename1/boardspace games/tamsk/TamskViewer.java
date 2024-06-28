@@ -359,7 +359,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,sandRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,sandRect,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	int tx = boardX+CELLSIZE/3;
@@ -519,6 +519,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	// something which might allow an action.  
     	long gameTime = reviewMode() ? gb.officialGameTime() : unofficialGameTime(gb);
     	Hashtable<TamskCell,Tamskmovespec> targets = gb.getTargets(gameTime);
+    	numberMenu.clearSequenceNumbers();
     	double h = G.Height(boardRect);
     	TamskChip po = gb.pickedObject;
     	boolean show = eyeRect.isOnNow();
@@ -535,6 +536,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
       		int hoffset = (int)(cell.maxRings*CS*0.1);
       		int hsize = CS-yscale;
             int xpos =  left + xx;
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             cell.setCurrentCenter(xpos,ypos);
             cell.setLastSize(hsize/2);
             boolean canHit = gb.legalToHitBoard(cell,targets);
@@ -571,7 +573,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
       //      G.print("pos('",cell.col,"',",(char)('0'+cell.row),",",(int)(xx*100/w)/100.0,",",(int)(yy*100/h)/100.0,");");
             		
         }
-    	
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);    	
     }
     private void drawTimer(Graphics gc,HitPoint highlight,TamskId code,boolean timers,long gameTime,TamskTimer timer,TamskChip chip,int size,int xpos,int ypos)
     {
@@ -772,6 +774,13 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	{	return gb.extraTime(G.Date())+gb.shotTime();
 	}
 	
+	   //
+    // support for the last move "numberMenu" logic
+    //
+	public int getLastPlacement(boolean empty) {
+		return (bb.moveNumber);
+	}
+
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -783,6 +792,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         
         /**
          * animations are handled by a simple protocol between the board and viewer.

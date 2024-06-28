@@ -676,9 +676,14 @@ public abstract class Platform implements Config{
      * create a simple console window that will be the target of {@link #print}
      */
 	static public void createBrowser(String title,String url)
-	{	
+	{		// this shoudln't be necessary, but at the point this is invoked the 
+			// top level frame has been hidden by a pop-up, and some really bad
+			// timing causes a hard crash in the codename1 simulator
+			MasterForm.getMasterForm().show();
+			
 			Browser f = new Browser(title,url);
 			f.setVisible(true);	
+			f.repaint();
 	}
 	static public void showDocument(String u)
 	{

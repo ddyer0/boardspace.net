@@ -233,7 +233,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
         int stateX = boardX;
         int stateH = fh*5/2;
         
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseViewRect,eyeRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -320,6 +320,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	Hashtable<ColoritoCell,ColoritoCell> sources = gb.getSources();
     	ColoritoCell src = gb.getSource();
     	boolean show = eyeRect.isOnNow();
+    	numberMenu.clearSequenceNumbers();
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -335,6 +336,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
             ColoritoCell cell = cells.nextElement();
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             String number = cell.number>0 ? ""+cell.number : null;
             boolean canHit = gb.LegalToHitBoard(cell,sources,dests);
             if( cell.drawStack(gc,this,canHit? highlight : null,SQUARESIZE,xpos,ypos,0,0.1,number)) 
@@ -354,6 +356,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     		StockArt.SmallO.drawChip(gc, this, SQUARESIZE, xpos,ypos,null);
     		}
     	}
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor,0.5);   
 
     }
     public void drawAuxControls(Graphics gc,HitPoint highlight)
@@ -427,7 +430,10 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
         drawVcrGroup(ourSelect, gc);
 
     }
-
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.dropState;
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -440,6 +446,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     {	
 
     	handleExecute(b,mm,replay);
+    	numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Chained);
         if(replay!=replayMode.Replay) { playSounds(mm); }
  

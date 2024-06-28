@@ -88,7 +88,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     public CannonCell townLocation[] = new CannonCell[2];	// placed town location
     public boolean townCaptured[]=new boolean[2];			// true when the town is captured
     public CannonId playerId[] = new CannonId[2];
-  
+    private int prevLastDropped = -1;
+    private int prevLastPicked = -1;
     //
     // private variables
     //
@@ -263,7 +264,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
 		}
     	gametype = gtype;
     	setState(CannonState.PUZZLE_STATE);
-    	
+    	prevLastPicked = -1;
+    	prevLastDropped = -1;
     	int map[]=getColorMap();
      	playerId[map[0]]=CannonId.White_Chip_Pool;
      	playerId[map[1]]=CannonId.Black_Chip_Pool;
@@ -436,6 +438,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     if(dr!=null)
     	{
     	droppedDest = null;
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	if(dr.topChip()!=null) { pickedObject = removeChip(dr); }
     	if(captured!=null) { addChip(dr,captured); captured = null;  }
     	}
@@ -450,6 +454,9 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     	CannonCell ps = pickedSource;
     	pickedSource=null;
     	pickedObject = null;
+    	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
+    
     	if(ps.topChip()==null) { addChip(ps,po); }
      	}
      }
@@ -466,6 +473,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	droppedDest = getCell(col,row);
         	if(droppedDest.topChip()!=null) { removeChip(droppedDest); }
         	addChip(droppedDest,pickedObject);
+        	prevLastDropped = droppedDest.lastDropped;
+        	droppedDest.lastDropped = moveNumber;
         	pickedObject = null;
         	break;
         case Black_Chip_Pool:		// back in the pool
@@ -529,6 +538,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         		  townLocation[index]=null; 
         		  townCaptured[index]=(board_state==CannonState.PLAY_STATE);
         		}
+        	prevLastPicked = c.lastPicked;
+        	c.lastPicked = moveNumber;
          	break;
          	}
         case White_Chip_Pool:

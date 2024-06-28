@@ -240,7 +240,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	 * @param message
 	 * @return
 	 */
-	public String notificationMessage(int who,int gameuid,String variation,String message)
+	public String notificationMessage(int who,int gameuid,String variation,String message,String longMessage)
 	{
 		String id = "";
 		if(G.debug())
@@ -262,8 +262,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				gameuid,
 				" ",
 				message,
-				id
-				);
+				id,
+				(longMessage!=null) ? "\n"+longMessage : " "	);
 		return Base64.encodeSimple(msg);
 	}
 
@@ -678,13 +678,14 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				int thispl = acceptedPlayers.elementAt(i);
 				String message = notificationMessage(thispl,(thispl==whoseturn)
 									? s.get(StartedAndYou)
-									: s.get(StartedMessage));
+									: s.get(StartedMessage),
+									null);
 				pendingNotifications.push(message);
 			}
 					
 			updateGame(STATUS,AsyncStatus.active.name(),
 						WHOSETURN,""+who,
-						NAG,notificationMessage(whoseturn,YourTurnMessage),
+						NAG,notificationMessage(whoseturn,YourTurnMessage,null),
 						NAGTIME,""+speed.firstNag
 					);
 		}
@@ -753,10 +754,10 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 * @param message the formatted message
 		 * @return
 		 */
-		public String notificationMessage(int who,String message)
+		public String notificationMessage(int who,String message,String longMessage)
 		{	
 			// the format is uid,base64encodedmessage
-			return TurnBasedViewer.this.notificationMessage(who,gameuid,variation,message);
+			return TurnBasedViewer.this.notificationMessage(who,gameuid,variation,message,longMessage);
 		}
 
 		
@@ -774,7 +775,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			whoseturn = who;
 			body = b;
 			chat = c;
-			String message = notificationMessage(whoseturn,s.get(YourTurnMessage));
+			String message = notificationMessage(whoseturn,s.get(YourTurnMessage),null);
 			if(!forced)
 				{ // forced is the final update when the game is over.  Don't send a "your turn" notification
 				  pendingNotifications.push(message);
@@ -842,8 +843,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			for(int i=0;i<acceptedPlayers.size();i++)
 			{
 				pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),
-						s.get(error?SuspendedMessage:EndedMessage)
-						+(message!=null?"\n"+message:"")));	
+						s.get(error?SuspendedMessage:EndedMessage),	message));	
 			}
 			AsyncStatus newstat = error?AsyncStatus.suspended : AsyncStatus.complete;
 			updateGame(STATUS,newstat.name());
@@ -931,7 +931,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				}
 				allowOtherPlayers = (acceptedPlayers.size()<game.maxPlayers);
 				String mess = s.get(remove ? DeclinedMessage : AcceptedMessage,loggedInUser.name());
-				String message = notificationMessage(owner,mess);
+				String message = notificationMessage(owner,mess,null);
 				pendingNotifications.push(message);
 				updateGame(
 						STATUS,status.name(),
@@ -953,16 +953,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 						{ status = AsyncStatus.canceled; 
 						  for(int i=0,lim=acceptedPlayers.size();i<lim;i++)
 						  {	// if players had accepted, notify them of the cancellation
-							pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),s.get(CancelledMessage)));
+							pendingNotifications.push(notificationMessage(acceptedPlayers.elementAt(i),s.get(CancelledMessage),null));
 						  }
 						}
 					else if(owner!=loggedInUser.uid()) {
 						// someone removed themselves
-						pendingNotifications.push(notificationMessage(owner,s.get(YouRemovedMessage,loggedInUser.name())));
+						pendingNotifications.push(notificationMessage(owner,s.get(YouRemovedMessage,loggedInUser.name()),null));
 					}
 					else {
 						// owner removed someone
-						pendingNotifications.push(notificationMessage(toRemove,s.get(RemovedMessage)));
+						pendingNotifications.push(notificationMessage(toRemove,s.get(RemovedMessage),null));
 						}
 					}
 					break;
@@ -1748,7 +1748,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 newGameMode = false;
 			 for(int i=0;i<invitedPlayers.size();i++)
 			 {
-				 pendingNotifications.push(notificationMessage(invitedPlayers.elementAt(i).channel(),parsedGameUid,selectedVariant.variationName,InvitedMessage));
+				 pendingNotifications.push(notificationMessage(invitedPlayers.elementAt(i).channel(),parsedGameUid,selectedVariant.variationName,
+						 s.get(InvitedMessage),s.get(InvitedLongMessage)));
 			 }			 
 		 }
 	}
@@ -2497,7 +2498,8 @@ static String AcceptedMessage = "#1 accepted your invitation to play";
 static String DeclinedMessage = "#1 removed themselves from your game";
 static String RemovedMessage = "You were removed by the owner";
 static String YouRemovedMessage = "#1 un-accepted your invitation to play";
-static String InvitedMessage = "You're invited to play";
+static String InvitedMessage = "You're invited to play a turn-based game";
+static String InvitedLongMessage = "invited_long_message";
 static String ErrorCaption = "Error";
 static String LoggedInMessage = "Logged in as #1";
 static String TurnBasedGamesMessage = "Turn Based Games";
@@ -2538,15 +2540,15 @@ static public void putStrings()
 			OtherPlayersMessage,
 			StartedAndYou,StartedMessage,CancelledMessage,EndedMessage,
 			};
-		//String[][] TurnStringPairs =
-		// {
-		//		 {}
-		// };
+		String[][] TurnStringPairs =
+		 {
+				 {InvitedLongMessage,"Open your boardspace.net app and select \"Play Turn Based\" to accept the invitation"},
+		 };
 		PlaySpeed.putStrings();
 		FirstPlayer.putStrings();
 		AsyncStatus.putStrings();
 		InternationalStrings.put(TurnStrings);
-		//InternationalStrings.put(TurnStringPairs);
+		InternationalStrings.put(TurnStringPairs);
 	}
 	
 	// draw the "expectedplaying speed" box in the new game dialog

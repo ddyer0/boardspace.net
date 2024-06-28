@@ -77,6 +77,9 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
 	public TzaarCell newcell(char c,int r)
 	{	return(new TzaarCell(c,r,cell.Geometry.Hex));
 	}
+    int prevLastPicked = -1;
+    int prevLastDropped = -1;
+    int dropState = 0;
     
 	static double sumweight = 5.0;
 	static double totweight = 0.10;
@@ -178,6 +181,9 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     	if(dr!=null)
     	{
     	pickedObject = dr.removeTop();
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
+    	dropState--;
     	TzaarCell src = pickedSourceStack[stackIndex];
     	moveStack(dr,
     	          src,
@@ -198,6 +204,8 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     	{
     	TzaarCell ps = pickedSourceStack[stackIndex];
     	ps.addChip(po);
+    	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
         pickedSourceStack[stackIndex]=null;
     	pickedObject = null;
     	}
@@ -237,9 +245,6 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
         	(placing ? rack : captures)[who][row].addChip(pickedObject);
         	pickedObject = null;
         	break;
-       case BoardLocation: // an already filled board slot.
-        	dropOnBoard(getCell(col,row),who,true,replay);
-         	break;
         }
     }
     private void pickFromCell(TzaarCell src)
@@ -247,12 +252,15 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     	pickedSourceStack[stackIndex] = src;
         pickedStackHeight[stackIndex] = src.chipIndex+1;
     	pickedObject = src.removeTop();
+    	prevLastPicked = src.lastPicked;
+    	src.lastPicked = moveNumber;
     }
 
     private void pickObject(TzaarCell from)
     {
     	G.Assert((pickedObject==null)&&(pickedSourceStack[stackIndex]==null),"ready to pick");
     	pickFromCell(from);
+    	
     }
     private TzaarCell getCell(TzaarId source, char col, int row)
     {	
@@ -475,6 +483,9 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
        AR.setValue(pickedStackHeight,0);
        AR.setValue(droppedStackHeight,0);
        moveNumber = 1;
+       prevLastDropped = -1;
+       prevLastPicked = -1;
+       dropState = 0;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -669,6 +680,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     		finalizePlacement();
        	 	setNextPlayer(); 
      		setNextStateAfterDone();
+     		dropState++;
      		break;
     	}}
     }
@@ -765,6 +777,11 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
 				G.Assert(board_state!=TzaarState.CAPTURE_STATE,"must be a capture");
 			}
         	moveStack(from,to,999);
+        	prevLastPicked = from.lastPicked;
+        	prevLastDropped = to.lastDropped;
+        	from.lastPicked = dropState;
+        	to.lastDropped = dropState;
+        	dropState++;
             setNextStateAfterDrop();
         	}
         	break;
@@ -794,6 +811,9 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
             	break;
 			case PLACE_STATE:
 				dropOnBoard(target,m.player,false,replay);
+				prevLastDropped = target.lastDropped;
+				target.lastDropped = dropState;
+				dropState++;
          	   	//undoInfo = m.undoInfo = sweepForDvonnContact();
                 stackIndex++;
                 setNextStateAfterDrop();
@@ -805,6 +825,9 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
   				//$FALL-THROUGH$
 			case PLAY_STATE:
                dropOnBoard(target,m.player,true,replay);
+               prevLastDropped = target.lastDropped;
+               target.lastDropped = dropState;
+               dropState++;
          	   	//undoInfo = m.undoInfo = sweepForDvonnContact();
                 stackIndex++;
                 setNextStateAfterDrop();
@@ -849,6 +872,8 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
            		TzaarCell target = getCell(m.from_col, m.from_row);
            		  m.top = target.topChip();
            		  pickFromCell(target);
+           		prevLastPicked = target.lastPicked;
+           		target.lastPicked = dropState;
                   setNextStateAfterPick();
            		}
         	}

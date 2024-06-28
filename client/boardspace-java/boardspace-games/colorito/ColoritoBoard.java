@@ -62,6 +62,10 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	static final ColoritoId RackLocation[] = { ColoritoId.White_Chip_Pool,ColoritoId.Black_Chip_Pool};
 	
+	int dropState = 0;
+	int prevLastPicked = -1;
+	int prevLastDropped = -1;
+	
 	public ColoritoCell rack[] = null;						// holds the sample chips for the viewer
 	
     public int boardColumns = Variation.Colorito_10.cols;	// size of the board
@@ -226,6 +230,9 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     {  	drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = GRIDSTYLE; //coordinates left and bottom
     	randomKey = rv;
+    	dropState = 0;
+    	prevLastDropped = -1;
+    	prevLastPicked = -1;
     	players_in_game = np;
     	sweep_counter = 0;
     	passedMoves = 0;
@@ -438,6 +445,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
 			case BoardLocation: 
 				pickedObject = removeChip(dr); 
+				dr.lastDropped = prevLastDropped;
+				prevLastDropped = -1;
 				break;
 	    	
 	    	}
@@ -451,6 +460,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     	if(po!=null)
     	{
     		ColoritoCell ps = pickedSourceStack.pop();
+    		ps.lastPicked = prevLastPicked;
+    		prevLastPicked = -1;
     		switch(ps.rackLocation())
     		{
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
@@ -470,7 +481,11 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     	switch(c.rackLocation())
 		{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
-		case BoardLocation: addChip(c,pickedObject); pickedObject = null; break;
+		case BoardLocation: addChip(c,pickedObject); pickedObject = null; 
+			prevLastDropped = c.lastDropped;
+			c.lastDropped = dropState;
+			dropState++;
+			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
 		}
@@ -520,6 +535,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
 		case BoardLocation: 
 			pickedObject = removeChip(c); 
+			prevLastPicked = c.lastPicked;
+			c.lastPicked = dropState;
 			break;
     	
     	}
@@ -587,7 +604,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     private void doDone()
     {	
         acceptPlacement();
-
+        dropState++;
         if (board_state==ColoritoState.Resign)
         {	setGameOver(false,true);
         }
@@ -607,8 +624,11 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 		ColoritoCell prev = path.pop();
 		while(path.top()!=null)
 		{	animationStack.push(prev); 
+			prev.lastPicked = dropState;
 			prev = path.pop();
 			animationStack.push(prev);
+			prev.lastDropped = dropState;
+			dropState++;
 		}}
     	
     }
@@ -659,11 +679,11 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
             	} 
             	else
             		{
+            		dropObject(c);
             		if(replay==replayMode.Single)
             			{
             			animatePath(getSource(),c);
             			}
-            		dropObject(c);
             		setNextStateAfterDrop();
             		}
 			}

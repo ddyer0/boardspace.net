@@ -213,7 +213,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 	    int stateY = boardY;
 	    int stateX = boardX;
 	    int stateH = fh*5/2;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,noChatRect);
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseViewRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)
@@ -331,6 +331,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         // now draw the contents of the board and anything it is pointing at
         //
         Hashtable<CannonCell,CannonCell> dests = gb.movingObjectDests();
+    	numberMenu.clearSequenceNumbers();
         // conventionally light source is to the right and shadows to the 
         // left, so we want to draw in right-left back-front order so the
         // solid parts will fall on top of existing shadows
@@ -340,6 +341,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
        		CannonCell cell = cells.nextElement();
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             cell.rotateCurrentCenter(gc,xpos,ypos);
             CannonChip cup = cell.topChip();
             boolean shot = (cell==gb.droppedDest)&&(cup==null);
@@ -361,7 +363,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
       		highlight.spriteColor = Color.red;
         }
     }
-
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);    	
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -424,6 +426,9 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
  
     }
 
+	public int getLastPlacement(boolean empty) {
+		return (b.moveNumber);
+	}
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -436,6 +441,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     {	
  
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
         
         if(replay!=replayMode.Replay) { playSounds(mm); }
         startBoardAnimations(replay,b.animationStack,CELLSIZE,MovementStyle.SequentialFromStart);
