@@ -846,7 +846,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	VeletasMovespec m = (VeletasMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -865,7 +865,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         	m.target = pickedObject;
         	dropObject(to);
         	setNextStateAfterDrop();
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
 			{
 				animationStack.push(from);
 				animationStack.push(to);
@@ -886,7 +886,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         			pickObject(src);
         			m.target = pickedObject;
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);

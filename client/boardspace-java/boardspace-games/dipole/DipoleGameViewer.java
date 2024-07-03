@@ -432,7 +432,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
 
-        if(replay!=replayMode.Replay) { playSounds((DipoleMovespec)mm); }
+        if(replay.animate) { playSounds((DipoleMovespec)mm); }
  
         return (true);
     }

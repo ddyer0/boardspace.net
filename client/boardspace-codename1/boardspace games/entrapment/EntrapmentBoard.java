@@ -69,6 +69,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     static final EntrapmentId DeadRoamerLocation[] = { EntrapmentId.DeadWhiteRoamers,EntrapmentId.DeadBlackRoamers };
     static final String[] ENTRAPMENTGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
+    private int prevLastPicked = -1;
+    private int prevLastDropped = -1;
+    int dropState = 0;
+    
 	public int getMaxRevisionLevel() { return(REVISION); }
 
 	EntrapmentState unresign;
@@ -349,6 +353,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     public void doInit(String gtype,long key,int rev)
     {	randomKey = key;	// not used, but for reference in this demo game
 
+    	prevLastPicked = -1;
+    	prevLastDropped = -1;
+    	dropState = 0;
+    	
     	adjustRevision(rev);
     	AR.setValue(nTrapped, 0);
     	AR.setValue(flippedBarriers,0);
@@ -586,6 +594,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     if(dr!=null)
     	{
     	// restore dead if appropriate
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
+    	dropState--;
+    	
     	unCheckDead();
     	droppedDestStack.pop();
     	pickedObject = removeChip(dr);
@@ -627,7 +639,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     	EntrapmentChip ch = ps.deadChip = removeChip(ps); 
 	    deadCells.put(ps,ch);
 	    deadRoamers[playerIndex(ch)].addChip(ch);
-	    if(replay!=replayMode.Replay)
+	    if(replay.animate)
 	    {
 	    	animationStack.push(ps);
 	    	animationStack.push(deadRoamers[playerIndex(ch)]);
@@ -731,6 +743,9 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     	if(po!=null)
     	{
     	EntrapmentCell ps = pickedSourceStack.pop();
+    	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
+    	
     	pickedObject = null;
     	pickPart1 = null;
     	addChip(ps,switchDroppedObject(ps,po));
@@ -771,6 +786,10 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
        G.Assert((pickedObject!=null),"ready to drop");
        int dead = removeDead();		// remove dead from previous move
        EntrapmentChip dropped = switchDroppedObject(c,pickedObject);
+       prevLastDropped = c.lastDropped;
+       c.lastDropped = dropState;
+       dropState++;
+       
        addChip(c,dropped);
        checkDead(c,replay);
        checkTrapped(true,replay);
@@ -843,6 +862,8 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     private void pickObject(EntrapmentCell c,replayMode replay)
     {	G.Assert((pickedObject==null),"ready to pick");
         pickedSourceStack.push(c);
+        prevLastPicked = c.lastPicked;
+        c.lastPicked = dropState;
         pickedObject = removeChip(c);
         checkTrapped(true,replay);
         if(pickPart1==null) 
@@ -961,6 +982,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
     void doDone(EntrapmentMovespec m,replayMode replay)
     {	
         acceptPlacement();
+        dropState++;
         if (board_state==EntrapmentState.RESIGN_STATE)
         {	setGameOver(false,true);
         }
@@ -1012,7 +1034,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
            	if(src.rackLocation==EntrapmentId.BoardLocation) { flipBarriers(src,dst,1); }
         	m.chip = dropObject(dst,replay);
         	
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(src);
         		animationStack.push(dst);

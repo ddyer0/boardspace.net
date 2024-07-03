@@ -260,7 +260,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         	pickObject(src,m.from_row);
         	dropObject(dest,m.to_row);
         	pickedHeight = -1;		// move is final, keep pickedHeight -1 for Digest
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{	animationStack.push(src);
         			animationStack.push(dest);
         			
@@ -275,7 +275,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         	currentPrize = getCell('D',7);
          	dropObject(currentPrize,-1);
         	setNextStateAfterDone(replay);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{
         		animationStack.push(prizes);
         		animationStack.push(currentPrize);
@@ -911,7 +911,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
     	throw G.Error("Not player owns "+c);
     }
     // actually award the prize
-    public String awardPrize(replayMode mode)
+    public String awardPrize(replayMode replay)
     {	ChipStack chips  = new ChipStack();
     	int tileTotal = 0;
      	for(RajCell c = allCells; c!=null; c=c.next)
@@ -937,7 +937,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
     				robotStack.push(c);
     				robotStack.push(dest.playedCards);
     			}
-    			if(mode!=replayMode.Replay)
+    			if(replay.animate)
     			{	
     				animationStack.push(c);
     				animationStack.push(dest.playedCards);
@@ -961,7 +961,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
     		{ // we have a winner
     		RajChip winningCard = cards[winner];
     		PlayerBoard winningPlayer = playerBoards[playerOwning(winningCard.cardColor())];
-    		if(mode!=replayMode.Replay) { prizeString = "Won by "+winningPlayer.color+" : "; }
+    		if(replay!=replayMode.Replay) { prizeString = "Won by "+winningPlayer.color+" : "; }
     		for(RajCell c = allCells; c!=null; c=c.next)
     			{
     			// move all the prizes to the player's stack
@@ -976,7 +976,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
     						  robotStack.push(c);
     						  robotStack.push(winningPlayer.wonPrizes);
     					  }
-    					  if(mode!=replayMode.Replay)
+    					  if(replay!=replayMode.Replay)
     					  {
     						  animationStack.push(c);
     						  animationStack.push(winningPlayer.wonPrizes);
@@ -1007,7 +1007,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
     public boolean Execute(commonMove mm,replayMode replay)
     {	Rajmovespec m = (Rajmovespec)mm;
         
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         switch (m.op)
         {
@@ -1019,7 +1019,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 
         case MOVE_AWARD:
 	        String pstring = awardPrize(replay);
-	        if(replay!=replayMode.Replay)
+	        if(replay.animate)
 	        	{m.setLineBreak(true);
 	        	 m.moveInfo = pstring;
 	        	}

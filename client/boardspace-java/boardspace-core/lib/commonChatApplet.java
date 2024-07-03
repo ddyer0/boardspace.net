@@ -63,7 +63,8 @@ public class commonChatApplet extends FullscreenPanel
 
     static private final String MESSAGEPROMPT = "Message:";
 	static private final String MESSAGETOPROMPT = "MessageTo:";
-    static private final String InitMessage = "Type your message here.";
+	static private final String MESSAGEFROM = "From #1";
+	static private final String InitMessage = "Type your message here.";
     private boolean hasInitMessage = false;
     private int floodStrings = 0;
     private int MAXLENGTH = 10000;
@@ -797,9 +798,10 @@ public class commonChatApplet extends FullscreenPanel
 	public void MouseDown(HitPoint hp) {
 		
 	}
-	@Override
+
 	public void setSingleUser(String name) {
-		// TODO Auto-generated method stub
-		
+	  	SimpleUser user =setUser(0,name);
+    	setSingleSend(user,false);
+    	messageLabel.setText(s.get(MESSAGEFROM,name));		
 	}
 }

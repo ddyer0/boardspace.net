@@ -980,7 +980,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	pickedSource = c;
     	while(transportCell.height()>0)
     	{	ExxitPiece p = transportCell.topPiece();
-    		if(replay!=replayMode.Replay) {
+    		if(replay.animate) {
     		animationStack.push(pickedSource);
     		animationStack.push(nx);
     		}
@@ -1069,7 +1069,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     		case CHIP_TYPE:
     			ExxitCell dest = rack[playerIndex(p)];
     			dest.addPiece(p);
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(c);
     				animationStack.push(dest);
@@ -1081,7 +1081,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	p.setColor(getColorMap()[whoseTurn]);
     	undoCell.push(p);
     	c.addPiece(p);
-    	if(replay!=replayMode.Replay) {
+    	if(replay.animate) {
     		animationStack.push(tiles);
     		animationStack.push(c);
     	}
@@ -1189,7 +1189,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
              		  if(pickedObject==null) 
              	  		{ ExxitCell pool = getCell(m.object,m.from_col,m.from_row);
              	  		  pickObject(pool);
-             	  		  if(replay!=replayMode.Replay)
+             	  		  if(replay.animate)
              	  		  {
              	  			  animationStack.push(pool);
              	  			  animationStack.push(c);

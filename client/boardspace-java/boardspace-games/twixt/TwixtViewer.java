@@ -1079,7 +1079,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      /**
@@ -1090,7 +1090,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

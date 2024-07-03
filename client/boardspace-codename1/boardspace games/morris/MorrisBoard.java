@@ -688,7 +688,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	MorrisMovespec m = (MorrisMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -701,7 +701,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
 	    	MorrisCell src = getCell(MorrisId.BoardLocation,m.from_col,m.from_row);
 	    	pickObject(src);
 			dropObject(dest); 
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 			animationStack.push(src);
 			animationStack.push(dest);
@@ -716,7 +716,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
         	MorrisCell dest = getCell(MorrisId.BoardLocation,m.to_col,m.to_row);
         	pickObject(src);
     		dropObject(dest); 
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
 			{
 			animationStack.push(src);
 			animationStack.push(dest);
@@ -732,7 +732,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
         		MorrisCell dest = getCell(MorrisId.BoardLocation,m.to_col,m.to_row);
         		pickObject(src);
         		dropObject(dest); 
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         			{
         			animationStack.push(src);
         			animationStack.push(dest);

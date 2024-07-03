@@ -147,7 +147,8 @@ public interface ViewGameProtocol
     * the game record is not allowed. After game end, players are free to go back
     * and play variations.  This method will be called after the game is over and
     * scoring activity has completed. 
- * @param always TODO*/ 
+ * @param always true if at the beginning of play, false if after gameover
+ * */ 
    public void setEditable(boolean always);	
    /** 
     * set who has control to make editing moves.  This is handled by the game controler.

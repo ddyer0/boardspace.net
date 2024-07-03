@@ -179,7 +179,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
        	G.Assert(sameCells(vlastMove,from_b.vlastMove),"vlastMove mismatch");
        	G.Assert(sameContents(vlastChip,from_b.vlastChip),"vlastMove mismatch");
       	G.Assert(pickedObject==from_b.pickedObject,"pickedObject matches");
-      	G.Assert(Digest()==from_b.Digest(),"sameboard ok, Digest mismatch");
+      	G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
      }
 
     /** 
@@ -361,7 +361,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
     	{
     	if(board_state!=QyshinsuState.PUZZLE_STATE) 
     		{ 
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			QyshinsuCell dest = vlastMove[nextPlayer[whoseTurn]].top();
     			QyshinsuChip top = vlastChip[nextPlayer[whoseTurn]].top();
@@ -578,7 +578,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	QyshinsuMovespec m = (QyshinsuMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //G.print("e "+mm);
         switch (m.op)
         {
@@ -594,7 +594,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
     			QyshinsuCell src = pickObject(QIds.BoardLocation,m.from_col,m.from_row);
                 m.object = pickedObject;
     			QyshinsuCell dest = dropObject(QIds.BoardLocation,'B',m.from_row);
-    			if(replay!=replayMode.Replay) 
+    			if(replay.animate) 
     			{
     				animationStack.push(src);
     				animationStack.push(dest);
@@ -610,7 +610,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
                     QyshinsuCell src = pickObject(playerQids[whoseTurn], m.from_col, m.from_row);
                     m.object = pickedObject;
                     QyshinsuCell dest = dropObject(QIds.BoardLocation,m.to_col,m.to_row);
-        			if(replay!=replayMode.Replay) 
+        			if(replay.animate) 
         			{
         				animationStack.push(src);
         				animationStack.push(dest);

@@ -951,7 +951,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
     {	PonteMovespec m = (PonteMovespec)mm;
     	CommonMoveStack nextAB = null;
     	boolean nextBlobsValid = false;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -967,7 +967,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
     		dropObject(dest);
     		
     		setState(PonteState.Confirm);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     			{
     			animationStack.push(src);
     			animationStack.push(dest);
@@ -991,7 +991,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
         		//	findBlobs();
         		//	G.Assert(h==blobs.size(),"update worked");
         		//}
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
     			{
     			animationStack.push(src);
     			animationStack.push(dest);

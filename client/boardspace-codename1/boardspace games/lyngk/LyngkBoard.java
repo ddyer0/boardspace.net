@@ -621,7 +621,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 				if(c.onBoard) { filledCells.remove(c, false); }
 				n++;	// remember how many unusual captures
 				if(fromStack!=null) { fromStack.push(c); }
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{	for(int i=0;i<CaptureHeight;i++)
 					{
 					animationStack.push(c);
@@ -650,7 +650,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         {
         	dest.transferTo(captures[whoseTurn],0);
         	filledCells.remove(dest,false);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	for(int i=0;i<CaptureHeight;i++)
 				{
         		animationStack.push(dest);
@@ -696,9 +696,9 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     public boolean Execute(commonMove mm,replayMode replay)
     {	LyngkMovespec m = (LyngkMovespec)mm;
     	//checkFilled();
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
-        //G.print("E "+m+" for "+whoseTurn+" "+board_state);
+        //G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+replay);
         switch (m.op)
         {
         case MOVE_DONE:
@@ -719,7 +719,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
 	            if(replay!=replayMode.Replay)
 	            	{
 	            	// call before the actual drop
-	            	addAnimationPath(getSource(),dest,pickedStack.topChip(),pickedStack.height());
+	            	addAnimationPath(getSource(),dest,pickedStack.topChip(),pickedStack.height(),replay);
 	            	stepped = true;
 	            	}
 	            if(!robotBoard)
@@ -748,9 +748,9 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         	}
         	G.Assert(!to.onBoard || (from.height()+to.height()<=variation.heightLimit()), "illegal stack");
         	pickObject(from,0);
-      	  	if(replay!=replayMode.Replay)
+       	  	if(replay!=replayMode.Replay)
   	  		{ 	// call before the actual move
-      	  		addAnimationPath(from,to,pickedStack.topChip(),pickedStack.height());
+      	  		addAnimationPath(from,to,pickedStack.topChip(),pickedStack.height(),replay);
       	  		stepped = true;
   	  		}
         	dropObject(to,replay,robotClaim);
@@ -1042,7 +1042,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  private Hashtable<LyngkCell,LyngkCell[]>pathHash = new Hashtable<LyngkCell,LyngkCell[]>();
  private CellStack activePath = new CellStack();
  
- private void addAnimationPath(LyngkCell src,LyngkCell dest,LyngkChip top,int height)
+ private void addAnimationPath(LyngkCell src,LyngkCell dest,LyngkChip top,int height,replayMode replay)
  {	
 	pathHash.clear();
 	activePath.clear();
@@ -1061,15 +1061,16 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  		// for the intermediate points won't be the same as the one
  		// actually drawn.  This prevents the future steps of the 
  		// animation from disappearing
- 		cop.copyAllFrom(to);
  		realFrom.lastPicked = dropStep;
  		to.lastPlaced = dropStep;
  		dropStep++;
+ 		cop.copyAllFrom(to);
+ 		if(replay.animate) {
 	 	for(int i=0;i<height;i++)
 	 		{
 	 		animationStack.push(from);
 	 		animationStack.push(cop);
-	 		}
+	 		}}
 	 	from = cop;
 	 	realFrom = to;
 	 	}
@@ -1078,13 +1079,13 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  	realFrom.lastPicked = dropStep;
  	dest.lastPlaced = dropStep;
 	dropStep++;
-	
+	if(replay.animate) {
  	for(int i=0;i<height;i++)
  	{
  		animationStack.push(from);
  		animationStack.push(dest);
 	
- 	}
+ 	}}
  	
   	pathHash.clear();
  }

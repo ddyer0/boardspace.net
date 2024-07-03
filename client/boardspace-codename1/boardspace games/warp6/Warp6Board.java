@@ -637,7 +637,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
   	  while(top!=null)
       {	
       	Warp6Cell next = target.exitTo(CELL_RIGHT);
-      	if(replay!=replayMode.Replay)
+      	if(replay.animate)
       	{
       		animationStack.push(target);
       		animationStack.push(next);
@@ -657,7 +657,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
     	  Warp6Cell c = warp[owner][index];
     	  rollCell = null;
     	  dropOnCell(c);
-    	  if(replay!=replayMode.Replay)
+    	  if(replay.animate)
         	{
         		animationStack.push(target);
         		animationStack.push(c);
@@ -673,7 +673,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
     
     public boolean Execute(commonMove mm,replayMode replay)
     {	Warp6Movespec m = (Warp6Movespec)mm;
-        if(replay==replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -691,7 +691,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
         	pickFromCell(src);
         	m.die = pickedObject;
         	dropOnBoard(dest,pickedObject);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	animationStack.push(src);
         		animationStack.push(dest);
         	}
@@ -703,7 +703,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
            	Warp6Cell from = getCell(m.from_row);
         	Warp6Cell target = getCell(m.to_row); 
              pickFromCell(from);
-            if(replay!=replayMode.Replay) 
+            if(replay.animate) 
     		{   animationStack.push(from);
     			animationStack.push(target); 
     		}
@@ -723,7 +723,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
         	if(from==target) { unPickObject(); }
         	else
         	{
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	// single step only, not in live play or full replay
         		animationStack.push((replay==replayMode.Live)?target:from);
         		animationStack.push(target);

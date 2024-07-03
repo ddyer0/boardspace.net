@@ -492,7 +492,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     {	
 		handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Chained);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

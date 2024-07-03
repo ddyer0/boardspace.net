@@ -1782,7 +1782,7 @@ synchronized(allGames) {
 			Color.yellow,Color.white,Color.green};
 	  String brules = "/breakingaway/english/rules.html";
 	  String bview = "breakingaway.BreakingAwayViewer";
-	  boolean okTurnBased = false;
+	  boolean okTurnBased = G.debug();
 	  double bspeed[] = {0.4,0.04};
 	  {
 	  GameInfo mm = put(new GameInfo(320,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway",
@@ -2399,7 +2399,7 @@ synchronized(allGames) {
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
-	 mm.okForTurnbased = false;
+	 mm.okForTurnbased = G.debug();
 	 mm.longMessage = "PlateauGameInfoMessage";
 	 // needs a compantion app for your played pieces and pool of available pieces
 
@@ -2419,7 +2419,7 @@ synchronized(allGames) {
 	 p.minPlayers = 3;
 	 p.randomizeFirstPlayer = true;
 	 p.hasHiddenInformation = true;
-	 p.okForTurnbased = false;
+	 p.okForTurnbased = G.debug();
 	 p.longMessage = "QEInfoMessage";
 	 // needs a companion app for your bid and for inspecting the final bids
 	}

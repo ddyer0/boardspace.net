@@ -417,7 +417,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 				//$FALL-THROUGH$
 			case ContinuePlay:
     			rv.addChip(cc.removeTop());
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(cc);
     				animationStack.push(rv);
@@ -473,7 +473,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
         		case FirstPlay: capturedStack.push(moveTo);
         		}
         		moveTo.addChip(cap);
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(c);
         			animationStack.push(moveTo);
@@ -668,7 +668,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	Tintasmovespec m = (Tintasmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m);
         switch (m.op)
@@ -725,7 +725,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(pickedSourceStack.top());
 	            	  animationStack.push(dest); 
 	            	}

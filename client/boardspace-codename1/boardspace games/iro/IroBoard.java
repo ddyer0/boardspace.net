@@ -59,6 +59,10 @@ class IroBoard
 	private Random robotRandom = new Random();		// a source of randomness for the robot
 	private StateStack robotState = new StateStack();
 	private IStack robotStack = new IStack();
+	private int prevLastPicked = -1;
+	private int prevLastDropped = -1;
+	private int prevDropState = 0;
+	int dropState = 0;
 	
 	static final int nCols =6;
 	static final int nRows = 8;	
@@ -293,6 +297,10 @@ class IroBoard
 		for(IroChip ch : IroChip.wchips) { whiteChipPool.addChip(ch); }
 		
         animationStack.clear();
+        prevLastPicked = -1;
+        prevLastDropped = -1;
+        dropState = 0;
+        prevDropState = 0;
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -505,6 +513,9 @@ class IroBoard
     {	IroCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	IroId rack = rv.rackLocation();
+    	rv.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
+    	dropState = prevDropState;
     	switch(rack)
     	{
     	case BoardLocation:
@@ -521,6 +532,8 @@ class IroBoard
     		break;
     	default: G.Error("not expecting %s",rack); 
     	}
+    	// after pickedObject is restored
+    	cleanLastMoveCells();
     	
     	return(rv);
     }
@@ -530,6 +543,10 @@ class IroBoard
     private void unPickObject()
     {	IroCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
+    	rv.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
+    	prevDropState = 0;
+    	cleanLastMoveCells();
     	IroId rack = rv.rackLocation();
     	switch(rack)
     	{
@@ -564,7 +581,9 @@ class IroBoard
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
-       
+       prevLastDropped = c.lastDropped;
+       c.lastDropped = dropState;
+       dropState++;
        switch (c.rackLocation())
         {
         default:
@@ -652,6 +671,9 @@ class IroBoard
     // to replace the original contents if the pick is cancelled.
     private void pickObject(IroCell c,int row)
     {	pickedSourceStack.push(c);
+    	prevLastPicked = c.lastPicked;
+    	c.lastPicked = dropState;
+    	prevDropState = dropState;
     	stateStack.push(board_state);
         switch (c.rackLocation())
         {
@@ -789,10 +811,26 @@ class IroBoard
         }
     }
 
-	
+	public void tracePath(IroCell src,IroChip po,IroCell dest,replayMode replay)
+	{
+		if((replay.animate) && (board_state==IroState.Play))
+        {
+        	CellStack path = getPath(src,po,dest);
+        	for(int lim=path.size(),i=1; i<lim;i++)
+        	{	// mark the intermediate cells
+        		IroCell c = path.elementAt(i);
+        		if(c!=dest)
+        		{
+        		c.lastDropped = dropState;
+        		dropState++;
+        		c.lastPicked = dropState;
+        		}
+        	}	
+        }
+	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	Iromovespec m = (Iromovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -815,6 +853,7 @@ class IroBoard
 				{
 				IroChip top = dest.topChip();
 				m.chip = top;
+		        tracePath(src,po,dest,replay);
 		           
 	            dropObject(dest,m.to_row);
 	            /**
@@ -833,7 +872,7 @@ class IroBoard
 	            case InvalidBoard:
 	            case FirstPlay:
 	            	acceptPlacement();
-		            if((po.id==IroId.Tile)&& (replay!=replayMode.Replay))
+		            if((po.id==IroId.Tile)&& (replay.animate))
 		            	{
 		            		animationStack.push(dest);
 		            		animationStack.push(src);
@@ -935,9 +974,12 @@ class IroBoard
     	   pickObject(from,m.from_row);
     	   m.chip = pickedObject;
     	   m.chip2 = to.topChip();
+    	   
+    	   tracePath(from,pickedObject,to,replay);
+    	   
        	   dropObject(to,m.to_row);
        	   setNextStateAfterDrop(replay);
-    	   if(replay!=replayMode.Replay) {
+    	   if(replay.animate) {
     		   animationStack.push(from);
     		   animationStack.push(to);
     	   switch(m.op)
@@ -1237,7 +1279,7 @@ class IroBoard
  // is moving, which might or might not be present in the cell.
  private void addPieceMoves(CommonMoveStack all,IroCell from,IroChip top,int who)
  {
-	 addPieceMoves(all,from,from,from,top,0,who);	// 3 unused color positions
+	 addPieceMoves(all,from,from,from,top,0,who,null,null,null);	// 3 unused color positions
 	 // add the piece swap moves
 	 IroCell to = getPlayerCell(who);
 	 if(robotBoard)
@@ -1265,14 +1307,23 @@ class IroBoard
 	 return nMoves;
 	 
  }
+ private CellStack getPath(IroCell from,IroChip top,IroCell to)
+ {
+	 CellStack path = new CellStack();
+	 CellStack shortPath = new CellStack();
+	 addPieceMoves(null,from,from,from,top,0,whoseTurn,to,path,shortPath);
+	 return shortPath;
+ }
  
  // mask is of the unused positions in the piece color map.  Start is the staring cell,from is the current intermediate cell
- private boolean addPieceMoves(CommonMoveStack all,IroCell start,IroCell mid,IroCell from,IroChip top,int mask,int who)
+ private boolean addPieceMoves(CommonMoveStack all,IroCell start,IroCell mid,IroCell from,IroChip top,int mask,int who,
+		 	IroCell finish,CellStack path,CellStack shortPath)
  {	IroId playerId = getPlayerChip(who).id;
 	IColor topC[] = top.colors;
 	int nColors = topC.length;
 	boolean some = false;
 	int allMask = (1<<nColors)-1;
+	if(path!=null) { path.push(from); }
 	for(int dir = 0,last = from.geometry.n; dir<last; dir++)
 	{
 		IroCell adj = from.exitTo(dir);
@@ -1287,33 +1338,48 @@ class IroBoard
 					IroChip atop = adj.topChip();
 					if(atop==null)
 						{ 
+						if(adj==finish && ((shortPath.size()==0) || path.size()<shortPath.size()))
+							{ shortPath.copyFrom(path); 
+							}
 						if(nextMask==allMask)
 						{
-							all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,0.5)); 
+							if(all!=null)
+								{ all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,0.5)); 
+								} 
 							some = true;
 						}
 						else {
 							// non terminal move, less likely to be correct
-							boolean some2 = addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who);
-							all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,some2 ? 0.5 :0.25)); 
+							
+							boolean some2 = addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who,finish,path,shortPath);
+							
+							if(all!=null) 
+							{ all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,some2 ? 0.5 :0.25));
+							}
 							some = true;
 						}
 						}
 					else if(atop.id==playerId)
 					{	// one of ours, not allowed to stop
 						if(nextMask!=allMask) 
-							{ some |= addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who); 
+							{ 
+							  some |= addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who,finish,path,shortPath); 
+							  
 							}
 					}
 					else 
 					{	// one of opponents, must stop
-						all.push(new Iromovespec(MOVE_CAPTURE,start,adj,who,1.0)); 
+						if(adj==finish && ((shortPath.size()==0) || path.size()<shortPath.size()))
+						{	shortPath.copyFrom(path); 
+						}
+						if(all!=null) { all.push(new Iromovespec(MOVE_CAPTURE,start,adj,who,1.0)); } 
 						some = true;
 					}
 					}
 				}
 		}
 	}
+	if(path!=null) { path.pop();}
 	return some;
  }
  // mask is of the unused positions in the piece color map.  Start is the staring cell,from is the current intermediate cell
@@ -1663,4 +1729,18 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 		}
 		return (wood);
 	}}
+
+// when undrop or unpick, don't leave cells with futurevalues of dropState
+public void cleanLastMoveCells() {
+	for(IroCell c = allCells; c!=null; c=c.next)
+	{	if(c.lastDropped>=dropState)
+			{
+			c.lastDropped = c.lastPicked = -1;
+			}
+		if(pickedObject==null && c.lastPicked>=dropState) 
+			{ c.lastPicked = -1;
+			}
+	}
+	
+}
 }

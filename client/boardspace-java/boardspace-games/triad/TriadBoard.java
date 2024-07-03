@@ -635,7 +635,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     			  captureChipStack.push(adjTop);
     			  captureCellStack.push(adj);
     			  SetBoard(adj,null);
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {
     				  animationStack.push(adj);
     				  animationStack.push(getCell(adjTop));
@@ -680,7 +680,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	TriadCell dest = getCell(m.to_col,m.to_row);
         	pickObject(src);
         	dropObject(dest);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(src);
         		animationStack.push(dest);

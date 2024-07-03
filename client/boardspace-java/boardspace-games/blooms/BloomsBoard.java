@@ -763,7 +763,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	int owner = ownerIndex(top);
     	chips[owner]--;
     	captured[owner]++;
-    	if(replay!=replayMode.Replay){
+    	if(replay.animate){
     		animationStack.push(seed);
     		animationStack.push(getCell(top.id));
     	}
@@ -1007,7 +1007,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Bloomsmovespec m = (Bloomsmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -1041,7 +1041,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 				G.Assert((board_state==BloomsState.Puzzle)
 							|| (ownerIndex(pickedObject)==whoseTurn),"color mismatch");
 
-				if(replay!=replayMode.Replay && ((po==null) || (replay==replayMode.Single)))
+				if(replay.animate && ((po==null) || (replay==replayMode.Single)))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

@@ -83,6 +83,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 {	private ShogiState board_state = ShogiState.Puzzle;
 	private ShogiState unresign = null;
 	private int lastDrawMove = 0;
+	private int prevLastPicked = -1;
+	private int prevLastDropped = -1;
 	public ShogiState getState() { return(board_state); }
 	public void setState(ShogiState st) 
 	{ 	unresign = ((st==ShogiState.Resign)||(st==ShogiState.OfferDraw))?board_state:null;
@@ -283,6 +285,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
        Init_Standard(gtype);
        allCells.setDigestChain(r);
        animationStack.clear();
+       prevLastPicked = -1;
+       prevLastDropped = -1;
         captured = null;
         pickedObject = null;
         originalDroppedObject = null;
@@ -436,6 +440,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     	{
     	droppedDest = null;
     	removeChip(dr);
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	pickedObject = originalDroppedObject;	// in case there was a promotion
     	originalDroppedObject = null;
     	if(captured!=null) { addChip(dr,captured.removeTop()); captured = null;  }
@@ -449,6 +455,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     	if(po!=null)
     	{
     	ShogiCell ps = pickedSource;
+    	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	pickedSource=null;
     	pickedObject = null;
     	originalPickedObject = null;
@@ -642,12 +650,12 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	setState(ShogiState.Confirm);
 			//$FALL-THROUGH$
 		case MOVE_DONE:
-        	if(replay!=replayMode.Replay) 
+        	if(replay.animate) 
         		{ if(captured !=null) 
         			{ m.annotation = captured.topChip(); }
         		}
          	doDone();
-          	if(replay!=replayMode.Replay) 
+          	if(replay.animate) 
           		{ if(board_state==ShogiState.Check) 
           			{ m.check = true; }
           		}
@@ -659,8 +667,10 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         		ShogiChip chip = ShogiChip.getChip(m.player,cap.pieceType.demoted);
         		m.chip = chip;
         		addChip(to,chip);
+        		prevLastDropped = to.lastDropped;
+        		to.lastDropped = moveNumber;
         		setNextStateAfterDrop();
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{	animationStack.push(from);
         			animationStack.push(to);
         		}
@@ -676,14 +686,14 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         			ShogiCell from = getCell(m.from_col, m.from_row);
         			ShogiCell to = getCell(m.to_col,m.to_row);
         			ShogiChip rem = to.topChip();
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(to);
         			}
         			if(rem!=null) 
         				{ captured = dropOnRack(RackLocation[whoseTurn],removeChip(to)); 
-        				if(replay!=replayMode.Replay)
+        				if(replay.animate)
         				  {
         					  animationStack.push(to);
         					  animationStack.push(captured);
@@ -693,6 +703,10 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 
         			pickedSource = from;
         			droppedDest = to;
+        			prevLastPicked = from.lastPicked;
+        			prevLastDropped = to.lastDropped;
+        			from.lastPicked = moveNumber;
+        			to.lastDropped = moveNumber;
                     m.chip = moving; 	// for game record
 
   				    if(m.op==MOVE_PROMOTE)
@@ -714,7 +728,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 			if(canPromote) { pickedObject = pickedObject.getPromoted(); };
 			if(rem!=null) 
 				{captured = dropOnRack(RackLocation[whoseTurn],removeChip(to)); 
-				 if(replay!=replayMode.Replay)
+				 if(replay.animate)
 				 {
 					 animationStack.push(to);
 					 animationStack.push(captured);
@@ -735,7 +749,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
             	else
             		{
             		addChip(droppedDest = getCell(m.to_col,m.to_row),pickedObject);
-            		
+            		prevLastDropped = droppedDest.lastDropped;
+            		droppedDest.lastDropped = moveNumber;
             		setNextStateAfterDrop();
             		}
 
@@ -747,7 +762,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	{
         	ShogiCell from = getCell(m.from_col,m.from_row);
         	if(isDest(from))
-        		{ if((captured!=null)&&(replay!=replayMode.Replay))
+        		{ if((captured!=null)&&(replay.animate))
             		{
             		animationStack.push(captured);
             		animationStack.push(from);
@@ -757,6 +772,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         		}
         	else 
         		{ pickedSource = from;
+        		  prevLastPicked = from.lastPicked;
+        		  from.lastPicked = moveNumber;
         		  originalPickedObject = pickedObject = removeChip(from);
                   m.chip = pickedObject; 	// for game record
         			// if you pick up a gobblet and expose a row of 4, you lose immediately

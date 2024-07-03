@@ -441,7 +441,6 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
      */
    public long Digest()
     {
-       Random r = new Random(64 * 1000); // init the random number generator
        long v = 0;
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -449,6 +448,7 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
+        Random r = new Random(64 * 1000); // init the random number generator
         
         for (int i = 0; i < win.length; i++)
         {
@@ -1021,7 +1021,7 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         	pickObject(src);
         	dropObject(dest);
         	
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(src);
 				animationStack.push(dest);

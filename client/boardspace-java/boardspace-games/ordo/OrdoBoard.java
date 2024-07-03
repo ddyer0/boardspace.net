@@ -800,7 +800,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		OrdoCell c = cells.elementAt(lim);
     		if(c.sweep_counter!=sweep_counter) 
     		{ doCapture(c); 
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(c);
     			animationStack.push(rack[who]);
@@ -848,7 +848,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public boolean Execute(commonMove mm,replayMode replay)
     {	OrdoMovespec m = (OrdoMovespec)mm;
     	//checkOccupied();
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -896,7 +896,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     			doCapture(dest);
     			dropObject(dest);
     			lastProgressMove = moveNumber;
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(dest);
     				animationStack.push(rack[whoseTurn^1]);
@@ -961,7 +961,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         		do {
         			pickObject(from);
         			dropObject(to);	// this might overlap and temporarily create a stack of 2
-        			if(replay!=replayMode.Replay) {
+        			if(replay.animate) {
         				animationStack.push(from);
         				animationStack.push(to);
         			}
@@ -988,7 +988,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             		pickObject(src);
         			dropObject(dest); 
         			sidewaysMove = (variation==Variation.OrdoX) && m.from_row==m.to_row;
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);
@@ -1619,7 +1619,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  {	int who = playerIndex(chip);
 	 if(from!=null && from.topChip()==chip) 
 	 	{ doCapture(from);
-	 	  if(replay!=replayMode.Replay)
+	 	  if(replay.animate)
 	 	  {
 	 		  animationStack.push(from);
 	 		  animationStack.push(rack[who]);

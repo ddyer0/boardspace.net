@@ -48,7 +48,7 @@ public interface BoardProtocol extends Digestable
 	 * @param m a {@link commonMove}
 	 * @return true if the move was successfully executed.
 	 */
-	public boolean Execute(commonMove m,replayMode mode);		//execute a move
+	public boolean Execute(commonMove m,replayMode replay);		//execute a move
 	/**
 	 * return a 32 Bit digest of the board state.  Any significant board 
 	 * state change should result in a different digest.

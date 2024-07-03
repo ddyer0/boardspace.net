@@ -458,7 +458,7 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
         	droppedOriginalHeight = 0;		// the original height of the dropped stack
             for(int i=0;i<row;i++) 
             	{ Waste_Cell.addChip(pickedObject); 
-            	  if(replay!=replayMode.Replay)
+            	  if(replay.animate)
             	  {
             		  animationStack.push(pickedSource);
             		  animationStack.push(Waste_Cell);
@@ -515,7 +515,7 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
            	sum_of_rows[pl] += rowscore(droppedDest,pl)*moved;
            	while(moved-- > 0)
            	{	droppedDest.addChip(pickedObject);
-           		if(replay!=replayMode.Replay)
+           		if(replay.animate)
            			{animationStack.push(pickedSource);
            			animationStack.push(droppedDest);
            			}

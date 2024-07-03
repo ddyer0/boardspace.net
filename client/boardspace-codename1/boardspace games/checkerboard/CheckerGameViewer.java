@@ -550,7 +550,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         lastDropped = b.lastDropped;
  
         startBoardAnimations(replay);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
@@ -578,7 +578,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       */
      void startBoardAnimations(replayMode replay)
      {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	double now = 0;
      		while(b.animationStack.size()>1)
      		{

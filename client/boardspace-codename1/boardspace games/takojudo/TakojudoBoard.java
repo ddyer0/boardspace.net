@@ -514,7 +514,7 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	TakojudoMovespec m = (TakojudoMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -538,7 +538,7 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case GAMEOVER_STATE:
         			// needed by some damaged games
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				throw G.Error("Not expecting robot in state %s",board_state);
         			}

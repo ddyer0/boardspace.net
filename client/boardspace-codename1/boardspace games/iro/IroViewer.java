@@ -21,11 +21,10 @@ import common.GameInfo;
 
 import static iro.Iromovespec.*;
 
+import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
 import java.util.*;
-
-import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
 import lib.CellId;
@@ -370,7 +369,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,altChip,rotate,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,altChip,rotate,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotateBoard)
@@ -562,6 +561,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     {
     	drawFixedTiles(gc,gb,brect);
     	IroState state = gb.getState();
+    	numberMenu.clearSequenceNumbers();
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
@@ -577,6 +577,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             boolean offset = false;
             // special offset for tile swapping
@@ -620,6 +621,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
             	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
             }
         }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
 
     /**
@@ -758,7 +760,10 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 		  return false;
 	  }
 	  
-
+	public int getLastPlacement(boolean empty)
+    {
+    	return bb.dropState;
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -770,6 +775,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -782,7 +788,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      /**
@@ -793,7 +799,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)
@@ -864,7 +870,6 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
     	  commonMove rval = EditHistory(nmove,false);
-     	     
     	  return(rval);
       }
       /**

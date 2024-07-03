@@ -510,7 +510,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
         
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

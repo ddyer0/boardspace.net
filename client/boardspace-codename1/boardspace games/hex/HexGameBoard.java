@@ -722,7 +722,7 @@ void doSwap(replayMode replay)
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Hexmovespec m = (Hexmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -773,7 +773,7 @@ void doSwap(replayMode replay)
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

@@ -672,7 +672,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
    	// until the jumping ball has landed
    	startBoardAnimations(replay,b.animationStack,CELLSIZE,MovementStyle.SequentialFromStart);
    	
-   	if(replay!=replayMode.Replay) { playSounds(m); }
+   	if(replay.animate) { playSounds(m); }
    	return (true);
     }
    void playSounds(commonMove m)

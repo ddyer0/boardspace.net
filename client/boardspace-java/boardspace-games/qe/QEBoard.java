@@ -384,7 +384,7 @@ import online.game.*;
 		G.Assert(fl!=null,"old score incorrect");
 		QECell newc = getCell(to%TRACKLENGTH);
 		newc.addChip(fl);
-		if(replay!=replayMode.Replay) 
+		if(replay.animate) 
 		{
 			animationStack.push(old);
 			animationStack.push(newc);
@@ -992,7 +992,7 @@ import online.game.*;
 			 // rare case of a 3-way tie in the final round of a 3 player game
 			 // end the game without a winner for the final auction
 			 wasteBasket.addChip(currentAuction.removeTop());
-			 if(replay!=replayMode.Replay)
+			 if(replay.animate)
 			 {
 				 animationStack.push(currentAuction);
 				 animationStack.push(wasteBasket);
@@ -1041,7 +1041,7 @@ import online.game.*;
 			 QEChip won = currentAuction.removeTop();
 			 addTileWon(winner,won,winningBid,replay);
 			 m.winner = winner.flag;
-			 if(replay!=replayMode.Replay)
+			 if(replay.animate)
 			 {
 				 animationStack.push(currentAuction);
 				 animationStack.push(winner.tilesWon);
@@ -1143,13 +1143,13 @@ import online.game.*;
 				if(thisRoundAuction.isEmpty())
 				{
 					QECell c = null;
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 						{ c = new QECell(thisRoundAuction);
 						}
 
 					for(int i=0;i<players_in_game && !futureAuctions.isEmpty();i++) 
 						{ thisRoundAuction.addChip(futureAuctions.removeTop());
-						if(replay!=replayMode.Replay)
+						if(replay.animate)
 						{
 							animationStack.push(futureAuctions);
 							// destination with card backs and the correct height
@@ -1166,7 +1166,7 @@ import online.game.*;
 				if(!thisRoundAuction.isEmpty())
 					{
 					currentAuction.addChip(thisRoundAuction.removeTop());
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 					{
 						animationStack.push(thisRoundAuction);
 						animationStack.push(currentAuction);
@@ -1199,7 +1199,7 @@ import online.game.*;
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	QEmovespec m = (QEmovespec)mm;
-    	if(replay!=replayMode.Replay) { animationStack.clear(); }
+    	if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+board_state);
         switch (m.op)

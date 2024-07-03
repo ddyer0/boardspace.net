@@ -480,7 +480,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
-        if(replay!=replayMode.Replay) { playSounds((VolcanoMovespec)mm); }
+        if(replay.animate) { playSounds((VolcanoMovespec)mm); }
  
         return (true);
     }

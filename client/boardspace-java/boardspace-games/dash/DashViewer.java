@@ -546,7 +546,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
     {	
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
-        if(replay!=replayMode.Replay) { playSounds((DashMovespec)mm); }
+        if(replay.animate) { playSounds((DashMovespec)mm); }
  
         return (true);
     }

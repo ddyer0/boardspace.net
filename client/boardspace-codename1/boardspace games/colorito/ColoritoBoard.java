@@ -616,17 +616,17 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
         }
     }
 
-    private void animatePath(ColoritoCell src,ColoritoCell dest)
+    private void animatePath(ColoritoCell src,ColoritoCell dest,replayMode replay)
     {
     	CellStack path = getMovePath(src,dest);
 		if(path!=null)
 		{
 		ColoritoCell prev = path.pop();
 		while(path.top()!=null)
-		{	animationStack.push(prev); 
+		{	if(replay.animate) { animationStack.push(prev); } 
 			prev.lastPicked = dropState;
 			prev = path.pop();
-			animationStack.push(prev);
+			if(replay.animate) { animationStack.push(prev); }
 			prev.lastDropped = dropState;
 			dropState++;
 		}}
@@ -634,8 +634,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	ColoritoMovespec m = (ColoritoMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
-        //System.out.println("E "+m+" for "+whoseTurn);
+        if(replay.animate) { animationStack.clear(); }
+        //System.out.println("E "+m+" for "+whoseTurn+" "+replay);
         switch (m.op)
         {
         case MOVE_DONE:
@@ -661,7 +661,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
         			m.chip = pickedObject;
         			dropObject(dest); 
         			if(replay!=replayMode.Replay)
-        			{	animatePath(src,dest);
+        			{	animatePath(src,dest,replay);
         			}
  				    setNextStateAfterDrop();
         			break;
@@ -680,9 +680,9 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
             	else
             		{
             		dropObject(c);
-            		if(replay==replayMode.Single)
+            		if(replay!=replayMode.Replay)
             			{
-            			animatePath(getSource(),c);
+            			animatePath(getSource(),c,replay);
             			}
             		setNextStateAfterDrop();
             		}

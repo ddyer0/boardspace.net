@@ -830,7 +830,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     		steps++;
     		next.addChip(chip);
     		finaldest = next;
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(from);
     			animationStack.push(next);
@@ -842,7 +842,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     
      public boolean Execute(commonMove mm,replayMode replay)
     {	VolcanoMovespec m = (VolcanoMovespec)mm;
-    	if(replay==replayMode.Replay) { animationStack.clear(); }
+    	if(replay.animate) { animationStack.clear(); }
         m.state = board_state;		// record starting state for undo, also for EditHistory
         m.stackInfo = stackIndex;	// used by robot unwind
        //G.print("E "+m+" for "+whoseTurn+" : "+stackIndex);
@@ -858,7 +858,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         	VolcanoCell to = getCell(m.to_col, m.to_row); 
         	pickFromCell(from);
         	dropOnBoard(to);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(from);
         		animationStack.push(to);

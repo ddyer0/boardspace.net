@@ -685,7 +685,7 @@ class MeridiansBoard
     			while(group.size()>0)
     			{
     				MeridiansCell c = group.pop();
-    				if(replay!=replayMode.Replay)
+    				if(replay.animate)
     				{
     					animationStack.push(c);
     					animationStack.push(pc);
@@ -754,7 +754,7 @@ class MeridiansBoard
     	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	MeridiansMovespec m = (MeridiansMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -795,7 +795,7 @@ class MeridiansBoard
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

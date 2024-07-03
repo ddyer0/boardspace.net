@@ -507,13 +507,13 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
         drawVcrGroup(ourSelect, gc);
 
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {	// the super method in commonCanvas is where the history is actually recorded
-       	if((b.getState()==DvonnState.PASS_STATE) && (m.op==MOVE_DONE) && OurMove() && (mode==replayMode.Live))
+       	if((b.getState()==DvonnState.PASS_STATE) && (m.op==MOVE_DONE) && OurMove() && (replay==replayMode.Live))
     	{
-         PerformAndTransmit(PASS,true,mode); 
+         PerformAndTransmit(PASS,true,replay); 
     	}
-       	boolean val =  super.PerformAndTransmit(m,transmit,mode);
+       	boolean val =  super.PerformAndTransmit(m,transmit,replay);
         return(val);
     }
     /**
@@ -532,14 +532,14 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
 
         startBoardAnimations(replay);
         
-        if(replay!=replayMode.Replay) { playSounds((DvonnMovespec)mm); }
+        if(replay.animate) { playSounds((DvonnMovespec)mm); }
         lastDropped = b.lastDropped;
         return (true);
     }
      
      void startBoardAnimations(replayMode replay)
      {	try {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	double start = 0.0;
      		double speed = masterAnimationSpeed*0.5;
      		boolean later = false;

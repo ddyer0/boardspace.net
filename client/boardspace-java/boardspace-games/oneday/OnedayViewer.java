@@ -1186,14 +1186,14 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
         if(mm.op==NORMALSTART) { mm.setLineBreak(true); }
          handleExecute(b,mm,replay);
         startBoardAnimations(replay);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
      
      void startBoardAnimations(replayMode replay)
      {	
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	double starttime = 0.0;
      		while(b.animationStack.size()>1)
      		{

@@ -726,7 +726,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      /**
@@ -737,7 +737,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

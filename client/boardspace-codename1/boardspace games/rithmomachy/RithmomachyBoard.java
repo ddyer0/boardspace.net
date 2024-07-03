@@ -848,7 +848,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
     			if(top!=null)
     				{int next =playerIndex(top);
     			// capture everything
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(c);
     				animationStack.push(captured[next]);
@@ -871,7 +871,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
 				 capturedValue[chColor]+=ch.value;
     		     captured[chColor].addChip(ch);
 			     captureStack.push(c);
-			     if(replay!=replayMode.Replay)
+			     if(replay.animate)
 			     {
 			    	 animationStack.push(c);
 			    	 animationStack.push(captured[chColor]);
@@ -901,7 +901,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	RithmomachyMovespec m = (RithmomachyMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -920,7 +920,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         			pickObject(src,m.from_row);
         			m.chip = pickedStack.topChip();
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);

@@ -423,7 +423,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Honeymovespec m = (Honeymovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {

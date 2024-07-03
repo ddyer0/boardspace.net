@@ -1255,7 +1255,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     	{	char oldContents = c.contents;
     		c.contents=setto;
     		if(i==4) { G.Assert((c.col==to_col)&&(c.row==to_row),"got to end of 5"); }
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(c);
     			animationStack.push(poolCell[indexForContents(oldContents)]);
@@ -1299,7 +1299,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         	case Black: c.contents=White; break;
         	default: throw G.Error("unexpected contents of "+c);
         	}
-        	if((c.contents!=Empty) && (replay!=replayMode.Replay))
+        	if((c.contents!=Empty) && (replay.animate))
         	{
         		animationStack.push(flipStart);
         		animationStack.push(c);
@@ -1484,7 +1484,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
                 PickObject(YinshId.BoardLocation, m.from_col, m.from_row);
                 placementCount++;
                 DropObject(dr, '@', -1,replay);
-                if(replay!=replayMode.Replay)
+                if(replay.animate)
                 {
                 	animationStack.push(getCell(m.from_col,m.from_row));
                 	animationStack.push(ringPool[whoseTurn]);

@@ -991,7 +991,7 @@ public class PlayerBoard
 		if(ind>=0) 
 			{ ViticultureCell dest = grapes[ind];
 			  dest.addChip(chip);
-			  if(replay!=replayMode.Replay) {
+			  if(replay.animate) {
 				  bb.animationStack.push(bb.getCell(dest.rackLocation(),'@',0));
 				  bb.animationStack.push(dest);
 			  }
@@ -1334,7 +1334,7 @@ public class PlayerBoard
 				    used = candidate;
 					if(doit) 
 						{ candidate.removeTop();
-							if(replay!=replayMode.Replay) 
+							if(replay.animate) 
 							{
 							bb.animationStack.push(candidate);
 							bb.animationStack.push(bb.getCell(candidate.rackLocation(),'@',0));
@@ -1363,7 +1363,7 @@ public class PlayerBoard
 			cards.addChip(target.card);
 			if(reInsert) {  bb.replaceCard(stack,target.card); }
 			some = true;
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 				{
 				bb.animationStack.push(stack);
 				bb.animationStack.push(cards);

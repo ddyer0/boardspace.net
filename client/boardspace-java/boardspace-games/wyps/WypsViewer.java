@@ -1035,7 +1035,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds((Wypsmovespec)mm); }
+		if(replay.animate) { playSounds((Wypsmovespec)mm); }
        return (true);
     }
      /**
@@ -1046,7 +1046,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

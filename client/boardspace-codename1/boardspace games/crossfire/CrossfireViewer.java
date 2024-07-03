@@ -650,7 +650,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         int sz = (int)(CELLSIZE*CHIP_SIZE_SCALE);
         startBoardAnimations(replay,bb.animationStack,sz,MovementStyle.Stack);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

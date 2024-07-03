@@ -38,7 +38,7 @@ class CellStack extends OStack<IroCell>
  */
 public class IroCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<IroCell,IroChip>	
+	extends stackCell<IroCell,IroChip>	implements PlacementProvider
 {	
 	IroChip.IColor color;
 	IroChip tile = null;
@@ -46,6 +46,13 @@ public class IroCell
 	boolean isTileAnchor = false;
 	boolean isPicked = false;
 	
+	int lastPicked = -1;
+	int lastDropped = -1;
+
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
 	public void initRobotValues() 
 	{
 	}
@@ -86,6 +93,9 @@ public class IroCell
 		rotation = ot.rotation;
 		isPicked = ot.isPicked;
 		isTileAnchor = ot.isTileAnchor;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
+
 		
 	}
 	/**
@@ -95,6 +105,9 @@ public class IroCell
 	public void reInit()
 	{	super.reInit();
 		isPicked = false;
+		lastPicked = -1;
+		lastDropped = -1;
+
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public IroCell(IroChip cont)

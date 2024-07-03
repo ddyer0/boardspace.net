@@ -1181,21 +1181,21 @@ public abstract class commonCanvas extends exCanvas
 	    //
 	    private boolean doBack(int n)
 	    {
-	       
 	        hidden.enterReviewMode();
 
 	        int v0 = History.viewStep;
 
 	        if (History.viewStep > 0)
 	        {	showComments();	// save as a side effect
-	            UndoStep(v0-n);
+	            UndoStep( v0-n);
 	        }
+
 	        showComments(); 
 	        return ((History.viewStep!=-1) && (History.viewStep < v0));
 	    }
-	    private void RedoStep(replayMode mode,commonMove m)
+	    private void RedoStep(replayMode replay,commonMove m)
 	    {
-	        Execute(m,mode);
+	        Execute(m,replay);
 	        if(m.digest==0) { m.digest = getBoard().Digest(); }
 	        repeatedPositions.checkForRepetition(getBoard(),m);
 	        if(History.viewStep==-1) {  generalRefresh(); }
@@ -1469,9 +1469,9 @@ public abstract class commonCanvas extends exCanvas
 	    	return(count);
 	    }
 	    // this is overridable but do not call it directly, call doScrollTo(FORWARD_ONE);
-	    private boolean doForward(replayMode mode)
+	    private boolean doForward(replayMode replay)
 	    {
-	    	return doForwardStep(mode);
+	    	return doForwardStep(replay);
 	    }
 
 
@@ -2417,6 +2417,7 @@ public abstract class commonCanvas extends exCanvas
   * this is called by the game controller when the game is over
   * and scoring activity has completed.  It's now safe to let the
   * players edit and rehash the game.   
+  * boolean andDone if true, can use the "done" button too
   */
     public void setEditable(boolean always)
     {	// a bit of a mess, turn based games that are viewed after completion
@@ -2606,7 +2607,7 @@ public abstract class commonCanvas extends exCanvas
     public void changePlayerList(commonPlayer p,commonPlayer replace)
     {	commonPlayer newpl[] = commonPlayer.changePlayerList(players,p,replace,false);
     	if(newpl==null) 
-    		{ throw G.Error("No empty slot for player %s",p); }
+    		{ throw G.Error("No empty slot for player %s players %s",p,AR.toString(players)); }
     	if(p!=null)
     	{	changeSpectatorList(null,p);	// remove from spectators list
     		p.addObserver(this);
@@ -2833,10 +2834,9 @@ public abstract class commonCanvas extends exCanvas
         doWayBack(replayMode.Replay);
         while ((History.viewStep!=-1) 
         		&& (History.viewStep < target)
-        		&& doForwardStep(replayMode.Replay))
+        		&& doForwardStep(replayMode.Replay1))
         {
         }
-
         //showComments();
     }
 
@@ -2844,11 +2844,11 @@ public abstract class commonCanvas extends exCanvas
       * This could be implemented cleverly, but the simple and reliable method 
       * is to just reinialize the board.
      */
-     public void doWayBack(replayMode mode)
+     public void doWayBack(replayMode replay)
     {	int sz = History.size();
         if (sz > 0)
         {   hidden.enterReviewMode();
-        	if(mode!=replayMode.Replay)
+        	if(replay!=replayMode.Replay)
         		{ showComments(); 	// save modified comments as a side effect
                 commentedMove = commentedMoveSeen = null;
                 if(reviewOnly && theChat!=null) { theChat.clearMessages(true); }
@@ -2856,7 +2856,7 @@ public abstract class commonCanvas extends exCanvas
             doInit(true);	// reinitialize
             // showComments();
             History.viewStep = 0;	// position 0
-            hidden.doForward(mode);	// the history is seeded with a start command
+            hidden.doForward(replay);	// the history is seeded with a start command
         }
     }
      /**
@@ -2879,7 +2879,7 @@ public abstract class commonCanvas extends exCanvas
     private void doForwardBranch()
     {
     	// scroll forward to the next branch
-        while (hidden.doForward(replayMode.Replay))
+        while (hidden.doForward(replayMode.Replay1))
         {
             int pos = getReviewPosition();
 
@@ -3872,8 +3872,8 @@ public abstract class commonCanvas extends exCanvas
             LogMessage("selected variation is ",command);
             if (m != null)
             {	if(m1.next == m) 
-            		{ hidden.doForward(replayMode.Replay); }
-            		else {  PerformAndTransmit(m.moveString(), true,replayMode.Replay); }
+            		{ hidden.doForward(replayMode.Replay1); }
+            		else {  PerformAndTransmit(m.moveString(), true,replayMode.Replay1); }
             }
         }
     }
@@ -3936,7 +3936,7 @@ public abstract class commonCanvas extends exCanvas
     	int who =bd.whoseTurn();
 		while((bd.whoseTurn()==who) && doScrollTo(BACKWARD_ONE)) {};
 		while((bd.whoseTurn()!=who) && doScrollTo(BACKWARD_ONE)) {};
-		return(hidden.doForward(replayMode.Replay));
+		return(hidden.doForward(replayMode.Replay1));
     	}
     	return(false);
     }
@@ -4073,7 +4073,7 @@ public abstract class commonCanvas extends exCanvas
             { // doBack does it all
             }
 			//	scroll to a position (if forward)
-            while ((getReviewPosition() < val) && hidden.doForward(replayMode.Replay))
+            while ((getReviewPosition() < val) && hidden.doForward(replayMode.Replay1))
             { // doforward does it all
             	commentedMoveSeen = commentedMove = null;
             	showComments();
@@ -4138,15 +4138,15 @@ public abstract class commonCanvas extends exCanvas
     }
     
     
-    public boolean doForwardStep(replayMode mode)
+    public boolean doForwardStep(replayMode replay)
     {
         int size = History.size();
-
-        if ((History.viewStep >= 0) && (History.viewStep < size))
+        int start = History.viewStep;
+        if ((start >= 0) && (start < size))
         {
-            RedoStep(mode);
+            RedoStep(replay);
             boolean notAtEnd = (History.viewStep >= 0);
-            if(!notAtEnd || (mode!=replayMode.Replay)) { showComments(); }
+            if(!notAtEnd || (replay!=replayMode.Replay)) { showComments(); }
             if(notAtEnd) { return notAtEnd; }
         }
 
@@ -4196,7 +4196,7 @@ public abstract class commonCanvas extends exCanvas
     	boolean stack = (groupMovement==MovementStyle.Stack)||(groupMovement==MovementStyle.StackFromStart);
     	boolean sequential = (groupMovement==MovementStyle.Sequential)||(groupMovement==MovementStyle.SequentialFromStart);
     	boolean fromStart = (groupMovement==MovementStyle.SequentialFromStart)||(groupMovement==MovementStyle.StackFromStart);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{	double start = 0.0;
     		cell <?> lastDest = null;
     		int depth = 0;
@@ -4399,10 +4399,10 @@ public abstract class commonCanvas extends exCanvas
      * we will never get to adding to the even queue
       * @param str
      * @param transmit
-     * @param mode  replay mode, which advises auxiliary behavior such as sound and animation
+     * @param replay  replay mode, which advises auxiliary behavior such as sound and animation
      * @return true if successful
      */
- public boolean PerformAndTransmit(String str, boolean transmit,replayMode mode)
+ public boolean PerformAndTransmit(String str, boolean transmit,replayMode replay)
  {
      // used in different contexts; parsing live moves from the GUI
      // also parsing replayed moves when resuming a game.  If not live, 
@@ -4410,24 +4410,24 @@ public abstract class commonCanvas extends exCanvas
 	 // joining a game which has variations and it will be necessary
 	 // to roll back the game before executing.
      int player =
-    		 (mode==replayMode.Replay) 
+    		 (replay==replayMode.Replay) 
     		 ? -1 
-    		 : ((mode!=replayMode.Replay) && simultaneousTurnsAllowed())
+    		 : ((replay!=replayMode.Replay) && simultaneousTurnsAllowed())
    		  		? getActivePlayer().boardIndex
    		  		: getBoard().whoseTurn();
-   	return(PerformAndTransmit(str,player,transmit,mode));
+   	return(PerformAndTransmit(str,player,transmit,replay));
 
  }
 /*
  * 
  */
- public boolean PerformAndTransmit(String str, int player,boolean transmit,replayMode mode)
+ public boolean PerformAndTransmit(String str, int player,boolean transmit,replayMode replay)
  { 
 	  l.lastParsed = str;
       commonMove m = ParseMove(str,player);
       if(m!=null)
         {	
-	        if (!PerformAndTransmit(m, transmit,mode))
+	        if (!PerformAndTransmit(m, transmit,replay))
 	        {
 	        	throw G.Error("can't perform %s" , str);
 	        }
@@ -4471,11 +4471,11 @@ public abstract class commonCanvas extends exCanvas
      * players seeing the events out of order.  Instead, use the continuation of ViewerRun
      * @param m
      * @param transmit
-	 * @param mode replay mode
+	 * @param replay replay mode
      * @return true if successful
      */
 
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {	//G.print("e "+my+" "+m);
     	if(transmit && !canSendAnyTime(m) && G.debug())
     	{ G.Assert(reviewOnly || mutable_game_record || !reviewMode(),
@@ -4513,7 +4513,7 @@ public abstract class commonCanvas extends exCanvas
        			}
        		return(true);	// we did it
        	}
-       	else if (Execute(m,mode))
+       	else if (Execute(m,replay))
         {
         	repaint(20);					 // states will have changed.
         	// str may be altered by AddToHistory, too, so get the string that must be transmitted first.
@@ -4543,7 +4543,7 @@ public abstract class commonCanvas extends exCanvas
             			  m.setDigest(newdig);
             			} 
             	}
-            if(mode==replayMode.Live) { verifyGameRecord(); }
+            if(replay==replayMode.Live) { verifyGameRecord(); }
             if (transmit && (allowed_to_edit || canUseDone()))
             {	if(m.elapsedTime()<=0)
             	{
@@ -4555,7 +4555,7 @@ public abstract class commonCanvas extends exCanvas
             	str = "+T "+m.elapsedTime()+" "+str; 	// add the move time stamp
                 addEvent(str);
             }
-            if((mode==replayMode.Live) && playerChanging()) { playTurnChangeSounds(); }
+            if((replay==replayMode.Live) && playerChanging()) { playTurnChangeSounds(); }
             return (true);
         }
         return (false);
@@ -4569,7 +4569,7 @@ public abstract class commonCanvas extends exCanvas
      * @param b
      * @param m
      */
-    public void handleExecute(BoardProtocol b,commonMove m,replayMode mode)
+    public void handleExecute(BoardProtocol b,commonMove m,replayMode replay)
     {	boolean review = reviewMode();
     	if(b.getState().Puzzle())
     	{
@@ -4606,20 +4606,21 @@ public abstract class commonCanvas extends exCanvas
         }
         else
         { 	commonPlayer pl = getPlayerOrTemp(m.player);
-        	switch(mode)
-        	{	default: G.Error("Not expecting mode %s", mode);
+        	switch(replay)
+        	{	default: G.Error("Not expecting mode %s", replay);
         		case Live: 
         			{ 	// in live play, load the move from the player time
         				m.setElapsedTime((int)pl.elapsedTime); 
         			}
         			break;
         		case Replay:
+        		case Replay1:
         		case Single:
         			{	// in review, load the player from the move time
         			pl.setReviewTime(m.elapsedTime());
         			}
         	}
-        	b.Execute(m,mode);						 // let the board do the dirty work
+        	b.Execute(m,replay);						 // let the board do the dirty work
         }
         if(m.op==MOVE_EDIT) 
         	{ stopRobots(); 
@@ -4636,7 +4637,7 @@ public abstract class commonCanvas extends exCanvas
         GameOverNow();	// notice if the game is over now
         // this saves a copy of the board for use in redisplay
         // if it is necessary to do so - ie on codename1
-        if(mode!=replayMode.Replay) { saveDisplayBoard(); }
+        if(replay!=replayMode.Replay) { saveDisplayBoard(); }
     }
     /**
      *  the default behavior is if there is a picked piece, unpick it
@@ -5229,7 +5230,14 @@ public abstract class commonCanvas extends exCanvas
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
         	l.unzoomButton = myFrame.addAction("Un Zoom",deferredEvents);
     	}
-        if(gameInfo!=null) {  myFrame.setTitle(gameInfo.gameName);}
+        commonPlayer myPlayer = (commonPlayer)info.get(MYPLAYER);
+        setActivePlayer(myPlayer);
+        G.Assert(getActivePlayer()!=null,"my player not supplied");
+        if(gameInfo!=null)
+        {  String name = gameInfo.gameName;
+           if(G.debug()) { name += " "+myPlayer.trueName(); }
+           myFrame.setTitle(name);
+        }
         // gameicon is initialized as part of the contract of preloadImages(), even
         // if the images were already loaded.
         myFrame.setIconAsImage(gameIcon);
@@ -5330,8 +5338,6 @@ public abstract class commonCanvas extends exCanvas
         
         hidden.showSgf = myFrame.addAction(ShowSGFMessage,deferredEvents);
         hidden.emailSgf = myFrame.addAction(EmailSGFMessage,deferredEvents);
-        setActivePlayer((commonPlayer)info.get(MYPLAYER));
-        G.Assert(getActivePlayer()!=null,"my player not supplied");
 
         if (canUseDone())
         {
@@ -6397,7 +6403,7 @@ public abstract class commonCanvas extends exCanvas
     public void adjustPlayers(int n)
     {	if(n!=players.length)
     	{
-    	G.Assert((n>0)&&(n<=Session.MAXPLAYERSPERGAME),"too many players");
+    	G.Assert((n>=0)&&(n<=Session.MAXPLAYERSPERGAME),"too many players");
     	commonPlayer newp[] = new commonPlayer[n];
     	int minp = Math.min(n,players.length);
     	for(int i=0;i<minp;i++) { newp[i]=players[i]; }
@@ -6637,7 +6643,9 @@ public abstract class commonCanvas extends exCanvas
     	// if("edit".equals(next) && getBoard().GameOver()) { return(true); }
        	String rest = "".equals(next) ? next : next+" "+G.restof(tokens);
        	String msg = first + " "+ rest;
-        return(PerformAndTransmit(msg, p.boardIndex,false,replayMode.Replay));	
+       	// replay1 instead of replay includes "heavier" move bookkeeping such as
+       	// reconstructing move paths in Colorito or Iro
+        return(PerformAndTransmit(msg, p.boardIndex,false,replayMode.Replay1));	
     }
     
     public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
@@ -6714,7 +6722,7 @@ public abstract class commonCanvas extends exCanvas
    			if(m.nVariations()>1)	// make sure next is correct
    			{	m.next = n;
    			}
-   			hidden.RedoStep(replayMode.Replay,n);	// replay it
+   			hidden.RedoStep(replayMode.Replay1,n);	// replay it
    			m = n;
     	};
     }
@@ -7576,7 +7584,7 @@ public void standardGameMessage(Graphics gc,double rotation,Color cc,Text defaul
 /**
  * general a "gameover" message appropriate for games where someone wins
  * but there is no score per se.
- * @param gb TODO
+ * @param gb the game board
  * @return a gameOver message
  */
 public String simpleGameOverMessage(BoardProtocol gb)
@@ -7596,7 +7604,7 @@ public String simpleGameOverMessage(BoardProtocol gb)
 /**
  * generate a "gameover" message appropriate for games where every player
  * has a final score.
- * @param gb TODO
+ * @param gb the game board
  * @return a gameOver message
  */
 private String scoredGameOverMessage(BoardProtocol gb)
@@ -7620,7 +7628,7 @@ private String scoredGameOverMessage(BoardProtocol gb)
 }
 /**
  * construct a "game won by" message, with scores for multiplayer games
- * @param gb TODO
+ * @param gb the game board
  * @return a String
  */
 public String gameOverMessage(BoardProtocol gb)
@@ -7907,7 +7915,7 @@ public void performHistoryTokens(StringTokenizer his)
         {
             if (!first)
             {
-                PerformAndTransmit(command.toString(), false,replayMode.Replay);
+                PerformAndTransmit(command.toString(), false,replayMode.Replay1);
                 if(time>=0) {
                 	History.top().setElapsedTime(time);
                 }
@@ -8014,7 +8022,6 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 {	
 	
 	if(tok==null) { tok = his.nextToken(); }
-	
 	if(his.hasMoreTokens())
 	{	
 

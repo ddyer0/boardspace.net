@@ -547,7 +547,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
  
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,(int)(b.cellSize()*chipScale),MovementStyle.Stack);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

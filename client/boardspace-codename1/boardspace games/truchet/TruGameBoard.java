@@ -571,7 +571,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     		  if(bot!=top) 
     		  {	chips_on_board[playerIndex(bot)]--;
     		  	captures[whoseTurn].addChip(bot);
-    		    if(replay!=replayMode.Replay)
+    		    if(replay.animate)
     		    {
     		    	animationStack.push(c);
     		    	animationStack.push(captures[whoseTurn]);
@@ -918,7 +918,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	{	acceptPlacement();
     		pickBoardLocation(pickedSource);
     		dropBoardLocation(droppedDest);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(pickedSource);
     			animationStack.push(droppedDest);
@@ -953,7 +953,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     			if(pickedSource!=droppedDest) 
     				{ pickBoardLocation(pickedSource);	
     				  dropBoardLocation(droppedDest);
-    				  if(replay!=replayMode.Replay)
+    				  if(replay.animate)
     				  {
     					  animationStack.push(pickedSource);
     					  animationStack.push(droppedDest);
@@ -1002,7 +1002,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 		TruCell source = getCell(m.from_col, m.from_row);
 		pickBoardLocation(source);
 		dropBoardLocation(dest); 
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			animationStack.push(source);
 			animationStack.push(dest);
@@ -1048,7 +1048,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	 	TruCell dest = center.exitTo(dir);
     	 	pickBoardLocation(dest);
     		dropBoardLocation(center); 
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(dest);
     			animationStack.push(center);
@@ -1106,7 +1106,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	 	TruCell dest = center.exitTo(dir);
     	 	pickBoardLocation(center);
     	 	dropBoardLocation(dest);
-    	 	if(replay!=replayMode.Replay)
+    	 	if(replay.animate)
     	 	{
     	 		animationStack.push(center);
     	 		animationStack.push(dest);
@@ -1163,7 +1163,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     public boolean Execute(commonMove mm,replayMode replay)
     {	TruMovespec m = (TruMovespec)mm;
         TruChip pickedObject = sm_picked[sm_step];
-        if(replay==replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {

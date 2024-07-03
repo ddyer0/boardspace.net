@@ -740,7 +740,7 @@ void doSwap(replayMode replay)
 	
 public boolean Execute(commonMove mm,replayMode replay)
 {	TweedMovespec m = (TweedMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -785,7 +785,7 @@ public boolean Execute(commonMove mm,replayMode replay)
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay)
+	            if(replay.animate)
 	            {
             	int nadd = dest.height()-originalHeight;
             	if(originalTop!=newTop)
@@ -802,7 +802,7 @@ public boolean Execute(commonMove mm,replayMode replay)
 	            		animationStack.push(dest); 
 	            	}
 	            }
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(picked);
 	            	  animationStack.push(dest); 
 	            	}

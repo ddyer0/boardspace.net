@@ -853,12 +853,12 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      * players seeing the events out of order.  Instead, use the continuation of ViewerRun
      * @param m
      * @param transmit
-	 * @param mode replay mode
+	 * @param replay replay mode
      * @return true if successful
      */
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {
-    	return(super.PerformAndTransmit(m,transmit,mode));
+    	return(super.PerformAndTransmit(m,transmit,replay));
     }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -883,7 +883,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      /**
@@ -894,7 +894,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

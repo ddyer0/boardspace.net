@@ -577,7 +577,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	MovementStyle style = (m.op==MOVE_REMOVE) ? MovementStyle.Simultaneous : MovementStyle.SequentialFromStart; 
 
     	startBoardAnimations(replay,b.animationStack,size,style);
-    	if(replay!=replayMode.Replay) { playSounds(m); }
+    	if(replay.animate) { playSounds(m); }
         return (true);
     }
     
@@ -587,7 +587,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     {	try {
     	boolean sequential = (groupMovement==MovementStyle.SequentialFromStart);
     	boolean fromStart = (groupMovement==MovementStyle.SequentialFromStart);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{	double start = 0.0;
     		cell <?> lastDest = null;
     		int depth = 0;

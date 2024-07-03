@@ -691,7 +691,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         			XiangqiCell from = getCell(m.from_col, m.from_row);
         			XiangqiCell to = getCell(m.to_col,m.to_row);
         			XiangqiChip rem = to.topChip();
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(to);
@@ -700,7 +700,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         				{ XiangqiCell tocap = rack[playerIndex(rem)][rem.pieceType];
         				  XiangqiCell fromcap = to;
         				  addChip(tocap,removeChip(to)); 
-        				  if(replay!=replayMode.Replay)
+        				  if(replay.animate)
         				  {
         					  animationStack.push(fromcap);
         					  animationStack.push(fromcap);
@@ -730,7 +730,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
 				{captured = dropOnRack(removeChip(to)); 
 				 progressMove = moveNumber; 
 				 m.captures = rem;
-				 if(replay!=replayMode.Replay)
+				 if(replay.animate)
 				 {
 					 animationStack.push(to);
 					 animationStack.push(captured);
@@ -766,7 +766,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         	{
         	XiangqiCell from = getCell(m.from_col,m.from_row);
         	if(isDest(from))
-        		{ if((captured!=null)&&(replay!=replayMode.Replay))
+        		{ if((captured!=null)&&(replay.animate))
             		{
             		animationStack.push(captured);
             		animationStack.push(from);

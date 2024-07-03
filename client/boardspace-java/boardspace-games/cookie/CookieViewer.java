@@ -586,14 +586,14 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         startBoardAnimations(replay);
       
 		lastDropped = bb.lastDropped;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      
     void startBoardAnimations(replayMode replay)
      {	CellStack animationStack = bb.animationStack;
      	try {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	
      		int lim = animationStack.size();
       		if(lim>0)

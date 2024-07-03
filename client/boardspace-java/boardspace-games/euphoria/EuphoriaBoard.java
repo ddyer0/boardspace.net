@@ -3468,7 +3468,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
  			// throw away the rejected card
   			EuphoriaChip discard = marketBasket.removeTop();
   			if((discard!=null)&&(discard.isArtifact())) { recycleArtifact(discard); }
- 			if(replay!=replayMode.Replay) { animateReturnArtifact(marketBasket); }
+ 			if(replay.animate) { animateReturnArtifact(marketBasket); }
    			}
   			if(isIIB() && (pend!=Benefit.FreeArtifact) && (pend!=Benefit.FreeArtifactOrResource))
   			{	// check for needing to pay for a card
@@ -3643,7 +3643,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         	{
          	p.setPFlag(PFlag.HasResolvedDilemma);
         	p.dilemma.addChip(p.getAuthorityToken(replay));
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animatePlacedItem(p.authority,p.dilemma);
         	}
@@ -4517,7 +4517,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
      		WorkerChip newWorker = chosenValue!=null ? chosenValue : (WorkerChip.getWorker(p.color,newvalue));	// the actual reroll
     		p.addWorker(newWorker);
     		chosenValue = null;		// only select one die
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(p.newWorkers);
     			animationStack.push(p.workers);
@@ -4548,7 +4548,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         	int h = p.newWorkers.height();
         	for(int i=0;i<h;i++) 
         		{ trash.addChip(p.workers.removeTop());
-        		  if(replay!=replayMode.Replay) {
+        		  if(replay.animate) {
         			  animationStack.push(p.workers);
         			  animationStack.push(trash);
         		  }
@@ -4812,7 +4812,7 @@ private void reRollWorkersAfterCheck(EPlayer p,replayMode replay,Cost penalty,in
     	Assert(dest.rackLocation().canBeBumped,"bumpable position");
     	EPlayer otherPlayer = getPlayer(bumpedWorker.color);
     	bumpingWorker = (WorkerChip)dest.topChip();
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(dest);
     		animationStack.push(otherPlayer.newWorkers);
@@ -5781,7 +5781,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	marketBasket.addChip(getArtifact());
     	marketBasket.addChip(getArtifact());
     	logGameEvent(BradleyTheFuturistEffect,currentPlayerColor());
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animatePlacedItem(unusedArtifacts,marketBasket);
     		animatePlacedItem(unusedArtifacts,marketBasket);
@@ -6109,7 +6109,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	EuphoriaChip t2 = getArtifact();
     	EuphoriaChip t3 = getArtifact();
     	p.incrementKnowledge(replay);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     		{
     		animateNewArtifact(p.artifacts);
     		animateNewArtifact(p.artifacts);
@@ -6126,7 +6126,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		  else { 
     			    recycleArtifact(t3);
     			  	logGameEvent(JonathanGain2);
-    			  	if(replay!=replayMode.Replay)
+    			  	if(replay.animate)
     		  		{
     			  	animateReturnArtifact(p.artifacts);
     		  		}
@@ -6138,7 +6138,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		p.addArtifact(t3);
     		recycleArtifact(t2);
   		  	logGameEvent(Gained2Cards);
-	    		if(replay!=replayMode.Replay)
+	    		if(replay.animate)
 	    		{
 	  		  	  animateReturnArtifact(p.artifacts);
 	    		}
@@ -6148,7 +6148,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		  p.addArtifact(t3); 
     		  recycleArtifact(top);
     		  logGameEvent(Gained2Cards);
-    		  if(replay!=replayMode.Replay)
+    		  if(replay.animate)
     		  	{ 
     		  	  animateReturnArtifact(p.artifacts);
     		  	}
@@ -6158,7 +6158,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     			  recycleArtifact(t2);
     			  recycleArtifact(t3);
     			  logGameEvent(Gained0Cards);
-    			  if(replay!=replayMode.Replay) 
+    			  if(replay.animate) 
     			  	{  
     			  	  animateReturnArtifact(p.artifacts);
       			  	  animateReturnArtifact(p.artifacts);
@@ -6452,7 +6452,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	    		{	EuphoriaCell src = artifactBazaar[lim-1];
 	    			Assert(src.topChip()!=null,"Artifacts not filled");
 	    			artifactBazaar[lim].addChip(src.removeTop());
-	    			if(replay!=replayMode.Replay)
+	    			if(replay.animate)
 	    			{	animationStack.push(src);
 	    				animationStack.push(dest2);
 	    			}
@@ -6460,7 +6460,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	    	// then refill the left slot
 	    	EuphoriaCell dest2 = artifactBazaar[0];
 	    	dest2.addChip(getArtifact());
-	    	if(replay!=replayMode.Replay)
+	    	if(replay.animate)
     			{
     				animationStack.push(unusedArtifacts);
     				animationStack.push(dest2);
@@ -6823,7 +6823,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     				if(ch!=null)
     				{markets[idx].addChip(ch);
     				p.marketStars++;
-    				if(replay!=replayMode.Replay) { animatePlacedItem(p.authority,markets[idx]); }
+    				if(replay.animate) { animatePlacedItem(p.authority,markets[idx]); }
     				}
     				else
     				{	// this is not an error any more. Nakagawathetribute_v2
@@ -6915,7 +6915,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     public boolean Execute(commonMove mm,replayMode replay)
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
-        if(replay!=replayMode.Replay) { animationStack.clear(); gameEvents.clear(); }
+        if(replay.animate) { animationStack.clear(); gameEvents.clear(); }
         if(board_state==EuphoriaState.Puzzle)
         {
         	setStatusDisplays();
@@ -7133,7 +7133,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	        	setNextStateAfterPick(dp);
 	        	dropObject(to,replay);
 	        	setNextStateAfterDrop(dp);      
-	           	if(replay!=replayMode.Replay)
+	           	if(replay.animate)
         		{
         		animationStack.push(from);
         		animationStack.push(to);
@@ -7163,7 +7163,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
             	setNextStateAfterPick(players[whoseTurn]);
             	dropObject(to,replay);
             	setNextStateAfterDrop(players[whoseTurn]); 
-               	if(replay!=replayMode.Replay)
+               	if(replay.animate)
         		{
         		animationStack.push(from);
         		animationStack.push(to);
@@ -7180,7 +7180,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	  setNextStateAfterPick(players[whoseTurn]);
     	  dropObject(to,replay);
     	  setNextStateAfterDrop(players[whoseTurn]);
-      	  if(replay!=replayMode.Replay)
+      	  if(replay.animate)
       		{
       		animationStack.push(from);
       		animationStack.push(to);
@@ -7198,7 +7198,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	setNextStateAfterPick(players[whoseTurn]);
         	dropObject(to,replay);
         	setNextStateAfterDrop(players[whoseTurn]);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{
         		animationStack.push(from);
         		animationStack.push(to);
@@ -8370,7 +8370,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 				trash.addChip(p.activeRecruits.removeChip(RecruitChip.KofiTheHermit));
 				useRecruit(RecruitChip.KofiTheHermit,"discard");
 				logGameEvent(DiscardKofiTheHermit);
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(p.activeRecruits);
 					animationStack.push(trash);

@@ -591,17 +591,17 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         drawVcrGroup(nonDraggingSelect, gc);
 
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {	// the super method in commonCanvas is where the history is actually recorded
        	if(((m.op==MOVE_DONE) 
        			&& (b.getState()==ExxitState.PASS_STATE)
        			&& OurMove() 
-       			&& (mode==replayMode.Live)
+       			&& (replay==replayMode.Live)
        			))
        		{	// insert a "pass" before "done"
        		PerformAndTransmit(PASS); 
        		}
-       	boolean val =  super.PerformAndTransmit(m,transmit,mode);
+       	boolean val =  super.PerformAndTransmit(m,transmit,replay);
     	return(val);
     }
     /**
@@ -638,7 +638,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         startBoardAnimations(replay,b.animationStack,(int)(chipSize()*BOARD_TILE_SCALE*0.25),
         		MovementStyle.Simultaneous);
 
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
 
          return (true);
     }

@@ -1024,10 +1024,10 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 
     }
 
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {	// the super method in commonCanvas is where the history is actually recorded
 
-       	boolean val =  super.PerformAndTransmit(m,transmit,mode);
+       	boolean val =  super.PerformAndTransmit(m,transmit,replay);
        	// 
        	// Important note:
        	// it's tempting to do "automove" here, but don't.  The move hasn't
@@ -1047,7 +1047,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
      public boolean Execute(commonMove m,replayMode replay)
     {
         handleExecute(b,m,replay);
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
          return (true);
     }
      void playSounds(commonMove mm)

@@ -2728,7 +2728,7 @@ private Color playerBackground[] = {
          * is done by drawSprites at the end of redrawBoard
          */
         lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-				if(replay!=replayMode.Replay) 
+				if(replay.animate) 
 					{ playSounds(mm); // animations after sounds, so animations
 						// can add additional sounds.
 					}
@@ -2744,7 +2744,7 @@ private Color playerBackground[] = {
       */
      void startBoardAnimations(replayMode replay)
      {	try {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	int CELLSIZE = bb.CELLSIZE;
      		int dice_rolled = 0;
      		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));

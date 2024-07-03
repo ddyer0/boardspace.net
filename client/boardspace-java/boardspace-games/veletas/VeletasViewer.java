@@ -468,7 +468,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
 		lastDropped = b.lastDroppedObject;	// this is for the image adjustment logic
 
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

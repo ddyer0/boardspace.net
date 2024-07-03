@@ -723,7 +723,7 @@ class TrenchBoard
     	from.lastCaptured = moveNumber;
     	from.lastContents = top;
     	to.addChip(top);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(from);
     		animationStack.push(to);
@@ -761,7 +761,7 @@ class TrenchBoard
 		dropObject(to,-1);
 	
 
-        if(replay!=replayMode.Replay && (po==null))
+        if(replay.animate && (po==null))
         	{ animationStack.push(from);
         	  animationStack.push(to); 
         	}
@@ -769,7 +769,7 @@ class TrenchBoard
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	Trenchmovespec m = (Trenchmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
        // G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
         switch (m.op)

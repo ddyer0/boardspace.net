@@ -479,7 +479,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         int cellSize = (int)(bb.cellSize()*xscale);
         startBoardAnimations(replay,bb.animationStack,cellSize,MovementStyle.SequentialFromStart);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

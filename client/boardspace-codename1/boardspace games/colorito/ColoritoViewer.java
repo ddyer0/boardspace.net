@@ -449,7 +449,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         handleExecute(b,mm,replay);
     	numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Chained);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

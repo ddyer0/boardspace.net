@@ -650,7 +650,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 					FrogPiece p = bag.removeTop();
 					if (p != null) {
 						hc.addChip(p);
-						if(replay!=replayMode.Replay)
+						if(replay.animate)
 						{
 							animationStack.push(bag);
 							animationStack.push(hc);
@@ -714,7 +714,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		case MOVE_ONBOARD: {
 			FrogCell c = hand[m.player][m.from_row];
 			FrogCell d = getCell(m.to_col, m.to_row);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(c);
 				animationStack.push(d);
@@ -728,7 +728,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		case MOVE_MOVE: {
 			FrogCell c = getCell(m.from_col, m.from_row);
 			FrogCell d = getCell(m.to_col, m.to_row);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(c);
 				animationStack.push(d);

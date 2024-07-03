@@ -805,22 +805,22 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         startBoardAnimations(replay,bb.animationStack,CELLSIZE*7/8,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
-     public void handleExecute(BoardProtocol b,commonMove m,replayMode mode)
+     public void handleExecute(BoardProtocol b,commonMove m,replayMode replay)
      {
  	 	TamskBoard bb = (TamskBoard)b;
-    	 if(mode==replayMode.Live )
+    	 if(replay==replayMode.Live )
     	 {	Tamskmovespec mm = (Tamskmovespec)m;
     	 	// note the actual start!
     	 	if(mm.gameTime<0) 
     	 		{ synchronizeGameTime(bb,mm); 
     	 		} 	
     	 }    
-    	 super.handleExecute(b,m,mode);
+    	 super.handleExecute(b,m,replay);
     	 stopRect.setValue(bb.timeRunning());
-    	 if(mode==replayMode.Live) {
+    	 if(replay==replayMode.Live) {
     		 if(m.op==MOVE_FIFTEEN)
     		 {
     			 commonPlayer p = getPlayerOrTemp(m.player);
@@ -858,7 +858,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

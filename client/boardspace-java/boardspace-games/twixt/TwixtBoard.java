@@ -719,7 +719,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     			  {
     			  addChip(c,bridge);
     			  if(!robotBoard && (m!=null)) { m.addTarget(bridge); } 
-               	  if(replay!=replayMode.Replay)
+               	  if(replay.animate)
                	  {
             		animationStack.push(getCell(bridge0));
             		animationStack.push(c);
@@ -740,7 +740,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
   			  	{
   			  	addChip(from,bridge);
     			if(!robotBoard && (m!=null)) { m.addTarget(bridge); } 
-             	  if(replay!=replayMode.Replay)
+             	  if(replay.animate)
              	  {
              		  animationStack.push(getCell(bridge0));
              		  animationStack.push(from);
@@ -1058,7 +1058,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Twixtmovespec m = (Twixtmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -1121,7 +1121,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

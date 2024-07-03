@@ -592,7 +592,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     		undoCode = (undoCode<<2) | (player+1);
     		h--;
     		CrossfireCell dest = ((player==whoseTurn)?reserve[player]:prisoners[player]);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{	animationStack.push(from);
     			animationStack.push(dest);
     		}
@@ -614,7 +614,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     {
     	CrossfireChip top = from.removeTop();
     	if(height>1)
-    		{ moveStack(from,to,height-1,(replay!=replayMode.Replay)?replayMode.Single:replay); 
+    		{ moveStack(from,to,height-1,(replay.animate)?replayMode.Single:replay); 
     		}
     	to.addChip(top);
     	if(replay==replayMode.Single)
@@ -625,7 +625,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	CrossfireMovespec m = (CrossfireMovespec)mm;
-    	if(replay!=replayMode.Replay) { animationStack.clear(); }
+    	if(replay.animate) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {

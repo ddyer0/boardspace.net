@@ -1172,7 +1172,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         handleExecute(b,mm,replay);
         // use the standard definition
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

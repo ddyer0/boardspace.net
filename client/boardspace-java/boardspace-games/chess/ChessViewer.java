@@ -587,7 +587,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         		b.variation==Variation.Atomic
         			? MovementStyle.SimultaneousAfterOne
         			: MovementStyle.Sequential);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

@@ -720,7 +720,7 @@ void doSwap()
 				break;
 			}
           	TabCell c = getCell(m.to_col, m.to_row);
-          	if((m.op==MOVE_MOVE) ? (replay!=replayMode.Replay) : (replay==replayMode.Single))
+          	if((m.op==MOVE_MOVE) ? (replay.animate) : (replay==replayMode.Single))
           	{
           		animationStack.push(pickedSource);
           		animationStack.push(c);
@@ -923,7 +923,7 @@ void doSwap()
     		int dx = 1+ (cap.col-source.col);
     		int dy = 1+ (cap.row-source.row);
        		TabChip ch = SetBoard(cap,null);
-       		if(replay!=replayMode.Replay)
+       		if(replay.animate)
        		{
        			animationStack.push(cap);
        			animationStack.push(playerChipPool(nextPlayer[whoseTurn]));

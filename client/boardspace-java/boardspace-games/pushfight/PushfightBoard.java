@@ -759,7 +759,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 			source = dest;
 			source.lastEmptied = lastPlacedIndex;
 			dest = dest.exitTo(direction);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{	
 				animationStack.push(source);
 				animationStack.push(dest);
@@ -771,7 +771,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		setPiece(dest,po);
 		if(pushedDest!=null) { pushedDest.removeTop(PushfightChip.Anchor); }
 		dest0.addChip(PushfightChip.Anchor);
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{	if(replay==replayMode.Single)
 			{pushProxy.copyAllFrom(dest0);
 			pushProxy.removeTop();
@@ -805,7 +805,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	Pushfightmovespec m = (Pushfightmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         cachedTargets = null;
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -834,7 +834,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 			if(robot==null) { m.to = top; }
 			if(top==null)
 				{dropObject(dest);
-	            if((replay!=replayMode.Replay)
+	            if((replay.animate)
 	            		&& ((replay==replayMode.Single) || (m.op==MOVE_FROM_TO)))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 

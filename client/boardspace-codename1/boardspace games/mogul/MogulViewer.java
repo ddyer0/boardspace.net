@@ -667,7 +667,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
  
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

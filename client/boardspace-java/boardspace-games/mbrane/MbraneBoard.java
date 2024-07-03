@@ -809,7 +809,7 @@ void doSwap(replayMode replay)
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Mbranemovespec m = (Mbranemovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -888,7 +888,7 @@ void doSwap(replayMode replay)
         	MbraneCell to = getCell(m.to_col,m.to_row);
         	doPick(from);
         	doDrop(to);
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
         	{ animationStack.push(from);
         	  animationStack.push(to); 
         	}

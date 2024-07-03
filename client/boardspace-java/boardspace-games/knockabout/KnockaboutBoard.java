@@ -554,7 +554,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     	KnockaboutCell c = from;
     	KnockaboutChip cc = chip;
     	boolean needRoll = false;
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(c);
     	}
@@ -574,7 +574,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     			  addChip(c,cc);
     			  pickedSourceStack[stackIndex] = next;
     			  cc = removeChip(next);
-    		      if(replay!=replayMode.Replay)
+    		      if(replay.animate)
     		    	{
     		    		animationStack.push(c);
     		    		animationStack.push(next);
@@ -585,7 +585,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     		else {	steps--; }
     		c = next; 
     	}
-       	if(replay!=replayMode.Replay)
+       	if(replay.animate)
     	{
     		animationStack.push(c);	// final destination
     	}
@@ -626,7 +626,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
             	  dropOnBoard(target,true);
             	  m.undoInfo = -1;
                   stackIndex++;
-                  if(replay!=replayMode.Replay)
+                  if(replay.animate)
                   {
                   	animationStack.push(from);
                   	animationStack.push(target);

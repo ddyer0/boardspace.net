@@ -551,7 +551,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     {	
         handleExecute(b,mm,replay);
         startBoardAnimations(replay);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
@@ -560,7 +560,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
      void startBoardAnimations(replayMode replay)
      {	CellStack animationStack = b.animationStack;
      	try {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	
      		int lim = animationStack.size();
       		if(lim>0)

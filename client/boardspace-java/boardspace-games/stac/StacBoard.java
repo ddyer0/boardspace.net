@@ -609,7 +609,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
     			dest.addChip(save);
     			nSingleChips--;
     			lastStackMove = moveNumber; 
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{	
     			animationStack.push(fromRack);
     			animationStack.push(dest);
@@ -649,7 +649,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
  
     public boolean Execute(commonMove mm,replayMode replay)
     {	StacMovespec m = (StacMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -667,7 +667,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
         			StacCell dest = getCell(StacId.BoardLocation,m.to_col,m.to_row);
         			pickObject(src,StacId.ChipLocation);
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	animationStack.push(src);
     					animationStack.push(dest);
         				animationStack.push(src);
@@ -687,7 +687,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
         			StacCell dest = getCell(StacId.BoardLocation,m.to_col,m.to_row);
         			pickObject(src,src.rackLocation());
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	if(pickedDisk!=null) 
         					{ 
         					animationStack.push(src);

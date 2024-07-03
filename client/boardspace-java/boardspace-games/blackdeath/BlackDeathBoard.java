@@ -1031,7 +1031,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	PlayerBoard b = getPlayer(n);
     	for(int lim=b.temporaryCards.height()-1; lim>=0; lim--)
     		{
-    	    	if(replay!=replayMode.Replay)
+    	    	if(replay.animate)
     	    	{
     			animationStack.push(b.temporaryCards);
     			animationStack.push(discardPile);
@@ -1563,7 +1563,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     			PlayerBoard pb = pbs[whoseTurn];
     			if(pb.cards.topChip()==null) 
     			{ pb.cards.addChip(drawPile.removeTop()); 
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {
     				  animationStack.push(drawPile);
     				  animationStack.push(pb.cards);
@@ -1784,7 +1784,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	BlackDeathMovespec m = (BlackDeathMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         checkChips();
         //G.print("E "+moveNumber+" "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -1995,7 +1995,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	        	{	BlackDeathChip rem = dest.removeChipAtIndex(0);
     	        		PlayerBoard rempb = getPlayer(rem.color);
     	        		rempb.chipCount++;
-    	        		if(replay!=replayMode.Replay)
+    	        		if(replay.animate)
     	        		{	animationStack.push(dest);
     	        			animationStack.push(rempb.chipCell);
     	        		}
@@ -2010,7 +2010,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         			unDropObject();
         			unPickObject();
         			pb.chipCount++;	// give back the chip
-        			if(replay!=replayMode.Replay) {
+        			if(replay.animate) {
         				animationStack.push(dest);
         				animationStack.push(src);
         			}
@@ -2067,7 +2067,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 			dropObject(dest,replay,cost,m);
 			dest.whenMoved = moveNumber;
 			setState(BlackDeathState.Confirm);
-			if(animate && replay!=replayMode.Replay)
+			if(animate && replay.animate)
         	{
         		animationStack.push(src);
         		animationStack.push(dest);
@@ -2075,7 +2075,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 			if(dest.isOffMap())
 			{	dest.removeTop();
 				pb.chipCount++;			// give it back
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 				animationStack.push(dest);
 				animationStack.push(pb.chipCell);
@@ -2099,7 +2099,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         			dropObject(dest,replay,0,m);
         			pb.chipCount--;
                 	setState(BlackDeathState.Roll);
-                	if(replay!=replayMode.Replay)
+                	if(replay.animate)
                 	{
                 		animationStack.push(src);
                 		animationStack.push(dest);
@@ -2125,7 +2125,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         			dropObject(dest,replay,0,m);
         			pb.chipCount--;
                 	setState(BlackDeathState.Roll);
-                	if(replay!=replayMode.Replay)
+                	if(replay.animate)
                 	{
                 		animationStack.push(src);
                 		animationStack.push(dest);
@@ -2184,7 +2184,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}
@@ -2207,7 +2207,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         	}
         	dropObject(dest,replay,0,m);
         	setState(BlackDeathState.ConfirmCard);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{
         		animationStack.push(src);
         		animationStack.push(dest);
@@ -2417,7 +2417,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
    		{
    		PlayerBoard pb = getPlayer(chip.color);
    		pb.chipCount++;		// give him the chip back
-   		if(replay!=replayMode.Replay)
+   		if(replay.animate)
 				{
 					animationStack.push(city);
 					animationStack.push(pb.chipCell);
@@ -2435,7 +2435,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
    				  if(drawPile.height()>0)
    				  {
    					  pb.cards.addChip(drawPile.removeTop());
-   					  if(replay!=replayMode.Replay)
+   					  if(replay.animate)
    					  {
    						  animationStack.push(drawPile);
    						  animationStack.push(pb.cards);
@@ -2453,7 +2453,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
    		{
    		// if this is part of a multi-square city, mark as catastrophic
 			city.addChip(BlackDeathChip.SkullIcon);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 				{ animationStack.push(getPlayer(whoseTurn).chipCell);
 				  animationStack.push(city);
 				}

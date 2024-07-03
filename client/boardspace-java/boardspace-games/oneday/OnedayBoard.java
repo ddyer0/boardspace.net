@@ -1288,7 +1288,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
     }
     public boolean ExecuteStandard(commonMove mm,replayMode replay)
     {	OnedayMovespec m = (OnedayMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn + pickedObject);
         switch (m.op)
         {
@@ -1319,7 +1319,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
         			OnedayCell from = getCell(m.source,m.from_col,m.from_row);
         			OnedayCell to = getCell(OneDayId.RackLocation,m.to_col, m.to_row);
         			OnedayCell disc = getCell(OneDayId.DiscardPile,'@',m.discard);
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(to);		//save in reverse order
         				animationStack.push(disc);
@@ -1348,7 +1348,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
         			pickObject(from);
         			dropObject(to);
         			to.exposed = true;
-           			if(replay!=replayMode.Replay)
+           			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(to);
@@ -1370,7 +1370,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
         			OnedayCell from = getCell(OneDayId.StartingPile, m.to_col, m.to_row);
            			OnedayCell target = getCell(OneDayId.RackLocation, m.to_col,m.to_row);
            			target.addChip(from.removeTop());
-           			if(replay!=replayMode.Replay)
+           			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(target);

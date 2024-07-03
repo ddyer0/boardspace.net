@@ -650,7 +650,7 @@ void doSwap(replayMode replay)
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Trikemovespec m = (Trikemovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -704,7 +704,7 @@ void doSwap(replayMode replay)
 	        
 	            dropObject(dest);
 	            
-	            if(replay!=replayMode.Replay)
+	            if(replay.animate)
             	{
             	if(po==null)
             	{ animationStack.push(getSource());

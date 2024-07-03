@@ -1163,7 +1163,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 		
         startBoardAnimations(replay);
        
-        if(replay!=replayMode.Replay) 
+        if(replay.animate) 
         	{ playSounds(mm);
         	  
         	}
@@ -1173,7 +1173,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 
      void startBoardAnimations(replayMode replay)
      {	try {
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
      	{	while(b.animationStack.size()>1)
      		{
      		YspahanCell dest = b.animationStack.pop();

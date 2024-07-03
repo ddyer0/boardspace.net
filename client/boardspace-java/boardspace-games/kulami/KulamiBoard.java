@@ -744,7 +744,7 @@ void doSwap(replayMode replay)
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Kulamimovespec m = (Kulamimovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)

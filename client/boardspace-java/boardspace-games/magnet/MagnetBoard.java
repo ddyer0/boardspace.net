@@ -906,7 +906,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			    	{ kingLocation[otherPlayer] = cap; 
     			    	} 
     				cs.push(moving);
-    				 if(replay!=replayMode.Replay)
+    				 if(replay.animate)
     				 {
     					 animationStack.push(moving);
     					 animationStack.push(cap);
@@ -924,7 +924,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     				 	  	{ kingLocation[forPlayer]=cap; 
     				 	  	}
     				 	  chip = null;
-    				 	  if(replay!=replayMode.Replay)
+    				 	  if(replay.animate)
     				 	  {
     				 		  animationStack.push(moving);
     				 		  animationStack.push(cap);
@@ -944,7 +944,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			  movementStack[forPlayer].push(moving);
     			}
     		firstMoving.removeTop();
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(firstMoving);
         		animationStack.push(moving);
@@ -1103,7 +1103,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Magnetmovespec m = (Magnetmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         recorder = robotBoard ? null : new StringBuilder();
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -1155,7 +1155,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(!unpick && replay!=replayMode.Replay)
+	            if(!unpick && replay.animate)
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

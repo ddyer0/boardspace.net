@@ -700,6 +700,7 @@ public class Session implements LobbyConstants
 		 String frameName = G.isCodename1()?framename : s.get(WebsiteMessage,framename);
 		 XFrame frame =  new XFrame();
 		 frame.setContentPane(theGame);
+		 if(G.debug() ) { frameName += " "+primaryUser.prettyName(); }
 		 frame.setTitle(frameName);
 		 playFrame = frame;
 		 	//LPanel.newLFrame(frameName,theGame);

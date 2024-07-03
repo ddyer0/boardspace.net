@@ -792,7 +792,7 @@ class TamskBoard
     	            if(board_state==TamskState.Play)
     	            {	TamskCell ring = getPlayerRing(whoseTurn);
     	            	c.addChip(ring.removeTop());
-    		            if(replay!=replayMode.Replay)
+    		            if(replay.animate)
     		            {
     		            	animationStack.push(ring);
     		            	animationStack.push(c);
@@ -1027,7 +1027,7 @@ class TamskBoard
     
     	masterGameTime = m.gameTime;
     	if(replay==replayMode.Live) { masterClockTime = G.Date(); }
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" "+Digest());
         switch (m.op)
@@ -1101,7 +1101,7 @@ class TamskBoard
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay==replayMode.Single || (replay!=replayMode.Replay && ((m.op==MOVE_FROM_TO)||(po==null))))
+	            if(replay==replayMode.Single || (replay.animate && ((m.op==MOVE_FROM_TO)||(po==null))))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

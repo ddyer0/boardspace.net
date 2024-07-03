@@ -232,7 +232,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int stateX = boardX;
         int stateH = fh*5/2;
 
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseViewRect,viewsetRect,noChatRect);
         
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -443,6 +443,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
      	EntrapmentChip moving = gb.pickedObject;
     	Hashtable<EntrapmentCell,EntrapmentChip> dead = gb.getDead();
     	Hashtable<EntrapmentCell,EntrapmentCell> hittable = gb.getDests();
+    	numberMenu.clearSequenceNumbers();
      	if(hittable==null) { hittable = gb.getSources(); }
      	boolean isBarrier = (moving!=null) && moving.isBarrier();
      	boolean canHitBarrier = (moving==null) || isBarrier;
@@ -457,6 +458,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
             	if(gb.reverseY()){
                     int ypos = G.Bottom(brect) - gb.cellToY(cell);
                     int xpos = G.Left(brect) + gb.cellToX(cell);
+                    numberMenu.saveSequenceNumber(cell,xpos,ypos);
                    	double scl = pow(((ypos-G.Top(brect))/(double)G.Height(brect)),0.1);
                 	int ss = (int)(SQUARESIZE*scl);
                 	boolean isDest =  (hittable!=null) && (hittable.get(cell)!=null);
@@ -486,6 +488,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
                	int ss = yScaleSize(ypos,brect,SQUARESIZE);
             	boolean isDest =  (hittable!=null) && (hittable.get(vbar)!=null);
                	boolean canHit = canHitBarrier && gb.LegalToHitBoard(vbar) && ((hittable==null) || isDest);
+                numberMenu.saveSequenceNumber(vbar,xpos,ypos);
                 if( vbar.drawStack(gc,this,canHit?highlight:null,ss,xpos,ypos,0,0.1,null)) 
             		{ hitCell = vbar; 
             		  gb.switchPickedObject(hitCell);
@@ -506,6 +509,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
             	int ss = yScaleSize(ypos,brect,SQUARESIZE);
             	boolean isDest =  (hittable!=null) && (hittable.get(hbar)!=null);
              	boolean canHit = canHitBarrier && gb.LegalToHitBoard(hbar) && ((hittable==null) || isDest);
+                numberMenu.saveSequenceNumber(hbar,xpos,ypos);
             	if( hbar.drawStack(gc,this,canHit?highlight:null,ss,xpos,ypos,0,0.1,null)) 
             		{ hitCell = hbar; 
             		  gb.switchPickedObject(hitCell);
@@ -519,7 +523,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         	if( !gb.reverseY()){
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-           // StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
+          // StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
            	double scl = pow(((ypos-G.Top(brect))/(double)G.Height(brect)),0.1);
         	int ss = (int)(SQUARESIZE*scl);
         	boolean isDest =  (hittable!=null) && (hittable.get(cell)!=null);
@@ -549,7 +554,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
       		highlight.awidth = SQUARESIZE/3;
       		highlight.spriteColor = Color.red;
         }
-
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor); 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  
@@ -616,7 +621,11 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         drawViewsetMarker(gc,viewsetRect,highlight);
 
     }
-
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.dropState;
+    }
+    
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -628,8 +637,9 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,b.cellSize(),MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

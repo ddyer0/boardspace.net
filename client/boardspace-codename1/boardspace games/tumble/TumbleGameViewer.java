@@ -429,7 +429,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
 
-        if(replay!=replayMode.Replay) { playSounds((TumbleMovespec)mm); }
+        if(replay.animate) { playSounds((TumbleMovespec)mm); }
  
         return (true);
     }

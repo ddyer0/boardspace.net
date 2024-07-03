@@ -792,7 +792,7 @@ class KingsColorBoard
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	KingsColormovespec m = (KingsColormovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -830,7 +830,7 @@ class KingsColorBoard
 				{
 				m.chip = po;
 		   
-				if( (replay!=replayMode.Replay) && (dest.topChip()!=null))
+				if( (replay.animate) && (dest.topChip()!=null))
 				{
 					animationStack.push(dest);
 					animationStack.push(captured[whoseTurn^1]);
@@ -842,7 +842,7 @@ class KingsColorBoard
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

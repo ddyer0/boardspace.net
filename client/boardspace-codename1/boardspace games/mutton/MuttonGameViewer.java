@@ -1198,7 +1198,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 
 		handleExecute(myBoard, mm,replay);
 
-		if (replay!=replayMode.Replay) {
+		if (replay.animate) {
 			playSounds((MuttonMoveSpec)mm);
 		}
 

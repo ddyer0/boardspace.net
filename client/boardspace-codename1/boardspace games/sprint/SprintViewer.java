@@ -1189,16 +1189,16 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	if(viewPlayer!=null) { return viewPlayer.boardIndex; }
     	return getActivePlayer().boardIndex;
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {
-    	boolean v = super.PerformAndTransmit(m,transmit,mode);
+    	boolean v = super.PerformAndTransmit(m,transmit,replay);
     	
         if(m.op==MOVE_SWITCH)
         {
         	setViewPlayer(getPlayerOrTemp(m.player));
         }
         else if(m.op==MOVE_PULLSTART)
-        {	if((mode==replayMode.Live) && !iAmSpectator())
+        {	if((replay==replayMode.Live) && !iAmSpectator())
         	{
         	int pl = getActivePlayer().boardIndex;
         	// synchronously pull new tiles
@@ -1238,7 +1238,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         startBoardAnimations(replay,gb.animationStack,gb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds((Sprintmovespec)mm); }
+		if(replay.animate) { playSounds((Sprintmovespec)mm); }
 		return (true);
     }
     
@@ -1255,7 +1255,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

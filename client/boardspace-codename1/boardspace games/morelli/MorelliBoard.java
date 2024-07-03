@@ -740,7 +740,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	MorelliMovespec m = (MorelliMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -770,7 +770,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         			pickObject(src);
         			dropObject(dest); 
         			currentCaptures = doCaptures(dest);
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);

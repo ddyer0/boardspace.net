@@ -621,7 +621,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     }
     void animateMove(replayMode replay,VoloCell from,VoloCell to,int direction,int distance)
     {
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{	// request an animation
     		while(distance-- >= 0)
     		{
@@ -672,7 +672,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     
     // remove all the opponnet chips contained in the same zone as "center"
     // return a new blob consisting of all the cleared cells, for undo
-    VoloBlob clearZoneContaining(VoloCell center,replayMode mode)
+    VoloBlob clearZoneContaining(VoloCell center,replayMode replay)
     {	int nextplayer = nextPlayer[whoseTurn];
     	VoloChip oppchip = playerChip[nextplayer];
     	VoloBlob cleared = new VoloBlob(oppchip,nextplayer,false);
@@ -684,7 +684,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     		if((c.chip==oppchip) && mainZone.contains(c)) 
     			{ c.chip = null; cleared.addCell(c); 
     			  chips.remove(c,false);
-    			  if(mode!=replayMode.Replay)
+    			  if(replay.animate)
     			  {
     				  animationStack.push(c);
     				  animationStack.push(playerCells[nextplayer]);
@@ -694,7 +694,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     	return(cleared);
     }
     
-    void restoreClearedZone(VoloBlob cleared,replayMode mode)
+    void restoreClearedZone(VoloBlob cleared,replayMode replay)
     {	int pl = cleared.playerIndex;
     	VoloCell src = playerCells[pl];
     	CellStack chips = playerChips[pl];
@@ -706,7 +706,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
 				
 				cell.chip = cleared.color;
 				chips.push(cell);
-				if(mode!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(src);
 					animationStack.push(cell);
@@ -714,7 +714,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
 			}
 	
     }
-    void unwindMoves(replayMode mode)
+    void unwindMoves(replayMode replay)
     {	boolean done = false;
     	while(!done && (moveStack.size()>0))
     	{	VoloMovespec m = (VoloMovespec)moveStack.pop();
@@ -732,7 +732,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     		case MOVE_SELECT:	// designating a zone to clear
     		{
     			VoloBlob cleared = zoneStack.pop();
-    			restoreClearedZone(cleared,mode);
+    			restoreClearedZone(cleared,replay);
     			setState(state);
     		}
     			break;
@@ -740,7 +740,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     			unDropObject();
     			break;
     		case MOVE_SLIDE:	// sliding a flock
-    			unSlideMove(m,mode);
+    			unSlideMove(m,replay);
     			setState(state);
 
     		}
@@ -801,7 +801,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
 			else if(pickedObject==VoloChip.Orange) { src = orangeChipPool; }
 
             dropObject(c);
-            if((src!=null) && (originalSrc==null) && (replay!=replayMode.Replay))
+            if((src!=null) && (originalSrc==null) && (replay.animate))
             {
             	animationStack.push(src);
             	animationStack.push(c);

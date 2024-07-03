@@ -522,7 +522,7 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     		  if(gchip.chip!=null) 
     		  	{ KubaChip gc = gchip.removeChip();
     		  	  KubaCell dest = captureBall(whoseTurn,gc);
-    		  	  if((replay!=replayMode.Replay) && (dest.centerX()>0))
+    		  	  if((replay.animate) && (dest.centerX()>0))
     		  	  {	// the extra cells beyone a win are never displayed
     		  		  animationStack.push(gchip);
     		  		  animationStack.push(dest);
@@ -643,7 +643,7 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     	while(empty!=end) 
     	{ KubaCell dest = gutterCell(empty);
     	  KubaCell src = gutterCell(empty-s);
-    	  if(replay!=replayMode.Replay)
+    	  if(replay.animate)
     	  {
     		  animationStack.push(src);
     		  animationStack.push(dest);
@@ -652,7 +652,7 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     	  empty -= s; 
     	}
     	KubaCell dest =  gutterCell(end);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(from);
     		animationStack.push(dest);
@@ -694,7 +694,7 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     int dropAndPush(KubaCell from,KubaChip move,KubaCell to,int dir,replayMode replay,boolean skip)
     {	int distance = 0;
     	KubaChip top = to.topChip();
-    	if(replay!=replayMode.Replay && !skip)
+    	if(replay.animate && !skip)
     	{
     		animationStack.push(from);
     		animationStack.push(to);

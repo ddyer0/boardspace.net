@@ -766,20 +766,20 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
     }
 
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {	// the super method in commonCanvas is where the history is actually recorded
        	if((b.getState()==HiveState.PASS_STATE) 
        			&& (m.op==MOVE_DONE) 
        			&& OurMove()
-       			&& (mode==replayMode.Live))
+       			&& (replay==replayMode.Live))
     	{
-         PerformAndTransmit(PASS,true,mode); 
+         PerformAndTransmit(PASS,true,replay); 
     	}
-       	if(m.op==MOVE_RESET && mode==replayMode.Replay) 
+       	if(m.op==MOVE_RESET && replay==replayMode.Replay) 
        		{ // this shouldn't occur, but there are a few damaged games
        		  return(true); 
        		} 
-       	boolean val =  super.PerformAndTransmit(m,transmit,mode);
+       	boolean val =  super.PerformAndTransmit(m,transmit,replay);
         return(val);
     }
 
@@ -799,7 +799,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int cellSize =  (int)((b.cellSize()*1.15)*BOARD_TILE_SCALE);
         startBoardAnimations(replay,b.animationStack,cellSize,MovementStyle.Chained);
         
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
         return (true);
     }
 

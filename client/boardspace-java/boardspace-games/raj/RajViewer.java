@@ -701,7 +701,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         startBoardAnimations(replay,bb.animationStack,CELLSIZE*2,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

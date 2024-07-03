@@ -649,7 +649,7 @@ class MijnlieffBoard
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Mijnlieffmovespec m = (Mijnlieffmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)

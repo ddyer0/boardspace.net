@@ -664,7 +664,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     		capturePiece.push(top);
     		if(top==ModxChip.Joker)
     			{ joker.addChip(top); 
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {	animationStack.push(c);
   			    	animationStack.push(joker);
     			  }
@@ -693,7 +693,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     			  	  captureStack.push(c);
     			  	  capturePiece.push(flat);
     				  c.addChip(flat);
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {	animationStack.push(c);
     			    animationStack.push(rack[index]);
     			  }
@@ -719,7 +719,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     			captureStack.push(c);
     			capturePiece.push(top);
     			joker.addChip(c.removeTop());
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{	animationStack.push(c);
     				animationStack.push(joker); 
     			}
@@ -748,7 +748,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
 
 		  		c.sweep_counter = -1;	//unmatch 
 			  		
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
     			{
         		animationStack.push(flats);
         		animationStack.push(c);
@@ -773,7 +773,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     			  c.addChip(p);
     			  captureStack.push(c);
     			  capturePiece.push(p);
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {	animationStack.push(c);
     			    animationStack.push(rack[index]);
     			    animationStack.push(flats);
@@ -858,7 +858,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	ModxMovespec m = (ModxMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -880,7 +880,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
         			ModxCell dest = getCell(ModxId.BoardLocation,m.col,m.row);
         			pickObject(src);
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);

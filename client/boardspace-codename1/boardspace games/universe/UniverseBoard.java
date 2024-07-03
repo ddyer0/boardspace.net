@@ -2764,7 +2764,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	invalidateDiagonalPointsCache();
     	cachedMovesValid = false;
     }
-    public boolean Execute(commonMove mm,replayMode mode)
+    public boolean Execute(commonMove mm,replayMode replay)
     {	UniverseMovespec m = (UniverseMovespec)mm;
         //G.print("E Tops "+regionIndex+" "+m);
         //G.print("E "+m);
@@ -2803,7 +2803,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
                     UniverseCell dest = getCell(UniverseId.BoardLocation,m.to_col,m.to_row);
                     dropObject(dest); 
                     setNextStateAfterDrop();
-                    if(mode!=replayMode.Replay)
+                    if(replay.animate)
                     {
         			animationStack.push(src);
         			animationStack.push(dest);
@@ -2867,7 +2867,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
           		  	m.chip = pickedObject;
             		dropObject(c);
             		setNextStateAfterDrop();
-            		if(mode==replayMode.Single)
+            		if(replay==replayMode.Single)
             			{
             			animationStack.push(getSource());
             			animationStack.push(c);
@@ -2943,7 +2943,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
             	m.chip = pickedObject;
             	dropObject(c); 
             	setNextStateAfterDrop();
-            	if(mode==replayMode.Single)
+            	if(replay==replayMode.Single)
             	{
     			animationStack.push(getSource());
     			animationStack.push(c);

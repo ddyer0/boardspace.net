@@ -1055,7 +1055,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 
 			pickObject(p);
 			m.chip = pickedObject;
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(c);
 				animationStack.push(getCell(m.to_col,m.to_row));

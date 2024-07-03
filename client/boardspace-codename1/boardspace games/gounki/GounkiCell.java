@@ -19,6 +19,7 @@ package gounki;
 import gounki.GounkiConstants.GounkiId;
 import lib.G;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<GounkiCell>
@@ -26,9 +27,30 @@ class CellStack extends OStack<GounkiCell>
 	public GounkiCell[] newComponentArray(int n) { return(new GounkiCell[n]); }
 }
 
-public class GounkiCell extends stackCell<GounkiCell,GounkiChip>
+public class GounkiCell extends stackCell<GounkiCell,GounkiChip> implements PlacementProvider
 {
 	public GounkiChip[] newComponentArray(int n) { return(new GounkiChip[n]); }
+	
+	int lastPicked = -1;
+	int lastDropped = -1;
+
+	public void copyFrom(GounkiCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
+	
 	// constructor
 	public GounkiCell(char c,int r) 
 	{	super(Geometry.Oct,c,r);

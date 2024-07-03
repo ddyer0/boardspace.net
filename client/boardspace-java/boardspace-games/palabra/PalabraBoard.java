@@ -229,7 +229,7 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
         	PalabraCell dest = getCell(PalabraId.EmptyBoard,m.to_col,m.to_row);
         	pickObject(src,m.from_row);
         	dropObject(dest,m.to_row);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{	animationStack.push(src);
         			animationStack.push(dest);
         			
@@ -244,7 +244,7 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
         	currentPrize = getCell('D',7);
          	dropObject(currentPrize,-1);
         	setNextStateAfterDone(replay);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{
         		animationStack.push(prizes);
         		animationStack.push(currentPrize);
@@ -850,7 +850,7 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
     public boolean Execute(commonMove mm,replayMode replay)
     {	Palabramovespec m = (Palabramovespec)mm;
         
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         switch (m.op)
         {

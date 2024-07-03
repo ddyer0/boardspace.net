@@ -925,7 +925,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         			G.Assert((pickedObject==null),"nothing is moving");
         			SantoriniCell from = getCell(m.from_col, m.from_row);
         			SantoriniCell to = getCell(m.to_col,m.to_row); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(to);
@@ -943,7 +943,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         				checkForWin(nextPlayer[whoseTurn],from,destination);
         				destination.addChip(opponent);
         				recordManLocation(opponent,destination);
-        				if(replay!=replayMode.Replay)
+        				if(replay.animate)
             			{
         				animationStack.push(to);
         				animationStack.push(destination);
@@ -1014,7 +1014,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 				newloc.addChip(opponent);
 				uiStateStack.push(SantoriniState.Unpush_State);
 				recordManLocation(opponent,newloc);
- 				if(replay!=replayMode.Replay)
+ 				if(replay.animate)
 				{
 				animationStack.push(dst);
 				animationStack.push(newloc);
@@ -1022,7 +1022,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 			}
 			m.chip = pickedObject;
             dropBoardCell(dst);
-			if((replay!=replayMode.Replay)
+			if((replay.animate)
 					&& (suppliedSource || (replay==replayMode.Single)))
 			{
 				animationStack.push(src);

@@ -545,7 +545,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         startBoardAnimations(replay,b.animationStack,
         					CELLSIZE,MovementStyle.Stack);
                
-        if(replay!=replayMode.Replay) { playSounds((TzaarMovespec)mm); }
+        if(replay.animate) { playSounds((TzaarMovespec)mm); }
  
         return (true);
     }

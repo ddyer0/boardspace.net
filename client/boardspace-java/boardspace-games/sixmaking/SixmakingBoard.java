@@ -611,7 +611,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	SixmakingMovespec m = (SixmakingMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -634,7 +634,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
         			m.to_full_height = dest.height()+moved;
         			pickObject(src,m.height);
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	for(int i=0;i<moved;i++)
         				{
         				animationStack.push(src);

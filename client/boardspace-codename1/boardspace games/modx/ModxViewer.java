@@ -409,7 +409,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
  
         handleExecute(b,mm,replay);
         startBoardAnimations(replay);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
@@ -430,7 +430,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
       */
      void startBoardAnimations(replayMode replay)
      {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	double now = 0;
      		while(b.animationStack.size()>1)
      		{

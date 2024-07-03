@@ -1325,7 +1325,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public boolean processAddDrop(int ntokens, String cmdStr,    StringTokenizer myST,String fullMsg)
     {
         if (process_ECHO_INTRO_SELF(cmdStr, myST,fullMsg))
-        {
+        {	if(v!=null) { AR.setValue(v.getPlayers(),null); }	// forget what we know about the players
             return (true);
         }
         if(NetConn.ECHO_INTRO.equals(cmdStr))

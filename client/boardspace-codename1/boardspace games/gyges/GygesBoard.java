@@ -696,7 +696,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
                     m.chip = pickedObject;
                     GygesCell dest = getCell(GygesId.BoardLocation,m.to_col,m.to_row);
                     dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	animationStack.push(src);
         				animationStack.push(dest);
         			}
@@ -732,7 +732,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         			dropObject(dest); 
  				    setNextStateAfterDrop();
         			}
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	animatePath(src,src,dest,po,null,null,whoseTurn);     				
         			}
         			break;

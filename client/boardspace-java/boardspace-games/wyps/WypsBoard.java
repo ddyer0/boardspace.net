@@ -1379,7 +1379,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     			  WypsChip newchip = drawPile.removeTop().getAltChip(playerColor[whoseTurn]);
     			  c.addChip(newchip);
     			  n++;
-    			  if(replay!=replayMode.Replay) 
+    			  if(replay.animate) 
     			  {
     				  WypsCell cd = mapped[c.row];
     				  // the mapped cell is used only by the user interface and is loaded by
@@ -1569,7 +1569,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         	{	WypsChip top = c.topChip();
         		if(top!=null)
         			{ drawPile.addChip(top); c.removeTop(); 
-        			  if(replay!=replayMode.Replay)
+        			  if(replay.animate)
         			  {
         				  animationStack.push(c);
         				  animationStack.push(drawPile);
@@ -1589,7 +1589,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         		{
         		WypsCell c = rack[whoseTurn][i];        		   
         		c.addChip(drawPile.removeTop());
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(drawPile);
         			animationStack.push(c);
@@ -1640,7 +1640,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 			pickObject(placeFrom);
 			dropObject(c);
 			lastLetters.push(c);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 				{
 				animationStack.push(placeFrom);
 				animationStack.push(c);
@@ -1682,7 +1682,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 			animationStack.push(rcells[dest]);
 		}
 		while(map[dest]!=-1)
-		{	if(replay!=replayMode.Replay)
+		{	if(replay.animate)
 			{
 			animationStack.push(rcells[dest]);
 			animationStack.push(rcells[dest+direction]);
@@ -1699,7 +1699,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Wypsmovespec m = (Wypsmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
@@ -1805,7 +1805,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

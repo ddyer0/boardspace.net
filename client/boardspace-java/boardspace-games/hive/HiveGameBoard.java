@@ -1537,7 +1537,7 @@ public variation gamevariation = variation.hive;
         	pickObject(loc);
         	m.location = pickedSource;
         	G.Assert(pickedObject==piece,"picked the right thing");
-        	animate = replay!=replayMode.Replay;
+        	animate = replay.animate;
         	// fall into dropb
         	fall = true;
 			//$FALL-THROUGH$
@@ -1587,7 +1587,7 @@ public variation gamevariation = variation.hive;
             	  		 				? dest 	// new pillbug, all moved pieces are stunned
             	  		 				: null;	// stunned only if moved by pillbug
             	  		 setNextStateAfterDrop(replay);
-            	  }
+             	  }
             	  break;
            	  case PUZZLE_STATE:
            	  case Setup:
@@ -1599,7 +1599,8 @@ public variation gamevariation = variation.hive;
            		  break;
            	  	}
             }}
-            if((m.op==MOVE_PMOVE_DONE)||(m.op==MOVE_MOVE_DONE)) { doDone(replay); }
+            if((m.op==MOVE_PMOVE_DONE)||(m.op==MOVE_MOVE_DONE)) 
+            	{ doDone(replay); }
             break;
         case MOVE_OFFER_DRAW:
            	if(canOfferDraw())

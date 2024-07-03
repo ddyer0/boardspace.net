@@ -1088,7 +1088,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
 				if(owner>=0)
 				{				
 				meeples[owner].addChip(m);
-				if(replayMode.Replay!=replay)
+				if(replay.animate)
 					{
 					animationStack.push(merchants);
 					animationStack.push(meeples[owner]);
@@ -1133,7 +1133,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     	{	teaPool.removeTop();
     		if(ownerNumber>=0)
     		{ teaCards[ownerNumber].addChip(MedinaChip.TEA);
-    		  if(replay!=replayMode.Replay)
+    		  if(replay.animate)
     		  {
     			  animationStack.push(teaPool);
     			  animationStack.push(teaCards[ownerNumber]);
@@ -1141,7 +1141,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     		}
     		else { 
     			teaDiscards.addChip(MedinaChip.TEA);
-    			if (replay!=replayMode.Replay)
+    			if (replay.animate)
     			{	// throw them down the well
     				animationStack.push(teaPool);
     				animationStack.push(teaDiscards);
@@ -1162,7 +1162,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     		while(count-- > 0)
     		{	MedinaChip ch = p.removeTop();
     			trash.addChip(ch);
-    			if(replayMode.Replay!=replay)
+    			if(replay.animate)
     			{	
     				animationStack.push(p);
     				animationStack.push(trash);
@@ -1604,7 +1604,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
         									? teaDiscards			// special case, discards is the only choice
         									: getCell(MedinaId.BoardLocation,m.to_col,m.to_row);
                     MedinaChip pik = pickObject(src);
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                     	animationStack.push(src);
                     	animationStack.push(dest);

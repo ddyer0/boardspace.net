@@ -698,7 +698,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     
     public boolean Execute(commonMove mm,replayMode replay)
     {	GoMovespec m = (GoMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         switch (m.op)
         {
         case MOVE_HANDICAP:

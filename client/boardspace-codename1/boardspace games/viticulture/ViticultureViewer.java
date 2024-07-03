@@ -3570,9 +3570,8 @@ private void drawPlayerBoard(Graphics gc,
      		destroyMode = true;
      		break;
      	case Pick2TopCards:
+		case Pick2Discards:
      		nToDiscard = 2;
-			//$FALL-THROUGH$
-     	case Pick2Discards:
      		uncensored = true;
      		break;
      	default: break;
@@ -5405,7 +5404,7 @@ private void drawPlayerBoard(Graphics gc,
         startBoardAnimations(replay,gb.animationStack,CELLSIZE,MovementStyle.Simultaneous);
         
 		lastDropped = gb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds((Viticulturemovespec)mm); }
+		if(replay.animate) { playSounds((Viticulturemovespec)mm); }
        return (true);
     }
      

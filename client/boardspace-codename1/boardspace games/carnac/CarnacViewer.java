@@ -972,7 +972,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     {	
         handleExecute(b,mm,replay);
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

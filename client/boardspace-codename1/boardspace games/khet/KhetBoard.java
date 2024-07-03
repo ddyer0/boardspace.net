@@ -585,7 +585,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     		if(d.topChip()==null)
     			{ d.addChip(ch); 
     			  capturedCells.push(d); 
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {
     				  animationStack.push(c);
     				  animationStack.push(d);
@@ -614,7 +614,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     	if((top==null)||top.isSphinx()) 
     	{ // continue in the same direction
     		KhetCell next = from.exitTo(direction);
-    		if((next==null) && (replay!=replayMode.Replay) && (step<=20))
+    		if((next==null) && (replay.animate) && (step<=20))
     		{	// limit the entertainment to 20 steps, so infinite loops don't drag on
     			int dist = Math.abs(origin.col-from.col)+Math.abs(origin.row-from.row);
 	   			animationStack.push(laserProxy(origin,false,step,distance-dist));
@@ -626,7 +626,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 	   	else 
 	   		{
 	   		int newdir = top.bounceDirection(direction);
-	   		if((replay!=replayMode.Replay)&&(step<=20))
+	   		if((replay.animate)&&(step<=20))
 	   		{	// limit the entertainment to 20 steps, so infinite loops don't drag on
 	   			int dist = Math.abs(origin.col-from.col)+Math.abs(origin.row-from.row);
    				animationStack.push(laserProxy(origin,false,step,distance-dist));
@@ -707,7 +707,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         		rotatedCell = dest; 
         		rotatedDirection = m.to_row; 
         		setNextStateAfterDrop();
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         			{
         			animationStack.push(dest);
         			animationStack.push(dest);
@@ -733,7 +733,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         			{
         			KhetCell from = getCell(KhetId.BoardLocation, m.from_col, m.from_row);
         			KhetCell to = getCell(KhetId.BoardLocation,m.to_col,m.to_row);
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(from);
         				animationStack.push(to);
@@ -743,7 +743,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         			m.piece = pickedObject;
         			if(to.topChip()!=null) { from.addChip(to.removeTop()); }
         			dropObject(to); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(to);
         				animationStack.push(from);
@@ -773,7 +773,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
             			KhetCell src = getSource();
             			src.addChip(back);
             			dropObject(c);
-            			if(replay!=replayMode.Replay)
+            			if(replay.animate)
             			{
             				animationStack.push(c);
             				animationStack.push(src);

@@ -523,7 +523,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     {	 
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
-        if(replay!=replayMode.Replay) { playSounds((TruMovespec)mm); }
+        if(replay.animate) { playSounds((TruMovespec)mm); }
  
         return (true);
     }

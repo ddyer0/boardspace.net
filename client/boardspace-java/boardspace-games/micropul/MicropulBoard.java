@@ -724,7 +724,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         {	int rot = core.topRotation();
         	MicropulChip xx = core.removeTop();
         	supply[whoseTurn].addChip(xx,rot);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         	animationStack.push(core);
         	animationStack.push(supply[whoseTurn]);
@@ -823,7 +823,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         	{
         		dropObject(m.dest, m.player, m.to_row);
         	}
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             {
             	animationStack.push(pickedSource);
             	animationStack.push(droppedDest);

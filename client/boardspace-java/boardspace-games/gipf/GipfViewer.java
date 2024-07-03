@@ -576,20 +576,20 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     }
     private boolean convertGames = true;
     private boolean removeIndexes = false;	// this is a flag that we're replaying an old file and need to convert SLIDE moves
-    public boolean PerformAndTransmit(commonMove mm, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove mm, boolean transmit,replayMode replay)
     {	if(removeIndexes) 
     		{ mm.setIndex(-1);	// remove indexes implies renumbering the moves 
     		}
-    	if(convertGames && (mm.op==MOVE_SLIDE) && (mode==replayMode.Replay))
+    	if(convertGames && (mm.op==MOVE_SLIDE) && (replay==replayMode.Replay))
     	{	// old game records contain MOVE_SLIDE, which we want to remove so the animations look nice.
     		Gipfmovespec m = (Gipfmovespec)mm;
     		removeIndexes = true;
-    		PerformAndTransmit(new Gipfmovespec(m.player,MOVE_DROPB,m.from_col,m.from_row),transmit,mode);
-    		return PerformAndTransmit(new Gipfmovespec(m.player,MOVE_SLIDEFROM,m.from_col,m.from_row,m.to_col,m.to_row),transmit,mode);
+    		PerformAndTransmit(new Gipfmovespec(m.player,MOVE_DROPB,m.from_col,m.from_row),transmit,replay);
+    		return PerformAndTransmit(new Gipfmovespec(m.player,MOVE_SLIDEFROM,m.from_col,m.from_row,m.to_col,m.to_row),transmit,replay);
     	}
     	else
     	{
-    		return super.PerformAndTransmit(mm, transmit, mode);
+    		return super.PerformAndTransmit(mm, transmit, replay);
     	}
     	
     }

@@ -238,7 +238,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
                 c.lastContents = c.contents;
                 
                 SetBoard(c,Empty); // turn captured balls into an Empty space
-                if(replay!=replayMode.Replay)
+                if(replay.animate)
                 {	zCell d = rack[whoseTurn][col];
                 	animationStack.push(c);
                 	animationStack.push(d);
@@ -252,7 +252,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
                 c.lastCaptured = placementIndex-1;
                 c.lastContents = c.contents;
                 SetBoard(c, NoSpace); // turn isolated spaces into nowhere
-                if(replay!=replayMode.Replay)
+                if(replay.animate)
                 {	zCell d = rack[whoseTurn][color];
                 	animationStack.push(c);
                 	animationStack.push(d);
@@ -946,7 +946,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         switch (board_state)
         {
         case GAMEOVER_STATE:
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	// some old damaged games continue with forced moves
             	throw G.Error("Undefined state for MoveBtoB: %s",board_state); //gameover?        		
         	}

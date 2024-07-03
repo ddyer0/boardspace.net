@@ -1021,7 +1021,7 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         	pickObject(src);
         	dropObject(dest);
         	
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(src);
 				animationStack.push(dest);

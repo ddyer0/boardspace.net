@@ -553,7 +553,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         lastDropped = b.lastDropped;
         
         startBoardAnimations(replay,b.animationStack,CHIPSIZE,MovementStyle.Simultaneous);        	
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

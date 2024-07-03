@@ -811,9 +811,9 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	if(viewPlayer!=null) { return viewPlayer.boardIndex; }
     	return getActivePlayer().boardIndex;
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {
-    	boolean v = super.PerformAndTransmit(m,transmit,mode);
+    	boolean v = super.PerformAndTransmit(m,transmit,replay);
     	
         if(m.op==MOVE_SWITCH)
         {
@@ -846,7 +846,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         HBoard gb = currentPlayerBoard(bb);
         startBoardAnimations(replay,gb.animationStack,gb.cellSize(),MovementStyle.Simultaneous);
         
-		if(replay!=replayMode.Replay) { playSounds((Honeymovespec)mm); }
+		if(replay.animate) { playSounds((Honeymovespec)mm); }
 		return (true);
     }
      HBoard currentPlayerBoard(HoneyBoard gb)
@@ -861,7 +861,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

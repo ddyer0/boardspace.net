@@ -702,7 +702,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     	{
     	TzaarChip ch = c.removeTop();
     	TzaarCell dest = captures[who][ch.typeIndex];
-    	if(replay!=replayMode.Replay) 
+    	if(replay.animate) 
     		{  animationStack.push(c); 
     		   animationStack.push(dest); 
     		}
@@ -727,7 +727,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	TzaarMovespec m = (TzaarMovespec)mm;
-    	if(replay!=replayMode.Replay) { animationStack.clear(); }
+    	if(replay.animate) { animationStack.clear(); }
        //G.print("E "+m+" for "+whoseTurn+" : "+stackIndex);
         switch (m.op)
         {
@@ -746,7 +746,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
      	   	//undoInfo = m.undoInfo = sweepForDvonnContact();
             stackIndex++;
             setNextStateAfterDrop();
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             	{
             	animationStack.push(from);
        	     	animationStack.push(to);
@@ -761,7 +761,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
 			TzaarChip dp = m.bottom = to.topChip();
 			TzaarChip fp = m.top = from.topChip();
 			
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
         	{ for(int lim=from.height()-1; lim>=0; lim--)
         		{ animationStack.push(from);
         	      animationStack.push(to);

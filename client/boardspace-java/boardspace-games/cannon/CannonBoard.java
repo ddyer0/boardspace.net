@@ -668,7 +668,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         			G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");
                     pickObject(m.source, m.from_col, m.from_row);
                     dropObject(CannonId.BoardLocation,m.to_col,m.to_row);
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                     	animationStack.push(pickedSource);
                     	animationStack.push(droppedDest);
@@ -689,7 +689,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	droppedDest = dest;
         	CannonCell deadPool = capturedChips[nextPlayer[whoseTurn]];
 			deadPool.addChip(top);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
              {	CannonCell from = getCell(m.from_col,m.from_row);
              	animationStack.push(from);
              	CannonCell d = new CannonCell(dest);
@@ -719,7 +719,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         	pickObject(CannonId.BoardLocation, m.from_col, m.from_row);
 			dropObject(CannonId.BoardLocation,m.to_col,m.to_row); 
 			
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             {
             	animationStack.push(pickedSource);
             	animationStack.push(droppedDest);
@@ -740,7 +740,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         			G.Assert((pickedObject==null)&&(droppedDest==null),"something is moving");
         			pickObject(CannonId.BoardLocation, m.from_col, m.from_row);
         			dropObject(CannonId.BoardLocation,m.to_col,m.to_row); 
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                     	animationStack.push(pickedSource);
                     	animationStack.push(droppedDest);
@@ -804,7 +804,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
 			}
 			if(remove)
 			{
-				 if(replay!=replayMode.Replay)
+				 if(replay.animate)
 				 {
 					 animationStack.push(dest);
 					 animationStack.push(deadPool);

@@ -709,7 +709,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     
     public boolean Execute(commonMove mm,replayMode replay)
     {	Stymiemovespec m = (Stymiemovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -734,7 +734,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 				animationStack.push(src);
 				animationStack.push(dest);
 			}
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(mid);
 				animationStack.push(caps);
@@ -755,7 +755,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     		StymieChip midTop = SetBoard(mid,null);
     		StymieCell caps = playerCaptives[whoseTurn];
     		caps.addChip(midTop);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(src);
     			animationStack.push(dest);
@@ -783,7 +783,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 			else { G.Error("Not expecting flip ",midTop); }
 			
 			mid.addChip(newmid);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(src);
 				animationStack.push(dest);
@@ -811,7 +811,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 			else { G.Error("Not expecting flip ",midTop); }
 			
 			mid.addChip(newmid);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(src);
 				animationStack.push(dest);
@@ -829,7 +829,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     		pickObject(src);
     		m.chip = pickedObject;
     		dropObject(dest);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(src);
     			animationStack.push(dest);
@@ -847,7 +847,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         		m.chip = pickedObject;
         		dropObject(dest);
         		captureStack.push(null);
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(src);
         			animationStack.push(dest);
@@ -923,7 +923,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
              * removed from the game record, so there are never picked stones in
              * single step replays.
              */
-            if(replay!=replayMode.Replay && (po==null))
+            if(replay.animate && (po==null))
             	{ animationStack.push(src);
             	  animationStack.push(dest); 
             	}

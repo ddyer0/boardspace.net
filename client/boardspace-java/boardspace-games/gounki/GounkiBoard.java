@@ -21,6 +21,7 @@ import java.awt.Color;
 import online.game.*;
 
 import java.util.*;
+
 import lib.*;
 import lib.Random;
 
@@ -60,7 +61,9 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
 	static final GounkiId RackLocation[] = { GounkiId.White_Chip_Pool,GounkiId.Black_Chip_Pool};
    	static final int White_Chip_Index = 0;
 	static final int Black_Chip_Index = 1;
-
+	private int prevLastDropped = -1;
+	private int prevLastPicked = -1;
+	int dropState = 0;
 	private GounkiState unresign;
  	private GounkiState board_state;
 	public GounkiState getState() {return(board_state); }
@@ -254,6 +257,9 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
      	}} 
     	Init_Standard(gtype);
         moveNumber = 1;
+        prevLastDropped = -1;
+        prevLastPicked = -1;
+        dropState = 0;
         forward_left[map[0]] = CELL_UP_LEFT;
         forward_right[map[0]] = CELL_UP_RIGHT;
         forward[map[0]] = CELL_UP;
@@ -386,6 +392,10 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
         	int size = undoInfo2%STACKHEIGHTLIMIT;
         	int capinfo = undoInfo2/STACKHEIGHTLIMIT;
          	moveStack(dr,src,size);
+         	dr.lastDropped = prevLastDropped;
+         	prevLastDropped = -1;
+         	dropState--;
+         	cleanLastMoveCells();
     		pickedObject = src.removeTop();
     		undoCaptures(dr,capinfo);
     		deploymentSize = 0;
@@ -407,6 +417,10 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
     	case MOVE_DEPLOYSTEP:
     		pickedSourceStack.pop();	// remove the source too.  This is unusual
     		deploymentSize++;
+         	dr.lastDropped = prevLastDropped;
+         	prevLastDropped = -1;
+         	dropState--;
+ 			cleanLastMoveCells();
     		int height = undoInfo2%STACKHEIGHTLIMIT;
     		int stack = undoInfo2/STACKHEIGHTLIMIT;
     		while(height-->0) { dr.removeTop(); }
@@ -425,8 +439,11 @@ default:
     {	GounkiChip po = pickedObject;
     	GounkiCell c = pickedSourceStack.pop();
     	c.addChip(po);
+    	c.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	setState(pickedStateStack.pop());
     	pickedObject = null;
+    	cleanLastMoveCells();
     	switch(c.rackLocation())
     	{
     	default: throw G.Error("Not expecting source %d", c.rackLocation);
@@ -463,6 +480,9 @@ default:
        c.addChip(po);
        droppedDestStack.push(c);
        dropMoveStack.push(m);
+       prevLastDropped = c.lastDropped;
+       c.lastDropped = dropState;
+       dropState++;
        switch (c.rackLocation())
         {
         default: throw G.Error("Not expecting dest %d",c.rackLocation);
@@ -504,6 +524,8 @@ default:
     {	G.Assert((pickedObject==null),"ready to pick");
     	pickedObject = c.removeTop();
     	pickedSourceStack.push(c);
+    	prevLastPicked = c.lastPicked;
+    	c.lastPicked = dropState;
     	pickedStateStack.push(board_state);
         switch (c.rackLocation())
         {
@@ -572,7 +594,7 @@ default:
      			chipsOnBoard[player]--;
     			GounkiCell dest = rack[player][top.chipTypeIndex()];
     			dest.addChip(top);
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{	
     				animationStack.push(to);
     				animationStack.push(dest);
@@ -625,12 +647,23 @@ default:
     	// deploy 2 or 3 chips.  If the row or column is the same, it's a square deployment
     	// prefer to remove from the bottom of the stack first
     	// and in any case preserve the identity of the chips
+    	
+			prevLastPicked = src.lastPicked;
+			src.lastPicked = dropState;
+			prevLastDropped = d1.lastDropped;
+
     	cellsForCurrentMove.push(src);
     	cellsForCurrentMove.push(d1);
     	cellsForCurrentMove.push(d2);
     	d1.addChip(src.removeChipOfType(isSquareDeployment(src,d1),0));
+		d1.lastDropped = dropState;
+		dropState++;
+		d1.lastPicked = dropState;
     	d2.addChip(src.removeChipOfType(isSquareDeployment(d1,d2),0));
-    	if(replay!=replayMode.Replay)
+		d2.lastDropped = dropState;
+		dropState++;
+
+    	if(replay.animate)
     	{
     		animationStack.push(src);
     		animationStack.push(d1);
@@ -640,8 +673,11 @@ default:
 
     	if(d3!=null) 
     	{	d3.addChip(src.removeChipOfType(isSquareDeployment(d2,d3),0));
+    		d2.lastPicked = dropState;
+			d3.lastDropped = dropState;
+			dropState++;
     		cellsForCurrentMove.push(d3);
-    	   	if(replay!=replayMode.Replay)
+    	   	if(replay.animate)
         	{
         		animationStack.push(d2);
         		animationStack.push(d3);
@@ -691,7 +727,7 @@ default:
         	GounkiCell src = getSource();
         	GounkiCell dest = getDest();
         	GounkiCell dest2 = getCell(m.to_col,m.to_row);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	for(int lim=dest.height();lim>0;lim--)
         		{
         		animationStack.push(dest);
@@ -708,9 +744,18 @@ default:
         	m.undoInfo = ((undo*STACKHEIGHTLIMIT)+deploymentSize)*100;
         	m.state = board_state;
         	dest.addChip(ch);										// put it back on the intermediate square
+        	
+        	src.lastPicked = dropState;
+        	dest.lastDropped = dropState;
+			dropState++;
+
         	pickedSourceStack.push(dest);
         	droppedDestStack.push(dest2);
         	cellsForCurrentMove.push(dest2);
+        	dest.lastPicked = dropState;
+			dest2.lastDropped = dropState;
+			dropState++;
+
         	dropMoveStack.push(m);
         	setState(GounkiState.DEPLOY2_STATE);
         	boolean finalDeploy = (deploymentSize==1) || (getDests().size()==0);
@@ -738,8 +783,13 @@ default:
         			G.Assert((pickedObject==null),"nothing should be moving");
         			GounkiCell src = getCell(GounkiId.BoardLocation, m.from_col, m.from_row);
         			GounkiCell dest = getCell(GounkiId.BoardLocation,m.to_col,m.to_row);
+        			prevLastPicked = src.lastPicked;
+        			prevLastDropped = dest.lastDropped;
+        			src.lastPicked = dropState;
+        			dest.lastDropped = dropState;
+        			dropState++;
         			int siz = src.height();
-                   	if(replay!=replayMode.Replay)
+                   	if(replay.animate)
                 	{
                 		animationStack.push(src);
                 		animationStack.push(dest);
@@ -778,7 +828,7 @@ default:
             	  chipsOnBoard[whoseTurn]++;
             	  pickedObject = null;
             	  int siz = src.height();
-	              if(replay!=replayMode.Replay)
+	              if(replay.animate)
 	            	{	for(int lim=src.height();lim>0;lim--)
 	            		{
 	            		if(replay==replayMode.Single)
@@ -791,6 +841,10 @@ default:
             	  m.state = board_state;
             	  moveStack(src,c,siz);
             	  droppedDestStack.push(c);
+            	  prevLastDropped = c.lastDropped;
+            	  c.lastDropped = dropState;
+            	  dropState++;
+            	  
             	  dropMoveStack.push(m);
             	  cellsForCurrentMove.push(c);
             	  deploymentSize = siz;
@@ -1348,5 +1402,19 @@ default:
  CommonMoveStack  GetListOfMoves()
  {	return(getListOfMoves(null,whoseTurn,true));
  }
- 
+
+//when undrop or unpick, don't leave cells with futurevalues of dropState
+public void cleanLastMoveCells() {
+	for(GounkiCell c = allCells; c!=null; c=c.next)
+	{	if(c.lastDropped>=dropState)
+			{
+			c.lastDropped = c.lastPicked = -1;
+			}
+		if(pickedObject==null && c.lastPicked>=dropState) 
+			{ c.lastPicked = -1;
+			  c.lastDropped = -1;
+			}
+	}
+	
+}
 }

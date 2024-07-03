@@ -39,7 +39,6 @@ import lib.*;
  *
  * March 2010 Initial work in progress. 
  * 
- *
 */
 public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiConstants
 {
@@ -220,7 +219,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,eyeRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,numberMenu,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,altchipRect);       
     	if(rotate)
@@ -386,7 +385,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
      	Hashtable<ShogiCell,ShogiCell> dests = gb.getDests();
        	drawArrow(gc,gb,YELLOWDOT,gb.pickedSource,gb.droppedDest,brect);
        	drawArrow(gc,gb,YELLOWDOT,gb.prevPickedSource,gb.prevDroppedDest,brect);
-
+       	numberMenu.clearSequenceNumbers();
         // drawing order doesn't matter for these graphics
     	for(ShogiCell cell = gb.allCells;
     	    cell!=null;
@@ -395,6 +394,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
             boolean canhit = gb.LegalToHitBoard(cell);
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             if( cell.drawStack(gc,this,canhit?highlight:null,SQUARESIZE,xpos,ypos,0,0.1,null)) 
             	{ 
@@ -446,6 +446,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 	            	}
 
     	}    	
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor,0.5);   
     }
     private void drawArrow(Graphics gc,ShogiBoard gb,Color color,ShogiCell from,ShogiCell to,Rectangle brect)
     {
@@ -503,7 +504,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 
         DrawChipsetMarker(gc,altchipRect,highlight);
         DrawReverseMarker(gc,reverseViewRect,highlight);
-      
+        DrawPlayerMarker(gc,gb.whoseTurn, iconRect);
         GC.setFont(gc,standardBoldFont());
         double standardRotation = pl.messageRotation();
 		if (vstate != ShogiState.Puzzle)
@@ -550,6 +551,10 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 
     }
 
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.moveNumber;
+    }
 
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -562,10 +567,10 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-        
+    	numberMenu.recordSequenceNumber(b.moveNumber); 
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

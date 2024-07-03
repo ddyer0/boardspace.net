@@ -497,7 +497,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public boolean Execute(commonMove m,replayMode replay)
     {	//if(my.spectator) { System.out.println("E "+m); }
         handleExecute(b,m,replay);
-        if(replay!=replayMode.Replay) { playSounce((plateaumove)m); }
+        if(replay.animate) { playSounce((plateaumove)m); }
         generalRefresh();
        return (true);
     }

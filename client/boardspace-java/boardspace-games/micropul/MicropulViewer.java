@@ -725,7 +725,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Chained);
 
 		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

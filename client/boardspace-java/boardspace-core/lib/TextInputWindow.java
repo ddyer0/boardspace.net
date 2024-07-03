@@ -119,7 +119,6 @@ public class TextInputWindow extends exCanvas implements CanvasProtocol, Runnabl
 		area.setBounds(l,t,w,h);
 	}
 	public void StartDragging(HitPoint hp) {
-		// TODO Auto-generated method stub
 		
 	}
 

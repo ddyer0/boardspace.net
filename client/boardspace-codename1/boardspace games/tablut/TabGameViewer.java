@@ -581,7 +581,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         
         startBoardAnimations(replay,b.animationStack,BOARDCELLSIZE,MovementStyle.Sequential);
 
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
 		lastDropped = b.lastDroppedDest;	// this is for the image adjustment logic
        return (true);
     }

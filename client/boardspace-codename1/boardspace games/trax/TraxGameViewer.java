@@ -584,7 +584,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
      public boolean Execute(commonMove m,replayMode replay)
     {	
         handleExecute(b,m,replay);						 // let the board do the dirty work
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
         return (true);
     }
      void playSounds(commonMove mm)

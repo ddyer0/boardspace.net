@@ -645,7 +645,7 @@ class DayAndNightBoard
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	DayAndNightmovespec m = (DayAndNightmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
@@ -666,7 +666,7 @@ class DayAndNightBoard
         	pickObject(src);
         	m.chip = pickedObject;
         	dropObject(dest);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{ animationStack.push(getSource());
         	  animationStack.push(dest); 
         	}
@@ -700,7 +700,7 @@ class DayAndNightBoard
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

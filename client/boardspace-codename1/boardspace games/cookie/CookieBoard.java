@@ -1046,7 +1046,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
         {	
       		if(crawlOption && (crawlCell==null)) 
       			{ crawlCell = cookieLocation[whoseTurn];
-      			  if(replay!=replayMode.Replay)
+      			  if(replay.animate)
       			  {	CookieCell d = crawlCellDestProxy[0];
        				animationStack.push(crawlCellSrcProxy);
       				animationStack.push(d);
@@ -1148,7 +1148,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
        	case MOVE_RACK_BOARD:
        		CookieCell from = getCell(m.source,m.from_col,m.from_row);
        		CookieCell to = getCell(m.dest,m.to_col,m.to_row);
-       		if(replay!=replayMode.Replay)
+       		if(replay.animate)
        		{
        			addAnimation(from,to);
        		}
@@ -1163,7 +1163,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
 	   		CookieCell c = getCell(m.from_col, m.from_row);
 	    	CookieCell d = getCell(m.to_col,m.to_row);
 	    	G.Assert(c==crawlCell,"starting from the crawl cell");
-	   		if(replay!=replayMode.Replay)
+	   		if(replay.animate)
 	   		{	addCrawlAnimation(c,d);
 	   		}
 	   		pickedSourceStack[stackIndex] = c;
@@ -1179,7 +1179,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
        		{
        		CookieCell c = getCell(m.from_col, m.from_row);
         	CookieCell d = getCell(m.to_col,m.to_row);
-       		if(replay!=replayMode.Replay)
+       		if(replay.animate)
        		{	addAnimation(c,d);
        		}
           	pickBoardCell(c);

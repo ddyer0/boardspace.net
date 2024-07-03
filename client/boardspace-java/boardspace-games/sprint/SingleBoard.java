@@ -974,7 +974,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 			animationStack.push(rcells[dest]);
 		}
 		while(map[dest]!=-1)
-		{	if(replay!=replayMode.Replay)
+		{	if(replay.animate)
 			{
 			animationStack.push(rcells[dest]);
 			animationStack.push(rcells[dest+direction]);
@@ -1005,7 +1005,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Sprintmovespec m = (Sprintmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         validateMap();
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -1051,7 +1051,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

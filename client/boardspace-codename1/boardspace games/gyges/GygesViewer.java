@@ -597,7 +597,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	handleExecute(b,mm,replay);
         startBoardAnimations(replay);
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
@@ -605,7 +605,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
      void startBoardAnimations(replayMode replay)
      {	try {
      	double start = 0.0;
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	GygesCell endpoint = b.animationStack.top();
      		if(endpoint!=null)
      		{

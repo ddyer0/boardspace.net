@@ -430,7 +430,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         handleExecute(b,mm,replay);
         numberMenu.recordSequenceNumber(b.moveNumber());
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

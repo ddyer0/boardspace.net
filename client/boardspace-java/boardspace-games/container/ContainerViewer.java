@@ -1732,13 +1732,13 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         handleExecute(b,mm,replay);
         startBoardAnimations(replay);
 		lastDropped = b.lastDroppedObject;
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
      void startBoardAnimations(replayMode replay)
      {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	while(b.animationStack.size()>1)
      		{
      		ContainerCell dest = b.animationStack.pop();

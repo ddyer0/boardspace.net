@@ -554,7 +554,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }
     
-    public boolean winForPlayer(int player)
+    public boolean WinForPlayer(int player)
     {
     	switch(variation)
     	{
@@ -568,7 +568,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {	// return true if the conditions for a win exist for player right now
     	// we maintain the wins in doDone so no logic is needed here.
     	if(board_state.GameOver()) 
-    		{ return winForPlayer(player);
+    		{ return WinForPlayer(player);
     		}
     	return(false);
     }
@@ -887,7 +887,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	dest.addChip(added);
     	kingCount[playerIndex(added)]++;
     	madeKing = true;
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(rack[whoseTurn]);
     		animationStack.push(dest);
@@ -1042,7 +1042,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     public boolean Execute(commonMove mm,replayMode replay)
     {	CheckerMovespec m = (CheckerMovespec)mm;
     	//checkOccupied();
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -1066,7 +1066,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         			
         			pickObject(src);
         			dropObject(dest); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{	animationStack.push(mid);	// captured stones first
         				animationStack.push(rack[whoseTurn^1]);
         				animationStack.push(src);
@@ -1090,7 +1090,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         			pickObject(src);
         			dropObject(dest); 
         			captureHeight.push(0);
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(src);
         				animationStack.push(dest);
@@ -1174,7 +1174,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
             dropObject(c);
             doCapture(cap);
             setNextStateAfterDrop(replay);
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             {
             	animationStack.push(cap);
             	animationStack.push(rack[whoseTurn^1]);

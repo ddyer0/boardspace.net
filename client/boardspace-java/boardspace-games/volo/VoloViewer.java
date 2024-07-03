@@ -526,7 +526,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
         handleExecute(bb,mm,replay);
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      

@@ -279,7 +279,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
             break;
         default:
         case Gameover:
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         	throw G.Error("Move not complete, can't change the current player %s",board_state);
         	}
@@ -719,7 +719,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	ProteusMovespec m = (ProteusMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -738,7 +738,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     			m.chip = pickedObject;
     			dropObject(dest,-1); 
                 setNextStateAfterDrop(replay);
-                if(replay!=replayMode.Replay)
+                if(replay.animate)
     				{
                 	animationStack.push(src);
                 	animationStack.push(dest);
@@ -756,7 +756,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     			pickObject(dest,1);
     			m.chip2 = pickedObject;
     			dropObject(src,0);
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(src);
     				animationStack.push(dest);

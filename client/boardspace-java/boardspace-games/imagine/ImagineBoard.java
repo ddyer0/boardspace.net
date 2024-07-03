@@ -517,7 +517,7 @@ class ImagineBoard
     		if(sel!=null && sel.topChip()!=null)
     		{	discards.addChip(sel.removeTop());
     			sel.addChip(draw());
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{	
     				animationStack.push(sel);
     				animationStack.push(discards);
@@ -904,14 +904,14 @@ class ImagineBoard
     	{	ImagineCell sel =cards[i];
     		if(sel.topChip()!=null)
     			{ discards.addChip(sel.removeTop());
-    			  if(replay!=replayMode.Replay)
+    			  if(replay.animate)
     			  {
     				  animationStack.push(sel);
     				  animationStack.push(discards);
     			  }
     			}
     		sel.addChip(draw());
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(deck);
     			animationStack.push(sel);
@@ -976,7 +976,7 @@ class ImagineBoard
     
     public boolean Execute(commonMove mm,replayMode replay)
     {	Imaginemovespec m = (Imaginemovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         
       //  G.print("E "+m+" for "+whoseTurn+" "+board_state);
  

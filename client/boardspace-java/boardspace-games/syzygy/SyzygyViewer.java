@@ -552,7 +552,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         startBoardAnimations(replay,bb.animationStack,siz,MovementStyle.Chained);
       
 		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
      

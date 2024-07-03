@@ -1135,7 +1135,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    			rd.addChip(rf.removeTop());
 	    			occupiedCells[whoseTurn].remove(rf,false);
 	    			occupiedCells[whoseTurn].push(rd);
-	    			if(replay!=replayMode.Replay)
+	    			if(replay.animate)
 	    			{
 	    				animationStack.push(rf);
 	    				animationStack.push(rd);
@@ -1148,7 +1148,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    			rd.addChip(rf.removeTop());
 	    			occupiedCells[whoseTurn].remove(rf,false);
 	    			occupiedCells[whoseTurn].push(rd);
-	    			if(replay!=replayMode.Replay)
+	    			if(replay.animate)
 	    			{
 	    				animationStack.push(rf);
 	    				animationStack.push(rd);
@@ -1176,7 +1176,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         		dest.addChip(ChessChip.QueenChip[colorIndex]);
         		occupiedCells[whoseTurn].push(dest);
         		checkOccupied();
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{	
         		    animationStack.push(captured[whoseTurn]);
         		    animationStack.push(dest);
@@ -1210,7 +1210,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		{
 			kingLocation[capee]=null;
 		}
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{	animationStack.push(mid);
 			animationStack.push(captured[capee]);
 		}
@@ -1251,7 +1251,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     }
     public void addDropAnimation(ChessCell src,ChessCell dest,replayMode replay)
     {
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
 		{
 			animationStack.push(src);
 			if((variation==Variation.Atomic) && (dest.topChip()!=null))
@@ -1269,7 +1269,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	ChessMovespec m = (ChessMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
        // System.out.println("E "+m+" for "+whoseTurn);
         checkOccupied();
         switch (m.op)
@@ -1327,7 +1327,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     		occupiedCells[whoseTurn].remove(rook,false);
     		occupiedCells[whoseTurn].push(rdest);
     		
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(rook);
     			animationStack.push(rdest);

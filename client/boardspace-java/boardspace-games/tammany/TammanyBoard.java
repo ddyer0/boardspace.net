@@ -803,7 +803,7 @@ import static tammany.TammanyMovespec.*;
 					TammanyCell to = influence[inf]; 
 					TammanyChip ch = from.removeTop();
 					to.addChip(ch);
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 					{
 						animationStack.push(from);
 						animationStack.push(to);
@@ -1093,7 +1093,7 @@ import static tammany.TammanyMovespec.*;
         		TammanyCell dest = p.influence[index];
         		dest.addChip(ch);
         		src.removeTop();
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(src);
         			animationStack.push(dest);
@@ -1197,7 +1197,7 @@ import static tammany.TammanyMovespec.*;
     					for(int i=0;i<3;i++)
     					{	// award 3 influence chips
     						p.influence[index].addChip(TammanyChip.influence[index]);
-    						if(replay!=replayMode.Replay)
+    						if(replay.animate)
     						{
     							animationStack.push(influence[index]);
     							animationStack.push(p.influence[index]);
@@ -1836,7 +1836,7 @@ import static tammany.TammanyMovespec.*;
     	dropObject(to);
        	setNextStateAfterDrop(replay);
    	
-    	if(replayMode.Replay!=replay)
+    	if(replay.animate)
     		{
     		animationStack.push(from);
     		animationStack.push(to);
@@ -1858,7 +1858,7 @@ import static tammany.TammanyMovespec.*;
     		  while(v-->0) 
     		  	{ TammanyChip top = p.influence[i].removeTop();		// remove the vote tokens he used
     		  	  wasteBasket.addChip(top);
-    		  	  if(replay!=replayMode.Replay)
+    		  	  if(replay.animate)
     		  	  {	  
     		  		  animationStack.push(p.influence[i]);
     		  		  animationStack.push(wasteBasket);
@@ -1869,7 +1869,7 @@ import static tammany.TammanyMovespec.*;
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	TammanyMovespec m = (TammanyMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); gameEvents.clear(); }
+        if(replay.animate) { animationStack.clear(); gameEvents.clear(); }
    
         switch (m.op)
         {

@@ -607,7 +607,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	GobMovespec m = (GobMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
@@ -626,7 +626,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
                     pickObject(src);
                     m.moved = pickedObject;
                     dropObject(dest); 
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                     	animationStack.push(src);
                     	animationStack.push(dest);
@@ -643,7 +643,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         		pickObject(src);
         		m.moved = pickedObject;        	
         		dropObject(dest); 
-                if(replay!=replayMode.Replay)
+                if(replay.animate)
                 {
                 	animationStack.push(src);
                 	animationStack.push(dest);

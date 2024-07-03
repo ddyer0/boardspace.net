@@ -313,14 +313,14 @@ int countRecruits(EuphoriaCell activeRecruits,Allegiance a)
 }
 void animateKnowledge(int step,replayMode replay)
 {
-	if(replay!=replayMode.Replay) {
+	if(replay.animate) {
 		b.animationStack.push(b.knowlegeTrack[knowledge-1]);
 		b.animationStack.push(b.knowlegeTrack[knowledge+step-1]);
 	}
 }
 void animateMorale(int step,replayMode replay)
 {
-	if(replay!=replayMode.Replay) {
+	if(replay.animate) {
 		b.animationStack.push(b.moraleTrack[morale-1]);
 		b.animationStack.push(b.moraleTrack[morale+step-1]);
 	}
@@ -522,7 +522,7 @@ public void addAllegianceStar(replayMode replay)
 {	EuphoriaChip tok = getAuthorityToken(replay);
 	if(tok!=null) 
 		{ allegianceStars.addChip(tok); 
-		  if(replay!=replayMode.Replay)
+		  if(replay.animate)
 		  {
 			  b.animatePlacedItem(authority,allegianceStars);
 		  }
@@ -916,7 +916,7 @@ void loseWorker(replayMode replay)
 	}
 	if(worker==null) { b.p1("No worker"); }
 	b.logGameEvent(LoseAWorker,""+lostWorkerKnowledge,worker.shortName(),color.name()); 
-	if(replay!=replayMode.Replay)
+	if(replay.animate)
 	{
 		b.animateSacrificeWorker(workers,worker);
 	}
@@ -936,7 +936,7 @@ public boolean moraleCheck(replayMode replay)
 	if(allOneArtifactType())  
 		{ while(nart-->morale)
 			{  b.recycleArtifact(artifacts.removeTop()); 
-		  	   if(replay!=replayMode.Replay)  { b.animateReturnArtifact(artifacts); } 
+		  	   if(replay.animate)  { b.animateReturnArtifact(artifacts); } 
 		  	}
 		}
 		else { return(true);//need to interact
@@ -1140,13 +1140,13 @@ int nKindsOfCommodityOrResource()
 void payCommodityOrResource(int n,replayMode replay)
 {	while(n-- > 0)
 	{
-	if(water.height()>0) { b.addWater(water.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnWater(water); } }
-	else if(energy.height()>0) { b.addEnergy(energy.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnEnergy(energy); } }
-	else if(food.height()>0) { b.addFood(food.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnFood(food); }}
-	else if(bliss.height()>0) { b.addBliss(bliss.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnBliss(bliss); }}
-	else if(clay.height()>0) { b.addClay(clay.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnClay(clay); }}
-	else if(gold.height()>0) { b.addGold(gold.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnGold(gold); }}
-	else if(stone.height()>0) { b.addStone(stone.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnStone(stone); } }
+	if(water.height()>0) { b.addWater(water.removeTop()); if(replay.animate) { b.animateReturnWater(water); } }
+	else if(energy.height()>0) { b.addEnergy(energy.removeTop()); if(replay.animate) { b.animateReturnEnergy(energy); } }
+	else if(food.height()>0) { b.addFood(food.removeTop());  if(replay.animate) { b.animateReturnFood(food); }}
+	else if(bliss.height()>0) { b.addBliss(bliss.removeTop());  if(replay.animate) { b.animateReturnBliss(bliss); }}
+	else if(clay.height()>0) { b.addClay(clay.removeTop());  if(replay.animate) { b.animateReturnClay(clay); }}
+	else if(gold.height()>0) { b.addGold(gold.removeTop());  if(replay.animate) { b.animateReturnGold(gold); }}
+	else if(stone.height()>0) { b.addStone(stone.removeTop());  if(replay.animate) { b.animateReturnStone(stone); } }
 	else { throw b.Error("Ran out of things"); }
 	}
 }
@@ -2332,15 +2332,15 @@ private EuphoriaChip shedOneResource(replayMode replay)
 {
 	if(stone.height()>0)
 		{ b.addStone(stone.removeTop()); 
-		  if(replay!=replayMode.Replay) { b.animateReturnStone(stone); }
+		  if(replay.animate) { b.animateReturnStone(stone); }
 		  return(RecruitChip.Stone);
 		}
 	else if(gold.height()>0) 
-		{ b.addGold(gold.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnGold(gold); }
+		{ b.addGold(gold.removeTop());  if(replay.animate) { b.animateReturnGold(gold); }
 		  return(RecruitChip.Gold);
 		}
 	else if(clay.height()>0) 
-		{ b.addClay(clay.removeTop());  if(replay!=replayMode.Replay) { b.animateReturnClay(clay); }
+		{ b.addClay(clay.removeTop());  if(replay.animate) { b.animateReturnClay(clay); }
 		  return(RecruitChip.Clay);
 		}
 	else { throw b.Error("ran out of resources");}
@@ -2348,17 +2348,17 @@ private EuphoriaChip shedOneResource(replayMode replay)
 private void shedOneCommodity(replayMode replay)
 {
 	if(water.height()>0) 
-		{  b.addWater(water.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnWater(water); }}
-	else if(food.height()>0) { b.addFood(food.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnFood(food); }}
-	else if(energy.height()>0) {  b.addEnergy(energy.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnEnergy(energy); }}
-	else if(bliss.height()>0) {  b.addBliss(bliss.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnBliss(bliss); }}
+		{  b.addWater(water.removeTop()); if(replay.animate) { b.animateReturnWater(water); }}
+	else if(food.height()>0) { b.addFood(food.removeTop()); if(replay.animate) { b.animateReturnFood(food); }}
+	else if(energy.height()>0) {  b.addEnergy(energy.removeTop()); if(replay.animate) { b.animateReturnEnergy(energy); }}
+	else if(bliss.height()>0) {  b.addBliss(bliss.removeTop()); if(replay.animate) { b.animateReturnBliss(bliss); }}
 	else { throw b.Error("Ran out of commodities"); }
 }
 private void shedOneNonBliss(replayMode replay)
 {
-	if(water.height()>0) {  b.addWater(water.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnWater(water); }}
-	else if(food.height()>0) { b.addFood(food.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnFood(food); }}
-	else if(energy.height()>0) {  b.addEnergy(energy.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnEnergy(energy); }}
+	if(water.height()>0) {  b.addWater(water.removeTop()); if(replay.animate) { b.animateReturnWater(water); }}
+	else if(food.height()>0) { b.addFood(food.removeTop()); if(replay.animate) { b.animateReturnFood(food); }}
+	else if(energy.height()>0) {  b.addEnergy(energy.removeTop()); if(replay.animate) { b.animateReturnEnergy(energy); }}
 	else { throw b.Error("Ran out of non-bliss commodities"); }
 }
 
@@ -2368,7 +2368,7 @@ private boolean shedCards(int n,replayMode replay)
 	{while(n-- > 0)
 	{
 		b.recycleArtifact(artifacts.removeTop()); 
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 	  		{  b.animateReturnArtifact(artifacts);
 	  		}
 	}
@@ -2399,13 +2399,13 @@ void sacrificeWorker(EuphoriaCell c,replayMode replay)
 		{ b.doublesElgible = null;
 		  b.usingDoubles = false;
 		}} }
-	if(replay!=replayMode.Replay) { b.animateSacrificeWorker(c,(WorkerChip)ch);}
+	if(replay.animate) { b.animateSacrificeWorker(c,(WorkerChip)ch);}
 }
 private void sendStone(int n,replayMode replay)
 {	if(stone.height()>=n)
 	{
 	for(int i=0;i<n;i++) 
-		{ b.addStone(stone.removeTop()); if(replay!=replayMode.Replay)
+		{ b.addStone(stone.removeTop()); if(replay.animate)
 		{ b.animateReturnStone(stone); }}
 	return;
 	}
@@ -2414,7 +2414,7 @@ private void sendStone(int n,replayMode replay)
 private void sendGold(int n,replayMode replay)
 {	if(gold.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addGold(gold.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnGold(gold); }}
+	for(int i=0;i<n;i++) { b.addGold(gold.removeTop()); if(replay.animate) { b.animateReturnGold(gold); }}
 	return;
 	}
 	b.Error("Not enough gold");
@@ -2422,7 +2422,7 @@ private void sendGold(int n,replayMode replay)
 private void sendClay(int n,replayMode replay)
 {	if(clay.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addClay(clay.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnClay(clay); }}
+	for(int i=0;i<n;i++) { b.addClay(clay.removeTop()); if(replay.animate) { b.animateReturnClay(clay); }}
 	return;
 	}
 	b.Error("Not enough clay");
@@ -2431,7 +2431,7 @@ private void sendClay(int n,replayMode replay)
 private void sendEnergy(int n,replayMode replay)
 {	if(energy.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addEnergy(energy.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnEnergy(energy); }}
+	for(int i=0;i<n;i++) { b.addEnergy(energy.removeTop()); if(replay.animate) { b.animateReturnEnergy(energy); }}
 	return;
 	}
 	b.p1("not enough energy");
@@ -2440,7 +2440,7 @@ private void sendEnergy(int n,replayMode replay)
 private void sendFood(int n,replayMode replay)
 {	if(food.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addFood(food.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnFood(food); }}
+	for(int i=0;i<n;i++) { b.addFood(food.removeTop()); if(replay.animate) { b.animateReturnFood(food); }}
 	return;
 	}
 	b.Error("Not enough food");
@@ -2449,7 +2449,7 @@ private void sendFood(int n,replayMode replay)
 private void sendWater(int n,replayMode replay)
 {	if(water.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addWater(water.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnWater(water); }}
+	for(int i=0;i<n;i++) { b.addWater(water.removeTop()); if(replay.animate) { b.animateReturnWater(water); }}
 	return;
 	}
 	b.Error("Not enough water");
@@ -2458,7 +2458,7 @@ private void sendWater(int n,replayMode replay)
 private void sendBliss(int n,replayMode replay)
 {	if(bliss.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.addBliss(bliss.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnBliss(bliss); }}
+	for(int i=0;i<n;i++) { b.addBliss(bliss.removeTop()); if(replay.animate) { b.animateReturnBliss(bliss); }}
 	return;
 	}
 	b.Error("Not enough Bliss");	
@@ -2466,7 +2466,7 @@ private void sendBliss(int n,replayMode replay)
 private Cost sendArtifacts(int n,replayMode replay)
 {	if(artifacts.height()>=n)
 	{
-	for(int i=0;i<n;i++) { b.recycleArtifact(artifacts.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }}
+	for(int i=0;i<n;i++) { b.recycleArtifact(artifacts.removeTop()); if(replay.animate) { b.animateReturnArtifact(artifacts); }}
 	return(null);
 	}
 	throw b.Error("should succeed");
@@ -2487,7 +2487,7 @@ private Cost artifactChipBuggy(ArtifactChip which,Cost cost,replayMode replay)
 	b.Assert(alternateArtifacts.height()==0,"no alternet artifacts allowed");
 	artifacts.removeChip(which);	
 	// do not recycle the artifact, that's the bug
-	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
+	if(replay.animate) { b.animateReturnArtifact(artifacts); }
 	return(null);
 	}
 }
@@ -2572,14 +2572,14 @@ private void sendArtifact(int ind,replayMode replay)
 {
 	ArtifactChip removed = (ArtifactChip)artifacts.removeChipAtIndex(ind);
 	b.recycleArtifact(removed);
-	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
+	if(replay.animate) { b.animateReturnArtifact(artifacts); }
 }
 // used by pamhidzai
 void returnArtifact(EuphoriaCell to,replayMode replay)
 {
 	ArtifactChip top = (ArtifactChip)artifacts.removeTop();
 	to.addChip(top);
-	if(replay!=replayMode.Replay) 
+	if(replay.animate) 
 	{
 		b.animatePlacedItem(artifacts,to);
 	}
@@ -3088,7 +3088,7 @@ Cost payCost(Cost item,replayMode replay)
 		// a no potential interaction with recruits that let you select a roll
 		totalWorkers--;
 		EuphoriaChip worker = newWorkers.removeTop();
-		if(replay!=replayMode.Replay) { b.animateSacrificeWorker(newWorkers,(WorkerChip)worker);}
+		if(replay.animate) { b.animateSacrificeWorker(newWorkers,(WorkerChip)worker);}
 		return(null);
 	case GoldOrArtifact:
 		if(gold.height()==0) { return(doFlartner(replay)); }
@@ -4520,7 +4520,7 @@ private boolean doAuthorityAndInfluence(EuphoriaBoard b,Allegiance aa,replayMode
 			 // incrementing allegiance can use up a token, so it's not an error
 			 // if there are none left.
 			 market.addChip(tok); 
-			 if(replay!=replayMode.Replay)
+			 if(replay.animate)
 			 	{
 				 b.animationStack.push(authority);
 				 b.animationStack.push(market);
@@ -4540,7 +4540,7 @@ private void doTheaterOfRevelatoryPropaganda(EuphoriaBoard b,replayMode replay)
 	{
 	if(incrementKnowledge(replay))
 		{
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 			{ MarketChip.TheaterOfRevelatoryPropaganda.logGameEvent(b);
 			}
 		}
@@ -4556,7 +4556,7 @@ private void doAuthority(EuphoriaBoard b,Allegiance aa,replayMode replay)
 			{
 			b.placeAuthorityToken(c,chip);
 			doTheaterOfRevelatoryPropaganda(b,replay);
-			if(replay!=replayMode.Replay) { b.animatePlacedItem(authority,c); }
+			if(replay.animate) { b.animatePlacedItem(authority,c); }
 			}
 		}
 }
@@ -4576,7 +4576,7 @@ private void doMarketAndInfluence(EuphoriaBoard b,replayMode replay,Allegiance a
 		}
 		b.placeAuthorityToken(market,chip);
 		doTheaterOfRevelatoryPropaganda(b,replay);
-		if(replay!=replayMode.Replay) { b.animatePlacedItem(authority,market); }
+		if(replay.animate) { b.animatePlacedItem(authority,market); }
 		}
 }
 // just influence
@@ -5159,17 +5159,17 @@ void doTrash(EuphoriaCell from,Benefit type,int n, int n0,replayMode replay)
 }
 void doBliss(int n0,EuphoriaBoard b,replayMode replay)
 {	int n = doLottery(n0,bliss);
-	for(int i=0;i<n;i++) { addBliss(b.getBliss()); if(replay!=replayMode.Replay) { b.animateNewBliss(bliss); }}
+	for(int i=0;i<n;i++) { addBliss(b.getBliss()); if(replay.animate) { b.animateNewBliss(bliss); }}
 	doTrash(b.bliss,Benefit.Bliss,n,n0,replay);
 }
 void doFood(int n0,EuphoriaBoard b,replayMode replay)
 {	int n = doLottery(n0,food);
-	for(int i=0;i<n;i++) { addFood(b.getFood()); if(replay!=replayMode.Replay) { b.animateNewFood(food); }}
+	for(int i=0;i<n;i++) { addFood(b.getFood()); if(replay.animate) { b.animateNewFood(food); }}
 	doTrash(b.farm,Benefit.Bliss,n,n0,replay);
 }
 void doWater(int n0,EuphoriaBoard b,replayMode replay)
 {	int n = doLottery(n0,water);
-	for(int i=0;i<n;i++) { addWater(b.getWater()); if(replay!=replayMode.Replay) { b.animateNewWater(water); }}
+	for(int i=0;i<n;i++) { addWater(b.getWater()); if(replay.animate) { b.animateNewWater(water); }}
 	doTrash(b.aquifer,Benefit.Water,n,n0,replay);
 }
 
@@ -5178,8 +5178,8 @@ Benefit doEnergy(int n0,EuphoriaBoard b,replayMode replay)
 	int n = doLottery(n0,energy);
 	int egg = energyGainedThisTurn;
 	energyGainedThisTurn += n;
-	for(int i=0;i<n;i++) { addEnergy(b.getEnergy()); if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }}
-	if(replay!=replayMode.Replay) { for(int i=n; i<n0; i++) { b.animateTrash(bliss); } }
+	for(int i=0;i<n;i++) { addEnergy(b.getEnergy()); if(replay.animate) { b.animateNewEnergy(energy); }}
+	if(replay.animate) { for(int i=n; i<n0; i++) { b.animateTrash(bliss); } }
 	if((egg<3) 
 			&& (energyGainedThisTurn>=3)
 			&& !testTFlag(TFlag.UsedFrazerTheMotivator) // only once per turn
@@ -5200,14 +5200,14 @@ private void doClay(int n0,EuphoriaBoard b,replayMode replay)
 	for(int i=n; i<n0; i++)
 	{
 	b.trash.addChip(b.getClay());
-	if(replay!=replayMode.Replay)
+	if(replay.animate)
 		{ b.animateTrash(bliss); 
 		}
 	}
 	while(n-- > 0)
 	{
 	addClay(b.getClay());		
-	if(replay!=replayMode.Replay) { b.animateNewClay(clay); }
+	if(replay.animate) { b.animateNewClay(clay); }
 	}
 
 }
@@ -5216,14 +5216,14 @@ private void doGold(int n0,EuphoriaBoard b,replayMode replay)
 
 	for(int i=n; i<n0; i++)
 	{	b.trash.addChip(b.getGold());
-	if(replay!=replayMode.Replay) 
+	if(replay.animate) 
 		{  b.animateTrash(bliss); } 
 	}	
 
 	while(n-- > 0)
 	{
 	addGold(b.getGold());		
-	if(replay!=replayMode.Replay) { b.animateNewGold(gold); }
+	if(replay.animate) { b.animateNewGold(gold); }
 	}
 
 }
@@ -5250,12 +5250,12 @@ private void doStone(int n0,EuphoriaBoard b,replayMode replay)
 	int n = doForcedAltruism(n0,Benefit.Stone.name());
 	for(int i=n; i<n0; i++) 
 		{ b.trash.addChip(b.getStone());
-		  if(replay!=replayMode.Replay)  { b.animateTrash(bliss);  }
+		  if(replay.animate)  { b.animateTrash(bliss);  }
 		}
 	while(n-- > 0)
 	{
 	addStone(b.getStone());		
-	if(replay!=replayMode.Replay) { b.animateNewStone(stone); }
+	if(replay.animate) { b.animateNewStone(stone); }
 	}
 }
 public Benefit doArtifact(int n,EuphoriaBoard b,replayMode replay)
@@ -5269,7 +5269,7 @@ public Benefit doArtifact(int n,EuphoriaBoard b,replayMode replay)
 		EuphoriaChip a = b.getArtifact();
 		if(a!=null)
 		{	addArtifact(a);
-			if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); }			
+			if(replay.animate) { b.animateNewArtifact(artifacts); }			
 		}
 	}
 	return(null);
@@ -5407,7 +5407,7 @@ Benefit collectBenefit(Benefit benefit,replayMode replay)
 		else if(totalWorkers<MAX_WORKERS)
 		{	// pretty expensive, but you can do it
 			addNewWorker(WorkerChip.getWorker(color,1));	// will be rerolled
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				b.animateNewWorkerA(newWorkers);
 			}
@@ -5430,7 +5430,7 @@ Benefit collectBenefit(Benefit benefit,replayMode replay)
 		else if(totalWorkers<MAX_WORKERS)
 		{	// only if there's room
 			addNewWorker(WorkerChip.getWorker(color,1));	// will be rerolled
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				b.animateNewWorkerB(newWorkers);
 			}	
@@ -5659,7 +5659,7 @@ private void doAlbertTheFounder(replayMode replay)
 		b.useRecruit(RecruitChip.AlbertTheFounder,"use");
 		addNewWorker(WorkerChip.getWorker(color,1));	// will be rerolled
 		totalWorkers++;
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			b.animateNewWorkerA(newWorkers);
 		}

@@ -786,7 +786,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	if(to.topChip()!=null) { val += doSlide(to,to.exitTo(dir),dir,replay,true); }
     	//G.Assert(!to.isEdgeCell(),"not edge1");
     	moveStack(from,to); 
-    	if(replay!=replayMode.Replay && animateFirst)
+    	if(replay.animate && animateFirst)
     	{
     		animationStack.push(from);
     		animationStack.push(to);
@@ -908,7 +908,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		c.previousLastCaptured = c.lastCaptured;
     		c.lastCaptured = lastPlacedIndex;
     		lastPlacedIndex++;
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(c);
     			animationStack.push(dest);
@@ -1181,7 +1181,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         			  GipfCell from = pickedSource.top();
         			  unPickObject(); 
          			  int cap = removalCells.size()*REMOVESTACK;
-         			  if(replay!=replayMode.Replay && animateFirst)
+         			  if(replay.animate && animateFirst)
          			  {
          			  animationStack.push(from);
          			  animationStack.push(dest);
@@ -1213,7 +1213,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         		G.Assert(dest.isEdgeCell(),"can only drop on edges");
         		boolean animateFirst = pickedObject==null;
         		if(animateFirst) { pickFromRack(reserve[whoseTurn]); }
-        		if(replay!=replayMode.Replay && animateFirst)
+        		if(replay.animate && animateFirst)
         		{
         			animationStack.push(getSource());
         			animationStack.push(dest);

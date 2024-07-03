@@ -1011,7 +1011,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 	}
 	public boolean Execute(commonMove mm,replayMode replay) {
 		BreakingAwayMovespec m = (BreakingAwayMovespec) mm;
-		//if(replay!=replayMode.Replay) { G.print("E "+m+" "+Digest()); }
+		//if(replay.animate) { G.print("E "+m+" "+Digest()); }
 		switch (m.op) {
 		case MOVE_DONEADJUST:
 			doneAdjusting(m.playerNumber,m.moveData);
@@ -1204,7 +1204,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		default:
 			cantExecute(m);
 		}
-		//if(replay!=replayMode.Replay) {	G.print("X "+m+" "+Digest()); }
+		//if(replay.animate) {	G.print("X "+m+" "+Digest()); }
 
 		// System.out.println("Ex "+m+" for "+whoseTurn+" "+board_state);
 		// System.out.println("Digest "+Digest());

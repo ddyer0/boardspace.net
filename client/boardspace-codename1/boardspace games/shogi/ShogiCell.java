@@ -22,6 +22,7 @@ import lib.Random;
 import lib.exCanvas;
 import lib.HitPoint;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<ShogiCell>
@@ -29,9 +30,27 @@ class CellStack extends OStack<ShogiCell>
 	public ShogiCell[] newComponentArray(int n) { return(new ShogiCell[n]); }
 }
 
-public class ShogiCell extends stackCell<ShogiCell,ShogiChip> implements ShogiConstants
+public class ShogiCell extends stackCell<ShogiCell,ShogiChip> implements ShogiConstants,PlacementProvider
 {	public ShogiChip[] newComponentArray(int n) { return(new ShogiChip[n]); }
-	public boolean isPalace = false;
+	int lastPicked = -1;
+	int lastDropped = -1;
+	
+	public void copyFrom(ShogiCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
 	
 	// true if this cell is across the river for that player
 	public boolean acrossTheRiver(int forPlayer)
@@ -41,7 +60,6 @@ public class ShogiCell extends stackCell<ShogiCell,ShogiChip> implements ShogiCo
 	public ShogiCell(char c,int r) 
 	{	super(Geometry.Oct,c,r);
 		onBoard=true;
-		isPalace = (col>='D') && (col<='F') && ((row<=3) || (row>=8));
 		rackLocation = ShogiId.BoardLocation;
 	}
 	// constructor for standalone cells

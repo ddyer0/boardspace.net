@@ -379,7 +379,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
         		
         		for(int i=1;i<=finalHeight;i++)
         		{	c.addChip(pickedSource.chipAtIndex(i)); 
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(pickedSource);
         				animationStack.push(c);
@@ -629,7 +629,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	TumbleMovespec m = (TumbleMovespec)mm;
-    	if(replay==replayMode.Replay) { animationStack.clear(); }
+    	if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {

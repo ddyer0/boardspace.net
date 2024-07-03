@@ -355,6 +355,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean review = reviewMode() && !mutable_game_record;
+      XiangqiBoard gb = disB(gc);
       if(review)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -363,10 +364,10 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
-	    b.SetDisplayParameters(0.91,1.04,  0.16,0.2,  0);
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayParameters(0.91,1.04,  0.16,0.2,  0);
+	    gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */
@@ -524,7 +525,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

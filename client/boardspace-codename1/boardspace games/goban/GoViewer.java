@@ -937,7 +937,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
 	        // go currently doesn't generate any animations, but if it did
 	        // this would be all-at-once movements.
 	        startBoardAnimations(replay,b.animationStack,b.cellSize(),MovementStyle.Simultaneous);
-	        if(replay!=replayMode.Replay) { playSounds(mm); }
+	        if(replay.animate) { playSounds(mm); }
 	    	 }
         	break;
     	 }

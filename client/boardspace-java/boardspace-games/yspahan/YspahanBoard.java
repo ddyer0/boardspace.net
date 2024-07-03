@@ -228,7 +228,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 					c.removeTop();
 					YspahanCell dest = playerBoards[playerWithColor(top)].pmisc[ypmisc.cubes.index];
 					dest.addChip(top);
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 					{
 					animationStack.push(c);
 					animationStack.push(dest);
@@ -1547,7 +1547,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		YspahanChip v = null;
 		while (n-- > 0) {
 			to.addChip(v = from.removeTop());
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 			animationStack.push(from);
 			animationStack.push(to);
@@ -2483,7 +2483,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 	}
 
 
-	public boolean Execute(commonMove mm,replayMode mode)
+	public boolean Execute(commonMove mm,replayMode replay)
 	{	YspahanMovespec m = (YspahanMovespec)mm;
 		// G.print("E "+m+" for "+whoseTurn+" "+startPlayer+" "+board_state+" "+confirmCardUndoState);
 		switch (m.op) {
@@ -2492,7 +2492,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 			break;
 		case MOVE_DONE:
 			G.Assert(DoneState()||board_state==ystate.PAY_CAMEL_STATE, "%s is not a legal Done state", board_state);
-			doDone(m,mode);
+			doDone(m,replay);
 			break;
 
 		case MOVE_BOARD_BOARD: { // Ro modified
@@ -2526,7 +2526,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 			pickObject(src, cardInx);
 			setNextStateAfterPick();
 			// change the replay so we animate even in direct play
-			dropObject(dest, -1,(mode==replayMode.Live?replayMode.Single:mode));
+			dropObject(dest, -1,(replay==replayMode.Live?replayMode.Single:replay));
 			setNextStateAfterDrop();
 			}
 		}
@@ -2536,9 +2536,9 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		{
 			YspahanCell c = getLocalCell(m.dest, m.to_col, m.to_row);
 			if (isSource(c) && (!movingSupervisorZero(c))) {
-				unPickObject(mode,null);
+				unPickObject(replay,null);
 			} else {
-				dropObject(c, -1,mode);
+				dropObject(c, -1,replay);
 				setNextStateAfterDrop();
 			}
 		}
@@ -2791,7 +2791,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 			{	YspahanChip top = c.removeTop();
 				YspahanCell dest = playerBoards[playerWithColor(top)].pmisc[ypmisc.cubes.index];
 				dest.addChip(top);
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(c);
 					animationStack.push(dest);

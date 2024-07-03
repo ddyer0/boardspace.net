@@ -1043,7 +1043,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         startBoardAnimations(replay,bb.animationStack,CELLSIZE,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
 

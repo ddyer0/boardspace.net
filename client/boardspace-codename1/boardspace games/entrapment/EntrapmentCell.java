@@ -18,6 +18,7 @@ package entrapment;
 import lib.Random;
 import entrapment.EntrapmentConstants.EntrapmentId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<EntrapmentCell>
@@ -25,8 +26,17 @@ class CellStack extends OStack<EntrapmentCell>
 	public EntrapmentCell[] newComponentArray(int n) { return(new EntrapmentCell[n]); }
 }
 
-public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> 
+public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip> implements PlacementProvider
 {	int sweepCounter=0;
+	int lastPicked = -1;
+	int lastDropped = -1;
+
+
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
+	
 	public EntrapmentChip[] newComponentArray(int n) { return(new EntrapmentChip[n]); }
 	public EntrapmentCell[] barriers = null;
 	boolean escapeCell = false;
@@ -68,12 +78,17 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip>
 		deadChip = null;
 		sweepCounter =0;
 		trapped = false;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 	public void copyFrom(EntrapmentCell c)
 	{
 		super.copyFrom(c);
 		deadChip = c.deadChip;
 		trapped = c.trapped;
+		lastPicked = c.lastPicked;
+		lastDropped = c.lastDropped;
+
 	}
 	public long Digest(Random r)
 	{	return(super.Digest(r)+((deadChip!=null) ? deadChip.Digest() : 0));

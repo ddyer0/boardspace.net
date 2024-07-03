@@ -712,7 +712,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     		DvonnCell dest = captures[ch.colorIndex];
         	dest.addChip(ch);
         	off++;
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{	if((prev==null) || (ch!=prev)) 
         		{ 
         		if(an!=null)
@@ -766,7 +766,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     }
      public boolean Execute(commonMove mm,replayMode replay)
     {	DvonnMovespec m = (DvonnMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn );
         switch (m.op)
         {
@@ -781,7 +781,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
         	int height = droppedHeight = from.height();
         	m.setSrcHeight(height);
         	m.setSrcChip(from.topChip());
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(from.copy());
         		animationStack.push(to);

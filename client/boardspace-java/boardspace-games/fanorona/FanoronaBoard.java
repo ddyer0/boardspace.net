@@ -659,7 +659,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     		  else 
     		  	{ lastCaptured[stackIndex]=first;
     		  	  removeChip(first);
-    		  	  if(replay!=replayMode.Replay)
+    		  	  if(replay.animate)
     		  	  {	animationStack.push(first);
     		  	    animationStack.push(fChips[toChip.colorIndex^1]);
     		  	  }
@@ -1088,7 +1088,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	        { 	
 	        	FanoronaCell src = getCell(m.from_col, m.from_row);
 	        	FanoronaCell dst = getCell(m.to_col, m.to_row);
-	        	if(replay!=replayMode.Replay)
+	        	if(replay.animate)
 	        	{
 	        		animationStack.push(src);
 	        		animationStack.push(dst);
@@ -1104,7 +1104,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	        {
 	        FanoronaCell src = getCell(m.from_col, m.from_row);
 	    	FanoronaCell dst = getCell(m.to_col, m.to_row);
-	    	if(replay!=replayMode.Replay)
+	    	if(replay.animate)
         	{
         		animationStack.push(src);
         		animationStack.push(dst);
@@ -1123,7 +1123,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
         	pickFromBoard(src);
         	dropOnBoard(dest);
         	setNextStateAfterDrop(replay);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(src);
         		animationStack.push(dest);

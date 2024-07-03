@@ -231,7 +231,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	//
         int stateY = boardY-bufferCellsH*CELLSIZE;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,altViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,altViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -385,7 +385,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	CellStack prev_cells = gb.cellsForPrevMove;
     	GounkiCell current_source = current_cells.size()>0 ? current_cells.elementAt(0) : null;
     	GounkiCell prev_source = prev_cells.size()>0 ? prev_cells.elementAt(0) : null;
-
+    	numberMenu.clearSequenceNumbers();
     	boolean perspective = usePerspective();
     	double ystep = perspective ? 0.2 : 0.03;
     	double xstep = perspective ? 0 : 0.1;
@@ -399,6 +399,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
             int rawy = gb.cellToY(cell);
             int ypos = G.Bottom(brect) - rawy;
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean legal = gb.LegalToHitBoard(cell,dests);
             double yscl = perspective 
             				? (twist?0.9:1.0)*yScale(rawy-G.Top(brect),G.Height(brect))
@@ -423,7 +424,8 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
         	}
     	}
-  
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
+    	
       }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  DrawReverseMarker(gc,reverseRect,highlight,GounkiId.ReverseViewButton);
@@ -487,6 +489,10 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
         drawViewsetMarker(gc,viewsetRect,ourSelect);
 
     }
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.dropState;
+    }
 
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -499,10 +505,10 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
      public boolean Execute(commonMove mm,replayMode replay)
     {	 
         handleExecute(b,mm,replay);
-        
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
 
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

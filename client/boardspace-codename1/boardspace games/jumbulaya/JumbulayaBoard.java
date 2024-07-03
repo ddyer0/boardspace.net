@@ -1270,7 +1270,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	    			{	JumbulayaChip newchip = drawPile.removeTop();
 	    				c.addChip(newchip);
 	    				n++;
-	    				if(replay!=replayMode.Replay) 
+	    				if(replay.animate) 
 	    				{ JumbulayaCell cd = mapped[ind];
 	    				// the mapped cell is used only by the user interface and is loaded by
 	    				// the user interface during redisplay, but we need to preload it so the
@@ -1305,7 +1305,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     		{	JumbulayaChip newchip = drawPile.removeTop();
     			c.addChip(newchip);
 				n++;
-				if(replay!=replayMode.Replay) 
+				if(replay.animate) 
 				{
 				  // the mapped cell is used only by the user interface and is loaded by
 				  // the user interface during redisplay, but we need to preload it so the
@@ -1668,7 +1668,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 			animationStack.push(rcells[dest]);
 		}
 		while(map[dest]!=-1)
-		{	if(replay!=replayMode.Replay)
+		{	if(replay.animate)
 			{
 			animationStack.push(rcells[dest]);
 			animationStack.push(rcells[dest+direction]);
@@ -1685,7 +1685,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Jumbulayamovespec m = (Jumbulayamovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+mapTarget[0]);
         switch (m.op)
@@ -1904,7 +1904,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         		if(c.topChip()!=null)
         		{
         			drawPile.addChip(c.removeTop());
-        			if(replay!=replayMode.Replay)
+        			if(replay.animate)
         			{
         				animationStack.push(c);
         				animationStack.push(drawPile);
@@ -2257,7 +2257,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 					placeAt.addChip(top);
 					boardReplacementChars.remove(idx,false);	
 					JumbulayaCell from = boardReplacementCells.remove(idx, false);
-					if((from!=placeAt) && (replay!=replayMode.Replay))
+					if((from!=placeAt) && (replay.animate))
 					{
 						animationStack.push(from);
 						animationStack.push(placeAt);
@@ -2277,7 +2277,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 				placeAt.addChip(top);
 				boardReplacementChars.remove(idx,false);	
 				JumbulayaCell from = boardReplacementCells.remove(idx, false);
-				if((from!=placeAt) && (replay!=replayMode.Replay))
+				if((from!=placeAt) && (replay.animate))
 				{
 					animationStack.push(from);
 					animationStack.push(placeAt);
@@ -2300,7 +2300,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 					nTiles++;
 					placeAt.addChip(top);
 					c.removeTop();
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 					{
 						animationStack.push(c);
 						animationStack.push(placeAt);
@@ -2323,7 +2323,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 					nTiles++;
 					placeAt.addChip(top);
 					c.removeTop();
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 					{
 						animationStack.push(c);
 						animationStack.push(placeAt);
@@ -2356,7 +2356,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 				{
 					rack[idx].addChip(ch);
 					placed = true;
-					if(replayMode.Replay!=replay)
+					if(replay.animate)
 					{
 						animationStack.push(from);
 						animationStack.push(rack[idx]);

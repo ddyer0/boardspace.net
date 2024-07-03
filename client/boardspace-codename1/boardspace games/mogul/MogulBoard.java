@@ -731,7 +731,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     	MogulChip chip = MogulChip.getPlayerChip(getColorMap()[p.myIndex]);
     	oldCell.removeChip(chip);
     	newCell.addChip(chip);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(oldCell);
     		animationStack.push(newCell);
@@ -823,7 +823,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     	{
     	MogulCell to = p.getCardBackgroundCell(top);
     	to.addChip(from.removeTop());
-       	if(replay!=replayMode.Replay)
+       	if(replay.animate)
         	{
         	animationStack.push(from);
         	animationStack.push(to);
@@ -843,7 +843,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     	to.addChip(from.removeTop());
     	givePoints(p,cardSaleValue,replay);
     	if(board_state==MogulState.WonAuction) { startPlayer = secondPlayer; }
-      	if(replay!=replayMode.Replay)
+      	if(replay.animate)
 	    	{
 	    	animationStack.push(from);
 	    	animationStack.push(to);
@@ -862,7 +862,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     int undoPot = 0;
     public boolean Execute(commonMove mm,replayMode replay)
     {	MogulMovespec m = (MogulMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         //System.out.println("E "+m+" for "+whoseTurn+ " " +Digest());
         switch (m.op)
         {
@@ -887,7 +887,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	        	MogulCell from = p.chips;
 	        	MogulCell to = pot;
 	        	to.addChip(from.removeTop());
-	        	if(replay!=replayMode.Replay)
+	        	if(replay.animate)
 		        	{
 		        	animationStack.push(from);
 		        	animationStack.push(to);
@@ -904,7 +904,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	        	to.addChip(from.removeTop());
 	        	to.addChip(from.removeTop());
 	        	p.hasTakenLoan = true;
-	           	if(replay!=replayMode.Replay)
+	           	if(replay.animate)
 		        	{
 		        	animationStack.push(from);
 		        	animationStack.push(to);
@@ -920,7 +920,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	        	undoPot = from.height();		// record the number taken for undo
 	        	while(from.height()>0) 
 	        	{ to.addChip(from.removeTop()); 
-		           	if(replay!=replayMode.Replay)
+		           	if(replay.animate)
 		        	{
 		        	animationStack.push(from);
 		        	animationStack.push(to);

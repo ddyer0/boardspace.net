@@ -511,7 +511,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
  
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,b.cellSize(),MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }

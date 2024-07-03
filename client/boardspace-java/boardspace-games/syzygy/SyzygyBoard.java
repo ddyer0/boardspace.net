@@ -941,7 +941,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
        		{
        		SyzygyCell c = getCell(m.from_col, m.from_row);
         	SyzygyCell d = getCell(m.to_col,m.to_row);
-       		if(replay!=replayMode.Replay)
+       		if(replay.animate)
        		{	addAnimation(c,d);
        		}
           	pickBoardCell(c);

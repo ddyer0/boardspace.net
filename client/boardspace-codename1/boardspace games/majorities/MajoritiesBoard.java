@@ -650,7 +650,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	MajoritiesMovespec m = (MajoritiesMovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -670,7 +670,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
 			MajoritiesCell src = getCell(m.source,m.to_col,m.to_row); 
 			MajoritiesCell dest =  getCell(MajoritiesId.BoardLocation,m.to_col,m.to_row);
 			if(po==null) { po=pickObject(src);	
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(src);
 					animationStack.push(dest);

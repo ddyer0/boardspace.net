@@ -17,7 +17,9 @@
 package online.game;
 
 /**
- * replayMode serves as advice to control saving animation information or not
+ * replayMode serves as advice to control some details when executing a move which are
+ * not technically part of the move.  Examples are saving animation information, recording
+ * details of a move path, or logging information about what the move did.
  * 
  * @author ddyer
  *
@@ -25,9 +27,16 @@ package online.game;
 public enum replayMode
 {	/** live indicates the user is manipulating the UI directly, but the robot is using accelerated move specifiers, 
  	so normally the usert's moves are not animated, but the robot's move are. */
-	Live,
-	/** Replay means a high speed replay or a robot move search is in progress, so no animations should be done */
-	Replay, 
+	Live(true),
+	/** Replay means a high speed replay or a robot move search is in progress, so no animations or extraneous things should be done */
+	Replay(false), 
+	/** replay, do not animate, but do record move path information */
+	Replay1(false),	
    	/** Single means a single step replay is in progress, so both the user and robot's moves should be animated */
-	Single
+	Single(true);
+	public boolean animate = false;
+	replayMode(boolean v)
+	{
+		animate = v;
+	}
 }

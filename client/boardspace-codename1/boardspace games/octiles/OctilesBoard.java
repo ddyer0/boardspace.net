@@ -1341,7 +1341,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
         	m.saved_rotation = rot;
         	OctilesCell mfrom = pickObject(OctilesId.TileLocation, m.from_col, m.from_row);
         	OctilesCell mto = dropObject(OctilesId.TileLocation,m.to_col,m.to_row,0);
-        	if(replay!=replayMode.Replay) 
+        	if(replay.animate) 
         	{
         		animationStack.push(from);
         		animationStack.push(loc);

@@ -443,7 +443,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         handleExecute(b,mm,replay);
         numberMenu.recordSequenceNumber(b.moveNumber());
         
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
         startBoardAnimations(replay,b.animationStack,CELLSIZE,MovementStyle.SequentialFromStart);
         
  

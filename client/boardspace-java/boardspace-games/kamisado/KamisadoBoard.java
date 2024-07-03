@@ -531,7 +531,7 @@ class KamisadoBoard extends rectBoard<KamisadoCell> implements BoardProtocol,Kam
         			m.chip = pickedObject;
         			dropObject(dest); 
  				    setNextStateAfterDrop();
- 				    if(replay!=replayMode.Replay)
+ 				    if(replay.animate)
  				    {
  				    	animationStack.push(src);
  				    	animationStack.push(dest);

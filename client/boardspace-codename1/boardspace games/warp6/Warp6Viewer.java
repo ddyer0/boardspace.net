@@ -565,7 +565,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         
         startBoardAnimations(replay);
          
-        if(replay!=replayMode.Replay) { playSounds((Warp6Movespec)mm); }
+        if(replay.animate) { playSounds((Warp6Movespec)mm); }
  
         return (true);
     }
@@ -574,7 +574,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
      void startBoardAnimations(replayMode replay)
      {	try {
     	 double time = 0.0;
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	int lim = b.animationStack.size();
      		if(lim>0)
      		{

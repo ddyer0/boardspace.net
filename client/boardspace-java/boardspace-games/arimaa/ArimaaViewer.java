@@ -605,14 +605,14 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         handleExecute(b,mm,replay);
         numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
      
      private void startBoardAnimations(replayMode replay)
      {	try {
-        if(replay!=replayMode.Replay)
+        if(replay.animate)
      	{	
      		CellStack anim = b.animationStack;
      		boolean place = getCurrentMoveOp()==MOVE_PLACE_RABBITS;

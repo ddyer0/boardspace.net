@@ -479,7 +479,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     {	
         handleExecute(bb,mm,replay);
 		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

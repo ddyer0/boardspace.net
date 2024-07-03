@@ -2032,7 +2032,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		if(automa) { if(maxp.score<automaScore) { maxp = null; }}
 		if(maxp!=null) { win[maxp.boardIndex]= true; } 
 		
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 			{for(PlayerBoard pb : pbs)
 			{
 			G.print("\nScore "+pb+" = "+pb.score+"\n"+pb.scoreString);
@@ -2545,7 +2545,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		}
     		if(msg!=null) { logRawGameEvent(msg,chip.type.name()); }
  		
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     		{
     			animationStack.push(from);
     			animationStack.push(dest);
@@ -2582,7 +2582,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureChip ok = from.removeChip(chip);   	
     	Assert(ok==chip,"target chip not found");
     	to.addChip(chip);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
 		{
 			animationStack.push(from);
 			animationStack.push(to);
@@ -2599,7 +2599,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	pb.changeResidual(amount);
         ViticultureCell to = residualTrack[pb.residual];
         to.addChip(mark);
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{	animationStack.push(from);
     		animationStack.push(to);
     	}
@@ -2621,7 +2621,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        	String ev = pb.getRooster().colorPlusName()+" "+(amount<0 ? "-" : "+")+aa+" $1";
     	logRawGameEvent(ev);
         
-       	if(replay!=replayMode.Replay)
+       	if(replay.animate)
     	{
     	ViticultureCell dest = amount>0 ? pb.cashDisplay : sink;
     	ViticultureCell source = amount>0 ? sink : pb.cashDisplay;    	
@@ -2651,7 +2651,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	String to = pb.getRooster().colorPlusName();
 		String msg = G.concat(to," ",from,n>=0 ? " +":" -",Math.abs(n),"VP"); 
 		logRawGameEvent(msg);
-    	if(replay != replayMode.Replay)
+    	if(replay.animate)
         {
         	animationStack.push(current);
         	animationStack.push(scoringTrack[pb.score-MIN_SCORE]);
@@ -2777,7 +2777,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		// rest of the cost to the bank
 		changeCash(pb,-cost,yokeCash,replay);
 			
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 			{
 			animationStack.push(recruitWorkers[0]);
 			animationStack.push(dest);
@@ -2956,7 +2956,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			bumpPlayer.messengerMove = null;
 		}
 		//p1("chef bump from "+dest.rackLocation());
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			animationStack.push(dest);
 			animationStack.push(bumpPlayer.workers);
@@ -3536,7 +3536,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(src.topChip()!=null && dest.topChip()==null)
     		{
     			dest.addChip(src.removeTop());
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(src);
     				animationStack.push(dest);
@@ -3643,7 +3643,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			if(doit)
     			{
     			to.addChip(from.removeTop());
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 				animationStack.push(from);
 				animationStack.push(to);
@@ -3685,7 +3685,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		if(canAge(9-row.length,age,dest,pb.hasMediumCellar(),pb.hasBothCellars()))
 		{
 			dest.addChip(age.removeTop());
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(age);
 				animationStack.push(dest);
@@ -3703,7 +3703,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			if(ch.color==pb.color || ((ch.color==ViticultureColor.Gray) && (pb.grayWorker!=null)))
 				{
 				pb.workers.addChip(c.removeChipAtIndex(lim));
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 					{
 					animationStack.push(c);
 					animationStack.push(pb.workers);
@@ -3912,7 +3912,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     				 pb.workers.addChip(current.removeTop());	
     	    		 pb.grayWorker = ViticultureChip.GrayMeeple;	// register owner
     														
-    	    		 if(replay!=replayMode.Replay)
+    	    		 if(replay.animate)
     	    		 {	animationStack.push(current);
     	    		 	animationStack.push(pb.workers);
     	    		 }
@@ -3931,7 +3931,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			Assert(current.topChip()==ViticultureChip.StartPlayerMarker,"the first player marker must be there");
     			
     			pb.isStartPlayer.addChip(current.removeTop());  // the grape has to be there
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{	animationStack.push(current);
     				animationStack.push(pb.isStartPlayer);
     			}
@@ -3965,7 +3965,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureCell dest = discardPile(ch);
     	dest.addChip(ch);
     	logGameEvent(msg,ch.type.toString(),ch.description);
-    	if(replay != replayMode.Replay)
+    	if(replay.animate)
     	{ 	animationStack.push(from);
     		animationStack.push(dest);
     	}
@@ -4746,7 +4746,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
            					if(current.topChip()!=null)	// better be there!
            					{
            						pb.isStartPlayer.addChip(current.removeTop());
-           	    			if(replay!=replayMode.Replay)
+           	    			if(replay.animate)
            	    			{	animationStack.push(current);
            	    				animationStack.push(pb.isStartPlayer);
            	    			}
@@ -5339,7 +5339,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    			logRawGameEvent(msg);
 
 				}
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(c);
 					animationStack.push(pb.workers);
@@ -6068,7 +6068,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private void removeTop(ViticultureCell from,replayMode replay)
     {
     	from.removeTop();
-    	if(replay!=replayMode.Replay)
+    	if(replay.animate)
     	{
     		animationStack.push(from);
     		animationStack.push(getCell(from.rackLocation(),'@',0));
@@ -6085,7 +6085,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(dest.topChip()==null)
     		{	dest.addChip(wine);
     			placed = true;
-    			if(replay!=replayMode.Replay) { 
+    			if(replay.animate) { 
     				animationStack.push(getCell(dest.rackLocation(),'@',0));
     				animationStack.push(dest);
     			}
@@ -6093,7 +6093,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		}
     		idx--;
     	}
-    	if(!placed && replay!=replayMode.Replay)
+    	if(!placed && replay.animate)
     	{
     		logGameEvent("Discard #1",wine.id.shortName);
     	}
@@ -6180,7 +6180,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			  plannerMoves.remove(ind, true);
 			}
 		
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			animationStack.push(from);
 			animationStack.push(dest);
@@ -6230,7 +6230,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		}
 		logVine(UprootSomething,removed);
 		dest.addChip(removed);
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{	animationStack.push(victim);
 			animationStack.push(dest);
 		}
@@ -6443,7 +6443,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
          		}	// gains a point
            	to.addChip(chip);
  
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
 	        	{
 	        	animationStack.push(from);
 	        	animationStack.push(to);
@@ -6583,7 +6583,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			flashChip = vineCard;
 			vine.addChip(vineCard);
 			logVine(PlantSomething,vineCard);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 				{
 				animationStack.push(pb.cards);
 				animationStack.push(vine);
@@ -6890,7 +6890,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		if(sold.topChip()!=null)
         		{
         		sold.removeTop();
-	        	if(replay!=replayMode.Replay)
+	        	if(replay.animate)
 	    		{
 	        		ViticultureCell dest = getCell(sold.rackLocation(),'@',0);
 	        		animationStack.push(sold);
@@ -7053,7 +7053,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(pb.hasVeranda()) { changeScore(pb,1,replay,VerandaBonus,ViticultureChip.VerandaCard,ScoreType.OrangeCard); }
     		if(pb.hasWineParlor()) { changeCash(pb,2,yokeCash,replay); }
     		ViticultureChip card = pb.removeTopSelectedCard().card;
-    		if(replay!=replayMode.Replay) { flashChip = card;	}			// if the viewer notices this card, it will flash up for 2 seconds
+    		if(replay.animate) { flashChip = card;	}			// if the viewer notices this card, it will flash up for 2 seconds
     		purpleDiscards.addChip(card);	// put on the discard pile, otherwise it would just vanish
     		pb.cards.removeChip(card);
     		boolean bonus = false;
@@ -7092,7 +7092,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				if(top==ch)
 				{	found = true;
 					structure.removeChipAtIndex(index);
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 						{
 						animationStack.push(structure);
 						animationStack.push(structureDiscards);
@@ -7118,7 +7118,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				{ // discard the top card, someone saw it.
 				  ViticultureCell discards = getDiscards(stack);
 				  discards.addChip(stack.removeTop());
-				  if(replay!=replayMode.Replay)
+				  if(replay.animate)
 				  {	
 					  animationStack.push(stack);
 					  animationStack.push(discards);
@@ -7135,7 +7135,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			dest.addChip(card);
 
 
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 			{
 				animationStack.push(pb.cards);
 				animationStack.push(dest);
@@ -7153,13 +7153,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			//p1("steal card "+moveNumber);
     			ViticultureChip card = toplayer.takeRandomVisitorCard(r,mm2.from_index);
     			pb.cards.addChip(card);
-    			if(replay!=replayMode.Replay) 
+    			if(replay.animate) 
     				{
     				pb.flashChip = card;
     				toplayer.flashChip = card; 
     				}
     			logGameEvent(InnkeeperSteal,card.type.toString());
-    			if(replay!=replayMode.Replay)
+    			if(replay.animate)
     			{
     				animationStack.push(toplayer.cards);
     				animationStack.push(pb.cards);
@@ -7193,7 +7193,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 					int ind = pb.removeTopSelectedCard().index;
 					ViticultureChip ch = pb.oracleCards.removeChipAtIndex(ind);
 					pb.cards.addChip(ch);  		
-					if(replay!=replayMode.Replay)
+					if(replay.animate)
 						{
 						animationStack.push(cardPile(ch));
 						animationStack.push(pb.cards);
@@ -7203,7 +7203,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			while(pb.oracleCards.height()>0)
 			{	ViticultureChip ch = pb.oracleCards.removeTop();
 				discardPile(ch).addChip(ch);
-				if(replay!=replayMode.Replay) {
+				if(replay.animate) {
 					animationStack.push(cardPile(ch));
 					animationStack.push(discardPile(ch));
 				}
@@ -7404,7 +7404,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		setState(ViticultureState.Gameover);
     		break;
         case FullPass:
-        	if(replay!=replayMode.Replay) { unselect(); }
+        	if(replay.animate) { unselect(); }
         	nextState = passToNextSeason(getCurrentPlayerBoard(),replay,m);
         	break;
         case Discard2GrapesFor3VP:
@@ -7527,7 +7527,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	pb.wakeupPosition = rc;
     	if((rc.col!='A') || (year<=0)) { pb.activeWakeupPosition = rc; }
     	pb.setSeason(rc.col-'A');
-       	if(replay!=replayMode.Replay)
+       	if(replay.animate)
     	{
     	animationStack.push(old);
     	animationStack.push(rc);
@@ -8190,7 +8190,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	Viticulturemovespec m = (Viticulturemovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         m.cards = null;
         turnChangeSamePlayer = false;
         flashChip = null;
@@ -8419,7 +8419,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	ViticultureCell to = getCell(m.dest,m.to_col,m.to_row);
         	pickObject(from,m.from_index);
         	dropObject(to);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{
         		animationStack.push(from);
         		animationStack.push(to);
@@ -8439,7 +8439,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	ViticultureCell to = getCell(m.dest,m.to_col,m.to_row);
         	ViticultureChip chip = from.removeTop();
         	to.addChip(chip);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         		{	animationStack.push(from);
         			animationStack.push(to);
         		}
@@ -8489,7 +8489,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		m.currentWorker = chip;
         	if(G.debug()) { Assert(chip==null || (chip.type!=null && chip.color!=null),"currentworker bad");}
        		dropObject(to);
-       		if(replay!=replayMode.Replay)
+       		if(replay.animate)
 	        	{ animationStack.push(from);
 	        	  animationStack.push(to); 
 	        	}
@@ -8530,7 +8530,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}
@@ -8749,7 +8749,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	if(board_state==ViticultureState.Confirm)
         	{	droppedDestStack.pop();
         		src.addChip(dest.removeTop());
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(dest);
         			animationStack.push(src);
@@ -8759,7 +8759,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	else
         	{	droppedDestStack.push(dest);
         		dest.addChip(src.removeTop());
-        		if(replay!=replayMode.Replay)
+        		if(replay.animate)
         		{
         			animationStack.push(src);
         			animationStack.push(dest);

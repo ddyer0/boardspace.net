@@ -535,7 +535,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     {	
         handleExecute(bb,mm,replay);
 		lastDropped = bb.lastDropped;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
  void playSounds(commonMove mm)

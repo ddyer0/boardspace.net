@@ -827,11 +827,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		}
     		return(false);
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
-    {
-  	
-    	return(super.PerformAndTransmit(m,transmit,mode));
-    }
+ 
     private void doRestart(CrosswordleMovespec m)
     {
        	// set the randomkey to the new date
@@ -874,7 +870,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         handleExecute(bb,mm,replay);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds((CrosswordleMovespec)mm); }
+		if(replay.animate) { playSounds((CrosswordleMovespec)mm); }
 		return (true);
     }
      /**
@@ -885,7 +881,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

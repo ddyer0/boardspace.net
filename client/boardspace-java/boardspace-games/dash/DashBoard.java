@@ -552,7 +552,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
 		DashCell source = getCell(m.from_col, m.from_row);
 		pickObject(source);
 		dropObject(dest); 
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			animationStack.push(source);
 			animationStack.push(dest);

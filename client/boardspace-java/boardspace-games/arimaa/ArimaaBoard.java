@@ -1709,7 +1709,7 @@ public long positionDigest()
     		ArimaaCell rackCell = rack[playerIndex(capturedPiece2)][capturedPiece2.chipType()];
     		rackCell.addChip(capturedPiece2);
     		captured++;
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
     			{
     			animationStack.push(dropped);
     			animationStack.push(rackCell);
@@ -1720,7 +1720,7 @@ public long positionDigest()
     		capturedPiece = captureStack[stackIndex-1]=removeChip(dropped);
     		ArimaaCell rackCell = rack[playerIndex(capturedPiece)][capturedPiece.chipType()];
     		rackCell.addChip(capturedPiece);
-    		if(replay!=replayMode.Replay)
+    		if(replay.animate)
 			{
 			animationStack.push(dropped);
 			animationStack.push(rackCell);
@@ -1915,8 +1915,8 @@ public long positionDigest()
     public boolean Execute(commonMove mm,replayMode replay)
     {	ArimaaMovespec m = (ArimaaMovespec)mm;
     	// G.print("M "+m);
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
-        switch (m.op)
+    	if(replay.animate) { animationStack.clear(); }
+    	switch (m.op)
         {
         case MOVE_PASS:
         case MOVE_NULL:
@@ -1945,7 +1945,7 @@ public long positionDigest()
         				pickObject(rab);
         				dropObject(c);
 
-        				if(replay!=replayMode.Replay)
+        				if(replay.animate)
         					{
         					animationStack.push(rab);
         					animationStack.push(c);
@@ -1966,7 +1966,7 @@ public long positionDigest()
                     pickObject(src);
                     m.picked = pickedObject;
                     ArimaaCell dest = getCell(ArimaaId.BoardLocation,m.to_col,m.to_row);
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                     	animationStack.push(src);
                     	animationStack.push(dest);
@@ -1982,7 +1982,7 @@ public long positionDigest()
         	ArimaaCell src = getCell(m.from_col,m.from_row);
         	ArimaaCell third = src.exitTo(m.pushPullDirection);
         	// a regular step
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             {
              	animationStack.push(src);
             	animationStack.push(dest);
@@ -2007,7 +2007,7 @@ public long positionDigest()
         	ArimaaCell src = getCell(m.from_col,m.from_row);
         	ArimaaCell third = dest.exitTo(m.pushPullDirection);
         	// move the victim
-            if(replay!=replayMode.Replay)
+            if(replay.animate)
             {
             	animationStack.push(dest);
             	animationStack.push(third);
@@ -2039,7 +2039,7 @@ public long positionDigest()
         			m.picked = pickedObject;
          			ArimaaCell dest = getCell(ArimaaId.BoardLocation,m.to_col,m.to_row);
         			dropObject(dest); 
-                    if(replay!=replayMode.Replay)
+                    if(replay.animate)
                     {
                      	animationStack.push(src);
                     	animationStack.push(dest);
@@ -2061,7 +2061,7 @@ public long positionDigest()
             	else
             		{
                 	ArimaaCell src = getSource();
-                	if(replay==replayMode.Single)
+                	if(replay.animate)
                 	{
                 		animationStack.push(src);
                 		animationStack.push(dest);

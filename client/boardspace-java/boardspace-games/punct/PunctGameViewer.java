@@ -711,7 +711,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     {     
         handleExecute(b,m,replay);						 // let the board do the dirty work
         startBoardAnimations(replay,b.animationStack,CELLSIZE,MovementStyle.Simultaneous);
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
         return (true);
     }
   void playSounds(commonMove mm)

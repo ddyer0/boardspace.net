@@ -805,7 +805,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 				ContainerCell dest = islandGoods[slot];
 				dest.addChip(top);
 				code = (code<<3) | (1+slot);
-				if(replay!=replayMode.Replay)
+				if(replay.animate)
 				{
 					animationStack.push(auctionBlock);
 					animationStack.push(dest);
@@ -4024,7 +4024,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 		ContainerCell dest = islandParking[owner.player];
 		owner.shipLocation = dest;
 		dest.addChip(ship);
-		if(replay!=replayMode.Replay)
+		if(replay.animate)
 		{
 			animationStack.push(auctionBlock);
 			animationStack.push(dest);
@@ -4309,7 +4309,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 	                	m.container |= ind<<12;
 	                	ContainerCell dest = getCell(m.dest, m.to_col, (int)(0xffff&m.to_row));
 	                    dropObject(dest); 
-	                    if(replay!=replayMode.Replay)
+	                    if(replay.animate)
 	                    {
 	                    	animationStack.push(src);
 	                    	animationStack.push(dest);
@@ -4340,7 +4340,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 	        			ContainerCell dest = getCell(m.dest, m.to_col, (int)(0xffff&m.to_row));
 	                    pickObject(src);
 	                    dropObject(dest); 
-	                    if(replay!=replayMode.Replay)
+	                    if(replay.animate)
 	                    {
 	                    	animationStack.push(src);
 	                    	animationStack.push(dest);

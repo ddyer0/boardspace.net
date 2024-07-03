@@ -482,7 +482,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     {
         handleExecute(b,m,replay);
         startBoardAnimations(replay,b.animationStack,(int)(b.cellSize()*2.2),MovementStyle.Sequential);
-        if(replay!=replayMode.Replay) { playSounds(m); }
+        if(replay.animate) { playSounds(m); }
          return (true);
     }
      void playSounds(commonMove mm)

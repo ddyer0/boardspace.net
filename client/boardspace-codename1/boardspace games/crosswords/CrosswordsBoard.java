@@ -1174,7 +1174,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     			  CrosswordsChip newchip = drawPile.removeTop();
     			  c.addChip(newchip);
     			  n++;
-    			  if(replay!=replayMode.Replay) 
+    			  if(replay.animate) 
     			  {	  CrosswordsCell cd = mapped[c.row];
     				  // the mapped cell is used only by the user interface and is loaded by
     				  // the user interface during redisplay, but we need to preload it so the
@@ -1596,7 +1596,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         			{// do this the slow way to keep the bookkeeping straight
         			 pickObject(c);
         			 dropObject(drawPile);
-        			  if(replay!=replayMode.Replay)
+        			  if(replay.animate)
         			  {
         				  animationStack.push(c);
         				  animationStack.push(drawPile);
@@ -1617,7 +1617,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         		{
         		CrosswordsCell c = ra[i];        		   
         		c.addChip(drawPile.removeTop());
-            		if(replay!=replayMode.Replay && (c!=null))
+            		if(replay.animate && (c!=null))
         		{
         			animationStack.push(drawPile);
         			animationStack.push(c);
@@ -1698,7 +1698,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 				pickedObject = CrosswordsChip.assignedBlanks[ch-'a'];
 			}
 			dropObject(c);
-			if(replay!=replayMode.Replay)
+			if(replay.animate)
 				{
 				animationStack.push(placeFrom);
 				animationStack.push(c);
@@ -1731,7 +1731,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 			animationStack.push(rcells[dest]);
 		}
 		while(map[dest]!=-1)
-		{	if(replay!=replayMode.Replay)
+		{	if(replay.animate)
 			{
 			animationStack.push(rcells[dest]);
 			animationStack.push(rcells[dest+direction]);
@@ -1748,7 +1748,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Crosswordsmovespec m = (Crosswordsmovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
         validateMap(m.player);
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -1832,7 +1832,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay.animate && (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

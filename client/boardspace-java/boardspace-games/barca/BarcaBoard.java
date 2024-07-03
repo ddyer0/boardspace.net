@@ -667,7 +667,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Barcamovespec m = (Barcamovespec)mm;
-        if(replay!=replayMode.Replay) { animationStack.clear(); }
+        if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
@@ -687,7 +687,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
         	dropObject(to);
         	acceptPlacement();
         	setState(BarcaState.Confirm);
-        	if(replay!=replayMode.Replay)
+        	if(replay.animate)
         	{
         		animationStack.push(from);
         		animationStack.push(to);

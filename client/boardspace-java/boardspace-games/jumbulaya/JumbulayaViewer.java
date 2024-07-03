@@ -1226,7 +1226,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     	return super.canSendAnyTime(m)
     			|| (m.op==MOVE_SHOW);
     }
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
     {
 	   	 if(m.op==MOVE_DROPONRACK)
 	   	 {
@@ -1240,7 +1240,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 	   		 }
 	   	 }
   	
-    	return(super.PerformAndTransmit(m,transmit,mode));
+    	return(super.PerformAndTransmit(m,transmit,replay));
     }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -1265,7 +1265,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds((Jumbulayamovespec)mm); }
+		if(replay.animate) { playSounds((Jumbulayamovespec)mm); }
        return (true);
     }
      /**
@@ -1276,7 +1276,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

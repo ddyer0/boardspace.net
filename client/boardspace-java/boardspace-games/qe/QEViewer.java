@@ -116,9 +116,9 @@ public commonMove convertToSynchronous(commonMove m)
 	return(m);
 }
 
-public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
+public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
 {
-	boolean val = super.PerformAndTransmit(m, transmit, mode);
+	boolean val = super.PerformAndTransmit(m, transmit, replay);
     if(simultaneousTurnsAllowed())
 	{ if(bb.readyToStartNormal())
 		{
@@ -1112,7 +1112,7 @@ public void ViewerRun(int wait)
         startBoardAnimations(replay,bb.animationStack,CELLSIZE*2,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
-		if(replay!=replayMode.Replay) { playSounds(mm); }
+		if(replay.animate) { playSounds(mm); }
        return (true);
     }
 
@@ -1124,7 +1124,7 @@ public void ViewerRun(int wait)
       */
 //     void startBoardAnimations(replayMode replay)
 //     {
-//        if(replay!=replayMode.Replay)
+//        if(replay.animate)
 //     	{
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)

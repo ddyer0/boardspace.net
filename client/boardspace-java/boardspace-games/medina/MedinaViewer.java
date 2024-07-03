@@ -661,7 +661,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,unitSize(b),MovementStyle.Chained);
-        if(replay!=replayMode.Replay) { playSounds(mm); }
+        if(replay.animate) { playSounds(mm); }
  
         return (true);
     }
