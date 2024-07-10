@@ -17,11 +17,10 @@
 package lib;
 
 import com.codename1.ui.Font;
-
 import bridge.FocusEvent;
 import bridge.FocusListener;
-import bridge.JTextComponent;
 import bridge.WindowEvent;
+import bridge.JTextComponent;
 import lib.ChatWidget.ChatId;
 import lib.TextContainer.Op;
 /**

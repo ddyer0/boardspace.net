@@ -667,7 +667,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
    	handleExecute(b,m,replay);
     // record where the boundaries in move numbers lie
-    numberMenu.recordSequenceNumber(b.moveNumber());
+    numberMenu.recordSequenceNumber(b.activeMoveNumber());
     
    	if(m.op==MOVE_SETBOARD) { resetBounds(); }
    	// in capture moves, SequentialFromStart shows the captured ball in its original place

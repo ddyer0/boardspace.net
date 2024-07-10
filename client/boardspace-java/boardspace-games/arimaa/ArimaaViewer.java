@@ -603,7 +603,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-        numberMenu.recordSequenceNumber(b.moveNumber);
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay);
         if(replay.animate) { playSounds(mm); }
  

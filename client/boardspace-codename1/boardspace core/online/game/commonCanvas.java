@@ -759,8 +759,6 @@ public abstract class commonCanvas extends exCanvas
 		private long lastAnimTime = 0;
 	    private Object lastLastDropped = null;
 	    private Object lastLastDropped2 = null;
-	    private int hurryState = 0;
-	    private long hurryTime = (60 * 14 * 1000);	// time to tell the player to finish up
 	    private long timePerTurn = (2 * 60 * 1000);	// tick him after this much time
 	    private long timePerDone = 15*1000;		
 	    private CellId vcr6ButtonCodes[] = 
@@ -7258,17 +7256,23 @@ public abstract class commonCanvas extends exCanvas
     	hidden.startTurn=now; 
     }
     
+    static int HURRYTIME = 1000*60;
+    private boolean hurryState = false;
+    
     // do time related things for the board.
     private void doTime(commonPlayer whoseTurn,boolean doSound)
     { boolean turnChange = whoseTurn!=hidden.lastPlayer;
-      boolean tournamentMode = sharedInfo.getBoolean(TOURNAMENTMODE,false);
       long currentT = G.Date();
       if(turnChange)
       {	hidden.lastPlayer = whoseTurn;
       	hidden.startTurn = currentT;
       }
-      if ((whoseTurn==getActivePlayer()) && doSound && l.playTickTockSounds)
-      {	long elapsed = (currentT - hidden.startTurn); 
+      commonPlayer active = getActivePlayer();
+      if(whoseTurn==active && doSound)
+      {
+      if (l.playTickTockSounds)
+      	{	
+    	long elapsed = (currentT - hidden.startTurn); 
         if ( (hidden.startTurn > 0) 
         		&& (((hidden.doneAtTime>0)&& (elapsed>hidden.timePerDone)) 
         		    || (elapsed > hidden.timePerTurn))
@@ -7277,21 +7281,16 @@ public abstract class commonCanvas extends exCanvas
              SoundManager.playASoundClip(clockSound,5000);
              hidden.startTurn = currentT;	// restart the timer
              if(hidden.doneAtTime>0) { hidden.doneAtTime=currentT; }
-           }
+           }}
 
-         if (tournamentMode)
+      	// if timers are in use, sound a bell at 1 minute
+        int remTime = timeRemaining(whoseTurn) - HURRYTIME;		// negative when less than a minute
+        if(remTime>0) { hurryState = false; }		// reset
+        else if(!hurryState)
             {
-       	    long newtime = whoseTurn.elapsedTime;
-            if ((hidden.hurryState<2) && (newtime > hidden.hurryTime))
-                {   hidden.hurryState=2;
+        	hurryState = true;
                 SoundManager.playASoundClip(hurrySound,1000);
                 }
-            else if ((hidden.hurryState==0) && (newtime > (hidden.hurryTime-1000)))
-            	{  
-            	hidden.hurryState=1;
-            	SoundManager.loadASoundClip(hurrySound);
-            	}
-              }
         }
     }
 

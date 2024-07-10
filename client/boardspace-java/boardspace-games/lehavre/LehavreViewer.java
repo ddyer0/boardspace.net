@@ -779,14 +779,10 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	public boolean isScored() {
 		return false;
 	}
-	@Override
 	public int ScoreForPlayer(commonPlayer p) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
-	@Override
 	public void setSeeChat(boolean b) {
-		// TODO Auto-generated method stub
 		
 	}
 

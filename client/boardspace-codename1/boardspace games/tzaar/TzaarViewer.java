@@ -540,7 +540,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-        numberMenu.recordSequenceNumber(b.moveNumber());
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
   
         startBoardAnimations(replay,b.animationStack,
         					CELLSIZE,MovementStyle.Stack);

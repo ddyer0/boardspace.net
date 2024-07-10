@@ -600,7 +600,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         	}
     	
     	handleExecute(b,mm,replay);
-    	numberMenu.recordSequenceNumber(b.moveNumber()); 
+    	numberMenu.recordSequenceNumber(b.activeMoveNumber()); 
     	
         startBoardAnimations(replay,b.animationStack,animationCellSize(b.animationStack),MovementStyle.Stack);
         return (true);

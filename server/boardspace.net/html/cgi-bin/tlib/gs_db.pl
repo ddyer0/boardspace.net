@@ -337,12 +337,11 @@ sub banme()
 {	my ($dbh,$ip,$from) = @_;
 	my $qip = $dbh->quote(&ip_to_int($ip));
 	my $msg1 = "auto-banned ip=$ip for tripping the robot alarm from $from";
-	my $msg2 = "alarm from $from";
-	my $qmsg1 = $dbh->quote($msg1);
+	my $da = &datestring();
+	my $msg2 = "${da}alarm from $from";
 	my $qmsg2 = $dbh->quote($msg2);
-	my $da = $dbh->quote(&datestring());
 	my $q = "INSERT INTO ipinfo SET status='autobanned',rejectcount=1,min=$qip,max=$qip,comment=$qmsg2 "
-		. " ON DUPLICATE KEY UPDATE badlogincount=badlogincount+1,rejectcount=rejectcount+1,status='autobanned',comment=concat(comment,'\n',$da,$qmsg2)";
+		. " ON DUPLICATE KEY UPDATE badlogincount=badlogincount+1,rejectcount=rejectcount+1,status='autobanned',comment=concat(comment,'\n',$qmsg2)";
 	#print "$q<p>";
 	&commandQuery($dbh,$q);
 
@@ -357,6 +356,7 @@ sub banme()
 	}
 	&finishQuery($sth);
 	# add an alert which will be sent with email
+	# my $qmsg1 = $dbh->quote($msg1);
 	# &commandQuery($dbh,"INSERT into messages SET type='alert',message=$qmsg1");
 }
 sub honeypot()

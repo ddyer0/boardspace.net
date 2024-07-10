@@ -51,6 +51,10 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 
 	private FrogState unresign;
  	private FrogState board_state;
+ 	private int prevLastPicked = -1;
+ 	private int prevLastDropped = -1;
+ 	int dropState = 0;
+ 	int prevDropState = 0;
 	public FrogState getState() {return(board_state); }
 	public CellStack animationStack = new CellStack();
 	public void setState(FrogState st) 
@@ -166,6 +170,9 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		droppedMoveDest = null;
 		pickedObject = null;
 		moveNumber = 1;
+		prevLastPicked = -1;
+		prevLastDropped = -1;
+		dropState = 0;
 	}
 
 	public FrogBoard cloneBoard() {
@@ -252,6 +259,8 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		pickedObject = from_b.pickedObject;
 		pickedSource = getCell(from_b.pickedSource);
 		pickedMoveSource = getCell(from_b.pickedMoveSource);
+		droppedMoveDest = getCell(from_b.droppedMoveDest);
+		droppedDest = getCell(from_b.droppedDest);
 		occupiedCells.clear();
 
 		for (int idx = 0, lim = from_b.occupiedCells.size(); idx < lim; idx++) {
@@ -267,7 +276,6 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		}
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
 		sameboard(from_b);
 	
 	}
@@ -433,7 +441,11 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		}
 		if (dr != null) {
 			pickedObject = removeChip(dr);
+			dr.lastDropped = prevLastDropped;
+			prevLastDropped = -1;
 		}
+		dropState = prevDropState;
+		cleanLastMoveCells();
 	}
 
 	public FrogPiece removeChip(FrogCell c) {
@@ -474,9 +486,10 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			pickedObject = null;
 			cached_sources = null;
 			cached_dests = null;
-			
+			ps.lastPicked = prevLastPicked;
+			prevLastPicked = -1;
 			addChip(ps, po);
-
+			cleanLastMoveCells();
 		}
 	}
 
@@ -530,6 +543,9 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		case BoardLocation:
 			{
 			G.Assert(dest.topChip() == null, "empty cell");
+			prevLastDropped = dest.lastDropped;
+			dest.lastDropped = dropState;
+			dropState++;
 			switch (board_state) {
 			default:
 				throw G.Error("Not expecting drop in state %s",board_state);
@@ -590,7 +606,8 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 	// the board location really becomes empty, and we depend on unPickObject
 	// to replace the original contents if the pick is cancelled.
 	private void pickObject(FrogCell c)
-	{
+	{	c.lastPicked = dropState;
+		prevDropState = dropState;
 		switch (c.rackLocation())
 	{
 		case Frog_Bag:
@@ -598,7 +615,8 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			pickedObject = c.removeTop();
 			break;
 		case BoardLocation:
-		{
+		{	prevLastPicked = c.lastPicked;
+			c.lastPicked = dropState;
 			pickedMoveSource = c;
 			pickedObject = removeChip(c);
 		}
@@ -665,6 +683,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 	private void doDone(replayMode replay) {
 		acceptPlacement();
 		drawChipFromBag(replay);
+		dropState++;
 		if (board_state==FrogState.RESIGN_STATE) {
 			G.Assert(players_in_game == 2, "only in 2 player games");
 			setGameOver(true); // draw with no winner
@@ -699,7 +718,20 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		return (hasFrogMoves(whoseTurn) ? FrogState.MOVE_FROG_STATE
 				: hasDropMoves(whoseTurn) ? FrogState.PLAY_STATE : FrogState.PASS_STATE);
 	}
-
+	private void recordPath(FrogCell source, FrogCell c,replayMode replay)
+	{
+		if(replay!=replayMode.Replay && source.onBoard)
+		{
+			CellStack path = getFrogMovePath(source,c);
+			for(int i=0,lim=path.size(); i<lim;i++)
+			{	
+				FrogCell dest = path.elementAt(i);
+				dest.lastDropped = dropState;
+				dropState++;
+				dest.lastPicked = dropState;
+			}
+		}
+	}
 	public boolean Execute(commonMove mm,replayMode replay) {
 		FrogMovespec m = (FrogMovespec) mm;
 		switch (m.op) {
@@ -722,18 +754,25 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			FrogPiece chip = removeChip(c);
 			m.object = chip;
 			addChip(d, chip);
+			d.lastDropped = dropState;
+			dropState++;
 			setState(FrogState.CONFIRM_STATE);
 		}
 			break;
 		case MOVE_MOVE: {
 			FrogCell c = getCell(m.from_col, m.from_row);
 			FrogCell d = getCell(m.to_col, m.to_row);
+			recordPath(c,d,replay);
 			if(replay.animate)
 			{
 				animationStack.push(c);
 				animationStack.push(d);
 			}
 			FrogPiece chip = removeChip(c);
+			c.lastPicked = dropState;
+			prevDropState = dropState;
+			d.lastDropped = dropState;
+			dropState++;
 			m.object = chip;
 			addChip(d, chip);
 			setState(hasDropMoves(whoseTurn) ? FrogState.PLAY_STATE : FrogState.CONFIRM_STATE);
@@ -741,8 +780,9 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			break;
 		case MOVE_DROPB: {
 			FrogCell c = getCell(m.to_col, m.to_row);
+			FrogCell source = (pickedSource!=null) ? pickedSource : pickedMoveSource;
 			if(replay==replayMode.Single)
-				{ FrogCell source = (pickedSource!=null) ? pickedSource : pickedMoveSource;
+				{ 
 				if(source!=null)
 				{
 				animationStack.push(source);
@@ -769,6 +809,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 				if (c == pickedMoveSource) {
 					unPickObject();
 				} else {
+					recordPath(source,c,replay);
 					dropObject(c,replay);
 					setState((hasDropMoves(whoseTurn)&&(!WinForPlayerNow(whoseTurn))) 
 										? FrogState.PLAY_STATE
@@ -780,6 +821,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 				if (c == pickedSource) {
 					unPickObject();
 				} else {
+					
 					dropObject(c,replay);
 					setState(FrogState.CONFIRM_STATE);
 				}
@@ -936,7 +978,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			return ((cell == droppedDest) 
 					|| ((pickedObject == null) 
 							? (getSources().get(cell) != null)
-					: (getDests().get(cell) != null)));
+							: ((cell==pickedMoveSource) || (getDests().get(cell) != null))));
 		case PASS_STATE:
 		case GAMEOVER_STATE:
 		case RESIGN_STATE:
@@ -1205,7 +1247,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 				if(pickedMoveSource!=null)	// should not be null, but some replay games with damage have it.
 				{
 				getFrogMoveMoves(v, whoseTurn, pickedMoveSource,
-						stillConnected(pickedMoveSource));
+						stillConnected(pickedMoveSource),null,null,null);
 				for (int idx = 0, lim = v.size(); idx < lim; idx++) {
 					FrogMovespec m = (FrogMovespec)v.elementAt(idx);
 					FrogCell c = getCell(m.to_col, m.to_row);
@@ -1316,15 +1358,25 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		}
 		return (true);
 	}
-
+	private CellStack getFrogMovePath(FrogCell from,FrogCell to)
+	{
+		CellStack path = new CellStack();
+		CellStack shortPath = new CellStack();
+		getFrogMoveMoves(null,whoseTurn,from,stillConnected(from),to,path,shortPath);
+		return shortPath;
+	}
+	public FrogCell currentDest() { return droppedDest; }
 	//
 	// return true if there are moves.
 	// if all!=null, add moves to it.
 	//
-	private boolean getFrogMoveMovesSweep(CommonMoveStack  all, int who, FrogCell origin,
-			FrogCell from, boolean stillConnected) {
+	private boolean getFrogMoveMovesSweep(CommonMoveStack  all, int who, FrogCell origin,FrogCell from, boolean stillConnected,
+			FrogCell target,CellStack path,CellStack shortPath)
+	{
 		boolean some = false;
+		if(target!=null) { path.push(from); }
 		from.sweep_counter = sweep_counter;
+		
 		for (int dir = 0; dir < 6; dir++) {
 			FrogCell start = from.exitTo(dir);
 			if (start.topChip() != null) {
@@ -1333,24 +1385,38 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 					to.sweep_counter = sweep_counter;
 					if (isValidHive(origin, to, stillConnected)) {
 						some = true;
-						if (all == null) {
+						if(to==target)
+						{	to.sweep_counter = sweep_counter-1;	// allow this cell to be found again in a subsequent sweep
+							if((shortPath.size()==0) || shortPath.size()>path.size())
+							{
+								shortPath.copyFrom(path);
+							}
+						}
+						if (target==null && all == null) {
 							break;
 						}
-						all.addElement(new FrogMovespec(who, MOVE_MOVE,
+						if(all!=null)
+							{all.addElement(new FrogMovespec(who, MOVE_MOVE,
 								origin.col, origin.row, to.col, to.row));
 					}
-					getFrogMoveMovesSweep(all, who, origin, to, stillConnected);
 				}
+					if(to!=target) 
+						{ // if this was a match for the target, we don't need to (and in fact must not)
+						  // look further.
+						  getFrogMoveMovesSweep(all, who, origin, to, stillConnected,target,path,shortPath); 
 			}
 		}
+			}
+		}
+		if(target!=null) { path.pop(); }
 		return (some);
 	}
 
 	// get the frog moves from a single cell
 	boolean getFrogMoveMoves(CommonMoveStack  all, int who, FrogCell from,
-			boolean stillConnected) {
+			boolean stillConnected,FrogCell target,CellStack path,CellStack shortPath) {
 		sweep_counter++;
-		return (getFrogMoveMovesSweep(all, who, from, from, stillConnected));
+		return (getFrogMoveMovesSweep(all, who, from, from, stillConnected,target,path,shortPath));
 	}
 
 	// get all the from-to moves for a player
@@ -1361,7 +1427,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			FrogPiece top = c.topChip();
 			if ((top != null) && (top.colorIndex == map[who])) {
 				boolean conn = stillConnected(c);
-				getFrogMoveMoves(all, who, c, conn);
+				getFrogMoveMoves(all, who, c, conn,null,null,null);
 				// if(movesteps>0) { G.print("c "+movesteps+" "+conn); }
 			}
 
@@ -1375,7 +1441,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			FrogCell c = occupiedCells.elementAt(idx);
 			FrogPiece top = c.topChip();
 			if (top == target) {
-				if (getFrogMoveMoves(null, who, c, stillConnected(c))) {
+				if (getFrogMoveMoves(null, who, c, stillConnected(c),null,null,null)) {
 					return (true);
 				}
 			}
@@ -1425,4 +1491,17 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		return (all);
 	}
 
+	// when undrop or unpick, don't leave cells with futurevalues of dropState
+	public void cleanLastMoveCells() {
+		for(FrogCell c = allCells; c!=null; c=c.next)
+		{	if(c.lastDropped>=dropState)
+				{
+				c.lastDropped = c.lastPicked = -1;
+				}
+			if(pickedObject==null && c.lastPicked>=dropState) 
+				{ c.lastPicked = -1;
+				}
+		}
+		
+	}
 }

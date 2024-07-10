@@ -28,10 +28,29 @@ class CellStack extends OStack<FrogCell>
 //
 // specialized cell used for the this game.
 //
-public class FrogCell extends stackCell<FrogCell,FrogPiece>
+public class FrogCell extends stackCell<FrogCell,FrogPiece> implements PlacementProvider
 {	
 	public int sweep_counter=0;		// used checking for valid hives
 	public int sweep_connected=0;	// second sweeper used to check connectivity
+	
+	int lastPicked = -1;
+	int lastDropped = -1;
+	// support for numberMenu
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastDropped = -1;
+		lastPicked = -1;
+	}
+	public void copyFrom(FrogCell c)
+	{
+		super.copyFrom(c);
+		lastDropped = c.lastDropped;
+		lastPicked = c.lastPicked;
+	}
 	public FrogPiece[] newComponentArray(int n) { return(new FrogPiece[n]); }
 	
 	public int animationSize(int s) 

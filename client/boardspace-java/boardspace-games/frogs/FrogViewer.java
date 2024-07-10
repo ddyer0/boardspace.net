@@ -232,7 +232,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	int boardBottom = mainY+mainH-stateH;
     	int boardH = boardBottom-boardY;
     	int stateY = boardY-stateH;
-    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	
     	G.placeRight(stateRect, zoomRect, zoomW);
 
@@ -347,6 +347,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         // now draw the contents of the board and anything it is pointing at
         //
     	 Hashtable<FrogCell,FrogCell> dests = gb.getDests();
+    	 numberMenu.clearSequenceNumbers();
 
           FrogCell sourceCell = gb.sourceCell();
           FrogCell destCell = gb.destCell();
@@ -359,6 +360,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         	  FrogCell ccell = cells.nextElement();
               int xpos = left+gb.cellToX(ccell);
               int ypos = top - gb.cellToY(ccell);
+              numberMenu.saveSequenceNumber(ccell,xpos,ypos);
               boolean isADest = dests.get(ccell)!=null;
               boolean canHitThis = canHit && gb.LegalToHitBoard(ccell);
               String labl = "";
@@ -392,7 +394,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
          }
     	
          doBoardDrag(tbRect,anySelect,cs,FrogId.InvisibleDragBoard);
-    	 
+         numberMenu.drawSequenceNumbers(gc,CELLSIZE*3,labelFont,labelColor);
          GC.setClip(gc,oldClip);
       }
 
@@ -465,7 +467,10 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         drawVcrGroup(nonDraggingSelect, gc);
  
     }
-
+    
+	public int getLastPlacement(boolean empty) {
+		return (b.dropState);
+	}
 
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -478,6 +483,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
      public boolean Execute(commonMove m,replayMode replay)
     { 
         handleExecute(b,m,replay);
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay,b.animationStack,(int)(b.cellSize()*2.2),MovementStyle.Sequential);
         if(replay.animate) { playSounds(m); }
          return (true);

@@ -548,7 +548,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-        numberMenu.recordSequenceNumber(b.moveNumber());
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
 
         lastDropped = b.lastDropped;
         

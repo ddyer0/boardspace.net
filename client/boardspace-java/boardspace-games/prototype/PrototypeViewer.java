@@ -871,6 +871,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        // movenumber() vs activeMoveNumber().  ActiveMoveNumber causes the 
+        // move arrows to disappear when the next move has started.  For games with from-to or more
+        // complicated moves, the persistence of the arrows is annoying.  for games like Go
+        // and Hex, where the stones are placed and not moved, it's more innocuous
         numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.

@@ -317,6 +317,8 @@ public class AR {
 	   
 	   public static String toString(Object []a)
 	   {	StringBuilder b = new StringBuilder("[");
+	   		if(a!=null)
+	   		{
 	   		for(int i=0,lim=a.length-1;i<=lim; i++)
 	   			{ if(i>20 && lim>i)
 	   				{ b.append( "... + "); 
@@ -327,7 +329,7 @@ public class AR {
 	   				{ b.append(" "); 
 	   				  b.append(a[i]); 
 	   				}
-	   			}
+	   			}}
 	   		b.append("]");
 	   		return b.toString();
 	   }

@@ -567,7 +567,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-    	numberMenu.recordSequenceNumber(b.moveNumber); 
+    	numberMenu.recordSequenceNumber(b.activeMoveNumber()); 
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
         if(replay.animate) { playSounds(mm); }

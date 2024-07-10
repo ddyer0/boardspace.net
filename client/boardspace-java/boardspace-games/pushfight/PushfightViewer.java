@@ -560,7 +560,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     {	
    	 
         handleExecute(bb,mm,replay);
-        numberMenu.recordSequenceNumber(bb.moveNumber);
+        numberMenu.recordSequenceNumber(bb.activeMoveNumber());
         
         
         /**

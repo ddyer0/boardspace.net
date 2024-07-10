@@ -321,7 +321,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -478,12 +478,14 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
+    	numberMenu.clearSequenceNumbers();
     	Hashtable<DayAndNightCell,DayAndNightmovespec> targets = gb.getTargets();
     	DayAndNightCell src = gb.getSource();
     	for(DayAndNightCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             if(cell.drawStack(gc,this,canHit?highlight:null,CHIPSIZE,xpos,ypos,0,0.1,0.1,null))
             		{
@@ -500,6 +502,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
             	StockArt.SmallO.drawChip(gc, this, CHIPSIZE, xpos,ypos, null);
             }
         }
+    	numberMenu.drawSequenceNumbers(gc,CHIPSIZE,labelFont,labelColor);
     }
 
     /**
@@ -618,7 +621,10 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
         drawVcrGroup(nonDragSelect, gc);
 
     }
-
+    public int getLastPlacement(boolean empty)
+    {
+    	return bb.moveNumber;
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -630,7 +636,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         lastDropped = bb.lastDropped;
 
         /**

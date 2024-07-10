@@ -16,13 +16,33 @@
  */
 package dipole;
 import lib.Random;
-
-
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
-public class DipoleCell extends stackCell<DipoleCell,DipoleChip> implements DipoleConstants
+public class DipoleCell extends stackCell<DipoleCell,DipoleChip> implements DipoleConstants,PlacementProvider
 {	
 	public DipoleChip[] newComponentArray(int n) { return(new DipoleChip[n]);}
+	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(DipoleCell other)
+	{
+		super.copyFrom(other);
+		lastDropped = other.lastDropped;
+		lastPicked = other.lastPicked;
+	}
+	public int getLastPlacement(boolean empty) {
+		// TODO Auto-generated method stub
+		return empty ? lastPicked : lastDropped;
+	}
+	
 	public boolean isDark = false;
 	// constructor
 	public DipoleCell(char c,int r) 

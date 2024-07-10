@@ -529,7 +529,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     {	
   
         handleExecute(b,mm,replay);
-        numberMenu.recordSequenceNumber(b.moveNumber);
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
   
         startBoardAnimations(replay);
         

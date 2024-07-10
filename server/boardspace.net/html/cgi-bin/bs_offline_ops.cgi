@@ -454,7 +454,7 @@ sub sendNotification()
 
 sub sendNags()
 {	my ($dbh) = @_;
-	my $q = "select nag,nagtime,utc_timestamp() from offlinegame where nag is not null and nagtime<utc_timestamp() and status='active' and marked is null";
+	my $q = "select nag,nagtime,utc_timestamp() from offlinegame where nag is not null and nagtime<utc_timestamp() and (status='active' or status='setup') and marked is null";
 	my $sth = &query($dbh,$q);
 	my $nrows = &numRows($sth);
 	if($nrows > 0)

@@ -54,7 +54,7 @@ class MasterToolBar extends Toolbar
 		setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
 
 	}
-	static int savedNotch = 0;
+	static int savedNotch = -1;
 	
 	static int getSafeAreaHeight()
 	{
@@ -78,9 +78,9 @@ class MasterToolBar extends Toolbar
 		G.print("initial safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
 
 		if(dissonent) { 
-			current = (disw>dish) ? 0 : savedNotch;
+			current = (disw>dish) ? 0 : Math.max(0,savedNotch);
 			rect.setY(current);
-			rect.setX(current==0 ? savedNotch : 0);
+			rect.setX(current==0 ? Math.max(0,savedNotch) : 0);
 			rect.setWidth(rh);
 			rect.setHeight(rw);
 			G.print("safe area dissonent, ",rw,"x",rh," vs ",disw,"x",dish);
@@ -108,7 +108,7 @@ class MasterToolBar extends Toolbar
 		Dimension sz = super.getPreferredSize();
 		if(G.isIOS() && savedNotch>=0)
 		{
-		// this is complete kludgery - iphones get it rigth the firstt time
+		// this is complete kludgery - iphones get it right the first time
 		// so remember the answer and reuse it. At least until codename1's notch
 		// logic is fixed.
 		if(remembered<0) { remembered = sz.getHeight()-savedNotch; }
@@ -121,6 +121,7 @@ class MasterToolBar extends Toolbar
 				G.print("kludge:  toolbar size changed from ",oldsize," to ",newsize);
 			}
 		}}
+		G.print("toolbar preferred size ",sz.getWidth(),"x",sz.getHeight());
 		return sz;
 	}
 }

@@ -218,7 +218,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         int stateH = fh*5/2;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,liftRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// board is square, no need to rotate
@@ -313,7 +313,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
      	boolean dolift = doLiftAnimation();
      	boolean showSize = dolift || G.pointInRect(highlight, liftRect);
      	Hashtable<DipoleCell,DipoleCell> dests = gb.getMoveDests();
-     	
+     	numberMenu.clearSequenceNumbers();
      	boolean planned = plannedSeating();
      	//
         // now draw the contents of the board and anything it is pointing at
@@ -325,6 +325,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
             int row = cell.row;
             int ypos = G.Bottom(brect) - gb.cellToY(thiscol, row);
             int xpos = G.Left(brect) + gb.cellToX(thiscol, row);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             int topindex = cell.chipIndex;
             boolean isADest = dests.get(cell)!=null;
             boolean canHit = gb.LegalToHitBoard(cell);
@@ -347,7 +348,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
             //G.DrawAACircle(gc,e_xpos+dotsize,e_ypos,dotsize,Color.red,Color.gray,true);
         }
         	}
-        
+     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
         DrawWasteRect(gc,highlight);
 
     }
@@ -421,7 +422,10 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
      }
-
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.moveNumber;
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -433,6 +437,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
         
         if(replay.animate) { playSounds((DipoleMovespec)mm); }

@@ -598,7 +598,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     {	
         
         handleExecute(bb,mm,replay);
-        numberMenu.recordSequenceNumber(bb.moveNumber);
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         
         /**
          * animations are handled by a simple protocol between the board and viewer.

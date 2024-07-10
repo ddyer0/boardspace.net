@@ -59,7 +59,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
 	static final int DEFAULT_BOARDSIZE = 8;	// 8x8 board
 	static final int BIG_BOARDSIZE = 10;	// 10x10 board
 	static final String[] DIPOLEGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-
+	private int prevLastDropped = -1;
+	private int prevLastPicked = -1;
  	DipoleState unresign;
 	DipoleState board_state;
 	public DipoleState getState() {return(board_state); }
@@ -226,6 +227,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
     	rack = new DipoleCell[2];
     	Random r =  new Random(22346752);
     	animationStack.clear();
+    	prevLastPicked = -1;
+    	prevLastDropped = -1;
     	int map[]=getColorMap();
     	for(int i=0,pl=FIRST_PLAYER_INDEX;i<2; i++,pl=nextPlayer[pl])
     	{
@@ -344,6 +347,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
 	droppedDest = null;
     if(dr!=null)
     	{
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	if(dr==Waste_Cell)
     	{	while(Waste_Cell.chipIndex > 0) 
     			{ Waste_Cell.chipIndex--;
@@ -397,6 +402,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
     	DipoleCell ps = pickedSource;
     	pickedSource=null;
     	pickedObject = null;
+    	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	ps.addChip(po);
     	if(ps.onBoard) 
     		{int pl = playerIndex(po);
@@ -480,6 +487,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
         case BoardLocation: // an already filled board slot.
         	droppedDest = getCell(col,row);
         	DipoleChip capChip = droppedDest.topChip();
+        	prevLastDropped =droppedDest.lastDropped;
+        	droppedDest.lastDropped = moveNumber;
             if(capChip!=pickedObject)
            		{	// capture the destination stack
             	int ndeleted = droppedDest.chipIndex;
@@ -576,6 +585,8 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
         case BoardLocation:
          	{
             DipoleCell c = getCell(col,row);
+            prevLastPicked = c.lastPicked;
+            c.lastPicked = moveNumber;
          	if((c==pickedSource)&&(droppedDest==Waste_Cell)) 
          	{ int pl = playerIndex(pickedObject);
          	  c.removeTop();

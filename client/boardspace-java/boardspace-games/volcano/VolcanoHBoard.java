@@ -68,5 +68,26 @@ public class VolcanoHBoard extends hexBoard<VolcanoCell> implements VolcanoConst
 
     }
 
+    public boolean Execute(commonMove m, replayMode replay) {
+		return false;
+	}
+	public long Digest() {
+		return 0;
+	}
+	public void SetDrawState() {
+	}
+	public void sameboard(BoardProtocol other) {
+		
+	}
+	public int movingObjectIndex() {
+		return 0;
+	}
+	public BoardProtocol cloneBoard() {
+		return null;
+	}
+	public void copyFrom(BoardProtocol from) {
+		
+	}
+
 
 }

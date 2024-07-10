@@ -637,7 +637,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
-        numberMenu.recordSequenceNumber(b.moveNumber);
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay,b.animationStack,b.cellSize(),MovementStyle.Simultaneous);
         if(replay.animate) { playSounds(mm); }
  

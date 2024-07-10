@@ -931,12 +931,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				}
 				allowOtherPlayers = (acceptedPlayers.size()<game.maxPlayers);
 				String mess = s.get(remove ? DeclinedMessage : AcceptedMessage,loggedInUser.name());
-				String message = notificationMessage(owner,mess,null);
+				String longmess = remove ? null : s.get(AcceptActionMessage);
+				String message = notificationMessage(owner,mess,longmess);
 				pendingNotifications.push(message);
 				updateGame(
 						STATUS,status.name(),
 						ACCEPTEDPLAYERS,playersList(acceptedPlayers),
-						ALLOWOTHERPLAYERS,allowOtherPlayers?"true":"false");
+						ALLOWOTHERPLAYERS,allowOtherPlayers?"true":"false",
+						NAG,message,
+						NAGTIME,(longmess!=null ? "1" : null)
+						);
 				}
 				break;
 			case Cancel:
@@ -2495,6 +2499,7 @@ static String CancelledMessage = "has been cancelled";
 static String EndedMessage = "has ended";
 static String SuspendedMessage = "has been suspended because of an error";
 static String AcceptedMessage = "#1 accepted your invitation to play";
+static String AcceptActionMessage = "acceptlongmessage";
 static String DeclinedMessage = "#1 removed themselves from your game";
 static String RemovedMessage = "You were removed by the owner";
 static String YouRemovedMessage = "#1 un-accepted your invitation to play";
@@ -2543,6 +2548,7 @@ static public void putStrings()
 		String[][] TurnStringPairs =
 		 {
 				 {InvitedLongMessage,"Open your boardspace.net app and select \"Play Turn Based\" to accept the invitation"},
+				 {AcceptActionMessage,"Open your boardspace.net app to start the game"},
 		 };
 		PlaySpeed.putStrings();
 		FirstPlayer.putStrings();

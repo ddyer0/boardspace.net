@@ -195,6 +195,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         animationStack.clear();
         moveNumber = 1;
         dropStep = 1;
+        prevDropStep = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -375,7 +376,8 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     
     private int prevLastPlaced = -1;
     private int prevLastPicked = -1;
-    int dropStep = -1;
+    int dropStep = 1;
+    int prevDropStep = 1;
     
     //
     // undo the drop, restore the moving object to moving status.
@@ -387,12 +389,14 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     	rv.transferTo(pickedStack,lvl); 	// SetBoard does ancillary bookkeeping
     	rv.lastPlaced = prevLastPlaced;
     	prevLastPicked = -1;
+    	dropStep = prevDropStep;
     	while(captureStack.size()>0)
     	{	LyngkCell dest = captureStack.pop();
     		LyngkCell src = captures[whoseTurn];
     		src.transferTo(dest,src.height()-CaptureHeight);
     		filledCells.push(dest);
     	}
+    	cleanLastMoveCells();
     	return(rv);
     }
     // 
@@ -407,6 +411,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     	pickedStack.transferTo(rv,0);
     	lastDroppedObject = rv.topChip();
     	if(rv.onBoard) { filledCells.push(rv); }
+    	cleanLastMoveCells();
     }
     
     // 
@@ -512,6 +517,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
     {	pickedSourceStack.push(c);
     	prevLastPicked = c.lastPicked;
     	c.lastPicked = dropStep;
+    	prevDropStep = dropStep;
     	pickedLevel.push(c.height()-lvl);
     	stateStack.push(board_state);
        	c.transferTo(pickedStack,lvl);
@@ -1358,4 +1364,17 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
  {	throw G.Error("Not implemented");
  }
 
+//when undrop or unpick, don't leave cells with futurevalues of dropState
+public void cleanLastMoveCells() {
+	for(LyngkCell c = allCells; c!=null; c=c.next)
+	{	if(c.lastPlaced>=dropStep)
+			{
+			c.lastPlaced = c.lastPicked = -1;
+			}
+		if(pickedStack.height()>0 && c.lastPicked>=dropStep) 
+			{ c.lastPicked = -1;
+			}
+	}
+	
+}
 }

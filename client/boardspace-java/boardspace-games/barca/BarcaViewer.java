@@ -512,7 +512,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        numberMenu.recordSequenceNumber(bb.moveNumber);
+        numberMenu.recordSequenceNumber(bb.activeMoveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination

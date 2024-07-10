@@ -463,7 +463,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     {	
     	
         handleExecute(b,mm,replay);
-    	numberMenu.recordSequenceNumber(b.moveNumber);
+    	numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
 		lastDropped = b.lastDroppedObject;	// this is for the image adjustment logic
 

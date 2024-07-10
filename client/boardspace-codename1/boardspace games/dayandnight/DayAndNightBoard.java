@@ -61,6 +61,8 @@ class DayAndNightBoard
 	private DayAndNightState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public DayAndNightState getState() { return(board_state); }
+	private int prevLastPicked = -1;
+	private int prevLastDropped = -1;
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
@@ -180,6 +182,8 @@ class DayAndNightBoard
     public void doInit(String gtype,long key,int players,int rev)
     {	randomKey = key;
     	adjustRevision(rev);
+    	prevLastPicked = -1;
+    	prevLastDropped = -1;
     	players_in_game = players;
     	win = new boolean[players];
  		setState(DayAndNightState.Puzzle);
@@ -462,6 +466,8 @@ class DayAndNightBoard
     private DayAndNightCell unDropObject()
     {	DayAndNightCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
+    	rv.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	return(rv);
     }
@@ -472,6 +478,8 @@ class DayAndNightBoard
     {	DayAndNightCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
+    	rv.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	pickedObject = null;
     }
     
@@ -494,6 +502,8 @@ class DayAndNightBoard
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         case EmptyBoard:
            	SetBoard(c,pickedObject);
+           	prevLastDropped = c.lastDropped;
+           	c.lastDropped = moveNumber;
             pickedObject = null;
             break;
         }
@@ -563,6 +573,8 @@ class DayAndNightBoard
         	{
             lastPicked = pickedObject = c.topChip();
             G.Assert(pickedObject!=null,"must be something");
+            prevLastPicked = c.lastPicked;
+            c.lastPicked = moveNumber;
          	lastDroppedObject = null;
 			SetBoard(c,null);
         	}

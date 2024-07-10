@@ -36,9 +36,32 @@ class CellStack extends OStack<MagnetCell>
  * @author ddyer
  *
  */
-public class MagnetCell extends stackCell<MagnetCell,MagnetChip>
+public class MagnetCell extends stackCell<MagnetCell,MagnetChip> implements PlacementProvider
 {	
-	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public int prevLastDropped = -1;
+	public int prevLastPicked = -1;
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+		prevLastDropped = -1;
+		prevLastPicked = -1;
+	}
+	public void copyFrom(MagnetCell other)
+	{
+		super.copyFrom(other);
+		lastDropped = other.lastDropped;
+		lastPicked = other.lastPicked;
+		prevLastDropped = other.prevLastDropped;
+		prevLastPicked = other.prevLastPicked;
+	}
+	public int getLastPlacement(boolean empty) {
+		// TODO Auto-generated method stub
+		return empty ? lastPicked : lastDropped;
+	}
 	public MagnetCell() {};
 	public MagnetCell(Random r,MagnetId rack) { super(r,rack); }		// construct a cell not on the board
 	public MagnetCell(MagnetId rack,char c,int r) 		// construct a cell on the board

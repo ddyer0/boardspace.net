@@ -290,6 +290,7 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
 			// copy the web start parameters
 			for(int i=0; i<args.length-1; i+=2)
 			{	String par = (args[i].toLowerCase());
+				if(par.startsWith("-")) { System.out.println("ignoring the dash"); par = par.substring(1); }	// ignore the dashes, if any
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);

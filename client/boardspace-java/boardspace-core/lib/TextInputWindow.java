@@ -20,9 +20,7 @@ import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
-
 import javax.swing.text.JTextComponent;
-
 import lib.ChatWidget.ChatId;
 import lib.TextContainer.Op;
 /**

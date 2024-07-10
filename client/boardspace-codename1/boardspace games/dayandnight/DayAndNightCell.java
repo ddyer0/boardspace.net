@@ -37,10 +37,30 @@ class CellStack extends OStack<DayAndNightCell>
  */
 public class DayAndNightCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<DayAndNightCell,DayAndNightChip>	
+	extends stackCell<DayAndNightCell,DayAndNightChip>	implements PlacementProvider
 {	public boolean dark = false;
 	public int sweepCounter = 0;
 	public int weight;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(DayAndNightCell other)
+	{
+		super.copyFrom(other);
+		lastDropped = other.lastDropped;
+		lastPicked = other.lastPicked;
+	}
+	public int getLastPlacement(boolean empty) {
+		// TODO Auto-generated method stub
+		return empty ? lastPicked : lastDropped;
+	}
+
 	public DayAndNightCell(Random r,DayAndNightId rack) { super(r,rack); }		// construct a cell not on the board
 	public DayAndNightCell(DayAndNightId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);

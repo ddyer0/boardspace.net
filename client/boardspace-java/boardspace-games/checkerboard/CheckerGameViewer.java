@@ -547,7 +547,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     {	
         handleExecute(b,mm,replay);
         // record where the boundaries in move numbers lie
-        numberMenu.recordSequenceNumber(b.moveNumber());
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         lastDropped = b.lastDropped;
         
         startBoardAnimations(replay);

@@ -568,7 +568,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public boolean Execute(commonMove m,replayMode replay)
     {   //System.out.println("e "+m);
     	handleExecute(b,m,replay);
-    	numberMenu.recordSequenceNumber(b.moveNumber);
+    	numberMenu.recordSequenceNumber(b.activeMoveNumber());
         int size = CELLSIZE;
         int stackSize = b.animationStack.size();
     	if(stackSize>=2)

@@ -40,7 +40,7 @@ import lib.Random;
  * @see squareBoard
  * @see circBoard
  */
-public abstract class BaseBoard implements Opcodes,Digestable
+public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 {	public Object clone() { throw G.Error("Do not call for %s",this); }
     /**
      * this is used to distinguish the true board from copies
@@ -143,6 +143,15 @@ public abstract class BaseBoard implements Opcodes,Digestable
      * @return an integer
      */
 	public int moveNumber() { return(moveNumber); }
+	
+	/** active move number is move number, plus 1 if another move 
+	has been started.  This is usually the right number for 
+    numberMenu.saveSequenceNumber
+	*/
+	public int activeMoveNumber()
+	{
+		return moveNumber() + ((movingObjectIndex()>=0)?1:0);
+	}
 	/** 
 	 * return the index of the player whose turn it is.  Note that this
 	 * is not strictly related to the position of players in other arrays.

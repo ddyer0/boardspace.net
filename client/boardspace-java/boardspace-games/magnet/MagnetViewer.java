@@ -290,7 +290,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		//
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,noChatRect);
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)
@@ -563,6 +563,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         boolean hitCell = gb.LegalToHitBoard(closestCell,bb.whoseTurn);
         MagnetCell dest = gb.getDest();
        	Enumeration<MagnetCell>cells = gb.getIterator(Itype.TBLR);
+       	numberMenu.clearSequenceNumbers();
        	while(cells.hasMoreElements())
        	{
        		MagnetCell cell = cells.nextElement();
@@ -572,7 +573,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
             	(hitCell && (cell==closestCell));	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-  
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight || (cell==dest) || (cell==gb.selectedCell))
              { // checking for pointable position
             	int sz = (cell==gb.selectedCell)
@@ -584,7 +585,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 
             //StockArt.SmallO.drawChip(gc, this, CELLSIZE, xpos,ypos,null);
             }
-         
+       	numberMenu.drawSequenceNumbers(gc,gb.cellSize(),labelFont,labelColor,0.45);
     }
 
     /**
@@ -692,7 +693,10 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         drawAuxControls(gc,nonDragSelect);
 
     }
-
+    public int getLastPlacement(boolean empty)
+    {
+    	return bb.dropState;
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -705,7 +709,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     {	
 
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination

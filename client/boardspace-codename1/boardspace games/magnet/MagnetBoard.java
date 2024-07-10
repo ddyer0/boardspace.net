@@ -69,6 +69,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	private MagnetState unresign = null;	// remembers the orignal state when "resign" is hit
 	private boolean robotBoard = false;
 	public MagnetState getState() { return(board_state); }	
+	int dropState = 0;
 	
 	public int movementCount[] = new int[2];				// records the height of movestack as of the last Done
 	private CellStack moveStack = new CellStack();			// every piece movement is recorded here
@@ -217,6 +218,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 		moveStack.clear();
 		gametype = gtype;
 		selectedDirection = -1;
+		dropState = 0;
 		selectedCell = null;
 		asyncPlay = reinitAsyncPlay;
 		AR.setValue(setupDone,false);
@@ -495,6 +497,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     private MagnetCell unDropObject()
     {	MagnetCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
+    	rv.lastDropped = rv.prevLastDropped;
+    	rv.prevLastDropped = -1;
     	pickedObject = rv.removeTop(); 	// SetBoard does ancillary bookkeeping
     	if(pickedObject.isKing()) 
     		{ kingLocation[pickedObject.playerIndex()] = null; 
@@ -543,6 +547,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     		break;
     	}
     	rv.addChip(pickedObject);
+    	rv.lastPicked = rv.prevLastPicked;
+    	rv.prevLastPicked = -1;
     	pickedObject = null;
     }
     
@@ -579,6 +585,9 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         case BoardLocation:	// already filled board slot, which can happen in edit mode
            	c.addChip(pickedObject);;
             lastDroppedObject = pickedObject;
+            c.prevLastDropped = c.lastDropped;
+            c.lastDropped = dropState;
+            dropState++;
             pickedObject = null;
             switch(board_state)
             {
@@ -658,9 +667,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         	throw G.Error("Not expecting rackLocation %s", c.rackLocation);
         case BoardLocation:
         	{
-            lastPicked = pickedObject = c.topChip();
+            lastPicked = pickedObject = c.removeTop();
          	lastDroppedObject = null;
-			c.removeTop();
         	}
             break;
         case Red_Captures:
@@ -886,6 +894,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     	if(moving!=null)
     	{	MagnetChip chip = moving.topChip();
     		MagnetCell firstMoving = moving;
+    		moving.prevLastPicked = moving.lastPicked;
+			moving.lastPicked = dropState;
     		boolean friendlyMagnet = magnet.isEmpty() ? false : magnet.chipAtIndex(0).playerIndex()==forPlayer;
     		int distance = chip.upFace();
     		int reverse = direction+CELL_HALF_TURN;
@@ -896,6 +906,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			moving = moving.exitTo(reverse);
     			if(!moving.isEmpty())
     			{MagnetChip victim = moving.chipAtIndex(0);	
+    			 
     			 if(victim.playerIndex()==otherPlayer)
     			 {	
     				{CellStack cs = captureStack[forPlayer];
@@ -935,7 +946,9 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			 
     			}
     		}
-
+    		moving.prevLastDropped = moving.lastDropped;
+			moving.lastDropped = dropState;
+			dropState++;
 
     		if(chip!=null) 
     			{ moving.insertChipAtIndex(0,chip); 
@@ -1053,6 +1066,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     private void doDone(int forPlayer,replayMode replay)
     {	
         acceptPlacement();
+        dropState++;
         switch(board_state)
         {
         default:

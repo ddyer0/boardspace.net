@@ -581,7 +581,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 		if(b.pickedObject!=null) { lastDropped = b.pickedObject; }
 
         handleExecute(b,mm,replay);
-		numberMenu.recordSequenceNumber(b.moveNumber());
+		numberMenu.recordSequenceNumber(b.activeMoveNumber());
 		
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,
         		b.variation==Variation.Atomic
