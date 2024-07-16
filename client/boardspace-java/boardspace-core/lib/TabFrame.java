@@ -197,7 +197,7 @@ public class TabFrame extends JPanel
 		{
 			int w = parent.getWidth();
 			int h = parent.getHeight();
-			setBounds(0,0,Math.max(300,w),Math.max(300,h));
+			setFrameBounds(0,0,Math.max(300,w),Math.max(300,h));
 		}
 
 

@@ -42,6 +42,8 @@ public abstract class Canvas extends java.awt.Canvas
 {	public Canvas() 
 		{ super(); 
 		}
+	public void setFrameBounds(int l,int t,int w,int h) { setBounds(l,t,w,h); }
+	
 	@SuppressWarnings("unused")
 	public LFrameProtocol myFrame = null;
 	public Canvas(LFrameProtocol frame)

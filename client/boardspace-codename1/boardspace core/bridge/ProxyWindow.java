@@ -23,7 +23,6 @@ import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
-import com.codename1.ui.layouts.Layout;
 import com.codename1.ui.plaf.Style;
 
 import lib.AwtComponent;
@@ -115,7 +114,6 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	}
 	// trampoline methods
 	public void setVisible(boolean to) { theComponent.setVisible(to); }
-	public void setLayout(LayoutManager l) { theComponent.setLayout((Layout)l); }
 	public void setEnabled(boolean b) {  theComponent.setEnabled(b); } 
 	
 	public Style getStyle() { return theComponent.getStyle(); }
@@ -198,7 +196,6 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	}
 	public String getName() { return theComponent.getName(); }
 	public void setName(String n) { theComponent.setName(n); }
-	public void remove(Component c) { theComponent.removeComponent(c); }
 	public void removeThis() 
 	{ 	com.codename1.ui.Container par = theComponent.getParent();
 		if(par!=null) { par.removeComponent(getComponent()); }

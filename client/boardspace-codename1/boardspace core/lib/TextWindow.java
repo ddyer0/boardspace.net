@@ -53,7 +53,6 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	}
 	public TextWindow(LFrameProtocol f)
 	{	super(f);
-		setLayout(new NullLayout(this));
 		painter.hasRunLoop = painter.drawLockRequired = false;
 		addMouseMotionListener(this);
 		addMouseListener(this);

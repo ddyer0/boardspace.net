@@ -28,9 +28,9 @@ public class Panel extends Container
 	public Dimension getMinimumSize() { return(new Dimension(10,10)); }
 	public void setBoundsEdt(int l,int t,int w,int h)
 	{
-		super.setBounds(l,t,w,h);
+		super.setFrameBounds(l,t,w,h);
 	}
-	public void setBounds(int l,int t,int w,int h)
+	public void setFrameBounds(int l,int t,int w,int h)
 	{
 		G.runInEdt(new Runnable(){ public void run() { setBoundsEdt(l,t,w,h); }});
 	}

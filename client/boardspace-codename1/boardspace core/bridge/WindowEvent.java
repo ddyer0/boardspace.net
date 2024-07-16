@@ -17,6 +17,6 @@
 package bridge;
 
 public class WindowEvent extends Event {
-	public WindowEvent(Component component) { source = component; }
-	public Window getWindow() { return((Window)getSource()); }
+	public WindowEvent(Container component) { source = component; }
+	public Container getWindow() { return((Container)getSource()); }
 }

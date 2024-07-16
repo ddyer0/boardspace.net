@@ -15,7 +15,8 @@ public interface TopFrameProtocol {
 
 	void setOpaque(boolean b);
 
-	void setBounds(int i, int j, int w, int h);
+	void setFrameBounds(int i, int j, int w, int h);
+	Rectangle getFrameBounds();
 
 	void setVisible(boolean v);
 
@@ -24,8 +25,6 @@ public interface TopFrameProtocol {
 	void dispose();
 
 	void removeFromMenuBar(JMenu actions);
-
-	Rectangle getBounds();
 
 	void addWindowListener(WindowListener who);
 

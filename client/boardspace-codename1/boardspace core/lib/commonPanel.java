@@ -93,9 +93,9 @@ public class commonPanel extends FullscreenPanel
         myFrame = null;
         G.doDelay(100);
     }
-    public void setBounds(int inx,int iny,int w,int h)
+    public void setFrameBounds(int inx,int iny,int w,int h)
     {
-    	super.setBounds(inx,iny,w,h);
+    	super.setFrameBounds(inx,iny,w,h);
     	setLocalBounds(inx,iny,w,h);
     }
     //5/2010
@@ -124,7 +124,7 @@ public class commonPanel extends FullscreenPanel
 
         if (localChatHeight > 0)
         { //System.out.println("chat " +  + inX + " " + inY + " " + inWidth + " " + localChatHeight);
-        	theChat.setBounds( inX, inY, inWidth, localChatHeight);
+        	theChat.setFrameBounds( inX, inY, inWidth, localChatHeight);
         }}
 
         CanvasProtocol can =myCanvas;
@@ -132,7 +132,7 @@ public class commonPanel extends FullscreenPanel
         {	int h = inHeight - localChatHeight;
         	int y = inY+localChatHeight;
         	can.resetBounds();
-        	can.setBounds(inX, y, inWidth,h);
+        	can.setFrameBounds(inX, y, inWidth,h);
             
         }
     }

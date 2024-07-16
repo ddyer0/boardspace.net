@@ -43,7 +43,7 @@ public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 
 
 	public void setLocalBounds(int l, int t, int w, int h) {
-		theChat.setBounds(l,t,w,h);
+		theChat.setFrameBounds(l,t,w,h);
 	}
 
 

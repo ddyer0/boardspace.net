@@ -109,8 +109,8 @@ public interface ChatInterface extends Config {
 
 	int getX();
 	int getY();
-	Rectangle getBounds();
-	void setBounds(int i, int j, int width, int height);
+	Rectangle getFrameBounds();
+	void setFrameBounds(int i, int j, int width, int height);
 
 
 	String nameField();

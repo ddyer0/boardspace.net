@@ -461,7 +461,7 @@ public void addToMenus(JButton m)
 		if(p==null) { p = moveNearerBar(getTabs(),x,y); }
 		return p;
 	}
-	private Point moveNearerBar(Component menus,int x,int y)
+	private Point moveNearerBar(Container menus,int x,int y)
 	{
 		try {
 		if(menus!=null)

@@ -87,6 +87,12 @@ public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuPa
 				c.setHeight(h);
 				
 			}
+			// if the component isn't a frame, invoke nulllayout if appropriate
+			if(!(c instanceof Container)
+				&& c instanceof NullLayoutProtocol)
+			{
+				((NullLayoutProtocol)c).doNullLayout();
+			}
 		}
 	}
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException 

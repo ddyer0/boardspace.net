@@ -36,6 +36,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -275,132 +276,85 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	}
     }
     
-    private void createPlayerGroup(commonPlayer pl0,Rectangle playerChipRect,int inx,int iny,int xsize,int ysize)
-    {
-        Rectangle timeRect = pl0.timeRect;
-        Rectangle altTimeRect = pl0.extraTimeRect;
-        Rectangle animRect = pl0.animRect;
-        Rectangle playerRect = pl0.nameRect;
-        Rectangle picRect = pl0.picRect;
-        Rectangle box = pl0.playerBox;
-        int CS = (xsize-ysize)/13;
-        G.SetRect(box, inx, iny, xsize, ysize);
-        // first player portrait
-        G.SetRect(picRect, inx, iny, ysize-CS,ysize-CS);
-        
-        //first player name
-        G.SetRect(playerRect, G.Right(picRect), iny, CS * 10, 3*CS/2);
-
-       	
-        // time display for first player
-        G.SetRect(timeRect, G.Right(playerRect),G.Top(playerRect),CS * 4,CS);
-        G.SetRect(altTimeRect,G.Left( timeRect),G.Bottom(timeRect), G.Width(timeRect),G.Height( timeRect));
-        
-        // first player "i'm alive" animation ball
-        G.SetRect(animRect, G.Right(timeRect),G.Top( timeRect),G.Height(timeRect),G.Height(timeRect));
-        
-       	G.SetRect(playerChipRect, G.Right(picRect), G.Bottom(altTimeRect)+CS/8,CS*14,CS*2);
-  
-     }
-
     static private final int ncols = 10;
     static private final int nrows = 7;
-    static private final int SUBCELL = 4;	// number of cells in a square
-
-    private boolean playersInColumns(int nPlayers,boolean wideMode,boolean tallMode)
-    {
-    	return(tallMode);
+    
+    /**
+     * create all per-player boxes.  Nothing is required, but the standard methods
+     * create a player name, clocks, and a box for an avatar.  Standard practice
+     * is to include a private "done" box if using a planned seating chart.
+     * 
+     * The layout manager tries many values for "unitsize" so effectively the rest of
+     * the boxes should use it as a standard unit.
+     */
+    public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
+    {	commonPlayer pl = getPlayerOrTemp(player);
+    	Rectangle chip = playerChipRect[player];
+    	Rectangle box =  pl.createRectangularPictureGroup(x,y,2*unitsize/3);
+    	Rectangle done = doneRects[player];
+    	int doneW = plannedSeating()? unitsize*3 : 0;
+    	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
+    	G.union(box,done);
+    	int boxw = G.Width(box);
+    	int cardh = (int)((boxw/10)*1.6);
+       	G.SetRect(chip,	x,	G.Bottom(box),	boxw,cardh);;
+       	G.union(box,chip);
+    	pl.displayRotation = rotation;
+    	return(box);
     }
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	if(wideMode) { return(0); }
-    	OnedayVariation variation = b.variation;
-    	boolean safari = (variation==OnedayVariation.Safari);
-    	int nPlayers = b.nPlayers();
-    	boolean columns = playersInColumns(nPlayers,wideMode,tallMode);
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = chatHeight==0;
-        double playerVSpace = (columns 
-        							? ((nPlayers+1)/2)*2
-        							: nPlayers*2);
-        double playerHSpace = 4 + (tallMode ? 1 :  (columns ? 10:5));
-        double sncols = (ncols+playerHSpace); // more cells wide to allow for the aux displays
-        double snrows = (safari? nrows+2 : 6)
-        				+ (noChat ? 5 : 0)
-        				+ (tallMode 
-        						? nrows+playerVSpace+1 
-        						: Math.max(nrows,playerVSpace));  
-        int cellw = (int)(width / sncols);
-        int cellh = (int)((height-(wideMode ? 0 : chatHeight)) / snrows);
-        SQUARESIZE = Math.max(SUBCELL,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
- 
-        return(SQUARESIZE);
-    }
+    
+    public void setLocalBounds(int l,int t,int w,int h)
+    	{	GameLayoutManager layout = selectedLayout;
+    		G.SetRect(fullRect,l,t,w,h);
+    		int fh = standardFontSize();
+    		int nPlayers = nPlayers();
+    		int margin = fh/2;
+    		int chatHeight = selectChatHeight(h); 		
+    	   	int minLogW = fh*12;	
+           	int minChatW = fh*35;	
+            int minLogH = fh*10;	
+            int buttonW = fh*8;
 
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-     	OnedayVariation variation = b.variation;
-    	@SuppressWarnings("unused")
-		boolean safari = (variation==OnedayVariation.Safari);
-    	int nPlayers = b.nPlayers();
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = chatHeight==0;
-        CELLSIZE = SQUARESIZE/SUBCELL;
-        int C2 = CELLSIZE/2;
-        int ideal_logwidth = CELLSIZE*8*2;
-        // game log.  This is generally off to the right, and it's ok if it's not
-        // completely visible in all configurations.
-        int boardW = SQUARESIZE * ncols;
-        
-        int boardX = C2;
-        
-        CARDSIZE =  Math.min((int)(boardW*0.35),(width-boardX-C2)/10);
-
-        G.SetRect(fullRect,x,y,width, height);
-
-        int stateY = (wideMode ? 0 : chatHeight) +CELLSIZE/3;
-        int stateH = CELLSIZE*2;
-        G.placeRow(boardX + CELLSIZE, stateY,	boardW, stateH,stateRect,noChatRect);
-        
-        G.SetRect(boardRect, boardX,G.Bottom(stateRect), boardW , SQUARESIZE * nrows);
-        boolean columns = playersInColumns(nPlayers,wideMode,tallMode);
-        int playerx = 0;
-        boolean rightPlacement = false;
-        switch(variation)
+            
+    		layout.selectLayout(this, nPlayers, w, h,
+    			margin,	
+    			0.75,	// 60% of space allocated to the board
+    			1.5,	// aspect ratio for the board
+    			fh*3,	// minimum cell size
+    			fh*4,	// maximum cell size
+    			0.7		// preference for the designated layout, if any
+    			);
+    		Rectangle br = layout.peekMainRectangle();
+    		int availw = G.Width(br)-2*margin;
+            int rackW = Math.min(fh*10*10,availw);
+    		int cardW = rackW/10;
+    		int cardH = (int)(cardW*1.7);
+    		CARDSIZE = cardW;
+		
+        switch(b.variation)
         {
         case Standard:
-	        int bigW = CARDSIZE*10;
-	        G.SetRect(bigRackRect,G.Left( boardRect), G.Bottom(boardRect)+C2,
-	        		bigW,
-	        		Math.min((bigW/10)*2,height-(noChat?12*CELLSIZE:0)-G.Bottom(boardRect)-C2));
-
-	        if(G.Height(bigRackRect)*6.5<G.Width(bigRackRect))
-	        {
-	        	G.SetWidth(bigRackRect, (int)(G.Height(bigRackRect)*6.5));
-	        }
-	        int cardW = G.Width(bigRackRect)/10;
-	        int cardH = (int)(cardW*1.7);
-	        
-	        int pileX = G.Right(boardRect)+CELLSIZE;
-	        int discardY = G.Bottom( boardRect)-cardH;
-	        G.SetRect(drawPile,pileX+CELLSIZE*2,
-	        		G.Top(boardRect),
-	        		cardW,cardH);
-	        rightPlacement = (discardY<G.Bottom(drawPile));
-	        G.SetRect(discardPile, 
-	        		rightPlacement ? G.Right(drawPile)+CELLSIZE : pileX ,
-	        		discardY,
-	        		cardW*3,
-	        		cardH);
-	        
-	        
-	       
-	        G.AlignTop(startingCardRect,
-	        		G.Left(drawPile),
-	        		drawPile);
-	        playerx =  tallMode ? G.Left(boardRect) : G.Right(discardPile)+C2;        
+    		layout.placeRectangle(bigRackRect,availw,cardH,BoxAlignment.Bottom);
+    		layout.placeRectangle(drawPile,cardW*4,cardH,cardW*4,cardH,
+    				cardW*3,cardH*2,cardW*3,cardH*2,
+    				BoxAlignment.Right,true);
+    		int dh = G.Height(drawPile);
+    		if(dh<=cardH)
+    		{
+            G.SetRect(discardPile,G.Left(drawPile)+cardW,G.Top(drawPile),cardW*3,cardH);
+            G.SetWidth(drawPile,cardW);
+    		}
+    		else
+    		{	
+                G.SetRect(discardPile,G.Left(drawPile),G.Top(drawPile)+cardH,cardW*3,cardH);
+                G.SetRect(drawPile,G.Left(drawPile)+cardW,G.Top(drawPile),cardW,cardH);
+    		}   		
+            G.copy(startingCardRect,discardPile);
+            
 	        break;
 	        
         case Safari:
+        	/*
         	G.SetRect(localViewRect,G.Left(boardRect),G.Bottom(boardRect)+C2,
         				G.Height(boardRect),G.Height(boardRect));
         	G.SetRect(playerStateRect,G.Right(localViewRect)+C2,G.Top(localViewRect),
@@ -409,69 +363,60 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
         			G.Width(playerStateRect),G.Height(localViewRect)-G.Height(playerStateRect));
         	G.SetRect(trainActionRect, G.Right(playerStateRect)+C2,G.Top(playerStateRect),CELLSIZE*14,CELLSIZE*3);
         	playerx = G.Right(drawPile)+C2;
+        	*/
 			break;
 		default:
 			break;
 	    }
-        G.SetRect(goalRect,G.Left( boardRect),		// really just a general message
-        		G.Bottom(boardRect)-2*CELLSIZE,
-        		G.Width( boardRect),CELLSIZE*2);
         
-        setProgressRect(progressRect,goalRect);
-      
-        int playery = tallMode 
-        			? G.Bottom(bigRackRect)+CELLSIZE 
-        			: chatHeight+CELLSIZE;
-        int xsize = (width-playerx-C2);
-        if(columns) { xsize=xsize/2; }
-        int ysize = (int)(xsize/(20/7.0));
-        if(!columns && (ysize*nPlayers>G.Height(boardRect)))
-        {
-        	ysize = G.Height(boardRect)/nPlayers;
-        	xsize = ysize*20/7;
-        }
-        for(int i=0;i<nPlayers;i++)
-        {	createPlayerGroup(getPlayerOrTemp(i),playerChipRect[i],
-        		playerx+(columns?((i&1)*xsize):0),playery,xsize,ysize);
+		
+       
+        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
+        			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 
-        	playery += (columns?(i&1)*ysize:ysize);
-        }
-        if(columns && (nPlayers==3)) { playery += ysize; }
+        	layout.placeDoneEdit(buttonW,buttonW*4/3,doneRect,editRect);
+        	
+        	Rectangle main = layout.getMainRectangle();
+        	int stateH = fh*3;
+        	int mainX = G.Left(main);
+        	int mainY = G.Top(main);
+        	int mainW = G.Width(main);
+        	int mainH = G.Height(main);
+           	boolean rotate = mainW<mainH;	
+           	int nCols = rotate ? nrows : ncols;
+           	int nRows = rotate ? ncols : nrows;
+           	int cellsize = Math.min(mainW/nCols,(mainH-stateH)/nRows);
+           	int boardW = nCols*cellsize;
+           	int boardH = nRows*cellsize;
+           	int extraW = mainW-boardW;
+           	int extraH = mainH-stateH-boardH;
+           	int boardX = mainX+extraW/2;
+           	int boardY = mainY+extraH/2+stateH;
+        	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	
+      	SQUARESIZE = cellsize;
+       	CELLSIZE = cellsize/4;
+       	
+    	{
+    	int vcrY = G.Bottom(boardRect)-7*CELLSIZE+CELLSIZE/2;
+       	int vcrX = G.Right(boardRect)-CELLSIZE*11;
+        	if(rotate)
+        	{	// this conspires to rotate the drawing of the board
+        		// and contents if the players are sitting opposite
+        		// on the short side of the screen.
+    		vcrX = G.Left(boardRect)+CELLSIZE;
+        		G.setRotation(boardRect,-Math.PI/2);
+        		contextRotation = -Math.PI/2;
+        	}
+       	SetupVcrRects(vcrX,vcrY,CELLSIZE*10,CELLSIZE*5);
+    	}
+
+        	layout.returnFromMain(extraW/2,extraH/2);
+         	G.placeRow(boardX,boardY-stateH,boardW,stateH,stateRect,noChatRect);
+            G.SetRect(goalRect, boardX,boardY+boardH-stateH,boardW,stateH);
+            
+            setProgressRect(progressRect,goalRect);
  
-        int chatX = wideMode ? playerx : 0;
-        int chatY = wideMode ? playery : 0;
-        int chatW = wideMode ? width-chatX-C2 : width-ideal_logwidth;
-        int chatH = wideMode ? Math.min(chatHeight,G.Bottom(boardRect)-chatY) : chatHeight;
-        int logX =  noChat ? C2 : wideMode ?  playerx : chatX+chatW+C2;
-        int logY = noChat ? (tallMode ? playery:G.Bottom(bigRackRect))+C2 : (wideMode ?G.Top(boardRect):0)+C2;
-        G.SetRect(logRect,logX,
-        			logY,
-        			ideal_logwidth,
-        			noChat ? height-logY-C2 : wideMode ? CELLSIZE*7 : chatHeight-C2);
-
-        G.SetRect(chatRect,chatX,chatY,	chatW,	chatH);
-        
-
-        // "edit" rectangle, available in reviewers to switch to puzzle mode
-        G.SetRect(doneRect,
-        		G.Right(drawPile)+CELLSIZE,
-        		G.Top(boardRect)+C2/2,
-        		CELLSIZE*8,4*CELLSIZE);
-
-        
-        // "done" rectangle, should always be visible, but only active when a move is complete.
-        G.AlignXY(editRect,
-        		rightPlacement ? G.Right(doneRect)+CELLSIZE : G.Left(doneRect),
-        		rightPlacement ? G.Top(doneRect) : G.Bottom( doneRect)+CELLSIZE/2,
-        		doneRect);
-  
-        //this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(G.Right(boardRect)-CELLSIZE*11,G.Bottom(boardRect)-7*CELLSIZE,
-            CELLSIZE * 10,
-            5 * CELLSIZE);
- 
-        positionTheChat(chatRect,Color.white,Color.white);
-        generalRefresh();
     }
 
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
@@ -628,10 +573,11 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 
     }
     public void drawFixedBoard(Graphics gc,Rectangle r)
-    {
+    {	GC.setRotatedContext(gc,r,null,contextRotation);
      images[BOARD_INDEX].centerImage(gc, r);
 	  Line.drawAllLines(gc,r,0.5);
       Station.drawAllStops(gc,this,r,0.5);
+    	GC.unsetRotatedContext(gc,null);
     }
     Image scaled = null;
     public void drawPrizeBoard(Graphics gc,OnedayBoard gb,Rectangle r)
@@ -988,8 +934,10 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	Rectangle oldclip = GC.combinedClip(gc,localViewRect);
     	GC.fillRect(gc, Color.gray,localViewRect);
     	
+        GC.setRotatedContext(gc,boardRect,hp,contextRotation);
+        drawBoardElements(gc,gb,playerRect,null);
+        GC.unsetRotatedContext(gc,hp);
 
-    	drawBoardElements(gc,gb,playerRect,null);
     	GC.setClip(gc,oldclip);
     	
     	GC.frameRect(gc, Color.yellow, localViewRect);
@@ -1064,7 +1012,11 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       OnedayState vstate = gb.getState();
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
+     	
+      GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
         drawBoardElements(gc, gb, boardRect, highlight);
+      GC.unsetRotatedContext(gc,highlight);
+
         GC.setFont(gc,standardBoldFont());
 		if (vstate != OnedayState.Puzzle)
         {
@@ -1634,10 +1586,6 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
-
-	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) {
-		throw G.Error("Not needed with manual layout");
-	}
 
 }
 

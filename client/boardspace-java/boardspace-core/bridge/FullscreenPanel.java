@@ -19,6 +19,7 @@ package bridge;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Panel;
+import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.security.AccessControlException;
 
@@ -42,7 +43,7 @@ public class FullscreenPanel extends Panel implements MenuParentInterface,NullLa
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+	public Rectangle getFrameBounds() { return getBounds(); }
 	public void addC(Component c) { add(c); }
 	public FullscreenPanel()
 	{
@@ -54,6 +55,9 @@ public class FullscreenPanel extends Panel implements MenuParentInterface,NullLa
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
+	
+	public void setFrameBounds(int l,int t,int w,int h) { setBounds(l,t,w,h); }
+	
 	public void setLocalBounds(int l,int t,int w, int h)
 	{	
 		for(int nc = getComponentCount()-1 ; nc>=0; nc--)

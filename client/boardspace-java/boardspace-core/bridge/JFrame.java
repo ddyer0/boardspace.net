@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -46,7 +47,7 @@ class JBar extends JMenuBar
 	{
 		super.paint(gc);
 	}
-	public void setBounds(int x,int y,int w,int h)
+	public void setFrameBounds(int x,int y,int w,int h)
 	{
 		super.setBounds(x,y,w,h);
 	}
@@ -71,6 +72,8 @@ public class JFrame extends javax.swing.JFrame
 	public JMenuBar jMenuBar = null;
 	JPopupMenu popupMenuBar = null;
 	public DeferredEventManager canSavePanZoom = null;
+	public Rectangle getFrameBounds() { return super.getBounds();}
+	public void setFrameBounds(int l,int t, int w,int h) { super.setBounds(l,t,w,h); }
 	public void setCanSavePanZoom(DeferredEventManager v) {
 		canSavePanZoom = v;		
 	}
@@ -304,7 +307,7 @@ public void validateTree()
         fh = Math.max(lastKnownHeight/5,Math.min(fh,lastKnownHeight));
         fx = Math.max(0,Math.min(lastKnownWidth-fw,fx));
         fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
-		setBounds(fx,fy,fw,fh);   			
+		setFrameBounds(fx,fy,fw,fh);   			
 	} 	
 	
 	public void windowClosing(WindowEvent e) {

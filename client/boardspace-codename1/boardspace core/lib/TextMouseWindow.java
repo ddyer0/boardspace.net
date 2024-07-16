@@ -63,8 +63,8 @@ public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,Windo
 		// the time.  This may be tied to volatile bitmaps.
 		repaint(1000);
 	}
-	public void setBounds(int l,int t,int w,int h)
-	{	super.setBounds(l, t, w, h);
+	public void setFrameBounds(int l,int t,int w,int h)
+	{	super.setFrameBounds(l, t, w, h);
 		area.setBounds(l, t, w, h);
 	}
 	public void setFont(Font f)

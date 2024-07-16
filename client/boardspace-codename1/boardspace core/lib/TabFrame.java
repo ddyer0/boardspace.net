@@ -16,8 +16,6 @@
  */
 package lib;
 
-import com.codename1.ui.Component;
-
 import bridge.AccessControlException;
 import bridge.ActionEvent;
 import bridge.Config;
@@ -30,8 +28,8 @@ import bridge.MasterForm;
 import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
-public class TabFrame extends Frame 
-	implements TopFrameProtocol,SizeProvider,Config
+public class TabFrame extends Frame
+	implements TopFrameProtocol,SizeProvider,Config,ImageConsumer
 {
 	ImageLoader loader = new ImageLoader(this);
 	public TabFrame() 
@@ -196,7 +194,7 @@ public class TabFrame extends Frame
 		{
 			int w = parent.getWidth();
 			int h = parent.getHeight();
-			setBounds(0,0,Math.max(300,w),Math.max(300,h));
+			setFrameBounds(0,0,Math.max(300,w),Math.max(300,h));
 		}
 
 
@@ -207,9 +205,5 @@ public class TabFrame extends Frame
 	}
 	public void setTitle(String n) {
 		MasterForm.getMasterPanel().setTabName(this,n,getIconAsImage());
-	}
-	public void removeC(Component c) {
-		remove(c);
-		
 	}
 }

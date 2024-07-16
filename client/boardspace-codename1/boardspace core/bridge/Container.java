@@ -19,17 +19,75 @@ package bridge;
 import lib.G;
 import lib.Http;
 
+import java.util.Vector;
+
 import com.codename1.ui.Graphics;
+import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.Insets;
 import com.codename1.ui.layouts.Layout;
 
-public class Container extends Component
+public class Container extends com.codename1.ui.Container
 {
 	public Insets getInsets() { return(new Insets(0,0,0,0)); }
 	
+	public int getComponentIndex(Component c)
+	{
+		int cc = getComponentCount();
+		for(int i=0;i<cc;i++) { if(getComponentAt(i)==c) { return i; }}
+		return -1;
+	}
 	public Container(Layout x) { super(x);  }
 	public Container() { super();  }
 	public void validate() {}
+	public Rectangle getFrameBounds() { return getBounds(); }
+	public void setFrameBounds(int l, int t, int w, int h) 
+	{	setX(l);
+		setY(t);
+		setWidth(w);
+		setHeight(h);
+	}
+	public void repaint(int tm) { repaint(); }
+	public Object getMediaComponent() { return this; }
+	public void setBackground(Color c) { getStyle().setBgColor(c.getRGB()); }
+	public void setForeground(Color c) { getStyle().setFgColor(c.getRGB());  }
+	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
+	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
+	public void setSize(int size_x2, int size_y2) 
+	{ 	setWidth(size_x2);
+		setHeight(size_y2);
+	}
+	Vector<WindowListener> listeners = null;
+	public void addWindowListener(WindowListener myrunner) {
+		if(listeners==null) { listeners = new Vector<WindowListener>(); }
+		if(!listeners.contains(myrunner)) { listeners.addElement(myrunner); }
+	}
+	public void dispose() 
+	{ //G.print("Dispose "+this);
+		closingChildren();	// make sure all children know they're going away
+	}
+	public void closingChildren()
+	{	if(listeners!=null)
+		{
+		for(WindowListener l : listeners)
+		  {
+		  l.windowClosing(new WindowEvent(this));
+		  }}
+		for(int nc = getComponentCount()-1; nc>=0; nc--)
+		{
+			com.codename1.ui.Component c = getComponentAt(nc);
+			if(c instanceof Container) { ((Container)c).closingChildren(); }	
+		}
+	}
+	public void windowActivated()
+	{
+		if(listeners!=null)
+		{	
+			for(WindowListener l : listeners)
+			{
+				l.windowActivated(new WindowEvent(this));
+			}
+		}
+	}
 
 	public void paint(Graphics g)
 	{	try {
@@ -91,15 +149,6 @@ public class Container extends Component
 	
 	public Component getComponent(int i) { return((Component)getComponentAt(i)); }
 	
-	public int getComponentIndex(JMenu m)
-	{
-		return m.getComponentIndex(m);
-	}
-	public int getComponentIndex(Component m)
-	{
-		return m.getComponentIndex(m.getComponent());
-	}
-
 	public void add(ProxyWindow c) { addC(c.getComponent()); }
 	public com.codename1.ui.Container add(com.codename1.ui.Component c)
 	{	G.Assert(!G.debug() || G.isEdt(),"should be edt");

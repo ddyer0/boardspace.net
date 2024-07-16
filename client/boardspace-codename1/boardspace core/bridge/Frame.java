@@ -18,7 +18,6 @@ package bridge;
 
 import lib.G;
 import lib.Http;
-import lib.ImageConsumer;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
 import lib.PinchEvent;
@@ -29,7 +28,7 @@ import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.Layout;
 
 public class Frame extends Window 
-		implements NullLayoutProtocol,MouseMotionListener,MouseListener,ImageConsumer
+		implements NullLayoutProtocol,MouseMotionListener,MouseListener
 {	boolean resizable = false;
 	public void setResizable(boolean n) { resizable = n; }
 	Container glassPane = new FullscreenPanel();
@@ -100,10 +99,10 @@ public class Frame extends Window
 	public void setSize(int w,int h)
 	{
 		super.setSize(w, h);
-		if(glassPane!=null) { glassPane.setBounds(0,0,w,h); }
+		if(glassPane!=null) { glassPane.setFrameBounds(0,0,w,h); }
 	}
 
-	public void setBounds(int x,int y,int w,int h) 
+	public void setFrameBounds(int x,int y,int w,int h) 
 	{ 
 		setSize(w,h);
 		setX(x);
@@ -168,7 +167,7 @@ public class Frame extends Window
 	}
 	
 	public void setLocationRelativeTo(Object object) {
-		Rectangle targetBounds = MasterForm.getMasterPanel().getBounds();
+		Rectangle targetBounds = MasterForm.getMasterPanel().getFrameBounds();
 		if(object instanceof Component) { targetBounds = ((Component)object).getBounds(new Rectangle()); }
 		int cx = targetBounds.getX()+targetBounds.getWidth()/2;
 		int cy = targetBounds.getY()+targetBounds.getHeight()/2;

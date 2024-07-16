@@ -19,8 +19,6 @@ package vnc;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.Component;
-import bridge.Container;
-
 import lib.Graphics;
 import lib.CellId;
 import lib.G;
@@ -53,7 +51,7 @@ enum DispatchId implements CellId {  selection ;
 public class VncDispatcher extends OffscreenWindow implements Runnable,VncServiceProvider,SimpleObserver,VNCConstants
 {	private boolean exitRequest = false;
 	String exitReason = null;
-	static Component dummyComponent = new Container();
+	static Component dummyComponent = new Component();
 	public Component getMediaComponent()
 	{ 
 	  return(dummyComponent); 

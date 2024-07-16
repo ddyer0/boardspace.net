@@ -30,7 +30,7 @@ import com.codename1.ui.geom.Dimension;
 import bridge.Platform.Style;
 
 
-public class JMenuItem implements ActionListener,AwtComponent,NativeMenuItemInterface
+public class JMenuItem extends Component implements ActionListener,AwtComponent,NativeMenuItemInterface
 {	MouseAdapter mouse = new MouseAdapter(null);
 	String text = null;
 	Object item = null;

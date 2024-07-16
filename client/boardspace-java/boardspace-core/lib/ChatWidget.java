@@ -131,8 +131,8 @@ public class ChatWidget
 	private int x=0,y=0,w=1,h=1;
 	public int getX() {	return x; }
 	public int getY() { return y; }
-	public Rectangle getBounds() {	return new Rectangle(x,y,w,h); }
-	public void setBounds(int i, int j, int width, int height) 
+	public Rectangle getFrameBounds() {	return new Rectangle(x,y,w,h); }
+	public void setFrameBounds(int i, int j, int width, int height) 
 	{	
 		x = i;
 		y = j;

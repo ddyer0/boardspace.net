@@ -133,8 +133,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 	private void windowActivated(Object cc)
 	{
-		if(cc instanceof bridge.Component) 
-		{ ((bridge.Component)cc).windowActivated(); 
+		if(cc instanceof bridge.Container) 
+		{ ((bridge.Container)cc).windowActivated(); 
 		}
 	}
 	public Component getMyChildContaining(Component c)

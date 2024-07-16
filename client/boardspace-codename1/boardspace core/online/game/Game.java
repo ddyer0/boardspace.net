@@ -1166,6 +1166,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			robotMasterOrder = G.IntToken(myST);
     			tok = myST.nextToken();
     		}
+  	    	// discard any events that may be trapped
+  	    	v.getEvents();
     		v.useStoryBuffer(tok,myST);
     	}
     }
@@ -2487,6 +2489,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         // the players all connected, but we were first (since we couldn't
         // learn about the other players before we connected).  
         G.Assert(offline||my==playerConnections[0],"we are not player 0");
+        
+        // get and discard any events leftover from a previous universe
+        v.getEvents();
         
         useStoryBuffer(myST);
         
@@ -3988,6 +3993,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
 
     private void DoJointReview()
+    {	if(!my.isSpectator())
     {
         boolean oldval = useJointReview;
         useJointReview = ((jointReview != null) && jointReview.getState())
@@ -4018,7 +4024,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 	sendStatechangeMessage(scrollMessage /* + b.placedPositionString() */);
                 	}
             }
-        }
+        }}
     }
  
     public void runStep(int wait)
@@ -4835,9 +4841,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        				{ //test_switch = !test_switch;  
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
-    	   			 //disConnected("test");
+    	   			 disConnected("test");
     	   			 //myNetConn.closeConn();
-    	   			 v.testSwitch();
+    	   			 //v.testSwitch();
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;
        				}

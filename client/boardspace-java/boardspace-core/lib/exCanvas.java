@@ -370,7 +370,7 @@ public abstract class exCanvas extends Canvas
     public void resetBounds()
      {  l.needLocalBounds = true;
      }
-    public void setBounds(int left, int t, int w, int h)
+    public void setFrameBounds(int left, int t, int w, int h)
     {	int oldw = getWidth();
     	int oldh = getHeight();
     	super.setBounds(left,t,w,h);
@@ -696,7 +696,7 @@ public abstract class exCanvas extends Canvas
     			if(!chatFramed ) 
 	    		{ int sx = isWindow ? -getSX() : 0;
 	    		  int sy = isWindow ? -getSY() : 0;   
-	     		  theChat.setBounds(G.Left(chatR)+sx,
+	     		  theChat.setFrameBounds(G.Left(chatR)+sx,
 	    				  G.Top(chatR)+sy,G.Width(chatR),G.Height(chatR)); 
 	     		}
     			if(chatCol!=null) { theChat.setBackgroundColor(chatCol); }
@@ -1892,7 +1892,7 @@ graphics when using a touch screen.
 	{	
 		if(theChat!=null && ( theChat.isWindow() || !chatHasRun))	// if old style chat window, we need to avoid it
 		{
-		Rectangle chatBounds = theChat.getBounds();
+		Rectangle chatBounds = theChat.getFrameBounds();
 		int l = G.Left(chatBounds);
 		int t = G.Top(chatBounds);
 		int r = G.Right(chatBounds);

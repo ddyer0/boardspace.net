@@ -527,7 +527,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		if(theChat!=null && (lobby.chatFrame==null))
 			{ 
 			  int chatX = wideMode ? G.Right(gameRect)+SCROLLBARWIDTH : inX;
-			  theChat.setBounds(chatX,inY,inWidth-chatX-2,chatHeight);  
+			  theChat.setFrameBounds(chatX,inY,inWidth-chatX-2,chatHeight);  
 			}
 		
     	int nusercopies = G.Height(userRect)/USERHEIGHT+2;

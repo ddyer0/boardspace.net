@@ -31,7 +31,7 @@ public interface CanvasProtocol extends DeferredEventHandler
      */
     public void ViewerRun(int waitTime);
 
-    public void setBounds(int x,int y,int w,int h);
+    public void setFrameBounds(int x,int y,int w,int h);
 	/** set the chat applet 
 	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop

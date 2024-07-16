@@ -133,7 +133,7 @@ public class FileSelector extends FullscreenPanel
     	{
     		Dimension sourcePref = sourcePanel.getPreferredSize();
     		sourceH = G.Height(sourcePref);
-    		sourcePanel.setBounds(0,y,w,sourceH);
+    		sourcePanel.setFrameBounds(0,y,w,sourceH);
     		y += sourceH;
     	}
  
@@ -153,7 +153,7 @@ public class FileSelector extends FullscreenPanel
      	sourcePanel.setVisible(multisource);
 
 
-    	dirPanel.setBounds(x,y,w,dirH);
+    	dirPanel.setFrameBounds(x,y,w,dirH);
     	y += dirH;   	
   	
     	
@@ -161,21 +161,21 @@ public class FileSelector extends FullscreenPanel
     	
     	if(seeExit)
     	{
-        	exitPanel.setBounds(x,y,w,exitH);
+        	exitPanel.setFrameBounds(x,y,w,exitH);
         	y+= exitH;
     	}
     	
     	if(G.isCodename1()) { dirList.setBounds(x,y,w,dirLH); }
-    	else { dirListPanel.setBounds(x,y,w,dirLH); }
+    	else { dirListPanel.setFrameBounds(x,y,w,dirLH); }
     	y += dirLH;
-    	filterPanel.setBounds(x,y,w,filterH);
+    	filterPanel.setFrameBounds(x,y,w,filterH);
     	y += filterH;
     	if(G.isCodename1())
     	{gameList.setBounds(x,y,w,gameH);
     	}
     	else 
     	{
-    	gameListPanel.setBounds(x,y,w,gameH);
+    	gameListPanel.setFrameBounds(x,y,w,gameH);
     	}
     	y += gameH;
     	

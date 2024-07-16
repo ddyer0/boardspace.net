@@ -3,6 +3,7 @@ package bridge;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Panel;
+import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
@@ -17,13 +18,14 @@ public class JPanel extends Panel implements NullLayoutProtocol,ImageConsumer
 	private Container contentPane = null;
 	public String getTitle() { return title; }
 	public JPanel () { super(); init(); }
+	public Rectangle getFrameBounds() { return getBounds(); }
 	public JPanel(String p)
 	{	super();
 		title = p;
 		init();
 	}
 	public void setOpaque(boolean v) {}
-	public void setBounds(int x,int y,int w,int h)
+	public void setFrameBounds(int x,int y,int w,int h)
 	{
 		super.setBounds(x,y,w,h);
 	}

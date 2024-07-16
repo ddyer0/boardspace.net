@@ -90,7 +90,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config
 			 double scale = G.getDisplayScale();
 			 int w = (int)(scale*450);
 			 int h = (int)(scale*430);
-			 myFrame.setBounds( 0, 0, w, h); 
+			 myFrame.setFrameBounds( 0, 0, w, h); 
 		}
 		myFrame.setVisible(v);
 	}
@@ -344,7 +344,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config
 	}
 	public void repaint() { myFrame.repaint(); }
 	public Container getContentPane() { return myFrame.getContentPane(); }
-	public void setBounds(int x,int y,int w,int h) { myFrame.setBounds(x,y,w,h); }
+	public void setBounds(int x,int y,int w,int h) { myFrame.setFrameBounds(x,y,w,h); }
 	public void setOpaque(boolean v) { myFrame.setOpaque(v); }
 	public void setLayout(LayoutManager x) { myFrame.setLayout(x); }
 	public void setContentPane(Container p) { myFrame.setContentPane(p); }
@@ -375,5 +375,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config
 	public void moveToFront() {
 		myFrame.moveToFront();
 	}
-	
+	public void setEnableRotater(boolean b) {
+		myFrame.setEnableRotater(b);
+	}
 }

@@ -18,7 +18,6 @@ package bridge;
 
 import com.codename1.ui.Graphics;
 
-import lib.NullLayout;
 import lib.NullLayoutProtocol;
 
 // 
@@ -29,7 +28,7 @@ public class ComponentProxy extends Component implements NullLayoutProtocol
 {	ProxyWindow client;
 	
 	public ComponentProxy(ProxyWindow c) 
-	{ 	setLayout(new NullLayout(this));
+	{ 	
 	    client = c;
 	    //for some reason this is a really bad idea, all the codename1 buttons stop working.
 	    // setFocusable(true);

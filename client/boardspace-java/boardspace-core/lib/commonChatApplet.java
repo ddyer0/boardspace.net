@@ -228,7 +228,7 @@ public class commonChatApplet extends FullscreenPanel
         return (b);
     }
 
-    public void setBounds(int l,int t,int w,int h)
+    public void setFrameBounds(int l,int t,int w,int h)
     	{   int oldw = getWidth();
     		int oldh = getHeight();
     		super.setBounds(l,t,w,h);
