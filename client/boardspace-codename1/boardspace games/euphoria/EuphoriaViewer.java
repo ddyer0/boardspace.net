@@ -1936,7 +1936,7 @@ private Color playerBackground[] = {
                 		highlight,s.get(DontUseRecruitAbility),
                         HighlightColor, rackBackGroundColor))
     				{ 
-    				highlight.hitCode =GameId.HitDoneButton;
+    				highlight.hitCode = GameId.HitDoneButton;
     				}
     		  }
     		}

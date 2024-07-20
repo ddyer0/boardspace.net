@@ -154,7 +154,7 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 	}
 	private void processGameState(ServiceType type,String spec)
 	{	G.Assert(type==serviceType, "should be the same");
-		client.execute(spec);
+		if(client!=null) { client.execute(spec); }
 	}
 	public void parseMessages(MixedPacket msg)
 	 {	long now = G.Date();
@@ -356,9 +356,14 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 		return(instance);
 	}
 	public static void start(PlaytableServer server, ExtendedHashtable sharedInfo, commonPanel myL,	XFrame myLF)
-	{	RpcReceiver me = getInstance();
-		me.host = server.hostIP;
-		me.port = server.hostPort;
+	{	start(server.hostIP,server.hostPort,sharedInfo,myL,myLF);
+	}
+	
+	public static void start(String hostIP,int hostPort,ExtendedHashtable sharedInfo, commonPanel myL,	XFrame myLF)
+	{
+		RpcReceiver me = getInstance();
+		me.host = hostIP;
+		me.port = hostPort;
 		me.panel = myL;
 		me.frame = myLF;
 		me.info = sharedInfo;

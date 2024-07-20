@@ -282,16 +282,6 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 	 *  When "extraactions" is available, a menu option "show rectangles" works
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	setLocalBoundsV(x,y,width,height,new double[] {-1,1});

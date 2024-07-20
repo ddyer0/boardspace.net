@@ -238,5 +238,6 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 		removeObserver(this);
 		}
 	}
+
 	
 }

@@ -433,7 +433,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       	if(canHit && highlight!=null)
       		{
       		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode=CrosswordsId.DrawPile;
+      		highlight.hitCode = CrosswordsId.DrawPile;
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}

@@ -44,6 +44,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 			G.isCodename1()
 				? RepaintStrategy.Direct_Unbuffered
 				: RepaintStrategy.Direct_SingleBuffer);
+	public HitPoint getHighlightPoint() { return null;}
 	public void drawBackground(Graphics gc, Image image) 
 	{
 		
@@ -54,7 +55,6 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	}
 	public TextWindow(LFrameProtocol f)
 	{	super(f);
-		setLayout(new NullLayout(this));
 		painter.hasRunLoop = painter.drawLockRequired = false;
 		addMouseMotionListener(this);
 		addMouseListener(this);

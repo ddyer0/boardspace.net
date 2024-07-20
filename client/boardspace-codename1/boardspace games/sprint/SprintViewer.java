@@ -411,7 +411,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
       	if(canHit && highlight!=null)
       		{
       		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode=SprintId.DrawPile;
+      		highlight.hitCode = SprintId.DrawPile;
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}

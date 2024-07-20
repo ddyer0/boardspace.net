@@ -391,10 +391,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		{ repaint(200); 
 		}
 	
-	public void setBounds(int inx,int iny,int inw,int inh)
+	public void setFrameBounds(int inx,int iny,int inw,int inh)
 	{	int oldw = getWidth();
 		int oldh = getHeight();
-		super.setBounds(inx,iny,inw,inh);
+		super.setFrameBounds(inx,iny,inw,inh);
 		if(oldw!=inw || oldh!=inh) { doNullLayout(); }
 	}
 	public Dimension getMinimumSize()

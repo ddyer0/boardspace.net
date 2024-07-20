@@ -244,7 +244,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	G.SetRect(fullRect, x, y, width, height);
 		int fh = standardFontSize();
     	double zoom = getGlobalZoom();
-    
     	gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, (int)(zoom*(fh)));
     	gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,(int)(zoom*(fh)));
     	GameLayoutManager layout = selectedLayout;
@@ -292,7 +291,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	
     	// calculate a suitable cell size for the board
     	CELLSIZE = fh*3;;
-        int zoomW = CELLSIZE*5;
+        int zoomW = CELLSIZE*3;
         int C4 = CELLSIZE/4;
         RACKSCALE = CELLSIZE*4;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
@@ -307,7 +306,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
-        G.placeRow(stateX+stateH,stateY,mainW-stateH,stateH,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
+        G.placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
         G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,annotationMenu,numberMenu,tilesetRect);
        
         G.placeRight(stateRect, zoomRect, zoomW);
@@ -529,12 +528,12 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      {	
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
         int csize = gb.cellSize();
-     	boolean dolift = doLiftAnimation();
+     	boolean somehit = draggingBoard();
+     	boolean dolift = !somehit && doLiftAnimation();
      	boolean see = seeMobile.isOnNow();
      	//
          // now draw the contents of the board and anything it is pointing at
          //
-     	boolean somehit = draggingBoard();
          
          Hashtable<HiveCell,HiveCell> dests = gb.movingObjectDests();
          HiveCell sourceCell = gb.pickedSource; 
@@ -759,8 +758,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
             				whoseTurn,
             				stateRect);
     	HivePiece idbug = HivePiece.getCanonicalChip(gb.playerColor(whoseTurn),PieceType.QUEEN);
-    	int h = G.Height(stateRect);
-    	idbug.drawChip(gc, this, h*3, G.Left(stateRect)-h/2, G.centerY(stateRect),null);
+    	int h = G.Height(iconRect);
+    	idbug.drawChip(gc, this, h*3, G.centerX(iconRect),G.centerY(iconRect),null);
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(HiveGoal),progressRect, goalRect);
         drawVcrGroup(nonDraggingSelect, gc);
 

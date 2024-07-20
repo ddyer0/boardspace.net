@@ -61,7 +61,9 @@ import lib.XFrame;
 import lib.commonPanel;
 import lib.exCanvas;
 import lib.SeatingChart.Seating;
+import rpc.RpcReceiver;
 import rpc.RpcService;
+import rpc.RpcServiceClient;
 import udp.UDPService;
 import vnc.AuxViewer;
 import vnc.VNCService;
@@ -179,7 +181,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
         autoDone.setForeground(Color.blue);
        // this starts the servers that listen for connections from side screens
-        if(extraactions) { startviewer = myFrame.addAction("start viewer",deferredEvents); }
+        if(G.debug())
+        	{ if(REMOTEVNC) { startVncViewer = myFrame.addAction("start vnc viewer",deferredEvents); }
+        	  if(REMOTERPC) { startRpcViewer = myFrame.addAction("start rpc viewer",deferredEvents); }
+        	}
        
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
@@ -1379,15 +1384,19 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	    	     startserver.setText(running ? "start server" : "stop server");
 	    	   	 return(true);
 	 			}
-	    if (target == startviewer)  
+	    if (target == startVncViewer)  
 				{ 
-	    	   	vncViewer = doViewer(sharedInfo);
-				 return(true);
+	    	   	vncViewer = doVncViewer(sharedInfo); 
+				return(true);
 				}
-
+	    if (target == startRpcViewer)  
+				{ 
+	    	   	rpcViewer = doRpcViewer(sharedInfo); 
+				return(true);
+				}
 		return(false);
 	}
-    private AuxViewer doViewer(ExtendedHashtable sharedInfo)
+    private AuxViewer doVncViewer(ExtendedHashtable sharedInfo)
     {  
     	commonPanel panel = (commonPanel)new commonPanel();
     	XFrame frame = new XFrame("VNC viewer");
@@ -1406,7 +1415,23 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     	return(viewer);
     }
     
- 
+    private RpcServiceClient doRpcViewer(ExtendedHashtable sharedInfo)
+    {  
+    	XFrame frame = new XFrame("RPC viewer");
+    	commonPanel panel = (commonPanel)new commonPanel();
+    	panel.init(sharedInfo,frame);
+    	RpcReceiver.start("localhost",RpcPort,sharedInfo, panel,frame);
+    	
+    	frame.setContentPane(panel);
+    	double scale = G.getDisplayScale();
+    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
+    	frame.setVisible(true);
+ 	 	G.print("running "+panel);
+        panel.start();
+
+    	return (RpcServiceClient)(panel.getCanvas());
+    }
+
 	static String SoloMode = "Solo review of games";
 	static String NPlayerMode = "Games for #1 Players";
 	static String CategoriesMode = "Categories";
@@ -1473,13 +1498,16 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
   
 		 AuxViewer v = vncViewer;
      	 if(v!=null) { vncViewer = null; v.shutDown(); }
-
+     	 RpcServiceClient r = rpcViewer;
+     	 if(r!=null) { rpcViewer = null; r.shutDown(); }
+     	 
 		 if(REMOTEVNC) { VNCService.stopVNCServer(); }
 		 if(REMOTERPC) { RpcService.stopRpcServer(); }	
 		 LFrameProtocol f = myFrame;
 		 if(f!=null) { f.killFrame(); }
 	 }
 	boolean fromLobby = false;
+	// this is used to start a seating viewer from the lobby
     static public SeatingViewer doSeatingViewer(ExtendedHashtable sharedInfo)
     {  
     	commonPanel panel = new commonPanel();
@@ -1514,7 +1542,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	private JMenuItem startserver = null; //for testing, disable the transmitter
 	private SeatingViewer seatingViewer = null;
 	private AuxViewer vncViewer = null;
-	private JMenuItem startviewer = null; //for testing, disable the transmitter
+	private RpcServiceClient rpcViewer = null;
+	private JMenuItem startVncViewer = null; //for testing, start a remote viewer
+	private JMenuItem startRpcViewer = null; // for testing, start a remote viewer
     public void createKeyboard()
     {	if(useKeyboard)
     	{

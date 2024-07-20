@@ -334,7 +334,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
       	if(canHit && highlight!=null)
       		{
       		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode=WypsId.DrawPile;
+      		highlight.hitCode = WypsId.DrawPile;
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}

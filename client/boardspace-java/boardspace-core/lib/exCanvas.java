@@ -790,7 +790,6 @@ graphics when using a touch screen.
 
     public HitPoint setHighlightPoint(HitPoint p)
     { 	
-    	painter.setHighlightPoint(p==null?new HitPoint(mouse.getX(),mouse.getY(),mouse.getLastMouseState()):p);
     	return(mouse.setHighlightPoint(p)); 
     }
 
@@ -1244,7 +1243,10 @@ graphics when using a touch screen.
         		Graphics.logging = true;
         		l.logGraphicsStart = 0;
         	}
- 	  		pt.hitCode = DefaultId.HitNoWhere;
+			//if this is a newly created point, it will already have HitNowhere
+			//if it is the current highlight point, it shouldn't change
+			//this was the underlying bug in the funky draggingboard behavior
+	  		//pt.hitCode = DefaultId.HitNoWhere;
 	       	pt.spriteRect = null;
 	       	pt.spriteColor = null;
 	       	pt.hitObject = null;

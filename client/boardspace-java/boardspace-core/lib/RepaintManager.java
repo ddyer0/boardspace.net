@@ -332,6 +332,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		public int unrotateCanvasY(int x,int y);
 		public int getRotatedWidth();
 		public int getRotatedHeight();
+		public HitPoint getHighlightPoint();
 		
 	}
 	Component client;
@@ -558,12 +559,6 @@ public class RepaintManager implements VncScreenInterface,Config
 			break;
 		}
 	}
-    HitPoint highlightPoint = null;
-    public void setHighlightPoint(HitPoint p)
-    { 
-      highlightPoint = p; 
-    }
-    
 	    
     public void generalRefresh(String w)
     {
@@ -712,6 +707,11 @@ public class RepaintManager implements VncScreenInterface,Config
 		}
 		return(got);
 	}
+	private HitPoint getHighlightPoint()
+	{
+		HitPoint hp = helper.getHighlightPoint();
+		return hp==null ? new HitPoint(-1,-1) : hp;
+	}
 	// return true if the buffer was drawn
 	// if false is returned, a timer has been set
 	private boolean drawBufferIfReady(Graphics g,XImage back)
@@ -723,7 +723,7 @@ public class RepaintManager implements VncScreenInterface,Config
 			step++;		
 	   		boolean rotated = helper.rotateCanvas(g);
 			drawToRealScreen(g,back);
-	   		HitPoint hp = (highlightPoint == null) ?  new HitPoint(-1,-1) : highlightPoint;
+	   		HitPoint hp = getHighlightPoint();
     		helper.actualPaint(g,hp);		// this does the rest of painting, ie; painting components
     		if(rotated) { helper.unrotateCanvas(g); }
     		return(true);
@@ -1223,7 +1223,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	 //        setVisible(shouldBeVisible);
 	 //        imageCache.clearCachedImages();
 
-	         final HitPoint hp = (highlightPoint == null) ?  new HitPoint(-1,-1) : highlightPoint;
+	         final HitPoint hp = getHighlightPoint();
 	         final Graphics hg = g;
 	         final boolean hcomplete = complete;
 	         //

@@ -18,7 +18,6 @@ package bridge;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -95,7 +94,6 @@ public abstract class Canvas extends java.awt.Canvas
 	{	Container par = getParent();
 		if(par!=null) { par.remove(this); }
 	}
-	public void setLayout(LayoutManager m) {};
 	public Component getMediaComponent() { return(this); }
 	public void requestFocus(TextContainer p) { requestFocus(); }
 	

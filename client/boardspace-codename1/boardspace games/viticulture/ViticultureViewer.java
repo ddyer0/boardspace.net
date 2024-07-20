@@ -702,14 +702,14 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         			{ if(chip.type==ChipType.StructureCard)
    						{
         				highlightAll.hitObject = chip;
-   						highlightAll.hitCode=ViticultureId.ShowBigChip;
+   						highlightAll.hitCode = ViticultureId.ShowBigChip;
    						highlightAll.arrow = StockArt.Eye;
    						highlightAll.awidth = G.Width(chipR)*2/3;
    						}
         			else if(chip.type==ChipType.GreenCard)
         			{
         				highlightAll.hitObject = c;
-   						highlightAll.hitCode=ViticultureId.ShowBigStack;
+   						highlightAll.hitCode = ViticultureId.ShowBigStack;
    						highlightAll.arrow = StockArt.Eye;
    						highlightAll.awidth = G.Width(chipR)*2/3;        				
         			}
@@ -3226,7 +3226,7 @@ private void drawPlayerBoard(Graphics gc,
        				{
        					if(chip!=null)
        					{	highlightAll.hitObject = chip;
-       						highlightAll.hitCode=ViticultureId.ShowBigChip;
+       						highlightAll.hitCode = ViticultureId.ShowBigChip;
        						highlightAll.awidth = xstep/2;
        						highlightAll.hit_x = xpos;
        						highlightAll.hit_y = ypos;

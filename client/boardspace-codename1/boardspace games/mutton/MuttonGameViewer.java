@@ -718,13 +718,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 			// number of dead sheep for the wolf player to win.
 			if (gb.getState() == MuttonState.FARMER_CONFIGURING_BOARD) {
 				if (G.pointInRect(highlight,UpArrowRect) && (gb.getWolfWinTarget() < 22)) {
-					highlight.hitCode =  MuttonId.HIT_WOLF_UP_ARROW;
+					highlight.hitCode = MuttonId.HIT_WOLF_UP_ARROW;
 					highlight.hitObject = null;
 					highlight.col = 0;
 					highlight.row = 0;
 					hitArrow = 1;
 				} else if (G.pointInRect(highlight,DownArrowRect) && (gb.getWolfWinTarget() > 1)) {
-					highlight.hitCode =  MuttonId.HIT_WOLF_DOWN_ARROW;
+					highlight.hitCode = MuttonId.HIT_WOLF_DOWN_ARROW;
 					highlight.hitObject = null;
 					highlight.col = 0;
 					highlight.row = 0;
@@ -734,7 +734,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 
 			// Check if we're in the farmer face rect for enabling rage
 			if (G.pointInRect(highlight,farmerFaceRect) && (gb.getFarmerId() == getActivePlayer().boardIndex)) {
-				highlight.hitCode =  MuttonId.HIT_FARMER_FACE;
+				highlight.hitCode = MuttonId.HIT_FARMER_FACE;
 				highlight.hitObject = null;
 				highlight.col = 0;
 				highlight.row = 0;

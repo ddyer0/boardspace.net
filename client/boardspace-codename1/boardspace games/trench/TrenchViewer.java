@@ -301,17 +301,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	 *  When "extraactions" is available, a menu option "show rectangles" works
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
-
     boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {	

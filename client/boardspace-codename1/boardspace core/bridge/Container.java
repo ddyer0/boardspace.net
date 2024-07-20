@@ -30,12 +30,6 @@ public class Container extends com.codename1.ui.Container
 {
 	public Insets getInsets() { return(new Insets(0,0,0,0)); }
 	
-	public int getComponentIndex(Component c)
-	{
-		int cc = getComponentCount();
-		for(int i=0;i<cc;i++) { if(getComponentAt(i)==c) { return i; }}
-		return -1;
-	}
 	public Container(Layout x) { super(x);  }
 	public Container() { super();  }
 	public void validate() {}

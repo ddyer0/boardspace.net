@@ -178,20 +178,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	 startFirstPlayer();
     	}
     }
-
-    static int SUBCELL = 4;
-    public int setLocalBoundsSize(int width, int height,boolean wide,boolean tall)
-    {
-        double sncols = (16*SUBCELL + (tall?4:(wide ? 34 : 30))); // more cells wide to allow for the aux displays
-        int chatHeight = selectChatHeight(height);
-        double snrows = 10*SUBCELL+(tall?35:10);  
-        double cellw = width / sncols;
-        double cellh = (height-(wide ? 0 : chatHeight)) / snrows;
-        CELLSIZE = (int)Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
-        return(CELLSIZE);
-    }
-    int playerWidth(boolean horizontal) { return(horizontal ? 33 : 20); }
-    
+ 
     public Rectangle createPlayerGroup(int player, int x,int y,double rot,int unit)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int chipW = unit*2;

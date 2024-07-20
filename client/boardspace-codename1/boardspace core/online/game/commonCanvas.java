@@ -1111,7 +1111,7 @@ public abstract class commonCanvas extends exCanvas
 	     * @return the hit code for the sub-button hit
 	     */
 	    private CellId drawVcrButtons(HitPoint p, Graphics inG)
-	    {
+	    {	
 	        CellId rval = null;
 	        CellId codes[] = vcr6ButtonCodes;
 	        int nButtons = StockArt.vcrButtons.length;
@@ -2686,7 +2686,8 @@ public abstract class commonCanvas extends exCanvas
     	if(who==null) { who=getActivePlayer(); }
     	return(who);
     }
-    public int remoteViewer = -1;
+    static int NoRemoteViewer = -999;
+    public int remoteViewer = NoRemoteViewer;
     public void setRemoteViewer(int n) 
     { remoteViewer = n; 
       if(n>=0) 
@@ -3676,7 +3677,7 @@ public abstract class commonCanvas extends exCanvas
           if(p!=null) { rval = p.hitCode; }
           
          }
-        else if(p==null || p.hitCode!=VcrId.Slider)
+        else 
         	{ rval = hidden.drawVcrButtons(p, inG); // button bar
         	}
         CellId tval = drawVcrSlider(p,  inG);
@@ -5863,7 +5864,7 @@ public abstract class commonCanvas extends exCanvas
     }
     public void runRemoteViewer()
     {
-    	if(remoteViewer>=0 && started)
+    	if((remoteViewer!=NoRemoteViewer) && started)
     	{
     		ParseMessage(null,remoteViewer);
     	}
@@ -7453,7 +7454,10 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 	switch(upcode)
 	{
 	case LAST_IS_DOWN:
+	case LAST_IS_UP:
 		setHasGameFocus(true);
+		repaint();
+		break;
 	case LAST_IS_IDLE: 
 	case LAST_IS_DRAG:
 	case LAST_IS_PINCH:
@@ -7461,6 +7465,7 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 		break;
 	default: break;
 	}
+	
     return(sp);
 }
 /**
@@ -8377,7 +8382,8 @@ public void verifyGameRecord()
     public boolean doBoardDrag(Rectangle tbRect,HitPoint anySelect,int cs,CellId id)
     {
     	HitPoint mo = getDragPoint();
-    	boolean nowDragging = G.pointInRect(anySelect,tbRect) && (mo!=null) && (mo.hitCode==id);
+    	boolean in = G.pointInRect(anySelect,tbRect);
+    	boolean nowDragging = in && (mo!=null) && (mo.hitCode==id);
     	if(nowDragging)
 	      	{	if(cs>0)
 	      		{int w = G.Width(tbRect);

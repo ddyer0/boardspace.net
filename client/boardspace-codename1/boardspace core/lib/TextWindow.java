@@ -43,6 +43,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 			G.isCodename1()
 				? RepaintStrategy.Direct_Unbuffered
 				: RepaintStrategy.Direct_SingleBuffer);
+	public HitPoint getHighlightPoint() { return null;}
 	public void drawBackground(Graphics gc, Image image) 
 	{
 		

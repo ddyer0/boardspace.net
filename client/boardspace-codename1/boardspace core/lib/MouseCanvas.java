@@ -30,6 +30,8 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
     
 	MouseManager mouse = new MouseManager(this);
 	public MouseManager getMouse() { return mouse; }
+	public HitPoint getHighlightPoint() { return mouse.getHighlightPoint(); }
+	
 	/**
 	 * asynchronous events such as menu selections and input from the network
 	 * should be synchronized with the game even loop using the deferredEvents queue

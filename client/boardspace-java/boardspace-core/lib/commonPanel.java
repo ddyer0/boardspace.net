@@ -75,8 +75,8 @@ public class commonPanel extends FullscreenPanel
     /* this somewhat complex bit is to make sure the set values are consistant */
     private Vector<String[]> deferredSetName = new Vector<String[]>();
 	public void killFrame(LFrameProtocol inTF)
-    {
-    	//    	overridden by Lobby and Game classes
+    {	//    	overridden by Lobby and Game classes
+    	requestShutdown();
     }
     
     public boolean handleDeferredEvent(Object e, String command)
@@ -93,6 +93,7 @@ public class commonPanel extends FullscreenPanel
     
     public void kill()
     { //overridden by Game class
+    	requestShutdown();
         exitFlag = true;
         myFrame = null;
         G.doDelay(100);

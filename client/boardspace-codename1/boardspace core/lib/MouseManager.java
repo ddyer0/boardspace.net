@@ -121,12 +121,12 @@ public class MouseManager
     //
     // change the highlighted point, and cause refresh if it changes.
     public HitPoint setHighlightPoint(HitPoint p)
-    {
+    {	
         if (p == null)
         {
           	 if(highlightPoint != null) { canvas.repaintForMouse(200,"setHighlightPoint null"); }
           	 highlightPoint = dragPoint = null;
-    }
+        }
         else
         {   
         	if ((highlightPoint == null) 
@@ -152,7 +152,10 @@ public class MouseManager
     { 	if(highlightPoint==null) { highlightPoint = new HitPoint(-1,-1); }
     	return(highlightPoint);
     }
-    public HitPoint getDragPoint() { return(dragPoint); }
+    public HitPoint getDragPoint() 
+    {     
+      return(dragPoint); 
+    }
     
     private synchronized void setMousePinchInternal(MouseState ev,double amount,int x,int y,double angle)
     {	// pinch event

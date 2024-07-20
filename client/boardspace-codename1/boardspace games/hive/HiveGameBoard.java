@@ -1091,7 +1091,7 @@ public variation gamevariation = variation.hive;
     //
     private void dropObject(HiveCell dest)
     {  HivePiece po = pickedObject;
-       G.Assert((po!=null)&&(droppedDest==null),"ready to drop");
+       G.Assert((po!=null)&&(droppedDest==null),"ready to drop po=%s dd=%s",po,droppedDest);
        droppedDest = dest;
        pickedObject = null;
        lastDroppedObject = po;
