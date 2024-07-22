@@ -1235,13 +1235,14 @@ graphics when using a touch screen.
         		Graphics.logging = true;
         		l.logGraphicsStart = 0;
         	}
-			//if this is a newly created point, it will already have HitNowhere
-			//if it is the current highlight point, it shouldn't change
-			//this was the underlying bug in the funky draggingboard behavior
-	  		//pt.hitCode = DefaultId.HitNoWhere;
+        	// pt might be either a newly created point or, if a piece is being moved or the board dragged,
+        	// it will be the current dragPoint or hightlightpoint.  In either case, the trip through
+        	// the display loop should be the same.
+	  		pt.hitCode = DefaultId.HitNoWhere;
 	        pt.spriteRect = null;
 	        pt.spriteColor = null;
 	        pt.hitObject = null;
+	        pt.hit_index = -1;
         	drawCanvas(offGC,complete,pt);
         	if(logging)
         	{

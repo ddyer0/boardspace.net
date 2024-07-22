@@ -522,7 +522,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     		//StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
           }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE*3,labelFont,labelColor);
-    }
+     }
 
     /**
      * draw the main window and things on it.  

@@ -7412,19 +7412,19 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 	HitPoint p =  new HitPoint(eventX, eventY,upcode);
 	HitPoint drag = getDragPoint();
     boolean newDrag = (drag!=null && drag.dragging) && (upcode!=MouseState.LAST_IS_UP);
-	p.dragging =  newDrag;			//p.dragging indicates if something is being dragged
-	p.inStandard = drag!=null ? drag.inStandard : false;
-    p.hitCode = p.dragging ? drag.hitCode : DefaultId.HitNoWhere;			//if dragging, lock the hitCode on the drag
-    
-    if(p.dragging && (p.hitCode==VcrId.Slider))				// special treatment of the vcr slider
+    if(newDrag)
+    {
+	p.dragging =  true;			//p.dragging indicates if something is being dragged
+	p.inStandard = drag.inStandard;
+    }
+
+    if(newDrag && (p.hitCode==VcrId.Slider))				// special treatment of the vcr slider
     	{   			  
     	drawVcrSlider(p,null);
     	}
     	else
     	{
     	p.hitCode = DefaultId.HitNoWhere;
-    	p.spriteColor =null;
-    	p.spriteRect = null;
     	//
     	// with on the fly rotations of the pointer for playtable, the absolute
     	// x,y tends to drift.  Combat this and other accidents by saving the
@@ -8383,7 +8383,7 @@ public void verifyGameRecord()
     {
     	HitPoint mo = getDragPoint();
     	boolean in = G.pointInRect(anySelect,tbRect);
-    	boolean nowDragging = in && (mo!=null) && (mo.hitCode==id);
+    	boolean nowDragging = in && (mo!=null) && anySelect.down;
     	if(nowDragging)
 	      	{	if(cs>0)
 	      		{int w = G.Width(tbRect);
@@ -8404,6 +8404,10 @@ public void verifyGameRecord()
 	      	}
          if(startBoardDrag(anySelect,tbRect)||nowDragging)
       		{ anySelect.hitCode = id; 
+      		  // if this is a "second cycle" where drag is being done, make sure the
+      		  // current drag point retains the drag id.  It was cleared in the
+      		  // drawCanvas method
+      		  if(mo!=null) { mo.hitCode = id; }
       		}
      	 setDraggingBoard(nowDragging);
 
