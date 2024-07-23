@@ -247,16 +247,6 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
  
     }
     
-
-    public Rectangle createPlayerGroup(commonPlayer pl0,int x,int y,Rectangle discRect,Rectangle frogRect)
-    {	
-    	Rectangle box = pl0.createRectangularPictureGroup(x+CELLSIZE*6,y,CELLSIZE+CELLSIZE/2);
-    	G.SetRect(discRect, x+CELLSIZE, y, CELLSIZE*2,CELLSIZE*2);
-     	G.SetRect(frogRect, x, G.Bottom(discRect)+CELLSIZE/2, CELLSIZE*6,CELLSIZE*3);
-     	G.union(box, discRect,frogRect);
-    	return(box);
-    }
-
     private void DrawBag(Graphics gc,HitPoint hitPoint)
     {	drawBag(gc,hitPoint,bagRect,0);
     }

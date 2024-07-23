@@ -7725,7 +7725,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
        	if(ToolTip!=null) { HitPoint.setHelpText(highlight,goalRect,s.get(ToolTip,message)); }
      	if(rules!=null)
     		{
-    		int cx = G.Right(goalRect)-h/2;
+    		int cx = G.Right(goalRect)-h/4;
     		int cy = G.centerY(goalRect);
     		if(StockArt.Rules.drawChip(gc,this,h,cx,cy,highlight,GameId.HitRulesButton,null,1,1))
     			{
