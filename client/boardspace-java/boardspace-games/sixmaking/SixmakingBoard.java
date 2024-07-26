@@ -323,6 +323,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
     {	switch(board_state)
     	{
     	case DrawPending: return true;
+    	case AcceptOrDecline:
     	case Play:
     		return((moveNumber - lastProgressMove)>15);
        	default: return(false);

@@ -337,7 +337,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     		double ystep,String msg)
     {	boolean hit = false;
     	int sz = (int)(gb.cellSize() * (usePerspective()? 1.0 : 1.08));
-    	boolean canDrop = gb.movingObjectIndex()>0;
+    	boolean canDrop = gb.movingObjectIndex()>=0;
     	boolean show = eyeRect.isOnNow();
     	if(c.drawStack(gc, this, highlight, sz, x,y,  0, perspective?0:-ystep,perspective?ystep:0,msg))
     	{

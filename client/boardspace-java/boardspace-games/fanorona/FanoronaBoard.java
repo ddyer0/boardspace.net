@@ -558,7 +558,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     	double mcd = 0.0;
     	
     	minimumClosingDistance(player);				// calculate distances and prepare for sweep coverage
-    	double cover = 1*sweep_for_coverage(player,3);	//calculate coverage for pieces in the fight
+    	double cover = sweep_for_coverage(player,3);	//calculate coverage for pieces in the fight
     	FanoronaChip chip = playerChip[player];
     	for(FanoronaCell c=allCells;
     		c!=null;
@@ -1599,12 +1599,13 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	}
  }
  
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(boolean includeDraw)
  {	CommonMoveStack all = new CommonMoveStack();
   	switch(board_state)
  	{
   	case AcceptOrDecline:
-  		if(drawIsLikely()) { all.addElement(new FanoronaMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
+  		if(drawIsLikely() && (chips_on_board[whoseTurn]<2*chips_on_board[nextPlayer[whoseTurn]]))
+  			{ all.addElement(new FanoronaMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
   		all.addElement(new FanoronaMovespec(MOVE_DECLINE_DRAW,whoseTurn));
   		break;
  	case CONFIRM_STATE:
@@ -1619,7 +1620,10 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
  	case PLAY_STATE:
 		freeMovesFor(whoseTurn,all);
 		// we should always find moves, otherwise should be gameover_state
-		if(canOfferDraw()
+		if(includeDraw 
+				&& canOfferDraw()
+				&& (chips_on_board[whoseTurn]<2*chips_on_board[nextPlayer[whoseTurn]])	// we don't have too much of an advantage
+				&& (chips_on_board[whoseTurn]*2>chips_on_board[nextPlayer[whoseTurn]])	// or too much of a disadvantage
 				&& ((moveNumber-lastProgressMove)>15)
 				&& ((moveNumber-lastDrawMove)>8))
 			{ 

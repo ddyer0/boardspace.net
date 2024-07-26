@@ -667,16 +667,14 @@ private void playSounds(commonMove m)
     {	if(target==offerDrawAction)
     	{
     		if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)||(b.getState()==StacState.DrawPending)))
     		{
-        		if(b.canOfferDraw())
-    			{
     			PerformAndTransmit(OFFERDRAW);
     		}
         		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-        		}
-    		
+   		
     		return(true);
     	}
     	else if(target==reverseOption)

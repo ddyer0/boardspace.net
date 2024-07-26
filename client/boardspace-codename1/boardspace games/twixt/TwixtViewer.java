@@ -1002,7 +1002,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 
 		if (state != TwixtState.Puzzle)
         {	
-    	   
+    	   boolean drawPending = (TwixtState.OfferDraw==state);
 			if((state == TwixtState.QueryDraw)
 					|| (state==TwixtState.AcceptDraw)
 					|| (state==TwixtState.DeclineDraw))
@@ -1016,9 +1016,9 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 			{ buttonSelect.hitCode = GameId.HitDeclineDrawButton;
 			}
 			}
-			else if(gb.drawIsLikely()) 
+			else if(gb.drawIsLikely() || drawPending)
 			{	if(GC.handleRoundButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(OFFERDRAW),
-					HighlightColor,(TwixtState.OfferDraw==state)?HighlightColor:rackBackGroundColor))
+					HighlightColor,drawPending?HighlightColor:rackBackGroundColor))
 					{ buttonSelect.hitCode = GameId.HitOfferDrawButton;
 					}
 			}
@@ -1433,14 +1433,14 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     {
         if(target==offerDrawAction)
      	{	if(OurMove() 
-     			&& (bb.movingObjectIndex()<=0)) 							
-     		{
-    		if(bb.canOfferDraw())
+     			&& bb.canOfferDraw()
+     			&& (bb.movingObjectIndex()<0)
+     			&& ((bb.getState()==TwixtState.Play) || (bb.getState()==TwixtState.QueryDraw))
+     			) 							
 			{
 			PerformAndTransmit(OFFERDRAW);
 			}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
      		return(true);
      	}
     	if(target==showDistancesItem)

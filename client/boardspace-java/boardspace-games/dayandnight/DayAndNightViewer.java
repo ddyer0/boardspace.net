@@ -788,7 +788,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
 	    case BoardLocation:
 	        DayAndNightCell hitCell = hitCell(hp);
 	        // this enables starting a move by click and drag
-	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<=0))
+	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);	    		
 	    		}
 	    	break;

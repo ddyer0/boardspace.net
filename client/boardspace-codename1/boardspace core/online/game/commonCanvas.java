@@ -104,7 +104,6 @@ public abstract class commonCanvas extends exCanvas
     public  static final String AnimationSpeed = "Animation Speed";
     public static String DisabledForSpectators = "Disabled for Spectators";
     private  static final String CantResign = "You can only resign when it is your move";
-    public  static final String CantDraw = "You can only offer a draw when it is your move";
     public  static final String ColorBlindOption = "Colorblind";
     public  static String NoeyeExplanation = "Stop showing available moves";
     public  static String EyeExplanation = "Show available moves";	
@@ -506,7 +505,6 @@ public abstract class commonCanvas extends exCanvas
 			ColorBlindOption,
 			// game lobby
 			CantResign,
-			CantDraw,
 			LiftExplanation,
 			TimeEndGameMessage,
 			ChangeLimitsMessage,

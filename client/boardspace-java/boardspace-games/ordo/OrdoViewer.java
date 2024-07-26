@@ -480,7 +480,9 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
       switch(vstate)
         {
         default:
-        	if(gb.drawIsLikely())
+        	if(!gb.drawIsLikely()) { break; }
+        //$FALL-THROUGH$
+        case DrawPending:
         	{	// if not making progress, put the draw option on the UI
             	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourButtonSelect,s.get(OFFERDRAW),
             			HighlightColor,
@@ -1035,15 +1037,13 @@ private void playSounds(commonMove m)
     {
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==OrdoState.OrdoPlay)||(b.getState()==OrdoState.DrawPending)))
     		{
-    		if(b.canOfferDraw())
-			{
-			PerformAndTransmit(OFFERDRAW);
+ 			PerformAndTransmit(OFFERDRAW);
 			}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
     		return(true);
     	}
     	else if(target==reverseOption)

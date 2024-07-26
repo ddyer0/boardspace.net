@@ -80,7 +80,7 @@ determine if you attack something with a move that delivers check at the same ti
  */
 
 class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiConstants
-{	private ShogiState board_state = ShogiState.Puzzle;
+{	ShogiState board_state = ShogiState.Puzzle;
 	private ShogiState unresign = null;
 	private int lastDrawMove = 0;
 	private int prevLastPicked = -1;

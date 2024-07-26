@@ -41,8 +41,9 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
 	
 	private boolean KILLER = false;					// probably ok for all games with a 1-part move
-	private static final int DUMBOT_DEPTH = 4;
-	private static final int GOODBOT_DEPTH = 5;
+	private static final int WEAKBOT_DEPTH = 4;
+	private static final int DUMBOT_DEPTH = 5;
+	private static final int SMARTBOT_DEPTH = 6;
 	private static final int BESTBOT_DEPTH = 8;		// depth 8 is a little slow.  7 is ok.  8 is still weaker than montebot
 	private int MAX_DEPTH = BESTBOT_DEPTH;
 	private boolean DUMBOT = false;
@@ -75,7 +76,7 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(board.GetListOfMoves(board.robotDepth==0));
     }
     
     
@@ -140,12 +141,15 @@ public class FanoronarPlay extends commonRobot<FanoronaBoard> implements Runnabl
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
+        	MAX_DEPTH = WEAKBOT_DEPTH;
+        	DUMBOT = true;
+        	break;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
          	DUMBOT=true;
         	break;
         case SMARTBOT_LEVEL:
-        	MAX_DEPTH = GOODBOT_DEPTH;
+        	MAX_DEPTH = SMARTBOT_DEPTH;
         	DUMBOT=false;
         	break;
         case BESTBOT_LEVEL:

@@ -16,7 +16,7 @@
  */
 package chess;
 /**
- * TODO: needs to be more willing to accept draws
+ * TODO: needs to be more willing to accept draws in cases where the material is known to be inadequate
  * TODO: ultima needs to be better at checkmate
  */
 import online.game.*;
@@ -639,6 +639,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	{
     	case DrawPending: return true;
     	case Play:
+    	case AcceptOrDecline:
     		return((moveNumber - lastProgressMove)>10);
     	default: return(false);
     	}
@@ -1110,7 +1111,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	ChessCell src = getSource();
     	lastDest[whoseTurn] = dest;
     	lastSrc[whoseTurn] = src;
-    	lastProgressMove = moveNumber; 
+    	if(captureStack.size()>0) { lastProgressMove = moveNumber; }
+
       	if(dest!=null)
       	{
     	ChessChip lastMoved = dest.topChip();
@@ -1181,6 +1183,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         		    animationStack.push(captured[whoseTurn]);
         		    animationStack.push(dest);
         		}
+            	lastProgressMove = moveNumber; 
         		}
     	}}}
   		doRobotCapture();
@@ -1461,9 +1464,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
-            AR.setValue(kingHasMoved,false);
-            AR.setValue(kingRookHasMoved,false);
-            AR.setValue(queenRookHasMoved,false);
             
             unPickObject();
             // standardize the gameover state.  Particularly importing if the
@@ -1823,7 +1823,7 @@ public Hashtable<ChessCell,ChessMovespec>getTargets()
 		case Check:
 		case Play:
 		case Filter:
-			{	addMoves(all,whoseTurn);
+			{	addMoves(all,true,whoseTurn);
 				filterCheckMoves(all,whoseTurn);
 				loadHash(all,hash,pickedObject==null);
 			}
@@ -1878,12 +1878,14 @@ private void filterStalemateMovesInternal(CommonMoveStack all,int who,ChessBoard
 	}
 }
 public void filterStalemateMoves(CommonMoveStack all)
-{
+{	if(board_state==ChessState.Play)
+	{
 	ChessBoard cp = cloneBoard();
 	cp.robotBoard = true;
 	cp.unPickObject();
 	cp.acceptPlacement();
 	cp.filterStalemateMovesInternal(all,whoseTurn,this);
+	}
 }
 public boolean hasSimpleMoves()
 {
@@ -1891,7 +1893,7 @@ public boolean hasSimpleMoves()
 }
 public boolean hasEscapeCheckMoves()
 {	CommonMoveStack all = new CommonMoveStack();
-	addMoves(all,whoseTurn);
+	addMoves(all,false,whoseTurn);
 	filterCheckMoves(all,whoseTurn); 
 	return(all.size()>0);
 }
@@ -2833,7 +2835,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  	int range = (loc==null)?0:sweepKingRange(loc,boundary);
  	return(range);
  }
- public boolean addMoves(CommonMoveStack all,int who)
+ public boolean addMoves(CommonMoveStack all,boolean offerdraw,int who)
  {	boolean some = false;
  	switch(variation)
 	 {
@@ -2868,7 +2870,8 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  			 {
  			 some = addSimpleMoves(all,source,piece,who); 
  			 }}
- 			if( canOfferDraw()
+ 			if( offerdraw 
+ 					&& canOfferDraw()
  					&& ((moveNumber-lastProgressMove)>8))
  			 {
  				 all.push(new ChessMovespec(MOVE_OFFER_DRAW,whoseTurn));
@@ -2880,9 +2883,9 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  	return(some);
  }
  private int nonKingMoves = 0;
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(boolean offerdraw)
  {	CommonMoveStack all = new CommonMoveStack();
-  	addMoves(all,whoseTurn);
+  	addMoves(all,offerdraw,whoseTurn);
   	// special logic to poision stalemates.  If we have only king
   	// moves, filter them for check moves, and if nothing is left
   	// emit a special "claimvictory" move.  This will cause the 

@@ -114,7 +114,6 @@ public abstract class commonCanvas extends exCanvas
     public  static final String AnimationSpeed = "Animation Speed";
     public static String DisabledForSpectators = "Disabled for Spectators";
     private  static final String CantResign = "You can only resign when it is your move";
-    public  static final String CantDraw = "You can only offer a draw when it is your move";
     public  static final String ColorBlindOption = "Colorblind";
     public  static String NoeyeExplanation = "Stop showing available moves";
     public  static String EyeExplanation = "Show available moves";	
@@ -133,7 +132,7 @@ public abstract class commonCanvas extends exCanvas
     public  static String CensoredGameRecordString = "The game record is not available during the game";
     public  static String Reviewing = "reviewing";
     public  static String DrawOutcome = "The game is a draw";
-    public  static String DrawNotAllowed = "You can't offer a draw on this turn";
+    public  static String DrawNotAllowed = "You can't offer a draw at this time";
     public  static String WonOutcome = "Game won by #1";
     public  static String StackHeightMessage = "Stack Height";
     private  static String GoalExplanationOnlyDetail = "The goal of the game is:\n#1";
@@ -516,7 +515,6 @@ public abstract class commonCanvas extends exCanvas
 			ColorBlindOption,
 			// game lobby
 			CantResign,
-			CantDraw,
 			LiftExplanation,
 			TimeEndGameMessage,
 			ChangeLimitsMessage,

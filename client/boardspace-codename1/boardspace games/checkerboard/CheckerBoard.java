@@ -535,6 +535,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	{
     	case Endgame:
     	case DrawPending: return true;
+    	case AcceptOrDecline:
     	case Play:
     		return((moveNumber - lastProgressMove)>10);
     	case CaptureMore:
@@ -1488,7 +1489,7 @@ public Hashtable<CheckerCell,CheckerMovespec>getTargets()
 		case CaptureMore:
 		case Play:
 		case Endgame:
-			{	addMoves(all,whoseTurn);
+			{	addMoves(all,true,whoseTurn);
 				loadHash(all,hash,pickedObject==null);
 			}
 			break;
@@ -1734,7 +1735,7 @@ public boolean hasSimpleMoves()
 	 }
  }
 
- private boolean addMoves(CommonMoveStack all,int who)
+ private boolean addMoves(CommonMoveStack all,boolean offerdraw,int who)
  {	boolean some = false;
  	switch(variation)
 	 {
@@ -1763,7 +1764,8 @@ public boolean hasSimpleMoves()
  			 some = addSimpleMoves(all,getSource(),pickedHeight.top()==2,whoseTurn()); 
  			 }
  			 
- 			if( ((moveNumber-lastProgressMove)>8)
+ 			if( (offerdraw 
+ 					&& (moveNumber-lastProgressMove)>8)
  					 && canOfferDraw())
  			 {
  				 all.push(new CheckerMovespec(MOVE_OFFER_DRAW,whoseTurn));
@@ -1803,9 +1805,9 @@ public boolean hasSimpleMoves()
 	 }
  	return(some);
  }
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(boolean offerdraw)
  {	CommonMoveStack all = new CommonMoveStack();
- 	addMoves(all,whoseTurn);
+ 	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }
 

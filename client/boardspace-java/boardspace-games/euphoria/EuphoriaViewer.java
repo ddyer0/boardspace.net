@@ -929,7 +929,7 @@ private Color playerBackground[] = {
     	}
     	if(hit)
     	{	highlight.awidth = cell.defaultScale;
-    		highlight.arrow = (gb.movingObjectIndex()>0) ? StockArt.DownArrow : StockArt.UpArrow;
+    		highlight.arrow = (gb.movingObjectIndex()>=0) ? StockArt.DownArrow : StockArt.UpArrow;
     		highlight.spriteColor = Color.red;
     		
     	}    
@@ -1566,7 +1566,7 @@ private Color playerBackground[] = {
     	if(hit)
     	{	highlight.awidth = cell.defaultScale;
     		highlight.spriteColor = Color.red;
-    		highlight.arrow = (gb.movingObjectIndex()>0) ? StockArt.DownArrow : StockArt.UpArrow;
+    		highlight.arrow = (gb.movingObjectIndex()>=0) ? StockArt.DownArrow : StockArt.UpArrow;
     	}
     	if(cell.placementCost==Cost.MarketCost) 
 			{ // this turns off the tooltips for closed market building squares
@@ -1745,7 +1745,7 @@ private Color playerBackground[] = {
     	{	
     	highlight.awidth = cell.defaultScale/3;
 		highlight.spriteColor = Color.red;
-    	highlight.arrow = (gb.movingObjectIndex()>0) ? StockArt.DownArrow : StockArt.UpArrow;
+    	highlight.arrow = (gb.movingObjectIndex()>=0) ? StockArt.DownArrow : StockArt.UpArrow;
     	}
      	if(cell.height()==1)
      	{

@@ -65,7 +65,7 @@ public class StacPlay extends commonRobot<StacBoard> implements Runnable, StacCo
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(board.robotDepth==0));
     }
     
 

@@ -22,7 +22,7 @@ import lib.InternationalStrings;
 import lib.OStack;
 
 import online.game.BaseBoard.BoardState;
-
+// TODO: arimaa needs to have draw offer/decline logic
 public interface ArimaaConstants 
 {	static final String Arimaa_Init = "arimaa";	//init for standard game
 	

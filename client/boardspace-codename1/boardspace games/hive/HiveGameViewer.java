@@ -111,15 +111,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         boolean handled = super.handleDeferredEvent(target, command);
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==HiveState.PLAY_STATE)||(b.getState()==HiveState.DrawPending)))
     		{
-    		if(b.canOfferDraw())
-    			{
     			PerformAndTransmit(OFFERDRAW);
     			}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
     	return(true);
     	}
     	if(target==textNotation)
@@ -706,9 +704,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         switch(state)
         {     
         default:
-	    	if(canOfferDraw(gb))
-	    	{	// if not making progress, put the draw option on the UI
         	boolean drawPending = (state==HiveState.DrawPending);
+	    	if(canOfferDraw(gb) || drawPending)
+	    	{	// if not making progress, put the draw option on the UI
 	    		String offer = s.get(OFFERDRAW);
 	    		Rectangle acceptDrawRect = chipRects[nextPlayer[whoseTurn]];
 	        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,offer,

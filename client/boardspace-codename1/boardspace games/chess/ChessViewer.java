@@ -930,16 +930,14 @@ private void playSounds(commonMove m)
     {
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& (b.movingObjectIndex()<0)
+    			&& b.canOfferDraw()
     			&& ((b.getState()==ChessState.Play) || (b.getState()==ChessState.DrawPending))) 					
     					
     		{
-    		if(b.canOfferDraw())
-			{
     		PerformAndTransmit(OFFERDRAW);
 			}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
     		return(true);
     	}
     	else if(target==reverseOption)

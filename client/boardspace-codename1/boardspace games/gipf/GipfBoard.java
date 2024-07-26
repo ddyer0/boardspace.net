@@ -1085,11 +1085,12 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     private void moveToRack(GipfCell c)
     {
     	dropOnRack(c);
+    	finalizePlacement();
     	switch(board_state)
     	{
     	case SLIDE_STATE:	setState(GipfState.PLACE_STATE); break;
     	case SLIDE_GIPF_STATE: setState(GipfState.PLACE_GIPF_STATE); break;
-    	case PUZZLE_STATE: finalizePlacement(); break;
+    	case PUZZLE_STATE: break;
     	default: break;
     	}
     }

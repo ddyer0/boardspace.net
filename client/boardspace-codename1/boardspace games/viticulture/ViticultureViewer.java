@@ -635,7 +635,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         		if(c.rackLocation==ViticultureId.Workers
         				&& ind>=0 
         				&& ind<c.height()
-        				&& (gb.movingObjectIndex()<=0))
+        				&& (gb.movingObjectIndex()<0))
         		{	// make the meeples pop to help show what you are picking
         			ViticultureChip chip = c.chipAtIndex(ind);
         			if(chip!=null)

@@ -107,7 +107,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   return(board.GetListOfMoves());
+    {   return(board.GetListOfMoves(board.robotDepth==0));
     }
     
     

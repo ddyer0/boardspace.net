@@ -246,7 +246,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     			G.Left(r),G.Bottom(r)-SQUARESIZE/3,0,0.1,null))
     		{	highlight.awidth=SQUARESIZE/2;
     			highlight.hit_x += SQUARESIZE/3;
-    			highlight.arrow = b.movingObjectIndex()>0 ? StockArt.DownArrow : StockArt.UpArrow;
+    			highlight.arrow = b.movingObjectIndex()>=0 ? StockArt.DownArrow : StockArt.UpArrow;
     			highlight.spriteColor = Color.red;
     			
     		};

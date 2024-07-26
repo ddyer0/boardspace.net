@@ -1520,7 +1520,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         case MOVE_PLACE:
 
             // place a ring in the opening sequence
-        	if((movingObjectIndex()<=0) && (replay==replayMode.Live)) { replay = replayMode.Single; }
+        	if((movingObjectIndex()<0) && (replay==replayMode.Live)) { replay = replayMode.Single; }
             PickObject(object, '@', -1);
             object = YinshId.BoardLocation;
             if(replay==replayMode.Single)

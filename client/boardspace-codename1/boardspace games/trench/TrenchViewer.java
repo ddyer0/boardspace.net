@@ -367,9 +367,9 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
-        int stateX = boardX;
         int stateH = fh*5/2;
+        int stateY = boardY+stateH/3;
+        int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,arrowRect,reverseViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
       	
@@ -935,7 +935,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	    case BoardLocation:
 	        TrenchCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
-	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<=0))
+	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
 	    		
 	    		}
@@ -1174,15 +1174,13 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     {
         if(target==offerDrawAction)
      	{	if(OurMove() 
-     			&& (bb.movingObjectIndex()<=0)
+     			&& bb.canOfferDraw()
+     			&& (bb.movingObjectIndex()<0)
      			&& ((bb.getState()==TrenchState.Play) || (bb.getState()==TrenchState.DrawPending))) 							
      		{
-    		if(bb.canOfferDraw())
-			{
      		PerformAndTransmit(OFFERDRAW);
      		}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
      		return(true);
      	}
        boolean handled = super.handleDeferredEvent(target, command);

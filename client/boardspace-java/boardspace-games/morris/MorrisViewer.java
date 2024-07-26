@@ -795,15 +795,13 @@ private void playSounds(commonMove m)
     {
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==MorrisState.Play)||(b.getState()==MorrisState.DrawPending)))
     		{
-    		if(b.canOfferDraw())
-			{
-			PerformAndTransmit(OFFERDRAW);
+ 			PerformAndTransmit(OFFERDRAW);
 			}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
     		return(true);
     	}
     	else 

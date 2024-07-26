@@ -134,11 +134,13 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     {
     	if(target==offerDrawAction)
 			{	if(OurMove() 
-					&& (b.movingObjectIndex()<=0)
+					&& (b.movingObjectIndex()<0)
+					&& b.canOfferDraw()
 					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
 				{
 				PerformAndTransmit(OFFERDRAW);
 				}
+				else { G.infoBox(null,s.get(DrawNotAllowed)); }
 				return(true);
 			}
     	return super.handleDeferredEvent(target, cmd);
@@ -454,8 +456,10 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         {
         default: break;
         case PLAY_STATE:
-        	if(gb.drawIsLikely())
-        	{	// if not making progress, put the draw option on the UI
+        	if(!gb.drawIsLikely()) { break; }
+			//$FALL-THROUGH$
+		case DrawPending:
+         	{	// if not making progress, put the draw option on the UI
             	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
             			HighlightColor,
             			vstate==FanoronaState.DrawPending ? HighlightColor : rackBackGroundColor))

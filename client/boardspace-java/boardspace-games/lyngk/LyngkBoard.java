@@ -862,7 +862,7 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         	throw G.Error("Not expecting Legal Hit state %s", board_state);
         case Claim:
         	LyngkCell home = playerColors[player];
-        	if(movingObjectIndex()>0)
+        	if(movingObjectIndex()>=0)
         	{	// something moving
         		return(isSource(c) || (c==home)); 
         	}

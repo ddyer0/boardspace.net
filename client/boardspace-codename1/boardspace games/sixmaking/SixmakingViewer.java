@@ -779,7 +779,7 @@ private void playSounds(commonMove m)
     {
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==SixmakingState.Play))||(b.getState()==SixmakingState.DrawPending))
     		{
     		PerformAndTransmit(OFFERDRAW);

@@ -1039,7 +1039,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	    case BoardLocation:
 	        PrototypeCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
-	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<=0))
+	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
 	    		
 	    		}

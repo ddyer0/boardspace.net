@@ -95,11 +95,12 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {   CommonMoveStack all = board.GetListOfMoves();
+    {   CommonMoveStack all = board.GetListOfMoves(board.robotDepth==0);
     	if(board.robotDepth==0)
     	{
     		board.filterStalemateMoves(all);
-    		if(all.size()==0) { all=board.GetListOfMoves(); }
+    		// we don't need to include draw offers at lower depths.
+    		if(all.size()==0) { all=board.GetListOfMoves(board.robotDepth==0); }
     	}
     	return(all);
     }

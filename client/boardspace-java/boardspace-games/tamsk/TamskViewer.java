@@ -594,13 +594,14 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        			else
        			{
     			long minutes = seconds / 60;
-    			time = G.format("%d:%02d",minutes,seconds%60);
+    			time =Drawable.NotHelpDraw + G.format("%d:%02d",minutes,seconds%60);
        			}
     		}
     	}
     	TamskChip draw = chip==null ? timer.id.chip : chip;
     	labelColor = Color.white;
     	draw.drawChip(gc,this,size,xpos,ypos,highlight,code,time);
+ 
     	labelColor = Color.yellow;
     	if(sand && time==null)
     	{	sandTimer.barColor = Color.yellow;
@@ -1021,7 +1022,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	    case BoardRing:
 	        TamskCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
-	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<=0))
+	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("PickRingb "+hitCell.col+" "+hitCell.row);
 	    		
 	    		}

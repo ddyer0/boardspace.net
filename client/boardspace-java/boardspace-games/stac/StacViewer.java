@@ -398,7 +398,9 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
         switch(vstate)
         {
         default:
-        	if((b.moveNumber-b.lastStackMove)>(5*b.nSingleChips))
+        	if(! ((b.moveNumber-b.lastStackMove)>(5*b.nSingleChips))) { break;}
+			//$FALL-THROUGH$
+		case DrawPending:
         	{	// if not making progress, put the draw option on the UI
             	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
             			HighlightColor,
@@ -667,16 +669,14 @@ private void playSounds(commonMove m)
     {	if(target==offerDrawAction)
     	{
     		if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)||(b.getState()==StacState.DrawPending)))
     		{
-        		if(b.canOfferDraw())
-    			{
     			PerformAndTransmit(OFFERDRAW);
     			}
         		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-        		}
-    		
+     		
     		return(true);
     	}
     	else if(target==reverseOption)

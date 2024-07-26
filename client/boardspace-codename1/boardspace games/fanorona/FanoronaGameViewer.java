@@ -79,7 +79,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     
     // private state
     private FanoronaBoard b = null; 	// the board from which we are displaying
-    private int CELLSIZE; 			// size of the layout cell.  
     private int SQUARESIZE;			// size of a board square
     
     // addRect is a service provided by commonCanvas, which supports a mode
@@ -135,11 +134,13 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     {
     	if(target==offerDrawAction)
 			{	if(OurMove() 
-					&& (b.movingObjectIndex()<=0)
+					&& (b.movingObjectIndex()<0)
+					&& b.canOfferDraw()
 					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
 				{
 				PerformAndTransmit(OFFERDRAW);
 				}
+				else { G.infoBox(null,s.get(DrawNotAllowed)); }
 				return(true);
 			}
     	return super.handleDeferredEvent(target, cmd);
@@ -177,6 +178,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         int minLogH = fh*10;	
         int ncols = b.ncols;
         int nrows = b.nrows;
+    	int buttonW = fh*10;
 
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -194,8 +196,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
         		
-    	CELLSIZE = (int)(fh*2);
-    	int buttonW = CELLSIZE*5;
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
        	layout.placeTheVcr(this,vcrW,vcrW*3/2);
@@ -395,7 +395,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
   
         if(hitCell!=null)
         {  	highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
-        	highlight.awidth = 3*CELLSIZE/2;
+        	highlight.awidth = SQUARESIZE/3;
         	highlight.hitCode = FanId.BoardLocation;
         	highlight.spriteColor = Color.red;
         }
@@ -456,7 +456,9 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         {
         default: break;
         case PLAY_STATE:
-        	if(gb.drawIsLikely())
+        	if(!gb.drawIsLikely()) { break; }
+			//$FALL-THROUGH$
+		case DrawPending:
         	{	// if not making progress, put the draw option on the UI
             	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
             			HighlightColor,

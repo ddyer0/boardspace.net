@@ -224,7 +224,10 @@ public class BSDate extends java.util.Date
 			else if(year==null && isYearNumber(str)) { year = str; }
 			else if(hour!=null && isPm(str)) { meridian=" p"; }
 			else if(hour!=null && isAm(str)) { meridian=" a"; }
-			else if(isTimezone(str)) { timezone = " "+str.toUpperCase(); }
+			else if(isTimezone(str)) 
+				{ timezone = " "+str.toUpperCase();
+				  if(timezone.equals(" WST")) { timezone = " PST"; }
+				}
 			else { 
 				//G.print("Not handled: "+str+" from "+time);
 				// most likely timezone

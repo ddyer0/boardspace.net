@@ -31,7 +31,6 @@ import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
-import lib.ChatInterface;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -749,18 +748,14 @@ private void playSounds(commonMove m)
     	}
     	else if (target==drawAction)
     	{
-    		if(OurMove()) 
-    			{ 
-        		if(b.canOfferDraw())
+    		if(OurMove()
+    				&& b.canOfferDraw()
+    				&& (b.movingObjectIndex()<0)
+    				&& ((b.getState()==XiangqiState.PLAY_STATE) || (b.getState()==XiangqiState.OFFER_DRAW_STATE)))
     			{
     			PerformAndTransmit(OFFERDRAW);
     			}
         		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-        		}
-    		else {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
-                    s.get(CantDraw));
-            }
     		return(true);
     	}
         return(super.handleDeferredEvent(target,command));

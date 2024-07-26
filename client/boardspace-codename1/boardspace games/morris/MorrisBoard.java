@@ -356,6 +356,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     	{
     	case DrawPending: return true;
     	case Play:
+    	case AcceptOrDecline:
     		return((moveNumber - lastProgressMove)>10);
     	case Capture:
        	default: return(false);
@@ -1140,7 +1141,7 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
 		case Capture:
 		case Play:
 		case Place:
-			{	addMoves(all,whoseTurn);
+			{	addMoves(all,true,whoseTurn);
 				loadHash(all,hash,pickedObject==null);
 			}
 			break;
@@ -1237,7 +1238,7 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
 	 return(some);
  }
  
- public boolean addMoves(CommonMoveStack all,int who)
+ public boolean addMoves(CommonMoveStack all,boolean offerdraw,int who)
  {	boolean some = false;
  	switch(variation)
 	 {
@@ -1270,7 +1271,8 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  			 some = addSimpleMoves(all,getSource(),whoseTurn()); 
  			 }
  			 
- 			if( canOfferDraw()
+ 			if( offerdraw
+ 					&& canOfferDraw()
  					&& ((moveNumber-lastProgressMove)>8))
  			 {
  				 all.push(new MorrisMovespec(MOVE_OFFER_DRAW,whoseTurn));
@@ -1294,9 +1296,9 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
 	 }
  	return(some);
  }
- CommonMoveStack GetListOfMoves()
+ CommonMoveStack GetListOfMoves(boolean offerdraw)
  {	CommonMoveStack all = new CommonMoveStack();
- 	addMoves(all,whoseTurn);
+ 	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }
 public boolean canOfferDraw() {

@@ -460,7 +460,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     	{
        	case DrawPending: return true;
        	 
-       	case OrdoPlay:
+    	case AcceptOrDecline:
+    	case OrdoPlay:
     		return((moveNumber - lastProgressMove)>10);
        	default: return(false);
     	}
@@ -1362,7 +1363,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 		case OrdoPlay2:
 		case OrdoRetain:
 		case Reconnect:
-			{	addMoves(all,whoseTurn);
+			{	addMoves(all,true,whoseTurn);
 				loadHash(all,hash,selectedStart==null);
 			}
 			break;
@@ -1657,7 +1658,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 return some;
  }
 
- private boolean addMoves(CommonMoveStack all,int who)
+ private boolean addMoves(CommonMoveStack all,boolean offerdraw,int who)
  {	boolean some = false;
  	switch(variation)
 	 {
@@ -1673,6 +1674,8 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  			if(drawIsLikely()) { all.push(new OrdoMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
  			 all.push(new OrdoMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
+ 		 case DeclinePending:
+ 		 case AcceptPending:
 		 case Confirm:
 			 all.push(new OrdoMovespec(MOVE_DONE,who));
 			 break;
@@ -1682,7 +1685,8 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 		 case OrdoPlay:
 			 addOrdoSingletonMoves(all,who,true,false);
 			 addOrdoMoves(all,who,true,false);
-			 if( canOfferDraw()
+			 if( offerdraw 
+					 && canOfferDraw()
 					 && ((moveNumber-lastProgressMove)>8))
 			 {
 				 all.push(new OrdoMovespec(MOVE_OFFER_DRAW,who));
@@ -1701,9 +1705,9 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 }
  	return(some);
  }
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(boolean offerdraw)
  {	CommonMoveStack all = new CommonMoveStack();
- 	addMoves(all,whoseTurn);
+ 	addMoves(all,offerdraw,whoseTurn);
  	if(all.size()==0) 
  		{ p1("no moves "+moveNumber); 
  		}

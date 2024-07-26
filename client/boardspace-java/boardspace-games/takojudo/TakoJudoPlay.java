@@ -192,12 +192,16 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
 
 // if this is looking like a draw (because both players are repeating themselves)
 // then in the absence of a breakthrough score increase, offer the draw or if 
-// offered, accept it.
+// offered, accept it.  This is called after the search and replaces the chosen
+// move with an offer of a draw, (rather than including the draw offer in the
+// list of moves to be evaluated)
 //
 public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
 {
 	
-    if(likelyDraw && (move!=null) && (move.evaluation()<draw_threshold))
+    if(likelyDraw 
+    		&& (move!=null)
+    		&& (move.evaluation()<draw_threshold))
     {	switch(board.getState())
     	{
     		case PLAY_STATE:

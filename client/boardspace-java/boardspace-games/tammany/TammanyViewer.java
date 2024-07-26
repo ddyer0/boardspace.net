@@ -1590,7 +1590,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     }
     public boolean allowUndo()
     {		
-    	if(bb.movingObjectIndex()>0) { return true; }
+    	if(bb.movingObjectIndex()>=0) { return true; }
     	TammanyState state = bb.getState();   	
     	return (state.allowUndo 
     			&& super.allowUndo());

@@ -781,18 +781,15 @@ private void playSounds(commonMove m)
     	}
     	else if (target==drawAction)
     	{
-    		if(OurMove()) 
-    			{ 
-        		if(b.canOfferDraw())
+    		if(OurMove()
+    				&& b.canOfferDraw()	
+    				&& (b.movingObjectIndex()<0)
+    				&& (( b.board_state==ShogiState.Play) || (b.board_state==ShogiState.OfferDraw))
+    				) 
     			{
     			  PerformAndTransmit(OFFERDRAW); 
     			}
         		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    			}
-    		else {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
-                    s.get(CantDraw));
-            }
     		return(true);
     	}
         return(super.handleDeferredEvent(target,command));

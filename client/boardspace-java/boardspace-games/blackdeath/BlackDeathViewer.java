@@ -1253,7 +1253,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         case TemporaryCards:
         	{
         	BlackDeathCell hitObject = hitCell(hp);
-        	if(bb.movingObjectIndex()>0)
+        	if(bb.movingObjectIndex()>=0)
         	{
         		PerformAndTransmit("Drop "+hitObject.color+" "+hitCode);
         	}
@@ -1276,7 +1276,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 			case WesternMovement:
 			case Movement:
 				{
-				if(bb.movingObjectIndex()>0)
+				if(bb.movingObjectIndex()>=0)
 				{
 				PerformAndTransmit(move.moveString());
 				}

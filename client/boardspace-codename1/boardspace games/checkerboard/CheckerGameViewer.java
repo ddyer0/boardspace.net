@@ -1110,15 +1110,13 @@ private void playSounds(commonMove m)
     {
     	if(target==offerDrawAction)
     	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
+    			&& b.canOfferDraw()
+    			&& (b.movingObjectIndex()<0)
     			&& offerDrawState())
     		{
-    		if(b.canOfferDraw())
-			{
     		PerformAndTransmit(OFFERDRAW);
     		}
     		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		}
     		return(true);
     	}
     	else if(target==reverseOption)

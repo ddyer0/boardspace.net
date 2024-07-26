@@ -1134,7 +1134,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
 
 	return(h);
  }
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  GetListOfMoves(boolean offerdraw)
  {	CommonMoveStack all = new CommonMoveStack();
  	switch(board_state)
 	 {
@@ -1151,6 +1151,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
 	 case Play:
 		 addMoveMoves(all,pawnLocation[whoseTurn],whoseTurn);
 		 if( canOfferDraw()
+				 && offerdraw
 				 && ((moveNumber-lastStackMove)>(4*nSingleChips))
 				 && ((moveNumber-lastDrawMove)>(2*nSingleChips)))
 		 {

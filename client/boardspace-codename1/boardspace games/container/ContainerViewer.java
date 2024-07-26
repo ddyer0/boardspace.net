@@ -1160,7 +1160,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
 			//
 			// players's goal and loans
 			//
-			//boolean moving = gb.movingObjectIndex()>0;
+			//boolean moving = gb.movingObjectIndex()>=0;
 			double macpos_l [][] = {{0.2,0.82}, {0.30,.78},{0.4,0.79}};
 			double macpos_r [][] = { {0.8,0.24},{0.7,0.26},{0.6,0.23}};
 			double macpos[][] = left ? macpos_l : macpos_r;
