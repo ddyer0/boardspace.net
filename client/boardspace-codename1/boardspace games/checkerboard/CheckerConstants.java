@@ -20,6 +20,7 @@ import lib.CellId;
 import lib.OStack;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 public interface CheckerConstants 
 {	static String VictoryCondition = "Capture all your opponent's pieces";
@@ -68,27 +69,30 @@ public interface CheckerConstants
 	} 
 
 public enum CheckerState implements BoardState
-{	Puzzle(PuzzleStateDescription),
-	Draw(DrawStateDescription),				// involuntary draw by repetition
-	Resign( ResignStateDescription),
-	Gameover(GameOverStateDescription),
-	Confirm(ConfirmStateDescription),
-	Play(CheckerConstants.CheckerMoveDescription),
-	Capture(CheckerConstants.CheckerCaptureDescription),
-	CaptureMore(CheckerConstants.CheckerCaptureMoreDescription),
-	DrawPending(DrawOfferDescription),		// offered a draw
-	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-   	DeclinePending(DeclineDrawPending),		// decline a draw is pending
-   	Endgame(EndgameDescription),				// frisian endgame, kings only
+{	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+	Draw(StateRole.RepetitionPending,DrawStateDescription),				// involuntary draw by repetition
+	Resign(StateRole.Resign,ResignStateDescription),
+	Gameover(StateRole.GameOver,GameOverStateDescription),
+	Confirm(StateRole.Confirm,ConfirmStateDescription),
+	Play(StateRole.Play,CheckerConstants.CheckerMoveDescription),
+	Capture(StateRole.Other,CheckerConstants.CheckerCaptureDescription),
+	CaptureMore(StateRole.Other,CheckerConstants.CheckerCaptureMoreDescription),
+	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+   	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
+   	Endgame(StateRole.Other,EndgameDescription),				// frisian endgame, kings only
 	;
 	String description;
-	CheckerState(String des)
-	{	description = des;
-	}
 	public String getDescription() { return(description); }
-	public boolean GameOver() { return(this==Gameover); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	StateRole role;
+	public StateRole getRole() { return role; }
+	
+	CheckerState(StateRole r,String des)
+	{	description = des;
+		role = r;
+	}
+	public boolean simultaneousTurnsAllowed() { return(false); }
 }
 public enum CheckerId implements CellId
 {

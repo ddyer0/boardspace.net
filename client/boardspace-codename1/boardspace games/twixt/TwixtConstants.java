@@ -23,6 +23,7 @@ import lib.CellId;
 import lib.Digestable;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface TwixtConstants 
@@ -58,21 +59,21 @@ public interface TwixtConstants
     //
 	public enum TwixtState implements BoardState
 	{
-	Puzzle(PuzzleStateDescription,false,false),
-	Resign(ResignStateDescription,true,false),
-	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
-	ConfirmSwap(ConfirmSwapDescription,true,false),
-	PlayOrSwap(PlayOrSwapDescription,false,false),
-	Play(TwixtPlayState,false,false),
+	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
+	Resign(StateRole.Resign,ResignStateDescription,true,false),
+	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
+	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
+	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
+	PlayOrSwap(StateRole.Other,PlayOrSwapDescription,false,false),
+	Play(StateRole.Play,TwixtPlayState,false,false),
 	
-	OfferDraw(OfferDrawStateDescription,true,false),
-	QueryDraw(OfferedDrawStateDescription,false,false),
-	AcceptDraw(AcceptDrawStateDescription,true,false),
-	DeclineDraw(DeclineDrawStateDescription,true,false);
+	OfferDraw(StateRole.DrawPending,OfferDrawStateDescription,true,false),
+	QueryDraw(StateRole.AcceptOrDecline,OfferedDrawStateDescription,false,false),
+	AcceptDraw(StateRole.AcceptPending,AcceptDrawStateDescription,true,false),
+	DeclineDraw(StateRole.DeclinePending,DeclineDrawStateDescription,true,false);
 
-	TwixtState(String des,boolean done,boolean digest)
-	{
+	TwixtState(StateRole r,String des,boolean done,boolean digest)
+	{	role = r;
 		description = des;
 		digestState = digest;
 		doneState = done;
@@ -80,11 +81,13 @@ public interface TwixtConstants
 	boolean doneState;
 	boolean digestState;
 	String description;
-	public boolean GameOver() { return(this==Gameover); }
 	public String description() { return(description); }
+	StateRole role;
+	public StateRole getRole() { return role; }
+	
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean simultaneousTurnsAllowed() { return(false); }
 	};
 	public static enum PieceColor implements Digestable { 
 		Red("R"),

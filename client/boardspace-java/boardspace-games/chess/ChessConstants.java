@@ -21,6 +21,7 @@ import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface ChessConstants 
@@ -112,26 +113,28 @@ public interface ChessConstants
 		public ChessState[] newComponentArray(int n) { return(new ChessState[n]); }
 	} 
     public enum ChessState implements BoardState
-    {	Puzzle(PuzzleStateDescription),
-    	Draw(DrawStateDescription),				// involuntary draw by repetition
-    	Resign( ResignStateDescription),
-    	Gameover(GameOverStateDescription),
-    	Confirm(ConfirmStateDescription),
-    	Play(ChessMoveDescription),
-    	Check(CheckStateExplanation),
-    	DrawPending(DrawOfferDescription),		// offered a draw
-    	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-    	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-       	DeclinePending(DeclineDrawPending),		// decline a draw is pending
-       	Filter("Filtering legal moves"),
+    {	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+    	Draw(StateRole.RepetitionPending,DrawStateDescription),				// involuntary draw by repetition
+    	Resign(StateRole.Resign, ResignStateDescription),
+    	Gameover(StateRole.GameOver,GameOverStateDescription),
+    	Confirm(StateRole.Confirm,ConfirmStateDescription),
+    	Play(StateRole.Play,ChessMoveDescription),
+    	Check(StateRole.Other,CheckStateExplanation),
+    	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+    	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+    	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+       	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
+       	Filter(StateRole.Other,"Filtering legal moves"),
     	;
     	String description;
-    	ChessState(String des)
-    	{	description = des;
-    	}
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==Gameover); }
-    		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	ChessState(StateRole r,String des)
+    	{	description = des;
+    		role = r;
+    	}
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 
 

@@ -718,33 +718,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
        double messageRotation = pl.messageRotation();
        
        GC.setFont(gc,standardBoldFont());
-       
-       switch(state)
-       {
-       default:
-       	if(gb.drawIsLikely())
-       	{	// if not making progress, put the draw option on the UI
-           	if(GC.handleSquareButton(gc,acceptDrawRect,buttonSelect,s.get(OFFERDRAW),
-           			HighlightColor,
-           			state==TrenchState.DrawPending ? HighlightColor : rackBackGroundColor))
-           	{
-           		buttonSelect.hitCode = GameId.HitOfferDrawButton;
-           	}	
-       	}
-       	break;
-       case AcceptOrDecline:
-       case AcceptPending:
-       case DeclinePending:
-       	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
-       	{
-       		buttonSelect.hitCode = GameId.HitAcceptDrawButton;
-       	}
-       	if(GC.handleSquareButton(gc,messageRotation,declineDrawRect,buttonSelect,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
-       	{
-       		buttonSelect.hitCode = GameId.HitDeclineDrawButton;
-       	}
-      	break;
-       }
+       handleDrawUi(gc,messageRotation,state.getRole(),gb.drawIsLikely(),buttonSelect,
+       		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
 
        if (state != TrenchState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button

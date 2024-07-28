@@ -22,6 +22,7 @@ import lib.OStack;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 public interface FanoronaConstants 
 {	
@@ -62,27 +63,30 @@ public interface FanoronaConstants
 	}
 
     public enum FanoronaState implements BoardState
-    {	PUZZLE_STATE(PuzzleStateDescription),
-    	RESIGN_STATE(ResignStateDescription),
-    	GAMEOVER_STATE(GameOverStateDescription),
-    	CONFIRM_STATE(ConfirmStateDescription),
-    	DRAW_STATE(DrawStateDescription),	// game is a draw, click to confirm
-    	PLAY_STATE("Move a piece one space"), 		// move a marker on the board
-    	DESIGNATE_STATE("Click on the line to be captured"),	// designate group to capture
-    	PLAY2_STATE("Make an addional capturing move, or click on Done"),	// make a subsequent capture
-    	PLAY1_STATE("Make a capturing move"),		// make an initial capture move
-    	CONFIRM_PLAY_STATE(ConfirmStateDescription),	// ready to confirm a non-capture move
-    	DrawPending(DrawOfferDescription),		// offered a draw
-    	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-    	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-       	DeclinePending(DeclineDrawPending),		// decline a draw is pending
-    	CONFIRM_REMOVE_STATE(ConfirmStateDescription);	// confirm after remove
+    {	PUZZLE_STATE(StateRole.Puzzle,PuzzleStateDescription),
+    	RESIGN_STATE(StateRole.Resign,ResignStateDescription),
+    	GAMEOVER_STATE(StateRole.GameOver,GameOverStateDescription),
+    	CONFIRM_STATE(StateRole.Confirm,ConfirmStateDescription),
+    	DRAW_STATE(StateRole.RepetitionPending,DrawStateDescription),	// game is a draw, click to confirm
+    	PLAY_STATE(StateRole.Play,"Move a piece one space"), 		// move a marker on the board
+    	DESIGNATE_STATE(StateRole.Other,"Click on the line to be captured"),	// designate group to capture
+    	PLAY2_STATE(StateRole.Other,"Make an addional capturing move, or click on Done"),	// make a subsequent capture
+    	PLAY1_STATE(StateRole.Other,"Make a capturing move"),		// make an initial capture move
+    	CONFIRM_PLAY_STATE(StateRole.Confirm,ConfirmStateDescription),	// ready to confirm a non-capture move
+    	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+    	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+    	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+       	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
+    	CONFIRM_REMOVE_STATE(StateRole.Other,ConfirmStateDescription);	// confirm after remove
 
     	String description;
-    	FanoronaState(String des) { description = des; }
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	
+    	FanoronaState(StateRole r,String des) { description = des; role = r; }
+    	
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
     
 	// move commands, actions encoded by movespecs.  Values chosen so these

@@ -701,40 +701,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
         seeMobile.draw(gc,nonDraggingSelect);
-        switch(state)
-        {     
-        default:
-        	boolean drawPending = (state==HiveState.DrawPending);
-	    	if(canOfferDraw(gb) || drawPending)
-	    	{	// if not making progress, put the draw option on the UI
-	    		String offer = s.get(OFFERDRAW);
-	    		Rectangle acceptDrawRect = chipRects[nextPlayer[whoseTurn]];
-	        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,offer,
-	        				HighlightColor,
-	        				drawPending ? HighlightColor : rackBackGroundColor))
-	        	{
-	        		ourTurnSelect.hitCode = GameId.HitOfferDrawButton;
-	        	}	
-	    	}
-	    	break;
-	    case AcceptOrDecline:
-	    case AcceptPending:
-	    case DeclinePending:
-	    {	String accept = s.get(ACCEPTDRAW);
-	    	String decline = s.get(DECLINEDRAW);
-	    	Color hitAccept = (state==HiveState.AcceptPending)?HighlightColor:rackBackGroundColor;
-	    	Color hitDecline = (state==HiveState.DeclinePending) ? HighlightColor : rackBackGroundColor; 
+        
+        GC.setFont(gc,standardBoldFont());
 	    	Rectangle acceptDrawRect = chipRects[whoseTurn];
 	    	Rectangle declineDrawRect = chipRects[nextPlayer[whoseTurn]];
-	    	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,accept,HighlightColor,hitAccept))
-	    	{
-	    		ourTurnSelect.hitCode = GameId.HitAcceptDrawButton;
-	    	}
-	    	if(GC.handleSquareButton(gc,messageRotation,declineDrawRect,ourTurnSelect,decline,HighlightColor,hitDecline))
-	    	{
-	    		ourTurnSelect.hitCode = GameId.HitDeclineDrawButton;
-	    	}
-        }}
+		handleDrawUi(gc,messageRotation,state.getRole(),canOfferDraw(gb),ourTurnSelect,
+	    		  repRect,acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+        
         GC.setFont(gc,standardBoldFont());
 		if (state != HiveState.PUZZLE_STATE)
         {	HitPoint ds = (gb.DoneState() ? buttonSelect : null);

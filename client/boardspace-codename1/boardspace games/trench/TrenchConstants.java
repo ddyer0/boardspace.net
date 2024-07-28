@@ -20,6 +20,7 @@ import lib.CellId;
 import lib.InternationalStrings;
 import lib.OStack;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 /**
  * Constants for the game.  This is set for a 2 player game, change to Play6Constants for a multiplayer game
@@ -52,21 +53,22 @@ class StateStack extends OStack<TrenchState>
 //
 public enum TrenchState implements BoardState,TrenchConstants
 {
-	Puzzle(PuzzleStateDescription,false,false),
-	Draw(DrawStateDescription,true,true),				// involuntary draw by repetition
-	Resign(ResignStateDescription,true,false),
-	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
+	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
+	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),				// involuntary draw by repetition
+	Resign(StateRole.Resign,ResignStateDescription,true,false),
+	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
+	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
 	
 	// standard package for accept/decline draw
-   	DrawPending(DrawOfferDescription,true,true),		// offered a draw
-	AcceptOrDecline(DrawDescription,false,false),		// must accept or decline a draw
-	AcceptPending(AcceptDrawPending,true,true),		// accept a draw is pending
-   	DeclinePending(DeclineDrawPending,true,true),		// decline a draw is pending
+   	DrawPending(StateRole.DrawPending,DrawOfferDescription,true,true),		// offered a draw
+	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription,false,false),		// must accept or decline a draw
+	AcceptPending(StateRole.AcceptPending,AcceptDrawPending,true,true),		// accept a draw is pending
+   	DeclinePending(StateRole.DeclinePending,DeclineDrawPending,true,true),		// decline a draw is pending
 
-	Play(PlayState,false,false);
-	TrenchState(String des,boolean done,boolean digest)
-	{
+   	Play(StateRole.Play,PlayState,false,false);
+	
+	TrenchState(StateRole r,String des,boolean done,boolean digest)
+	{	role = r;
 		description = des;
 		digestState = digest;
 		doneState = done;
@@ -74,6 +76,9 @@ public enum TrenchState implements BoardState,TrenchConstants
 	boolean doneState;
 	boolean digestState;
 	String description;
+	StateRole role;
+	public StateRole getRole() { return role; }
+	
 	public boolean GameOver() { return(this==Gameover); }
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }

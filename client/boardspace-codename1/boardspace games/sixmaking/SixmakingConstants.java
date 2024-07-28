@@ -20,6 +20,7 @@ import lib.G;
 import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface SixmakingConstants 
@@ -93,24 +94,26 @@ public interface SixmakingConstants
 		public SixmakingState[] newComponentArray(int n) { return(new SixmakingState[n]); }
 	} 
     public enum SixmakingState implements BoardState
-    {	Puzzle(PuzzleStateDescription),
-    	Draw(DrawStateDescription),				// involuntary draw by repetition
-    	Resign( ResignStateDescription),
-    	Gameover(GameOverStateDescription),
-    	Confirm(ConfirmStateDescription),
-    	Play(SixmakingMoveDescription),
-    	DrawPending(DrawOfferDescription),		// offered a draw
-    	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-    	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-       	DeclinePending(DeclineDrawPending),		// decline a draw is pending
+    {	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+    	Draw(StateRole.RepetitionPending,DrawStateDescription),				// involuntary draw by repetition
+    	Resign(StateRole.Resign, ResignStateDescription),
+    	Gameover(StateRole.GameOver,GameOverStateDescription),
+    	Confirm(StateRole.Confirm,ConfirmStateDescription),
+    	Play(StateRole.Play,SixmakingMoveDescription),
+    	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+    	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+    	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+       	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
     	;
     	String description;
-    	SixmakingState(String des)
-    	{	description = des;
-    	}
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==Gameover); }
-    		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	SixmakingState(StateRole r,String des)
+    	{	description = des;
+    		role = r;
+    	}
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 
 

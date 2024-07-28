@@ -21,6 +21,7 @@ import lib.InternationalStrings;
 import lib.OStack;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 public interface OrdoConstants 
 {	static String VictoryCondition = "Capture all, Disconnect your opponent, or reach the opposite side";
@@ -57,27 +58,29 @@ public interface OrdoConstants
 	} 
 
 public enum OrdoState implements BoardState
-{	Puzzle(PuzzleStateDescription),
-	Draw(DrawStateDescription),				// involuntary draw by repetition
-	Resign( ResignStateDescription),
-	Gameover(GameOverStateDescription),
-	Confirm(ConfirmStateDescription),
-	OrdoPlay(FirstPlayDescription),
-	OrdoPlay2(SecondPlayDescription),	// for ordox, second move
-	OrdoRetain(RetainDescription),
-	Reconnect(OrdoConstants.ReconnectDescription),
-	DrawPending(DrawOfferDescription),		// offered a draw
-	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-   	DeclinePending(DeclineDrawPending),		// decline a draw is pending
+{	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+	Draw(StateRole.RepetitionPending,DrawStateDescription),				// involuntary draw by repetition
+	Resign(StateRole.Resign, ResignStateDescription),
+	Gameover(StateRole.GameOver,GameOverStateDescription),
+	Confirm(StateRole.Confirm,ConfirmStateDescription),
+	OrdoPlay(StateRole.Play,FirstPlayDescription),
+	OrdoPlay2(StateRole.Other,SecondPlayDescription),	// for ordox, second move
+	OrdoRetain(StateRole.Other,RetainDescription),
+	Reconnect(StateRole.Other,OrdoConstants.ReconnectDescription),
+	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+   	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
 	;
 	String description;
-	OrdoState(String des)
-	{	description = des;
-	}
 	public String getDescription() { return(description); }
-	public boolean GameOver() { return(this==Gameover); }
-	public boolean Puzzle() { return(this==Puzzle); }
+	StateRole role;
+	public StateRole getRole() { return role; }
+	
+	OrdoState(StateRole r,String des)
+	{	description = des;
+		role = r;
+	}
 	public boolean simultaneousTurnsAllowed() { return(false); }
 }
 public enum OrdoId implements CellId

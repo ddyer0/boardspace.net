@@ -1000,29 +1000,12 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 			swapButton.show(gc,messageRotation,buttonSelect);
 		}
 
+		handleDrawUi(gc,messageRotation,state.getRole(),gb.drawIsLikely(),buttonSelect,
+	      		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+	 
+
        if (state != TwixtState.Puzzle)
         {	
-    	   boolean drawPending = (TwixtState.OfferDraw==state);
-			if((state == TwixtState.QueryDraw)
-					|| (state==TwixtState.AcceptDraw)
-					|| (state==TwixtState.DeclineDraw))
-			{
-			if(GC.handleRoundButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(ACCEPTDRAW),
-					HighlightColor,(state==TwixtState.AcceptDraw)?HighlightColor:rackBackGroundColor))
-			{ buttonSelect.hitCode = GameId.HitAcceptDrawButton;
-			}
-			if(GC.handleRoundButton(gc,messageRotation,declineDrawRect,buttonSelect,s.get(DECLINEDRAW),
-					HighlightColor,(state==TwixtState.DeclineDraw)?HighlightColor:rackBackGroundColor))
-			{ buttonSelect.hitCode = GameId.HitDeclineDrawButton;
-			}
-			}
-			else if(gb.drawIsLikely() || drawPending)
-			{	if(GC.handleRoundButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(OFFERDRAW),
-					HighlightColor,drawPending?HighlightColor:rackBackGroundColor))
-					{ buttonSelect.hitCode = GameId.HitOfferDrawButton;
-					}
-			}
-
     	    // if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -1031,7 +1014,6 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 					HighlightColor, rackBackGroundColor);
 				}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
- 
         }
 
 		// if the state is Puzzle, present the player names as start buttons.

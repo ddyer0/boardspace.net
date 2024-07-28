@@ -20,6 +20,7 @@ import lib.CellId;
 import lib.InternationalStrings;
 import lib.OStack;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 /**
  * Constants for the game.  This is set for a 2 player game, change to Play6Constants for a multiplayer game
@@ -53,16 +54,17 @@ class StateStack extends OStack<PrototypeState>
 //
 public enum PrototypeState implements BoardState,PrototypeConstants
 {
-	Puzzle(PuzzleStateDescription,false,false),
-	Draw(DrawStateDescription,true,true),
-	Resign(ResignStateDescription,true,false),
-	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
-	ConfirmSwap(ConfirmSwapDescription,true,false),
-	PlayOrSwap(PlayOrSwapState,false,false),
-	Play(PlayState,false,false);
-	PrototypeState(String des,boolean done,boolean digest)
-	{
+	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
+	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),
+	Resign(StateRole.Resign,ResignStateDescription,true,false),
+	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
+	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
+	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
+	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
+	Play(StateRole.Play,PlayState,false,false);
+	
+	PrototypeState(StateRole r,String des,boolean done,boolean digest)
+	{	role = r;
 		description = des;
 		digestState = digest;
 		doneState = done;
@@ -70,11 +72,13 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 	boolean doneState;
 	boolean digestState;
 	String description;
-	public boolean GameOver() { return(this==Gameover); }
 	public String description() { return(description); }
+	StateRole role;
+	public StateRole getRole() { return role; }
+
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-	public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean simultaneousTurnsAllowed() { return(false); }
 };
     /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
     where adjacent X's are separated by 2.  This gives the board nice mathematical properties for

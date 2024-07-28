@@ -217,6 +217,7 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
     	G.Assert(getState()==from_b.getState(),"state mismatch, is %s expected %s",getState(),from_b.getState());
 		G.Assert(AR.sameArrayContents(win,from_b.win), "win mismatch");
 	}
+	public enum StateRole { Puzzle, Play, GameOver, Confirm, Resign, AcceptOrDecline, AcceptPending, DeclinePending, DrawPending, RepetitionPending, Other}
 	public interface BoardState
 	{	
 		static final String ConfirmSwapDescription = "Click on Done to confirm swapping colors";
@@ -241,8 +242,10 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	    static final  String IllegalRepetitionStateDescription = "Illegal due to repetition, try something else or resign";
 		static String ConfirmNewRolesDescription = "Click on Done to confirm the new role assignments";
 
-		public boolean GameOver();
-		public boolean Puzzle();
+		public default StateRole getRole() { return StateRole.Other; }
+		public default boolean GameOver() { return getRole()==StateRole.GameOver; }
+		public default boolean Puzzle() { return getRole()==StateRole.Puzzle; }
+		
 		public int ordinal();
 		public boolean simultaneousTurnsAllowed();
 

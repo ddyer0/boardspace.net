@@ -22,6 +22,7 @@ import lib.G;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface HiveConstants 
@@ -104,26 +105,30 @@ public interface HiveConstants
     
 
     public enum HiveState implements BoardState
-    {	PUZZLE_STATE(PuzzleStateDescription),
-    	RESIGN_STATE(ResignStateDescription),
-    	GAMEOVER_STATE(GameOverStateDescription),
-    	CONFIRM_STATE(ConfirmStateDescription),
-    	PASS_STATE(PassStateDescription),
-    	FIRST_PLAY_STATE(FirstPlayStateDescription),
-    	QUEEN_PLAY_STATE(QueenStateDescription),
-    	PLAY_STATE(PlayStateDescription),
-    	DRAW_STATE(DrawStateDescription),
-    	Setup(SetupDescription),
-    	DrawPending(DrawOfferDescription),		// offered a draw
-    	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
-    	AcceptPending(AcceptDrawPending),		// accept a draw is pending
-       	DeclinePending(DeclineDrawPending),		// decline a draw is pending
-    	Swap(SwapDescription);
+    {	PUZZLE_STATE(StateRole.Puzzle,PuzzleStateDescription),
+    	RESIGN_STATE(StateRole.Resign,ResignStateDescription),
+    	GAMEOVER_STATE(StateRole.GameOver,GameOverStateDescription),
+    	CONFIRM_STATE(StateRole.Confirm,ConfirmStateDescription),
+    	PASS_STATE(StateRole.Other,PassStateDescription),
+    	FIRST_PLAY_STATE(StateRole.Other,FirstPlayStateDescription),
+    	QUEEN_PLAY_STATE(StateRole.Other,QueenStateDescription),
+    	PLAY_STATE(StateRole.Play,PlayStateDescription),
+    	DRAW_STATE(StateRole.RepetitionPending,DrawStateDescription),
+    	Setup(StateRole.Other,SetupDescription),
+    	DrawPending(StateRole.DrawPending,DrawOfferDescription),		// offered a draw
+    	AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),		// must accept or decline a draw
+    	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),		// accept a draw is pending
+       	DeclinePending(StateRole.DeclinePending,DeclineDrawPending),		// decline a draw is pending
+    	Swap(StateRole.Other,SwapDescription);
+    	
     	String description;
-    	HiveState(String des) { description = des; }
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	
+    	HiveState(StateRole r,String des) { description = des; role = r; }
+    	
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 	
 	// move commands, actions encoded by movespecs.  Values chosen so these

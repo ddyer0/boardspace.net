@@ -1302,7 +1302,7 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  	return(all);
  }
 public boolean canOfferDraw() {
-	return moveNumber-lastDrawMove>4;
+	return (moveNumber-lastDrawMove>4);
 }
  
 

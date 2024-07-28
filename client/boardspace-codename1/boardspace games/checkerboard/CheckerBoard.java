@@ -535,8 +535,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	{
     	case Endgame:
     	case DrawPending: return true;
-    	case AcceptOrDecline:
     	case Play:
+    	case AcceptOrDecline:
     		return((moveNumber - lastProgressMove)>10);
     	case CaptureMore:
     	case Capture:

@@ -476,33 +476,9 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
         }
 
         GC.setFont(gc,standardBoldFont());
-        switch(vstate)
-        {
-        default:
-        	if(gb.drawIsLikely())
-        	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
-            			HighlightColor,
-            			vstate==SixmakingState.DrawPending ? HighlightColor : rackBackGroundColor))
-            	{
-            		select.hitCode = GameId.HitOfferDrawButton;
-            	}
        		
-        	}
-        	break;
-        case AcceptOrDecline:
-        case AcceptPending:
-        case DeclinePending:
-        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,select,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		select.hitCode = GameId.HitAcceptDrawButton;
-        	}
-        	if(GC.handleSquareButton(gc,messageRotation,declineDrawRect,select,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		select.hitCode = GameId.HitDeclineDrawButton;
-        	}
-       	break;
-        }
+        handleDrawUi(gc,messageRotation,vstate.getRole(),gb.drawIsLikely(),select,
+        		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
         
 		if (vstate != SixmakingState.Puzzle)
         {

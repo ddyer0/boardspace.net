@@ -468,27 +468,12 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         DrawChipsetMarker(gc,altchipRect,highlight);
         
         GC.setFont(gc,standardBoldFont());
+        
+        handleDrawUi(gc,messageRotation,vstate.getRole(), ( gb.movesSinceProgress()>30),select,
+        		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+
 		if (vstate != XiangqiState.PUZZLE_STATE)
         {
-			if((vstate == XiangqiState.QUERY_DRAW_STATE)
-						|| (vstate==XiangqiState.ACCEPT_DRAW_STATE)
-						|| (vstate==XiangqiState.DECLINE_DRAW_STATE))
-			{
-			if(GC.handleRoundButton(gc,messageRotation,acceptDrawRect,select,s.get(ACCEPTDRAW),
-					HighlightColor,rackBackGroundColor))
-			{ select.hitCode = GameId.HitAcceptDrawButton;
-			}
-			if(GC.handleRoundButton(gc,messageRotation,declineDrawRect,select,s.get(DECLINEDRAW),
-					HighlightColor,rackBackGroundColor))
-			{ select.hitCode = GameId.HitDeclineDrawButton;
-			}
-			}
-			else if((vstate==XiangqiState.OFFER_DRAW_STATE) || ( gb.movesSinceProgress()>30)) 
-			{	if(GC.handleRoundButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
-					HighlightColor,(XiangqiState.OFFER_DRAW_STATE==vstate)?HighlightColor:rackBackGroundColor))
-					{ select.hitCode = GameId.HitOfferDrawButton;
-					}
-			}
 			if(!planned && !autoDoneActive())
 			{
 			handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? select : null), 

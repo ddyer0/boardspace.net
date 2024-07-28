@@ -19,6 +19,7 @@ package shogi;
 import lib.G;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface ShogiConstants 
@@ -60,23 +61,25 @@ public interface ShogiConstants
    	 };// true for 1-3
     
     public enum ShogiState implements BoardState
-    {	Puzzle(PuzzleStateDescription),
-    	Confirm(ConfirmStateDescription),
-    	Draw(DrawStateDescription),
-    	Resign(ResignStateDescription),
-    	Gameover(GameOverStateDescription),
-    	Play("Move a piece, or drop a captured piece"),
-    	Check(CheckStateExplanation),
-    	IllegalMove("Illegal move due to uncovered check - try something else"),
-    	OfferDraw(OfferDrawStateDescription),
-    	QueryDraw(OfferedDrawStateDescription),
-    	AcceptDraw(AcceptDrawStateDescription),
-    	DeclineDraw(DeclineDrawStateDescription);
+    {	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+    	Confirm(StateRole.Confirm,ConfirmStateDescription),
+    	Draw(StateRole.RepetitionPending,DrawStateDescription),
+    	Resign(StateRole.Resign,ResignStateDescription),
+    	Gameover(StateRole.GameOver,GameOverStateDescription),
+    	Play(StateRole.Play,"Move a piece, or drop a captured piece"),
+    	Check(StateRole.Other,CheckStateExplanation),
+    	IllegalMove(StateRole.Other,"Illegal move due to uncovered check - try something else"),
+    	OfferDraw(StateRole.DrawPending,OfferDrawStateDescription),
+    	QueryDraw(StateRole.AcceptOrDecline,OfferedDrawStateDescription),
+    	AcceptDraw(StateRole.AcceptPending,AcceptDrawStateDescription),
+    	DeclineDraw(StateRole.DeclinePending,DeclineDrawStateDescription);
     	String description;
-    	ShogiState(String str) { description = str; }
-    	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==Gameover); }
-    		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+       	public String getDescription() { return(description); }
+        StateRole role;
+        public StateRole getRole() { return role; }
+        
+       	ShogiState(StateRole r,String str) { description = str; role=r; }
+       	public boolean simultaneousTurnsAllowed() { return(false); }
     }
     	
     String TraditionalPieces = "Traditional Pieces";

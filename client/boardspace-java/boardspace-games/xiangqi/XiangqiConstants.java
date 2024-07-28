@@ -20,6 +20,7 @@ import lib.G;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 public interface XiangqiConstants 
 {	static final int DEFAULT_COLUMNS = 9;	// 10x9board
@@ -67,23 +68,24 @@ public interface XiangqiConstants
     public static int BLACK_CHIP_INDEX = 1;
      
     public enum XiangqiState implements BoardState
-    {	PUZZLE_STATE(PuzzleStateDescription),
-    	RESIGN_STATE(ResignStateDescription),
-    	GAMEOVER_STATE(GameOverStateDescription),
-    	CONFIRM_STATE(ConfirmStateDescription),
-    	DRAW_STATE(DrawStateDescription),
-    	PLAY_STATE("Move a piece"), 	// place a marker on the board
-    	CHECK_STATE(CheckStateExplanation),	// general can be captured.
-    	ILLEGAL_MOVE_STATE("Illegal move due to repetition - try something else"),	// illegal move due to repetition
-    	OFFER_DRAW_STATE(OfferDrawStateDescription),
-    	QUERY_DRAW_STATE(OfferedDrawStateDescription),
-    	ACCEPT_DRAW_STATE(AcceptDrawStateDescription),
-    	DECLINE_DRAW_STATE(DeclineDrawStateDescription);
+    {	PUZZLE_STATE(StateRole.Puzzle,PuzzleStateDescription),
+    	RESIGN_STATE(StateRole.Resign,ResignStateDescription),
+    	GAMEOVER_STATE(StateRole.GameOver,GameOverStateDescription),
+    	CONFIRM_STATE(StateRole.Confirm,ConfirmStateDescription),
+    	DRAW_STATE(StateRole.RepetitionPending,DrawStateDescription),
+    	PLAY_STATE(StateRole.Play,"Move a piece"), 	// place a marker on the board
+    	CHECK_STATE(StateRole.Other,CheckStateExplanation),	// general can be captured.
+    	ILLEGAL_MOVE_STATE(StateRole.Other,"Illegal move due to repetition - try something else"),	// illegal move due to repetition
+    	OFFER_DRAW_STATE(StateRole.DrawPending,OfferDrawStateDescription),
+    	QUERY_DRAW_STATE(StateRole.AcceptOrDecline,OfferedDrawStateDescription),
+    	ACCEPT_DRAW_STATE(StateRole.AcceptPending,AcceptDrawStateDescription),
+    	DECLINE_DRAW_STATE(StateRole.DeclinePending,DeclineDrawStateDescription);
     	String description;
-    	XiangqiState(String des) { description = des; }
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	XiangqiState(StateRole r,String des) { role = r; description = des; }
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 	
     static final int MOVE_PICK = 204; // pick a chip from a pool

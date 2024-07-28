@@ -20,6 +20,7 @@ import lib.G;
 import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 
 
 public interface StacConstants 
@@ -84,25 +85,29 @@ public interface StacConstants
 		public StacState[] newComponentArray(int n) { return(new StacState[n]); }
 	}  
     public enum StacState implements BoardState
-    {	Puzzle(PuzzleStateDescription),
-    	Resign( ResignStateDescription),
-    	Gameover(GameOverStateDescription),
-    	Confirm(ConfirmStateDescription),
-    	Play(MoveMeepleDescription),
-    	Carry(MoveOrCarryDescription),
-    	CarryDrop(DropDiscDescription),
-       	DrawPending(DrawOfferDescription),
-        AcceptOrDecline(DrawDescription),
-    	AcceptPending(AcceptDrawPending),
-    	RepetitionPending(AcceptDrawPending),
-    	DeclinePending(DeclineDrawPending);
+    {	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
+    	Resign(StateRole.Resign,ResignStateDescription),
+    	Gameover(StateRole.GameOver,GameOverStateDescription),
+    	Confirm(StateRole.Confirm,ConfirmStateDescription),
+    	Play(StateRole.Play,MoveMeepleDescription),
+    	Carry(StateRole.Other,MoveOrCarryDescription),
+    	CarryDrop(StateRole.Other,DropDiscDescription),
+       	DrawPending(StateRole.DrawPending,DrawOfferDescription),
+        AcceptOrDecline(StateRole.AcceptOrDecline,DrawDescription),
+    	AcceptPending(StateRole.AcceptPending,AcceptDrawPending),
+    	RepetitionPending(StateRole.RepetitionPending,AcceptDrawPending),
+    	DeclinePending(StateRole.DeclinePending,DeclineDrawPending);
+    	
     	String description;
-    	StacState(String des)
-    	{	description = des;
-    	}
     	public String getDescription() { return(description); }
-    	public boolean GameOver() { return(this==Gameover); }
-    		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	StateRole role;
+    	public StateRole getRole() { return role; }
+    	
+    	StacState(StateRole r,String des)
+    	{	description = des;
+    		role = r;
+    	}
+    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 
 

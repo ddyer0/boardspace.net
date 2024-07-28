@@ -362,6 +362,8 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
     {  drawLiftRect(gc,liftRect,highlight,StacChip.liftIcon.image);
        DrawReverseMarker(gc,reverseViewRect,highlight);
     }
+     
+
     //
     // draw the board and things on it.  If gc!=null then actually 
     // draw, otherwise just notice if the highlight should be on
@@ -395,38 +397,12 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
   
         GC.setFont(gc,standardBoldFont());
        
-        switch(vstate)
-        {
-        default:
-        	if(! ((b.moveNumber-b.lastStackMove)>(5*b.nSingleChips))) { break;}
-			//$FALL-THROUGH$
-		case DrawPending:
-        	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
-            			HighlightColor,
-            			vstate==StacState.DrawPending?HighlightColor : rackBackGroundColor))
-            	{
-            		select.hitCode = GameId.HitOfferDrawButton;
-            	}
-       		
-        	}
-        	break;
-        case AcceptOrDecline:
-        case AcceptPending:
-        case DeclinePending:
-        	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		select.hitCode = GameId.HitAcceptDrawButton;
-        	}
-        	if(GC.handleSquareButton(gc,declineDrawRect,select,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		select.hitCode = GameId.HitDeclineDrawButton;
-        	}
-       	break;
-        }
-        
  		commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
  		double messageRotation = pl.messageRotation();
+
+ 		handleDrawUi(gc,messageRotation,vstate.getRole(),(b.moveNumber-b.lastStackMove)>(5*b.nSingleChips),select,
+        		acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+        
  
  		if (vstate != StacState.Puzzle && !autoDoneActive())
         {

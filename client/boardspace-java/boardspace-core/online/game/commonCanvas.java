@@ -51,6 +51,7 @@ import online.common.OnlineConstants;
 import online.common.Session;
 import online.common.TurnBasedViewer;
 import online.game.BaseBoard.BoardState;
+import online.game.BaseBoard.StateRole;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_gamestack;
@@ -9176,5 +9177,76 @@ public void verifyGameRecord()
 		private JMenuItem setNetConsole = null;
 		public void setTransmitter(VNCTransmitter m) { transmitter = m; }
 
+		/**
+		 * Handle the "offer draw" "accept draw" "decline draw" buttons in a uniform way
+		 *  
+		 * @param gc
+		 * @param rotation 	 	rotation to present the button at (can flip for 2p seating across)
+		 * @param role		 	the role of the current state, ie, getState().getRole()
+		 * @param drawLikely	true if a draw is "likely" so should be offered in the UI
+		 * @param select		the hit point
+		 * @param acceptRect	rectangle for accept/offer
+		 * @param declineRect	rectangle for decline
+		 * @param highlightColor button foreground color
+		 * @param backgroundColor button background color
+		 */
+	    public void handleDrawUi(Graphics gc,double rotation,StateRole role,
+	    		boolean drawLikely,HitPoint select,
+	    		Rectangle acceptRect,Rectangle declineRect,
+	    		Color highlightColor,Color backgroundColor)
+	    {	handleDrawUi(gc,rotation,role,drawLikely,select,
+	    		acceptRect,acceptRect,declineRect,highlightColor,backgroundColor);
+	    }
+	    
+		/**
+		 * Handle the "offer draw" "accept draw" "decline draw" buttons in a uniform way
+		 *  
+		 * @param gc
+		 * @param rotation 	 	rotation to present the button at (can flip for 2p seating across)
+		 * @param role		 	the role of the current state, ie, getState().getRole()
+		 * @param drawLikely	true if a draw is "likely" so should be offered in the UI
+		 * @param select		the hit point
+		 * @oaram offerRect		rectangle for offer draw
+		 * @param acceptRect	rectangle for accept
+		 * @param declineRect	rectangle for decline
+		 * @param highlightColor button foreground color
+		 * @param backgroundColor button background color
+		 */
+	    public void handleDrawUi(Graphics gc,double rotation,StateRole role,
+	    		boolean drawLikely,HitPoint select,
+	    		Rectangle offerDrawRect,Rectangle acceptRect,Rectangle declineRect,
+	    		Color highlightColor,Color backgroundColor)
+	    {
+	        switch(role)
+	        {
+	        default:
+	        case Other: 
+	        	break;
+	        case Play:
+	        	if(!drawLikely) { break; }
+	        case DrawPending:
+	        	{	// if not making progress, put the draw option on the UI
+	            	if(GC.handleSquareButton(gc,rotation,offerDrawRect,select,s.get(OFFERDRAW),
+	            			highlightColor,
+	            			role==StateRole.DrawPending?highlightColor : backgroundColor))
+	            	{
+	            		select.hitCode = GameId.HitOfferDrawButton;
+	            	}
 
+	        	}
+	        	break;
+	        case AcceptOrDecline:
+	        case AcceptPending:
+	        case DeclinePending:
+	        	if(GC.handleSquareButton(gc,rotation,acceptRect,select,s.get(ACCEPTDRAW),highlightColor,role==StateRole.AcceptPending?highlightColor:backgroundColor))
+	        	{
+	        		select.hitCode = GameId.HitAcceptDrawButton;
+	        	}
+	        	if(GC.handleSquareButton(gc,rotation,declineRect,select,s.get(DECLINEDRAW),highlightColor,role==StateRole.DeclinePending?highlightColor:backgroundColor))
+	        	{
+	        		select.hitCode = GameId.HitDeclineDrawButton;
+	        	}
+	       	break;
+	        }
+	    }
 }

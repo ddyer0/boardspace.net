@@ -505,27 +505,13 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         DrawPlayerMarker(gc,gb.whoseTurn, iconRect);
         GC.setFont(gc,standardBoldFont());
         double standardRotation = pl.messageRotation();
+        
+        handleDrawUi(gc,standardRotation,vstate.getRole(),false,select,
+        		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+   
 		if (vstate != ShogiState.Puzzle)
         {
-			if((vstate == ShogiState.QueryDraw)
-						|| (vstate==ShogiState.AcceptDraw)
-						|| (vstate==ShogiState.DeclineDraw))
-			{
-			if(GC.handleRoundButton(gc,standardRotation,acceptDrawRect,select,s.get(ACCEPTDRAW),
-					HighlightColor,rackBackGroundColor))
-			{ select.hitCode = GameId.HitAcceptDrawButton;
-			}
-			if(GC.handleRoundButton(gc,standardRotation,declineDrawRect,select,s.get(DECLINEDRAW),
-					HighlightColor,rackBackGroundColor))
-			{ select.hitCode = GameId.HitDeclineDrawButton;
-			}
-			}
-			else if(vstate==ShogiState.OfferDraw)
-			{	if(GC.handleRoundButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
-					HighlightColor,(ShogiState.OfferDraw==vstate)?HighlightColor:rackBackGroundColor))
-					{ select.hitCode = GameId.HitOfferDrawButton;
-					}
-			}
+			
 			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

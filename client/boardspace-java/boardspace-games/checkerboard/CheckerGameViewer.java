@@ -478,35 +478,11 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       GC.setFont(gc,standardBoldFont());
       commonPlayer pl = getPlayerOrTemp(whoseTurn);
       double messageRotation = pl.messageRotation();
-      switch(vstate)
-        {
-        default:
-        	if(gb.drawIsLikely())
-        	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourButtonSelect,s.get(OFFERDRAW),
-            			HighlightColor,
-            			vstate==CheckerState.DrawPending ? HighlightColor : rackBackGroundColor))
-            	{
-            		ourButtonSelect.hitCode = GameId.HitOfferDrawButton;
-            	}
-       		
-        	}
-        	break;
-        case AcceptOrDecline:
-        case AcceptPending:
-        case DeclinePending:
-        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourButtonSelect,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		ourButtonSelect.hitCode = GameId.HitAcceptDrawButton;
-        	}
-        	if(GC.handleSquareButton(gc,messageRotation,declineDrawRect,ourButtonSelect,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
-        	{
-        		ourButtonSelect.hitCode = GameId.HitDeclineDrawButton;
-        	}
-       	break;
-        }
-        
-		if (vstate != CheckerState.Puzzle)
+      
+      handleDrawUi(gc,messageRotation,vstate.getRole(),gb.drawIsLikely(),ourButtonSelect,
+    		  acceptDrawRect,declineDrawRect,HighlightColor,rackBackGroundColor);
+              
+      if (vstate != CheckerState.Puzzle)
         {
 			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(b.DoneState()? ourButtonSelect : null),HighlightColor, rackBackGroundColor);
