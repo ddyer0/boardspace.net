@@ -890,6 +890,10 @@ graphics when using a touch screen.
 	   
 	   
    }
+   /**
+    * handle mouse motion, including mouse motion for the chat, so this method
+    * should be wrapped rather than superseded.
+    */
    public HitPoint performStandardMouseMotion(int x,int y,MouseState p)
    {   // simplemenu takes precedence over chat
 	   if(menu==null && runTheChat())
@@ -902,7 +906,10 @@ graphics when using a touch screen.
 	   }
 	   return(null);
    }
-   
+    /**
+     * handle any special MouseDown behavior.  This base method includes handling MouseDown for
+     * the chat, so it should be wrapped, not superceeded
+     */
 	public void MouseDown(HitPoint hp)
 	{
 		if(theChat!=null) { theChat.MouseDown(hp); }

@@ -1105,7 +1105,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 			{ keys.MouseDown(p);
 			  //Plog.log.addLog("Down "+p+" and repaint");
 			  repaint();
-			}			
+			}	
+		super.MouseDown(p);
 	}
 	private void restartDate()
 	{	dateRect.changed = false;

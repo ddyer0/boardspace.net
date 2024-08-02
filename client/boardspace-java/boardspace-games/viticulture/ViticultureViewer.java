@@ -5434,12 +5434,16 @@ private void drawPlayerBoard(Graphics gc,
 	 case MOVE_MAKEWINE:
 	 	{	if(mm.gameEvents!=null)
 	 		{
-	 		// the game events associated with makewine are "discard" which is translatable
-	 		// and +vp which is not
-	 		if(mm.gameEvents[0].indexOf("Penthouse")<0)
+	 		// the game events associated with makewine are "discard" which is translatable,
+	 		// and +vp or +$  which are not, so process by elimination
+	 		for(String e : mm.gameEvents)
+	 		{
+	 		if((e.indexOf("Penthouse")<0)
+	 			&& (e.indexOf(" $1")<0))// patio logs +money for making wine
+	 			
 	 		{
 	 		playASoundClip(drainSound,500);
-	 		}}
+	 		}}}
 	 	}
 	 	break;
 	 default: break;

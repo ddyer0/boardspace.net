@@ -1163,7 +1163,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 			{ keyboard.MouseDown(p);
 			  //Plog.log.addLog("Down "+p+" and repaint");
 			  repaint();
-			}			
+			}	
+		super.MouseDown(p);
 	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking

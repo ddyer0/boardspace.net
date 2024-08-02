@@ -3995,8 +3995,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     }
 
+    // this is where synchronization of the board across multiple players occurs.
+    //
     private void DoJointReview()
-    {	if(!my.isSpectator())
+    {	if(reviewOnly || !my.isSpectator())
     	{
         boolean oldval = useJointReview;
         useJointReview = ((jointReview != null) && jointReview.getState())

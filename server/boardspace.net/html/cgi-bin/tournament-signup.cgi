@@ -35,7 +35,7 @@ require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
 require "tlib/password_tools.pl";
-
+require "tlib/offline_ops.pl";
 require "push/push.pl";
 
 use Crypt::Tea;
@@ -213,7 +213,7 @@ sub logon_admin
 	return $val;
 }
 
-sub logon 
+sub logon_user
 {
 	my ($dbh,$pname,$passwd,$admin) = @_;
 	my $myaddr = $ENV{'REMOTE_ADDR'};
@@ -552,7 +552,7 @@ sub showInputForm()
   {  my $quid=$dbh->quote($fromuser);
      my $qteam = $dbh->quote($forced);
      my $q = "update participant set team=$qteam where tid=$qtid and p`id=$quid";
-     print "Q forced $q<br>";
+     #print "Q forced $q<br>";
      &commandQuery($dbh,$q);
   }
   print "<!-- showInputForm --!>\n";
@@ -699,9 +699,9 @@ sub findByEmail()
 	print "</table>";
 	}
 }
-sub processInputForm
+sub processTournamentForm
 {  my ($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin) = @_;
-   my ($uid,$bounce) = &logon($dbh,$fromname,$passwd,$admin);
+   my ($uid,$bounce) = &logon_user($dbh,$fromname,$passwd,$admin);
    if($uid>0)
    { if($tournamentid>0)
      {
@@ -757,11 +757,22 @@ sub processInputForm
 sub get_tournament_variation()
 {	my ($dbh,$tournament) = @_;
 	my $qt = $dbh->quote($tournament);
-	my $q = "select variation,game_threshold from tournament where uid=$qt";
+	my $q = "select variation,game_threshold,format,subvariants from tournament left join variation on variation.name=tournament.variation where uid=$qt";
 	my $sth = &query($dbh,$q);
-	my ($var,$thresh) = &nextArrayRow($sth);
+	my ($var,$thresh,$format,$subvariant) = &nextArrayRow($sth);
 	&finishQuery($sth);
-	return($var,$thresh);
+	return($var,$thresh,$format,$subvariant);
+}
+sub get_tournament_description()
+{
+	my ($dbh,$tournament) = @_;
+	my $qt = $dbh->quote($tournament);
+	my $q = "select description from tournament where uid=$qt";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	my ($desc) = &nextArrayRow($sth);
+	&finishQuery($sth);
+	return $desc;
 }
 sub show_getadminpassword()
 {
@@ -861,11 +872,12 @@ sub show_blank_match_form()
 
 # this version fills a row for the matchparticipant table
 sub show_filled_playerinfo()
-{	my ($dbh,$admin,$closed,$row,$matchid,$matchplayerid,$pn,$pl1,$name1,$team1,@ids) = @_;
+{	my ($dbh,$order,$admin,$closed,$row,$matchid,$matchplayerid,$pn,$pl1,$name1,$team1,@ids) = @_;
 
 	my $en1 = &uri_escape($name1);
-	my $plname1 = $names{$pl1};
-	
+	my $plname1 = $names{$pl1} ;
+	# order is the player order when the match was created
+	# $plname1 .= . "=$order";
 	if($admin)
 	{
 	print "<td>$plname1<br>";	#this is to make browser page search find it
@@ -916,7 +928,7 @@ sub show_notready_matches()
 	my $qturn = $dbh->quote($tournamentid);
 	my $qgroup = $dbh->quote($group);
 	my $q = "select player,comment,matchid from matchparticipant"
-		. " where (matchstatus='notready') and tournament=$qturn and tournament_group=$qgroup order by matchid";
+		. " where (matchstatus='notready') and tournament=$qturn and tournament_group=$qgroup order by matchid,playorder asc";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	my $row = 0;
@@ -959,7 +971,8 @@ sub show_matches_in_group()
 	print "<!-- show_matches_in_group() --!>\n";
 
 
-	my ($variation) = &get_tournament_variation($dbh,$tournamentid);
+	my ($variation,$thresh,$format) = &get_tournament_variation($dbh,$tournamentid);
+	my $isRR = ($format eq 'open-rr');
 	my $matchplayers = &getPlayersForVariation($dbh,$variation);
 	my @ids = &fill_player_info($dbh,$tournamentid,'');
 	my $nrows = 0;
@@ -991,12 +1004,13 @@ sub show_matches_in_group()
 	# come from matchparticipant records.  The 'A' in the admin select is a 
 	# trick to make it sort last.
 	#
-	my $q = "select player,outcome,points,played,unix_timestamp(played),scheduled,comment,matchid,uid from matchparticipant"
+	my $q = "select player,outcome,points,played,unix_timestamp(played),scheduled,comment,matchid,uid,playorder as po,0 from matchparticipant"
 		. " where (matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
-		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,unix_timestamp(played),scheduled,comment, matchid,'A' from matchrecord "
+		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,unix_timestamp(played),scheduled,comment, matchid,'A',99 as po,offlinegameuid from matchrecord "
 		. " where(matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
-		. " order by $or,uid";
+		. " order by $or,po,uid";
 	my $sth = &query($dbh,$q);
+	#print "Q: $q<br>";
 	my $nr = &numRows($sth);
 	#
 	# show existing matches
@@ -1058,8 +1072,9 @@ sub show_matches_in_group()
 	my $pn = 0;
 	while($nr-- > 0)
 	{
-	my ($pl1,$outcome,$player1_points,$played,$playedint,$scheduled,$comment,$matchid,$uid) = &nextArrayRow($sth);
+	my ($pl1,$outcome,$player1_points,$played,$playedint,$scheduled,$comment,$matchid,$uid,$playorder,$offlinegameuid) = &nextArrayRow($sth);
 	$pn++;
+	#print "row $pl1 m=$matchid u=$uid g=$offlinegameuid<br>";
 	# remove trailing nulls from colums damaged by the query
 	$outcome =~ s/\x00*$//g;
 	$uid =~ s/\x00*$//g;
@@ -1129,7 +1144,7 @@ sub show_matches_in_group()
 				}
 			if($player1_points!='') { $points .= "<br>$name1 : $player1_points\n"; }
 
-		if($admin && $name1 && $found{$pl1}) 
+		if($admin && !$isRR && $name1 && $found{$pl1}) 
 		{ $name1 = "$name1 (duplicate)";
 		}
 		$found{$pl1}=$pl1;
@@ -1146,7 +1161,9 @@ sub show_matches_in_group()
 	    }
 	print "<td colspan=2>$out$points</td>"; 
 	my $ch = &convertTime($change,$changeint);
-	print "<td>$ch</td>";
+	print "<td>$ch";
+	if($offlinegameuid>0) { print " game #$offlinegameuid";}
+	print "</td>";
 	print "<td>$comm";
 	&printDetailMatchLink($matchid,$admin);
 	print "</td>"; 
@@ -1155,7 +1172,7 @@ sub show_matches_in_group()
 	}
 	else
 	{
-	&show_filled_playerinfo($dbh,$admin,$closed,$nrows,$matchid,$uid,$pn,$pl1,$name1,$tt,@ids);
+	&show_filled_playerinfo($dbh,$playorder,$admin,$closed,$nrows,$matchid,$uid,$pn,$pl1,$name1,$tt,@ids);
 	}
 	
 	}
@@ -1181,9 +1198,43 @@ sub show_matches_in_group()
 	#
 	if(!$closed)
 	{
-	print "<table><caption>Create New matches for $group</caption>";
-	my ($variation) = &get_tournament_variation($dbh,$tournamentid);
+	my ($variation,$thresh,$format,$subvariants) = &get_tournament_variation($dbh,$tournamentid);
 	my $matchplayercount = &getPlayersForVariation($dbh,$variation);
+
+	if($matchplayercount eq 2)
+	{	
+	# only for 2 player games
+	print "<select name=roundrobinsize>\n";
+	print "<option value=0 selected>Round Robin Size</option>\n";
+	print "<option value=3>Round Robin, Max 3 players\n";
+	print "<option value=4>Round Robin, Max 4 players\n";
+	print "<option value=5>Round Robin, Max 5 players\n";
+	print "<option value=6>Round Robin, Max 6 players\n";
+	print "<option value=7>Round Robin, Max 7 players\n";
+	print "<option value=8>Round Robin, Max 8 players\n";
+	print "<option value=9>Round Robin, Max 9 players\n";
+	print "<option value=10>Round Robin, Max 10 players\n";
+	print "</select>\n";
+
+	print " create games ";
+	print "<select name=roundrobinvariant>\n";
+	print "<option value=''>Do Not Create Games</option>\n";
+	if($subvariants eq '')
+		{
+		print "<option value='$variation'>$variation</option>\n";
+		}
+		else
+		{
+		my (@variants) =  split /,/,$subvariants;
+		foreach  my $var( @variants)
+			{
+			print "<option value='$var'>$var</option>\n";
+			}
+		}
+	print "</select>\n";
+	}
+
+	print "<table><caption>Create New matches for $group</caption>";
 	&show_blank_match_form($nrows++,$tournamentid,$matchplayercount,$group,@ids);
 	&show_blank_match_form($nrows++,$tournamentid,$matchplayercount,$group,@ids);
 	&show_blank_match_form($nrows++,$tournamentid,$matchplayercount,$group,@ids);
@@ -1237,7 +1288,122 @@ sub show_current_matches()
 	print "</form>\n";
 	}
 }
+sub deleteOfflineTournamentGame($dbh,$matchid)
+{
+	my ($dbh,$matchid) = @_;
+	my $qmatch = $dbh->quote($matchid);
+	my $q = "select offlinegameuid from matchrecord where matchid=$qmatch";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	if($nr>0)
+	{
+	my ($gameid) = &nextArrayRow($sth);
+	if($gameid > 0)
+		{
+		# let the details be handled by offline_ops
+		&deleteOfflineGame($dbh,$gameid);
+		}
+	}
+	&finishQuery($sth);
+}
 
+sub createOneMatch()
+{
+  my ($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player1,$player2) = @_;
+  my $qp1 = $dbh->quote($player1);
+  my $qp2 = $dbh->quote($player2);
+  my $qtour = $dbh->quote($tournamentid);
+  my $qgroup = $dbh->quote($group);
+  my $q = "INSERT INTO matchrecord SET tournament=$qtour,tournament_group=$qgroup";
+  #print "Q: $q<br>";
+  if(!($variant eq ''))
+	{
+	my $comment = "this game is in tournament $tournamentdesc, $group";
+	my $gid = &create2PlayerGame($dbh,$player1,$player2,$variant,$comment);
+	if($gid > 0)
+	  {
+	  my $qgid = $dbh->quote($gid);
+	  $q .= ",offlinegameuid=$qgid";
+	  # send 1 time notifications that the game is set up
+	  my $not1 = "$variant game #$gid created for $tournamentdesc; It's your turn.\nOpen your boardspace.net app to make your move.";
+	  &sendNotification($dbh,"Boardspace.net game activity",$player1,$not1);
+	  my $not2 = "$variant game #$gid created for $tournamentdesc;\nOpen your boardspace.net app to view the game.";
+	  &sendNotification($dbh,"Boardspace.net game activity",$player2,$not2);
+	  # set up a nag for the first player
+	  update2PlayerNag($dbh,$gid,$player1,$not1,1);
+	  }
+	}
+  my $sth = &commandQuery($dbh,$q);	
+  my $mid = &last_insert_id($sth);
+  &finishQuery($sth);
+  if($mid>0)
+	{
+	my $qmid = $dbh->quote($mid);
+	my $q2 = "insert into matchparticipant set player=$qp1,tournament=$qtour,tournament_group=$qgroup,matchid=$qmid,playorder='0'";
+	my $q3 = "insert into matchparticipant set player=$qp2,tournament=$qtour,tournament_group=$qgroup,matchid=$qmid,playorder='1'";
+	#print "q2: $q2<br>";
+	&commandQuery($dbh,$q3);
+	&commandQuery($dbh,$q2);
+
+	
+
+	}
+}
+sub createRRmatches()
+{
+	my ($dbh,$tournamentid,$group,$rrstart,$rrsize,$variant,$ids) = @_;
+	print "group $group $rrstart $rrsize<br>\n";
+	my $rrend = $rrstart + $rrsize;
+	my $count = 0;
+	my $tournamentdesc = &get_tournament_description($dbh,$tournamentid);
+	for(my $left = $rrstart; $left<$rrend; $left++)
+	{
+	for(my $right = $left+1; $right<$rrend; $right++)
+	 {
+	 #print "pair $left $right<br>\n";
+         my $player1 =  @$ids[$left];
+	 my $player2 = @$ids[$right];
+	 if(($count & 1) == 0)
+		{
+		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player1,$player2);
+		}
+		else
+		{
+		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player2,$player1);
+		}
+	 $count++;
+	 }
+	}
+	
+}
+
+sub createRoundRobin()
+{	my ($dbh,$maxsize,$tournamentid,$group,$variant,$admin) = @_;
+	my @ids = &fill_player_info($dbh,$tournamentid,'');
+	my $nplayers = $#ids+1;
+	my $rrsize = $maxsize;
+        if($rrsize>$nplayers) { $rrsize = $nplayers; }
+	my $ngroups = $nplayers / $rrsize;
+	my $rem = $nplayers % $rrsize;
+	while( (($rem>0) && ($rrsize - $rem)) > $ngroups)
+	{ $rrsize--;
+	  $ngroups = $nplayers / $rrsize;
+	  $rem = $nplayers % $rrsize;
+	}
+	if($rrsize<$maxsize) 
+	{ print "Round robin size reduced to $rrsize<br>\n";
+	}
+	my $rrstart = 0;
+	my $invrem = $rrsize-$rem;
+	while($rrstart < $nplayers)
+	{
+	 &createRRmatches($dbh,$tournamentid,$group,$rrstart,$rrsize,$variant,\@ids);
+	 $rrstart += $rrsize;
+	 $invrem--;
+	 # decrease the size for subsequent matches
+	 if($invrem==0) { $rrsize--; }
+	}
+}
 sub creatematches()
 {	my ($dbh,$tournamentid,$group,$sortkey,$admin)=@_;
 
@@ -1265,7 +1431,9 @@ sub creatematches()
 		my $match = &param("match_$firstex");
 		my $qmatch = $dbh->quote($match);
 		if($del) 
-		{ my $q = "delete from matchrecord where matchid=$qmatch";
+		{ 
+		  &deleteOfflineTournamentGame($dbh,$match);
+	  	  my $q = "delete from matchrecord where matchid=$qmatch";
 		  &commandQuery($dbh,$q); 
 		  #print "Del $q<p>";
 		  my $q2 = "delete from matchparticipant where matchid=$qmatch";
@@ -1308,6 +1476,16 @@ sub creatematches()
 	# create new matches
 	#
 	{
+	my $rrsize = &param('roundrobinsize');
+	my $rrvariant = &param('roundrobinvariant');
+	if($rrsize>0)
+		{
+		&createRoundRobin($dbh,$rrsize,$tournamentid,$group,$rrvariant,$admin);
+		}
+	}
+
+	{
+	my $order = 0;
 	my $first = &param('firstnew');
 	my $last = &param('lastnew');
 	while($first < $last)
@@ -1330,7 +1508,8 @@ sub creatematches()
 		my $qmid = $dbh->quote($mid);
 		if($pl!=0)
 			{
-			my $q2 = "insert into matchparticipant set player=$qpl,tournament=$qtour,tournament_group=$qgroup,matchid=$qmid";
+			my $qorder = $dbh->quote($order);
+			my $q2 = "insert into matchparticipant set player=$qpl,tournament=$qtour,tournament_group=$qgroup,matchid=$qmid,playorder=$qorder";
 			#print "Q $q2<br>";
 			&commandQuery($dbh,$q2);
 			}
@@ -1338,6 +1517,7 @@ sub creatematches()
 		}}
 		}
 	$first++;
+	$order++;
 	}}
 	my $mcomment = &param("comment_$group");
 	if($mcomment || $sortkey || $status || $typ)
@@ -1353,6 +1533,17 @@ sub creatematches()
 	
 	if(param("delete_$group")) 
 	{	print "Delete match $qtour group $egroup<br>\n";
+
+		# mark the associated offline games as deleted
+		my $q = "select matchid from matchrecord where tournament=$qtour and tournament_group=$qgroup";
+		my $sth = &query($dbh,$q);
+		my $nr = &numRows($sth);
+		while($nr-- > 0)
+		{ my ($match) = &nextArrayRow($sth);
+		  &deleteOfflineTournamentGame($dbh,$match);
+		}
+		&finishQuery($sth);
+		&commandQuery($dbh,"delete from matchparticipant where tournament=$qtour and tournament_group=$qgroup");
 		&commandQuery($dbh,"delete from matchrecord where tournament=$qtour and tournament_group=$qgroup");
 		&commandQuery($dbh,"delete from matchgroup where uid=$qtour and name=$qgroup");
 	}
@@ -1594,17 +1785,17 @@ sub show_edit_match()
 	# trick to make it sort last.
 	#
 	my $q = "select matchgroup.status,player,points,tournament,outcome,played,UNIX_TIMESTAMP(played),scheduled,"
-				. " matchparticipant.comment,tournament_group,matchparticipant.uid"
+				. " matchparticipant.comment,tournament_group,matchparticipant.uid,playorder as po,0"
 				. " from matchparticipant left join matchgroup "
 				. " on matchparticipant.tournament = matchgroup.uid and matchgroup.name = matchparticipant.tournament_group "
 				. " where matchid=$qm "
 				# note that because of the particular structure of this join query, $outcome seems to be padded with a lot of nulls
 				. " union select matchgroup.status,-2,0,tournament,if(admin='winner',admin_winner,admin),played,UNIX_TIMESTAMP(played),scheduled,"
-				. " matchrecord.comment,tournament_group,'A'"
+				. " matchrecord.comment,tournament_group,'A',99,offlinegameuid"
 				. " from matchrecord left join matchgroup "
 				. "	on matchrecord.tournament = matchgroup.uid and matchgroup.name = matchrecord.tournament_group "
 				. " where matchid=$qm "
-				. " order by uid ";
+				. " order by po,uid ";
 	my $sth = &query($dbh,$q);
 	my $nr = &numRows($sth);
 	my $filled = 0;
@@ -1616,6 +1807,7 @@ sub show_edit_match()
 	my $scheduled;
 	my @playeruids;
 	my $closed = 0;
+	my $gameuid = 0;
 	#print "Q : $q<p>";
 	
 	&print_form_header($admin);
@@ -1630,8 +1822,9 @@ sub show_edit_match()
 		my $pn = 0;
 		while($nr-- > 0)
 		{
-		my ($status,$player,$points,$tournament,$outcome,$played,$uplayed,$scheduled,$comment,$tournament_group,$uid) = &nextArrayRow($sth);
+		my ($status,$player,$points,$tournament,$outcome,$played,$uplayed,$scheduled,$comment,$tournament_group,$uid,$playorder,$onlinegameuid) = &nextArrayRow($sth);
 
+		if($onlinegameuid>0) { $gameuid = $onlinegameuid; }
 		# note that because of the particular structure of the join query, $outcome and $uid seem to be padded with a lot of nulls
 		# this removes the nulls
 		$outcome =~ s/\x00*$//g;
@@ -1669,6 +1862,8 @@ sub show_edit_match()
 		my $p1name = $fromname;
 		my $tz1_raw = $timezones{$fromuid};
 		my $p2name = $names{$player};
+		# playorder is the player order when the match was created
+		# $p2name .= "=$playorder";
 		my $tz2_raw = $timezones{$player};
 		my $tz1 = $tz1_raw;
 		my $tz2 = $tz2_raw;
@@ -1729,6 +1924,10 @@ sub show_edit_match()
 		
 		print "</table>";					    # left table end
 
+		if($gameuid>0)
+		{
+		print "Offline game #$gameuid<br>";
+		}
 		if($admin || !$closed)
 		{
 		print "<table>";						# right table start
@@ -2392,9 +2591,12 @@ sub do_tournamentboard()
    if(&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0)
     { 	
 	&print_header($admin);
+
+	#print "operation is $operation ($fromname $passwd $admin)<br>";
+
 	if(($operation eq '') || ($operation eq 'showtournament'))
 		{if($fromname && ($passwd || $admin)) 
-			{ $uid = &processInputForm($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin);
+			{ $uid = &processTournamentForm($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin);
 			}
 		 &showTournaments($dbh,$uid,$fromname,$newteam,$passwd,$past,$tournamentid,$playeremails,$admin);
 		}
