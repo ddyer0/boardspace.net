@@ -108,6 +108,7 @@ sub bless_parameter_length()
 	my $dif = $len-$xlen*2;
 	if($dif>0)
 	{	$'single_ip_penalty_time += $dif;
+		$'single_ip_ip = &ip_to_int($ENV{'REMOTE_ADDR'});
 		$'single_ip_penalty_string = ("" eq $'single_ip_penalty_string) ? $str : "$'single_ip_penalty_string\n$str";
 	}
 }
@@ -164,7 +165,7 @@ sub disconnect()
 		my $q = "update ipinfo set status='autobanned',comment=concat(comment,'\n',$da,$qc) WHERE uid=$quid";
 		&commandQuery($dbh,$q);
 		}
-		else
+		elsif($'single_ip_ip)
 		{
 		my $qip = $dbh->quote($'single_ip_ip);
 		my $q = "Insert into ipinfo set status='autobanned',min=$qip,max=$qip,comment=$qc"

@@ -6,6 +6,9 @@
  * You can make a cert/key with openssl using:
  * openssl req -new -x509 -days 365 -nodes -out self.pem -keyout self.pem
  * as taken from http://docs.python.org/dev/library/ssl.html#certificates
+
+ * revised aug 2024, see comments in websocket.c
+
  */
 #include <stdio.h>
 #include <errno.h>
@@ -54,21 +57,22 @@ extern int pipe_error;
 extern settings_t settings;
 
 void do_proxy(ws_ctx_t *ws_ctx, int target) {
-    fd_set rlist, wlist, elist;
-    struct timeval tv;
-    int i, maxfd, client = ws_ctx->sockfd;
-    unsigned int left, ret;
-    unsigned int tout_start, tout_end, cout_start, cout_end;
-    unsigned int tin_start, tin_end;
-    ssize_t len, bytes;
     unsigned int opcode = ws_ctx->opcode;
     if(settings.veryverbose) { printf("proxy opcode %d",opcode); }
-    tout_start = tout_end = cout_start = cout_end;
-    tin_start = tin_end = 0;
-    maxfd = client > target ? client+1 : target+1;
 
-    while (1) {
-        tv.tv_sec = 1;
+    int cout_start = 0,cout_end = 0;
+    int tout_start = 0,tout_end = 0;
+    int tin_start = 0,tin_end = 0;
+    int client = ws_ctx->sockfd;
+    int maxfd = client > target ? client+1 : target+1;
+    int idle_count = 0;
+
+    while (idle_count++ < PROXY_MAX_IDLE_LOOP)
+      {// in our application, there should always be IO ticking along.  Exit after some number of unsuccessful tries at making some progress
+       // Effectively an unexpected timeout, or an unexpected stall in the data flow 
+	fd_set rlist, wlist, elist;
+	struct timeval tv;
+        tv.tv_sec = PROXY_SLEEP_TIME;
         tv.tv_usec = 0;
 
         FD_ZERO(&rlist);
@@ -93,13 +97,15 @@ void do_proxy(ws_ctx_t *ws_ctx, int target) {
             FD_SET(client, &wlist);
         }
 
-        ret = select(maxfd, &rlist, &wlist, &elist, &tv);
+        int ret = select(maxfd, &rlist, &wlist, &elist, &tv);
+        if(settings.verbose) { printf("select = %d\n",ret); }
         if (pipe_error) { break; }
 
         if (FD_ISSET(target, &elist)) {
             handler_emsg("target exception\n");
             break;
         }
+
         if (FD_ISSET(client, &elist)) {
             handler_emsg("client exception\n");
             break;
@@ -114,8 +120,8 @@ void do_proxy(ws_ctx_t *ws_ctx, int target) {
         }
 
         if (FD_ISSET(target, &wlist)) {
-            len = tout_end-tout_start;
-            bytes = send(target, ws_ctx->tout_buf + tout_start, len, 0);
+            int len = tout_end-tout_start;
+            int bytes = send(target, ws_ctx->tout_buf + tout_start, len, 0);
 	    if(settings.verbose)
 	      { char ch = *(ws_ctx->tout_buf + tout_start + len);
 	        *(ws_ctx->tout_buf + tout_start + len) = 0;
@@ -128,18 +134,21 @@ void do_proxy(ws_ctx_t *ws_ctx, int target) {
                              strerror(errno));
                 break;
             }
+	    if(bytes>0)
+	      {
+		idle_count = 0;
             tout_start += bytes;
             if (tout_start >= tout_end) {
                 tout_start = tout_end = 0;
                 traffic(">");
             } else {
                 traffic(">.");
-            }
+            }}
         }
 
         if (FD_ISSET(client, &wlist)) {
-            len = cout_end-cout_start;
-            bytes = ws_send(
+            int len = cout_end-cout_start;
+            int bytes = ws_send(
 ws_ctx, ws_ctx->cout_buf + cout_start, len);
             if (pipe_error) { break; }
             if (len < 3) {
@@ -147,6 +156,9 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
                              (int) len, (int) bytes,
                              (int) *(ws_ctx->cout_buf + cout_start));
             }
+            if(bytes>0)
+	      {
+		idle_count = 0;
             cout_start += bytes;
 	    if(settings.veryverbose)
 	      {
@@ -157,11 +169,13 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
                 traffic("<");
             } else {
                 traffic("<.");
-            }
+            }}
         }
 
         if (FD_ISSET(target, &rlist)) {
-            bytes = recv(target, ws_ctx->cin_buf, DBUFSIZE , 0);
+	  // make the maximum size from the target small enough to accomodate base64 encoding on the outgoing side plus the frame overhead.
+	  // no need to be exact, be conservative!
+	    int bytes = recv(target, ws_ctx->cin_buf, (BUFSIZE*3)/4-30 , 0);
             if (pipe_error) { break; }
             if (bytes <= 0) {
                 handler_emsg("target closed connection\n");
@@ -169,7 +183,10 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
             }
             cout_start = 0;
 	    if(settings.veryverbose) { printf("received %d from target\n",bytes); }
-	    ws_ctx->cin_buf[bytes]=(char)0;
+	    if(bytes>0)
+	      {
+		idle_count = 0;
+		ws_ctx->cin_buf[bytes]=(char)0;
 	    if(settings.verbose) { printf("echo: %s\n",ws_ctx->cin_buf); }
 
             if (ws_ctx->hybi) {
@@ -183,40 +200,60 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
             }
 	    if(settings.veryverbose)
 	      {
+		int i;
 		printf("encoded: "); 
-            for (i=0; i< cout_end; i++) {
-                printf("%u,", (unsigned char) *(ws_ctx->cout_buf+i));
-            }
-            printf("\n");
+		for (i=0; i< cout_end; i++) 
+		  {
+		    printf("%u,", (unsigned char) *(ws_ctx->cout_buf+i));
+		  }
+		printf("\n");
 	      }
             if (cout_end < 0) {
                 handler_emsg("encoding error\n");
                 break;
             }
             traffic("{");
+	      }
         }
 
         if (FD_ISSET(client, &rlist)) {
-            bytes = ws_recv(ws_ctx, ws_ctx->tin_buf + tin_end, BUFSIZE-1);
+	  // this was originally just BUFSIZE, which I'm pretty sure this was incorrect given that tin_end can be nonzero
+	  int available_size = BUFSIZE-tin_end-1;
+	  int bytes = ws_recv(ws_ctx, ws_ctx->tin_buf + tin_end, available_size);
 	    if(settings.veryverbose) { printf("got %d bytes\n",bytes); }
             if (pipe_error) { break; }
             if (bytes <= 0) {
                 handler_emsg("client closed connection\n");
                 break;
             }
-            tin_end += bytes;
-
-	    if(settings.veryverbose)
+	    if(bytes>0)
 	      {
+		idle_count = 0; 
+            tin_end += bytes;
+	    // we got some data from the incoming websocket, but it may be less than or more than a complete frame
+	    // the decoding process will return 0 until a complete frame is available and decoded, and will return in "left"
+	    // where to start the next attempt at decoding a frame.  When an exact frame is received the buffers are reset
+	    // to start, but this simple buffering scheme will fail if the frames never come up even or a frame exceeds the
+	    // buffer size
+	    if(settings.veryverbose && bytes>0)
+	      {
+		int i;
 		printf("before decode: ");
 		for (i=0; i< bytes; i++) {
 		  printf("%u,", (unsigned char) *(ws_ctx->tin_buf+i));
 		}
 		printf("\n");
 	      }
+	    //
+	    // if the packet size is too large, this is going to just fill the buffer and then fail to
+	    // make any more progress.  Also, under bad conditions with split buffers, the available
+	    // size might shrink.   A more sophisticated buffer management stratgegy is needed.
+	    //
+	    unsigned int left=0;
+	    int len = 0;
             if (ws_ctx->hybi) {
 	      if(settings.veryverbose) { printf("decode hybi %d\n",opcode); }
-                len = decode_hybi(ws_ctx->tin_buf + tin_start,
+	       len = decode_hybi(ws_ctx->tin_buf + tin_start,
                                   tin_end-tin_start,
                                   ws_ctx->tout_buf, BUFSIZE-1,
                                   &opcode, &left);
@@ -234,13 +271,14 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
                 break;
             }
 
-	    if(settings.veryverbose)
-	      {
-            printf("decoded: ");
-            for (i=0; i< len; i++) {
-                printf("%u,", (unsigned char) *(ws_ctx->tout_buf+i));
-            }
-            printf("\n");
+	    if(settings.veryverbose && len>0)
+	      { int i;
+		printf("decoded: ");
+		for (i=0; i< len; i++) 
+		{
+		  printf("%u,", (unsigned char) *(ws_ctx->tout_buf+i));
+		}
+		printf("\n");
 	      }
             if (len < 0) {
                 handler_emsg("decoding error\n");
@@ -257,8 +295,12 @@ ws_ctx, ws_ctx->cout_buf + cout_start, len);
             traffic("}");
             tout_start = 0;
             tout_end = len;
-        }
+	      }
+	    }
     }
+    if(idle_count>=PROXY_MAX_IDLE_LOOP)
+      { handler_emsg("pipeline stalled, giving up\n");
+      }
 }
 
 void proxy_handler(ws_ctx_t *ws_ctx) {

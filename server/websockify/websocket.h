@@ -1,8 +1,8 @@
 #include <openssl/ssl.h>
 
 #define BUFSIZE 65536
-#define DBUFSIZE (BUFSIZE * 3) / 4 - 20
-
+#define PROXY_MAX_IDLE_LOOP 10
+#define PROXY_SLEEP_TIME 10
 #define SERVER_HANDSHAKE_HIXIE "HTTP/1.1 101 Web Socket Protocol Handshake\r\n\
 Upgrade: WebSocket\r\n\
 Connection: Upgrade\r\n\

@@ -108,9 +108,12 @@ static int crash_test=0;				//if nonzero, include doomsday code for crash testin
 
 loglevel logging=0;
 
-#if WIN32
-typedef int socklen_t;
+#if WEBSOCKET
+static int websocketPortNum = 0;
+char* websocketSslKey = NULL;
+char* websocketSslCert = NULL;
 #endif
+
 /* runtime parameters set from supervisor commends */
 
 BOOLEAN isClosed=FALSE;		// closed to new connections
@@ -1049,6 +1052,12 @@ static void ClearUser(User *u)
 		u->expectEof=FALSE;
 		u->inputClosed = FALSE;
 		u->requestingLock = FALSE;
+#if WEBSOCKET
+		freeWebsocket(u);
+		u->websocket = FALSE;
+		u->websocket_errno = 0;
+		u->websocket_data = NULL;	// just to be sure
+#endif
 		u->oopsCount=0;
 		u->injectedOutput = 0;
 		u->rogueOutput = 0;
@@ -1133,6 +1142,14 @@ static void CopyUser(User *from,User *to)
 		 
 		 to->oopsCount = from->oopsCount;
 		 to->requestingLock = from->requestingLock;
+#if WEBSOCKET
+		 freeWebsocket(to);
+		 to->websocket = from->websocket;
+		 to->websocket_data = from->websocket_data;
+		 to->websocket_errno = from->websocket_errno;
+		 from->websocket = FALSE;
+		 from->websocket_data = NULL;
+#endif
 		 from->requestingLock = FALSE;
 		 from->oopsCount = 0;
 		 to->unexpectedCount = from->unexpectedCount;
@@ -1384,7 +1401,7 @@ void DumpHistory()
 
 #endif /* history */
 /*-----------------------------------------------------------------*/
-static int ErrNo()
+int ErrNo()
 {
 #if WIN32
 	static int lastError=0;
@@ -1576,19 +1593,20 @@ void mybcopy(char *theSrc, struct in_addr *theDst, int length) {
 }
 
 /*-----------------------------------------------------------------*/
-
-
-
-static BOOLEAN setNBIO(SOCKET sock)
+//
+// set nonblocking io
+// the current belief is that this unnecessary when using "select", which we do
+// but this is a belt-and-suspenders failsafe to be sure the main event loop
+// never blocks.
+//
+BOOLEAN setNBIO(SOCKET sock)
 {
 #if WIN32
 		unsigned int nb=1;
-#endif
-
-#if WIN32
 		if (ioctlsocket(sock,FIONBIO,&nb))
 #else
-		if (fcntl(sock,F_SETFL,_POSIX_FSYNC|O_NDELAY)<0) 
+		  // printf("non block flags %x %x %x\n",O_NDELAY,O_NONBLOCK,FNONBLOCK); they're all the same
+		  if (fcntl(sock,F_SETFL,_POSIX_FSYNC|O_NDELAY)<0) 
 #endif
 		{ unusual_events++;
 		  if(logging>=log_errors)
@@ -1611,7 +1629,31 @@ static BOOLEAN setNBIO(SOCKET sock)
 #endif
 	return(TRUE);
 }
+//
+// set blocking io
+//
+BOOLEAN setBIO(SOCKET sock)
+{
+#if WIN32
+		unsigned int nb=0;
+		if (ioctlsocket(sock,FIONBIO,&nb))
+#else
+		if (fcntl(sock,F_SETFL,_POSIX_FSYNC)<0) 
+#endif
+		{ unusual_events++;
+		  if(logging>=log_errors)
+					{logEntry(&securityLog,"[%s] UNUSUAL: ioctl failed for %d\n",
+							timestamp(),sock);
+					}
+			return(FALSE);
+    } 
+	return(TRUE);
+}
 
+
+/** initialize the main listening socket.  If any significant modifications are ever made,
+then the websocket implementation client_websocket_init should be modified too
+*/
 static void client_socket_init(int portNum) 
 {
   int actCtr=0;
@@ -1696,7 +1738,7 @@ static void client_socket_init(int portNum)
   // here's a story for the records.  Originally this code bound
   // a specific IP specified in the config file.  I think the motivation
   // was to not clog the port on shared server hosts.  This worked fine
-  // until one day, boardspace.net started refising all connections which
+  // until one day, boardspace.net started refusing all connections which
   // originated from localhost (ie; the "register user" "probe" and "score"
   // connections.   After a while this odd behavior went away.  My best
   // guess what had really gone on, was that "socket" started presenting
@@ -1705,18 +1747,20 @@ static void client_socket_init(int portNum)
   // both present 127.0.0.1 but telnet www.boardspace.net presents the
   // correct ip.
   //
+  logEntry(&mainLog, "[%s] Server on %s, address %d.%d.%d.%d, using port %d.\n",
+	  timestamp(), host_name, IP1, IP2, IP3, IP4, portNum);
+
   if (bind(serversd,(struct sockaddr *)&iclient,sizeof(iclient)) == -1)
-    {error("Failed bind",ErrNo());
+    {error("Failed bind for main port",ErrNo());
     };
   if (listen(serversd,4) == -1)
-    {error("Failed listen",ErrNo());
+    {error("Failed listen on main port",ErrNo());
     }
   {
   socklen_t csize=sizeof(iclient);
   getsockname(serversd,(struct sockaddr *)&iclient,&csize);
 
-  logEntry(&mainLog,"[%s] Server on %s, address %d.%d.%d.%d, using port %d.\n",
-          timestamp(),host_name, IP1, IP2, IP3, IP4, portNum);
+ 
 }
 }
 static char *plural(int n)
@@ -1844,7 +1888,7 @@ void realSaveConfig()
 	fprintf(tempfp,"<br>%d users banned, %d additional connection attempts<br>",
 			totalBanned,totalAttempts);
 	if(isshutdown) { fprintf(tempfp,"<br><b>Server has been shut down by the supervisor\n</b><br>");}
-	fprintf(tempfp,"%d/%d allocations, %dk allocated<br>",totalAllocations,allocations,allocatedSize/1024);
+	fprintf(tempfp,"%d/%d allocations, %dk allocated<br>",totalAllocations,allocations,(int)(allocatedSize/1024));
 	{UPTIME now = Uptime();
 	 int up = now - start_time;
 	 int upminutes = up/60;
@@ -1949,7 +1993,7 @@ static int sessionIsEmpty(Session *sess)
 //
 // close a socket and do any ancillary bookeeping
 //
-static void simpleCloseSocket(SOCKET sock)
+void simpleCloseSocket(SOCKET sock)
 {
 	if(isRealSocket(sock))
 	{
@@ -2032,7 +2076,7 @@ static void simpleCloseClientOnly(User *u,char *cxt)
 static void update_user_timestamps();
 
 /* just close a client */
-static void simpleCloseClient(User *u,char *cxt)
+void simpleCloseClient(User *u,char *cxt)
 {	BOOLEAN isSoc = isRealSocket(u->socket);	// remember it was
 	simpleCloseClientOnly(u,cxt);			// closes socket, so after this isSoc would be false
 	update_user_timestamps();
@@ -2923,20 +2967,21 @@ void reloadGames()
 	{
 	int reloaded = 0;
 #if WIN32
-	WIN32_FIND_DATA find_data;
+	WIN32_FIND_DATAA find_data;
 	char gameDir[SMALLBUFSIZE];
-	// gameDir should end with a \
+	// gameDir should end with a backslash
 	lsprintf(sizeof(gameDir),gameDir,"%s*.*",THREAD_READ(G,gameCacheDir));
 	{
 	HANDLE val = FindFirstFileA(gameDir,&find_data);
 	if(val != INVALID_HANDLE_VALUE)
 	{
-	while(FindNextFile(val,&find_data))
+	while(FindNextFileA(val,&find_data))
 		{
 		char fname[SMALLBUFSIZE];
 		char fullpath[SMALLBUFSIZE];
 		// convert wide chars to narrow chars
-		wcstombs(fname, &find_data.cFileName, sizeof(fname));
+		//wcstombs(fname, &find_data.cFileName, sizeof(fname));
+		strncpy(fname, find_data.cFileName, SMALLBUFSIZE);
 		lsprintf(sizeof(fullpath),fullpath,"%s%s",THREAD_READ(G,gameCacheDir), fname);
 		if(reloadOneFile(fullpath)) { reloaded++; }
 		}
@@ -3433,7 +3478,11 @@ int startOutput(User *u)
 	{ 
 	  int slen = to-from;
 	  SOCKET sock = u->socket;
-	  int len = err = isRealSocket(sock)?send(sock,u->outbufPtr+from,slen,0):-2;
+	  int len = err = isRealSocket(sock)
+			?u->websocket
+				? websocketSend(u, u->outbufPtr + from, slen)
+				: send(sock,u->outbufPtr+from,slen,0)
+		    :-2;
 	  if(slen==u->outbufSize)
 	  {	// improbable, full buffer
 		logEntry(&mainLog,"[%s] full buffer for  C%d (%s#%d) S%d %d\n",
@@ -4105,6 +4154,9 @@ static void doShutdown(User *u,const char *buf)
 		logEntry(&mainLog,"[%s] shutdown request by supervisor C%d (%s#%d) S%d : %s\n",
 			timestamp(),u->userNUM,u->clientRealName,u->clientUid,u->socket,buf); 
 		
+#if WEBSOCKET
+		closeWebSocket();
+#endif
 		closesocket(serversd);		//first close the server accept.  This doesn't count in the active tally
 		serversd=0;
 		{ int i;
@@ -4170,7 +4222,7 @@ static void doSupervisor(User *SU,char *buf)
 
 		}
 	}
-	else if(strncmp(buf,"uncache ",8)==0)
+	else if(STRNICMP(buf,"uncache ",8)==0)
 	{	// remove a cached game, identified by a number seen in the "cached" display
 		int nth = 0;
 		int n = sscanf(buf+8,"%d",&nth);
@@ -4245,8 +4297,10 @@ static void doSupervisor(User *SU,char *buf)
 		 doShutdown(SU,buf+9);
 		}
 	else if(crash_test && strncmp(buf,"crash",5)==0)
-		{ char *die = (char *)0xdeadbeef;
-		  die[0]=(char)0;
+		{ // deliberately cause a memory violation, for testing purposes
+		char* die = 0;
+		die += 0xdeadbeef;
+		  *die = 'a';
 		}
 	else if(strncmp(buf,"close",5)==0)
 		{char obuf[SMALLBUFSIZE];
@@ -6495,8 +6549,6 @@ static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq
 
 }
 
-
-
 User *lastUsers[3];	// for emergency debugging
 static User *ProcessMessages(char *cmd,User *u)
 {  char rawcmd[120];
@@ -6706,20 +6758,26 @@ static int fillBuffer(User *u)
 		client_errors++;
   		closeClient(u,"tooMuchData",grace_forbidden);
 		}
-	  else
-	  {
+	  else {
 	  char *buffer = u->inbufPtr;
 	  buffer[put]=(char)0;
 	  {
 	  SOCKET sock = u->socket;
-	  int readResult = recv(sock, buffer+put, siz,0);
+	  int readResult = u->websocket
+						? websocketRecv(u,buffer+put,siz)
+						: recv(sock, buffer+put, siz,0);
 	  switch(readResult)
 	  { case 0:	
 			// note that reading zero bytes always seems to be an error.  Sometimes
 			// it doesn't immediately progress into real errors (returning -1) but it
 			// never recovers into reading real data.  Some sources claim reading 0 means
 			// the other side closed the stream normally
-		  {int err=ErrNo();
+		  if (u->websocket)
+		  {	  // no more read required, but not necessarily an error
+			  doneReading = 1;
+		  }
+		  else
+		  { int err=ErrNo();
 			doneReading=1;
 			if(!u->wasZapped
 				&& (err!=EWOULDBLOCK)
@@ -6742,20 +6800,25 @@ static int fillBuffer(User *u)
 
 	   case -1:	//various error possibilities
 		doneReading=1;
-		{int err=ErrNo();
+		{int err = u->websocket_errno;
+		if (err == 0) { err = ErrNo(); }
 		 switch(err)
-			 {case EWOULDBLOCK:			//would block; not an error
+			 {
+		 
+		     case EWOULDBLOCK:			//would block; not an error
 #if (EWOULDBLOCK!=EAGAIN)
 			 case EAGAIN:
 #endif
-				readBreak++;
+				 	// not applicable to websockets
+					 readBreak++;
 #if HISTORY
-				if(!u->use_rng_in)
-				{ // not very informative if encrypted.
-				recordInHistory("iXX",u->socket,buffer+take,put-take);
-				}
+					 if (!u->use_rng_in)
+					 { // not very informative if encrypted.
+						 recordInHistory("iXX", u->socket, buffer + take, put - take);
+					 }
 #endif
-				break;
+					 break;
+				 
 			default:	//other errors
 			  {
 				if((u->session!=LOBBYSESSION) 
@@ -6797,10 +6860,10 @@ static int fillBuffer(User *u)
 	return(eol);
 }
 
-static void acceptNewConnections(SOCKET serversd)
+static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 {	 
 	socklen_t fl=sizeof(iclient);
-	SOCKET newsocket = accept(serversd,(struct sockaddr *)&iclient,&fl);
+	SOCKET newsocket = accept(insoc,(struct sockaddr *)&iclient,&fl);
 	 unsigned int ip = htonl(iclient.sin_addr.s_addr);
 	 User *u=NULL;
 	 if(newsocket==INVALID_SOCKET ) 
@@ -6817,6 +6880,9 @@ static void acceptNewConnections(SOCKET serversd)
 	    && (u=findAslot(WAITINGSESSION)))	//possibly fail to find a slot
 	 { 
 	 u->socket = newsocket;
+	 u->websocket = websock;
+	 u->websocket_data = NULL;
+	 u->websocket_errno = 0;
 	 u->ip = ip;
 	 u->clientTime = Uptime();
 	 if(sockets_open==1)
@@ -6856,6 +6922,7 @@ static void acceptNewConnections(SOCKET serversd)
 	  errClose(__LINE__,newsocket,ECHO_I_QUIT "refused, connection failed");
 	 }}
 }
+
 static void clearOrphanedSessions()
 {
 	/* look for orphaned sessions */
@@ -6969,6 +7036,25 @@ void ReadConfigFile()
 	else
 	{error2("Couldn't open config file",configFile);
 	}
+}
+
+char* GetOptionalParm(char* param,char *def)
+{
+	static char dummy[4] = { 0 };
+	if (nparam == 0)
+	{
+		ReadConfigFile();
+	}
+	{int i;
+	for (i = 0; i < nparam; i++)
+	{
+		if (strcmp(params[i].name, param) == 0)
+		{
+			return(params[i].value);
+		}
+	}
+	}
+	return def;
 }
 
 char *GetParm(char *param)
@@ -7096,6 +7182,14 @@ void main_thread()
 	{FD_SET(serversd,&rfds);
          FD_SET(serversd,&efds);
 	}
+#if WEBSOCKET
+	if (webserversd != 0)
+	{       if(webserversd>maxfd) { maxfd = webserversd; }
+		FD_SET(webserversd, &rfds);
+		FD_SET(webserversd, &efds);
+	}
+#endif
+
 	{
 	//
 	// this was moved up here because "dead" users were being
@@ -7125,8 +7219,11 @@ void main_thread()
     if ((serversd!=0) && FD_ISSET(serversd,&efds)) {
       error("Server socket exception", ErrNo());
     }
-
-
+#if WEBSOCKET
+	if ((webserversd != 0) && FD_ISSET(webserversd, &efds)) {
+		error("Server web socket exception", ErrNo());
+	}
+#endif
     if(nActive>0)
 	{int idx;
 	round_robin_salt++;
@@ -7215,8 +7312,14 @@ void main_thread()
 #endif
       }
 	}}}
-    if ((serversd!=0) && FD_ISSET(serversd,&rfds))	{acceptNewConnections(serversd); }
-
+    if ((serversd!=0) && FD_ISSET(serversd,&rfds))	
+		{acceptNewConnections(serversd,FALSE); }
+#if WEBSOCKET
+	if((webserversd!=0) && FD_ISSET(webserversd, &rfds))
+	{
+		acceptNewConnections(webserversd, TRUE);
+	}
+#endif
 	{	SaveGameInfo *G = &saveGameInfo;
 		UPTIME now = Uptime();
 		if(now>bktime)	// once per second
@@ -7321,6 +7424,15 @@ int main(int argc, char **argv)
 #endif
 
   client_socket_init(portNum);
+#if WEBSOCKET
+  websocketPortNum = atoi(GetParm("websocket"));
+  if (websocketPortNum > 0)
+  {
+	  client_websocket_init(websocketPortNum);
+  }
+  websocketSslKey = GetOptionalParm("websocketsslkey",NULL);
+  websocketSslCert = GetOptionalParm("websocketsslcert",NULL);
+#endif
   //
   // get here (past the socket init) only if we actually get the socked.
   //
@@ -7334,13 +7446,13 @@ int main(int argc, char **argv)
   {
   char *p = NULL;
   logEntry(&mainLog,"Server 64 bit version, sizeof int = %d sizeof long = %d sizeof char * = %d\n",sizeof(int),sizeof(long),sizeof(char*));
-  if(sizeof(p)!=8) { logEntry(&mainLog,"Size mismatch, compiled sizeof pointer is %d",sizeof(p)); }
+  if(sizeof(p)!=8) { logEntry(&mainLog,"Size mismatch, compiled sizeof pointer is %d\n",sizeof(p)); }
   }
 #else
   {
   char *p = NULL;
   logEntry(&mainLog,"Server 32 bit version, sizeof int = %d sizeof long = %d sizeof char * = %d\n",sizeof(int),sizeof(long),sizeof(char*));
-  if(sizeof(p)!=4) { logEntry(&mainLog,"Size mismatch, compiled sizeof pointer is %d",sizeof(p)); }
+  if(sizeof(p)!=4) { logEntry(&mainLog,"Size mismatch, compiled sizeof pointer is %d\n",sizeof(p)); }
   }
 #endif
   logEntry(&mainLog,"Compiled limits: buffer %d, User %d(=%dm), Session %d(=%dm), GameBuffers %d(=%dm)\n",

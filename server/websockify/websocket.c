@@ -7,6 +7,15 @@
  * openssl req -new -x509 -days 365 -nodes -out self.pem -keyout self.pem
  * as taken from http://docs.python.org/dev/library/ssl.html#certificates
  *
+
+ * reworked aug 2014 by ddyer@real-me.net to fix several problems.
+ * the motivation is that after using it in production, not too strenuously, there was a common
+ * failure mode where the master process accumulated a lot of children, probably until "fork" failed
+ * Studying the code I found that threads could block both at the initial handshake and later in the
+ * flowing proxy mode, so I've rewritten to use "select" all the time, and to use "tries with no progress"
+ * as the criterion for giving up.  It's apparent there is still a potential to die because of oversized
+ * websocket frames, or due to buffer fragmentation
+ *
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -458,7 +467,7 @@ int decode_hybi(unsigned char *src, size_t srclength,
     *left = srclength;
     frame = src;
 
-    //printf("Deocde new frame\n");
+    //printf("Decode new frame\n");
     while (1) {
         // Need at least two bytes of the header
         // Find beginning of next frame. First time hdr_length, masked and
@@ -717,31 +726,77 @@ static void gen_sha1(headers_t *headers, char *target) {
     //assert(r == HYBI10_ACCEPTHDRLEN - 1);
 }
 
+//
+// do a nonblocking select with a timeout
+//
+int doselect(int socket,fd_set *rlist,fd_set*wlist,fd_set*elist,int timeout)
+{
+  struct timespec tv;
 
-ws_ctx_t *do_handshake(int sock) {
+  if(rlist) { FD_ZERO(rlist); FD_SET(socket, rlist);}
+  if(wlist) { FD_ZERO(wlist); FD_SET(socket, wlist);}
+  if(elist) { FD_ZERO(elist); FD_SET(socket, elist); }
+
+  tv.tv_sec = timeout;
+  tv.tv_nsec = 0;
+
+  return pselect(socket+1, rlist, wlist, elist, &tv,NULL);
+}
+//
+// inspect the handshake's first byte, see if ssl is appropriate
+// return 1 if ssl should be used 0 if plain socket, -1 if error
+//
+int handshake_preamble(int socket)
+{ fd_set rlist, elist;
+  char buf[10];
+  doselect(socket,&rlist,NULL,&elist,10);
+
+  if(FD_ISSET(socket,&elist))
+    {
+     handler_emsg("handshake preamble exception\n");
+     return -1;
+    }
+  if(FD_ISSET(socket,&rlist))
+    {
+    // peek but don't receive the data
+    int len = recv(socket,buf,1,MSG_PEEK);
+    if(len==1)
+    {
+      if(buf[0]==0x16 || buf[0]==0x80)
+	{
+	  return 1;
+	}
+      else {
+	return 0;
+      }}}
+    return -1;
+}
+
+ws_ctx_t *do_handshake(int sock)
+ {
+    if(settings.verbose) { printf("doing handshake\n"); }
+
+    int preamble = handshake_preamble(sock);
+
+    if(preamble<0)
+      {
+            handler_emsg("Empty handshake\n");
+	    return NULL;
+      }
+
+    int complete = 0;             // true when the handshake buffer contains the \r\n\r\n
+    ws_ctx_t * ws_ctx = NULL;
+    fd_set rlist, elist;
     char handshake[4096], response[4096], sha1[29], trailer[17];
     char *scheme, *pre;
     headers_t *headers;
-    int len, ret, i, offset;
-    ws_ctx_t * ws_ctx;
+    int len, ret;
+ 
     char *response_protocol=NULL;
     const char *response_protocol_header = "Sec-WebSocket-Protocol: ";
     const char *response_protocol_crlf = "\r\n";
-
-    printf("doing handshake\n");
-
-    // Peek, but don't read the data
-    len = recv(sock, handshake, 1024, MSG_PEEK);
-
-    handshake[len] = 0;
-
-    printf("in %s\n",handshake);
-
-    if (len == 0) {
-        handler_msg("ignoring empty handshake\n");
-        return NULL;
-    } else if ((bcmp(handshake, "\x16", 1) == 0) ||
-               (bcmp(handshake, "\x80", 1) == 0)) {
+    
+    if (preamble==1) {
         // SSL
         if (!settings.cert) {
             handler_msg("SSL connection but no cert specified\n");
@@ -766,9 +821,22 @@ ws_ctx_t *do_handshake(int sock) {
         scheme = "ws";
         handler_msg("using plain (not SSL) socket\n");
     }
-    offset = 0;
-    for (i = 0; i < 10; i++) {
+
+    int offset = 0;
+    int loops = 0;  // counts the number of selects without progress
+    while (loops++ < 10)
+      {
+	doselect(ws_ctx->sockfd,&rlist,NULL,&elist,1);
+
         /* (offset + 1): reserve one byte for the trailing '\0' */
+        if (FD_ISSET(ws_ctx->sockfd, &elist)) {
+            handler_emsg("handshake exception\n");
+	    return NULL;
+        }
+
+        if (FD_ISSET(ws_ctx->sockfd, &rlist)) 
+	{
+	  if(settings.verbose) { printf("reading\n"); }  
         if (0 > (len = ws_recv(ws_ctx, handshake + offset, sizeof(handshake) - (offset + 1)))) {
             handler_emsg("Read error during handshake: %m\n");
             free_ws_ctx(ws_ctx);
@@ -778,21 +846,28 @@ ws_ctx_t *do_handshake(int sock) {
             free_ws_ctx(ws_ctx);
             return NULL;
         }
+	if(len>0)
+	  {
+        loops = 0; 
         offset += len;
         handshake[offset] = 0;
         if (strstr(handshake, "\r\n\r\n")) {
+	  complete=1;
             break;
         } else if (sizeof(handshake) <= (size_t)(offset + 1)) {
             handler_emsg("Oversized handshake\n");
             free_ws_ctx(ws_ctx);
             return NULL;
-        } else if (9 == i) {
+        }}
+	}}
+
+    if(!complete)
+      {
             handler_emsg("Incomplete handshake\n");
             free_ws_ctx(ws_ctx);
             return NULL;
-        }
-        usleep(10);
-    }
+      }
+    else if(settings.verbose) { printf("%d: handshake %d \n",offset); }
 
     //handler_msg("handshake: %s\n", handshake);
     if (!parse_handshake(ws_ctx, handshake)) {
@@ -847,7 +922,7 @@ ws_ctx_t *do_handshake(int sock) {
     ws_send(ws_ctx, response, strlen(response));
 
     return ws_ctx;
-}
+ }
 
 void signal_handler(int sig) {
     switch (sig) {

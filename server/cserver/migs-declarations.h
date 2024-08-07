@@ -14,10 +14,15 @@
 	You should have received a copy of the GNU General Public License along with Boardspace.
 	If not, see https://www.gnu.org/licenses/.
  */
+
+// websockets not supported is the legacy default
+// if on, accept websocket connections and magically treat them the same as regular sockets
+#define WEBSOCKET 1
+
 #ifndef __MIGS__
 #define __MIGS__
 #ifndef X64
-#define X64 0
+#define X64 1
 #endif
 
 #include <stdio.h>
@@ -159,7 +164,7 @@ typedef long DAYS;		//days since forever
 #define TIMEOUTS 1		// include code for session timeouts
 #define HISTORY 1		// keep a transaction history for debugging
 
-#if PROXY
+#if WEBSOCKET
 #define SERVERID 19
 #else
 #define SERVERID 18             //time filter in game records
@@ -180,7 +185,8 @@ typedef long DAYS;		//days since forever
 						// 16 adds sequence numbers to commands
 						// 17 adds the session lock commands
 						// 18 makes the old fetch game "filtered", adds new fetch game for the unfiltered version
-						// 19 (unimplemented) will add proxy service.
+						// 19 adds support for direct websocket connections
+						// 20 (unimplemented) will add proxy service.
 
 #define THREADSLEEP_US 1000000		// microseconds for status thread to sleep
 #define LOG_AGE_MINUTES (7*24*60)	//max time before creating a new log file
@@ -351,7 +357,7 @@ struct User
 	int errorsLogged;			// @field errors logged since connection
 	SOCKET socket;				// @field unix socket number
 	unsigned int ip;			// @field user ip address
-	unsigned int serverKey;	// @field user server supplied key.  See comments about "strict" logins
+	unsigned int serverKey;		// @field user server supplied key.  See comments about "strict" logins
 	registeredUser *keyIndex;	// @field our index in the registered user structure
 
 	//  each user has his own input and output buffer preallocated
@@ -370,6 +376,11 @@ struct User
 	BOOLEAN inputClosed;		// @field if no input is being accepted from this user
 	BOOLEAN isARobot;			// @field connection is a fake, registered for a robot player
 	BOOLEAN requestingLock;		// @field if we want the session lock eventually
+#if WEBSOCKET
+	BOOLEAN websocket;			// @field true if this socket is using websocket protocols
+	int  websocket_errno;		// @field error overrides other errno
+	void *websocket_data;		// @field in websocket preamble
+#endif
 	UPTIME clientTime;			// @field last active time
 	int oopsCount;				// @field count of missed supervisor commands (fraudcatcher)
 	int unexpectedCount;		// @field unexpected message count (hack catcher)
@@ -624,6 +635,26 @@ void DumpHistory();
 
 
 #include "migs-lib.h"
+
+// used by websockets
+#if WIN32
+typedef int socklen_t;
+#endif
+int ErrNo();
+BOOLEAN setNBIO(SOCKET sock);
+
+#if WEBSOCKET
+void client_websocket_init(int portNum);
+void closeWebSocket();
+extern SOCKET webserversd;
+int websocketRecv(User *u, unsigned char* buf, int siz);
+int websocketSend(User* u, unsigned char* buf, int siz);
+void freeWebsocket(User* u);
+void simpleCloseClient(User* u, char* cxt);
+extern char* websocketSslKey;
+extern char* websocketSslCert;
+BOOLEAN setBIO(SOCKET sock);
+#endif
 
 // end of file
 #endif

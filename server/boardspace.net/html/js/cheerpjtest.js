@@ -57,7 +57,7 @@ async function initNatives()
 	  return socket.connok;
 	},
 	 Java_bridge_WebSocket_connect(lib,_this,host,socket)
-	    {  let target = "ws://" + host + ":" + socket +"/gameserver";
+	    {  let target = "wss://" + host + ":" + socket +"/gameserver";
 	       console.log("make socket "+target );
                let sock = new WebSocket(target);
                let n = nsockets++;

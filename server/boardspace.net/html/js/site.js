@@ -135,7 +135,7 @@ function validateForm(form1)
   {  alert("\nThe password is blank");
       return false;
   }
-  if(!(form1.password.value == form1.password2.value))
+  if(!(form1.password.value == form1.password2.value) && !isFieldBlank(form1.password2,"password2"))
   { alert("\nPassword and Password2 don't match");
   return false;
   }

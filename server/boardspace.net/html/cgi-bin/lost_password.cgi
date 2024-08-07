@@ -65,6 +65,7 @@ sub show_registrations()
     my $sel = (lc($name) eq lc($player_name)) ? "checked" : "";
 		print "<TR>";
      print "<td><input type=radio name=uid value=$uid $sel></td>";
+     print "<input type=hidden name=pname$uid value=$player_name>";
      print "<TD><P ALIGN=left><A HREF=\"javascript:editlink('$player_name',0)\">$player_name</A></TD>";
      # don't give the full email here
      my $idx = index($email,'@');
@@ -99,7 +100,8 @@ sub doacquire()
 
   if($uid) 
     { #actually sending a password
-	&note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: send password change $name");
+	my $pn = &param("pname$uid");
+	&note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: send password change name=$pn uid=$uid");
 	&send_password($dbh,$uid);
     $name="";
     }
@@ -114,7 +116,7 @@ sub doacquire()
   print "<br><input name=email value='$email' SIZE=50 MAXLENGTH=50 chars>";
   print "<br>\n";
   if( ($name && (length($name)>=3)) || ($email && (length($email)>=5)) )
-    { &note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: password change $name");
+    { &note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: password change $name $email");
       my $ns = &show_registrations($dbh,$nitems,$name,$email); 
       if($ns>0)
         {print &trans("selectone");
@@ -180,7 +182,7 @@ sub doreset()
 			if($bless)
 			{	
 				#actually changing a password, record a ding to keep it from happening a lot
-				&note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: use recovery token for $name uid=$uid");
+				&note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: use recovery token for name=$name uid=$uid");
  
 				my $qpassword = $dbh->quote($password);
 				# ready to roll
