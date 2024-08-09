@@ -4000,10 +4000,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
     		field.addChip(ViticultureChip.Bead);
     		int harvest[] = pb.harvest(vine,replay);
+    		if(harvest[0]>0 || harvest[1]>0)
+    		{
     		logGameEvent(G.concat("+ ",
     								harvest[0]>0 ? "RedGrape " : "",
     								harvest[1]>0 ? "WhiteGrape" : ""));
     		n++;
+    		}
     		}
     	}
     	fields.clear();

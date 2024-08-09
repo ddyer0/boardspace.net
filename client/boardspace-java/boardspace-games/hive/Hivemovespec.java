@@ -284,9 +284,10 @@ public class Hivemovespec extends commonMove implements HiveConstants
     public void setAttachment(HiveCell c,HivePiece pickedObject,HiveCell ignoreCell)
     {	HivePiece bug = c.topChip();
     	if(bug!=null) 
-    		{ attachment = exactBugName(bug);
+    		{ attachment = exactBugName(bug)+".";
     		  attachObject = bug; 
     		  attachDirection = -1; 
+    		  return;
     		}
     	else if(pickedObject!=null)
     	{
@@ -314,11 +315,12 @@ public class Hivemovespec extends commonMove implements HiveConstants
     		}
     		}
     	  if(bestScore>=0) { return; }
+    	  attachment = ".";
+    	  attachObject = c.topChip();
+    	  attachDirection = -1;
     	}
     	
-    	attachment = ".";
-    	attachObject = c.topChip();
-    	attachDirection = -1;
+ 
     } 
     
     private String attachmentText()
@@ -385,9 +387,33 @@ public class Hivemovespec extends commonMove implements HiveConstants
     		}
     	}
      }
+    public String reverseAttachment()
+    {
+    	StringBuilder b = new StringBuilder();
+    	char pre = (char)0;
+    	char post = (char)0;
+    	boolean main = false;
+    	for(int lim = attachment.length(),i=0; i<lim; i++)
+    	{
+    		char ch = attachment.charAt(i);
+    		switch(ch)	
+    		{
+    		case '/':
+    		case '\\':
+    		case '-':
+    			if(main) { pre = ch; } else { post = ch; }
+    			break;
+    		default: 
+    			main = true;
+    			b.append(ch);
+    			break;
+    		}
+    	}
+    	return pre + b.toString()+post;
+    }
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public String shortMoveString(boolean reverse)
     {
         switch (op)
         {
@@ -402,11 +428,11 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_PMOVE:
         	{
         	HivePiece bug = object;
-        	return(bug.exactBugName()+" "+attachment);
+        	return(bug.exactBugName()+" "+(reverse ? reverseAttachment() : attachment));
         	}
 		case MOVE_DROPB:
 		case MOVE_PDROPB:
-            return (" "+attachment);
+            return (" "+(reverse ? reverseAttachment() : attachment));
 
         case MOVE_DROP:
             return (D.findUnique(op) + " "+source.name()+ object.getName());
@@ -438,7 +464,11 @@ public class Hivemovespec extends commonMove implements HiveConstants
     }
     double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
     public Text shortMoveText(HiveGameViewer v)
-    {	if(v.useTextNotation) { return(TextChunk.create(shortMoveString())); }
+    {	if(v.useTextNotation)
+    		{ String msg = shortMoveString(v.reverse_y());
+    		
+    		  return TextChunk.create(msg);
+    		}
         switch (op)
         {
         case MOVE_PLAYBLACK:

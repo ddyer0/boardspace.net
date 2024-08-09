@@ -1,5 +1,4 @@
 
-
 function isTouchEnabled() {
 	    return ( 'ontouchstart' in window ) || 
 		( navigator.maxTouchPoints > 0 ) || 
@@ -18,6 +17,21 @@ function touchTest()
 let sockets = [];
 let nsockets = 0;  
 let clips = [];
+let cheerpjparent = document.body;
+
+function redirectifHttps()
+{
+if(window.location.protocol == "https:")
+{ var newloc = "http://" + window.location.hostname + window.location.pathname;
+  window.location = newloc;
+}
+}
+
+function createDisplay(width,height,parent)
+{
+   cheerpjparent = parent;
+   cheerpjCreateDisplay(width,height,parent);
+}
 
 async function initNatives()
 {   
@@ -37,10 +51,10 @@ async function initNatives()
  	 clip.play();
 	},
 	Java_bridge_Cheerpj_getWidth(lib,_this) { 
-	     return document.body.clientWidth; 
+	     return cheerpjparent.clientWidth; 
          }
 	,Java_bridge_Cheerpj_getHeight(lib,_this) {
-	     return document.body.clientHeight; 
+	     return cheerpjparent.clientHeight; 
 	 },
          async Java_bridge_WebSocket_read(lib,_this,sock) {
               let socket = sockets[sock];

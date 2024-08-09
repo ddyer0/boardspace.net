@@ -307,9 +307,11 @@ public interface ViticultureConstants
 	static String ScoringFor = "Scoring for #1";
 	static String PointsFrom = "#1{ points, point} from #2";
 	static String ScoreSummaryMessage = "Summary of Scoring";
+	static String DiscardGrapeMessage = "discarded #1";
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
 		PointsFrom,
+		DiscardGrapeMessage,
 		ScoreSummaryMessage,
 		ScoringFor,
 		NoCardMessage,

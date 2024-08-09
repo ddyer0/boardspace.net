@@ -700,7 +700,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_BUILD:
         	{
         	String color = currentWorker!=null ? currentWorker.color.name()+"-" : "";
-        	return("build "+color+dest.shortName);
+        	return(" "+color+dest.shortName);
         	}        	
 
         case MOVE_RETRIEVE:

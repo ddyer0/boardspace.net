@@ -7,7 +7,20 @@ import java.net.InetAddress;
 
 import lib.G;
 import lib.SocketProxy;
-
+/**
+ * this is the class that the "cheerpj" branch used to connect using websocket.
+ * in order for this to work, a bunch of separate tweaks have to be in place.
+ * look for calls to of "G.isCheerpj()" for details.
+ * 
+ *  Briefly,
+ *   cgi-bin/include.pl must include a socket assignment $cheerpj_game_server_port = 12345;
+ *   login.cgi must look for the "cheerpj" parameter, and use the socket instead of the game server socket.
+ *   the caller of login.cgi has to supply cheerpj=true
+ *   the C server has to open the appropriate web server port, determined by its .conf file
+ *   http/js/ has to include the socket and general cheerpj javascript files
+ *   http/login.html has to call for all this to happen.
+ *   all of the above conspire for WebSocket to be used instead of regular sockets.
+ */
 public class WebSocket implements SocketProxy
 {
   int socket = -1;

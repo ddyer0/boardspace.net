@@ -984,7 +984,7 @@ public class PlayerBoard
 		return(true);
 	}
 	
-	private void addWineOrGrapeChip(ViticultureCell grapes[],ViticultureChip chip,int index,replayMode replay)
+	private boolean addWineOrGrapeChip(ViticultureCell grapes[],ViticultureChip chip,int index,replayMode replay)
 	{
 		int ind = Math.min(grapes.length-1,index-1);
 		while(ind>=0 && (grapes[ind].topChip()!=null)) { ind--; }
@@ -995,7 +995,9 @@ public class PlayerBoard
 				  bb.animationStack.push(bb.getCell(dest.rackLocation(),'@',0));
 				  bb.animationStack.push(dest);
 			  }
-			};
+			  return true;
+			}
+		return false;
 	}
 	public int[] harvest(ViticultureCell vine,replayMode replay)
 	{
@@ -1006,8 +1008,16 @@ public class PlayerBoard
 			sumOfWhites += card.whiteVineValue();
 			sumOfReds += card.redVineValue();
 		}
-		addWineOrGrapeChip(redGrape,ViticultureChip.RedGrape,sumOfReds,replay);
-		addWineOrGrapeChip(whiteGrape,ViticultureChip.WhiteGrape,sumOfWhites,replay);	
+		if(sumOfReds>0 && !addWineOrGrapeChip(redGrape,ViticultureChip.RedGrape,sumOfReds,replay))
+		{
+			sumOfReds = 0;
+			bb.logGameEvent(DiscardGrapeMessage,"RedGrapeDiscard");
+		}
+		if(sumOfWhites>0 && !addWineOrGrapeChip(whiteGrape,ViticultureChip.WhiteGrape,sumOfWhites,replay))
+		{
+			sumOfWhites = 0;
+			bb.logGameEvent(DiscardGrapeMessage,"WhiteGrapeDiscard");
+		}
 		return new int[] {sumOfReds,sumOfWhites};
 	}
 	// count fields not sold but empty

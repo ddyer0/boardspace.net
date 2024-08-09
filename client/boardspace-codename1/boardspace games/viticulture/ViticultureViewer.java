@@ -1515,7 +1515,7 @@ private void drawPlayerBoard(Graphics gc,
     		{
     			ViticultureCell c = rowCell[col];
         		boolean canSelect = gb.legalToHit(c,targets);
-        		// special tweak for seleting new rooster positions, 
+        		// special tweak for selecting new rooster positions, 
         		// slide the old off the the right a little so the 
         		// bonuses can be seen.
         		double fry = ((double)col+(select && (col==3) && (row<6) ? 0.5: 0))/ncols;
@@ -4030,6 +4030,7 @@ private void drawPlayerBoard(Graphics gc,
 		case PlaySecondBlue:
 		case PlaySecondYellow:
 		if((gb.getState()!=ViticultureState.Confirm)
+			&& uimode==UI.ShowCards
 			&& GC.handleRoundButton(gc,new Rectangle(xp+totalW-totalW/3,h-h/10,totalW/3-totalW/15,h/15),
        					highlight,NoCardMessage,HighlightColor,rackBackGroundColor))
        	{
@@ -5424,6 +5425,7 @@ private void drawPlayerBoard(Graphics gc,
  }
  void playSounds(Viticulturemovespec mm)
  {
+	 boolean flush = false;
 	 switch(mm.op)
 	 {
 	 case MOVE_SELECT:
@@ -5444,13 +5446,27 @@ private void drawPlayerBoard(Graphics gc,
 	 		{
 	 		if((e.indexOf("Penthouse")<0)
 	 			&& (e.indexOf(" $1")<0))// patio logs +money for making wine
-	 			
 	 		{
-	 		playASoundClip(drainSound,500);
-	 		}}}
+	 			flush = true;
+	 		}
+	 		}}
 	 	}
 	 	break;
+	 case MOVE_DONE:
+		 if(mm.gameEvents!=null)
+		 {
+			 for(String e : mm.gameEvents)
+			 {	
+				 flush |= e.indexOf("GrapeDiscard")>=0;
+			 }
+	 	}
+
+	 	break;
 	 default: break;
+	 }
+	 if(flush)
+	 {
+		 playASoundClip(drainSound,500);
 	 }
 	 if(mainBoard.reshuffled())
 	 {	G.print("Play "+CARD_SHUFFLE);
@@ -6462,7 +6478,7 @@ private void drawPlayerBoard(Graphics gc,
     	double[] cscale = {1.5,2,0,-0.2};
     	double[] vscale = {1.5,1.4,0,-0.4}; 
     	double[] xscale = {1.5,1.7,0.0,-0.4}; 
-    	double[] gscale = {1.0,0.8,0,-0.4}; 
+    	double[] gscale = {1.5,1.0,0,-0.4}; 
     	TextStack texts = new TextStack();
     	icons(texts,ViticultureChip.Roosters,cscale);
     	icons(texts,ViticultureChip.CardBacks,escale);
@@ -6475,6 +6491,8 @@ private void drawPlayerBoard(Graphics gc,
     	texts.push(TextGlyph.create("$1","xx",ViticultureChip.Coin_1,this,xscale));
     	texts.push(TextGlyph.create("RedGrape","xxx",ViticultureChip.RedGrape,this,gscale));   	
     	texts.push(TextGlyph.create("WhiteGrape","xxx",ViticultureChip.WhiteGrape,this,gscale));   	
+    	texts.push(TextGlyph.create("RedGrapeDiscard","xxx",ViticultureChip.RedGrape,this,gscale));   	
+    	texts.push(TextGlyph.create("WhiteGrapeDiscard","xxx",ViticultureChip.WhiteGrape,this,gscale));   	
     	texts.push(TextGlyph.create("1VP","xx",ViticultureChip.VictoryPoint_1,this,vscale));
     	texts.push(TextGlyph.create("2VP","xx",ViticultureChip.VictoryPoint_2,this,vscale));
     	texts.push(TextGlyph.create("3VP","xx",ViticultureChip.VictoryPoint_3,this,vscale));
