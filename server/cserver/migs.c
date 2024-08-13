@@ -3723,6 +3723,10 @@ static User *findAslot(Session *s)
 
 	return(NULL);
 }
+/*
+return the number of existing connections in the session that match the ip
+or -1 if the limit is exceeded.
+*/
 static int checkSession(unsigned int ip, Session* S, int max)
 {
 
@@ -5275,7 +5279,7 @@ void process_send_intro(char *data,User *u,char *seq)
 			  unsigned int nowtime = (unsigned int)(realtime & 0xffffffff);	// overflow on jan 19 2035
 			  BOOLEAN passwordSupplied = strcmp(password,"<none>")!=0;
 
-			  if (sessionNum>0 && checkSession(client_real_ip, s, maxConnectionsPerSession))	// too many!
+			  if (sessionNum>0 && checkSession(client_real_ip, s, maxConnectionsPerSession)<0)	// too many!
 			  {
 				  unusual_events++;
 				  lsprintf(u->tempBufSize, u->tempBufPtr, ECHO_I_QUIT "bad-banner-id ");
