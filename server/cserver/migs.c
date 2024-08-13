@@ -95,7 +95,7 @@ static int strict_score=1;				//enforce strict scoring
 static int portNum;						//the sock number the server listens on
 static int maxSessions=0;				//the nunber of sessions (0-n) we will run.  Must be less than MAXSESSIONS
 static int maxClients=0;				//the number of clients we will run, must be bess than MAXCLIENTS
-static int maxConnections=MAXCONNECTIONS;	//max connections per client ip address
+static int maxConnections=MAXCONNECTIONS;	//max connections in the "waiting" session per client ip address
 static int maxConnectionsPerSession=MAXCONNECTIONSPERSESSION;
 static int maxConnectionsPerUID=MAXCONNECTIONSPERUID;
 static char *statusfile=NULL;			//file name for status (html)
@@ -255,6 +255,10 @@ Bugs fixed & features added:
 8/2013		Added in-stream encryption and some covert signaling to combat data injection attacks.
 2/2014		made GameBuffer dynamically allocated and reference counted, which
 			fixed a longstanding problem with bookkeeping and deleting finished games.
+8/2024		added direct support for websocket connections on a separate listening port
+			repurposed maxconnections to apply only to the waiting session, and fixed a bug
+			where waiting session was accidentally excluded from the check.
+			reduced the timeout time for the waiting session
 Message protocols
 
 General:
@@ -1051,6 +1055,7 @@ static void ClearUser(User *u)
 		u->gagged=FALSE;
 		u->expectEof=FALSE;
 		u->inputClosed = FALSE;
+		u->outputClosed = FALSE;
 		u->requestingLock = FALSE;
 #if WEBSOCKET
 		freeWebsocket(u);
@@ -1117,6 +1122,7 @@ static void CopyUser(User *from,User *to)
 		 to->isAPlayer=from->isAPlayer;
 		 to->expectEof=FALSE;
 		 to->inputClosed = FALSE;
+		 to->outputClosed = FALSE;
 
 		 FREE(to->outbufPtr,to->outbufSize);
 		 CHECK(from->outbufPtr,from->outbufSize);
@@ -3545,6 +3551,11 @@ int startOutput(User *u)
 	  }}
 	  else { err=len; }
 	}
+
+	if (u->outputClosed && (u->outbuf_put_index == u->outbuf_take_index))
+	{
+		closeClient(u,"internal close request",grace_forbidden);
+	}
 	return(err);
 }
 
@@ -3712,90 +3723,73 @@ static User *findAslot(Session *s)
 
 	return(NULL);
 }
+static int checkSession(unsigned int ip, Session* S, int max)
+{
+
+
+	User* U = S->first_user;
+	int pop = S->population;
+	int nfound = 0;
+	int nhits = 0;
+	while (U)
+	{
+		User* next = U->next_in_session;
+		assert(U->session == S);
+		if (U->ip == ip)
+		{
+			nhits++;
+			if (nhits > max)
+			{	// not session 0, but all others
+				char* stamp = timestamp();
+				int b4 = (ip >> 0) & 0xff;
+				int b3 = (ip >> 8) & 0xff;
+				int b2 = (ip >> 16) & 0xff;
+				int b1 = (ip >> 24) & 0xff;
+				unusual_events++;
+				if (logging >= log_errors)
+				{
+					logEntry(&mainLog, "[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections in Session %d from ip)\n",
+						stamp, b1, b2, b3, b4, S->sessionNUM);
+
+				}
+				logEntry(&securityLog, "[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections in Session %d from ip)\n",
+					stamp, b1, b2, b3, b4, S->sessionNUM);
+
+				return(-1);
+			}
+
+
+
+		}
+		U = next;
+		nfound++;
+		assert(nfound <= pop);
+	}
+	assert(nfound == pop);
+	return nfound;
+}
 
 static BOOLEAN checkIP(unsigned int ip)
 {
-	int absnhits=0;
-	int i;
 
-	if(isBanned("",0,0,"",ip)!=bc_none)
+	if (isBanned("", 0, 0, "", ip) != bc_none)
 	{	// banned by IP, do a quick rejection
-			if(logging>=log_errors)
-				{
-				char *stamp = timestamp();
-				int b4 = (ip>>0)&0xff;
-				int b3 = (ip>>8)&0xff;
-				int b2 = (ip>>16)&0xff;
-				int b1 = (ip>>24)&0xff;
-				logEntry(&mainLog,"[%s] UNUSUAL: ip %d.%d.%d.%d rejected - connection from banned IP\n",
-							stamp,b1,b2,b3,b4);
-					}
+		if (logging >= log_errors)
+		{
+			char* stamp = timestamp();
+			int b4 = (ip >> 0) & 0xff;
+			int b3 = (ip >> 8) & 0xff;
+			int b2 = (ip >> 16) & 0xff;
+			int b1 = (ip >> 24) & 0xff;
+			logEntry(&mainLog, "[%s] UNUSUAL: ip %d.%d.%d.%d rejected - connection from banned IP\n",
+				stamp, b1, b2, b3, b4);
+		}
 		return(FALSE);
 	}
-	for(i=0;i<=maxSessions;i++)	// all sessions, including waiting session
-	{	Session *S=&Sessions[i];
-		User *U=S->first_user;
-		int pop = S->population;
-		int nfound=0;
-		int nhits = 0;
-		while(U)
-		{
-		User *next = U->next_in_session;
-		assert(U->session==S);
-		if(U->ip == ip) 
-		{ nhits++; 
-		  absnhits++;
-		  if((i>0) && (nhits>maxConnectionsPerSession))
-			{	// not session 0, but all others
-				char *stamp = timestamp();
-				int b4 = (ip>>0)&0xff;
-				int b3 = (ip>>8)&0xff;
-				int b2 = (ip>>16)&0xff;
-				int b1 = (ip>>24)&0xff;
-				unusual_events++;
-				if(logging>=log_errors)
-					{
-					logEntry(&mainLog,"[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections in Session %d from ip)\n",
-							stamp,b1,b2,b3,b4,S->sessionNUM);
-
-					}
-					logEntry(&securityLog,"[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections in Session %d from ip)\n",
-							stamp,b1,b2,b3,b4,S->sessionNUM);
-
-				return(FALSE); 
-			}
-
-			if(absnhits>=maxConnections)
-			{	char *stamp = timestamp();
-				int b4 = (ip>>0)&0xff;
-				int b3 = (ip>>8)&0xff;
-				int b2 = (ip>>16)&0xff;
-				int b1 = (ip>>24)&0xff;unusual_events++;
-
-			unusual_events++;
-			if(logging>=log_errors)
-					{
-					
-					logEntry(&mainLog,"[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections overall from ip)\n",
-							stamp,b1,b2,b3,b4);
-
-					}
-					logEntry(&securityLog,"[%s] UNUSUAL: ip %d.%d.%d.%d rejected (too many connections overall from ip)\n",
-							stamp,b1,b2,b3,b4);
-
-				return(FALSE); 
-			}
-			
-		}
-		 U=next;
-		 nfound++;
-		 assert(nfound<=pop);
-		}
-		assert(nfound==pop);
-	}
-
-	return(TRUE);	//it's ok
+	int n = checkSession(ip, WAITINGSESSION, maxConnections);
+	return n >= 0;
 }
+
 
 void doEchoAll(User *ru, char *toOthers, int ignoreF) 
 { Session *S = ru->session;
@@ -3908,11 +3902,15 @@ void doEchoSelf(User *ru, char *toSource, int ignoreF)
     }
   }
 }
-
+void markForClosure(User* u)
+{
+	u->inputClosed = TRUE;
+	u->outputClosed = TRUE;
+}
 int sendSingleLen(char *inStr, User *u)
 {
    int err=0;
-   if(isRealSocket(u->socket))
+   if(isRealSocket(u->socket) && !u->outputClosed)
    {
    if ((err=lsend(u, inStr)) < 0) 
    {if(!u->expectEof)
@@ -5257,6 +5255,7 @@ void process_send_intro(char *data,User *u,char *seq)
 					username,usernum,
 					b1,b2,b3,b4,
 					data);
+			markForClosure(u);
 		 }
 
 		 if ((idx1>0)			// we got a session number 
@@ -5275,6 +5274,19 @@ void process_send_intro(char *data,User *u,char *seq)
 			  int lowtime = (int)(realtime % 1000000);		// time_t mught be a long long, and will overflow on 19 January 2038
 			  unsigned int nowtime = (unsigned int)(realtime & 0xffffffff);	// overflow on jan 19 2035
 			  BOOLEAN passwordSupplied = strcmp(password,"<none>")!=0;
+
+			  if (sessionNum>0 && checkSession(client_real_ip, s, maxConnectionsPerSession))	// too many!
+			  {
+				  unusual_events++;
+				  lsprintf(u->tempBufSize, u->tempBufPtr, ECHO_I_QUIT "bad-banner-id ");
+				  sendSingle(u->tempBufPtr, u);
+				  logEntry(&securityLog, "[%s] UNUSUAL:< too many connections from %s(%d) ip %d.%d.%d.%d: %s\n",
+					  timestamp(),
+					  username, usernum,
+					  b1, b2, b3, b4,
+					  data);
+				  markForClosure(u);
+			  }
 			  // [3/2013]
 			  // don't allow connections as a player to sessions that are
 			  // not playing sessions.  This happened, rarely, when one of
@@ -6865,12 +6877,13 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 	socklen_t fl=sizeof(iclient);
 	SOCKET newsocket = accept(insoc,(struct sockaddr *)&iclient,&fl);
 	 unsigned int ip = htonl(iclient.sin_addr.s_addr);
+
 	 User *u=NULL;
 	 if(newsocket==INVALID_SOCKET ) 
 	 {
 	   if(logging>=log_errors)
-			{ logEntry(&mainLog,"[%s] Connection attempted, accept failed, code %d errno %d.\n",
-				  timestamp(),newsocket,ErrNo());
+			{ logEntry(&mainLog,"[%s] Connection attempted, %saccept failed, code %d errno %d.\n",
+				  timestamp(),websock?"websocket ":"",newsocket, ErrNo());
 			}
 	 }else
 	 { sockets_open++;
@@ -6900,9 +6913,9 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 			 int b3 = (ip>>8)&0xff;
 			 int b2 = (ip>>16)&0xff;
 			 int b1 = (ip>>24)&0xff;
-			  logEntry(&mainLog,"[%s] Call C%d S%d from %d.%d.%d.%d queued to join a session.\n",
+			  logEntry(&mainLog,"[%s] Call C%d S%d from %d.%d.%d.%d queued to join a %ssession.\n",
 			  timestamp(),u->userNUM,u->socket,
-			  b1,b2,b3,b4);
+			  b1,b2,b3,b4,websock?"websocket ":"");
 			}
 
 	 }else
@@ -6914,8 +6927,8 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 		 int b3 = (ip>>8)&0xff;
 		 int b2 = (ip>>16)&0xff;
 	     int b1 = (ip>>24)&0xff;
-		 logEntry(&mainLog,"[%s] Call from %d.%d.%d.%d refused (no room or iofail)\n",
-			  timestamp(),b1,b2,b3,b4);
+		 logEntry(&mainLog,"[%s] Call from %d.%d.%d.%d refused %s(no room or iofail)\n",
+			  timestamp(),b1,b2,b3,b4,websock?"websocket ":"");
 		}
 	  MyStrncpy(tempString," " ECHO_I_QUIT "refused\r\n",sizeof(tempString));	// include the leading space
 	  send(newsocket,tempString,(int)strlen(tempString),0);
@@ -7259,9 +7272,10 @@ void main_thread()
 		else if (FD_ISSET(sock,&rfds) != 0) 
 			{	//read data from a socket
 				int newline=0;
-				u->clientTime=tempTime;
 				if((newline=fillBuffer(u))!=0)
-				{char *inbuf = u->inbufPtr+u->inbuf_take_index;
+				{
+				u->clientTime = tempTime;		// only reset the timer if we finish a buffer
+				char *inbuf = u->inbufPtr+u->inbuf_take_index;
 				 u->inbuf_take_index = newline;
 				 if(!u->inputClosed)
 				 {
@@ -7514,7 +7528,7 @@ int main(int argc, char **argv)
   require_rng = atoi(GetParm("obfuscation"));
   require_seq = atoi(GetParm("sequencenumbers"));
 
-  {	logEntry(&mainLog,"Max of %d users and %d sessions and %d connections per IP\n%d connections per session per IP\n%d connections per UID per IP\n",
+  {	logEntry(&mainLog,"Max of %d users and %d sessions and %d pending connections per IP\n%d connections per session per IP\n%d connections per UID per IP\n",
 			maxClients,
 			maxSessions,
 			maxConnections,

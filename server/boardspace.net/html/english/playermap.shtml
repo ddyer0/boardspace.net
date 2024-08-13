@@ -49,13 +49,14 @@ satisfactory if the amount of data involved is fairly small.</font><br>
 <br>
 </li>
 </ul>
-<script src="https://cjrtnc.leaningtech.com/3.0rc2/cj3loader.js"></script>
+<script src="https://cjrtnc.leaningtech.com/3_20240802_520/cj3loader.js"></script>
 <script src="/js/cheerpj.js"></script>
 <center>
 <table id="theframe" height="300" width="500">
 </table>
 </center>
 <script>
+      alertUnsupportedOS();
 async function myInit() {
 await initNatives();
 cheerpjCreateDisplay(500,300,document.getElementById("theframe")); 

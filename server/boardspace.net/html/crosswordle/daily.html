@@ -1,23 +1,25 @@
 <html>
-<head> <script src="/js/site.js"> </script></head>
-<body background="/images/background-image.jpg">
-<title>Review Crosswordle games offline.  The games are archived at /crosswordle/crosswordlegames/</title>
-  <script src="https://cjrtnc.leaningtech.com/3.0rc2/cj3loader.js">
-</script>
+<title>Daily Crosswordl</title><meta charset="utf-8">
+
+<head>
+<script src="https://cjrtnc.leaningtech.com/3_20240802_520/cj3loader.js"></script>
 <script src="/js/site.js"> </script>
 <script src="/js/cheerpj.js"></script>
 </head>
-<body background="/images/background-image.jpg">
-<meta charset="utf-8">
+
+<body background="/images/background-image.jpg"><br>
+
+
  <script>
       touchTest();
+      alertUnsupportedOS();
       async function myInit() {
       await initNatives();
-      cheerpjCreateDisplay(-1,-1,document.body);
+      createDisplay(-1,-1,document.body);
+      var server = window.location.host;
       cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
-                        "servername","boardspace.net",
+                        "servername",server,
                         "frameheight","2600","framewidth","2600",
-                        "rootname","Offline Daily Crosswordle",
                         "gamename","crosswordle",
                         "offline","true"
                         );
@@ -25,10 +27,4 @@
       myInit();
   </script>
 
-</body>
-
-</html>
-
-
-</body>
-</html>
+</body></html>

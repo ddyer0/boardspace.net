@@ -1505,13 +1505,18 @@ public class GameLayoutManager implements UniversalConstants
 	 * The "old" version of this logic used exact width and height if zoomed
 	 * windows, and the exact values of sizing parameters.  This proved to be
 	 * hard to stabilize because the base size parameters were derived from
-	 * font sizes, and that changed as the window zoomed up.
+	 * font sizes, and that changed as the window zoomed up.  The interim
+	 * heuristic is to force the layout manager to use the same layout when
+	 * zoomed as was already used when not zoomed.  This gives the windows
+	 * the same basic appearance, but some of the boxes might still wander.
 	 * 
-	 * The "new" version uses zoom>1.0, corresponding to the global zoom factor,
+	 * The "future" version uses zoom>1.0, corresponding to the global zoom factor,
 	 * and allocates based on width/zoom and height/zoom, which ought to be the
 	 * actual (unzoomed) size of the window.   Sized parameters, minsize maxsize 
 	 * ought to be based on the the global default font size, or some other
-	 * metric which is not affected by the zoom.
+	 * metric which is not affected by the zoom.  In this model the client thinks
+	 * it is allocating in "zoomed" coordinates, but rectangle manager is actually
+	 * working with unzoomed values, all the logic is in the rectangle manager.
 	 * 
 	 * @param client				 the client window
 	 * @param nPlayers				 number of players
@@ -1536,14 +1541,15 @@ public class GameLayoutManager implements UniversalConstants
 		// on the client size.  The math for this doesn't quite work out yet. so we nuke
 		// the option for now.
 		zoom = 1.0;
+		rects.zoom = zoom;
 		boolean portraitMode = fullwidth*1.5<fullheight;
 		boolean landscapeMode = fullwidth>fullheight*1.5;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);
 		int extramargin = G.isRealLastGameBoard()||G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
 		int height = (int)(fullheight/zoom)-extramargin;
-		rects.zoom = zoom;
-		if((nPlayers!=selectedNPlayers) || ((zoom==1.0) ? !client.isZoomed() : true))
+		boolean recalc = (nPlayers!=selectedNPlayers) || ((zoom==1.0) ? !client.isZoomed() : true);
+		if(recalc)
 		{
 		double bestPercent = 0;
 		double bestScore = 0;
@@ -1623,9 +1629,12 @@ public class GameLayoutManager implements UniversalConstants
 		selectedPercent = bestPercent;
 		}
 		//G.print("Resize ");
-	    double finalSize = sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
+		// if we're not recalculating the layout, allow the minumum cell size to 
+		// slip to compensate for breakage due to differing margins and font size.
+		//
+	    double finalSize = sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,recalc ? minSize : minSize/2,width,height,margin);
 
-	    if(selectedCellSize<=0)
+	    if(selectedCellSize<=0 || finalSize<=0)
 	    {
 	    	// in the rare case that the best layout still didn't produce a valid cell size,
 	    	// try once more with no minimum

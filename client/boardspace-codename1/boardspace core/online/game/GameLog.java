@@ -189,9 +189,7 @@ public class GameLog implements Opcodes
     		Font playerFont,Font lineFont,SequenceStack history)
     {	if(G.Height(r)>0)
     {	
-      	boolean scrolled = scrollbar.mouseIsActive();
-      	HitPoint mainHighlight = scrolled&!scrollbar.activelyScrolling() ? highlight : null;
-        if (((gc != null)||G.pointInRect(mainHighlight,r)) && canvas.rectangleIsVisible(r))
+        if (((gc != null)||G.pointInRect(highlight,r)) && canvas.rectangleIsVisible(r))
         {	//G.Assert(Thread.currentThread()==runThread,"running in the wrong thread");
 
         	redrawGameLog_internal(gc,canvas.disableForSpectators(highlight),r,textColor,highlightColor,playerFont,lineFont,history);

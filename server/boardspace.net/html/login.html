@@ -2,7 +2,7 @@
 <title>Experimental Browser Interface</title>
 <!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
 <head> 
-<script src="https://cjrtnc.leaningtech.com/3.0rc2/cj3loader.js"></script>
+<script src="https://cjrtnc.leaningtech.com/3_20240802_520/cj3loader.js"></script>
 <script src="/js/site.js"> </script>
 <script src="/js/cheerpj.js"></script>
 </head>
@@ -16,6 +16,7 @@
         await initNatives();
         createDisplay(-1,-1,document.body); 
 	touchTest();
+	alertUnsupportedOS();
 	var server = window.location.host;
         cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
 			"servername",server,

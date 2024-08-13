@@ -19,6 +19,8 @@ import lib.SocketProxy;
  *   the C server has to open the appropriate web server port, determined by its .conf file
  *   http/js/ has to include the socket and general cheerpj javascript files
  *   http/login.html has to call for all this to happen.
+ *   in the current strategy which doesn't support wss, the parent page has to be http not https
+ *     this can be enforced by .htaccess or by in-page redirect
  *   all of the above conspire for WebSocket to be used instead of regular sockets.
  */
 public class WebSocket implements SocketProxy

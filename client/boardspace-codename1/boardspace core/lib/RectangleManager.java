@@ -43,6 +43,9 @@ public class RectangleManager
 	static int MinCoord = 0;
 	static int MaxCoord = 999999;
 	public int failedPlacements = 0;
+	// the use of "zoom" is not supported as coding is incomplete.
+	// the idea is to do the layout exactly the same, then expand the boxes to match the zoom factor
+	// but there's a log of tricky zoom/unzoom to work out.
 	public double zoom = 1.0;
 	public RectangleManager(double zoomto) { zoom = zoomto; }
 	

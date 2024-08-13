@@ -97,7 +97,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 161;			// 100 represents the initial version of the game
+{	static int REVISION = 162;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -179,6 +179,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 159 fixes a problem where max points gained were incorrectly limited
 										// revision 160 introduces turn based games, which affects initialization
 										// revision 161 moves drawing residual cards to beginning of wakeup instead of end of residuals
+										// revision 162 fixes mafioso+fermentation tank interaction
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -2923,7 +2924,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     				if((action==ViticultureId.PlayerYokeWorker)
     					|| (action==ViticultureId.HarvestWorker))
     				{	// upgrade the mafioso harvest to 2
+    					if(revision<162 || !pb.hasFermentationTank())
+    						{
     					return(ViticultureState.Harvest2Optional);
+    				}
+    					else
+    					{	// making wine after harvesting, do as two separate operations
+    						addContinuation(Continuation.MafiosoTwice);
+    					}
     				}
     				else if((revision>=147) && (action==ViticultureId.PlantWorker))
     				{	// upgrade mafioso to plant 2 vines

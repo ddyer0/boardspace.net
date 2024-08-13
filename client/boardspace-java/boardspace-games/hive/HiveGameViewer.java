@@ -642,8 +642,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              }
          }
          numberMenu.drawSequenceNumbers(gc,cellSize,pieceLabelFont,labelColor);
-         
-
         
        	doBoardDrag(tbRect,anySelect,csize,HiveId.InvisibleDragBoard);
 

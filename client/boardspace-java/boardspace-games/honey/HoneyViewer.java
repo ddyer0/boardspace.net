@@ -413,8 +413,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     * presenting the motion of your opponent's pieces, and also during replay
     * when a piece is picked up and not yet placed.  While "obj" is nominally
     * a game piece, it is really whatever is associated with b.movingObject()
-    
-      */
+    */
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     { 
     	// draw an object being dragged
@@ -771,8 +770,8 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        }
        else {
     	   GC.Text(gc,true,statsRect,null,null,s.get("Words for #1",prettyName(pboard.boardIndex)));
-           drawGameLog(gc,gameLog3,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
-           drawGameLog(gc, gameLog4,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
+          // drawGameLog(gc,gameLog3,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
+          // drawGameLog(gc, gameLog4,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
            drawGameLog(gc,gameLog5,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
       }
        GC.setFont(gc,standardBoldFont());

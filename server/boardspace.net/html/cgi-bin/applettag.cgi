@@ -271,9 +271,11 @@ print <<ENDBODY
 <body background="/images/background-image.jpg">
 <meta charset="utf-8">
  <script>
+      touchTest();
+      alertUnsupportedOS();
       async function myInit() {
       await initNatives();
-      cheerpjCreateDisplay(-1,-1,document.body);
+      createDisplay(-1,-1,document.body);
       cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
                         "servername","$host",
                         "rootviewer","true",

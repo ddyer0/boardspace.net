@@ -411,7 +411,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
       	if(canHit && highlight!=null)
       		{
       		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode = SprintId.DrawPile;
+      		highlight.hitCode=SprintId.DrawPile;
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}
@@ -879,7 +879,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         {
         	drawDefinition(gc,gb,all,brect);
         }
-        doBoardDrag(brect,all,cs,SprintId.InvisibleDragBoard);
+        int mo = getOurMovingObject(highlight);
+        if(mo<0) 
+        	{ doBoardDrag(brect,all,cs,SprintId.InvisibleDragBoard); 
+        	}
 
         if(leadin)
         {	String secs = ""+ ( ((5000-time)/1000)+1);
@@ -969,7 +972,19 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     				{	// checking for pointable position
     					highlight.spriteRect = new Rectangle(xp-cs/2,yp-cs/2,cs,cs);
     					highlight.spriteColor = Color.red;
+    					
+    					SprintCell s = getPickedRackCell(highlight);
+    					if(s!=null)
+    					{
+    					highlight.hitObject = G.concat("move ",getViewPlayer()," Rack ",G.printCol(s.col)," ",s.row," ",
+            					highlight.hitCode.name()," ",c.col," ",c.row);
+    					}
+    					else
+    					{
     		   		    highlight.hitObject = G.concat((moving ? "drop ":"pick "),forPlayer," Unplaced ",c.col," ",c.row);	
+    	   		   		 
+    					}
+  
     				}
     			}
 					   				     			

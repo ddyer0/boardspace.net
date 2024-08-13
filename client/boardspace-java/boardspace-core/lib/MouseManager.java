@@ -152,7 +152,10 @@ public class MouseManager
     { 	if(highlightPoint==null) { highlightPoint = new HitPoint(-1,-1); }
     	return(highlightPoint);
     }
-    public HitPoint getDragPoint() { return(dragPoint); }
+    public HitPoint getDragPoint() 
+    {     
+      return(dragPoint); 
+    }
     
     private synchronized void setMousePinchInternal(MouseState ev,double amount,int x,int y,double angle)
     {	// pinch event

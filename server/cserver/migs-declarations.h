@@ -100,9 +100,9 @@
 
 
 #define IDLESESSION (&Idle_Users)
-#define MAXWAITTIME 30		/* max wait time in select (seconds) */
+#define MAXWAITTIME 30		/* "select" wait time in select (seconds) */
 
-#define MAXWAITINGTIME 300	/* maximum idle time while waiting is 5 min. */
+#define MAXWAITINGTIME 30	/* maximum idle time while waiting is 30 seconds. */
 #define SESSIONTIMEOUT 300	/* session setup time is 5 minutes */
 #define MAXPROXYTIME 60		/* proxy timeout */
 #define SESSIONCLEARTIMEOUT 10	/* timeout for clear sessions is 10 seconds */
@@ -374,6 +374,7 @@ struct User
 	BOOLEAN gagged;				// @field client has been gagged
 	BOOLEAN expectEof;			// @field connection is expected to be closing or closed
 	BOOLEAN inputClosed;		// @field if no input is being accepted from this user
+	BOOLEAN outputClosed;		// @field if no more output is being accepted
 	BOOLEAN isARobot;			// @field connection is a fake, registered for a robot player
 	BOOLEAN requestingLock;		// @field if we want the session lock eventually
 #if WEBSOCKET
