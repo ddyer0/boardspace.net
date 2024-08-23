@@ -265,6 +265,9 @@ public abstract class SystemGraphics
     	//graphics.drawString(msg,x,y); 
     	if(msg!=null)
     	{
+    	// this would be the simple version
+    	//graphics.drawString(msg,x,y);
+    	//this descent to lower level constructs helps diagnose character set problems.
     	graphics.drawGlyphVector(graphics.getFont().createGlyphVector(graphics.getFontRenderContext(), msg.toCharArray()),
     			x,y);
     	}

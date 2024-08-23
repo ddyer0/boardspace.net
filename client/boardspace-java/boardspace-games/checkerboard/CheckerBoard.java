@@ -22,6 +22,7 @@ import online.game.*;
 
 import java.util.*;
 
+import checkerboard.CheckerChip.ChipColor;
 import checkerboard.CheckerConstants.CheckerId;
 import checkerboard.CheckerConstants.CheckerState;
 import checkerboard.CheckerConstants.StateStack;
@@ -64,8 +65,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	 * replaying an "old" version of the game, revision numbers help keep the old
 	 * games playing the same as always.
 	 */
-	static int REVISION = 101;			// revision numbers start at 100
+	static int REVISION = 103;			// revision numbers start at 100
 										// revision 101 adds defense against multiple draw offers
+										// revision 103 adds enforcement of the "no multiple/reverse captures" rule
     static final int White_Chip_Index = 0;
     static final int Black_Chip_Index = 1;
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
@@ -108,6 +110,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		case Checkers_8:
  		case Checkers_6:
 		case Checkers_American:
+		case Checkers_Russian:
+		case Checkers_Stacks:
+		case Checkers_Bashni:
  		case Checkers_International:
  		case AntiDraughts:
  		case Checkers_Turkish:
@@ -127,6 +132,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		case Checkers_Turkish:
  		case Checkers_10:
  		case Checkers_8:
+ 		case Checkers_Russian:
+ 		case Checkers_Bashni:
+ 		case Checkers_Stacks:
  		case Checkers_6:
  			return super.dys();
  		case Checkers_Frisian:
@@ -135,9 +143,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  	}
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
-    public CheckerChip pickedObject = null;
+    public CheckerCell pickedStack = null;
     public CheckerChip lastDropped = null;
-    private IStack pickedHeight = new IStack();		// the height that was picked, ie 1=single 2=king
     private CellStack pickedSourceStack = new CellStack();
     private CellStack droppedDestStack = new CellStack();
     private StateStack dropState = new StateStack();
@@ -172,6 +179,12 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     		CELL_DOWN,CELL_UP,CELL_LEFT,CELL_RIGHT
     	};
     private int ForwardDiagonals[][] = { { CELL_DOWN_LEFT,CELL_DOWN_RIGHT}, { CELL_UP_LEFT,CELL_UP_RIGHT}};
+    
+    // for Bashni and Russian Checkers, captures can't change directions
+    private int BackwardDiagonals[][] = {  { CELL_UP_LEFT,CELL_UP_RIGHT}, { CELL_DOWN_LEFT,CELL_DOWN_RIGHT} };
+    boolean captureForward = false;
+    boolean captureBackward = false;
+    
     private int AllDiagonals[][] ={ { CELL_DOWN_LEFT,CELL_DOWN_RIGHT, CELL_UP_LEFT,CELL_UP_RIGHT},
     		{ CELL_DOWN_LEFT,CELL_DOWN_RIGHT, CELL_UP_LEFT,CELL_UP_RIGHT}};
     //
@@ -188,7 +201,10 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {   repeatedPositions = rep;
 
     	setColorMap(map, np);
-        doInit(init,rv,np,rev); // do the initialization 
+    	Random r = new Random(3573574);
+    	pickedStack = new CheckerCell(r);
+    	
+    	doInit(init,rv,np,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }
 
@@ -208,19 +224,22 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
        	G.Assert(AR.sameArrayContents(win,from_b.win),"win array contents match");
        	G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor contents match");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
-       	G.Assert(sameContents(pickedHeight,from_b.pickedHeight),"pickedHeight mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
-        G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
+        G.Assert(pickedStack.sameContents(from_b.pickedStack),"pickedObject doesn't match");
         G.Assert(occupiedCells[FIRST_PLAYER_INDEX].size()==from_b.occupiedCells[FIRST_PLAYER_INDEX].size(),"occupiedCells mismatch");
         G.Assert(occupiedCells[SECOND_PLAYER_INDEX].size()==from_b.occupiedCells[SECOND_PLAYER_INDEX].size(),"occupiedCells mismatch");
         G.Assert(sameCells(lastMoved,from_b.lastMoved),"lastMoved mismatch");
         G.Assert(AR.sameArrayContents(lastMovedCount,from_b.lastMovedCount),"lastMovedCount mismatch");
         G.Assert(sameCells(currentDest,from_b.currentDest),"currentDest mismatch");
         G.Assert(sameCells(currentSource,from_b.currentSource),"currentSource mismatch");
+        G.Assert(captureHeight.sameContents(from_b.captureHeight),"captureheight mismatch");
         G.Assert(lastDrawMove==from_b.lastDrawMove,"lastDrawMove mismatch");
         G.Assert(AR.sameArrayContents(drawCountdown,from_b.drawCountdown),"drawCountdown mismatch");
         G.Assert(AR.sameArrayContents(kingCount,from_b.kingCount),"kingCount mismatch");
+        G.Assert(captureForward==from_b.captureForward,"captureForward mismatch");
+        G.Assert(captureBackward==from_b.captureBackward,"captureBackward mismatch");
+        G.Assert(madeKing==from_b.madeKing,"madeking mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -253,7 +272,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      * (7) digests are also used in live play to detect "parroting" by running two games
      * simultaneously and playing one against the other.
      */
-   public long Digest()
+    public long Digest()
     {
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -263,16 +282,14 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         //
         Random r = new Random(64 * 1000); // init the random number generator
         long v = super.Digest(r);
-
-		v ^= chip.Digest(r,pickedObject);
+		v ^= Digest(r,pickedStack);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,pickedSourceStack);
-		v ^= Digest(r,pickedHeight);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,captureStack);
 		v ^= Digest(r,captureHeight);
-		v ^= Digest(r,occupiedCells[SECOND_PLAYER_INDEX].size());	// not completely specific because the stack can be shuffled
-		v ^= Digest(r,occupiedCells[FIRST_PLAYER_INDEX].size());
+		//v ^= Digest(r,occupiedCells[SECOND_PLAYER_INDEX].size());	// not completely specific because the stack can be shuffled
+		//v ^= Digest(r,occupiedCells[FIRST_PLAYER_INDEX].size());
 		v ^= Digest(r,kingCount);
 		v ^= Digest(r,lastMoved);
 		v ^= Digest(r,lastMovedCount);
@@ -280,11 +297,15 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,currentDest);
 		v ^= Digest(r,currentSource);
+		v ^= Digest(r,captureForward);
+		v ^= Digest(r,captureBackward);
 		v ^= Digest(r,lastDrawMove);
 		v ^= Digest(r,madeKing);
 		v ^= Digest(r,whoseTurn);
         return (v);
     }
+
+    
    public CheckerBoard cloneBoard() 
 	{ CheckerBoard copy = new CheckerBoard(gametype,randomKey,players_in_game,repeatedPositions,getColorMap(),revision);
 	  copy.copyFrom(this); 
@@ -300,9 +321,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     public void copyFrom(CheckerBoard from_b)
     {	
         super.copyFrom(from_b);			// copies the standard game cells in allCells list
-        pickedObject = from_b.pickedObject;	
+        pickedStack.copyFrom(from_b.pickedStack);	
         getCell(pickedSourceStack,from_b.pickedSourceStack);
-        pickedHeight.copyFrom(from_b.pickedHeight);
         getCell(droppedDestStack,from_b.droppedDestStack);
         dropState.copyFrom(from_b.dropState);
         getCell(captureStack,from_b.captureStack);
@@ -317,6 +337,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         currentDest = getCell(from_b.currentDest);
         board_state = from_b.board_state;
         lastProgressMove = from_b.lastProgressMove;
+        captureForward = from_b.captureForward;
+        captureBackward = from_b.captureBackward;
         lastDrawMove = from_b.lastDrawMove;
         unresign = from_b.unresign;
         repeatedPositions = from_b.repeatedPositions;
@@ -336,8 +358,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     }
     private int playerIndex(CheckerChip ch)
     {	int []map = getColorMap();
-    	if(ch==CheckerChip.black) { return(map[SECOND_PLAYER_INDEX]);}
-    	else if(ch==CheckerChip.white) { return(map[FIRST_PLAYER_INDEX]); }
+    	if(ch.color==ChipColor.Black) { return(map[SECOND_PLAYER_INDEX]);}
+    	else if(ch.color==ChipColor.White) { return(map[FIRST_PLAYER_INDEX]); }
     	else { return(-1); }
     }
     public CheckerChip playerChip(int pl)
@@ -354,6 +376,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		rack = new CheckerCell[2];
     	Random r = new Random(67246765);
     	int map[]=getColorMap();
+    	pickedStack = new CheckerCell(r);
      	for(int i=0,pl=FIRST_PLAYER_INDEX;i<2; i++,pl=pl^1)
     	{
      	occupiedCells[i] = new CellStack();
@@ -378,6 +401,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      	case Checkers_10:
      	case Checkers_8:
      	case Checkers_6:
+     	case Checkers_Russian:
+     	case Checkers_Stacks:
+     	case Checkers_Bashni:
       		reInitBoard(variation.size,variation.size);
      		kingRow[map[FIRST_PLAYER_INDEX]] = 1;
      		kingRow[map[SECOND_PLAYER_INDEX]] = nrows;
@@ -399,13 +425,18 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    int nRows = 3;
 	    switch(variation)
 	    {
-	    default: break;
+	    default: 
+	    	G.Error("Missing piece setup for %s",variation);
+	    	break;
 	    case Checkers_Frisian:
 	    case AntiDraughts:
 	    case Checkers_International:
 	    	nRows++;
 			//$FALL-THROUGH$
 		case Checkers_American:
+		case Checkers_Russian:
+		case Checkers_Bashni:
+		case Checkers_Stacks:
 	    	// standard pattern 
 	    	for(int row=1;row<=nRows;row++)
 	    	{
@@ -437,7 +468,11 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    	}
 	    }
 	    lastProgressMove = 0;
+	    captureForward = false;
+	    captureBackward = false;
 	    lastDrawMove = 0;
+	    captureStack.clear();
+	    captureHeight.clear();
 	    robotDepth = 0;
 	    lastPlacedIndex = 1;
 	    robotState.clear();
@@ -586,21 +621,17 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     //
     public void acceptPlacement()
     {	
-        pickedObject = null;
-        madeKing = false;
+        pickedStack.reInit();
         droppedDestStack.clear();
         dropState.clear();
-        captureStack.clear();
-        captureHeight.clear();
         pickedSourceStack.clear();
-        pickedHeight.clear();
      }
     //
     // undo the drop, restore the moving object to moving status.
     //
     private void unDropObject()
     {
-    G.Assert(pickedObject==null, "nothing should be moving");
+    G.Assert(pickedStack.isEmpty(), "nothing should be moving");
     if(droppedDestStack.size()>0)
     	{
     	CheckerCell dr = droppedDestStack.pop();
@@ -610,24 +641,37 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    	{
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
 			case BoardLocation: 
-				CheckerChip ch = pickedObject = dr.removeTop();
-				if(pickedHeight.top()==2) { dr.removeTop(); }
-				occupiedCells[playerIndex(ch)].remove(dr,false); 
+				{
+				int capHeight = captureHeight.pop();
 				if((board_state==CheckerState.Capture)||(board_state==CheckerState.CaptureMore))
 				{
-					CheckerCell cap = captureStack.pop();
-					int capHeight = captureHeight.pop();
-					undoCapture(cap,capHeight);
+					CheckerCell cap = captureStack.top();
+					
+					switch(variation)
+					{
+					case Checkers_Stacks:
+					case Checkers_Bashni:
+						undoBashniCapture(cap,dr);
+						break;
+					default:
+						undoCapture(cap,capHeight);
+						break;
+					}
 					currentDest = droppedDestStack.top();
 				}
-				else { captureHeight.pop(); }
+				
+				int pl = playerIndex(dr.topChip());
+				if(isKing(dr)) { kingCount[pl]--; }
+				pickedStack.moveFrom(dr);
+				occupiedCells[pl].remove(dr,false); 
+
 				dr.lastPlaced = previousLastPlaced;
 				lastPlacedIndex--;
-				
+				}
 				break;
 			case White_Chip_Pool:	// treat the pools as infinite sources and sinks
 			case Black_Chip_Pool:	
-				pickedObject = dr.topChip();
+				pickedStack.addChip(dr.topChip());
 				break;	// don't add back to the pool
 	    	
 	    	}
@@ -637,26 +681,28 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
-    {	CheckerChip po = pickedObject;
-    	if(po!=null)
+    {	boolean empty = pickedStack.isEmpty();
+    	if(!empty)
     	{
     		CheckerCell ps = pickedSourceStack.pop();
-    		int h = pickedHeight.pop();
     		switch(ps.rackLocation())
     		{
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
     		case BoardLocation: 
-    				ps.addChip(po);
+    			{	int po = playerIndex(pickedStack.topChip());
+    				ps.moveFrom(pickedStack);
     				currentSource = null;
-    				if(h==2) { ps.addChip(po); }
-    				occupiedCells[playerIndex(po)].push(ps);
+     				occupiedCells[po].push(ps);
     				ps.lastEmptied = previousLastEmptied;
+    				if(isKing(ps)) { kingCount[po]++; }
     				
-    				break;
+    			}
+    			break;
     		case White_Chip_Pool:
-    		case Black_Chip_Pool:	break;	// don't add back to the pool
+    		case Black_Chip_Pool:	
+    			pickedStack.reInit();
+    			break;	// don't add back to the pool
     		}
-    		pickedObject = null;
      	}
      }
 
@@ -664,64 +710,67 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     // drop the floating object.
     //
     private void dropObject(CheckerCell c)
-    {   G.Assert(pickedObject!=null,"pickedObject should not be null"); 	    		
+    {   G.Assert(!pickedStack.isEmpty(),"pickedObject should not be null"); 	    		
     	switch(c.rackLocation())
 		{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
 		case BoardLocation:
-			c.addChip(pickedObject);
-			if(pickedHeight.top()==2) 
-				{ c.addChip(pickedObject); 
-				  occupiedCells[playerIndex(pickedObject)].push(c);
-				}
-			else if(c.isKing())
-				{ // was not a king, but is now.
-				  kingCount[playerIndex(pickedObject)]++; 
-				}
-			else {
-				occupiedCells[playerIndex(pickedObject)].push(c);
+			{
+			CheckerChip oldTop = c.topChip();
+			boolean wasKing = isKing(c);
+			c.moveFrom(pickedStack);
+			CheckerChip top = c.topChip();
+			int po = playerIndex(top);
+			if(oldTop==top) {}
+			else if(oldTop==null) { occupiedCells[po].push(c); }
+			else if(oldTop.color!=top.color)
+			{	occupiedCells[nextPlayer[po]].remove(c,false);
+			    occupiedCells[po].push(c); 
 			}
+			if(!wasKing && isKing(c)) { kingCount[po]++; }
 			
 			previousLastPlaced = c.lastPlaced;
 			c.lastPlaced = lastPlacedIndex;
 			lastPlacedIndex++;
+			}
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
-			// flushing a king
-			if(pickedHeight.top()==2) { kingCount[playerIndex(pickedObject)]--; }
+			pickedStack.reInit();
 			break;	// don't add back to the pool
 		}
     	dropState.push(board_state);
        	droppedDestStack.push(c);
        	currentDest=c;
-       	pickedObject = null;
     }
     
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
     private void pickObject(CheckerCell c)
-    {	G.Assert(pickedObject==null,"pickedObject should be null");
+    {	G.Assert(pickedStack.isEmpty(),"pickedObject should be null");
     	G.Assert(!c.isEmpty(),"should have a chip");
     	switch(c.rackLocation())
     	{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
 		case BoardLocation: 
-			boolean isKing = c.isKing();
-			CheckerChip ch = pickedObject = c.removeTop();
-			if(isKing) { c.removeTop(); }
-			pickedHeight.push(isKing?2:1);
-			occupiedCells[playerIndex(ch)].remove(c,false);
-			previousLastContents = ch;
+			{
+			boolean oldKing = isKing(c);
+			CheckerChip oldTop = c.topChip();
+			int oldPlayer = playerIndex(oldTop);
+			if(oldKing) 
+				{ kingCount[oldPlayer]--; }
+			pickedStack.moveFrom(c);
+			occupiedCells[oldPlayer].remove(c,false);
+			previousLastContents = oldTop;
 			previousLastEmptied = c.lastEmptied;
 			c.lastEmptied = lastPlacedIndex;
 			currentSource = c;
+			}
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
-			pickedObject = c.topChip();
-			pickedHeight.push(1);
+			pickedStack.addChip(c.topChip());
 			break;	// don't add back to the pool
     	
     	}
@@ -752,10 +801,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     // to draw when tracking the mouse.  Returns +100 if a king is the moving object.
     // Caution! This method is called in the mouse process
     public int movingObjectIndex()
-    {	CheckerChip ch = pickedObject;
+    {	CheckerChip ch = pickedStack.topChip();
     	if(ch!=null)
-    		{ int nn = ch.chipNumber();
-    		  return(nn+((pickedHeight.topz(0)==2)?100:0));
+    		{ return ch.chipNumber();
     		}
         return (NothingMoving);
     }
@@ -787,7 +835,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     // in the actual game, picks are optional; allowed but redundant.
     //
 
-    private void setNextStateAfterDrop(replayMode replay)
+    private void setNextStateAfterDrop(CheckerMovespec m,replayMode replay)
     {
         switch (board_state)
         {
@@ -807,11 +855,15 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			break;
         case CaptureMore:
         case Capture:
+  
         	if(!hasCaptureMoves(currentDest)) 
         		{ // leave capture state
         			setState(CheckerState.Confirm);
         		}
-        	else { setState(CheckerState.CaptureMore); }
+        	else
+        	{ 
+        	setState(CheckerState.CaptureMore); 
+        	}
         	break;
         case Puzzle:
 			acceptPlacement();
@@ -844,7 +896,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     }
     
     private void setNextStateAfterDone()
-    {
+    {	
        	switch(board_state)
     	{
     	case Capture:
@@ -872,7 +924,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     		else if(hasSimpleMoves()) 
     			{ 
     			setState(CheckerState.Play); 
-    			doDrawCountdown(whoseTurn^1);
+    			doDrawCountdown(whoseTurn^1); 
     			}
     		else { setGameOver(false,true); } // no moves, we lose
      		break;
@@ -883,10 +935,22 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     // make dest be a king
     //
     private void makeKing(CheckerCell dest,replayMode replay)
-    {	CheckerChip added = rack[whoseTurn].topChip();
+    {	
     	//G.Assert(added.id==dest.topChip().id,"same color");
-    	dest.addChip(added);
-    	kingCount[playerIndex(added)]++;
+    	G.Assert(!isKing(dest),"not already a king");
+    	switch(variation)
+    	{
+    	case Checkers_Bashni:
+    		CheckerChip removed = dest.removeTop();
+    		dest.addChip(CheckerChip.getKing(removed));
+    		kingCount[playerIndex(removed)]++;
+    		break;
+    	default:
+    		CheckerChip added = rack[whoseTurn].topChip();
+        	dest.addChip(added);
+        	kingCount[playerIndex(added)]++;
+        	break;
+    	} 	
     	madeKing = true;
     	if(replay.animate)
     	{
@@ -897,9 +961,12 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     @SuppressWarnings("unused")
 	private void checkOccupied()
     {	int ss[] = new int[2];
+    	int kc[] = new int[2];
     	for(CheckerCell c = allCells; c!=null; c=c.next)
     	{
     		CheckerChip top = c.topChip();
+    		if(isKing(c)) 
+    			{ kc[playerIndex(top)]++; }
     		if(top==null)
     			{ G.Assert(!occupiedCells[0].contains(c),"empty occupied 0"); 
     			  G.Assert(!occupiedCells[1].contains(c),"empty occupied 1"); 
@@ -913,20 +980,24 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	}
     	G.Assert(ss[0]==occupiedCells[0].size(),"size 0 mismatch");
     	G.Assert(ss[1]==occupiedCells[1].size(),"size 1 mismatch");
+    	G.Assert(kc[0]==kingCount[0],"white king mismatch");
+    	G.Assert(kc[1]==kingCount[1],"black king mismatch");
     }
     private int chipsOnBoard() { return occupiedCells[0].size()+occupiedCells[1].size(); }
     private void doDrawCountdown(int who)
     {	
     	switch(variation)
     	{
+    	case Checkers_Russian:
+    	case Checkers_Stacks:
+    	case Checkers_Bashni:
     	case AntiDraughts:
     	case Checkers_International:
-    	   	// if you have 2 kings, you have 7 moves to win of else the game is drawn
     	{
     		if((kingCount[0]>0)
     				&& (kingCount[1]>0) 
     				&& !madeKing
-    				&& currentDest.isKing()
+    				&& isKing(currentDest)
     				)
     		{
     		setState(CheckerState.Endgame);  
@@ -986,7 +1057,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     private void doDone(replayMode replay)
     {	CheckerCell dest = currentDest;
     	CheckerCell src = currentSource;
-    	boolean isKing = (dest!=null) && dest.isKing();
+    	boolean isKing = (dest!=null) && isKing(dest);
     	boolean kingMe = (dest!=null) && !isKing && (dest.row==kingRow[whoseTurn]);
     	int capsize = (captureHeight.size()>0) ? captureHeight.top() : 0;
      	if(src==lastMoved[whoseTurn] && (capsize==0) && isKing) 
@@ -999,12 +1070,18 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     		{ lastProgressMove = moveNumber; }
     	// special bit for the animations
     	captureKing = capsize==2;
-    	
+    	captureForward = false;
+    	captureBackward = false;
+        captureStack.clear();
+        captureHeight.clear();
      	acceptPlacement();
      	if(kingMe)
-    	{	// rules for making kings vary slightly
+    	{	// rules for making kings vary slightly.  In international checkers, you make a king
+     		// only when you end a move in the king square, which is not possible if more regular
+     		// (non king) jumps are possible.
        		makeKing(dest,replay);
     	}
+     	else { madeKing = false; }
 
         if (board_state==CheckerState.Resign)
         {	setGameOver(false,true);
@@ -1019,9 +1096,92 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {
     	return kingCount[pl]==occupiedCells[pl].size();
     }
+
+    public boolean isKing(CheckerCell c)
+    {	switch(variation)
+    	{
+    	case Checkers_Bashni:
+    		return c.isBashniKing();
+    	case Checkers_Stacks:
+    		return c.isTowerKing();
+    	default:
+    		return c.isSimpleKing();
+    	}
+    }
+    private void undoBashniCapture(CheckerCell mid,CheckerCell dest)
+    {	boolean wasking = isKing(dest);
+    	CheckerChip ch = dest.removeChipAtIndex(1);
+    	int pl = playerIndex(ch);
+    	CheckerCell unc = captureStack.pop();
+    	G.Assert(unc==mid,"should match");
+    	if(wasking && !isKing(dest)) { kingCount[pl]--; }
+    	
+    	boolean midWasKing = isKing(mid); 
+    	CheckerChip oldTop = mid.topChip();
+    	mid.addChip(ch);
+    	if(ch==oldTop)
+    	{	// adding a same chip
+    		if(!midWasKing && isKing(mid)) { kingCount[pl]++; }
+    	}
+    	else if(oldTop!=null)
+    	{	
+    		int mpl = playerIndex(oldTop);
+    		if(oldTop.color!=ch.color)	// bashni has a special king characters
+    		{
+    		// adding a chip of a different color
+    		occupiedCells[mpl].remove(mid); 
+    		occupiedCells[pl].push(mid);
+    		}
+       		if(midWasKing) { kingCount[mpl]--; }
+    		if(isKing(mid)) { kingCount[pl]++; }
+ 
+    	}
+    	else // old was null
+    	{
+    		occupiedCells[pl].push(mid);
+    		if(isKing(mid)) { kingCount[pl]++; }
+    	}
+    }
+    private void doBashniCapture(CheckerCell mid,CheckerCell dest,replayMode replay)
+    {	boolean isKing = isKing(mid);
+		captureStack.push(mid);
+    	CheckerChip ch = mid.removeTop();
+    	CheckerChip newCh = mid.topChip();
+    	dest.insertChipAtIndex(1,ch);
+    	int capee = playerIndex(ch);
+    	if(isKing)
+    	{
+    		kingCount[capee]--;
+    	}
+    	if(newCh==null)
+    	{
+		occupiedCells[capee].remove(mid,false);
+    	}
+    	else if(newCh==ch)	// uncovered another piece of the same player
+    	{
+    		if(isKing(mid)) { kingCount[capee]++; }
+    	}
+    	else 
+    	{	if(ch.color!=newCh.color) 
+    		{
+    		occupiedCells[capee].remove(mid,false);
+    		occupiedCells[nextPlayer[capee]].push(mid);
+    		
+    		}
+    		if(isKing(mid)) { kingCount[playerIndex(newCh)]++;  }
+    	}
+		mid.lastContents = ch;
+		mid.lastCaptured = lastPlacedIndex;
+		if(!isKing(dest) && (dest.row==kingRow[whoseTurn])) 
+			{ // if a capture lands in the king row, make it a king immediately 
+			  makeKing(dest,replay); 
+			}
+		captureHeight.push(1);
+    }
     
-    private void doCapture(CheckerCell mid)
-    {	boolean isKing = mid.isKing();
+ 
+    private void doCapture(CheckerCell mid,CheckerCell dest,replayMode replay)
+    {	boolean isKing = isKing(mid);
     	CheckerChip ch = mid.removeTop();
     	if(isKing) { mid.removeTop(); kingCount[playerIndex(ch)]--; }
     	int capee = playerIndex(ch);
@@ -1030,16 +1190,43 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		mid.lastContents = ch;
 		mid.lastCaptured = lastPlacedIndex;
 		captureHeight.push(isKing?2:1);
+		if(variation==Variation.Checkers_Russian)
+			{ if(!isKing(dest) && (dest.row==kingRow[whoseTurn]))
+				{
+				// russian checkers and bashni, if a capture lands in the
+				// king row, the move continues as a king
+				makeKing(dest,replay);
+				}
+			}
     }
     private void undoCapture(CheckerCell cap,int capHeight)
-    {	//checkOccupied();
+    {	
     	int player = whoseTurn^1;
 		CheckerChip chip = rack[player].topChip();
+		CheckerCell unc = captureStack.pop();
+    	G.Assert(unc==cap,"should match");
+		G.Assert(cap.isEmpty(),"should be empty");
 		if(capHeight==2) { cap.addChip(chip); kingCount[playerIndex(chip)]++;}
 		cap.addChip(chip);
 		occupiedCells[player].push(cap);
 		//checkOccupied();
     }
+    
+    // remember the first capture direction, I erroneously thought
+    // this was a rule in Russian Checkers, but apparently not, which
+    // makes russian checkers the same as international checkers, except
+    // for the "maximal" rule.
+    /*
+    private void setCaptureDirection(CheckerMovespec m)
+    {
+        int direction = findDirection(m.target_col,m.target_row,m.to_col,m.to_row);
+        int forward[] = ForwardDiagonals[whoseTurn];
+        int backward[] = BackwardDiagonals[whoseTurn];
+        if(AR.indexOf(forward,direction)>=0) { captureForward = true; }
+        else if(AR.indexOf(backward,direction)>=0) { captureBackward = true; }
+        else { G.Error("capturing direction not found"); }
+    } */
+    
     public boolean Execute(commonMove mm,replayMode replay)
     {	CheckerMovespec m = (CheckerMovespec)mm;
     	//checkOccupied();
@@ -1058,24 +1245,33 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case Capture:
         		case CaptureMore:
-        			G.Assert(pickedObject==null,"something is moving");
+        			G.Assert(pickedStack.isEmpty(),"something is moving");
         			CheckerCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
         			CheckerCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
         			CheckerCell mid = getCell(CheckerId.BoardLocation,m.target_col,m.target_row);
-        			doCapture(mid);
-        			
-        			
-        			pickObject(src);
+           			pickObject(src);
         			dropObject(dest); 
+        			switch(variation)
+        			{
+        			case Checkers_Bashni:
+        			case Checkers_Stacks:
+        				doBashniCapture(mid,dest,replay);
+        				break;
+        			default:
+        				doCapture(mid,dest,replay);
+        				if(replay.animate)
+            			{	animationStack.push(mid);	// captured stones first
+            				animationStack.push(rack[whoseTurn^1]);
+            			}
+        			}
+
         			if(replay.animate)
-        			{	animationStack.push(mid);	// captured stones first
-        				animationStack.push(rack[whoseTurn^1]);
+        			{
         				animationStack.push(src);
         				animationStack.push(dest);
         			}
-        			robotCapture.push(captureHeight.top());
         			acceptPlacement();
- 				    setNextStateAfterDrop(replay);
+ 				    setNextStateAfterDrop(m,replay);
         			break;
         	}
         	break;
@@ -1085,7 +1281,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case Endgame:
         		case Play:
-        			G.Assert(pickedObject==null,"something is moving");
+        			G.Assert(pickedStack.isEmpty(),"something is moving");
         			CheckerCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
         			CheckerCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
         			pickObject(src);
@@ -1096,16 +1292,16 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         				animationStack.push(src);
         				animationStack.push(dest);
         			}
- 				    setNextStateAfterDrop(replay);
+ 				    setNextStateAfterDrop(m,replay);
  				    acceptPlacement();
         			break;
         	}
         	break;
         case MOVE_DROPB:
 			{
-			lastDropped = pickedObject;
+	        G.Assert(!pickedStack.isEmpty(),"something is moving");
+			lastDropped = pickedStack.topChip();
 			CheckerCell c = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
-        	G.Assert(pickedObject!=null,"something is moving");
 			if(isSecondSource(c))
 			{
 				unPickObject();
@@ -1121,7 +1317,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
             		{
             		dropObject(c);
             		captureHeight.push(0);
-            		setNextStateAfterDrop(replay);
+            		setNextStateAfterDrop(m,replay);
             		if(replay==replayMode.Single)
             			{
             			animationStack.push(getSource());
@@ -1160,7 +1356,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         	{
         	CheckerCell c = getCell(m.source, m.to_col, m.to_row);
             dropObject(c);
-            setNextStateAfterDrop(replay);
+            setNextStateAfterDrop(m,replay);
             if(replay==replayMode.Single)
 			{
 			animationStack.push(getSource());
@@ -1173,13 +1369,23 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         	CheckerCell c = getCell(m.source, m.to_col, m.to_row);
         	CheckerCell cap = getCell(m.target_col,m.target_row); 
             dropObject(c);
-            doCapture(cap);
-            setNextStateAfterDrop(replay);
-            if(replay.animate)
+            switch(variation)
             {
-            	animationStack.push(cap);
-            	animationStack.push(rack[whoseTurn^1]);
+            case Checkers_Stacks:
+            case Checkers_Bashni:
+            	doBashniCapture(cap,c,replay);	
+            	break;
+            default:
+            	doCapture(cap,c,replay);
+                if(replay.animate)
+                {
+                	animationStack.push(cap);
+                	animationStack.push(rack[whoseTurn^1]);
+                }
             }
+
+            setNextStateAfterDrop(m,replay);
+ 
             if(replay==replayMode.Single)
 			{
 			animationStack.push(getSource());
@@ -1200,6 +1406,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
+            checkOccupied();
             unPickObject();
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
@@ -1287,7 +1494,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		case AcceptPending:
 			return(false);
         case Puzzle:
-        	return((pickedObject==null)?true:(player==playerIndex(pickedObject)));
+        	return(pickedStack.isEmpty()?true:(player==playerIndex(pickedStack.topChip())));
         }
     }
   
@@ -1315,12 +1522,13 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         default:
         	throw G.Error("Not expecting state %s", board_state);
         case Puzzle:
-        	return(pickedObject==null?!cell.isEmpty():true);
+        	return(pickedStack.isEmpty()?!cell.isEmpty():true);
         }
     }
   public boolean canDropOn(CheckerCell cell)
-  {		CheckerCell top = (pickedObject!=null) ? pickedSourceStack.top() : null;
-  		return((pickedObject!=null)				// something moving
+  {		boolean empty = pickedStack.isEmpty();
+  		CheckerCell top = !empty ? pickedSourceStack.top() : null;
+  		return(!empty				// something moving
   			&&(top.onBoard 			// on the main board
   					? (cell!=top)	// dropping on the board, must be to a different cell 
   					: (cell==top))	// dropping in the rack, must be to the same cell
@@ -1336,8 +1544,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     executing.
     */
     public void RobotExecute(CheckerMovespec m)
-    {
-        //G.print("R "+m);
+    {	madeKing = false;
+        //G.print("R ",robotDepth," ",m," for ",whoseTurn);
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         robotState.push(board_state);
         robotLast.push(currentDest);
@@ -1348,22 +1556,37 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         robotUndo.push(drawCountdown[1]);
         robotUndo.push(lastMovedCount[whoseTurn]);
         robotUndo.push(lastDrawMove);
-        madeKing = false;
+        int captures = 0;
+        if (m.op == MOVE_DONE)
+        	{ G.Error("Not expecting done");
+        	}
         if (Execute(m,replayMode.Replay))
         {	
-            if (m.op == MOVE_DONE)
-            {
+            boolean made = madeKing;
+            if(m.op==MOVE_JUMP)
+            {	
+       			robotCapture.push(captureHeight.top());
             }
-            else if (DoneState())
+            if (DoneState())
             {	if((robotDepth<=6) && (repeatedPositions.numberOfRepeatedPositions(Digest())>1))
             		{
             		// this check makes game end by repetition explicitly visible to the robot
             		setGameOver(false,false);
             		}
-            else { doDone(replayMode.Replay); }
+            else { 
+            	// the accumulated captures have to be saved so they can be restored when we undo this move
+            	captures = captureStack.size();
+            	for(int i=captures-1; i>=0; i--) 
+            	{
+            		robotLast.push(captureStack.elementAt(i));
+            	}
+            	doDone(replayMode.Replay); 
+             }
             }
+            robotUndo.push(made|madeKing?1:0);
         }
-        robotUndo.push(madeKing?1:0);
+        madeKing = false;
+        robotUndo.push(captures);
     }
  
 
@@ -1374,8 +1597,15 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
    //
     public void UnExecute(CheckerMovespec m)
     {	//checkOccupied();
-        //G.print("U "+m+" for "+whoseTurn);
-    	robotDepth--;
+       	robotDepth--;
+        //G.print("U ",robotDepth," ",m+" for "+whoseTurn);
+       	// if this was a "done" move, reload the capture stack
+        int captures = robotUndo.pop();
+        if(captures>0)
+        {	captureStack.clear();
+        	while(captures-- > 0) { captureStack.push(robotLast.pop()); }
+        }
+        
         setState(robotState.pop());
         boolean unKing = robotUndo.pop()==1;
         if(whoseTurn!=m.player)
@@ -1395,12 +1625,16 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         		case Endgame:
          		case Play:
          			{
-        			G.Assert(pickedObject==null,"something is moving");
+        			G.Assert(pickedStack.isEmpty(),"something is moving");
         			pickObject(getCell(CheckerId.BoardLocation, m.to_col, m.to_row));
         			CheckerCell from = getCell(CheckerId.BoardLocation, m.from_col,m.from_row);
        			    dropObject(from); 
        			    if(unKing)
-       			    	{ from.removeTop(); 
+       			    	{ CheckerChip ch = from.removeTop(); 
+       			    	  if(variation==Variation.Checkers_Bashni)
+       			    	  {
+       			    		  from.addChip(CheckerChip.unKing(ch));
+       			    	  }
        			    	  kingCount[whoseTurn]--; 
        			    	}
        			    acceptPlacement();
@@ -1409,25 +1643,41 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         	}
         	break;
         case MOVE_JUMP:
+        	{
+        	int rcap = robotCapture.pop();
         	switch(board_state)
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
         		case CaptureMore:
         		case Capture:
         			{
-        			G.Assert(pickedObject==null,"something is moving");
+        			G.Assert(pickedStack.isEmpty(),"something is moving");
         			CheckerCell to = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
         			pickObject(to);
         			CheckerCell from = getCell(CheckerId.BoardLocation, m.from_col,m.from_row);
        			    dropObject(from);
        			    if(unKing) 
-       			    	{ from.removeTop(); 
+       			    	{ CheckerChip ch = from.removeTop(); 
+       			    	  if(variation==Variation.Checkers_Bashni)
+       			    	  {
+       			    		  from.addChip(CheckerChip.unKing(ch));
+       			    	  }
        			    	  kingCount[whoseTurn]--; 
        			    	}
        			    CheckerCell mid = getCell(CheckerId.BoardLocation, m.target_col, m.target_row);
-       			    undoCapture(mid,robotCapture.pop());
+       			    switch(variation)
+       			    {
+       			    case Checkers_Stacks:
+       			    case Checkers_Bashni:
+       			    	undoBashniCapture(mid,from);
+       			    	break;
+       			    default:
+       			    	undoCapture(mid,rcap);
+       			    	break;
+       			    }
        			    acceptPlacement();
          			}
         			break;
+        	}
         	}
         	break;
  
@@ -1444,7 +1694,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         lastMovedCount[whoseTurn] = robotUndo.pop();
         drawCountdown[1] = robotUndo.pop();
         drawCountdown[0] = robotUndo.pop();
-
+        madeKing = false;
         //checkOccupied();
   }
 
@@ -1490,7 +1740,7 @@ public Hashtable<CheckerCell,CheckerMovespec>getTargets()
 		case Play:
 		case Endgame:
 			{	addMoves(all,true,whoseTurn);
-				loadHash(all,hash,pickedObject==null);
+				loadHash(all,hash,pickedStack.isEmpty());
 			}
 			break;
 		}
@@ -1504,7 +1754,7 @@ public boolean hasCaptureMoves()
 // true if there are capturing moves from a particular cell
 public boolean hasCaptureMoves(CheckerCell from)
 {
-	return(addCaptureMoves(null,from,from.isKing(),whoseTurn,null));
+	return(addCaptureMoves(null,from,isKing(from),whoseTurn,null));
 }
 public boolean hasSimpleMoves()
 {
@@ -1520,7 +1770,7 @@ public boolean hasSimpleMoves()
  	for(int lim=pieces.size()-1; lim>=0; lim--)
  	{
  		CheckerCell cell = pieces.elementAt(lim);
- 		some |= addCaptureMoves(all,cell,cell.isKing(),who,empty);
+ 		some |= addCaptureMoves(all,cell,isKing(cell),who,empty);
  		if(some && (all==null)) { return(true); }
  	}
  	return(some);
@@ -1537,10 +1787,25 @@ public boolean hasSimpleMoves()
 	 	case AntiDraughts:
 	 	case Checkers_International:
 	 		return(AllDiagonals[who]);		// international checkers go forward and backward
+	 	case Checkers_Russian:
+	 	case Checkers_Stacks:
+	 	case Checkers_Bashni:
+	 		if(captureForward) { return ForwardDiagonals[who]; }
+	 		else if(captureBackward) { return BackwardDiagonals[who]; }
+	 		else { return AllDiagonals[who]; }
 	 	case Checkers_American:
 	 		return(isKing ? AllDiagonals[who]:ForwardDiagonals[who]);
 	 	}
 		
+ }
+ public boolean isRecapture(CheckerCell target)
+ {	 if(revision<103) { return false; }
+	 switch(variation)
+	 {
+	 case Checkers_Stacks: 	// stacks checkers allows back and forth recapturing
+		 	return false;
+	 default: return captureStack.contains(target);
+	 }
  }
  // add capture moves originating from a particular cell
  // "all" may be null.
@@ -1552,7 +1817,9 @@ public boolean hasSimpleMoves()
 	for(int direction : diagonals)
  		{	CheckerCell target = cell;
  			boolean more = true;
- 			while(more && ((target=target.exitTo(direction))!=null))
+ 			while(more 
+ 					&& ((target=target.exitTo(direction))!=null)
+ 					&& !isRecapture(target))
  			{
  				CheckerChip top = ((empty!=null) && empty.contains(target)) ? null : target.topChip();
  				if(top!=null)
@@ -1560,7 +1827,11 @@ public boolean hasSimpleMoves()
  					{
  					// something to jump
  					CheckerCell landing = target;
- 					while(more && ((landing=landing.exitTo(direction))!=null) && (landing.topChip()==null))
+ 					while(more 
+ 							&& ((landing=landing.exitTo(direction))!=null) 
+ 							&& (landing.topChip()==null)
+ 							&& !isRecapture(landing)
+ 							)
  					{
  						// got a keeper
  						if(all==null) { return(true); }
@@ -1587,7 +1858,7 @@ public boolean hasSimpleMoves()
  	{
  		CheckerCell cell = pieces.elementAt(lim);
  		if((variation==Variation.Checkers_Frisian)
- 			&& cell.isKing()
+ 			&& isKing(cell)
  			&& cell==lastMoved[whoseTurn]
  			&& lastMovedCount[whoseTurn]>=3
  			&& !allKings(whoseTurn))
@@ -1596,7 +1867,7 @@ public boolean hasSimpleMoves()
  		}
  		else
  		{
- 		some |= addSimpleMoves(all, cell,cell.isKing(),who);
+ 		some |= addSimpleMoves(all, cell,isKing(cell),who);
  		if(some && (all==null))  { return(true); }
  		}
  	}
@@ -1613,6 +1884,9 @@ public boolean hasSimpleMoves()
 	 	case AntiDraughts:
 	 	case Checkers_Frisian:
 	 	case Checkers_American:
+	 	case Checkers_Russian:
+	 	case Checkers_Stacks:
+	 	case Checkers_Bashni:
 	 		return(isKing ? AllDiagonals[who]:ForwardDiagonals[who]);
 	 	default: throw G.Error("Not expecting %s",variation);
 	 	}
@@ -1683,7 +1957,7 @@ public boolean hasSimpleMoves()
 		 	{ CheckerMovespec m = (CheckerMovespec)all.elementAt(lim);
 		 	  CheckerCell captured = getCell(m.target_col,m.target_row);
 		 	  empty.push(captured);	  // add the new captured cell to the stack of empties
-		 	  boolean king = captured.isKing();
+		 	  boolean king = isKing(captured);
 		 	  int depth = (king ? 199 : 100) +maximalCaptureValue(getCell(m.to_col,m.to_row),isKing,who,empty);
 		 	  maxDepth = Math.max(maxDepth,depth); 
 		 	  empty.pop();		// remove the new captured cell
@@ -1713,8 +1987,8 @@ public boolean hasSimpleMoves()
 		 double depth = 0;
 		 CheckerCell from = getCell(m.from_col,m.from_row);
 		 CheckerCell to = getCell(m.to_col,m.to_row);
-		 boolean isKing = unpicked?from.isKing()
-	 				:pickedHeight.top()==2;
+		 boolean isKing = unpicked?isKing(from)
+	 				:isKing(pickedStack);
 		 switch(variation)
 		 {
 		 default: throw G.Error("not expecting variation %s",variation);
@@ -1725,7 +1999,7 @@ public boolean hasSimpleMoves()
 			 break;
 		 case Checkers_Frisian:
 			 depth = (isKing ? 0.5 : 0)		// force use of king if there's a same value capture
-					 	+ (target.isKing()?199:100)
+					 	+ (isKing(target)?199:100)
 					 	+ maximalCaptureValue(to,isKing,	who,empty);		
 			 break;
 		 }
@@ -1745,6 +2019,9 @@ public boolean hasSimpleMoves()
  	 case Checkers_Frisian:
  	 case Checkers_American:
  	 case Checkers_Turkish:
+ 	 case Checkers_Russian:
+ 	 case Checkers_Bashni:
+ 	 case Checkers_Stacks:
  		 // captures are mandatory
  		 switch(board_state)
  		 {
@@ -1755,13 +2032,13 @@ public boolean hasSimpleMoves()
  			 break;
  		 case Play:
  		 case Endgame:
- 			 if(pickedObject==null)
+ 			 if(pickedStack.isEmpty())
  			 {
  			 some = addSimpleMoves(all,whoseTurn); 
  			 }
  			 else
  			 {	// something is already moving
- 			 some = addSimpleMoves(all,getSource(),pickedHeight.top()==2,whoseTurn()); 
+ 			 some = addSimpleMoves(all,getSource(),isKing(pickedStack),whoseTurn()); 
  			 }
  			 
  			if( (offerdraw 
@@ -1775,15 +2052,15 @@ public boolean hasSimpleMoves()
  		 case CaptureMore:
  		 case Capture:
  		 {	
- 			 if(pickedObject==null)
+ 			 if(pickedStack.isEmpty())
  			 {
  			 some = ((board_state==CheckerState.CaptureMore) && (currentDest!=null))
- 					 	? addCaptureMoves(all,currentDest,currentDest.isKing(),whoseTurn,null)
+ 					 	? addCaptureMoves(all,currentDest,isKing(currentDest),whoseTurn,null)
  					 	: addCaptureMoves(all,whoseTurn,null);
  			 }
  			 else
  			 {	// something is already moving
- 			 some = addCaptureMoves(all,getSource(),pickedHeight.top()==2,whoseTurn,null);
+ 			 some = addCaptureMoves(all,getSource(),isKing(pickedStack),whoseTurn,null);
   			 }
  			 
  			 switch(variation)
@@ -1792,9 +2069,12 @@ public boolean hasSimpleMoves()
  			 case Checkers_Frisian:
  			 case AntiDraughts:
  			 case Checkers_International:
- 				 if(all.size()>1) { removeShortCaptures(all,pickedObject==null,whoseTurn); }
+ 				 if(all.size()>1) { removeShortCaptures(all,pickedStack.isEmpty(),whoseTurn); }
  				 break;
  			 case Checkers_American: 
+ 			 case Checkers_Russian:
+ 			 case Checkers_Bashni:
+ 			 case Checkers_Stacks:	// maximal captures not required
  				 break;
  			 default: G.Error("Not expecting %s",variation);
  			 }

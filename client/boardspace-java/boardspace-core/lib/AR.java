@@ -315,6 +315,11 @@ public class AR {
 		   return(-1);
 	   }
 	   
+	   static public int indexOf(int[]a,int i)
+	   {
+		   for(int lim = a.length-1; lim>=0; lim--) { if (a[lim]==i) return lim; }
+		   return(-1);		   
+	   }
 	   public static String toString(Object []a)
 	   {	StringBuilder b = new StringBuilder("[");
 	   		if(a!=null)

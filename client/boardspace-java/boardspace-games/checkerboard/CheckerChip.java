@@ -21,6 +21,7 @@ import checkerboard.CheckerConstants.CheckerId;
 import lib.AR;
 import lib.Drawable;
 import lib.DrawableImageStack;
+import lib.G;
 import lib.ImageLoader;
 import lib.MultiGlyph;
 import lib.Random;
@@ -34,7 +35,8 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 	
 	private static boolean imagesLoaded = false;
 
-
+	enum ChipColor { White,Black };
+	
 	public int chipNumber() 
 	{	return(AR.indexOf(chips,this));
 	}
@@ -43,7 +45,8 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 	}
 
 	public CheckerId id = null;		// chips/images that are expected to be visible to the user interface should have an ID
-
+	public ChipColor color = null;
+	
 	// constructor for chips not expected to be part of the UI
 	private CheckerChip(String na,double scl[],DrawableImageStack art)
 	{	file = na;
@@ -52,9 +55,10 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 		art.push(this);
 	}
 	// constructor for chips expected to be part of the UI
-	private CheckerChip(String na,double scl[],CheckerId uid,DrawableImageStack art)
+	private CheckerChip(String na,double scl[],CheckerId uid,ChipColor co,DrawableImageStack art)
 	{	this(na,scl,art);
 		id = uid;
+		color = co;
 	}
 	
 
@@ -72,33 +76,49 @@ public class CheckerChip extends chip<CheckerChip> implements Config
     	new CheckerChip("dark-tile",new double[]{0.5,0.5,1.0},allChips),
 		};
 	
-	public static CheckerChip white = new CheckerChip("white-chip-np",new double[]{0.53,0.430,1.38},CheckerId.White_Chip_Pool,allChips);
-	public static CheckerChip black = new CheckerChip("black-chip-np",new double[]{0.53,0.402,1.38},CheckerId.Black_Chip_Pool,allChips); 
+	public static CheckerChip white = new CheckerChip("white-chip-np",new double[]{0.53,0.430,1.38},CheckerId.White_Chip_Pool,ChipColor.White,allChips);
+	public static CheckerChip black = new CheckerChip("black-chip-np",new double[]{0.53,0.402,1.38},CheckerId.Black_Chip_Pool,ChipColor.Black,allChips); 
+	public static CheckerChip whiteKing = new CheckerChip("white-king-np",new double[]{0.53,0.430,1.38},CheckerId.White_King,ChipColor.White,allChips);
+	public static CheckerChip blackKing = new CheckerChip("black-king-np",new double[]{0.53,0.402,1.38},CheckerId.Black_King,ChipColor.Black,allChips); 
 
+	public static CheckerChip getKing(CheckerChip ch)
+	{
+		if(ch==white) { return whiteKing; }
+		if(ch==black) { return blackKing; }
+		throw G.Error("shoudln't ask for king %s",ch);
+	}
+	public static CheckerChip unKing(CheckerChip ch)
+	{
+		if(ch==whiteKing) { return white; }
+		if(ch==blackKing) { return black; }
+		throw G.Error("shoudln't ask for unking %s",ch);
+	}
 	static private CheckerChip chips[] = 
 		{
 		white,
     	black,
+    	whiteKing,
+    	blackKing,
 		};
 	
-	public static MultiGlyph blackKing = new MultiGlyph();
-	public static MultiGlyph whiteKing = new MultiGlyph();
+	private static MultiGlyph blackKingGlyph = new MultiGlyph();
+	private static MultiGlyph whiteKingGlyph = new MultiGlyph();
 	
 	static {
-		blackKing.append(black,new double[]{1.0,0,0});
-		blackKing.append(black,new double[]{1.0,0,-0.1});
-		whiteKing.append(white,new double[]{1.0,0,0});
-		whiteKing.append(white,new double[]{1.0,0,-0.1});
+		blackKingGlyph.append(black,new double[]{1.0,0,0});
+		blackKingGlyph.append(black,new double[]{1.0,0,-0.1});
+		whiteKingGlyph.append(white,new double[]{1.0,0,0});
+		whiteKingGlyph.append(white,new double[]{1.0,0,-0.1});
 	}
 	
 	public Drawable getKing()
 	{	switch(id)
-		{case White_Chip_Pool:	return(whiteKing); 
-		case Black_Chip_Pool: return(blackKing);
+		{case White_Chip_Pool:	return(whiteKingGlyph); 
+		case Black_Chip_Pool: return(blackKingGlyph);
 		default: return(null);
 		}
 	}
- 
+
 	public static CheckerChip getTile(int color)
 	{	return(tiles[color]);
 	}
@@ -109,15 +129,18 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 	
 	public static CheckerChip backgroundTile = new CheckerChip( "background-tile-nomask",null,allChips);
 	public static CheckerChip backgroundReviewTile = new CheckerChip( "background-review-tile-nomask",null,allChips);
+	public static CheckerChip liftIcon = new CheckerChip( "lift-icon-nomask",null,null,null,allChips);	
+	public static CheckerChip international = new CheckerChip("international",null,null,null,allArt);
+	public static CheckerChip anti = new CheckerChip("antidraughts",null,null,null,allArt);
+	public static CheckerChip frisian = new CheckerChip("frisian",null,null,null,allArt);
+	public static CheckerChip turkish = new CheckerChip("turkish",null,null,null,allArt);
+	public static CheckerChip american = new CheckerChip("american",null,null,null,allArt);
+	public static CheckerChip russian = new CheckerChip("russian",null,null,null,allArt);
+	public static CheckerChip bashni = new CheckerChip("bashni",null,null,null,allArt);
+	public static CheckerChip stacks = new CheckerChip("stacks",null,null,null,allArt);
 	
-	public static CheckerChip liftIcon = new CheckerChip( "lift-icon-nomask",null,null,allChips);	
-	public static CheckerChip international = new CheckerChip("international",null,null,allArt);
-	public static CheckerChip anti = new CheckerChip("antidraughts",null,null,allArt);
-	public static CheckerChip frisian = new CheckerChip("frisian",null,null,allArt);
-	public static CheckerChip turkish = new CheckerChip("turkish",null,null,allArt);
-	public static CheckerChip american = new CheckerChip("american",null,null,allArt);
-	public static CheckerChip CheckerIcon = new CheckerChip("checkers-icon-nomask",null,allArt);
- 
+	public static CheckerChip CheckerIcon = new CheckerChip("checkers-icon-nomask",null,null,null,allArt);
+	
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(!imagesLoaded)

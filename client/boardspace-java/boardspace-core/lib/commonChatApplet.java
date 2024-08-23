@@ -18,13 +18,14 @@ package lib;
 
 import java.net.URL;
 import javax.swing.JButton;
+import javax.swing.JTextField;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
-import java.awt.TextField;
 
 import java.awt.event.*;
 import bridge.*;
@@ -94,9 +95,11 @@ public class commonChatApplet extends FullscreenPanel
     static private final String Spaces = "     ";
     private int MINTEXTHEIGHT = 45;
     private TextArea messages = null;
-    public  TextField inputField = null;
-    private TextField nameField = null;
-    private TextField shortNameField = null;
+    // changing this from TextField to JTextField fixed a glitch in the cheerpj presentation
+    // and had no apparent bad effects in the Tantrix-java branch.  We don't currently use this at all.
+    public  JTextField inputField = null;
+    private JTextField nameField = null;
+    private JTextField shortNameField = null;
     
     // note on standard java, jbutton renders unicode
     // names correctly, button does not.
@@ -156,17 +159,17 @@ public class commonChatApplet extends FullscreenPanel
         messages.setBackground(backgroundColor);
         add(messages);
 
-        inputField = new TextField("Connection uninitialized.");
+        inputField = new JTextField("Connection uninitialized.");
         inputField.setFont(basicFont);
         inputField.setEditable(true);
         add(inputField);
 
-        shortNameField = new TextField("");
+        shortNameField = new JTextField("");
         add(shortNameField);
         shortNameField.setEditable(true);
         shortNameField.setVisible(false);
 
-        nameField = new TextField("");
+        nameField = new JTextField("");
         add(nameField);
         nameField.setEditable(true);
         nameField.setVisible(false);

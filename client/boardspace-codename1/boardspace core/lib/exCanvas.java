@@ -93,6 +93,7 @@ public abstract class exCanvas extends ProxyWindow
 	    private JMenuItem logGraphics = null;	// log a graphics cycle
 	    private long logGraphicsStart = 0;
 	    private JMenu fontSizeMenu = null;	// select a font size
+	    private JMenu fontStyleMenu = null;
 	    private JMenu languageMenu = null;	// select a language
 	    private JCheckBoxMenuItem useCache = null;
 	    private JCheckBoxMenuItem virtualMouseCheckbox = null;
@@ -477,6 +478,19 @@ public abstract class exCanvas extends ProxyWindow
         	l.fontSizeMenu.add(m);
         }
         
+        if(G.debug())
+        {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
+        	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
+        	String current = G.defaultFontFamily();
+        	for(String font : fonts)
+        	{
+        		JCheckBoxMenuItem m  = new JCheckBoxMenuItem(font);
+        		if(font.equals(current)) { m.setSelected(true); }
+        		m.addItemListener(deferredEvents);
+        		l.fontStyleMenu.add(m);
+        	}
+        }
+        
         l.languageMenu = myFrame.addChoiceMenu(s.get(PREFERREDLANGUAGE),deferredEvents);
         l.languageMenu.setForeground(Color.blue);
         InternationalStrings.addLanguageNames(l.languageMenu,deferredEvents);
@@ -525,6 +539,38 @@ public abstract class exCanvas extends ProxyWindow
     			if(isSel && (val>6) && (val!=G.defaultFontSize)) 
     				{ 
     					G.setDefaultFontSize(val);
+    					G.setGlobalDefaultFont();
+    					doNullLayout();  
+    					generalRefresh();
+    					item.setSelected(true);
+    					
+     				}
+ 				  some = true;
+    		}
+    		else if(isSel) 
+    			{ sel = item; }
+    	}	
+    	if(some && sel!=null) 
+    		{ sel.setSelected(false); 
+    		}}
+    	return(some);
+    }
+    private boolean selectFontStyle(Object target)
+    {	JMenu m = (JMenu)l.fontStyleMenu;
+		boolean some = false;
+    	if(m!=null)
+    	{
+    	int nItems = m.getItemCount();
+    	JCheckBoxMenuItem sel = null;
+    	for(int i = 0; i<nItems; i++)
+    	{	JCheckBoxMenuItem item = (JCheckBoxMenuItem)m.getItem(i);
+    		boolean isSel = item.isSelected();
+    		if(item==target)
+    		{	
+    			String val = item.getText();
+    			if(isSel) 
+    				{ 
+    					G.setDefaultFontFamily(val);
     					G.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
@@ -637,6 +683,7 @@ public abstract class exCanvas extends ProxyWindow
 		   mouse.setVirtualMouseMode(l.virtualMouseCheckbox.getState());
 	   }
 	   else if(selectFontSize(target)) {return(true); }
+	   else if(selectFontStyle(target)) { return true; }
        else if(target==l.cpuTest) 
         	{ double time = G.cpuTest();
         	  
@@ -651,7 +698,14 @@ public abstract class exCanvas extends ProxyWindow
         {	imageCache.cache_images = l.useCache.getState();
         	return(true);
         }
-        else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) { return(true); }
+        else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
+        	{	String fam = G.getTranslations().get("fontfamily");
+	 			G.setDefaultFontFamily(fam);
+	 			G.setGlobalDefaultFont();
+	 			doNullLayout();  
+	 			generalRefresh(); 
+	 			return(true); 
+        	}
 
 		return(false);
 	}

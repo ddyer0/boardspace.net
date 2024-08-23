@@ -49,7 +49,7 @@ import static checkerboard.CheckerMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, PlacementProvider
+public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants,PlacementProvider
 {
 	static final String Checker_SGF = "Checker"; // sgf game name
 	static final String ImageDir = "/checkerboard/images/";
@@ -353,12 +353,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     //
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
-    	int obj2 = obj/100;
-    	int obj1 = obj%100;
-    	CheckerChip ch = CheckerChip.getChipNumber(obj1);// Tiles have zero offset
-    	Drawable chd = obj2!=0 ? ch.getKing() : ch;
-    	chd.drawChip(g,this,SQUARESIZE,xp,yp,null);
-
+    	CheckerCell c = b.pickedStack;
+    	c.drawStack(g,this,null,SQUARESIZE,xp,yp,0,stepSize(c),null);
      }
 
     // also related to sprites,
@@ -376,6 +372,12 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     //}
 
 
+    private double stepSize(CheckerCell cell)
+    {
+    	int h = cell.height();
+        double step = h<=5 ? 0.1 : 0.1-(h-5)*0.004;
+        return step;
+    }
 
 
 
@@ -395,7 +397,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         //
      	numberMenu.clearSequenceNumbers();
      	
-     	Enumeration<CheckerCell>cells = gb.getIterator(Itype.LRTB);
+     	// stacks for bashki can lean right a little, TBLR clips them
+     	Enumeration<CheckerCell>cells = gb.getIterator(Itype.TBRL);
      	while(cells.hasMoreElements())
      	{
             CheckerCell cell = cells.nextElement();
@@ -403,7 +406,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             HitPoint hitNow = (!dolift && gb.legalToHitBoard(cell,targets)) ? highlight : null;
-            if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,liftSteps,0.1,null)) 
+            double step = stepSize(cell);
+            if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,liftSteps,step,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	highlight.arrow =hasMovingObject(highlight) 
           				? StockArt.DownArrow 
@@ -525,7 +529,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         numberMenu.recordSequenceNumber(b.activeMoveNumber());
         lastDropped = b.lastDropped;
  
-        startBoardAnimations(replay);
+        startBoardAnimations(b,replay);
         if(replay.animate) { playSounds(mm); }
  
         return (true);
@@ -552,7 +556,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       * 
       * @param replay
       */
-     void startBoardAnimations(replayMode replay)
+     void startBoardAnimations(CheckerBoard gb,replayMode replay)
      {
         if(replay.animate)
      	{	double now = 0;
@@ -561,7 +565,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      		CheckerCell to = b.animationStack.pop();		// source and destination for the move
      		CheckerCell from = b.animationStack.pop();
      		double start = now;
-     		Drawable glyph = to.isKing()
+     		Drawable glyph = gb.isKing(to)
      							? to.topChip().getKing() 
      							: to.topChip();
      		now = startAnimation(from,to,glyph,start,0);	// start it
@@ -746,38 +750,11 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    //public void verifyGameRecord()
-    //{	super.verifyGameRecord();
-    //}    
-    // for reference, here's the standard definition
-    //   public void verifyGameRecord()
-    //   {	BoardProtocol ourB =  getBoard();
-    //   	int ourDig = ourB.Digest();
-    //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
-    //   	int dupDig = dup.Digest();
-    //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
-    //   	dup.doInit();
-    //   	int step = History.size();
-    //   	int limit = viewStep>=0 ? viewStep : step;
-    //   	for(int i=0;i<limit;i++) 
-    //   		{ commonMove mv = (commonMove)History.elementAt(i);
-    //   		  //G.print(".. "+mv);
-    //   		  dup.Execute(mv); 
-    //   		}
-    //   	int dupRedig = dup.Digest();
-    //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
-    //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
-    //   	if(dupRedig!=ourDig)
-    //   	{
-    //   	//int d0 = ourB.Digest();
-    //   	//int d1 = dup.Digest();
-    //   	G.Assert(false,"Replay digest matches");
-    //   	}
-    //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
-    //   	// may be a draw where dup is not if ourB is pending a draw.
-    //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
-    //   	dupBoard = null;
-    //   }
+    public void verifyGameRecord()
+    {	//DISABLE_VERIFY = true;
+    	super.verifyGameRecord();
+    }    
+ 
     
 private void playSounds(commonMove m)
 {
@@ -1134,8 +1111,11 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023
-     * 	381 files visited 0 problems
+     * summary: 7/16/2024
+     * summary:
+	 * 324: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\checkers\checkersgames\checkersgames\archive-2023\games-Jan-29-2023.zip CK-guatemara-Dumbot-2022-12-01-2003.sgf lib.ErrorX: Not expecting robot in state Gameover
+	 * 503: play Problem in file:G:\share\projects\boardspace-html\htdocs\checkers\checkersgames\checkersgames\games-Jan-29-2023\CK-guatemara-Dumbot-2022-12-01-2003.sgf lib.ErrorX: Not expecting robot in state Gameover
+	 * 714 files visited 2 problems
      */
     public void ReplayMove(sgf_node no)
     {

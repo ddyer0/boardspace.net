@@ -182,7 +182,12 @@ public variation gamevariation = variation.hive;
 				&& (c!=null)
 				&& ((threestep || (c.sweep_counter!=sweep_counter)))	// not already seen (for ant moves)	
 				&& (c.height()==0) 	// not occupied
-				&& ((prevc==origin)||(nextc==origin)||((prevc!=null)&&(prevc.height()==0))||((nextc!=null) && (nextc.height()==0)))	// not a closed gate
+				&& ((prevc==origin)
+						||(nextc==origin)
+						// at the current edge of the board, prevc and nextc can be null, which should
+						// be treated as empty cells.
+						||((prevc==null) || (prevc.height()==0))
+						||((nextc==null) || (nextc.height()==0)))	// not a closed gate
 				&& adjacentCell(c,source,origin)) // still part of the hive
 				{ c.sweep_counter=sweep_counter;
 				  if(path!=null) { path.push(c); }

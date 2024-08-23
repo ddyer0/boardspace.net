@@ -770,8 +770,8 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        }
        else {
     	   GC.Text(gc,true,statsRect,null,null,s.get("Words for #1",prettyName(pboard.boardIndex)));
-          // drawGameLog(gc,gameLog3,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
-          // drawGameLog(gc, gameLog4,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
+           drawGameLog(gc,gameLog3,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
+           drawGameLog(gc, gameLog4,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
            drawGameLog(gc,gameLog5,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
       }
        GC.setFont(gc,standardBoldFont());

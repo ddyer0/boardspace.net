@@ -33,12 +33,18 @@ public interface CheckerConstants
 	static String InternationalCheckersRules = "international checkers rules";
 	static String AntiDraughtsRules = "antidraughts rules";
 	static String FrisianCheckersRules = "frisian checkers rules";
+	static String RussianCheckersRules = "russian checkers rules";
+	static String BashniCheckersRules = "bashni rules";
+	static String StacksCheckersRules = "stacks rules";
 	static String EndgameDescription = "The game will be a draw after #1 moves";
 	static enum Variation
 	{	Checkers_Frisian(CheckerChip.frisian,FrisianCheckersRules,"checkers-frisian",10,true),
 		Checkers_Turkish(CheckerChip.turkish,TurkishCheckersRules,"checkers-turkish",8,true),
 		Checkers_International(CheckerChip.international,InternationalCheckersRules,"checkers-international",10,true),
 		Checkers_American(CheckerChip.american,AmericanCheckersRules,"checkers-american",8,false),
+		Checkers_Russian(CheckerChip.russian,RussianCheckersRules,"checkers-russian",8,true),
+		Checkers_Stacks(CheckerChip.stacks,StacksCheckersRules,"checkers-stacks",8,true),
+		Checkers_Bashni(CheckerChip.bashni,BashniCheckersRules,"checkers-bashni",8,true),
 		AntiDraughts(CheckerChip.anti,AntiDraughtsRules,"antidraughts",10,true),
 		Checkers_10(null,null,"checkers-10",10,false),	// empty checkers board size 10
 		Checkers_8(null,null,"checkers-8",8,false),		// empty checkers board size 8
@@ -100,6 +106,8 @@ public enum CheckerId implements CellId
 //	these next must be unique integers in the dictionary
 	Black_Chip_Pool("B"), // positive numbers are trackable
 	White_Chip_Pool("W"),
+	Black_King("BK"),
+	White_King("WK"),
     BoardLocation(null),
     ReverseViewButton(null),
     ToggleEye(null),
@@ -141,17 +149,26 @@ static void putStrings()
 			{"Checkers_variation","Standard Checkers"},
 			{"Checkers-frisian","Frisian Checkers"},
 			{"Checkers-frisian_variation","Frisian Checkers"},
+			{"Checkers-russian_variation","Russian Checkers"},
+			{"Checkers-bashni_variation","Bashni"},
+			{"Checkers-stacks_variation","Stacks Checkers"},
 			{"Checkers-international","International Checkers"},
 			{"Checkers-international_variation","International Checkers"},
 			{"Checkers-turkish","Turkish Checkers"},
 			{"Checkers-turkish_variation","Turkish Checkers"},
 			{"Checkers-american","American Checkers"},
 			{"Checkers-american_variation","American Checkers"},
+			{"Checkers-russian","Russian Checkers"},
+			{"Checkers-bashni","Bashni Checkers"},
+			{"Checkers-stacks","Stacks Checkers"},
 			{AmericanCheckersRules,"move forward 1 space diagonally\nmandatory capture forward diagonally\nkings move and capture forward and backward"},
 			{TurkishCheckersRules,"move forward or sideways orthogonally\nmandatory captures forward or sideways\nflying kings move and capture orthoginally\nmaximal captures are required"},
 			{InternationalCheckersRules,"move forward diagonally\nmandatory captures forward or backwards diagonally\nflying kings move and capture diagonally\nmaximal captures are required"},
 			{AntiDraughtsRules,"same as International Checkers, except the goal is to lose"},
-			{FrisianCheckersRules,"move forward diagonally\nmandatory captures in all 8 directions\nflying kings move and capture in all directions, captures are required"}
+			{FrisianCheckersRules,"move forward diagonally\nmandatory captures in all 8 directions\nflying kings move and capture in all directions, captures are required"},
+			{RussianCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required"},
+			{BashniCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required\ncaptured checkers are stacked, and only the top of stacks are captured"},
+			{StacksCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required\ncaptured checkers are stacked, and only the top of stacks are captured\nAny stack with 2 of the same chips on top is a king"},
 		};
 		InternationalStrings.put(CheckerStrings);
 		InternationalStrings.put(CheckerStringPairs);

@@ -746,7 +746,7 @@ public static Object MakeInstance(String classname)
      */
     public static void setGlobalDefaultFont()
     {	int fontHeight = defaultFontSize();
-		Font f = G.getFont("Arial Unicode MS"/*"sansserif"*/, G.Style.Plain, fontHeight);
+		Font f = G.getFont(G.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, G.Style.Plain, fontHeight);
     	setGlobalDefaultFont (f);
     }
     public static int getAbsoluteX(Component c)	// absolute up to the frame

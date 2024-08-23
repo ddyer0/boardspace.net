@@ -64,7 +64,6 @@ public class ChatWidget
 	boolean hasFocus = false;
 	int flipInterval = 500;
 	boolean inputVisible = false;
-	
 	void changeFocus(boolean has,ChatId id)
 	{	hasFocus = has;
 		useKeyboard = G.defaultUseKeyboard();
@@ -387,7 +386,6 @@ public class ChatWidget
         comments.multiLine = true;
         inputField.addObserver(this);
         messages.addObserver(this);
-        
     }
 
     public void postMessage(int userNum, String command, String theMessage)
@@ -550,7 +548,7 @@ public class ChatWidget
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
     	int fs = G.standardizeFontSize((int)(G.defaultFontSize*(G.isCodename1()?1.2:1)));
-        basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, fs);
+        basicFont = G.getFont(G.defaultFontFamily(), G.Style.Plain, fs);
         boldFont = G.getFont(basicFont,G.Style.Bold,fs);
 
         //G.print("font "+fs+" "+G.defaultFontSize);

@@ -59,10 +59,28 @@ public class CheckerCell extends stackCell<CheckerCell,CheckerChip> implements P
 	/** define the base level for stacks as 1.  This is because level 0 is the square itself for this
 	 * particular representation of the board.
 	 */
-	public int stackBaseLevel() { return(1); }
+	public int stackBaseLevel() { return(onBoard?1:0); }
 
-	
-	public boolean isKing() { return((height()-stackBaseLevel())==2); }
+	public boolean isTowerKing()
+	{
+		int h = height();
+		if(h>=2)
+		{
+			CheckerChip ch1 = chipAtIndex(h-1);
+			CheckerChip ch2 = chipAtIndex(h-2);
+			return (ch1==ch2);
+		}
+		return false;
+	}
+	public boolean isSimpleKing()
+	{
+		return (height()-stackBaseLevel())==2;
+	}
+	public boolean isBashniKing()
+	{	CheckerChip top = topChip();
+		return (top==CheckerChip.whiteKing) || (top==CheckerChip.blackKing);
+	}
+
 	public CheckerCell(Random r) { super(r); }
 	
 	public int getLastPlacement(boolean empty) {
@@ -92,6 +110,13 @@ public class CheckerCell extends stackCell<CheckerCell,CheckerChip> implements P
 		lastCaptured = ot.lastCaptured;
 		lastContents = ot.lastContents;
 
+	}
+	public void moveFrom(CheckerCell ot)
+	{	int fromBoard = ot.onBoard ? 1 : 0;
+		int toBoard = ot.height();
+		// cells on the board have the board itself as their bottom element
+		for(int i=fromBoard; i<toBoard;i++) { addChip(ot.chipAtIndex(i)); }
+		while(toBoard>fromBoard) { ot.removeTop(); toBoard--; }
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
