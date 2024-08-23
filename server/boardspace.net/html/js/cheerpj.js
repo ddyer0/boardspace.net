@@ -16,7 +16,7 @@ function touchTest()
 function getOS() {
   const userAgent = window.navigator.userAgent,
       platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
-      macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+      macosPlatforms = ['Mac OS', 'macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
       windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
       iosPlatforms = ['iPhone', 'iPad', 'iPod'];
   let os = null;
@@ -39,9 +39,9 @@ function getOS() {
 function alertUnsupportedOS()
 {
   var os = getOS();
-  if(! ((os == 'Windows') || (os == 'Linux') || (os == 'Max OS')))
+  if(! ((os == 'Windows') || (os == 'Linux') || (os == 'Mac OS')))
   {
-   alert("Not supported on " + os + "\nDon't expect this to work");
+   alert("Not supported on '" + os + "'\nDon't expect this to work");
   }
 }
 

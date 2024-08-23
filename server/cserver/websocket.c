@@ -145,6 +145,11 @@ May 29, 2022
  */
 settings_t settings;
 
+int minusErrNo()
+{
+    int e = ErrNo();
+    return e<= 0 ? -1 : e;
+}
 
 /*
  * SSL Wrapper Code
@@ -321,6 +326,7 @@ char* base64_encode(const unsigned char* in, size_t len,unsigned char *out,size_
     return out;
 }
 
+#if 0
 int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
     59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
     6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -409,15 +415,16 @@ int base64_decode(const char* in, unsigned char* out, size_t outlen)
     return 1;
 }
 
+#endif
 
-int encode_hybi(User *u,u_char const *src, int srclength,
-                char *target, int targsize, unsigned int opcode)
+int encode_hybi(User* u, u_char const* src, int srclength,
+    char* target, int targsize, unsigned int opcode)
 {
     unsigned long long payload_offset = 2;
     int len = 0;
 
     if (opcode != OPCODE_TEXT && opcode != OPCODE_BINARY) {
-        logEntry(&mainLog, "[%s] Invalid opcode %d.  S%d\n", timestamp(),opcode, socket);
+        logEntry(&mainLog, "[%s] Invalid opcode %d.  S%d\n", timestamp(), opcode, socket);
         u->websocket_errno = -1;
         return -1;
     }
@@ -430,22 +437,24 @@ int encode_hybi(User *u,u_char const *src, int srclength,
 
     len = (int)srclength;
 
-     if (len <= 125) {
-        target[1] = (char) len;
+    if (len <= 125) {
+        target[1] = (char)len;
         payload_offset = 2;
-    } else if ((len > 125) && (len < 65536)) {
-        target[1] = (char) 126;
+    }
+    else if ((len > 125) && (len < 65536)) {
+        target[1] = (char)126;
         *(u_short*)&(target[2]) = htons(len);
         payload_offset = 4;
-    } else {
+    }
+    else {
         logEntry(&mainLog, "[%s] Sending frames larger than 65535 bytes not supported. size=%d S%d\n", timestamp(), len, socket);
         u->websocket_errno = -1;
         return -1;
     }
 
-        memcpy(target+payload_offset, src, srclength);
-        len = (int)srclength;
- 
+    memcpy(target + payload_offset, src, srclength);
+    len = (int)srclength;
+
     if (len < 0) {
         return len;
     }
@@ -455,14 +464,14 @@ int encode_hybi(User *u,u_char const *src, int srclength,
 
 int decode_hybi(User *u,unsigned char *src, int srclength,
                 u_char *target, int targsize,
-                unsigned int *opcode, unsigned int *left)
+                int *opcode, int *left)
 {
     unsigned char *frame, *mask, *payload, save_char;
     char cntstr[4];
     int masked = 0;
     int len, framecount = 0;
     size_t remaining;
-    unsigned int target_offset = 0, hdr_length = 0, payload_length = 0;
+    int target_offset = 0, hdr_length = 0, payload_length = 0;
 
     *left = (int)srclength;
     frame = src;
@@ -537,16 +546,25 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
         {
             mask = payload - 4;
             {
-                unsigned int i;
+                int i;
                 for (i = 0; i < payload_length; i++) {
                     payload[i] ^= mask[i % 4];
                 }}
         }
 
-	  { // binary
-	    if(settings.veryverbose) { printf("binary decode\n"); }
-            memcpy(target+target_offset, payload, payload_length);
-            len = payload_length;
+        { // binary
+            if (settings.veryverbose) { printf("binary decode\n"); }
+            if (payload_length <= targsize)
+            {
+                memcpy(target + target_offset, payload, payload_length);
+                len = payload_length;
+            }
+            else
+            {
+                logEntry(&mainLog, "[%s] websocket input buffer too small, %d available need %d  S%d\n", timestamp(), targsize, payload_length, socket);
+                u->websocket_errno = -1;
+                return -1;
+            }
         }
 
         // Restore the first character of the next frame
@@ -554,7 +572,7 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
         if (len < 0) {
             logEntry(&mainLog, "[%s] Base64 decode error code %d S%d\n", timestamp(), len, socket);
             u->websocket_errno = -1;
-            return len;
+            return -1;
         }
         target_offset += len;
 
@@ -564,7 +582,6 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
     if (framecount > 1) {
         snprintf(cntstr, 3, "%d", framecount);
      }
-
     *left = (int)remaining;
     return target_offset;
 }
@@ -830,9 +847,14 @@ HandshakeResult do_handshake(User* u)
             logEntry(&mainLog, "[%s] Oversized handshake. size=%d S%d\n", timestamp(), index, sock);
             result = HANDSHAKE_ERROR;
     }
-
+    
     int len = (int) ws_recv(ctx, sock, buffer+index, size);
     if (len < 0) {
+        int enn = minusErrNo();
+        if (enn == EWOULDBLOCK)
+        {
+            return HANDSHAKE_SOME;
+        }
         return HANDSHAKE_ERROR;
     }
     else if (len == 0) { return HANDSHAKE_SOME; }
@@ -840,8 +862,26 @@ HandshakeResult do_handshake(User* u)
     // got something
     buffer[index + len] = (char)0;
 
+    if ( ((len >= 4) && (bcmp_local(buffer,"GET ", 4) != 0))
+         || ((len >= 16) && (bcmp_local(buffer, "GET /gameserver ", 16) != 0))) // this is the specific request for tantrix/boardspace server
+    {   // bogus websocket handshake, just disallow it now.
+        if (logging >= log_connections)
+        {
+            logEntry(&mainLog, "[%s] invalid websocket handshake, starts with %s S%d.\n",
+                timestamp(), buffer, sock);
+        }
+        banUserByIP(u);
+        return HANDSHAKE_ERROR;
+    }
+ 
     if (!strstr(buffer, "\r\n\r\n")) { return HANDSHAKE_SOME;  }    // not all there yet
 
+    
+    //if (logging >= log_all)
+    {
+        logEntry(&mainLog, "[%s] websocket handshake %s S%d.\n",
+            timestamp(), buffer, sock);
+    }
      // found for the break in the http header
 
     result = parse_handshake(u,ctx, buffer);
@@ -891,8 +931,9 @@ HandshakeResult do_handshake(User* u)
         }
 
         //handler_msg("response: %s\n", response);
-        ws_send(ctx, u->socket, response, strlen(response));
-        return HANDSHAKE_OK;
+        size_t len = strlen(response);
+        size_t sent = ws_send(ctx, u->socket, response, len);
+        return len==sent ?  HANDSHAKE_OK : HANDSHAKE_ERROR;
 
     }
     return HANDSHAKE_ERROR;
@@ -961,7 +1002,7 @@ void client_websocket_init(int portNum)
 int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
 {
     ws_ctx_t* ctx = (ws_ctx_t*)u->websocket_data;
-    unsigned int opcode = ctx->opcode;
+    int opcode = ctx->opcode;
     SOCKET sock = u->socket;
     unsigned char* inBuffer = ctx->cin_buf;
     int inIndex = ctx->cin_buf_idx; // start for reading new data
@@ -971,6 +1012,12 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
     int inEnd = inIndex + bytes;
     if (bytes < 0) {
         //handler_emsg("target closed connection\n");
+        int eno = minusErrNo();
+        u->websocket_errno = eno;
+        if (eno == EWOULDBLOCK)
+        {
+            bytes = 0;
+        }
         return bytes;
     }
     if (bytes > 0)
@@ -991,7 +1038,7 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
         }
         int left = 0;
         int len = 0;
-        //if (ctx->hybi) 
+        //if (ctx->hybi) the only kind we do
         {
             //printf("decode hybi %d\n", opcode);
             len = decode_hybi(u,inBuffer + inStart,
@@ -1035,38 +1082,45 @@ int websocketSend(User* u, unsigned char* buf, int siz)
     int sent = 0;   // if we're continuing with a partial packet, we tell the caller
                     // we sent nothing this time.  
     ws_ctx_t* ctx = (ws_ctx_t*)u->websocket_data;
-    unsigned char* outbuf = ctx->cout_buf;
-    int outstart = ctx->cout_buf_idx;
-    int outend = ctx->cout_buf_end;
- 
-    if (outend == 0)
+    if (ctx)
     {
-        // add new content to the now-empty buffer
+        unsigned char* outbuf = ctx->cout_buf;
+        int outstart = ctx->cout_buf_idx;
+        int outend = ctx->cout_buf_end;
 
-        //if (ctx->hybi) 
-        {   // for some reason, OPCODE_BINARY isn't acceptable to the clients
-            outend = encode_hybi(u,buf,siz,outbuf, WEBSOCKET_BUFSIZE, OPCODE_TEXT);
-        }
-        sent = siz;     // we tell the server we sent it all, eventhough we may not actually
-    }
-    int len = outend - outstart;
-    if (len > 0)
-    {
-        int bsent = ws_send(ctx, u->socket, outbuf + outstart, len);
-        if (bsent > 0)
+        if (outend == 0)
         {
-            outstart += bsent;
-            if (outstart == outend)
-            {   // start next time with a clean buffer
-                ctx->cout_buf_idx = ctx->cout_buf_end = 0;
+            // add new content to the now-empty buffer
+
+            //if (ctx->hybi) 
+            {   // for some reason, OPCODE_BINARY isn't acceptable to the clients
+                outend = encode_hybi(u, buf, siz, outbuf, WEBSOCKET_BUFSIZE, OPCODE_TEXT);
             }
-            else {
-                // continue sending the incomplete packet
-                ctx->cout_buf_idx = outstart;
+            sent = siz;     // we tell the server we sent it all, eventhough we may not actually
+        }
+        int len = outend - outstart;
+        if (len > 0)
+        {
+            int bsent = ws_send(ctx, u->socket, outbuf + outstart, len);
+            if (bsent > 0)
+            {
+                outstart += bsent;
+                if (outstart == outend)
+                {   // start next time with a clean buffer
+                    ctx->cout_buf_idx = ctx->cout_buf_end = 0;
+                }
+                else {
+                    // continue sending the incomplete packet
+                    ctx->cout_buf_idx = outstart;
+                }
+            }
+            else if(bsent<0)
+            {
+                u->websocket_errno = minusErrNo();
+                sent = bsent;
             }
         }
     }
-    
     return sent;
 
 }

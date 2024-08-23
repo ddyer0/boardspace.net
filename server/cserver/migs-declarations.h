@@ -90,15 +90,11 @@
 */
 #define ARRAY_NUMBER_OF_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
-#define PROXYSESSIONNUM (MAXSESSIONS-2)				// session devoted to http proxys
-#define WAITINGSESSIONNUM (MAXSESSIONS-1)			// the waiting session is where new connections go
-#define LASTREALSESSION (MAXSESSIONS-3)
+#define LASTREALSESSION (MAXSESSIONS-1)
 
 #define LOBBYSESSION (&Sessions[0])			// the lobby is where everyone sees everyone
-#define WAITINGSESSION (&Sessions[WAITINGSESSIONNUM])
-#define PROXYSESSION (&Sessions[PROXYSESSIONNUM])	//
-
-
+#define WAITINGSESSION (&WaitingSession)
+#define PROXYSESSION (&ProxySession)	//
 #define IDLESESSION (&Idle_Users)
 #define MAXWAITTIME 30		/* "select" wait time in select (seconds) */
 
@@ -645,6 +641,7 @@ int ErrNo();
 BOOLEAN setNBIO(SOCKET sock);
 
 #if WEBSOCKET
+void banUserByIP(User* U);
 void client_websocket_init(int portNum);
 void closeWebSocket();
 extern SOCKET webserversd;

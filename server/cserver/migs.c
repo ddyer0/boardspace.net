@@ -128,7 +128,9 @@ static User *activeClients[MAXCLIENTS];			//keep track of sockets active at the 
 Session Sessions[MAXSESSIONS];	//@global | Sessions | the array of all Session structures
 static Session *sessionStateHash[MAXSESSIONS*2];	//@global | sessionStateHash | hash index of session states
 static Session Idle_Users;		//@global | Idle_Users | an extra session that anchors the freelist of <t User> structures
-static User *DeadUsers;			//@global | DeadUsers | dead users, waiting to be flushed
+static Session ProxySession;	//@global | ProxySession | sessions using a proxy connection to elsewhere
+static Session WaitingSession;	//@global | WaitingSession | sessions newly connected, not in a regular session yet.
+static User *DeadUsers;			//@global | DeadUsers | dead users who were playing, waiting to notify the rest of the session
 
 static registeredUser *freeRegisteredUsers=NULL;
 static registeredUser *activeRegisteredUsers=NULL;
@@ -162,7 +164,7 @@ New features:
 	all ancillary data but no real socket.  This allows embedded robots to appear
 	as players, even though they do not use a socket.  It also allows disconnected
 	players to remain visible until they time out or reconnect.
-
+	
 	For game client version 2.10, added features to the "220" disconnection code, to
 	allow players to switch between player and spectator status. 
 
@@ -916,19 +918,25 @@ void banUser
 					timestamp(),U->clientUid,U->cookie);
 
 }
-
-void banIP(User *U)
+void banIP(unsigned int ip)
 {
-	int b4 = (U->ip>>0)&0xff;
-	int b3 = (U->ip>>8)&0xff;
-	int b2 = (U->ip>>16)&0xff;
-	int b1 = (U->ip>>24)&0xff;
-	U->expectEof = TRUE;
-	isBanned("",0,'Z',"",U->ip);
-	logEntry(&mainLog,"[%s] unusual banned IP %d.%d.%d.%d\n",
-					timestamp(),b1,b2,b3,b4);
+	int b4 = (ip >> 0) & 0xff;
+	int b3 = (ip >> 8) & 0xff;
+	int b2 = (ip >> 16) & 0xff;
+	int b1 = (ip >> 24) & 0xff;
+	isBanned("", 0, 'Z', "", ip);
+	logEntry(&mainLog, "[%s] unusual banned IP %d.%d.%d.%d\n",
+		timestamp(), b1, b2, b3, b4);
 
 }
+
+void banUserByIP(User* U)
+{
+	U->expectEof = TRUE;
+
+	banIP(U->ip);
+}
+
 int roundUp(int val,int r)
 {	int sz = ((val+r)/r)*r;
         return(sz>=0?sz:1);
@@ -2317,7 +2325,22 @@ static void closeClient(User *U,char *cxt,grace_state grace)
     saveConfig();
 }}
 
-
+static void putInDeadPlayers(Session *S,User* U)
+{
+	if (S != WAITINGSESSION)
+	{
+		User* du = DeadUsers;
+		while (du)
+		{
+			if (U == du) { return; }
+			du = du->nextDead;
+		}
+		// add to the dead list, make very sure we're not already on it.
+		U->nextDead = DeadUsers;
+		U->deadFromSession = S;
+		DeadUsers = U;
+	}
+}
 
 
 //
@@ -2326,51 +2349,48 @@ static void closeClient(User *U,char *cxt,grace_state grace)
 // if there are more bodies on the floor.  So we build a list
 // of the deceased, and send notifications as a separate phase.
 //
-void HandleError(User *U)
-{	
-	if(U->deadFromSession)
-	{
-	User *du = DeadUsers;
-	while(du) 
-	{ if(U==du) { return; }
-	  du = du->nextDead;
+void HandleWriteError(User *U,char *context)
+{
+	Session* S = U->session;
+	client_errors++;
+
+	if (S == WAITINGSESSION) {
+		simpleCloseClientOnly(U, context);
+		U->deadFromSession = NULL;
+		removeUserFromSession(U);
+		putUserInSession(U, IDLESESSION);
+		return;
 	}
-	assert(U->deadFromSession);
-	lsprintf(sizeof(U->reasonClosed),U->reasonClosed,"write_error");
-	// add to the dead list, make very sure we're not already on it.
-	U->nextDead = DeadUsers;
-	DeadUsers = U;
-	}
+	lsprintf(sizeof(U->reasonClosed), U->reasonClosed, context);
+	U->expectEof = TRUE;
+	closeClient(U, context, grace_optional);
+	putInDeadPlayers(S, U);
 }
 
+// close this client and add them to the dead users lists
 void HandleReadError(User *U,int err)
-{	
-	char xB[SMALLBUFSIZE];
-	SOCKET sock = U->socket;
-	lsprintf(sizeof(U->reasonClosed),U->reasonClosed,"readerr %d",err);
-	lsprintf(sizeof(xB),xB,ECHO_I_QUIT "%d %s",U->userNUM,U->reasonClosed);
-	U->expectEof=TRUE;
-	// try to tell him
-	if(isRealSocket(sock) )
-		{ sendSingle(xB,U);
- 		  closeClient(U,U->reasonClosed,grace_optional);
-		}
+{
+	Session* S = U->session;
+	lsprintf(sizeof(U->reasonClosed), U->reasonClosed, "readerr %d", err);
 
+	if (S == WAITINGSESSION)
 	{
-	// make sure we're not already there
-	User *du = DeadUsers;
-	while(du) 
-	{ if(U==du) { return; }
-	  du = du->nextDead;
+		U->deadFromSession = NULL;
+		simpleCloseClientOnly(U, U->reasonClosed);
+		removeUserFromSession(U);
+		putUserInSession(U, IDLESESSION);
+		return;
 	}
-	// add to the dead list, make very sure we're not already on it.
-	assert(U->deadFromSession);
-	U->nextDead = DeadUsers;
-	DeadUsers = U;
-	}
+	
+	SOCKET sock = U->socket;
+	U->expectEof = TRUE;
+	closeClient(U, U->reasonClosed, grace_optional);
+	putInDeadPlayers(S,U);
+	
 }
 
 
+// try to notify members of the same session that someone left
 void HandleDeadUsers()
 {	char dB[SMALLBUFSIZE];
  	while(DeadUsers)
@@ -3618,22 +3638,25 @@ int doSplitCopy(User *u,char *buf,int len)
 	return(0);
 }
 
-void restartOutput(User *u)
-{	if(isRealSocket(u->socket))
+int restartOutput(User *u)
+{   int writeResult = 0;
+    if(isRealSocket(u->socket))
 	{
 	BOOLEAN blocked = u->blocked;
-	int writeResult = startOutput(u);
-    if (writeResult < 0) 
-	{if(!u->expectEof)
-	{u->wasZapped=TRUE;
-	 if(logging>=log_errors)
-		{logEntry(&mainLog,"[%s] Zap At %d:(restart) Closing C%d (%s#%d) S%d  due to error %d, errno=%d, pending=%d\n",
-		timestamp(),__LINE__,u->userNUM,u->clientRealName,u->clientUid,u->socket,writeResult,ErrNo(),output_pending(u));
+	writeResult = startOutput(u);
+	if (writeResult < 0)
+	{
+		if (!u->expectEof)
+		{
+			u->wasZapped = TRUE;
+			if (logging >= log_errors)
+			{
+				logEntry(&mainLog, "[%s] Zap At %d:(restart) Closing C%d (%s#%d) S%d  due to error %d, errno=%d, pending=%d\n",
+					timestamp(), __LINE__, u->userNUM, u->clientRealName, u->clientUid, u->socket, writeResult, ErrNo(), output_pending(u));
+			}
 		}
-	 client_errors++;
-	 closeClient(u,"zap",grace_mandatory);
-	 HandleError(u);
-	}}
+		HandleWriteError(u, "Zap restart output");
+	}
 	else if(blocked)
 	{
 	 if(logging>=log_errors)
@@ -3642,6 +3665,7 @@ void restartOutput(User *u)
 		}
 	}
 	}
+    return writeResult;
 }
 /* local send */
 int lsend0(User *u,char *tempb,int len2)
@@ -3773,7 +3797,7 @@ static int checkSession(unsigned int ip, Session* S, int max)
 	return nfound;
 }
 
-static BOOLEAN checkIP(unsigned int ip)
+static BOOLEAN checkBannedIP(unsigned int ip,BOOLEAN websock)
 {
 
 	if (isBanned("", 0, 0, "", ip) != bc_none)
@@ -3785,13 +3809,32 @@ static BOOLEAN checkIP(unsigned int ip)
 			int b3 = (ip >> 8) & 0xff;
 			int b2 = (ip >> 16) & 0xff;
 			int b1 = (ip >> 24) & 0xff;
-			logEntry(&mainLog, "[%s] UNUSUAL: ip %d.%d.%d.%d rejected - connection from banned IP\n",
-				stamp, b1, b2, b3, b4);
+			logEntry(&mainLog, "[%s] UNUSUAL: ip %d.%d.%d.%d rejected - connection from banned %sIP\n",
+				stamp, b1, b2, b3, b4,
+				websock ? "websocket " : "");
 		}
-		return(FALSE);
+		return(TRUE);
 	}
+	return FALSE;
+}
+static BOOLEAN checkTooMany(unsigned int ip,BOOLEAN websock)
+{
 	int n = checkSession(ip, WAITINGSESSION, maxConnections);
-	return n >= 0;
+	if (n < 0)
+	{
+		if (logging >= log_errors)
+		{
+			int b4 = (ip >> 0) & 0xff;
+			int b3 = (ip >> 8) & 0xff;
+			int b2 = (ip >> 16) & 0xff;
+			int b1 = (ip >> 24) & 0xff;
+			logEntry(&mainLog, "[%s] Call from %d.%d.%d.%d refused and banned %s too many connections\n",
+				timestamp(), b1, b2, b3, b4,
+				websock ? "websocket " : "");
+		}
+		return TRUE;
+	}
+	return FALSE;
 }
 
 
@@ -3823,11 +3866,9 @@ void doEchoAll(User *ru, char *toOthers, int ignoreF)
 					  timestamp(),__LINE__,su->userNUM,su->clientRealName,su->clientUid,su->socket,writeResult,ErrNo());
 						}
 
-			client_errors++;
 		  }
-		  closeClient(su,"echo other zap",grace_mandatory);
- 		  HandleError(su);
-	  }
+		  HandleWriteError(su, "echo other zap");
+		}
 	  }
 	  nfound++;
 	  su=next;
@@ -3866,11 +3907,9 @@ void doEchoOthers(User *ru, char *toOthers, int ignoreF)
 					  timestamp(),__LINE__,su->userNUM,su->clientRealName,su->clientUid,su->socket,writeResult,ErrNo());
 						}
 
-			client_errors++;
 		  }
-		  closeClient(su,"echo other zap",grace_mandatory);
- 		  HandleError(su);
-	  }
+		  HandleWriteError(su, "echo other zap");
+		}
 	  }
 	  nfound++;
 	  su=next;
@@ -3889,20 +3928,16 @@ void doEchoSelf(User *ru, char *toSource, int ignoreF)
     int writeResult = lsend(ru,toSource);
     if (writeResult < 0) 
 	{
-      if(!ignoreF )
-	  {
-	   ru->wasZapped=TRUE;
-	   if(logging>=log_errors)
-			{logEntry(&mainLog,"[%s] Zap At %d:(echo) Closing C%d (%s#%d) S%d  due to error %d, errno=%d\n",
-			timestamp(),__LINE__,ru->userNUM,ru->clientRealName,ru->clientUid,ru->socket,writeResult,ErrNo());
+		if (!ignoreF)
+		{
+			ru->wasZapped = TRUE;
+			if (logging >= log_errors)
+			{
+				logEntry(&mainLog, "[%s] Zap At %d:(echo) Closing C%d (%s#%d) S%d  due to error %d, errno=%d\n",
+					timestamp(), __LINE__, ru->userNUM, ru->clientRealName, ru->clientUid, ru->socket, writeResult, ErrNo());
 			}
-	  client_errors++;
-	  closeClient(ru,"echo zap",grace_mandatory);
-	  HandleError(ru);
-	  }else
-	  {
-	  closeClient(ru,"failed echo",grace_mandatory);
-	  }
+		}
+	HandleWriteError(ru, "echo zap");
     }
   }
 }
@@ -3914,20 +3949,22 @@ void markForClosure(User* u)
 int sendSingleLen(char *inStr, User *u)
 {
    int err=0;
-   if(isRealSocket(u->socket) && !u->outputClosed)
+   if (isRealSocket(u->socket) && !u->outputClosed)
    {
-   if ((err=lsend(u, inStr)) < 0) 
-   {if(!u->expectEof)
-	   {u->wasZapped=TRUE;
-		if(logging>=log_errors)
-			{logEntry(&mainLog,"[%s] Zap At %d: Closing C%d (%s#%d) S%d due to error %d, errno=%d.\n",
-				timestamp(),__LINE__,u->userNUM,u->clientRealName,u->clientUid,u->socket,err,ErrNo());
-			}
-	   client_errors++;
+	   if ((err = lsend(u, inStr)) < 0)
+	   {
+		   if (!u->expectEof)
+		   {
+			   u->wasZapped = TRUE;
+			   if (logging >= log_errors)
+			   {
+				   logEntry(&mainLog, "[%s] Zap At %d: Closing C%d (%s#%d) S%d due to error %d, errno=%d.\n",
+					   timestamp(), __LINE__, u->userNUM, u->clientRealName, u->clientUid, u->socket, err, ErrNo());
+			   }
+		   }
+		   HandleWriteError(u, "send error");
 	   }
-   closeClient(u,"send error",grace_mandatory);
-   HandleError(u);
-   }}
+  }
    else
    {  logEntry(&mainLog,"[%s] Unusual: send to already closed C%d session %d msg %s",
 				timestamp(),
@@ -5045,31 +5082,31 @@ void process999(char *cmd,User *u,char *seq)		// just ignore
 }
 
 // tell "to" about the current members of the session
-void doSessionIntro(User *to)
-{	
-	Session *s = to->session;
-	User *u = s->first_user;
-	while(u!=NULL)
+void doSessionIntro(User* to)
+{
+	Session* s = to->session;
+	User* u = s->first_user;
+	while (u != NULL)
 	{
-	if(u!=to)
-	{
-	char xB[SMALLBUFSIZE];
-	lsprintf(sizeof(xB),xB,ECHO_INTRO_OTHERS "%d %d %d %d %s %d %d",
-					u->userNUM,
-					(u->isARobot?2 : u->isAPlayer ? 1 : 0),				// 1 for a player 0 for a spectator
-					u->clientSeat,
-					u->clientUid,
-					u->clientRealName,
-					u->clientOrder,
-					u->clientRev);			// play order is of interest only to the other players
-	sendSingle(xB,to);
-	}
-	u=u->next_in_session;
+		if (u != to)
+		{
+			char xB[SMALLBUFSIZE];
+			lsprintf(sizeof(xB), xB, ECHO_INTRO_OTHERS "%d %d %d %d %s %d %d",
+				u->userNUM,
+				(u->isARobot ? 2 : u->isAPlayer ? 1 : 0),				// 1 for a player 0 for a spectator
+				u->clientSeat,
+				u->clientUid,
+				u->clientRealName,
+				u->clientOrder,
+				u->clientRev);			// play order is of interest only to the other players
+			sendSingle(xB, to);
+		}
+		u = u->next_in_session;
 	}
 
 }
 
-BOOLEAN checkTooMany(int userid,unsigned int ip)
+BOOLEAN checkTooManyU(int userid,unsigned int ip)
 {	int numconnections=0;
 	int i;
 	for(i=0;i<=maxSessions;i++)	// all sessions, except waiting session
@@ -5248,7 +5285,7 @@ void process_send_intro(char *data,User *u,char *seq)
 #endif
 
 		// check for too many connections for this UID/IP pair
-		 if(checkTooMany(usernum,client_real_ip))
+		 if(checkTooManyU(usernum,client_real_ip))
 		 {
 			lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_I_QUIT "bad-banner-id ");
 			sendSingle(u->tempBufPtr,u);
@@ -6476,25 +6513,28 @@ cmdp commands[] =
 // return new value of loopCtr, which is usually the same as the old value
 
 static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq)
-{	if(u->unexpectedCount>0)
-	{	
+{
+	if (u->unexpectedCount > 0)
+	{
 		// security measure, if the user has sent garage, continue to accept and ignore
 		// input until he times out.
 		char shortCmd[100];
-		char *dots = "";
-		MyStrncpy(shortCmd,cmd,sizeof(shortCmd));
-		if(strlen(shortCmd)<strlen(cmd))
-		{	dots = " ...";
-		}
-		if(u->use_rng_in && rawcmd)
+		char* dots = "";
+		MyStrncpy(shortCmd, cmd, sizeof(shortCmd));
+		if (strlen(shortCmd) < strlen(cmd))
 		{
-		logEntry(&mainLog,"[%s] unusual ignored encrypted message from C%d (%s#%d) S%d : %s%s\n",
-					timestamp(),u->userNUM,u->clientRealName,u->clientUid,u->socket,rawcmd,dots);
+			dots = " ...";
 		}
-		logEntry(&mainLog,"[%s] unusual ignored message from C%d (%s#%d) S%d : %s%s\n",
-					timestamp(),u->userNUM,u->clientRealName,u->clientUid,u->socket,shortCmd,dots);
-		lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_GROUP_SELF "%s",cmd);
-		sendSingle(u->tempBufPtr, u);
+		if (u->use_rng_in && rawcmd)
+		{
+			logEntry(&mainLog, "[%s] unusual ignored encrypted message from C%d (%s#%d) S%d : %s%s\n",
+				timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, rawcmd, dots);
+		}
+		else
+		{
+			logEntry(&mainLog, "[%s] unusual ignored message from C%d (%s#%d) S%d : %s%s\n",
+			timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, shortCmd, dots);
+		}
 		return(u);
 	}
 	// process messages from the dispatch table
@@ -6524,7 +6564,7 @@ static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq
 			if( (strncmp("GET ",cmd,4)==0)
 				|| (strncmp("POST ",cmd,5)==0))
 			{	// somebody pointed a browser at our port.  Not an accident.
-				banIP(u);
+				banUserByIP(u);
 			}
 			if(logging>=log_errors)
 			{	
@@ -6544,7 +6584,7 @@ static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq
 						u->clientRealName,
 						u->clientUid,
 						u->socket,cmd);
-					banIP(u);
+					banUserByIP(u);
 				}else
 				{
 				DumpHistory();
@@ -6558,8 +6598,16 @@ static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq
 			}
 		// this used to be "ECHO FAILED" but changed in order to not give information
 		// to hackers about what is acceptable.
-		lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_GROUP_SELF "%s",cmd);
-		sendSingle(u->tempBufPtr, u);
+			if (u->session != WAITINGSESSION)
+			{
+				lsprintf(u->tempBufSize, u->tempBufPtr, ECHO_GROUP_SELF "%s", cmd);
+				sendSingle(u->tempBufPtr, u);
+			}
+			else {
+				simpleCloseClientOnly(u,"bad input from waiting session");
+				removeUserFromSession(u);
+				putUserInSession(u,IDLESESSION);
+			}
        }
 	return(u);	//loopCtr can change when reconnecting
 
@@ -6657,6 +6705,11 @@ static User *ProcessMessages(char *cmd,User *u)
 		}
 	else {
 		recordInHistory(" in",u->socket,cmd,strlen(cmd));
+		if (logging >= log_all)
+			{
+				logEntry(&mainLog, "[%s] received from C%d (%s#%d) S%d : %s\n",
+					timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, cmd);
+			}
 		}
 
 	// this shouldlnt' be here because strings that are
@@ -6793,24 +6846,27 @@ static int fillBuffer(User *u)
 			  doneReading = 1;
 		  }
 		  else
-		  { int err=ErrNo();
-			doneReading=1;
-			if(!u->wasZapped
-				&& (err!=EWOULDBLOCK)
-				&& (err!=EAGAIN)
-				&& (u->session!=LOBBYSESSION) 
-				&& (u->session!=WAITINGSESSION)
-				&& (u->session!=PROXYSESSION))
-			{
-			  client_errors++;
-			  u->wasZapped=TRUE;
-			  if(logging>=log_errors)
-				{ logEntry(&mainLog,"[%s] Zap C%d (%s#%d) S%d reading 0 bytes errno=%d\n",
-							timestamp(),u->userNUM,u->clientRealName,u->clientUid,u->socket,err);
-			}}
-			put=0;
-			u->expectEof=TRUE;
-			HandleReadError(u,err);
+		  {
+			  int err = ErrNo();
+			  doneReading = 1;
+			  if (!u->wasZapped
+				  && (err != EWOULDBLOCK)
+				  && (err != EAGAIN)
+				  && (u->session != LOBBYSESSION)
+				  && (u->session != WAITINGSESSION)
+				  && (u->session != PROXYSESSION))
+			  {
+				  client_errors++;
+				  u->wasZapped = TRUE;
+				  if (logging >= log_errors)
+				  {
+					  logEntry(&mainLog, "[%s] Zap C%d (%s#%d) S%d reading 0 bytes errno=%d\n",
+						  timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, err);
+				  }
+			  }
+			  put = 0;
+			  u->expectEof = TRUE;
+			  HandleReadError(u, err);
 		  }
 		break;
 
@@ -6875,33 +6931,61 @@ static int fillBuffer(User *u)
 
 	return(eol);
 }
+void closePendingConnections(unsigned int ip)
+{
+	Session *S = WAITINGSESSION;
+	User* U = S->first_user;
+	while (U != NULL)
+	{
+		User* next = U->next_in_session;
+		if (U->ip == ip)
+		{
+			simpleCloseClientOnly(U, "one of too many");
+			removeUserFromSession(U);
+			putUserInSession(U, IDLESESSION);
+		}
 
+		U = next;
+	}
+
+}
 static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 {	 
 	socklen_t fl=sizeof(iclient);
 	SOCKET newsocket = accept(insoc,(struct sockaddr *)&iclient,&fl);
 	 unsigned int ip = htonl(iclient.sin_addr.s_addr);
 
-	 User *u=NULL;
 	 if(newsocket==INVALID_SOCKET ) 
 	 {
 	   if(logging>=log_errors)
 			{ logEntry(&mainLog,"[%s] Connection attempted, %saccept failed, code %d errno %d.\n",
 				  timestamp(),websock?"websocket ":"",newsocket, ErrNo());
 			}
-	 }else
-	 { sockets_open++;
-	 if(maxsockets<sockets_open) { maxsockets = sockets_open; }
-	 if(checkIP(ip)					//possibly refuse based on connection ip addr
-	    && setNBIO(newsocket)		//possibly fail ioctl
-	    && (u=findAslot(WAITINGSESSION)))	//possibly fail to find a slot
+	 }
+	 else if (checkBannedIP(ip,websock)) {
+		 closesocket(newsocket);
+	 }
+	 else if (checkTooMany(ip,websock))
+	 {
+		 banIP(ip);
+		 closesocket(newsocket);
+		 closePendingConnections(ip);
+	 }
+	 else 
 	 { 
+	 if(setNBIO(newsocket))		//possibly fail ioctl
+	 { 
+	 User *u= findAslot(WAITINGSESSION);	//possibly fail to find a slot
+	 if(u)
+	   {
 	 u->socket = newsocket;
 	 u->websocket = websock;
 	 u->websocket_data = NULL;
 	 u->websocket_errno = 0;
 	 u->ip = ip;
 	 u->clientTime = Uptime();
+	 sockets_open++;
+	 if(maxsockets<sockets_open) { maxsockets = sockets_open; }
 	 if(sockets_open==1)
 		{UPTIME time_now=Uptime();
 		 UPTIME idle = time_now - start_idle_time;
@@ -6912,7 +6996,7 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 
 		}
 
-      if(logging>=log_connections)
+          if(logging>=log_connections)
 			{int b4 = (ip>>0)&0xff;
 			 int b3 = (ip>>8)&0xff;
 			 int b2 = (ip>>16)&0xff;
@@ -6922,21 +7006,23 @@ static void acceptNewConnections(SOCKET insoc,BOOLEAN websock)
 			  b1,b2,b3,b4,websock?"websocket ":"");
 			}
 
-	 }else
+           // succeeded
+           return;
+	   }
+	 }
+	 // failed for some reason, no U allocated
 	 {//no room at the end, send a curt refusal
-	  char tempString[100];
-	  
 	  if(logging>=log_connections)
 		{int b4 = (ip>>0)&0xff;
 		 int b3 = (ip>>8)&0xff;
 		 int b2 = (ip>>16)&0xff;
-	     int b1 = (ip>>24)&0xff;
+	         int b1 = (ip>>24)&0xff;
 		 logEntry(&mainLog,"[%s] Call from %d.%d.%d.%d refused %s(no room or iofail)\n",
-			  timestamp(),b1,b2,b3,b4,websock?"websocket ":"");
+			  timestamp(),b1,b2,b3,b4,
+			 websock?"websocket ":"");
 		}
-	  MyStrncpy(tempString," " ECHO_I_QUIT "refused\r\n",sizeof(tempString));	// include the leading space
-	  send(newsocket,tempString,(int)strlen(tempString),0);
-	  errClose(__LINE__,newsocket,ECHO_I_QUIT "refused, connection failed");
+	  simpleCloseSocket(newsocket);
+
 	 }}
 }
 
@@ -7309,23 +7395,38 @@ void main_thread()
 			else
 #endif
 			{
-			restartOutput(u);
+			  if((restartOutput(u))>0)
+			    {
+			      // reset timeout if progress was made
+			      u->clientTime=tempTime;
+			    }
 			}
-		    u->clientTime=tempTime;
 			}
 #if TIMEOUTS
 		else 
 		{int dif= (tempTime - u->clientTime);
-		 int tim = sessionTimeout(u->session);
+		 Session* S = u->session;
+		 int tim = sessionTimeout(S);
 		 if ( dif > tim)
-		{ char buf[SMALLBUFSIZE];
-          lsprintf(sizeof(buf),buf,ECHO_PLAYER_QUIT "%d timeout",u->userNUM);
-          doEchoOthers(u,buf,1);
-          lsprintf(sizeof(buf),buf,ECHO_I_QUIT "timeout");
-		  doEchoSelf(u,buf,1);
-		  lsprintf(sizeof(buf),&buf[0],"C%d (%s#%d) S%d timeout, (%d>%d)",u->userNUM,u->clientRealName,u->clientUid,u->socket,dif,tim);
-          errMsg(__LINE__,u->socket,&buf[0]);
-          closeClient(u,"timeout",grace_mandatory);
+		{ 
+			 if (S != WAITINGSESSION)
+			 {
+				 char buf[SMALLBUFSIZE];
+				 lsprintf(sizeof(buf), buf, ECHO_PLAYER_QUIT "%d timeout", u->userNUM);
+				 doEchoOthers(u, buf, 1);
+				 lsprintf(sizeof(buf), buf, ECHO_I_QUIT "timeout");
+				 doEchoSelf(u, buf, 1);
+				 lsprintf(sizeof(buf), &buf[0], "C%d (%s#%d) S%d timeout, (%d>%d)", u->userNUM, u->clientRealName, u->clientUid, u->socket, dif, tim);
+				 errMsg(__LINE__, u->socket, &buf[0]);
+				 closeClient(u, "timeout", grace_mandatory);
+			 }
+			 else
+			 {
+				 simpleCloseClientOnly(u, "waiting session timeout");
+				 removeUserFromSession(u);
+				 putUserInSession(u, IDLESESSION);
+			 }
+          
         }}
 #endif
       }
@@ -7365,7 +7466,7 @@ int main(int argc, char **argv)
   securityLog.logStream = stderr;
   securityLog.renameLogFile = TRUE;
   securityLog.notflushable=TRUE;
-
+  WAITINGSESSION->sessionNUM = -1;
   if (argc != 2) {
     logEntry(&mainLog,"<echoServer command> <configFile>\n");
     ExitWith(1);
