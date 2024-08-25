@@ -196,10 +196,11 @@ class SecondEvaluator extends DefaultEvaluator implements Evaluator
 				PieceType bugtype = bug.type;
 				int pieceordinal = bugtype.ordinal();
 				{	double weight = 0.6*piece_mobility_weight[pieceordinal];
-					HiveCell tempDests[] = board.getTempDest();
-					int ndests = board.legalDests(loc,false,bug,tempDests,null,pl,false);
-					if(ndests>0 || distance)
+					CellStack tempDests = board.getTempDest();
+					boolean some = board.legalDests(loc,false,bug,tempDests,null,pl,false);
+					if(some || distance)
 					{
+					int ndests = tempDests.size();
 					int nd = Math.min(ndests, 5);
 					if(print) 
 						{ msg += " "+bug.exactBugName()+"[";

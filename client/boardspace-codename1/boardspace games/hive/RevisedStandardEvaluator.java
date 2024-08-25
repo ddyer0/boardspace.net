@@ -118,9 +118,9 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 				if(board.pieceTypeIncluded.test(bugtype) && loc.onBoard)
 				{	double weight = 0.6*piece_mobility_weight[pieceordinal];
 					double distancemul = queen_distance_multiplier[pieceordinal];
-					HiveCell tempDests[] = board.getTempDest();
-					int ndests = board.legalDests(loc,false,bug,tempDests,null,pl,false);
-					if(ndests>0 || distance)
+					CellStack tempDests = board.getTempDest();
+					boolean some = board.legalDests(loc,false,bug,tempDests,null,pl,false);
+					if(some || distance)
 					{
 						// 
 						// look for sibling mobility enable, where a pair of pieces are both
@@ -129,21 +129,21 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 						if(print) 
 						{ msg += " "+bug.exactBugName()+"[";
 						}
-					if(ndests>0)
+					if(some)
 					{	boolean sibmo = board.sibMobile(loc);
 						if(sibmo)
 							{weight=weight/3;			// factor of 3 actively penalizes pairing ants
 							distancemul = distancemul/3;
 							if(print) { msg+="sibmobile "; }
 							}
-						val += ndests*weight;
+						val += tempDests.size()*weight;
 						if(!sibmo
 								&& (loc.height()==1)
 								&&loc.isAdjacentTo(myQueenLoc))
 							{ myQueenAdjacent++; 	// count the number of our pieces adjacent to the our q which are mobile
 							}
 					}
-					if(distance && (ndests>0))
+					if(distance && some)
 					{	// score distance from queen, but only for mobile pieces
 						int slither_distance = loc.slither_gradient-slither_base_gradient;
 						int queen_distance = (loc.overland_gradient-overland_base_gradient);

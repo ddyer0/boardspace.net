@@ -19,6 +19,15 @@ extern fileBuffer chatLog;
 extern fileBuffer securityLog;	
 extern int statusThreadRunning;
 extern int killThreads;
+// two macros ensures any macro passed will
+// be expanded before being stringified
+#define STRINGIZE_DETAIL(x) #x
+#define STRINGIZE(x) STRINGIZE_DETAIL(x)
+#define LOCATION() (__FILE__ ":" STRINGIZE(__LINE__))
+
+
+#define ALLOC(size) ALLOC_actual(size,LOCATION())
+#define FREE(obj,size) FREE_actual(obj,size,LOCATION())
 
 void MyStrncpy(char *dest,const char *src,size_t destsize);
 int lsprintf
@@ -47,8 +56,8 @@ void error(char *inStr, int err);
 extern int totalAllocations;
 extern int allocations;
 extern size_t allocatedSize;
-void *ALLOC(size_t size);
-void FREE(void *obj,size_t size);
+void *ALLOC_actual(size_t size,char *msg);
+void FREE_actual(void *obj,size_t size,char *from);
 void CHECK(void *obj,size_t size);
 void MEMCPY(void *dest,void *src,size_t siz);
 void MEMMOVE(void *dest,void *src,size_t siz);

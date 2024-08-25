@@ -113,15 +113,16 @@ class StandardEvaluator extends DefaultEvaluator implements Evaluator
 				int pieceordinal = bugtype.ordinal();
 				if(board.pieceTypeIncluded.test(bugtype) && loc.onBoard)
 				{	double weight = 0.6*piece_mobility_weight[pieceordinal];
-					HiveCell tempDests[] = board.getTempDest();
-					int ndests = board.legalDests(loc,false,bug,tempDests,null,pl,false);
-					if(ndests>0 || distance)
+					CellStack tempDests = board.getTempDest();
+					boolean some = board.legalDests(loc,false,bug,tempDests,null,pl,false);
+					if(some || distance)
 					{
+					int ndests = tempDests.size();
 					if(print) 
 						{ msg += " "+bug.exactBugName()+"[";
-						  if(ndests>0) { msg+=""+ndests+"="+(ndests*weight); }
+						  if(some) { msg+=""+ndests+"="+(ndests*weight); }
 						}
-					if(ndests>0)
+					if(some)
 					{
 						val += ndests*weight;
 						if((loc.height()==1)&&loc.isAdjacentTo(myQueenLoc))

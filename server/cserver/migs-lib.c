@@ -67,7 +67,7 @@ void MyStrncpy(char *dest,const char *src,size_t destsize)
 	dest[destsize-1]=(char)0;		// make sure it's terminated
 }
 
-static void fmtbug(int space, char *format, char *tmpfmt)
+static void fmtbug(size_t space, char *format, char *tmpfmt)
 {	char tmpbuf[30];
 	MyStrncpy(tmpbuf,format,sizeof(tmpbuf));
 	logEntry(&securityLog,"lvsprintf: buffer size %d exceeded, format \"%s\" at %s",space,tmpbuf,tmpfmt);
@@ -75,13 +75,13 @@ static void fmtbug(int space, char *format, char *tmpfmt)
 
 int lvsprintf_err
 	(BOOLEAN fatal,
-	 int space,	//the buffer size
+	 size_t space,	//the buffer size
 	 char *dest,	//the buffer
 	 char *format,	//the format specifier
 	 va_list args)	//variable arg list
 {	char *start_format = format;
     char *buffp = dest;
- 	int spaceleft = space-1;	//space left
+ 	size_t spaceleft = space-1;	//space left
     char c;
     char *tp;
     char tempfmt[64];		//temporary format
@@ -290,17 +290,19 @@ continue_format:
     return (int)(buffp - dest);
 }
 
+
 /* @func
 This is vsprintf with the addition of a buffer length argument, so you won't crash
 or generate unpredictable results if you accidentally exceed the size of the buffer.
 <nl>Overview: <l Printing>
 */
 int lvsprintf
-	(size_t space,	//@parm the buffer size
-	 char *dest,	//@parm the buffer
-	 char *format,	//@parm the format specifier
-	 va_list args)	//@parm variable arg list
-{	return(lvsprintf_err(TRUE,space,dest,format,args));
+(size_t space,	//@parm the buffer size
+	char* dest,	//@parm the buffer
+	char* format,	//@parm the format specifier
+	va_list args)	//@parm variable arg list
+{
+	return(lvsprintf_err(TRUE, space, dest, format, args));
 }
 
 /* @func
@@ -399,11 +401,13 @@ int totalAllocations = 0;
 // used to check the integrety of the heap
 typedef struct headGuard
 {	int data;
+	char* purpose;
 	size_t size;
 } headGuard;
 #define GUARDINT 0x5927531e
 
-void *ALLOC(size_t size)
+
+void *ALLOC_actual(size_t size,char *purpose)
 {	unsigned char *newptr = malloc(size+2*sizeof(headGuard));
 	if(newptr==NULL)
 	{
@@ -414,19 +418,22 @@ void *ALLOC(size_t size)
 	unsigned char *main = newptr+sizeof(headGuard);
 	headGuard *tail = (headGuard *)(main+size);
 	guard->size = size;
+	guard->purpose = purpose;
 	guard->data = GUARDINT;
 	tail->size = size;
+	tail->purpose = purpose;
 	tail->data = GUARDINT;
 	allocations++;
 	totalAllocations++;
 	allocatedSize += size;
 	if(logging>=log_all)
 			{
-				logEntry(&mainLog,"[%s] allocate #%d-%d %d : %x\n",
+				logEntry(&mainLog,"[%s] allocate #%d-%d %d %s : %x\n",
 							timestamp(),
 							totalAllocations,
 							allocations,
 							size,
+							purpose,
 							main);
 			}
 	return(main);
@@ -441,21 +448,24 @@ void CHECK(void *obj,size_t size)
 	assert((tail->size==size) && (tail->data==GUARDINT));
 	}
 }
-void FREE(void *obj,size_t size)
+void FREE_actual(void *obj,size_t size,char *from)
 {	if(obj!=NULL)
 	{
 	headGuard *head = (headGuard *)((unsigned char *)obj-sizeof(headGuard));
 	headGuard *tail = (headGuard *)((unsigned char *)obj+size);
 	assert((head->size==size) && (head->data==GUARDINT));
 	assert((tail->size==size) && (tail->data==GUARDINT));
+	assert((head->purpose == tail->purpose));
 	allocations--;
 	allocatedSize -= size;
 	if(logging>=log_all)
 			{
-				logEntry(&mainLog,"[%s] deallocate #%d %d : %x\n",
+				logEntry(&mainLog,"[%s] deallocate #%d %d %s allocated at %s : %x\n",
 							timestamp(),
 							allocations,
 							size,
+							from,
+							head->purpose,
 							obj);
 			}
 	free(head);

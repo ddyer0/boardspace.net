@@ -781,7 +781,12 @@ PREAMBLE_RESULT handshake_preamble(SOCKET socket)
                 return PREAMBLE_RAW;
             }
         }
-        else if (len == 0) { return PREAMBLE_ASKAGAIN;  }
+        else if (len == 0) 
+        {
+            int eno = minusErrNo();
+
+            return eno==EWOULDBLOCK ? PREAMBLE_ASKAGAIN : PREAMBLE_ERROR;
+        }
         else { return PREAMBLE_ERROR;  }
     }
     return PREAMBLE_ERROR;  // shouldn't ever get here.
@@ -849,7 +854,7 @@ HandshakeResult do_handshake(User* u)
     }
     
     int len = (int) ws_recv(ctx, sock, buffer+index, size);
-    if (len < 0) {
+    if (len <= 0) {
         int enn = minusErrNo();
         if (enn == EWOULDBLOCK)
         {
@@ -857,7 +862,7 @@ HandshakeResult do_handshake(User* u)
         }
         return HANDSHAKE_ERROR;
     }
-    else if (len == 0) { return HANDSHAKE_SOME; }
+ 
     ctx->cin_buf_idx = index + len;
     // got something
     buffer[index + len] = (char)0;
@@ -1010,7 +1015,7 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
     int inSize = WEBSOCKET_BUFSIZE - inIndex;
     int bytes = (int)ws_recv(ctx, sock, inBuffer + inIndex, inSize);
     int inEnd = inIndex + bytes;
-    if (bytes < 0) {
+    if (bytes <= 0) {
         //handler_emsg("target closed connection\n");
         int eno = minusErrNo();
         u->websocket_errno = eno;
@@ -1190,12 +1195,19 @@ void free_ws(ws_ctx_t* ctx) {
     FREE(ctx->cin_buf, WEBSOCKET_BUFSIZE);
     FREE(ctx->cout_buf, WEBSOCKET_BUFSIZE);
     FREE(ctx->headers, sizeof(headers_t));
-    FREE(ctx,sizeof(ws_ctx_t));
 #if INCLUDE_SSL
-    SSL_free(ctx->ssl);
-    ctx->ssl = NULL;
-    SSL_CTX_free(ctx->ssl_ctx);
-    ctx->ssl_ctx = NULL;
+    if (ctx->ssl != NULL)
+    {
+        SSL_free(ctx->ssl);
+        ctx->ssl = NULL;
+    }
+    if (ctx->ssl_ctx != NULL);
+    {
+        SSL_CTX_free(ctx->ssl_ctx);
+        ctx->ssl_ctx = NULL;
+    }
+    FREE(ctx, sizeof(ws_ctx_t));
+
 #endif
 }
 
@@ -1210,7 +1222,7 @@ void freeWebsocket(User* u)
     if (data != NULL)
     {
         u->websocket_data = NULL;
-        FREE(data, sizeof(ws_ctx_t));
+        free_ws(data);
     }
 }
 

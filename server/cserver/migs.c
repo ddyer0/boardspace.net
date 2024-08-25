@@ -6784,7 +6784,8 @@ static int fillBuffer(User *u)
 	int eol=0;
 	assert((u->topGuard==0xDEADBEEF)&&(u->bottomGuard==0xDEADBEEF)&&(u->midGuard==0xDEADBEEF));
     while (doneReading == 0)
-	{ int put = u->inbuf_put_index;
+	{ 
+	  int put = u->inbuf_put_index;
 	  int take = u->inbuf_take_index;
 	  int siz = (u->inbufSize-put)-1;
 	  if(put==take) 
@@ -6924,7 +6925,7 @@ static int fillBuffer(User *u)
 			doneReading = (eol!=0);
 			}
 	  }
-	  }
+	}
 	  /* end of actually reading */
 	}/* end of while */
 	assert((u->topGuard==0xDEADBEEF)&&(u->bottomGuard==0xDEADBEEF)&&(u->midGuard==0xDEADBEEF));

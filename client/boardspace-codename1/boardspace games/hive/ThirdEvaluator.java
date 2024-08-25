@@ -259,10 +259,11 @@ class ThirdEvaluator extends DefaultEvaluator implements Evaluator
 				int pieceordinal = bugtype.ordinal();
 				{	double weight = 0.6*piece_mobility_weight[pieceordinal];
 					double distanceweight = queen_distance_multiplier[pieceordinal];
-					HiveCell tempDests[] = board.getTempDest();
-					int ndests = board.legalDests(loc,false,bug,tempDests,null,pl,false);
-					if(ndests>0 || distance)
+					CellStack tempDests = board.getTempDest();
+					boolean some = board.legalDests(loc,false,bug,tempDests,null,pl,false);
+					if(some || distance)
 					{
+					int ndests = tempDests.size();
 					double nd = Math.min(ndests, 5);
 					// 
 					// look for sibling mobility enable, where a pair of pieces are both
