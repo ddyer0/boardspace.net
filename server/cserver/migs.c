@@ -924,9 +924,21 @@ void banIP(unsigned int ip)
 	int b3 = (ip >> 8) & 0xff;
 	int b2 = (ip >> 16) & 0xff;
 	int b1 = (ip >> 24) & 0xff;
-	isBanned("", 0, 'Z', "", ip);
-	logEntry(&mainLog, "[%s] unusual banned IP %d.%d.%d.%d\n",
-		timestamp(), b1, b2, b3, b4);
+	if (ip == 2130706433)	// 127.0.0.1
+		{
+		// this is inspired by an incident 8/21/2024 where the server banned connections from itsef
+		// which are used to authorize new logins and to check scoring.  Somehow the "218" check scoring
+		// message was received in the websocket channel, and rejected and summarily banned (of course)
+		// the result was that no one could login.  This clause is a backstop to be sure that this "impossible"
+		// state doesn't happen again.
+		logEntry(&mainLog, "[%s] unusual tried to self ban IP %d.%d.%d.%d\n",
+			timestamp(), b1, b2, b3, b4);
+		}
+	else {
+		isBanned("", 0, 'Z', "", ip);
+		logEntry(&mainLog, "[%s] unusual banned IP %d.%d.%d.%d\n",
+			timestamp(), b1, b2, b3, b4);
+	}
 
 }
 

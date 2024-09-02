@@ -466,18 +466,17 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
                 u_char *target, int targsize,
                 int *opcode, int *left)
 {
-    unsigned char *frame, *mask, *payload, save_char;
-    char cntstr[4];
+    unsigned char *frame, *mask, *payload;
     int masked = 0;
     int len, framecount = 0;
-    size_t remaining;
+    size_t remaining = 0;
     int target_offset = 0, hdr_length = 0, payload_length = 0;
 
-    *left = (int)srclength;
     frame = src;
 
     //printf("Deocde new frame\n");
-    while (1) {
+    while (1) 
+    {
         // Need at least two bytes of the header
         // Find beginning of next frame. First time hdr_length, masked and
         // payload_length are zero
@@ -488,17 +487,25 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
         //       (unsigned char) frame[2],
         //       (unsigned char) frame[3], srclength);
 
+        
+        remaining = (src + srclength) - frame;
         if (frame > src + srclength) {
             //printf("Truncated frame from client, need %d more bytes\n", frame - (src + srclength) );
             break;
         }
-        remaining = (src + srclength) - frame;
+        if (framecount > 0 && targsize < BUFFER_ALLOC_STEP/2)
+        {   // cause an artificial break if destination space is getting low
+            // and we've made some progress.  The next round ought to increase
+            // the buffer size for us
+            break;
+        }
         if (remaining < 2) {
             //printf("Truncated frame header from client\n");
             break;
         }
         framecount ++;
-
+        // frames we're getting from java are typically 1 byte frames, but a lot of them can stack up
+        // if there are any glitches in transmission
         *opcode = frame[0] & 0x0f;
         masked = (frame[1] & 0x80) >> 7;
 
@@ -537,10 +544,7 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
             continue;
         }
 
-        // Terminate with a null for base64 decode
-        save_char = payload[payload_length];
-        payload[payload_length] = '\0';
-
+ 
         // unmask the data
         if (masked)
         {
@@ -556,6 +560,7 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
             if (settings.veryverbose) { printf("binary decode\n"); }
             if (payload_length <= targsize)
             {
+                //printf("frame %d size %d rem in %d rem out %d\n", framecount, payload_length,  (int)remaining, targsize );
                 memcpy(target + target_offset, payload, payload_length);
                 len = payload_length;
             }
@@ -567,21 +572,12 @@ int decode_hybi(User *u,unsigned char *src, int srclength,
             }
         }
 
-        // Restore the first character of the next frame
-        payload[payload_length] = save_char;
-        if (len < 0) {
-            logEntry(&mainLog, "[%s] Base64 decode error code %d S%d\n", timestamp(), len, socket);
-            u->websocket_errno = -1;
-            return -1;
-        }
         target_offset += len;
+        targsize -= len;
 
         //printf("    len %d, raw %s\n", len, frame);
     }
 
-    if (framecount > 1) {
-        snprintf(cntstr, 3, "%d", framecount);
-     }
     *left = (int)remaining;
     return target_offset;
 }
@@ -1014,7 +1010,6 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
     int inStart = ctx->cin_start;   // start for decoding
     int inSize = WEBSOCKET_BUFSIZE - inIndex;
     int bytes = (int)ws_recv(ctx, sock, inBuffer + inIndex, inSize);
-    int inEnd = inIndex + bytes;
     if (bytes <= 0) {
         //handler_emsg("target closed connection\n");
         int eno = minusErrNo();
@@ -1023,9 +1018,10 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
         {
             bytes = 0;
         }
-        return bytes;
     }
-    if (bytes > 0)
+    int inEnd = inIndex + bytes;
+
+    if (bytes >= 0)
     {
 
         ctx->cin_buf_idx += bytes;
@@ -1050,6 +1046,7 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
                 inEnd - inStart,
                 outBuf, outSiz - 1,
                 &opcode, &left);
+            assert(len <= outSiz);
             //printf("len %d op %d\n", len, opcode);
         }
 
@@ -1161,7 +1158,7 @@ int websocketRecv(User *u, unsigned char* buf, int siz)
     {  // char sha1[HYBI10_ACCEPTHDRLEN + 1];
        // sha1_test("This is a test", sha1, sizeof(sha1));
         received = recv_decoded(u, buf, siz);
-        
+        assert(received <= siz);
         break;
         ;
         }
