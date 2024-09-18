@@ -362,7 +362,10 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
    public long Digest(Random r,int[]arr)
    {
 	   long v = 0;
-	   for(int lim = arr.length-1; lim>=0; lim--) { v ^= r.nextLong()*arr[lim]; }
+	   for(int lim = arr.length-1; lim>=0; lim--)
+	   	{ long d = r.nextLong();
+	   	  v ^= d*arr[lim]; 
+	   	}
 	   return(v);
    }
    

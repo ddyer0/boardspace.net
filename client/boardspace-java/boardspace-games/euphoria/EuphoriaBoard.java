@@ -1666,9 +1666,9 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         	{  EPlayer.sameBoard(players[i],from_b.players[i]);
         	}
         Assert(pickedObject==from_b.pickedObject,"pickedObject mismatch");
-        Assert(sameContents(droppedStateStack,from_b.droppedStateStack),"dropped state mismatch");
-        Assert(sameContents(pickedStateStack,from_b.pickedStateStack),"picked state mismatch");
-        Assert(sameContents(reRollPlayers,from_b.reRollPlayers),"rerollplayers mismatch");
+        Assert(droppedStateStack.eqContents(from_b.droppedStateStack),"dropped state mismatch");
+        Assert(pickedStateStack.eqContents(from_b.pickedStateStack),"picked state mismatch");
+        Assert(reRollPlayers.eqContents(from_b.reRollPlayers),"rerollplayers mismatch");
         Assert(sameContents(pickedHeightStack,from_b.pickedHeightStack),"picked height stack matches %s and %s",pickedHeightStack,from_b.pickedHeightStack);
         Assert(doublesElgible==from_b.doublesElgible,"elgible for doubles mismatch");
         Assert(usingDoubles==from_b.usingDoubles,"using doubles mismatch");

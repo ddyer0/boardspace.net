@@ -18,8 +18,6 @@ package viticulture;
 
 import lib.Sort;
 import lib.StackIterator;
-import lib.exCanvas;
-import lib.Graphics;
 import lib.Drawable;
 import lib.G;
 import lib.HitPoint;
@@ -184,19 +182,6 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 		else
 		{
 			return super.pointInsideCell(pt, x, y, SQW, SQH);
-		}
-	}
-
-	public boolean drawChip(Graphics gc,exCanvas drawOn,chip<?> piece,HitPoint highlight,int SQUARESIZE,int e_x,int e_y,String thislabel)
-	{ if(piece!=null && ViticultureChip.BACK.equals(thislabel))
-		{
-	     return(super.drawChip(gc,
-	    		 ((ViticultureChip) piece).cardBack,drawOn,highlight,SQUARESIZE,1.0,e_x,e_y,null));
-		}
-	else
-		{
-	     return(super.drawChip(gc,
-	    		  piece,drawOn,highlight,SQUARESIZE,1.0,e_x,e_y,thislabel));
 		}
 	}
 

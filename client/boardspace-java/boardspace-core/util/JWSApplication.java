@@ -423,7 +423,6 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
 				
 				args.push(aa);
 				args.push(av);
-				
 				if(CLASSDIR.equals(aa)) { classes = " "+av; }
 				if(TESTSERVER.equals(aa)) { ts = " TestServer"; }
 				if(TESTVERSION.equals(aa)) { tt = " Test"; }

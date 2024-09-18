@@ -1445,6 +1445,17 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     {
     	super.canonicalizeHistory();
     }
+    
+    /**
+     * sort the ephemeral moves into their final order.  Normally is is
+     * just ordering the moves so all of each players moves are together.
+     * 
+     * @param ephemera
+     */
+    public void ephemeralSort(CommonMoveStack ephemera)
+    {
+    	super.ephemeralSort(ephemera);
+    }
     /**
      * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
      * ok to return null meaning the move should be deleted.  Normally, all

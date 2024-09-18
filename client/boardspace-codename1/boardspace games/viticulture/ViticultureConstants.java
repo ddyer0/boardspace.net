@@ -1277,7 +1277,7 @@ public interface ViticultureConstants
     static final String Viticulture_SGF = "viticulture"; // sgf game number
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/viticulture/images/";
+    static final String ImageDir = G.isCodename1() ? "/appdata/viticulture/images/" : "/viticulture/images/";
     public String drainSound = ImageDir + "drainsink" + Config.SoundFormat;
 
 

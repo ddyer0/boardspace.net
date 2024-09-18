@@ -101,7 +101,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     static final String Iro_SGF = "iro"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/iro/images/";
+    static final String ImageDir = G.isCodename1() ? "/appdata/iro/images/" : "/iro/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

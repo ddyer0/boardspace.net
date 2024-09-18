@@ -128,14 +128,14 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
        	G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor contents match");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(dropState.eqContents(from_b.dropState),"dropState mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(sameCells(rack, from_b.rack), "rack mismatch");
         G.Assert(sameCells(flat, from_b.flat), "flat mismatch");
         G.Assert(sameCells(joker, from_b.joker), "joker mismatch");
         G.Assert(AR.sameArrayContents(score, from_b.score), "score mismatch");
         G.Assert(sameCells(captureStack,from_b.captureStack),"capture stack mismatch");
-        G.Assert(capturePiece.sameContents(from_b.capturePiece),"capturepiece mismatch");
+        G.Assert(capturePiece.eqContents(from_b.capturePiece),"capturepiece mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.

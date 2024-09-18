@@ -136,7 +136,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
        	G.Assert(AR.sameArrayContents(win,from_b.win),"win array contents match");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(dropState.eqContents(from_b.dropState),"dropState mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(sameCells(shooters,from_b.shooters),"shooters mismatch");
         G.Assert(nUnclaimedShooters==from_b.nUnclaimedShooters,"unclaimed shooters mismatch");

@@ -149,4 +149,24 @@ public class PrototypeChip extends chip<PrototypeChip> implements CommonConfig
 
 	    }
 	 */
+	/*
+	 * this is a standard trick to display card backs as an alternate to the normal face.
+	public static PrototypeChip cardBack = new PrototypeChip("cards",null,defaultScale);
+	
+	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
+	
+    public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
+	{
+		boolean isBack = BACK.equals(label);
+		if(cardBack!=null && isBack)
+		{
+		 cardBack.drawChip(gc,canvas,SQUARESIZE, xscale, cx, cy,null);
+		}
+		else
+		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
+		}
+	}
+
+	 */
+
 }

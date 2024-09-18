@@ -91,7 +91,6 @@ public class VoloChip extends chip<VoloChip>
         BlueO = CC[2];
         OrangeO = CC[3];
         CANONICAL_PIECE = CC;
-        
         check_digests(CC);	// verify that the chips have different digests
 		}
 	}   

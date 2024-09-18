@@ -8148,7 +8148,20 @@ public void useEphemeraBuffer(StringTokenizer his)
 	}
 	resetBounds();
 }
-
+/**
+ * sort the ephemeral moves into their final order.  Normally is is
+ * just ordering the moves so all of each players moves are together.
+ * 
+ * @param ephemera
+ */
+public void ephemeralSort(CommonMoveStack ephemera)
+{	for(int i=0,siz=ephemera.size();i<siz;i++)
+	{
+	commonMove m = ephemera.elementAt(i);
+	m.setEvaluation((m.player*1000+m.index()));	// set evaluation for the sort
+	}
+	ephemera.sort(false);
+}
 /**
  * convert the ephemeral moves into non-ephemeral equivalents, and
  * sort them into canonical order.  This is called at the end of
@@ -8164,14 +8177,15 @@ public void canonicalizeHistory()
 	while(h.size()>0) 
 		{ commonMove m = h.pop();
 		  if(m.isEphemeral())
-		  { m.setEvaluation(m.player*1000+m.index());	// set evaluation for the sort
+		  { 
 		    ephemera.push(m); 
 		  }
 		  else
 		  { permanent.push(m); 
 		  }
 		}
-	ephemera.sort(false);		// sort by evaluation.  This puts all of each players ephemeral moves together
+	
+	ephemeralSort(ephemera);
 	
 	commonMove prev = null;
 	while(permanent.size()>0)
@@ -8192,6 +8206,10 @@ public void canonicalizeHistory()
 		prev.next = m;
 		prev = m;
 		m.next = null;
+		// this is a subtle point.  The now-non-epheral moves have been reordered,
+		// so the digests are invalid.  The invalid digests can trigger invalid removals
+		// due to "digest not changed" if there are undo/redo steps after.
+		m.digest = 0;
 		m.setIndex(h.size());
 		h.push(m);
 		}

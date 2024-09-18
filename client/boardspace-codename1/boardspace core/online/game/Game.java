@@ -3233,7 +3233,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey ,
         		turnBasedGame!=null ? "&turnbased=true" : "",
         		"&session=",sessionNum ,
-        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
+        		// we used to pass the socket, which turned out to be a bad idea
+        		// instead pass the symbolic type and let the server supply the details.
+        		"&sock=" , G.getBoolean(TESTSERVER,false)
+        					? "test" 
+        					: "standard",
         		"&mode=" ,mode , tm);
 
         appendNotes(urlStr);
@@ -3261,10 +3265,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         G.append(urlStr,
         		"&key=" , myNetConn==null ? "0" : myNetConn.sessionKey ,
         		"&session=",sessionNum ,
-        		// realport and lobbyport are normally the same, but in cheerpj the lobby port
-        		// may be a proxy port.  This port is used by the scoring script to connect
-        		// and check if the game is actually in progress.
-        		"&sock=" , sharedInfo.getInt(REALPORT,-1) , 
+        		// we used to pass the socket, which turned out to be a bad idea
+        		// instead pass the symbolic type and let the server supply the details.
+        		"&sock=" , G.getBoolean(TESTSERVER,false)
+        					? "test" 
+        					: "standard",
         		"&game=" , gameTypeId ,
         		"&u1=", p.uid,
         		"&p1=", p.trueName(),
@@ -3346,7 +3351,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		(turnBasedGame!=null ? turnBasedGame.variation : myNetConn.sessionKey),
         		(turnBasedGame!=null ? "&turnbased=true" : ""),
         		"&session=" , sessionNum,
-        		"&sock=" , sharedInfo.getInt(REALPORT,-1) ,
+        		// we used to pass the socket, which turned out to be a bad idea
+        		// instead pass the symbolic type and let the server supply the details.
+        		"&sock=" , G.getBoolean(TESTSERVER,false)
+        					? "test" 
+        					: "standard",
         		"&mode=" , mode , tm);
         appendNotes(urlStr);
         String str = urlStr.toString();
@@ -3360,92 +3369,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         */
         return (str);
     }
-    /*
-    // get the scoring string for a 4 player game
-    private String getUrlStr4Old()
-    {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
-         int realPCtr = 1;
-        int digest = (int)v.Digest();
-        int mid = (int)midDigest;
-        String gametype = gameTypeString;
-        String mode = modeString();
-        String tm = tournamentMode ? "&tournament=1" : "";
-        String urlStr = "&de=" +  digest + "&dm=" + mid + "&game=" + gametype
-        		+ (masterMode ? "&mm=true" : "") 
-        		;
-        int nPlayers = 0;
-        for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
-                p = commonPlayer.nextPlayer(playerConnections, p))
-        {
-            String name = p.trueName;
-            String uid = p.uid;
-            nPlayers++;
-            if (uid == null)
-            {
-                uid = "";
-            }
-
-            if (name != null)
-            {	int wp = v.ScoreForPlayer(p);
-                String scor = "="+wp;
-                urlStr += ("&u" + realPCtr + "=" + uid + "&s" + realPCtr +
-                scor 
-             // register the possible follower fraud with the game
-             + ((follow_state_warning>1) 
-                 ? ("&fsw="+follow_state_warning)
-                 : "")
-             + ((p.focuschanged > 10)
-                ? ("&fch" + realPCtr + "=" + p.focuschanged) : "")
-             + ((unrankedMode) ? ("&nr" + realPCtr + "=true") : "")
-             + "&t" +
-                realPCtr + "=" + ((int) (p.elapsedTime / 1000)));
-                realPCtr++;
-            }
-        }
-        if((nPlayers==1) && v.UsingAutoma())
-        {
-        	Bot bot = Bot.Automa;
-        	urlStr += ("&u" + realPCtr + "=" + bot.uid + "&s" + realPCtr +"=" + v.ScoreForAutoma());
-        	if(unrankedMode)
-        	{
-        		urlStr += "&nr"+realPCtr+"=true";
-        	}
-        }
-        urlStr += ("&key=" + myNetConn.sessionKey + "&session=" + sessionNum +
-        "&sock=" + sharedInfo.getInt(LOBBYPORT) + "&mode=" + mode + tm);
-        //add fraud detection hacks
-        {
-            int focus = focusPercent();
-
-            if (focus > 25)
-            {
-                urlStr += ("&focus=" + focus);
-            }
-        }
-
-        if (robot==null)
-        {
-            if (my.sameIP(playerConnections))
-            {
-                urlStr += "&samepublicip=1";
-            }
-
-            if (my.sameHost(playerConnections))
-            {
-                urlStr += "&samelocalip=1";
-            }
-
-            if (my.sameClock(playerConnections))
-            {
-                urlStr += "&sameclock=1";
-            }
-        }
-        String fn = fileNameString();
-        urlStr += ("&fname=" + fn);
-        urlStr += ("&xx=xx");	// dummy at the end to avoid "gord's problem"
-        return (urlStr);
-    }
-*/
+ 
     //
     // this ought to be part of the netconn class, but it uses several resources from the game class too.
     //

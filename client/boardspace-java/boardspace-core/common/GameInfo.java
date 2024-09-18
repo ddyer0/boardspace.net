@@ -782,7 +782,29 @@ synchronized(allGames) {
 				pfVideo,false, pfColors));		
 		
 	}
-
+	
+	{	
+	// the orderof these corresponds to the elements of MColor
+	Color []ecolors = {  Color.red, Color.green, Color.blue, Color.yellow, bsPurple };
+	String mmside = "ManhattanInfoMessage";
+	String manhattanRules ="/manhattan/english/manhattan-rules.html";		
+	String manhattanViewer =  "manhattan.ManhattanViewer";
+	String euphoriaVideo = null;
+	boolean okTurnBased = true;
+	{GameInfo mm = put(new GameInfo(709,ES.test,120,"EU",EuroGames,"Manhattan","Manhattan",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			manhattanViewer,manhattanRules,"about_manhattan.html",
+			euphoriaVideo,true, ecolors));		// manhattan first player is determined by the initial die roll
+	 mm.minPlayers = 2;
+	 mm.maxPlayers = 5;
+	 mm.hasHiddenInformation = true;
+	 mm.okForTurnbased = okTurnBased;
+	 // only requires card concealment for the player cards and hidden recruits
+	 mm.longMessage = mmside;
+	}
+	}
+	
 	{	Color []ecolors = {  Color.red, Color.green, Color.blue, Color.black, Color.lightGray, bsPurple };
 		String mmside = "EuphoriaInfoMessage";
 		String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
@@ -2626,6 +2648,10 @@ synchronized(allGames) {
 				{"EuphoriaInfoMessage",
 					"side screens are only needed to conceal cards\n...You could play open or just look away."
 				},
+				{"ManhattanInfoMessage",
+					"side screens are only needed to conceal bomb cards\n...You could play open or just look away."
+				},
+
 				{"ImagineInfoMessage",
 					"side screens are only needed to conceal cards."
 				},

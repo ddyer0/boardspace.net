@@ -349,7 +349,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
        	G.Assert(sameCells(rack,from_b.rack),"rack mismatch");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(stateStack.sameContents(from_b.stateStack),"state stack mismatch");
+        G.Assert(stateStack.eqContents(from_b.stateStack),"state stack mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(swapped==from_b.swapped,"swapped mismatch");
         G.Assert(AR.sameArrayContents(playerRack,from_b.playerRack),"playerRack mismatch");

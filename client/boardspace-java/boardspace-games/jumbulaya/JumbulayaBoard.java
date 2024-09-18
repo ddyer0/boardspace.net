@@ -239,7 +239,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		if(this==to) { return(true); }
 		if(!name.equals(to.name)) { return(false); }
 		if((path==null) != (to.path==null)) { return(false); }
-		if(path!=null && !path.sameContents(to.path)) { return(false); }
+		if(path!=null && !path.eqContents(to.path)) { return(false); }
 		return(seed.sameCell(to.seed));
 	}
 	static public boolean sameWord(Word from,Word to)

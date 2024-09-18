@@ -312,7 +312,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(captureStack,from_b.captureStack),"captureStack mismatch");
-        G.Assert(sameContents(chipStack,from_b.chipStack),"chipStack mismatch");
+        G.Assert(chipStack.eqContents(from_b.chipStack),"chipStack mismatch");
         G.Assert(AR.sameArrayContents(captured,from_b.captured),"captured mismatch");
         G.Assert(sameCells(firstPlayedLocation,from_b.firstPlayedLocation),"playedLocation mismatch");
         

@@ -464,7 +464,7 @@ public abstract class stackCell
 	 * @param liftSteps the number of lift steps
 	 * @param xscale the x scale for each lift step
 	 * @param yscale the y scale for each lift step
-	 * @param label a label or null
+	 * @param tooltip a label or null
 	 * @return true if any call to {@link #drawChip} returned true.  Effectively this should be if
 	 * the mouse hit any chip in the stack.  If true, HitPoint.hitIndex is set to the first index
 	 * that registered as a hit.

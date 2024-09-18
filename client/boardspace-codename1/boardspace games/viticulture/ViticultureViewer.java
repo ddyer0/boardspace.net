@@ -429,6 +429,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     {	// try different aspect ratios
        	double aspects[] = new double[]{ 1.2 , 1.5, 2.2, 2.5, 1.8};
        	setLocalBoundsV(x,y,width,height,aspects);
+       	if(centerOnBox!=null) { centerOnBox(centerOnBox); centerOnBox=null; }
     }
     
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
@@ -538,7 +539,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	G.SetRect(passWarnRect, passX,passY+fh*3,passw*2,fh*3);
     	G.SetRect(editRect,boardX+boardW-buttonW-fh*3,G.Top(passRect),buttonW,fh*3);
     	
-        centerOnBox();
+        
         //selectedLayout.optimize();
         positionTheChat(chatRect, chatBackgroundColor,rackBackGroundColor);
         //return the board size as a score
@@ -830,19 +831,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     }
     private Rectangle centerOnBox = null;
     private double boxExpansion = 1.2;
-    private void centerOnBox()
-    {	Rectangle box = centerOnBox;
-    	if(box!=null)
-    	{
-    	centerOnBox = null;
-    	int fullW = getWidth();
-    	int fullH = getHeight();
-		int x = (int)(G.centerX(box)-fullW/2);
-		int y = (int)(G.centerY(box)-fullH/2);
-  		setSX(x);
-		setSY(y);
-    	}
-    }
+
     public void setGlobalUnZoomButton(ViticultureBoard gb)
     {
     	super.setGlobalUnZoomButton();
@@ -867,7 +856,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 		double wscale = fullw/((swap?h:w)*expansion);
 		double ratio = Math.min(wscale, hscale);
 		setGlobalZoom(ratio,rotation);
-		centerOnBox = box;
+		centerOnBox =box;
     	}
     	else { setGlobalZoom(1.0,getRotation());
     	}
@@ -1104,6 +1093,7 @@ private void drawPlayerBoard(Graphics gc,
     {	
         PlayerBoard pb = gb.getPlayerBoard(player);
         commonPlayer pl = getPlayerOrTemp(player);
+        GC.frameRect(gc,Color.red,pl.playerBox);
         boolean showAll = (remoteWindowIndex(highlightAll)>=0) || !BACKGROUND_OPTIMIZATION;
         if(showAll)
         {

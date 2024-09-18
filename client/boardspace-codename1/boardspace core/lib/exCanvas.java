@@ -144,8 +144,29 @@ public abstract class exCanvas extends ProxyWindow
 	// support for global pan/zoom
 
     public boolean isZoomed() { return(getGlobalZoom()>1.0); }
+    
+     /**
+     * pan to place the center of the box at the center of the window
+     * @param box
+     */
+    
+    public void centerOnBox(Rectangle box)
+    {	
+    	if(box!=null)
+    	{
+    	// getWidth/getHeight are the window size, which are same as the zoomed size / zoom
+		int x = (int)(G.centerX(box)-getWidth()/2);
+		int y = (int)(G.centerY(box)-getHeight()/2);
+  		setSX(x);
+		setSY(y);
+    	}
+    }
+    
     public String getErrorReport() { return(""); }
-    // set scroll X (in pan/zoom logic)
+     /**
+     * scroll X (in pan/zoom logic)
+     * @param x
+     */
 	public void setSX(int x) 
 	{ 	int oldX = mouse.getSX();
 	   	int w = getWidth();
@@ -160,7 +181,10 @@ public abstract class exCanvas extends ProxyWindow
      	}
 	}
 
-	// set scroll Y (in pan/zoom logic)
+	/**
+	 * set scroll Y (in pan/zoom logic)
+	 * @param y
+	 */
 	public void setSY(int y) 
 	{	int oldY = mouse.getSY();
 		int h = getHeight();
@@ -174,7 +198,13 @@ public abstract class exCanvas extends ProxyWindow
 		  generalRefresh();
 		}
 	}
+	/**
+	 * get current scroll x
+	 */
 	public int getSX() { return(mouse.getSX()); }
+	/**
+	 * get current scroll y
+	 */
 	public int getSY() { return(mouse.getSY()); }
 	public static double MINIMUM_ZOOM = 1.05;
 	public static double MAXIMUM_ZOOM = 5.0;

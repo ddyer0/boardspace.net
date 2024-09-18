@@ -335,11 +335,11 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
         super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
-       G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor mismatch");
+        G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor mismatch");
         G.Assert(AR.sameArrayContents(playerChip,from_b.playerChip),"playerChip mismatch");
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"pickedSourceStack mismatch");
-        G.Assert(sameContents(stateStack,from_b.stateStack),"state stack mismatch");
+        G.Assert(stateStack.eqContents(from_b.stateStack),"state stack mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(chips_on_board == from_b.chips_on_board,"chips_on_board mismatch");
  

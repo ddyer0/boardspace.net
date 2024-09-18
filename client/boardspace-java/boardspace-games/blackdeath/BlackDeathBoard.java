@@ -265,7 +265,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		G.Assert(cards.sameContents(other.cards),"Cards mismatch");
 		G.Assert(temporaryCards.sameContents(other.temporaryCards),"temporaryCards mismatch");
 		G.Assert(parent.sameCells(closedRegions, other.closedRegions),"closedRegions mismatch");
-		G.Assert(closedLinks.sameContents(other.closedLinks),"closed links mismatch");
+		G.Assert(closedLinks.eqContents(other.closedLinks),"closed links mismatch");
 		long v1 = Digest(new Random(35325));
 		long v2 = other.Digest(new Random(35325));
 		G.Assert(v1==v2,"Digest matches");

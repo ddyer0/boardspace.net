@@ -47,8 +47,6 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "gametimer"; // sgf game name
-
     // file names for jpeg images and masks
     static final String ImageDir = "/gametimer/images/";
 
@@ -479,7 +477,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(""); }	// this is the official SGF number assigned to the game
 
    
     /**

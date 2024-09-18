@@ -1501,11 +1501,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
         Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         Assert(sameCells(plannerCells,from_b.plannerCells),"plannerCells mismatch");
-        Assert(plannerMeeples.sameContents(from_b.plannerMeeples), "plannerMeeples mismatch");
+        Assert(plannerMeeples.eqContents(from_b.plannerMeeples), "plannerMeeples mismatch");
         Assert(resetState==from_b.resetState,"resetstate mismatch");
         Assert(targetPlayer==from_b.targetPlayer,"triggerPlayer mismatch");
         Assert(suspendedWhoseTurn==from_b.suspendedWhoseTurn,"suspendedWhoseTurn mismatch");
-        Assert(continuation.sameContents(from_b.continuation),"continuation mismatch");
+        Assert(continuation.eqContents(from_b.continuation),"continuation mismatch");
         Assert(stateChange==from_b.stateChange,"forced state change mismatch");
         for(int i=0;i<pbs.length; i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         Assert(currentWorker==from_b.currentWorker,"currentWorker mismatch");

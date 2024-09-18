@@ -253,7 +253,7 @@ package crosswordle;
 		 G.Assert(unresign==from_b.unresign,"unresign mismatch");
 		 G.Assert(variation==from_b.variation,"variation matches");
 		 G.Assert(AR.sameArrayContents(score,from_b.score),"score mismatch");
-		 G.Assert(guesses.sameContents(from_b.guesses),"guesses mismatch");
+		 G.Assert(guesses.eqContents(from_b.guesses),"guesses mismatch");
 		 
 		 // this is a good overall check that all the copy/check/digest methods
 		 // are in sync, although if this does fail you'll no doubt be at a loss

@@ -372,13 +372,14 @@ public abstract class OStack<T> implements StackIterator<T>
 		 * @param other
 		 * @return true of the stacks are identical
 		 */
-		public boolean sameContents(OStack<?> other)
+		@SuppressWarnings("unchecked")
+		public boolean eqContents(OStack<?> other)
 		{	int sz = size();
 			if(sz==other.size())
 			{	Object[] d = data;
 				Object[] od = other.data;
-				for(int i=0;i<sz;i++) { if(d[i]!=od[i]) 
-					{ return(false); }}
+				for(int i=0;i<sz;i++) 
+				{ 	if(!eq((T)d[i],(T)od[i]))	{ return(false); }}
 				return(true);
 			}
 			return(false);

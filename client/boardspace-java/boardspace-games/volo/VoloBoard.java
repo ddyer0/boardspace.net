@@ -1489,12 +1489,25 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
 	 		return(new VoloMovespec(MOVE_PASS,whoseTurn));
 	 	}
  }
+ public VoloPlay robot = null;
+ public boolean p1(String msg)
+	{	
+		if(G.p1(msg) &&(robot!=null))
+		{	String dir = "g:/share/projects/boardspace-html/htdocs/volo/vologames/robot/";
+			robot.saveCurrentVariation(dir+msg+".sgf");
+			return(true);
+		}
+		return(false);
+	}
+ 
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack  all = new CommonMoveStack();
 
  	switch(board_state)
  	{
- 	default: throw G.Error("Not expecting state ",board_state);
+ 	default: 
+ 		p1("unexpected-"+board_state);
+ 		throw G.Error("Not expecting state ",board_state);
  	case DESIGNATE_ZONE_STATE:
  		getDesignateZoneMoves(all,whoseTurn);
  		break;

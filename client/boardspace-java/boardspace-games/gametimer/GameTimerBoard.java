@@ -25,7 +25,7 @@ import lib.Random;
 import online.game.*;
 
 /**
- * StymieBoard knows all about the game of Prototype, which is played
+ * StymieBoard knows all about the game of Stymie, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 

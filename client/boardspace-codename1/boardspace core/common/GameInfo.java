@@ -632,7 +632,26 @@ synchronized(allGames) {
 			 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 	 
+	 g = put(new GameInfo(1763,ES.game,76,"CK",AncientGames,"Checkers","Checkers-russian",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/Russian%20Checkers%20Rules.html","about_checkers.html",
+				 null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
 
+	 g = put(new GameInfo(1764,ES.game,76,"CK",AncientGames,"Checkers","Checkers-bashni",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/Bashni%20Checkers%20Rules.html","about_checkers.html",
+				 null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
+	 
+	 g = put(new GameInfo(1765,ES.game,76,"CK",AncientGames,"Checkers","Checkers-stacks",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/Stacks%20Checkers%20Rules.html","about_checkers.html",
+				 null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
 
 	}
 	{

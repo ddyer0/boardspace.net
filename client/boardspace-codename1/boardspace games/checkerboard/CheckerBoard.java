@@ -225,7 +225,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
        	G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor contents match");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(dropState.eqContents(from_b.dropState),"dropState mismatch");
         G.Assert(pickedStack.sameContents(from_b.pickedStack),"pickedObject doesn't match");
         G.Assert(occupiedCells[FIRST_PLAYER_INDEX].size()==from_b.occupiedCells[FIRST_PLAYER_INDEX].size(),"occupiedCells mismatch");
         G.Assert(occupiedCells[SECOND_PLAYER_INDEX].size()==from_b.occupiedCells[SECOND_PLAYER_INDEX].size(),"occupiedCells mismatch");

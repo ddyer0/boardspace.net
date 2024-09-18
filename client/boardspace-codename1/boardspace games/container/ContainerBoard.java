@@ -1593,9 +1593,9 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
         {	playerBoard[i].sameBoard(from_b.playerBoard[i]);
         }
         G.Assert(undoStack.sameContents(from_b.undoStack),"same undo stack");
-        G.Assert(undoStateStack.sameContents(from_b.undoStateStack),"same undo state stack");
+        G.Assert(undoStateStack.eqContents(from_b.undoStateStack),"same undo state stack");
         G.Assert(robotStack.sameContents(from_b.robotStack),"same robotStack");
-        G.Assert(robotStateStack.sameContents(from_b.robotStateStack),"same robotStateStack");
+        G.Assert(robotStateStack.eqContents(from_b.robotStateStack),"same robotStateStack");
         G.Assert(robotStack2.sameContents(from_b.robotStack2),"same robotStack2");
         G.Assert((hasProduced == from_b.hasProduced), "hasProduced not the same");
         G.Assert(hasRepricedFactory==from_b.hasRepricedFactory, "repriced factory matches");

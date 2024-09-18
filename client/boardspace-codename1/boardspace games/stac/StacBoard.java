@@ -124,8 +124,8 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(pawnLocation,from_b.pawnLocation),"pawnlocation mismatch");
-        G.Assert(droppedState.sameContents(from_b.droppedState),"droppedState mismatch");
-        G.Assert(pickedState.sameContents(from_b.pickedState),"pickedState mismatch");
+        G.Assert(droppedState.eqContents(from_b.droppedState),"droppedState mismatch");
+        G.Assert(pickedState.eqContents(from_b.pickedState),"pickedState mismatch");
         G.Assert(AR.sameArrayContents(lastWasCarry,from_b.lastWasCarry),"lastWasCarry mismatch");
         G.Assert(nSingleChips==from_b.nSingleChips,"singleChips mismatch");
         //G.Assert(lastStackMove==from_b.lastStackMove,"lastStackMove mismatch");	// not in digest

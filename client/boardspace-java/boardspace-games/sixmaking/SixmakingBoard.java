@@ -120,7 +120,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
        	G.Assert(sameContents(pickedHeight,from_b.pickedHeight),"pickedHeight mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(dropState.eqContents(from_b.dropState),"dropState mismatch");
         G.Assert(sameCells(pickedStack,from_b.pickedStack),"pickedStack doesn't match");
         G.Assert(sameCells(lastDest,from_b.lastDest),"lastDest mismatch");
         G.Assert(sameCells(currentDest,from_b.currentDest),"currentDest mismatch");

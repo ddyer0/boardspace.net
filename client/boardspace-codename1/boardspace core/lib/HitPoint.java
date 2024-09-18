@@ -72,6 +72,8 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	a rectangle.
 	*/ 
 	public Object hitObject = null;
+	
+	public Object hitData = null;	// additional data object for hit tracking
 	/**
 	 * conventionally, the board column hit by the mouse.
 	 */

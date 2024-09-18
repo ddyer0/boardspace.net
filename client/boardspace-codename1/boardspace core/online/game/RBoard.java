@@ -303,6 +303,27 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    public void copyFrom(CELLTYPE c,CELLTYPE from)
    {	if(c!=null) { c.copyFrom(from); }
    }  
+   /**
+    *  this is a visitor method so the actual board can clone the cell it's own way
+    * @param c
+    * @param from
+    */
+   public void copyFrom(OStack<CELLTYPE> c,OStack<CELLTYPE>from)
+   {	for(int i=0,size=c.size();i<size;i++)
+	   		{ c.elementAt(i).copyFrom(from.elementAt(i)); }
+   }  
+   /**
+    *  this is a visitor method so the actual board can clone the cell it's own way
+    * @param c
+    * @param from
+    */
+   public boolean sameContents(OStack<CELLTYPE> c,OStack<CELLTYPE>from)
+   {
+	   for(int i=0,size=c.size();i<size;i++)
+	   	{ if(!c.elementAt(i).sameContents(from.elementAt(i))) { return false; }
+	   	}
+	   return true;
+   }
    
    /**
     *  this is a visitor method so the actual board can clone the cell it's own way
@@ -575,7 +596,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    public boolean sameContents(OStack<?>[]local,OStack<?>[]remote)
    {	if(local.length!=remote.length) { return(false); }
    		for(int i=0;i<local.length;i++) 
-   			{ if(!local[i].sameContents(remote[i])) { return(false); } 
+   			{ if(!local[i].eqContents(remote[i])) { return(false); } 
    			}
    		return(true);
     }
@@ -612,15 +633,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    	}
    	return(true);
    }
-  /**
-   * compare to ostack for eq contents
-   * @param local
-   * @param remote
-   * @return true of the stacks of cells have the same contents
-   */
-  public boolean sameContents(OStack<?>local,OStack<?>remote)
-  {	return(local.sameContents(remote));
-  }
+
   /**
    * adjust the internal scaling parameters so the board displays
    * inside the specified rectangle.  This works by running a trial

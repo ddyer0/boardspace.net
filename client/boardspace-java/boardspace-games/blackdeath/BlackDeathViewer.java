@@ -196,6 +196,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     double aspects[]= {1.2,1.8,1.5};
     public void setLocalBounds(int x, int y, int width, int height)
     {	setLocalBoundsV(x,y,width,height,aspects);
+    	if(centerOnBox!=null) { centerOnBox(centerOnBox); centerOnBox=null; }
     }
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {
@@ -295,7 +296,6 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	G.SetRect(goalRect, boardX+off, boardBottom-(int)(boardH*0.05),boardW-off-stateH,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        centerOnBox();
         return(boardW*boardH);
     }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
@@ -716,11 +716,16 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	{
         		highlightAll.hitObject = rotatedMortalityRect;
         	}
+        
+        /*
+         * the board is always big enough that this magnifier does nothing
         if(StockArt.Magnifier.drawChip(gc, this, sh, G.Right(boardRect)-sh/2,
         		G.Bottom(boardRect)-sh/2,highlightAll,BlackDeathId.MagnifyBoard,null))
         	{
         		highlightAll.hitObject = boardRect;
         	}
+        	        	*/
+
         GC.frameRect(gc, Color.red, mortalityRect);
         if(bc!=null)
         {	int margin = wid/10;
@@ -1111,19 +1116,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 		}
 	}
     private Rectangle centerOnBox = null;
-    private void centerOnBox()
-    {	Rectangle box = centerOnBox;
-    	if(box!=null)
-    	{
-    	centerOnBox = null;
-    	int fullW = getWidth();
-    	int fullH = getHeight();
-		int x = (int)(G.centerX(box)-fullW/2);
-		int y = (int)(G.centerY(box)-fullH/2);
-  		setSX(x);
-		setSY(y);
-    	}
-    }
+
     private Rectangle globalMag = null;
     private void setGlobalMagnifier(Rectangle box,double rotation)
     {	if(getGlobalZoom()<=1) { globalMag = null; }

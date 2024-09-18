@@ -170,7 +170,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
        	G.Assert(sameCells(captured, from_b.captured), "captured mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(dropState.eqContents(from_b.dropState),"dropState mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(occupiedCells[FIRST_PLAYER_INDEX].size()==from_b.occupiedCells[FIRST_PLAYER_INDEX].size(),"occupiedCells mismatch");
         G.Assert(occupiedCells[SECOND_PLAYER_INDEX].size()==from_b.occupiedCells[SECOND_PLAYER_INDEX].size(),"occupiedCells mismatch");

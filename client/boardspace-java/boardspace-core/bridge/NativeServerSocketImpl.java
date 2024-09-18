@@ -69,13 +69,15 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
 	// service for NativeOutputStream
     public int write(int handle, int param1) {
     	try { 
-        	OutputStream o = (OutputStream)find(handle);
+        	@SuppressWarnings("resource")
+			OutputStream o = (OutputStream)find(handle);
     		o.write(param1); 
         	return(0);
    		} catch (Exception e) { return(errorCode(e.toString())); }
     }
     public int writeArray(int param, byte[] param1, int param2, int param3) 
     {	try {
+		@SuppressWarnings("resource")
 		OutputStream stream = (OutputStream)find(param);
     	stream.write(param1,param2,param3);
     	return(0);
@@ -90,7 +92,8 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
      */
     public int read(int param) {
         try {
-            InputStream s = (InputStream)find(param);
+            @SuppressWarnings("resource")
+			InputStream s = (InputStream)find(param);
             int val = s.read();
         	return(val);
         }
@@ -99,7 +102,8 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
     public int readArray(int param, byte[] param1, int param2, int param3) 
     {
     	try {
-    		InputStream stream = (InputStream)find(param);
+    		@SuppressWarnings("resource")
+			InputStream stream = (InputStream)find(param);
         	int v = stream.read(param1,param2,param3);
         	return(v);
         	}catch (Exception e) 
@@ -131,7 +135,8 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
 
     public int flush(int param) {
     	try {
-    		OutputStream stream = (OutputStream)find(param);
+    		@SuppressWarnings("resource")
+			OutputStream stream = (OutputStream)find(param);
     		if(stream!=null) { stream.flush();  }
     		return(0);
     	} catch (Exception e) { return(errorCode(e.toString())); }
@@ -178,7 +183,8 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
     // input and output streams
     public int getOutputHandle(int handle) 
     {	try {
-         {	Socket listenSocket = (Socket)find(handle);
+         {	@SuppressWarnings("resource")
+		Socket listenSocket = (Socket)find(handle);
          	if(listenSocket!=null)
          	{
         	return(remember(listenSocket.getOutputStream()));
@@ -190,7 +196,8 @@ public class NativeServerSocketImpl implements bridge.NativeServerSocket
 
     public int getInputHandle(int handle) {
     	try {
-    	Socket listenSocket = (Socket)find(handle);
+    	@SuppressWarnings("resource")
+		Socket listenSocket = (Socket)find(handle);
     	if(listenSocket!=null) { return(remember(listenSocket.getInputStream())); }
     	else { return(errorCode("invalid socket handle")); }
     	}

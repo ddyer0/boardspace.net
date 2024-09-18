@@ -1129,6 +1129,16 @@ public class G extends Platform implements Timestamp
     {
     	return (Long.parseLong(s,10));
     }
+    /**
+     *
+     */
+    static public boolean sameRects(Rectangle r1,Rectangle r2)
+    {
+    	return((G.Left(r1)==G.Left(r2))
+    			&& (G.Top(r1)==G.Top(r2))
+    			&& (G.Width(r1)==G.Width(r2))
+    			&& (G.Height(r1)==G.Height(r2)));
+    }
 
     /**
     * copy a rectangle. to can be null, 

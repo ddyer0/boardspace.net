@@ -93,6 +93,9 @@ public class PrototypeCell
 	 */
 	public long Digest(Random r) { return(super.Digest(r)); }
 	
+	//this could be used to eliminate the "tick" in stacks
+	//public int drawStackTickSize(int sz) { return(0); }
+	
 	public PrototypeChip[] newComponentArray(int size) {
 		return(new PrototypeChip[size]);
 	}
