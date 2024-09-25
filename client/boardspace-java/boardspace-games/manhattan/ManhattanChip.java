@@ -20,8 +20,8 @@ import lib.Digestable;
 import lib.DrawableImageStack;
 import lib.G;
 import lib.Graphics;
-import lib.Image;
 import lib.ImageLoader;
+import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
 import lib.exCanvas;
@@ -49,6 +49,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 {
 
 	private static DrawableImageStack otherChips = new DrawableImageStack();
+	private static DrawableImageStack myChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public Type type = Type.Other;
 	public ManhattanId id;
@@ -90,6 +91,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	private ManhattanChip(String na)
 	{	file = na;
 		scale = defaultScale;
+		randomv = r.nextLong();
 		otherChips.push(this);
 	}
 	private ManhattanChip(String na,WorkerType ty,MColor co)
@@ -98,6 +100,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		workerType = ty;
 		type = Type.Worker;
 		randomv = r.nextLong();
+		myChips.push(this);
 	}
 	// constructor for all the other random artwork.
 	private ManhattanChip(String na,Type t,double[]sc,MColor c )
@@ -107,6 +110,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		randomv = r.nextLong();
 		file = na;
 		color = c;
+		randomv = r.nextLong();
 		otherChips.push(this);
 	}
 	private ManhattanChip(String na,Type t,Cost req,Benefit be)
@@ -116,6 +120,8 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		benefit = be;
 		file = na;
 		type = t;
+		randomv = r.nextLong();
+
 		if(t==Type.Bomb) 
 			{ parseBenefits(); 
 			  israeliCost = cost.getIsraeliCosts();
@@ -134,7 +140,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		}
 		setWorkerRequirements();
 		setBuildingType();
-	
+		myChips.push(this);
 		
 	}
 	private void setBuildingType()
@@ -321,6 +327,10 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	static ManhattanChip Uranium = new ManhattanChip("uranium",Type.Uranium,defaultScale,MColor.Gray);
 	static ManhattanChip Damage = new ManhattanChip("damage",Type.Damage,defaultScale,MColor.Gray);
 	static ManhattanChip JapanAirstrike = new ManhattanChip("japan-airstrike",Type.JapanAirstrike,defaultScale,MColor.Gray);
+	static ManhattanChip Spy = new ManhattanChip("spy-nomask",Type.Other,defaultScale,MColor.Gray);
+	static ManhattanChip BomberSale = new ManhattanChip("bombersale-nomask",Type.BomberSale,defaultScale,MColor.Gray);
+	static ManhattanChip AirstrikeHelp = new ManhattanChip("airstrike-nomask",Type.Help,defaultScale,MColor.Gray);
+	static ManhattanChip Question = new ManhattanChip("question",Type.Other,defaultScale,MColor.Gray);
 	
 	static ManhattanChip playerBoards[] = {
 			new ManhattanChip("player-board-red-nomask",Type.Other,defaultScale,MColor.Red),
@@ -512,21 +522,29 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			NationsBack,
 			Nations2Back,
 	};
+	static ManhattanChip Oppenheimer = new ManhattanChip("oppenheimer-front",Type.Personalities);
+	static ManhattanChip Fuchs = new ManhattanChip("fuchs-front",Type.Personalities);
+	static ManhattanChip Groves = new ManhattanChip("groves-front",Type.Personalities);
+	static ManhattanChip Lemay = new ManhattanChip("lemay-front",Type.Personalities);
+	static ManhattanChip Szilard = new ManhattanChip("szilard-front",Type.Personalities);
+	static ManhattanChip Nichols = new ManhattanChip("nichols-front",Type.Personalities);
+	static ManhattanChip Landsdale = new ManhattanChip("lansdale-front",Type.Personalities);
+	
 	static ManhattanChip Personalities[] = {
-			new ManhattanChip("oppenheimer-front",Type.Personalities),
-			new ManhattanChip("oppenheimer-back",Type.Personalities),
-			new ManhattanChip("fuchs-front",Type.Personalities),
-			new ManhattanChip("fuchs-back",Type.Personalities),
-			new ManhattanChip("groves-front",Type.Personalities),
-			new ManhattanChip("groves-back",Type.Personalities),
-			new ManhattanChip("lemay-front",Type.Personalities),
-			new ManhattanChip("lemay-back",Type.Personalities),
-			new ManhattanChip("szilard-front",Type.Personalities),
-			new ManhattanChip("szilard-back",Type.Personalities),
-			new ManhattanChip("nichols-front",Type.Personalities),
-			new ManhattanChip("nichols-back",Type.Personalities),
-			new ManhattanChip("lansdale-front",Type.Personalities),
-			new ManhattanChip("lansdale-back",Type.Personalities),
+			Oppenheimer,
+			new ManhattanChip("oppenheimer-back",Type.Other),
+			Fuchs,
+			new ManhattanChip("fuchs-back",Type.Other),
+			Groves,
+			new ManhattanChip("groves-back",Type.Other),
+			Lemay,
+			new ManhattanChip("lemay-back",Type.Other),
+			Szilard,
+			new ManhattanChip("szilard-back",Type.Other),
+			Nichols,
+			new ManhattanChip("nichols-back",Type.Other),
+			Landsdale,
+			new ManhattanChip("lansdale-back",Type.Other),
 	};
 	static ManhattanChip scientists[] = {
 			new ManhattanChip("worker-rs",WorkerType.S,MColor.Red),
@@ -605,47 +623,50 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
      */
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
-		{	
-		Image mask = forcan.load_image(Dir,"buildingbackb-mask");
-		forcan.load_images(Dir,otherCards,mask);
-		forcan.load_images(Dir,startingBuildings,mask);
+		{
+		//
+		// these images will be autoloaded, but more support in drawChip and drawCell is needed 
+		// to make sure they aren't loaded unnecessarily
+		//
+		myChips.autoloadMaskGroup(Dir,"buildingbackb-mask",otherCards);
+		myChips.autoloadMaskGroup(Dir,"buildingbackb-mask",startingBuildings);
+		myChips.autoloadMaskGroup(Dir,"buildingbackb-mask",buildings);
+		myChips.autoloadMaskGroup(Dir,"buildingbackb-mask",bombs);
+		
+		
 		for(ManhattanChip c : startingBuildings) { c.cardBack = BuildingBackA; }
-		forcan.load_masked_images(Dir,otherChips);
-		forcan.load_images(Dir,buildings,mask);
 		for(ManhattanChip c : buildings) { c.cardBack = BuildingBackB; }
-		forcan.load_masked_images(Dir,otherChips);
-		forcan.load_images(Dir,bombs,mask);
 		for(ManhattanChip c : bombs) { c.cardBack = BombBack; }
+
+		otherChips.autoloadGroup(Dir);	
 		
-		Image nmask = forcan.load_image(Dir,"nations-mask");
-		forcan.load_images(Dir,NationsBacks,nmask);
-		forcan.load_images(Dir,Nations,nmask);
+		myChips.autoloadMaskGroup(Dir,"nations-mask",Nations);
+		myChips.autoloadMaskGroup(Dir,"nations-mask",NationsBacks);
 		double nationScale[] = new double[] {0.5,0.5,0.9};
-		for(ManhattanChip ch : Nations) { ch.scale = nationScale; }
+		for(ManhattanChip ch : Nations) { ch.scale = nationScale;ch.cardBack = NationsBack; }
 		
-		Image pmask = forcan.load_image(Dir,"personalities-mask");
-		forcan.load_images(Dir,Personalities,pmask);
+		myChips.autoloadMaskGroup(Dir,"personalities-mask",Personalities);
+
 		for(int i=0;i<Personalities.length;i+=2)
 		{
 			Personalities[i].cardBack = Personalities[i+1];
 			Personalities[i+1].cardBack = Personalities[i];
 		}
 		
-		Image smask = forcan.load_image(Dir,"worker-s-mask");
-		forcan.load_images(Dir,scientists,smask);
+		myChips.autoloadMaskGroup(Dir,"worker-s-mask",scientists);
+		myChips.autoloadMaskGroup(Dir,"worker-e-mask",engineers);
+		myChips.autoloadMaskGroup(Dir,"worker-l-mask",laborers);
+		myChips.autoloadMaskGroup(Dir,"bombtest-mask",BombTests);
 
-		Image emask = forcan.load_image(Dir,"worker-e-mask");
-		forcan.load_images(Dir,engineers,emask);
-
-		Image lmask = forcan.load_image(Dir,"worker-l-mask");
-		forcan.load_images(Dir,laborers,lmask);
-
-		Image tmask = forcan.load_image(Dir,"bombtest-mask");
-		forcan.load_images(Dir,BombTests,tmask);
-		
-		imagesLoaded = forcan.load_masked_images(Dir,otherChips);
+	
+		imagesLoaded = true;
 		}
 	}   
+	   public static double imageSize(ImageStack imstack)
+	    {	double sum = otherChips.imageSize(imstack)+myChips.imageSize(imstack);
+	    	return(sum);
+	    }
+
 	/*
 	// override for drawChip can draw extra ornaments or replace drawing entirely
 	public void drawChip(Graphics gc,

@@ -509,6 +509,23 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			}
 		}
 	}
-	
+	private int componentIndex(Component comp)
+	{
+		for(int nc = getComponentCount()-1 ; nc>=0; nc--)
+		{
+			Component c = safeGetComponentAt(nc);
+			if(c==comp) { return nc; }
+		}
+		return -1;
 	}
+    public int getComponentZOrder(Component comp) {
+        if (comp == null) {
+            return -1;
+        }
+        if(comp.getParent() != this) {
+                return -1;
+            }
+        return componentIndex(comp);
+	}
+}
 	

@@ -58,6 +58,33 @@ public class TabFrame extends Frame
 	{	
 		addToMenuBar(m,null);
 	}
+	public void setVisible(boolean vis)
+	{	
+		super.setVisible(vis);
+		addTabToPanel();
+
+	}
+	// this was troublesome - it was in "JPanel" and caused the source tabs
+	// to disappear from the fileselector, because it was added to the
+	// master panel.  I Moved it up, to here, and added
+	// a catch to "addC" to throw an error if it tries to move a window that
+	// already has a parent.
+	public void addTabToPanel()
+	{
+		MasterForm mf =MasterForm.getMasterForm();
+		if(!mf.isVisible()) 
+			{ 
+			mf.setVisible(true); 
+			}
+		// defer adding this panel to the master until it's supposed to be seen
+		// doing this in the constructor caused mysterious "blank" windows that
+		// could be fixed by window-level operations such as resizing or minimizing
+		MasterPanel mp = MasterForm.getMasterPanel();
+		if(mp.getComponentZOrder(this)<0)
+			{ mp.addC(this);
+			}
+	MasterForm.getMasterPanel().adjustTabStyles();
+	}
 	public void addToMenuBar(JMenu m,DeferredEventManager l)
 	{	
 		if(useMenuBar)

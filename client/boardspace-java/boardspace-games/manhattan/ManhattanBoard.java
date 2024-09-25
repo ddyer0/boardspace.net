@@ -17,7 +17,6 @@
 package manhattan;
 
 import static manhattan.ManhattanMovespec.*;
-
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.*;
@@ -48,6 +47,7 @@ import online.game.*;
  * a private entity used by the viewer and the robot.
  * 
  * @author ddyer
+ * 
  *
  */
 
@@ -94,10 +94,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private AfterWorkerDispatch afterWorkerDispatch = null;
     int espionageSteps = 0;
     int northKoreanPlayer = 0;
+    int northKoreaSteps = 0;
 	private ManhattanState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public ManhattanState getState() { return(board_state); }
-	
+	private Random cellCounter = new Random(2424264);
 	private ManhattanCell C(ManhattanId id,Type t, Cost required,Benefit bene) 
 	{ ManhattanCell c = new ManhattanCell(id,required,bene); 
 	  c.onBoard = true;
@@ -107,6 +108,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	  c.color = MColor.Board;
 	  c.col = '@';
 	  c.row = 0;
+	  c.randomv = cellCounter.nextLong();
 	  return c;
 	}
 	private ManhattanCell[] CA(ManhattanId id,Type t,Cost[] requires,Benefit[]bene)
@@ -119,6 +121,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		  c.row = i;
 		  c.color = MColor.Board;
 		  c.type = t;
+		  c.randomv = cellCounter.nextLong();
 		  allCells = c;
 		}
 		return ca;
@@ -138,7 +141,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		return ca;
 	}
 	// choices is a scratch array for UI presentations
-	// size of choices is dictated by the number of bomb designs (players+1)
+	// size of choices is dictated by the number personalities or of bomb designs (players+1)
 	// plus one for france
 	ManhattanCell choice[] = CA(ManhattanId.Select,Type.Other,7,Cost.None,Benefit.None);
 	// choice out is a secondary scratch used to indicate a second row of chocies in the gui
@@ -171,12 +174,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	ManhattanCell seeEspionage[] = CA(ManhattanId.SeeEspionage,Type.Marker,7, Cost.None,Benefit.None);
 	ManhattanCell seeBuilding[] = CA(ManhattanId.Building,Type.BuildingMarket,7, Cost.Cash,Benefit.SelectedBuilding);
 	ManhattanCell seeBuildings = C(ManhattanId.SeeBuildingPile,Type.Building, Cost.None,Benefit.None);
-	ManhattanCell seeBombs = C(ManhattanId.SeeBombPile,Type.Bomb, Cost.None,Benefit.None);
-	ManhattanCell seeDiscardedBombs = C(ManhattanId.SeeDiscardedBombPile,Type.Bomb, Cost.None,Benefit.None);
-	ManhattanCell seePersonalities = C(ManhattanId.SeePersonalityPile,Type.Personalities, Cost.None,Benefit.None);
-	ManhattanCell seeNations = C(ManhattanId.SeeNationsPile,Type.Nations, Cost.None,Benefit.None);
-	ManhattanCell seeBombtests = C(ManhattanId.Bombtest	,Type.Bombtest, Cost.None,Benefit.None);
-	
+	ManhattanCell seeBombs = C(ManhattanId.SeeBombPile,Type.Bomb, Cost.None,Benefit.Inspect);
+	ManhattanCell seeDiscardedBombs = C(ManhattanId.SeeDiscardedBombPile,Type.Bomb, Cost.None,Benefit.Inspect);
+	ManhattanCell seePersonalities = C(ManhattanId.SeePersonalityPile,Type.Personalities, Cost.None,Benefit.Inspect);
+	ManhattanCell seeNations = C(ManhattanId.SeeNationsPile,Type.Nations, Cost.None,Benefit.Inspect);
+	ManhattanCell seeBombtests = C(ManhattanId.Bombtest	,Type.Bombtest, Cost.None,Benefit.Inspect);
+	ManhattanCell availablePersonalities = C(ManhattanId.Personality,Type.Personalities,Cost.None,Benefit.Inspect);
 	ManhattanCell seeUranium[] = CA(ManhattanId.SeeUranium,Type.Marker,9, Cost.None,Benefit.None);
 	ManhattanCell seePlutonium[] = CA(ManhattanId.SeePlutonium,Type.Marker,9, Cost.None,Benefit.None);
 	// places to play on the main board
@@ -188,9 +191,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				new Cost[] {Cost.AnyWorker,Cost.AnyWorker,Cost.AnyWorker,Cost.AnyWorkerAnd3},
 				new Benefit[] {Benefit.Worker3,Benefit.Engineer,Benefit.Scientist,Benefit.ScientistOrEngineer});
 	ManhattanCell playDesignBomb = C(ManhattanId.DesignBomb,Type.Worker, Cost.ScientistAndEngineerAndBombDesign,Benefit.BombDesign);
-	ManhattanCell seeCurrentDesigns = C(ManhattanId.CurrentDesigns,Type.Bomb, Cost.None,Benefit.None);
-	ManhattanCell playMakePlutonium = C(ManhattanId.MakePlutonium,Type.Worker, Cost.ScientistAnd2Y,Benefit.Plutonium);
-	ManhattanCell playMakeUranium = C(ManhattanId.MakeUranium,Type.Worker, Cost.ScientistAnd2YAnd3,Benefit.Uranium);
+	ManhattanCell seeCurrentDesigns = C(ManhattanId.CurrentDesigns,Type.Bomb, Cost.None,Benefit.Inspect);
+	ManhattanCell playMakePlutonium = C(ManhattanId.MakePlutonium,Type.Worker, Cost.ScientistAnd2Y,Benefit.MainPlutonium);
+	ManhattanCell playMakeUranium = C(ManhattanId.MakeUranium,Type.Worker, Cost.ScientistAnd2YAnd3,Benefit.MainUranium);
 	ManhattanCell playAirStrike[] = CA(ManhattanId.AirStrike,Type.Worker,2, Cost.AnyWorker,Benefit.Airstrike);
 	ManhattanCell playRepair = C(ManhattanId.Repair,Type.Worker, Cost.AnyWorkerAnd5,Benefit.Repair);
 	ManhattanCell playMakeFighter = C(ManhattanId.MakeFighter,Type.Worker, Cost.AnyWorker,Benefit.Fighter2);
@@ -268,6 +271,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private IStack pickedIndex = new IStack();
     private IStack droppedIndex = new IStack();
     private StateStack stateStack = new StateStack();
+    private LStack optionStack = new LStack();
     public ManhattanCell displayCell = null;		// cell for the gui to display in a "select" dialog
     public CellStack displayCells = new CellStack();
     
@@ -405,16 +409,16 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	}
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
-    {	randomKey = key;
+    {	// magic numbers
+    	// 317628249 japan+north korea
+    	//key = 317628249 ;
+    	randomKey = key;
     	adjustRevision(rev);
     	players_in_game = players;
     	win = new boolean[players];
     	contextStack.clear();
-    	if(G.debug())
-    	{
-    		options.set(Options.Personalities);
-    		options.set(Options.Nations);
-    	}
+		options.set(Options.Personalities);
+		options.set(Options.Nations);
     	
     	// pbs is the player board indexed by boardindex, mapped to the player's preferred color
         int map[] = getColorMap();
@@ -483,7 +487,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         seeDiscardedBombs.reInit();
         
         seePersonalities.reInit();
-        for(ManhattanChip ch : ManhattanChip.Personalities)  { seePersonalities.addChip(ch); }
+        availablePersonalities.reInit();
+        for(ManhattanChip ch : ManhattanChip.Personalities)  
+        { seePersonalities.addChip(ch); 
+          if(ch.type==Type.Personalities) { availablePersonalities.addChip(ch); }
+        }
  
         seeNations.reInit();
         for(ManhattanChip ch : ManhattanChip.Nations)  { seeNations.addChip(ch); }
@@ -512,8 +520,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         reInit(playMine);
         reInit(playUniversity);
         playDesignBomb.reInit();
-        
-        loadNewDesigns();
+        seeCurrentDesigns.reInit();
+        loadNewDesigns(replayMode.Replay);
          
         playMakePlutonium.reInit();
         playMakeUranium.reInit();
@@ -541,6 +549,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	    
 	    for(PlayerBoard pb : pbs)
 	    {	// give everyone 4 regular workers
+	    	pb.addCoinsFromBank(pb.cashDisplay,10,replayMode.Replay);
 	    	for(int i=0;i<4;i++)
 	    		 { pb.workers.addChip(getAvailableWorker(pb.color,WorkerType.L)); 
 	    		 }
@@ -555,28 +564,33 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         for(int i=0,fp = whoseTurn;i<players_in_game;i++)
         {
         	PlayerBoard pb = pbs[fp];
-        	pb.cashDisplay.setCash(bonuscash[i]);     
+        	pb.addCoinsFromBank(pb.cashDisplay,bonuscash[i],replayMode.Replay);     
         	fp = nextPlayer(fp);
         }
         afterWorkerDispatch = null;
         displayCell = null;
         espionageSteps = 0;
         northKoreanPlayer = 0;
+        northKoreaSteps = 0;
         displayCells.clear();
         initialDigest = Digest();
         // note that firstPlayer is NOT initialized here
     }
     long initialDigest = 0;
     
-    public void loadNewDesigns()
-    {
-        seeCurrentDesigns.reInit();
-        if(nBombsAvailable()>=players_in_game+1)
+    public void loadNewDesigns(replayMode replay)
+    {	int needed = players_in_game+1-seeCurrentDesigns.height();
+        if(needed>0 && nBombsAvailable()>=needed)
         {
         // only load bombs if fully available
-        for(int i=0;i<players_in_game+1;i++) 
+        for(int i=0;i<needed;i++) 
         	{ 	ManhattanChip bomb = getABomb();
-        		if(bomb!=null) { seeCurrentDesigns.addChip(bomb); }
+        		seeCurrentDesigns.addChip(bomb); 
+        		if(replay.animate)
+        		{
+        			animationStack.push(seeBombs);
+        			animationStack.push(seeCurrentDesigns);
+        		}
         	}}
     }
     /** create a copy of this board */
@@ -615,7 +629,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         seeBuildings.copyFrom(from_b.seeBuildings);
         seeBombs.copyFrom(from_b.seeBombs);
         seeDiscardedBombs.copyFrom(from_b.seeDiscardedBombs);
-        seePersonalities.copyFrom(from_b.seePersonalities);
+        availablePersonalities.copyFrom(from_b.availablePersonalities);
         seeNations.copyFrom(from_b.seeNations);
         seeBombtests.copyFrom(from_b.seeBombtests);
         copyFrom(seeUranium,from_b.seeUranium);
@@ -642,6 +656,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         getCell(displayCells,from_b.displayCells);
         espionageSteps = from_b.espionageSteps;
         northKoreanPlayer = from_b.northKoreanPlayer;
+        northKoreaSteps = from_b.northKoreaSteps;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
@@ -652,7 +667,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         resetState = from_b.resetState;
         lastPicked = null;
         options.copy(from_b.options);
+        if(G.debug())
+        {
         sameboard(from_b); 
+        }
     }
 
     
@@ -689,7 +707,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         G.Assert(seeDiscardedBombs.sameContents(from_b.seeDiscardedBombs),"seediscardedbombs mismatch");
         G.Assert(seeNations.sameContents(from_b.seeNations),"seenations mismatch");
         G.Assert(seeBombtests.sameContents(from_b.seeBombtests),"seeBombtests mismatch");
-        G.Assert(seePersonalities.sameContents(from_b.seePersonalities),"seepersonalities mismatch");
+        G.Assert(availablePersonalities.sameContents(from_b.availablePersonalities),"seepersonalities mismatch");
         G.Assert(sameContents(seeUranium,from_b.seeUranium),"seeUranium mismatch");
         G.Assert(sameContents(seePlutonium,from_b.seePlutonium),"seeplutoniom mismatch");
         
@@ -782,7 +800,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         v ^= seeDiscardedBombs.Digest(r);
         v ^= seeNations.Digest(r);
         v ^= seeBombtests.Digest(r);
-        v ^= seePersonalities.Digest(r);
+        v ^= availablePersonalities.Digest(r);
         v ^= Digest(r,seeUranium);
         v ^= Digest(r,seePlutonium);
         
@@ -821,13 +839,89 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         return (v);
     }
 
+    public long Digest1()
+    { 
+        // the basic digestion technique is to xor a bunch of random numbers. 
+    	// many object have an associated unique random number, including "chip" and "cell"
+    	// derivatives.  If the same object is digested more than once (ie; once as a chip
+    	// in play, and once as the chip currently "picked up", then it must be given a
+    	// different identity for the second use.
+        //
+        Random r = new Random(64 * 1000); // init the random number generator
+        long v = super.Digest(r);
+        G.print("\nd0 ",v);
+        
+        v ^= Digest(r,seeBribe);
+        v ^= Digest(r,choice);
+        v ^= Digest(r,choiceOut);
+        v ^= Digest(r,repairCounter);
+        v ^= Digest(r,bombDesigner);
+        v ^= Digest(r,needScientists);
+        v ^= Digest(r,needEngineers);
+        v ^= Digest(r,selectedCells);
+        v ^= Digest(r,selectedChips);
+        v ^= Digest(r,pendingCost);
+        v ^= Digest(r,pendingBenefit);
+        v ^= Digest(r,availableWorkers);
+        v ^= Digest(r,seeEspionage);
+        v ^= Digest(r,seeBuilding);
+        v ^= seeBuildings.Digest(r);
+        v ^= seeBombs.Digest(r);
+        v ^= seeDiscardedBombs.Digest(r);
+        v ^= seeNations.Digest(r);
+        G.print("d1 ",v);
+               v ^= seeBombtests.Digest(r);
+        v ^= availablePersonalities.Digest(r);
+        v ^= Digest(r,seeUranium);
+        v ^= Digest(r,seePlutonium);
+        
+        v ^= playEspionage.Digest(r);
+        v ^= Digest(r,playMine);
+        v ^= Digest(r,playUniversity);
+        v ^= playDesignBomb.Digest(r);
+        v ^= seeCurrentDesigns.Digest(r);
+        v ^= playMakePlutonium.Digest(r);
+        v ^= playMakeUranium.Digest(r);
+        v ^= Digest(r,playAirStrike);
+        v ^= playRepair.Digest(r);
+        G.print("d2 ",v);
+                v ^= playMakeFighter.Digest(r);
+        v ^= playMakeBomber.Digest(r);
+        v ^= Digest(r,playMakeMoney);
+        v ^= Digest(r,afterWorkerDispatch);
+        v ^= Digest(r,displayCell);
+        v ^= Digest(r,displayCells);
+        v ^= Digest(r,espionageSteps);
+        v ^= Digest(r,northKoreanPlayer);
+        v ^= Digest(r,playBuyBuilding);
+        v ^= Digest(r,playBuyBuilding2);
+        
+		// many games will want to digest pickedSource too
+		// v ^= cell.Digest(r,pickedSource);
+        G.print("d3 ",v);
+              for(PlayerBoard pb : pbs) { v^= pb.Digest(r); }
+        G.print("d4 ",v);
+        v ^= chip.Digest(r,pickedObject);
+		v ^= Digest(r,pickedSourceStack);
+		v ^= Digest(r,droppedDestStack);
+		v ^= Digest(r,pickedIndex);
+		v ^= Digest(r,droppedIndex);
+		v ^= Digest(r,revision);
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn);
+		v ^= Digest(r,options);
+	       G.print("d5 ",v);
+	               return (v);
+    }
+
+
 
 
     //
     // change whose turn it is, increment the current move number
     //
     public void setNextPlayer(replayMode replay)
-    {
+    {	pbs[whoseTurn].endTurn(replay);
         switch (board_state)
         {
         default:
@@ -847,13 +941,15 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         case Airstrike:
         case JapanAirstrike:
         case Repair:
+        case NextPlayer:
+        case NoMovesState:
         case PaidRepair:
         case Resign:
             moveNumber++; //the move is complete in these states
     		espionageSteps = 0;	// done spying too
     		setWhoseTurn(nextPlayer(whoseTurn));
-            return;
         }
+        pbs[whoseTurn].startTurn(replay);
     }
 
     /** this is used to determine if the "Done" button in the UI is live
@@ -890,6 +986,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     {	
         droppedDestStack.clear();
         pickedSourceStack.clear();
+        optionStack.clear();
         pickedIndex.clear();
         droppedIndex.clear();
         stateStack.clear();
@@ -903,6 +1000,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private ManhattanCell unDropObject()
     {	ManhattanCell rv = droppedDestStack.pop();
     	int ri = droppedIndex.pop();
+    	pbs[whoseTurn].restoreOptions(optionStack.pop());
     	resetState = stateStack.pop();
     	setState(stateStack.pop());
     	if(rv.cost==Cost.FixedPool)
@@ -970,7 +1068,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     {
        droppedDestStack.push(c);
        droppedIndex.push(index);
-       
+       ManhattanId rack = c.rackLocation();
+       if((rack==ManhattanId.Stockpile)||(rack==ManhattanId.Building))
+       {
+    	   PlayerBoard pb = getPlayerBoard(c.color);
+    	   if(pb!=null)
+    	   		{ pb.selectedBomb = c; 
+    	   		}
+       }
        if(c.cost==Cost.FixedPool)
        {  switch(c.type)
     	   {
@@ -1002,6 +1107,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     pickedObject = null;
     stateStack.push(board_state);
     stateStack.push(resetState);
+    optionStack.push(pbs[whoseTurn].saveOptions());
     }
     //
     // true if c is the place where something was dropped and not yet confirmed.
@@ -1038,6 +1144,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         {
         default:
         	throw G.Error("Not expecting source %s" , source);
+        case Personality: return availablePersonalities;
         case Select: return choice[row];
         case SelectOut: return choiceOut[row];
         case SeeEspionage: return seeEspionage[row];
@@ -1190,9 +1297,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		// premake the choice if there is no real choice
 		if(pb.nUranium<nU) 
 			{ selectedCells.push(choice[1]); 
+			displayCells.remove(0,true);
 			return ManhattanState.ConfirmPayment; }
 		else if(pb.yellowcakeDisplay.height()<nY) 
 			{selectedCells.push(choice[0]); 
+			displayCells.remove(1,true);
 			return ManhattanState.ConfirmPayment; }
 		else { 
 			pendingBenefit = Benefit.None;
@@ -1232,12 +1341,51 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	ManhattanChip bomb = c.chipAtIndex(0);
     	G.Assert(c.height()==1 || scientists==bomb.nScientistsRequired() && engineers==bomb.nEngineersRequired(),
     			"wrong requirements for %s",c.chipAtIndex(0));
-    	
-    	switch(worker.workerType)
+    	PlayerBoard pb = pbs[whoseTurn];
+    	WorkerType wtype = worker.workerType;
+    	if(wtype==WorkerType.L) {
+    		// must be oppie or groves
+    		if(pb.hasPersonality(ManhattanChip.Oppenheimer)
+    				&& !pb.testOption(TurnOption.OppenheimerWorker)
+    				&& scientists>0)
+    		{
+    			wtype = WorkerType.S; 
+				pb.setOption(TurnOption.OppenheimerWorker);
+    		}
+    		else if(pb.hasPersonality(ManhattanChip.Groves)
+    				&& !pb.testOption(TurnOption.GrovesWorker)
+    				&& engineers>0)
+    		{
+    			wtype = WorkerType.E; 
+				pb.setOption(TurnOption.GrovesWorker);
+    		}
+    		else {
+    			G.Error("bad combination of Laborers and permissions");
+    		}
+    	}
+    	switch(wtype)
     	{
-    	case S:	scientists--; break;
-    	case E: engineers--; break;
-    	default: break;
+    	case S:	scientists--; 
+    			if((scientists>0)
+    					&& pb.hasPersonality(ManhattanChip.Oppenheimer)
+    					&& !pb.testOption(TurnOption.OppenheimerWorker))
+    			{	// use 1 as 2
+    				scientists--;
+    				pb.setOption(TurnOption.OppenheimerWorker);
+    			}
+    			break;
+    	case E: engineers--; 
+			if((engineers>0)
+					&& pb.hasPersonality(ManhattanChip.Groves)
+					&& !pb.testOption(TurnOption.GrovesWorker))
+			{	// use 1 as 2
+				engineers--;
+				pb.setOption(TurnOption.GrovesWorker);
+			}
+			break;
+    	default: 
+    		G.Error("not expecting %s",worker);
+    		break;
     	}
     	
      	needScientists = scientists;
@@ -1256,24 +1404,82 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	{
     		switch(scientists)
     		{
+    		case 0: return ManhattanState.ConfirmWorker;
     		case 1: return ManhattanState.PlayScientist;
     		case 2: return ManhattanState.Play2Scientists;
     		default: 
-    			return ManhattanState.ConfirmWorker;
+    			break;
+    			
     		}
     	}
     	else if(scientists<=0)
     	{
     		switch(engineers)
     		{
+    		case 0: return ManhattanState.ConfirmWorker;
     		case 1: return ManhattanState.PlayEngineer;
     		case 2: return ManhattanState.Play2Engineers;
+    		case 3: return ManhattanState.NeedWorkers;
     		default: 
-    			return ManhattanState.ConfirmWorker;
+    			break;
     		}
     	}
     	return ManhattanState.NeedWorkers;
     }
+    
+    // using a worker where an engineer is required
+    public void checkForGroves(ManhattanCell c)
+    {
+   		ManhattanChip top = c.topChip();
+   		if(top.workerType==WorkerType.L)
+   			{
+   			PlayerBoard pb = pbs[whoseTurn];
+   			if(pb.hasPersonality(ManhattanChip.Groves)
+   					&& !pb.testOption(TurnOption.GrovesWorker))
+   				{
+   					pb.setOption(TurnOption.GrovesWorker);
+   				}
+   			else { G.Error("invalid use of worker");}
+   			}
+   		}
+    	
+    // using a worker where a scientist is required
+    public void checkForOppenheimer(ManhattanCell c)
+    {
+   		ManhattanChip top = c.topChip();
+   		if(top.workerType==WorkerType.L)
+   			{
+   			PlayerBoard pb = pbs[whoseTurn];
+   			if(pb.hasPersonality(ManhattanChip.Oppenheimer)
+   					&& !pb.testOption(TurnOption.OppenheimerWorker))
+   				{
+   					pb.setOption(TurnOption.OppenheimerWorker);
+   				}
+   			else { G.Error("invalid use of worker or permission");}
+   			}
+   		}
+    
+    // using a worker where either scientists or engineers are required
+    public void checkForGrovesOrOppenheimer(ManhattanCell c)
+    {
+   		ManhattanChip top = c.topChip();
+   		if(top.workerType==WorkerType.L)
+   			{
+   			PlayerBoard pb = pbs[whoseTurn];
+   			if(pb.hasPersonality(ManhattanChip.Groves)
+   					&& !pb.testOption(TurnOption.GrovesWorker))
+   				{
+   					pb.setOption(TurnOption.GrovesWorker);
+   				}
+   			else if(pb.hasPersonality(ManhattanChip.Oppenheimer)
+   					&& !pb.testOption(TurnOption.OppenheimerWorker))
+   				{
+   					pb.setOption(TurnOption.OppenheimerWorker);
+   				}
+   			else { G.Error("invalid use of worker or permission");}
+   			}
+   		}
+ 
     //
     // this is where the action is; after the first worker is placed, we may need to 
     // select other workers or resources to be ready to click "done"
@@ -1286,16 +1492,28 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        	default: 
     		p1("requirements-"+requirements);
     		throw G.Error("Not expecting %s",requirements);
- 
+       	case ScientistOrEngineer:
+       		{
+       		checkForGrovesOrOppenheimer(c);
+       		return ManhattanState.ConfirmWorker;
+       		}
+       	case Airstrike:
+       		// this happens when the action is a "lemay" airstrike
+       		return ManhattanState.ConfirmSingleAirstrike;
+       		
     	case Engineer:
-    	case Scientist:
-    	case AnyWorker:
-    	case ScientistOrEngineer:
-    	case Cash:
+    		return setNeedWorkers(c,0,1);
+    		
+     	case AnyWorker:
+     	case Cash:
     	case AnyWorkerAnd3:
     	case AnyWorkerAnd3Y:
     	case AnyWorkerAnd5:
-    	case ScientistAnd1Yellowcake:
+     	case None: 	
+    		return ManhattanState.ConfirmWorker;
+ 		
+       	case Scientist:
+       	case ScientistAnd1Yellowcake:
     	case ScientistAnd2YAnd3:
     	case ScientistAnd1Uranium:
     	case ScientistAnd2YellowcakeAnd2:
@@ -1307,9 +1525,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case ScientistAnd4YellowcakeAnd4:
     	case ScientistAnd3YellowcakeAnd1:
     	case ScientistAndBombDesign:
-     	case None: 	
-    		return ManhattanState.ConfirmWorker;
-    		
+    		return setNeedWorkers(c,1,0);
     		
     		
     	case ScientistAndEngineerAnd3Uranium:
@@ -1344,12 +1560,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		return ManhattanState.DiscardOneBomb;
     		
     	case Engineer3:
-    		return ManhattanState.Play2Engineers;
+    		// use the generic so groves personality is automatic
+    		return setNeedWorkers(c,0,3);
+    		
     	case Engineer2:
-    		return ManhattanState.PlayEngineer;
+    		return setNeedWorkers(c,0,2);
     		
     	case Scientists3And8Yellowcake:
-    		return ManhattanState.Play2Scientists;
+    		return setNeedWorkers(c,3,0);
     		    		
 		case Scientist2And3Yellowcake:
 		case Scientist2And2YellowcakeAnd5:
@@ -1358,12 +1576,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case Scientist2And6Yellowcake:
     	case Scientists2And6YellowcakeAnd7:
     	case Scientist2And4YellowcakeAnd3:
-    		return ManhattanState.PlayScientist;
+    		return setNeedWorkers(c,2,0);
     		
     	case ScientistAndEngineerAndBombDesign:
     		return setNeedWorkers(c,1,1);
   
     	case EngineerAndMoney:
+    		checkForGroves(c);
+    		return ManhattanState.SelectBuilding;
     	case ScientistOrWorkerAndMoney:
     		return ManhattanState.SelectBuilding;
     	
@@ -1372,15 +1592,15 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		
     	case Scientists2And1UraniumOr7Yellowcake:
     		afterWorkerDispatch = AfterWorkerDispatch.plusUandY17;
-    		return ManhattanState.PlayScientist;
+    		return setNeedWorkers(c,2,0);
     		
     	case Scientists2And1UraniumOr4Yellowcake:
     		afterWorkerDispatch = AfterWorkerDispatch.plusUandY14;
-    		return ManhattanState.PlayScientist;
+    		return setNeedWorkers(c,2,0);
     		
     	case Scientist2And1UraniumOr3Yellowcake:
     		afterWorkerDispatch = AfterWorkerDispatch.plusUandY13;
-    		return ManhattanState.PlayScientist;
+    		return setNeedWorkers(c,2,0);
     		
     	case Any3Workers:
     		return ManhattanState.PlayAny3Workers;
@@ -1404,6 +1624,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     }
     public void setNextPlayState(ManhattanCell c)
     {	ManhattanState n = requirementsSatisfied(c,c.getEffectiveCost());
+    	
     	setState(n);
     }
     private void setIsrailiBombRequirement(ManhattanCell c)
@@ -1411,7 +1632,15 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	ManhattanChip bomb = c.chipAtIndex(0);
     	ManhattanChip worker = c.chipAtIndex(1);
     	G.Assert(bomb.type==Type.Bomb && worker.type==Type.Worker,"should be a worker and a bomb");
-    	switch(worker.workerType){
+    	WorkerType type = worker.workerType;
+    	if(type==WorkerType.L)
+    	{	// oppenheimer or groves at work
+    		PlayerBoard pb = pbs[whoseTurn];
+    		if(pb.hasPersonality(ManhattanChip.Oppenheimer)) { type = WorkerType.S; }
+    		else if(pb.hasPersonality(ManhattanChip.Groves)) { type = WorkerType.E; }
+    		else { G.Error("invalid worker type"); }
+    	}
+    	switch(type){
     	case E:	
     		needEngineers = bomb.nEngineersRequired();
     		needScientists = 0;
@@ -1420,7 +1649,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		needScientists = bomb.nScientistsRequired();
     		needEngineers = 0;
     		break;
-    	default: throw G.Error("Not expecting %s",worker);
+    	default: 
+    		
+    		throw G.Error("Not expecting %s",worker);
     	}
     	
     	
@@ -1435,8 +1666,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         {
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
-        case Airstrike:
         case JapanAirstrike:
+        	setState(ManhattanState.ConfirmJapanAirstrike);
+        	break;
+        case Airstrike:
         	setState(ManhattanState.ConfirmAirstrike);
         	break;
         case PlayAny3Workers:
@@ -1460,7 +1693,16 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	
         	{
         	ManhattanChip top = dest.topChip();
-        	switch(top.workerType)
+        	WorkerType type = top.workerType;
+        	if(type==WorkerType.L)
+        	{
+        		// oppenheimer or groves at work 
+        		PlayerBoard pb = pbs[whoseTurn];
+        		if(pb.hasPersonality(ManhattanChip.Oppenheimer)) { type = WorkerType.S; }
+        		else if(pb.hasPersonality(ManhattanChip.Groves)) { type = WorkerType.E; }
+        		else { G.Error("invalid worker type"); }
+        	}
+        	switch(type)
         	{
         	case S: needScientists--; break;
         	case E: needEngineers--; break;
@@ -1472,16 +1714,25 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         case PlayScientist:
         case PlayEngineer:
         case PlayAny2Workers:
+        	{
         	ManhattanState disp = afterWorkerDispatch();
         	if(disp!=null) { setState(disp); }
         	else setState(ManhattanState.ConfirmWorker);
+        	}
         	break;
-			//$FALL-THROUGH$
 		case Play:
         case PlayLocal:
         case PlayEspionage:
         case PlayOrRetrieve:
-			setNextPlayState(dest);
+        	{
+ 			setNextPlayState(dest);
+ 			if(board_state==ManhattanState.ConfirmWorker)
+ 			{
+ 	       	ManhattanState disp = afterWorkerDispatch();
+        	if(disp!=null)
+        		{ setState(disp);
+        		}
+        	}}
 			break;
         case Puzzle:
 			acceptPlacement();
@@ -1507,8 +1758,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case PlayEspionage:
     	case BuildIsraelBomb:
     	case North_Korea_Dialog:
+    	case SelectPersonality:
     	case Gameover: 
     		break;
+    	case ConfirmJapanAirstrike:
     	case ConfirmAirstrike:
     		setState(resetState);	// airstrike or japan airstrike
     		break;
@@ -1519,28 +1772,25 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case ConfirmDiscard:
     	case ConfirmChoice:
     		break;
+    	case Resign:
+    		setState(ManhattanState.Resign);
+    		break;
        	case ConfirmPayment:
      	case ConfirmBenefit:
     	case ConfirmWorker:
+       	case ConfirmSingleAirstrike:
     	case ConfirmRetrieve1:
-    		// finished placement of one worker
-    		{
-    		PlayerBoard pb = getPlayerBoard(whoseTurn);
-       		if(pb.nAvailableWorkers()>0)
-			{
        		// if we still have workers, allow continuing
        		// otherwise fall through into the next player
 			setState(espionageSteps>0 ? ManhattanState.PlayEspionage : ManhattanState.PlayLocal);
-			if(hasMoves())
-				{
-				break;
-				}
-			}}
-    		setState(ManhattanState.Confirm);
+			break;
+    	case NoMovesState:
+		case NextPlayer:
     		setNextPlayer(replay);
 			//$FALL-THROUGH$
-		case Confirm:
-    	case ConfirmRetrieve:
+      	case ConfirmRetrieve:
+       	case ConfirmNichols:
+   		case Confirm:
     	case Puzzle:
     	case PlayLocal:
     	case Play:
@@ -1552,7 +1802,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		}
     		break;
     	}
-
+       	if(!hasMoves()) {
+       		setState(ManhattanState.NoMovesState);
+       	}
     }
     
     private void startNextChoice()
@@ -1619,7 +1871,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	    	pb.payCost(dest,dest.getEffectiveCost(),replay);
 	    	displayCell = null;
 	    	pb.collectBenefit(dest,dest.getEffectiveBenefit(),selectedCells.top(),replay);
-	        acceptPlacement();
 	        
 	        if(winForPlayerNow(whoseTurn)) 
 			{ win[whoseTurn]=true;
@@ -1646,6 +1897,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		PlayerBoard pb = pbs[whoseTurn];
     		pb.collectBenefit(idest,idest.getEffectiveBenefit(),idest,replay);
     	}
+ 
     }
     private void discardBombs(replayMode replay)
     {
@@ -1705,12 +1957,19 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	
     	switch(startingState)
     	{
+   		
+ 		//$FALL-THROUGH$
+
     	case PlayEspionage:
     		espionageSteps = 0;		// end or espionage if you hit done without doing anything
 			//$FALL-THROUGH$
 		case BuildIsraelBomb:
     		setState(ManhattanState.ConfirmWorker);
     		break;
+		case PaidRepair:
+			repairCounter = 0;
+			setState(ManhattanState.ConfirmWorker);
+			break;
     	case ConfirmRepair:
     		{
     		ManhattanCell dest = selectedCells.pop();
@@ -1732,9 +1991,42 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case Repair:
     	case Airstrike:
     	case JapanAirstrike:
-    		setNextPlayer(replay);
-    		setState(ManhattanState.Confirm);
+    		//setNextPlayer(replay);
+    		//setState(ManhattanState.Confirm);
+    		setState(ManhattanState.ConfirmWorker);
     		break;
+    		
+    	case ConfirmJapanAirstrike:
+			{
+			ManhattanCell dest = getDest();
+			doAirstrike(getSource(),dest,replay);
+			setState(ManhattanState.JapanAirstrike);
+			}
+			break;
+
+    	case ConfirmNichols:
+    		{
+    		ManhattanChip victim = seeBuilding[0].removeTop();
+    		seeBuildings.insertChipAtIndex(0,victim);
+    		if(replay.animate)
+    		{
+    			animationStack.push(seeBuilding[0]);
+    			animationStack.push(seeBuildings);
+    		}
+   			pbs[whoseTurn].addCoinsFromBank(seeBribe,1,replay);
+			pbs[whoseTurn].setOption(TurnOption.NicholsShuffle);
+			logGameEvent(NicholsActionMessage);
+			shuffleBuildings(seeBuilding[0],replay);
+    		}
+    		break;
+    	case ConfirmSingleAirstrike:
+			{
+			ManhattanCell dest = getDest();
+			doAirstrike(getSource(),dest,replay);
+			pbs[whoseTurn].setOption(TurnOption.LemayAirstrike);
+			}
+			break;
+	
     	case ConfirmAirstrike:
     		{
     		ManhattanCell dest = getDest();
@@ -1783,7 +2075,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 							{selectedCells.push(seeCurrentDesigns);
 						     distributeBenefit(replay);
 							}
-						loadNewDesigns();
+						loadNewDesigns(replay);
 					}
 					else if(seeCurrentDesigns.height()>0)
 					{
@@ -1803,14 +2095,36 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	case ConfirmWorker:
     		{
     		ManhattanCell dest = getDest();
-    		if((espionageSteps>0) && dest!=null && dest.color!=pb.color)
+    		boolean espionage = dest!=null && dest.color!=pb.color;
+    		if(espionage)
+    		{
+    		if(espionageSteps>0)
     			{
     			espionageSteps--;
     			}
+    		else if(pb.hasPersonality(ManhattanChip.Fuchs)
+    				&& (dest.color!=MColor.Board)
+    				&& (dest.color!=pb.color))
+    			{
+    			pb.setOption(TurnOption.FuchsEspionage);
+    			}	
+    		}
     		finishWorker(dest,replay);
-    		if(board_state==ManhattanState.Confirm) 
-    			{ // china does this to cause the turn to end
+    		switch(board_state)
+    		{
+    		case ConfirmBenefit:
+    				// nations usa can have no bombers to sell
+    				distributeBenefit(replay);
+    				break;
+    		case Confirm:
+    				// china does this to cause the turn to end
     				setNextPlayer(replay);
+    				break;
+    		default: break;
+    		}
+    		if(board_state==ManhattanState.Confirm) 
+    			{ 
+    				
     			}
     		}
     		break;
@@ -1819,20 +2133,34 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		break;
     	case ConfirmRetrieve:
     		doRetrieve(replay);
+       		if(options.test(Options.Personalities))
+    		{	
+       			preparePersonalityMoves();
+    			break;
+    		}
 			//$FALL-THROUGH$
 		case Confirm:
     	case PlayLocal:
     		if(winForPlayerNow(whoseTurn)) { setState(ManhattanState.Gameover); }
     		else { setNextPlayer(replay); }
     		break;
+    	case Resign:
+    		setState(ManhattanState.Gameover);
+    		break;
     	case Gameover:
     	default:
     		break;
     	}
-    	
+    	acceptPlacement();
     	setNextStateAfterDone(replay);
     	
-		finishChoice();
+		switch(board_state)
+		{
+		case PaidRepair:
+			break;
+		default : finishChoice();
+			break;
+		}
 		 
     	
     	if(frenchDiscard)
@@ -1846,8 +2174,16 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				}
 			}
     	}
-    	
-		startNextChoice();
+    	switch(board_state)
+    	{
+    	case Repair:
+    	case PaidRepair:
+    		break;
+    	default: 
+    			startNextChoice();
+    			break;
+    	}
+    	if(frenchDiscarded) { loadNewDesigns(replay); }
 		// in rare circumstances, there can be no moves - either at top level
 		// or after a french discard which discards the only available move
 		while( ( (frenchDiscarded && (board_state==ManhattanState.PlayLocal))
@@ -1944,8 +2280,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	
 	private void selectCells(ManhattanCell newselected)
 	{
-       	boolean multi = pendingBenefit==Benefit.DiscardBombs;
-       	boolean tworows = pendingBenefit==Benefit.Trade;
+		boolean nichols = (board_state!=ManhattanState.ConfirmWorker)
+						&& (board_state!=ManhattanState.SelectBuilding)
+						&&  ( newselected==seeBuilding[0]);	// for the nichols personality option
+       	boolean multi = !nichols && pendingBenefit==Benefit.DiscardBombs;
+       	boolean tworows = !nichols && pendingBenefit==Benefit.Trade;
     	boolean remove = selectedCells.remove(newselected,true)!=null;
     	ManhattanState next = resetState;
     	if(!remove)
@@ -1971,6 +2310,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	{
     		if(selectedCells.size()==2) { next = ManhattanState.ConfirmBenefit; }
     	}
+    	else if(nichols)
+    	{
+    		if(!remove) { next = ManhattanState.ConfirmNichols; }
+    	}
     	else
     	{
     	switch(resetState)
@@ -1983,11 +2326,13 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
      	case PaidRepair:
     	case Repair: if(!remove) { next = ManhattanState.ConfirmRepair; } break;
        	case CollectBenefit: if(!remove) { next = ManhattanState.ConfirmBenefit; } break;
+       	case SelectPersonality:
     	case ResolveChoice: if(!remove) { next = ManhattanState.ConfirmChoice;} break;
     	case DiscardOneBomb:
     	case ResolvePayment: if(!remove) { next = ManhattanState.ConfirmPayment; } break;
     	case SelectBuilding:
     	case BuildIsraelBomb:
+    	case PlayLocal: 
     	case Play: next = ManhattanState.ConfirmWorker; break;
     	case Puzzle: break;
     	default: throw G.Error("Not expecting %s",resetState); 
@@ -2000,7 +2345,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 
         //G.print("E "+m+" for "+whoseTurn);
         switch (m.op)
-        {
+        {        	
         case MOVE_DONE:
         	doDone(replay);
             break;
@@ -2116,12 +2461,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        		{
        		 PlayerBoard pb = getPlayerBoard(m.from_color);
        		 pb.approvedNorthKorea = true;
+       		 pb.hasSetContribution = true;	// even if not really
        		 if(allApproved() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     		 
        		}
        		break;
        case EPHEMERAL_CONTRIBUTE:
        	{ PlayerBoard pb = getPlayerBoard(m.from_color);
     	   m.player = pb.boardIndex;
+    	   northKoreaSteps++;
     	   if(pb.koreanContribution != m.from_index)
     	   {
     	   for(PlayerBoard p : pbs) { p.approvedNorthKorea = false; p.hasSetContribution=false; }
@@ -2216,8 +2563,22 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		 		}
 		 }
 		 }
-	 	
 	 }
+	 if(pb.hasPersonality(ManhattanChip.Nichols) 
+			 && !pb.testOption(TurnOption.NicholsShuffle)
+			 && seeBuilding[0].height()>0)
+	 	{	some = true;
+	 		if(all!=null)
+	 		{	// personality nichols can trash the first building
+	 			all.push(new ManhattanMovespec(MOVE_SELECT,seeBuilding[0],0,whoseTurn));
+	 		}
+	 	}
+	 if(pb.hasPersonality(ManhattanChip.Fuchs)
+			 && !pb.testOption(TurnOption.FuchsEspionage))
+	 	{
+		 some |= addPlayerEspionageMoves(all,pbs[whoseTurn],whoseTurn); 
+	 	}
+	 
 	 return some;
  }
  
@@ -2270,6 +2631,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 PlayerBoard pb = pbs[who];
 	 ManhattanChip worker = dest.topChip();
 	 boolean some = false;
+	 if((dest.rackLocation()==ManhattanId.BuyWithEngineer)
+			 && worker.workerType==WorkerType.L)
+	 {	 // special case, groves uses his upgrade to build for free
+		 G.Assert(pb.hasPersonality(ManhattanChip.Groves),"must be groves");
+		 worker = pb.engineer;
+	 }
 	 for(ManhattanCell c : seeBuilding)
 	 {	if(c.height()>0)
 	 	{
@@ -2279,7 +2646,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 }
 	 return some;
  }
- 
+
  public boolean addRepairMoves(CommonMoveStack all,int who)
  { 	PlayerBoard pb = pbs[who];
  	return pb.addRepairMoves(all,repairCost(),who);
@@ -2326,20 +2693,21 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		 { mypb.addAirstrikeMoves(all,pb,board_state==ManhattanState.JapanAirstrike,who); 
 		 }
 	 }
-	 all.push(new ManhattanMovespec(MOVE_DONE,who));
 
 	 return true;
  }
  
  public boolean addPlayerEspionageMoves(CommonMoveStack all,PlayerBoard pb,int who)
- {	if(all==null) { return true; }
+ {	boolean some = false;
  	for(PlayerBoard other : pbs)
  		{
  		// you can use your own buildings during espionage
-	 	pb.addPlayerBoardMoves(all,pickedObject,other.buildings,who); 
+ 		if(!other.hasPersonality(ManhattanChip.Landsdale))
+ 		{	// personality Landsdale is immune to espionage
+	 	some |= pb.addPlayerBoardMoves(all,pickedObject,other.buildings,who); 
  		}
- 	all.push(new ManhattanMovespec(MOVE_DONE,who)); 
- 	return true;
+ 		}
+ 	return some;
  }
  public void addSelectableMoves(CommonMoveStack all)
  {
@@ -2406,7 +2774,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				  }
 				  if(ok)
 				  {
-				  if(all!=null) { all.addElement(new ManhattanMovespec(MOVE_DROP,c,-1,whoseTurn));}
+				  if(all!=null) 
+				  	{ ManhattanMovespec m = new ManhattanMovespec(MOVE_DROP,c,-1,whoseTurn);
+				  	  all.addElement(m);
+				  	}
 				  some = true;
 				  }
 				
@@ -2425,7 +2796,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  }
  private boolean addNorthKoreaMoves(CommonMoveStack all,int who)
  {	 
- 	 if(all==null || robot==null) { return true; }
+ 	 if(all==null) { return true; }
  	 // only generate moves for the bot
 	 return pbs[who].addNorthKoreaMoves(all,who);
  }
@@ -2433,27 +2804,38 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  {
 	 boolean has = addMovesForState(null,board_state);
 	// test for consistency between the quick method and the full method
-	// CommonMoveStack c = new CommonMoveStack();
-	// boolean has2 = addMovesForState(c,board_state);
-	// if((has!=has2) || ((c.size()!=0) != has))
-	// {
-	//	 G.Error("has moves after all "+c.top());
-	// }
+	 if(G.debug())
+	 {
+	 CommonMoveStack c = new CommonMoveStack();
+	 boolean has2 = addMovesForState(c,board_state);
+	 if((has!=has2) || ((c.size()!=0) != has))
+	 {	if(board_state!=ManhattanState.Gameover)
+	 	{
+		 G.Error("has moves after all "+c.top());
+	 	}
+	 }}
 	 return has;
  }
  CommonMoveStack  GetListOfMoves(boolean forGui)
  {	CommonMoveStack all = new CommonMoveStack();
   	addMovesForState(all,board_state);
- 	if(forGui && resetState!=null && resetState!=board_state && board_state!=ManhattanState.Puzzle)
- 	{
- 		addMovesForState(all,resetState);
- 	}
  	if(all.size()==0)
- 		{ p1("nomoves-"+moveNumber+"-"+board_state+" 2");
+ 		{ p1("nomoves-"+moveNumber+"-"+board_state);
  		}
  	return all;
  }
- 
+ public void preparePersonalityMoves()
+ {		
+ 		int n =availablePersonalities.height();
+ 		prepareChoices(n);
+	 	for(int i=0;i<n; i++)
+	 	{	ManhattanChip ch = availablePersonalities.chipAtIndex(i);
+	 		choice[i].addChip(ch);
+	 	}
+	 	pendingBenefit = Benefit.Personality;
+	 	pendingCost = Cost.None;
+	 	setState(ManhattanState.SelectPersonality);
+ }
  boolean addMovesForState(CommonMoveStack all,ManhattanState state)
  {	boolean some = false;
  	switch(state)
@@ -2469,6 +2851,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	case ResolvePayment:
  	case CollectBenefit:
  	case ResolveChoice:
+ 	case SelectPersonality:
  		ManhattanId notfrom = null;
  		boolean isRobot = robot!=null;
  		if(isRobot)
@@ -2495,9 +2878,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	case ConfirmRetrieve1:
 	case ConfirmRepair:
 	case ConfirmDiscard:
+	case ConfirmSingleAirstrike:
 	case ConfirmAirstrike:
+	case ConfirmJapanAirstrike:
  	case ConfirmChoice:
  	case ConfirmBenefit:
+ 	case ConfirmNichols:
  	case Confirm:
  	case ConfirmWorker:
  	case ConfirmPayment:
@@ -2508,6 +2894,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	case Airstrike:
  	case JapanAirstrike:
  		some = addAirstrikeMoves(all,whoseTurn);
+ 		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+ 		some = true;	// can always pass out of airstrikes
  		break;
  	case PlayOrRetrieve:
  		some = true;
@@ -2515,14 +2903,34 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  		else { break; }
 		//$FALL-THROUGH$
 	case Play:
-		some = addMainboardMoves(all,whoseTurn);
+		some |= addMainboardMoves(all,whoseTurn);
 		if(some && all==null) { break; }
-		//$FALL-THROUGH$
-	case PlayLocal:
 		some |= addPlayerBoardMoves(all,pbs[whoseTurn],whoseTurn);
+		// under rare circumstances, there can be legitimately no moves
+		break;
+	case Resign:
+	case NoMovesState:
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;
+		break;
+		
+	case PlayLocal:
+		// in playlocal, you can always do nothing
+		some = addPlayerBoardMoves(all,pbs[whoseTurn],whoseTurn);
+		PlayerBoard pb = pbs[whoseTurn];
+		if(pb.hasPersonality(ManhattanChip.Fuchs)
+				&& !pb.testOption(TurnOption.FuchsEspionage))
+		{
+			some |= addPlayerEspionageMoves(all,pb,whoseTurn);
+		}
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;
  		break;
+ 		
 	case PlayEspionage:
 		some = addPlayerEspionageMoves(all,pbs[whoseTurn],whoseTurn);
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;	// can always say done in espionage state
 		break;
 	case SelectAnyWorker:
 	case SelectAny2Workers:
@@ -2550,6 +2958,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	case Repair:
 	case PaidRepair:
 		some = addRepairMoves(all,whoseTurn);
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;	// can always pass out of repair
 		break;
 	case RetrieveSorE:	// germany
 		some = addRetrieveSorEMoves(all,whoseTurn);
@@ -2645,6 +3055,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  		case MOVE_DONE:
  		case MOVE_APPROVE:
  		case MOVE_CONTRIBUTE:
+ 		case EPHEMERAL_APPROVE:
  			break;
 
  		default: G.Error("Not expecting "+m);

@@ -29,6 +29,12 @@ public class JPanel extends Panel implements NullLayoutProtocol,ImageConsumer
 	{
 		super.setBounds(x,y,w,h);
 	}
+	public void paint(java.awt.Graphics g)
+	{
+		super.paint(g);
+		//g.setColor(Color.blue);
+		//g.drawLine(0,0,getWidth(),getHeight());
+	}
 	public void init()
 	{	setLayout(new NullLayout(this));
 	}
@@ -63,28 +69,7 @@ public class JPanel extends Panel implements NullLayoutProtocol,ImageConsumer
 			
 		}
 	}
-	public void setVisible(boolean vis)
-	{	
-		super.setVisible(vis);
-		
-		if(vis)
-			{
-			MasterForm mf =MasterForm.getMasterForm();
-			if(!mf.isVisible()) 
-				{ 
-				mf.setVisible(true); 
-				}
-			// defer adding this panel to the master until it's supposed to be seen
-			// doing this in the constructor caused mysterious "blank" windows that
-			// could be fixed by window-level operations such as resizing or minimizing
-			MasterPanel mp = MasterForm.getMasterPanel();
-			if(mp.getComponentZOrder(this)<0)
-				{ mp.addC(this);
-				}
-			}
-		MasterForm.getMasterPanel().adjustTabStyles();
-	}
-	
+
 	public void doNullLayout()
 	{	int w = getWidth();
 		int h = getHeight();

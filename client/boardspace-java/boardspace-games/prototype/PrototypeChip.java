@@ -18,6 +18,7 @@ package prototype;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;
+import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
 import online.game.chip;
@@ -136,6 +137,18 @@ public class PrototypeChip extends chip<PrototypeChip> implements CommonConfig
 				& forcan.load_masked_images(Dir,otherChips);
 		}
 	}   
+	/**
+	 * this is a debugging interface to provide information about images memory consumption
+	 * in the "show images" option.
+	 * It's especially useful in applications that are very image intensive.
+	 * @param imstack
+	 * @return size of images (in megabytes)
+	 */
+	public static double imageSize(ImageStack imstack)
+	    {	double sum = otherChips.imageSize(imstack);
+	    	return(sum);
+	    }
+	   
 	/*
 	// override for drawChip can draw extra ornaments or replace drawing entirely
 	public void drawChip(Graphics gc,

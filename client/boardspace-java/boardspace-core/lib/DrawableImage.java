@@ -594,7 +594,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	     */
 	    public boolean registerChipHit(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int e_w,int e_h)
 	    	{
-      	  highlight.hitObject = this; 
+     	  highlight.hitObject = this; 
       	  highlight.hit_x = e_x;
       	  highlight.hit_y = e_y;
       	  highlight.hit_width = e_w;

@@ -109,6 +109,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	ManhattanPlay cc = (ManhattanPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

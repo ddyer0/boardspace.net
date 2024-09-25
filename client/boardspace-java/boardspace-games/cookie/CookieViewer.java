@@ -549,8 +549,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
 					HighlightColor, ds ? rackActiveColor : rackBackGroundColor);}
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
-            if((state==CookieState.CONFIRM_SWAP_STATE)||(state==CookieState.PLACE_OR_SWAP_STATE))
-            {	
+			boolean conf = (state==CookieState.CONFIRM_SWAP_STATE);
+            if(conf ||(state==CookieState.PLACE_OR_SWAP_STATE))
+            {	swapButton.highlightWhenIsOn = true;
+            	swapButton.setIsOn(conf);
             	swapButton.show(gc, messageRotation, buttonSelect);
             }
           }

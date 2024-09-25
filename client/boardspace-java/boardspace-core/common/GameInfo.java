@@ -598,7 +598,7 @@ synchronized(allGames) {
 	}
 	
 	{
-	 GameInfo g = put(new GameInfo(763,ES.game,76,"CK",AncientGames,"Checkers","Checkers-frisian",
+	 GameInfo g = put(new GameInfo(1766,ES.game,76,"CK",AncientGames,"Checkers","Checkers-frisian",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Frisian%20Checkers%20Rules.html","about_checkers.html",
@@ -791,7 +791,7 @@ synchronized(allGames) {
 	String manhattanViewer =  "manhattan.ManhattanViewer";
 	String euphoriaVideo = null;
 	boolean okTurnBased = true;
-	{GameInfo mm = put(new GameInfo(709,ES.test,120,"EU",EuroGames,"Manhattan","Manhattan",
+	{GameInfo mm = put(new GameInfo(709,ES.game,120,"MH",EuroGames,"Manhattan","Manhattan",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			manhattanViewer,manhattanRules,"about_manhattan.html",
@@ -799,6 +799,7 @@ synchronized(allGames) {
 	 mm.minPlayers = 2;
 	 mm.maxPlayers = 5;
 	 mm.hasHiddenInformation = true;
+	 mm.randomizeFirstPlayer = true;
 	 mm.okForTurnbased = okTurnBased;
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;

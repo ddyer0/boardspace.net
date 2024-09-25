@@ -117,7 +117,6 @@ public class FileSelector extends FullscreenPanel
     public SimpleObservable observer = new SimpleObservable(this); 	//list of observers
     private boolean inited = false;		//this is used to prevent game updates from firing during initialization
    
- 
     //
     // layout with a mostly vertical orientation, with main
     // panes for subdirectories and individual files.
@@ -311,7 +310,11 @@ public class FileSelector extends FullscreenPanel
     public FileSelector(FileSource... source)
     {
         s = G.getTranslations();
-    	for(int i=0;i<source.length;i++) { if(source[i]!=null) { sources.add(source[i]); }}
+    	for(int i=0;i<source.length;i++)
+    		{ if(source[i]!=null) 
+    			{ sources.add(source[i]); 
+    			}
+    	}
     	construct();
     	selectSource(source[0]);
     	new Thread(this,"file selector").start();

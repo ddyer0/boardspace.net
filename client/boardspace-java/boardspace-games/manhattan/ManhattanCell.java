@@ -17,6 +17,7 @@
 package manhattan;
 
 import lib.Random;
+import lib.exCanvas;
 import manhattan.ManhattanConstants.Benefit;
 import manhattan.ManhattanConstants.Type;
 import manhattan.ManhattanConstants.MColor;
@@ -26,6 +27,8 @@ import manhattan.ManhattanConstants.Cost;
 import java.awt.Rectangle;
 
 import lib.G;
+import lib.Graphics;
+import lib.HitPoint;
 import lib.OStack;
 import online.game.*;
 
@@ -75,6 +78,11 @@ public class ManhattanCell
     	switch(type)
     	{
     	default: throw G.Error("Not expecting %s",this);
+    	case Fighter:
+    	case Bomber:
+    		// this happens when this is a "lemay" airstrike out of the usual sequence
+    		return Cost.Airstrike;
+    		
     	case Worker:
     	case BuildingMarket:
     		{
@@ -86,6 +94,14 @@ public class ManhattanCell
 			//$FALL-THROUGH$
 		case Building:
     		{
+    		if(height()>1)
+    		{
+    			ManhattanChip ch = topChip();
+    			if(ch.type==Type.Bomber || ch.type==Type.Fighter)
+    			{	// lemay airstrike on a building
+    				return Cost.Airstrike;
+    			}
+    		}
     		ManhattanChip top = chipAtIndex(0);
     		return top.cost;
     		}
@@ -310,5 +326,23 @@ public class ManhattanCell
 			}
 		return false;
 		}
-
+	/**
+	 * this is a trap for the "card backs" mechanism used in drawStack.  It's
+	 * important because it keeps the actual cards from being loaded when only
+	 * the card backs will be seen.
+	 */
+	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
+	{	
+		if( ManhattanChip.BACK.equals(thislabel)
+				&& (piece instanceof ManhattanChip)
+				&& ((ManhattanChip)piece).cardBack!=null)
+				
+			{ 
+			return super.drawChip(gc,((ManhattanChip)piece).cardBack,drawOn,highlight,squareWidth,scale,e_x,e_y,null);
+			}	
+		else
+			{ 
+			return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
+			}
+	}
 }

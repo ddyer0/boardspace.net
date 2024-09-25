@@ -88,7 +88,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 	}
 	public void addC(Component cc)
-	{	super.add(cc,0);
+	{	G.Assert(cc.getParent()==null,"already has a parent %s",cc);
+		super.add(cc,0);
 		if(cc instanceof TopFrameProtocol) 
 			{ 
 			  addTab((TopFrameProtocol)cc); 

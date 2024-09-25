@@ -2003,14 +2003,15 @@ public abstract class commonCanvas extends exCanvas
     public boolean ourActiveMove()
     {	commonPlayer ap = getActivePlayer();
     	commonPlayer who = currentGuiPlayer();
-    	return(!reviewMode()
+    	return(reviewOnly
+    			|| (!reviewMode()
     			&& (ap!=null)
     			&& !ap.isSpectator() 
     			&& (who!=null)
     			&& (simultaneousTurnsAllowed()
     					|| isALocalPlayer(who)
     					|| (who==ap)
-    					|| (who.boardIndex == ap.boardIndex)));
+    					|| (who.boardIndex == ap.boardIndex))));
     }
     
      /** return true of we are allowed to make move-type gestures

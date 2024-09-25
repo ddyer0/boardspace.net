@@ -37,6 +37,8 @@ public interface ManhattanConstants
 	enum ManhattanId implements CellId
 	{	
 		ToggleEye, 
+		Magnifier,
+		Unmagnifier,
 		HitRetrieve,
 		SeeEspionage, Espionage, SeeBribes, Building, Mine, 
 		University,
@@ -50,7 +52,7 @@ public interface ManhattanConstants
 		MakeMoney, SeeBuildingPile,SeePlutonium,SeeUranium, 
 		Fighters, Bombers, SeeBombPile, SeePersonalityPile, 
 		SeeNationsPile, CurrentDesigns, AvailableWorkers, Workers, CloseOverlay, Cash,Personality, Select,SelectOut,
-		BuyWithEngineer, BuyWithWorker, Scientists, Engineers, Bank, Yellowcake, HitCard, SeeDiscardedBombPile, ShowChip, Damage, Stockpile, Bombtest,
+		BuyWithEngineer, BuyWithWorker, Scientists, Engineers, Bank, Yellowcake, HitCard, SeeDiscardedBombPile, ShowChip, Damage, Stockpile, Bombtest, AirstrikeHelp,
 		;
 	
 	}
@@ -68,7 +70,7 @@ public int WinningScore[] = {999, 999, 70, 60, 50, 45 };
  * type for cells and the chips that might be stored in them
  */
 public enum Type { BuildingMarket, Building, Worker, WorkerPool, Marker, Fighter, Bomber, Bomb, Coin, Other, Nations, Personalities, Yellowcake,
-					Uranium, Plutonium, Damage, JapanAirstrike, Bombtest,Bombbuilt,Bombloaded;
+					Uranium, Plutonium, Damage, JapanAirstrike, Bombtest,Bombbuilt,Bombloaded, BomberSale, Help;
 	public boolean canDropOn(Type other)
 	{
 		if(this==other) { return true; }
@@ -190,6 +192,7 @@ public enum Cost implements Digestable
 	}
 	
 };
+enum TurnOption { LemayBomber, LemayFighter, LemayAirstrike, NicholsShuffle, FuchsEspionage, GrovesWorker,OppenheimerWorker};
 
 public enum Benefit implements Digestable
 {
@@ -201,6 +204,9 @@ public enum Benefit implements Digestable
 	Uranium2, Uranium3, Plutonium2, Plutonium3, Plutonium4,
 	BombDesign,Espionage, FrenchBombDesign, DiscardBombs,DiscardOneBomb, Repair,PaidRepair,
 	UraniumOrPlutonium,
+	 MainPlutonium,	// main board plutonium, can be doubled by szilard
+	 MainUranium,	// main board uraniom, can be doubled by szilard
+	 Inspect,	// labels cells that are "inspect only" in the GUI
 	// bomb yields
 	P09T09L1,
 	P10T10L1,	
@@ -248,7 +254,7 @@ public enum Benefit implements Digestable
 	Nations_NORTH_KOREA, // north korea
 	Nations_PAKISTAN,	// pakistan
 	Nations_SOUTH_AFRICA,
-	Points0,Points2,Points4,Points6,Points8, Dismantle, Trade, ;
+	Points0,Points2,Points4,Points6,Points8, Dismantle, Trade, Personality, ;
 
 	public long Digest(Random r) {
 		return r.nextLong()*(ordinal()+25235);
@@ -299,8 +305,10 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	
 	SelectBomb(StateRole.Play,SelectBombMessage,false,false), 
 	Airstrike(StateRole.Play,AirstrikeMessage,true,false),
-	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false),
 	ConfirmAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
+	ConfirmSingleAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
+	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false),
+	ConfirmJapanAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
 	Repair(StateRole.Play,RepairMessage,true,false),
 	PaidRepair(StateRole.Play,PaidRepairMessage,true,false), 
 	ConfirmRepair(StateRole.Confirm,ConfirmRepairMessage,true,false), 
@@ -308,6 +316,10 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	RetrieveSorE(StateRole.Play,Retrieve1Message,true,false), 
 	BuildIsraelBomb(StateRole.Play,BuildIsraelMessage,true,false), 
 	North_Korea_Dialog(StateRole.Play,NorthKoreaMessage,false,false), 
+	SelectPersonality(StateRole.Play,SelectPersonalityMessage,false,false),
+	NextPlayer(StateRole.Confirm,ConfirmStateDescription,true,false),
+	ConfirmNichols(StateRole.Confirm,NicholsStateDescription,true,false),
+	NoMovesState(StateRole.Confirm,NoMovesMessage,true,false),
 	;
 	
 	ManhattanState(StateRole r,String des,boolean done,boolean digest)
@@ -350,7 +362,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String VictoryCondition = "score at least #1 points by building bombs";
 	static final String PlayState = "Place a worker on the main board or your player board";
 	static final String RetrieveState = "Retrieve all of your workers";
-	static final String PlayOrRetrieveState = "Place a marker on the main board, or retrieve all of your workers";
+	static final String PlayOrRetrieveState = "Place a worker on the main board or your player board, or retrieve all of your workers";
 	static final String SelectBuildingMessage = "Select the building you want to buy";
 	static final String SelectBombMessage = "Select a bomb design";
 	static final String PlayLocalState = "Play a worker your player board, or click on \"Done\" to end your turn";
@@ -383,11 +395,25 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String Retrieve1Message = "you may retrieve 1 scientist or engineer";
 	static final String BuildIsraelMessage = "build a bomb using no scientists or no engineers";
 	static final String NorthKoreaMessage = "collectively, give $3 to North Korea, or they get 1U or 1P";
+	static final String SelectPersonalityMessage = "select a new personality";
+	static final String NicholsStateDescription = "click on \"Done\" to recycle this building";
+	static final String FuchsExplanation = "you can take 1 espionage action";
+	static final String OppenheimerWorkerExplanation = "you can use a laborer as a scientist, or a scientist as 2 scientists";
+	static final String GrovesWorkerExplanation = "you can use a laborer as an engineer, or an engineer as 2 engineers";
+	static final String NoMovesMessage = "you have no moves available, just click on \"Done\"";
+	static final String NicholsActionMessage = "Nichols recycles a building";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Game",
+			FuchsExplanation,
+			NicholsActionMessage,
+			NoMovesMessage,
+			OppenheimerWorkerExplanation,
+			GrovesWorkerExplanation,
 			NeedWorkerMessage,
+			NicholsStateDescription,
+			SelectPersonalityMessage,
 			NorthKoreaMessage,
 			BuildIsraelMessage,
 			Retrieve1Message,
@@ -422,8 +448,9 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 			
 		};
 		String GameStringPairs[][] = 
-		{   {"Game_family","Game"},
-			{"Game_variation","Game"},
+		{   {"Manhattan_family","Manhattan Project"},
+			{"Manhattan_variation","Manhattan Project"},
+			{"Manhattan","Manhattan Project"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

@@ -1034,14 +1034,7 @@ public class ViticultureChip extends chip<ViticultureChip>
  	
     
    public static double imageSize(ImageStack imstack)
-    {	double sum = 0;
-    	for(int lim=allChips.size()-1; lim>=0;lim--)
-    	{
-    		ViticultureChip chip = (ViticultureChip)allChips.elementAt(lim);
-    		Image im = chip.image;
-    		sum += (im==null || im.isUnloaded()) ? 0 : im.imageSize(imstack);
-    	}
-    	//G.print("sz "+sum/1e6);
+    {	double sum = allChips.imageSize(imstack);
     	return(sum);
     }
     public static void showGrid(Graphics gc,exCanvas can,HitPoint hp,Rectangle r)

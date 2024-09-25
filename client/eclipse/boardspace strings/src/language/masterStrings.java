@@ -62,6 +62,7 @@ import gyges.GygesConstants;
 import havannah.HavannahConstants;
 import hex.HexConstants;
 import majorities.MajoritiesConstants;
+import manhattan.ManhattanConstants;
 import mbrane.MbraneConstants;
 import medina.MedinaConstants;
 import meridians.MeridiansConstants;
@@ -186,9 +187,12 @@ public class masterStrings extends InternationalStrings
         setContext("Game Timer");
         GameTimerConstants.putStrings();
         
+        setContext("Manhattan");
+        ManhattanConstants.putStrings();
+        
         setContext("Trench");
         TrenchConstants.putStrings();
-        
+
         setContext("Trike");
         TrikeConstants.putStrings();
         

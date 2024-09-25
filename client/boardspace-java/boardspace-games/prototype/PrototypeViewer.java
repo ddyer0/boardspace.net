@@ -33,6 +33,7 @@ import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
+import lib.ImageStack;
 import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
@@ -1495,5 +1496,13 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);
 	}
+	 
+	/** this is a debugging interface to provide information about memory
+	 * consumption by images.
+	 */
+	public double imageSize(ImageStack im)
+	  {
+		  return(super.imageSize(im) + PrototypeChip.imageSize(im));
+	  }
 }
 

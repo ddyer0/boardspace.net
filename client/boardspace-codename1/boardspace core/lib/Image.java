@@ -122,13 +122,13 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 
 	public int getWidth() 
 	{ 	// get the width.  If it is incompletely loaded, it will be updated later 
-		if(isUnloaded()) { getImage(); }
+		if(width<=0 && isUnloaded()) { getImage(); }
 		G.Assert(width>=0,"Width not determined ",this);
 		return(width);
 	}
 	public int getHeight()
 	{ 	// get the height.  If it is incompletely loaded, it will be updated later
-		if(isUnloaded()) { getImage(); }
+		if(height<=0 && isUnloaded()) { getImage(); }
 		G.Assert(height>=0, "Height not determined", this);
 		return(height); 
 	}

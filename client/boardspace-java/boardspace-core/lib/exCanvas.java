@@ -1746,7 +1746,7 @@ graphics when using a touch screen.
         private String imageLoadString(ImageStack im)
         {	double megabytes = imageSize(im)/1e6;
         	
-        	return(" i: "+(int)megabytes);
+        	return(" I: "+(int)megabytes+"M");
         }
         public void ShowStats(Graphics gc,HitPoint hp, int x, int y)
         {	

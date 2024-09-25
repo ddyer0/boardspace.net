@@ -96,15 +96,15 @@ public class TextButton extends ToggleButton
 		if(square)
 		{  
 			hit = GC.handleSquareButton(gc,rot, r,highlight,msg, textColor, 
-						frameColor ,highlightColor,
-						highlight==null ? inactiveColor : backgroundColor);
+						frameColor ,isOn&&highlightWhenIsOn ? backgroundColor : highlightColor,
+						isOn&&highlightWhenIsOn ? highlightColor : highlight==null ? inactiveColor : backgroundColor);
 		}
 		else
 		{
 			hit = GC.handleRoundButton(gc,rot, r, highlight,
 						msg, textColor, 
-						frameColor, highlightColor, 
-						highlight==null ? inactiveColor : backgroundColor);
+						frameColor, isOn&&highlightWhenIsOn? backgroundColor : highlightColor, 
+						isOn&&highlightWhenIsOn ? highlightColor : highlight==null ? inactiveColor : backgroundColor);
 		}
 		if(hit)
 		{
@@ -118,6 +118,10 @@ public class TextButton extends ToggleButton
 
 	public boolean actualDraw(Graphics gc, HitPoint hp) {
 		return show(gc,this,0,hp);
+	}
+
+	public void setIsOn(boolean b) {
+		isOn = b;
 	}
 
 }

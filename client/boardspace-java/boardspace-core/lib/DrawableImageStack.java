@@ -21,4 +21,54 @@ public class DrawableImageStack extends OStack<DrawableImage<?>>
 {	public DrawableImage<?>[] newComponentArray(int n) 
 	{ return(new DrawableImage[n]); 
 	}
+public double imageSize(ImageStack imstack)
+{	double sum = 0;
+ 	for(int lim=size()-1; lim>=0;lim--)
+ 	{
+ 		DrawableImage<?> chip = elementAt(lim);
+ 		Image im = chip.image;
+ 		sum += (im==null || im.isUnloaded()) ? 0 : im.imageSize(imstack);
+ 	}
+ 	return sum;
+}
+/**
+ * set all images to be autoloaded with a specific mask
+ * @param dir
+ * @param mask
+ */
+public void autoloadMaskGroup(String dir,String mask)
+{	
+	autoloadMaskGroup(dir,mask,toArray());
+}
+/**
+ * set images to be autoloaded with a specific mask
+ * @param Dir
+ * @param mask
+ */
+public void autoloadMaskGroup(String Dir,String mask,DrawableImage<?>images[])
+{	
+	for(DrawableImage<?>chip : images)
+	{
+		chip.image = new Image(Dir+chip.file+".jpg",Dir+mask+".jpg");
+		chip.image.setUnloadable(true);
+	}
+}
+/**
+ * Set all images to be autoloaded
+ */
+public void autoloadGroup(String dir)
+{	autoloadGroup(dir,toArray());
+}
+/**
+ * Set all images
+ */
+public void autoloadGroup(String dir,DrawableImage<?>images[])
+{
+	for(DrawableImage<?>chip : images)
+	{	String mask = chip.file.contains("-nomask") ? null : dir+chip.file+"-mask.jpg";
+		chip.image = new Image(dir+chip.file+".jpg",mask);
+		chip.image.setUnloadable(true);
+	}
+}
+
 }
