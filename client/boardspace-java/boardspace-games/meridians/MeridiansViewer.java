@@ -579,13 +579,15 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation();
        
-       GC.setFont(gc,standardBoldFont());
-       
-		if((state==MeridiansState.ConfirmSwap) 
+       	GC.setFont(gc,standardBoldFont());
+       	boolean conf = (state==MeridiansState.ConfirmSwap);
+		if(conf 
 				|| (state==MeridiansState.PlayOrSwap) 
 				|| (state==MeridiansState.Puzzle))
 				{// make the "swap" button appear if we're in the correct state
-					swapButton.show(gc, buttonSelect);
+				swapButton.highlightWhenIsOn = true;
+				swapButton.setIsOn(conf);
+				swapButton.show(gc, buttonSelect);
 				}
 
        if (state != MeridiansState.Puzzle)

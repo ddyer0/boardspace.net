@@ -438,8 +438,10 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
 				}
 			handleEditButton(gc,messageRotation,editRect,select,highlight, HighlightColor, rackBackGroundColor);
         }
-		if((vstate==PonteState.PlayOrSwap)||(vstate==PonteState.ConfirmSwap))
-		{
+		boolean conf = (vstate==PonteState.ConfirmSwap);
+		if((vstate==PonteState.PlayOrSwap)||conf)
+		{	swapButton.highlightWhenIsOn = true;
+    		swapButton.setIsOn(conf);
 			swapButton.show(gc,messageRotation, select);
 		}
 

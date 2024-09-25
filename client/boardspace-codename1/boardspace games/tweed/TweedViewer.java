@@ -645,15 +645,19 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==TweedState.ConfirmSwap) 
+       boolean conf = (state==TweedState.ConfirmSwap) ;
+		if(conf
 			|| (state==TweedState.PlayOrSwap) 
 			|| (state==TweedState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
+				swapButton.highlightWhenIsOn = true;
+        		swapButton.setIsOn(conf);
 				swapButton.show(gc, buttonSelect);
 			}
 
 		if(bb.passIsPossible())
-		{
+		{	passButton.highlightWhenIsOn = true;
+    		passButton.setIsOn(bb.lastIsPass);
 			passButton.show(gc,buttonSelect);
 		}
 		if (state != TweedState.Puzzle)
@@ -829,10 +833,10 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
+ //   public void verifyGameRecord()
+ //   {	//DISABLE_VERIFY=true;
+ //   	super.verifyGameRecord();
+ //  }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
  //   {	BoardProtocol ourB =  getBoard();
@@ -1214,6 +1218,8 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		162 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

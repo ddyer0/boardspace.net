@@ -1169,10 +1169,12 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 				endJRect.show(gc, messageRotation,buttonSelect);
 			}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-			if(state==JumbulayaState.Play 
+			if((state==JumbulayaState.Play || gb.isPass)
 					&& (buttonSelect!=null)
 					&& gb.notStarted())
 					{
+					passButton.highlightWhenIsOn = true;
+					passButton.setIsOn(gb.isPass);
 					passButton.show(gc,messageRotation,buttonSelect);
 					}
 			

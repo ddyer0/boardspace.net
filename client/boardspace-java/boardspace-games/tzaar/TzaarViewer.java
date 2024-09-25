@@ -500,7 +500,10 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         	
             boolean ispassed = ((vstate==TzaarState.CONFIRM_STATE)&&gb.isPassed());
             if ((vstate==TzaarState.PLAY_STATE) || ispassed)
-            {	passButton.show(gc,messageRotation,select);
+            {	
+            passButton.highlightWhenIsOn = true;
+        	passButton.setIsOn(ispassed);       	
+        	passButton.show(gc,messageRotation,select);
             }
   
          }

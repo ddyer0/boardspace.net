@@ -331,6 +331,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	static ManhattanChip BomberSale = new ManhattanChip("bombersale-nomask",Type.BomberSale,defaultScale,MColor.Gray);
 	static ManhattanChip AirstrikeHelp = new ManhattanChip("airstrike-nomask",Type.Help,defaultScale,MColor.Gray);
 	static ManhattanChip Question = new ManhattanChip("question",Type.Other,defaultScale,MColor.Gray);
+	static ManhattanChip BlankCard = new ManhattanChip("blankbomb-nomask",Type.Other,new double[] {0.5,0.5,0.75},MColor.Gray);
 	
 	static ManhattanChip playerBoards[] = {
 			new ManhattanChip("player-board-red-nomask",Type.Other,defaultScale,MColor.Red),

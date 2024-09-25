@@ -505,8 +505,12 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
        GC.setFont(gc,standardBoldFont());
 		if (vstate != OctilesState.PUZZLE_STATE)
         {	if(!planned) { handleDoneButton(gc,showRotation,doneRect,(b.DoneState()? select : null),HighlightColor, rackBackGroundColor); }
-        	if(vstate==OctilesState.PLAY_TILE_STATE || vstate==OctilesState.CONFIRM_PASS_STATE)
-        	{	passButton.show(gc,showRotation,select);
+        	boolean conf = vstate==OctilesState.CONFIRM_PASS_STATE;
+        	if(vstate==OctilesState.PLAY_TILE_STATE || conf)
+        	{	
+        		passButton.highlightWhenIsOn = true;
+            	passButton.setIsOn(conf);
+        		passButton.show(gc,showRotation,select);
         	}
         	handleEditButton(gc,showRotation,editRect,select,highlight,HighlightColor, rackBackGroundColor);
                 }

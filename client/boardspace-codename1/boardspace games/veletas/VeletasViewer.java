@@ -430,6 +430,8 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
  			case PlayOrSwap:
  			case PlaceOrSwap:
  			case ConfirmSwap:
+ 				swapButton.highlightWhenIsOn = true;
+            	swapButton.setIsOn(vstate==VeletasState.ConfirmSwap);
  				swapButton.show(gc,messageRotation, select);
  					break;
  			default: break;

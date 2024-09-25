@@ -665,12 +665,14 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
        }
        
        GC.setFont(gc,standardBoldFont());
-       
+       boolean conf = (state==HavannahState.ConfirmSwap);
        // draw the board control buttons 
-		if((state==HavannahState.ConfirmSwap) 
+		if(conf 
 			|| (state==HavannahState.PlayOrSwap) 
 			|| (state==HavannahState.Puzzle))
 		{ // make the "swap" button appear if we're in the correct state
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
 			swapButton.show(gc,messageRotation,buttonSelect);
 		}
 

@@ -111,7 +111,7 @@ class TweedBoard
     public TweedChip pickedObject = null;
     private TweedChip droppedOnColor = null;
     private int droppedOnHeight = 0;
-    private boolean lastIsPass = false;
+    boolean lastIsPass = false;
     private int fullSize = 0;
     public TweedChip lastPicked = null;
     private TweedCell whiteChipPool = null;	// dummy source for the chip pools

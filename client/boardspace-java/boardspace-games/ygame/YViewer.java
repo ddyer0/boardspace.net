@@ -467,10 +467,13 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==YState.ConfirmSwap) 
+       boolean conf = (state==YState.ConfirmSwap) ;
+		if(conf
 			|| (state==YState.PlayOrSwap) 
 			|| (state==YState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
+				swapButton.highlightWhenIsOn = true;
+				swapButton.setIsOn(conf);
 				swapButton.show(gc, messageRotation, buttonSelect);
 			}
 

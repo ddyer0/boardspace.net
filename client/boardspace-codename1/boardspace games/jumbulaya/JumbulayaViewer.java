@@ -385,7 +385,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
       	if(canHit && highlight!=null)
       		{
       		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode = JumbulayaId.DrawPile;
+      		highlight.hitCode=JumbulayaId.DrawPile;
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}
@@ -1173,10 +1173,12 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 				endJRect.show(gc, messageRotation,buttonSelect);
 			}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-			if(state==JumbulayaState.Play 
+			if((state==JumbulayaState.Play || gb.isPass)
 					&& (buttonSelect!=null)
 					&& gb.notStarted())
 					{
+					passButton.highlightWhenIsOn = true;
+					passButton.setIsOn(gb.isPass);
 					passButton.show(gc,messageRotation,buttonSelect);
 					}
 			

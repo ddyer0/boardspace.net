@@ -123,8 +123,6 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     //
     private Rectangle chipRects[] = addZoneRect("chip",2);
 
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
-			HighlightColor, rackBackGroundColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackActiveColor, rackBackGroundColor);
 	
@@ -583,12 +581,6 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
        
        GC.setFont(gc,standardBoldFont());
        
-       // draw the board control buttons 
-		if(state==DayAndNightState.Puzzle)
-			{// make the "swap" button appear if we're in the correct state
-				swapButton.show(gc, buttonSelect);
-			}
-
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
         drawPlayerStuff(gc,(state==DayAndNightState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);

@@ -622,6 +622,11 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		{
       		drawPlayerCell(gc,hp,gb,pb,targets,c,cellSize,xstep,ystep, hint,hitAny);
     		}
+    		else
+    		{int xpos =pb.cellToX(c);
+    		 int ypos =pb.cellToY(c);
+    		 ManhattanChip.BlankCard.drawChip(gc,this,cellSize,xpos,ypos, null);
+    		}
     	}
     }
     

@@ -649,10 +649,13 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==TrikeState.ConfirmSwap) 
+       boolean conf = (state==TrikeState.ConfirmSwap) ;
+		if(conf
 			|| (state==TrikeState.PlayOrSwap) 
 			)
 			{// make the "swap" button appear if we're in the correct state
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
 				swapButton.show(gc, buttonSelect);
 			}
 
@@ -1085,7 +1088,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
-
 
 /** this is used by the scorekeeper to determine who won. Draws are indicated
  * by both players returning false.  Be careful not to let both players return true!

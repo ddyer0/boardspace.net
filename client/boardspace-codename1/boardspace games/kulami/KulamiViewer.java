@@ -588,11 +588,14 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
        double messageRotation = pl.messageRotation();
        GC.setFont(gc,standardBoldFont());
        
+       boolean conf = (state==KulamiState.ConfirmSwap) ;
        // draw the board control buttons 
-		if((state==KulamiState.ConfirmSwap) 
+		if(conf
 			|| (state==KulamiState.PlayOrSwap) 
 			|| (state==KulamiState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
 				swapButton.show(gc, messageRotation,buttonSelect);
 			}
 

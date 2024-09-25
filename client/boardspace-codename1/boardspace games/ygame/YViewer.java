@@ -32,6 +32,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.Random;
+import lib.Image;
 import lib.StockArt;
 import lib.TextButton;
 import lib.InternationalStrings;
@@ -309,21 +310,21 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
      YChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
-    
+    Image scaled = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    {	YBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
          YChip.backgroundReviewTile.image.tileImage(gc,brect);   
         }
 
-        setDisplayParameters(bb,brect);
+        setDisplayParameters(gb,brect);
 
-       YChip.board.getImage().centerImage(gc,boardRect);
+        scaled = YChip.board.getImage().centerScaledImage(gc,boardRect,scaled);
         
-	  	bb.DrawGrid(gc, boardRect, use_grid,
+	  	gb.DrawGrid(gc, boardRect, use_grid,
 	  			Color.black, Color.black,
 	  			Color.black,Color.black);
 	 
@@ -466,10 +467,13 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==YState.ConfirmSwap) 
+       boolean conf = (state==YState.ConfirmSwap) ;
+		if(conf
 			|| (state==YState.PlayOrSwap) 
 			|| (state==YState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
+				swapButton.highlightWhenIsOn = true;
+				swapButton.setIsOn(conf);
 				swapButton.show(gc, messageRotation, buttonSelect);
 			}
 
@@ -900,6 +904,8 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		36 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

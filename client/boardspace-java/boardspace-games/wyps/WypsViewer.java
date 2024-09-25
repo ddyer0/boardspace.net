@@ -925,6 +925,8 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 		{
 		case FirstPlay:
 		case ConfirmFirstPlay:
+        	swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(state==WypsState.ConfirmFirstPlay);
 			swapButton.show(gc,messageRotation, buttonSelect);
 			break;
 		case Atari:
@@ -971,10 +973,13 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 			{
 			case Atari:
 			case Play:
+			case ConfirmPass:
 
 				if((buttonSelect!=null)
 					&& gb.notStarted())
 					{
+					passButton.highlightWhenIsOn = true;
+	            	passButton.setIsOn(state==WypsState.ConfirmPass);
 					passButton.show(gc,buttonSelect);
 					}
 				if(G.debug() && GC.handleRoundButton(gc, checkWordsRect, buttonSelect,"Check",HighlightColor, rackBackGroundColor))

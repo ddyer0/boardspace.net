@@ -644,15 +644,19 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==TweedState.ConfirmSwap) 
+       boolean conf = (state==TweedState.ConfirmSwap) ;
+		if(conf
 			|| (state==TweedState.PlayOrSwap) 
 			|| (state==TweedState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
+				swapButton.highlightWhenIsOn = true;
+        		swapButton.setIsOn(conf);
 				swapButton.show(gc, buttonSelect);
 			}
 
 		if(bb.passIsPossible())
-		{
+		{	passButton.highlightWhenIsOn = true;
+    		passButton.setIsOn(bb.lastIsPass);
 			passButton.show(gc,buttonSelect);
 		}
 		if (state != TweedState.Puzzle)

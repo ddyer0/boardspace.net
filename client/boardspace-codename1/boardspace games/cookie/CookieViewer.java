@@ -551,8 +551,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
 					HighlightColor, ds ? rackActiveColor : rackBackGroundColor);}
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
-            if((state==CookieState.CONFIRM_SWAP_STATE)||(state==CookieState.PLACE_OR_SWAP_STATE))
-            {	
+			boolean conf = (state==CookieState.CONFIRM_SWAP_STATE);
+            if(conf ||(state==CookieState.PLACE_OR_SWAP_STATE))
+            {	swapButton.highlightWhenIsOn = true;
+            	swapButton.setIsOn(conf);
             	swapButton.show(gc, messageRotation, buttonSelect);
             }
         }
@@ -832,6 +834,8 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	1995 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

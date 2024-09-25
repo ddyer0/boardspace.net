@@ -529,11 +529,14 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 
        double messageRotation = pl.messageRotation();
        // draw the board control buttons 
-		if((state==TablutState.CONFIRM_SWAP_STATE) 
+       boolean conf = (state==TablutState.CONFIRM_SWAP_STATE) ;
+		if(conf
 			|| (state==TablutState.PLAY_OR_SWAP_STATE) 
 			|| (state==TablutState.PUZZLE_STATE))
 		{ // make the "swap" button appear if we're in the co;rrect state
-			swapButton.show(gc,messageRotation, buttonSelect);
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
+        	swapButton.show(gc,messageRotation, buttonSelect);
 		}
 
 		if (state != TablutState.PUZZLE_STATE)

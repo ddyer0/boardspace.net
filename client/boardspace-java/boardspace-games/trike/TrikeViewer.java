@@ -648,11 +648,14 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==TrikeState.ConfirmSwap) 
+       boolean conf = (state==TrikeState.ConfirmSwap) ;
+		if(conf
 			|| (state==TrikeState.PlayOrSwap) 
 			)
 			{// make the "swap" button appear if we're in the correct state
-				swapButton.show(gc, buttonSelect);
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
+        	swapButton.show(gc, buttonSelect);
 			}
 
 		if (state != TrikeState.Puzzle)

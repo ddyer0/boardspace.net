@@ -303,7 +303,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	private StateStack robotState = new StateStack();
 	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
 	public int robotWinThreshold = Word.wordScore(NCOLS);
-	private boolean isPass = false;
+	boolean isPass = false;
 	private int nPasses = 0;
 	public JumbulayaState getState() { return(board_state); }
 	public JumbulayaCell claimed[] = new JumbulayaCell[NROWS];

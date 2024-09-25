@@ -647,10 +647,13 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
 
         commonPlayer pl = getPlayerOrTemp(whoseTurn);
         double messageRotation = pl.messageRotation();
-        
-        if((vstate==QuinamidState.CONFIRM_STATE && gb.swapPending)
+        boolean conf = (vstate==QuinamidState.CONFIRM_STATE && gb.swapPending);
+        if(conf
         	|| ((vstate==QuinamidState.PLAY_OR_SWAP_STATE) && !moving))
-        {	swapButton.show(gc, messageRotation,highlight);       	
+        {
+        swapButton.highlightWhenIsOn = true;
+    	swapButton.setIsOn(conf);
+    	swapButton.show(gc, messageRotation,highlight);       	
         }
         GC.setFont(gc,standardBoldFont());
 		if (vstate != QuinamidState.PUZZLE_STATE)

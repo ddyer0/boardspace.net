@@ -568,6 +568,8 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        {
        case ConfirmSwap:
        case PlayOrSwap:
+       	   swapButton.highlightWhenIsOn = true;
+       	   swapButton.setIsOn(state==MbraneState.ConfirmSwap);
     	   swapButton.show(gc,messageRotation, buttonSelect);
     	   break;
        case ConfirmPlay:

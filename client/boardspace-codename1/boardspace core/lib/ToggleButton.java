@@ -28,6 +28,12 @@ import com.codename1.ui.geom.Rectangle;
 abstract public class ToggleButton extends Rectangle
 {	String name = "";
 	boolean isOn = false;
+	/**
+	 * if true, the highlight will lock "on" when the button is on, and will toggle off when the mouse is over.
+	 * this gets the behavior that when you turn a button on, it stays highlighted, and when you come back
+	 * to it later it toggles off when you mouse over.
+	 */
+	public boolean highlightWhenIsOn = false;
 	boolean justTurnedOff = false;
 	boolean justTurnedOn = false;
 	boolean mouseOverNow = false;

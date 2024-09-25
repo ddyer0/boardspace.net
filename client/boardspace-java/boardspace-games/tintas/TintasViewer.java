@@ -513,6 +513,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         case Puzzle: break;
         case PlayOrSwap:
         case ConfirmSwap:
+        	swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(state==TintasState.ConfirmSwap);
         	swapButton.show(gc, messageRotation,buttonSelect);
         	//$FALL-THROUGH$
 		default:       	

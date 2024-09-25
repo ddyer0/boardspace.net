@@ -795,11 +795,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-		if((state==PrototypeState.ConfirmSwap) 
+       boolean conf = (state==PrototypeState.ConfirmSwap) ;
+		if( conf
 			|| (state==PrototypeState.PlayOrSwap) 
 			|| (state==PrototypeState.Puzzle))
 			{// make the "swap" button appear if we're in the correct state
-				swapButton.show(gc, buttonSelect);
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
+        	swapButton.show(gc, buttonSelect);
 			}
 
 		if (state != PrototypeState.Puzzle)

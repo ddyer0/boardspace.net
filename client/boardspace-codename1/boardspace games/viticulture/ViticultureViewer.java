@@ -1093,7 +1093,6 @@ private void drawPlayerBoard(Graphics gc,
     {	
         PlayerBoard pb = gb.getPlayerBoard(player);
         commonPlayer pl = getPlayerOrTemp(player);
-        GC.frameRect(gc,Color.red,pl.playerBox);
         boolean showAll = (remoteWindowIndex(highlightAll)>=0) || !BACKGROUND_OPTIMIZATION;
         if(showAll)
         {

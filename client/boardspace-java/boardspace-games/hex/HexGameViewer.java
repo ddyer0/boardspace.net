@@ -674,13 +674,15 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
        }
        
        GC.setFont(gc,standardBoldFont());
-       
+       boolean conf = (state==HexState.ConfirmSwap) ;
        // draw the board control buttons 
-		if((state==HexState.ConfirmSwap) 
+		if(conf
 			|| (state==HexState.PlayOrSwap) 
 			|| (state==HexState.Puzzle))
 		{ // make the "swap" button appear if we're in the correct state
-			swapButton.show(gc,messageRotation,buttonSelect);
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
+        	swapButton.show(gc,messageRotation,buttonSelect);
 		}
 
 		if (state != HexState.Puzzle)

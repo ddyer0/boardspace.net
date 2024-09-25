@@ -994,10 +994,13 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
        double messageRotation = pl.messageRotation();
        
        // draw the board control buttons 
-		if((state==TwixtState.ConfirmSwap) 
+       boolean conf = (state==TwixtState.ConfirmSwap);
+		if(conf
 			|| (state==TwixtState.PlayOrSwap))
 		{ // make the "swap" button appear if we're in the correct state
-			swapButton.show(gc,messageRotation,buttonSelect);
+			swapButton.highlightWhenIsOn = true;
+        	swapButton.setIsOn(conf);
+        	swapButton.show(gc,messageRotation,buttonSelect);
 		}
 
 		handleDrawUi(gc,messageRotation,state.getRole(),gb.drawIsLikely(),buttonSelect,
