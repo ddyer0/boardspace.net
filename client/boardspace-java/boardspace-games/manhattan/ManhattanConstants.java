@@ -52,7 +52,7 @@ public interface ManhattanConstants
 		MakeMoney, SeeBuildingPile,SeePlutonium,SeeUranium, 
 		Fighters, Bombers, SeeBombPile, SeePersonalityPile, 
 		SeeNationsPile, CurrentDesigns, AvailableWorkers, Workers, CloseOverlay, Cash,Personality, Select,SelectOut,
-		BuyWithEngineer, BuyWithWorker, Scientists, Engineers, Bank, Yellowcake, HitCard, SeeDiscardedBombPile, ShowChip, Damage, Stockpile, Bombtest, AirstrikeHelp,
+		BuyWithEngineer, BuyWithWorker, Scientists, Engineers, Bank, Yellowcake, HitCard, SeeDiscardedBombPile, ShowChip, Damage, Stockpile, Bombtest, AirstrikeHelp, BombHelp,
 		;
 	
 	}
@@ -105,6 +105,9 @@ public enum Type { BuildingMarket, Building, Worker, WorkerPool, Marker, Fighter
  * color - for player boards, plus temporary workers and the board itself
  */
 public enum MColor { Red, Green ,Blue,  Yellow, Purple, Gray, Board};
+
+public MColor PlayerColors[] = { MColor.Red, MColor.Green, MColor.Blue, MColor.Yellow, MColor.Purple};
+
 /**
  * laborer, engineer, or scientist
  */

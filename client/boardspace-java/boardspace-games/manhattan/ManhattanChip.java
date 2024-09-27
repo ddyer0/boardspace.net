@@ -330,6 +330,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	static ManhattanChip Spy = new ManhattanChip("spy-nomask",Type.Other,defaultScale,MColor.Gray);
 	static ManhattanChip BomberSale = new ManhattanChip("bombersale-nomask",Type.BomberSale,defaultScale,MColor.Gray);
 	static ManhattanChip AirstrikeHelp = new ManhattanChip("airstrike-nomask",Type.Help,defaultScale,MColor.Gray);
+	static ManhattanChip BombtestHelp = new ManhattanChip("bombtest-nomask",Type.Help,defaultScale,MColor.Gray);
 	static ManhattanChip Question = new ManhattanChip("question",Type.Other,defaultScale,MColor.Gray);
 	static ManhattanChip BlankCard = new ManhattanChip("blankbomb-nomask",Type.Other,new double[] {0.5,0.5,0.75},MColor.Gray);
 	
@@ -589,10 +590,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
     /* plain images with no mask can be noted by naming them -nomask */
     static public ManhattanChip backgroundTile = new ManhattanChip("background-tile-nomask");
     static public ManhattanChip backgroundReviewTile = new ManhattanChip("background-review-tile-nomask");
-   
-
-    public static ManhattanChip Icon = new ManhattanChip("manhatten-icon-nomask",Type.Other);
-    
+     
 
 	/*
 	 * this is a standard trick to display card backs as an alternate to the normal face.

@@ -86,7 +86,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
   
     // mcts parameters
     // also set MONTEBOT = true;
-    private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
+    private boolean UCT_WIN_LOSS = true;		// use strict win/loss scoring  
     private boolean EXP_MONTEBOT = false;		// test version
     private double ALPHA = 0.5;
     private double NODE_EXPANSION_RATE = 1.0;
@@ -339,6 +339,9 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
          case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
+        case SMARTBOT_LEVEL:
+        	UCT_WIN_LOSS = false;
+			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=true;
            	MAX_DEPTH = DUMBOT_DEPTH;
@@ -396,7 +399,6 @@ public void PrepareToMove(int playerIndex)
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	UCT_WIN_LOSS = EXP_MONTEBOT;
  	boardSearchLevel = 1;
  	try {
          	// this is a test for the randomness of the random move selection.
@@ -478,7 +480,7 @@ public void PrepareToMove(int playerIndex)
  	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = Math.min(maxs, ScoreForPlayer(board,i,false));
 	 	}
-	return(mm.reScorePosition(playerindex,maxs)/maxs);	
+	return(mm.reScorePosition(playerindex,UCT_WIN_LOSS ? maxs : maxs*2)/maxs);	
  }
  public double NormalizedScore(commonMove lastMove)
  {	

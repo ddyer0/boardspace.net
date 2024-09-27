@@ -189,6 +189,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				new Cost[] {Cost.AnyWorker,Cost.AnyWorker,Cost.AnyWorker,Cost.AnyWorkerAnd3},
 				new Benefit[] {Benefit.Worker3,Benefit.Engineer,Benefit.Scientist,Benefit.ScientistOrEngineer});
 	ManhattanCell playDesignBomb = C(ManhattanId.DesignBomb,Type.Worker, Cost.ScientistAndEngineerAndBombDesign,Benefit.BombDesign);
+	ManhattanCell bombtestHelp = C(ManhattanId.BombHelp,Type.Help, Cost.None,Benefit.None);
 	ManhattanCell seeCurrentDesigns = C(ManhattanId.CurrentDesigns,Type.Bomb, Cost.None,Benefit.Inspect);
 	ManhattanCell playMakePlutonium = C(ManhattanId.MakePlutonium,Type.Worker, Cost.ScientistAnd2Y,Benefit.MainPlutonium);
 	ManhattanCell playMakeUranium = C(ManhattanId.MakeUranium,Type.Worker, Cost.ScientistAnd2YAnd3,Benefit.MainUranium);
@@ -264,6 +265,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     // be represented explicitly, so unwinding is easy and reliable.
     public ManhattanChip pickedObject = null;
     public ManhattanChip lastPicked = null;
+    public int dropSequence = 0;
     CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private IStack pickedIndex = new IStack();
@@ -278,7 +280,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     InternationalStrings s = G.getTranslations();
     
  	void logGameEvent(String str,String... args)
- 	{	//if(!robotBoard)
+ 	{	if(robot==null)
  		{String trans = s.get(str,args);
  		 gameEvents.push(trans);
  		}
@@ -411,13 +413,17 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	// 317628249 japan+north korea
     	//key = 317628249 ;
     	randomKey = key;
+    	dropMoveNumber = -1;
+    	pickMoveNumber = -1;
+    	prevLastPicked = -1;
+    	prevLastDropped = -1;
     	adjustRevision(rev);
     	players_in_game = players;
     	win = new boolean[players];
     	contextStack.clear();
 		options.set(Options.Personalities);
 		options.set(Options.Nations);
-    	
+    	dropSequence = 0;
     	// pbs is the player board indexed by boardindex, mapped to the player's preferred color
         int map[] = getColorMap();
         pbs = new PlayerBoard[players];
@@ -427,6 +433,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	  pb.doInit();
         	  
         	}
+        
         Random r = new Random(randomKey);
         seeBribe.reInit();
         seeBank.reInit();
@@ -518,6 +525,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         reInit(playMine);
         reInit(playUniversity);
         playDesignBomb.reInit();
+        bombtestHelp.reInit();
+        bombtestHelp.addChip(ManhattanChip.Question);
         seeCurrentDesigns.reInit();
         loadNewDesigns(replayMode.Replay);
          
@@ -572,6 +581,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         northKoreaSteps = 0;
         displayCells.clear();
         initialDigest = Digest();
+        gameEvents.clear();
         // note that firstPlayer is NOT initialized here
     }
     long initialDigest = 0;
@@ -607,7 +617,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     {
         super.copyFrom(from_b);
         for(int i=0;i<players_in_game;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
-        
+        dropMoveNumber = from_b.dropMoveNumber;
+        pickMoveNumber = from_b.pickMoveNumber;
+        prevLastPicked = from_b.prevLastPicked;
+        prevLastDropped = from_b.prevLastDropped;
         contextStack.copyFrom(from_b.contextStack);
         seeBribe.copyFrom(from_b.seeBribe);
         copyFrom(choice,from_b.choice);
@@ -1000,6 +1013,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	int ri = droppedIndex.pop();
     	pbs[whoseTurn].restoreOptions(optionStack.pop());
     	resetState = stateStack.pop();
+    	dropMoveNumber = moveNumber-1;
+    	rv.lastDropped = prevLastDropped;
     	setState(stateStack.pop());
     	if(rv.cost==Cost.FixedPool)
     	{
@@ -1028,6 +1043,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     {	ManhattanCell rv = pickedSourceStack.pop();
     	int ri = pickedIndex.pop();
     	resetState = stateStack.pop();
+    	pickMoveNumber = moveNumber-1;
+    	rv.lastPicked = prevLastPicked;
     	setState(stateStack.pop());
     	if(rv.cost==Cost.FixedPool)
     	{}
@@ -1045,11 +1062,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
+    int pickMoveNumber = -1;
+    int prevLastPicked = -1;
     private void pickObject(ManhattanCell c,int index)
     {	pickedSourceStack.push(c);
     	pickedIndex.push(index);
     	stateStack.push(board_state);
     	stateStack.push(resetState);
+    	if(moveNumber!=pickMoveNumber) 
+    		{ prevLastPicked = c.lastPicked;
+    		  c.lastPicked = moveNumber; 
+    		  pickMoveNumber = moveNumber; 
+    		}
     	if(c.cost==Cost.FixedPool)
     	{
     	pickedObject = c.chipAtIndex(index);
@@ -1062,11 +1086,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     // 
     // drop the floating object.
     //
+    int dropMoveNumber = -1;
+    int prevLastDropped = -1;
     private void dropObject(ManhattanCell c,int index,replayMode replay)
     {
        droppedDestStack.push(c);
        droppedIndex.push(index);
        ManhattanId rack = c.rackLocation();
+       if(moveNumber != dropMoveNumber)
+       	{ prevLastDropped = c.lastDropped;
+       	  c.lastDropped = moveNumber; 
+       	  dropMoveNumber = moveNumber; 
+       	}
        if((rack==ManhattanId.Stockpile)||(rack==ManhattanId.Building))
        {
     	   PlayerBoard pb = getPlayerBoard(c.color);
@@ -1154,6 +1185,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         case Building: return seeBuilding[row];
         case Mine: return playMine[row]; 
         case University: return playUniversity[row];
+        case BombHelp: return bombtestHelp;
         case DesignBomb: return playDesignBomb;
         case MakePlutonium: return playMakePlutonium;
         case MakeUranium: return playMakeUranium;
@@ -1191,12 +1223,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
      * that corresponds to a cell on the old board.
      */
     public ManhattanCell getCell(ManhattanCell c)
-    {
-    	return((c==null)
-    			?null
-    			: c.onBoard 
-    				? getCell(c.rackLocation(),c.row)
-    				: getPlayerBoard(c.color).getCell(c.rackLocation(),c.row));
+    {	if(c==null) { return null; }
+    	if(c.onBoard || (c.color==MColor.Board)) { return getCell(c.rackLocation(),c.row); }
+    	PlayerBoard pb = getPlayerBoard(c.color);
+    	if(pb!=null) { return pb.getCell(c.rackLocation(),c.row); }
+    	return null;
     }
 
     //	
@@ -2252,7 +2283,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	}
     	}
     }
-	private void selectChips(ManhattanChip newselected)
+	void selectChips(ManhattanChip newselected)
 	{
        	boolean multi = false;
     	boolean remove = selectedChips.remove(newselected,true)!=null;
@@ -2400,9 +2431,27 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		        if(replay==replayMode.Live)
 	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
 	        	  //G.print("last ",lastDroppedObject); 
-	        	}      	
-            	dropObject(dest,m.to_index,replay); 
-            	setNextStateAfterDrop(dest,replay);
+	        	}
+		    if(dest.height()>0)
+		        {
+		        switch(dest.type) 
+		        {
+		        case Building:
+		        case BuildingMarket:
+		        	 m.chip = dest.chipAtIndex(0);
+		        	 break;
+		        default:
+		        	break;
+		        }
+		        }
+		    m.cell = dest;
+           	dropObject(dest,m.to_index,replay); 
+           	if(replay.animate)
+           	{
+           		animationStack.push(getSource());
+           		animationStack.push(dest);
+           	}
+           	setNextStateAfterDrop(dest,replay);
             	}
         	}
             break;
@@ -3127,6 +3176,7 @@ public int cellToY(ManhattanCell c)
 	 playEspionage.setPosition(0.09,0.54);
 	 // original board playDesignBomb.setPosition(0.6,0.79);
 	 playDesignBomb.setPosition(0.575,0.75);
+	 bombtestHelp.setPosition(0.64,0.69);
 	 seeBombtests.setPosition(0.64,0.92);
 	 seeCurrentDesigns.setPosition(0.56,0.89);
 	 playMakePlutonium.setPosition(0.69,0.79);

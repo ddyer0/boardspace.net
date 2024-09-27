@@ -48,7 +48,7 @@ class CellStack extends OStack<ManhattanCell>
  */
 public class ManhattanCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<ManhattanCell,ManhattanChip>
+	extends stackCell<ManhattanCell,ManhattanChip> implements PlacementProvider
 {	MColor color = null;
 	int cash = 0;
 	double xpos = 0.5;		// position relative to the board rectangle
@@ -199,6 +199,8 @@ public class ManhattanCell
 		cash = ot.cash;
 		cost = ot.cost;
 		selectedIndex = ot.selectedIndex;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	
 	public void insertChipAtIndex(int in,ManhattanChip ch)
@@ -237,6 +239,7 @@ public class ManhattanCell
 		cash = 0;
 		partiallyVacated = false;
 		selectedIndex = -1;
+		lastPicked = lastDropped = -1;
 	}
 
 	/**
@@ -344,5 +347,11 @@ public class ManhattanCell
 			{ 
 			return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
 			}
+	}
+
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 }

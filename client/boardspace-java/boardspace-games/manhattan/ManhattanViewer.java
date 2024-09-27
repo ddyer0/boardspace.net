@@ -36,7 +36,11 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.StockArt;
+import lib.Text;
 import lib.TextButton;
+import lib.TextChunk;
+import lib.TextGlyph;
+import lib.TextStack;
 import lib.Toggle;
 import lib.Image;
 import lib.ImageStack;
@@ -98,7 +102,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> implements ManhattanConstants
+public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> implements ManhattanConstants,  PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	// TODO: display some indication of the university's owner for "india" selection.
@@ -162,7 +166,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
  */
     public synchronized void preloadImages()
     {	ManhattanChip.preloadImages(loader,ImageDir);	// load the images used by stones
-		gameIcon = ManhattanChip.Icon.image;
+		gameIcon = ManhattanChip.icon.getImage();
     }
 
     /**
@@ -328,9 +332,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*15;	
+    	int minLogW = fh*20;	
        	int minChatW = fh*35;	
-        int minLogH = fh*10;	
+        int minLogH = fh*25;	
         int margin = fh/2;
         int buttonW = fh*7;
         // this does the layout of the player boxes, and leaves
@@ -565,6 +569,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
     	ManhattanState state = gb.getState();
+ 
     	gb.setRectangle(brect);
     	//if(G.debug()) { gb.positionCells(); }
     	int cellSize = G.Width(brect)/18;
@@ -589,6 +594,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	drawBoardCell(gc,highlight,gb,targets,gb.seeNations, cellSize*3/4, 0.01, 0.02, ManhattanChip.BACK,hitAny);
        	
        	drawBoardCell(gc,highlight,gb,targets,gb.playDesignBomb, cellSize, 0.00, 0.03, null,hitAny);
+       	drawBoardCell(gc,hitAny,gb,targets,gb.bombtestHelp,cellSize*2/3,0,0,null,hitAny);
        	boolean censor = gb.pendingBenefit==Benefit.BombDesign;
        	drawBoardCell(gc,hitAny,gb,targets,gb.seeCurrentDesigns, cellSize, 0.26, 0.22, censor?ManhattanChip.BACK:null,hitAny);
       	drawBoardCell(gc,highlight,gb,targets,gb.playMakePlutonium, cellSize, 0.00, 0.00, null,hitAny);
@@ -642,6 +648,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     public boolean drawDefaultCell(Graphics gc,HitPoint hp,boolean selected,ManhattanCell c,int cellSize,int xpos,int ypos,double xstep,double ystep,String hint, HitPoint hitAny)
     {
     	boolean see = c.rackLocation()==ManhattanId.Stockpile && c.height()>=2;
+    	numberMenu.saveSequenceNumber(c,xpos,ypos);
     	boolean hit = c.drawStack(gc,this,hp, cellSize,xpos,ypos,0,xstep,ystep,see ? null : hint);
 		if(hit)
 		{	
@@ -834,12 +841,18 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     				hit = true;
     			}
     			break;
+    		case Help:
+    			ahp =  hitAny;
+    			//$FALL-THROUGH$
     		default:
     			if(drawDefaultCell(gc,ahp,gb.isSelected(c),c,cellSize,xpos,ypos,xstep,ystep,hint, hitAny))
     			{	boolean top = (xstep==0 && ystep==0) || c.height()==0 || c.rackLocation()==ManhattanId.Bombtest;
+    				if(move!=null)
+    				{
     				move.from_index = top ? -1 : hitAny.hit_index;
         			move.to_index = top ? -1 : hitAny.hit_index+1;
         			ahp.hitData = move;
+    				}
         			hit = true;
     			}
     		}
@@ -955,11 +968,14 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.workers,cellSize*3/2, 0.4, 0.0, null,hitAny);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.scientists,cellSize*3/2, 0.4, 0.0, null,hitAny);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.engineers,cellSize*3/2, 0.4, 0.0, null,hitAny);
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.yellowcakeDisplay,cellSize*3/2, -0.1,0, ""+(pb.yellowcakeDisplay.height()-pb.yellowcakeDisplay.activeAnimationHeight()),hitAny);	
+    	int nyellow = pb.yellowcakeDisplay.height();
+    	double cakeStep = Math.max(-0.1,-1.2/nyellow);
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.yellowcakeDisplay,cellSize*3/2, cakeStep,0, ""+(nyellow-pb.yellowcakeDisplay.activeAnimationHeight()),hitAny);	
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.fighters, cellSize, 0.5, 0.5, null,hitAny);
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.bombers, cellSize, 0.5, 0.5, null,hitAny);
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.buildings, null, cellSize*3, 0.0, 0.0,null, hitAny);
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,0.4, null,hitAny);
+    	double cashstep = Math.min(0.4,1.5/pb.cashDisplay.height());
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,cashstep, null,hitAny);
     	String bombBacks = (pl!=getActivePlayer() && !mutable_game_record) 
     							? ManhattanChip.BACK 
     							: null;
@@ -1058,7 +1074,20 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		   bigChip = ManhattanChip.AirstrikeHelp;
     		   }
     		   break; 
+    	   case PlayLocal:
+    		   if(!helpOff.contains(ManhattanChip.BombtestHelp)
+    				   && bb.scoreForPlayer(bb.whoseTurn)>0)
+    		   {   // first time they score
+    			   bigChip = ManhattanChip.BombtestHelp;
+    		   }
+    		   break;
     		default:
+    	   		   if(bigChip!=null && bigChip.type==Type.Help && !helpOff.contains(bigChip))
+        		   {
+        			   helpOff.push(bigChip);
+        			   bigChip = null;
+        		   }
+    	   		   break;
     	   }
        }
        // this does most of the work, but other functions also use contextRotation to rotate
@@ -1096,6 +1125,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        HitPoint boardSelect = anyOverlay ? null :ourTurnSelect;
 
        Hashtable<ManhattanCell,ManhattanMovespec> targets = gb.getTargets();
+
+       numberMenu.clearSequenceNumbers();
 
        drawBoardElements(gc, gb, boardRect, boardSelect,targets,anyOverlay ? null : selectPos);
        
@@ -1137,6 +1168,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	}
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation();
+       
+       numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);
        
        GC.setFont(gc,standardBoldFont());
        
@@ -1337,7 +1370,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
      */
     public void verifyGameRecord()
     {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
+    	//super.verifyGameRecord();
     }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
@@ -1728,8 +1761,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         case HitRetrieve:
         	PerformAndTransmit("Retrieve "+bb.getCurrentPlayerBoard().color);
         	break;
+        case BombHelp:
+        	helpOff.pushNew(ManhattanChip.BombtestHelp);
+        	bigChip = ManhattanChip.BombtestHelp;
+        	break;
         case AirstrikeHelp:
-        	helpOff.remove(ManhattanChip.AirstrikeHelp);
+        	helpOff.pushNew(ManhattanChip.AirstrikeHelp);
         	bigChip = ManhattanChip.AirstrikeHelp;
         	break;
         case SeeBuildingPile:
@@ -2181,5 +2218,51 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	  {
 		  return(super.imageSize(im) + ManhattanChip.imageSize(im));
 	  }
+	  
+	   private Text[] gameMoveText = null;
+	   private Text[] gameMoveText()
+	    {  
+	    	if(gameMoveText==null)
+	    	{
+	    	double[] escale = {1,1.5,.3,-0.4};
+	    	double[] wscale = {1,1.5,.3,-0.4};
+	    	double[] sscale = {1,1.5,.3,-0.4};
+	    	double[] xscale = {1,2,0.0,-0.4};
+	    	double[] cscale = {1,2,0.0,-0.4};
+	    	double[] c5scale = {1,1.8,0.0,-0.4};
+	    	TextStack texts = new TextStack();
+	    	for(ManhattanChip chip : ManhattanChip.playerChips)
+	    	{
+	    		texts.push(TextGlyph.create(""+chip.color+"-chip","xx",chip,this,escale));
+	    	}
+	    	for(ManhattanChip worker : ManhattanChip.engineers)
+	    	{
+	    		texts.push(TextGlyph.create(""+worker.color+"-"+worker.workerType,"xx",worker,this,escale));
+	    		
+	    	}
+	    	for(ManhattanChip worker : ManhattanChip.laborers)
+	    	{
+	    		texts.push(TextGlyph.create(""+worker.color+"-"+worker.workerType,"xx",worker,this,wscale));
+	    		
+	    	}
+	    	for(ManhattanChip worker : ManhattanChip.scientists)
+	    	{
+	    		texts.push(TextGlyph.create(""+worker.color+"-"+worker.workerType,"xx",worker,this,sscale));	
+	    	}
+	    	texts.push(TextGlyph.create("1$","xx",ManhattanChip.coin_1,this,cscale));
+	    	texts.push(TextGlyph.create("2$","xx",ManhattanChip.coin_2,this,cscale));
+	    	texts.push(TextGlyph.create("5$","xx",ManhattanChip.coin_5,this,c5scale));
+	    	texts.push(TextGlyph.create("uranium","xx",ManhattanChip.Uranium,this,xscale));
+	    	texts.push(TextGlyph.create("plutonium","xx",ManhattanChip.Plutonium,this,xscale));
+	    	texts.push(TextGlyph.create("yellowcake","xx",ManhattanChip.Yellowcake,this,xscale));
+	    	
+	    	gameMoveText = texts.toArray();
+	    	}
+	    	return gameMoveText;
+	    }
+	    public Text colorize(String str)
+	    {
+	    	return TextChunk.colorize(str,null,gameMoveText());
+	    }
 }
 

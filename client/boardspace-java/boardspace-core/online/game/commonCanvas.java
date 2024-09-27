@@ -4974,7 +4974,7 @@ public abstract class commonCanvas extends exCanvas
     		  // go from non-review/end-of-variation to review/middle-of-variation by
     		  // deleting some moves in EditHistory
     		  commonMove oldm = History.elementAt(sz-1);
-    		  if(oldm.next!=null)
+    		  if(oldm.next!=null && oldm.nVariations()>1)
     		  {	History.viewStep = sz;		// viewstep should point to the next item to be executed, which will be 
     		  						// the first item added.
     		  	mutated_game_record=true;

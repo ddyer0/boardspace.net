@@ -87,6 +87,7 @@ public class ManhattanMovespec
     int from_index = 0;
     int to_index = 0;
     ManhattanChip chip;
+    ManhattanCell cell;
     
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
@@ -289,7 +290,7 @@ public class ManhattanMovespec
     }
 
     private Text icon(commonCanvas v,Object... msg)
-    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    {	double chipScale[] = {1,1.5,-0.0,-0.5};
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
@@ -298,7 +299,15 @@ public class ManhattanMovespec
     	}
     	return(m);
     }
-
+    private Text postIcon(commonCanvas v,Object... msg)
+    {	double chipScale[] = {1.5,1.3,-0.0,-0.2};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(m,TextGlyph.create("xx", chip, v,chipScale));
+    	}
+    	return(m);
+    }
     /** construct an abbreviated move string, mainly for use in the game log.  These
      * don't have to be parseable, they're intended only to help humans understand
      * the game record.  The alternative method {@link #shortMoveText} can be implemented
@@ -306,26 +315,87 @@ public class ManhattanMovespec
      * 
      * */
     public Text shortMoveText(commonCanvas v)
-    {
+    {	//if(gameEvents!=null) { setLineBreak(true); }
         switch (op)
         {
-
+        case MOVE_DONE:
+        	setLineBreak(true);
+            return TextChunk.create("");
         case MOVE_FROM_TO:
         case MOVE_ATTACK:
         	return icon(v,from_color.name()+" "+dest.name());
         	
         case MOVE_SELECT:
+        	if(cell!=null)
+        	{
+        		switch(cell.type)
+        		{
+        		case BuildingMarket:
+        			return postIcon(v,"");
+        		default: break;
+        		}
+        	}
+			return TextChunk.create("");
+
         case MOVE_REPAIR:
         case MOVE_DROP:
-        	return icon(v,from_color.name()+" "+dest.name());
+        	commonMove n = next;
+        	if(n!=null && n.op==MOVE_PICK) { return TextChunk.create(""); }
+        	if(cell!=null)
+        	{
+        	switch(cell.type)
+        	{     
+        	case Bomb:
+        		return postIcon(v," build  ");
+        	case BuildingMarket:
+        		return postIcon(v," buy  ");
+        	case Building:
+        		return postIcon(v," use  ");
+        	case Worker:
+        		switch(cell.rackLocation())
+        		{
+              	case BuyWithWorker:
+              	case BuyWithEngineer:
+              		return postIcon(v," buy ");
+        		case MakeUranium:
+        			chip = ManhattanChip.Uranium;
+        			return postIcon(v," refine ");
+        			
+        		case MakePlutonium:
+        			chip = ManhattanChip.Plutonium;
+        			return postIcon(v," refine ");
+        		case Mine:
+        			chip = ManhattanChip.Yellowcake;
+        			return postIcon(v," mine ");
+        		case DesignBomb:
+        			return postIcon(v," design bombs ");
+        		case Espionage:
+        			return postIcon(v," espionage ");
+        		case MakeMoney:
+        			return postIcon(v," get money ");
+        		case MakeFighter:
+        			return postIcon(v," buy fighters ");
+        		case MakeBomber:
+        			return postIcon(v," buy bombers ");
+        		case Repair:
+        			return postIcon(v," repair ");
+        		case AirStrike:
+        			return postIcon(v," airstrike ");
+        		case University:
+        			return postIcon(v,"");
+        		default: break;
+        		}
+        		break;
+        	default:
+        		break;
+        	}}
+        	return icon(v,to_color.name()+" "+dest.name()+" "+to_row);
         	
         case MOVE_PICK:
-            return icon(v,from_color.name()+" "+source.name());
+            return icon(v," ");
         case MOVE_CONTRIBUTE:
         case EPHEMERAL_CONTRIBUTE:
         	return icon(v,from_color.name()+" "+from_index);
-        case MOVE_DONE:
-            return TextChunk.create("");
 
         default:
         case EPHEMERAL_APPROVE:

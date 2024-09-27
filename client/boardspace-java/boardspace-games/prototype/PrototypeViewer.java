@@ -36,7 +36,9 @@ import lib.HitPoint;
 import lib.ImageStack;
 import lib.Random;
 import lib.StockArt;
+import lib.Text;
 import lib.TextButton;
+import lib.TextChunk;
 import lib.Toggle;
 import lib.LFrameProtocol;
 import online.game.*;
@@ -1507,5 +1509,21 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	  {
 		  return(super.imageSize(im) + PrototypeChip.imageSize(im));
 	  }
+	
+    /**
+     * colorize a string and return a Text with the result.  This is used
+     * to substitute icons for words, or translate the words, in the string;
+     * or to otherwise change the presentation of the string to something other than a plain 
+     * fonted string.  See {@link lib.Text#colorize}
+     * This is used by redrawGameLog to transform raw strings from game events.  In conjunction
+     * with iconification done by "shortMoveString", this is responsible for making pretty
+     * pictures in the game log.
+     * @param str
+     * @return the new Text object
+     */
+    //public Text colorize(String str)
+    //{	return(TextChunk.create(str));
+    //}
+    
 }
 

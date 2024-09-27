@@ -474,7 +474,7 @@ public class PlayerBoard implements ManhattanConstants
 		sameBoard(other);
 	}
 	public void sameBoard(PlayerBoard other)
-	{
+	{	G.Assert(color==other.color,"color mismatch");
 		G.Assert(boardIndex==other.boardIndex,"boardIndex mismatch");
 		G.Assert(b.sameContents(fighters,other.fighters),"fighter mismatch");
 		G.Assert(b.sameContents(bombers,other.bombers),"bomber mismatch");
@@ -1684,13 +1684,16 @@ public class PlayerBoard implements ManhattanConstants
 		if(size>=2)
 		{	ManhattanChip bomb = c.chipAtIndex(0);
 			G.Assert(c.chipAtIndex(1)==ManhattanChip.built,"should be a built bomb");
-			if((!hasTestedBomb) && bomb.isPlutoniumBomb())
+			if((!hasTestedBomb)
+					&& bomb.isPlutoniumBomb() 
+					&& (( pickedObject==null) || (pickedObject.type==Type.Bombtest)))
 			{
 				if(all!=null) { all.push(new ManhattanMovespec(MOVE_FROM_TO,b.seeBombtests,-1,c,who)); }
 				some = true;
 			}
 			if(!isLoaded(c) 
 					&& (nBombers>0)
+					&& ((pickedObject==null) || (pickedObject.type==Type.Bomber))
 					&& !c.containsChip(bomber)
 					&& !c.contains(Type.Bombtest)
 					&& !c.containsChip(ManhattanChip.Damage)
@@ -1710,7 +1713,6 @@ public class PlayerBoard implements ManhattanConstants
 		int h = from.height();
 		from.addCash(-n);
 		to.addCash(n);
-
 		if(replay.animate)
 		{
 			int newh = to.height();
@@ -1774,6 +1776,7 @@ public class PlayerBoard implements ManhattanConstants
 		{	// freebie in first 2 slots
 			int cost = b.selectedCells.top().cash;
 			sendCoinsToBank(cashDisplay,cost,replay);
+			b.logGameEvent("- "+cost+"$");
 		}
 	}
 
@@ -1781,6 +1784,7 @@ public class PlayerBoard implements ManhattanConstants
 	{	// pay full price
 		int cost = b.selectedCells.top().cash;
 		sendCoinsToBank(cashDisplay,cost,replay);
+		b.logGameEvent("- "+cost+"$");
 	}
 	
 	void payCost(ManhattanCell cell,replayMode replay)
@@ -1796,12 +1800,15 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 		case Coin:
 			addCoinsFromBank(cashDisplay,cell.cash,replay);
+			b.logGameEvent("- "+cell.cash+"$");
 			break;
 		case Yellowcake:				
 			payYellowcake(cell.height(),replay);
+			b.logGameEvent("- "+cell.height()+" yellowcake");
 			break;
 		case Uranium:
 			addUranium(-cell.height(),replay);
+			b.logGameEvent("- "+cell.height()+" uranium");
 			break;
 		default: throw G.Error("not expecting %s",top);
 		}
@@ -1818,35 +1825,43 @@ public class PlayerBoard implements ManhattanConstants
 		case ScientistAnd3Uranium:
 		case ScientistAndEngineerAnd3Uranium:
 			addUranium(-3,replay);
+			b.logGameEvent("-3 uranium");
 			break;
 
 		case ScientistAndEngineerAnd4Uranium:
 		case ScientistAndEngineer2And4Uranium:
 			addUranium(-4,replay);
+			b.logGameEvent("-4 uranium");
 			break;
 
 		case ScientistAndEngineer2And5Uranium:
 		case Scientist2AndEngineer2And5Uranium:
 			addUranium(-5,replay);
+			b.logGameEvent("-5 uranium");
 			break;
 		case Scientist2AndEngineer2And6Uranium:
 			addUranium(-6,replay);
+			b.logGameEvent("-6 uranium");
 			break;
 		case ScientistAndEngineerAnd4Plutonium:
 		case ScientistAndEngineer2And4Plutonium:
 			addPlutonium(-4,replay);
+			b.logGameEvent("-4 plutonium");
 			break;
 		case Scientist2AndEngineer2And5Plutonium:
 		case ScientistAndEngineer2And5Plutonium:
-			addPlutonium(5,replay);
+			addPlutonium(-5,replay);
+			b.logGameEvent("-5 plutonium");
 			break;
 		case Scientist2AndEngineer2And6Plutonium:
 		case Scientist2AndEngineer3And6Plutonium:
 			addPlutonium(-6,replay);
+			b.logGameEvent("-6 plutonium");
 			break;
 		case Scientist2AndEngineer3And7Plutonium:
 		case Scientist2AndEngineer4And7Plutonium:
 			addPlutonium(-7,replay);
+			b.logGameEvent("-7 plutonium");
 			break;
 		case AnyWorker:
 		case Scientist:
@@ -1897,82 +1912,103 @@ public class PlayerBoard implements ManhattanConstants
 			
 		case AnyWorkerAnd5:			
 			sendCoinsToBank(cashDisplay,5,replay);
+			b.logGameEvent("- 5$");
 			break;
 			
 		case AnyWorkerAnd3:
 			sendCoinsToBank(cashDisplay,3,replay);
+			b.logGameEvent("- 1$ 2$");
 			break;
 		case ScientistAnd2YellowcakeAnd2:
 			payYellowcake(2,replay);
 			sendCoinsToBank(cashDisplay,2,replay);
+			b.logGameEvent("-2$");
 			break;
 		case Scientist2And4YellowcakeAnd3:
 			payYellowcake(4,replay);
 			sendCoinsToBank(cashDisplay,3,replay);
+			b.logGameEvent("-1$ 2$");
 			break;
 		case Scientists2And6YellowcakeAnd7:
 			payYellowcake(6,replay);
 			sendCoinsToBank(cashDisplay,7,replay);
+			b.logGameEvent("-6 yellowcake 1$ 2$ 5$");
 			break;
 			
 		case Scientists3And8Yellowcake:
 			payYellowcake(8,replay);
+			b.logGameEvent("-8 yellowcake");
 			break;
 			
 		case Scientist2And6Yellowcake:
 			payYellowcake(6,replay);
+			b.logGameEvent("-6 yellowcake");
 			break;
 			
 		case ScientistAnd1Uranium:
 			addUranium(-1,replay);
+			b.logGameEvent("-1 uranium");
 			break;
 		case ScientistAnd3YellowcakeAnd5:
 			payYellowcake(3,replay);
 			sendCoinsToBank(cashDisplay,5,replay);
+			b.logGameEvent("-3 yellowcake -5$");
 			break;
 		case ScientistAnd4YellowcakeAnd4:
 			payYellowcake(4,replay);
 			sendCoinsToBank(cashDisplay,4,replay);
+			b.logGameEvent("- 4$ -4 yellowcake ");
 			break;
 		case ScientistAnd1YellowcakeAnd3:
 			payYellowcake(1,replay);
 			sendCoinsToBank(cashDisplay,3,replay);
+			b.logGameEvent("- 1$ 2$ -1 yellowcake ");
 			break;
 		case Scientist2And5YellowcakeAnd2:
 			payYellowcake(5,replay);
 			sendCoinsToBank(cashDisplay,2,replay);
+			b.logGameEvent("- 2$ -5 yellowcake ");
 			break;
 		case Scientists2And3YellowcakeAnd4:
 			payYellowcake(3,replay);
 			sendCoinsToBank(cashDisplay,4,replay);
+			b.logGameEvent("- 2$ 2$ -3 yellowcake ");
 			break;
 		case ScientistAnd3YellowcakeAnd1:
 			payYellowcake(3,replay);
 			sendCoinsToBank(cashDisplay,1,replay);
+			b.logGameEvent("- 1$ -3 yellowcake ");
 			break;
 		case Scientist2And2YellowcakeAnd5:
 			payYellowcake(2,replay);
 			sendCoinsToBank(cashDisplay,5,replay);
+			b.logGameEvent("- 5$ -2 yellowcake ");
 			break;
 		case ScientistAnd2Y:
 			payYellowcake(2,replay);
+			b.logGameEvent("-2 yellowcake ");
 			break;
 		case ScientistAnd5Yellowcake:
 			payYellowcake(5,replay);
+			b.logGameEvent("-5 yellowcake ");
 			break;
 		case ScientistAnd1Yellowcake:
 			payYellowcake(1,replay);
+			b.logGameEvent("-1 yellowcake ");
 			break;
 		case Scientist2And3Yellowcake:
 			payYellowcake(3,replay);
+			b.logGameEvent("-3 yellowcake ");
 			break;
 		case ScientistAnd2YAnd3:
 			payYellowcake(2,replay);
 			sendCoinsToBank(cashDisplay,3,replay);
+			b.logGameEvent("- 1$ 2$ -2 yellowcake ");
 			break;
 
 		case AnyWorkerAnd3Y:
 			payYellowcake(3,replay);
+			b.logGameEvent("-3 yellowcake ");
 			break;
 			
 		case Cash:
@@ -2018,13 +2054,15 @@ public class PlayerBoard implements ManhattanConstants
 	 * @param replay animation
 	 */
 	private void collectWorkers(int n,WorkerType t,ManhattanCell dest,replayMode replay)
-	{
+	{	
+		String ev = "train";
 		for(int i=0;i<n;i++)
 		{	ManhattanChip ch = b.getAvailableWorker(color,t);
 			if(ch==null) { ch = b.getAvailableWorker(MColor.Gray,t);}
 			if(ch!=null)
 			{
 				dest.addChip(ch);
+				if(b.robot==null) { ev += " "+ch.color+"-"+t; }
 				if(replay.animate) 
 				{
 					b.animationStack.push(b.availableWorkers);
@@ -2032,6 +2070,8 @@ public class PlayerBoard implements ManhattanConstants
 				}
 			}
 		}
+		b.logGameEvent(ev);
+
 	}
 	private void collectWorker(ManhattanChip worker,replayMode replay)
 	{	WorkerType t = worker.workerType;
@@ -2275,63 +2315,82 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 		case Plutonium4:
 			addPlutonium(4,replay);
+			b.logGameEvent("+4 plutonium");
 			break;
 		case Plutonium3:
 			addPlutonium(3,replay);
+			b.logGameEvent("+3 plutonium");
 			break;
 		case Uranium3:
 			addUranium(3,replay);
+			b.logGameEvent("+3 uranium");
 			break;
 		case Uranium2:
 			addUranium(2,replay);
+			b.logGameEvent("+2 uranium");
 			break;
 		case Plutonium2:
 			addPlutonium(2,replay);
+			b.logGameEvent("+2 plutonium");
 			break;
 		case MainUranium:
 			if(hasPersonality(ManhattanChip.Szilard))
 			{
-				addUranium(1,replay);
+				addUranium(2,replay);
+				b.logGameEvent("+2 Uranium");
+				break;
 			}
 			//$FALL-THROUGH$
 		case Uranium:
 			addUranium(1,replay);
+			b.logGameEvent("+1 uranium");
+
 			break;
 		case MainPlutonium:
 			if(hasPersonality(ManhattanChip.Szilard))
 			{
-				addPlutonium(1,replay);
+				addPlutonium(2,replay);
+				b.logGameEvent("+2 plutonium");
+				break;
 			}
 			//$FALL-THROUGH$
 		case Plutonium:
 			addPlutonium(1,replay);
+			b.logGameEvent("+1 plutonium");
 			break;
 						
 		case BomberAnd2:
 			addBomber(1,replay);
 			addCoinsFromBank(cashDisplay,2,replay);
+			b.logGameEvent("2 bomber + 2$");
 			break;
 		case Bomber3And3:
 			addBomber(3,replay);
 			addCoinsFromBank(cashDisplay,3,replay);
+			b.logGameEvent("3 bomber + 2$");
 			break;
 		case FighterAnd2: 
 			addFighter(1,replay);
 			addCoinsFromBank(cashDisplay,2,replay);
+			b.logGameEvent("2 fighter + 2$");
 			break;
 		case Fighter2AndBomber2:
 			addFighter(2,replay);
 			addBomber(2,replay);
+			b.logGameEvent("2 fighter + 2 bomber");
 			break;
 		case Fighter2: 
 			addFighter(2,replay);
+			b.logGameEvent("+2 fighter");
 			break;
 		case Bomber2:
 			addBomber(2,replay);
+			b.logGameEvent("+2 bomber");
 			break;
 		case Fighter3And3:
 			addFighter(3,replay);
 			addCoinsFromBank(cashDisplay,3,replay);
+			b.logGameEvent("1 fighter + 1$ 2$");
 			break;
 		case Fighter2OrBomber2:
 			// fighter or 2 in a new dialog
@@ -2383,6 +2442,7 @@ public class PlayerBoard implements ManhattanConstants
 				}
 				}}
 			collectYellowcake(n,replay);
+			b.logGameEvent("+ "+n+" yellowcake");
 			}
 			break;
 		case Nations_CHINA:
@@ -2510,23 +2570,28 @@ public class PlayerBoard implements ManhattanConstants
 			
 		case Five:
 			addCoinsFromBank(cashDisplay,5,replay);
+			b.logGameEvent("+ 5$");
 			break;
 			
 		case ThreeAnd1:
 			addCoinsFromBank(cashDisplay,3,replay);
+			b.logGameEvent("+ 1$ 2$");
 			addCoinsFromBank(b.seeBribe,1,replay);
 			break;
 			
 		case FiveAnd1:
 			// we get 5 and one to the bribe pile
 			addCoinsFromBank(cashDisplay,5,replay);
+			b.logGameEvent("+ 5$");
 			addCoinsFromBank(b.seeBribe,1,replay);
 			break;
 		case FiveAnd2:
 			// we get 5 and everyone else gets 2
 			for(PlayerBoard pb : b.pbs)
 				{ 
-				pb.addCoinsFromBank(pb.cashDisplay,pb==this ? 5 : 2,replay);
+				int amount = pb==this ? 5 : 2;
+				pb.addCoinsFromBank(pb.cashDisplay,amount,replay);
+				b.logGameEvent(""+pb.color+"-chip"+ " + "+amount+"$");
 				}
 			addCoinsFromBank(b.seeBribe,1,replay);
 			break;
@@ -2554,25 +2619,35 @@ public class PlayerBoard implements ManhattanConstants
 			
 		case Yellowcake6:
 			collectYellowcake(6,replay);
+			b.logGameEvent("+ 6 yellowcake ");
 			break;
 		case Yellowcake4:
 			collectYellowcake(4,replay);
+			b.logGameEvent("+ 4 yellowcake ");
 			break;
 		case Yellowcake3:
 			collectYellowcake(3,replay);
+			b.logGameEvent("+ 3 yellowcake ");
 			break;
 		case Yellowcake2:
 			collectYellowcake(2,replay);
+			b.logGameEvent("+ 2 yellowcake ");
 			break;
 		case Yellowcake:
 			collectYellowcake(1,replay);
+			b.logGameEvent("+ 1 yellowcake ");
 			break;
 		case Yellowcake3And1:
 			// 3 yellowcake for us, 1 for everyone else
 			for(PlayerBoard pb : b.pbs)
 			{
-			if(pb==this) { collectYellowcake(3,replay); }
-			else { pb.collectYellowcake(1,replay); }
+			if(pb==this) 
+				{ collectYellowcake(3,replay); 
+				  b.logGameEvent(""+color+"-chip +3 yellowcake");
+				}
+			else { pb.collectYellowcake(1,replay);
+			 		b.logGameEvent(""+pb.color+"-chip +1 yellowcake");
+			}
 			}
 			break;
 			
@@ -2708,21 +2783,25 @@ public class PlayerBoard implements ManhattanConstants
 			case BomberSale:
 				addBomber(-1,replay);
 				addCoinsFromBank(cashDisplay,3,replay);
+				b.logGameEvent("+ 1$ 3$");
 				break;
 			case JapanAirstrike:
 				b.setState(ManhattanState.JapanAirstrike);
 				break;
 			case Yellowcake:
 				collectYellowcake(selected.height(),replay);
+				b.logGameEvent(""+selected.height()+" yellowcake");
 				break;
 			case Worker:
 				while(selected.height()>0) { collectWorker(selected.removeTop(),replay); }
 				break;
 			case Fighter:	
 				addFighter(selected.height(),replay);
+				b.logGameEvent("+ fighter");
 				break;
 			case Bomber: 
 				addBomber(selected.height(),replay);	
+				b.logGameEvent("+ bomber");
 				break;
 			case Coin: 
 				addCoinsFromBank(cashDisplay,selected.cash,replay);
@@ -2732,15 +2811,18 @@ public class PlayerBoard implements ManhattanConstants
 				case Coin:	break;
 				case Bomber: // usa nations card
 					addBomber(1,replay);
+					b.logGameEvent("+ bomber");
 					break;
 				default: throw G.Error("Not expecting %s under coins",ch);
 				}
 				break;
 			case Plutonium:
 				addPlutonium(1,replay);
+				b.logGameEvent("+ plutonium");
 				break;
 			case Uranium:
 				addUranium(1,replay);
+				b.logGameEvent("+ uranium");
 				break;
 			case Bomb:
 				if(something==ManhattanChip.BombBack)
