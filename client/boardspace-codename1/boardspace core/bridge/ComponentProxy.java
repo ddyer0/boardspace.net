@@ -55,7 +55,7 @@ public class ComponentProxy extends Component implements NullLayoutProtocol
 	public void paint(Graphics g)
 	{	
 		boolean rotated = MasterForm.rotateNativeCanvas(this,g);
-		client.paint(lib.Graphics.create(g));
+		client.paint(lib.Graphics.create(g,this));
 		if(rotated) { MasterForm.unrotateNativeCanvas(this, g); }
 	}
 

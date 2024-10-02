@@ -298,7 +298,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			topLevelGraphics = offG;
 			if(useFakePaint)
 			{
-			lib.Graphics g1 = lib.Graphics.create(g);
+			lib.Graphics g1 = lib.Graphics.create(g,this);
 			Rectangle clip = GC.getClipBounds(g1);
 			GC.setClip(g1,new Rectangle(0,0,0,0));
 			g.translate(200,200);

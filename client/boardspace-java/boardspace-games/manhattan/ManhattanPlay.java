@@ -72,22 +72,15 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
 	// for the evaluator to work with.
 	
 	// common parameters
-    private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
     private ManhattanChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
-    private int MAX_DEPTH = 7;						// search depth.
-    private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-    private int boardSearchLevel = 1;				// the current search depth
   
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = true;		// use strict win/loss scoring  
-    private boolean EXP_MONTEBOT = false;		// test version
     private double ALPHA = 0.5;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
@@ -149,7 +142,6 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     public void Unmake_Move(commonMove m)
     {	ManhattanMovespec mm = (ManhattanMovespec)m;
         board.UnExecute(mm);
-        boardSearchLevel--;
     }
 /** Called from the search driver to make a move, saving information needed to 
  * unmake the move later.
@@ -158,8 +150,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     public void Make_Move(commonMove m)
     {   ManhattanMovespec mm = (ManhattanMovespec)m;
         board.RobotExecute(mm);
-        boardSearchLevel++;
-    }
+     }
     
 	public void prepareForDescent(UCTMoveSearcher from)
 	{
@@ -180,7 +171,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {	
+        {	setInhibitions();
             CommonMoveStack all = board.GetListOfMoves(false);
             return all;
         }
@@ -258,63 +249,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
-    public commonMove DoAlphaBetaFullMove()
-    {
-           ManhattanMovespec move = null;
-           try
-           {
-          	
-               // it's important that the robot randomize the first few moves a little bit.
-               int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
-               boardSearchLevel = 0;
-
-               int depth = MAX_DEPTH;	// search depth
-               double dif = 0.0;		// stop randomizing if the value drops this much
-               // if the "dif" and "randomn" arguments to Find_Static_Best_Move
-               // are both > 0, then alpha-beta will be disabled to avoid randomly
-               // picking moves whose value is uncertain due to cutoffs.  This makes
-               // the search MUCH slower so depth ought to be limited
-               // if ((randomn>0)&&(dif>0.0)) { depth--; }
-               // for games such as pushfight, where there are no "fools mate" type situations
-               // the best solution is to use dif=0.0;  For games with fools mates,
-               // set dif so the really bad choices will be avoided
-               Search_Driver search_state = Setup_For_Search(depth, false);
-               search_state.save_all_variations = SAVE_TREE;
-               search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-               search_state.verbose = verbose;
-               search_state.allow_killer = KILLER;
-               search_state.allow_best_killer = false;
-               search_state.save_top_digest = true;	// always on as a background check
-               search_state.save_digest=false;	// debugging only
-               search_state.check_duplicate_digests = false; 	// debugging only
-
-              if (move == null)
-               {	// randomn takes the a random element among the first N
-               	// to provide variability.  The second parameter is how
-               	// large a drop in the expectation to accept.  For pushfight this
-               	// doesn't really matter, but some games have disasterous
-               	// opening moves that we wouldn't want to choose randomly
-                   move = (ManhattanMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-               }
-           }
-           finally
-           {
-               Accumulate_Search_Summary();
-               Finish_Search_In_Progress();
-           }
-
-           if (move != null)
-           {
-               if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-               // normal exit with a move
-               return (move);
-           }
-
-           continuous = false;
-           // abnormal exit
-           return (null);
-       }
-
+ 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
@@ -339,15 +274,17 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
          case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
-        case SMARTBOT_LEVEL:
-        	UCT_WIN_LOSS = false;
-			//$FALL-THROUGH$
-		case DUMBOT_LEVEL:
+ 		case DUMBOT_LEVEL:
+			UCT_WIN_LOSS = true;
            	MONTEBOT=true;
-           	MAX_DEPTH = DUMBOT_DEPTH;
+         	break;
+       case SMARTBOT_LEVEL:
+  			//$FALL-THROUGH$
+			UCT_WIN_LOSS = false;
+           	MONTEBOT=true;
          	break;
         	
-        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
+        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true;  break;
         }
     }
 
@@ -399,7 +336,6 @@ public void PrepareToMove(int playerIndex)
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	boardSearchLevel = 1;
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm
@@ -430,7 +366,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = UCT_WIN_LOSS ? 9999 : 1000;		
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
@@ -493,18 +429,111 @@ public void PrepareToMove(int playerIndex)
 	//}
 	return(sc);
  }
-/**
- * for a multiplayer game, it would be something like this
- * 
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 1 : 0;
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return((max-omax));
- }
- */
+
+ /**
+  * the theory behind "inhibitions" is to prevent the robot making
+  * really silly moves in its random lookahead.  
+  */
+boolean nomines = false;
+boolean noairstrikes = false;
+boolean nobombs = false;
+boolean noplutonium = false;
+boolean nouranium = false;
+boolean nosouthafrica = false;
+boolean noisrael = false;
+boolean nopakistan = false;
+boolean noaustralia = false;
+boolean noindia = false;
+boolean norussia = false;
+boolean nochina = false;
+boolean nogermany = false;
+boolean norepair = false;
+boolean nobritain = false;
+public void setInhibitions()
+{	PlayerBoard pb = board.getCurrentPlayerBoard();
+	nomines = noaustralia = (pb.yellowcakeDisplay.height()>20);	// inhibit mine activity if the yellowcake supply is good
+	nobombs = (pb.nDesignsAvailable()>5);	
+	noplutonium = pb.nPlutonium>=7;
+	nouranium = pb.nUranium>=7;
+	nosouthafrica = !pb.hasBuiltBombs();
+	noisrael = nopakistan = !pb.hasBuildBombMoves();
+	noairstrikes = true;
+	noindia = !pb.hasOtherUniversities();
+	norussia = !pb.hasOtherOpenBuildings();
+	nochina = !pb.hasPlacedWorkers();
+	nogermany = !pb.hasRetrieveSorEMoves();
+	norepair = !pb.hasRepairMoves();
+	nobritain = norepair && pb.nFighters>=10;
+	if(!noaustralia)
+	{
+		noaustralia = !pb.hasOtherMines();
+	}
+	if(pb.nFighters+pb.nBombers>0)
+	{
+		for(PlayerBoard op : board.pbs)
+		{	// find a potential victim
+			if(pb!=op && op.nFighters<=pb.nFighters) { noairstrikes = false; break; }
+		}
+	}
+}
+public void setDefaultInhibitions(ManhattanCell c)
+{
+	switch(c.rackLocation())
+	{
+	case MakePlutonium:
+		c.inhibited = noplutonium;
+		break;
+	case MakeUranium:
+		c.inhibited = nouranium;
+		break;
+	case AirStrike:
+		c.inhibited = noairstrikes;
+		break;
+	case DesignBomb:
+		c.inhibited = nobombs;
+		break;
+	case Mine:
+		c.inhibited = nomines;
+		break;
+	case Repair:
+		c.inhibited = norepair;
+		break;
+	case Building:
+		if(c.height()>0)
+		{
+			ManhattanChip ch = c.chipAtIndex(0);
+			if((nomines && ch.isAMine())
+					|| (noplutonium && ch.isAReactor())
+					|| (ch.type==Type.Nations
+					    &&
+					    (((ch==ManhattanChip.UK) && nobritain)
+					    		|| ((ch==ManhattanChip.UK) && nobritain)
+					    		|| ((ch==ManhattanChip.GERMANY) && nogermany)
+					    		|| ((ch==ManhattanChip.CHINA) && nochina)
+					    		|| ((ch==ManhattanChip.USSR) && norussia)
+					    		|| ((ch==ManhattanChip.INDIA) && noindia)
+					    		|| ((ch==ManhattanChip.PAKISTAN) && nopakistan)
+					    		|| ((ch==ManhattanChip.ISRAEL) && noisrael)
+					    		|| ((ch==ManhattanChip.SOUTH_AFRICA) && nosouthafrica)
+					    		|| ((ch==ManhattanChip.AUSTRALIA) && noaustralia)))
+					) 
+				{ c.inhibited = true; } 
+		}
+		break;
+	default: break;
+	}
+}
+public void setInhibitions(ManhattanCell c) 
+{
+	switch(Strategy)
+	{
+	case SMARTBOT_LEVEL:
+	case DUMBOT_LEVEL:
+	case WEAKBOT_LEVEL:
+		setDefaultInhibitions(c);
+		break;
+	default: G.Error("Not expecting strategy %s",Strategy);
+	}
+	
+	}
  }

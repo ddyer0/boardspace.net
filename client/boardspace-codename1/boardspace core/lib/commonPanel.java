@@ -133,11 +133,11 @@ public class commonPanel extends FullscreenPanel
         {	int h = inHeight - localChatHeight;
         	int y = inY+localChatHeight;
         	can.resetBounds();
-        	can.setFrameBounds(inX, y, inWidth,h);
+        	can.setFrameBounds(inX+frameSize, y+frameSize, inWidth-2*frameSize,h-2*frameSize);
             
         }
     }
-
+    int frameSize = 00;
     
     
     public void CreateChat(boolean framed)

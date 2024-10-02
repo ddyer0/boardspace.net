@@ -185,8 +185,10 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 		clientRevisionLevel = b.clientRevisionLevel;
 		if(colorMap!=null && (colorMap.length!=b.colorMap.length)) { colorMap = new int[b.colorMap.length]; }
 		if(win.length!=b.win.length) { win = new boolean[b.win.length]; }
-		doInit(b.gametype,b.randomKey);
+		// copy the color map before the call to doInit, so if the initialization
+		// for players depends on the color in some way (as in manhattan) the color map is correct.
 		AR.copy(colorMap,b.colorMap);
+		doInit(b.gametype,b.randomKey);
 		AR.copy(win,b.win);
 		whoseTurn = b.whoseTurn;
 		moveNumber = b.moveNumber;

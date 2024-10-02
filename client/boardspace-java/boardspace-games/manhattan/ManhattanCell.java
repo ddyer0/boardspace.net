@@ -58,6 +58,7 @@ public class ManhattanCell
 	public Cost cost = Cost.None;
 	public Benefit benefit = Benefit.None;
 	public int selectedIndex = -1;
+	public boolean inhibited = false;
 	
 	// this is a special flag for cells partiallyVacated by "china" or espionage.
 	// the current ruling is that these buildings are unusable until the owner 
@@ -195,6 +196,7 @@ public class ManhattanCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		partiallyVacated = ot.partiallyVacated;
+		inhibited = ot.inhibited;
 		color = ot.color;
 		cash = ot.cash;
 		cost = ot.cost;
@@ -237,6 +239,7 @@ public class ManhattanCell
 	public void reInit()
 	{	super.reInit();
 		cash = 0;
+		inhibited = false;
 		partiallyVacated = false;
 		selectedIndex = -1;
 		lastPicked = lastDropped = -1;

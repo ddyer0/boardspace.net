@@ -1738,7 +1738,7 @@ graphics when using a touch screen.
         private String imageLoadString(ImageStack im)
         {	double megabytes = imageSize(im)/1e6;
         	
-        	return(" i: "+(int)megabytes);
+        	return(" I: "+(int)megabytes+"M");
         }
         public void ShowStats(Graphics gc,HitPoint hp, int x, int y)
         {	
@@ -1927,13 +1927,29 @@ graphics when using a touch screen.
         int posy = (int) (scale==null ? 0.5 : scale[1] * scaleh_d) + jy;
         int ax = x - posx;
         int ay = y - posy;
+        
+        boolean invisible = GC.isNotVisible(gc,ax,ay,scalew2,scaleh);
+        Rectangle rr = new Rectangle(ax,ay,scalew2,scaleh);
+       // if the image is completely invisible at the current pan/zoom settings,
+       // then skip all the clipping and scaling and the actual drawing.
+        if(invisible)
+        {  	GC.fillRect(gc,Color.blue,ax,ay,scalew2,scaleh);
+            if(gc.flag)
+            {
+            	gc.flag = false;
+            	GC.setColor(gc,Color.red);
+            	GC.frameRect(gc,ax-100,ay-100,scalew2+200,scaleh+200);
+            }
+        }
+       if(!invisible)
+        {
+        
         	// the scales and offsets are empirically adjusted.  This is a simpler solution than
         	// requiring the actual images to have particular size and placement of the interesting
         	// elements within the image.
         int xtrim = (scalew+imw)/(imw+1)+1;
         int ytrim = (scaleh+imh)/ (imh+1)+1;
-        Rectangle rr = new Rectangle(ax,ay,scalew2,scaleh);
-        Rectangle sh = GC.combinedClip(gc,ax+xtrim , ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2);
+        Rectangle sh = GC.combinedClip(gc,ax+xtrim , Math.max(0,ay+ytrim) , scalew2 - xtrim*2, scaleh - ytrim*2);
         //
         // this clipping ought to be unnecessary, but there seems to be a bug with
         // images that are both scaled and transparent, that the edges are not
@@ -1943,7 +1959,8 @@ graphics when using a touch screen.
         // image and the presentation won't know about the scaled copy we make.
         //
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());
-       cached.drawImage(gc, ax, ay, scalew2, scaleh);
+        
+        cached.drawImage(gc, ax, ay,scalew2 , scaleh);
         GC.setClip(gc,sh);	// reset the clipping rectangle before drawing the label
         if(text!=null)
         { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);
@@ -1955,7 +1972,7 @@ graphics when using a touch screen.
           int ty = artCenterText ? ay : (int)(y - (0.5*scaleh_d) + jy);
           GC.drawOutlinedText(gc,true,tx,ty,scalew3,scaleh,labelColor,Color.black,text);
         }
-          
+        }
         return(rr);
     }
     	return(null);

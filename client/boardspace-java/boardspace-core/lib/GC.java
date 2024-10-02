@@ -1104,5 +1104,18 @@ public class GC {
 	public static void setOpacity(Graphics gc,double op)
 	{	if(gc!=null) { gc.setOpactity(op); }
 	}
-
+	 /**
+	  * return true if no part of the rectangle is visible.  This is intended to be used
+	  * when drawing images, to determine if the image will be visible before any loading,
+	  * reloading, or elaborate scaling is invoked.	 If the gc is null, all rectangles are invisible.
+	  * @param x
+	  * @param y
+	  * @param w
+	  * @param h
+	  * @return
+	  */
+	 public static boolean isNotVisible(Graphics gc,int x,int y,int w,int h)
+	 {	if(gc==null) { return false; }
+	 	return gc.isNotVisible(x,y,w,h);
+	 }
 }

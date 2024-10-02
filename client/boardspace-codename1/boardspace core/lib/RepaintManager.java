@@ -1200,7 +1200,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	     	case Deferred_Unbuffered:
 	     	case Deferred:
 		    	 {
-		    	 Graphics g = Graphics.create(client.getGraphics());
+		    	 Graphics g = Graphics.create(client.getGraphics(),client);
 		       	 redrawCanvas(g,false);
 		    	 }
 		    	 break;

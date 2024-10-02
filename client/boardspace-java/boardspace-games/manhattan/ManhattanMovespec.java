@@ -299,12 +299,12 @@ public class ManhattanMovespec
     	}
     	return(m);
     }
-    private Text postIcon(commonCanvas v,Object... msg)
+    private Text postIcon(commonCanvas v,ManhattanChip ch,Object... msg)
     {	double chipScale[] = {1.5,1.3,-0.0,-0.2};
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
-    		m = TextChunk.join(m,TextGlyph.create("xx", chip, v,chipScale));
+    		m = TextChunk.join(m,TextGlyph.create("","xx", ch, v,chipScale));
     	}
     	return(m);
     }
@@ -322,8 +322,15 @@ public class ManhattanMovespec
         	setLineBreak(true);
             return TextChunk.create("");
         case MOVE_FROM_TO:
+        	{
+        	Text ic = icon(v," ");
+        	Text dc = dropText(v);
+        	return TextChunk.join(ic,dc);
+        	}
         case MOVE_ATTACK:
-        	return icon(v,from_color.name()+" "+dest.name());
+        	Text from =  icon(v," attack ");
+        	Text to = dropText(v);
+        	return TextChunk.join(from,to);
         	
         case MOVE_SELECT:
         	if(cell!=null)
@@ -331,7 +338,7 @@ public class ManhattanMovespec
         		switch(cell.type)
         		{
         		case BuildingMarket:
-        			return postIcon(v,"");
+        			return postIcon(v,chip,"");
         		default: break;
         		}
         	}
@@ -339,57 +346,7 @@ public class ManhattanMovespec
 
         case MOVE_REPAIR:
         case MOVE_DROP:
-        	commonMove n = next;
-        	if(n!=null && n.op==MOVE_PICK) { return TextChunk.create(""); }
-        	if(cell!=null)
-        	{
-        	switch(cell.type)
-        	{     
-        	case Bomb:
-        		return postIcon(v," build  ");
-        	case BuildingMarket:
-        		return postIcon(v," buy  ");
-        	case Building:
-        		return postIcon(v," use  ");
-        	case Worker:
-        		switch(cell.rackLocation())
-        		{
-              	case BuyWithWorker:
-              	case BuyWithEngineer:
-              		return postIcon(v," buy ");
-        		case MakeUranium:
-        			chip = ManhattanChip.Uranium;
-        			return postIcon(v," refine ");
-        			
-        		case MakePlutonium:
-        			chip = ManhattanChip.Plutonium;
-        			return postIcon(v," refine ");
-        		case Mine:
-        			chip = ManhattanChip.Yellowcake;
-        			return postIcon(v," mine ");
-        		case DesignBomb:
-        			return postIcon(v," design bombs ");
-        		case Espionage:
-        			return postIcon(v," espionage ");
-        		case MakeMoney:
-        			return postIcon(v," get money ");
-        		case MakeFighter:
-        			return postIcon(v," buy fighters ");
-        		case MakeBomber:
-        			return postIcon(v," buy bombers ");
-        		case Repair:
-        			return postIcon(v," repair ");
-        		case AirStrike:
-        			return postIcon(v," airstrike ");
-        		case University:
-        			return postIcon(v,"");
-        		default: break;
-        		}
-        		break;
-        	default:
-        		break;
-        	}}
-        	return icon(v,to_color.name()+" "+dest.name()+" "+to_row);
+        	return dropText(v);
         	
         case MOVE_PICK:
             return icon(v," ");
@@ -405,7 +362,77 @@ public class ManhattanMovespec
 
         }
     }
+    public Text dropText(commonCanvas v)
+    {
+       	commonMove n = next;
+    	if(n!=null && n.op==MOVE_PICK) { return TextChunk.create(""); }
+    	ManhattanChip ch = null;
+    	if(cell!=null)
+    	{
+    	switch(cell.type)
+    	{     
+    	case Fighter:
+    		ch = ManhattanChip.getFighter(to_color);
+    		return postIcon(v,ch,"");
+    	case Bomber:
+    		ch = ManhattanChip.getBomber(to_color);
+    		return postIcon(v,ch,"");
+    	case Bomb:
+    		boolean done = next!=null && next.op==MOVE_DONE;
+    		if(done)
+    			{ setLineBreak(true); 
+    			  ch=cell.chipAtIndex(0); 
+    			  return postIcon(v,ch,"bomb");
+    			}
+    		return TextChunk.create("");
+    	case BuildingMarket:
+    		ch = cell.chipAtIndex(0);
+    		return postIcon(v,ch," buy  ");
+    	case Building:
+    		ch = cell.chipAtIndex(0);
+    		return postIcon(v,ch," use  ");
+    	case Worker:
+    		switch(cell.rackLocation())
+    		{
+          	case BuyWithWorker:
+          	case BuyWithEngineer:
+          		ch = cell.chipAtIndex(0);
+          		return postIcon(v,ch," buy ");
+    		case MakeUranium:
+    			ch = ManhattanChip.Uranium;
+    			return postIcon(v,ch," refine ");
+    			
+    		case MakePlutonium:
+    			ch = ManhattanChip.Plutonium;
+    			return postIcon(v,ch," refine ");
+    		case Mine:
+    			ch = ManhattanChip.Yellowcake;
+    			return postIcon(v,ch," mine ");
+    		case DesignBomb:
+    			return postIcon(v,ch," design bombs ");
+    		case Espionage:
+    			return postIcon(v,ch," espionage ");
+    		case MakeMoney:
+    			return postIcon(v,ch," get money ");
+    		case MakeFighter:
+    			return postIcon(v,ch," buy fighters ");
+    		case MakeBomber:
+    			return postIcon(v,ch," buy bombers ");
+    		case Repair:
+     			return postIcon(v,ch," repair ");
+    		case AirStrike:
+    			return postIcon(v,ch," airstrike ");
+    		case University:
+    			return postIcon(v,ch,"university");
+    		default: break;
+    		}
+    		break;
+    	default:
+    		break;
+    	}}
+    	return icon(v,to_color.name()+" "+dest.name()+" "+to_row);
 
+    }
     /** construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and only secondarily human readable */
     public String moveString()

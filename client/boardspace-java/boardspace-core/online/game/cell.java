@@ -958,7 +958,7 @@ public abstract class cell<FINALTYPE
      */
 	public boolean drawChip(Graphics gc,exCanvas drawOn,chip<?> piece,HitPoint highlight,int SQUARESIZE,int e_x,int e_y,String thislabel)
 	{ 
-      return(drawChip(gc,piece==null?null:piece.getAltDisplayChip(this),drawOn,highlight,SQUARESIZE,1.0,e_x,e_y,thislabel));
+      return(drawChip(gc,piece==null?null:piece.getAltDisplayChip(this).getAlternateSizeChip(SQUARESIZE),drawOn,highlight,SQUARESIZE,1.0,e_x,e_y,thislabel));
   	}
 		
 	/**

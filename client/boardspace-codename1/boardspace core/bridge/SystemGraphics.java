@@ -22,6 +22,8 @@ import com.codename1.ui.Font;
 import com.codename1.ui.RGBImage;
 import com.codename1.ui.Stroke;
 import com.codename1.ui.geom.GeneralPath;
+import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
 
@@ -74,16 +76,27 @@ public abstract class SystemGraphics {
 	}
 
 	public SystemGraphics() {}
-
-	public static Graphics create(com.codename1.ui.Graphics g)
+	public abstract void setActualSize(int w,int h);
+	protected int actualX = 0;
+	protected int actualY = 0;
+	public static Graphics create(com.codename1.ui.Graphics g,int x,int y,int w,int h)
 	{	// a window in the process of being destroyed can return null from getGraphics()
 		if(g==null) { return(null); }
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gn = new Graphics();
 		gn.graphics = g;
+		gn.setActualSize(w,h);
+		gn.actualX = x;
+		gn.actualY = y;
 		return(gn);
 	}
-	
+	public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) {
+		return Graphics.create(g,g.getTranslateX(),g.getTranslateY(),canvas.getWidth(),canvas.getHeight());
+	}
+	public static Graphics create(com.codename1.ui.Graphics g, com.codename1.ui.Component canvas) {
+		return Graphics.create(g,g.getTranslateX(),g.getTranslateY(),canvas.getWidth(),canvas.getHeight());
+	}
+
 	public void setColor(Color c)
     {	if(logging) { Log.addLog("setColor"); }
     	graphics.setColor(c.getRGB());
@@ -340,4 +353,31 @@ public abstract class SystemGraphics {
     {
     	// there is no corresponding operation
     }
+    private float from[] = null;
+    private float to[] =null;
+    private Point pt = null;
+    @SuppressWarnings("deprecation")
+	public Point transform(int x,int y)
+    {	if(from==null) { from = new float[3]; }
+    	if(to==null) { to = new float[3]; }
+    	if(pt==null) { pt = new Point(0,0); }
+    	int tx = graphics.getTranslateX()-actualX;
+    	int ty = graphics.getTranslateY()-actualY;
+    	from[0] = x+tx;
+    	from[1] = y+ty;
+    	graphics.getTransform().transformPoint(from,to);
+    	pt.setX((int)to[0]);
+    	pt.setY((int)to[1]);
+    	return pt;
+    }
+
+	public static Point2D newPoint2D(Point2D ptSrc)
+	{
+		return new Point2D(0,0);
+	}
+	public static void setLocation(Point2D p,double x,double y)
+	{
+		p.setX(x);
+		p.setY(y);
+	}
 }

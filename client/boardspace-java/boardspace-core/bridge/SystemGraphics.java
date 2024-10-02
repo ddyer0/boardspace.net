@@ -20,12 +20,15 @@ import static java.lang.Math.atan2;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import lib.G;
@@ -37,6 +40,7 @@ public abstract class SystemGraphics
 {
 	public static boolean logging = false;
 	protected java.awt.Graphics2D graphics;
+	
 	public java.awt.Graphics2D getGraphics() { return(graphics); }
 
 	/**
@@ -78,25 +82,32 @@ public abstract class SystemGraphics
 	// constructors
 	protected SystemGraphics() {}
 	protected SystemGraphics(java.awt.Graphics g) { graphics = (Graphics2D)g; }
-	
-	public Graphics create()
+
+	private Graphics create()
 	{ 	if(logging) { Log.addLog("clone graphics"); }
 		Graphics n = new Graphics();
 		n.graphics = (Graphics2D)(graphics.create());
 		return(n);
 	}
+	
 	public void setStroke(BasicStroke e)
 	{	if(logging) { Log.addLog("setStroke"); }
 		graphics.setStroke(e);
 	}
 	
-	public static Graphics create(java.awt.Graphics g) 
+	public static Graphics create(java.awt.Graphics g,int actualX,int actualY,int clipw,int cliph) 
 	{	if(g==null) { return(null); }
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
 		gt.graphics = (Graphics2D)g;	
+		gt.setActualSize(clipw,cliph);
 		return(gt);
 	}
+	
+	public static Graphics create(java.awt.Graphics graphics, Component client) {
+		return create(graphics,0,0,client.getWidth(),client.getHeight());
+	}
+
     /**
      * set the color if gc is not null
      * @param gc
@@ -127,7 +138,7 @@ public abstract class SystemGraphics
 		 graphics.rotate(ang);
 		 if(logging) { Log.finishEvent(); }
 	 }
-   
+
 	public void setRotation(double ang,int cx,int cy)
 	 {	if(logging) { Log.appendNewLog("rotate ");Log.appendLog(ang);  }
 		 graphics.rotate(ang,cx,cy);
@@ -376,4 +387,37 @@ public abstract class SystemGraphics
     public void dispose()
     {	if(graphics!=null) { graphics.dispose(); }
     }	
+    private Point from = null;
+    private Point to =null;
+    public Point transform(int x,int y)
+    {	if(from==null) { from = new Point(); }
+    	if(to==null) { to = new Point(); }
+    	from.setLocation(x,y);
+    	graphics.getTransform().transform(from,to);
+    	return to;
+    }
+    /**
+     * these are service methods for lib.AffineTransform, hidden here so the differences between codename1 and java
+     * are papered over
+     * @param ptSrc
+     * @return
+     */
+	public static Point2D newPoint2D(Point2D ptSrc)
+	{
+		if (ptSrc instanceof Point2D.Double) {
+            return new Point2D.Double();
+        } else {
+            return new Point2D.Float();
+        }
+	}
+	  /**
+     * these are service methods for lib.AffineTransform, hidden here so the differences between codename1 and java
+     * are papered over
+     * @param ptSrc
+     * @return
+     */
+	public static void setLocation(Point2D p,double x,double y)
+	{
+		p.setLocation(x,y);
+	}
 }

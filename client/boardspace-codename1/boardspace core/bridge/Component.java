@@ -152,7 +152,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 		if(getHeight()<=0) { G.p1("too small "+getHeight()+this);}
 		if(canRotate)
 		{
-		lib.Graphics g1 = lib.Graphics.create(g);
+		lib.Graphics g1 = lib.Graphics.create(g,this);
 			boolean rotated = MasterForm.rotateCanvas(this, g1 );
 		super.paint(g);
 		if(rotated) { MasterForm.unrotateCanvas(this,g1); }

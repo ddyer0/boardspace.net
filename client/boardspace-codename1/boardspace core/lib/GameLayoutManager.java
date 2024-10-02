@@ -948,14 +948,19 @@ public class GameLayoutManager implements UniversalConstants
 		}
 		{
 		int topabove = top+playerHM;
-		int heightabove = ymid-top-playerHM;
-		int heightbelow = ybot-ymid-playerWM;
-		int topbelow = ymid+playerWM;
+		int heightabove = ymid-playerWM/2-topabove;
+		int topbelow = ymid+(playerWM-playerWM/2);
+		int heightbelow = (ybot-playerHM)-topbelow;
 		int xright = right-playerHM;
-	   addToSpare(left,topabove,playerHM,heightabove);
+	    if(heightabove>0) 
+	    	{ addToSpare(left,topabove,playerHM,heightabove); 
+	    	  addToSpare(xright,topabove,playerHM,heightabove);
+	    	}
+	    if(heightbelow>0) 
+	    	{ 
 	   addToSpare(left,topbelow,playerHM,heightbelow);
-	   addToSpare(xright,topabove,playerHM,heightabove);
 	   addToSpare(xright,topbelow,playerHM,heightbelow);
+	    	}
 		}
 	
 		right -= playerHM;

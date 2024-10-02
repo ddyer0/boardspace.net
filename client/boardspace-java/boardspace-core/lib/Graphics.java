@@ -17,9 +17,12 @@
 package lib;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 
 import bridge.Polygon;
 import bridge.SystemGraphics;
@@ -42,7 +45,15 @@ public class Graphics extends SystemGraphics
 	public void setTextColor(Color newColor) { txtColor=newColor; }
 	public void setNeutralFrameColor(Color newColor) { ntrColor=newColor; }
 	public boolean _rotated_ = false;
-	
+	protected double rotation = 0.0;
+	protected int actualWidth = 0;
+	protected int actualHeight = 0;
+	public boolean flag = false;
+	public int actualWidth() { return actualWidth; }
+	public int actualHeight() { return actualHeight; }
+	public double getRotation() { return rotation; }
+	public void setActualSize(int w,int h) { actualWidth = w; actualHeight = h; }
+   
 	public void fillRoundRect(int left, int top, int width, int height, int rx, int ry) 
 	{	if(logging) { Log.appendNewLog("fillRoundRect "); Log.appendLog(width); Log.appendLog("x");Log.appendLog(height); }
 		graphics.fillRoundRect(left, top, width, height, rx, ry);
@@ -76,6 +87,7 @@ public class Graphics extends SystemGraphics
 		{ Log.appendNewLog("translate ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
 		}
 		graphics.translate(inX, inY);
+		shadow.translate(inX,inY);
 		if(logging) { Log.finishEvent(); }
 	}
 
@@ -122,6 +134,23 @@ public class Graphics extends SystemGraphics
 		{
 		setRotatedContext(G.centerX(rect),G.centerY(rect),select,rotation);
 		}
+	}
+	public void setRotation(double r)
+	{
+		rotation = r;
+		super.setRotation(r);
+		shadow.setRotation(r);
+	}
+	public void setRotation(double ang,int cx,int cy)
+	{	rotation = ang;
+		super.setRotation(ang,cx,cy);
+		shadow.setRotation(ang,cx,cy);
+	}
+	public void resetAffine()
+	{
+		rotation = 0;
+		super.resetAffine();
+		shadow.resetAffine();
 	}
 	public void setRotatedContext(int cx,int cy,HitPoint select,double rotation)
 	{
@@ -403,5 +432,93 @@ public class Graphics extends SystemGraphics
 	        setColor(cCol);
 	        fillOval(X - sz8, Y - sz8, sz4, sz4);
 	    }
+	 public static boolean preferStd = false; 
+	 /**
+	  * return true if no part of the rectangle is visible.  This is intended to be used
+	  * when drawing images, to determine if the image will be visible before any loading,
+	  * reloading, or elaborate scaling is invoked.
+	  * @param x
+	  * @param y
+	  * @param w
+	  * @param h
+	  * @return
+	  */
+	 public boolean isNotVisible(int x,int y,int w,int h)
+	 {	
+		 boolean alt = isNotVisibleAlt(x,y,w,h);
+		 if(G.debug())
+		 {
+		 boolean std = isNotVisibleStd(x,y,w,h);
+		 if(std!=alt)
+		 {
+			 G.print("different views ",std," ",alt," ",x," ",y," ",w,"x",h," std ",preferStd);
+			 flag = true;
+			 return preferStd ? std : alt;
+		 }}
+		 return alt;
+	 }
+	 public boolean isNotVisibleStd(int x,int y,int w,int h)
+	  {	 
+		 int aw = actualWidth();
+		 int ah = actualHeight();
+		 int al = 0;
+		 int at = 0;
+		 /* include the current clipping region in the logic
+		 Rectangle clip = graphics.getClipBounds();
+		 if(clip!=null)
+		 {
+			 at = G.Width(clip);
+			 ah = G.Height(clip);
+			 al = G.Left(clip);
+			 at = G.Top(clip);
+		 }
+		 */
+		 Point dest = transform(x,y);
+		 double left = dest.getX();
+		 double top = dest.getY();
+		 Point dest1 = transform(x+w,y+h);
+		 double right = dest1.getX();
+		 double bottom = dest1.getY();
+		 if(right<left) { double d = left; left=right; right=d; }
+		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
+		 boolean invisible = ( left>aw
+				 			|| right<al
+				 			|| bottom<at
+				 			|| top>ah);	 
+		 return invisible;		  
+	  }
+
+	 AffineTransform shadow = new AffineTransform();
+	 public boolean isNotVisibleAlt(int x,int y,int w,int h)
+	  {
+		 int aw = actualWidth();
+		 int ah = actualHeight();
+		 int al = 0;
+		 int at = 0;
+		 /* include the current clipping region in the logic
+		 Rectangle clip = graphics.getClipBounds();
+		 if(clip!=null)
+		 {
+			 at = G.Width(clip);
+			 ah = G.Height(clip);
+			 al = G.Left(clip);
+			 at = G.Top(clip);
+		 }
+		 */
+		 Point2D dest = shadow.transform(x,y);
+		 double left = dest.getX();
+		 double top = dest.getY();
+		 Point2D dest1 = shadow.transform(x+w,y+h);
+		 double right = dest1.getX();
+		 double bottom = dest1.getY();
+		 if(right<left) { double d = left; left=right; right=d; }
+		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
+		 boolean invisible = ( left>aw
+				 			|| right<al
+				 			|| bottom<at
+				 			|| top>ah);	 
+		 return invisible;		  
+	  }
+
 
 }

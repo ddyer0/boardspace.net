@@ -91,7 +91,7 @@ public class FullscreenPanel extends Panel implements MenuParentInterface,NullLa
 		super.paint(g.getGraphics());
 	}
 	public void paint(java.awt.Graphics g)
-	{	paint(Graphics.create(g));
+	{	paint(Graphics.create(g,this));
 	}
 	public void paint(Graphics g)
 	{

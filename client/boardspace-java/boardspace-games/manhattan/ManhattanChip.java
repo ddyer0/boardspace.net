@@ -17,15 +17,18 @@
 package manhattan;
 
 import lib.Digestable;
+import lib.DrawableImage;
 import lib.DrawableImageStack;
 import lib.G;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
 import lib.exCanvas;
 import online.game.chip;
+import bridge.SystemImage.ScaleType;
 import common.CommonConfig;
 class ChipStack extends OStack<ManhattanChip> implements Digestable
 {
@@ -68,6 +71,67 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	public boolean isAMine() { return isAMine; }
 	private boolean isAUniversity;
 	public boolean isAUniversity() { return isAUniversity; }
+	private boolean isAReactor = false;
+	public boolean isAReactor() { return isAReactor; }
+	private boolean isAnEnricher = false;
+	public boolean isAnEnricher() { return isAnEnricher; }
+	public ManhattanChip lores = null;
+	public ManhattanChip hires = null;
+	
+	public ManhattanChip(Image im, ManhattanChip ho)
+	{
+		hires = ho;
+		image = im;
+		scale = ho.scale;
+		file = ho.file;
+		color = ho.color;
+		type = ho.type;
+	}
+	public DrawableImage<?> getAltSizeChip(exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy)
+	{	/*
+		if(canvas!=null)
+		{
+			int w = canvas.getWidth();
+			int h = canvas.getHeight();
+			int px = canvas.getSX();
+			int py = canvas.getSY();
+			int x = cx-px;
+			int y = cy-py;
+			if((x+SQUARESIZE*2<0)
+					|| x-SQUARESIZE*2>w
+					|| y+SQUARESIZE*2<0
+					|| y-SQUARESIZE*2>h)
+			{	//if(this==ManhattanChip.Yellowcake)
+				{ //return ManhattanChip.backgroundReviewTile; 			
+				}
+			}
+		}*/
+		if(image!=null
+				&& image.isUnloadable() 
+				&& lores==null 
+				&& SQUARESIZE<200 
+				&& image.getWidth()>400)
+		{	// this is an ad-hoc heuristic for the manhattan project's artwork.  
+			// all the images are unloadable, and are relatively huge.  If asking
+			// for a scaled image that's much smaller than the original image, create
+			// a new half-scale copy of the big image.  This reduces the image load 
+			// by 75% for most cases, but still allows a giant card to be displayed
+			// when needed.   The other half of the problem is that when zoomed up,
+			// all the images need the hires version.  This is addressed by some 
+			// logic in the canvas which skips all the image processing for images
+			// that aren't visible.
+			Image smaller = image.getScaledInstance(image.getWidth()/2,image.getHeight()/2,ScaleType.defaultScale);
+			ManhattanChip newchip = new ManhattanChip(smaller,this);
+			image.unload();
+			lores = newchip;
+			//G.print("scalable ",this," ",image," ",image==null ? "" : image.isUnloaded()," ",SQUARESIZE);
+		}
+		if((lores!=null) && SQUARESIZE<200)
+		{
+			return lores;
+		}
+		return this;
+	}
 	
 	// nWorkersReqired is used when pricing the university costs for india
 	int nWorkersRequired = 0;
@@ -165,7 +229,12 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		case Scientist3:
 			isAUniversity = true;
 			break;
-			
+		case Plutonium:
+			isAReactor = true;
+			break;
+		case Uranium:
+			isAnEnricher = true;
+			break;
 		default: break;
 			
 		}
@@ -364,7 +433,11 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			 new ManhattanChip("yellow-bomber-nomask",Type.Bomber,defaultScale,MColor.Yellow),
 			 new ManhattanChip("purple-bomber-nomask",Type.Bomber,defaultScale,MColor.Purple),
 	};
-
+	public static ManhattanChip getBomber(MColor color)
+	{
+		for(ManhattanChip ch : playerBombers) { if(ch.color==color) { return ch; }}
+		return null;
+	}
 	static ManhattanChip playerFighters[] = {
 		new ManhattanChip("red-fighter-nomask",Type.Fighter,defaultScale,MColor.Red),
 		new ManhattanChip("green-fighter-nomask",Type.Fighter,defaultScale,MColor.Green),
@@ -372,7 +445,12 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		new ManhattanChip("yellow-fighter-nomask",Type.Fighter,defaultScale,MColor.Yellow),
 		new ManhattanChip("purple-fighter-nomask",Type.Fighter,defaultScale,MColor.Purple),
 		};
-	
+	public static ManhattanChip getFighter(MColor color)
+	{
+		for(ManhattanChip ch : playerFighters) { if(ch.color==color) { return ch; }}
+		return null;
+	}
+
 	public static ManhattanChip BuildingBackA = new ManhattanChip("buildingbacka",Type.Building);
 	public static ManhattanChip BuildingBackB = new ManhattanChip("buildingbackb",Type.Building);
 	public static ManhattanChip BombBack = new ManhattanChip("bombback",Type.Bomb);
@@ -487,37 +565,35 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			new ManhattanChip("bomb28",Type.Bomb,Cost.Scientist2AndEngineer4And7Plutonium,Benefit.P18T32L8),
 			new ManhattanChip("bomb29",Type.Bomb,Cost.Scientist2AndEngineer4And7Plutonium,Benefit.P20T34L9),
 	};
-	
+	static ManhattanChip USA = new ManhattanChip("nations-01",Type.Nations,Cost.AnyWorker,Benefit.Nations_USA);
+	static ManhattanChip UK = new ManhattanChip("nations-02",Type.Nations,Cost.AnyWorker,Benefit.Nations_UK);
+	static ManhattanChip USSR = new ManhattanChip("nations-03",Type.Nations,Cost.Any2Workers,Benefit.Nations_USSR);
+	static ManhattanChip GERMANY = new ManhattanChip("nations-04",Type.Nations,Cost.Any2WorkersAndRetrieve,Benefit.Nations_GERMANY);
+	static ManhattanChip JAPAN = new ManhattanChip("nations-05",Type.Nations,Cost.Any2Workers,Benefit.Nations_JAPAN);
+	static ManhattanChip CHINA = new ManhattanChip("nations-06",Type.Nations,Cost.AnyWorker,Benefit.Nations_CHINA);
+	static ManhattanChip FRANCE = new ManhattanChip("nations-07",Type.Nations,Cost.ScientistAndBombDesign,Benefit.Nations_FRANCE);
+	static ManhattanChip SOUTH_AFRICA = new ManhattanChip("nations2-07",Type.Nations,Cost.Engineer,Benefit.Nations_SOUTH_AFRICA);
+	static ManhattanChip AUSTRALIA = new ManhattanChip("nations2-01",Type.Nations,Cost.Any3Workers,Benefit.Nations_AUSTRALIA);
+	static ManhattanChip BRAZIL = new ManhattanChip("nations2-02",Type.Nations,Cost.AnyWorker,Benefit.Nations_BRAZIL);
+	static ManhattanChip INDIA = new ManhattanChip("nations2-03",Type.Nations,Cost.Any2WorkersAndCash,Benefit.Nations_INDIA);
+	static ManhattanChip ISRAEL = new ManhattanChip("nations2-04",Type.Nations,Cost.AnyWorker,Benefit.Nations_ISRAEL);
+	static ManhattanChip NORTH_KOREA = new ManhattanChip("nations2-05",Type.Nations,Cost.ScientistAnd1Yellowcake,Benefit.Nations_NORTH_KOREA);
+	static ManhattanChip PAKISTAN = new ManhattanChip("nations2-06",Type.Nations,Cost.AnyWorkerAndBomb,Benefit.Nations_PAKISTAN);
 	static ManhattanChip Nations[] = {
-			new ManhattanChip("nations-01",Type.Nations,Cost.AnyWorker,Benefit.Nations_USA),		// usa
-			new ManhattanChip("nations-02",Type.Nations,Cost.AnyWorker,Benefit.Nations_UK),		// britain
-			new ManhattanChip("nations-03",Type.Nations,Cost.Any2Workers,Benefit.Nations_USSR),	// soviet union
-			new ManhattanChip("nations-04",Type.Nations,Cost.Any2WorkersAndRetrieve,Benefit.Nations_GERMANY),	// germany
-			new ManhattanChip("nations-05",Type.Nations,Cost.Any2Workers,Benefit.Nations_JAPAN),	// japan
-
-			// tested 9/14/2024
-			new ManhattanChip("nations-06",Type.Nations,Cost.AnyWorker,Benefit.Nations_CHINA),		// china
-
-			// tested 9/14/2024
-			new ManhattanChip("nations-07",Type.Nations,Cost.ScientistAndBombDesign,Benefit.Nations_FRANCE),		// france
-
-			// tested 9/14/2024
-			new ManhattanChip("nations2-01",Type.Nations,Cost.Any3Workers,Benefit.Nations_AUSTRALIA),	// australia
-
-			new ManhattanChip("nations2-02",Type.Nations,Cost.AnyWorker,Benefit.Nations_BRAZIL),	// brazil
-
-			// tested 9/14/2024
-			new ManhattanChip("nations2-03",Type.Nations,Cost.Any2WorkersAndCash,Benefit.Nations_INDIA),	// india
-
-			new ManhattanChip("nations2-04",Type.Nations,Cost.AnyWorker,Benefit.Nations_ISRAEL),	// israel
-
-			// disfavored and excluded
-			new ManhattanChip("nations2-05",Type.Nations,Cost.ScientistAnd1Yellowcake,Benefit.Nations_NORTH_KOREA), // north korea
-
-			// tested 9/14/2024
-			new ManhattanChip("nations2-06",Type.Nations,Cost.AnyWorkerAndBomb,Benefit.Nations_PAKISTAN),	// pakistan
-
-			new ManhattanChip("nations2-07",Type.Nations,Cost.Engineer,Benefit.Nations_SOUTH_AFRICA),	// south africa
+			USA,		// usa
+			UK,		// britain
+			USSR,	// soviet union
+			GERMANY,	// germany
+			JAPAN,	// japan
+			CHINA,		// china
+			FRANCE,		// france
+			AUSTRALIA,	// australia
+			BRAZIL,	// brazil
+			INDIA,	// india
+			ISRAEL,	// israel
+			NORTH_KOREA, // north korea
+			PAKISTAN,	// pakistan
+			SOUTH_AFRICA,	// south africa
 	};
 	
 	static ManhattanChip NationsBacks[] = {

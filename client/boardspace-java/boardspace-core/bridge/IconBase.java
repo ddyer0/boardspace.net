@@ -22,7 +22,7 @@ public abstract class IconBase implements Icon
 {	
 	public void paintIcon(Component c, Graphics g, int x, int y)
 	{
-		paintIcon(c,lib.Graphics.create(g),x,y);
+		paintIcon(c,lib.Graphics.create(g,c),x,y);
 	}
 }
 	

@@ -163,7 +163,7 @@ public class PlayerBoard implements ManhattanConstants
 		scientists.setPosition(0.65,-0.05);
 		engineers.setPosition(0.35,-0.05);
 		
-		cashDisplay.setPosition(-0.015,0.25);
+		cashDisplay.setPosition(-0.07,0.25);
 		yellowcakeDisplay.setPosition(0.95,-0.05);
 	}
 	public void setPosition(ManhattanCell c,Rectangle r,double xoff,double yoff)
@@ -311,41 +311,7 @@ public class PlayerBoard implements ManhattanConstants
 		v ^= b.Digest(r,turnOptions);
 		return v;
 	}
-	public long Digest1(Random r)
-	{	long v = 0;
-		v ^= b.Digest(r,boardIndex);
-		v ^= b.Digest(r,fighters);
-		v ^= b.Digest(r,bombers);
-		v ^= b.Digest(r,nFighters);
-		G.print("\nP1 ",v);
-		v ^= b.Digest(r,nBombers);
-		G.print("P1a ",v);
-		v ^= b.Digest(r,buildings);
-		G.print("P1b ",v);
-		v ^= b.Digest(r,workers);
-		G.print("P1c ",v);
-		v ^= b.Digest(r,engineers);
-		G.print("P2 ",v);
-		v ^= b.Digest(r,scientists);
-		v ^= b.Digest(r,cashDisplay);
-		v ^= b.Digest(r,yellowcakeDisplay);
-		v ^= b.Digest(r,stockpile);
-		v ^= b.Digest(r,bombtest);
-		//G.print("P3 ",v);
-		v ^= b.Digest(r,pendingChoices);
-		v ^= b.Digest(r,nPlacedWorkers);
-		v ^= b.Digest(r,nUranium);
-		v ^= b.Digest(r,hasTestedBomb);
-		v ^= b.Digest(r,approvedNorthKorea);
-		//G.print("P4 ",v);
-		//v ^= b.Digest(r,hasSetContribution);
-		v ^= b.Digest(r,koreanContribution);
-		v ^= b.Digest(r,nPlutonium);
-		v ^= b.Digest(r,nEspionage);
-		v ^= b.Digest(r,turnOptions);
-		//G.print("P5 ",v);
-		return v;
-	}
+
 	public ManhattanCell getCell(ManhattanId id,int row)
 	{
 		switch(id)
@@ -675,10 +641,17 @@ public class PlayerBoard implements ManhattanConstants
 		if(workers.height()>0) { if(c!=null) { return null; } else { c = workers; }}
 		return c;
 	}
-	int designsAvailable()
+	boolean hasDesignsAvailable()
+	{	
+		for(int lim = stockpile.size()-1; lim>=0; lim--)
+		{	if(designIsAvailable(stockpile.elementAt(lim))) { return true; }
+		}
+		return false;
+	}
+	int nDesignsAvailable()
 	{	int n=0;
 		for(int lim = stockpile.size()-1; lim>=0; lim--)
-		{	if(designIsAvailable(stockpile.elementAt(lim))) { n++; }
+		{	if(designIsAvailable(stockpile.elementAt(lim))) { return n++; }
 		}
 		return n;
 	}
@@ -705,7 +678,7 @@ public class PlayerBoard implements ManhattanConstants
 			some = true; // nFighters>0 || nBombers>0;
 			break;
 		case AnyWorkerAndBomb:
-			some = designsAvailable()>0;
+			some = hasDesignsAvailable();
 			break;
 		case ScientistOrWorkerAndMoney:	// buying a building
 			some = b.seeBuilding[0].height()>0 && cashDisplay.cash>=b.seeBuilding[0].cash;
@@ -826,7 +799,23 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		return some;
 	}
-	
+	int nScientistsAvailable()
+	{	int h = scientists.height();
+		if(hasPersonality(ManhattanChip.Oppenheimer)
+				&& !testOption(TurnOption.OppenheimerWorker))
+		{
+			if(h>0 || workers.height()>0) { h++; }
+		}
+		return h;
+	}
+	int nEngineersAvailable()
+	{	int h = engineers.height();
+		if(hasPersonality(ManhattanChip.Groves)
+				&& !testOption(TurnOption.GrovesWorker))	
+		{ 	if(h>0 || workers.height()>0) { h++; }
+		}
+		return h;
+	}
 	// an engineer is picked or known to be available
 	private boolean engineerSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who,int op,ManhattanCell source)
 	{	boolean some = false;
@@ -849,7 +838,7 @@ public class PlayerBoard implements ManhattanConstants
 			some = true; // nFighters>0 || nBombers>0;
 			break;
 		case AnyWorkerAndBomb:
-			some = designsAvailable()>0;
+			some = hasDesignsAvailable();
 			break;
 		
 		case Cash:	// purchase a building by an engineer
@@ -892,7 +881,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 			
 		case ScientistAndEngineerAndBombDesign:
-			some = scientists.height()>0 && b.seeCurrentDesigns.height()>0;
+			some = nScientistsAvailable()>=1 && b.seeCurrentDesigns.height()>0;
 			break;
 			
 		// building cost
@@ -998,59 +987,59 @@ public class PlayerBoard implements ManhattanConstants
 		case ScientistAnd3Uranium: 
 			break;
 		case ScientistAndEngineerAnd3Uranium:
-			some = nUranium>=3 && scientists.height()>=1;
+			some = nUranium>=3 && nScientistsAvailable()>=1;
 			break;
 		case ScientistAndEngineerAnd4Uranium:
-			some = nUranium>=4 && scientists.height()>=1;
+			some = nUranium>=4 && nScientistsAvailable()>=1;
 			break;
 			
 		case ScientistAndEngineer2And4Uranium:
-			some = nUranium>=4 && scientists.height()>=1 && engineers.height()+prepicked>=2;
+			some = nUranium>=4 && nScientistsAvailable()>=1 && engineers.height()+prepicked>=2;
 			break;
 			
 		case ScientistAndEngineer2And5Uranium:
-			some = nUranium>=5 && scientists.height()>=1 && engineers.height()+prepicked>=2;
+			some = nUranium>=5 && nScientistsAvailable()>=1 && engineers.height()+prepicked>=2;
 			break;
 
 		case Scientist2AndEngineer2And5Uranium:
-			some = nUranium>=5 && scientists.height()>=2 && engineers.height()+prepicked>=2;
+			some = nUranium>=5 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=2;
 			break;
 			
 		case Scientist2AndEngineer2And6Uranium:
-			some = nUranium>=6 && scientists.height()>=2 && engineers.height()+prepicked>=2;
+			some = nUranium>=6 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=2;
 			break;
 			
 		case ScientistAndEngineerAnd4Plutonium:
-			some = nPlutonium>=4 && scientists.height()>=1;
+			some = nPlutonium>=4 && nScientistsAvailable()>=1;
 			break;
 			
 		case ScientistAndEngineer2And4Plutonium:
-			some = nPlutonium>=4 && scientists.height()>=1 && engineers.height()+prepicked>=2;
+			some = nPlutonium>=4 && nScientistsAvailable()>=1 && engineers.height()+prepicked>=2;
 			break;
 			
 		case Scientist2AndEngineer2And5Plutonium:
-			some = nPlutonium>=5 && scientists.height()>=2 && engineers.height()+prepicked>=2;
+			some = nPlutonium>=5 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=2;
 			break;
 		
 		case Scientist2AndEngineer2And6Plutonium:
-			some = nPlutonium>=6 && scientists.height()>=2 && engineers.height()+prepicked>=2;
+			some = nPlutonium>=6 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=2;
 			break;
 			
 		case ScientistAndEngineer2And5Plutonium:
-			some = nPlutonium>=5 && scientists.height()>=1 && engineers.height()+prepicked>=2;
+			some = nPlutonium>=5 && nScientistsAvailable()>=1 && engineers.height()+prepicked>=2;
 			break;
 						
 			
 		case Scientist2AndEngineer3And6Plutonium:
-			some = nPlutonium>=6 && scientists.height()>=2 && engineers.height()+prepicked>=3;
+			some = nPlutonium>=6 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=3;
 			break;
 			
 		case Scientist2AndEngineer3And7Plutonium:
-			some = nPlutonium>=7 && scientists.height()>=2 && engineers.height()+prepicked>=3;
+			some = nPlutonium>=7 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=3;
 			break;
 			
 		case Scientist2AndEngineer4And7Plutonium:
-			some = nPlutonium>=7 && scientists.height()>=2 && engineers.height()+prepicked>=4;
+			some = nPlutonium>=7 && nScientistsAvailable()>=2 && engineers.height()+prepicked>=4;
 			break;
 
 		}
@@ -1088,7 +1077,7 @@ public class PlayerBoard implements ManhattanConstants
 			some = true; // nFighters>0 || nBombers>0;
 			break;
 		case AnyWorkerAndBomb:
-			some = designsAvailable()>0;
+			some = nDesignsAvailable()>0;
 			break;
 		
 		case Cash:	// purchase a building by a scientist
@@ -1138,7 +1127,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 			
 		case ScientistAndEngineerAndBombDesign:	
-			some = engineers.height()>0 && b.seeCurrentDesigns.height()>0;
+			some = nEngineersAvailable()>=1 && b.seeCurrentDesigns.height()>0;
 			break;
 		
 			// building cost
@@ -1236,57 +1225,57 @@ public class PlayerBoard implements ManhattanConstants
 			some = nUranium>=3;
 			break;
 		case ScientistAndEngineerAnd3Uranium:
-			some = nUranium>=3 && engineers.height()>=1;
+			some = nUranium>=3 && nEngineersAvailable()>=1;
 			break;
 		case ScientistAndEngineerAnd4Uranium:
-			some = nUranium>=4 && engineers.height()>=1;
+			some = nUranium>=4 && nEngineersAvailable()>=1;
 			break;
 		case ScientistAndEngineer2And4Uranium:
-			some = nUranium>=4 && engineers.height()>=2;
+			some = nUranium>=4 && nEngineersAvailable()>=2;
 			break;
 						
 		case ScientistAndEngineer2And5Uranium:
-			some = nUranium>=5 && engineers.height()>=2;
+			some = nUranium>=5 && nEngineersAvailable()>=2;
 			break;
 			
 		case Scientist2AndEngineer2And5Uranium:
-			some = nUranium>=5 && engineers.height()>=2 && scientists.height()+prepicked>=2;
+			some = nUranium>=5 && nEngineersAvailable()>=2 && scientists.height()+prepicked>=2;
 			break;
 			
 		case Scientist2AndEngineer2And6Uranium:
-			some = nUranium>=6 && engineers.height()>=2 && scientists.height()+prepicked>=2;
+			some = nUranium>=6 && nEngineersAvailable()>=2 && scientists.height()+prepicked>=2;
 			break;
 			
 		case ScientistAndEngineerAnd4Plutonium:
-			some = nPlutonium>=4 && engineers.height()>=1;
+			some = nPlutonium>=4 && nEngineersAvailable()>=1;
 			break;
 			
 		case ScientistAndEngineer2And4Plutonium:
-			some = nPlutonium>=4 && engineers.height()>=2;
+			some = nPlutonium>=4 && nEngineersAvailable()>=2;
 			break;
 			
 		case Scientist2AndEngineer2And5Plutonium:
-			some = nPlutonium>=5 && engineers.height()>=2 && scientists.height()+prepicked>=2;
+			some = nPlutonium>=5 && nEngineersAvailable()>=2 && scientists.height()+prepicked>=2;
 			break;
 			
 		case Scientist2AndEngineer2And6Plutonium:
-			some = nPlutonium>=6 && engineers.height()>=2 && scientists.height()+prepicked>=2;
+			some = nPlutonium>=6 && nEngineersAvailable()>=2 && scientists.height()+prepicked>=2;
 			break;
 			
 		case ScientistAndEngineer2And5Plutonium:
-			some = nPlutonium>=5 && engineers.height()>=2;
+			some = nPlutonium>=5 && nEngineersAvailable()>=2;
 			break;
 
 		
 		case Scientist2AndEngineer3And6Plutonium:
-			some = nPlutonium>=6 && engineers.height()>=3 && scientists.height()+prepicked>=2;
+			some = nPlutonium>=6 && nEngineersAvailable()>=3 && scientists.height()+prepicked>=2;
 			break;
 			
 		case Scientist2AndEngineer3And7Plutonium:
-			some = nPlutonium>=7 && engineers.height()>=3 && scientists.height()+prepicked>=2;
+			some = nPlutonium>=7 && nEngineersAvailable()>=3 && scientists.height()+prepicked>=2;
 			break;
 		case Scientist2AndEngineer4And7Plutonium:
-			some = nPlutonium>=7 && engineers.height()>=4 && scientists.height()+prepicked>=2;
+			some = nPlutonium>=7 && nEngineersAvailable()>=4 && scientists.height()+prepicked>=2;
 			break;
 			
 		case Uranium3:
@@ -1344,7 +1333,12 @@ public class PlayerBoard implements ManhattanConstants
 		return some;
 	}
 
-	// nothing is picked yet
+	// nothing is picked yet. This is used to generate moves only for the initial
+	// placement.  It looks for an available complement of workers plus whatever
+	// other resources are needed.  After the initial placement, the state machine
+	// counts down the required workers and when all are present, it collects the
+	// ancillary resources.  Sometimes this involves a supplementary dialog.
+	//
 	private boolean satisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who)
 	{	
 		boolean some = false;
@@ -1455,9 +1449,44 @@ public class PlayerBoard implements ManhattanConstants
 	public boolean addSelectWorkerMoves(CommonMoveStack all,int op,ManhattanCell src,ManhattanCell dest,int who)
 	{
 		if(all==null) { return true; }
-		all.push(new ManhattanMovespec(op,src,-1,dest,who));
+		all.push(new ManhattanMovespec(op,src,-1,dest,who)); 
 		return true;
 	}
+	
+	public boolean addEngineerMoves(CommonMoveStack all,ManhattanChip picked,ManhattanCell dest,int who)
+	{
+
+		 boolean some = false;
+		 if(picked!=null || engineers.height()>0)
+		 {
+			 some |= addSelectWorkerMoves(all,picked==null ? MOVE_FROM_TO : MOVE_DROP,engineers,dest,who);
+		 }
+		 if(all==null && some) { return some; }
+		 if((picked==null)
+				 && hasPersonality(ManhattanChip.Groves) 
+				 && !testOption(TurnOption.GrovesWorker)
+				 && workers.height()>0)
+		 { some |= addSelectWorkerMoves(all,MOVE_FROM_TO,workers,dest,who);
+		 }
+		 return some;
+	}
+	public boolean addScientistMoves(CommonMoveStack all,ManhattanChip picked,ManhattanCell dest,int who)
+	{
+
+		 boolean some = false;
+		 if(picked!=null || scientists.height()>0)
+			 {	some |= addSelectWorkerMoves(all,picked==null ? MOVE_FROM_TO : MOVE_DROP,scientists,dest,who);
+			 }
+		 if(all==null && some) { return some; }
+		 if((picked==null)
+				 && hasPersonality(ManhattanChip.Oppenheimer) 
+				 && !testOption(TurnOption.OppenheimerWorker)
+				 && workers.height()>0)
+		 { some |= addSelectWorkerMoves(all,MOVE_FROM_TO,workers,dest,who);
+		 }
+		 return some;
+	}
+	
 	public boolean addWorkerMoves(CommonMoveStack all,ManhattanChip picked,ManhattanCell c,int op,int who)
 	{
 		return satisfies(all,picked,c,c.getEffectiveCost(),op,who);
@@ -1511,6 +1540,10 @@ public class PlayerBoard implements ManhattanConstants
 	 	return some;
 	 }
 	 
+	public boolean hasRepairMoves()
+	{
+		return addRepairMoves(null,5,boardIndex);
+	}
 	public boolean addRepairMoves(CommonMoveStack all,int cost,int who)
 	{
 		 boolean some = false;
@@ -1518,15 +1551,17 @@ public class PlayerBoard implements ManhattanConstants
 		 {
 			 for(int lim=buildings.size()-1; lim>=0  && (all!=null || !some); lim--)
 				{ManhattanCell c = buildings.elementAt(lim);
+				 if(!c.inhibited)
+				 {
 				 ManhattanChip ch = c.topChip();
 				 if(ch!=null && ch.type==Type.Damage)
 				 {
 					 if(all!=null) { all.push(new ManhattanMovespec(MOVE_REPAIR,c,-1,who)); }
 					 some = true;
-				 }
+				 }}
 			 }
 		 }
-		 return true;
+		 return some;
 	}
 	
 	public boolean addNorthKoreaMoves(CommonMoveStack all,int who)
@@ -1572,31 +1607,84 @@ public class PlayerBoard implements ManhattanConstants
 		return some;
 	}
 	
-	public boolean addIsraelBombMoves(CommonMoveStack all,ManhattanChip pickedObject,int who)
-	{	if(all==null) { return true; }
-		boolean some = false;
-		for(int lim=stockpile.size()-1; lim>=0; lim--)
-			{
-			ManhattanCell c = stockpile.elementAt(lim);
-			if(c.height()==1) {
-				some |=addIsraelBombMoves(all,pickedObject,c,who);
-			}
-		}
-		if(!some) { all.push(new ManhattanMovespec(MOVE_DONE,who)); }
-		return true;
+
+	public boolean hasBuildBombMoves()
+	{
+		return addIsraelBombMoves(null,null,boardIndex);
 	}
 	
+	public boolean addIsraelBombMoves(CommonMoveStack all,ManhattanChip pickedObject,int who)
+	{	boolean some = false;
+		for(int lim=stockpile.size()-1; lim>=0 && (all!=null || !some); lim--)
+		{
+		ManhattanCell c = stockpile.elementAt(lim);
+		if(c.height()==1) {
+			some |=addIsraelBombMoves(all,pickedObject,c,who);
+		}
+		}
+		return some;
+	}
 	// playermoves on some list of buildings, possibly not our own
 	public boolean addPlayerBoardMoves(CommonMoveStack all, ManhattanChip pickedObject, CellStack from,int who)
 	{	boolean some = false;
 		for(int i=0,size=from.size();i<size;i++)
 		{
 			ManhattanCell c = from.elementAt(i);
+			if(!c.inhibited)
+			{
 			some |= addPlayerBoardMoves(all,pickedObject,c,who);
 			if(some && all==null) { return some; }
+			}
 		}
 		return some;
 	}
+	// has other player has mines, damaged or occupied ok (for australia)
+	public boolean hasOtherMines()
+	{
+		for(PlayerBoard op : b.pbs)
+		{	if(op!=this)
+			 { if(hasMines(op.buildings)) { return true; }
+			 }
+		}
+		return false;
+	}
+	
+	public boolean hasPlacedWorkers()
+	{
+		for(int lim=buildings.size()-1; lim>=0; lim--)
+		{
+			ManhattanCell c = buildings.elementAt(lim);
+			if(c.containsChip(worker)) { return true; }
+		}
+		return false;
+	}
+	
+	// has mines, damaged or occupied ok (for australia)
+	public boolean hasMines(CellStack buildings)
+	{
+		for(int lim=buildings.size()-1; lim>=0; lim--)
+		{
+			ManhattanCell c = buildings.elementAt(lim);
+			if((c.height()>0) && c.chipAtIndex(0).isAMine()) 
+				{ return true; }
+		}
+		return false;
+	}
+	
+	public boolean hasOpenBuildings()
+	{	return addPlayerBoardMoves(null,null,buildings,boardIndex);
+	}
+	// true if there's a building we cound espionage (for russia)
+	public boolean hasOtherOpenBuildings()
+	{	for(PlayerBoard op : b.pbs)
+		{	if(op!=this)
+			 { boolean some = addPlayerBoardMoves(null,null,op.buildings,boardIndex);
+			   if(some) { return true; }
+			 }
+		}
+		return false;
+	}
+
 	public boolean addPlayerBoardMoves(CommonMoveStack all, ManhattanChip pickedObject, ManhattanCell c,int who)
 	{	boolean some = false;
 		if(c.height()>0)
@@ -1663,16 +1751,19 @@ public class PlayerBoard implements ManhattanConstants
 			ManhattanChip bombCard = bomb.chipAtIndex(0);
 			ManhattanChip testChip = null;
 			ManhattanChip bomberChip = null;
+			ManhattanChip dismantleChip = null;
 			for(int j = 2;j<h; j++)
 			{
 				ManhattanChip ch = bomb.chipAtIndex(j);
 				if(ch.type==Type.Bombtest) { testChip = ch; }
 				else if(ch.type==Type.Bomber) { bomberChip = ch; }
+				else if(ch.type==Type.Damage) { dismantleChip = ch; }
 			}
 			if(testChip!=null) { value = testChip.bombValue(); }	// and that's all
 			else
 			{ 	value += hasTestedBomb ? bombCard.bombTestedValue() : bombCard.bombValue();
 				if(bomberChip!=null) { value += 5; }
+				if(dismantleChip!=null) { value += 5; }
 			}
 		}
 		return value;
@@ -2119,6 +2210,7 @@ public class PlayerBoard implements ManhattanConstants
 		
 		ManhattanChip ch = selected.removeTop();
 		d.addChip(ch); 
+		if(b.robot!=null) { b.robot.setInhibitions(d); }
 		if(replay.animate)
 			{
 			b.animationStack.push(selected);
@@ -2146,6 +2238,21 @@ public class PlayerBoard implements ManhattanConstants
 		b.pendingBenefit = be;
 		b.setState(ManhattanState.CollectBenefit);
 	}
+	public boolean hasBuiltBombs()
+	{	
+		for(int i=0,size=stockpile.size(); i<size;i++)
+		{
+			ManhattanCell c = stockpile.elementAt(i);
+			if(c.height()>=2
+				&& (c.chipAtIndex(1)==ManhattanChip.built)
+				&& !c.contains(Type.Bombtest)
+				&& !c.containsChip(ManhattanChip.Damage))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	private void loadDismantleChoices(Benefit be)
 	{	b.prepareChoices(0);
 		b.pendingBenefit = be;
@@ -2155,14 +2262,17 @@ public class PlayerBoard implements ManhattanConstants
 			ManhattanCell c = stockpile.elementAt(i);
 			if(c.height()>=2
 				&& (c.chipAtIndex(1)==ManhattanChip.built)
+				&& (cashDisplay.cash>=c.chipAtIndex(0).loadingCost())
 				&& !c.contains(Type.Bombtest)
 				&& !c.containsChip(ManhattanChip.Damage))
 			{
 				b.displayCells.push(c);
+				some = true;
 			}
 		}
 		if(some) { b.setState(ManhattanState.CollectBenefit); }
 	}
+	
 	private void addTradeChoices(Benefit be)
 	{	
 		b.prepareChoices(0);
@@ -2218,9 +2328,43 @@ public class PlayerBoard implements ManhattanConstants
 		b.prepareChoices(2);
 		b.choice[0].addChip(fighter);
 		b.choice[0].addChip(fighter);
+		if(hasRepairMoves())
+		{
 		b.choice[1].addChip(ManhattanChip.Damage);
-		b.pendingBenefit = Benefit.Nations_UK;
 		b.setState(ManhattanState.CollectBenefit);
+		}
+		else
+		{
+			b.displayCells.pop();
+			b.selectedCells.push(b.choice[0]);
+			b.setState(ManhattanState.ConfirmBenefit);
+		}
+		b.pendingBenefit = Benefit.Nations_UK;
+		
+	}
+	
+	public boolean hasOtherUniversities()
+	{	
+		for(PlayerBoard pb : b.pbs)
+		{
+		if(pb!=this)
+		{
+		CellStack buildings = pb.buildings;
+		for(int lim=buildings.size()-1; lim>=0; lim--)
+		{
+			ManhattanCell c = buildings.elementAt(lim);
+			if(!c.inhibited && c.height()>0)
+			{
+				ManhattanChip building = c.chipAtIndex(0);
+				if(building.isAUniversity()
+					&& cashDisplay.cash>= building.nWorkersRequired()
+					&& (c.topChip()!=ManhattanChip.Damage))
+				{	
+					return true;
+				}
+			}
+		}}}
+		return false;
 	}
 	private void chooseUniversity()	// for india
 	{
@@ -2234,7 +2378,7 @@ public class PlayerBoard implements ManhattanConstants
 			for(int lim=buildings.size()-1; lim>=0; lim--)
 			{
 				ManhattanCell c = buildings.elementAt(lim);
-				if(c.height()>0)
+				if(!c.inhibited && c.height()>0)
 				{
 					ManhattanChip building = c.chipAtIndex(0);
 					if(building.isAUniversity()
@@ -2362,35 +2506,35 @@ public class PlayerBoard implements ManhattanConstants
 		case BomberAnd2:
 			addBomber(1,replay);
 			addCoinsFromBank(cashDisplay,2,replay);
-			b.logGameEvent("2 bomber + 2$");
+			b.logGameEvent("2 bomber-"+color+" + 2$");
 			break;
 		case Bomber3And3:
 			addBomber(3,replay);
 			addCoinsFromBank(cashDisplay,3,replay);
-			b.logGameEvent("3 bomber + 2$");
+			b.logGameEvent("3 bomber-"+color+" + 2$");
 			break;
 		case FighterAnd2: 
 			addFighter(1,replay);
 			addCoinsFromBank(cashDisplay,2,replay);
-			b.logGameEvent("2 fighter + 2$");
+			b.logGameEvent("2 fighter-"+color+" + 2$");
 			break;
 		case Fighter2AndBomber2:
 			addFighter(2,replay);
 			addBomber(2,replay);
-			b.logGameEvent("2 fighter + 2 bomber");
+			b.logGameEvent("2 fighter-"+color +" 2 bomber-"+color);
 			break;
 		case Fighter2: 
 			addFighter(2,replay);
-			b.logGameEvent("+2 fighter");
+			b.logGameEvent("+2 fighter-"+color);
 			break;
 		case Bomber2:
 			addBomber(2,replay);
-			b.logGameEvent("+2 bomber");
+			b.logGameEvent("+2 bomber-"+color);
 			break;
 		case Fighter3And3:
 			addFighter(3,replay);
 			addCoinsFromBank(cashDisplay,3,replay);
-			b.logGameEvent("1 fighter + 1$ 2$");
+			b.logGameEvent("1 fighter-"+color+" + 1$ 2$");
 			break;
 		case Fighter2OrBomber2:
 			// fighter or 2 in a new dialog
@@ -2717,10 +2861,6 @@ public class PlayerBoard implements ManhattanConstants
 			sendCoinsToBank(cashDisplay,price,replay);
 			collectBenefit(null,c.benefit,selected,replay);
 			break;
-		case Nations_UK:
-			b.repairCounter = 1;
-			b.setState(ManhattanState.Repair);
-			break;
 		case Nations_NORTH_KOREA:
 			{
 			int total = 0;
@@ -2750,7 +2890,12 @@ public class PlayerBoard implements ManhattanConstants
 				}
 			}
 			break;
+		case Dismantle:
+			sendCoinsToBank(cashDisplay,selected.chipAtIndex(0).loadingCost(),replay);
+			selected.addChip(ManhattanChip.Damage);
+			break;
 		default:
+		case Nations_UK:
 			if(selected.height()>0)
 			{
 			ManhattanChip something = selected.topChip();
@@ -2805,6 +2950,7 @@ public class PlayerBoard implements ManhattanConstants
 				break;
 			case Coin: 
 				addCoinsFromBank(cashDisplay,selected.cash,replay);
+				b.logGameEvent("+ "+selected.cash+"$");
 				ManhattanChip ch = selected.chipAtIndex(0);
 				switch(ch.type)
 				{
@@ -2824,12 +2970,19 @@ public class PlayerBoard implements ManhattanConstants
 				addUranium(1,replay);
 				b.logGameEvent("+ uranium");
 				break;
+			case Damage:
+				b.repairCounter = selected.height();
+				b.setState(ManhattanState.Repair);
+				break;
 			case Bomb:
 				if(something==ManhattanChip.BombBack)
 				{	// nation france selects a blind card
 					ManhattanCell designs = findEmptyStockPile();
 					ManhattanChip newb = b.getABomb();
-					if(newb!=null) { designs.addChip(newb); }
+					if(newb!=null) 
+						{ designs.addChip(newb); 
+						  if(b.robot!=null) { b.robot.setInhibitions(designs); }
+						}
 					if(replay.animate)
 					{
 						b.animationStack.push(b.seeBombs);
@@ -2932,7 +3085,7 @@ public class PlayerBoard implements ManhattanConstants
 			// open season, bomb away!
 			for(int lim=victim.buildings.size()-1; lim>=0; lim--)
 			{ 	ManhattanCell dest = victim.buildings.elementAt(lim);
-				if((dest.type==Type.Building) && dest.height()>0)
+				if(!dest.inhibited && (dest.type==Type.Building) && dest.height()>0)
 				{	// excluding nations
 				ManhattanChip ch = dest.chipAtIndex(0);
 				if(ch.type==Type.Building)	// not a nations card
@@ -2961,6 +3114,18 @@ public class PlayerBoard implements ManhattanConstants
 			}
 		}
 	
+	}
+	public void setInhibitions(ManhattanPlay m,CellStack from)
+	{
+		for(int lim = from.size()-1; lim>=0; lim--)
+		{	ManhattanCell c = from.elementAt(lim);
+			c.inhibited = false;
+			m.setInhibitions(c);
+		}
+	}
+	public void setInhibitions(ManhattanPlay m) {
+		setInhibitions(m,buildings);
+		setInhibitions(m,stockpile);
 	}
 	
 }

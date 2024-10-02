@@ -106,6 +106,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	// TODO: display some indication of the university's owner for "india" selection.
+	
+
     static final String Prototype_SGF = "manhattan"; // sgf game name
 
     // file names for jpeg images and masks
@@ -332,9 +334,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*20;	
+    	int minLogW = fh*15;	
        	int minChatW = fh*35;	
-        int minLogH = fh*25;	
+        int minLogH = fh*15;	
         int margin = fh/2;
         int buttonW = fh*7;
         // this does the layout of the player boxes, and leaves
@@ -346,22 +348,22 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			2.0,	// aspect ratio for the board
     			fh*4,	// minimum cell size
     			fh*6,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.3		// preference for the designated layout, if any
     			);
-    	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+       	// its generally recommended for the vcr to be no wider than the game log,
+       	// this helps the vcr to tuck into the spare space allocated for the log
+    	layout.placeTheVcr(this,minLogW,minLogW*3/2);
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,retrieveButton);
-       	// its generally recommended for the vcr to be no wider than the game log,
-       	// this helps the vcr to tuck into the spare space allocated for the log
-    	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
-
+ 
+  
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
@@ -427,32 +429,32 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	Rectangle box =  pl.createRectangularPictureGroup(x,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	Rectangle chip = playerChip[player];
-    	int doneW = plannedSeating()? unitsize*3 : 0;
-    	G.SetRect(done,x,G.Bottom(box)+unitsize/2,doneW,doneW/2);
-    	G.union(box, done);
-    	int l = G.Left(box);
+    	int pwid = unitsize*2;
+    	int doneW = plannedSeating()? pwid : 0;
     	int t = G.Bottom(box);
-       	G.SetRect(chip,l-unitsize/4,t-unitsize*4/3,unitsize*5/4,unitsize*5/4);
-
+       	G.SetRect(chip,x-unitsize/4,t-unitsize*4/3,unitsize*5/4,unitsize*5/4);
+       	G.SetRect(done,x,t,doneW,doneW/2);
+    	G.union(box, done);
     	
+    	int l = x;
     	if(bb.testOption(Options.Personalities))
     	{
     	Rectangle pp = playerPersonality[player];
-    	G.SetRect(pp,l,t,unitsize*3/2,unitsize*2);
+    	G.SetRect(pp,l,G.Bottom(box),pwid,unitsize*2+unitsize/4);
     	G.union(box,pp);
-    	l += unitsize*3/2;
+    	l += pwid;
     	}
     	
     	{
     	Rectangle or = playerBombDesigns[player];
-    	G.SetRect(or,l,t,unitsize*2+unitsize/2,unitsize*3);
+    	G.SetRect(or,l,t,unitsize*2+unitsize/2,unitsize*3+unitsize/4);
     	G.union(box,or);
     	l += unitsize*2+unitsize/2;
     	}
 
     	{
     	Rectangle pp = playerCard[player];
-    	G.SetRect(pp,l,t,unitsize*2,unitsize*3);
+    	G.SetRect(pp,l,t,unitsize*2,unitsize*3+unitsize/4);
     	G.union(box,pp);
     	l += unitsize*2;
     	}
@@ -1041,6 +1043,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        ManhattanBoard gb = disB(gc);
        ManhattanState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
+
    	   if(gc!=null)
    		{
    		// note this gets called in the game loop as well as in the display loop
@@ -1218,7 +1221,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         eyeRect.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
-
+        
     }
 
     /**
@@ -1462,17 +1465,22 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 {	int ncells = choices.size();
 	 	Benefit benefit = gb.pendingBenefit;
 	 	boolean trade =  benefit== Benefit.Trade;
+	 	boolean personality = benefit==Benefit.Personality;
 	 	//ManhattanState state = gb.getState();
 	 	boolean censor = (benefit==Benefit.BombDesign) && hp==null;
-		int nrows = trade ? 2 : 1;
-	 	int ncols = trade ? 4 : ncells;
+		int nrows = trade||(personality&&ncells>=4) ? 2 : 1;
+	 	int ncols = trade 
+	 			? 4 
+	 			: nrows==2 
+	 				? (ncells+1)/2 
+	 				: ncells;
 		int left = G.Left(rect);
 		int top = G.Top(rect);
 		int w = G.Width(rect);
 		int h = G.Height(rect);
 		 
 		double off = (ncols-1)/2.0;
-		int cellSize = w/Math.max(ncells+1,5);
+		int cellSize = w/Math.max(ncols+1,5);
 		int yspace = 4;
 		int ystep = cellSize*yspace/3;
 		int x00 = left+w/2 - (int)(cellSize*off);
@@ -1483,7 +1491,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		int scrimLeft = x0-cellSize*2/3;
 		int scrimTop =  y0-ystep*2/3;
 		StockArt.Scrim.getImage().drawImage(gc,scrimLeft,scrimTop,scrimW,scrimH);
-		 
+	
 		for(int i=0;i<ncells;i++)
 		 {	ManhattanCell cell = choices.elementAt(i);
 		 	double xs = 0.3/cell.height();
@@ -1502,6 +1510,11 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 					x0 = x00;
 					y0 += ystep;
 				}
+			}
+			else if(i+1==ncols)
+			{
+				x0 = x00;
+				y0 += ystep;
 			}
 		 }
 		 int dotSize = w/30;
@@ -2249,12 +2262,22 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	    	{
 	    		texts.push(TextGlyph.create(""+worker.color+"-"+worker.workerType,"xx",worker,this,sscale));	
 	    	}
+	    	for(ManhattanChip ch : ManhattanChip.playerFighters)
+	    	{
+	    		texts.push(TextGlyph.create("fighter-"+ch.color,"xx",ch,this,sscale));
+	    	}
+	    	for(ManhattanChip ch : ManhattanChip.playerBombers)
+	    	{
+	    		texts.push(TextGlyph.create("bomber-"+ch.color,"xx",ch,this,cscale));
+	    	}
+
 	    	texts.push(TextGlyph.create("1$","xx",ManhattanChip.coin_1,this,cscale));
 	    	texts.push(TextGlyph.create("2$","xx",ManhattanChip.coin_2,this,cscale));
 	    	texts.push(TextGlyph.create("5$","xx",ManhattanChip.coin_5,this,c5scale));
 	    	texts.push(TextGlyph.create("uranium","xx",ManhattanChip.Uranium,this,xscale));
 	    	texts.push(TextGlyph.create("plutonium","xx",ManhattanChip.Plutonium,this,xscale));
 	    	texts.push(TextGlyph.create("yellowcake","xx",ManhattanChip.Yellowcake,this,xscale));
+	    	
 	    	
 	    	gameMoveText = texts.toArray();
 	    	}

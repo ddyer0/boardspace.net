@@ -99,8 +99,9 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 	public void paint(com.codename1.ui.Graphics g)
 	{
 		if(icon!=null)
-		{
-			icon.paintIcon(this,lib.Graphics.create(g),getWidth(),getHeight());
+		{	int w = getWidth();
+			int h = getHeight();
+			icon.paintIcon(this,lib.Graphics.create(g,this),w,h);
 		}
 		else
 		{

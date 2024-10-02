@@ -232,7 +232,8 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	public final void drawChipInternal(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{if(gc!=null)
 	  {
-	  DrawableImage<?> alt = getAltChip(canvas==null?0:canvas.getAltChipset());
+	  DrawableImage<?> alt1 = getAltChip(canvas==null?0:canvas.getAltChipset());
+	  DrawableImage<?> alt = alt1.getAltSizeChip(canvas,SQUARESIZE,xscale,cx,cy);
  	  double pscale[]=alt.getScale();
       // use this to tune piece position
       if(canvas!=null) { canvas.adjustScales(pscale,alt); }
@@ -240,6 +241,10 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
     		  SQUARESIZE,xscale,0.0,label,true);
  	  }
 	} 
+	public DrawableImage<?>getAltSizeChip(exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy)
+	{
+		return this;
+	}
 	/**
 	 * this is the lowest level overridable method, which actually passes to the canvas for drawing.  Stock art which constructs
 	 * its image in complex ways can override this method.  The standard definition of this method is

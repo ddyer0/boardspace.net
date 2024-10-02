@@ -55,7 +55,7 @@ public class Canvas extends Component implements WindowListener,MouseListener,Mo
 	
 	public void paint(com.codename1.ui.Graphics g)
 	{	
-		paint(Graphics.create(g));
+		paint(Graphics.create(g,this));
 	}
 
 	/* dummy methods to be overridden */

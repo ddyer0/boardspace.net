@@ -17,6 +17,7 @@
 package manhattan;
 
 import static manhattan.ManhattanMovespec.*;
+
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.*;
@@ -279,10 +280,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
     
- 	void logGameEvent(String str,String... args)
+ 	void logGameEvent(String str)
  	{	if(robot==null)
- 		{String trans = s.get(str,args);
- 		 gameEvents.push(trans);
+ 		{
+ 		 gameEvents.push(str);
  		}
  	}
 
@@ -553,7 +554,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	    pickedIndex.clear();
 	    droppedIndex.clear();
 	    stateStack.clear();
-	    
+	    reInit(choice);
+	    reInit(choiceOut);
 	    for(PlayerBoard pb : pbs)
 	    {	// give everyone 4 regular workers
 	    	pb.addCoinsFromBank(pb.cashDisplay,10,replayMode.Replay);
@@ -585,7 +587,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         // note that firstPlayer is NOT initialized here
     }
     long initialDigest = 0;
-    
     public void loadNewDesigns(replayMode replay)
     {	int needed = players_in_game+1-seeCurrentDesigns.height();
         if(needed>0 && nBombsAvailable()>=needed)
@@ -849,83 +850,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		v ^= Digest(r,options);
         return (v);
     }
-
-    public long Digest1()
-    { 
-        // the basic digestion technique is to xor a bunch of random numbers. 
-    	// many object have an associated unique random number, including "chip" and "cell"
-    	// derivatives.  If the same object is digested more than once (ie; once as a chip
-    	// in play, and once as the chip currently "picked up", then it must be given a
-    	// different identity for the second use.
-        //
-        Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest(r);
-        G.print("\nd0 ",v);
-        
-        v ^= Digest(r,seeBribe);
-        v ^= Digest(r,choice);
-        v ^= Digest(r,choiceOut);
-        v ^= Digest(r,repairCounter);
-        v ^= Digest(r,bombDesigner);
-        v ^= Digest(r,needScientists);
-        v ^= Digest(r,needEngineers);
-        v ^= Digest(r,selectedCells);
-        v ^= Digest(r,selectedChips);
-        v ^= Digest(r,pendingCost);
-        v ^= Digest(r,pendingBenefit);
-        v ^= Digest(r,availableWorkers);
-        v ^= Digest(r,seeEspionage);
-        v ^= Digest(r,seeBuilding);
-        v ^= seeBuildings.Digest(r);
-        v ^= seeBombs.Digest(r);
-        v ^= seeDiscardedBombs.Digest(r);
-        v ^= seeNations.Digest(r);
-        G.print("d1 ",v);
-               v ^= seeBombtests.Digest(r);
-        v ^= availablePersonalities.Digest(r);
-        v ^= Digest(r,seeUranium);
-        v ^= Digest(r,seePlutonium);
-        
-        v ^= playEspionage.Digest(r);
-        v ^= Digest(r,playMine);
-        v ^= Digest(r,playUniversity);
-        v ^= playDesignBomb.Digest(r);
-        v ^= seeCurrentDesigns.Digest(r);
-        v ^= playMakePlutonium.Digest(r);
-        v ^= playMakeUranium.Digest(r);
-        v ^= Digest(r,playAirStrike);
-        v ^= playRepair.Digest(r);
-        G.print("d2 ",v);
-                v ^= playMakeFighter.Digest(r);
-        v ^= playMakeBomber.Digest(r);
-        v ^= Digest(r,playMakeMoney);
-        v ^= Digest(r,afterWorkerDispatch);
-        v ^= Digest(r,displayCell);
-        v ^= Digest(r,displayCells);
-        v ^= Digest(r,espionageSteps);
-        v ^= Digest(r,northKoreanPlayer);
-        v ^= Digest(r,playBuyBuilding);
-        v ^= Digest(r,playBuyBuilding2);
-        
-		// many games will want to digest pickedSource too
-		// v ^= cell.Digest(r,pickedSource);
-        G.print("d3 ",v);
-              for(PlayerBoard pb : pbs) { v^= pb.Digest(r); }
-        G.print("d4 ",v);
-        v ^= chip.Digest(r,pickedObject);
-		v ^= Digest(r,pickedSourceStack);
-		v ^= Digest(r,droppedDestStack);
-		v ^= Digest(r,pickedIndex);
-		v ^= Digest(r,droppedIndex);
-		v ^= Digest(r,revision);
-		v ^= Digest(r,board_state);
-		v ^= Digest(r,whoseTurn);
-		v ^= Digest(r,options);
-	       G.print("d5 ",v);
-	               return (v);
-    }
-
-
 
 
     //
@@ -1705,10 +1629,32 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	setState(ManhattanState.PlayAny2Workers);
         	break;
         case Play2Scientists:
-        	setState(ManhattanState.PlayScientist);
+        	{
+        	PlayerBoard pb = pbs[whoseTurn];
+        	if(pb.hasPersonality(ManhattanChip.Oppenheimer) && !pb.testOption(TurnOption.OppenheimerWorker))
+            		{
+            		pb.setOption(TurnOption.OppenheimerWorker);
+            		setState(ManhattanState.ConfirmWorker);
+            		}
+            		else 
+            		{
+            			setState(ManhattanState.PlayScientist);
+            		}
+        	}
         	break;
         case Play2Engineers:
-        	setState(ManhattanState.PlayEngineer);
+        	{
+        	PlayerBoard pb = pbs[whoseTurn];
+        	if(pb.hasPersonality(ManhattanChip.Groves) && !pb.testOption(TurnOption.GrovesWorker))
+        		{
+        		pb.setOption(TurnOption.GrovesWorker);
+        		setState(ManhattanState.ConfirmWorker);
+        		}
+        		else 
+        		{
+        		setState(ManhattanState.PlayEngineer);
+        		}
+        	}
         	break;
         	
         case BuildIsraelBomb:
@@ -1723,18 +1669,44 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	{
         	ManhattanChip top = dest.topChip();
         	WorkerType type = top.workerType;
-        	if(type==WorkerType.L)
-        	{
-        		// oppenheimer or groves at work 
-        		PlayerBoard pb = pbs[whoseTurn];
-        		if(pb.hasPersonality(ManhattanChip.Oppenheimer)) { type = WorkerType.S; }
-        		else if(pb.hasPersonality(ManhattanChip.Groves)) { type = WorkerType.E; }
-        		else { G.Error("invalid worker type"); }
-        	}
+        	PlayerBoard pb = pbs[whoseTurn];
+ 
         	switch(type)
         	{
-        	case S: needScientists--; break;
-        	case E: needEngineers--; break;
+        	case L: 
+        		
+        		if(needScientists>0
+        				&& pb.hasPersonality(ManhattanChip.Oppenheimer)
+        				&& !pb.testOption(TurnOption.OppenheimerWorker))
+        			{ needScientists--; 
+        				pb.setOption(TurnOption.OppenheimerWorker);
+        			}
+        		else if(needEngineers>0 
+        				&& pb.hasPersonality(ManhattanChip.Groves)
+        				&& !pb.testOption(TurnOption.GrovesWorker))       
+					{ needEngineers--; 
+					  pb.setOption(TurnOption.GrovesWorker);
+					}
+        		else { G.Error("invalid worker type"); }
+        		break;
+        	case S: 
+        		needScientists--; 
+        		if(pb.hasPersonality(ManhattanChip.Oppenheimer) 
+        				&& needScientists>0
+        				&& !pb.testOption(TurnOption.OppenheimerWorker))
+					{ needScientists--; 
+					  pb.setOption(TurnOption.OppenheimerWorker);
+					}
+        		break;
+        	case E: needEngineers--; 
+        		if(pb.hasPersonality(ManhattanChip.Groves) 
+        				&& needEngineers>0
+        				&& !pb.testOption(TurnOption.GrovesWorker)
+        				) 
+        			{ needEngineers--; 
+        			  pb.setOption(TurnOption.GrovesWorker);
+        			}
+        		break;
         	default: throw G.Error("not expecting %s",top);
         	}
         	setState(nextWorkerState(needScientists,needEngineers));
@@ -2197,7 +2169,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		// and it was the only one that gave you moves.
     		for(PlayerBoard apb : pbs)
 			{
-			if(apb.designsAvailable()>3)
+			if(apb.nDesignsAvailable()>3)
 				{
 				apb.pendingChoices.push(Benefit.DiscardBombs);
 				}
@@ -2419,6 +2391,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	{
         	ManhattanCell src = getCell(m.source,m.from_color,m.from_row);
         	pickObject(src,m.from_index);
+        	m.chip = pickedObject;
         	}
 			//$FALL-THROUGH$
 		case MOVE_DROP: // drop on chip pool;
@@ -2432,18 +2405,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
 	        	  //G.print("last ",lastDroppedObject); 
 	        	}
-		    if(dest.height()>0)
-		        {
-		        switch(dest.type) 
-		        {
-		        case Building:
-		        case BuildingMarket:
-		        	 m.chip = dest.chipAtIndex(0);
-		        	 break;
-		        default:
-		        	break;
-		        }
-		        }
 		    m.cell = dest;
            	dropObject(dest,m.to_index,replay); 
            	if(replay.animate)
@@ -2460,6 +2421,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
             setWhoseTurn(m.player);
             acceptPlacement();
             // if it's a cold start, queue up the worker choice
+             
             if((Digest()==initialDigest) && players_in_game>3)
             {	for(int lim=players_in_game-1; lim>=3;lim--)
             	pbs[lim].pendingChoices.push(Benefit.ScientistOrEngineer);   
@@ -2597,7 +2559,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 PlayerBoard pb = pbs[who];
 	 boolean some = false;
 	 for(ManhattanCell c = allCells; c!=null && (all!=null || !some); c=c.next)
-	 {	switch(c.type)
+	 { if(!c.inhibited)
+		 {switch(c.type)
 		 {
 		 default: break;
 		 case BuildingMarket:	// this lets us drop directly on the buildings
@@ -2610,7 +2573,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		 		}
 		 }
 		 }
-	 }
+	 }}
 	 if(pb.hasPersonality(ManhattanChip.Nichols) 
 			 && !pb.testOption(TurnOption.NicholsShuffle)
 			 && seeBuilding[0].height()>0)
@@ -2642,12 +2605,13 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  public boolean addEngineerMoves(CommonMoveStack all,ManhattanCell dest,int who)
  {
 	 PlayerBoard pb = pbs[who];
-	 return pb.addSelectWorkerMoves(all,MOVE_FROM_TO,pb.engineers,dest,who);
+	 return pb.addEngineerMoves(all,pickedObject,dest,who);
  }
+ 
  public boolean addScientistMoves(CommonMoveStack all,ManhattanCell dest,int who)
  {
 	 PlayerBoard pb = pbs[who];
-	 return pb.addSelectWorkerMoves(all,MOVE_FROM_TO,pb.scientists,dest,who);
+	 return pb.addScientistMoves(all,pickedObject,dest,who);
  }
  /**
   * the Israel nations card causes several complications in the game flow.
@@ -2662,9 +2626,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
   * @return
   */
  public boolean addIsraelBombMoves(CommonMoveStack all,int who)
- {
-	 PlayerBoard pb = pbs[who];
-	 return pb.addIsraelBombMoves(all,pickedObject,who);
+ {	if(all==null) { return true; }
+	PlayerBoard pb = pbs[who];
+	boolean some = pb.addIsraelBombMoves(all,pickedObject,who);
+	if(!some) { all.push(new ManhattanMovespec(MOVE_DONE,who)); }
+	return true;
  }
  /** from the construction space on the main board, next select the building to buy
   * 
@@ -3031,10 +2997,21 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	}
  	return(some);
  }
- 
+ public void setInhibitions(ManhattanPlay m)
+ {
+	 for(ManhattanCell c = allCells; c!=null; c=c.next)
+	 {
+		 c.inhibited = false;
+		 m.setInhibitions(c);
+	 }
+	 for(PlayerBoard pb : pbs)
+	 {
+		 pb.setInhibitions(m);
+	 }
+ }
  public void initRobotValues(ManhattanPlay m)
  {	robot = m;
-
+ 	setInhibitions(m);
  }
 
  // small ad-hoc adjustment to the grid positions

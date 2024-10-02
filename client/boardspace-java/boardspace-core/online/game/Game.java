@@ -2269,6 +2269,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	return(false);
     }
+
     private boolean alwaysBePlayer(commonPlayer p)
     {
     	p.qcode = null;

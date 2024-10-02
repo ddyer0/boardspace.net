@@ -64,10 +64,10 @@ public abstract class Canvas extends java.awt.Canvas
 	}
 	public void paint(java.awt.Graphics g)
 	{	//if(!isDoubleBuffered()) { setDoubleBuffered(true); }
-		paint(Graphics.create(g));
+		paint(Graphics.create(g,this));
 	}
 	public void update(java.awt.Graphics g)
-	{	update(Graphics.create(g));
+	{	update(Graphics.create(g,this));
 	}
 	public void update(lib.Graphics g)
 	{

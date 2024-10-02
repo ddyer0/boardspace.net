@@ -35,7 +35,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	public void paintIcon(Component c, Graphics g, int x, int y) { G.Error("should be overridden");}
 	public void paintIcon(Component c, java.awt.Graphics g, int x, int y)
 	{
-		paintIcon(c,Graphics.create(g),x,y);
+		paintIcon(c,Graphics.create(g,c),x,y);
 	}
 	public Icon getNativeIcon() { return(null); }
 	public NativeMenuItemInterface getMenuItem(int n) 
@@ -52,7 +52,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	public NativeMenuInterface getSubmenu() { return(this); }
 	public int getNativeWidth() { return(JMenu.Width(this)); }
 	public int getNativeHeight() { return(JMenu.Height(this)); }
-	public void paint(java.awt.Graphics g) { paint(Graphics.create(g)); }
+	public void paint(java.awt.Graphics g) { paint(Graphics.create(g,this)); }
 	public void paint(Graphics g) { super.paint(g.getGraphics()); }
 	public static int Height(NativeMenuItemInterface mi)
 	{	Icon ic = mi.getNativeIcon();

@@ -40,6 +40,12 @@ import java.util.Hashtable;
 public class CachedImageManager
 {	private int CACHE_USE_THRESHOLD = 1; 
 	private boolean LOG_CACHE = false;
+	//
+	// this is a heuristic intended to handle the case where lots of
+	// little cards are presented based on huge cards you might eventually
+	// want to see.  Throw away the master as soon as the small card is
+	// created.
+	public boolean IMMEDIATE_UNCACHE = true;
 	public boolean cache_images = true;
 	private boolean needManagement = false;
 	public boolean needsManagement() { return(needManagement); }
@@ -65,6 +71,7 @@ public class CachedImageManager
     private long lastManageTime = 0;
     public boolean manageCachedImages(int timeToSpend,boolean doscaling)
     {  	int created = 0;
+    	boolean needy = false;
     	if(!busy)
     	{
     	try {
@@ -75,7 +82,6 @@ public class CachedImageManager
     	long longExpDate = now-30000;		// 30 seconds ago, consider throwing away a cached image
     	long shortExpDate = now-10000;		// 10 seconds ago, consider forgetting an uncached image
     	//G.addLog("Clearing "+cachedImagesIdle);
-    	CachedImage big = null;
    	 
     	for(Enumeration<Image> e = cachedImages.keys();
     		e.hasMoreElements();)
@@ -109,11 +115,11 @@ public class CachedImageManager
  
       					Image im = CachedImage.getScaledInstance(k,v.ScaledW,v.ScaledH,Image.ScaleType.defaultScale);
     					v.im = im;
-     				  	if((big==null) || (big.ScaledW<v.ScaledW))
-    				  	{	//w=k.getWidth(this);
-    				  		big=v;
-    				  	}
     				    created++;
+    				    if(IMMEDIATE_UNCACHE && k.isUnloadable() && k.getWidth()>v.ScaledW*3)
+    				    {
+    				    	k.unload();
+    				    }
     				    long later =  G.Date();
     				    exit = (later>=exitDate); 
     				    if(exit && LOG_CACHE) { Plog.log.addLog("c ",timeToSpend," ",((int)(later-now))," added ",created); }
@@ -151,15 +157,19 @@ public class CachedImageManager
     			v = next;
      		}
      		// maybe unload the root image of a cached image if it no longer has any sub images 
-			if( (!subsPending  && !k.isUnloaded() && k.isUnloadable() && (removed || (k.getLastUsed()<shortExpDate))) )
+    		boolean unloadable = k.isUnloadable() ;
+			if( (!subsPending  && !k.isUnloaded() && unloadable && (removed || (k.getLastUsed()<shortExpDate))) )
 				{ if(LOG_CACHE) { Plog.log.addLog("unload ",k); }
 				  k.unload(); 
 				}
-
+			else {
+				// if we have unloadable images still pending, keep managing at intervals
+				needy |= unloadable;
+			}
     		}
     	}
 
-    	needManagement = created>0;
+    	needManagement = needy || created>0;
     	}
     	finally {
     	busy = false;
@@ -203,7 +213,8 @@ public class CachedImageManager
    				    		{	// at least do the freeing steps
    				    		//System.out.println("salvage cached images");
    				    		manageCachedImages(10,false);
-    					}
+   				    		}
+    					  needManagement = true;
     					}
  					  cim.useTime = now;
  	  				}

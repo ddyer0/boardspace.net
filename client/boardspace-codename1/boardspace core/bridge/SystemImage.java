@@ -436,7 +436,7 @@ public Graphics getGraphics()
 	}
 	gr.setClip(0,0,w,h);
 	gr.resetAffine();
-	return Graphics.create(gr);
+	return Graphics.create(gr,0,0,getWidth(),getHeight());
 	}
 	return(null);
 }
@@ -648,4 +648,12 @@ public boolean isEncoded()
 public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
 	g.getGraphics().drawImage(this.getImage(),x,y);
 }
+public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) 
+{
+	return Graphics.create(g,canvas.getX(),canvas.getY(),canvas.getWidth(),canvas.getHeight());
+}
+public static Graphics create(com.codename1.ui.Graphics g, Component canvas) {
+	return Graphics.create(g,canvas.getX(),canvas.getY(),canvas.getWidth(),canvas.getHeight());
+}
+
 }
