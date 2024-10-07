@@ -192,7 +192,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				new Benefit[] {Benefit.Worker3,Benefit.Engineer,Benefit.Scientist,Benefit.ScientistOrEngineer});
 	ManhattanCell playDesignBomb = C(ManhattanId.DesignBomb,Type.Worker, Cost.ScientistAndEngineerAndBombDesign,Benefit.BombDesign);
 	ManhattanCell bombtestHelp = C(ManhattanId.BombHelp,Type.Help, Cost.None,Benefit.None);
-	ManhattanCell seeCurrentDesigns = C(ManhattanId.CurrentDesigns,Type.Bomb, Cost.None,Benefit.Inspect);
+	ManhattanCell seeCurrentDesigns = C(ManhattanId.CurrentDesigns,Type.Other, Cost.None,Benefit.Inspect);
 	ManhattanCell playMakePlutonium = C(ManhattanId.MakePlutonium,Type.Worker, Cost.ScientistAnd2Y,Benefit.MainPlutonium);
 	ManhattanCell playMakeUranium = C(ManhattanId.MakeUranium,Type.Worker, Cost.ScientistAnd2YAnd3,Benefit.MainUranium);
 	ManhattanCell playAirStrike[] = CA(ManhattanId.AirStrike,Type.Worker,2, Cost.AnyWorker,Benefit.Airstrike);
@@ -588,7 +588,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         // note that firstPlayer is NOT initialized here
     }
     long initialDigest = 0;
-    
     public void loadNewDesigns(replayMode replay)
     {	int needed = players_in_game+1-seeCurrentDesigns.height();
         if(needed>0 && nBombsAvailable()>=needed)
@@ -2929,6 +2928,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		some = true;
 		break;
 		
+	case PlayEspionage:
+		some = addPlayerEspionageMoves(all,pbs[whoseTurn],whoseTurn);
+		//$FALL-THROUGH$
 	case PlayLocal:
 		// in playlocal, you can always do nothing
 		some = addPlayerBoardMoves(all,pbs[whoseTurn],whoseTurn);
@@ -2942,11 +2944,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		some = true;
  		break;
  		
-	case PlayEspionage:
-		some = addPlayerEspionageMoves(all,pbs[whoseTurn],whoseTurn);
-		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
-		some = true;	// can always say done in espionage state
-		break;
 	case SelectAnyWorker:
 	case SelectAny2Workers:
 		some = addSelectAnyWorkerMoves(all,whoseTurn);
@@ -3050,9 +3047,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  {
  	Hashtable<ManhattanCell,ManhattanMovespec> targets = new Hashtable<ManhattanCell,ManhattanMovespec>();
  	CommonMoveStack all = GetListOfMoves(true);
- 	addSelectableMoves(all);
+ 	
  	if(pickedObject==null)
  	{
+ 	addSelectableMoves(all);
  	ManhattanCell dest = getDest();
  	if(dest!=null)
  	 	{
@@ -3227,6 +3225,9 @@ public String getStateDescription(ManhattanState state)
 	String b = state.description();
 	switch(state)
 	{
+	case PlayEspionage:
+		b = s.get(b,espionageSteps);
+		break;
 	case NeedWorkers:
 		b = s.get(b,needScientists,needEngineers);
 		break;

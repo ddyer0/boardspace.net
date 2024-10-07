@@ -17,6 +17,7 @@
 package yinsh.common;
 
 import java.awt.*;
+import java.awt.Rectangle;
 import lib.Graphics;
 import lib.Image;
 

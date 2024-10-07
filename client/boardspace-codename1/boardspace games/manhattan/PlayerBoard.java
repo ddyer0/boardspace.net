@@ -159,12 +159,12 @@ public class PlayerBoard implements ManhattanConstants
 		ManhattanCell.setPosition(fighters,  0.09,0.11,  0.92,0.11);
 		ManhattanCell.setPosition(bombers,   0.09,0.215, 0.92,0.215);
 		ManhattanCell.setPosition2(buildings, 0.14,0.45, 0.87,0.77 );
-		workers.setPosition(0.05,-0.05);
-		scientists.setPosition(0.65,-0.05);
-		engineers.setPosition(0.35,-0.05);
+		workers.setPosition(0.05,-0.015);
+		scientists.setPosition(0.65,-0.015);
+		engineers.setPosition(0.35,-0.015);
 		
-		cashDisplay.setPosition(-0.07,0.25);
-		yellowcakeDisplay.setPosition(0.95,-0.05);
+		cashDisplay.setPosition(-0.07,0.21);
+		yellowcakeDisplay.setPosition(0.95,-0.0);
 	}
 	public void setPosition(ManhattanCell c,Rectangle r,double xoff,double yoff)
 	{	c.setPosition(boardRect,r,xoff,yoff);
@@ -1344,7 +1344,10 @@ public class PlayerBoard implements ManhattanConstants
 		boolean some = false;
 		if(workers.height()>0) 
 			{ some |= workerSatisfies(all,c,requirements,who,MOVE_FROM_TO); 
-			  if(some && all==null) { return some; }
+			  //
+			  // if we placed an ordinary worker, robots don't need to try scientists or engineers as well.
+			  //
+			  if(some && (b.robot!=null || all==null)) { return some; }
 			  if(hasPersonality(ManhattanChip.Groves) 
 					  && !testOption(TurnOption.GrovesWorker))
 			  {	// use a regular worker as an engineer
@@ -1356,9 +1359,12 @@ public class PlayerBoard implements ManhattanConstants
 					  some |= scientistSatisfies(all,c,requirements,who,MOVE_FROM_TO,workers); 
 				  }
 			}
+		// if we placed an ordinary worker where 
 		if(some && all==null) { return some; }
 		if(engineers.height()>0) 
 			{ some |= engineerSatisfies(all,c,requirements,who,MOVE_FROM_TO,engineers); 
+			  // if a robot placed an engineer, we don't need to also try scientists
+			  if(some && b.robot!=null) { return some; }
 			}
 		if(some && all==null) { return some; }
 		if(scientists.height()>0)

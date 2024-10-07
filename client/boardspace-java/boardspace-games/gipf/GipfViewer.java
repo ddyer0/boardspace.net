@@ -18,6 +18,7 @@ package gipf;
 
 
 import java.awt.*;
+import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 
 import common.GameInfo;

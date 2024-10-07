@@ -18,7 +18,7 @@ package takojudo;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
-
+import java.awt.Rectangle;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;

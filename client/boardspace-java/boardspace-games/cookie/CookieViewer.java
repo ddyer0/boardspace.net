@@ -17,7 +17,7 @@
 package cookie;
 
 import java.awt.*;
-
+import java.awt.Rectangle;
 import online.common.*;
 
 import java.util.*;

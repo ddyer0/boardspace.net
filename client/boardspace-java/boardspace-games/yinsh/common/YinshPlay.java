@@ -17,8 +17,7 @@
 package yinsh.common;
 
 
-import java.awt.*;
-
+import java.awt.Rectangle;
 import online.search.*;
 import lib.*;
 import online.game.*;

@@ -17,6 +17,8 @@
 package khet;
 
 import java.awt.*;
+import java.awt.Rectangle;
+
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;

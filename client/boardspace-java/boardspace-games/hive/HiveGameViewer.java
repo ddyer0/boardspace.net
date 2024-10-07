@@ -326,19 +326,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     } 
 
     private void DrawTilesetRect(Graphics gc,HitPoint highlight)
-    {	
-    	if(G.pointInRect(highlight,tilesetRect))
-    	{	
-    		highlight.hitCode = HiveId.TilesetRect;
-    		highlight.spriteRect = tilesetRect;
-    		highlight.spriteColor = Color.red;
-   		
-    	}
-		if(gc!=null) 
-		{ HivePiece ch = HivePiece.getCanonicalChip(HiveId.White_Bug_Pool,PieceType.QUEEN).getAltChip(1);
-		  ch.drawChip(gc,this,G.Width(tilesetRect)*3,G.centerX(tilesetRect),G.centerY(tilesetRect),null);
-		  GC.frameRect(gc,Color.black,tilesetRect);
-		}
+    {	HivePiece ch = HivePiece.getCanonicalChip(HiveId.White_Bug_Pool,PieceType.QUEEN).getAltChip(1);
+    	ch.drawChip(gc,this,G.Width(tilesetRect)*3,G.centerX(tilesetRect),G.centerY(tilesetRect),
+    			highlight,HiveId.TilesetRect,getAltChipset()==0? CarbonMessage : StandardMessage);
     }
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
     private void DrawSetupPool(Graphics gc, HiveGameBoard gb, HiveState state,Rectangle r, int player,HitPoint highlight,HiveCell cells[])

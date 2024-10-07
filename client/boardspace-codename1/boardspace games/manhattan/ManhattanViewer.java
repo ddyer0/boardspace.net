@@ -54,6 +54,14 @@ import online.search.SimpleRobotProtocol;
 
 
 /**
+ * TODO: should be able to use any workers
+ * TODO: reword bomb info card
+ * TODO: remove extra slots in buildings
+ * TODO: display actual worker type on worker choice cards
+ * TODO: see all personality cards
+ * TODO: expand bomb touch sensitivity
+ * TODO: organize spare workers with all grays together
+ * TODO: place on gray bomb
  * 
  * This is intended to be maintained as the reference example how to interface to boardspace.
  * <p>
@@ -106,9 +114,10 @@ import online.search.SimpleRobotProtocol;
 */
 public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> implements ManhattanConstants,  PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
-
 	// integers won't look quite like all the other integers
  	// TODO: display some indication of the university's owner for "india" selection.
+	
+
     static final String Prototype_SGF = "manhattan"; // sgf game name
 
     // file names for jpeg images and masks
@@ -122,7 +131,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
 
-    
+    private Rectangle visualBoardRect = new Rectangle();
+    private Rectangle visualBoardRectRotated = new Rectangle();
      
     // private state
     private ManhattanBoard bb = null; //the board from which we are displaying
@@ -163,6 +173,31 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     private Rectangle playerPersonality[] = addRect("personality",5);
     private Rectangle playerCard[] = addRect("playercard",5);
     private Rectangle playerChip[] = addRect("score",5);
+    private Toggle playerEyes[] = 
+    	{
+    			new Toggle(this,"eye",
+    					StockArt.NoEye,ManhattanId.SeeBombs,HideBombsExplanation,
+    					StockArt.Eye,ManhattanId.SeeBombs,SeeBombsExplanation
+    					),
+    			new Toggle(this,"eye",
+    					StockArt.NoEye,ManhattanId.SeeBombs,HideBombsExplanation,
+    					StockArt.Eye,ManhattanId.SeeBombs,SeeBombsExplanation
+    					),
+    			new Toggle(this,"eye",
+    					StockArt.NoEye,ManhattanId.SeeBombs,HideBombsExplanation,
+    					StockArt.Eye,ManhattanId.SeeBombs,SeeBombsExplanation
+    					),
+    			new Toggle(this,"eye",
+    					StockArt.NoEye,ManhattanId.SeeBombs,HideBombsExplanation,
+    					StockArt.Eye,ManhattanId.SeeBombs,SeeBombsExplanation
+    					),
+    			new Toggle(this,"eye",
+    					StockArt.NoEye,ManhattanId.SeeBombs,HideBombsExplanation,
+    					StockArt.Eye,ManhattanId.SeeBombs,SeeBombsExplanation
+    					)
+    			
+    	};
+    
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -302,23 +337,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 *  When "extraactions" is available, a menu option "show rectangles" works
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
 
-    boolean traditionalLayout = false;
     Rectangle centerOnBox = null;
     int centerOnBoxRotation = 0;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	modernLayout(x,y,width,height);
+    	setLocalBoundsV(x,y,width,height,new double[] {1});
     	if(centerOnBox!=null) 
     		{ Rectangle r = G.copy(null,centerOnBox);
     		  centerOnBox = null; 
@@ -327,7 +351,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		}
 
     }
-    private void modernLayout(int x, int y, int width, int height)
+    public double setLocalBoundsA(int x, int y, int width, int height,double v)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
@@ -347,7 +371,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			margin,	
     			0.7,	// 60% of space allocated to the board
     			2.0,	// aspect ratio for the board
-    			fh*4,	// minimum cell size
+    			fh*5,	// minimum cell size
     			fh*6,	// maximum cell size
     			0.3		// preference for the designated layout, if any
     			);
@@ -401,6 +425,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.SetRect(visualBoardRect,boardX,boardY+stateH,boardW,boardH-stateH*2);
+    	G.copy(visualBoardRectRotated,visualBoardRect);
+    	G.setRotation(visualBoardRectRotated,Math.PI/2);
+    	
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
@@ -415,8 +443,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW-CELLSIZE,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
+        return boardW*boardH+G.Width(playerBoards[0]);
  	
     }
+    
     /**
      * create all per-player boxes.  Nothing is required, but the standard methods
      * create a player name, clocks, and a box for an avatar.  Standard practice
@@ -430,38 +460,46 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	Rectangle box =  pl.createRectangularPictureGroup(x,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	Rectangle chip = playerChip[player];
-    	int pwid = unitsize*2;
-    	int doneW = plannedSeating()? pwid : 0;
+    	Rectangle eye = playerEyes[player];
+    	int doneW = plannedSeating()? unitsize*2 : 0;
     	int t = G.Bottom(box);
        	G.SetRect(chip,x-unitsize/4,t-unitsize*4/3,unitsize*5/4,unitsize*5/4);
+       	int bigboxH = unitsize*5;
+       	int overallBottom = y+bigboxH;
+ 
        	G.SetRect(done,x,t,doneW,doneW/2);
     	G.union(box, done);
+    	
+    	G.SetRect(eye,G.Right(box),t-unitsize,unitsize,unitsize);
     	
     	int l = x;
     	if(bb.testOption(Options.Personalities))
     	{
     	Rectangle pp = playerPersonality[player];
-    	G.SetRect(pp,l,G.Bottom(box),pwid,unitsize*2+unitsize/4);
+    	int bb = G.Bottom(box);
+    	int pwid = Math.max(doneW,unitsize*3/2);
+    	G.SetRect(pp,l,bb,pwid,overallBottom-bb);
     	G.union(box,pp);
     	l += pwid;
     	}
     	
     	{
     	Rectangle or = playerBombDesigns[player];
-    	G.SetRect(or,l,t,unitsize*2+unitsize/2,unitsize*3+unitsize/4);
+    	int pw = unitsize*2+(doneW==0?unitsize:unitsize/2);
+    	G.SetRect(or,l,t,pw,overallBottom-t);
     	G.union(box,or);
-    	l += unitsize*2+unitsize/2;
+    	l += pw;
     	}
 
     	{
     	Rectangle pp = playerCard[player];
-    	G.SetRect(pp,l,t,unitsize*2,unitsize*3+unitsize/4);
+    	G.SetRect(pp,l,t,unitsize*2,overallBottom-t);
     	G.union(box,pp);
-    	l += unitsize*2;
+    	l += unitsize*3/2;
     	}
    	
     	Rectangle pb = playerBoards[player];
-       	G.SetRect(pb,G.Right(box),y+unitsize/2,unitsize*6+unitsize/4,unitsize*5);
+       	G.SetRect(pb,G.Right(box),y,unitsize*6+unitsize/4,bigboxH);
     	G.union(box,pb);
 
     	pl.displayRotation = rotation;
@@ -653,12 +691,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	boolean see = c.rackLocation()==ManhattanId.Stockpile && c.height()>=2;
     	numberMenu.saveSequenceNumber(c,xpos,ypos);
     	boolean hit = c.drawStack(gc,this,hp, cellSize,xpos,ypos,0,xstep,ystep,see ? null : hint);
-
     	if(hit)
 		{	
 			hp.spriteColor = Color.red;
 			hp.awidth = cellSize/2;
-			
 		}
 		
 		if(selected) 
@@ -797,7 +833,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			}
 			break;
 		case Help:
-			ahp =  hitAny;
+			if(gb.pickedObject==null) { ahp =  hitAny; }
 			//$FALL-THROUGH$
 		default:
 			if(drawDefaultCell(gc,ahp,gb.isSelected(c),c,cellSize,xpos,ypos,xstep,ystep,hint, hitAny))
@@ -847,7 +883,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			}
     			break;
     		case Help:
-    			ahp =  hitAny;
+    			if(gb.pickedObject==null) { ahp =  hitAny; }
     			//$FALL-THROUGH$
     		default:
     			if(drawDefaultCell(gc,ahp,gb.isSelected(c),c,cellSize,xpos,ypos,xstep,ystep,hint, hitAny))
@@ -913,9 +949,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	int bombsize = pb.setPosition(pb.stockpile,bombBox);
     	pb.setPosition(pb.personality,playerPersonality[pb.boardIndex],0,0);
     	int score = pb.calculateScore();
-    	Rectangle rect = playerChip[pb.boardIndex];
-    	pb.chip.drawChip(gc,this,rect,""+score);
-    	pb.chip.drawChip(gc,this,bombBox,null);
+    	pb.chip.drawChip(gc,this,playerChip[pb.boardIndex],""+score);
     	if(G.debug()) { pb.positionCells(); }
     	
     	back.getImage().centerImage(gc,r);
@@ -972,6 +1006,14 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			pb.scientist.drawChip(gc,this,step,left,top,hp,null,OppenheimerWorkerExplanation);
 			}
     	}
+    	if(G.debug() || G.offline())
+    	{
+    		Toggle eyerect = playerEyes[pl.boardIndex];
+    		if(eyerect.draw(gc,hitAny))
+    		{
+    			hitAny.hitData = eyerect;
+    		}
+    	}
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.workers,cellSize*3/2, 0.4, 0.0, null,hitAny);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.scientists,cellSize*3/2, 0.4, 0.0, null,hitAny);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.engineers,cellSize*3/2, 0.4, 0.0, null,hitAny);
@@ -983,10 +1025,13 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.buildings, null, cellSize*3, 0.0, 0.0,null, hitAny);
     	double cashstep = Math.min(0.4,1.5/pb.cashDisplay.height());
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,cashstep, null,hitAny);
-    	String bombBacks = (pl!=getActivePlayer() && !mutable_game_record) 
+ 
+    	Toggle seeBombs = playerEyes[pb.boardIndex];
+    	String bombBacks = (pl!=getActivePlayer() && !mutable_game_record && !seeBombs.isOn()) 
     							? ManhattanChip.BACK 
     							: null;
     	int bsize = Math.min(bombsize,w/pb.stockpile.size());
+    	
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.stockpile,pb.selectedBomb,bsize,0.2,
     			0.2,bombBacks, hitAny);
     	
@@ -1048,6 +1093,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        ManhattanBoard gb = disB(gc);
        ManhattanState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
+       if(gb.whoseTurn!=lastSeenPlayer)
+       {	// set the orientation for popups when the player changes.
+    	   lastSeenPlayer = gb.whoseTurn;
+    	   scaleOverlays = false;
+    	   overlayOrientation = G.rotationQuarterTurns(getPlayerOrTemp(gb.whoseTurn).displayRotation);
+       }
    	   if(gc!=null)
    		{
    		// note this gets called in the game loop as well as in the display loop
@@ -1137,26 +1188,59 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
        drawBoardElements(gc, gb, boardRect, boardSelect,targets,anyOverlay ? null : selectPos);
        
+       GC.unsetRotatedContext(gc,selectPos);
+       
+       Rectangle overlayRect = ((overlayOrientation&1)==0) 
+   		   						? visualBoardRect
+   		   						: visualBoardRectRotated;
+       GC.setRotatedContext(gc,
+    		   overlayRect,selectPos,Math.PI/2*overlayOrientation);
+       scalableOverlay = false;
        if(choiceOverlay)
        	{  
-    	   drawChoiceOverlay(gc,gb,boardRect,targets,
+    	   scalableOverlay = true;
+    	   if(scaleOverlays)
+    	   {
+    		   drawChoiceOverlay(gc,gb,
+    				   new Rectangle(G.Left(overlayRect),G.Top(overlayRect),G.Width(overlayRect)/5,G.Height(overlayRect)/5),
+    				   targets,
+       			   	choices,
+       			   	null,selectPos
+       			   );  
+    	   }
+    	   else
+    	   {
+    	   drawChoiceOverlay(gc,gb,overlayRect,targets,
     			   	choices,
     			   	ourTurnSelect,selectPos
     			   );  
        	}
+       	}
        else if(koreaOverlay)
        {
-    	   drawKoreaOverlay(gc,gb,boardRect,targets,ourTurnSelect,selectPos);
+       	   scalableOverlay = true;
+       	   if(scaleOverlays)
+    	   {drawKoreaOverlay(gc,gb,
+				   new Rectangle(G.Left(overlayRect),G.Top(overlayRect),G.Width(overlayRect)/5,G.Height(overlayRect)/5),
+				   targets,
+   			   	null,selectPos
+   			   ); 
+       	}
+       else 
+		   {
+    	   drawKoreaOverlay(gc,gb,overlayRect,targets,ourTurnSelect,selectPos);
+		   }
        }
        else if(deckOverlay!=null)
        	{
-    	drawOverlayDeck(gc,gb,boardRect,deckOverlay,state.Puzzle()?ourTurnSelect:null,deckSelect,selectPos);   
+    	drawOverlayDeck(gc,gb,overlayRect,deckOverlay,state.Puzzle()?ourTurnSelect:null,deckSelect,selectPos);   
        	}
        
        if(bigChip!=null)
        {
-    	   drawBigChip(gc,gb,boardRect,bigChip,selectPos);
+    	   drawBigChip(gc,gb,overlayRect,bigChip,selectPos);
        }
+       
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
@@ -1377,7 +1461,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
      */
     public void verifyGameRecord()
     {	//DISABLE_VERIFY=true;
-    	//super.verifyGameRecord();
+    	super.verifyGameRecord();
     }
  // for reference, here's the standard definition
  //   public void verifyGameRecord()
@@ -1461,46 +1545,78 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	    {
 	    	super.performReset();
 	    }
-	 
+	 //
+	 // reduce columns by enough to cause an additional row
+	 //
+	 private int columnDecrement(int count,int nrows,int ncols)
+	 {
+		 int leftover = ncols-count%ncols;
+		 int v = Math.max(1,leftover/(nrows+1));
+		 return v;
+	 }
+	 private int nrows(int count, int cols)
+	 {
+		 return (count/cols+(count%cols==0 ? 0 : 1));
+	 }
 	 public void drawChoiceOverlay(Graphics gc,ManhattanBoard gb,Rectangle rect,
 			 		Hashtable<ManhattanCell,ManhattanMovespec>targets,
 			 		CellStack choices,
 			 		HitPoint hp,HitPoint hitAny)
-	 {	int ncells = choices.size();
-	 	Benefit benefit = gb.pendingBenefit;
-	 	boolean trade =  benefit== Benefit.Trade;
-	 	boolean personality = benefit==Benefit.Personality;
-	 	//ManhattanState state = gb.getState();
-	 	boolean censor = (benefit==Benefit.BombDesign) && hp==null;
-		int nrows = trade||(personality&&ncells>=4) ? 2 : 1;
-	 	int ncols = trade 
-	 			? 4 
-	 			: nrows==2 
-	 				? (ncells+1)/2 
-	 				: ncells;
-		int left = G.Left(rect);
+	 {	int left = G.Left(rect);
 		int top = G.Top(rect);
 		int w = G.Width(rect);
 		int h = G.Height(rect);
+		int ah = h-h/5;
+
+		int ncells = choices.size();
+	 	Benefit benefit = gb.pendingBenefit;
+	 	boolean trade =  benefit== Benefit.Trade;
+	 	//ManhattanState state = gb.getState();
+	 	boolean censor = (benefit==Benefit.BombDesign) && hp==null;
+		int nrows = trade ? 2 : 1;
+	 	int ncols = trade 
+	 			? 4 
+	 			: Math.max(2,ncells);
 		 
+		int cellSize = (int)( w/(ncols+0.5));
+		int ystep = cellSize*4/3;
+		 
+		if(!trade)
+		{
+			while(ncols>2 && ystep*(nrows+1)<ah)
+			{
+				ncols--;
+				nrows = nrows(ncells,ncols);
+				cellSize =(int)( w/(ncols+0.5));
+				ystep =cellSize*4/3;
+			}
+			if(ystep*(nrows)>ah)
+			{
+				ncols++;
+				nrows = nrows(ncells,ncols);
+				cellSize = (int)( w/(ncols+0.5));
+				ystep =cellSize*4/3;
+			}
+			// keep the cell size constant, but equalize the length of the rows
+			while(ncols>2 && nrows(ncells,ncols-1)==nrows)
+				{ ncols--; }
+		}
 		double off = (ncols-1)/2.0;
-		int cellSize = w/Math.max(ncols+1,5);
-		int yspace = 4;
-		int ystep = cellSize*yspace/3;
 		int x00 = left+w/2 - (int)(cellSize*off);
 		int x0 = x00;
-		int y0 = top+h/2 - (int)((nrows/2.0-0.5)*ystep);
-		int scrimW = (int)(cellSize*(ncols+0.3));
-		int scrimH = (int)(ystep*(nrows+0.3));
+		int y0 = top+h/2 - (int)(((nrows/2.0)-0.5)*ystep);
+		int scrimW = (int)(cellSize*(ncols+0.2));
+		int scrimH = (int)(ystep*(nrows+0.2));
 		int scrimLeft = x0-cellSize*2/3;
-		int scrimTop =  y0-ystep*2/3;
+		int scrimTop =  y0+(int)(ystep*-0.6);
 		StockArt.Scrim.getImage().drawImage(gc,scrimLeft,scrimTop,scrimW,scrimH);
 		 
 		for(int i=0;i<ncells;i++)
 		 {	ManhattanCell cell = choices.elementAt(i);
 		 	double xs = 0.3/cell.height();
 		 	double ys = 0.3/cell.height();
-			drawBoardCell(gc,hp,gb,targets,cell,cellSize,x0,y0,xs,ys,
+		 	int cs = cell.height()>0 && cell.chipAtIndex(0).type.isACard() ?  cellSize : cellSize*2/3 ;
+			drawBoardCell(gc,hp,gb,targets,cell,cs,x0,y0,xs,ys,
 					censor ? ManhattanChip.BACK:null,hitAny);
 			findBigChip(cell,hitAny,cellSize,x0,y0,xs,ys,null);
 
@@ -1515,15 +1631,15 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 					y0 += ystep;
 				}
 			}
-			else if(i+1==ncols)
+			else if((i+1)%ncols==0)
 			{
 				x0 = x00;
 				y0 += ystep;
 			}
 		 }
-		 int dotSize = w/30;
+		 drawRotators(gc,scrimLeft,scrimTop,scrimW,scrimH,hitAny);
+
 		 GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);
-		 StockArt.FancyCloseBox.drawChip(gc, this, dotSize*3/4, scrimLeft+scrimW-dotSize/2, scrimTop+dotSize/2, hp,ManhattanId.CloseOverlay,null);
 	 }
  
 	 public void drawKoreaOverlay(Graphics gc,ManhattanBoard gb,Rectangle rect,
@@ -1603,7 +1719,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			}
 			y0 += ystep;
 		}
-
+		drawRotators(gc,scrimLeft,scrimTop,scrimW,scrimH,hitAny);
 	}
 
 	GC.setFont(gc,largeBoldFont());
@@ -1631,6 +1747,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 private ChipStack helpOff = new ChipStack();
 	 
 	 ManhattanChip bigChip = null;
+	 int overlayOrientation = 0;
+	 int lastSeenPlayer = -1; 
+	 boolean scaleOverlays = false;
+	 boolean scalableOverlay = false;
 	 public void drawBigChip(Graphics gc,ManhattanBoard gb,Rectangle rect,ManhattanChip ch,	HitPoint hp)
 	 {	int w = G.Width(rect);
 	 	int h = G.Height(rect);
@@ -1640,33 +1760,60 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 	Image im = ch.getImage();
 	 	double imw = im.getWidth();
 	 	double imh = im.getHeight();
-	 	int fillw = (int)(sz*1.02);
-	 	int fillh = (int)(fillw*imh/imw);
-	 	Rectangle fillr = new Rectangle(cx-fillw/2,cy-fillh/2,fillw,fillh);
-	 	GC.fillRect(gc,Color.gray,fillr);
+	 	int scrimW = (int)(sz*1.02);
+	 	int scrimH = (int)(scrimW*imh/imw);
+	 	int scrimLeft = cx-scrimW/2;
+	 	int scrimTop = cy-scrimH/2;
+	 	GC.fillRect(gc,Color.gray,scrimLeft,scrimTop,scrimW,scrimH);
+	 	GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);
 	 	if(ch.drawChip(gc,this,sz,cx,cy,hp,ManhattanId.ShowChip,null,1,1))
 	 	{
 	 		hp.hitData = ch;
 	 	}
+	 	drawRotators(gc,scrimLeft,scrimTop,scrimW,scrimH,hp);
 	 }
 	 
 	 ManhattanCell overlayDeck = null;
 	
 	 public void drawOverlayDeck(Graphics gc,ManhattanBoard gb,Rectangle rect,ManhattanCell cell,
 			 	HitPoint hp,boolean select,HitPoint hitAny)
-	 {	int ncells = cell.height();
-	 	int ncols = Math.max(3,Math.min(ncells,8));
-		int nrows = (ncells+ncols-1)/ncols;
-		while(nrows>=5) { ncols++; nrows = (ncells+ncols-1)/ncols; }
+	 {
 		int left = G.Left(rect);
 		int top = G.Top(rect);
 		int w = G.Width(rect);
 		int h = G.Height(rect);
-		 
-		 double off = (ncols-1)/2.0;
+		int ncells = cell.height();
+	 	int ncols = Math.max(3,ncells);
+		int nrows = 1;
+		
+		
 		 int cellSize = w/(ncols+1);
-		 int yspace = 4;
-		 int ystep = cellSize*yspace/3;
+		 int ystep = cellSize*4/3;
+		 // increase the number of rows until the new number of rows
+		 // exceeds the vertical space
+		 while(ncols>1 && ystep*(nrows+1)<h)
+		 {
+			 ncols -= columnDecrement(ncells,nrows,ncols);
+			 nrows = nrows(ncells,ncols);
+			 cellSize =  w/(ncols+1);
+			 ystep = cellSize*4/3;
+		 }
+		 // we oversteped so step back by 1
+		 if((nrows+1)*ystep>h)
+		 {	// overshot
+			 ncols++;
+			 nrows = nrows(ncells,ncols-1);
+			 cellSize =  w/(ncols+1);
+			 ystep = cellSize*4/3;
+		 }
+		 
+		 // keep the cell size constant, but equalize the length of the rows
+		 while(ncols>2 && nrows(ncells,ncols-1)==nrows)
+				{ ncols--; }
+
+		 double off = (ncols-1)/2.0;
+		 
+		 
 		 int x00 = left+w/2 - (int)(cellSize*off);
 		 int x0 = x00;
 		 int y0 = top+h/2 - (int)((nrows/2.0-0.5)*ystep);
@@ -1702,13 +1849,43 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			 if((i+1)%ncols==0) { x0 = x00; y0 += ystep; }
 			 else { x0 += cellSize; }
 		 }
-		 int dotSize = w/30;
+		 
+		 drawRotators(gc,scrimLeft,scrimTop,scrimW,scrimH,hitAny);
+
 		 GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);	 
-		 StockArt.FancyCloseBox.drawChip(gc, this, dotSize*3/4, scrimLeft+scrimW-dotSize/2, scrimTop+dotSize/2, hitAny,ManhattanId.CloseOverlay,null);
+		 
+
 		 if(hitAny!=null && hitAny.hitCode==DefaultId.HitNoWhere )
 		 {	hitAny.hitObject = cell;
 		 	hitAny.hitCode = ManhattanId.CloseOverlay;
 		 }
+	 }
+	 
+	 // draw rotation arrows and close box for displays.
+	 // this also triggers re-expansion of non-closable overlays that were scaled to get them out of the way.
+	 //
+	 private void drawRotators(Graphics gc,int scrimLeft,int scrimTop,int scrimW,int scrimH,HitPoint hitAny)
+	 {	if(scaleOverlays)
+	 	{
+		 if(HitPoint.setHelpText(hitAny,scrimLeft,scrimTop,scrimW,scrimH,
+				 ReexpandMessage))
+		 	{
+			 hitAny.hitCode = ManhattanId.CloseOverlay;
+		 	}
+	 	}
+	 else
+	 {
+	 	int sz = Math.max(scrimH,scrimW)/20;
+	 	if(plannedSeating())
+		 {	
+			 
+			 ManhattanChip.RotateCCW.drawChip(gc,this,new Rectangle(scrimLeft,scrimTop,sz,sz),
+					 hitAny,ManhattanId.RotateCW,RotateCCWMessage,1.2);
+			 ManhattanChip.RotateCW.drawChip(gc,this,new Rectangle(scrimLeft+sz,scrimTop,sz,sz),
+					 hitAny,ManhattanId.RotateCW,RotateCWMessage,1.2);
+		 }
+		 StockArt.FancyCloseBox.drawChip(gc, this, sz, scrimLeft+scrimW-sz/2, scrimTop+sz/2, hitAny,ManhattanId.CloseOverlay,null);
+	 }
 	 }
 	    private void setGlobalMagnifier(Rectangle box,int qt)
 	    {	if(getGlobalZoom()<=1) { currentZoomRect = null; }
@@ -1755,7 +1932,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         switch (hitCode)
         {
         case CloseOverlay:
+        	bigChip = null;
         	overlayDeck = null;
+        	if(scalableOverlay) { scaleOverlays = !scaleOverlays; }
         	break;
         case ShowChip:
         	{
@@ -1785,6 +1964,18 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         case AirstrikeHelp:
         	helpOff.pushNew(ManhattanChip.AirstrikeHelp);
         	bigChip = ManhattanChip.AirstrikeHelp;
+        	break;
+        case RotateCW:
+        	overlayOrientation = (overlayOrientation+1)&3;
+        	break;
+        case RotateCCW:
+           	overlayOrientation = (overlayOrientation+3)&3;      	
+        	break;
+        case SeeBombs:
+        	{
+        		Toggle o = (Toggle)hp.hitData;
+        		o.toggle();
+        	}
         	break;
         case SeeBuildingPile:
         case CurrentDesigns:

@@ -40,6 +40,7 @@ public interface ManhattanConstants
 		Magnifier,
 		Unmagnifier,
 		HitRetrieve,
+		SeeBombs,
 		SeeEspionage, Espionage, SeeBribes, Building, Mine, 
 		University,
 		DesignBomb,
@@ -49,6 +50,7 @@ public interface ManhattanConstants
 		Repair,
 		MakeFighter,
 		MakeBomber,
+		RotateCW,RotateCCW,
 		MakeMoney, SeeBuildingPile,SeePlutonium,SeeUranium, 
 		Fighters, Bombers, SeeBombPile, SeePersonalityPile, 
 		SeeNationsPile, CurrentDesigns, AvailableWorkers, Workers, CloseOverlay, Cash,Personality, Select,SelectOut,
@@ -71,6 +73,19 @@ public int WinningScore[] = {999, 999, 70, 60, 50, 45 };
  */
 public enum Type { BuildingMarket, Building, Worker, WorkerPool, Marker, Fighter, Bomber, Bomb, Coin, Other, Nations, Personalities, Yellowcake,
 					Uranium, Plutonium, Damage, JapanAirstrike, Bombtest,Bombbuilt,Bombloaded, BomberSale, Help;
+	public boolean isACard()
+	{
+		switch(this)
+		{
+		case Building:
+		case Bomb:
+		case Personalities:
+		case Nations:
+			return true;
+		default: 
+			return false;
+		}
+	}
 	public boolean canDropOn(Type other)
 	{
 		if(this==other) { return true; }
@@ -384,7 +399,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String PlayEngineerMessage = "Add another engineer";
 	static final String Play2EngineersMessage = "Add 2 more engineers";
 	static final String Play2ScientistsMessage = "Add 2 more scientists";
-	static final String PlayEspionageMessage = "Perform espionage on one of your opponents";
+	static final String PlayEspionageMessage = "Perform #1 espionage on one of your opponents";
 	static final String DiscardBombMessage = "Discard down to 3 designs";
 	static final String DiscardOneBombMessage = "Discard one Bomb";
 	static final String ConfirmDiscardMessage = "Click on \"Done\" to discard the selected designs";
@@ -405,10 +420,20 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String GrovesWorkerExplanation = "you can use a laborer as an engineer, or an engineer as 2 engineers";
 	static final String NoMovesMessage = "you have no moves available, just click on \"Done\"";
 	static final String NicholsActionMessage = "Nichols recycles a building";
+	static final String ReexpandMessage = "click to re-expand the overlay";
+	static final String RotateCCWMessage = "rotate the overlay counter-clockwise";
+	static final String RotateCWMessage = "rotate the overlay clockwise";
+	static final String HideBombsExplanation = "hide your bomb designs from the other players";
+	static final String SeeBombsExplanation = "show your bomb designs";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Game",
+			HideBombsExplanation,
+			SeeBombsExplanation,
+			RotateCCWMessage,
+			RotateCWMessage,
+			ReexpandMessage,
 			FuchsExplanation,
 			NicholsActionMessage,
 			NoMovesMessage,

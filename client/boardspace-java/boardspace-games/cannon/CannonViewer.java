@@ -18,7 +18,7 @@ package cannon;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
-
+import java.awt.Rectangle;
 import bridge.Config;
 import common.GameInfo;
 import online.game.*;

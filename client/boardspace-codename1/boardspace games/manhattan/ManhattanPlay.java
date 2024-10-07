@@ -172,6 +172,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {	setInhibitions();
+        	board.setInhibitions(this);
             CommonMoveStack all = board.GetListOfMoves(false);
             return all;
         }
@@ -449,6 +450,8 @@ boolean nochina = false;
 boolean nogermany = false;
 boolean norepair = false;
 boolean nobritain = false;
+boolean noairstrike1 = false;
+
 public void setInhibitions()
 {	PlayerBoard pb = board.getCurrentPlayerBoard();
 	nomines = noaustralia = (pb.yellowcakeDisplay.height()>20);	// inhibit mine activity if the yellowcake supply is good
@@ -464,6 +467,7 @@ public void setInhibitions()
 	nogermany = !pb.hasRetrieveSorEMoves();
 	norepair = !pb.hasRepairMoves();
 	nobritain = norepair && pb.nFighters>=10;
+	noairstrike1 = board.playAirStrike[0].height()==0;
 	if(!noaustralia)
 	{
 		noaustralia = !pb.hasOtherMines();
@@ -487,7 +491,8 @@ public void setDefaultInhibitions(ManhattanCell c)
 		c.inhibited = nouranium;
 		break;
 	case AirStrike:
-		c.inhibited = noairstrikes;
+		c.inhibited = noairstrikes
+				||(c.row==1 && noairstrike1);
 		break;
 	case DesignBomb:
 		c.inhibited = nobombs;
@@ -537,3 +542,9 @@ public void setInhibitions(ManhattanCell c)
 	
 	}
  }
+// notes on personalities
+// France vs USSR france dominates
+// France vs N. Korea about equal
+// Germany vs India about equal
+// Brazil vs N Korea about equal
+

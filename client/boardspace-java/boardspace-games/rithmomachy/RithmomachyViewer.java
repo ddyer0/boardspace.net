@@ -17,6 +17,7 @@
 package rithmomachy;
 
 import java.awt.*;
+import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 

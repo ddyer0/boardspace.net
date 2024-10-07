@@ -96,7 +96,7 @@ public abstract class SystemGraphics {
 	public static Graphics create(com.codename1.ui.Graphics g, com.codename1.ui.Component canvas) {
 		return Graphics.create(g,g.getTranslateX(),g.getTranslateY(),canvas.getWidth(),canvas.getHeight());
 	}
-
+	
 	public void setColor(Color c)
     {	if(logging) { Log.addLog("setColor"); }
     	graphics.setColor(c.getRGB());

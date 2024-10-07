@@ -8197,10 +8197,6 @@ public void canonicalizeHistory()
 		prev.next = m;
 		prev = m;
 		m.next = null;
-		// this is a subtle point.  The now-non-epheral moves have been reordered,
-		// so the digests are invalid.  The invalid digests can trigger invalid removals
-		// due to "digest not changed" if there are undo/redo steps after.
-		m.digest = 0;
 		m.setIndex(h.size());
 		h.push(m);
 		}

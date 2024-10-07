@@ -52,7 +52,7 @@ public class Graphics extends SystemGraphics
 	public int actualHeight() { return actualHeight; }
 	public double getRotation() { return rotation; }
 	public void setActualSize(int w,int h) { actualWidth = w; actualHeight = h; }
-
+	
 	public void fillRoundRect(int left, int top, int width, int height, int rx, int ry) 
 	{	if(logging) { Log.appendNewLog("fillRoundRect "); Log.appendLog(width); Log.appendLog("x");Log.appendLog(height); }
 		graphics.fillRoundRect(left, top, width, height, rx, ry);

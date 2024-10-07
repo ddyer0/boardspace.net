@@ -515,7 +515,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{
 			Component c = safeGetComponentAt(nc);
 			if(c==comp) { return nc; }
-		}
+	}
 		return -1;
 	}
     public int getComponentZOrder(Component comp) {

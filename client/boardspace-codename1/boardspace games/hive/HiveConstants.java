@@ -163,12 +163,15 @@ public interface HiveConstants
     	static PieceType find(int i) { for(PieceType v : values()) { if(v.ordinal()==i) { return(v); }} return(null); } 
     	PieceType(boolean st,String ss) { standard = st; shortName=ss; }
     };
-
+    public static String CarbonMessage = "Switch to Carbon Pieces";
+    public static String StandardMessage = "Switch to Standard pieces";
     static void putStrings()
     { /*
     	String HiveStrings[] = {
     			SetupDescription,
     			TextLogMessage,
+    			CarbonMessage,
+    			StandardMessage,
     			"Hive",
     			SwapDescription,
     			HiveGoal,

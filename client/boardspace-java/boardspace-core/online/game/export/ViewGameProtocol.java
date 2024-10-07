@@ -243,7 +243,7 @@ public interface ViewGameProtocol
    /** print the game record as a SGF file.  These are "public" rather than private
    formats, but mainly to be parsed by the reviewer version of the viewer. */
    public void printGameRecord(PrintStream s,String startingTime,String filename);
-     
+    
 
 
    /** playback the ephemeral data supplied by formEphemeralString.

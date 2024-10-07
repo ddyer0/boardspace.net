@@ -90,7 +90,7 @@ public interface ViewerProtocol extends ViewGameProtocol
     errors where game state "should" have been preserved 
     */
     public long Digest();
-   
+
   
     /** set up a robot for this player as p.robotPlayer.  Don't actually make any moves yet. 
      * this is where you instantiate the class that will implement RobotProtocol for the game.
