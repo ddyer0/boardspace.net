@@ -58,6 +58,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("manhattan.ManhattanViewer",manhattan.ManhattanViewer.class);
     	classes.put("gametimer.GameTimerViewer",gametimer.GameTimerViewer.class);
     	classes.put("honey.HoneyViewer",honey.HoneyViewer.class);
     	classes.put("trench.TrenchViewer",trench.TrenchViewer.class);

@@ -26,6 +26,7 @@ import lib.ImageLoader;
 import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
+import lib.StockArt;
 import lib.exCanvas;
 import online.game.chip;
 import bridge.SystemImage.ScaleType;
@@ -82,10 +83,14 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	{
 		hires = ho;
 		image = im;
+		if(ho!=null)
+		{
 		scale = ho.scale;
 		file = ho.file;
 		color = ho.color;
 		type = ho.type;
+		}
+		else { randomv = r.nextLong(); }
 	}
 	public DrawableImage<?> getAltSizeChip(exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy)
 	{	/*
@@ -388,7 +393,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	}
 
 	static MColor playerColors[] = { MColor.Red, MColor.Green ,MColor.Blue,  MColor.Yellow, MColor.Purple};
-	
+	static ManhattanChip xx = new ManhattanChip(StockArt.Exmark.getImage(), null);
 	static ManhattanChip icon = new ManhattanChip("manhattan-icon-nomask");
 	static ManhattanChip board = new ManhattanChip("board-nomask");
 	static ManhattanChip Yellowcake = new ManhattanChip("yellowcake",Type.Yellowcake,defaultScale,MColor.Gray);
@@ -401,7 +406,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	static ManhattanChip AirstrikeHelp = new ManhattanChip("airstrike-nomask",Type.Help,defaultScale,MColor.Gray);
 	static ManhattanChip BombtestHelp = new ManhattanChip("bombtest-nomask",Type.Help,defaultScale,MColor.Gray);
 	static ManhattanChip Question = new ManhattanChip("question",Type.Other,defaultScale,MColor.Gray);
-	static ManhattanChip BlankCard = new ManhattanChip("blankbomb-nomask",Type.Other,new double[] {0.5,0.5,0.75},MColor.Gray);
+	static ManhattanChip BlankCard = new ManhattanChip("blankbomb",Type.Other,defaultScale,MColor.Gray);
 	static ManhattanChip RotateCW = new  ManhattanChip("rotatecw",Type.Other,defaultScale,MColor.Gray);
 	static ManhattanChip RotateCCW = new  ManhattanChip("rotateccw",Type.Other,defaultScale,MColor.Gray);
 	
@@ -626,15 +631,18 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			Landsdale,
 			new ManhattanChip("lansdale-back",Type.Other),
 	};
+	static public ManhattanChip GrayScientist = new ManhattanChip("worker-xs",WorkerType.S,MColor.Gray);
+	
 	static ManhattanChip scientists[] = {
 			new ManhattanChip("worker-rs",WorkerType.S,MColor.Red),
 			new ManhattanChip("worker-gs",WorkerType.S,MColor.Green),
 			new ManhattanChip("worker-bs",WorkerType.S,MColor.Blue),
 			new ManhattanChip("worker-ys",WorkerType.S,MColor.Yellow),
 			new ManhattanChip("worker-ps",WorkerType.S,MColor.Purple),
-			new ManhattanChip("worker-xs",WorkerType.S,MColor.Gray),
-			
+			GrayScientist
 	};
+	
+	static public ManhattanChip GrayEngineer = new ManhattanChip("worker-xe",WorkerType.E,MColor.Gray);
 	
 	static ManhattanChip engineers[] = {
 			new ManhattanChip("worker-re",WorkerType.E,MColor.Red),
@@ -642,18 +650,25 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			new ManhattanChip("worker-be",WorkerType.E,MColor.Blue),
 			new ManhattanChip("worker-ye",WorkerType.E,MColor.Yellow),
 			new ManhattanChip("worker-pe",WorkerType.E,MColor.Purple),
-			new ManhattanChip("worker-xe",WorkerType.E,MColor.Gray),
+			GrayEngineer
 			
 	};
+	static public ManhattanChip GrayWorker = new ManhattanChip("worker-xl",WorkerType.L,MColor.Gray);
 	static ManhattanChip laborers[] = {
 			new ManhattanChip("worker-rl",WorkerType.L,MColor.Red),
 			new ManhattanChip("worker-gl",WorkerType.L,MColor.Green),
 			new ManhattanChip("worker-bl",WorkerType.L,MColor.Blue),
 			new ManhattanChip("worker-yl",WorkerType.L,MColor.Yellow),
-			new ManhattanChip("worker-pl",WorkerType.L,MColor.Purple),
-			new ManhattanChip("worker-xl",WorkerType.L,MColor.Gray),
-			
+			new ManhattanChip("worker-pl",WorkerType.L,MColor.Purple),	
+			GrayWorker,
 	};
+	
+	static public ManhattanChip GreyGuys[] = 
+		{
+			GrayScientist,GrayEngineer,GrayWorker
+
+		};
+	
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
      * method is called from drawChip, and the result is passed here to substitute a different chip.

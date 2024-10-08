@@ -544,10 +544,12 @@ public void setInhibitions(ManhattanCell c)
  }
 // notes on personalities
 // France vs USSR france dominates
+// France vs South Africa france dominates at first, loses in the end
 // France vs N. Korea about equal
 // Germany vs India about equal
 // Brazil vs N Korea about equal
 // Britain vs Australia Britian a little ahead at first
 // Japan vs USA usa slightly better from the start, japan in the end
+
 
 

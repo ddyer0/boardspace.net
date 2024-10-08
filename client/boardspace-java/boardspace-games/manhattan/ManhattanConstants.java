@@ -298,6 +298,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	PlayLocal(StateRole.Play,PlayLocalState,true,true),
 	Retrieve(StateRole.Play,RetrieveState,false,false),
 	PlayOrRetrieve(StateRole.Play,PlayOrRetrieveState,false,false),
+	ConfirmSelectBuilding(StateRole.Play,ConfirmStateDescription,true,false),
 	ConfirmWorker(StateRole.Play,ConfirmStateDescription,true,false),
 	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false),
 	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false),

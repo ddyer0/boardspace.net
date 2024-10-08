@@ -621,7 +621,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	drawBoardCell(gc,highlight,gb,targets,gb.seeDiscardedBombs, cellSize*3/4, 0.01, 0.01, ManhattanChip.BACK,hitAny);
        	drawBoardCell(gc,highlight,gb,targets,gb.seeBombtests, cellSize*3/4, 0.02, 0.03, null,hitAny);
      	drawBoardCell(gc,highlight,gb,targets,gb.seeBombs, cellSize*3/4, 0.01, 0.01, ManhattanChip.BACK,hitAny);
-      	drawBoardCell(gc,highlight,gb,targets,gb.seePersonalities, cellSize*3/4, 0.02, 0.025, null,hitAny);
+      	drawBoardCell(gc,hitAny,gb,targets,gb.seePersonalities, cellSize*3/4, 0.02, 0.025, null,hitAny);
        	drawBoardCell(gc,highlight,gb,targets,gb.seeNations, cellSize*3/4, 0.01, 0.02, ManhattanChip.BACK,hitAny);
        	
        	drawBoardCell(gc,highlight,gb,targets,gb.playDesignBomb, cellSize, 0.00, 0.03, null,hitAny);
@@ -655,18 +655,15 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     {
       	for(int i=0,siz=cells.size();i<siz;i++)
     	{	ManhattanCell c = cells.elementAt(i);
-    		if(c!=exclude)
-    		{
-      		drawPlayerCell(gc,hp,gb,pb,targets,c,cellSize,xstep,ystep, hint,hitAny);
-    		}
-    		else
-    		{int xpos =pb.cellToX(c);
-    		 int ypos =pb.cellToY(c);
-    		 ManhattanChip.BlankCard.drawChip(gc,this,cellSize,xpos,ypos, null);
-    		}
+       		drawPlayerCell(gc,hp,gb,pb,targets,c,cellSize,xstep,ystep, hint,hitAny);
+    		if(c==exclude) { drawGrayOverlay(gc, pb, c,cellSize); }
     	}
     }
-    
+    public void drawGrayOverlay(Graphics gc, PlayerBoard pb,ManhattanCell c,int cellSize)
+    {	int xpos =pb.cellToX(c);
+    	int ypos =pb.cellToY(c);
+    	ManhattanChip.BlankCard.drawChip(gc,this,cellSize,xpos,ypos, null);
+    }
     public void drawPlayerArray(Graphics gc,HitPoint hp,ManhattanBoard gb,PlayerBoard pb,Hashtable<ManhattanCell, ManhattanMovespec> targets,ManhattanCell cells[], int cellSize, double xstep, double ystep, 
     		String hint,HitPoint hitAny)
     {
@@ -715,13 +712,13 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
      * @param hint
      * @return
      */
-    public boolean findBigChip(ManhattanCell c,HitPoint hitAny,int cellSize,int xpos,int ypos,double xstep,double ystep,String hint)
+    public boolean findBigChip(ManhattanCell c,boolean wholeCell,HitPoint hitAny,int cellSize,int xpos,int ypos,double xstep,double ystep,String hint)
     {
-	int h = c.height();
+	int hi = c.height();
 	boolean hit = false;
-	if(!ManhattanChip.BACK.equals(hint) && (h>=1))
+	if(!ManhattanChip.BACK.equals(hint) && (hi>=1))
 	{
-		for(int i=0;i<h;i++)
+		for(int i=0;i<hi;i++)
 		{
 		ManhattanChip base = c.chipAtIndex(i);
 		switch(base.type)
@@ -733,10 +730,13 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		case Bomb:
 			int xp = (int)(xpos + cellSize*i*xstep);
 			int yp = (int)(ypos - cellSize*i*ystep);	
-			Rectangle r = new Rectangle(xp-cellSize*2/5,yp+cellSize/3,cellSize*4/5,cellSize/3);
+			int top = wholeCell ? yp-cellSize*4/6 : yp+cellSize/3;
+			int h = wholeCell ? cellSize*4/3 : cellSize/3;
+			int left = xp-cellSize*2/5;
+			int w = cellSize*4/5;
 			//GC.frameRect(gc,Color.blue,r);
-			if(G.pointInRect(hitAny,r))
-			{
+			if(G.pointInRect(hitAny,left,top,w,h))
+				{Rectangle r = new Rectangle(left,top,w,h);
 				hitAny.spriteRect = r;
 				hitAny.spriteColor = Color.red;
 				hitAny.hitCode = ManhattanId.ShowChip;
@@ -825,14 +825,22 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		case Help:
 			if(gb.pickedObject==null) { ahp =  hitAny; }
 			//$FALL-THROUGH$
+		case Worker:
 		default:
 			if(drawDefaultCell(gc,ahp,gb.isSelected(c),c,cellSize,xpos,ypos,xstep,ystep,hint, hitAny))
 			{
 				ahp.hitData = move;
+				if(c.type==Type.Worker)
+				{
+					move.from_index = ahp.hit_index;
+				}
 			}
 
 		}
-    	findBigChip(c,hitAny,cellSize,xpos,ypos,xstep,ystep,hint);
+		boolean selectable = (ahp==null)
+								&&(gb.pickedObject==null)
+								&&((move==null || move.op!=MOVE_SELECT));
+    	findBigChip(c,selectable,hitAny,cellSize,xpos,ypos,xstep,ystep,hint);
 		if(c.benefit!=Benefit.Inspect 
 				&& eyeRect.isOnNow() 
 				&& !gb.getState().Puzzle()
@@ -887,7 +895,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         			hit = true;
     			}
     		}
-			findBigChip(c,hitAny,cellSize,xpos,ypos,xstep,ystep,hint);
+    		boolean selectable = (ahp==null)
+					&&(gb.pickedObject==null)
+					&&((move==null || move.op!=MOVE_SELECT));
+			findBigChip(c,selectable,hitAny,cellSize,xpos,ypos,xstep,ystep,hint);
 			if(c.benefit!=Benefit.Inspect 
 				&& eyeRect.isOnNow() 
 				&& !gb.getState().Puzzle()
@@ -1030,11 +1041,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	{	
     		ManhattanMovespec bomb = targets.get(selected);
     		boolean can = bomb!=null;
+    		HitPoint ahp = can ? hp : null;
     		Rectangle cr = playerCard[pb.boardIndex];
     		int cansize = G.Width(cr);
     		int xp = G.centerX(cr);
     		int yp = G.centerY(cr);
-    		if(drawBuildingCell(gc,can?hp:null,false,null, selected,cansize,
+    		if(drawBuildingCell(gc,ahp,false,null, selected,cansize,
     				xp,yp,0.2,0.2,
     				selected.type==Type.Bomb ? bombBacks : null,
     				hitAny))
@@ -1042,7 +1054,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			hp.hitObject = selected;
     			hp.hitData = bomb;
     		}
-        	findBigChip(selected,hitAny,cansize,xp,yp,0,0,null);
+    		boolean selectable = (ahp==null)
+					&&(gb.pickedObject==null);
+        	findBigChip(selected,selectable,hitAny,cansize,xp,yp,0,0,null);
     		GC.frameRect(gc,Color.black,cr);
     	}
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.airstrikeHelp,cellSize,0.0,0.4, null,hitAny);
@@ -1608,7 +1622,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		 	int cs = cell.height()>0 && cell.chipAtIndex(0).type.isACard() ?  cellSize : cellSize*2/3 ;
 			drawBoardCell(gc,hp,gb,targets,cell,cs,x0,y0,xs,ys,
 					censor ? ManhattanChip.BACK:null,hitAny);
-			findBigChip(cell,hitAny,cellSize,x0,y0,xs,ys,null);
 
 			x0 += cellSize; 
 			

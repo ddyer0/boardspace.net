@@ -230,7 +230,7 @@ public class PlayerBoard implements ManhattanConstants
 			ManhattanCell c = buildings.pop();
 			removeCell(c);
 		}
-		expandBuildings(10);
+		expandBuildings(9);
 		airstrikeHelp.reInit();
 		airstrikeHelp.addChip(ManhattanChip.Question);
 		nPlacedWorkers = 0;
@@ -651,7 +651,9 @@ public class PlayerBoard implements ManhattanConstants
 	int nDesignsAvailable()
 	{	int n=0;
 		for(int lim = stockpile.size()-1; lim>=0; lim--)
-		{	if(designIsAvailable(stockpile.elementAt(lim))) { return n++; }
+		{	if(designIsAvailable(stockpile.elementAt(lim))) 
+			{ n++;
+			}
 		}
 		return n;
 	}
@@ -2321,10 +2323,46 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		return idx>0;
 	}
-	private void chooseScientistOrEngineer(Benefit be,int ns,int ne)
+	public void chooseScientistOrEngineer(Benefit be,int ns,int ne)
 	{	b.prepareChoices(2);
-		for(int i=0;i<ns;i++) { b.choice[0].addChip(scientist);}
-		for(int i=0;i<ne;i++) { b.choice[1].addChip(engineer); }
+		{
+		ManhattanChip sci1 = null;
+		for(int i=0;i<ns;i++)
+			{ 
+			// we need extra logic becuase the request can be 2 scientists
+			// and the pattern may be mixed colored and gray
+    		ManhattanChip sci = (b.countAvailableWorkers(color,WorkerType.S)>i)
+    							? scientist
+    							: (b.countAvailableWorkers(MColor.Gray,WorkerType.S)
+    									> ((sci1==ManhattanChip.GrayScientist) ? i : 0))
+    							? ManhattanChip.GrayScientist
+    								: ManhattanChip.xx;;
+ 
+ 			sci1 = sci;
+ 			if(i==0 || sci!=ManhattanChip.xx) 
+			{
+ 			// show one chip if two are not available
+			b.choice[0].addChip(sci); 
+			}
+			}}
+		{
+		ManhattanChip eng1 = null;
+		for(int i=0;i<ne;i++) 
+		{     		
+		// we need extra logic becuase the request can be 2 scientists
+		// and the pattern may be mixed colored and gray
+		ManhattanChip eng = (b.countAvailableWorkers(color,WorkerType.E)>i)
+							? engineer
+							: (b.countAvailableWorkers(MColor.Gray,WorkerType.E)
+								> (eng1==(ManhattanChip.GrayEngineer) ? i : 0))
+								? ManhattanChip.GrayEngineer
+								: ManhattanChip.xx;
+		eng1 = eng;
+		if(i==0 || eng!=ManhattanChip.xx) 
+			{// show one chip if two are not available
+			b.choice[1].addChip(eng); 
+			}
+		}}
 		b.pendingBenefit = be;
 		b.setState(ManhattanState.CollectBenefit);
 		
@@ -2693,7 +2731,7 @@ public class PlayerBoard implements ManhattanConstants
 			
 			break;
 		case Engineer2OrScientist:
-			chooseScientistOrEngineer(benefit,2,1);
+			chooseScientistOrEngineer(benefit,1,2);
 			break;
 			
 		case ScientistOrEngineer:
@@ -2979,6 +3017,9 @@ public class PlayerBoard implements ManhattanConstants
 			case Damage:
 				b.repairCounter = selected.height();
 				b.setState(ManhattanState.Repair);
+				break;
+			case Other:
+				// selected a blank type. This is the 'xx' character from choose scientist or engineer 
 				break;
 			case Bomb:
 				if(something==ManhattanChip.BombBack)

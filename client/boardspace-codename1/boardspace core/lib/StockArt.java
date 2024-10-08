@@ -147,6 +147,7 @@ public class StockArt extends DrawableImage<StockArt> {
 	public static StockArt Exmark = new StockArt("exmark",new double[] {0.5,0.5,0.75});
 	public static StockArt Tooltips = new StockArt("tooltips",defaultAdjust);
 	public static StockArt Scrim =  new StockArt("scrim-nomask",defaultAdjust);
+	public static StockArt TransparentScrim = new StockArt("scrim",defaultAdjust);
 	public static StockArt Gear = new StockArt("gear-nomask.png",defaultAdjust);
 
 	//public static StockArt GreenLight = new StockArt("green-light",new double[]{0.5,0.5,1.0});

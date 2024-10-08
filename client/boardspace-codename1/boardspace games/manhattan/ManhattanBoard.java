@@ -354,11 +354,15 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private void add4IfInUse(ManhattanChip c)
     {
     	PlayerBoard pb = getPlayerBoard(c.color);
-    	if(pb!=null || c.color==MColor.Gray)
+    	if(pb!=null)
+    	{
+    		add4(c);
+    	}
+    }
+    private void add4(ManhattanChip c)
     	{
     		for(int i=0;i<4;i++) { availableWorkers.addChip(c); }
     	}
-    }
     
 	private int getAvailableWorkerIndex(MColor c,WorkerType t)
 	{
@@ -382,7 +386,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		}
 		return null;
 	}
-	
+	int countAvailableWorkers(MColor c,WorkerType t)
+	{
+		int n=0;
+		for(int lim=availableWorkers.height()-1; lim>=0; lim--)
+		{
+			ManhattanChip ch = availableWorkers.chipAtIndex(lim);
+			if(ch.workerType==t && ch.color==c)
+			{	n++;
+			}
+		}
+		return n;
+	}
 	int buildingCost[] = {2,3,5,7,10,14,20};
 
 	// shuffle the building array after one has been removed;
@@ -474,7 +489,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         for(ManhattanChip c : ManhattanChip.scientists)
     	{ add4IfInUse(c);
     	}
+        for(ManhattanChip c : ManhattanChip.GreyGuys)
+        {	add4(c);
                
+        }
         // randomize and place the starting buildings
         seeBuildings.reInit();
         for(ManhattanChip ch : ManhattanChip.startingBuildings) { seeBuildings.addChip(ch); }
@@ -862,6 +880,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         {
         default:
         case ConfirmWorker:
+        case ConfirmSelectBuilding:
         	throw G.Error("Move not complete, can't change the current player in state %s",board_state);
         case Puzzle:
             break;
@@ -1780,6 +1799,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        	case ConfirmPayment:
      	case ConfirmBenefit:
     	case ConfirmWorker:
+    	case ConfirmSelectBuilding:
        	case ConfirmSingleAirstrike:
     	case ConfirmRetrieve1:
        		// if we still have workers, allow continuing
@@ -1850,11 +1870,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		contextStack.save();
     		pendingBenefit = c;
     		whoseTurn = who;
-    		prepareChoices(2);
-    		choice[0].addChip(pb.scientist);
-    		choice[1].addChip(pb.engineer);
+    		pb.chooseScientistOrEngineer( Benefit.ScientistOrEngineer,1,1);
     		pendingCost = Cost.None;
-    		pendingBenefit = Benefit.ScientistOrEngineer;
     		setState(ManhattanState.ResolveChoice);
     	}
     }
@@ -2094,6 +2111,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		
     		break;
     	case ConfirmPayment:
+    	case ConfirmSelectBuilding:
     	case ConfirmWorker:
     		{
     		ManhattanCell dest = getDest();
@@ -2131,7 +2149,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		}
     		break;
     	case RetrieveSorE:
-    		setState(ManhattanState.ConfirmRetrieve);	// chose not to (or didn't have any)
+    		setState(ManhattanState.ConfirmRetrieve1);	// chose not to (or didn't have any)
     		break;
     	case ConfirmRetrieve:
     		doRetrieve(replay);
@@ -2284,6 +2302,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	{
 		boolean nichols = (board_state!=ManhattanState.ConfirmWorker)
 						&& (board_state!=ManhattanState.SelectBuilding)
+						&& (board_state!=ManhattanState.ConfirmSelectBuilding)
 						&&  ( newselected==seeBuilding[0]);	// for the nichols personality option
        	boolean multi = !nichols && pendingBenefit==Benefit.DiscardBombs;
        	boolean tworows = !nichols && pendingBenefit==Benefit.Trade;
@@ -2324,15 +2343,26 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     		if(displayCells.size()-selectedCells.size()==3) { next = ManhattanState.ConfirmDiscard; }
     		break;
        	case RetrieveSorE:
-       		if(!remove) { next = ManhattanState.ConfirmRetrieve1; } break;
+       		if(!remove) { next = ManhattanState.ConfirmRetrieve1; } 
+       		break;
      	case PaidRepair:
-    	case Repair: if(!remove) { next = ManhattanState.ConfirmRepair; } break;
-       	case CollectBenefit: if(!remove) { next = ManhattanState.ConfirmBenefit; } break;
+    	case Repair: 
+    		if(!remove) { next = ManhattanState.ConfirmRepair; } 
+    		break;
+       	case CollectBenefit: 
+       		if(!remove) { next = ManhattanState.ConfirmBenefit; } 
+       		break;
        	case SelectPersonality:
-    	case ResolveChoice: if(!remove) { next = ManhattanState.ConfirmChoice;} break;
+    	case ResolveChoice: 
+    		if(!remove) { next = ManhattanState.ConfirmChoice;} 
+    		break;
     	case DiscardOneBomb:
-    	case ResolvePayment: if(!remove) { next = ManhattanState.ConfirmPayment; } break;
+    	case ResolvePayment: 
+    		if(!remove) { next = ManhattanState.ConfirmPayment; } 
+    		break;
     	case SelectBuilding:
+    		if(!remove) { next = ManhattanState.ConfirmSelectBuilding; }
+    		break;
     	case BuildIsraelBomb:
     	case PlayLocal: 
     	case Play: next = ManhattanState.ConfirmWorker; break;
@@ -2554,7 +2584,19 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         	setWhoseTurn(m.player);
         }
  }
- 
+ public boolean addNicholsMoves(CommonMoveStack all,PlayerBoard pb,int who)
+ {	boolean some = false;
+	 if(pb.hasPersonality(ManhattanChip.Nichols) 
+			 && !pb.testOption(TurnOption.NicholsShuffle)
+			 && seeBuilding[0].height()>0)
+	 	{	some = true;
+	 		if(all!=null)
+	 		{	// personality nichols can trash the first building
+	 			all.push(new ManhattanMovespec(MOVE_SELECT,seeBuilding[0],0,whoseTurn));
+	 		}
+	 	}
+	 return some;
+ }
  public boolean addMainboardMoves(CommonMoveStack all,int who)
  {
 	 PlayerBoard pb = pbs[who];
@@ -2575,15 +2617,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		 }
 		 }
 	 }}
-	 if(pb.hasPersonality(ManhattanChip.Nichols) 
-			 && !pb.testOption(TurnOption.NicholsShuffle)
-			 && seeBuilding[0].height()>0)
-	 	{	some = true;
-	 		if(all!=null)
-	 		{	// personality nichols can trash the first building
-	 			all.push(new ManhattanMovespec(MOVE_SELECT,seeBuilding[0],0,whoseTurn));
-	 		}
-	 	}
+	 some |= addNicholsMoves(all,pb,who);
 	 if(pb.hasPersonality(ManhattanChip.Fuchs)
 			 && !pb.testOption(TurnOption.FuchsEspionage))
 	 	{
@@ -2862,6 +2896,16 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	case North_Korea_Dialog:
  		some |= addNorthKoreaMoves(all,whoseTurn);
  		break;
+ 	case ConfirmPayment:
+ 	case ConfirmChoice:
+ 	case ConfirmBenefit:
+ 		if(robot!=null) 
+ 			{ 
+ 			if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+ 			some = true;
+ 			break; 	// the robot doesn't second guess itself
+ 			}
+		//$FALL-THROUGH$
  	case ResolvePayment:
  	case CollectBenefit:
  	case ResolveChoice:
@@ -2889,18 +2933,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  				some |= true;
  			}
  		break;
-	case ConfirmRetrieve1:
-	case ConfirmRepair:
-	case ConfirmDiscard:
+ 	case ConfirmNichols:
+ 		if(robot==null) { some |= addNicholsMoves(all,pbs[whoseTurn],whoseTurn); }
+		//$FALL-THROUGH$
 	case ConfirmSingleAirstrike:
 	case ConfirmAirstrike:
 	case ConfirmJapanAirstrike:
- 	case ConfirmChoice:
- 	case ConfirmBenefit:
- 	case ConfirmNichols:
  	case Confirm:
  	case ConfirmWorker:
- 	case ConfirmPayment:
  	case ConfirmRetrieve:
  		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
  		some = true;
@@ -2948,6 +2988,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	case SelectAny2Workers:
 		some = addSelectAnyWorkerMoves(all,whoseTurn);
 		break;
+	case ConfirmSelectBuilding:
+		if(robot!=null) 
+		{ 
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;
+		break; 	// the robot doesn't second guess itself
+		}
+		//$FALL-THROUGH$
 	case SelectBuilding:
 		some = addSelectBuildingMoves(all,getDest(),whoseTurn);
 		break;
@@ -2967,15 +3015,41 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		if(all==null && some) break;
 		if(needScientists>0) {  some |= addScientistMoves(all,getDest(),whoseTurn); }
 		break;
+		
+	case ConfirmRepair:	// include the selections in the confirm state
+		if(robot!=null) 
+			{ 
+			if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+			some = true;
+			break; 	// the robot doesn't second guess itself
+			}
+		//$FALL-THROUGH$
 	case Repair:
 	case PaidRepair:
 		some = addRepairMoves(all,whoseTurn);
 		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
 		some = true;	// can always pass out of repair
 		break;
+
+	case ConfirmRetrieve1:	// include the selection moves in the confirm state
+		if(robot!=null) 
+		{ 
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;
+		break; 	// the robot doesn't second guess itself
+		}
+		//$FALL-THROUGH$
 	case RetrieveSorE:	// germany
 		some = addRetrieveSorEMoves(all,whoseTurn);
 		break;
+	case ConfirmDiscard:
+		if(robot!=null) 
+		{ 
+		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
+		some = true;
+		break; 	// the robot doesn't second guess itself
+		}
+		//$FALL-THROUGH$
 	case DiscardBombs:
 	case DiscardOneBomb:
 		some = addDiscardBombMoves(all,whoseTurn);
@@ -3053,7 +3127,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	addSelectableMoves(all);
  	ManhattanCell dest = getDest();
  	if(dest!=null)
- 	 	{
+ 	 	{	// if we moved something, allow picking it up
  	 		targets.put(dest,new ManhattanMovespec(MOVE_PICK,dest,-1,whoseTurn));
  	 	}
  	 for(int lim=all.size()-1; lim>=0; lim--)
