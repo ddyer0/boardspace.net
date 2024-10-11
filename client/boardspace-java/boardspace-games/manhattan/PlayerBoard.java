@@ -1441,6 +1441,7 @@ public class PlayerBoard implements ManhattanConstants
 		{	if(all==null) { return true; }
 			all.push(new ManhattanMovespec(op,workers,-1,dest,who));
 			some = true;
+			if(some && b.robot!=null) { return some; }	// use workers if possible
 		}
 		if((engineers.height()>0)||(picked==WorkerType.E))
 		{	if(all==null) { return true; }
@@ -1516,8 +1517,7 @@ public class PlayerBoard implements ManhattanConstants
 	 return some;
 	}
 	public boolean addRetrieveSorEMoves(CommonMoveStack all,MColor targetColor,int who)
-	{	if(all==null) { return true; }
-		boolean some = addAddRetrieveSorEMoves(all,buildings,targetColor,who);
+	{	boolean some = addAddRetrieveSorEMoves(all,buildings,targetColor,who);
 		some |= addAddRetrieveSorEMoves(all,stockpile,targetColor,who);
 		return some;
 	}
@@ -1590,11 +1590,11 @@ public class PlayerBoard implements ManhattanConstants
 		// don't overpledge if some have already weighed in
 		for(int i=0,lim=Math.max(0,Math.min(3-sofar,cashDisplay.cash)); i<=lim; i++)
 				{
-				all.push(new ManhattanMovespec(EPHEMERAL_CONTRIBUTE,color,i,who));
+				all.push(new ManhattanMovespec(b.robot==null ? EPHEMERAL_CONTRIBUTE : MOVE_CONTRIBUTE,color,i,who));
 				}}
 		else 
 		{
-		all.push(new ManhattanMovespec(EPHEMERAL_APPROVE,color,who));
+		all.push(new ManhattanMovespec(b.robot==null ? EPHEMERAL_APPROVE : MOVE_APPROVE,color,who));
 		}
 		return true;
 	}
@@ -1605,7 +1605,7 @@ public class PlayerBoard implements ManhattanConstants
 		some |= addPlayerBoardMoves(all,pickedObject,stockpile,who);
 		if(hasPersonality(ManhattanChip.Lemay) && !testOption(TurnOption.LemayAirstrike))
 		{
-			some |= b.addAirstrikeMoves(all,who);
+			some |= b.addAirstrikeMoves(all,true,who);
 		}
 		if(hasPersonality(ManhattanChip.Szilard))
 		{	// can use the main board reactors
@@ -1618,7 +1618,8 @@ public class PlayerBoard implements ManhattanConstants
 
 	public boolean hasBuildBombMoves()
 	{
-		return addIsraelBombMoves(null,null,boardIndex);
+		boolean some = addIsraelBombMoves(null,null,boardIndex);
+		return some;
 	}
 	
 	public boolean addIsraelBombMoves(CommonMoveStack all,ManhattanChip pickedObject,int who)
@@ -1714,7 +1715,10 @@ public class PlayerBoard implements ManhattanConstants
 	{	
 		Cost is = c.chipAtIndex(0).getIsraeliCost();
 		// special case for "little boy" which needs no workers in israel mode
-		if((is==Cost.Uranium3) && (pickedObject==null) && c.height()==1)
+		if((is==Cost.Uranium3)
+				&& (nUranium>=3)
+				&& (pickedObject==null) 
+				&& c.height()==1)
 		{	if(all!=null)
 			{
 			all.push(new ManhattanMovespec(MOVE_SELECT,c,-1,who));
@@ -2386,7 +2390,15 @@ public class PlayerBoard implements ManhattanConstants
 		b.pendingBenefit = Benefit.Nations_UK;
 		
 	}
-	
+	public int nUsableBuildings()
+	{
+		int n = 0;
+		for(int lim = buildings.size()-1; lim>=0; lim--)
+		{	ManhattanCell c = buildings.elementAt(lim);
+			if(c.height()>0 && c.topChip()!=ManhattanChip.Damage) { n++; }
+		}
+		return n;
+	}
 	public boolean hasOtherUniversities()
 	{	
 		for(PlayerBoard pb : b.pbs)
@@ -2711,6 +2723,9 @@ public class PlayerBoard implements ManhattanConstants
 				  pb.koreanContribution=0; 
 				}
 			b.setState(ManhattanState.North_Korea_Dialog);
+			if(b.robot!=null)
+				{ b.setNextPlayer(replayMode.Replay); 
+				}
 			break;
 		case Nations_USA:
 			// 2 bombers or 1 bomber and 3$
@@ -3105,14 +3120,14 @@ public class PlayerBoard implements ManhattanConstants
 		}
 	}
 	
-	public void addAirstrikeMoves(CommonMoveStack all,PlayerBoard victim,boolean japan,int who) 
+	public void addAirstrikeMoves(CommonMoveStack all,PlayerBoard victim,boolean japan,boolean lemay,int who) 
 	{
 		// add airstrike moves on the victim
 		if(nFighters>0)
 		{
 			if(victim.nFighters>0) 
 			{ 
-				for(int i = 1,dest=victim.nFighters-1;i<=nFighters && dest>=0;i++,dest--)
+				for(int i = 1,dest=victim.nFighters-1;i<=(lemay?1:nFighters) && dest>=0;i++,dest--)
 				{
 				all.push(new ManhattanMovespec(MOVE_ATTACK,fighters[nFighters],0,
 					victim.fighters[dest],who));
@@ -3120,7 +3135,7 @@ public class PlayerBoard implements ManhattanConstants
 			}
 			if(victim.nBombers>0)
 			{
-				for(int i = 1,dest=victim.nBombers-1;i<=nFighters && dest>=0;i++,dest--)
+				for(int i = 1,dest=victim.nBombers-1;i<=(lemay?1:nFighters) && dest>=0;i++,dest--)
 				{
 				all.push(new ManhattanMovespec(MOVE_ATTACK,fighters[nFighters],0,
 						victim.bombers[dest],who)); 

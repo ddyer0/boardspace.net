@@ -58,6 +58,8 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
  		return(getAltDisplayChip((int)c.randomv));
     	}
 	
+ 
+	
 	/**
 	 * this is the opportunity to substitute a decorative different chip on the way to being drawn,
 	 * based on the cell where it resides.  This is (for example) used to present one of several
@@ -70,6 +72,18 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
     {
     	if(alternates!=null) { return(alternates[Math.abs(rv%alternates.length)]); }
     	return((T)this);
+    }
+    /**
+     * this is an opportunity to substitute an alternate chip based on the size to be used.
+     * forsize is pixels on the canvas, which ought to relate to the size of the artwork
+     * 
+     * @param forsize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+	public T getAlternateSizeChip(int forsize)
+    {
+    	return (T)this;
     }
 
 	/**

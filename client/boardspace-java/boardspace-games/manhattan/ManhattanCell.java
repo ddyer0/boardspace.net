@@ -16,6 +16,8 @@
  */
 package manhattan;
 
+import java.awt.Rectangle;
+
 import lib.Random;
 import lib.exCanvas;
 import manhattan.ManhattanConstants.Benefit;
@@ -23,8 +25,6 @@ import manhattan.ManhattanConstants.Type;
 import manhattan.ManhattanConstants.MColor;
 import manhattan.ManhattanConstants.ManhattanId;
 import manhattan.ManhattanConstants.Cost;
-
-import java.awt.Rectangle;
 
 import lib.G;
 import lib.Graphics;

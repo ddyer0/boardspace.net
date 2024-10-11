@@ -172,17 +172,21 @@ public class UDPService implements Runnable,Config
 
 	public void sendMessage(String m)
 	{	log("out "+m);
-		if(service!=null) { service.sendMessage(m); }
+		UdpRunner s = service;
+		if(s!=null) { s.sendMessage(m); }
 	}
 	public String getMessage(int wait) 
 	{ 
 		String m = null;
-		if(service!=null) { m = service.getMessage(wait); }
+		UdpRunner s = service;
+		if(s!=null) { m = s.getMessage(wait); }
 		if((m==null) && (wait==0)) { G.waitAWhile(this, 1); }	// wait anyway
 		return(m);
 	}
 	public void wake()
-		{ service.wake(); 
+		{ 		
+		UdpRunner s = service;
+		if(s!=null) { s.wake(); } 
 		}
 	
 	int errors = 0;
@@ -240,8 +244,12 @@ public class UDPService implements Runnable,Config
 		if(host==null) { host=""; }
 		// old clients will see both but only use the second 
 		boolean showtype =  G.debug() || (REMOTERPC & REMOTEVNC);
-		if(REMOTERPC) { service.sendMessage(role.name()+":"+rpcPort+":"+G.getGlobalStatus().name()+":"+host+(showtype ? " rpc" : "")); }
-		if(REMOTEVNC) { service.sendMessage(role.name()+":"+tcpPort+":"+G.getGlobalStatus().name()+":"+host+(showtype  ? " vnc" : "")); } 
+		UdpRunner s = service;
+		if(s!=null)
+		{
+		if(REMOTERPC) { s.sendMessage(role.name()+":"+rpcPort+":"+G.getGlobalStatus().name()+":"+host+(showtype ? " rpc" : "")); }
+		if(REMOTEVNC) { s.sendMessage(role.name()+":"+tcpPort+":"+G.getGlobalStatus().name()+":"+host+(showtype  ? " vnc" : "")); } 
+		}
 	}
 
 	public void run() {
@@ -273,8 +281,12 @@ public class UDPService implements Runnable,Config
 	public static void stop()
 	{	UDPService me = getInstance();
 		instance = null;
+		if(me!=null)
+		{
 		me.exitRequest = true;
-		if(me.service!=null) { me.service.stop(); }
+		UdpRunner s = me.service;
+		if(s!=null) { s.stop(); }
+		}
 	}
 
 	private static UDPService instance = null;
@@ -292,7 +304,8 @@ public class UDPService implements Runnable,Config
 	{	
 		UDPService ser = instance==null ? null : getInstance();
 		if(ser==null) { return(false); }
-		return (!ser.exitRequest && ser.service.running);
+		UdpRunner s = ser.service;
+		return (!ser.exitRequest && s!=null && s.running);
 	}
 	public static void setRole(boolean server)
 	{	getInstance().setMyRole(server);

@@ -331,10 +331,12 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
- 
- // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
- // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
- // evaluator other than winning a game.
+ //
+ // Notes on optimizing MCTS for Manhattan Project.  
+ // even the very first working version was not terrible, so probably manhattan is not a hard game for MCTS.
+ // The main method to optimize it has been to prevent it making really terrible moves during the random
+ // playout phase, along the lines of "if you have a lot of bomb designs, don't take more"
+ //
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	try {
@@ -451,6 +453,11 @@ boolean nogermany = false;
 boolean norepair = false;
 boolean nobritain = false;
 boolean noairstrike1 = false;
+boolean nomorebuildings = false;
+boolean nomoremoney = false;
+boolean nobombers = false;
+boolean nofighters = false;
+
 
 public void setInhibitions()
 {	PlayerBoard pb = board.getCurrentPlayerBoard();
@@ -459,7 +466,8 @@ public void setInhibitions()
 	noplutonium = pb.nPlutonium>=7;
 	nouranium = pb.nUranium>=7;
 	nosouthafrica = !pb.hasBuiltBombs();
-	noisrael = nopakistan = !pb.hasBuildBombMoves();
+	noisrael = !pb.hasBuildBombMoves();
+	nopakistan = !pb.hasDesignsAvailable();
 	noairstrikes = true;
 	noindia = !pb.hasOtherUniversities();
 	norussia = !pb.hasOtherOpenBuildings();
@@ -468,6 +476,10 @@ public void setInhibitions()
 	norepair = !pb.hasRepairMoves();
 	nobritain = norepair && pb.nFighters>=10;
 	noairstrike1 = board.playAirStrike[0].height()==0;
+	nomorebuildings = pb.nUsableBuildings()>10;
+	nomoremoney = pb.cashDisplay.cash>=20;
+	nobombers = pb.nBombers >= pb.bombers.length-1;
+	nofighters = pb.nFighters >= pb.fighters.length-1;
 	if(!noaustralia)
 	{
 		noaustralia = !pb.hasOtherMines();
@@ -484,6 +496,15 @@ public void setDefaultInhibitions(ManhattanCell c)
 {
 	switch(c.rackLocation())
 	{
+	case Fighters:
+		c.inhibited = nofighters;
+		break;
+	case Bombers: 
+		c.inhibited = nobombers;
+		break;
+	case MakeMoney:
+		c.inhibited = nomoremoney;
+		break;
 	case MakePlutonium:
 		c.inhibited = noplutonium;
 		break;
@@ -503,12 +524,26 @@ public void setDefaultInhibitions(ManhattanCell c)
 	case Repair:
 		c.inhibited = norepair;
 		break;
+
+	case BuyWithEngineer:
+	case BuyWithWorker:
+		c.inhibited = nomorebuildings;
+		break;
 	case Building:
 		if(c.height()>0)
 		{
 			ManhattanChip ch = c.chipAtIndex(0);
-			if((nomines && ch.isAMine())
+			if(		(nomorebuildings && c.type==Type.BuildingMarket)
+					|| (nomines && ch.isAMine())
+					|| (nouranium && ch.isAnEnricher())
 					|| (noplutonium && ch.isAReactor())
+					|| (nomoremoney && ((ch.benefit==Benefit.Five)
+										|| (nofighters && ch.fightersAndMoney())
+										|| (nobombers && ch.bombersAndMoney())))
+					|| (nofighters 
+							&& nobombers 
+							&& ((ch.benefit==Benefit.Fighter2AndBomber2)
+									|| (ch.benefit==Benefit.FighterOrBomber)))
 					|| (ch.type==Type.Nations
 					    &&
 					    (((ch==ManhattanChip.UK) && nobritain)
@@ -550,6 +585,8 @@ public void setInhibitions(ManhattanCell c)
 // Brazil vs N Korea about equal
 // Britain vs Australia Britian a little ahead at first
 // Japan vs USA usa slightly better from the start, japan in the end
+//
+// Germany vs Pakistan, germany dominates at the start
 
 
 

@@ -124,7 +124,7 @@ import vnc.VNCService;
  *  <p>
  * *  
 */
-public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants
+public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants,PlacementProvider
 {	
     // file names for jpeg images and masks
     static final String SoundDir = G.isCodename1() ? "/appdata/euphoria-other/data/" : "/euphoria/sounds/";
@@ -467,7 +467,6 @@ private Color playerBackground[] = {
         super.init(info,frame);
         EuphoriaState.putStrings();
         // use_grid=reviewer;// use this to turn the grid letters off by default
-
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
@@ -626,7 +625,7 @@ private Color playerBackground[] = {
     	int boardBottom = boardY+boardH;
         int stateY = boardY-stateH+stateH/4;
         layout.returnFromMain(extraW,extraH);
-        G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,magnifierRect,noChatRect);
+        G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,annotationMenu,magnifierRect,noChatRect);
 
         // make the recruit rect square and centered on the board, so everything
         // will be easy when displayed rotated.
@@ -827,6 +826,9 @@ private Color playerBackground[] = {
     	boolean hit = false;
     	int CELLSIZE = gb.CELLSIZE;
     	EuphoriaId rack = cell.rackLocation();
+
+    	numberMenu.saveSequenceNumber(cell,xpos,ypos);
+
     	switch(rack)
     	{	 case PlayerNewWorker:
     			cell.defaultScale = CELLSIZE; 
@@ -1605,7 +1607,7 @@ private Color playerBackground[] = {
     	// something which might allow an action.  Either gc or highlight might be
     	// null, but not both.
         //
-
+    	
         // using closestCell is preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
     	if(gc!=null) 
@@ -1630,6 +1632,8 @@ private Color playerBackground[] = {
             						? gb.legalToDropOnBoard(cell,dests) 
             						: gb.legalToHitBoard(cell,sources);
             drawStackOnBoard(gc,gb,canhit?highlight:null,cell,xpos,ypos,tip);
+        	numberMenu.saveSequenceNumber(cell,xpos,ypos);
+
             }
           }
         if(tip!=null && tip.hitCode instanceof EuphoriaId)
@@ -2537,6 +2541,8 @@ private Color playerBackground[] = {
        boolean anyAuxGui = recruitGui|recruitOverlay|bigChipOverlay ;
        HitPoint ourTurnSelect = ourMove ? selectPos : null;
        
+       numberMenu.clearSequenceNumbers();
+
        //
        // whoseMove refers to the actually state of the board, not who is allowed
        // to make mouse gestures to change the state.  The symptom if this is wrong
@@ -2546,7 +2552,7 @@ private Color playerBackground[] = {
        //
        int whoseMove = (simultaneousTurnsAllowed())
 				? getActivePlayer().boardIndex
-				: gb.whoseTurn;;
+				: gb.whoseTurn;
        //
        // even if we can normally select things, if we have already got a piece
        // moving, we don't want to hit some things, such as the vcr group
@@ -2563,16 +2569,18 @@ private Color playerBackground[] = {
        drawHiddenWindows(gc, selectPos);
 
        double []currentZoom = zoomZone(gb);
-       
+       boolean drawnZoomed = false;
    	   if(currentZoom==null) { magnifier = true; }	// turn it back on for next time
    	   {
    		Hashtable<EuphoriaCell,EuphoriaMovespec>dests = moving ? gb.getDests(whoseMove) : null;
    		Hashtable<EuphoriaCell,EuphoriaMovespec>sources = moving ? null : gb.getSources(whoseMove);
+   		double []actualZoom = (magnifier && ourMove && !animating)?currentZoom:null;
+   		drawnZoomed = actualZoom!=null;
         drawZoomedBoardElements(gc, 
     		   gb, 
     		   boardRect, 
     		   anyAuxGui?null:ourTurnSelect,sources,dests,
-    		   (magnifier && ourMove && !animating)?currentZoom:null,
+    		   actualZoom,
     		   selectPos);
    	   }
        if(currentZoom!=null)
@@ -2698,6 +2706,9 @@ private Color playerBackground[] = {
             goalAndProgressMessage(gc,nonDragSelect,Color.white,s.get(EuphoriaVictoryCondition),progressRect, goalRect);
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for euphoria
         
+        if(!drawnZoomed && !recruitGui && !recruitOverlay && !bigChipOverlay) 
+        	{ numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);        	
+        	}
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
 
@@ -2717,6 +2728,7 @@ private Color playerBackground[] = {
     	{   
     		bb.setActivePlayer(getActivePlayer().boardIndex);
             handleExecute(bb,mm,replay);
+            numberMenu.recordSequenceNumber(bb.moveNumber()+(bb.doneLast?0:1));
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -3571,4 +3583,7 @@ private Color playerBackground[] = {
     	}
     	return(newHist);
     }
+    public int getLastPlacement(boolean empty) {
+		return (bb.moveNumber+(bb.doneLast?0:1));
+	}
 }

@@ -20,8 +20,8 @@ import static manhattan.ManhattanMovespec.*;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.util.*;
 
+import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -634,6 +634,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
      *  */
     public void copyFrom(ManhattanBoard from_b)
     {
+    	rawCopyFrom(from_b);
+    	if(G.debug())
+    	{
+    	long d1 = Digest();
+    	doInit();
+    	rawCopyFrom(from_b);
+    	long d2 = Digest();
+    	G.Assert(d1==d2,"init copyfrom mismatch");
+    	}
+    }
+    private void rawCopyFrom(ManhattanBoard from_b)
+    {    	
         super.copyFrom(from_b);
         for(int i=0;i<players_in_game;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         dropMoveNumber = from_b.dropMoveNumber;
@@ -898,6 +910,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         case NextPlayer:
         case NoMovesState:
         case PaidRepair:
+        case North_Korea_Dialog:
         case Resign:
             moveNumber++; //the move is complete in these states
     		espionageSteps = 0;	// done spying too
@@ -2501,7 +2514,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        		 PlayerBoard pb = getPlayerBoard(m.from_color);
        		 pb.approvedNorthKorea = true;
        		 pb.hasSetContribution = true;	// even if not really
-       		 if(allApproved() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     		 
+       		 if(allApproved() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     	
+       		 else if(robot!=null) { setNextPlayer(replayMode.Replay); }
        		}
        		break;
        case EPHEMERAL_CONTRIBUTE:
@@ -2701,7 +2715,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  
 
  public boolean addRetrieveSorEMoves(CommonMoveStack all,int who)
- {	if(all==null) { return true; }
+ {	
  	PlayerBoard mpb = pbs[who];
 	boolean some = false;
 	MColor color = mpb.color;
@@ -2715,8 +2729,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 {	 some |= pb.addRetrieveSorEMoves(all,color,who);
 	 	 some |= pb.addRetrieveSorEMoves(all,color,who);
 	 }
-	 if(!some) { all.push(new ManhattanMovespec(MOVE_DONE,who)); }
-	 return true;
+	 return some;
  }
  
 
@@ -2730,14 +2743,14 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  {	 
 	 return pb.addPlayerBoardMoves(all,pickedObject,who);
  }
- public boolean addAirstrikeMoves(CommonMoveStack all,int who)
+ public boolean addAirstrikeMoves(CommonMoveStack all,boolean lemay,int who)
  {	 
  	 if(all==null) { return true; }
  	 PlayerBoard mypb = pbs[who];
 	 for(PlayerBoard pb : pbs)
 	 {
 		 if(pb!=mypb)
-		 { mypb.addAirstrikeMoves(all,pb,board_state==ManhattanState.JapanAirstrike,who); 
+		 { mypb.addAirstrikeMoves(all,pb,board_state==ManhattanState.JapanAirstrike,lemay,who); 
 		 }
 	 }
 
@@ -2946,7 +2959,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  		break;
  	case Airstrike:
  	case JapanAirstrike:
- 		some = addAirstrikeMoves(all,whoseTurn);
+ 		some = addAirstrikeMoves(all,false,whoseTurn);
  		if(all!=null) { all.push(new ManhattanMovespec(MOVE_DONE,whoseTurn)); }
  		some = true;	// can always pass out of airstrikes
  		break;
@@ -3011,7 +3024,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		break;
 	case NeedWorkers:
 		if(needEngineers>0) { some = addEngineerMoves(all,getDest(),whoseTurn); }
-		if(all==null && some) break;
+		if(some && (all==null || robot!=null)) { break;}
 		if(needScientists>0) {  some |= addScientistMoves(all,getDest(),whoseTurn); }
 		break;
 		
@@ -3083,7 +3096,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  }
  public void initRobotValues(ManhattanPlay m)
  {	robot = m;
- 	setInhibitions(m);
  }
 
  // small ad-hoc adjustment to the grid positions

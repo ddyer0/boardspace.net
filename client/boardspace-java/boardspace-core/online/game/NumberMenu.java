@@ -81,6 +81,7 @@ public class NumberMenu extends Rectangle {
 	public NumberingMode selected() { return selected; }
 	PlacementProvider selectedProvider = null;
 	int startingNumber = 0;
+	private boolean mouseIsOn = false;
 	public boolean includePartialMoves = true;
 	double arrowOpacity = 0.7;		// opacity for arrows
     public double lineWidthMultiplier = 0.05;		// cellsize multiplier for line width of the arrow
@@ -119,9 +120,11 @@ public class NumberMenu extends Rectangle {
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
+	    	mouseIsOn = false;
 	    	if(base.drawChip(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,text))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
+	    		mouseIsOn = true;
 				highlight.setHelpText(G.getTranslations().get(helpText));
 	    	}
 	     }  
@@ -202,8 +205,11 @@ public class NumberMenu extends Rectangle {
 	public int getVisibleNumber(int number)
 	{
 		if(number>=0)
-		{
-			switch(selected)
+		{	NumberingMode choice = selected();
+			if(mouseIsOn && choice==NumberingMode.None)
+				{ choice = NumberingMode.Last;
+				}
+			switch(choice)
 			{
 			case None: return -1;
 			case From_Here:

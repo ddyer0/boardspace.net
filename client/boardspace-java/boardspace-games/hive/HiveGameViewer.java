@@ -92,7 +92,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Rectangle[]setupRects = addRect("setup",2);
     private Rectangle tilesetRect = addRect("tilesetRect");
     private Rectangle reverseRect = addRect("reverseRect");
-    private Toggle seeMobile = new Toggle(this,"eye",StockArt.Eye,HiveId.SeeMovable,true,"See Movable Pieces");
+    private Toggle seeMobile = new Toggle(this,"eye",StockArt.Eye,HiveId.SeeMovable,true,SeeMovableMessage);
  
     private int tileColorSet = 0;
     public int getAltChipset() 

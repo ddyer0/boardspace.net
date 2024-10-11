@@ -1124,18 +1124,13 @@ public class UCTMoveSearcher extends CommonDriver
 			return(myCopy);
 		}
 		public commonMove getCurrent2PVariation()
-		{	if(threads!=null)
-			{
-			return(getLeadThread().getCurrent2PVariation());
-			}
-			return(null);
+		{	UCTThread t = (UCTThread)Thread.currentThread();
+			return t.getCurrent2PVariation();
 		}
 		public commonMove getCurrentVariation()
-		{	if(threads!=null)
 			{
-			return(getLeadThread().getCurrentVariation());
-			}
-			return(null);
+			UCTThread t = (UCTThread)Thread.currentThread();
+			return t.getCurrentVariation();
 		}
 	    public void pauseThreads() 
 	    {

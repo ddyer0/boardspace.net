@@ -76,6 +76,11 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	public boolean isAReactor() { return isAReactor; }
 	private boolean isAnEnricher = false;
 	public boolean isAnEnricher() { return isAnEnricher; }
+	private boolean bombersAndMoney = false;
+	public boolean bombersAndMoney() { return bombersAndMoney; }
+	private boolean fightersAndMoney = false;
+	public boolean fightersAndMoney() { return fightersAndMoney; }
+	
 	public ManhattanChip lores = null;
 	public ManhattanChip hires = null;
 	
@@ -235,11 +240,26 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			isAUniversity = true;
 			break;
 		case Plutonium:
+		case Plutonium2:
+		case Plutonium3:
+		case Plutonium4:
 			isAReactor = true;
 			break;
 		case Uranium:
+		case Uranium2:
+		case Uranium3:
 			isAnEnricher = true;
 			break;
+		case FighterAnd2:
+		case Fighter3And3:
+			fightersAndMoney = true;
+			break;
+		case BomberAnd2:
+		case Bomber3And3:
+			bombersAndMoney = true;
+			break;
+			
+			
 		default: break;
 			
 		}

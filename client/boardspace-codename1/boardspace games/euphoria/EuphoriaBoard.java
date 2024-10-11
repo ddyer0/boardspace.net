@@ -1467,6 +1467,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     {
     	return(isIIB() ? startingPosition[players_in_game] : 0);
     }
+
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int play,int rev)
     {	clearSteps();
@@ -1474,6 +1475,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	allCells.setDigestChain(new Random(0x6235366));
     	win = new boolean[play];
     	players_in_game = play;
+    	doneLast = true;
      	Random gameRandom = new Random(key);
     	SIMULTANEOUS_PLAY = MASTER_SIMULTANEOUS_PLAY;
     	
@@ -2374,6 +2376,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     private EuphoriaCell unDropObject()
     {	EuphoriaCell rv = droppedDestStack.top();
 		EuphoriaId rack = rv.rackLocation();
+		rv.lastDropped = prevLastDropped;
 		if(rv!=null) 
     	{	droppedDestStack.pop();
     	
@@ -2396,6 +2399,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
      	}
     	return(rv);
     }
+    private int prevLastPicked = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -2404,6 +2408,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	if(pickedSourceStack.size()>0) 
     		{ int height = pickedHeightStack.pop();
     		  EuphoriaCell src = pickedSourceStack.pop();
+    		  src.lastPicked =prevLastPicked;
     		  if(pickedObject!=null)
     		  { if(!src.rackLocation().infinite) { src.insertChipAtIndex(height,pickedObject); }
     		    if(src.rackLocation==EuphoriaId.UnusedWorkers)
@@ -2422,13 +2427,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     		}
 		  pickedObject = null;
     }
+    private int prevLastDropped = -1;
     // 
     // drop the floating object.
     //
     private void dropObject(EuphoriaCell c,replayMode replay)
     {
     	EuphoriaId rack = c.rackLocation();
-
     	switch(rack)
 		{
     	case GenericSink:
@@ -2477,6 +2482,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			}
 			break;
 		default:  
+	    	prevLastDropped = c.lastDropped;
+	    	c.lastDropped = moveNumber;
 			c.addChip(pickedObject);  
 			break;
 		}
@@ -2532,6 +2539,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     // to replace the original contents if the pick is cancelled.
     private void pickObject(EuphoriaCell c,int h)
     {	pickedSourceStack.push(c);
+    	prevLastPicked = c.lastPicked;
+    	c.lastPicked = moveNumber;
     	pickedStateStack.push(board_state);
     	if((c==unusedArtifacts)&&(c.height()==0)) { reshuffleArtifacts(); }
     	int pickedHeight = Math.max(0,Math.min(c.chipIndex,h));
@@ -3382,9 +3391,11 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     {
     	return (RecruitChip)unusedRecruits.removeTop();
     }
+    public boolean doneLast = false;
     private void doDone(EuphoriaChip chipin,replayMode replay)
     {	EPlayer p = players[whoseTurn];
     	openedMarket = null;
+    	doneLast = true;
     	marketToOpen = (chipin!=null && chipin.isMarket()) ? chipin : null;
     	if(resignPending) { 
         	win[(whoseTurn+1)%players.length] = true;
@@ -4563,7 +4574,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         {	// the rerolled workers are still in newWorkers
         	int numberNew = p.newWorkers.height();
            	int extraKnowledge = 0;	// institute of orwellian optimism increases the effective knowledge of 1 or2 value workers          
-           	p.newWorkers.reInit();
+           	p.newWorkers.makeEmpty();
         	int rollPenalties = 0;
         	int h = p.workers.height();
         	while(numberNew-- > 0)
@@ -6915,6 +6926,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     public boolean Execute(commonMove mm,replayMode replay)
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
+    	doneLast = false;
         if(replay.animate) { animationStack.clear(); gameEvents.clear(); }
         if(board_state==EuphoriaState.Puzzle)
         {

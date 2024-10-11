@@ -40,7 +40,7 @@ class CellStack extends OStack<EuphoriaCell>
  * @author ddyer
  *
  */
-public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
+public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip> implements PlacementProvider
 {	
 	public double center_x;
 	public double center_y;
@@ -114,6 +114,8 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 		placementBenefit = ot.placementBenefit;
 		placementCost = ot.placementCost;
 		defaultScale = ot.defaultScale;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	public void copyAllFrom(EuphoriaCell other)
 	{
@@ -158,5 +160,21 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 	{	int sum = 0;
 		for(int lim=height()-1; lim>=0; lim--) { sum += chipAtIndex(lim).knowledge(); }
 		return(sum);
+	}
+
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public void makeEmpty()
+	{	// avoid clearing the lastPicked/lastDropped
+		super.reInit();
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = lastDropped = -1;
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 }

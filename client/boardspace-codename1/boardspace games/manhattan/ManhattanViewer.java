@@ -16,18 +16,15 @@
  */
 package manhattan;
 
-import common.GameInfo;
 
-import static manhattan.ManhattanMovespec.*;
+import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
+import bridge.Color;
+import bridge.JCheckBoxMenuItem;
 
 import online.common.*;
 import java.util.*;
 
-import com.codename1.ui.geom.Point;
-import com.codename1.ui.geom.Rectangle;
-
-import bridge.Color;
-import bridge.JCheckBoxMenuItem;
 import lib.Graphics;
 import lib.CellId;
 import lib.DefaultId;
@@ -51,6 +48,8 @@ import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
+import common.GameInfo;
+import static manhattan.ManhattanMovespec.*;
 
 
 /**
@@ -1266,7 +1265,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation();
        
-       numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);
+       if(bigChip==null && deckOverlay==null && !koreaOverlay && !choiceOverlay)
+    	   { numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);    	
+    	   }
        
        GC.setFont(gc,standardBoldFont());
        
@@ -1944,7 +1945,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         case ShowChip:
         	{
         	ManhattanChip ch =  (ManhattanChip)hp.hitData;
-        	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
         	if(bigChip!=null) 
         		{	if(bigChip.type==Type.Help) { helpOff.pushNew(bigChip); }
         		}
