@@ -331,10 +331,12 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
- 
- // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
- // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
- // evaluator other than winning a game.
+ //
+ // Notes on optimizing MCTS for Manhattan Project.  
+ // even the very first working version was not terrible, so probably manhattan is not a hard game for MCTS.
+ // The main method to optimize it has been to prevent it making really terrible moves during the random
+ // playout phase, along the lines of "if you have a lot of bomb designs, don't take more"
+ //
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	try {
@@ -348,7 +350,7 @@ public void PrepareToMove(int playerIndex)
          	//RandomMoveQA qa = new RandomMoveQA();
          	//qa.runTest(this, new Random(),100,false);
          	//qa.report();
-         	
+ 		noinhibitions = false;
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
@@ -385,10 +387,22 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
 
         move = monte_search_state.getBestMonteMove();
-
+        if(move!=null && move.op==MOVE_DONE)
+        {
+       	 ManhattanMovespec mm = (ManhattanMovespec)move;
+       	 if(mm.from_index==99)	// marked as a desperation move
+       	 {
+       		 noinhibitions = true;
+       		 move = monte_search_state.getBestMonteMove();
+       		 noinhibitions = false;
+       	 }
+        }
  		}
       finally { ; }
       if(move==null) { continuous = false; }
+     //
+     // the bot might inhibit some moves and end up with none, unnecessarily
+
      return(move);
  }
  /**
@@ -456,6 +470,7 @@ boolean nomoremoney = false;
 boolean nobombers = false;
 boolean nofighters = false;
 
+boolean noinhibitions = false;
 
 public void setInhibitions()
 {	PlayerBoard pb = board.getCurrentPlayerBoard();
@@ -491,7 +506,8 @@ public void setInhibitions()
 	}
 }
 public void setDefaultInhibitions(ManhattanCell c)
-{
+{	if(!noinhibitions) 
+	{
 	switch(c.rackLocation())
 	{
 	case Fighters:
@@ -559,15 +575,15 @@ public void setDefaultInhibitions(ManhattanCell c)
 		}
 		break;
 	default: break;
-	}
+	}}
 }
 public void setInhibitions(ManhattanCell c) 
 {
 	switch(Strategy)
 	{
+	case WEAKBOT_LEVEL:
 	case SMARTBOT_LEVEL:
 	case DUMBOT_LEVEL:
-	case WEAKBOT_LEVEL:
 		setDefaultInhibitions(c);
 		break;
 	default: G.Error("Not expecting strategy %s",Strategy);

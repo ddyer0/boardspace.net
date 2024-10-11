@@ -1026,7 +1026,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.bombers, cellSize, 0.5, 0.5, null,hitAny);
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.buildings, null, cellSize*3, 0.0, 0.0,null, hitAny);
     	double cashstep = Math.min(0.4,1.5/pb.cashDisplay.height());
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,cashstep, null,hitAny);
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,cashstep,null,hitAny);
+    	HitPoint.setHelpText(hitAny,cellSize*3,pb.cellToX(pb.cashDisplay),pb.cellToY(pb.cashDisplay),
+    			""+pb.cashDisplay.cash+"$");
  
     	Toggle seeBombs = playerEyes[pb.boardIndex];
     	String bombBacks = (pl!=getActivePlayer() && !mutable_game_record && !seeBombs.isOn()) 

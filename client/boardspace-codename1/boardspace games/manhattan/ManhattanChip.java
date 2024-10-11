@@ -118,9 +118,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		}*/
 		if(image!=null
 				&& image.isUnloadable() 
-				&& lores==null 
-				&& SQUARESIZE<200 
-				&& image.getWidth()>400)
+				&& SQUARESIZE<image.getWidth()/2)
 		{	// this is an ad-hoc heuristic for the manhattan project's artwork.  
 			// all the images are unloadable, and are relatively huge.  If asking
 			// for a scaled image that's much smaller than the original image, create
@@ -130,13 +128,27 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			// all the images need the hires version.  This is addressed by some 
 			// logic in the canvas which skips all the image processing for images
 			// that aren't visible.
-			Image smaller = image.getScaledInstance(image.getWidth()/2,image.getHeight()/2,ScaleType.defaultScale);
+			int imw = image.getWidth();
+			int ratio = Math.max(2,imw/(SQUARESIZE*4));
+			int neww = imw/ratio;
+			G.Assert(neww>=SQUARESIZE,"bigger");
+			if((lores!=null) && lores.getImage().getWidth()<neww)
+				{
+					//G.print("rescale ",lores);
+					lores.getImage().unload();
+					lores = null;
+				}		
+			if(lores==null)
+			{
+			Image smaller = image.getScaledInstance(image.getWidth()/ratio,image.getHeight()/ratio,ScaleType.defaultScale);
 			ManhattanChip newchip = new ManhattanChip(smaller,this);
 			image.unload();
 			lores = newchip;
-			//G.print("scalable ",this," ",image," ",image==null ? "" : image.isUnloaded()," ",SQUARESIZE);
+			//G.print("scalable ",this," ",image," ",image.isUnloaded()," ",SQUARESIZE," ",smaller);
 		}
-		if((lores!=null) && SQUARESIZE<200)
+			
+		}
+		if((lores!=null) && lores.getWidth()>=SQUARESIZE)
 		{
 			return lores;
 		}

@@ -128,7 +128,8 @@ public class PlayerBoard implements ManhattanConstants
 	{
 		ManhattanCell c = fighters[nFighters];
 		if(c.topChip()!=null) { c.removeTop(); }
-		int newpos = Math.max(0,Math.min(nFighters+n,fighters.length-1));
+		int newpos = Math.min(nFighters+n,fighters.length-1);
+		G.Assert(newpos>=0,"negative fighters!");
 		ManhattanCell d = fighters[newpos];
 		d.addChip(fighter);
 		nFighters = newpos;
@@ -142,7 +143,8 @@ public class PlayerBoard implements ManhattanConstants
 	{
 		ManhattanCell c = bombers[nBombers];
 		if(c.topChip()!=null) { c.removeTop(); }
-		int newpos = Math.max(0,Math.min(nBombers+n,bombers.length-1));
+		int newpos = Math.min(nBombers+n,bombers.length-1);
+		G.Assert(newpos>=0,"negative bombers!");
 		ManhattanCell d = bombers[newpos];
 		d.addChip(bomber);
 		nBombers = newpos;
@@ -821,8 +823,8 @@ public class PlayerBoard implements ManhattanConstants
 	private boolean engineerSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who,int op,ManhattanCell source)
 	{	boolean some = false;
 		int prepicked = (op==MOVE_FROM_TO) ? 0 : 1;
+		int actualPicked = prepicked;
 		if(hasPersonality(ManhattanChip.Groves)
-				&& prepicked>0
 				&& source==engineers		// using 1 engineer as 2
 				&& !testOption(TurnOption.GrovesWorker))	
 		{ 	// pretend we picked 2 workers up
@@ -890,13 +892,13 @@ public class PlayerBoard implements ManhattanConstants
 			if(cashDisplay.cash==0) { break; }	// must have cash
 			//$FALL-THROUGH$
 		case Any2Workers:
-			some = nAvailableWorkers()+prepicked>=2;
+			some = nAvailableWorkers()+actualPicked>=2;	// groves not applicable
 			break;
 		case Engineer2:
 			some = engineers.height()+prepicked>=2;
 			break;
 		case Any3Workers:
-			some = nAvailableWorkers()+prepicked>=3;
+			some = nAvailableWorkers()+actualPicked>=3;	// groves not applicable
 			break;
 		case Engineer3:
 			some = engineers.height()+prepicked>=3;
@@ -981,7 +983,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 				
 		case  Any2WorkersAndRetrieve:	// germany
-			some = ((nAvailableWorkers()+prepicked>=2) && hasRetrieveSorEMoves());
+			some = ((nAvailableWorkers()+actualPicked>=2) && hasRetrieveSorEMoves());
 			break;
 		
 		// bomb cost
@@ -1055,8 +1057,8 @@ public class PlayerBoard implements ManhattanConstants
 	private boolean scientistSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements, int who,int op,ManhattanCell source)
 	{	boolean some = false;
 		int prepicked = (op==MOVE_FROM_TO) ? 0 : 1;
+		int actualPicked = prepicked;
 		if(hasPersonality(ManhattanChip.Oppenheimer) 
-				&& prepicked>0
 				&& source==scientists		// using a scientits as 2
 				&& !testOption(TurnOption.OppenheimerWorker))	
 			{ // pretend we picked 2 workers up
@@ -1124,7 +1126,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 			
 		case  Any2WorkersAndRetrieve:	// germany
-			some = ((nAvailableWorkers()+prepicked>=2) && hasRetrieveSorEMoves());
+			some = ((nAvailableWorkers()+actualPicked>=2) && hasRetrieveSorEMoves());
 			break;
 			
 		case ScientistAndEngineerAndBombDesign:	
@@ -1136,7 +1138,7 @@ public class PlayerBoard implements ManhattanConstants
 			if(cashDisplay.cash==0) { break; }	// must have cash
 			//$FALL-THROUGH$
 		case Any2Workers:
-			some = nAvailableWorkers()+prepicked>=2;
+			some = nAvailableWorkers()+actualPicked>=2;	// oppenheimer not applicable
 			break;
 		case Engineer2:
 		case Engineer3:
@@ -1340,7 +1342,7 @@ public class PlayerBoard implements ManhattanConstants
 	// counts down the required workers and when all are present, it collects the
 	// ancillary resources.  Sometimes this involves a supplementary dialog.
 	//
-	private boolean satisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who)
+	private boolean satisfies(CommonMoveStack all,boolean allowPersonalities,ManhattanCell c,Cost requirements,int who)
 	{	
 		boolean some = false;
 		if(workers.height()>0) 
@@ -1349,6 +1351,8 @@ public class PlayerBoard implements ManhattanConstants
 			  // if we placed an ordinary worker, robots don't need to try scientists or engineers as well.
 			  //
 			  if(some && (b.robot!=null || all==null)) { return some; }
+			  if(allowPersonalities)
+			  {
 			  if(hasPersonality(ManhattanChip.Groves) 
 					  && !testOption(TurnOption.GrovesWorker))
 			  {	// use a regular worker as an engineer
@@ -1358,7 +1362,7 @@ public class PlayerBoard implements ManhattanConstants
 					&& !testOption(TurnOption.OppenheimerWorker))
 				  {	// use a regular worker as an engineer
 					  some |= scientistSatisfies(all,c,requirements,who,MOVE_FROM_TO,workers); 
-				  }
+				  }}
 			}
 		// if we placed an ordinary worker where 
 		if(some && all==null) { return some; }
@@ -1375,11 +1379,11 @@ public class PlayerBoard implements ManhattanConstants
 	
 	// add available moves to "all", or if all is null, just return true if some could have been added
 	// "worker" is any worker currently picked up in the UI
-	private boolean satisfies(CommonMoveStack all,ManhattanChip worker,ManhattanCell c,Cost requirements,int op,int who)
+	private boolean satisfies(CommonMoveStack all,boolean allowPersonalities,ManhattanChip worker,ManhattanCell c,Cost requirements,int op,int who)
 	{	if(c.available())
 		{if(worker==null)
 			{
-		 	return satisfies(all,c,requirements,who);
+		 	return satisfies(all,allowPersonalities,c,requirements,who);
 			}
 		if(worker.type==Type.Worker)
 			{
@@ -1397,6 +1401,14 @@ public class PlayerBoard implements ManhattanConstants
 			case L:
 				boolean some = workerSatisfies(all,c,requirements,who,op);
 				if(all==null && some) { return some; }
+				// 
+				// this is when a laborer is being used on a scientist or engineer slot
+				// enabled by groves or oppenheimer.  The nasty case is when playing 
+				// directly on the building market, which could "imply" the use of groves
+				// but we don't allow.
+				//
+				if(allowPersonalities)
+				{
 				if(hasPersonality(ManhattanChip.Groves)
 						&& !testOption(TurnOption.GrovesWorker))
 				{
@@ -1407,6 +1419,7 @@ public class PlayerBoard implements ManhattanConstants
 						&& !testOption(TurnOption.OppenheimerWorker))
 				{
 					some |= scientistSatisfies(all,c,requirements,who,op,workers);
+				}
 				}
 				return some;
 			}}
@@ -1495,9 +1508,9 @@ public class PlayerBoard implements ManhattanConstants
 		 return some;
 	}
 	
-	public boolean addWorkerMoves(CommonMoveStack all,ManhattanChip picked,ManhattanCell c,int op,int who)
+	public boolean addWorkerMoves(CommonMoveStack all,boolean allowPersonalities,ManhattanChip picked,ManhattanCell c,int op,int who)
 	{
-		return satisfies(all,picked,c,c.getEffectiveCost(),op,who);
+		return satisfies(all,allowPersonalities,picked,c,c.getEffectiveCost(),op,who);
 	}
 	public boolean addDiscardBombMoves(CommonMoveStack all,boolean robot,int who)
 	{
@@ -1608,8 +1621,8 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		if(hasPersonality(ManhattanChip.Szilard))
 		{	// can use the main board reactors
-			some |= addWorkerMoves(all,b.pickedObject,b.playMakePlutonium,MOVE_DROP,who);
-			some |= addWorkerMoves(all,b.pickedObject,b.playMakeUranium,MOVE_DROP,who);
+			some |= addWorkerMoves(all,true,b.pickedObject,b.playMakePlutonium,MOVE_DROP,who);
+			some |= addWorkerMoves(all,true,b.pickedObject,b.playMakeUranium,MOVE_DROP,who);
 		}
 		return some;
 	}
@@ -1705,7 +1718,7 @@ public class PlayerBoard implements ManhattanConstants
 					some = addBombMoves(all,pickedObject,c,who);
 					if(all==null && some) { return some; }
 				}
-				some |=satisfies(all,pickedObject,c,c.getEffectiveCost(),MOVE_DROP,who);
+				some |=satisfies(all,true,pickedObject,c,c.getEffectiveCost(),MOVE_DROP,who);
 			}
 		}
 		return some;
@@ -1726,7 +1739,7 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		else
 		{
-		return satisfies(all,pickedObject,c,is,MOVE_DROP,who);
+		return satisfies(all,true,pickedObject,c,is,MOVE_DROP,who);
 		}
 	}
 	
@@ -1848,6 +1861,7 @@ public class PlayerBoard implements ManhattanConstants
 	public void sendCoinsToBank(ManhattanCell src,int n,replayMode replay)
 	{
 		int h = src.height();
+		G.Assert(src.cash>=n,"cash going negative!");
 		src.addCash(-n);
 		if(replay.animate)
 		{
@@ -1901,7 +1915,7 @@ public class PlayerBoard implements ManhattanConstants
 			addBomber(-cell.height(),replay);
 			break;
 		case Coin:
-			addCoinsFromBank(cashDisplay,cell.cash,replay);
+			sendCoinsToBank(cashDisplay,cell.cash,replay);
 			b.logGameEvent("- "+cell.cash+"$");
 			break;
 		case Yellowcake:				

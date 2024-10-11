@@ -2616,16 +2616,21 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 boolean some = false;
 	 for(ManhattanCell c = allCells; c!=null && (all!=null || !some); c=c.next)
 	 { if(!c.inhibited)
-		 {switch(c.type)
+		 {
+		 boolean allowPersonalities = true;
+		 switch(c.type)
 		 {
 		 default: break;
 		 case BuildingMarket:	// this lets us drop directly on the buildings
 			 if(c.height()==0) { break; }
+			 // if we have groves, don't allow him to be used accidentally when buying a building.
+			 // it can still be done by playing a worker on the engineer spot.
+			 allowPersonalities = false;
 		 //$FALL-THROUGH$
 		 case Worker:	
 		 {		if(c.getEffectiveCost()!=Cost.None)
 		 		{
-			 	some |= pb.addWorkerMoves(all,pickedObject,c,MOVE_DROP,who);
+			 	some |= pb.addWorkerMoves(all,allowPersonalities,pickedObject,c,MOVE_DROP,who);
 		 		}
 		 }
 		 }
@@ -2701,7 +2706,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 for(ManhattanCell c : seeBuilding)
 	 {	if(c.height()>0)
 	 	{
-		some |= pb.addWorkerMoves(all,worker,c,MOVE_SELECT,who);
+		// don't allow personality groves to be invoked, we already decided above
+		// if that's the case, by switching the worker. 
+		some |= pb.addWorkerMoves(all,false,worker,c,MOVE_SELECT,who);
 		if(all==null && some) { break; }
 	 	}
 	 }
@@ -2881,6 +2888,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
   	addMovesForState(all,board_state);
  	if(all.size()==0)
  		{ p1("nomoves-"+moveNumber+"-"+board_state);
+ 		  // this is rare but can be legitimate, if we most recently retrieved
+ 		  // and there are no moves available (excluding the bot's sensible exclusions)
+ 		  // this will never happen in a real game, only in the bot lookahead.
+ 		  ManhattanMovespec m = new ManhattanMovespec(MOVE_DONE,whoseTurn);
+ 		  m.from_index = 99;	// mark this as a desperation move
+ 		  all.push(m);
  		}
  	return all;
  }

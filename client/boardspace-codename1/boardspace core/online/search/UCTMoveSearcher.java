@@ -1089,7 +1089,10 @@ public class UCTMoveSearcher extends CommonDriver
 		// get the lead thread (selected for debugger attention)
 		// this is used by getCurrentVariation()
 		public UCTThread getLeadThread()
-		{	UCTThread leader = null;
+		{	
+			Thread s = Thread.currentThread();
+			if(s instanceof UCTThread) { return (UCTThread)s; }
+			UCTThread leader = null;
 			UCTThread myThreads[] = threads;
 			if(myThreads!=null) 
 				{ for(UCTThread thread : myThreads) 
@@ -1124,13 +1127,12 @@ public class UCTMoveSearcher extends CommonDriver
 			return(myCopy);
 		}
 		public commonMove getCurrent2PVariation()
-		{	UCTThread t = (UCTThread)Thread.currentThread();
-			return t.getCurrent2PVariation();
+		{	
+			return getLeadThread().getCurrent2PVariation();
 		}
+		
 		public commonMove getCurrentVariation()
-			{
-			UCTThread t = (UCTThread)Thread.currentThread();
-			return t.getCurrentVariation();
+		{	return getLeadThread().getCurrentVariation();
 		}
 	    public void pauseThreads() 
 	    {
