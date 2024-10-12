@@ -40,8 +40,10 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 {
 	public void rotateCurrentCenter(double amount,int x,int y,int cx,int cy) {};
  	public double activeAnimationRotation() { return(0); }
- 	public int getWidth() { return(0); }
- 	public int getHeight() { return(0); }
+ 	public int getWidth()
+ 		{ return(image==null ? 0 : image.getWidth()); }
+ 	public int getHeight() 
+ 		{ return(image==null ? 0 : image.getHeight()); }
 	// implement "StackIterator".  This allows a singleton piece of art
 	// to be morped into a stack of art (if manipulated correctly)
 	public int size() { return(1); }		// stack size is always 1

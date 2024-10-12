@@ -1144,7 +1144,7 @@ public class PlayerBoard implements ManhattanConstants
 		case Engineer3:
 			break;
 		case Any3Workers:
-			some = nAvailableWorkers()+prepicked>=3;
+			some = nAvailableWorkers()+actualPicked>=3;	// oppenheimer not applicable
 			break;
 		case Scientist2And5YellowcakeAnd2:
 			some = yellowcakeDisplay.height()>=5 && cashDisplay.cash>=2 && scientists.height()+prepicked>=2;

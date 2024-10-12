@@ -145,8 +145,16 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	G.union(box,done,score,chip);
     	return(box);
     }
+    
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {	
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    
+    public double setLocalBoundsA(int x,int y,int width,int height,double v)
+    {
+    	G.SetRect(fullRect, x, y, width, height);
+    	boolean below = positionBelow = v>0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -186,15 +194,15 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/(ncols+3),(double)mainH/ncols);
+    	double cs = Math.min((double)mainW/(ncols+(below?0:3)),(double)mainH/(ncols+(below?3:0)));
     	int CELLSIZE = (int)cs;
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(ncols*CELLSIZE);
-    	int extraW = Math.max(0, (mainW-boardW-SQUARESIZE*2)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraW = Math.max(0, (mainW-boardW-(below ? 0 : SQUARESIZE*2))/2);
+    	int extraH = Math.max(0, (mainH-boardH-(below ? SQUARESIZE*2 : 0))/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
@@ -210,10 +218,20 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int chipW = SQUARESIZE;
+    	if(below)
+    	{
+        	G.SetRect(chipRects[0],boardX+SQUARESIZE/2,boardBottom,chipW,chipW);
+        	G.SetRect(chipRects[1],boardRight-SQUARESIZE*3/2,boardBottom,chipW,chipW);
+        	G.SetRect(bridgeRect,boardX+boardW/2-SQUARESIZE/2,boardBottom-SQUARESIZE/2,chipW,chipW);
+        	G.SetRect(bigBridgeRect,boardX+boardW/2-SQUARESIZE,boardBottom,chipW+SQUARESIZE,chipW+chipW/3); 		
+    	}
+    	else
+    	{
     	G.SetRect(chipRects[0],boardRight,boardY+SQUARESIZE*2,chipW,chipW);
     	G.SetRect(chipRects[1],boardRight,boardBottom-SQUARESIZE*2,chipW,chipW);
     	G.SetRect(bridgeRect,boardRight+SQUARESIZE,boardY+boardH/2-SQUARESIZE,chipW,chipW);
     	G.SetRect(bigBridgeRect,boardRight,boardY+boardH/2-SQUARESIZE,chipW+SQUARESIZE,chipW+chipW/3);
+    	}
  /*   	
         G.SetRect(bridgeRect, 
         		G.Left( firstPlayerChipRect)+(tallMode ?SQUARESIZE*5 : CELLSIZE*4)-SQUARESIZE,
@@ -226,12 +244,14 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 
+    boolean positionBelow = false;
 	// draw the unused components
     private void DrawCommonChipPool(Graphics gc, PonteBoard gb, int forPlayer,Rectangle bigR, Rectangle r, int player, HitPoint highlight,double vstep)
     {	if(bigR==null) { bigR = r; }
+    	boolean right = G.Left(r)<G.centerX(boardRect);
         PonteCell thisCell = gb.getPlayerChips(forPlayer);
         PonteChip thisChip = thisCell.topChip();
         boolean canHit = gb.LegalToHitChips(forPlayer<=1?forPlayer:gb.whoseTurn,thisCell);
@@ -243,7 +263,10 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         boolean isRect = G.pointInRect(pt, bigR);
         // note that using "isRect" is because the standard logic doesn't do well
         // because of the extreme aspect ratio of the bridge pieces
-        if(thisCell.drawStack(gc,this,pt,step,G.Right(r)-step/2,G.centerY(r),0,vstep,msg) || 
+        if(thisCell.drawStack(gc,this,pt,step,G.Right(r)-step/2,G.centerY(r),0,
+        		positionBelow ? ( right ? vstep : -vstep) : 0,
+        		positionBelow ? 0 : vstep,
+        		msg) || 
         		isRect)
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
         	highlight.awidth = step/2;

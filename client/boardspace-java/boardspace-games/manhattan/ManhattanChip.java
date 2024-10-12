@@ -148,7 +148,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			}
 			
 		}
-		if((lores!=null) && lores.getWidth()>=SQUARESIZE)
+		if((lores!=null) && lores.getImage().getWidth()>=SQUARESIZE)
 		{
 			return lores;
 		}

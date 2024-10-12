@@ -1673,7 +1673,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	int scrimH = (int)(ystep*(nrows+0.3)+ystep/2);
 	int scrimLeft = x00-cellSize*2/3;
 	int scrimTop =  y0-ystep*2/3;
-	boolean allApproved = bb.allApproved();
+	boolean allApproved = bb.allApprovedExcept();
 	StockArt.Scrim.getImage().drawImage(gc,scrimLeft,scrimTop,scrimW,scrimH);
 	int total = 0;
 	commonPlayer us = getActivePlayer();
@@ -2201,7 +2201,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		   for(commonPlayer pp : players)
     		   	{ 	PlayerBoard pb = bb.getPlayerBoard(pp.boardIndex);
     		   		if(!pb.approvedNorthKorea)
-    		   		{	if((pb.boardIndex!=bb.northKoreanPlayer) || bb.allApproved())
+    		   		{	if((pb.boardIndex!=bb.northKoreanPlayer) || bb.allApprovedExcept())
     		   				{ asyncRobot = pp;
     		   				  startRobotTurn(pp);
     		   				}

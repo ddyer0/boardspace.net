@@ -20,7 +20,7 @@ import lib.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;
 import online.search.*;
-
+import static manhattan.ManhattanMovespec.*;
 
 /** 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
@@ -85,7 +85,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
+    private boolean HONESTROBOT = true;
     
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -101,6 +101,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     {	RobotProtocol c = super.copyPlayer(from);
     	ManhattanPlay cc = (ManhattanPlay)c;
     	cc.Strategy = Strategy;
+    	cc.HONESTROBOT = HONESTROBOT;
     	cc.movingForPlayer = movingForPlayer; 
     	cc.board.initRobotValues(cc);
     	return(c);
@@ -162,6 +163,11 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	// so we need to re-randomize the hidden state.
     	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
     	//terminatedWithPrejudice = -1;
+    	if(HONESTROBOT)
+    	{	Random r = new Random();
+    		board.seeBuildings.shuffle(r);
+    		board.seeBombs.shuffle(r);
+    	}
     }
 
 
@@ -278,11 +284,13 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
  		case DUMBOT_LEVEL:
 			UCT_WIN_LOSS = true;
            	MONTEBOT=true;
+           	HONESTROBOT = true;
          	break;
        case SMARTBOT_LEVEL:
   			//$FALL-THROUGH$
 			UCT_WIN_LOSS = false;
            	MONTEBOT=true;
+           	HONESTROBOT = false;
          	break;
         	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true;  break;
@@ -387,17 +395,30 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
 
         move = monte_search_state.getBestMonteMove();
-        if(move!=null && move.op==MOVE_DONE)
+        if(move!=null)
         {
-       	 ManhattanMovespec mm = (ManhattanMovespec)move;
-       	 if(mm.from_index==99)	// marked as a desperation move
-       	 {
-       		 noinhibitions = true;
-       		 move = monte_search_state.getBestMonteMove();
-       		 noinhibitions = false;
-       	 }
-        }
- 		}
+        switch(move.op)
+        { 
+        case MOVE_APPROVE:
+        	// this applies only to the korean extortion dialog.  The UI operates in asynchronous mode,
+        	// while the robot turns it into a synchronous mode.  Here at the final robot level, we 
+        	// change the sync back into async
+        	move.op = EPHEMERAL_APPROVE;
+        	break;
+        case MOVE_DONE:
+        	ManhattanMovespec mm = (ManhattanMovespec)move;
+	       	 if(mm.from_index==99)	// marked as a desperation move
+	       	 {	// in uncommon situations, the bot will have avoided legal but silly moves
+	       		// and there is nothing left.
+	       		// so let the silly moves back in.
+	       		 noinhibitions = true;
+	       		 move = monte_search_state.getBestMonteMove();
+	       		 noinhibitions = false;
+	       	 }
+        	break;
+        default: 
+        	break;
+        }}}
       finally { ; }
       if(move==null) { continuous = false; }
      //

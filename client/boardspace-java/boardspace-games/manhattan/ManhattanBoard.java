@@ -2502,19 +2502,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        		break;
        case EPHEMERAL_APPROVE:
        		{
-    	   m.player = getPlayerBoard(m.from_color).boardIndex;
-    	   PlayerBoard pb = getPlayerBoard(m.from_color);
-    	   pb.approvedNorthKorea = !pb.approvedNorthKorea;
-    	   if(allApproved() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     		 
-    	   break;
+	    	   m.player = getPlayerBoard(m.from_color).boardIndex;
+	    	   PlayerBoard pb = getPlayerBoard(m.from_color);
+	    	   pb.approvedNorthKorea = !pb.approvedNorthKorea;
+	    	   if(allApprovedExcept() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     		 
        		}
-			//$FALL-THROUGH$
+     	   break;
 		case MOVE_APPROVE:
        		{
        		 PlayerBoard pb = getPlayerBoard(m.from_color);
        		 pb.approvedNorthKorea = true;
        		 pb.hasSetContribution = true;	// even if not really
-       		 if(allApproved() && (pb.boardIndex==northKoreanPlayer)) { doDone(replay); }     	
+       		 if(allApproved()) { doDone(replay); }     	
        		 else if(robot!=null) { setNextPlayer(replayMode.Replay); }
        		}
        		break;
@@ -2771,7 +2770,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  		// you can use your own buildings during espionage
  		if(!other.hasPersonality(ManhattanChip.Landsdale))
  		{	// personality Landsdale is immune to espionage
-	 	some |= pb.addPlayerBoardMoves(all,pickedObject,other.buildings,who); 
+	 	if(other!=pb) { some |= pb.addPlayerBoardMoves(all,pickedObject,other.buildings,who); } 
  		}
  		}
  	return some;
@@ -2854,10 +2853,19 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	}
 	return some;
  }
- public boolean allApproved()
+ 
+ public boolean allApprovedExcept()
  {
  	 for(PlayerBoard pb : pbs) 
  	 	{ if((pb.boardIndex!=northKoreanPlayer) && !pb.approvedNorthKorea) { return false; } 	 	
+ 	 	}
+ 	 return true;
+ }
+ 
+ public boolean allApproved()
+ {
+ 	 for(PlayerBoard pb : pbs) 
+ 	 	{ if(!pb.approvedNorthKorea) { return false; } 	 	
  	 	}
  	 return true;
  }
@@ -2998,7 +3006,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		//$FALL-THROUGH$
 	case PlayLocal:
 		// in playlocal, you can always do nothing
-		some = addPlayerBoardMoves(all,pbs[whoseTurn],whoseTurn);
+		some |= addPlayerBoardMoves(all,pbs[whoseTurn],whoseTurn);
 		PlayerBoard pb = pbs[whoseTurn];
 		if(pb.hasPersonality(ManhattanChip.Fuchs)
 				&& !pb.testOption(TurnOption.FuchsEspionage))
