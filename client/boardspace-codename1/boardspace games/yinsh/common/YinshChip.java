@@ -88,6 +88,7 @@ public class YinshChip extends chip<YinshChip> implements YinshConstants
        CANONICAL_PIECE = CC;
        BlackChip = getChip(BLACK_CHIP_INDEX);
        WhiteChip = getChip(WHITE_CHIP_INDEX);
+       Image.registerImages(CC);
        check_digests(CC);
 	 }
 	}

@@ -198,6 +198,7 @@ public class MogulChip extends chip<MogulChip>
         for(StockArt c : chips) { ind++; CANONICAL_PIECE[ind] = new MogulChip(ind,c,r.nextLong(),scales[0]); }
 
         check_digests(CANONICAL_PIECE);
+        Image.registerImages(CANONICAL_PIECE);
         for(int i : startingCards) { getCard(i).starting = true; }
         pokerChip = pchip;
 		}

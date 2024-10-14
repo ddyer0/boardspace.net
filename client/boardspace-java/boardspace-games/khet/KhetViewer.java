@@ -46,7 +46,6 @@ import lib.*;
 public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants
 {
      /**
-	 * 
 	 */
 	static final String Khet_SGF = "Khet"; // sgf game name
     // file names for jpeg images and masks
@@ -145,7 +144,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     	}
 
     }
-    boolean vertical = false;
+    boolean vertical = true;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -252,7 +251,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
         
-        return boardW*boardH;
+        return boardW*boardH+G.Height(getPlayerOrTemp(0).playerBox);
     }
   
 	

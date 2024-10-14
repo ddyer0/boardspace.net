@@ -848,7 +848,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 
     // add new cards here
     static ViticultureChip NeutralBuilding = new ViticultureChip("watertower",watertowerScale);
-
+ 
     /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images into the stack of
@@ -925,8 +925,8 @@ public class ViticultureChip extends chip<ViticultureChip>
 	 	PoliticoTradeExtra = ChoiceDeck2[3];
 	 	PoliticoPlantExtra = ChoiceDeck2[4];
 	 	autoloadMaskGroup(Dir,ChoiceDeck2,"choice/choice-mask");
-	
 	 	imagesLoaded = true;
+	 	Image.registerImages(allChips);
 		check_digests(allChips);
 		}
 

@@ -17,6 +17,7 @@
 package prototype;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
 import lib.OStack;
@@ -135,6 +136,8 @@ public class PrototypeChip extends chip<PrototypeChip> implements CommonConfig
 		{	
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(Dir,otherChips);
+		Image.registerImages(stoneChips);
+		Image.registerImages(otherChips);
 		}
 	}   
 	/**

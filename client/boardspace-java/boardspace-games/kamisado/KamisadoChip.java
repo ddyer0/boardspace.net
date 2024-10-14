@@ -97,6 +97,7 @@ public class KamisadoChip extends chip<KamisadoChip>
         	CC[i]=new KamisadoChip(ImageNames[i],i,colors[i%colors.length],IM[i],rv.nextLong(),chipScale); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

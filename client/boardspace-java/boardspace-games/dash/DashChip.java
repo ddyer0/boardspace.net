@@ -181,6 +181,7 @@ public class DashChip extends chip<DashChip> implements DashConstants
         CC[i] = new DashChip(cl,i,TileColors[i],IM[i],SCALES[i],r.nextLong());	
         }
        CANONICAL_PIECE = CC;
+       Image.registerImages(CC);
        check_digests(CC);
 		}
 	}

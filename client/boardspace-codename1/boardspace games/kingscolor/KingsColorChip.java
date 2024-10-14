@@ -19,6 +19,7 @@ package kingscolor;
 import lib.DrawableImageStack;
 import lib.G;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -167,6 +168,12 @@ public class KingsColorChip extends chip<KingsColorChip> implements CommonConfig
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(chessDir,chessChips)
 				& forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(chessChips);
+			Image.registerImages(otherChips);
+		}
 		}
 	}   
 	

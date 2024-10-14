@@ -187,6 +187,7 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
         	}
         check_digests(CC);	// verify that the chips have different digests
 		CANONICAL_PIECE = CC;
+		Image.registerImages(CC);
 		
 		{
 		// construct one set of cards for each color

@@ -118,6 +118,7 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 	        CANONICAL_PIECE = CYCLES[0];
 	        check_digests(CANONICAL_PIECE);	// verify that the chips have different digests
 			Icon = CANONICAL_PIECE[0].image;
+		Image.registerImages(CANONICAL_PIECE);
 			}
 		}  
 }

@@ -20,6 +20,7 @@ import bridge.Config;
 import lib.AR;
 import lib.Drawable;
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.MultiGlyph;
 import lib.Random;
@@ -119,7 +120,8 @@ public class OrdoChip extends chip<OrdoChip> implements Config
 		imagesLoaded = forcan.load_masked_images(StonesDir,allChips)
 					&& forcan.load_masked_images(ImageDir, allArt)
 				;
-		
+		Image.registerImages(allChips);
+		Image.registerImages(allArt);
 		check_digests(allChips);
 		}
 	}

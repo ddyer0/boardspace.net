@@ -74,6 +74,7 @@ public class FrogPiece extends chip<FrogPiece>
 	        FP[i] = new FrogPiece(i,IM[i],SCALES[i],ImageFileNames[i],rv.nextLong());
 	        }
 	        CANONICAL_PIECE = FP;
+	        Image.registerImages(FP);
 	        check_digests(FP);	// verify that the chips have different digests
 			}
 		}  

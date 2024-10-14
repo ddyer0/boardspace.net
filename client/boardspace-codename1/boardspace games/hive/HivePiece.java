@@ -26,16 +26,12 @@ import java.util.Hashtable;
 
 import hive.HiveConstants.HiveId;
 import hive.HiveConstants.PieceType;
+import lib.DrawableImageStack;
 import lib.G;
-import lib.OStack;
 import lib.Random;
 import lib.exCanvas;
 import online.game.chip;
 
-class ChipStack extends OStack<HivePiece>
-{
-	public HivePiece[] newComponentArray(int n) { return(new HivePiece[n]); }
-}
 public class HivePiece extends chip<HivePiece> 
 {	
 	// this corresponds to the standard artwork loaded for both colors and both tile sets
@@ -304,7 +300,7 @@ public class HivePiece extends chip<HivePiece>
 	    	{0.404,0.715,0.524},	// carbon black blank
 	    	};
 	    
-	static private HivePiece makepiece(ChipStack stack,HiveId pl,int set,PieceType typ,int seq,double scal[],Image im)
+	static private HivePiece makepiece(DrawableImageStack stack,HiveId pl,int set,PieceType typ,int seq,double scal[],Image im)
 	{	// create a piece and place it in the rack.  Create cells for the rack.
 		HivePiece p =new HivePiece(set,typ,pl,seq,scal,im);
 		stack.push(p);
@@ -330,16 +326,16 @@ public class HivePiece extends chip<HivePiece>
 	static public HivePiece getCanonicalChip(HiveId pl,PieceType pieceType)
 	{	return(getCanonicalChip(hivePieces[(pl==HiveId.White_Bug_Pool)?0:1],pieceType));
 	}
-	static public HivePiece getCanonicalChip(ChipStack pieces,PieceType pieceType)
+	static public HivePiece getCanonicalChip(DrawableImageStack pieces,PieceType pieceType)
 	{	
 		for(int i=0,lim=pieces.size(); i<lim; i++)
-		{	HivePiece p = pieces.elementAt(i);
+		{	HivePiece p = (HivePiece)pieces.elementAt(i);
 			if(p.type==pieceType) { return(p); }
 		}
 
 		return(null);
 	}
-	static private HivePiece makeNewChip(ChipStack stack,PieceType pt,int seq)
+	static private HivePiece makeNewChip(DrawableImageStack stack,PieceType pt,int seq)
 	{	HivePiece p = getCanonicalChip(stack,pt);	// get a sample
 		if(p==null) { return(null); }
 		HivePiece newp = makepiece(stack,p.color,p.mySet,pt,seq,p.scale,p.image);
@@ -363,15 +359,15 @@ public class HivePiece extends chip<HivePiece>
 		return(p0);
 	}
 
-	static private ChipStack hivePieces[] = null;
-	static private ChipStack carbonPieces[] = null;
+	static private DrawableImageStack hivePieces[] = null;
+	static private DrawableImageStack carbonPieces[] = null;
 
 	// find the piece owned by player with typ and sequence
 	static HivePiece findPiece(HiveId player,PieceType typ,int idx,boolean create)
-	{	OStack<HivePiece>stack = hivePieces[player==HiveId.White_Bug_Pool?0:1];
+	{	DrawableImageStack stack = hivePieces[player==HiveId.White_Bug_Pool?0:1];
 		if((idx==-1) && (typ!=PieceType.QUEEN)) { idx = 1; }
 		for(int i=0,lim=stack.size(); i<lim;i++)
-		{	HivePiece p = stack.elementAt(i);
+		{	HivePiece p = (HivePiece)stack.elementAt(i);
 			if((p.type == typ) && (p.seq == idx)) { return(p); }
 		}
 		if(create) 
@@ -380,9 +376,9 @@ public class HivePiece extends chip<HivePiece>
 		return(null);
 	}
 
-	public static ChipStack[] loadImageSet(String ImageDir,ImageLoader forcan,int set,String []names,double [][]scales,String topNames[],double[][]topscales)
+	public static DrawableImageStack[] loadImageSet(String ImageDir,ImageLoader forcan,int set,String []names,double [][]scales,String topNames[],double[][]topscales)
 	{	
-		ChipStack pieces[] = new ChipStack[2];
+		DrawableImageStack pieces[] = new DrawableImageStack[2];
 
 		Image images[] = forcan.load_masked_images(ImageDir, names); // load the main images
 		Image topImages[] = forcan.load_masked_images(ImageDir, topNames);	// and the top images
@@ -392,7 +388,7 @@ public class HivePiece extends chip<HivePiece>
         // make the canonical pieces
         boolean isBase = false;
         for(int pl=0; pl<=1;pl++)
-        { ChipStack whitePieces = new ChipStack();
+        { DrawableImageStack whitePieces = new DrawableImageStack();
           pieces[pl] = whitePieces;
         	for(int aidx=0;aidx<StartingPieceTypes.length;aidx++)
         	{int seq = StartingPieceSeq[aidx];
@@ -428,10 +424,10 @@ public class HivePiece extends chip<HivePiece>
 	}
 	
 	// match up the altChip for carbon and standard pieces from the starting sets
-	static private void matchPairs(OStack<HivePiece>a,OStack<HivePiece>b)
+	static private void matchPairs(DrawableImageStack a,DrawableImageStack b)
 	{	for(int i=a.size()-1; i>=0; i--)
-		{	HivePiece p1 = a.elementAt(i);
-			HivePiece p2 = b.elementAt(i);
+		{	HivePiece p1 = (HivePiece)a.elementAt(i);
+			HivePiece p2 = (HivePiece)b.elementAt(i);
 			p1.altChip = p2;
 			p2.altChip = p1;
 		}
@@ -450,7 +446,10 @@ public class HivePiece extends chip<HivePiece>
         WhiteQueen = getCanonicalChip(HiveId.White_Bug_Pool,PieceType.QUEEN);
         BlackQueen = getCanonicalChip(HiveId.Black_Bug_Pool,PieceType.QUEEN);
 	        BugIcon.image = getCanonicalChip(HiveId.White_Bug_Pool,PieceType.ANT).getImage();
-	        
+	        Image.registerImages(hivePieces[0]);
+	        Image.registerImages(carbonPieces[0]);
+	        Image.registerImages(hivePieces[1]);
+	        Image.registerImages(carbonPieces[1]);
         for(int i=0;i<=1;i++)
         	{ matchPairs(hivePieces[i],carbonPieces[i]);
         	}

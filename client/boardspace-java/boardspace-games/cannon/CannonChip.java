@@ -99,6 +99,7 @@ public class CannonChip extends chip<CannonChip>
         WhiteSoldier = CC[1];
         BlueSoldier = CC[3];
         check_digests(CC);
+        Image.registerImages(CC);
 		}
 	}
 

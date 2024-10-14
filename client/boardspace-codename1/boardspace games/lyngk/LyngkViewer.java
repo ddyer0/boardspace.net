@@ -241,8 +241,14 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     }
 
     public void setLocalBounds(int x, int y, int width, int height)
+    {	
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    boolean positionBelow = false;
+    public double setLocalBoundsA(int x,int y,int width,int height,double v)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	positionBelow = v<0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -278,7 +284,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	int mainH = G.Height(main);
     	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)(mainW)/(nrows+3),(double)mainH/(nrows+1));
+    	double cs = Math.min((double)(mainW)/(nrows+(positionBelow?1:3)),(double)mainH/(nrows+(positionBelow?3:1)));
     	SQUARESIZE = (int)cs;
     	CELLSIZE = SQUARESIZE/2;
     	int C2 = CELLSIZE/2;
@@ -287,16 +293,24 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         int stateH = fh*5/2; 
         int boardW = (int)(nrows*cs);
     	int boardH = (int)(nrows*cs);
-    	int unclaimedW = SQUARESIZE*2;
-    	int unclaimedH = SQUARESIZE*10;
-    	int extraW = Math.max(0, (mainW-boardW-unclaimedW)/2);
-    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
+    	int unclaimedW = positionBelow ? SQUARESIZE*10 : SQUARESIZE*2;
+    	int unclaimedH = positionBelow ? SQUARESIZE*2 : SQUARESIZE*10;
+    	int extraW = Math.max(0, (mainW-boardW-(positionBelow ? 0 : unclaimedW))/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH-(positionBelow ? unclaimedH : 0))/2);
     	int boardY = extraH+mainY+stateH;
+    	int boardX = mainX+extraW+(positionBelow ? 0 : unclaimedW);
+    	if(positionBelow)
+    	{
+    	int unclaimedY = boardY+boardH;
+    	G.SetRect(unclaimedChipRect,(boardX+boardW)/2-unclaimedW/2,unclaimedY,unclaimedW,unclaimedH);
+    	}
+    	else
+    	{
     	int unclaimedX = mainX+extraW+SQUARESIZE/4;
     	G.SetRect(unclaimedChipRect,unclaimedX,boardY+(boardH-unclaimedH)/2,unclaimedW,unclaimedH);
+    	}
        	layout.returnFromMain(extraW,extraH);
 
-    	int boardX = unclaimedX+unclaimedW;
     	int boardBottom = boardY+boardH;
     	int boardRight = boardX + boardW;
     	//
@@ -329,9 +343,8 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
             		doneRect);
  
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-
+        return boardW*boardH;
     }
-
     private boolean drawStack(boolean perspective,Graphics gc,HitPoint highlight,LyngkBoard gb,LyngkCell c,int x,int y,
     		double ystep,String msg)
     {	boolean hit = false;
@@ -355,12 +368,17 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     private void DrawUnclaimedPool(Graphics gc, Rectangle r, HitPoint highlight,LyngkBoard gb,Hashtable<LyngkCell,LyngkMovespec> targets)
     {	
     	int w = G.Width(r);
+    	int h = G.Height(r);
     	int top = G.Top(r);
-    	int left = G.centerX(r);
+    	boolean vertical = w<h;
+    	int left = G.Left(r);
+   
      	for(LyngkCell c : gb.unclaimedColors)
     	{	boolean canHit = gb.LegalToHitChips(c,gb.whoseTurn,targets);
-    		drawStack(true,gc, canHit ? highlight : null, gb,c,left,top+w/2,CELLSPACING,null);
-      		top += w;
+    		drawStack(true,gc, canHit ? highlight : null, gb,c,
+    				left+(vertical? w/2:h/2),
+    				top+(vertical ? w/2 :  h/2),CELLSPACING,null);
+      		if(vertical) { top += w; } else { left += h; }
     	}
     }
 

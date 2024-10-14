@@ -173,7 +173,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	    // set the initial contents of the board 
 	    int maxSize = 0;
 	    do {
-		ChipStack all = new ChipStack();
+	    	DrawableImageStack all = new DrawableImageStack();
 		for(TintasChip ch : TintasChip.Chips)
 		{
 			for(int i=0;i<ChipsPerColor;i++) { all.push(ch);};
@@ -182,7 +182,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 
 		for(TintasCell c = allCells; c!=null; c=c.next)
 		{	c.reInit();
-			c.addChip(all.pop());
+			c.addChip((TintasChip)all.pop());
 		}    
 		maxSize =0;
 		sweep_counter++;

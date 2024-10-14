@@ -16,16 +16,13 @@
  */
 package tintas;
 
+import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
-import lib.OStack;
 import lib.Random;
 import online.game.chip;
 
-class ChipStack extends OStack<TintasChip>
-{
-	public TintasChip[] newComponentArray(int n) { return(new TintasChip[n]); }
-}
 
 /**
  * this is a specialization of {@link chip} to represent the stones used by tintas;
@@ -39,7 +36,7 @@ public class TintasChip extends chip<TintasChip> implements TintasConstants
 	private int index = 0;
 	TintasChip altChip = null;
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
-	private static ChipStack allChips = new ChipStack();
+	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public TintasId id;
 	
@@ -103,7 +100,7 @@ public class TintasChip extends chip<TintasChip> implements TintasConstants
     // indexes into the balls array, usually called the rack
     static final TintasChip getChip(int n) 
     { for(int lim=allChips.size()-1; lim>=0; lim--) 
-    	{ TintasChip ch = allChips.elementAt(lim);
+    	{ TintasChip ch = (TintasChip)allChips.elementAt(lim);
     	  if(ch.index==n) { return(ch); }
     	}
     	throw G.Error("Chip %s not found",n);
@@ -122,6 +119,7 @@ public class TintasChip extends chip<TintasChip> implements TintasConstants
 		forcan.load_masked_images(Dir,allChips);
 		for(int i=0;i<Chips.length;i++) { Chips[i].altChip = AltChips[i]; }
 		Pawn.altChip = Pawn_np; 
+		Image.registerImages(allChips);
 		imagesLoaded = true;
 		}
 	}   

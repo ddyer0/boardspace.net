@@ -81,6 +81,7 @@ public class TriadChip extends chip<TriadChip>
         GreenStone = CC[1];
         RedStone = CC[0];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}   

@@ -97,6 +97,7 @@ public class TabChip extends chip<TabChip> {
        HexTile_Gold = CC[5];
        HexTile_Gold2 = CC[6];
        tCHIPS = CC;
+       Image.registerImages(CC);
        check_digests(CC);
 	 }
 	}

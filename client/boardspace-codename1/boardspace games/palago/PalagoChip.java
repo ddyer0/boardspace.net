@@ -216,6 +216,7 @@ public class PalagoChip extends chip<PalagoChip>
         blank = CC[blank_index];
         logo = CC[nImages-1];	// last is the logo
         check_digests(CC);
+        Image.registerImages(CC);
         CANONICAL_PIECE = CC;
 		}
 	}   

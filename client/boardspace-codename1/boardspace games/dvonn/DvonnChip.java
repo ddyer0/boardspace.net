@@ -91,6 +91,7 @@ public class DvonnChip extends chip<DvonnChip>
         { CC[i].altChip = CC[i+nColors/2];
         }
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

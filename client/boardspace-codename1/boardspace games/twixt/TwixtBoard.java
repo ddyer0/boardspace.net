@@ -110,7 +110,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     }
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
-    private ChipStack droppedChipStack = new ChipStack();
+    private DrawableImageStack droppedChipStack = new DrawableImageStack();
     public CellStack history = new CellStack();
     public TwixtChip playerChip[] = { TwixtChip.red_peg,TwixtChip.black_peg };
     public boolean swapped = false;
@@ -603,7 +603,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     //
     public void acceptPlacement()
     {	lastDropped = droppedDestStack.top();
-    	lastDroppedChip = droppedChipStack.top();
+    	lastDroppedChip = (TwixtChip)droppedChipStack.top();
         droppedDestStack.clear();
         droppedChipStack.clear();
         pickedSourceStack.clear();
@@ -616,7 +616,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     //
     private TwixtCell unDropObject()
     {	TwixtCell rv = droppedDestStack.pop();
-    	TwixtChip rc = droppedChipStack.pop();
+    	TwixtChip rc = (TwixtChip)droppedChipStack.pop();
     	setState(stateStack.pop());
     	if(rv.onBoard)
     	{
@@ -882,7 +882,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	return(d);
     }
     public TwixtChip getLastDestChip() 
-    { 	TwixtChip d = droppedChipStack.top();
+    { 	TwixtChip d = (TwixtChip)droppedChipStack.top();
     	if(d==null) { d = lastDroppedChip; }
     	return(d);
     }

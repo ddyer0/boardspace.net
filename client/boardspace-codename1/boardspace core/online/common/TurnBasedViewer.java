@@ -58,6 +58,7 @@ import lib.HitPoint;
 import lib.Http;
 import lib.IStack;
 import lib.Image;
+import lib.ImageStack;
 import lib.InternationalStrings;
 import lib.Keyboard;
 import lib.LFrameProtocol;
@@ -1443,6 +1444,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	}
 	
+	public double imageSize(ImageStack im)
+	{
+		return (super.imageSize(im)+Image.registeredImageSize(im));
+	}
+
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
 		Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);

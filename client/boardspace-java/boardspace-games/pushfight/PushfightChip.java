@@ -17,6 +17,7 @@
 package pushfight;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -148,6 +149,7 @@ public class PushfightChip extends chip<PushfightChip> implements PushfightConst
 		black_round.altChip = black_roundO;
 		white_round.altChip = white_roundO;
 		red_oblique.altChip = red_obliqueO;
+		Image.registerImages(allChips);
 		imagesLoaded = true;
 		}
 	}   

@@ -87,6 +87,7 @@ public class GipfChip extends chip<GipfChip>
         	  CC[i] = ch;
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

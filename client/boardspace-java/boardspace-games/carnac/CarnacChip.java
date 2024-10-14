@@ -223,6 +223,7 @@ static CarnacChip chips[] = {
 		}
 		}
 		imagesLoaded = true;
+		Image.registerImages(CANONICAL_PIECE);
 	}
 
 

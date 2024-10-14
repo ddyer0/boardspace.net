@@ -604,13 +604,16 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
         StockArt BB_V[]=StockArt.preLoadArt(BorderNames,v_barbells,SCALES);
         
         CANONICAL_PIECE = createGroup(sided.normal,OminoStep.FULLSET,IM,BO_H,BO_V,BB_H,BB_V,0);
+        Image.registerImages(CANONICAL_PIECE);
         G.Assert(SNAKES_PIECE_OFFSET>CANONICAL_PIECE.length,"overlap");
         SNAKES_PIECE = createGroup(sided.normal,OminoStep.SNAKES,IM,BO_H,BO_V,BB_H,BB_V,SNAKES_PIECE_OFFSET);
+        Image.registerImages(SNAKES_PIECE);
         G.Assert(DOMAIN_PIECE_OFFSET>SNAKES_PIECE.length+SNAKES_PIECE_OFFSET,"overlap");
         PHLIP_PIECES = createGroup(sided.twosided,OminoStep.PHLIPSET,IM,BO_H,BO_V,BB_H,BB_V,DOMAIN_PIECE_OFFSET);
-        
+        Image.registerImages(PHLIP_PIECES);
         Random r = new Random(12387535);
         GIVENS_PIECES =  new UniverseChip[OminoStep.GIVENS.length];
+        Image.registerImages(GIVENS_PIECES);
         for(int i=0;i<GIVENS_PIECES.length;i++)
         {	UniverseChip ch = GIVENS_PIECES[i] = new UniverseChip(i,OminoStep.GIVENS[i],IG[0],GIVENSSCALE,r.nextLong());
         	ch.getVariation(0,false);

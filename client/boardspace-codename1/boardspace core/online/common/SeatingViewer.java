@@ -44,6 +44,7 @@ import lib.GC;
 import lib.GearMenu;
 import lib.HitPoint;
 import lib.Image;
+import lib.ImageStack;
 import lib.InternationalStrings;
 import lib.Keyboard;
 import lib.LFrameProtocol;
@@ -1595,6 +1596,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     		{ super.Wheel(x,y,button,amount);
     		}
     }
+	public double imageSize(ImageStack im)
+	{
+		return (super.imageSize(im)+Image.registeredImageSize(im));
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		if(sess.timeControl().handleDeferredEvent(e.getSource(), e.getActionCommand()))

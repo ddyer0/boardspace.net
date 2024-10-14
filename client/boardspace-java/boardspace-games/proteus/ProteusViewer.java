@@ -44,7 +44,8 @@ import static proteus.ProteusMovespec.*;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
- * todo: rotate board for ftf portrait mode
+ * TODO: rotate board for ftf portrait mode
+ * TODO: better layout for vertical phone sized screens
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants
 {

@@ -17,6 +17,7 @@
 package qe;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -216,6 +217,7 @@ public class QEChip extends chip<QEChip> implements QEConstants
 		{
 		// this will get the rest of the images that don't use the card mask
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

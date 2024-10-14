@@ -17,6 +17,7 @@
 package stymie;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -110,6 +111,7 @@ public class StymieChip extends chip<StymieChip> implements StymieConstants,Comm
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded) { Image.registerImages(otherChips); }
 		}
 	} 
  	public StymieChip getAltDisplayChip(cell<?>cc)

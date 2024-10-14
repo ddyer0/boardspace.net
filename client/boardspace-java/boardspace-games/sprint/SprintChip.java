@@ -24,6 +24,7 @@ import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -182,6 +183,7 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
 		char vl[] = new char[]{'a','e','i','o','u'};
 		Vowels = new SprintChip[vl.length];
 		for(int i=0; i<vl.length;i++) { Vowels[i] = alphaLetters[vl[i]-'a']; }
+		Image.registerImages(allChips);
  		}
 
 	}   

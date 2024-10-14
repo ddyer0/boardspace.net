@@ -17,6 +17,7 @@
 package trike;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -145,7 +146,11 @@ public class TrikeChip extends chip<TrikeChip> implements CommonConfig
 		{	
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(Dir,otherChips);
-		}
+		if(imagesLoaded)
+		{
+		Image.registerImages(stoneChips);
+		Image.registerImages(otherChips);
+		}}
 	}   
 	/*
 	// override for drawChip can draw extra ornaments or replace drawing entirely

@@ -1023,8 +1023,8 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
  	return(some);
  }
 
- private ChipStack tempDestStack = new ChipStack();
- private ChipStack tempSrcStack = new ChipStack();
+ private DrawableImageStack tempDestStack = new DrawableImageStack();
+ private DrawableImageStack tempSrcStack = new DrawableImageStack();
  
  // the rule is that each of goal,trade,move has to be activated exactly once
  // at the end of the placement phase.  Any move which makes that impossible is
@@ -1032,7 +1032,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
  // so we just try all possibilities and return true if we succeed.  This isn't effecient,
  // but the absolute numbers are so small it won't matter.
  //
- private boolean canPlaceAndStillActivate(ChipStack destStack,ChipStack srcStack,
+ private boolean canPlaceAndStillActivate(DrawableImageStack destStack,DrawableImageStack srcStack,
 		 	ProteusChip from,ProteusChip target,int acode)
  {	
 	 if(target.shape==from.shape)
@@ -1055,11 +1055,11 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
  // srcStack is all the pieces that haven't been placed yet.
  // acode is a bit mask representing which of the 3 variables have been activated 7=all
  //
- private boolean recursivelyPlace(ChipStack destStack,ChipStack srcStack,int acode)
+ private boolean recursivelyPlace(DrawableImageStack destStack,DrawableImageStack srcStack,int acode)
  {	if(srcStack.size()==0) { return(false); }
- 	ProteusChip from = srcStack.pop();
+ 	ProteusChip from = (ProteusChip)srcStack.pop();
  	for(int lim=destStack.size()-1; lim>=0; lim--)
- 		{ ProteusChip dest = destStack.remove(lim,true);	// preserve the order of the stack during the descent
+ 		{ ProteusChip dest = (ProteusChip)destStack.remove(lim,true);	// preserve the order of the stack during the descent
  		  boolean val = canPlaceAndStillActivate(destStack,srcStack,from,dest,acode);
  		  destStack.insertElementAt(dest,lim);
  		  if(val) 

@@ -93,6 +93,7 @@ public class TicTacNineChip extends chip<TicTacNineChip>
         	CC[i]=new TicTacNineChip(ImageNames[i],i-FIRST_CHIP_INDEX,IM[i],rv.nextLong(),SCALES[i]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

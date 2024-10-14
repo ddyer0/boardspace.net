@@ -74,6 +74,7 @@ public class SpanglesChip extends chip<SpanglesChip>
         	{CC[i]=new SpanglesChip(i,IM[i],ImageNames[i],SCALES[i],rv.nextLong(),names[i]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}   

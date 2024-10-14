@@ -24,6 +24,7 @@ import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -232,6 +233,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
 			assignedBlanks[ch-'A']=new CrosswordsChip(Blank,ch,0); 
 		}
 		imagesLoaded = true;
+		Image.registerImages(allChips);
 		}
 	}   
 	Color ltblue = new Color(100,100,250);

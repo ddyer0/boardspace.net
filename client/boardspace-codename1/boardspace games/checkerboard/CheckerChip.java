@@ -22,6 +22,7 @@ import lib.AR;
 import lib.Drawable;
 import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
 import lib.MultiGlyph;
 import lib.Random;
@@ -148,7 +149,7 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 		imagesLoaded = forcan.load_masked_images(StonesDir,allChips)
 					&& forcan.load_masked_images(ImageDir, allArt)
 				;
-		
+		if(imagesLoaded) { Image.registerImages(allChips); Image.registerImages(allArt);}
 		check_digests(allChips);
 		}
 	}

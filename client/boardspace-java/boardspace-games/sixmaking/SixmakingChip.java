@@ -18,6 +18,7 @@ package sixmaking;
 
 import lib.Drawable;
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.MultiGlyph;
 import lib.Random;
@@ -144,6 +145,7 @@ public class SixmakingChip extends chip<SixmakingChip> implements SixmakingConst
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

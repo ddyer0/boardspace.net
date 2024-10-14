@@ -1687,7 +1687,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 
 
 private CellStack replacable = new CellStack();
-private ChipStack replacements = new ChipStack();
+private DrawableImageStack replacements = new DrawableImageStack();
 public void randomizeHiddenState(Random robotRandom, int robotPlayer) 
 {	replacements.clear();
 	replacable.clear();
@@ -1716,7 +1716,7 @@ public void randomizeHiddenState(Random robotRandom, int robotPlayer)
 		boolean found = false;
 		for(int idx = siz; !found && idx>=0; idx--)
 		{
-			MagnetChip newChip = replacements.elementAt(idx);
+			MagnetChip newChip = (MagnetChip)replacements.elementAt(idx);
 			if(newChip.upFace()==oldFace)
 			{
 				rep.setChipAtIndex(0,newChip);

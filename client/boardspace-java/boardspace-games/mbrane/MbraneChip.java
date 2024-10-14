@@ -19,6 +19,7 @@ package mbrane;
 import java.awt.Rectangle;
 
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.AR;
 import lib.DrawableImageStack;
@@ -189,6 +190,7 @@ public class MbraneChip extends chip<MbraneChip>
 			red[i].altChip  = black[i];
 			black[i].altChip = red[i];
 			}
+		Image.registerImages(allChips);
 		imagesLoaded = true;
 		}
 	}

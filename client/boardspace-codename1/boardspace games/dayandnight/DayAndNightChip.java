@@ -20,6 +20,7 @@ import bridge.Config;
 import dayandnight.DayAndNightConstants.DayAndNightId;
 import lib.AR;
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -109,7 +110,11 @@ public class DayAndNightChip extends chip<DayAndNightChip> implements Config
 		imagesLoaded = forcan.load_masked_images(StonesDir,allChips)
 					&& forcan.load_masked_images(ImageDir, allArt)
 				;
-		
+		if(imagesLoaded)
+		{
+			Image.registerImages(allChips);
+			Image.registerImages(allArt);
+		}
 		check_digests(allChips);
 		}
 	}

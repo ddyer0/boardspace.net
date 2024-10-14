@@ -3133,10 +3133,10 @@ public class PlayerBoard implements ManhattanConstants
 		}
 	}
 	
-	public void addAirstrikeMoves(CommonMoveStack all,PlayerBoard victim,boolean japan,boolean lemay,int who) 
+	public void addAirstrikeMoves(CommonMoveStack all,ManhattanChip playing,PlayerBoard victim,boolean japan,boolean lemay,int who) 
 	{
 		// add airstrike moves on the victim
-		if(nFighters>0)
+		if(nFighters>0 && (playing==null || playing==fighter))
 		{
 			if(victim.nFighters>0) 
 			{ 
@@ -3155,7 +3155,7 @@ public class PlayerBoard implements ManhattanConstants
 				}
 			}
 		}
-		if(nBombers>0 && victim.nFighters==0)
+		if(nBombers>0 && victim.nFighters==0 && (playing==null || playing==bomber))
 		{
 			// open season, bomb away!
 			for(int lim=victim.buildings.size()-1; lim>=0; lim--)
@@ -3173,6 +3173,7 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		if (japan
 				&& nFighters>0 
+				&& (playing==null || playing==fighter)
 				&& victim.nFighters==0)
 			{
 			// open season, bomb away!

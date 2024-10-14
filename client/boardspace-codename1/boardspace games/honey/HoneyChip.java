@@ -24,6 +24,7 @@ import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -174,6 +175,7 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
 		letters = pool.toArray();  	
 		alphaLetters = new HoneyChip[26];
 		for(HoneyChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
+		Image.registerImages(allChips);
  		}
 
 	}   

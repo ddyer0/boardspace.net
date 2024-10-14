@@ -16,21 +16,23 @@
  */
 package lib;
 
+
 /** a stack of some type of DrawableImage */
 public class DrawableImageStack extends OStack<DrawableImage<?>>
-{	public DrawableImage<?>[] newComponentArray(int n) 
+{		
+	public DrawableImage<?>[] newComponentArray(int n) 
 	{ return(new DrawableImage[n]); 
 	}
-public double imageSize(ImageStack imstack)
-{	double sum = 0;
- 	for(int lim=size()-1; lim>=0;lim--)
- 	{
- 		DrawableImage<?> chip = elementAt(lim);
- 		Image im = chip.image;
- 		sum += (im==null || im.isUnloaded()) ? 0 : im.imageSize(imstack);
- 	}
- 	return sum;
-}
+	public double imageSize(ImageStack imstack)
+	{	double sum = 0;
+	 	for(int lim=size()-1; lim>=0;lim--)
+	 	{
+	 		DrawableImage<?> chip = elementAt(lim);
+	 		Image im = chip.image;
+	 		sum += (im==null || im.isUnloaded()) ? 0 : im.imageSize(imstack);
+	 	}
+	 	return sum;
+	}
 /**
  * set all images to be autoloaded with a specific mask
  * @param dir
@@ -69,6 +71,24 @@ public void autoloadGroup(String dir,DrawableImage<?>images[])
 		chip.image = new Image(dir+chip.file+".jpg",mask);
 		chip.image.setUnloadable(true);
 	}
+}
+public void unloadImages()
+{
+	for(int lim=size()-1; lim>=0; lim--)
+	{
+		DrawableImage<?>chip = elementAt(lim);
+		chip.unload();
+	}
+}
+
+public long Digest(Random r) 
+{
+	long v = 0;
+	for(int lim=size()-1; lim>=0; lim--)
+	{
+		v ^= elementAt(lim).Digest(r);
+	}
+	return v;
 }
 
 }

@@ -440,7 +440,13 @@ public class ImagineChip extends chip<ImagineChip> implements CommonConfig
 		autoloadPosts(Dir);
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(Dir,otherChips);
-		
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(otherChips);
+			Image.registerImages(deck1);
+			Image.registerImages(deck1a);
+		}
 		//for(ImagineChip ch : deck1) { ch.getImage(forcan); }
 		
 		}

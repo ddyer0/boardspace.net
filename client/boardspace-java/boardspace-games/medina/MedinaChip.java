@@ -254,6 +254,7 @@ public class MedinaChip extends chip<MedinaChip>
         TEA_BACK = CC[tea_back_index];
         WASTE = CC[waste_index];
         PURPLE_PALACE = getPalace(1);
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

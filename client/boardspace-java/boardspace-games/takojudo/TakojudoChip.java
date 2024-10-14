@@ -95,6 +95,7 @@ public class TakojudoChip extends chip<TakojudoChip>
         	CC[i]=new TakojudoChip(ImageNames[i],i,IM[i],rv.nextLong(),SCALES[i]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

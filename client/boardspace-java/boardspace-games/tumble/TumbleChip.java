@@ -72,6 +72,7 @@ public class TumbleChip extends chip<TumbleChip> implements Config
         	CC[i]=new TumbleChip((i<2?i:-1),i,ImageNames[i],IM[i],SCALES[i],r.nextLong()); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

@@ -110,6 +110,7 @@ public class WorkerChip extends EuphoriaChip implements EuphoriaConstants
 		for(WorkerChip ca[] : allWorkers) { for(WorkerChip c : ca)
 			{ c.image = images[idx];
 			  idx++; 
+			  Image.registerImages(ca);
 			}
 		}
 		}

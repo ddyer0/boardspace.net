@@ -96,6 +96,7 @@ public class SyzygyChip extends chip<SyzygyChip>
         	}
         Asteroid = CC[ASTEROID_INDEX];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}   

@@ -602,17 +602,17 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	//if(G.debug()) { gb.positionCells(); }
     	int cellSize = G.Width(brect)/18;
     	
-       	drawBoardCell(gc,highlight,gb,targets,gb.seeBribe, cellSize, 0.1, 0.0, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.seeBribe, cellSize*2, 0.1, 0.0, null,hitAny);
        	if(state==ManhattanState.Puzzle)
        	{
-       	drawBoardCell(gc,highlight,gb,targets,gb.seeBank, cellSize, 0.2, 0.1, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.seeYellowcake, cellSize*3/4, 0.2, 0.1, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.seeBank, cellSize*2, 0.2, 0.1, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.seeYellowcake, cellSize, 0.2, 0.1, null,hitAny);
        	}
        	drawBoardCell(gc,highlight,gb,targets,gb.seeDamage,cellSize*2/3,0,0,null,hitAny);
        	double space = (G.Width(brect)*0.75)/(0.7*cellSize*gb.availableWorkers.height());
        	double spacing = Math.min(space,0.5);
        	// draw them across the board between the buildings and the player spaces
-       	drawBoardCell(gc,highlight,gb,targets,gb.availableWorkers, cellSize*2/3, spacing, 0.0, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.availableWorkers, cellSize*8/10, spacing, 0.0, null,hitAny);
        	
        	drawBoardCell(gc,highlight,gb,targets,gb.seeBuildings, cellSize*2, 0.002, 0.003, ManhattanChip.BACK,hitAny);
        	drawBoardCell(gc,highlight,gb,targets,gb.seeDiscardedBombs, cellSize*3/4, 0.01, 0.01, ManhattanChip.BACK,hitAny);
@@ -625,21 +625,21 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	drawBoardCell(gc,hitAny,gb,targets,gb.bombtestHelp,cellSize*2/3,0,0,null,hitAny);
        	boolean censor = gb.pendingBenefit==Benefit.BombDesign;
        	drawBoardCell(gc,hitAny,gb,targets,gb.seeCurrentDesigns, cellSize, 0.26, 0.22, censor?ManhattanChip.BACK:null,hitAny);
-      	drawBoardCell(gc,highlight,gb,targets,gb.playMakePlutonium, cellSize, 0.00, 0.00, null,hitAny);
-     	drawBoardCell(gc,highlight,gb,targets,gb.playMakeUranium, cellSize, 0.00, 0.00, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playEspionage, cellSize, 0.00, 0.00, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playRepair, cellSize, 0.00, 0.00, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playMakeFighter, cellSize, 0.00, 0.00, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playMakeBomber, cellSize, 0.00, 0.00, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playBuyBuilding, cellSize, 0.2, 0.4, null,hitAny);
-       	drawBoardCell(gc,highlight,gb,targets,gb.playBuyBuilding2, cellSize, 0.2, 0.4, null,hitAny);
+      	drawBoardCell(gc,highlight,gb,targets,gb.playMakePlutonium, cellSize*2, 0.00, 0.00, null,hitAny);
+     	drawBoardCell(gc,highlight,gb,targets,gb.playMakeUranium, cellSize*2, 0.00, 0.00, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playEspionage, cellSize*2, 0.00, 0.00, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playRepair, cellSize*2, 0.00, 0.00, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playMakeFighter, cellSize*2, 0.00, 0.00, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playMakeBomber, cellSize*2, 0.00, 0.00, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playBuyBuilding, cellSize*3/2, 0.2, 0.4, null,hitAny);
+       	drawBoardCell(gc,highlight,gb,targets,gb.playBuyBuilding2, cellSize*3/2, 0.2, 0.4, null,hitAny);
 
-    	drawBoardArray(gc,highlight,gb,targets,gb.playAirStrike, cellSize, 0.00, 0.00, null,hitAny);
+    	drawBoardArray(gc,highlight,gb,targets,gb.playAirStrike, cellSize*2, 0.00, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.seeEspionage, cellSize, 0.15, 0.000, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.seeBuilding, cellSize*2, 0.00, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.seeUranium, cellSize, 0.2, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.seePlutonium, cellSize, -0.2, 0.00, null,hitAny);
-    	drawBoardArray(gc,highlight,gb,targets,gb.playMakeMoney, cellSize, 0.00, 0.00, null,hitAny);
+    	drawBoardArray(gc,highlight,gb,targets,gb.playMakeMoney, cellSize*2, 0.00, 0.00, null,hitAny);
 
     	drawBoardArray(gc,highlight,gb,targets,gb.playMine, cellSize, 0.00, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.playUniversity, cellSize, 0.00, 0.00, null,hitAny);
@@ -810,6 +810,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		int ypos = pb.cellToY(c);
 		ManhattanMovespec move = targets.get(c);
 		HitPoint ahp = move!=null ? hp : null;
+		ManhattanId rack = c.rackLocation();
+		boolean bombing =  (c.topChip()==null) && ((rack==ManhattanId.Fighters) || (rack==ManhattanId.Bombers));
+		boolean see = eyeRect.isOnNow() || bombing;
+
 		switch(c.type)
 		{
 		case Building:
@@ -839,11 +843,15 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 								&&((move==null || move.op!=MOVE_SELECT));
     	findBigChip(c,selectable,hitAny,cellSize,xpos,ypos,xstep,ystep,hint);
 		if(c.benefit!=Benefit.Inspect 
-				&& eyeRect.isOnNow() 
+				&& see
 				&& !gb.getState().Puzzle()
 				&& targets.get(c)!=null)
 		{	
 			StockArt.SmallO.drawChip(gc,this,cellSize*3,xpos,ypos,null);
+			if(bombing)
+			{
+				StockArt.RedLight.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+			}
 		}
 		//StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
     }
@@ -1018,8 +1026,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	int nyellow = pb.yellowcakeDisplay.height();
     	double cakeStep = Math.max(-0.1,-1.2/nyellow);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.yellowcakeDisplay,cellSize*3/2, cakeStep,0, ""+(nyellow-pb.yellowcakeDisplay.activeAnimationHeight()),hitAny);	
-    	drawPlayerArray(gc,hp,gb,pb,targets,pb.fighters, cellSize, 0.5, 0.5, null,hitAny);
-    	drawPlayerArray(gc,hp,gb,pb,targets,pb.bombers, cellSize, 0.5, 0.5, null,hitAny);
+    	drawPlayerArray(gc,hp,gb,pb,targets,pb.fighters, cellSize*3/2, 0.5, 0.5, null,hitAny);
+    	drawPlayerArray(gc,hp,gb,pb,targets,pb.bombers, cellSize*3/2, 0.5, 0.5, null,hitAny);
     	drawPlayerArray(gc,hp,gb,pb,targets,pb.buildings, null, cellSize*3, 0.0, 0.0,null, hitAny);
     	double cashstep = Math.min(0.4,1.5/pb.cashDisplay.height());
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.cashDisplay,cellSize*5/2,0.0,cashstep,null,hitAny);
@@ -1236,7 +1244,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        }
        else if(deckOverlay!=null)
        	{
-    	drawOverlayDeck(gc,gb,overlayRect,deckOverlay,state.Puzzle()?ourTurnSelect:null,deckSelect,selectPos);   
+    	drawDeckOverlay(gc,gb,overlayRect,deckOverlay,state.Puzzle()?ourTurnSelect:null,deckSelect,selectPos);   
        	}
        
        if(bigChip!=null)
@@ -1606,6 +1614,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			while(ncols>2 && nrows(ncells,ncols-1)==nrows)
 				{ ncols--; }
 		}
+		
 		double off = (ncols-1)/2.0;
 		int x00 = left+w/2 - (int)(cellSize*off);
 		int x0 = x00;
@@ -1641,6 +1650,15 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 				y0 += ystep;
 			}
 		 }
+		if(trade)
+			{	// trade
+				String give = s.get(TradeAwayMessage);
+				String take = s.get(TradeGetMessage);
+				GC.setFont(gc,largeBoldFont());
+				GC.Text(gc,true,scrimLeft,scrimTop+(int)(scrimH*0.3),scrimW,scrimH/4,Color.black,null,give);
+				GC.Text(gc,true,scrimLeft,scrimTop+(int)(scrimH*0.715),scrimW,scrimH/3,Color.black,null,take);
+				
+			}
 		 drawRotators(gc,scrimLeft,scrimTop,scrimW,scrimH,hitAny);
 
 		 GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);
@@ -1779,7 +1797,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 
 	 ManhattanCell overlayDeck = null;
 	
-	 public void drawOverlayDeck(Graphics gc,ManhattanBoard gb,Rectangle rect,ManhattanCell cell,
+	 public void drawDeckOverlay(Graphics gc,ManhattanBoard gb,Rectangle rect,ManhattanCell cell,
 			 	HitPoint hp,boolean select,HitPoint hitAny)
 	 {
 		int left = G.Left(rect);
@@ -1789,7 +1807,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		int ncells = cell.height();
 	 	int ncols = Math.max(3,ncells);
 		int nrows = 1;
-		
+		boolean personalities = cell.rackLocation()==ManhattanId.SeePersonalityPile;
 		
 		 int cellSize = w/(ncols+1);
 		 int ystep = cellSize*4/3;
@@ -1817,7 +1835,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
 		 double off = (ncols-1)/2.0;
 		 
-		 
+		 int fh = standardFontSize();
 		 int x00 = left+w/2 - (int)(cellSize*off);
 		 int x0 = x00;
 		 int y0 = top+h/2 - (int)((nrows/2.0-0.5)*ystep);
@@ -1839,8 +1857,18 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			 {
 				 StockArt.Exmark.drawChip(gc,this,cellSize/2,x0,y0,null);
 			 }
+			 if(personalities && (chip.type==Type.Personalities))
+			 {	boolean has = false;
+			 	for(PlayerBoard pb : gb.pbs) { has |= pb.hasPersonality(chip); }
+			 	if(!has)
+			 	{	GC.setFont(gc,standardBoldFont());
+			 		GC.Text(gc,true,x0-cellSize/2,y0-(int)(cellSize*0.77),cellSize,fh*3,Color.black,null,s.get(AvailableMessage));
+			 	}
+			 }
 			 // select an enlarged card if pointing at the bottom of the card
-			 Rectangle r = new Rectangle(x0-cellSize*2/5,y0+cellSize/3,cellSize*4/5,cellSize/3);
+			 int xp = x0-cellSize*2/5;
+			 int yp = y0+cellSize/3;
+			 Rectangle r = new Rectangle(xp,yp,cellSize*4/5,cellSize/3);
 				//GC.frameRect(gc,Color.blue,r);
 				if(G.pointInRect(hitAny,r))
 				{

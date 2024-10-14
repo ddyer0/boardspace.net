@@ -54,9 +54,15 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public static Image getCachedImage(String name) { return(cache.getCachedImage(name)); }
 	public static CachedImageManager getImageCache() { return(cache); }
 	
+	/**
+	 * manage cached images, but discarding images not used lately
+	 * and scaling images whose scale is pending.  
+	 * @param n is how many milliseconds to spend doing it
+	 * @return
+	 */
 	public static boolean manageCachedImages(int n)
 	{
-		if(cache.needsManagement())
+		if(cache.needsManagement()||n>=1000)
 		{
 			cache.manageCachedImages(n);
 			return true;
@@ -641,5 +647,52 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 		
 		return getHeight();
 	}
+	
+	public static DrawableImageStack registeredImages = new DrawableImageStack();
+	/**
+	 * register images for debugging awareness, and potentially for unloading.
+	 * These images are visible in the showStats and showImages hack for the
+	 * various game launchers.
+	 * @param all
+	 */
+	public static void registerImages(DrawableImage<?>[] all)
+	{
+		for(DrawableImage<?> im : all) { registeredImages.push(im); }
+	}
+	/**
+	 * register images for debugging awareness, and potentially for unloading.
+	 * These images are visible in the showStats and showImages hack for the
+	 * various game launchers.
+	 * @param all
+	 */
+	public static void registerImages(DrawableImageStack allChips) 
+	{
+		for(int lim=allChips.size()-1; lim>=0; lim--)
+		{
+			registeredImages.push(allChips.elementAt(lim));
+		}		
+	}
+	/**
+	 * register images for debugging awareness, and potentially for unloading.
+	 * These images are visible in the showStats and showImages hack for the
+	 * various game launchers.
+	 * @param all
+	 */
+	public static void unloadRegisteredImages()
+	{
+		registeredImages.unloadImages();
+	}
+	/**
+	 * size of images that have been registered and are still in memory.
+	 * this is used by the showStats and showImages hack for the various
+	 * game launchers.
+	 * 
+	 * @param all
+	 */
+	public static double registeredImageSize(ImageStack stack)
+	{
+		return registeredImages.imageSize(stack);
+	}
+
 
 }

@@ -117,6 +117,7 @@ public class CookieChip extends chip<CookieChip> implements CookieConstants
         Cherry = CC[CHERRY_INDEX];
         Crawl = CC[CRAWL_INDEX];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}   

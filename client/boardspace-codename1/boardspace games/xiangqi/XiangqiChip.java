@@ -161,6 +161,7 @@ public class XiangqiChip extends chip<XiangqiChip>
         Image extraImages[] = forcan.load_masked_images(ImageDir,extraNames);
         check = new XiangqiChip(extraNames[0],-1,extraImages[0],rv.nextLong(),new double[]{0.5,0.5,1.0},null);
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

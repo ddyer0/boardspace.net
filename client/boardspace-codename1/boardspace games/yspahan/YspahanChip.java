@@ -22,10 +22,6 @@ import lib.*;
 import online.common.OnlineConstants;
 import online.game.chip;
 
-class ChipStack extends OStack<YspahanChip>
-{
-	public YspahanChip[] newComponentArray(int n) { return(new YspahanChip[n]); }
-}
 /*
  * generic "playing piece class, provides canonical playing pieces, 
  * image artwork, scales, and digests.  For our purposes, the squares
@@ -109,8 +105,8 @@ public class YspahanChip extends chip<YspahanChip> implements YspahanConstants,O
 		cube.chip = this;
 	}
 
-	static ChipStack CANONICAL_PIECE = null;
-	static YspahanChip getChip(int n) { return(CANONICAL_PIECE.elementAt(n)); }
+	static DrawableImageStack CANONICAL_PIECE = null;
+	static YspahanChip getChip(int n) { return((YspahanChip)CANONICAL_PIECE.elementAt(n)); }
 	static YspahanChip getDie(int value,boolean yellow)
 	{	ydie[] vals = ydie.values();
 		ydie h = vals[value-1+(yellow?6:0)];
@@ -142,7 +138,7 @@ public class YspahanChip extends chip<YspahanChip> implements YspahanConstants,O
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(CANONICAL_PIECE==null)
 		{
-		ChipStack CP = new ChipStack();
+		DrawableImageStack CP = new DrawableImageStack();
 		Random r = new Random(6364642);
 		// load cards
 		Image cardMask = forcan.load_image(ImageDir,"card-mask");
@@ -190,6 +186,7 @@ public class YspahanChip extends chip<YspahanChip> implements YspahanConstants,O
 		}
 		plusCube.image = forcan.load_image(ImageDir,plusCube.file,cubeMask);
 		plus2.image = forcan.load_image(ImageDir,plus2.file,forcan.load_image(ImageDir,plus2.file+"-mask"));
+		Image.registerImages(CP);
 		CANONICAL_PIECE = CP;
 		}
 	}

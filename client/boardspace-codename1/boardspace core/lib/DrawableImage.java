@@ -36,7 +36,7 @@ import bridge.Color;
  *
  */
 
-public class DrawableImage<T> implements Drawable,StackIterator<T>
+public class DrawableImage<T extends DrawableImage<T>> implements Drawable,StackIterator<T>,Digestable
 {
 	public void rotateCurrentCenter(double amount,int x,int y,int cx,int cy) {};
  	public double activeAnimationRotation() { return(0); }
@@ -683,5 +683,9 @@ try {
 		Image.setChangeDates(true);
 	}
 }
-
+public void unload() 
+{ 	Image im = image;
+	if(im!=null && im.isUnloadable()) { im.unload(); }
+}
+	public long Digest(Random r) { return r.nextLong(); }
 }

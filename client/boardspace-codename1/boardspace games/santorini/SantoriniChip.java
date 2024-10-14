@@ -18,6 +18,7 @@ package santorini;
 
 import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.*;
@@ -194,6 +195,8 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
 		Dome.npChip = Dome_NP;
 		Cylinder_A.npChip = Cylinder_B.npChip = Cylinder_NP;
 		Cube_A.npChip = Cube_B.npChip = Cube_NP; 
+		Image.registerImages(Gods);
+		Image.registerImages(allChips);
 		imagesLoaded = true;
 		}
 	}

@@ -146,6 +146,7 @@ public class QyshinsuChip extends chip<QyshinsuChip>
         for(int i=0;i<nChips;i++) {CC[i]=new QyshinsuChip(i,r.nextLong()); }
         IMAGES = IM;
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

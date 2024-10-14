@@ -134,6 +134,7 @@ public class ColoritoChip extends chip<ColoritoChip>
         	CC[i]=new ColoritoChip(ImageNames[i],ChipColors[i],IM[i],rv,SCALES[i],i>=N_STANDARD_TILES); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

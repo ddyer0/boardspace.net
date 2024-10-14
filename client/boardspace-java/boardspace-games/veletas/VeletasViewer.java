@@ -165,13 +165,15 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     
     
     private boolean flatten = false;
+    private boolean positionBelow = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    	setLocalBoundsV(x,y,width,height,new double[] {2, 1,-1, -2});
     }
 
     public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	flatten = a<0;	
+    	positionBelow = Math.abs(a)<1.5;
     	G.SetRect(fullRect, x, y, width, height);
 	  	GameLayoutManager layout = selectedLayout;
 		int nPlayers = nPlayers();
@@ -212,14 +214,14 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		int mainH = G.Height(main);
 		
 		// calculate a suitable cell size for the board
-		double cs = Math.min((double)mainW/(ncols+1),(double)mainH/nrows);
+		double cs = Math.min((double)mainW/(ncols+(positionBelow?0:1)),(double)(mainH/(nrows+(positionBelow?1:0))));
 		SQUARESIZE = (int)cs;
 		//G.print("cell "+cs0+" "+cs+" "+bestPercent);
 		// center the board in the remaining space
-		int boardW = (int)((ncols+1)*SQUARESIZE);
+		int boardW = (int)((ncols+(positionBelow ? 0 : 1))*SQUARESIZE);
 		int boardH = (int)(nrows*SQUARESIZE);
 		int extraW = Math.max(0, (mainW-boardW)/2);
-		int extraH = Math.max(0, (mainH-boardH)/2);
+		int extraH = Math.max(0, (mainH-boardH-(positionBelow?SQUARESIZE:0))/2);
 		int boardX = mainX+extraW;
 		int boardY = mainY+extraH;
 		int boardBottom = boardY+boardH;
@@ -234,8 +236,14 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 	    int stateH = fh*5/2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-		
+		if(positionBelow)
+		{
+			G.SetRect(shooterChipRect,boardX+boardW/2-SQUARESIZE,boardY+boardH,SQUARESIZE,SQUARESIZE);
+		}
+		else
+		{
 		G.SetRect(shooterChipRect,boardRight,boardY+boardH/2-SQUARESIZE/2,SQUARESIZE,SQUARESIZE);
+		}
 		// goal and bottom ornaments, depending on the rendering can share
 		// the rectangle or can be offset downward.  Remember that the grid
 		// can intrude too.
@@ -288,6 +296,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     private void DrawShooterPool(Graphics gc, VeletasBoard gb, int forPlayer, Rectangle r, HitPoint highlight)
     {	
         VeletasCell thisCell = gb.shooters;
+        boolean vertical = !positionBelow;
         boolean canHit = gb.LegalToHitChips(thisCell);
         VeletasChip thisChip = thisCell.topChip();
         boolean canDrop = hasMovingObject(highlight);
@@ -295,7 +304,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
         String msg = ""+thisCell.height();
         int w = G.Width(r);
-        thisCell.drawStack(gc,this,pt,w,G.centerX(r),G.centerY(r),0,0.1,msg);
+        thisCell.drawStack(gc,this,pt,w,G.centerX(r),G.centerY(r),0,vertical ? 0 : 0.1, vertical ? 0.1 : 0,msg);
 
         if((highlight!=null) && (highlight.hitObject==thisCell))
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;

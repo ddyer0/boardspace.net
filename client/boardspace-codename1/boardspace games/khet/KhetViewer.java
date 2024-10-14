@@ -27,8 +27,7 @@ import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
-import lib.Graphics;
-import lib.Image;
+
 import lib.SimpleSprite.Movement;
 import lib.*;
 
@@ -252,8 +251,9 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
  
-        return boardW*boardH;
-    }
+        return boardW*boardH+G.Height(getPlayerOrTemp(0).playerBox);
+        
+   }
     
 	
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)

@@ -16,16 +16,12 @@
  */
 package proteus;
 
+import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
-import lib.OStack;
 import lib.Random;
 import online.game.chip;
 
-
-class ChipStack extends OStack<ProteusChip>
-{
-	public ProteusChip[] newComponentArray(int n) { return(new ProteusChip[n]); }
-}
 /*
  * generic "playing piece class, provides canonical playing pieces, 
  * image artwork, scales, and digests.  For our purposes, the squares
@@ -35,7 +31,7 @@ class ChipStack extends OStack<ProteusChip>
 public class ProteusChip extends chip<ProteusChip> implements ProteusConstants
 {	
 	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
-	private static ChipStack allChips = new ChipStack();
+	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 
 	Shape shape=null;
@@ -63,7 +59,7 @@ public class ProteusChip extends chip<ProteusChip> implements ProteusConstants
 	}
 	public int chipNumber() { return(chipIndex); }
 	public static ProteusChip getChipNumber(int id)
-	{	return(allChips.elementAt(id));
+	{	return((ProteusChip)allChips.elementAt(id));
 	}
 
 	// constructor for chips not expected to be part of the UI
@@ -159,6 +155,7 @@ public class ProteusChip extends chip<ProteusChip> implements ProteusConstants
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

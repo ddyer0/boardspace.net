@@ -18,6 +18,7 @@ package kulami;
 
 import kulami.KulamiConstants.KulamiId;
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -106,6 +107,7 @@ public class KulamiChip extends chip<KulamiChip>
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

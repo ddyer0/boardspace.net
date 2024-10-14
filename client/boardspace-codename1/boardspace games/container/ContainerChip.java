@@ -270,6 +270,7 @@ public class ContainerChip extends chip<ContainerChip> implements ContainerConst
         CANONICAL_PIECE = CC;
         GOLD_CONTAINER = getChip(CONTAINER_INDEX+MACHINE_COLORS);
         BLANK_CARD = getChip(BLANK_GOAL_INDEX);
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

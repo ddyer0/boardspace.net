@@ -17,6 +17,7 @@
 package meridians;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -134,6 +135,11 @@ public class MeridiansChip extends chip<MeridiansChip> implements CommonConfig
 		{	
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(otherChips);
+		}
 		}
 	}   
 	/*

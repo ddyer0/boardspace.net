@@ -400,7 +400,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String PlayEngineerMessage = "Add another engineer";
 	static final String Play2EngineersMessage = "Add 2 more engineers";
 	static final String Play2ScientistsMessage = "Add 2 more scientists";
-	static final String PlayEspionageMessage = "Perform #1 espionage on one of your opponents";
+	static final String PlayEspionageMessage = "You may perform #1 espionage on your opponents";
 	static final String DiscardBombMessage = "Discard down to 3 designs";
 	static final String DiscardOneBombMessage = "Discard one Bomb";
 	static final String ConfirmDiscardMessage = "Click on \"Done\" to discard the selected designs";
@@ -426,11 +426,17 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String RotateCWMessage = "rotate the overlay clockwise";
 	static final String HideBombsExplanation = "hide your bomb designs from the other players";
 	static final String SeeBombsExplanation = "show your bomb designs";
+	static final String TradeAwayMessage = "Select one to give in trade";
+	static final String TradeGetMessage = "Select one to receive in trade";
+	static final String AvailableMessage = "Available";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Game",
+			AvailableMessage,
 			HideBombsExplanation,
+			TradeGetMessage,
+			TradeAwayMessage,
 			SeeBombsExplanation,
 			RotateCCWMessage,
 			RotateCWMessage,

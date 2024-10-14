@@ -434,6 +434,7 @@ public abstract class exCanvas extends ProxyWindow
     	// as well as the instantiate canvas code.
      	try
     	{
+    	Image.unloadRegisteredImages();	// dispose of unneeded old images before loading new ones
         StockArt.preloadImages(loader,IMAGEPATH);
       	preloadImages();
        	}

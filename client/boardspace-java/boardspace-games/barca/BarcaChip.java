@@ -17,6 +17,7 @@
 package barca;
 
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import barca.BarcaConstants.BarcaId;
 import lib.DrawableImageStack;
@@ -157,6 +158,7 @@ public class BarcaChip extends chip<BarcaChip>
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

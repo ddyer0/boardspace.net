@@ -107,6 +107,7 @@ public class MorelliChip extends chip<MorelliChip>
         	}
         darkener = CC[N_STANDARD_TILES-1];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

@@ -221,6 +221,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 		// to make transparent images that are actually used.
         Image IM[]=forcan.load_masked_images(Dir,names);
 		for(int i=0;i<CC.length;i++) { CC[i].image = IM[i]; }
+		Image.registerImages(CC);
 		
 		preloadMaskGroup(forcan,Dir,MoraleMarkers,"morale-mask");
 		{int i=0;
@@ -229,6 +230,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 			  m.color = Colors.find(i);
 			  i++;
 			}}
+		Image.registerImages(MoraleMarkers);
 		
 		preloadMaskGroup(forcan,Dir,AuthorityMarkers,"authority-mask");
 		for(int i=0;i<AuthorityMarkers.length;i++) 
@@ -237,6 +239,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 			  AuthorityMarkers[i].color = Colors.find(i);
 			}
 		AuthorityBlocker.subtype = AuthorityMarkers[0];
+		Image.registerImages(AuthorityMarkers);
 		
 		preloadMaskGroup(forcan,Dir,KnowledgeMarkers,"knowlege-mask");
 		{int i=0;
@@ -246,6 +249,8 @@ public class EuphoriaChip extends chip<EuphoriaChip>
 		 	  i++;
 		 	}		 
 		}
+		Image.registerImages(KnowledgeMarkers);
+		
 		imagesLoaded = true;
  		}
 	}   

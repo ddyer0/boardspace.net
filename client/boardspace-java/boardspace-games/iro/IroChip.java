@@ -211,6 +211,12 @@ public class IroChip extends chip<IroChip> implements CommonConfig
 		loadChips(forcan,dir,bchips);
 		loadChips(forcan,dir,wchips);
 		imagesLoaded = forcan.load_masked_images(dir,stoneChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(bchips);
+			Image.registerImages(wchips);
+		}
 		}
 	}   
 	

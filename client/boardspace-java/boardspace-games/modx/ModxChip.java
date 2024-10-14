@@ -24,26 +24,17 @@ import online.game.chip;
  * on the board are pieces too.
  * 
  */
-class ChipStack extends OStack<ModxChip> implements Digestable
-{
-	public ModxChip[] newComponentArray(int n) { return(new ModxChip[n]); }
-
-	public long Digest(Random r) {
-		long v = 0;
-		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(r)*(i+12456); }
-		return(v);	}
-}
 public class ModxChip extends chip<ModxChip> implements ModxConstants
 	{	
 	enum PieceType { Joker, X, Flat }
 	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
-	private static ChipStack allChips = new ChipStack();
+	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public PieceType type;
 	private int chipIndex;
 	public int chipNumber() { return(chipIndex); }
 	public static ModxChip getChipNumber(int id)
-	{	return(allChips.elementAt(id));
+	{	return((ModxChip)allChips.elementAt(id));
 	}
 
 	public ModxId id = null;		// chips/images that are expected to be visible to the user interface should have an ID
@@ -121,6 +112,7 @@ public class ModxChip extends chip<ModxChip> implements ModxConstants
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		Image.registerImages(allChips);
 		}
 	}
 

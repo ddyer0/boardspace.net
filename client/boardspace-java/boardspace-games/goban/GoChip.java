@@ -23,6 +23,7 @@ import common.CommonConfig;
 import goban.GoConstants.GoId;
 import goban.GoConstants.Kind;
 import lib.DrawableImageStack;
+import lib.Image;
 import online.game.chip;
 
 /*
@@ -152,6 +153,11 @@ public class GoChip extends chip<GoChip> implements CommonConfig
 		{
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 						& forcan.load_masked_images(ImageDir,otherChips);
+		if(imagesLoaded)
+			{
+			Image.registerImages(stoneChips);
+			Image.registerImages(otherChips);
+			}
 		}
 	}
 

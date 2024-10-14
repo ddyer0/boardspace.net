@@ -257,6 +257,7 @@ public class RithmomachyChip extends chip<RithmomachyChip> implements CompareTo<
         	CC[i]=new RithmomachyChip(ImageNames[i],i-FIRST_CHIP_INDEX,IM[i],rv.nextLong(),SCALES[i],SPECS[i]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

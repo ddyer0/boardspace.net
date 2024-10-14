@@ -99,6 +99,7 @@ public class CrossfireChip extends chip<CrossfireChip>
         Black.altChip = CC[3];
         White.altChip = CC[2];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);	// verify that the chips have different digests
 		}
 	}   

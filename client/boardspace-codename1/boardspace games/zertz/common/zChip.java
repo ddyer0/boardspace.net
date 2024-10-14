@@ -102,6 +102,8 @@ public class zChip extends chip<zChip> implements GameConstants
         Icon = CC[ICON_OFFSET];
         White = CC[WHITE_INDEX];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

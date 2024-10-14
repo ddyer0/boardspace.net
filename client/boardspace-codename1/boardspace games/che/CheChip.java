@@ -116,7 +116,9 @@ public class CheChip extends chip<CheChip>
        CANONICAL_PIECE = CC;
        check_digests(CC);
        // these are pictures used to show the stack of remaining chips
+       Image.registerImages(CC);
        OBLIQUE_CHIPS = StockArt.preLoadArt(forcan,Dir,ObliqueNames,SCALES);
+       Image.registerImages(OBLIQUE_CHIPS);
 		}
 	}   
 }

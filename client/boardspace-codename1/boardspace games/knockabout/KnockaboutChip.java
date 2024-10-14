@@ -188,6 +188,7 @@ public class KnockaboutChip extends chip<KnockaboutChip> implements OnlineConsta
         }
 
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

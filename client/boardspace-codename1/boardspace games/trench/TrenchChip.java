@@ -16,16 +16,13 @@
  */
 package trench;
 
+import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
-import lib.OStack;
 import lib.Random;
 import online.game.chip;
 import trench.TrenchConstants.TrenchId;
 import common.CommonConfig;
-class ChipStack extends OStack<TrenchChip>
-{
-	public TrenchChip[] newComponentArray(int n) { return(new TrenchChip[n]); }
-}
 
 /**
  * this is a specialization of {@link chip} to represent the stones used by pushfight;
@@ -84,7 +81,7 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
 	};
 	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
-	private static ChipStack trenchChips = new ChipStack();
+	private static DrawableImageStack trenchChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public Type type = null;
 	public TrenchId color = null;
@@ -236,6 +233,7 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,trenchChips);
+		if(imagesLoaded) { Image.registerImages(trenchChips); }
 		}
 	}   
 	/*

@@ -98,6 +98,7 @@ public class ArtifactChip extends EuphoriaChip implements EuphoriaConstants
 		
 		int idx = 0;
 		for(ArtifactChip c : allArtifacts) { c.image = images[idx]; idx++; }
+		Image.registerImages(allArtifacts);
         ImagesLoaded = true;
 		}
 	}   

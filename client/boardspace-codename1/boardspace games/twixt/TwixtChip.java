@@ -17,16 +17,11 @@
 package twixt;
 
 import lib.Image;
+import lib.DrawableImageStack;
 import lib.G;
 import lib.ImageLoader;
-import lib.OStack;
 import lib.Random;
 import online.game.chip;
-
-class ChipStack extends OStack<TwixtChip>
-{
-	public TwixtChip[] newComponentArray(int n) { return(new TwixtChip[n]); }
-}
 
 /**
  * this is a specialization of {@link chip} to represent the stones used by twixt;
@@ -39,7 +34,7 @@ public class TwixtChip extends chip<TwixtChip> implements TwixtConstants
 {
 	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
-	private static ChipStack allChips = new ChipStack();
+	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	
 	private int index = 0;
@@ -219,14 +214,14 @@ public class TwixtChip extends chip<TwixtChip> implements TwixtConstants
     }
 
     static final TwixtChip getChip(int n) 
-    { 	if(n>=0 && n<allChips.size()) return(allChips.elementAt(n));
+    { 	if(n>=0 && n<allChips.size()) return((TwixtChip)allChips.elementAt(n));
     	return(null);
     }
     static final TwixtChip getChip(TwixtId n) 
     { 	if(n!=null)
     	{
     	for(int lim = allChips.size()-1; lim>=0; lim--)
-    	{ TwixtChip ch = allChips.elementAt(lim);
+    	{ TwixtChip ch = (TwixtChip)allChips.elementAt(lim);
     	  if(ch.id==n) { return(ch);}
     	}}
     	return(null);
@@ -371,6 +366,7 @@ public class TwixtChip extends chip<TwixtChip> implements TwixtConstants
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

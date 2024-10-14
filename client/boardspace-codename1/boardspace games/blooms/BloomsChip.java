@@ -20,6 +20,7 @@ import blooms.BloomsConstants.BloomsId;
 import common.CommonConfig;
 import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -148,6 +149,7 @@ public class BloomsChip extends chip<BloomsChip> implements CommonConfig
 		{	
 		imagesLoaded = forcan.load_masked_images(StonesDir, stoneChips)
 						& forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded) { Image.registerImages(otherChips); Image.registerImages(stoneChips); }
 		}
 	}   
 }

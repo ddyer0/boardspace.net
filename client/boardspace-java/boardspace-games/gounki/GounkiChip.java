@@ -143,6 +143,7 @@ public class GounkiChip extends chip<GounkiChip>
         	new GounkiChip(i,ImageNames[i],IM[i],SCALES[i],rv,CC,altChip[ChipMap[i]]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         // digests for the set of gounki chips are not expected to be unique
         // check_digests(CC);
 		}

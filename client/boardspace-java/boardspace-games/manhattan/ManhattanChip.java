@@ -784,6 +784,8 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 
 	
 		imagesLoaded = true;
+		Image.registerImages(myChips);
+		Image.registerImages(otherChips);
 		}
 	}   
 	   public static double imageSize(ImageStack imstack)

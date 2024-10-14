@@ -352,6 +352,7 @@ public class OctilesChip extends chip<OctilesChip>
 		lines120 = compositeImages(forcan,ImageDir,line120names);
 		lines180 = compositeImages(forcan,ImageDir,line180names);
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
 		}
 
 

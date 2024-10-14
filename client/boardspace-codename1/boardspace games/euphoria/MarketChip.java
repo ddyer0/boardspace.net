@@ -295,7 +295,7 @@ public class MarketChip extends EuphoriaChip implements EuphoriaConstants
 			}
 		CardBack = allMarkets[0];     
         check_digests(allMarkets);	// verify that the chips have different digests
-        
+        Image.registerImages(allMarkets);
         ImagesLoaded = true;
 		}
 	}   

@@ -24,6 +24,7 @@ import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -235,7 +236,7 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
 			{ int cc = c.extendedCharCode();
 			  if((cc>='a') && cc<='z')
 				{ alphaLetters[cc-'a'] = c; }}
-		
+		Image.registerImages(allChips);
 		imagesLoaded = true;
    	
 		}

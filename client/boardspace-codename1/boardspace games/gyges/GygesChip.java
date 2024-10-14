@@ -86,6 +86,7 @@ public class GygesChip extends chip<GygesChip>
         	CC[i]=new GygesChip(ImageNames[i],i,IM[i],rv.nextLong(),SCALES[i],movements[i]); 
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

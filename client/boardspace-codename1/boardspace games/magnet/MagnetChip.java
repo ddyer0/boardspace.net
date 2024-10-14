@@ -16,16 +16,14 @@
  */
 package magnet;
 
+import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
-import lib.OStack;
 import lib.Random;
 import magnet.MagnetConstants.ChipId;
 import online.game.chip;
 
-class ChipStack extends OStack<MagnetChip>
-{
-	public MagnetChip[] newComponentArray(int n) { return(new MagnetChip[n]); }
-}
+
 
 /**
  * this is a specialization of {@link chip} to represent the stones used by magnet;
@@ -39,7 +37,7 @@ public class MagnetChip extends chip<MagnetChip>
 	private int index = 0;
 	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
-	private static ChipStack allChips = new ChipStack();
+	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public ChipId id;
 	private int player = -1;
@@ -86,7 +84,7 @@ public class MagnetChip extends chip<MagnetChip>
 	
 	public int chipNumber() { return(index); }
 	
-	public static MagnetChip getChip(int n) { return(allChips.elementAt(n)); } 
+	public static MagnetChip getChip(int n) { return((MagnetChip)allChips.elementAt(n)); } 
     
 	
     /* plain images with no mask can be noted by naming them -nomask */
@@ -180,6 +178,7 @@ public class MagnetChip extends chip<MagnetChip>
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

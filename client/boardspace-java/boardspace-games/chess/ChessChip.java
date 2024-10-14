@@ -17,6 +17,7 @@
 package chess;
 
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import bridge.Config;
 import lib.DrawableImageStack;
@@ -260,6 +261,7 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips)
 						&& forcan.load_masked_images(StonesDir, allTiles);
+		if(imagesLoaded) { Image.registerImages(allChips); Image.registerImages(allTiles); }
 		}
 	}
 

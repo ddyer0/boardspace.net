@@ -17,6 +17,7 @@
 package veletas;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -127,6 +128,11 @@ public class VeletasChip extends chip<VeletasChip> implements VeletasConstants,C
 		imagesLoaded = 
 				forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(ImageDir,iconChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(iconChips);
+		}
 		}
 	}
 

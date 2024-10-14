@@ -79,7 +79,7 @@ public class DilemmaChip extends EuphoriaChip implements EuphoriaConstants
 		for(DilemmaChip c : allDilemmas) { c.image = images[idx]; idx++; }
 		CardBack = allDilemmas[0];     
         check_digests(allDilemmas);	// verify that the chips have different digests
-        
+        Image.registerImages(allDilemmas);
         ImagesLoaded = true;
 		}
 	}   

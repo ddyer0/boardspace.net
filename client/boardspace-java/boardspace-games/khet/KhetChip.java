@@ -439,6 +439,7 @@ public class KhetChip extends chip<KhetChip> implements KhetConstants
        	}
         }
         Blast = CANONICAL_PIECE[BLAST_INDEX];
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

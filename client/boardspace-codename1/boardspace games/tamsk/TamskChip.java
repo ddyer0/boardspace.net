@@ -17,6 +17,7 @@
 package tamsk;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -137,6 +138,7 @@ public class TamskChip extends chip<TamskChip> implements CommonConfig
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded) { Image.registerImages(otherChips); }
 		}
 	}   
 	/*

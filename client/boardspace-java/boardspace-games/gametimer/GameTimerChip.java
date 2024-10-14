@@ -17,6 +17,7 @@
 package gametimer;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import online.game.chip;
@@ -67,6 +68,11 @@ public class GameTimerChip extends chip<GameTimerChip> implements CommonConfig
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(otherChips);
+		}
+
 		}
 	}   
 

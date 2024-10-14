@@ -480,6 +480,7 @@ public class SnakesChip extends chip<SnakesChip> implements Cloneable
         	for(int i=0;i<len;i++) { names[i] = ImageNames[i+FIRST_CHIP_INDEX] + "-" + rot; }
         	rotatedImages[rot-1] = forcan.load_masked_images(ImageDir,names);
         }
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

@@ -17,6 +17,7 @@
 package xeh;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -111,6 +112,7 @@ public class XehChip extends chip<XehChip> implements XehConstants
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

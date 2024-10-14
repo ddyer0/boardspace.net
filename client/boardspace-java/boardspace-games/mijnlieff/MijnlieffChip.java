@@ -17,12 +17,14 @@
 package mijnlieff;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
 import mijnlieff.MijnlieffConstants.MColor;
 import mijnlieff.MijnlieffConstants.MijnlieffId;
 import online.game.chip;
+
 import common.CommonConfig;
 class ChipStack extends OStack<MijnlieffChip>
 {
@@ -109,6 +111,7 @@ public class MijnlieffChip extends chip<MijnlieffChip> implements CommonConfig
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	imagesLoaded = forcan.load_masked_images(Dir,otherChips);
+		Image.registerImages(otherChips);
 		}
 	}   
 

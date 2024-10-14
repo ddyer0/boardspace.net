@@ -2756,7 +2756,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 for(PlayerBoard pb : pbs)
 	 {
 		 if(pb!=mypb)
-		 { mypb.addAirstrikeMoves(all,pb,board_state==ManhattanState.JapanAirstrike,lemay,who); 
+		 { mypb.addAirstrikeMoves(all,pickedObject,pb,board_state==ManhattanState.JapanAirstrike,lemay,who); 
 		 }
 	 }
 

@@ -17,7 +17,7 @@
 package lib;
 
 
-public class StockArt extends DrawableImage<StockArt> {
+public class StockArt extends DrawableImage<StockArt> implements Digestable{
 	private static StockArtStack all = new StockArtStack();
 	private StockArt(String n,double[]s)
 	{
@@ -151,7 +151,7 @@ public class StockArt extends DrawableImage<StockArt> {
 	public static StockArt Gear = new StockArt("gear-nomask.png",defaultAdjust);
 	
 	//public static StockArt GreenLight = new StockArt("green-light",new double[]{0.5,0.5,1.0});
-	//public static StockArt RedLight = new StockArt("red-light",new double[]{0.5,0.5,1.0});
+	public static StockArt RedLight = new StockArt("red-light",new double[]{0.5,0.5,1.0});
 	//public static StockArt OffLight = new StockArt("off-light",new double[]{0.5,0.5,1.0});
 	
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
@@ -218,6 +218,11 @@ public class StockArt extends DrawableImage<StockArt> {
    public static StockArt Make(String image,double scale[])
    {	StockArt m = new StockArt(image,scale,false);
    		return(m);
+   }
+
+   public long Digest(Random r) 
+   {
+	   return r.nextLong();
    }
    
 }

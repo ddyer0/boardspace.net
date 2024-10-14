@@ -70,6 +70,7 @@ public class DipoleChip extends chip<DipoleChip> implements DipoleConstants ,Con
         Waste = new DipoleChip(0,0,"waste",im[0],new double[]{0.5,0.5,1.0},0); 
         white = CC[FIRST_CHIP_INDEX];
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

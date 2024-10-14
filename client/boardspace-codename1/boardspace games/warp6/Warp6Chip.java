@@ -164,6 +164,7 @@ public class Warp6Chip extends chip<Warp6Chip> implements OnlineConstants
         }
 
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

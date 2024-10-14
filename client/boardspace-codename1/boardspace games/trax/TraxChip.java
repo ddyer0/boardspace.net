@@ -109,6 +109,8 @@ public class TraxChip extends chip<TraxChip> {
         	modernRedChipLines[lim] = new TraxChip(ModernImageFileNames[lim],MODERN_SCALE[lim],modernRedLines[lim]);
         	modernWhiteChipLines[lim] = new TraxChip(ModernImageFileNames[lim],MODERN_SCALE[lim],modernWhiteLines[lim]);
         }
+       Image.registerImages(modernChips);
+       Image.registerImages(classicChips);
        imagesLoaded = true;
 		}
 	}   

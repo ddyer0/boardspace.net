@@ -106,6 +106,7 @@ public class GobCup extends chip<GobCup> implements GobConstants
 	        white = getCup(0,3);
 	        black = getCup(1,3);
 	        imagesLoaded = true;
+	        Image.registerImages(CC);
 	        check_digests(CC);
 			}
 		}

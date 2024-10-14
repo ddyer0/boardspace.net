@@ -18,6 +18,7 @@ package lyngk;
 
 import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import lib.StockArt;
@@ -141,6 +142,7 @@ public class LyngkChip extends chip<LyngkChip>
 	{	if(!imagesLoaded)
 		{	
 		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }

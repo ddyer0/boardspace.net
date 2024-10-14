@@ -140,6 +140,7 @@ public class Pyramid extends chip<Pyramid>
          				r.nextLong()); 
          	}
          CC[i]=row;
+         Image.registerImages(row);
         }
         CANONICAL_PIECE = CC;
 		}

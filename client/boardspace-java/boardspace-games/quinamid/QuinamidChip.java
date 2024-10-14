@@ -142,6 +142,7 @@ public class QuinamidChip extends chip<QuinamidChip> implements QuinamidConstant
 		MovementZone.Rotate_DownRight.arrow = QuinamidChip.getArrow(5);
 		MovementZone.Rotate_DownRight.reverseArrow = QuinamidChip.getArrow(1);
 		HelpPanel = CC[HELP_INDEX];
+		Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

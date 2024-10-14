@@ -38,6 +38,7 @@ import common.GameInfo.ES;
 import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
+import lib.ImageStack;
 import lib.Bitset;
 import lib.CanvasProtocol;
 import lib.CellId;
@@ -2938,6 +2939,10 @@ public boolean touchZoomEnabled()
 public void drawCanvasSprites(Graphics gc, HitPoint pt) 
 {
 	if(mouseTrackingAvailable(pt)) { drawTileSprite(gc,pt); }
+}
+public double imageSize(ImageStack im)
+{
+	return (super.imageSize(im)+Image.registeredImageSize(im));
 }
 
 

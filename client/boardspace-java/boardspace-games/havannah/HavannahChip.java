@@ -17,6 +17,7 @@
 package havannah;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import lib.StockArt;
@@ -143,6 +144,9 @@ public class HavannahChip extends chip<HavannahChip> implements CommonConfig
 		forcan.load_masked_images(Dir,otherChips);
         borders = StockArt.preLoadArt(forcan,StonesDir,BorderFileNames,BORDERSCALES);
 		imagesLoaded = true;
+
+		Image.registerImages(stoneChips);
+		Image.registerImages(otherChips);
 
 		check_digests(stoneChips);
 		}

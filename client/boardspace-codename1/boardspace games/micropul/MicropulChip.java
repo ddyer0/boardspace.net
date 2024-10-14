@@ -33,7 +33,6 @@ public class MicropulChip extends chip<MicropulChip>
 	static final int BLANK_OFFSET = 66;
 	static final int SQUARE_OFFSET = 67;	// fake chip
  
-
 	public int index = 0;
 	private int components[]=null;
 	// components[x] identifying pips
@@ -633,6 +632,7 @@ public class MicropulChip extends chip<MicropulChip>
         			pieces[i],SCALES[square_index],rv.nextLong()); 
         	}
        CANONICAL_PIECE = CC;
+       Image.registerImages(CC);
        JEWELS = new MicropulChip[2];
        for(int i=0;i<2;i++) 
        	{JEWELS[i]=new MicropulChip(JEWEL_OFFSET+i,Elements[jewel_index+i].image,

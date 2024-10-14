@@ -83,6 +83,7 @@ public class KubaChip extends chip<KubaChip>
         for(int i=0;i<N_STANDARD_CHIPS;i++) {CC[i]=new KubaChip(i,r.nextLong()); }
         IMAGES = IM;
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

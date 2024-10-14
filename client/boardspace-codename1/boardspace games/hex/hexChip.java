@@ -17,6 +17,7 @@
 package hex;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -143,6 +144,11 @@ public class hexChip extends chip<hexChip> implements CommonConfig
 		imagesLoaded =
 				forcan.load_masked_images(StonesDir,stoneChips)
 				& forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded)
+		{
+			Image.registerImages(stoneChips);
+			Image.registerImages(otherChips);
+		}
 		check_digests(stoneChips);
 		}
 	}   

@@ -17,6 +17,7 @@
 package morris;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -92,6 +93,7 @@ public class MorrisChip extends chip<MorrisChip> implements MorrisConstants
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

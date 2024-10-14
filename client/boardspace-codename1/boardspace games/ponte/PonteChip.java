@@ -17,6 +17,7 @@
 package ponte;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -120,6 +121,7 @@ public class PonteChip extends chip<PonteChip> implements PonteConstants
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

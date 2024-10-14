@@ -227,6 +227,7 @@ public class BlackDeathChip extends chip<BlackDeathChip> implements OnlineConsta
 			BDice[i] = dv[i].chip = new BlackDeathChip(dv[i],dice[i]);		
 		}
 		imagesLoaded = true;
+		Image.registerImages(allChips);
 		}
 	}
 }

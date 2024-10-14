@@ -25,6 +25,7 @@ import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
+import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
@@ -215,6 +216,8 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
 		letters = pool.toArray();  	
 		alphaLetters = new WypsChip[26];
 		for(WypsChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
+		Image.registerImages(stoneChips);
+		Image.registerImages(otherChips);
 		imagesLoaded = true;
 		}
     	

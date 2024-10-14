@@ -721,6 +721,7 @@ metadata.mergeTree("javax_imageio_1.0", root);
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

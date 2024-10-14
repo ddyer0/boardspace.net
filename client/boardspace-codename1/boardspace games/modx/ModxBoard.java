@@ -99,7 +99,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
   	private StateStack robotState = new StateStack();
   	private IStack robotStack = new IStack();
   	private CellStack captureStack = new CellStack();
-  	private ChipStack capturePiece = new ChipStack();
+  	private DrawableImageStack capturePiece = new DrawableImageStack();
 	// factory method
 	public ModxCell newcell(char c,int r)
 	{	return(new ModxCell(c,r));
@@ -798,7 +798,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     	while(captureStack.size()>level)
     	{
     		ModxCell p = captureStack.pop();
-    		ModxChip v = capturePiece.pop();
+    		ModxChip v = (ModxChip)capturePiece.pop();
     		ModxCell from = getCell(v.id);
     		if(v.isFlat())
     		{	// flats were moved from the reservoir to the board

@@ -17,6 +17,7 @@
 package majorities;
 
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import majorities.MajoritiesConstants.MajoritiesId;
@@ -111,6 +112,7 @@ public class MajoritiesChip extends chip<MajoritiesChip> implements CommonConfig
 		{	
 		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
 						& forcan.load_masked_images(Dir,otherChips);
+		if(imagesLoaded) { Image.registerImages(stoneChips); Image.registerImages(otherChips);  }
 		}
 	}   
 }

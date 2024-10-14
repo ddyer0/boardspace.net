@@ -56,6 +56,7 @@ public class FanoronaChip extends chip<FanoronaChip>
         	CC[i]=new FanoronaChip(i,ImageNames[i],IM[i],r.nextLong(),SCALES[i]); 
         	}
         fCHIPS = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

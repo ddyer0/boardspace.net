@@ -60,15 +60,25 @@ public class CachedImageManager
     public void clearCachedImages() { cachedImages.clear(); }
     private boolean busy = false;
     
-    // cycle through the cached images, clearing the use counts and discarding
-    // any images that haven't been used.  If we're idle, create the images we
-    // want to see.
+    /**
+     * cycle through the cached images, clearing the use counts and discarding
+     * any images that haven't been used.  If we're idle, create the images we
+     * want to see.
+     * @param timeToSpend doing this, in milliseconds
+     * @return true if some scaling was done 
+     */
     public boolean manageCachedImages(int timeToSpend)
     {
     	return(manageCachedImages(timeToSpend,true));
     }
     
     private long lastManageTime = 0;
+    /**
+     * 
+     * @param timeToSpend time to spend doing this, in milliseconds
+     * @param doscaling if true, include doing some scaling that is pending
+     * @return true if some scaling was done
+     */
     public boolean manageCachedImages(int timeToSpend,boolean doscaling)
     {  	int created = 0;
     	boolean needy = false;

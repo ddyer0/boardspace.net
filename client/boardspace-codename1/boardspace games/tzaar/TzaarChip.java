@@ -109,6 +109,7 @@ public class TzaarChip extends chip<TzaarChip>
         	  CC[i] = chip;
         	}
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

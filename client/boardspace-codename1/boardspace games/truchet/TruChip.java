@@ -179,6 +179,7 @@ public class TruChip extends chip<TruChip>
         CC[i] = new TruChip(cl,i,TileColors[i],IM[i],SCALES[i],r.nextLong());	
         }
        CANONICAL_PIECE = CC;
+       Image.registerImages(CC);
        check_digests(CC);
 		}
 	}

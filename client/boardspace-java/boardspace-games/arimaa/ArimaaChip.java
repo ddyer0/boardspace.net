@@ -136,6 +136,7 @@ static private double SQUARE_SCALE[] = {0.44,0.545,0.91};
         	CC[off2+i] = new ArimaaChip(SilverNames[i],SilverPNames[i],1,i,i+off2,BM[i],rv.nextLong(),STANDARD_SCALE);
         }
         CANONICAL_PIECE = CC;
+        Image.registerImages(CC);
         check_digests(CC);
 		}
 	}

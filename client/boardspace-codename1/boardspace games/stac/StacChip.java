@@ -18,6 +18,7 @@ package stac;
 
 import lib.Random;
 import lib.DrawableImageStack;
+import lib.Image;
 import lib.ImageLoader;
 import online.game.chip;
 
@@ -93,6 +94,7 @@ public class StacChip extends chip<StacChip> implements StacConstants
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}
 

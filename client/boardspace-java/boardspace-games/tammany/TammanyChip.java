@@ -18,6 +18,7 @@ package tammany;
 
 import lib.DrawableImageStack;
 import lib.G;
+import lib.Image;
 import lib.ImageLoader;
 import lib.IntObjHashtable;
 import lib.Random;
@@ -207,6 +208,7 @@ public class TammanyChip extends chip<TammanyChip> implements TammanyConstants
 	{	
 		if(!imagesLoaded)
 		{	imagesLoaded = forcan.load_masked_images(Dir,allChips);
+			if(imagesLoaded) { Image.registerImages(allChips); }
 		}
 	}   
 }
