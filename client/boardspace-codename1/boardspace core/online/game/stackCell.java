@@ -190,15 +190,17 @@ public abstract class stackCell
 	public void addChip(COMPONENTTYPE newchip) { addChip_local(newchip); }
 	
 	private final void addChip_local(COMPONENTTYPE newcup) 
-	{ 	G.Assert(newcup!=null,"new chip is null");
+	{ 	if(newcup==null) { G.Error("new chip is null"); }
 		COMPONENTTYPE[] oldChip = chipStack;
-		int oldChipIndex = chipIndex;
-		if(oldChipIndex+1>=oldChip.length) 
+		int newindex = chipIndex+1;
+		if(newindex>=oldChip.length) 
 			{ 
-			chipStack = newComponentArray(oldChip.length+STARTING_CHIP_HEIGHT);
-			for(int i=0;i<=oldChipIndex;i++) { chipStack[i]=oldChip[i]; }
+			COMPONENTTYPE newchip[] = newComponentArray(oldChip.length+STARTING_CHIP_HEIGHT);
+			for(int i=0;i<newindex;i++) { newchip[i]=oldChip[i]; }
+			chipStack = oldChip = newchip;
 			}
-		chipStack[++chipIndex] = newcup;
+		oldChip[newindex] = newcup;
+		chipIndex = newindex;
 	}
 	
 	/**
@@ -264,14 +266,19 @@ public abstract class stackCell
 	 * @param n
 	 * @return a chip
 	 */
-	public COMPONENTTYPE chipAtIndex(int n) { return(((n>=0)&&(n<=chipIndex))?chipStack[n]:null); }
+	public COMPONENTTYPE chipAtIndex(int n) 
+	{ 	COMPONENTTYPE ch[] = chipStack;
+		int ci = chipIndex;
+		return(((n>=0)&&(n<=ci))?ch[n]:null);
+	}
+	
 	/**
 	 * change the chip at the specified index.  An error occurs if the stack is shorter.
 	 * @param n
 	 * @param ch
 	 */
 	public void setChipAtIndex(int n,COMPONENTTYPE ch) 
-	{	G.Assert((n>=0) && (n<=chipIndex),"index exists");
+	{	if(n<0 || n>chipIndex) { G.Error("index doesn't exists %s",n); }
 		chipStack[n]=ch;
 	}
 	/**
@@ -281,7 +288,7 @@ public abstract class stackCell
 	 */
 	public COMPONENTTYPE removeChipAtIndex(int idx)
 	{	
-		G.Assert((idx>=0) && (idx<=chipIndex),"chip exists");
+		if(idx<0 || idx>chipIndex) { G.Error("index doesn't exists %s",idx); }
 		COMPONENTTYPE c = chipStack[idx];
 		while(idx<chipIndex)
 		{	chipStack[idx]=chipStack[idx+1];
@@ -297,7 +304,7 @@ public abstract class stackCell
 	 * @param ch
 	 */
 	public void insertChipAtIndex(int idx,COMPONENTTYPE ch)
-	{	G.Assert((idx>=0) && (idx<=(chipIndex+1)),"index exists");
+	{	if(idx<0 || idx>chipIndex+1) { G.Error("index doesn't exists %s",idx); }
 		addChip(ch);	// first add it to the top
 		for(int i=chipIndex;i>idx;i--)	// shuffle the stack up
 		{ chipStack[i]=chipStack[i-1];
@@ -309,7 +316,7 @@ public abstract class stackCell
 	 * @return the chip removed
 	 */
 	public COMPONENTTYPE removeTop()
-	{	G.Assert((chipIndex>=0),"there is no chip");
+	{	if(chipIndex<0) { G.Error("there is no chip"); }
 		COMPONENTTYPE oldc = chipStack[chipIndex];
 		chipStack[chipIndex--] = null;
 		return(oldc);
@@ -319,7 +326,7 @@ public abstract class stackCell
 	 * @param oldChip
 	 */
 	public void removeTop(COMPONENTTYPE oldChip)
-	{	G.Assert(topChip()==oldChip,"removing wrong chip");
+	{	if(topChip()!=oldChip) { G.Error("removing wrong chip"); }
 		removeTop();
 	}
 	/**

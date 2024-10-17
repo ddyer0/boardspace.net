@@ -845,7 +845,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 		
 		case Cash:	// purchase a building by an engineer
-			some = c.row<=1 || c.cash<cashDisplay.cash;
+			some = c.row<=1 || c.cash<=cashDisplay.cash;
 			break;
 			
 		case AnyWorker:
@@ -2995,7 +2995,7 @@ public class PlayerBoard implements ManhattanConstants
 					}
 				}
 				b.availablePersonalities.removeChip(something);
-				b.setState(ManhattanState.NextPlayer);
+				b.setState(ManhattanState.ConfirmPersonality);
 				break;
 			case BomberSale:
 				addBomber(-1,replay);

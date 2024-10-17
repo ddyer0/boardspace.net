@@ -1800,6 +1800,9 @@ graphics when using a touch screen.
         public void setLowMemory(String msg)
         {
      		  G.print(msg);
+
+     		  Image.unloadRegisteredImages();	// dispose of unneeded old images before loading new ones
+
      		  int nlow = l.nlowmemories++;
     		  if(nlow < 2)
     		  {

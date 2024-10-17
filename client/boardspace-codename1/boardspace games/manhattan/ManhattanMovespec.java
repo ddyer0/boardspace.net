@@ -24,6 +24,7 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import manhattan.ManhattanConstants.MColor;
 import manhattan.ManhattanConstants.ManhattanId;
+import manhattan.ManhattanConstants.Type;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class ManhattanMovespec 
@@ -88,7 +89,10 @@ public class ManhattanMovespec
     int to_index = 0;
     ManhattanChip chip;
     ManhattanCell cell;
-    
+    //
+    // this is a hack to track invalid game records
+    // public long startingDigest = 0;
+    //
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
     public String[] gameEvents() { return(gameEvents); }
@@ -221,6 +225,11 @@ public class ManhattanMovespec
      * @param the player index for whom the move will be.
      * */
     private void parse(StringTokenizer msg, int p)
+    {
+    	parse1(msg,p);
+    	//if(msg.hasMoreTokens()) { startingDigest = G.LongToken(msg); }
+    }
+    private void parse1(StringTokenizer msg,int p)
     {
         String cmd = msg.nextToken();
         player = p;
@@ -437,6 +446,25 @@ public class ManhattanMovespec
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
+    	return moveString1() /* +" "+startingDigest */;
+    }
+    private String buildingInfo()
+    {
+    	ManhattanCell c = cell;
+		if(c!=null
+				&& (c.type==Type.Building)
+				&& (dest==ManhattanId.Building))
+		{	ManhattanChip ch = c.chipAtIndex(0);
+			if(ch!=null)
+				{
+				 return " \""+ch.benefit+"\"";
+				}	
+		}
+		return "";
+    }
+    
+    public String moveString1()
+    {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
@@ -447,14 +475,18 @@ public class ManhattanMovespec
         case MOVE_REPAIR:
         case MOVE_SELECT:
         case MOVE_DROP:
-        	return G.concat(opname , dest," ",to_color," ",to_row," ",to_index);
-        	
+        	{
+        	return G.concat(opname , dest," ",to_color," ",to_row," ",to_index,buildingInfo());
+        	}
         case MOVE_PICK:
             return G.concat(opname , source," ",from_color," ",from_row," ",from_index);
         case MOVE_ATTACK:
         case MOVE_FROM_TO:
+        	{
+        		
         	return G.concat(opname , source, " ",from_color," ",from_row," ",from_index," ",
-        			dest," ",to_color," ",to_row);
+        			dest," ",to_color," ",to_row,buildingInfo());
+        	}
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
 

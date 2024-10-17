@@ -224,7 +224,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         // not suitable for games with any optional "done" states.  If true, autodone
         // is controlled by an option menu option.  Also conditionalize showing the
         // "done" button with autoDoneActive()
-        enableAutoDone = true;
+        enableAutoDone = false;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
         
@@ -645,8 +645,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	drawBoardArray(gc,highlight,gb,targets,gb.seePlutonium, cellSize, -0.2, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.playMakeMoney, cellSize*2, 0.00, 0.00, null,hitAny);
 
-    	drawBoardArray(gc,highlight,gb,targets,gb.playMine, cellSize, 0.00, 0.00, null,hitAny);
-    	drawBoardArray(gc,highlight,gb,targets,gb.playUniversity, cellSize, 0.00, 0.00, null,hitAny);
+    	drawBoardArray(gc,highlight,gb,targets,gb.playMine, cellSize*2, 0.00, 0.00, null,hitAny);
+    	drawBoardArray(gc,highlight,gb,targets,gb.playUniversity, cellSize*2, 0.00, 0.00, null,hitAny);
     	
     	drawMagnifier(gc,hitAny,boardRect,0);
     }
@@ -2520,6 +2520,14 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	    }
 	    public void testSwitch()
 	    {	Graphics.preferStd = !Graphics.preferStd;
+	    }
+	    public boolean mandatoryDoneState()
+	    {
+	    	return bb.DoneState() && !bb.optionalDoneState();
+	    }
+	    public boolean autoDoneActive()
+	    {
+	    	return super.autoDoneActive() && !bb.optionalDoneState();
 	    }
 }
 

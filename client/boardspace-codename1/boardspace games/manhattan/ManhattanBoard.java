@@ -220,7 +220,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     // player boards by board index
     PlayerBoard pbs[] = null;
 	Bitset<Options> options = new Bitset<Options>();
-	
 	public boolean testOption(Options op)
 	{
 		return options.test(op);
@@ -901,13 +900,13 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 			//$FALL-THROUGH$
         case Confirm:
         case ConfirmRetrieve:
+ 		case ConfirmPersonality:
         case ConfirmRepair:
         case ConfirmBenefit:
         case PlayLocal:
         case Airstrike:
         case JapanAirstrike:
         case Repair:
-        case NextPlayer:
         case NoMovesState:
         case PaidRepair:
         case North_Korea_Dialog:
@@ -936,6 +935,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	return(board_state.digestState());
     }
 
+    public boolean optionalDoneState() { return board_state.optionalDoneState(); }
 
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
@@ -1819,7 +1819,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 			setState(espionageSteps>0 ? ManhattanState.PlayEspionage : ManhattanState.PlayLocal);
 			break;
     	case NoMovesState:
-		case NextPlayer:
+		case ConfirmPersonality:
     		setNextPlayer(replay);
 			//$FALL-THROUGH$
       	case ConfirmRetrieve:
@@ -2173,7 +2173,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 			//$FALL-THROUGH$
 		case Confirm:
     	case PlayLocal:
-    		if(winForPlayerNow(whoseTurn)) { setState(ManhattanState.Gameover); }
+    		if(winForPlayerNow(whoseTurn)) 
+    			{ setState(ManhattanState.Gameover); 
+    			//p1("gameover "+moveNumber);
+    			}
     		else { setNextPlayer(replay); }
     		break;
     	case Resign:
@@ -2386,7 +2389,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     public boolean Execute(commonMove mm,replayMode replay)
     {	ManhattanMovespec m = (ManhattanMovespec)mm;
         if(replay.animate) { animationStack.clear(); }
-
+        //m.startingDigest = Digest();
         //G.print("E "+m+" for "+whoseTurn);
         switch (m.op)
         {        	
@@ -2635,7 +2638,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		 }
 	 }}
 	 some |= addNicholsMoves(all,pb,who);
-	 if(pb.hasPersonality(ManhattanChip.Fuchs)
+	 if(  (!some || robot==null)
+			 && pb.hasPersonality(ManhattanChip.Fuchs)
 			 && !pb.testOption(TurnOption.FuchsEspionage))
 	 	{
 		 some |= addPlayerEspionageMoves(all,pbs[whoseTurn],whoseTurn); 

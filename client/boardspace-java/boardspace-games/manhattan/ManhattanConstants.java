@@ -289,66 +289,69 @@ class StateStack extends OStack<ManhattanState>
 //
 public enum ManhattanState implements BoardState,ManhattanConstants
 {
-	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
-	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),
-	Resign(StateRole.Resign,ResignStateDescription,true,false),
-	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
-	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	Play(StateRole.Play,PlayState,false,false),
-	PlayLocal(StateRole.Play,PlayLocalState,true,true),
-	Retrieve(StateRole.Play,RetrieveState,false,false),
-	PlayOrRetrieve(StateRole.Play,PlayOrRetrieveState,false,false),
-	ConfirmSelectBuilding(StateRole.Play,ConfirmStateDescription,true,false),
-	ConfirmWorker(StateRole.Play,ConfirmStateDescription,true,false),
-	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false),
-	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false),
-	SelectBuilding(StateRole.Play,SelectBuildingMessage,false,false),
-	SelectAnyWorker(StateRole.Play,SelectWorkerMessage,false,false),
-	SelectAny2Workers(StateRole.Play,Select2WorkersMessage,false,false),
-	CollectBenefit(StateRole.Play,CollectBenefitMessage,false,false),
-	ConfirmBenefit(StateRole.Play,ConfirmChoiceMessage,true,false),
-	PlayScientist(StateRole.Play,PlayScientistMessage,false,false),
-	Play2Engineers(StateRole.Play,Play2EngineersMessage,false,false),
-	Play2Scientists(StateRole.Play,Play2ScientistsMessage,false,false),
-	PlayEngineer(StateRole.Play,PlayEngineerMessage,false,false),
-	PlayAny3Workers(StateRole.Play,Play3Message,false,false),
-	PlayAny2Workers(StateRole.Play,Play2Message,false,false),
-	DiscardBombs(StateRole.Play,DiscardBombMessage,false,false),
-	DiscardOneBomb(StateRole.Play,DiscardOneBombMessage,false,false),
-	ConfirmDiscard(StateRole.Confirm,ConfirmDiscardMessage,true,false),
-	ResolveChoice(StateRole.Other,"make a choice",false,false),
-	ConfirmChoice(StateRole.Play,ConfirmChoiceMessage,true,false),
-	PlayEspionage(StateRole.Play,PlayEspionageMessage,true,false),
-	ResolvePayment(StateRole.Other,"select your payment",false,false),
-	ConfirmPayment(StateRole.Play,ConfirmPaymentMessage,true,false),
+	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false,false),
+	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true,true),
+	Resign(StateRole.Resign,ResignStateDescription,true,false,true),
+	Gameover(StateRole.GameOver,GameOverStateDescription,false,false,false),
+	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true,false),
+	Play(StateRole.Play,PlayState,false,false,false),
+	PlayLocal(StateRole.Play,PlayLocalState,true,true,true),
+	Retrieve(StateRole.Play,RetrieveState,false,false,false),
+	PlayOrRetrieve(StateRole.Play,PlayOrRetrieveState,false,false,false),
+	ConfirmSelectBuilding(StateRole.Play,ConfirmStateDescription,true,false,false),
+	ConfirmWorker(StateRole.Play,ConfirmStateDescription,true,false,false),
+	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false,false),
+	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false,false),
+	SelectBuilding(StateRole.Play,SelectBuildingMessage,false,false,false),
+	SelectAnyWorker(StateRole.Play,SelectWorkerMessage,false,false,false),
+	SelectAny2Workers(StateRole.Play,Select2WorkersMessage,false,false,false),
+	CollectBenefit(StateRole.Play,CollectBenefitMessage,false,false,false),
+	ConfirmBenefit(StateRole.Play,ConfirmChoiceMessage,true,false,false),
+	PlayScientist(StateRole.Play,PlayScientistMessage,false,false,false),
+	Play2Engineers(StateRole.Play,Play2EngineersMessage,false,false,false),
+	Play2Scientists(StateRole.Play,Play2ScientistsMessage,false,false,false),
+	PlayEngineer(StateRole.Play,PlayEngineerMessage,false,false,false),
+	PlayAny3Workers(StateRole.Play,Play3Message,false,false,false),
+	PlayAny2Workers(StateRole.Play,Play2Message,false,false,false),
+	DiscardBombs(StateRole.Play,DiscardBombMessage,false,false,false),
+	DiscardOneBomb(StateRole.Play,DiscardOneBombMessage,false,false,false),
+	ConfirmDiscard(StateRole.Confirm,ConfirmDiscardMessage,true,false,false),
+	ResolveChoice(StateRole.Other,"make a choice",false,false,false),
+	ConfirmChoice(StateRole.Play,ConfirmChoiceMessage,true,false,false),
+	PlayEspionage(StateRole.Play,PlayEspionageMessage,true,false,true),
+	ResolvePayment(StateRole.Other,"select your payment",false,false,false),
+	ConfirmPayment(StateRole.Play,ConfirmPaymentMessage,true,false,false),
 	
-	SelectBomb(StateRole.Play,SelectBombMessage,false,false), 
-	Airstrike(StateRole.Play,AirstrikeMessage,true,false),
-	ConfirmAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
-	ConfirmSingleAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
-	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false),
-	ConfirmJapanAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false),
-	Repair(StateRole.Play,RepairMessage,true,false),
-	PaidRepair(StateRole.Play,PaidRepairMessage,true,false), 
-	ConfirmRepair(StateRole.Confirm,ConfirmRepairMessage,true,false), 
-	NeedWorkers(StateRole.Play,NeedWorkerMessage,false,false),
-	RetrieveSorE(StateRole.Play,Retrieve1Message,true,false), 
-	BuildIsraelBomb(StateRole.Play,BuildIsraelMessage,true,false), 
-	North_Korea_Dialog(StateRole.Play,NorthKoreaMessage,false,false), 
-	SelectPersonality(StateRole.Play,SelectPersonalityMessage,false,false),
-	NextPlayer(StateRole.Confirm,ConfirmStateDescription,true,false),
-	ConfirmNichols(StateRole.Confirm,NicholsStateDescription,true,false),
-	NoMovesState(StateRole.Confirm,NoMovesMessage,true,false),
+	SelectBomb(StateRole.Play,SelectBombMessage,false,false,false), 
+	Airstrike(StateRole.Play,AirstrikeMessage,true,false,true),
+	ConfirmAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
+	ConfirmSingleAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
+	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false,true),
+	ConfirmJapanAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
+	Repair(StateRole.Play,RepairMessage,true,false,true),
+	PaidRepair(StateRole.Play,PaidRepairMessage,true,false,true), 
+	ConfirmRepair(StateRole.Confirm,ConfirmRepairMessage,true,false,true), 
+	NeedWorkers(StateRole.Play,NeedWorkerMessage,false,false,false),
+	RetrieveSorE(StateRole.Play,Retrieve1Message,true,false,false), 
+	BuildIsraelBomb(StateRole.Play,BuildIsraelMessage,true,false,false), 
+	North_Korea_Dialog(StateRole.Play,NorthKoreaMessage,false,false,false), 
+	SelectPersonality(StateRole.Play,SelectPersonalityMessage,false,false,false),
+	ConfirmPersonality(StateRole.Confirm,ConfirmStateDescription,true,false,false),
+	ConfirmNichols(StateRole.Confirm,NicholsStateDescription,true,false,false),
+	NoMovesState(StateRole.Confirm,NoMovesMessage,true,false,false),
 	;
 	
-	ManhattanState(StateRole r,String des,boolean done,boolean digest)
+	ManhattanState(StateRole r,String des,boolean done,boolean digest,boolean optional)
 	{	role = r;
 		description = des;
 		digestState = digest;
 		doneState = done;
+		optionalDoneState = doneState && optional;
 	}
 	boolean doneState;
 	boolean digestState;
+	boolean optionalDoneState;
+	
 	String description;
 	public String description() { return(description); }
 	StateRole role;
@@ -356,6 +359,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
+	public boolean optionalDoneState() { return optionalDoneState; }
 	public boolean simultaneousTurnsAllowed() { return(this==ManhattanState.North_Korea_Dialog); }
 
 };

@@ -74,7 +74,7 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 		{
 			if(i!=forplayer) 
 			{ double thisv =playerScores[i];
-			  if(first || (max<thisv)) { max = thisv; first = true; }
+			  if(first || (max<thisv)) { max = thisv; first = false; }
 			}
 		}
 	    if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }

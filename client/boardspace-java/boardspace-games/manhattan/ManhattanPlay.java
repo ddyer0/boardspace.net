@@ -86,7 +86,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
     private boolean HONESTROBOT = true;
-    
+    private boolean SKIP_OPTIONAL_DONE = true;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -104,6 +104,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	cc.HONESTROBOT = HONESTROBOT;
     	cc.movingForPlayer = movingForPlayer; 
     	cc.board.initRobotValues(cc);
+    	cc.SKIP_OPTIONAL_DONE = SKIP_OPTIONAL_DONE;
     	return(c);
     }
 
@@ -180,6 +181,16 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
         {	setInhibitions();
         	board.setInhibitions(this);
             CommonMoveStack all = board.GetListOfMoves(false);
+            ManhattanState state = board.getState();
+            if(SKIP_OPTIONAL_DONE
+            		&& ((state==ManhattanState.PlayLocal) || (state==ManhattanState.PlayEspionage))
+            		&& (board.getCurrentPlayerBoard().nAvailableWorkers()>1)
+            		&& (all.size()>1))
+            	{
+            	commonMove m = all.top();
+            	if(m.op==MOVE_DONE) { all.pop(); }
+            	}
+            
             return all;
         }
 
@@ -282,19 +293,27 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
         	WEAKBOT = true;
 			//$FALL-THROUGH$
  		case DUMBOT_LEVEL:
-			UCT_WIN_LOSS = true;
-           	MONTEBOT=true;
-           	HONESTROBOT = true;
-         	break;
-       case SMARTBOT_LEVEL:
-  			//$FALL-THROUGH$
-			UCT_WIN_LOSS = false;
+ 	   	   	UCT_WIN_LOSS = false;
+ 	   	   	SKIP_OPTIONAL_DONE = true;
+    	   	ALPHA = 0.35;
+          	MONTEBOT=true;
+          	HONESTROBOT = !G.debug();
+        	break;
+
+ 		case SMARTBOT_LEVEL:
+    	   	UCT_WIN_LOSS = false;
+ 	   	   	SKIP_OPTIONAL_DONE = true;
+    	   	ALPHA = 0.35;
+          	MONTEBOT=true;
+          	HONESTROBOT = !G.debug();
+        	break;
+        	
+        case MONTEBOT_LEVEL:
+        	UCT_WIN_LOSS = true;
            	MONTEBOT=true;
            	HONESTROBOT = false;
          	break;
-        	
-        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true;  break;
-        }
+         }
     }
 
 
@@ -360,7 +379,9 @@ public void PrepareToMove(int playerIndex)
          	//qa.report();
  		noinhibitions = false;
         // it's important that the robot randomize the first few moves a little bit.
-        double randomn = (RANDOMIZE && (board.moveNumber <= 4))
+        double randomn = (RANDOMIZE 
+        					&& (board.moveNumber <= 4) 
+        					&& board.getState()==ManhattanState.Play)
         						? 0.1/board.moveNumber
         						: 0.0;
         UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
@@ -445,7 +466,7 @@ public void PrepareToMove(int playerIndex)
 // }
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
- 	int maxs = board.winningScore();
+ 	double maxs = board.winningScore();
  	int nplay = board.nPlayers();
  	commonMPMove mm = (commonMPMove)m;
  	mm.setNPlayers(nplay);
@@ -457,7 +478,6 @@ public void PrepareToMove(int playerIndex)
  public double NormalizedScore(commonMove lastMove)
  {	
 	double sc =Normalized_Evaluate_Position(lastMove);
-
 	//
 	//sc += (sc>0.001*speed;
 	//sc += (sc>0?-0.01:0.01)*Math.min(20,boardSearchLevel);
@@ -490,8 +510,9 @@ boolean nomorebuildings = false;
 boolean nomoremoney = false;
 boolean nobombers = false;
 boolean nofighters = false;
-
+boolean nofuchs = false;
 boolean noinhibitions = false;
+boolean nouni3 = false;
 
 public void setInhibitions()
 {	PlayerBoard pb = board.getCurrentPlayerBoard();
@@ -514,6 +535,7 @@ public void setInhibitions()
 	nomoremoney = pb.cashDisplay.cash>=20;
 	nobombers = pb.nBombers >= pb.bombers.length-1;
 	nofighters = pb.nFighters >= pb.fighters.length-1;
+	nouni3 = board.playUniversity[1].topChip()==null && board.playUniversity[2].topChip()==null;
 	if(!noaustralia)
 	{
 		noaustralia = !pb.hasOtherMines();
@@ -531,6 +553,9 @@ public void setDefaultInhibitions(ManhattanCell c)
 	{
 	switch(c.rackLocation())
 	{
+	case University:
+		if(nouni3 && c.row==3) { c.inhibited = true; }
+		break;
 	case Fighters:
 		c.inhibited = nofighters;
 		break;

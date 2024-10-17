@@ -2469,7 +2469,7 @@ public abstract class commonCanvas extends exCanvas
     // may not include tie break information
     public int PrettyScoreForPlayer(BoardProtocol gb, commonPlayer p)
     {
-    	return(ScoreForPlayer(p));
+    	return(gb.scoreForPlayer(p.boardIndex));
     }
     
     public boolean UsingAutoma() { return(false); }
