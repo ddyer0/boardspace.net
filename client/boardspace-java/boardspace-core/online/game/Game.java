@@ -3943,8 +3943,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
             }
 
-            if ((v.getJointReviewStep() != where))
-            {
+            if ((where!=-1) && (v.getJointReviewStep() != where))
+            {	
                 v.setJointReviewStep(where);
                 int step = v.getJointReviewStep();
                 if(v.hasControlTokenOrPending())

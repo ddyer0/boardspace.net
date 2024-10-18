@@ -4785,7 +4785,7 @@ public abstract class commonCanvas extends exCanvas
             doScroll(FORWARD_TO_END,"new variation");
          }
     }
-
+    
 /**
  * call this from your {@link #EditHistory} method to remove
  * a superfluous element at idx.  Note that this maintains both
@@ -6673,15 +6673,19 @@ public abstract class commonCanvas extends exCanvas
     { 
     	Error theError = null;
    		try	{
+   		String rootResult = null;
+   		
    		while((root!=null) && (theError==null))
    		{	l.parsedTime = -1;
    			l.parsedAnnotation = null;
    			l.parsedResult=null;
   			ReplayMove(root);
-  			if(l.parsedTime>=0) { History.top().setElapsedTime(l.parsedTime); }
-  			if(l.parsedAnnotation!=null) { History.top().setAnnotations(l.parsedAnnotation); }
-  			if(l.parsedResult!=null) 
-  				{ History.top().setProperty(result_property,l.parsedResult); 
+  			commonMove top = History.top();
+  			if(l.parsedResult!=null) { rootResult = l.parsedResult; }
+  			if(top!=null)
+  				{
+  				if(l.parsedTime>=0) { top.setElapsedTime(l.parsedTime); }
+  				if(l.parsedAnnotation!=null) { top.setAnnotations(l.parsedAnnotation); }
   				}
    			int nSuccessors = root.nElements();
    			if(nSuccessors <= 1) { root = root.firstElement(); }	// iterate for simple nodes
@@ -6699,6 +6703,13 @@ public abstract class commonCanvas extends exCanvas
    					root = null;
    			}
    		}
+   		if(rootResult!=null && History.size()>0)
+   			{ commonMove top = History.elementAt(0);
+   			  if(top!=null)
+   			  {
+   				  top.setProperty(result_property,rootResult);
+   			  }
+   			}
    		}
    		catch (Error err) 
    			{ theError = err; }
@@ -6767,6 +6778,13 @@ public abstract class commonCanvas extends exCanvas
                 datePlayed = "";
                 gameOver = false;
                 doInit(false);
+            	//
+            	// history ought to be completely empty at this point, but typically isn't
+            	// because it is initialized with a start or edit.  Start an edit ought to
+            	// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
+            	// this makes damn sure the history is empty to start
+            	//
+                resetHistory();
                 if(theChat!=null)
                 {
                 theChat.setShortNameField("Game " + ga.sequence);
@@ -7911,6 +7929,13 @@ public void performHistoryTokens(StringTokenizer his)
 	boolean ended = false;
 	boolean first = true;
 	int time = -1;
+	//
+	// history ought to be completely empty at this point, but typically isn't
+	// because it is initialized with a start or edit.  Start an edit ought to
+	// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
+	// this makes damn sure the history is empty to start
+	//
+	resetHistory();
     while (his.hasMoreTokens() && !ended)
     {
         String token = his.nextToken();

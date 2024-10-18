@@ -54,6 +54,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	implements BoardProtocol,ManhattanConstants
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
+	
+	/**
+	 * contect saves imformation that's needed to return after executing an out of turn action.
+	 * there aren't many of these in Manahattan, mainly initial worker selection and "french"
+	 * bomb discards.
+	 */
 	class Context 
 	{
 		ManhattanState state;
@@ -426,6 +432,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     public void doInit(String gtype,long key,int players,int rev)
     {	// magic numbers
     	// 317628249 japan+north korea
+    	// 2 -1349594329 india pakistan
+    	// 2  127441678 germany usa
+    	// 2 -1539186274 israel usa
+    	// 2  485836965 100 australia france
     	//key = 317628249 ;
     	randomKey = key;
     	dropMoveNumber = -1;
@@ -599,6 +609,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         northKoreanPlayer = 0;
         northKoreaSteps = 0;
         displayCells.clear();
+        if(players_in_game>3)
+        {	for(int lim=players_in_game-1; lim>=3;lim--)
+        	pbs[lim].pendingChoices.push(Benefit.ScientistOrEngineer);   
+        }
+
         initialDigest = Digest();
         gameEvents.clear();
         // note that firstPlayer is NOT initialized here
@@ -2467,11 +2482,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
             setWhoseTurn(m.player);
             acceptPlacement();
             // if it's a cold start, queue up the worker choice
-             
-            if((Digest()==initialDigest) && players_in_game>3)
-            {	for(int lim=players_in_game-1; lim>=3;lim--)
-            	pbs[lim].pendingChoices.push(Benefit.ScientistOrEngineer);   
-            }
             int nextp = nextPlayer(whoseTurn);
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
@@ -2481,7 +2491,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
                	{ setState(ManhattanState.Gameover); 
                	}
             else {  doDone(replay); }
-
             break;
 
        case MOVE_RESIGN:
@@ -2489,6 +2498,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
             break;
        case MOVE_EDIT:
         	acceptPlacement();
+        	for(PlayerBoard pb : pbs) { pb.pendingChoices.clear(); }
             setState(ManhattanState.Puzzle);
             resetState = board_state;
             break;
@@ -2857,7 +2867,10 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	}
 	return some;
  }
- 
+ /**
+  * all players except the korean player have approved the payment
+  * @return
+  */
  public boolean allApprovedExcept()
  {
  	 for(PlayerBoard pb : pbs) 
@@ -2865,8 +2878,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	 	}
  	 return true;
  }
- 
- public boolean allApproved()
+ /**
+  * all players including the korean player have approved the payment
+  * @return
+  */
+ private boolean allApproved()
  {
  	 for(PlayerBoard pb : pbs) 
  	 	{ if(!pb.approvedNorthKorea) { return false; } 	 	
@@ -2909,7 +2925,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  		}
  	return all;
  }
- public void preparePersonalityMoves()
+ private void preparePersonalityMoves()
  {		
  		int n =availablePersonalities.height();
  		prepareChoices(n);
@@ -2921,7 +2937,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 	pendingCost = Cost.None;
 	 	setState(ManhattanState.SelectPersonality);
  }
- boolean addMovesForState(CommonMoveStack all,ManhattanState state)
+ private boolean addMovesForState(CommonMoveStack all,ManhattanState state)
  {	boolean some = false;
  	switch(state)
  	{
@@ -3107,6 +3123,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  	}
  	return(some);
  }
+ /**
+  * set inhibited for some set of cells.  This is how the robot prevents
+  * unreasonable or useless moves.
+  * @param m
+  */
  public void setInhibitions(ManhattanPlay m)
  {
 	 for(ManhattanCell c = allCells; c!=null; c=c.next)
@@ -3123,24 +3144,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
  {	robot = m;
  }
 
- // small ad-hoc adjustment to the grid positions
- public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
- {   if(Character.isDigit(txt.charAt(0)))
-	 	{ switch(variation)
-	 		{
-	 		case manhattan:
-	 			xpos -= cellsize/2;
-	 			break;
- 			default: G.Error("case "+variation+" not handled");
-	 		}
-	 	}
- 		else
- 		{ 
- 		  ypos += cellsize/4;
- 		}
- 	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
- }
- 
 
  
  /**
@@ -3301,6 +3304,10 @@ int nBombsAvailable()
 {
 	return seeBombs.height()+seeDiscardedBombs.height();
 }
+//
+// load the current bomb designs, in random order, into the choice array.
+// plus a "blind" bomb for the french nations style of selection
+//
 public void loadBombDesigns(boolean france) 
 {
 	int nChoices = seeCurrentDesigns.height();

@@ -16,7 +16,6 @@
  */
 package manhattan;
 
-import javax.swing.JCheckBoxMenuItem;
 import java.awt.*;
 import online.common.*;
 import java.util.*;
@@ -151,9 +150,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
  			HighlightColor, rackBackGroundColor,rackIdleColor);
  	
 	// private menu items
-    private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
     
     private Rectangle playerBoards[] = addRect("pbs",5);
     private Rectangle playerBombDesigns[] = addRect("design",5);
@@ -232,8 +228,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         	ManhattanConstants.putStrings();
         }
          
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
-        
         String type = info.getString(GameInfo.GAMETYPE, ManhattanVariation.manhattan.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
@@ -1585,7 +1579,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 	Benefit benefit = gb.pendingBenefit;
 	 	boolean trade =  benefit== Benefit.Trade;
 	 	//ManhattanState state = gb.getState();
-	 	boolean censor = (benefit==Benefit.BombDesign) && hp==null;
+	 	boolean censor = ((benefit==Benefit.DiscardOneBomb) 
+	 						|| (benefit==Benefit.DiscardBombs)
+	 						|| (benefit==Benefit.BombDesign)) && hp==null;
 		int nrows = trade ? 2 : 1;
 	 	int ncols = trade 
 	 			? 4 
@@ -1691,6 +1687,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	int scrimH = (int)(ystep*(nrows+0.3)+ystep/2);
 	int scrimLeft = x00-cellSize*2/3;
 	int scrimTop =  y0-ystep*2/3;
+	// if everyone else has approved, present the final checkbox to the korean player
 	boolean allApproved = bb.allApprovedExcept();
 	StockArt.Scrim.getImage().drawImage(gc,scrimLeft,scrimTop,scrimW,scrimH);
 	int total = 0;
@@ -1862,7 +1859,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			 	for(PlayerBoard pb : gb.pbs) { has |= pb.hasPersonality(chip); }
 			 	if(!has)
 			 	{	GC.setFont(gc,standardBoldFont());
-			 		GC.Text(gc,true,x0-cellSize/2,y0-(int)(cellSize*0.77),cellSize,fh*3,Color.black,null,s.get(AvailableMessage));
+			 	GC.Text(gc,true,x0-cellSize/2,y0-(int)(cellSize*0.73),cellSize,fh*3/2,Color.black,null,s.get(AvailableMessage));
+			 	//GC.frameRect(gc,Color.black,x0-cellSize/2,y0-(int)(cellSize*0.73),cellSize,fh*3/2);
 			 	}
 			 }
 			 // select an enlarged card if pointing at the bottom of the card
@@ -2075,10 +2073,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     private boolean setDisplayParameters(ManhattanBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	}
       	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);
@@ -2171,13 +2165,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-        if(target==rotationOption)
-        {	handled=true;
-        	doRotation = rotationOption.getState();
-        	resetBounds();
-        	repaint(20);
-        }
-
         return (handled);
     }
 /** handle the run loop, and any special actions we need to take.

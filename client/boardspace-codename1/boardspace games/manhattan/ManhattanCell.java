@@ -357,4 +357,5 @@ public class ManhattanCell
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastPicked : lastDropped;
 	}
+
 }

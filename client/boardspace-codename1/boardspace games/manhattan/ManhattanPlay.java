@@ -187,6 +187,11 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
             		&& (board.getCurrentPlayerBoard().nAvailableWorkers()>1)
             		&& (all.size()>1))
             	{
+            	// this is a heuristic based on the observation that the robot frequently went directly
+            	// to "done" rather than play local board moves, which results in a pace of 1 move per turn.
+            	// removing the "done" forces the bot to make as much progress as possible.  While there
+            	// are situations where deferring moves is a good strategy, there are many more where
+            	// getting on with it is the best bet.
             	commonMove m = all.top();
             	if(m.op==MOVE_DONE) { all.pop(); }
             	}
@@ -360,9 +365,15 @@ public void PrepareToMove(int playerIndex)
 
  //
  // Notes on optimizing MCTS for Manhattan Project.  
+ //
  // even the very first working version was not terrible, so probably manhattan is not a hard game for MCTS.
  // The main method to optimize it has been to prevent it making really terrible moves during the random
  // playout phase, along the lines of "if you have a lot of bomb designs, don't take more"
+ //
+ // The second major advance was noting that the "phase 2" moves on the player board were
+ // frequently skipped, the optional "done" was way too attractive.  The heuristic
+ // SKIP_OPTIONAL_DONE removes the optional done's.  It's unclear why the done is so
+ // much more attractive than doing something.
  //
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;

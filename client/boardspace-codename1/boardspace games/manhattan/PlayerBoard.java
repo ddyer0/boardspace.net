@@ -1874,6 +1874,8 @@ public class PlayerBoard implements ManhattanConstants
 			}
 		}
 	}
+
+	
 	public void payYellowcake(int n,replayMode replay)
 	{
 		for(int i=0;i<n;i++)
@@ -2928,10 +2930,15 @@ public class PlayerBoard implements ManhattanConstants
 			}
 		case Nations_INDIA:
 			// selected is a university
+			{	
 			ManhattanChip c = selected.chipAtIndex(0);
+			PlayerBoard pb = b.getPlayerBoard(selected.color);
 			int price = c.nWorkersRequired();
-			sendCoinsToBank(cashDisplay,price,replay);
+			G.Assert(cashDisplay.cash>=price,"not enough cash");
+			// transfer coins to the other player
+			transferCoins(cashDisplay,pb.cashDisplay,price,replay);
 			collectBenefit(null,c.benefit,selected,replay);
+			}
 			break;
 		case Nations_NORTH_KOREA:
 			{

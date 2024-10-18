@@ -118,6 +118,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		}*/
 		if(image!=null
 				&& image.isUnloadable() 
+				&& SQUARESIZE>0
 				&& SQUARESIZE<image.getWidth()/2)
 		{	// this is an ad-hoc heuristic for the manhattan project's artwork.  
 			// all the images are unloadable, and are relatively huge.  If asking
