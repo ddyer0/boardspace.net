@@ -95,9 +95,12 @@ public class PlayerBoard implements ManhattanConstants
 	}
 	
 	MColor color;
-	ManhattanChip chip;
 	ManhattanBoard b;
-	ManhattanChip background;
+	// 
+	// prototype objects used by this player
+	//
+	ManhattanChip chip;			// the color chip for this player
+	ManhattanChip background;	// this main background for the player board
 	ManhattanChip fighter;
 	ManhattanChip bomber;
 	ManhattanChip scientist;
@@ -160,9 +163,9 @@ public class PlayerBoard implements ManhattanConstants
 		ManhattanCell.setPosition(fighters,  0.09,0.11,  0.92,0.11);
 		ManhattanCell.setPosition(bombers,   0.09,0.215, 0.92,0.215);
 		ManhattanCell.setPosition2(buildings, 0.14,0.45, 0.87,0.77 );
-		workers.setPosition(0.05,-0.015);
-		scientists.setPosition(0.65,-0.015);
-		engineers.setPosition(0.35,-0.015);
+		workers.setPosition(0.05,0.03);
+		scientists.setPosition(0.65,0.03);
+		engineers.setPosition(0.35,0.03);
 		
 		cashDisplay.setPosition(-0.07,0.21);
 		yellowcakeDisplay.setPosition(0.95,-0.0);
@@ -597,8 +600,6 @@ public class PlayerBoard implements ManhattanConstants
 					// with espionage, some of these workers may be visitors
 				}
 			}
-			c.partiallyVacated = false;	// definitely not partially partiallyVacated
-		
 	}
 	//
 	// retrieve workers of a particular color from buildings of another player
@@ -607,7 +608,7 @@ public class PlayerBoard implements ManhattanConstants
 	void retrieveColoredWorkers(MColor color,replayMode replay)
 	{
 		for(int blim=buildings.size()-1; blim>=0; blim--)
-		{	boolean some = false;
+		{	
 			ManhattanCell c = buildings.elementAt(blim);
 			if(c.height()>1)
 			{	// the bottom of the stack is a building, and there's something on top
@@ -623,11 +624,10 @@ public class PlayerBoard implements ManhattanConstants
 					// with espionage, some of these workers may be visitors
 					b.returnWorker(c,ch,replay);
 					}
-					else { some = true; }
+					
 					}
 				}
 			}
-			c.partiallyVacated = some;	// some true if partially partiallyVacated
 		}
 	}
 	int nAvailableWorkers()
@@ -658,6 +658,9 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		return n;
 	}
+	//
+	// true if this a a bomb design that hasn't been built or destroyed
+	//
 	public boolean designIsAvailable(ManhattanCell c)
 	{
 		if(c.height()==1)
@@ -667,7 +670,11 @@ public class PlayerBoard implements ManhattanConstants
 			}
 		return false;
 	}
-	// an ordinary worker is picked or known to be available, can it be placed on 'c'
+	//
+	// an ordinary worker is picked or known to be available, can it be placed on 'c' ?
+	// turn true if that's a valid move considering all the additional workers and resources
+	// that will be needed to complete the move. 
+	//
 	private boolean workerSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who,int op)
 	{	boolean some = false;
 		int prepicked = (op==MOVE_FROM_TO) ? 0 : 1 ;
@@ -677,46 +684,38 @@ public class PlayerBoard implements ManhattanConstants
 		default: throw G.Error("Not expecting cost %s",requirements);
 		case Airstrike:
 			// at present, there's no requirement you actually have any planes
-			// you can take airstrike action as a defensive measure.
+			// you can take airstrike action as a defensive measure, competitive exclusion
 			some = true; // nFighters>0 || nBombers>0;
 			break;
 		case AnyWorkerAndBomb:
+			// nations Pakistan can trade a bomb design for other stuff 
 			some = hasDesignsAvailable();
 			break;
-		case ScientistOrWorkerAndMoney:	// buying a building
+		case ScientistOrWorkerAndMoney:	// buying a building and pay its cost
 			some = b.seeBuilding[0].height()>0 && cashDisplay.cash>=b.seeBuilding[0].cash;
 			break;
 		
-		case Cash:	// purchase a building by a regular worker
+		case Cash:			// purchase a building by placing a regular worker directly on a building
 			some = c.cash<=cashDisplay.cash;
 			break;
 			
-		case AnyWorker:
+		case AnyWorker:		// any worker, no additional cost
 			some = true;
 			break;
-		case AnyWorkerAnd3:			
+		case AnyWorkerAnd3:	// any worker and 3$
 			some = cashDisplay.cash>=3;
 			break;
 			
-		case AnyWorkerAnd5:
+		case AnyWorkerAnd5:	// any worker and 5$
 			some = cashDisplay.cash>=5;
 			break;
 			
-		case AnyWorkerAnd3Y:
+		case AnyWorkerAnd3Y:	// any worker and 3 yellowcake
 			some = yellowcakeDisplay.height()>=3;
 			break;
 
-		case Scientist:
-		case ScientistAnd2Y:
-		case ScientistAnd2YAnd3:
-		case EngineerAndMoney:
-		case Engineer:
-		case ScientistOrEngineer:
-		case ScientistAndEngineerAndBombDesign:
-		case ScientistAndBombDesign:
-			break;
-			
-		case  Any2WorkersAndRetrieve:	// germany
+		case  Any2WorkersAndRetrieve:	
+			// germany nations card, takes 2 workers and retrieves a scientist or engineer
 			some = ((nAvailableWorkers()+prepicked>=2) && hasRetrieveSorEMoves());
 			break;
 			
@@ -758,6 +757,16 @@ public class PlayerBoard implements ManhattanConstants
 		case Scientists2And1UraniumOr7Yellowcake:
 		case Scientists3And8Yellowcake:
 		case Scientist2And1UraniumOr3Yellowcake:
+
+		case Scientist:
+		case ScientistAnd2Y:
+		case ScientistAnd2YAnd3:
+		case EngineerAndMoney:
+		case Engineer:
+		case ScientistOrEngineer:
+		case ScientistAndEngineerAndBombDesign:
+		case ScientistAndBombDesign:
+			// these all require scientists or engineers, and this is a regular worker, so, no.
 			break;
 			
 			// bomb cost
@@ -819,7 +828,9 @@ public class PlayerBoard implements ManhattanConstants
 		}
 		return h;
 	}
-	// an engineer is picked or known to be available
+	
+	// an engineer is picked or known to be available, determine of all other requirements
+	// can be satisfied
 	private boolean engineerSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who,int op,ManhattanCell source)
 	{	boolean some = false;
 		int prepicked = (op==MOVE_FROM_TO) ? 0 : 1;
@@ -2680,10 +2691,6 @@ public class PlayerBoard implements ManhattanConstants
 								{
 								case L: 
 									workers.addChip(c.removeChipAtIndex(i));
-									// flag this cell so it can be used if partially full
-									// current blief is this only matters for cells with requirements
-									// any2workers or any3workers
-									c.partiallyVacated = true;
 									nPlacedWorkers--;
 									if(replay.animate){
 										{

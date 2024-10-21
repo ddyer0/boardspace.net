@@ -26,7 +26,6 @@ import lib.Random;
 import online.game.*;
 
 /**
- * TODO: shouldn't see pakastan discard bombs
  * ManhattanBoard knows all about the game of Manhattan
  * 
  * This class doesn't do any graphics or know about anything graphical, 
@@ -609,16 +608,22 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         northKoreanPlayer = 0;
         northKoreaSteps = 0;
         displayCells.clear();
+        
+        // this bit caused quite a bit of trouble, because it causes 
+        // out-of-turn moves to be triggered when the game starts.
         if(players_in_game>3)
         {	for(int lim=players_in_game-1; lim>=3;lim--)
         	pbs[lim].pendingChoices.push(Benefit.ScientistOrEngineer);   
         }
 
-        initialDigest = Digest();
         gameEvents.clear();
         // note that firstPlayer is NOT initialized here
     }
-    long initialDigest = 0;
+    /**
+     * load the available bombs into the display, but only if there are enough
+     * to completely fill the display.
+     * @param replay
+     */
     public void loadNewDesigns(replayMode replay)
     {	int needed = players_in_game+1-seeCurrentDesigns.height();
         if(needed>0 && nBombsAvailable()>=needed)
@@ -1287,6 +1292,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 			default: throw G.Error("Not expecting airstrike on %s",dest);
 			}
     }
+    //
+    // make a choice dialog for uranium or yellowcake
+    // if there is only one actual choice, construct the
+    // choice box but select the (only) source 
+    //
     private ManhattanState plusUandY(int nU,int nY)
     {
     	PlayerBoard pb = pbs[whoseTurn];
@@ -2224,12 +2234,19 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 				}
 			}
     	}
+    	
     	switch(board_state)
     	{
     	case Repair:
     	case PaidRepair:
     		break;
     	default: 
+    			// this arrangement caused quite a bit of trouble with restarting games, because
+    			// 4 or 5 player games trigger an extra worker placement at the start of the game.
+    			// the problem was that "start" ought to be idempotent, but in the original arrangement,
+    			// start was done twice, and the second start didn't find these on the pending queue
+    			// the fix was to add several calls to resetHistory() to make sure there was no extra
+    			// start to be executed.
     			startNextChoice();
     			break;
     	}
@@ -2583,33 +2600,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        
     }
  
-
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(ManhattanMovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	ManhattanState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-            
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
- public boolean addNicholsMoves(CommonMoveStack all,PlayerBoard pb,int who)
+// 
+// nichols can punch out the first building, causing all the other buildings
+// to cascade down.
+//
+ private boolean addNicholsMoves(CommonMoveStack all,PlayerBoard pb,int who)
  {	boolean some = false;
 	 if(pb.hasPersonality(ManhattanChip.Nichols) 
 			 && !pb.testOption(TurnOption.NicholsShuffle)
@@ -2622,7 +2617,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 	}
 	 return some;
  }
- public boolean addMainboardMoves(CommonMoveStack all,int who)
+ 
+ //
+ // add moves on the main board
+ //
+ private boolean addMainboardMoves(CommonMoveStack all,int who)
  {
 	 PlayerBoard pb = pbs[who];
 	 boolean some = false;
@@ -2657,12 +2656,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	 
 	 return some;
  }
- 
- public boolean addSelectAnyWorkerMoves(CommonMoveStack all,int who)
- {
-	 PlayerBoard pb = pbs[who];
-	 return pb.addSelectWorkerMoves(all,MOVE_SELECT,who);
- }
+
  public boolean addAddWorkersMoves(CommonMoveStack all,ManhattanCell dest,int who)
  {
 	 PlayerBoard pb = pbs[who];
@@ -3037,10 +3031,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 		some = true;
  		break;
  		
-	case SelectAnyWorker:
-	case SelectAny2Workers:
-		some = addSelectAnyWorkerMoves(all,whoseTurn);
-		break;
+
 	case ConfirmSelectBuilding:
 		if(robot!=null) 
 		{ 
@@ -3336,7 +3327,9 @@ public void loadBombDesigns(boolean france)
 	pendingBenefit = Benefit.BombDesign;
 	}
 }
-
+//
+// this produces the lines that are displayed at the top of the board
+//
 public String getStateDescription(ManhattanState state)
 {
 	String b = state.description();
@@ -3370,8 +3363,4 @@ public void prepareChoices(int n) {
 	
 }
 
-
- // most multi player games can't handle individual players resigning
- // this provides an escape hatch to allow it.
- //public boolean canResign() { return(super.canResign()); }
 }

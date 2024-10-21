@@ -303,8 +303,6 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false,false),
 	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false,false),
 	SelectBuilding(StateRole.Play,SelectBuildingMessage,false,false,false),
-	SelectAnyWorker(StateRole.Play,SelectWorkerMessage,false,false,false),
-	SelectAny2Workers(StateRole.Play,Select2WorkersMessage,false,false,false),
 	CollectBenefit(StateRole.Play,CollectBenefitMessage,false,false,false),
 	ConfirmBenefit(StateRole.Play,ConfirmChoiceMessage,true,false,false),
 	PlayScientist(StateRole.Play,PlayScientistMessage,false,false,false),
@@ -393,8 +391,6 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String ExplainRetrieve = "Retrieve all of your workers";
 	static final String ConfirmRetrieveDescription = "Click on \"Done\" to retrieve all your workers";
 	static final String ConfirmRetrieve1Description = "Click on \"Done\" to retrieve this worker";
-	static final String SelectWorkerMessage = "Select an additional worker to use";
-	static final String Select2WorkersMessage = "Select two additional workers to use";
 	static final String CollectBenefitMessage = "Collect your benefit";
 	static final String ConfirmChoiceMessage = "Click on \"Done\" to confirm your benefit choice";
 	static final String ConfirmPaymentMessage = "Click on \"Done\" to confirm your payment choice";
@@ -473,9 +469,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 			Play2Message,
 			Play3Message,
 			CollectBenefitMessage,
-			Select2WorkersMessage,
 			ConfirmChoiceMessage,
-			SelectWorkerMessage,
 			RetrieveAction,
 			ConfirmRetrieveDescription,
 			ExplainRetrieve,

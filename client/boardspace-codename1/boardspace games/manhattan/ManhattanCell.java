@@ -50,23 +50,21 @@ public class ManhattanCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
 	extends stackCell<ManhattanCell,ManhattanChip> implements PlacementProvider
 {	MColor color = null;
-	int cash = 0;
-	double xpos = 0.5;		// position relative to the board rectangle
+	int cash = 0;			// usually costs but for cells containing coins this is maintaied as the value
+	double xpos = 0.5;		// position relative to the board rectangle (main board, or player board)
 	double ypos = 0.5;
-	int index = 0;
 	public Type type = Type.Other;
 	public Cost cost = Cost.None;
 	public Benefit benefit = Benefit.None;
-	public int selectedIndex = -1;
-	public boolean inhibited = false;
 	
-	// this is a special flag for cells partiallyVacated by "china" or espionage.
-	// the current ruling is that these buildings are unusable until the owner 
-	// retrieves their workers.  I believe that the logic in PlayerBoard makes
-	// these buildings unusable by default, but this is an extra flag as a possible
-	// cross check, or if the ruling is changed, it becomes the basis for detecting
-	// the special cases.
-	boolean partiallyVacated = false;	
+	// in most cases when we select a cell, the rest is implicit.  In a few cases
+	// we need to select a particular element of the contents
+	public int selectedIndex = -1;
+	
+	// inhibited is used by the robot to prevent moves to a particular cell, for
+	// example if the bot has a lot of yellowcake, it will mark the places that
+	// generate yellowcake to be ignored
+	public boolean inhibited = false;
 	
 	public String toString() { return "<c "+color+" "+rackLocation+" "+row+">"; }
 	/**
@@ -134,10 +132,8 @@ public class ManhattanCell
 	
 	public ManhattanCell() { super(); }
 	public ManhattanCell(ManhattanId rack) { super(rack); }		// construct a cell not on the board
-	public ManhattanCell(ManhattanId rack,int indx) 		// construct a cell on the board
-	{	super(cell.Geometry.Standalone,rack);
-		index = indx;
-	};
+
+	
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public ManhattanCell(ManhattanChip cont)
 	{	super();
@@ -152,7 +148,6 @@ public class ManhattanCell
 	public ManhattanCell(ManhattanId id, Cost requires,Benefit bene, int i)
 	{
 		super(id);
-		index = i;
 		cost = requires;
 		benefit = bene;
 	}
@@ -180,6 +175,10 @@ public class ManhattanCell
 		reInit();
 		addCash(dif);
 	}
+	//
+	// add (or subtract) cash to a cell that stores it.  Then adjust the
+	// contents of the cell to a stack of coins equal to the new value.
+	//
 	public void addCash(int dif)
 	{	int newval = cash+dif;
 		reInit();
@@ -195,7 +194,6 @@ public class ManhattanCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		partiallyVacated = ot.partiallyVacated;
 		inhibited = ot.inhibited;
 		color = ot.color;
 		cash = ot.cash;
@@ -212,6 +210,10 @@ public class ManhattanCell
 		
 		changeCashDisplay(ch,true);
 	}
+	
+	// if a cell is supposed to contain coins, adjust the
+	// cash value to agree.  This allows the puzzle gui
+	// to change cash by dragging coins around.
 	private void changeCashDisplay(ManhattanChip ch,boolean add)
 	{	
 		if(type==Type.Coin && ch.type==Type.Coin)
@@ -240,7 +242,6 @@ public class ManhattanCell
 	{	super.reInit();
 		cash = 0;
 		inhibited = false;
-		partiallyVacated = false;
 		selectedIndex = -1;
 		lastPicked = lastDropped = -1;
 	}

@@ -58,13 +58,16 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 	public Type type = Type.Other;
 	public ManhattanId id;
 	public MColor color = null;
-	public String ioSpec = "";
 	ManhattanChip cardBack = null;
 	public String contentsString() { return(id==null ? file : id.name()); }
 	static Random r = new Random(63466235);
 	static private double defaultScale[] = {0.5,0.5,1.0};
 	public WorkerType workerType = WorkerType.N;	// not a worker
 	public Cost cost = Cost.None;
+	
+	// rather than encode all the characteristics of chips into the constructors
+	// we run a bunch of post-creation code to set these parameters appropriately
+	// at runtime, it's all predigested
 	private int loadingCost = 0;
 	private int bombValue = 0;
 	private int bombTestedValue = 0;
@@ -97,25 +100,13 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 		}
 		else { randomv = r.nextLong(); }
 	}
+	
+	//
+	// this generates medium sized images which are used in most cases instead of
+	// the full sized images.  This greatly reduces the memory footprint of grapics
+	// 
 	public DrawableImage<?> getAltSizeChip(exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy)
-	{	/*
-		if(canvas!=null)
-		{
-			int w = canvas.getWidth();
-			int h = canvas.getHeight();
-			int px = canvas.getSX();
-			int py = canvas.getSY();
-			int x = cx-px;
-			int y = cy-py;
-			if((x+SQUARESIZE*2<0)
-					|| x-SQUARESIZE*2>w
-					|| y+SQUARESIZE*2<0
-					|| y-SQUARESIZE*2>h)
-			{	//if(this==ManhattanChip.Yellowcake)
-				{ //return ManhattanChip.backgroundReviewTile; 			
-				}
-			}
-		}*/
+	{	
 		if(image!=null
 				&& image.isUnloadable() 
 				&& SQUARESIZE>0
@@ -277,6 +268,7 @@ public class ManhattanChip extends chip<ManhattanChip> implements CommonConfig,M
 			
 		}
 	}
+
 	private void setWorkerRequirements()
 	{
 		switch(cost)

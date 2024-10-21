@@ -20,8 +20,6 @@ package manhattan;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import bridge.JCheckBoxMenuItem;
-
 import online.common.*;
 import java.util.*;
 
@@ -1019,9 +1017,9 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			hitAny.hitData = eyerect;
     		}
     	}
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.workers,cellSize*3/2, 0.4, 0.0, null,hitAny);
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.scientists,cellSize*3/2, 0.4, 0.0, null,hitAny);
-    	drawPlayerCell(gc,hp,gb,pb,targets,pb.engineers,cellSize*3/2, 0.4, 0.0, null,hitAny);
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.workers,(int)(cellSize*1.3), 0.4, 0.0, null,hitAny);
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.scientists,(int)(cellSize*1.3), 0.4, 0.0, null,hitAny);
+    	drawPlayerCell(gc,hp,gb,pb,targets,pb.engineers,(int)(cellSize*1.3), 0.4, 0.0, null,hitAny);
     	int nyellow = pb.yellowcakeDisplay.height();
     	double cakeStep = Math.max(-0.1,-1.2/nyellow);
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.yellowcakeDisplay,cellSize*3/2, cakeStep,0, ""+(nyellow-pb.yellowcakeDisplay.activeAnimationHeight()),hitAny);	
@@ -1810,30 +1808,30 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 	int ncols = Math.max(3,ncells);
 		int nrows = 1;
 		boolean personalities = cell.rackLocation()==ManhattanId.SeePersonalityPile;
-		
-		 int cellSize = w/(ncols+1);
-		 int ystep = cellSize*4/3;
+		double aspect = 1.4;
+		 int cellSize = (int)(w/(ncols+0.5));
+		 int ystep = (int)(cellSize*aspect);
 		 // increase the number of rows until the new number of rows
 		 // exceeds the vertical space
 		 while(ncols>1 && ystep*(nrows+1)<h)
 		 {
-			 ncols -= columnDecrement(ncells,nrows,ncols);
+			 ncols -= personalities ? 2 : columnDecrement(ncells,nrows,ncols);
 			 nrows = nrows(ncells,ncols);
 			 cellSize =  w/(ncols+1);
-			 ystep = cellSize*4/3;
+			 ystep = (int)(cellSize*aspect);
 		 }
 		 // we oversteped so step back by 1
-		 if((nrows+1)*ystep>h)
+		 if((nrows+0.1)*ystep>h)
 		 {	// overshot
-			 ncols++;
-			 nrows = nrows(ncells,ncols-1);
+			 ncols += personalities ? 2 : 1;
+			 nrows = nrows(ncells,ncols-(personalities ? 2 : 1));
 			 cellSize =  w/(ncols+1);
-			 ystep = cellSize*4/3;
+			 ystep = (int)(cellSize*aspect);
 		 }
 		 
 		 // keep the cell size constant, but equalize the length of the rows
-		 while(ncols>2 && nrows(ncells,ncols-1)==nrows)
-				{ ncols--; }
+		 while(ncols>2 && nrows(ncells,ncols-(personalities ? 2 : 1))==nrows)
+				{ ncols -= personalities ? 2 : 1; }
 
 		 double off = (ncols-1)/2.0;
 		 

@@ -6772,7 +6772,8 @@ public abstract class commonCanvas extends exCanvas
             	// history ought to be completely empty at this point, but typically isn't
             	// because it is initialized with a start or edit.  Start an edit ought to
             	// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
-            	// this makes damn sure the history is empty to start
+            	// this makes damn sure the history is empty when we start replaying a game, where
+            	// the first move ought to be a "start"
             	//
                 resetHistory();
                 if(theChat!=null)
@@ -7923,7 +7924,8 @@ public void performHistoryTokens(StringTokenizer his)
 	// history ought to be completely empty at this point, but typically isn't
 	// because it is initialized with a start or edit.  Start an edit ought to
 	// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
-	// this makes damn sure the history is empty to start
+	// this makes damn sure the history is empty when we start replaying a game, where
+	// the first move ought to be a "start"
 	//
 	resetHistory();
     while (his.hasMoreTokens() && !ended)

@@ -478,7 +478,8 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
        GC.setFont(gc,standardBoldFont());
 	    
         if(state==VoloState.PLAY_STATE)
-        {	passButton.show(gc, messageRotation,buttonSelect);
+        {	
+        	passButton.show(gc, messageRotation,buttonSelect);
         }
 
 		if (state != VoloState.PUZZLE_STATE)

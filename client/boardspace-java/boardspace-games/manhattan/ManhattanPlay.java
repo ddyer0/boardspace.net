@@ -73,11 +73,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
 	
 	// common parameters
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
-    private ManhattanChip movingForPlayer = null;	// optional, some evaluators care
     
-	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 10000.0;
-  
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = true;		// use strict win/loss scoring  
@@ -87,10 +83,10 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
     private boolean HONESTROBOT = true;
     private boolean SKIP_OPTIONAL_DONE = true;
+    private int movingForPlayer = -1;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
-     * 
-     *  */
+     */
 
     public ManhattanPlay()
     {
@@ -124,27 +120,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	// this method returns true.
         return(current>=max);
    }*/
-/** Called from the search driver to undo the effect of a previous Make_Move.  These
- * will always be done in reverse sequence. This is usually the most troublesome 
- * method to implement - everything else in the board manipulations moves "forward".
- * Among other things, Unmake_Move will have to undo captures and restore captured
- * pieces to the board, remove newly placed pieces from the board and so on.  
- * <p>
- * Among the most useful methods; 
- * <li>use the move object and the Make_Move method
- * to store the information you will need to perform the unmove.
- * It's also standard to restore the current player, the current move number,
- * and the current board state from saved values rather than try to deduce
- * the correct inverse of these state changes.
- * <li>use stacks in the board class to keep track of changes you need to undo, and
- * record only the index into the stack in the move object.
- * 
- * Not needed for blitz MonteCarlo searches
- */
-    public void Unmake_Move(commonMove m)
-    {	ManhattanMovespec mm = (ManhattanMovespec)m;
-        board.UnExecute(mm);
-    }
+
 /** Called from the search driver to make a move, saving information needed to 
  * unmake the move later.
  * 
@@ -223,34 +199,6 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
      	return(val);
     }
 
-    /**
-     * this re-evaluates the current position from the viewpoint of forplayer.
-     * for 2 player games this is to trivially negate the value, but for multiplayer
-     * games it requires considering multiple player's values.
-     * Not needed for MonteCarlo searches
-     */
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
-    }
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
-     * Not needed for MonteCarlo searches
-     */
-    public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for pushfight because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
-    }
     /**
      * this is called from UCT setup to get the evaluation, prior to ordering the UCT move lists.
      */
@@ -343,8 +291,8 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues(this);
-    movingForPlayer = GameBoard.getCurrentPlayerChip();
-    board.whoseTurn = playerIndex;
+    movingForPlayer = playerIndex;
+
 }
 
 	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
@@ -567,10 +515,10 @@ public void setDefaultInhibitions(ManhattanCell c)
 	case University:
 		if(nouni3 && c.row==3) { c.inhibited = true; }
 		break;
-	case Fighters:
+	case MakeFighter:
 		c.inhibited = nofighters;
 		break;
-	case Bombers: 
+	case MakeBomber:
 		c.inhibited = nobombers;
 		break;
 	case MakeMoney:
@@ -647,6 +595,8 @@ public void setInhibitions(ManhattanCell c)
 	}
 	
 	}
+
+
  }
 // notes on personalities
 // France vs USSR france dominates
