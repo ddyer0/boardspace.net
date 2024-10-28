@@ -48,7 +48,8 @@ public class PrototypeCell
 	}
 	public PrototypeCell(Random r,PrototypeId rack) { super(r,rack); }		// construct a cell not on the board
 	public PrototypeCell(PrototypeId rack,char c,int r) 		// construct a cell on the board
-	{	super(cell.Geometry.Hex,rack,c,r);
+	{	// for square geometry, boards, this would be Oct or Square
+		super(cell.Geometry.Hex,rack,c,r);
 	};
 	/** upcast racklocation to our local type */
 	public PrototypeId rackLocation() { return((PrototypeId)rackLocation); }

@@ -666,7 +666,20 @@ synchronized(allGames) {
 				"ordo.OrdoViewer","/ordo/english/ordox-rules.html","about_ordo.html",
 				 null,false, WhiteOverBlack));
 	}
+	{
 	
+		 put(new GameInfo(1763,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					"epaminondas.EpaminondasViewer","/epaminondas/english/epaminondas-rules.html","about_epaminondas.html",
+					 null,false, WhiteOverBlack));
+		 put(new GameInfo(1764,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas_8",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					"epaminondas.EpaminondasViewer","/epaminondas/english/epaminondas-rules.html","about_epaminondas.html",
+					 null,false, WhiteOverBlack));
+		
+	}
 	{
 	put(new GameInfo(770,ES.game,77,"MM",AncientGames,"Morris","Morris-9",
 			OneBotPlus,

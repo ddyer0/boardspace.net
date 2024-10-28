@@ -66,7 +66,7 @@ public int UseBombTests[][] = { { 0, 3},	// 0 and 6 for 2 players
 		{ 0, 1, 2, 3 },		// 0 2 4 and 6 for 4 players
 		{ 0, 1, 2, 3, 4}
 };
-public int WinningScore[] = {999, 999, 70, 60, 50, 45 };
+public int WinningScore[] = {999, 70, 70, 60, 50, 45 };
 
 /**
  * type for cells and the chips that might be stored in them

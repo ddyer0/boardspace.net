@@ -49,6 +49,7 @@ import dayandnight.DayAndNightConstants;
 import dipole.DipoleConstants;
 import dvonn.DvonnConstants;
 import entrapment.EntrapmentConstants;
+import epaminondas.EpaminondasConstants;
 import carnac.CarnacConstants;
 import checkerboard.CheckerConstants;
 import chess.ChessConstants;
@@ -186,6 +187,9 @@ public class masterStrings extends InternationalStrings
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
+        
+        setContext("epaminondas");
+        EpaminondasConstants.putStrings();
         
         setContext("Manhattan");
         ManhattanConstants.putStrings();

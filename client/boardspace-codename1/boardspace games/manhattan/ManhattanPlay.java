@@ -76,7 +76,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
   
     // mcts parameters
     // also set MONTEBOT = true;
-    private boolean UCT_WIN_LOSS = true;		// use strict win/loss scoring  
+    private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
     private double ALPHA = 0.5;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
@@ -84,6 +84,9 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     private boolean HONESTROBOT = true;
     private boolean SKIP_OPTIONAL_DONE = true;
     private int movingForPlayer = -1;
+    private int boardSearchLevel = 0;
+    private boolean fakeSoloPlay = false;
+    boolean inRandomDescent = false;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      */
@@ -101,6 +104,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	cc.movingForPlayer = movingForPlayer; 
     	cc.board.initRobotValues(cc);
     	cc.SKIP_OPTIONAL_DONE = SKIP_OPTIONAL_DONE;
+    	cc.fakeSoloPlay = fakeSoloPlay;
     	return(c);
     }
 
@@ -127,12 +131,15 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
  */
     public void Make_Move(commonMove m)
     {   ManhattanMovespec mm = (ManhattanMovespec)m;
+    	boardSearchLevel++;
         board.RobotExecute(mm);
      }
     
 	public void prepareForDescent(UCTMoveSearcher from)
 	{
 		// called at the top of the tree descent
+		boardSearchLevel = 0;
+		inRandomDescent = false;
 	}
     public void startRandomDescent()
     {
@@ -140,6 +147,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	// so we need to re-randomize the hidden state.
     	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
     	//terminatedWithPrejudice = -1;
+    	inRandomDescent = true;
     	if(HONESTROBOT)
     	{	Random r = new Random();
     		board.seeBuildings.shuffle(r);
@@ -156,6 +164,16 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
         public CommonMoveStack  List_Of_Legal_Moves()
         {	setInhibitions();
         	board.setInhibitions(this);
+        	if(fakeSoloPlay
+        			&& inRandomDescent
+        			&& (board.whoseTurn!=movingForPlayer)
+        			&& (board.board_state==ManhattanState.Play))
+        			{
+        			// if the player is at top level, punch him out
+        			CommonMoveStack all = new CommonMoveStack();
+        			all.push(new ManhattanMovespec(MOVE_SKIPMYTURN,board.whoseTurn));
+        			return all;
+        			}
             CommonMoveStack all = board.GetListOfMoves(false);
             ManhattanState state = board.getState();
             if(SKIP_OPTIONAL_DONE
@@ -248,14 +266,16 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
  		case DUMBOT_LEVEL:
  	   	   	UCT_WIN_LOSS = false;
  	   	   	SKIP_OPTIONAL_DONE = true;
+ 	   	   	fakeSoloPlay = false;
     	   	ALPHA = 0.35;
            	MONTEBOT=true;
           	HONESTROBOT = !G.debug();
          	break;
 
        case SMARTBOT_LEVEL:
-			UCT_WIN_LOSS = false;
+ 			UCT_WIN_LOSS = true;
  	   	   	SKIP_OPTIONAL_DONE = true;
+	   	   	fakeSoloPlay = false;
     	   	ALPHA = 0.35;
           	MONTEBOT=true;
           	HONESTROBOT = !G.debug();
@@ -292,6 +312,7 @@ public void PrepareToMove(int playerIndex)
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues(this);
     movingForPlayer = playerIndex;
+    boardSearchLevel = 0;
 
 }
 
@@ -432,7 +453,16 @@ public void PrepareToMove(int playerIndex)
  	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = Math.min(maxs, ScoreForPlayer(board,i,false));
 	 	}
-	return(mm.reScorePosition(playerindex,UCT_WIN_LOSS ? maxs : maxs*2)/maxs);	
+ 	double val = mm.reScorePosition(playerindex,maxs);
+ 	if(!UCT_WIN_LOSS)
+ 	{
+ 		double x = val*0.9;
+ 		double y = maxs*0.1;
+ 		// assign 10% of the outcome to faster resolution
+ 		double v2 = (x + y/Math.sqrt(boardSearchLevel));
+ 		return v2/maxs;
+ 	}
+ 	return val/maxs;
  }
  public double NormalizedScore(commonMove lastMove)
  {	

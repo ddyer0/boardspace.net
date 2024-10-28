@@ -9231,10 +9231,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v = canFillWineOrder(pb);
 		break;
 	case DrawGreenWorker:	
-		v = greenCards.height()>0;
+		v = greenCards.height()+greenDiscards.height()>0;
 		break;
 	case DrawPurpleWorker:
-		v = purpleCards.height()>0;
+		v = purpleCards.height()+purpleDiscards.height()>0;
 		break;
 	case GiveTourWorker:	// can always do these
 	case StarPlacementWorker:

@@ -682,5 +682,17 @@ class Random implements java.io.Serializable {
 	   	   {return(max==0?-1:r.nextInt(max));
 		   }
 	   }
+	   private long fastRandomVar = 0;
+	   /** return a fast, small random integer upto N
+	    * 
+	    * @param n
+	    * @return
+	    */
+	   public int fastUpto(int n)
+	   {	if(fastRandomVar<n) { fastRandomVar =nextInt(Integer.MAX_VALUE); }
+	   		int rem = (int)(fastRandomVar%n);
+	   		fastRandomVar = fastRandomVar/n;
+	   		return rem;
+	   }
 
 }

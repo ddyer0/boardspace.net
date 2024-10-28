@@ -42,6 +42,7 @@ public class ManhattanMovespec
     static final int MOVE_APPROVE = 214;
     static final int EPHEMERAL_CONTRIBUTE = 313;
     static final int EPHEMERAL_APPROVE = 314;
+    static final int MOVE_SKIPMYTURN = 315;	// fake move for the robot to use
     
     static
     {	// load the dictionary
@@ -49,6 +50,7 @@ public class ManhattanMovespec
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
         	"Pick", MOVE_PICK,
         	"Drop", MOVE_DROP,
+        	"Skip",MOVE_SKIPMYTURN,
         	"Select",MOVE_SELECT,
         	"Retrieve",MOVE_RETRIEVE,
         	"Move",MOVE_FROM_TO,
@@ -293,6 +295,7 @@ public class ManhattanMovespec
         	from_color = to_color = MColor.valueOf(msg.nextToken());
         	break;
         default:
+        case MOVE_SKIPMYTURN:
 
             break;
         }
@@ -364,6 +367,7 @@ public class ManhattanMovespec
         	return icon(v,from_color.name()+" "+from_index);
 
         default:
+        case MOVE_SKIPMYTURN:
         case EPHEMERAL_APPROVE:
         case MOVE_APPROVE:
         case MOVE_RETRIEVE:
@@ -497,6 +501,7 @@ public class ManhattanMovespec
         case EPHEMERAL_APPROVE:
         case MOVE_APPROVE:
         case MOVE_RETRIEVE:
+        case MOVE_SKIPMYTURN:
         	return G.concat(opname , " ",from_color);
         	
         default:

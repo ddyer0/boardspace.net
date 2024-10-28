@@ -55,13 +55,13 @@ import online.search.SimpleRobotProtocol;
  * the game part of the site.
  * <p>
  * The main classes are:
- * <br>PushfightViewer - this class, a canvas for display and mouse handling
- * <br>PushfightBoard - board representation and implementation of the game logic
- * <br>Pushfightmovespec - representation, parsing and printing of move specifiers
- * <br>PushfightPlay - a robot to play the game
- * <br>PushfightConstants - static constants shared by all of the above.  
+ * <br>IroViewer - this class, a canvas for display and mouse handling
+ * <br>IroBoard - board representation and implementation of the game logic
+ * <br>Iromovespec - representation, parsing and printing of move specifiers
+ * <br>IroPlay - a robot to play the game
+ * <br>IroConstants - static constants shared by all of the above.  
  *  <p>
- *  The primary purpose of the PushfightViewer class is to do the actual
+ *  The primary purpose of the IroViewer class is to do the actual
  *  drawing and to mediate the mouse gestures.  All the actual work is 
  *  done in an event loop, rather than in direct response to mouse or
  *  window events, so there is only one process involved.  With a single 

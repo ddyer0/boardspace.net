@@ -219,10 +219,21 @@ public class Search_Node implements Constants,Opcodes
     	for(int i=0;i<nem;i++)
     	{	if(promote_to_position(em[i],position)) { position++; };
     	}
+    	// TODO: investigate CM!=null for possible bugs that this papers over
+    	// added 10/24/2024 while developing Epaminondas.  The apparent situation
+    	// was that a first-level progressive search found a win, but this code
+    	// was called anyway to pre-order the next level search depth.  Possibly
+    	// this shouldn't have occurred at all, but there was a mismatch between
+    	// GameOver() and returning a static evaluation that indicated a win.
+    	// adding cm!=null papers over the situation, but I wonder what is 
+    	// done with best_mov & best_value under both this and the more usual
+    	// circumstances.  -- ddyer
+    	if(cm!=null)
+    	{
         best_move = cm[0];
         best_value = best_move.evaluation();
         best_move_index = -1;
-        }
+        }}
     }
     
     private boolean promote_to_position(commonMove evaled_move,int pos)

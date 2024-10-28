@@ -93,7 +93,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	Benefit pendingBenefit = null;
 	Cost pendingCost = null;
 	ManhattanVariation variation = ManhattanVariation.manhattan;
-	private ManhattanState board_state = ManhattanState.Puzzle;	
+	ManhattanState board_state = ManhattanState.Puzzle;	
     private AfterWorkerDispatch afterWorkerDispatch = null;
     int espionageSteps = 0;
     int northKoreanPlayer = 0;
@@ -535,7 +535,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         
         seeBombtests.reInit();
         // the set of bomb test cards varies depending on the number of players
-        for(int i : UseBombTests[players_in_game-2]) { seeBombtests.addChip(ManhattanChip.BombTests[i]); }
+        for(int i : UseBombTests[Math.max(0,players_in_game-2)]) { seeBombtests.addChip(ManhattanChip.BombTests[i]); }
         
         reInit(seeEspionage);
         reInit(seeUranium);
@@ -1836,7 +1836,6 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
      	case ConfirmBenefit:
     	case ConfirmWorker:
     	case ConfirmSelectBuilding:
-       	case ConfirmSingleAirstrike:
     	case ConfirmRetrieve1:
        		// if we still have workers, allow continuing
        		// otherwise fall through into the next player
@@ -1850,12 +1849,18 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        	case ConfirmNichols:
    		case Confirm:
     	case Puzzle:
+      	case ConfirmSingleAirstrike:	// lemay airstrike
     	case PlayLocal:
     	case Play:
     		{
     		PlayerBoard pb = getPlayerBoard(whoseTurn);
     		if(pb.nAvailableWorkers()==0) { setState(ManhattanState.Retrieve); }
-    		else if(pb.nPlacedWorkers==0) { setState(ManhattanState.Play); }
+    		else if((pb.nPlacedWorkers==0)
+    				// lemay can't retrieve after only doing an airstrike.
+    				|| (board_state==ManhattanState.ConfirmSingleAirstrike)) 
+    			{
+    			  setState(ManhattanState.Play); 
+    			}
     		else { setState(ManhattanState.PlayOrRetrieve); }
     		}
     		break;
@@ -2003,7 +2008,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     	if(repairCounter<=0) { return 9999; }	// infinite, we already did 3
     	return RepairCost[RepairCost.length-repairCounter];
     }
-    private void doDone(replayMode replay)
+    void doDone(replayMode replay)
     {	
     	ManhattanState startingState = board_state;
     	boolean frenchDiscard = false;
@@ -2424,6 +2429,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         //G.print("E "+m+" for "+whoseTurn);
         switch (m.op)
         {        	
+        case MOVE_SKIPMYTURN:
+        	setState(ManhattanState.Confirm);
         case MOVE_DONE:
         	doDone(replay);
             break;

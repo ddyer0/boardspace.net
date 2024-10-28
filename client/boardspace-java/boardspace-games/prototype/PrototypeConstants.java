@@ -159,15 +159,15 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 	static void putStrings()
 	{
 		String GameStrings[] = 
-		{  "Game",
+		{  "Prototype",
 			PlayState,
 	    PlayOrSwapState,
 	    VictoryCondition
 			
 		};
 		String GameStringPairs[][] = 
-		{   {"Game_family","Game"},
-			{"Game_variation","Game"},
+		{   {"Prototype_family","Prototype"},
+			{"Prototype_variation","Prototype"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

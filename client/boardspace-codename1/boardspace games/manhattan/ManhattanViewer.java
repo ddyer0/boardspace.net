@@ -107,7 +107,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
  	// TODO: display some indication of the university's owner for "india" selection.
 	
 
-    static final String Prototype_SGF = "manhattan"; // sgf game name
+    static final String Manhattan_SGF = "manhattan"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/manhattan/images/";
@@ -2136,7 +2136,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Manhattan_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**
