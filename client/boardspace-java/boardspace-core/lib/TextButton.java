@@ -34,9 +34,17 @@ public class TextButton extends ToggleButton
 	public Color textColor = Color.black;
 	public Color frameColor = Color.black;
 	public boolean square;
-	Text onText = TextChunk.create("button");
-	Text offText = TextChunk.create("off");
+	private Text onText = TextChunk.create("button");
+	private Text offText = TextChunk.create("off");
 	public void setRotation(double r) { rotation=r; }
+	public void setOnText(String msg)
+	{
+		onText = TextChunk.create(msg);
+	}
+	public void setOffText(String msg)
+	{
+		offText = TextChunk.create(msg);
+	}
 
 	/* constructor */
 	public TextButton(String label,CellId code,String help,Color highlight,Color background,Color inactive)

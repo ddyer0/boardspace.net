@@ -87,6 +87,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     private int boardSearchLevel = 0;
     private boolean fakeSoloPlay = false;
     boolean inRandomDescent = false;
+    boolean directedRandomDescent = false;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      */
@@ -105,6 +106,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
     	cc.board.initRobotValues(cc);
     	cc.SKIP_OPTIONAL_DONE = SKIP_OPTIONAL_DONE;
     	cc.fakeSoloPlay = fakeSoloPlay;
+    	cc.directedRandomDescent = directedRandomDescent;
     	return(c);
     }
 
@@ -267,6 +269,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
  	   	   	UCT_WIN_LOSS = false;
  	   	   	SKIP_OPTIONAL_DONE = true;
  	   	   	fakeSoloPlay = false;
+ 	   	   	directedRandomDescent = false;
     	   	ALPHA = 0.35;
            	MONTEBOT=true;
           	HONESTROBOT = !G.debug();
@@ -276,6 +279,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
  			UCT_WIN_LOSS = true;
  	   	   	SKIP_OPTIONAL_DONE = true;
 	   	   	fakeSoloPlay = false;
+	   	   	directedRandomDescent = true;
     	   	ALPHA = 0.35;
           	MONTEBOT=true;
           	HONESTROBOT = !G.debug();
@@ -505,8 +509,9 @@ boolean nouni3 = false;
 
 public void setInhibitions()
 {	PlayerBoard pb = board.getCurrentPlayerBoard();
-	nomines = noaustralia = (pb.yellowcakeDisplay.height()>20);	// inhibit mine activity if the yellowcake supply is good
-	nobombs = (pb.nDesignsAvailable()>5);	
+	boolean limited = directedRandomDescent && inRandomDescent;
+	nomines = noaustralia = (pb.yellowcakeDisplay.height()>(limited ? 10 : 20));	// inhibit mine activity if the yellowcake supply is good
+	nobombs = (pb.nDesignsAvailable()>(limited?2:5));	
 	noplutonium = pb.nPlutonium>=7;
 	nouranium = pb.nUranium>=7;
 	nosouthafrica = !pb.hasBuiltBombs();
@@ -521,15 +526,15 @@ public void setInhibitions()
 	nobritain = norepair && pb.nFighters>=10;
 	noairstrike1 = board.playAirStrike[0].height()==0;
 	nomorebuildings = pb.nUsableBuildings()>10;
-	nomoremoney = pb.cashDisplay.cash>=20;
-	nobombers = pb.nBombers >= pb.bombers.length-1;
-	nofighters = pb.nFighters >= pb.fighters.length-1;
+	nomoremoney = pb.cashDisplay.cash>=(limited?10:20);
+	nobombers = pb.nBombers >= (limited ? 2 : pb.bombers.length-1);
+	nofighters = pb.nFighters >= pb.fighters.length-(limited ? 2 : 1);
 	nouni3 = board.playUniversity[1].topChip()==null && board.playUniversity[2].topChip()==null;
 	if(!noaustralia)
 	{
 		noaustralia = !pb.hasOtherMines();
 	}
-	if(pb.nFighters+pb.nBombers>0)
+	if(!limited && pb.nFighters+pb.nBombers>0)
 	{
 		for(PlayerBoard op : board.pbs)
 		{	// find a potential victim

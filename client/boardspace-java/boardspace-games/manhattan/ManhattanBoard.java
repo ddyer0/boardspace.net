@@ -956,6 +956,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     }
  
     public boolean optionalDoneState() { return board_state.optionalDoneState(); }
+    public boolean endTurnState() { return board_state.endTurnState(); }
     
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
@@ -2432,7 +2433,8 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         {      
         case MOVE_SKIPMYTURN:
         	setState(ManhattanState.Confirm);
-        case MOVE_DONE:
+			//$FALL-THROUGH$
+		case MOVE_DONE:
         	doDone(replay);
             break;
         case MOVE_REPAIR:

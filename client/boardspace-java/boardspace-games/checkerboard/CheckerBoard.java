@@ -123,6 +123,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  	}
  	// dys altered so links are +2 vertically for frisian
  	public int[] dys() { 
+
  		switch(variation)
  		{
  		default: throw G.Error("Not expecting %s",variation);

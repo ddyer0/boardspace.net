@@ -291,6 +291,7 @@ public class JWSApplication implements Config,OnlineConstants
 			// must be first because it loads the defaults
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
+			//G.print("local address "+G.getLocalIpAddress());
 			for(int i=0; i<args.length-1; i+=2)
 			{	String par = (args[i].toLowerCase());
 				String arg = args[i+1];

@@ -613,12 +613,12 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
         Image.registerImages(PHLIP_PIECES);
         Random r = new Random(12387535);
         GIVENS_PIECES =  new UniverseChip[OminoStep.GIVENS.length];
-        Image.registerImages(GIVENS_PIECES);
         for(int i=0;i<GIVENS_PIECES.length;i++)
         {	UniverseChip ch = GIVENS_PIECES[i] = new UniverseChip(i,OminoStep.GIVENS[i],IG[0],GIVENSSCALE,r.nextLong());
         	ch.getVariation(0,false);
   		}
-        
+        Image.registerImages(GIVENS_PIECES);
+       
         chipSets = new UniverseChip[3][];
         chipSets[0] = CANONICAL_PIECE;
         chipSets[1] = SNAKES_PIECE;

@@ -373,33 +373,33 @@ public class GameLog implements Opcodes
 
                 if (sp != null)
                 {
-               	   //p1Index = idx; 
-                   //if(sms.length() > 0) 
-                   // 	{p1 = combineLines(p1,sms);
-                   // 	}
-                   // if(p1.length()>0) { linebreak |= sp.getLineBreak();	}
-                    
-                    // this is an attempt to avoid constructing absurdly long lines
-                    // when there are a lot of actions in a turn.  Case in point
-                    // is word games, where you can shuffle tiles a lot
-                    Text savedLine = p1==null ? null : p1.clone();
-                    Text newline = combineLines(p1,sms);
-                    if(savedLine!=null 
-                    		&& (savedLine!=newline)
-                    		&& (newline!=sms)
-                    		&& (newline.width(myFM)>mid))
-                    {
-                    	linebreak = true;
-                    	p1 = savedLine;
-                    	idx--;
-                    }
-                    else 
-                    { 
-                    p1 = newline; 
-                    if(p1.length()>0) { linebreak |= sp.getLineBreak();	}
-                    }                 
-
+          	   //p1Index = idx; 
+               //if(sms.length() > 0) 
+               // 	{p1 = combineLines(p1,sms);
+               // 	}
+               // if(p1.length()>0) { linebreak |= sp.getLineBreak();	}
+                
+                // this is an attempt to avoid constructing absurdly long lines
+                // when there are a lot of actions in a turn.  Case in point
+                // is word games, where you can shuffle tiles a lot
+                Text savedLine = p1==null ? null : p1.clone();
+                Text newline = combineLines(p1,sms);
+                if(savedLine!=null 
+                		&& (savedLine!=newline)
+                		&& (newline!=sms)
+                		&& (newline.width(myFM)>mid))
+                {
+                	linebreak = true;
+                	p1 = savedLine;
+                	idx--;
                 }
+                else 
+                { 
+                p1 = newline; 
+                if(p1.length()>0) { linebreak |= sp.getLineBreak();	}
+                }                 
+
+            }
             }
             maxEverLineHeight = Math.max(maxLineH,maxEverLineHeight);
             // take care of the trailing line if we didn't fill the last line
@@ -465,6 +465,10 @@ public class GameLog implements Opcodes
     {
     	redrawGameLog2(gc,highlight,r,textColor,highlightColor,bold,normal,canvas.History);
     }
+    public void redrawGameLog2(Graphics gc, HitPoint highlight, Rectangle r, Color highlightColor)
+    {	redrawGameLog2(gc,highlight,r,Color.black,highlightColor,
+    		canvas.standardBoldFont(),canvas.standardPlainFont(),canvas.History);
+    }   
     /**
      * draw a game log in 2 column format, where the left column is the player/move number
      * and the right column is the move activity.  This is more suitable for multiplayer games
@@ -489,7 +493,7 @@ public class GameLog implements Opcodes
        	// which was the newest.  
        	//
        	//G.startLog("start log "+gameLogScroll);
-    	if(G.Height(r)>0)
+     	if(G.Height(r)>0)
     	{
         if(highlight!=null) { scrollbar.doMouseMotion(G.Left(highlight),G.Top(highlight),highlight.upCode); }
     	boolean scrolled = scrollbar.mouseIsActive();   
@@ -498,289 +502,291 @@ public class GameLog implements Opcodes
   	   	
     	 if (((gc != null)||G.pointInRect(mainHighlight, r)) && canvas.rectangleIsVisible(r))
             {
-    		 redrawGameLog2_internal(gc,canvas.disableForSpectators(mainHighlight),r,textColor,highlightColor,bold,normal,history);
+     		 redrawGameLog2_internal(gc,canvas.disableForSpectators(mainHighlight),r,textColor,highlightColor,bold,normal,history);
             }
        }}
-       private void redrawGameLog2_internal(Graphics gc,HitPoint highlight,Rectangle r,
-    		   	Color textColor,Color highlightColor,Font bold,Font normal,SequenceStack history)
-       {
-    	boolean barvisible = scrollbar.scrollBarVisible();
-    	int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
-    	boolean scrolled = scrollbar.mouseIsActive();   
-	    	
-        
-	   FontMetrics myFM = G.getFontMetrics(normal);
-       int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
-       int sz = history.size();
-       int historyStep = history.viewStep();
-       if(sz!=lastHistorySize || historyStep!=lastHistoryStep) 
-           	{ lastHistoryStep = historyStep;
-           	  lastHistorySize = sz;
-           	}
-       	// scrolled means the scroll bar was changed from inside
-   		// in which case we use the scrolled value
-       boolean sizechange = sz!=lastSize;
-       lastSize = sz;
-       boolean down = !rememberScrollPosition 
-    		   			|| (G.pointInRect(highlight,r)		   			
-    		   					&& scrollbar.mouseIsDown());
-       int scrollY = scrolled && down
-    		   		? scrollbar.getScrollPosition() 
-    		   		: rememberScrollPosition && !down && !sizechange
-    		   			? preferredScrollPosition
-    		   			: gameLogScrollY;
        
-       if(down) { preferredScrollPosition = scrollY; }
-       int highlightYPos = -1;
-       int hr = G.Height(r);
-       // basic layout, 1 cell for the row number, then two columns for the moves
-       GC.setColor(gc,textColor);
-       GC.setFont(gc,bold);
+      private void redrawGameLog2_internal(Graphics gc,HitPoint highlight,Rectangle r,
+   		   	Color textColor,Color highlightColor,Font bold,Font normal,SequenceStack history)
+      {
+   	boolean barvisible = scrollbar.scrollBarVisible();
+   	int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
+   	boolean scrolled = scrollbar.mouseIsActive();   
+	    	
+       
+	   FontMetrics myFM = G.getFontMetrics(normal);
+      int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
+      int sz = history.size();
+      int historyStep = history.viewStep();
+      if(sz!=lastHistorySize || historyStep!=lastHistoryStep) 
+          	{ lastHistoryStep = historyStep;
+          	  lastHistorySize = sz;
+          	}
+      	// scrolled means the scroll bar was changed from inside
+  		// in which case we use the scrolled value
+      boolean sizechange = sz!=lastSize;
+      lastSize = sz;
+      boolean down = !rememberScrollPosition 
+   		   			|| (G.pointInRect(highlight,r)		   			
+   		   					&& scrollbar.mouseIsDown());
+      int scrollY = scrolled && down
+   		   		? scrollbar.getScrollPosition() 
+   		   		: rememberScrollPosition && !down && !sizechange
+   		   			? preferredScrollPosition
+   		   			: gameLogScrollY;
+      
+      if(down) { preferredScrollPosition = scrollY; }
+      int highlightYPos = -1;
+      int hr = G.Height(r);
+      // basic layout, 1 cell for the row number, then two columns for the moves
+      GC.setColor(gc,textColor);
+      GC.setFont(gc,bold);
 
-       int width = G.Width(r);
-       int rownumWidth = Math.min(myFM.stringWidth("XXXXXXXXXXXX"),width/2);
-       int x = G.Left(r) + rownumWidth;
-       int y = G.Top(r);
-       boolean sawEnd = false;
-       int mid = (width - rownumWidth);
+      int width = G.Width(r);
+      int rownumWidth = Math.min(myFM.stringWidth("XXXXXXXXXXXX"),width/2);
+      int x = G.Left(r) + rownumWidth;
+      int y = G.Top(r);
+      boolean sawEnd = false;
+      int mid = (width - rownumWidth);
 
-       GC.setFont(gc,normal);
+      GC.setFont(gc,normal);
 
-       String moven = null;
-       String prevMoven = null;
-       int player = -100;
-       Text currentLine = TextChunk.create("");
-       int currentIndex = 0;
-       String gameEvents[] = null;
-       boolean linebreak = false;
-       int idx = 0;
-       int ypos = 0;
-       int lastSeenY = ypos;
-       int maxLineHeight = rowHeight;
-       if(sz>0 && (history.elementAt(0).ignoredInLogs())) { idx++;  }
-       boolean recalculating = startingIdx<0; 
-       HitPoint mainHighlight = scrollbar.thumbScrolling() ? null : highlight;
-       if(!recalculating && !scrolled)
-       		{	
-    	    // saving these numbers allows the log to be 
-           	// restarted at the current position, so you don't
-           	// have to troll thought all the parts that precede the piece
-           	// that is actually displayed.
-           	// it turns out this is a noticeable problem for long games
-           	// such as viticulture
-           	idx = startingIdx;
-           	lastSeenY = ypos = startingYpos;
-           	maxLineHeight = startingMaxLineheight;
-            }
-       GC.setColor(gc,textColor);
-       if(banner!=null)
-       {
-    	   y += drawBanner(gc,banner,x,y,width,rowHeight);
-       }
+      String moven = null;
+      String prevMoven = null;
+      int player = -100;
+      Text currentLine = TextChunk.create("");
+      int currentIndex = 0;
+      String gameEvents[] = null;
+      boolean linebreak = false;
+      int idx = 0;
+      int ypos = 0;
+      int lastSeenY = ypos;
+      int maxLineHeight = rowHeight;
+      { SequenceElement m = history.elementAt(0);
+      if(sz>0 && m!=null && (m.ignoredInLogs())) { idx++;  }
+      }
+      boolean recalculating = startingIdx<0; 
+      HitPoint mainHighlight = scrollbar.thumbScrolling() ? null : highlight;
+      if(!recalculating && !scrolled)
+      		{	
+   	    // saving these numbers allows the log to be 
+          	// restarted at the current position, so you don't
+          	// have to troll thought all the parts that precede the piece
+          	// that is actually displayed.
+          	// it turns out this is a noticeable problem for long games
+          	// such as viticulture
+          	idx = startingIdx;
+          	lastSeenY = ypos = startingYpos;
+          	maxLineHeight = startingMaxLineheight;
+           }
+      GC.setColor(gc,textColor);
+      if(banner!=null)
+      {
+   	   y += drawBanner(gc,banner,x,y,width,rowHeight);
+      }
 
-           int smsidx = idx;
-           int smsypos = ypos;
-           int smsheight = maxLineHeight;
-           boolean variation = false;
-           boolean nextVariation = false;
-       	   boolean first = !scrolled;
-       	   boolean earlyExit = false;
-       	   //G.print("scr "+scrollY+ " "+idx);
-           while (idx < sz && !earlyExit)
-           {	
-
-        	SequenceElement sp = history.elementAt(idx);
-        	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
-           	variation |= (sp!=null) && (sp.nVariations()>1);
-           	String newnum = (sp==null) ? "" : sp.getSliderNumString();
-        	int nextIdx = idx;
-             // look for reasons to break rather than add this line to the current display line
-           	if((moven!=null) 
-           			&& (newnum!=null) 
-           			&& !"".equals(newnum) 
-           			&& !newnum.equals(moven))
-               	{	// changing move number
-                   	linebreak = true;
-                   	}
-                if((player!=-100) && (sp!=null) && (player!=sp.player())) 
-               		{ linebreak = true; 
-               		}
-                
-                if(!linebreak) 
-                { 	// process this line
-            	if(!"".equals(newnum)) { moven = newnum; }
-                if(sp!=null) { gameEvents = combineEvents(gameEvents,sp.gameEvents()); }
-                // this is an attempt to avoid constructing absurdly long lines
-                // when there are a lot of actions in a turn.  Case in point
-                // is word games, where you can shuffle tiles a lot
-                Text savedLine = currentLine==null ? null : currentLine.clone();
-                Text newline = combineLines(currentLine,sms);
-                if(savedLine!=null 
-                		&& (savedLine!=newline)
-                		&& (newline!=sms)
-                		&& (newline.width(myFM)>mid))
-                {
-                	linebreak = true;
-                	currentLine = savedLine;
-                }
-                else if(sp!=null)
-                { currentLine = newline; 
-                	player = sp.player();
-                	linebreak = sp.getLineBreak();
-                	if(linebreak) { idx++; }	// skip ahead too
-                }
-            }
-            if(!linebreak) 
-            { 	
-            	idx++; 
-            }			// advance if we are not outputting
-            if(idx>=sz) { linebreak = true; }	// make sure we do the last line
-
-                if(idx!=nextIdx && nextIdx==historyStep)
-                	{
-                  	
-                	highlightYPos = ypos;
-                	}
- 
-             	if(linebreak)
-              	{	
-                 // output related to the accumulated line
-        	int owed = 0;
-            int breakYpos = ypos;
-        	if(idx>=sz || currentLine.length()>0 || (gameEvents!=null))
-          	{	// output the line we have built
-          		int h = currentLine.lineHeight(myFM);
-               maxLineHeight = Math.max(h,maxLineHeight);
-               if(ypos>=scrollY)
+          int smsidx = idx;
+          int smsypos = ypos;
+          int smsheight = maxLineHeight;
+          boolean variation = false;
+          boolean nextVariation = false;
+      	   boolean first = !scrolled;
+      	   boolean earlyExit = false;
+      	   //G.print("scr "+scrollY+ " "+idx);
+          while (idx < sz && !earlyExit)
+          {	
+       	SequenceElement sp = history.elementAt(idx);
+       	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
+          	variation |= (sp!=null) && (sp.nVariations()>1);
+          	String newnum = (sp==null) ? "" : sp.getSliderNumString();
+       	int nextIdx = idx;
+            // look for reasons to break rather than add this line to the current display line
+          	if((moven!=null) 
+          			&& (newnum!=null) 
+          			&& !"".equals(newnum) 
+          			&& !newnum.equals(moven))
+              	{	// changing move number
+                  	linebreak = true;
+                  	}
+               if((player!=-100) && (sp!=null) && (player!=sp.player())) 
+              		{ linebreak = true; 
+              		}
+               
+               if(!linebreak) 
+               { 	// process this line
+           	if(!"".equals(newnum)) { moven = newnum; }
+               if(sp!=null) { gameEvents = combineEvents(gameEvents,sp.gameEvents()); }
+               // this is an attempt to avoid constructing absurdly long lines
+               // when there are a lot of actions in a turn.  Case in point
+               // is word games, where you can shuffle tiles a lot
+               Text savedLine = currentLine==null ? null : currentLine.clone();
+               Text newline = combineLines(currentLine,sms);
+               if(savedLine!=null 
+               		&& (savedLine!=newline)
+               		&& (newline!=sms)
+               		&& (newline.width(myFM)>mid))
                {
-               if(ypos+h<scrollY+hr)
-               {
-            	if(first)
-            	{	// remember where we started
-                   	startingIdx = smsidx;
-                   	startingYpos = smsypos;
-                   	startingMaxLineheight = smsheight;
-                   	first = false;
-                }
-          		Color bgColor = breakYpos==highlightYPos ? highlightColor : nextVariation? branchColor : null;
-          		nextVariation = variation;
-          		variation = false;
+               	linebreak = true;
+               	currentLine = savedLine;
+               }
+               else if(sp!=null)
+               { currentLine = newline; 
+               	player = sp.player();
+               	linebreak = sp.getLineBreak();
+               	if(linebreak) { idx++; }	// skip ahead too
+               }
+           }
+           if(!linebreak) 
+           { 	
+           	idx++; 
+           }			// advance if we are not outputting
+           if(idx>=sz) { linebreak = true; }	// make sure we do the last line
+
+               if(idx!=nextIdx && nextIdx==historyStep)
+               	{
+                 	
+               	highlightYPos = ypos;
+               	}
+
+            	if(linebreak)
+             	{	
+                // output related to the accumulated line
+       	int owed = 0;
+           int breakYpos = ypos;
+       	if(idx>=sz || currentLine.length()>0 || (gameEvents!=null))
+         	{	// output the line we have built
+         		int h = currentLine.lineHeight(myFM);
+              maxLineHeight = Math.max(h,maxLineHeight);
+              if(ypos>=scrollY)
+              {
+              if(ypos+h<scrollY+hr)
+              {
+           	if(first)
+           	{	// remember where we started
+                  	startingIdx = smsidx;
+                  	startingYpos = smsypos;
+                  	startingMaxLineheight = smsheight;
+                  	first = false;
+               }
+         		Color bgColor = breakYpos==highlightYPos ? highlightColor : nextVariation? branchColor : null;
+         		nextVariation = variation;
+         		variation = false;
 				String mn = moven +" "+canvas.prettyName(player);
-                   if(!mn.equals(prevMoven))
-                      	{int l = G.Left(r);
-                      	 GC.Text(gc, false, l + 2, y + (ypos-scrollY), x-l ,	h, textColor, bgColor, mn);
-                      	}
-                prevMoven = mn;
-                int yco = y + (ypos-scrollY);
-                int boxw = mid - barWidth;
-                boolean inside = G.pointInRect(mainHighlight, x,yco,boxw,h);
-      			if(inside)
-      				{ 
-      				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
-      				mainHighlight.spriteColor = Color.red;
-      				mainHighlight.hit_index = currentIndex;
-      				mainHighlight.hitObject = history.elementAt(currentIndex);
-      				mainHighlight.hitCode = GameId.HitGameRecord;
-      				}
-               	currentLine.draw(gc, false , x + 2, yco, mid - 4, h, textColor, bgColor );
-               	lastSeenY = ypos+h;
-               }
-               else if(historyStep>=0 && !recalculating) 
-  				{ earlyExit=true; }	// shut off the rendering
-               }
-               
-               if(currentLine.length()>0) 
-               	{ ypos += h; 
-               	}
-               	else 
-               	{ owed = h; 
-               	}
-               
-           	}
-           if(gameEvents!=null)
-             {	
-             	for(int gameEventsIndex = 0;gameEventsIndex<gameEvents.length;gameEventsIndex++)
-             	{  
-            		String msg = gameEvents[gameEventsIndex];
-            		Text chunk = canvas.colorize(msg);
-            		int h = currentLine.lineHeight(myFM);
-              		if(ypos>=scrollY)
-            		{
-              		maxLineHeight = Math.max(h,maxLineHeight);
-                	if(first)
-                	{	// remember where we started
-                       	startingIdx = smsidx;
-                       	startingYpos = smsypos;
-                       	startingMaxLineheight = smsheight;
-                       	first = false;
-                    }
+                  if(!mn.equals(prevMoven))
+                     	{int l = G.Left(r);
+                     	 GC.Text(gc, false, l + 2, y + (ypos-scrollY), x-l ,	h, textColor, bgColor, mn);
+                     	}
+               prevMoven = mn;
+               int yco = y + (ypos-scrollY);
+               int boxw = mid - barWidth;
+               boolean inside = G.pointInRect(mainHighlight, x,yco,boxw,h);
+     			if(inside)
+     				{ 
+     				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
+     				mainHighlight.spriteColor = Color.red;
+     				mainHighlight.hit_index = currentIndex;
+     				mainHighlight.hitObject = history.elementAt(currentIndex);
+     				mainHighlight.hitCode = GameId.HitGameRecord;
+     				}
+              	currentLine.draw(gc, false , x + 2, yco, mid - 4, h, textColor, bgColor );
+              	lastSeenY = ypos+h;
+              }
+              else if(historyStep>=0 && !recalculating) 
+ 				{ earlyExit=true; }	// shut off the rendering
+              }
+              
+              if(currentLine.length()>0) 
+              	{ ypos += h; 
+              	}
+              	else 
+              	{ owed = h; 
+              	}
+              
+          	}
+          if(gameEvents!=null)
+            {	
+            	for(int gameEventsIndex = 0;gameEventsIndex<gameEvents.length;gameEventsIndex++)
+            	{  
+           		String msg = gameEvents[gameEventsIndex];
+           		Text chunk = canvas.colorize(msg);
+           		int h = currentLine.lineHeight(myFM);
+             		if(ypos>=scrollY)
+           		{
+             		maxLineHeight = Math.max(h,maxLineHeight);
+               	if(first)
+               	{	// remember where we started
+                      	startingIdx = smsidx;
+                      	startingYpos = smsypos;
+                      	startingMaxLineheight = smsheight;
+                      	first = false;
+                   }
 
-              		if ((ypos + h) <= (scrollY+hr))
+             		if ((ypos + h) <= (scrollY+hr))
 	               		{
-              			int yco = y + (ypos-scrollY);
-              			int boxw = mid-barWidth;
-              			boolean inside = G.pointInRect(mainHighlight, x,yco,boxw,h);
-              			if(inside && !mainHighlight.dragging)
-              				{ 
-              				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
-              				mainHighlight.spriteColor = Color.red;
-              				mainHighlight.hitCode = GameId.HitGameRecord;
-              				mainHighlight.hitObject = history.elementAt(currentIndex);
-              				}
-                  		Color bgColor = breakYpos==highlightYPos ? highlightColor : null;
+             			int yco = y + (ypos-scrollY);
+             			int boxw = mid-barWidth;
+             			boolean inside = G.pointInRect(mainHighlight, x,yco,boxw,h);
+             			if(inside && !mainHighlight.dragging)
+             				{ 
+             				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
+             				mainHighlight.spriteColor = Color.red;
+             				mainHighlight.hitCode = GameId.HitGameRecord;
+             				mainHighlight.hitObject = history.elementAt(currentIndex);
+             				}
+                 		Color bgColor = breakYpos==highlightYPos ? highlightColor : null;
 	               		chunk.draw(gc, false , x + 2, yco, mid - 4, h, Color.darkGray, bgColor);
 	               		lastSeenY = ypos+h;
 	               		}
-               			else if(historyStep>=0 && !recalculating) 
-               				{ earlyExit = true; }	// shut off the rendering
-             		}
-              		
-               	  ypos += h;
-              	  owed = 0; 
-             	}
-            }
-        
-        ypos += owed;
-        owed = 0; 
-
-        if(idx>=sz) { totalHeight = ypos; }	// we saw the end
-        
-   		linebreak = false;
-   		gameEvents = null;
-   		player = -100;
-   		// starting a new line
-   		currentLine = TextChunk.create("");
-   		currentIndex = idx;
-   		smsidx = idx;
-   		smsypos = ypos;
-   		smsheight = maxLineHeight;
-   		moven = null;
-        } // end of linebreak
-
-       } // end of while
-       sawEnd = idx>=sz;
-       GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.max(G.Height(r),Math.min(y+lastSeenY,hr)));
-       boolean recalc = false;
-       if(!scrolled)
-         {
-    	   recalc = autoScroll(historyStep,highlightYPos,lastSeenY,totalHeight,hr,rowHeight);
-
-         }
-       GC.setFont(gc,canvas.standardPlainFont());
-       // the scroll bar, if visible, overlays the right part of the log area
-       // the vertical parameters of the scroll bar are in pixel units
-       int big = hr/2;
-       drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight-hr+rowHeight,!sawEnd);
-
-       if(recalc && (gc!=null))
-       	{
-    	// draw again with no graphics output, so the next real refresh will be correct
-    	// and not require another repaint.  This prevents a double flash of the log when
-    	// there is a major relocation
-    	redrawGameLog2_internal(null,  highlight,r,textColor,highlightColor,bold,normal,history); 
-       	}
-       }
+              			else if(historyStep>=0 && !recalculating) 
+              				{ earlyExit = true; }	// shut off the rendering
+            		}
+             		
+              	  ypos += h;
+             	  owed = 0; 
+            	}
+           }
        
+       ypos += owed;
+       owed = 0; 
+
+       if(idx>=sz) { totalHeight = ypos; }	// we saw the end
+       
+  		linebreak = false;
+  		gameEvents = null;
+  		player = -100;
+  		// starting a new line
+  		currentLine = TextChunk.create("");
+  		currentIndex = idx;
+  		smsidx = idx;
+  		smsypos = ypos;
+  		smsheight = maxLineHeight;
+  		moven = null;
+       } // end of linebreak
+
+      } // end of while
+      sawEnd = idx>=sz;
+      GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.max(G.Height(r),Math.min(y+lastSeenY,hr)));
+      boolean recalc = false;
+      if(!scrolled)
+        {
+   	   recalc = autoScroll(historyStep,highlightYPos,lastSeenY,totalHeight,hr,rowHeight);
+
+        }
+      GC.setFont(gc,canvas.standardPlainFont());
+      // the scroll bar, if visible, overlays the right part of the log area
+      // the vertical parameters of the scroll bar are in pixel units
+      int big = hr/2;
+      drawScrollbar(gc,r,scrollY,rowHeight,big,totalHeight-hr+rowHeight,!sawEnd);
+
+      if(recalc && (gc!=null))
+      	{
+   	// draw again with no graphics output, so the next real refresh will be correct
+   	// and not require another repaint.  This prevents a double flash of the log when
+   	// there is a major relocation
+   	redrawGameLog2_internal(null,  highlight,r,textColor,highlightColor,bold,normal,history); 
+      	}
+      }
+         
        /**
         * adjust the scroll position based on what is displayed.  The two main considerations
         * are the rollback position, acquired from the game history, and the end of the record

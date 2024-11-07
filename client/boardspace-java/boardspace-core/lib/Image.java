@@ -657,7 +657,11 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	 */
 	public static void registerImages(DrawableImage<?>[] all)
 	{
-		for(DrawableImage<?> im : all) { registeredImages.push(im); }
+		for(DrawableImage<?> im : all) 
+			{
+			G.Assert(im!=null,"shouldn't be null");
+			registeredImages.push(im); 
+			}
 	}
 	/**
 	 * register images for debugging awareness, and potentially for unloading.
@@ -668,8 +672,9 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public static void registerImages(DrawableImageStack allChips) 
 	{
 		for(int lim=allChips.size()-1; lim>=0; lim--)
-		{
-			registeredImages.push(allChips.elementAt(lim));
+		{	DrawableImage<?> s = allChips.elementAt(lim);
+			G.Assert(s!=null,"shouldn't be null");
+			registeredImages.push(s);
 		}		
 	}
 	/**

@@ -133,7 +133,7 @@ class EpaminondasBoard
  		}
  	}
  	
-    private CellStack occupiedCells[] = { new CellStack(),new CellStack()};
+    CellStack occupiedCells[] = { new CellStack(),new CellStack()};
     private EpaminondasState resetState = EpaminondasState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -425,10 +425,15 @@ class EpaminondasBoard
     private static int CaptureLength=3;
     private int moveStats[] = bothMoveStats[0];
     //
-    public double evalForPlayer(int pl,boolean useStats)
+    // 10/2024 ddyer
+    // I've done a bunch of ad-hoc tweaking of these parameters, and
+    // conclude that other than woodMultiplier, none of them make a
+    // definitive difference.  New ideas required.
+    //
+    public double dumbEval(int pl,boolean useStats)
     {
     	double rowMultiplier = 10;
-    	double columnMultiplier = 0.2;
+    	double columnMultiplier = -0.2;
     	double woodMultiplier = 10;
     	double winMultiplier = 100;
     	int oc = opponentCount(pl);
@@ -460,6 +465,79 @@ class EpaminondasBoard
     	}
     	return val;
     }
+    public double smartEval(int pl,boolean useStats)
+    {
+    	double rowMultiplier = 10;
+    	double columnMultiplier = -0.2;
+    	double woodMultiplier = 1;
+    	double winMultiplier = 100;
+    	int oc = opponentCount(pl);
+    	double val = oc*winMultiplier;
+    	int homeRow = playerHomeRow(pl);   
+    	CellStack occupied = occupiedCells[pl];
+    	int size = occupied.size();
+    	int mid = 'A'+nrows/2;
+    	val += woodMultiplier * size;
+    	for(int lim=size-1; lim>=0; lim--)
+    	{
+    		EpaminondasCell c = occupied.elementAt(lim);
+    		int col = Math.abs(mid-c.col);
+    		int row = Math.abs(c.row-homeRow);
+    		val += rowMultiplier*row;
+    		val += columnMultiplier*col;
+    	}
+    	if(useStats)
+    	{	int stats[] = bothMoveStats[pl];
+    		double singleMultiplier = -0.1;
+    		double phalanxMultiplier = 0.04;
+    		double phalanxLengthMultiplier = 0.01;
+    		double captureLengthMultiplier = 1.1;
+    		
+    		val += stats[Single]*singleMultiplier;
+    		val += stats[Phalanx]*phalanxMultiplier;
+    		val += stats[PhalanxLength]*phalanxLengthMultiplier;
+    		val += stats[CaptureLength]*captureLengthMultiplier;
+    	}
+    	return val;
+    }
+    
+
+    //
+    public double bestEval(int pl,boolean useStats)
+    {
+    	double rowMultiplier = 1;
+    	double columnMultiplier = 0.1;
+    	double woodMultiplier = 40;
+    	double winMultiplier = 100;
+    	int oc = opponentCount(pl);
+    	double val = oc*winMultiplier;
+    	int homeRow = playerHomeRow(pl);   
+    	CellStack occupied = occupiedCells[pl];
+    	int size = occupied.size();
+    	int mid = 'A'+nrows/2;
+    	val += woodMultiplier * size;
+    	for(int lim=size-1; lim>=0; lim--)
+    	{
+    		EpaminondasCell c = occupied.elementAt(lim);
+    		int col = Math.abs(mid-c.col);
+    		int row = Math.abs(c.row-homeRow);
+    		val += rowMultiplier*row;
+    		val += columnMultiplier*col;
+    	}
+    	if(false)
+    	{	int stats[] = bothMoveStats[pl];
+    		double singleMultiplier = -0.1;
+    		double phalanxMultiplier = 0.04;
+    		double phalanxLengthMultiplier = -0.2;
+    		double captureLengthMultiplier = 1.1;
+    		
+    		val += stats[Single]*singleMultiplier;
+    		val += stats[Phalanx]*phalanxMultiplier;
+    		val += stats[PhalanxLength]*phalanxLengthMultiplier;
+    		val += stats[CaptureLength]*captureLengthMultiplier;
+    	}
+    	return val;
+    } 
     
     // set the contents of a cell, and maintain the books
     private int lastPlaced = -1;
@@ -615,6 +693,24 @@ class EpaminondasBoard
     {	return(pickedSourceStack.top());
     }
  
+    private boolean isPositionSymmetric()
+    {	CellStack my = occupiedCells[0];
+    	CellStack his = occupiedCells[1];
+    	int sz = occupiedCells[0].size();
+    
+    	if(sz == his.size())
+    	{	EpaminondasChip ot = getPlayerChip(1);
+    		for(int i=0;i<sz;i++)
+    		{
+    			EpaminondasCell c = my.elementAt(i);
+    			EpaminondasCell d = getCell((char)('A'+ncols-(c.col-'A'+1)),nrows-c.row+1);
+    			EpaminondasChip ch = d.topChip();
+    			if(ch!=ot) { return false; }
+    		}
+    		return true;
+    	}
+    	return false;
+    }
     //
     // in the actual game, picks are optional; allowed but redundant.
     //
@@ -628,8 +724,15 @@ class EpaminondasBoard
         case Confirm:
         	setNextStateAfterDone(replay);
          	break;
-        case Play:
         case Check:
+        	if(isPositionSymmetric()) 
+        		{ 
+        			if(robot!=null) { setState(EpaminondasState.Gameover); win[nextPlayer[whoseTurn]]=true; }
+        			setState(EpaminondasState.Illegal); 
+        			break;
+        		}
+			//$FALL-THROUGH$
+        case Play:
 			setState(EpaminondasState.Confirm);
 			break;
         case Puzzle:
@@ -1141,7 +1244,8 @@ void doSwap(replayMode replay)
  	case Gameover:
  		all.push(new EpaminondasMovespec(MOVE_DONE,whoseTurn));
   		break;
- 		
+ 	case Illegal: 
+ 		break;
  	default:
  			G.Error("Not expecting state ",board_state);
  	}

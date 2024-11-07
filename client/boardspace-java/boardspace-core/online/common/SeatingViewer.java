@@ -53,6 +53,7 @@ import lib.MouseState;
 import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
+import lib.ScrollArea;
 import lib.SeatingChart;
 import lib.StockArt;
 import lib.TextButton;
@@ -155,7 +156,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		PlayOnline,
 		HelpButton,
 		TableName,
-		NewName, MessageArea, RecentSelected, GameTimer;
+		NewName, MessageArea, RecentSelected, GameTimer, Scroll;
 	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
@@ -411,6 +412,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				} 
 			switch(id)
 			{
+			case Scroll: break;
 			case GameTimer:
 				selectGame(gameTimerMode ? null : GameInfo.GameTimer);
 				break;
@@ -875,21 +877,39 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	}
 	
 	private boolean selectedGameSeen=false;
+	ScrollArea leftScrollbar = new ScrollArea();	// the scrollbar for the display
+	ScrollArea midScrollbar = new ScrollArea();	// the scrollbar for the display
+	ScrollArea catScrollbar = new ScrollArea();
+	ScrollArea variationScrollbar = new ScrollArea();
 	
 	// draw a column of game names
-	private boolean drawGameColumn(Graphics gc,HitPoint hp,boolean autoSelect,int margin,GameInfo gameNames[],int gameX,int gameY,int gameColumnWidth,int h)
+	private boolean drawGameColumn(Graphics gc,HitPoint hp,ScrollArea scroll,
+			boolean autoSelect,int margin,GameInfo gameNames[],int gameX,int gameY,int gameColumnWidth,int h)
 	{	
 		boolean hit = false;
 		if(gameNames!=null)
 		{
-		int vspace = h/Math.max(13,gameNames.length+3);
+		int fh = G.getFontSize(standardPlainFont());
+		int vspace = (int)(fh*3.5);
 		int half = vspace*5/6;
 		int lessThanHalf = half-half/10;
+		boolean barvisible = vspace*gameNames.length>h;
+		if(barvisible) 	{ h = (h/vspace)*vspace; }
+		
+	   	//int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
+	   	//boolean scrolled = scrollbar.mouseIsActive();   
+		int scrollPos = scroll.drawScrollBar(gc,hp,SeatId.Scroll,new Rectangle(gameX,gameY,gameColumnWidth,h),barvisible,gameNames.length,vspace);
+
+		if(barvisible)
+		{	gameColumnWidth -= scroll.getScrollbarWidth()+margin;
+			
+		}
+
 		// display games within a category
 		if(autoSelect && gameNames.length==1) { selectGame(gameNames[0]); }
-		for(int i=0;i<gameNames.length;i++)
+		for(int i=0;i+scrollPos<gameNames.length && (i+1)*vspace<=h;i++)
 		{
-			GameInfo g = gameNames[i];
+			GameInfo g = gameNames[i+scrollPos];
 			String name = s.get(g.gameName);
 			boolean selected = g==selectedGame;
 			selectedGameSeen |= selected;
@@ -936,13 +956,14 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int l = G.Left(r);
 		int t = G.Top(r);
 		int h = G.Height(r);
+		int fh = G.getFontSize(standardPlainFont());
+		
 		GameInfo categoryNames[] = GameInfo.groupMenu(typeClass,nplayers);
 		int az_cols = 3;
-		int rows = 1+ (mainMode==MainMode.Category ? categoryNames.length : (26+az_cols-1)/az_cols);
-		int step = Math.max(4, Math.min(G.getFontSize(largeBoldFont())*3,(h+rows-1)/rows));
+		int step = fh*4;
 		int half = 2*step/3;
 		int margin = half/10;
-		int vspace = half+half/4;
+		int vspace = fh*3;
 		boolean gameListSeen = false;
 		sess.setMode(nplayers==0?Session.Mode.Review_Mode:Session.Mode.Unranked_Mode,true,false);
 		
@@ -963,7 +984,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		drawCatButton(gc,hp,MainMode.AZ,catColumnLeft+catButtonW+third, t+half, catButtonW, step);
 		drawCatButton(gc,hp,MainMode.Recent,catColumnLeft+catButtonW*2+third*2, t+half, catButtonW, step);
 		int mainX = catColumnLeft+catButtonW*3+catButtonW*2/3;
-		int gameY = t+half*2+step;
+		int gameY = t+half*3;
+		int gameboxH = h-(gameY-t)-fh*3;
 		int variantY = gameY;
 		int spaces = (h-step*6)/half;
 		switch(mainMode)
@@ -975,13 +997,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			GameInfo favs[] = favoriteGames.filterGames(nplayers);
 			if(favs!=null)
 			{	// don't autoselect if there's a single game, it gets stuck!
-				drawGameColumn(gc,hp,games==null||games.length==1,margin,favs,catColumnLeft,gameY,gameColumnWidth,h);
+				drawGameColumn(gc,hp,leftScrollbar,games==null||games.length==1,margin,favs,catColumnLeft,gameY,gameColumnWidth,gameboxH);
 				gameListSeen = true;
 			}
 			
 			if(games!=null)
 			{
-				drawGameColumn(gc,hp,(favs==null||favs.length==1),margin,games,gameX,gameY,gameColumnWidth,h);
+				drawGameColumn(gc,hp,midScrollbar,(favs==null||favs.length==1),margin,games,gameX,gameY,gameColumnWidth,gameboxH);
 				gameListSeen = true;
 			}
 			
@@ -990,24 +1012,27 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		case Category:
 		{	// game categories
 			int ncats = categoryNames.length;
-			{
-			int avspace = Math.min(vspace,h/ncats);
-			for(int i=0;i<ncats;i++)
-			{	String catName = categoryNames[i].groupName;
+			boolean barvisible = vspace*ncats>gameboxH;
+			int gameW = w/3;
+			int boxh = barvisible ? (gameboxH/vspace)*vspace : gameboxH;
+			int scrollPos = leftScrollbar.drawScrollBar(gc,hp,SeatId.Scroll,new Rectangle(catColumnLeft,gameY,gameW,boxh),barvisible,ncats,vspace);
+			if(barvisible) { gameW -= leftScrollbar.getScrollbarWidth()+margin; }
+			for(int i=0;i+scrollPos<ncats && (i+1)*vspace<=gameboxH;i++)
+			{	String catName = categoryNames[i+scrollPos].groupName;
 				boolean selected = catName.equals(selectedCategory);
 				Color bgColor =  selected ? buttonSelectedColor : buttonBackgroundColor;
 				Color fgColor = selected ? buttonSelectedColor : buttonHighlightColor;
-				if(GC.handleRoundButton(gc, new Rectangle(catColumnLeft,gameY+i*avspace,w/3,half),hp,
+				if(GC.handleRoundButton(gc, new Rectangle(catColumnLeft,gameY+i*vspace,gameW,vspace-4),hp,
 					s.get(catName),fgColor,bgColor))
 				{
 					hp.hitCode = SeatId.SelectCategory;
 					hp.hitObject = catName;
 				}
-			}}
+			}
 			{
 			GameInfo gameNames[] = GameInfo.gameMenu(selectedCategory,typeClass,nplayers);		
 			gameListSeen = gameNames!=null && gameNames.length>0;
-			drawGameColumn(gc,hp,true,margin,gameNames,gameX,gameY,gameColumnWidth,h);
+			drawGameColumn(gc,hp,midScrollbar,true,margin,gameNames,gameX,gameY,gameColumnWidth,gameboxH);
 			}
 		}
 		break;
@@ -1021,7 +1046,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int row = 0;
 			int col = 0;
 			catColumnLeft += vspace/2;
-			vspace = h/Math.max(13,(26+2)/3);
 			int hspace = vspace*5/6;
 			if(gameNames.length>spaces)
 			{   
@@ -1063,7 +1087,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			gameListSeen = matches!=null;
 			gameX = catColumnLeft+vspace*3+vspace/4;
 			variantX = gameX+gameColumnWidth+vspace/4;
-			drawGameColumn(gc,hp,true,margin,matches,gameX,gameY,gameColumnWidth,h);
+			drawGameColumn(gc,hp,midScrollbar,true,margin,matches,gameX,gameY,gameColumnWidth,gameboxH);
 			
 		}
 		}
@@ -1082,14 +1106,14 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		    // circumstances, this.getFont() may also be null.
 		    GC.setFont(gc,lb);
 		    FontMetrics fm = G.getFontMetrics(lb);
-		    int fh = fm.getHeight();
-		    int topPart = fh*3;
+		    int fonth = fm.getHeight();
+		    int topPart = fonth*3;
 		    int messageY = G.Bottom(helpRect)+topPart/3;
 		    Rectangle ur = new Rectangle(gameX,messageY,gameW,topPart);
 		    GC.frameRect(gc,Color.blue,ur);
 		    GC.Text(gc,true,gameX,messageY,gameW,topPart,Color.black,null,"Play Offline");
 		    GC.setFont(gc,standardPlainFont());
-		    messageArea.setBounds(gameX,messageY+topPart+1,gameW,gameH-topPart-fh);
+		    messageArea.setBounds(gameX,messageY+topPart+1,gameW,gameH-topPart-fonth);
 		    if(!messageArea.isVisible())
 			  {
 			  messageArea.setVisible(true);
@@ -1118,31 +1142,36 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			GameInfo variations[] = selectedGame.variationMenu(selectedGame.gameName,typeClass,nplayers);
 			if((variations!=null) && (variations.length>1) 
 					&& (selectedChart!=null))					
-			{	int avspace = Math.min(vspace, (h-vspace*4)/(variations.length+4));
-
-				GC.Text(gc,false,variantX,variantY,gameColumnWidth,avspace,Color.black,null,
-							s.get(VariantMsg,s.get(selectedGame.gameName),""+variations.length));
-				variantY += avspace;
-				for(int i=0;i<variations.length;i++)
-				{	GameInfo variant = variations[i];
+			{	
+			GC.Text(gc,false,variantX,variantY,gameColumnWidth,vspace,Color.black,null,
+						s.get(VariantMsg,s.get(selectedGame.gameName),""+variations.length));
+			variantY += vspace;
+			int boxh = ((gameboxH-vspace*3)/vspace)*vspace;
+			boolean barvisible = variations.length*vspace>boxh;
+			
+			int gameW = gameColumnWidth;
+			int scrollPos = variationScrollbar.drawScrollBar(gc,hp,SeatId.Scroll,new Rectangle(variantX,variantY,gameW,boxh),barvisible,variations.length,vspace);
+			if(barvisible) { gameW -= variationScrollbar.getScrollbarWidth()+margin; }
+			else { boxh = variations.length*vspace; }
+		
+			for(int i=0;i+scrollPos<variations.length && (i+1)*vspace<=boxh;i++)
+				{	GameInfo variant = variations[i+scrollPos];
 					String name = s.get(variant.variationName+"_variation");
 					boolean selected = variant==selectedVariant ;
 					Color fgColor = selected ? buttonSelectedColor : buttonHighlightColor;
 					Color bgColor = selected ? buttonSelectedColor : buttonBackgroundColor;
-					if(GC.handleRoundButton(gc, new Rectangle(variantX,variantY,gameColumnWidth,avspace-4),hp,
+					if(GC.handleRoundButton(gc, new Rectangle(variantX,variantY+i*vspace,gameW,vspace-4),hp,
 							name,fgColor,bgColor))
 					{	hp.hitCode = SeatId.SelectVariant;
 						hp.hitObject = variant;
 					}
-					variantY += avspace;
 				}
-			}
 			variantY += half/3;
 			if(selectedVariant!=null)
 				{ 
-				selectedVariant.drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY,gameColumnWidth,half));
-				variantY+= half*4/3;
+				selectedVariant.drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY+boxh,gameColumnWidth,half));
 				}
+			}
 
 		}
 	  }

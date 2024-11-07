@@ -466,6 +466,10 @@ public class GameLog implements Opcodes
     {
     	redrawGameLog2(gc,highlight,r,textColor,highlightColor,bold,normal,canvas.History);
     }
+    public void redrawGameLog2(Graphics gc, HitPoint highlight, Rectangle r, Color highlightColor)
+    {	redrawGameLog2(gc,highlight,r,Color.black,highlightColor,
+    		canvas.standardBoldFont(),canvas.standardPlainFont(),canvas.History);
+    }   
     /**
      * draw a game log in 2 column format, where the left column is the player/move number
      * and the right column is the move activity.  This is more suitable for multiplayer games
@@ -502,6 +506,7 @@ public class GameLog implements Opcodes
     		 redrawGameLog2_internal(gc,canvas.disableForSpectators(mainHighlight),r,textColor,highlightColor,bold,normal,history);
             }
        }}
+       
        private void redrawGameLog2_internal(Graphics gc,HitPoint highlight,Rectangle r,
     		   	Color textColor,Color highlightColor,Font bold,Font normal,SequenceStack history)
        {
@@ -550,15 +555,17 @@ public class GameLog implements Opcodes
            String moven = null;
            String prevMoven = null;
            int player = -100;
-           Text currentLine = TextChunk.create("");
-           int currentIndex = 0;
+      Text currentLine = TextChunk.create("");
+      int currentIndex = 0;
            String gameEvents[] = null;
            boolean linebreak = false;
            int idx = 0;
            int ypos = 0;
            int lastSeenY = ypos;
            int maxLineHeight = rowHeight;
-       if(sz>0 && (history.elementAt(0).ignoredInLogs())) { idx++;  }
+       { SequenceElement m = history.elementAt(0);
+         if(sz>0 && m!=null && (m.ignoredInLogs())) { idx++;  }
+       }
            boolean recalculating = startingIdx<0; 
        HitPoint mainHighlight = scrollbar.thumbScrolling() ? null : highlight;
            if(!recalculating && !scrolled)
@@ -589,12 +596,11 @@ public class GameLog implements Opcodes
            	   //G.print("scr "+scrollY+ " "+idx);
                while (idx < sz && !earlyExit)
                {	
-
-        	SequenceElement sp = history.elementAt(idx);
-        	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
-           	variation |= (sp!=null) && (sp.nVariations()>1);
-           	String newnum = (sp==null) ? "" : sp.getSliderNumString();
-            	int nextIdx = idx;
+       	SequenceElement sp = history.elementAt(idx);
+       	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
+          	variation |= (sp!=null) && (sp.nVariations()>1);
+          	String newnum = (sp==null) ? "" : sp.getSliderNumString();
+       	int nextIdx = idx;
                    // look for reasons to break rather than add this line to the current display line
                	if((moven!=null) 
                			&& (newnum!=null) 
@@ -603,52 +609,52 @@ public class GameLog implements Opcodes
                    	{	// changing move number
                    	linebreak = true;
                    	}
-                if((player!=-100) && (sp!=null) && (player!=sp.player())) 
+               if((player!=-100) && (sp!=null) && (player!=sp.player())) 
                		{ linebreak = true; 
                		}
  
                 if(!linebreak) 
                 { 	// process this line
                 	if(!"".equals(newnum)) { moven = newnum; }
-                if(sp!=null) { gameEvents = combineEvents(gameEvents,sp.gameEvents()); }
+               if(sp!=null) { gameEvents = combineEvents(gameEvents,sp.gameEvents()); }
                 // this is an attempt to avoid constructing absurdly long lines
                 // when there are a lot of actions in a turn.  Case in point
                 // is word games, where you can shuffle tiles a lot
-                Text savedLine = currentLine==null ? null : currentLine.clone();
+               Text savedLine = currentLine==null ? null : currentLine.clone();
                 Text newline = combineLines(currentLine,sms);
-                if(savedLine!=null 
-                		&& (savedLine!=newline)
+               if(savedLine!=null 
+               		&& (savedLine!=newline)
                 		&& (newline!=sms)
                 		&& (newline.width(myFM)>mid))
                 {
                 	linebreak = true;
                 	currentLine = savedLine;
                 }
-                else if(sp!=null)
-                { currentLine = newline; 
+               else if(sp!=null)
+               { currentLine = newline; 
                 	player = sp.player();
                     linebreak = sp.getLineBreak();
-                    if(linebreak) { idx++; }	// skip ahead too
+               	if(linebreak) { idx++; }	// skip ahead too
                 }
-            }
-                if(!linebreak) 
-                { 
-                	idx++; 
-                }			// advance if we are not outputting
-                if(idx>=sz) { linebreak = true; }	// make sure we do the last line
+           }
+           if(!linebreak) 
+           { 	
+           	idx++; 
+           }			// advance if we are not outputting
+           if(idx>=sz) { linebreak = true; }	// make sure we do the last line
 
-                if(idx!=nextIdx && nextIdx==historyStep)
-                	{
+               if(idx!=nextIdx && nextIdx==historyStep)
+               	{
                     	
-                	highlightYPos = ypos;
-                	}
+               	highlightYPos = ypos;
+               	}
  
              	if(linebreak)
               	{	
                  // output related to the accumulated line
             	int owed = 0;
                 int breakYpos = ypos;
-            	if(idx>=sz || currentLine.length()>0 || (gameEvents!=null))
+       	if(idx>=sz || currentLine.length()>0 || (gameEvents!=null))
               	{	// output the line we have built
               		int h = currentLine.lineHeight(myFM);
                    maxLineHeight = Math.max(h,maxLineHeight);
@@ -679,8 +685,8 @@ public class GameLog implements Opcodes
       				{ 
       				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
           				  mainHighlight.spriteColor = Color.red;
-          				  mainHighlight.hit_index = currentIndex;
-          				  mainHighlight.hitObject = history.elementAt(currentIndex);
+     				mainHighlight.hit_index = currentIndex;
+     				mainHighlight.hitObject = history.elementAt(currentIndex);
           				  mainHighlight.hitCode = GameId.HitGameRecord;
           				}
                    	currentLine.draw(gc, false , x + 2, yco, mid - 4, h, textColor, bgColor );
@@ -726,7 +732,7 @@ public class GameLog implements Opcodes
               				mainHighlight.spriteRect = new Rectangle(x,yco,boxw,h);
                   				  mainHighlight.spriteColor = Color.red;
                    				  mainHighlight.hitCode = GameId.HitGameRecord;
-                   				  mainHighlight.hitObject = history.elementAt(currentIndex);
+             				mainHighlight.hitObject = history.elementAt(currentIndex);
                   				}
                       		Color bgColor = breakYpos==highlightYPos ? highlightColor : null;
 		               		chunk.draw(gc, false , x + 2, yco, mid - 4, h, Color.darkGray, bgColor);
@@ -739,27 +745,27 @@ public class GameLog implements Opcodes
                    	  ypos += h;
                   	  owed = 0; 
                  	}
-                }
+           }
             
             ypos += owed;
             owed = 0; 
 
-            if(idx>=sz) { totalHeight = ypos; }	// we saw the end
+       if(idx>=sz) { totalHeight = ypos; }	// we saw the end
             
        		linebreak = false;
        		gameEvents = null;
        		player = -100;
        		// starting a new line
-       		currentLine = TextChunk.create("");
-       		currentIndex = idx;
+  		currentLine = TextChunk.create("");
+  		currentIndex = idx;
        		smsidx = idx;
        		smsypos = ypos;
        		smsheight = maxLineHeight;
        		moven = null;
             } // end of linebreak
 
-           } // end of while
-       sawEnd = idx>=sz;
+       } // end of while
+      sawEnd = idx>=sz;
        GC.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.max(G.Height(r),Math.min(y+lastSeenY,hr)));
        boolean recalc = false;
            if(!scrolled)

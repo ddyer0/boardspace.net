@@ -166,8 +166,8 @@ public abstract class OStack<T> implements StackIterator<T>
 					 {	data[i] = data[i+1];
 						i++;	
 					}
-					data[lim] = null;
-					index = lim;
+					index = lim;		// remove the element first
+					data[lim] = null;	// then null the old slot
 				  }
 				  else 
 				  {

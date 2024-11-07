@@ -111,7 +111,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
-    private Color rackIdleColor = new Color(205,172,162);
+    private Color rackIdleColor = new Color(155,155,155);
     
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
@@ -1278,6 +1278,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			// is currently active.
 			if(!planned && !autoDoneActive())
 				{
+				doneButton.setOffText(bb.endTurnState()?s.get(EndTurnAction):s.get(DoneAction));
 				doneButton.show(gc,messageRotation,gb.DoneState() ? buttonSelect : null);
 				}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);

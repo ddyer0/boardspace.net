@@ -89,7 +89,6 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
-    private boolean EXP_MONTEBOT = false;		// test version
     private double ALPHA = 0.5;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
@@ -215,7 +214,12 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
     double ScoreForPlayer(EpaminondasBoard evboard,int player,boolean print)
     {	
 		double val = 0.0; 
-		double myscore = evboard.evalForPlayer(player,useMoveStats);
+		double myscore = 
+				Strategy==BESTBOT_LEVEL
+				? evboard.bestEval(player,useMoveStats)
+				: Strategy==SMARTBOT_LEVEL
+					? evboard.smartEval(player,useMoveStats)
+					: evboard.dumbEval(player,useMoveStats);
 		val += myscore;
 		if(print) { G.print("ev ",player," ",val); }
      	return(val);
@@ -369,11 +373,15 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
 			MAX_DEPTH = DUMBOT_DEPTH;
 			useMoveStats = true;
 			break;
+		case BESTBOT_LEVEL:
+			MONTEBOT=false;
+			MAX_DEPTH = DUMBOT_DEPTH;
+			useMoveStats = true;
+			break;
 	         	
         case MONTEBOT_LEVEL:
         	ALPHA = .25; 
         	MONTEBOT=true;
-        	EXP_MONTEBOT = true; 
         	break;
         }
     }
@@ -425,7 +433,7 @@ public void PrepareToMove(int playerIndex)
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	UCT_WIN_LOSS = EXP_MONTEBOT;
+
  	boardSearchLevel = 1;
  	try {
          	// this is a test for the randomness of the random move selection.
@@ -457,7 +465,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = 40;		
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
@@ -510,6 +518,12 @@ public void PrepareToMove(int playerIndex)
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(!UCT_WIN_LOSS)
+ 	{
+ 		double me = 1-1.0/board.occupiedCells[player].size();
+ 		double him = 1-1.0/board.occupiedCells[nextPlayer[player]].size();
+ 		return me-him;
+ 	}
  	return(0);
  }
 /**

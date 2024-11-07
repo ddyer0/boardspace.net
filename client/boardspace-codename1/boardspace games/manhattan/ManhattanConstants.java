@@ -289,72 +289,73 @@ class StateStack extends OStack<ManhattanState>
 //
 public enum ManhattanState implements BoardState,ManhattanConstants
 {
-	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false,false),
-	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true,true),
-	Resign(StateRole.Resign,ResignStateDescription,true,false,true),
-	Gameover(StateRole.GameOver,GameOverStateDescription,false,false,false),
-	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true,false),
-	Play(StateRole.Play,PlayState,false,false,false),
-	PlayLocal(StateRole.Play,PlayLocalState,true,true,true),
-	Retrieve(StateRole.Play,RetrieveState,false,false,false),
-	PlayOrRetrieve(StateRole.Play,PlayOrRetrieveState,false,false,false),
-	ConfirmSelectBuilding(StateRole.Play,ConfirmStateDescription,true,false,false),
-	ConfirmWorker(StateRole.Play,ConfirmStateDescription,true,false,false),
-	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false,false),
-	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false,false),
-	SelectBuilding(StateRole.Play,SelectBuildingMessage,false,false,false),
-	CollectBenefit(StateRole.Play,CollectBenefitMessage,false,false,false),
-	ConfirmBenefit(StateRole.Play,ConfirmChoiceMessage,true,false,false),
-	PlayScientist(StateRole.Play,PlayScientistMessage,false,false,false),
-	Play2Engineers(StateRole.Play,Play2EngineersMessage,false,false,false),
-	Play2Scientists(StateRole.Play,Play2ScientistsMessage,false,false,false),
-	PlayEngineer(StateRole.Play,PlayEngineerMessage,false,false,false),
-	PlayAny3Workers(StateRole.Play,Play3Message,false,false,false),
-	PlayAny2Workers(StateRole.Play,Play2Message,false,false,false),
-	DiscardBombs(StateRole.Play,DiscardBombMessage,false,false,false),
-	DiscardOneBomb(StateRole.Play,DiscardOneBombMessage,false,false,false),
-	ConfirmDiscard(StateRole.Confirm,ConfirmDiscardMessage,true,false,false),
-	ResolveChoice(StateRole.Other,"make a choice",false,false,false),
-	ConfirmChoice(StateRole.Play,ConfirmChoiceMessage,true,false,false),
-	PlayEspionage(StateRole.Play,PlayEspionageMessage,true,false,true),
-	ResolvePayment(StateRole.Other,"select your payment",false,false,false),
-	ConfirmPayment(StateRole.Play,ConfirmPaymentMessage,true,false,false),
+	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false,false,false),
+	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true,true,true),
+	Resign(StateRole.Resign,ResignStateDescription,true,false,true,true),
+	Gameover(StateRole.GameOver,GameOverStateDescription,false,false,false,false),
+	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true,false,false),
+	Play(StateRole.Play,PlayState,false,false,false,false),
+	PlayLocal(StateRole.Play,PlayLocalState,true,true,true,true),
+	Retrieve(StateRole.Play,RetrieveState,false,false,false,true),
+	PlayOrRetrieve(StateRole.Play,PlayOrRetrieveState,false,false,false,false),
+	ConfirmSelectBuilding(StateRole.Play,ConfirmStateDescription,true,false,false,false),
+	ConfirmWorker(StateRole.Play,ConfirmStateDescription,true,false,false,false),
+	ConfirmRetrieve(StateRole.Play,ConfirmRetrieveDescription,true,false,false,true),
+	ConfirmRetrieve1(StateRole.Play,ConfirmRetrieve1Description,true,false,false,false),
+	SelectBuilding(StateRole.Play,SelectBuildingMessage,false,false,false,false),
+	CollectBenefit(StateRole.Play,CollectBenefitMessage,false,false,false,false),
+	ConfirmBenefit(StateRole.Play,ConfirmChoiceMessage,true,false,false,false),
+	PlayScientist(StateRole.Play,PlayScientistMessage,false,false,false,false),
+	Play2Engineers(StateRole.Play,Play2EngineersMessage,false,false,false,false),
+	Play2Scientists(StateRole.Play,Play2ScientistsMessage,false,false,false,false),
+	PlayEngineer(StateRole.Play,PlayEngineerMessage,false,false,false,false),
+	PlayAny3Workers(StateRole.Play,Play3Message,false,false,false,false),
+	PlayAny2Workers(StateRole.Play,Play2Message,false,false,false,false),
+	DiscardBombs(StateRole.Play,DiscardBombMessage,false,false,false,false),
+	DiscardOneBomb(StateRole.Play,DiscardOneBombMessage,false,false,false,false),
+	ConfirmDiscard(StateRole.Confirm,ConfirmDiscardMessage,true,false,false,false),
+	ResolveChoice(StateRole.Other,"make a choice",false,false,false,false),
+	ConfirmChoice(StateRole.Play,ConfirmChoiceMessage,true,false,false,false),
+	PlayEspionage(StateRole.Play,PlayEspionageMessage,true,false,true,false),
+	ResolvePayment(StateRole.Other,"select your payment",false,false,false,false),
+	ConfirmPayment(StateRole.Play,ConfirmPaymentMessage,true,false,false,false),
 	
-	SelectBomb(StateRole.Play,SelectBombMessage,false,false,false), 
-	Airstrike(StateRole.Play,AirstrikeMessage,true,false,true),
-	ConfirmAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
-	ConfirmSingleAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
-	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false,true),
-	ConfirmJapanAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false),
-	Repair(StateRole.Play,RepairMessage,true,false,true),
-	PaidRepair(StateRole.Play,PaidRepairMessage,true,false,true), 
-	ConfirmRepair(StateRole.Confirm,ConfirmRepairMessage,true,false,true), 
-	NeedWorkers(StateRole.Play,NeedWorkerMessage,false,false,false),
-	RetrieveSorE(StateRole.Play,Retrieve1Message,true,false,false), 
-	BuildIsraelBomb(StateRole.Play,BuildIsraelMessage,true,false,false), 
-	North_Korea_Dialog(StateRole.Play,NorthKoreaMessage,false,false,false), 
-	SelectPersonality(StateRole.Play,SelectPersonalityMessage,false,false,false),
-	ConfirmPersonality(StateRole.Confirm,ConfirmStateDescription,true,false,false),
-	ConfirmNichols(StateRole.Confirm,NicholsStateDescription,true,false,false),
-	NoMovesState(StateRole.Confirm,NoMovesMessage,true,false,false),
+	SelectBomb(StateRole.Play,SelectBombMessage,false,false,false,false), 
+	Airstrike(StateRole.Play,AirstrikeMessage,true,false,true,false),
+	ConfirmAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false,false),
+	ConfirmSingleAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false,false),
+	JapanAirstrike(StateRole.Play,JapanAirstrikeMessage,true,false,true,false),
+	ConfirmJapanAirstrike(StateRole.Confirm,ConfirmStrikeMessage,true,false,false,false),
+	Repair(StateRole.Play,RepairMessage,true,false,true,false),
+	PaidRepair(StateRole.Play,PaidRepairMessage,true,false,true,false), 
+	ConfirmRepair(StateRole.Confirm,ConfirmRepairMessage,true,false,true,false), 
+	NeedWorkers(StateRole.Play,NeedWorkerMessage,false,false,false,false),
+	RetrieveSorE(StateRole.Play,Retrieve1Message,true,false,false,false), 
+	BuildIsraelBomb(StateRole.Play,BuildIsraelMessage,true,false,false,false), 
+	North_Korea_Dialog(StateRole.Play,NorthKoreaMessage,false,false,false,false), 
+	SelectPersonality(StateRole.Play,SelectPersonalityMessage,false,false,false,false),
+	ConfirmPersonality(StateRole.Confirm,ConfirmStateDescription,true,false,false,false),
+	ConfirmNichols(StateRole.Confirm,NicholsStateDescription,true,false,false,false),
+	NoMovesState(StateRole.Confirm,NoMovesMessage,true,false,false,true),
 	;
 	
-	ManhattanState(StateRole r,String des,boolean done,boolean digest,boolean optional)
+	ManhattanState(StateRole r,String des,boolean done,boolean digest,boolean optional,boolean end)
 	{	role = r;
 		description = des;
 		digestState = digest;
 		doneState = done;
+		endTurnState = end;
 		optionalDoneState = doneState && optional;
 	}
 	boolean doneState;
 	boolean digestState;
 	boolean optionalDoneState;
-	
+	boolean endTurnState;
 	String description;
 	public String description() { return(description); }
 	StateRole role;
 	public StateRole getRole() { return role; }
-
+	public boolean endTurnState() { return endTurnState; }
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
 	public boolean optionalDoneState() { return optionalDoneState; }
@@ -386,10 +387,10 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String PlayOrRetrieveState = "Place a worker on the main board or your player board, or retrieve all of your workers";
 	static final String SelectBuildingMessage = "Select the building you want to buy";
 	static final String SelectBombMessage = "Select a bomb design";
-	static final String PlayLocalState = "Play a worker your player board, or click on \"Done\" to end your turn";
+	static final String PlayLocalState = "Play a worker your player board, or click on \"End Turn\" to end your turn";
 	static final String RetrieveAction = "Retrieve Workers";
 	static final String ExplainRetrieve = "Retrieve all of your workers";
-	static final String ConfirmRetrieveDescription = "Click on \"Done\" to retrieve all your workers";
+	static final String ConfirmRetrieveDescription = "Click on \"End Turn\" to retrieve all your workers";
 	static final String ConfirmRetrieve1Description = "Click on \"Done\" to retrieve this worker";
 	static final String CollectBenefitMessage = "Collect your benefit";
 	static final String ConfirmChoiceMessage = "Click on \"Done\" to confirm your benefit choice";
@@ -404,8 +405,8 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String DiscardBombMessage = "Discard down to 3 designs";
 	static final String DiscardOneBombMessage = "Discard one Bomb";
 	static final String ConfirmDiscardMessage = "Click on \"Done\" to discard the selected designs";
-	static final String AirstrikeMessage = "Make airstrikes with your planes";
-	static final String JapanAirstrikeMessage = "Make airstrikes with your planes, you may use fighters as bombers";
+	static final String AirstrikeMessage = "Make airstrikes with your planes, click on \"done\" when finished";
+	static final String JapanAirstrikeMessage = "Make airstrikes with your planes, you may use fighters as bombers, click on \\\"done\\\" when finished";
 	static final String ConfirmStrikeMessage = "click on \"Done\" to confirm this airstrike";
 	static final String PaidRepairMessage = "you can pay to repair up to #1 of your buildings";
 	static final String RepairMessage = "you can repair up to #1 buildings";
@@ -419,7 +420,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 	static final String FuchsExplanation = "you can take 1 espionage action";
 	static final String OppenheimerWorkerExplanation = "you can use a laborer as a scientist, or a scientist as 2 scientists";
 	static final String GrovesWorkerExplanation = "you can use a laborer as an engineer, or an engineer as 2 engineers";
-	static final String NoMovesMessage = "you have no moves available, just click on \"Done\"";
+	static final String NoMovesMessage = "you have no moves available, just click on \"End Turn\"";
 	static final String NicholsActionMessage = "Nichols recycles a building";
 	static final String ReexpandMessage = "click to re-expand the overlay";
 	static final String RotateCCWMessage = "rotate the overlay counter-clockwise";

@@ -166,6 +166,17 @@ public class ScrollArea
     public ScrollArea()
     {	InitScrollDimensions(0,new Rectangle(),1,1,1,1);	// start with something
     }
+    /**
+     * construct a scrollbar with a pair of colors
+     * @param fore
+     * @param back
+     */
+    public ScrollArea(Color fore,Color back)
+    {
+    	this();
+    	foregroundColor = fore;
+    	backgroundColor = back;
+    }
 /**
  * Initialize the position and jump characteristics of the scroll bar
  * the main area can be zero width, in which case there is no scrolling 
@@ -381,6 +392,7 @@ public class ScrollArea
      	flingFlag = false;
      	thumbScrolling = false;	
     }
+    /** return true if in the scroll bar */
     public boolean doMouseDown(int x, int y)
     {	
     	if (inScrollBarRect(x, y))
@@ -604,4 +616,46 @@ public class ScrollArea
     	if(amount<0) { doSmallUp(); } else { doSmallDown(); }
     	return(true);
     }
+    /**
+     * this is the "simple" interface to draw scroll bars, suitable for cases where
+     * the scroll position is entirely controlled by user inputs
+     * 
+     * @param gc		the current graphics
+     * @param hp		the current mouse
+	 * @param id		the hitcode if the scroll bar is hit
+     * @param r			the whole rectangle, scroll bar will be at the right
+     * @param barvisible if true, the bar will be visible
+     * @param nrows		the number of rows in the list
+     * @param vspace	the number of pixels per row
+     * @return the current scroll position
+     */
+	public int drawScrollBar(Graphics gc,HitPoint hp,CellId hitcode,Rectangle r,boolean barvisible,int nrows,int vspace)
+	{
+	   	//int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
+	   	//boolean scrolled = scrollbar.mouseIsActive();   
+		int scrollPos = 0;
+		if(barvisible)
+		{	int scrollw = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+			int h = G.Height(r);
+			int gameX = G.Left(r);
+			int gameColumnWidth = G.Width(r);
+			int rows = h/vspace;
+			scrollPos = getScrollPosition();
+			InitScrollDimensions(gameX+gameColumnWidth-scrollw, 
+						r,
+						scrollw,nrows-rows*3/4, 1, nrows/4);
+	         setScrollPosition(scrollPos); 
+	         drawScrollBar(gc,scrollPos>0,scrollPos+(h/vspace)<nrows);
+	         if(hp!=null) 
+	         { doMouseMotion(G.Left(hp),G.Top(hp),hp.upCode);
+	           if(mouseInBox)
+	           	{ hp.hitCode = hitcode; 
+	           	} 
+	         }
+		}
+		else { 
+			setScrollPosition(0);
+		}
+		return scrollPos;
+	}
 }

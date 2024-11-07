@@ -115,6 +115,7 @@ public abstract class commonCanvas extends exCanvas
     public  static String ReverseViewExplanation = "Rotate the board 180 degrees";
     public  static String YourTurnMessage = "Your Turn";
     public static String DoneAction = "Done";
+    public static String EndTurnAction = "End Turn";
     public static String UndoAction = "Undo";
     public  static String ExplainDone = "Commit to the actions taken so far";
     public  static String ExplainPass = "take no action this turn";
@@ -123,7 +124,7 @@ public abstract class commonCanvas extends exCanvas
     public  static String CensoredGameRecordString = "The game record is not available during the game";
     public  static String Reviewing = "reviewing";
     public  static String DrawOutcome = "The game is a draw";
-    public  static String DrawNotAllowed = "You can't offer a draw on this turn";
+    public  static String DrawNotAllowed = "You can't offer a draw at this time";
     public  static String WonOutcome = "Game won by #1";
     public  static String StackHeightMessage = "Stack Height";
     private  static String GoalExplanationOnlyDetail = "The goal of the game is:\n#1";
@@ -316,7 +317,7 @@ public abstract class commonCanvas extends exCanvas
 	    		pscale[2] =auxS2Rect.value;
 	    		}
 	    }
-	    void drawAuxSliders(Graphics inG,HitPoint p)
+	    private void drawAuxSliders(Graphics inG,HitPoint p)
 	    {
 	    	auxXRect.draw(inG,p);
     	    auxYRect.draw(inG,p);
@@ -498,6 +499,7 @@ public abstract class commonCanvas extends exCanvas
 			CensoredGameRecordString,
 			ReverseView,
 			DoneAction,
+			EndTurnAction,
 			NoResignMessage,
 			NoeyeExplanation,
 			EyeExplanation,
@@ -2101,7 +2103,8 @@ public abstract class commonCanvas extends exCanvas
     			}
     		else
     		{
-     	redrawBoard(gc,p);
+    			redrawBoard(gc,p);
+    			doFlashAnimation(gc);
     		}
     	if(l.gameOverlayEnabled) { drawGameOverlay(gc,p); }
     }
@@ -7278,7 +7281,35 @@ public abstract class commonCanvas extends exCanvas
     
     static int HURRYTIME = 1000*60;
     private boolean hurryState = false;
-    
+    private long flashAnimation = 0;
+    private int flashState = 0;
+    private void notifyOfSuspense(boolean doSound)
+    {	if(doSound && l.playTickTockSounds)
+    	{
+    	SoundManager.playASoundClip(clockSound,5000);
+    	flashAnimation = 0;
+    	}
+    	else
+    	{
+    	flashAnimation = G.Date()+3000;	// 3 seconds
+    	repaint();
+    	}
+    }
+    public void doFlashAnimation(Graphics gc)
+    {
+    	if(gc!=null && G.Date()<flashAnimation)
+    	{
+    		int w = getWidth();
+    		int h = getHeight();
+    		int div = Math.min(w,h)/3;
+    		Color col = ((flashState&1)==0)?Color.red:Color.white;
+    		GC.frameRect(gc,col,flashState,flashState,w-flashState*2,h-flashState*2);
+    		flashState = (flashState+1)%div;
+    		GC.frameRect(gc,col,flashState,flashState,w-flashState*2,h-flashState*2);
+    		flashState = (flashState+1)%div;
+    		repaint(20);
+    	}
+    }
     // do time related things for the board.
     private void doTime(commonPlayer whoseTurn,boolean doSound)
     { boolean turnChange = whoseTurn!=hidden.lastPlayer;
@@ -7288,30 +7319,27 @@ public abstract class commonCanvas extends exCanvas
       	hidden.startTurn = currentT;
       }
       commonPlayer active = getActivePlayer();
-      if(whoseTurn==active && doSound)
+      if(whoseTurn==active )
       {
-      if (l.playTickTockSounds)
-      	{	
-    	long elapsed = (currentT - hidden.startTurn); 
-        if ( (hidden.startTurn > 0) 
-        		&& (((hidden.doneAtTime>0)&& (elapsed>hidden.timePerDone)) 
-        		    || (elapsed > hidden.timePerTurn))
-        		&& !isTurnBasedGame())
-           {
-             SoundManager.playASoundClip(clockSound,5000);
+    	  long elapsed = (currentT - hidden.startTurn); 
+    	  if ( (hidden.startTurn > 0) 
+    			  && (((hidden.doneAtTime>0)&& (elapsed>hidden.timePerDone)) 
+    					  || (elapsed > hidden.timePerTurn))
+    			  && !isTurnBasedGame())
+    	  {
+             notifyOfSuspense(doSound);
              hidden.startTurn = currentT;	// restart the timer
              if(hidden.doneAtTime>0) { hidden.doneAtTime=currentT; }
-           }}
+    	  }
+      }
 
-      	// if timers are in use, sound a bell at 1 minute
-        int remTime = timeRemaining(whoseTurn) - HURRYTIME;		// negative when less than a minute
-        if(remTime>0) { hurryState = false; }		// reset
-        else if(!hurryState)
-            {
-        	hurryState = true;
-                SoundManager.playASoundClip(hurrySound,1000);
-                }
-        }
+      // if timers are in use, sound a bell at 1 minute
+      int remTime = timeRemaining(whoseTurn) - HURRYTIME;		// negative when less than a minute
+      if(remTime>0) { hurryState = false; }		// reset
+      else if(!hurryState)
+      	{		
+    	  if(doSound) { SoundManager.playASoundClip(hurrySound,1000); }
+      	}      
     }
 
 
