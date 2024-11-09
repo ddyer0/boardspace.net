@@ -244,9 +244,9 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     int stateY = boardY;
     int stateX = boardX;
 
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseViewRect,eyeRect,noChatRect);
+    placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     G.SetRect(boardRect,boardX, boardY, boardW, boardH);         
-    G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect);       
+    placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect);       
 	
 	if(rotate)
 	{

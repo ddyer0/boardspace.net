@@ -323,7 +323,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     int centerOnBoxRotation = 0;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	setLocalBoundsV(x,y,width,height,new double[] {1});
+    	setLocalBoundsV(x,y,width,height,new double[] {0.5,1,2});
     	if(centerOnBox!=null) 
     		{ Rectangle r = G.copy(null,centerOnBox);
     		  centerOnBox = null; 
@@ -354,7 +354,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			2.0,	// aspect ratio for the board
     			fh*5,	// minimum cell size
     			fh*6,	// maximum cell size
-    			0.3		// preference for the designated layout, if any
+    			0.6		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
@@ -404,7 +404,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(visualBoardRect,boardX,boardY+stateH,boardW,boardH-stateH*2);
     	G.copy(visualBoardRectRotated,visualBoardRect);
@@ -421,7 +421,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW-CELLSIZE,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW-CELLSIZE,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return boardW*boardH+G.Width(playerBoards[0]);

@@ -42,6 +42,7 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 // TODO think about "consistent" and "3 player" variants
 // TODO annotations with perspective are placed a little oddly
+// TODO barca needs the draw offer/decline logic
 public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants,PlacementProvider
 {	 	
     static final String Barca_SGF = "Barca"; // sgf game number allocated for barca
@@ -214,7 +215,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
         
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,annotationMenu,numberMenu,viewsetRect,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
        	
     	if(perspective)
@@ -235,8 +236,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-2*stateH/3,boardW,stateH);       
-            setProgressRect(progressRect,goalRect);
+    	placeRow(boardX, boardBottom-2*stateH/3,boardW,stateH,goalRect,viewsetRect,reverseRect);       
+    	setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  
             }

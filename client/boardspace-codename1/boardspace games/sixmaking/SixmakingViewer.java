@@ -213,14 +213,14 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,liftRect,reverseViewRect,chessRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
  
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.placeRow(stateX, boardBottom-stateH,boardW,stateH,goalRect);       
+    	placeRow(stateX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,reverseViewRect,chessRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
     }

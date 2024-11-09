@@ -1507,6 +1507,11 @@ public abstract class commonCanvas extends exCanvas
      * In timed games, this will display the time constraints for the game.
      */
     public Rectangle goalRect = addRect("goalRect");	// standard rectangle for game goal
+    
+    /** rectangle where the link to rules will be displayed
+     * 
+     */
+    public Rectangle rulesRect = addRect("rules");
     /**
      * this is a standard rectnagle of all viewers, normally displays the word "done"
      */
@@ -4805,14 +4810,13 @@ public abstract class commonCanvas extends exCanvas
           if(G.debug() && (midx.op!=MOVE_EDIT)) { G.print(msg); }
         }
         
-        {
         // if next is not null, this is a move in the middle of a chain and we can't really remove
         // it without destroying the semantics of the continuation.  If it was at the end of a chain
         // then make it really disappear.
         if((idx>0) && (midx.next==null))
         {	commonMove pmidx = History.elementAt(idx-1);
         	pmidx.removeVariation(midx);
-         }}
+         }
         repeatedPositions.removeFromRepeatedPositions(midx);
         // note that this remove will leave the history with the last
         // element having a non-null "next" if we just removed the end of
@@ -4967,7 +4971,7 @@ public abstract class commonCanvas extends exCanvas
     		  // go from non-review/end-of-variation to review/middle-of-variation by
     		  // deleting some moves in EditHistory
     		  commonMove oldm = History.elementAt(sz-1);
-    		  if(oldm.next!=null && oldm.nVariations()>1)
+    		  if(oldm.next!=null)
     		  {	History.viewStep = sz;		// viewstep should point to the next item to be executed, which will be 
     		  						// the first item added.
     		  	mutated_game_record=true;
@@ -7338,6 +7342,7 @@ public abstract class commonCanvas extends exCanvas
       if(remTime>0) { hurryState = false; }		// reset
       else if(!hurryState)
       	{		
+        	hurryState = true;
     	  if(doSound) { SoundManager.playASoundClip(hurrySound,1000); }
       	}      
     }
@@ -7762,13 +7767,9 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
        	if(ToolTip!=null) { HitPoint.setHelpText(highlight,goalRect,s.get(ToolTip,message)); }
      	if(rules!=null)
     		{
-    		int cx = G.Right(goalRect)-h/4;
-    		int cy = G.centerY(goalRect);
-    		if(StockArt.Rules.drawChip(gc,this,h,cx,cy,highlight,GameId.HitRulesButton,null,1,1))
+    		if(StockArt.Rules.drawChip(gc,this,rulesRect,highlight,GameId.HitRulesButton,ShowRulesMessage))
     			{
-    			highlight.setHelpText(s.get(ShowRulesMessage));
-    			highlight.awidth = h; 
-    			highlight.hit_x = cx-h/4;
+    			highlight.spriteRect = rulesRect; 
     			highlight.spriteColor = Color.red;
     			}
     		}
@@ -9313,4 +9314,43 @@ public void verifyGameRecord()
 	       	break;
 	        }
 	    }
+		/**
+		 * place a row of rectangles
+		 * 
+		 * @param stateX
+		 * @param stateY
+		 * @param stateW
+		 * @param stateH
+		 * @param rects
+		 */
+		public void placeRow(int stateX,int stateY,int stateW,int stateH,Rectangle... rects)
+		{
+			if(rects[0]==goalRect)
+			{	int xw = stateH+stateH/4;
+				stateW -= xw;
+				G.SetRect(rulesRect,stateX+stateW,stateY,stateH,stateH);
+			}
+			int x = stateX+stateW-stateH/4;
+			for(int lim=rects.length-1; lim>0; lim--)
+			{
+				x -= stateH+stateH/2;
+				G.SetRect(rects[lim],x,stateY,stateH,stateH);
+			}
+			G.SetRect(rects[0], stateX, stateY, x-stateX-stateH/2,stateH);
+		}
+		/**
+		 * place a "stateRect" row with an icon at space at the left and a list of other rectangles
+		 * chipped off at the right.
+		 * @param l
+		 * @param t
+		 * @param w
+		 * @param h
+		 * @param icon
+		 * @param r
+		 */
+		public void placeStateRow(int l,int t,int w,int h,Rectangle icon,Rectangle... r)
+		{
+			G.SetRect(icon, l, t, h, h);
+			placeRow(l+h+h/2,t,w-h-h/2,h,r);
+		}
 }

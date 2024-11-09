@@ -263,8 +263,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
-        G.SetRect(idRect, stateX, stateY, stateH, stateH);
+        placeStateRow(stateX,stateY,boardW-stateH ,stateH,idRect,stateRect,annotationMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(mortalityRect,
@@ -293,7 +292,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
     	int off = (int)(boardW*0.31);
-    	G.SetRect(goalRect, boardX+off, boardBottom-(int)(boardH*0.05),boardW-off-stateH,stateH);       
+    	placeRow(boardX+off, boardBottom-(int)(boardH*0.05),boardW-off-stateH,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return(boardW*boardH);

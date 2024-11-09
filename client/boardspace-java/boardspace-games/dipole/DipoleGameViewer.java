@@ -215,7 +215,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         int stateH = fh*5/2;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,liftRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// board is square, no need to rotate
@@ -224,7 +224,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
  	

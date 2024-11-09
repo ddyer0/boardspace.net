@@ -192,7 +192,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         G.SetRect(boardRect,boardX, y+sparey+effectiveChatHeight+SQUARESIZE-CS, boardW , boardH);      
         {
         int stateH = CELLSIZE*2;
-        G.placeRow(x + CS,
+        placeRow(x + CS,
         		y+sparey+(wideMode ? 0 : chatHeight) +CS/3,
         		boardW-CELLSIZE*9, 
         		stateH,stateRect,annotationMenu,noChatRect);
@@ -315,7 +315,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         		G.Bottom(reverseViewRect)+CS, CS4, CS4);
 
         int gh = CELLSIZE*2;
-        G.SetRect(goalRect, G.Right(chipSetRect),G.Bottom(boardRect)-2*CELLSIZE, CELLSIZE*35, gh);
+        placeRow(G.Right(chipSetRect),G.Bottom(boardRect)-2*CELLSIZE, CELLSIZE*35, gh,goalRect);
         int repX = G.Right(editRect)+CS;
         G.SetRect(repRect, repX,G.Top( goalRect)-gh,  G.Right(goalRect)-repX,  gh);
 
@@ -433,7 +433,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     
 
  
-        G.SetRect(goalRect, G.Right(chipSetRect),G.Bottom(boardRect)-stateH, CELLSIZE*35, stateH);
+        placeRow( G.Right(chipSetRect),G.Bottom(boardRect)-stateH, CELLSIZE*35, stateH);
 
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,veryLtGreen,rackBackGroundColor);

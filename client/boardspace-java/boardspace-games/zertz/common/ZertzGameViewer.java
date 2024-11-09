@@ -233,7 +233,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+CELLSIZE/2,boardW,boardH);
     	
     	G.SetRect(reserveRect,boardX+boardW,boardY+CELLSIZE,3*CELLSIZE,boardH-2*CELLSIZE);
@@ -241,7 +241,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatColor,rackBackGroundColor);
         return((boardW+rackW)*boardH);

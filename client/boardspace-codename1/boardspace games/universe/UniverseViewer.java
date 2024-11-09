@@ -455,7 +455,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	int stateY = boardY-stateH;
     	int boardRight = boardX+boardW;
     	layout.returnFromMain(extraW,extraH);
-    	G.placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
+    	placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;
@@ -514,7 +514,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
  
      	if(!success) { return(0); }	// not acceptable, no place for the rotators
      	
-    	G.SetRect(goalRect, boardX, boardBottom, boardW, stateH);
+    	placeRow( boardX, boardBottom, boardW, stateH,goalRect,viewsetRect);
         setProgressRect(progressRect,goalRect);
         	
         positionTheChat(chatRect,Color.white,Color.white);

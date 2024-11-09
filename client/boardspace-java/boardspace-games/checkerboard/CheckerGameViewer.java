@@ -285,11 +285,11 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
          {
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(	stateX,
+        placeStateRow(	stateX,
         			stateY,
         			boardW,stateH,iconRect,stateRect ,annotationMenu,numberMenu,eyeRect,noChatRect);
         
-        G.placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
+        placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
         
  
         setProgressRect(progressRect,goalRect);

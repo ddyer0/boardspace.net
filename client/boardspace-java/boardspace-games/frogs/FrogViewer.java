@@ -232,16 +232,16 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	int boardBottom = mainY+mainH-stateH;
     	int boardH = boardBottom-boardY;
     	int stateY = boardY-stateH;
-    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
+    	placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	
-    	G.placeRight(stateRect, zoomRect, zoomW);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 
     	SetupVcrRects(boardX+fh,boardBottom-vcrW/2-fh,vcrW,vcrW/2);
 
-    	G.SetRect(goalRect, boardX, boardBottom, boardW, stateH);
-        setProgressRect(progressRect,goalRect);
+    	placeRow(boardX, boardBottom, boardW, stateH,goalRect);
+    	G.placeRight(goalRect, zoomRect, zoomW);
+    	setProgressRect(progressRect,goalRect);
 
         positionTheChat(chatRect,Color.white,Color.white);
  

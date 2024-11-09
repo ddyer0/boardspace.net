@@ -216,14 +216,14 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         int stateY = boardY-stateH/3;
         int stateX = boardX;
 
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,viewsetRect,eyeRect,noChatRect);
+        placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY-(perspective?(boardW-boardH)/2:0),
     			boardW,perspective ? boardW : boardH);
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return boardW*boardH;

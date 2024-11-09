@@ -323,9 +323,16 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         int stateY = boardY-stateH/2;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,annotationMenu,altNoChatRect);
+    	placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
-    	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
+    	if(plannedSeating())
+    	{
+    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect,rotateRect,lockRect);   
+    	}
+    	else
+    	{
+    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
+    	}
     	int bigRackH = planned?0:CELLSIZE*2;
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, bigRackH);
     	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);

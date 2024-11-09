@@ -188,8 +188,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         int stateY = boardY-stateH;
         int stateX = boardX;
         int zoomW = CELLSIZE*5;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
-        G.placeRight(stateRect, zoomRect, zoomW);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
  
     	SetupVcrRects(boardX+C2/2,boardBottom-minLogW/2-C2/2,minLogW,minLogW/2);
@@ -197,7 +196,8 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow( boardX, boardBottom,boardW,stateH,goalRect);       
+        G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white); 	
     }

@@ -326,13 +326,13 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,rotateRect,flatRect,viewsetRect,guidelinesRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,guidelinesRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/600.0;
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH/2,boardW,stateH,goalRect,rotateRect,flatRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	

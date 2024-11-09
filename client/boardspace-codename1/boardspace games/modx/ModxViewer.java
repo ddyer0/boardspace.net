@@ -223,13 +223,13 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW-stateH ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
  
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH*2,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         return boardW*boardH;

@@ -289,13 +289,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
         int stateX = boardX;
     	int stripeW = CELLSIZE*2*(rackSize+3);
     	int zoomW = stateH*4;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
-    	G.placeRight(stateRect, zoomRect, zoomW);
+    	placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
     	if(plannedSeating())
     	{ G.SetRect(boardRect,0,0,0,0);
     	  G.SetRect(upperBoardRect,0,0,0,0);
     	  G.SetRect(bigRack,0,0,0,0);
-    	  G.SetRect(goalRect,0,0,0,0);
+    	  placeRow(0,0,0,0,goalRect);
     	}
     	else 
     	{	int sp = (boardW-stripeW)/2;
@@ -303,7 +302,8 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
   
         	G.SetRect(boardRect,boardX,boardY,boardW,boardH-c2);
            	G.SetRect(upperBoardRect,boardX,boardY,boardW,c2);
-        	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
+        	placeRow( boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
+        	G.placeRight(goalRect, zoomRect, zoomW);
         	int goalB = G.Bottom(goalRect);
         	G.SetRect(bigRack, boardX+sp, goalB, stripeW, planned?0:c2);
         	G.SetRect(drawPileRect,boardX,goalB, c2,c2);

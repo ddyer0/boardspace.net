@@ -46,6 +46,7 @@ import static proteus.ProteusMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
  * todo: rotate board for ftf portrait mode
+ * TODO: add an alternate layout with the goal buttons above or below
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants
 {	
@@ -216,7 +217,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
         int stateH = fh*5/2;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 
     	// goal and bottom ornaments, depending on the rendering can share
@@ -238,7 +239,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
         G.SetRect(mainChipRect, boardRight-SQUARESIZE/2+CELLSIZE,boardY+SQUARESIZE/2, SQUARESIZE, SQUARESIZE*2);
         
 
-        G.SetRect(goalRect,boardX+CELLSIZE, boardBottom-CELLSIZE,boardW-CELLSIZE*2, C2);
+        placeRow(boardX+CELLSIZE, boardBottom-CELLSIZE,boardW-CELLSIZE*2, C2,goalRect);
      
         setProgressRect(progressRect,goalRect);
 

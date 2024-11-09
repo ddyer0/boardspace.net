@@ -625,7 +625,7 @@ private Color playerBackground[] = {
     	int boardBottom = boardY+boardH;
         int stateY = boardY-stateH+stateH/4;
         layout.returnFromMain(extraW,extraH);
-        G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,annotationMenu,magnifierRect,noChatRect);
+        placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,magnifierRect,numberMenu,annotationMenu,noChatRect);
 
         // make the recruit rect square and centered on the board, so everything
         // will be easy when displayed rotated.
@@ -641,7 +641,7 @@ private Color playerBackground[] = {
        	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);      
+    	placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect);      
     	
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);

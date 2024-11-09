@@ -185,7 +185,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     		contextRotation = -Math.PI/2;
     	}
     	int boardY = G.centerY(boardRect)-goalH/2;    
-     	G.SetRect(goalRect,G.Left(boardRect)+buttonW/2,boardY,G.Width(boardRect)-buttonW,goalH);
+     	placeRow(G.Left(boardRect)+buttonW/2,boardY,G.Width(boardRect)-buttonW,goalH,goalRect);
      	if(!prealloc)
      	{
        	G.splitLeft(goalRect,pauseRect,buttonW);

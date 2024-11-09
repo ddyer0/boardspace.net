@@ -305,7 +305,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
             CELLSIZE * 6,
             CELLSIZE*3);
         
-        G.SetRect(goalRect, CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE);
+        placeRow( CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE,goalRect);
         
         setProgressRect(progressRect,goalRect);
   

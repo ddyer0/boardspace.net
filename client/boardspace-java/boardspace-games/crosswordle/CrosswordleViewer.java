@@ -334,9 +334,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int boardY = mainY+extraH;
         int stateY = boardY;
         int stateX = boardX;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,altNoChatRect);
+    	placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
+    	placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid

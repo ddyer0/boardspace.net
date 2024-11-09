@@ -238,10 +238,10 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	int boardBottom = boardY+boardH;
     	int stateY = boardY;
        	layout.returnFromMain(extraW,extraH);
-    	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,annotationMenu,eyeRect,viewsetRect,noChatRect);
+    	placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
-    	G.SetRect(goalRect, boardX, boardBottom-stateH*2, boardW, stateH);
+    	placeRow( boardX, boardBottom-stateH*2, boardW, stateH,goalRect,viewsetRect);
     	setProgressRect(progressRect,goalRect);
 
     	positionTheChat(chatRect,Color.white,Color.white);

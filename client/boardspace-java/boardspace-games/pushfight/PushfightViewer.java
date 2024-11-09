@@ -302,7 +302,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
         G.SetRect(iconRect,stateX,stateY,stateH,stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -323,7 +323,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         Rectangle pl = getPlayerOrTemp(0).playerBox;

@@ -233,10 +233,10 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     	int stateY = boardY-stateH+C2;
        	layout.returnFromMain(extraW,extraH);
    	
-    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,viewsetRect,reverseRect,noChatRect);
+    	placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,viewsetRect,reverseRect,noChatRect);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.SetRect(goalRect, boardX, boardBottom-stateH, boardW, stateH);
+    	placeRow( boardX, boardBottom-stateH, boardW, stateH,goalRect);
     	setProgressRect(progressRect,goalRect);
     	if(rotate)
     	{

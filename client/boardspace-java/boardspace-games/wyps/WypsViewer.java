@@ -279,9 +279,16 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
+        placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH-(planned?0:2*CELLSIZE));
-    	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
+    	if(plannedSeating())
+    	{
+    	placeRow( boardX, G.Bottom(boardRect),boardW,stateH,goalRect,rotateRect,lockRect);   
+    	}
+    	else
+    	{
+    		placeRow( boardX, G.Bottom(boardRect),boardW,stateH,goalRect);  
+    	}
     	G.SetRect(timeRect,  boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null?0:stateH); 
     	int goalBottom = G.Bottom(timeRect);
     	G.SetRect(bigRack, boardX, goalBottom, boardW, planned?0:CELLSIZE*6/3);

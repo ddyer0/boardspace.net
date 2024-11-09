@@ -234,7 +234,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 	    int stateY = boardY;
 	    int stateX = boardX;
 	    int stateH = fh*5/2;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
+	    placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		if(positionBelow)
 		{
@@ -247,7 +247,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		// goal and bottom ornaments, depending on the rendering can share
 		// the rectangle or can be offset downward.  Remember that the grid
 		// can intrude too.
-		G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+		placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
 	    setProgressRect(progressRect,goalRect);
 	    positionTheChat(chatRect,Color.white,rackBackGroundColor);
 	    return boardW*boardH;

@@ -359,7 +359,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,sandRect,numberMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,sandRect,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	int tx = boardX+CELLSIZE/3;
@@ -377,7 +377,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return boardW*boardH;

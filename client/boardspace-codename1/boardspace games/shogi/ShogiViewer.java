@@ -219,9 +219,9 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,numberMenu,reverseViewRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,altchipRect);       
+    	placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect,altchipRect);       
     	if(rotate)
     	{
     		G.setRotation(boardRect, -Math.PI/2);

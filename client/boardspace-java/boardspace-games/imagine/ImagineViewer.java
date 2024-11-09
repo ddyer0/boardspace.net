@@ -267,7 +267,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	//
         int stateY = boardY;
         int stateH = fh*5/2;
-        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
         int storyLeft = boardX+CELLSIZE;
         int storyTop = stateY+stateH;
         int storyW = boardW-CELLSIZE*2;
@@ -290,7 +290,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         if(keyboard!=null) { keyboard.resizeAndReposition(); }

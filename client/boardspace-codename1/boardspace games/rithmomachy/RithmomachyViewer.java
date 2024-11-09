@@ -242,7 +242,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	//
         int stateY = boardY+stateH/4;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseViewRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	if(rotateBoard) 
       		{ 
@@ -252,7 +252,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH*2,boardW,stateH);   
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,reverseViewRect);   
         G.SetRect(resultRect,boardX,boardBottom-stateH,boardW,stateH);
         
         setProgressRect(progressRect,goalRect);

@@ -317,7 +317,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
        	if(rotate)
     	{	// this conspires to rotate the drawing of the board
@@ -353,7 +353,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
         int caravanW = (int)(boardW*0.6);
-        G.SetRect(goalRect, boardX, boardBottom,caravanW,stateH);       
+        placeRow( boardX, boardBottom,caravanW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         
         int auxTop = boardBottom;

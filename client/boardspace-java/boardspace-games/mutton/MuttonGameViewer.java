@@ -246,7 +246,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		int stateY = chatHeight + BOARD_INSET / 2;
 		int goalW = CELLSIZE*5;
 		G.SetRect(noChatRect, G.Right(boardRect)-stateH, stateY, stateH,stateH);
-		G.SetRect(goalRect,G.Left(noChatRect)-goalW,stateY,goalW,stateH);
+		placeRow(G.Left(noChatRect)-goalW,stateY,goalW,stateH,goalRect);
 		setProgressRect(progressRect,goalRect);
 		G.SetRect(stateRect, BOARD_INSET,stateY ,	G.Left(goalRect)-BOARD_INSET	,stateH);
 

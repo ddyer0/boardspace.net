@@ -696,42 +696,6 @@ public class G extends Platform implements Timestamp
 		SetRect(to,Right(r)+h/2,Top(r),w,h);
 	}
 	/**
-	 * place a "stateRect" row with an icon at space at the left and a list of other rectangles
-	 * chipped off at the right.
-	 * @param l
-	 * @param t
-	 * @param w
-	 * @param h
-	 * @param icon
-	 * @param r
-	 */
-    public static void placeStateRow(int l,int t,int w,int h,Rectangle icon,Rectangle... r)
-    {
-    	SetRect(icon, l, t, h, h);
-    	placeRow(l+h+h/2,t,w-h-h/2,h,r);
-    }
-
-	/**
-	 * place a row of rectangles
-	 * 
-	 * @param stateX
-	 * @param stateY
-	 * @param stateW
-	 * @param stateH
-	 * @param rects
-	 */
-	public static void placeRow(int stateX,int stateY,int stateW,int stateH,Rectangle... rects)
-	{
-		int x = stateX+stateW-stateH/4;
-		for(int lim=rects.length-1; lim>0; lim--)
-		{
-			x -= stateH+stateH/2;
-			SetRect(rects[lim],x,stateY,stateH,stateH);
-		}
-		SetRect(rects[0], stateX, stateY, x-stateX-stateH/2,stateH);
-	}  
-    
-    /**
      * modify my rectangle to align with the top edge of "other" and have the same size.
      * @param my
      * @param left

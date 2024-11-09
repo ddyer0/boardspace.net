@@ -199,13 +199,13 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseViewRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,reverseViewRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackGroundColor,rackBackGroundColor);
  	
@@ -422,7 +422,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
             				vstate!=StacState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
-            goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
+		goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca

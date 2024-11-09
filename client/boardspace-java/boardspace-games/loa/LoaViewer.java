@@ -178,13 +178,13 @@ public class LoaViewer extends commonCanvas implements UIC
    	// state and top ornaments snug to the top of the board.  Depending
    	// on the rendering, it can occupy the same area or must be offset upwards
    	//
-    G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     G.SetRect(boardRect,boardX,boardY,boardW,boardH);
    	lineStrokeWidth = Math.max(1.0, boardW/350.0);
    	// goal and bottom ornaments, depending on the rendering can share
    	// the rectangle or can be offset downward.  Remember that the grid
    	// can intrude too.
-   	G.SetRect(goalRect, boardX, boardBottom+stateH/2,boardW,stateH);       
+   	placeRow( boardX, boardBottom+stateH/2,boardW,stateH,goalRect);       
     setProgressRect(progressRect,goalRect);
     positionTheChat(chatRect,Color.white,Color.white);
   

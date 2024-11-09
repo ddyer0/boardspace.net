@@ -224,15 +224,15 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        int zoomW = stateH*4;
-        G.placeStateRow(stateX, stateY,boardW, stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,liftRect,reverseViewRect,noChatRect);
-        G.placeRight(stateRect, zoomRect, zoomW);
+        placeStateRow(stateX, stateY,boardW, stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow(boardX, boardBottom,boardW,stateH,goalRect,viewsetRect,liftRect,reverseViewRect);       
+        int zoomW = stateH*4;
+        G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         return boardW*boardH;

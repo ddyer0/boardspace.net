@@ -290,7 +290,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		//
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,noChatRect);
+	    placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)
@@ -301,7 +301,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		// goal and bottom ornaments, depending on the rendering can share
 		// the rectangle or can be offset downward.  Remember that the grid
 		// can intrude too.
-		G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+		placeRow( boardX, boardBottom,boardW,stateH,goalRect,reverseRect);       
 	    setProgressRect(progressRect,goalRect);
 	    positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
 	

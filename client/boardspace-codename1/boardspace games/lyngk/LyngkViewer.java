@@ -317,14 +317,14 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-    	G.placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,annotationMenu,viewsetRect,rotateRect,eyeRect,numberMenu,liftRect,noChatRect);
+    	placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,annotationMenu,eyeRect,numberMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,rotateRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
   
             // "done" rectangle, should always be visible, but only active when a move is complete.

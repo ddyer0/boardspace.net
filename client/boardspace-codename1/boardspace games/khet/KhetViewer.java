@@ -45,7 +45,6 @@ import lib.*;
 public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConstants
 {
      /**
-	 * 
 	 */
 	static final String Khet_SGF = "Khet"; // sgf game name
     // file names for jpeg images and masks
@@ -144,7 +143,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	}
 
     }
-    boolean vertical = false;
+    boolean vertical = true;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -237,7 +236,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)
@@ -247,12 +246,11 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
  
         return boardW*boardH+G.Height(getPlayerOrTemp(0).playerBox);
-        
    }
     
 	

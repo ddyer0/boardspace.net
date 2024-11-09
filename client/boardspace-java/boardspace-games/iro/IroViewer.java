@@ -101,7 +101,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     static final String Iro_SGF = "iro"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/iro/images/";
+    static final String ImageDir = G.isCodename1() ? "/appdata/iro/images/" : "/iro/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -360,7 +360,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,altChip,rotate,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotateBoard)
@@ -372,7 +372,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH/2,boardW,stateH,goalRect,altChip,rotate);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return boardW*boardH;

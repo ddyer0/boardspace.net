@@ -308,10 +308,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
-        G.placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
-        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,annotationMenu,numberMenu,tilesetRect);
+        placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,annotationMenu,numberMenu,seeMobile,noChatRect);
+        placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,reverseRect,liftRect,tilesetRect);
         
-        G.placeRight(stateRect, zoomRect, zoomW);
+        G.placeRight(goalRect, zoomRect, zoomW);
 
     	G.SetRect(boardRect,mainX,boardY,mainW,boardH);
     	

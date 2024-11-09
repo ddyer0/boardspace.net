@@ -238,7 +238,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH-stateH);
 		// a pool of chips for the first player at the top
@@ -249,7 +249,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	

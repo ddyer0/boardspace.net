@@ -496,12 +496,12 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	//
         int stateY = boardY-stateH;
         int stateX = boardX+stateH*2;
-        G.placeRow(stateX,stateY,boardW-stateH*2 ,stateH,stateRect,annotationMenu,scoreRect,hintRect,noChatRect);
+        placeRow(stateX,stateY,boardW-stateH*2 ,stateH,stateRect,annotationMenu,scoreRect,hintRect,noChatRect);
         G.SetRect(rotatedStateRect,stateX-boardH/2-stateH,stateY+boardH/2,boardH-stateH*2,stateH);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW-stateH/3,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW-stateH/3,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

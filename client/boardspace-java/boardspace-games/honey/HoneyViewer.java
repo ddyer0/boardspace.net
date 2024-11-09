@@ -283,10 +283,10 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,summaryRect,annotationMenu,noChatRect);
+    	placeRow(stateX,stateY,boardW ,stateH,stateRect,summaryRect,annotationMenu,noChatRect);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.SetRect(goalRect,boardX,boardY+boardH-stateH,boardW,stateH);
+    	placeRow(boardX,boardY+boardH-stateH,boardW,stateH,goalRect);
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid

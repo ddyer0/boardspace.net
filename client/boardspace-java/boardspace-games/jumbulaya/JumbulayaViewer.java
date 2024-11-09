@@ -312,9 +312,16 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	//
         int stateY = boardY-stateH/8;
         int stateX = boardX;
-    	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
+    	placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.SetRect(goalRect, boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2);   
+    	if(plannedSeating())
+    	{
+    		placeRow( boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2,goalRect	,rotateRect,lockRect); 
+    	}
+    	else
+    	{
+    	placeRow( boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2,goalRect);   
+    	}
     	G.SetRect(timeRect, boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null ? 0 : stateH/2);   
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect), boardW-CELLSIZE, planned?0:CELLSIZE*3/2);
     	G.SetRect(largerBoardRect,mainX+extraW,mainY+extraH,largeW,largeH);

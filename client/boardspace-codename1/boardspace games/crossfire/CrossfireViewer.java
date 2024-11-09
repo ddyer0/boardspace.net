@@ -284,7 +284,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         int stateX = boardX;
         int ph = CELLSIZE*4;
         
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
   
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     		
@@ -302,7 +302,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-        G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect);
+        placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect,reverseViewRect,viewsetRect);
         G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);

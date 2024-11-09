@@ -174,14 +174,14 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         int stateX = boardX;
         
         RINGRADIUS = CELLSIZE/2; //ball radius to work with
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH);
     	G.SetRect(chipPool,boardX+boardW-CELLSIZE*2,boardY+boardH-CELLSIZE*2-stateH*2,CELLSIZE*2,CELLSIZE*2);
      	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow( boardX, boardBottom,boardW,stateH,goalRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return(boardW*boardH);
@@ -288,8 +288,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
             switch (b.getState())
             {
             case PUZZLE_STATE:
-                highlight.hitCode = (G.Left(highlight) < (G.Left(r) + (G.Width(r) / 2))
-                    ? YinshId.White_Chip_Pool : YinshId.Black_Chip_Pool);
+                highlight.hitCode = (G.Left(highlight) < (G.Left(r) + (G.Width(r) / 2)))
+                    ? YinshId.White_Chip_Pool : YinshId.Black_Chip_Pool;
 
                 break;
 
@@ -384,8 +384,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                 //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
                 if (hitpoint)
                 {
-                    highlight.hitCode = (piece == Empty ? YinshId.EmptyBoard
-                                                         : YinshId.BoardLocation);
+                    highlight.hitCode = (piece == Empty) ? YinshId.EmptyBoard
+                                                         : YinshId.BoardLocation;
                     highlight.col = thiscol;
                     highlight.row = thisrow;
                 }

@@ -379,11 +379,11 @@ public void ViewerRun(int wait)
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH+C2;
        	layout.returnFromMain(extraW,extraH);
-       	G.placeRow(boardX,stateY,boardW,stateH,stateRect,annotationMenu,noChatRect);
+       	placeRow(boardX,stateY,boardW,stateH,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int goaly =  boardBottom-stateH+C2;
     	G.SetRect(scoreCard,boardX,goaly-stateH,stateH*2,stateH*2);
-    	G.SetRect(goalRect, boardX+stateH*2,goaly, boardW-stateH*2, stateH);
+    	placeRow( boardX+stateH*2,goaly, boardW-stateH*2, stateH,goalRect);
     	setProgressRect(progressRect,goalRect);
     		
         {

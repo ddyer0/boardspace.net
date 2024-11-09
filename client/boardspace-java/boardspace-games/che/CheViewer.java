@@ -225,16 +225,16 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	//
         int zoomW = CELLSIZE*5;
 
-        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
-        G.placeRight(stateRect, zoomRect, zoomW);
-
+        placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+ 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 
     	SetupVcrRects(boardX+C4,boardBottom-vcrW/2-C4,vcrW,vcrW/2);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow(boardX, boardBottom,boardW,stateH,goalRect);       
+        G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
  	

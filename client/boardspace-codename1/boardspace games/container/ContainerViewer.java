@@ -483,10 +483,10 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         // "edit" rectangle, available in reviewers to switch to puzzle mode
         G.SetRect(editRect, atSeaX+CELLSIZE, G.Bottom(atSeaRect)+CELLSIZE, buttonW,buttonH);
 
-        G.SetRect(goalRect, 
+        placeRow( 
         		G.Left(boardRect)+G.Width(boardRect)/3,
         		G.Bottom(boardRect)-CELLSIZE-C2,
-        		G.Width(boardRect)/3,CELLSIZE);
+        		G.Width(boardRect)/3,CELLSIZE,goalRect);
         
         setProgressRect(progressRect,goalRect);
  
@@ -503,7 +503,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
             int stateH = CELLSIZE+C2;
             int stateX = G.Left( boardRect) + C2;
             int stateY = 0;
-            G.placeStateRow(stateX, stateY,G.Right(islandRect)-stateX,stateH,
+            placeStateRow(stateX, stateY,G.Right(islandRect)-stateX,stateH,
             		iconRect,stateRect,noChatRect);
             }
         int vsy = boardBottom-cx2;

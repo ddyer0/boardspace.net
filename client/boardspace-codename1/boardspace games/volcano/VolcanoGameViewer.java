@@ -234,14 +234,14 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         {
         	contextRotation = -Math.PI/2;
         }
-        G.placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
+        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH-stateH/2,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH-stateH/2,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
         return(boardW*boardH);

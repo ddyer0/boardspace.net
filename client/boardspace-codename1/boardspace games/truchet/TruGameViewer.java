@@ -55,6 +55,9 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
      /**
 	 * 
 	 */
+	boolean wideTest = false;
+	boolean tallTest = false;
+	
 	static final long serialVersionUID = 1L;
 	// colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -137,7 +140,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	Rectangle captures = captureRects[player];
     	G.SetRect(captures, G.Right(box),y,unitsize*2,unitsize*5);	// a little taller than necessary so overall layout is better
     	G.SetRect(done, horizontal ? G.Right(captures)+unitsize/4:x, 
-    				horizontal ? y+unitsize/2 : y+chipW, doneW, doneW/2);
+    				horizontal ? y+unitsize/2 : y+chipW, doneW+(wideTest?12*unitsize:0), doneW/2+(tallTest?unitsize*10:0));
 
     	pl.displayRotation = rotation;
     	G.union(box, chip,done,captures);
@@ -154,7 +157,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
-    	horizontal = aspect<0;
+    	horizontal = wideTest||tallTest ? false : aspect<0;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -178,15 +181,16 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     			fh*2.0,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
-    	
         boolean rotate = seatingFaceToFaceRotated();
+        if(! (wideTest||tallTest))
+        {
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
- 
+        }
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
@@ -213,7 +217,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -224,7 +228,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,liftRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         return(boardW*boardH);
@@ -472,7 +476,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
       cpl.setRotatedContext(gc, highlight, false);
       DrawCommonChipPool(gc, i,chipRects[i],ot,true);
       DrawCaptures(gc,i,captureRects[i],highlight);
-      if(planned && (whoseTurn==i))
+      if(planned && (wideTest || tallTest ||(whoseTurn==i)))
       {
 			handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

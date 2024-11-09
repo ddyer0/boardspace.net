@@ -210,7 +210,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,eyeRect,viewsetRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -220,7 +220,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow( boardX, boardBottom,boardW,stateH,goalRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         return boardW*boardH;
@@ -479,7 +479,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     			{ select.hitCode = TacoId.OfferDraw;
     			}
     	}
-
+        }
  		drawPlayerStuff(gc,(vstate==TakojudoState.PUZZLE_STATE),ourSelect,HighlightColor,rackBackGroundColor);
 
  
@@ -492,7 +492,6 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         playerChip(gb.whoseTurn).drawChip(gc, this,w,G.centerX(iconRect),G.centerY(iconRect)+w/2,null);
         goalAndProgressMessage(gc,ourSelect,s.get("Immobilize your opponent"),progressRect, goalRect);
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
-        }
 
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);

@@ -224,15 +224,15 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     	//
         int zoomW = CELLSIZE*7;
 
-        G.placeRow( boardX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
-        G.placeRight(stateRect, zoomRect, zoomW);
+        placeRow( boardX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	SetupVcrRects(boardX+C2/2,boardBottom-C2/2-minLogW/2,minLogW,minLogW/2);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
+    	placeRow( boardX, boardBottom,boardW,stateH,goalRect);       
+        G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
  

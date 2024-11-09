@@ -92,7 +92,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Rectangle tilesetRect = addRect("tilesetRect");
     private Rectangle reverseRect = addRect("reverseRect");
     private Toggle seeMobile = new Toggle(this,"eye",StockArt.Eye,HiveId.SeeMovable,true,SeeMovableMessage);
- 
+ //    public void verifyGameRecord()
+ //   {	DISABLE_VERIFY=true;
+ //   	super.verifyGameRecord();
+ //   }
     private int tileColorSet = 0;
     public int getAltChipset() 
     	{ return(tileColorSet); }
@@ -304,11 +307,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
-        G.placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
-        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,annotationMenu,numberMenu,tilesetRect);
-       
-        G.placeRight(stateRect, zoomRect, zoomW);
+        placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,annotationMenu,numberMenu,seeMobile,noChatRect);
+        placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,reverseRect,liftRect,tilesetRect);
         
+        G.placeRight(goalRect, zoomRect, zoomW);
+     
     	G.SetRect(boardRect,mainX,boardY,mainW,boardH);
  
     	int vcrW = CELLSIZE*6;

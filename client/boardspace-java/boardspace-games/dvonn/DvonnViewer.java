@@ -240,7 +240,7 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	//
     int stateY = boardY;
     int stateX = boardX;
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
+    placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
 	G.SetRect(boardRect,boardX,boardY+(rotate?CELLSIZE/2:CELLSIZE),boardW,boardH);
 	if(rotate)
 	{	// this conspires to rotate the drawing of the board
@@ -262,10 +262,9 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	// the rectangle or can be offset downward.  Remember that the grid
 	// can intrude too.
 	int goalY = boardBottom+(rotate?CELLSIZE/2:0);
-	G.SetRect(goalRect, boardX, goalY,boardW,stateH);
+	placeRow( boardX, goalY,boardW,stateH,goalRect,liftRect,reverseViewRect,viewsetRect);
     int sizeW = stateH*5;
-    G.SetWidth(goalRect, G.Width(goalRect)-sizeW);
-    G.SetRect(sizeRect, G.Right(goalRect),goalY,sizeW,stateH);
+    G.placeRight(goalRect,sizeRect,sizeW);
 
     setProgressRect(progressRect,goalRect);
     positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);

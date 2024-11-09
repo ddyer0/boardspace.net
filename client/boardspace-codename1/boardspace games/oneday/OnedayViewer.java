@@ -412,8 +412,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	}
 
         	layout.returnFromMain(extraW/2,extraH/2);
-         	G.placeRow(boardX,boardY-stateH,boardW,stateH,stateRect,noChatRect);
-            G.SetRect(goalRect, boardX,boardY+boardH-stateH,boardW,stateH);
+         	placeRow(boardX,boardY-stateH,boardW,stateH,stateRect,noChatRect);
+            placeRow( boardX,boardY+boardH-stateH,boardW,stateH,goalRect);
             
             setProgressRect(progressRect,goalRect);
  

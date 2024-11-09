@@ -289,7 +289,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
  
         G.SetRect(reverseViewRect, G.Right(vcrZone), G.Top(vcrZone),CELLSIZE*2, CELLSIZE*4);
         
-        G.SetRect(goalRect, G.Right(reverseViewRect), G.Bottom(boardRect),SQUARESIZE*4, CELLSIZE*2);
+        placeRow( G.Right(reverseViewRect), G.Bottom(boardRect),SQUARESIZE*4, CELLSIZE*2,goalRect);
         
         setProgressRect(progressRect,goalRect);
 

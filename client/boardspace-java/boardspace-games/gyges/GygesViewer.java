@@ -213,7 +213,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = (int)(fh*2.5);
-        G.placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,eyeRect,reverseViewRect,noChatRect);
+        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)
@@ -233,7 +233,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
  	

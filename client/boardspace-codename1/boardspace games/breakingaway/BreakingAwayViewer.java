@@ -296,7 +296,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	}
     
 
-	G.SetRect(goalRect,boardX, boardY+boardH,boardW, stateH);
+	placeRow(boardX, boardY+boardH,boardW, stateH,goalRect);
     
     setProgressRect(progressRect,goalRect);
       
@@ -310,7 +310,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 
     G.SetRect(sprintRect, Math.max(boardX+BCELL,G.Right(vcrZone)),bottomLine, BCELL*15, BCELL*2);
 
-	G.placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+	placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);
 	G.placeRight(stateRect, sizeRect ,CELLSIZE*12);
 
     int timeW = 2*BCELL;

@@ -255,7 +255,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
+        placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(!portrait)
@@ -281,10 +281,10 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	if(portrait)
     	{
     	int goalX = boardX+wardW*3/2;
-        G.SetRect(goalRect,goalX, boardBottom-stateH,boardW-(goalX-boardX)-C2,stateH);  
+        placeRow(goalX, boardBottom-stateH,boardW-(goalX-boardX)-C2,stateH,goalRect);  
     	}
     	else {
-            G.SetRect(goalRect,boardX+C2, boardBottom-stateH,boardW-wardW-CELLSIZE,stateH);     		
+            placeRow(boardX+C2, boardBottom-stateH,boardW-wardW-CELLSIZE,stateH,goalRect);     		
     	}
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);

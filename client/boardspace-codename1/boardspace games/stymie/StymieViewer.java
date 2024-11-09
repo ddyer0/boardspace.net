@@ -220,13 +220,13 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     	//
         int stateX = boardX;
         int stateY = boardY-stateH;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX+CELLSIZE, boardBottom-stateH*3/2,boardW-CELLSIZE*2,stateH);       
+    	placeRow( boardX+CELLSIZE, boardBottom-stateH*3/2,boardW-CELLSIZE*2,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	

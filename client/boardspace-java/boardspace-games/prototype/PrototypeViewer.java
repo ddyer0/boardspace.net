@@ -378,7 +378,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
@@ -391,7 +391,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
@@ -465,7 +465,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateX = C2;
         int stateH = CELLSIZE;
         int stateW = G.Width(boardRect);
-        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
+        placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
         
  		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
@@ -491,7 +491,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             CELLSIZE * 6,
             CELLSIZE*3);
         
-        G.SetRect(goalRect, CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE);
+        placeRow( CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE,goalRect);
         
         setProgressRect(progressRect,goalRect);
   
