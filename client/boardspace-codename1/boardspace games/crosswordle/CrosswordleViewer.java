@@ -291,7 +291,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	//G.SetRect(dateRect,ll,lt,lw,stateH*2);
     	//G.SetRect(logRect,ll,lt+stateH*2,lw,lh-stateH*2);
     	
-    	
+       	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+          	
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,hardButton,restartRect);
        	layout.alwaysPlaceDone = true;
@@ -307,7 +308,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	inputField.setFont(G.getFont(largeBoldFont(),stateH*9/5));
        		
        	
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
        	       	
     	Rectangle main = layout.getMainRectangle();

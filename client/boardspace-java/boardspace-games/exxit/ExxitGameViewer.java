@@ -224,8 +224,8 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
        	layout.placeTheVcr(this, vcrH*2, vcrH*3);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeRectangle(tilePoolRect,
     				buttonW*2,buttonW,buttonW*2,buttonW,
     				buttonW,buttonW*2,buttonW,buttonW*2,

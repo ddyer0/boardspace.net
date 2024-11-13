@@ -76,11 +76,6 @@ public class Stone_Spec extends commonMove
         return ((x == other.x) && (y == other.y) && (color == other.color));
     }
 
-    public boolean Same_Move_P(commonMove other)
-    {
-        return (Equal((Stone_Spec) other));
-    }
-
     public String shortMoveString()
     {
         return (null);
@@ -90,4 +85,8 @@ public class Stone_Spec extends commonMove
     {
         return (null);
     }
+
+	public boolean Same_Move_P(commonMove other) {
+		return ((Move_Spec)this).Same_Move_P((Move_Spec)other);
+	}
 }

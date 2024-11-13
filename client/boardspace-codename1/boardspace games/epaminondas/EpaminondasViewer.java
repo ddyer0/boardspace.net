@@ -324,14 +324,14 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+       	// its generally recommended for the vcr to be no wider than the game log,
+       	// this helps the vcr to tuck into the spare space allocated for the log
+    	layout.placeTheVcr(this,minLogW,minLogW*3/2);
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
-       	// its generally recommended for the vcr to be no wider than the game log,
-       	// this helps the vcr to tuck into the spare space allocated for the log
-    	layout.placeTheVcr(this,minLogW,minLogW*3/2);
-       	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+      	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

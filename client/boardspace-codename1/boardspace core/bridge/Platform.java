@@ -122,6 +122,13 @@ public abstract class Platform implements Config{
 	    }
 
 		}
+	
+	public static int standardDisplayDensity()
+	{
+		if(G.isAndroid()) { return(160); }
+		return(Config.standardDisplayDensity);
+	}
+
     static public FontMetrics getFontMetrics(AwtComponent c)
 	   {
 		   return(getFontMetrics(c.getFont()));

@@ -321,8 +321,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();

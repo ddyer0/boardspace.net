@@ -223,9 +223,9 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
-    	layout.placeTheVcr(this,vcrW,vcrW*3/2);
-   	
+     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+      	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
+  	
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);

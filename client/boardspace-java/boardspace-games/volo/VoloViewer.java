@@ -160,7 +160,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
     }
     
     private int boardRows = 18;
-
+    private int boardCols = 14;
     public void setLocalBounds(int x, int y, int width, int height)
     {	G.SetRect(fullRect, x, y, width, height);
 	  	GameLayoutManager layout = selectedLayout;
@@ -176,7 +176,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 	    int margin = fh/2;
 	    int buttonW = fh*8;
 	    int nrows = boardRows;
-	    int ncols = boardRows;
+	    int ncols = boardCols;
 	    	// this does the layout of the player boxes, and leaves
 		// a central hole for the board.
 		//double bestPercent = 
@@ -871,10 +871,10 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
       	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
           if(bb.smallBoard)
         	  {
-        	  bb.SetDisplayParameters(0.99, 0.99, .02,-0.4, 0); // 
+        	  bb.SetDisplayParameters(0.98, 0.97, .02,-0.5, 0); // 
         	  }
           else 
-          	{ bb.SetDisplayParameters(1.112, 0.99, .02,-0.6, 0); // 
+          	{ bb.SetDisplayParameters(0.97, 0.97, .02,-0.7, 0); // 
           	}
      
       	bb.SetDisplayRectangle(boardRect);

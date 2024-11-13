@@ -58,7 +58,7 @@ public enum EpaminondasState implements BoardState,EpaminondasConstants
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	Check(StateRole.Play,CheckStateDescription,true,true),
+	Check(StateRole.Play,CheckStateDescription,false,false),
 	Play(StateRole.Play,PlayState,false,false),
 	Illegal(StateRole.Play,IllegalState,false,false);
 	EpaminondasState(StateRole r,String des,boolean done,boolean digest)

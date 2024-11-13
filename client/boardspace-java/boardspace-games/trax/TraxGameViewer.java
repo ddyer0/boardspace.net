@@ -210,8 +210,8 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	layout.placeRectangle(chipPool,minLogW,minLogW/2,minLogW,minLogW/2,BoxAlignment.Edge,true);
     	
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int stateH = fh*5/2;

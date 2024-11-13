@@ -31,4 +31,6 @@ public interface LoaMove
     public boolean captures();
 
     public String moveString();
+    
+
 }

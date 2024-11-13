@@ -203,7 +203,30 @@ public class downloadLanguages {
 			 
 	 	}
 	  }
-
+	  /**
+	   * this checks that the #1 #2 etc in translations are the same as they are in english.
+	   * technically, this ought to be done in the translation interface, but this is a backup
+	   * @param name
+	   * @param key
+	   * @param english
+	   * @param translation
+	   */
+	  private static void checkPlaceholders(String name,String key,String english,String translation)
+	  {	  int len = english.length();
+		  for(int index=-1;  index<len && (index=english.indexOf('#',index))>=0 && index+1<len;index++)
+		  	{
+			  char ch = english.charAt(index+1);
+			  if(ch=='#') { index += 2; }
+			  else {
+			  String xl = "#"+ch;
+			  if(translation.indexOf(xl)<0)
+			  {
+				  G.print("\n",name+" transation of ",key," is missing placeholder "+xl);
+				  if(!key.equals(english)) { G.print(english); }
+				  G.print(translation);
+			  }}
+		  	}
+	  }
 	  
 	  public static void saveStrings(String name,Hashtable<String,String>langKeys,Hashtable<String,String>backupKeys)
 	  {		if(backupKeys==null) { backupKeys = langKeys; }
@@ -224,6 +247,7 @@ public class downloadLanguages {
 				String val = langKeys.get(key);
 				String backval = backupKeys.get(key);
 				if(val==null) { val=backval; }
+				else { checkPlaceholders(name,key,backval,val); }
 				
 				// always save languages with translations in their own language
 	    		String subst = languageNameTranslations.get(key);

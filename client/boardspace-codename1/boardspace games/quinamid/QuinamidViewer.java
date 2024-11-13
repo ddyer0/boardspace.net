@@ -218,8 +218,8 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     	layout.placeRectangle(helpRect, buttonW,buttonW,buttonW*2,buttonW*2,BoxAlignment.Bottom,true);
         
 
-    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeRectangle(swapButton,buttonW*2,buttonW/2,buttonW*3,buttonW,BoxAlignment.Center,true);
         
     	Rectangle main = layout.getMainRectangle();

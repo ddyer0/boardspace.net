@@ -412,7 +412,6 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     			0.1		// preference for the designated layout, if any
     			);
    	
-        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,resignRect);
     	// place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	// however, if that doesn't work out the main rectangle will shrink.
@@ -420,7 +419,8 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     			minLogW, minLogH, minLogW*3/2, minLogH*2);
      	
         layout.placeTheVcr(this,minLogW,minLogW*3/2);
-       
+        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,resignRect);
+      
         if(isNudoku)
         {
         int unitsize = fh;

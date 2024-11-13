@@ -185,8 +185,8 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

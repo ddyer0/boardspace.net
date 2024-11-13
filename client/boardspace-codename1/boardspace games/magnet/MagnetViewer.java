@@ -214,8 +214,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	int u4 = unitsize/4;
     	G.SetRect(chip,	x+u4,	y,	2*unitsize-u4,	2*unitsize-u4);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-    	G.SetRect(rack, x, y+G.Height(box),unitsize*14,unitsize*5);
-    	G.SetRect(random, G.Right(box)+unitsize/2,y+unitsize/2,unitsize*6,unitsize);
+    	G.SetRect(rack, x, y+G.Height(box),unitsize*13,unitsize*4);
+    	G.SetRect(random, G.Right(box)+unitsize/2,y+unitsize/2,unitsize*5,unitsize);
     	G.SetRect(done, G.Right(box)+unitsize, y, unitsize*4,unitsize*2);
     	G.union(box,rack,random,chip,done);
       	pl.displayRotation = rotation;
@@ -251,8 +251,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		// them together and not encroaching on the main rectangle.
 		layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
 				minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-	   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
 		layout.placeTheVcr(this,minLogW,minLogW*3/2);
+	   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
 	   	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 	
 		Rectangle main = layout.getMainRectangle();
@@ -289,7 +289,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		//
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,noChatRect);
+	    placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)
@@ -300,7 +300,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		// goal and bottom ornaments, depending on the rendering can share
 		// the rectangle or can be offset downward.  Remember that the grid
 		// can intrude too.
-		placeRow( boardX, boardBottom,boardW,stateH,goalRect);       
+		placeRow( boardX, boardBottom,boardW,stateH,goalRect,reverseRect);       
         setProgressRect(progressRect,goalRect);
 	    positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
 

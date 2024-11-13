@@ -338,8 +338,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,repRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,repRect);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();

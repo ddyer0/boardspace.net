@@ -178,9 +178,9 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
-        layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+      	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
+        layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
         layout.placeRectangle(logoRect, fh*10,fh*10, BoxAlignment.Edge);
 
     	Rectangle main = layout.getMainRectangle();

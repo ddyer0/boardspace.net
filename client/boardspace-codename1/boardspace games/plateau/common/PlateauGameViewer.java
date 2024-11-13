@@ -293,8 +293,8 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
  
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

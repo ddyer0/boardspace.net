@@ -238,8 +238,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
     	
  
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	
        	Rectangle full = layout.peekMainRectangle();
        	int fuw = G.Width(full);

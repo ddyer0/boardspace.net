@@ -200,8 +200,8 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
@@ -234,14 +234,14 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         {
         	contextRotation = -Math.PI/2;
         }
-        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
+        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH-stateH/2,boardW,stateH,goalRect);       
+    	placeRow( boardX, boardBottom-stateH-stateH/2,boardW,stateH,goalRect,liftRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
         return(boardW*boardH);

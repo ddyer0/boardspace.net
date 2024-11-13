@@ -214,6 +214,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
+       	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,swapButton);
        	
        	layout.placeRectangle(flagCaptureRect, ruleW,ruleH*4,BoxAlignment.Edge);
@@ -223,7 +224,6 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         G.AlignLeft(flagOwnRect,ry+ruleH*2,flagCaptureRect);
         G.AlignLeft(flagshipWinRect,ry+ruleH*3,flagCaptureRect);
         
-    	layout.placeTheVcr(this,minLogW,minLogW*3/2);
      
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

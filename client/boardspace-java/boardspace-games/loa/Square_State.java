@@ -22,4 +22,5 @@ class Square_State
     int sweep_counter;
     int x;
     int y;
+    public String toString() { return "<square "+x+" "+y+" = "+contents+">";}
 }

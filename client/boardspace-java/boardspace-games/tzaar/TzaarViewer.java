@@ -195,9 +195,9 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+       	layout.placeTheVcr(this,vcrW,vcrW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW,doneRect,editRect);
        	layout.placeRectangle(passButton, buttonW, buttonW/2,BoxAlignment.Center);
-    	layout.placeTheVcr(this,vcrW,vcrW*3/2);
       	
   
     	Rectangle main = layout.getMainRectangle();

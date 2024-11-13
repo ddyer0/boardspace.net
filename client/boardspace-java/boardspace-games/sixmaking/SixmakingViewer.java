@@ -139,15 +139,15 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*5/2;
-    	int chipH = unitsize*5;
     	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
-    	Rectangle done = doneRects[player];
-    	G.SetRect(chip, x, y, chipW, chipH);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
+    	Rectangle done = doneRects[player];
     	G.SetRect(done, x+chipW+unitsize/2, G.Bottom(box), doneW, doneW/2);
+    	G.union(box,done);
+    	G.SetRect(chip, x, y, chipW, G.Height(box));
+    	G.union(box, chip);
     	pl.displayRotation = rotation;
-    	G.union(box, chip,done);
     	return(box);
     }
     
@@ -169,7 +169,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     			0.75,	// space allocated to the board
     			1,		// aspect ratio for the board
     			fh*2.0,
-    			fh*3.0,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.5		// preference for the designated layout, if any
     			);
     	int minLogW = fh*16;	
@@ -182,11 +182,11 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*4/3);
-    	
+       	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+   	
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
        	layout.placeDrawGroup(fm, acceptDrawRect, declineDrawRect);
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-       
+        
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);

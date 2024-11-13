@@ -185,8 +185,8 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();

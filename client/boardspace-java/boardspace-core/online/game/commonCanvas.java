@@ -8336,6 +8336,8 @@ public void verifyGameRecord()
 	// now reinitialize the copy and replay all the moves.
 	//
 	dup.doInit();
+	G.print("dup init "+dup.Digest());
+	
 	G.Advise(ourB.Digest()==ourDig,"our digest changed unexpectedly, probably shared structure");
 		
 	

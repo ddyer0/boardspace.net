@@ -197,8 +197,8 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
         		
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
        	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
                
     	Rectangle main = layout.getMainRectangle();
         int stateH = fh*5/2;

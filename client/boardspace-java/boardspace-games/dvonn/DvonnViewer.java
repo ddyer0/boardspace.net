@@ -203,8 +203,8 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	// them together and not encroaching on the main rectangle.
 	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
 			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
    	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
 	Rectangle main = layout.getMainRectangle();

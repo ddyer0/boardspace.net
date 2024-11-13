@@ -1260,11 +1260,6 @@ public class G extends Platform implements Timestamp
 		return((int)(getDisplayScale()*sz));
 	}
 	
-	public static int standardDisplayDensity()
-	{
-		if(isAndroid()) { return(160); }
-		return(96);
-	}
 
 	/**
 	 * get the standard scale factor to the nominal 96ppi display

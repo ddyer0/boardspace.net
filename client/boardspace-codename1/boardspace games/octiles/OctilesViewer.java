@@ -213,8 +213,8 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
      	
-        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,repRect);
         layout.placeTheVcr(this,minLogW,minLogW*3/2);
+        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,repRect);
         layout.placeRectangle(passButton, G.Width(editRect), G.Height(editRect), BoxAlignment.Edge);
         Rectangle main = layout.getMainRectangle();
         int mainX = G.Left(main);

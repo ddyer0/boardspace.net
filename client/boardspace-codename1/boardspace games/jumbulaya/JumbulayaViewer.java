@@ -271,10 +271,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
     	layout.alwaysPlaceDone = false;
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
-       	G.copy(endJRect,startJRect);
+    	G.copy(endJRect,startJRect);
     	layout.placeTheVcr(this,vcrw,vcrw/2);
-       	int doneW = G.Width(editRect);
+      	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
+      	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = G.debug();
        	layout.placeDoneEditRep(buttonW,buttonW,checkWordsButton, checkJumbulayaButton,vocabularyRect);

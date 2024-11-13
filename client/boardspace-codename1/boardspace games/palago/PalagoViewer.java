@@ -234,8 +234,8 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
    	
     	{
     	int chipW = CELLSIZE*3;

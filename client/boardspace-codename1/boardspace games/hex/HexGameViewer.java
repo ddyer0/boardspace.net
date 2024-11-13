@@ -320,8 +320,8 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

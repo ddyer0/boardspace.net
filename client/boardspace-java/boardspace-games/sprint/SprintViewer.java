@@ -247,13 +247,13 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	//layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
-       	layout.alwaysPlaceDone = false;
+    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+      	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect,noticeRect);
        	int doneW = G.Width(editRect);
        	layout.alwaysPlaceDone = true;
        	layout.placeDoneEditRep(doneW,doneW,pullButton,null);
       	 
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
        //	commonPlayer pl = getPlayerOrTemp(0);
        //	int spare = G.Height(pl.playerBox)/3;

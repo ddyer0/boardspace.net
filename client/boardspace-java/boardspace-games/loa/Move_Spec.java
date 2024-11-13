@@ -257,10 +257,13 @@ public class Move_Spec extends Stone_Spec implements UIC, LoaMove
         }
     }
 
-    boolean Same_Move_P(Move_Spec other)
+    public boolean Same_Move_P(Move_Spec other)
     {
-        return ((x == other.x) && (y == other.y) && (dx == other.dx) &&
-        (dy == other.dy) && (op == other.op));
+        return ((x == other.x) 
+        		&& (y == other.y) 
+        		&& (dx == other.dx) 
+        		&& (dy == other.dy) 
+        		&& (op == other.op));
     }
 
     Move_Spec Copy_Slots(Move_Spec to)
@@ -289,11 +292,6 @@ public class Move_Spec extends Stone_Spec implements UIC, LoaMove
         return (to);
     }
 
-    boolean Equal(Move_Spec other)
-    {
-        //note, move number isn't required to match
-        return (super.Equal(other) && (dx == other.dx) && (dy == other.dy));
-    }
 
     int Move_Number()
     {

@@ -236,8 +236,8 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
        	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
        	if(G.debug()) 

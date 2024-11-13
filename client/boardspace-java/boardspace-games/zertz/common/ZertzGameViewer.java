@@ -187,11 +187,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
        	Rectangle rack = rackRects[1];
        	G.copy(swapButton,rack);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-    	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
+     	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
+     	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
     		}
     	else { G.SetHeight(variationRect,0); }
