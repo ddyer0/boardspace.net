@@ -116,6 +116,7 @@ sub show_friends()
 		 my $sth = &query($dbh,"SELECT latitude,logitude,player_name,full_name,e_mail,last_played,uid FROM players "
 														. "where (abs(logitude-$mylon)+abs(latitude-$mylat))<$degrees "
 																	. " and player_name!=$qpname"
+																	. " and is_robot is null"
 																	. " and last_played > $sunset "
 														. "order by (abs(logitude-$mylon)+abs(latitude-$mylat))");
 		  my $numr = &numRows($sth);
