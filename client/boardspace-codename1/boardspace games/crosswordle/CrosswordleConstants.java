@@ -43,7 +43,8 @@ public interface CrosswordleConstants
 	static String SolvedType = "#1 solved #2 puzzles of this type, average time #3";
 	static String SolutionsFor = "Solutions for #1 for #2";
 	static String LoadMessage = "For faster loading and more games install the app";
-	
+	static String CautionMessage ="Puzzle from a different day";
+	static String CautionDate = "Resuming the puzzle from #1";
 	enum LetterColor 
 	{ 
 	  Blank, Yellow, Green, NewYellow, NewGreen ;
@@ -146,6 +147,8 @@ public interface CrosswordleConstants
     	    	Sofar,
     	        RestartMessage,
     	    	HardPuzzles,EasyPuzzles,
+    	    	CautionDate,
+    	    	CautionMessage,
     	        PuzzleN,
     	        StatsHelp,
     	        NoSolutions,

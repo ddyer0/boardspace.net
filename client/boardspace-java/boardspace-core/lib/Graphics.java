@@ -27,9 +27,7 @@ import bridge.Polygon;
 import bridge.SystemGraphics;
 
 public class Graphics extends SystemGraphics
-{
-	public Graphics() { super(); }
-	
+{	
 	// additional colors used in some complex object drawing
 	private Color txtColor = Color.white;
 	private Color fllColor = Color.black;
@@ -445,18 +443,23 @@ public class Graphics extends SystemGraphics
 	 public boolean isNotVisible(int x,int y,int w,int h)
 	 {	
 		 boolean alt = isNotVisibleAlt(x,y,w,h);
+		 /*
 		 if(G.debug())
 		 {
 		 boolean std = isNotVisibleStd(x,y,w,h);
 		 if(std!=alt)
-		 {
-			 G.print("different views ",std," ",alt," ",x," ",y," ",w,"x",h," std ",preferStd);
+		 {	// one case where there is divergence is the pulldown for annotations in games.
+			// the alt transformation is used, which is correct.  For reasons I don't understand,
+			// the transformation calculated using the native transform is sometimes incorrect
+			 G.print("isNotVisible different views std:",std," alt:",alt," ",x," ",y," ",w,"x",h," std ",preferStd);
 			 flag = true;
 			 return preferStd ? std : alt;
 		 }}
+		 */
 		 return alt;
 	 }
-	 public boolean isNotVisibleStd(int x,int y,int w,int h)
+	 @SuppressWarnings("unused")
+	private boolean isNotVisibleStd(int x,int y,int w,int h)
 	  {	 
 		 int aw = actualWidth();
 		 int ah = actualHeight();
@@ -487,8 +490,10 @@ public class Graphics extends SystemGraphics
 		 return invisible;		  
 	  }
 
-	 AffineTransform shadow = new AffineTransform();
-	 public boolean isNotVisibleAlt(int x,int y,int w,int h)
+	 private AffineTransform shadow = new AffineTransform();
+	 public AffineTransform getShadowTransform() { return shadow; }
+	 
+	 private boolean isNotVisibleAlt(int x,int y,int w,int h)
 	  {
 		 int aw = actualWidth();
 		 int ah = actualHeight();

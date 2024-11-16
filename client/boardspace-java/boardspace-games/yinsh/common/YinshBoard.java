@@ -116,8 +116,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             {
             default:
                 movingOrigin = null;
-                throw G.Error("Bad char, Origin " + movingOrigin + "=" +
-                    movingObjectChar);
+                throw G.Error("Bad char, Origin %s = %s" , movingOrigin,movingObjectChar);
             case Empty:	
 				// shouldn't happen, but maybe in damaged games
             	movingOrigin = null;
@@ -185,7 +184,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
                 return;
             }
         }
-        throw G.Error("Ring " + cc + " not found");
+        throw G.Error("Ring %s not found", cc);
     }
 
     public char SetBoard(char fromcol, int fromrow, char to)
@@ -198,7 +197,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         switch (cc)
         {
         default:
-        	throw G.Error("Not expecting to find " + cc);
+        	throw G.Error("Not expecting to find %s" , cc);
         case Empty:
             break;
         case White:
@@ -215,7 +214,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         switch (to)
         {
         default:
-        	throw G.Error("Not expecting to place " + to);
+        	throw G.Error("Not expecting to place %s" ,to);
         case BRing:
             PlaceBoardRing(getColorMap()[SECOND_PLAYER_INDEX], c);
             break;
@@ -357,7 +356,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             switch (c)
             {
             default:
-            	throw G.Error("Not expecting " + c);
+            	throw G.Error("Not expecting %s", c);
 
             case Empty:
             case WRing:
@@ -1329,7 +1328,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         switch (board_state)
         {
         default:
-        	throw G.Error("Can't execute pick " + m);
+        	throw G.Error("Can't execute pick %s in state %s",m,board_state);
 
         case MOVE_DONE_STATE:
             UnDropObject();
@@ -1351,14 +1350,14 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         switch (board_state)
         {
         default:
-        	throw G.Error("Can't execute drop");
+        	throw G.Error("Can't execute drop in state %s",board_state);
 
         case PICK_RING_STATE:
 
             switch (object)
             {
             default:
-            	throw G.Error("Can't pick from " + object);
+            	throw G.Error("Can't pick from %s" , object);
 
             case Black_Chip_Pool:
             case White_Chip_Pool:
@@ -1385,7 +1384,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             switch (object)
             {
             default:
-            	throw G.Error("Can't drop on" + object);
+            	throw G.Error("Can't drop on %s" ,object);
 
             case Black_Ring_Cache:
             case White_Ring_Cache:

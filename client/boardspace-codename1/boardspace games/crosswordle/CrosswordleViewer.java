@@ -293,6 +293,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	
        	layout.placeTheVcr(this,vcrw,vcrw*3/2);
           	
+    	
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,hardButton,restartRect);
        	layout.alwaysPlaceDone = true;
@@ -309,7 +310,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        		
        	
        	
-       	       	
     	Rectangle main = layout.getMainRectangle();
     	int mainW = G.Width(main);
     	int mainH = G.Height(main)-stateH*2;
@@ -343,7 +343,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         int stateX = boardX;
     	placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	placeRow( boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
+    	placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -834,6 +834,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		}
     		return(false);
     }
+ 
     private void doRestart(CrosswordleMovespec m)
     {
        	// set the randomkey to the new date
@@ -1081,12 +1082,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private String statStr = null;
 	private String statCaption = "Caption";
 	
-	public void doShowStats()
+	public void doShowStats(long key)
 		{
         String baseUrl = statsURL;
         commonPlayer pl = getPlayerOrTemp(0);
         String serverName = sharedInfo.getString(SERVERNAME);
-        long key = dateRect.getTime();
         String dateString = dateRect.dateString();
         String hards = (hardButton.isOn()?"true":"false");
         String vname = bb.variation.name();
@@ -1166,7 +1166,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	statStr = null;
         	break;
         case ShowStats:
-        		doShowStats();
+         	doShowStats(dateRect.getTime());
         	break;
         case ToggleEasy:
         	hardButton.toggle();
@@ -1241,6 +1241,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     // this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Crosswordle_SGF); }	// this is the official SGF number assigned to the game
 
+    private String cautionMessage = null;
    
     /**
      * parse and perform the initialization sequence for the game, which
@@ -1259,8 +1260,15 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// bb.doInit(token,rk);
     	statStr = null;
         bb.doInit(token,rv,np,rev);
+        String oldDate = dateRect.dateString();
+        dateRect.setTime(rv);
         adjustPlayers(np);
+        String newDate = dateRect.dateString();
+        if(!oldDate.equals(newDate))
+        {
+            cautionMessage = s.get(CautionDate,newDate);
 
+    }
     }
 
 
@@ -1331,12 +1339,18 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         }
         if(triggerEndStats!=0 && triggerEndStats<G.Date())
         {	triggerEndStats = 0;
-        	doShowStats();
+        	doShowStats(bb.randomKey);
         
         }
         if(dateRect.changed)
         {
         	restartDate();
+        }
+        if(cautionMessage!=null)
+        {
+        	G.infoBox(s.get(CautionMessage),
+        			cautionMessage);
+        	cautionMessage = null;
         }
    }
     /**

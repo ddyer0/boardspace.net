@@ -830,4 +830,9 @@ public static Object MakeInstance(String classname)
 	 {
 	 	return false;
 	 }
+	 public static int standardDisplayDensity()
+		{
+			return(96);
+		}
+
 }

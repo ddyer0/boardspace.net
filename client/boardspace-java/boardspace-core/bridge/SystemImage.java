@@ -375,7 +375,7 @@ public static Image createImage(int w,int h)
 }
 public lib.Graphics getGraphics()
 {
-	return(image==null ? null : lib.Graphics.create(image.getGraphics(),0,0,getWidth(),getHeight()));
+	return(image==null ? null : lib.Graphics.create(image.getGraphics(),getWidth(),getHeight()));
 }
 
 // bits to save images

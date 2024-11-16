@@ -94,18 +94,33 @@ public abstract class SystemGraphics
 	{	if(logging) { Log.addLog("setStroke"); }
 		graphics.setStroke(e);
 	}
-	
-	public static Graphics create(java.awt.Graphics g,int actualX,int actualY,int clipw,int cliph) 
+	/**
+	 * this creates a lib.Graphics which uses the underlying system graphics, NOT a copy of it
+	 * @param g
+	 * @param clipw
+	 * @param cliph
+	 * @return
+	 */
+	public static Graphics create(java.awt.Graphics g,int clipw,int cliph) 
 	{	if(g==null) { return(null); }
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
-		gt.graphics = (Graphics2D)g;	
+		gt.graphics = (java.awt.Graphics2D)g;
 		gt.setActualSize(clipw,cliph);
 		return(gt);
 	}
-	
+/**
+ * this creates a lib.Graphics which uses the underlying system graphics, NOT a copy of it
+ * @param graphics
+ * @param client
+ * @return
+ */
 	public static Graphics create(java.awt.Graphics graphics, Component client) {
-		return create(graphics,0,0,client.getWidth(),client.getHeight());
+		if(logging) { Log.addLog("create new graphics"); }
+		Graphics gt = new Graphics();
+		gt.graphics = (java.awt.Graphics2D)graphics;
+		gt.setActualSize(client.getWidth(),client.getHeight());
+		return gt;
 	}
 
     /**
@@ -124,11 +139,18 @@ public abstract class SystemGraphics
 		return(graphics.getColor());
 	}
     public int getTranslateX()
-    {	if(logging) { Log.addLog("getTranslateX");}
+    {	return getTranslateX(graphics);
+    }
+    public static int getTranslateX(java.awt.Graphics2D graphics)
+    {
+    	if(logging) { Log.addLog("getTranslateX");}
     	AffineTransform xform = graphics.getTransform();
     	return((int)xform.getTranslateX());
     }
     public int getTranslateY()
+    {	return getTranslateY(graphics);
+    }
+    public static int getTranslateY(java.awt.Graphics2D graphics)
     {	if(logging) { Log.addLog("getTranslateY"); }
     	AffineTransform xform = graphics.getTransform();
     	return((int)xform.getTranslateY());

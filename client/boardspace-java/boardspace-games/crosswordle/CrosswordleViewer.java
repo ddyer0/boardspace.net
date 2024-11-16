@@ -1075,12 +1075,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private String statStr = null;
 	private String statCaption = "Caption";
 	
-	public void doShowStats()
+	public void doShowStats(long key)
 	{	
         String baseUrl = statsURL;
         commonPlayer pl = getPlayerOrTemp(0);
         String serverName = sharedInfo.getString(SERVERNAME);
-        long key = dateRect.getTime();
         String dateString = dateRect.dateString();
         String hards = (hardButton.isOn()?"true":"false");
         String vname = bb.variation.name();
@@ -1160,7 +1159,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	statStr = null;
         	break;
         case ShowStats:
-         	doShowStats();
+         	doShowStats(dateRect.getTime());
         	break;
         case ToggleEasy:
         	hardButton.toggle();
@@ -1235,7 +1234,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     // this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Crosswordle_SGF); }	// this is the official SGF number assigned to the game
 
-   
+    private String cautionMessage = null;
+    
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
@@ -1253,8 +1253,15 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// bb.doInit(token,rk);
     	statStr = null;
         bb.doInit(token,rv,np,rev);
+        String oldDate = dateRect.dateString();
+        dateRect.setTime(rv);
         adjustPlayers(np);
-
+        String newDate = dateRect.dateString();
+        if(!oldDate.equals(newDate))
+        {
+            cautionMessage = s.get(CautionDate,newDate);
+        	
+        }
     }
 
 
@@ -1325,12 +1332,18 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         }
         if(triggerEndStats!=0 && triggerEndStats<G.Date())
         {	triggerEndStats = 0;
-        	doShowStats();
+        	doShowStats(bb.randomKey);
         
         }
         if(dateRect.changed)
         {
         	restartDate();
+        }
+        if(cautionMessage!=null)
+        {
+        	G.infoBox(s.get(CautionMessage),
+        			cautionMessage);
+        	cautionMessage = null;
         }
    }
     /**
