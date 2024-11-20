@@ -561,6 +561,10 @@ package crosswordle;
     	   win[whoseTurn] = true;
     	   setState(CrosswordleState.Gameover);
     	   break;
+       case MOVE_DONE:
+    	   // resigning 
+    	   setState(CrosswordleState.Gameover);
+    	   break;
        default:
         	cantExecute(m);
         }

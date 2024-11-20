@@ -487,7 +487,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 					favoriteGames.recordRecentGame(sess.currentGame,FAVORITES,RECENT_LIST_SIZE);
 				}
 				sess.startingTimeControl = sess.timeControl();
-				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame,true);
+				sess.launchGame(user,myFrame.doSound(),colorIndex,getCanvasRotation(),sess.currentGame,true);
 				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
 				break;
 			case DiscardButton:

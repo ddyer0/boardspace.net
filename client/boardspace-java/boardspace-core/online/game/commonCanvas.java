@@ -7309,19 +7309,27 @@ public abstract class commonCanvas extends exCanvas
     	repaint();
     	}
     }
+    /** this does the attention getting animation when the ticktock sound is off
+     * 
+     * @param gc
+     */
     public void doFlashAnimation(Graphics gc)
     {
-    	if(gc!=null && G.Date()<flashAnimation)
-    	{
-    		int w = getWidth();
-    		int h = getHeight();
-    		int div = Math.min(w,h)/3;
-    		Color col = ((flashState&1)==0)?Color.red:Color.white;
-    		GC.frameRect(gc,col,flashState,flashState,w-flashState*2,h-flashState*2);
-    		flashState = (flashState+1)%div;
-    		GC.frameRect(gc,col,flashState,flashState,w-flashState*2,h-flashState*2);
-    		flashState = (flashState+1)%div;
-    		repaint(20);
+    	if(gc!=null  && G.Date()<flashAnimation )
+    	{	commonPlayer pl = getActivePlayer();
+    		Rectangle flashTimeRect =pl.timeRect;
+    		int left = G.Left(flashTimeRect);
+    		int top = G.Top(flashTimeRect);
+    		int w = G.Width(flashTimeRect);
+    		int h = G.Height(flashTimeRect);
+    		int mod = Math.min(w,h)/2;
+    		if(mod>0)
+    			{
+    			int step = (int)(flashState%mod);
+    			flashState++;
+    			GC.frameRect(gc,((step&1)==0)?Color.blue:Color.red,left-step,top-step,w+step*2,h+step*2);
+    			}
+     		repaint(20);
     	}
     }
     // do time related things for the board.
@@ -7336,7 +7344,7 @@ public abstract class commonCanvas extends exCanvas
       if(whoseTurn==active )
       	{	
     	long elapsed = (currentT - hidden.startTurn); 
-        if ( (hidden.startTurn > 0) 
+        if ((hidden.startTurn > 0) 
         		&& (((hidden.doneAtTime>0)&& (elapsed>hidden.timePerDone)) 
         		    || (elapsed > hidden.timePerTurn))
         		&& !isTurnBasedGame())
@@ -8336,7 +8344,6 @@ public void verifyGameRecord()
 	// now reinitialize the copy and replay all the moves.
 	//
 	dup.doInit();
-	G.print("dup init "+dup.Digest());
 	
 	G.Advise(ourB.Digest()==ourDig,"our digest changed unexpectedly, probably shared structure");
 		

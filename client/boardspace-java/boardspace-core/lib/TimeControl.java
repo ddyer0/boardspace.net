@@ -309,6 +309,8 @@ public class TimeControl implements Config
 		G.SetRect(extraRect,G.Right(mainRect), t, w*9/40, h);
 
 	}
+	
+	
 	//
 	// draw time control description and one or two associated times
 	// this is used from the lobby, and also from the revised time control overlay
@@ -535,5 +537,6 @@ public class TimeControl implements Config
 			return false;
 	  }
 	  }
+
 }
 

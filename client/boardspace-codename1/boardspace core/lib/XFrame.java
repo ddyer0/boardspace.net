@@ -33,12 +33,13 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	private TopFrameProtocol myFrame = null;
     private InternationalStrings s = null;
 	String name="Unnamed";
-	/** constructor */
+	/** constructor for lobbies */
 	public XFrame(String string) 
 	{ 	myFrame = G.useTabInterface() ? new TabFrame(string) : new JFrame(string); //new TabFrame(string);
 		initStuff(string);
+		soundCheckBox.setForeground(Color.blue);
 	}
-	/** constructor */
+	/** constructor for games */
 	public XFrame()
 	{	myFrame = G.useTabInterface() ? new TabFrame() : new JFrame();//new TabFrame();
 		initStuff("");

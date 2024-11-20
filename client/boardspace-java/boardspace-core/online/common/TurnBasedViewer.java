@@ -643,7 +643,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				sess.launchSpectator(players[0],true,getCanvasRotation(),sess.currentGame,true);
 			}
 			else {
-				sess.launchGame(players[targetPlayerIndex],true,null,getCanvasRotation(),sess.currentGame,true);
+				sess.launchGame(players[targetPlayerIndex],
+						myFrame.doSound(),null,getCanvasRotation(),sess.currentGame,true);
 			}
 			for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }			
 		}
@@ -1759,7 +1760,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 for(int i=0;i<invitedPlayers.size();i++)
 			 {
 				 pendingNotifications.push(notificationMessage(invitedPlayers.elementAt(i).channel(),parsedGameUid,selectedVariant.variationName,
-						 s.get(InvitedMessage),s.get(InvitedLongMessage)));
+						 s.get(InvitedMessage,loggedInUser.name()),s.get(InvitedLongMessage)));
 			 }			 
 		 }
 	}
@@ -2509,7 +2510,7 @@ static String AcceptActionMessage = "acceptlongmessage";
 static String DeclinedMessage = "#1 removed themselves from your game";
 static String RemovedMessage = "You were removed by the owner";
 static String YouRemovedMessage = "#1 un-accepted your invitation to play";
-static String InvitedMessage = "You're invited to play a turn-based game";
+static String InvitedMessage = "You're invited to play a turn-based game with #1";
 static String InvitedLongMessage = "invited_long_message";
 static String ErrorCaption = "Error";
 static String LoggedInMessage = "Logged in as #1";
