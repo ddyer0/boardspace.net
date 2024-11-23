@@ -1970,5 +1970,6 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 			}
     	}
     }
+
 }
 

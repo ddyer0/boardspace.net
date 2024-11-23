@@ -3059,9 +3059,7 @@ CommonMoveStack  GetandomSteps()
    return(all);
  
 }
-public boolean canResign() 
-	{ return(true); 	// not quite there yet, needs to handle closing the connection too
-	}
+
 }
 
 

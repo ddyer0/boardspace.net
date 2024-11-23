@@ -825,8 +825,6 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 
         case MOVE_OFFER_DRAW:
         {	
-        	if(canOfferDraw())
-        {
         	ShogiState bs = board_state;
         	if(bs==ShogiState.OfferDraw)
         	{
@@ -835,7 +833,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	{
         	unresign = bs;
         	setState(ShogiState.OfferDraw);
-        	}}}
+        	}}
         	break;
         	
         case MOVE_ACCEPT_DRAW:
@@ -1572,6 +1570,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 	 
  }
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& (( board_state==ShogiState.Play) || (board_state==ShogiState.OfferDraw));
 }
 }

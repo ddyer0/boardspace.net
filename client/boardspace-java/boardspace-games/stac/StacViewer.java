@@ -18,7 +18,6 @@ package stac;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
 
 import common.GameInfo;
 import online.common.*;
@@ -71,7 +70,6 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
     // in the options menu.
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");
@@ -116,7 +114,6 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
         useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);
         MouseColors = new Color[]{Color.red,Color.blue};
         MouseDotColors = new Color[]{Color.white,Color.white};
         
@@ -637,25 +634,15 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
+    }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target, String command)
-    {	if(target==offerDrawAction)
-    	{
-    		if(OurMove() 
-    			&& b.canOfferDraw()
-    			&& (b.movingObjectIndex()<0)
-    			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)||(b.getState()==StacState.DrawPending)))
-    		{
-    			PerformAndTransmit(OFFERDRAW);
-    			}
-        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-     		
-    		return(true);
-    	}
-    	else if(target==reverseOption)
+    {	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

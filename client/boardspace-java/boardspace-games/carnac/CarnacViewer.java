@@ -1291,7 +1291,5 @@ private void playSounds(commonMove m)
 	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) {
 		throw G.Error("Not needed with manual layout");
 	}
-
-
 }
 

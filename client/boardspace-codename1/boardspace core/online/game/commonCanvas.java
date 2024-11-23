@@ -790,7 +790,7 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem gameTest = null;
 	    
 	    private JMenuItem resignAction = null;
-	    private JMenuItem passMove = null;
+	    private JMenuItem offerDrawAction = null;
 	    private JMenuItem editMove = null;
 	    private JMenuItem saveAndCompare = null;
 	    private boolean separateChat = false;		// chat in a separate window
@@ -838,13 +838,7 @@ public abstract class commonCanvas extends exCanvas
 
 	    	return(controlToken);
 	    }
-	    /**
-	     * switch to the other player for the next move.
-	     */
-	    private void doPassMove()
-	    {	// not usually used in the game, but available in debugging situations to just toggle the player.
-	    	PerformAndTransmit(PASS);
-	    }
+
 	    /**
 	     * switch to the other player for the next move.
 	     */
@@ -994,8 +988,9 @@ public abstract class commonCanvas extends exCanvas
 	        else if(target==resignAction)
 	        {  doResign();
 	        }
-	        else if (target == passMove)
-	        {   doPassMove();
+	        else if(target==offerDrawAction)
+	        {
+	        	doOfferDraw();
 	        }
 	        else if (target == editMove)
 	        {
@@ -2734,6 +2729,7 @@ public abstract class commonCanvas extends exCanvas
     	saveDisplayBoard();
     	if((hidden.resignAction==null) && canUseDone()) 
     	   { hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);    	   
+          hidden.offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
     	   }
     	resetBounds();
     	wake();
@@ -5312,7 +5308,6 @@ public abstract class commonCanvas extends exCanvas
         	hidden.train = myFrame.addAction(robotMenu, "run training",deferredEvents);
         	}
         	hidden.startShell = myFrame.addAction("start shell",deferredEvents);
-            hidden.passMove = myFrame.addAction("pass this move",deferredEvents);
             hidden.editMove = myFrame.addAction("edit this game",deferredEvents);
             l.auxSliders = myFrame.addOption("Use aux sliders",false,deferredEvents);
            	hidden.alternateBoard = myFrame.addOption("Show Alternate Board", false,deferredEvents);
@@ -5338,8 +5333,8 @@ public abstract class commonCanvas extends exCanvas
         if (canUseDone())
         {
             hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);
+            hidden.offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         }
-
         if(!G.useTabInterface())
         {
 
@@ -7253,8 +7248,9 @@ public abstract class commonCanvas extends exCanvas
      */
     public boolean canResign()
     {
-    	return(getBoard().canResign());
+    	return(getBoard().nPlayers()<=2);
     }
+    
     public void doResign()
     {   
     if(!canResign()) 
@@ -7276,7 +7272,17 @@ public abstract class commonCanvas extends exCanvas
         }
     	}
     }    
+    public boolean doOfferDraw()
+    {	
+    	if(OurMove()
+    			&& canOfferDraw()) 					
+    		{
+			PerformAndTransmit(OFFERDRAW);
+			}
+    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
+     		return(true);
     
+    }
     public void setDoneState(boolean isDone)
     {	long now = G.Date();
     	hidden.doneAtTime = isDone ? now : 0;
@@ -7299,6 +7305,10 @@ public abstract class commonCanvas extends exCanvas
     	repaint();
     	}
     }
+    /** this does the attention getting animation when the ticktock sound is off
+     * 
+     * @param gc
+     */
     public void doFlashAnimation(Graphics gc)
     {
     	if(gc!=null  && G.Date()<flashAnimation )
@@ -9358,4 +9368,10 @@ public void verifyGameRecord()
 			G.SetRect(icon, l, t, h, h);
 			placeRow(l+h+h/2,t,w-h-h/2,h,r);
 		}
+		public boolean passIsPossible() { return false; }
+		/** return true of the rest of the logic supports offerdraw/declinedraw */
+		public boolean drawIsPossible() { return false; }
+		public boolean canOfferDraw() { return false; }
+
+
 }

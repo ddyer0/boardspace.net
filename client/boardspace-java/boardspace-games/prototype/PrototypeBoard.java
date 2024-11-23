@@ -935,8 +935,16 @@ void doSwap(replayMode replay)
  	
  	return(targets);
  }
- 
-
+ //public boolean drawIsPossible() { return false; }
+ // public boolean canOfferDraw() {
+ //	 return false;
+	 /**
+	something like this:
+ 	return (movingObjectIndex()<0)
+ 			&& ((board_state==PrototypeState.Play) || (board_state==PrototypeState.DrawPending))
+ 			&& (moveNumber-lastDrawMove>4);
+ 			*/
+ //}
 
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.

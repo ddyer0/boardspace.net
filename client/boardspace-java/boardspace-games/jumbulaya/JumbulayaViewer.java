@@ -1860,6 +1860,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 			}
     	}
     }
+ 
     /*
     public void startRobotTurn(commonPlayer p)
     {	if(bb.pickedSourceStack.size()>10) 

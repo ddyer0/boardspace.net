@@ -1478,7 +1478,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
             }
             break;
         case MOVE_OFFER_DRAW:
-        	if(revision<102 || canOfferDraw())
+        	// note that if you get this far, do the draw stuff even if canOfferDraw is false.
+        	// its required that the UI and move generators take care to only allow draw offers when
+        	// they are allowed.  The robot search can get here repeatedly when searching variations.
         	{ 			
         	if(board_state==ChessState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
@@ -2906,8 +2908,11 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
   	}
  	return(all);
  }
+public boolean drawIsPossible() { return true; }
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (movingObjectIndex()<0)
+			&& ((board_state==ChessState.Play) || (board_state==ChessState.DrawPending))
+			&& (moveNumber-lastDrawMove>4);
 }
  
  

@@ -1077,5 +1077,6 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
             setComment(comments);
         }
     }
+
 }
 

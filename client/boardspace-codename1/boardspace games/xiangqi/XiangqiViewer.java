@@ -96,7 +96,6 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     private JCheckBoxMenuItem chipsetOption = null;
     private JCheckBoxMenuItem reverseOption = null;
     
-    private JMenuItem drawAction = null;
     public synchronized void preloadImages()
     {	
        	XiangqiChip.preloadImages(loader,ImageDir);
@@ -137,7 +136,6 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        drawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);
         
      }
 
@@ -710,7 +708,10 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-
+    public boolean canOfferDraw()
+    {
+    	return  b.canOfferDraw();
+    }
     /** handle action events
      * 
      */
@@ -727,18 +728,7 @@ private void playSounds(commonMove m)
     	repaint(20);
     	return(true);
     	}
-    	else if (target==drawAction)
-    	{
-    		if(OurMove()
-    				&& b.canOfferDraw()
-    				&& (b.movingObjectIndex()<0)
-    				&& ((b.getState()==XiangqiState.PLAY_STATE) || (b.getState()==XiangqiState.OFFER_DRAW_STATE)))
-    			{
-    			PerformAndTransmit(OFFERDRAW);
-    			}
-        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
+  
         return(super.handleDeferredEvent(target,command));
      }
 

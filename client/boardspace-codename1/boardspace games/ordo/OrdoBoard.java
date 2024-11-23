@@ -1075,7 +1075,6 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             }
             break;
         case MOVE_OFFER_DRAW:
-        	if(revision<101 || canOfferDraw())
         	{
         	if(board_state==OrdoState.DrawPending) { setState(resetState); }
         	else { 	setState(OrdoState.DrawPending);
@@ -1756,7 +1755,9 @@ public commonMove Get_Random_Move(Random rand,double ordoProbability)
 }
 
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& ((board_state==OrdoState.OrdoPlay)||(board_state==OrdoState.DrawPending));
 }
 
 }

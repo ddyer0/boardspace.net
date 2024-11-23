@@ -251,7 +251,6 @@ public interface BoardProtocol extends Digestable
 	 */
 	public void setSimultaneousTurnsAllowed(boolean v);
 	
-	public boolean canResign();
 	
 	/**
 	 * true if the board has a reverse view

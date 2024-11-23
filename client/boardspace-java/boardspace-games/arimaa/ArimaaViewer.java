@@ -897,6 +897,6 @@ public boolean allowResetUndo()
 	public int getLastPlacement(boolean empty) {
 		return b.placementIndex;
 	}
-
+	
 }
 

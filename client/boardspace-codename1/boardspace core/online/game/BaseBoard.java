@@ -480,8 +480,8 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	{
 		return simultaneousTurnsAllowed && state.simultaneousTurnsAllowed();
 	}
-	public boolean canResign()
-	{
-		return(players_in_game<=2);
-	}
+
+	public boolean drawIsPossible() { return false; }
+	public boolean canOfferDraw() { return false; }
+	
 }

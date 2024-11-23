@@ -72,7 +72,9 @@ class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,
 	public HivePiece lastDroppedObject = null;
 	public boolean robotCanOfferDraw = true;
 	public boolean canOfferDraw()
-	{ return((moveNumber-lastRealMoveNumber)<=1); 
+	{ return((moveNumber-lastRealMoveNumber)<=1)
+				&& (movingObjectIndex()<0)
+				&& ((board_state==HiveState.PLAY_STATE)||(board_state==HiveState.DrawPending));
 	}
 	private boolean setupAccepted = false;
 	boolean swappedRacks = false;
@@ -1624,7 +1626,6 @@ public variation gamevariation = variation.hive;
             	{ doDone(replay); }
             break;
         case MOVE_OFFER_DRAW:
-           	if(canOfferDraw())
            	{
         	if(board_state==HiveState.DrawPending) { setState(undrawState); }
         	else {  undrawState = board_state;

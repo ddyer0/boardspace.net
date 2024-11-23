@@ -18,7 +18,6 @@ package checkerboard;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
 import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
@@ -70,7 +69,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
  
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
     
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
@@ -120,7 +118,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -1046,33 +1043,20 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-    private boolean offerDrawState()
-    {	switch(b.getState())
-    	{
-    	case Play:
-    	case Endgame:
-    	case DrawPending:
-    		return true;
-    	default: return false;
-    	}
+    
+    /** return true if it's ok to offer a draw "right now" through the UI
+     * 
+     */
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
     }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& b.canOfferDraw()
-    			&& (b.movingObjectIndex()<0)
-    			&& offerDrawState())
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-    		}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

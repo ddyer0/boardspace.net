@@ -1508,7 +1508,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	  {
 		  return(super.imageSize(im) + PrototypeChip.imageSize(im));
 	  }
-	
+    
     /**
      * colorize a string and return a Text with the result.  This is used
      * to substitute icons for words, or translate the words, in the string;

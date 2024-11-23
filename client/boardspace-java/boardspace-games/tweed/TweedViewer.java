@@ -1259,5 +1259,6 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
 	public int getLastPlacement(boolean empty) {
 		return bb.lastPlacedMove;
 	}
+	public boolean drawIsPossible() { return true; }
 }
 

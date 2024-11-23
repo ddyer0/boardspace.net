@@ -24,8 +24,6 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
-import javax.swing.JMenuItem;
-
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -99,7 +97,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 
     private Rectangle repRect = addRect("repRect");
     private Rectangle reverseRect = addRect("reverse");
-    private JMenuItem offerDrawAction = null;
 
     public synchronized void preloadImages()
     {	FanoronaChip.preloadImages(loader,ImageDir);
@@ -125,24 +122,16 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 
          
         b = new FanoronaBoard(info.getString(GameInfo.GAMETYPE, "Fanorona"),getStartingColorMap());
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         useDirectDrawing(true);
         doInit(false);
      }
     
+    public boolean canOfferDraw()
+    {
+    	return (b.canOfferDraw());
+    }
     public boolean handleDeferredEvent(Object target,String cmd)
     {
-    	if(target==offerDrawAction)
-			{	if(OurMove() 
-					&& (b.movingObjectIndex()<0)
-					&& b.canOfferDraw()
-					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
-				{
-				PerformAndTransmit(OFFERDRAW);
-				}
-				else { G.infoBox(null,s.get(DrawNotAllowed)); }
-				return(true);
-			}
     	return super.handleDeferredEvent(target, cmd);
     }
     /** 

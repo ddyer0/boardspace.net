@@ -1444,6 +1444,5 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     public void doGameTest()
     {	Builder.getInstance().generateCrosswords(G.Date(),bb.ncols,bb.nrows);
     }
-   
 }
 

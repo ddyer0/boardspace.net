@@ -28,7 +28,6 @@ import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-import bridge.JMenuItem;
 import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
@@ -138,7 +137,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-    private JMenuItem offerDrawAction = null;
 
     private Toggle eyeRect = new Toggle(this,"eye",
  			StockArt.NoEye,TrenchId.ToggleEye,NoeyeExplanation,
@@ -220,8 +218,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         // the user interface and in the board's copyBoard operation.
         // in the user interface.
         useDirectDrawing(true);
-        doInit(false);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
+        doInit(false);        
         
         adjustPlayers(players_in_game);
     }
@@ -1140,6 +1137,10 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 
     }
 
+    public boolean canOfferDraw()
+    {
+    	return bb.canOfferDraw();
+    }
 
     /** handle action events from menus.  Don't do any real work, just note
      * state changes and if necessary set flags for the run loop to pick up.
@@ -1147,17 +1148,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-        if(target==offerDrawAction)
-     	{	if(OurMove() 
-     			&& bb.canOfferDraw()
-     			&& (bb.movingObjectIndex()<0)
-     			&& ((bb.getState()==TrenchState.Play) || (bb.getState()==TrenchState.DrawPending))) 							
-     		{
-     		PerformAndTransmit(OFFERDRAW);
-     		}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-     		return(true);
-     	}
        boolean handled = super.handleDeferredEvent(target, command);
          return (handled);
     }

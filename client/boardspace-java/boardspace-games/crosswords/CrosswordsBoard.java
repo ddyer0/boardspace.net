@@ -2681,8 +2681,5 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  {	robot = rob;
  	robotVocabulary = vocab;
  }
- public boolean canResign() 
- 	{ return(G.debug()); 	// not quite there yet, needs to handle closing the connection too
- 	}
 
 }

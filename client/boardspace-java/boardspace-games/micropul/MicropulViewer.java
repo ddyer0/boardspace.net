@@ -1034,5 +1034,6 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
             setComment(comments);
         }
     }
+
 }
 

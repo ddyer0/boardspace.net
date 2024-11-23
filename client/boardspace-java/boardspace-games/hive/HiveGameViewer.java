@@ -18,7 +18,6 @@ package hive;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
 
 import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
@@ -102,7 +101,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{ return(tileColorSet); }
     private JCheckBoxMenuItem textNotation = null;
     public boolean useTextNotation = false;
-    private JMenuItem offerDrawAction = null;
 
     public boolean reverse_y() { return(b.reverseY());}
     
@@ -110,20 +108,14 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     {
     	return((p==null)?false:(b.swappedWinForPlayer(p.boardIndex)));
     }
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
+    }
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& b.canOfferDraw()
-    			&& (b.movingObjectIndex()<0)
-    			&& ((b.getState()==HiveState.PLAY_STATE)||(b.getState()==HiveState.DrawPending)))
-    		{
-     			PerformAndTransmit(OFFERDRAW);
-    		}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    	return(true);
-    	}
+
     	if(target==textNotation)
         {
         	handled = true;
@@ -168,7 +160,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         b = new HiveGameBoard(info.getString(GameInfo.GAMETYPE, "Hive"),getStartingColorMap());
         useDirectDrawing(true);
         textNotation = myFrame.addOption(TextLogMessage,false,deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);    
         if(G.debug()) {
         	HiveConstants.putStrings();
         }
@@ -1062,7 +1053,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	public int getLastPlacement(boolean empty) {
 		return b.lastPlacement;
 	}
-
 
 }
 

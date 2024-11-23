@@ -1005,9 +1005,6 @@ int getListOfMovesFrom(TriadCell from,TriadChip top,int who,TriadCell to,int dir
 	 {
  	case PLAY_STATE:
  		getListOfMoves(all,whoseTurn,false);
- 		if(all.size()==0) 
- 			{ all.addElement(new TriadMovespec(MOVE_PASS,whoseTurn));
- 			}
  		break;
  	case CONFIRM_END_STATE:
 	case DRAW_STATE:

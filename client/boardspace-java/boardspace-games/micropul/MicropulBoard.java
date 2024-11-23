@@ -855,9 +855,6 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
             setState(MicropulState.PUZZLE_STATE);
 
             break;
-        case MOVE_PASS:
-        	setState(MicropulState.CONFIRM_STATE);
-        	break;
         case MOVE_ROTATE:
         	{
         	MicropulCell c = getCell(m.to_col,m.to_row);
@@ -1087,7 +1084,6 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
    	    	throw G.Error("Can't un execute %s", m);
 
         case MOVE_DONE:
-        case MOVE_PASS:
             break;
             
         case MOVE_MOVE:

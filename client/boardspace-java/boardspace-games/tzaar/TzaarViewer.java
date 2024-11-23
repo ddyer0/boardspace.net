@@ -778,7 +778,7 @@ private void playSounds(TzaarMovespec m)
             setComment(comments);
         }
     }
-
+    public boolean drawIsPossible() { return true; }
 
 }
 

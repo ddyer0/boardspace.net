@@ -842,7 +842,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		 		{	// if the root has no viable moves, it's because all the moves lead to direct losses
 		 			// at this time, this bookkeeping result is only possible if TerminalNodeOptimization
 		 			// is on
-		 			if(board.canResign())
+		 			if(board.nPlayers()<=2)
 		 			{
 		 			best = parent.getChild(0).Copy(null);
 		 			best.op = MOVE_RESIGN;

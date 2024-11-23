@@ -17,7 +17,6 @@
 package chess;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
 
 import common.GameInfo;
 
@@ -75,7 +74,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     						StockArt.Eye,ChessId.ToggleEye,EyeExplanation
     						);
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
     
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
@@ -130,7 +128,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
         useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -900,24 +897,19 @@ private void playSounds(commonMove m)
 //        }
 //    }
 
+    /** return true if it's ok to offer a draw "right now" through the UI
+     * 
+     */
+    public boolean canOfferDraw()
+    {
+    	return (b.canOfferDraw());
+    }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target,String cmd)
     {	
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<0)
-    			&& b.canOfferDraw()
-    			&& ((b.getState()==ChessState.Play) || (b.getState()==ChessState.DrawPending))) 					
-    					
-    		{
-			PerformAndTransmit(OFFERDRAW);
-			}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-     		return(true);
-    	}
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

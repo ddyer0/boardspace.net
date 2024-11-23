@@ -19,7 +19,6 @@ package chess;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
 import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
@@ -73,7 +72,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     						StockArt.Eye,ChessId.ToggleEye,EyeExplanation
     						);
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
     
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
@@ -128,7 +126,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
         useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -208,8 +205,8 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	// them together and not encroaching on the main rectangle.
 	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
 						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
-	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
    	layout.placeDoneEditRep(buttonW,3*buttonW/2,doneRect,editRect,repRect);
 	layout.placeRectangle(Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();
@@ -898,24 +895,19 @@ private void playSounds(commonMove m)
 //        }
 //    }
 
+    /** return true if it's ok to offer a draw "right now" through the UI
+     * 
+     */
+    public boolean canOfferDraw()
+    {
+    	return (b.canOfferDraw());
+    }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target,String cmd)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<0)
-    			&& b.canOfferDraw()
-    			&& ((b.getState()==ChessState.Play) || (b.getState()==ChessState.DrawPending))) 					
-    					
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-			}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

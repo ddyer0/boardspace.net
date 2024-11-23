@@ -21,7 +21,6 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
 import common.GameInfo;
 import online.common.*;
 import online.game.*;
@@ -93,7 +92,6 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     private JCheckBoxMenuItem chipsetOption = null;
     private JCheckBoxMenuItem reverseOption = null;
     
-    private JMenuItem drawAction = null;
     public synchronized void preloadImages()
     {	
        	ShogiChip.preloadImages(loader,ImageDir);
@@ -133,7 +131,6 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         doInit(false);
         chipsetOption = myFrame.addOption(s.get(TraditionalPieces),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        drawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);
         
      }
 
@@ -747,7 +744,10 @@ private void playSounds(commonMove m)
     	// make the random key part of the standard initialization,
         b.doInit(token,rk);
     }
-
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
+    }
     
     /** handle action events
      * 
@@ -765,19 +765,7 @@ private void playSounds(commonMove m)
     	repaint(20);
     	return(true);
     	}
-    	else if (target==drawAction)
-    	{
-    		if(OurMove()
-    				&& b.canOfferDraw()	
-    				&& (b.movingObjectIndex()<0)
-    				&& (( b.board_state==ShogiState.Play) || (b.board_state==ShogiState.OfferDraw))
-    				) 
-    			{
-    			  PerformAndTransmit(OFFERDRAW); 
-    			}
-        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
+    	
         return(super.handleDeferredEvent(target,command));
      }
 

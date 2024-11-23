@@ -775,7 +775,6 @@ class TrenchBoard
         switch (m.op)
         {
         case MOVE_OFFER_DRAW:
-        	if(revision<101 || canOfferDraw())
         	{
         	if(board_state==TrenchState.DrawPending) { setState(TrenchState.Play); }
         	else { 
@@ -1398,7 +1397,9 @@ public boolean drawIsLikely()
 	
 }
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& ((board_state==TrenchState.Play) || (board_state==TrenchState.DrawPending));
 }
 
  // most multi player games can't handle individual players resigning

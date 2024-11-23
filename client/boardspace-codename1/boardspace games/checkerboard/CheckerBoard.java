@@ -123,6 +123,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  	}
  	// dys altered so links are +2 vertically for frisian
  	public int[] dys() { 
+
  		switch(variation)
  		{
  		default: throw G.Error("Not expecting %s",variation);
@@ -1420,7 +1421,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
             }
             break;
         case MOVE_OFFER_DRAW:
-           	if(revision<101 || canOfferDraw())
+        	// note that if you get this far, do the draw stuff even if canOfferDraw is false.
+        	// its required that the UI and move generators take care to only allow draw offers when
+        	// they are allowed.  The robot search can get here repeatedly when searching variations.
            	{
         	if(board_state==CheckerState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
@@ -2090,9 +2093,21 @@ public boolean hasSimpleMoves()
  	addMoves(all,offerdraw,whoseTurn);
  	return(all);
  }
+ private boolean offerDrawState()
+ {	switch(getState())
+ 	{
+ 	case Play:
+ 	case Endgame:
+ 	case DrawPending:
+ 		return true;
+ 	default: return false;
+ 	}
+ }
 
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& offerDrawState();
 }
  
 

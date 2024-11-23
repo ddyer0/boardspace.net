@@ -21,7 +21,6 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
 import common.GameInfo;
 
 import static ordo.OrdoMovespec.*;
@@ -72,7 +71,6 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
 
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
     
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
@@ -121,7 +119,6 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -1006,24 +1003,16 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
+    }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& b.canOfferDraw()
-    			&& (b.movingObjectIndex()<0)
-    			&& ((b.getState()==OrdoState.OrdoPlay)||(b.getState()==OrdoState.DrawPending)))
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-			}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

@@ -829,7 +829,6 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
             break;
 
         case MOVE_OFFER_DRAW:
-        	if(canOfferDraw())
         	{
         	XiangqiState bs = board_state;
          	if(bs==XiangqiState.OFFER_DRAW_STATE)
@@ -1382,6 +1381,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
 	 
  }
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& ((board_state==XiangqiState.PLAY_STATE) || (board_state==XiangqiState.OFFER_DRAW_STATE));
 }
 }

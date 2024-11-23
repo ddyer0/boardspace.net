@@ -820,7 +820,6 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
  
             break;
         case MOVE_OFFER_DRAW:
-			if(revision<102 || canOfferDraw())
 			{
         	if(board_state==StacState.DrawPending) { setState(pickedState.pop()); }
         	else { if(pickedState.size()==0) { pickedState.push(board_state); }
@@ -1162,7 +1161,11 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
  	return(all);
  }
 public boolean canOfferDraw() {
-	return (moveNumber-lastDrawMove>4);
+	return (moveNumber-lastDrawMove>4)
+			&& (movingObjectIndex()<0)
+			&& ((board_state==StacState.Play)
+					||(board_state==StacState.Carry)
+					||(board_state==StacState.DrawPending));
 }
  
 }

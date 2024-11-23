@@ -18,7 +18,6 @@ package sixmaking;
 
 
 import java.awt.*;
-import javax.swing.JMenuItem;
 
 import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
@@ -69,7 +68,6 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle reverseViewRect = addRect("reverse");
-    private JMenuItem offerDrawAction = null;
     private Rectangle chessRect = addRect("chessRect");
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
@@ -115,7 +113,6 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
 
     /** 
@@ -748,22 +745,18 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
+    
+    public boolean canOfferDraw()
+    {
+    	return (b.movingObjectIndex()<0)
+    			&& ((b.getState()==SixmakingState.Play)||(b.getState()==SixmakingState.DrawPending));
+    }
 
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<0)
-    			&& ((b.getState()==SixmakingState.Play))||(b.getState()==SixmakingState.DrawPending))
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-    		}
-    		return(true);
-    	}
-    	else 
     	return(super.handleDeferredEvent(target,command));
      }
 /** handle the run loop, and any special actions we need to take.

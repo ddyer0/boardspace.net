@@ -531,10 +531,6 @@ package crosswordle;
         	setNextStateAfterDrop(null,null,replay);
         	}
         	break;
-        case MOVE_PASS:
-        	setState(CrosswordleState.Play);
-        	break;
-
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();

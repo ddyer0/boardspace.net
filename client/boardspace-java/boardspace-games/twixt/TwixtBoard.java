@@ -1065,8 +1065,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         {
 
         case MOVE_OFFER_DRAW:
-        {	if(canOfferDraw())
-        	{
+        {	
         	TwixtState bs = board_state;
         	if(bs==TwixtState.OfferDraw)
         	{	setState(stateStack.pop());
@@ -1074,7 +1073,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         	{
         		stateStack.push(bs);
         		setState(TwixtState.OfferDraw);
-        	}}}
+        	}}
         break;
         	
         case MOVE_ACCEPT_DRAW:
@@ -2115,6 +2114,8 @@ public double Static_Evaluate_Position2(int playerIndex,boolean print)
  }
  public boolean canOfferDraw()
  {
-	 return (moveNumber-lastDrawMove>4);
+	 return (moveNumber-lastDrawMove>4)
+				&& (movingObjectIndex()<0)
+				&& ((board_state==TwixtState.Play) || (board_state==TwixtState.QueryDraw));
  }
 }

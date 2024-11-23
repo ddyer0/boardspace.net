@@ -17,7 +17,6 @@
 package morris;
 
 import java.awt.*;
-import javax.swing.JMenuItem;
 
 import common.GameInfo;
 import online.common.*;
@@ -61,10 +60,6 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     private MorrisBoard b = null; 	// the board from which we are displaying
     private int SQUARESIZE;			// size of a board square
     
-    // addRect is a service provided by commonCanvas, which supports a mode
-    // to visualize the layout during development.  Look for "show rectangles"
-    // in the options menu.
-   private JMenuItem offerDrawAction = null;
     
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
@@ -118,7 +113,6 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
 
     /** 
@@ -760,24 +754,15 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-
+    public boolean canOfferDraw()
+    {
+    	return b.canOfferDraw();
+    }
     /** handle action events
      * 
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& b.canOfferDraw()
-    			&& (b.movingObjectIndex()<0)
-    			&& ((b.getState()==MorrisState.Play)||(b.getState()==MorrisState.DrawPending)))
-    		{
- 			PerformAndTransmit(OFFERDRAW);
-			}
-    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
-    		return(true);
-    	}
-    	else 
     	return(super.handleDeferredEvent(target,command));
      }
 /** handle the run loop, and any special actions we need to take.

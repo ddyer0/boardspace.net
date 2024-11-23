@@ -17,8 +17,6 @@
 package fanorona;
 
 import bridge.*;
-import common.GameInfo;
-
 import com.codename1.ui.geom.Rectangle;
 
 import online.game.*;
@@ -27,6 +25,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -99,7 +98,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
    
     private Rectangle repRect = addRect("repRect");
     private Rectangle reverseRect = addRect("reverse");
-    private JMenuItem offerDrawAction = null;
 
     public synchronized void preloadImages()
     {	FanoronaChip.preloadImages(loader,ImageDir);
@@ -125,24 +123,16 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 
          
         b = new FanoronaBoard(info.getString(GameInfo.GAMETYPE, "Fanorona"),getStartingColorMap());
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         useDirectDrawing(true);
         doInit(false);
      }
-
-    public boolean handleDeferredEvent(Object target,String cmd)
+    
+    public boolean canOfferDraw()
     {
-    	if(target==offerDrawAction)
-			{	if(OurMove() 
-					&& (b.movingObjectIndex()<0)
-					&& b.canOfferDraw()
-					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
+    	return (b.canOfferDraw());
+    }
+    public boolean handleDeferredEvent(Object target,String cmd)
 				{
-				PerformAndTransmit(OFFERDRAW);
-				}
-				else { G.infoBox(null,s.get(DrawNotAllowed)); }
-				return(true);
-			}
     	return super.handleDeferredEvent(target, cmd);
     }
     /** 
@@ -195,9 +185,8 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-        		
+       	layout.placeTheVcr(this,vcrW,vcrW*3/2);    	
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
-       	layout.placeTheVcr(this,vcrW,vcrW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
                
     	Rectangle main = layout.getMainRectangle();
