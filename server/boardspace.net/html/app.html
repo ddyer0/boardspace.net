@@ -1,19 +1,17 @@
 <html>
-<title>Experimental Browser Interface</title>
+<title>Experimental WSS Browser Interface</title>
 <!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
 <head> 
-<script src="https://cjrtnc.leaningtech.com/3_20240802_520/cj3loader.js"></script>
+<link rel="manifest" href="/js/manifest.json" /><script src="https://cjrtnc.leaningtech.com/3_20240802_520/cj3loader.js"></script>
 <script src="/js/site.js"> </script>
 <script src="/js/cheerpj.js"></script>
-<link rel="manifest" href="/js/manifest.json" />
+<link rel="manifest-app" href="/js/manifest-app.json" />
 </head>
 
 <body background="/images/background-image.jpg">
 <meta charset="utf-8">
  <script>
         async function myInit() {
- 	// not needed if https/wss is supported
-	// redirectifHttps();
         await initNatives();
         createDisplay(-1,-1,document.body); 
 	touchTest();
@@ -21,7 +19,7 @@
 	var server = window.location.host;
         cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
 			"servername",server,
-			); 
+	); 
       }
       myInit();
   </script>

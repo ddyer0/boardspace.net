@@ -1,0 +1,25 @@
+{
+  "name": "Boardspace PWA",
+  "short_name": "Boardspace",
+  "start_url": "/app.html",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "js/boardspace.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+       "src": "/js/boardspace-icon-192x192.png",
+       "sizes": "192x192",
+       "type": "image/png"
+    },
+    {
+       "src": "/js/boardspace-icon-512x512.png",
+       "sizes": "512x512",
+       "type": "image/png"
+    }
+
+  ],
+  "display": "standalone"
+}

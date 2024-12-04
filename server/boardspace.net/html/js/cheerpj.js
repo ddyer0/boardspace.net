@@ -54,6 +54,7 @@ function redirectifHttps()
 {
 if(window.location.protocol == "https:")
 { var newloc = "http://" + window.location.hostname + window.location.pathname;
+  alert("redirecting to http");
   window.location = newloc;
 }
 }
@@ -67,7 +68,8 @@ function createDisplay(width,height,parent)
 async function initNatives()
 {   
     await cheerpjInit( 
-    { 	clipboardMode: "system" ,
+    { 	 enableDebug:true,
+	 clipboardMode: "system" ,
 	natives: {
 
 	Java_bridge_Cheerpj_playSound(lib,_this,cl)
@@ -102,7 +104,8 @@ async function initNatives()
 	  return socket.connok;
 	},
 	 Java_bridge_WebSocket_connect(lib,_this,host,socket)
-	    {  let target = "ws://" + host + ":" + socket +"/gameserver";
+	    {  let index = host.indexOf("://");
+	       let target = (index>=0 ? "" : "ws://") + host + ":" + socket +"/gameserver";
 	       console.log("make socket "+target );
                let sock = new WebSocket(target);
                let n = nsockets++;
