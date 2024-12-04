@@ -9373,5 +9373,4 @@ public void verifyGameRecord()
 		public boolean drawIsPossible() { return false; }
 		public boolean canOfferDraw() { return false; }
 
-
 }

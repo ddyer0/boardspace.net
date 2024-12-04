@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import lib.G;
 import lib.SocketProxy;
 /**
- * this is the class that the "cheerpj" branch used to connect using websocket.
+ * this is the class that the "cheerpj" branch uses to connect using websocket.
  * in order for this to work, a bunch of separate tweaks have to be in place.
  * look for calls to of "G.isCheerpj()" for details.
  * 
@@ -19,8 +19,11 @@ import lib.SocketProxy;
  *   the C server has to open the appropriate web server port, determined by its .conf file
  *   http/js/ has to include the socket and general cheerpj javascript files
  *   http/login.html has to call for all this to happen.
- *   in the current strategy which doesn't support wss, the parent page has to be http not https
+ *   in the previous strategy which doesn't support wss, the parent page has to be http not https
  *     this can be enforced by .htaccess or by in-page redirect
+ *   in the latest strategy which does support wss, the some strategy is needed to supply
+ *     the server with current private and public key certificates.  This is currently to
+ *     copy them at the point of creation, using a letsencrypt post process hook.
  *   all of the above conspire for WebSocket to be used instead of regular sockets.
  */
 public class WebSocket implements SocketProxy
@@ -31,9 +34,9 @@ public class WebSocket implements SocketProxy
   public native void send(int sock,String message);
   public native boolean isConnected(int socket);   
   public native  int connect(String host,int socket);
-
   public WebSocket(String host,int port)
-  {	  G.print("create websocket",host,port);
+  {	 
+	  G.print("create websocket for ",host,":",port);
 	  socket = connect(host,port);
 	  while(!isConnected(socket)) { G.print("waiting for connection"); G.doDelay(500); }
 	  G.print("connected websocket ",host,port);

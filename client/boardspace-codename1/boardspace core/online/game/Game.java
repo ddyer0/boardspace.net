@@ -2059,7 +2059,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         removeActions();
 
         if (my.isSpectator() && extraactions)
-        {
+        {	// this gives special people the ability to take over playing
+        	// for players that have quit.  There's no public interface for
+        	// this, but it still works.
             if (nva != 0)
             {
                 JMenu to = ColorChoiceMenu(s.get(TakeOverMessage));
@@ -2088,10 +2090,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 myFrame.addAction(to,deferredEvents);
             }
         }
- 
+        if(extraactions || G.isCheerpj()) 
+        {
+        	testswitch = myFrame.addAction("test switch",deferredEvents);
+        }
         if (extraactions)
         {
-            testswitch = myFrame.addAction("test switch",deferredEvents);
+            
             inspectGame = myFrame.addAction("inspect game",deferredEvents);
             inspectViewer = myFrame.addAction("inspect canvas",deferredEvents);
             saveStart = myFrame.addAction("Save as Starting Position",deferredEvents);
@@ -2434,7 +2439,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             } //translate guests name
 
             setPlayerName(player, "(" + tn + ")", false);
-            
+            /**
+            11/2024 ddyer
+            this would trigger if a player already in the lobby has a duplicate spectator,
+            which shouldn't happen.  It also triggered if a reconnecting player had a
+            network error, which caused occasional "missing echoes" errors when a 
+            duplicate "playing x" message was issued.
             if(my.isSpectator()
             	&& player.uid.equals(my.uid)
             	&& !isPoisonedGuest					// don't let guests take over when they notice a guest has left
@@ -2442,6 +2452,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	{
             	bePlayer(player);
             	}
+            */
         }
     }
 
@@ -4771,6 +4782,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			// disConnected("test");
     	   			 //myNetConn.closeConn();
     	   			 v.testSwitch();
+    	   			 PopupManager.useSwing = !PopupManager.useSwing;
+    	   			 G.infoBox(null,"swing popups "+PopupManager.useSwing);
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;
        				}

@@ -452,14 +452,15 @@ public class DataCache implements Runnable,Config
 		// changing xxx results in the entire cache being reloaded.
 		// the rest of the result is a list of dates (unix format, seconds since the epoch),files to be cached,
 		//
-		String firstLine = reader.readLine().toLowerCase();
-		if(verbose) { DataCache.out.println("webinfo:"+firstLine); }
+		String zeroline = reader.readLine();
+		if(verbose) { DataCache.out.println("webinfo:"+zeroline); }
+		String firstLine = zeroline==null ? "" : zeroline.toLowerCase();
 		String specs[] = G.split(firstLine,',');
-		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
 		if(specs.length==3
 			&& "version".equals(specs[0])
 			&& "1".equals(specs[1]))		// require an exact match on version we expect
 		{
+		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
 		String line = null;
 		int nlines = 0;
 		while( (line=reader.readLine())!=null)

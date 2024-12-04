@@ -72,7 +72,9 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		int index;
 		private StockArt chip;
 		private StockArt reverseChip = null;
-		Annotation(StockArt c,StockArt rev,int ind) { chip = c; reverseChip=rev; index = ind; }
+		Annotation(StockArt c,StockArt rev,int ind)
+			{ chip = c; reverseChip=rev; index = ind; 
+			}
 		public int index() { return index; }
 		public StockArt getChip(boolean rev) { return rev ? reverseChip : chip; }
 		static public Annotation find(int n)

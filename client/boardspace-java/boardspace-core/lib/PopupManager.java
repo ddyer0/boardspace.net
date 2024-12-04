@@ -22,7 +22,6 @@ import bridge.JMenuItem;
 import bridge.MenuItem;
 import bridge.PopupMenu;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.AccessControlException;
@@ -245,7 +244,6 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	   public boolean isVisible() {
 		   return false;
 	   }
-	   private Component showOn = null;
 	   public void show(MenuParentInterface parent, int x, int y) 
 	   {
 		try {
@@ -258,7 +256,6 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	   }
 	  public void setVisible(boolean b) 
 	  {
-		if(showOn!=null) { showOn.remove(awtPopupMenu); }
 	  }
 	  public void setLightWeightPopupEnabled(boolean b) 
 	  {

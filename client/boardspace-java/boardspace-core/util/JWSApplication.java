@@ -29,7 +29,6 @@ import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
 import lib.OfflineGames;
-import lib.Plog;
 import lib.SoundManager;
 import lib.StringStack;
 import lib.UrlResult;
@@ -294,7 +293,7 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);
-					  Plog.log.addLog("put arg " ,par," ",arg);
+					  System.out.println("put arg " +par+" "+arg);
 					}
 			}
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);

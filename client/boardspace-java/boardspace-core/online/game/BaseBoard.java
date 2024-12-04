@@ -482,7 +482,6 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 		return simultaneousTurnsAllowed && state.simultaneousTurnsAllowed();
 	}
 
-	public boolean passIsPossible() { return false; }
 	public boolean drawIsPossible() { return false; }
 	public boolean canOfferDraw() { return false; }
 	

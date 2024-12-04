@@ -5096,7 +5096,7 @@ private void drawPlayerBoard(Graphics gc,
     		Rectangle oldClip = GC.combinedClip(gc,brect);
      	   	drawBoardElements(gc,gb,newBR,highlight,highlightAll,targets,ui);
      	   	GC.setClip(gc,oldClip);
-     	   	GC.frameRect(gc,Color.red,brect);
+     	   	//GC.frameRect(gc,Color.red,brect);
        	   	//G.frameRect(gc,Color.red,brect);
       	   	//G.frameRect(gc,Color.green,dispR);
       	}
@@ -6675,17 +6675,19 @@ private void drawPlayerBoard(Graphics gc,
   	GC.Text(gc, false, nameR, Color.black,null,name);
     }
   }
-  
+  private int lastMoveNumber = -1;
   public boolean playerChanging()
   {
   	commonPlayer who = currentGuiPlayer();
   	commonMove top = History.top();
-  	
+  	int currentMove = lastMoveNumber;
+  	lastMoveNumber = getBoard().moveNumber() ;
   	return((mainBoard.players_in_game>1) 
   			&& (allPlayersLocal()|| (who==getActivePlayer()))
   			&& (mainBoard.turnChangeSamePlayer ||
   					((top.op==MOVE_DONE)	
   					  || (who==null)
+  					  || (currentMove!=lastMoveNumber)
   					  || (who.boardIndex!=top.player))));
   }
 

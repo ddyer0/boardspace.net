@@ -1404,7 +1404,11 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		}
 				
 		if(gearMenu.handleDeferredEvent(target,command)) { }
-			
+		if(target == testswitch)
+		{
+  			 PopupManager.useSwing = !PopupManager.useSwing;
+  			 G.infoBox(null,"swing popups "+PopupManager.useSwing);
+		}
 	    if (target == startserver)  
 	 			{ 
 	    	   	 boolean running = VNCService.isVNCServer()||RpcService.isRpcServer(); 
@@ -1570,6 +1574,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
     private Keyboard keyboard = null;
 	private boolean useKeyboard = G.defaultUseKeyboard();
 	private JMenuItem startserver = null; //for testing, disable the transmitter
+	private JMenuItem testswitch = null;
 	private SeatingViewer seatingViewer = null;
 	private AuxViewer vncViewer = null;
 	private RpcServiceClient rpcViewer = null;

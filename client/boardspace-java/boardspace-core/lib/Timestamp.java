@@ -1,4 +1,1 @@
-
-				package lib;
-				public interface Timestamp { String build = "22-November-2024 15:11"; } 
-			
+package lib; public interface Timestamp { String build =  "Tue 12/03/2024" ;} 
