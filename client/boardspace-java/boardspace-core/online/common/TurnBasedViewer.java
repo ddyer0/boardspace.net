@@ -1235,7 +1235,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	     */
 	    public void drawScrollbar(Graphics gc,Rectangle r,int scrollPos,int smallJump,int bigJump,int scrollMax,boolean moreUnseen)
 	    {
-	        int scrollw = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+	        int scrollw = ScrollArea.getDefaultScrollbarWidth();
 	        scrollbar.InitScrollDimensions(G.Right(r)-scrollw, r , scrollw,scrollMax, smallJump, bigJump);
 	        //
 	        // the scroll bar position is choreographed between the changes caused by internal scroll

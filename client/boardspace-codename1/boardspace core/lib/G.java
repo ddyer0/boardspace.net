@@ -19,6 +19,7 @@ package lib;
 import bridge.*;
 
 import com.codename1.ui.Component;
+import com.codename1.ui.Font;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import java.util.Calendar;
@@ -44,7 +45,8 @@ public class G extends Platform implements Timestamp
 	public static final String LANGUAGE = "language";
 	public static final String TABLEWIDTH = "tablewidth";
 	public static final String TABLEHEIGHT = "tableheight";
-
+	public static final String JAVADROID = "javadroid";			// jvm on android
+	public static final String TABINTERFACE = "tabinterface";	// use tabbed interface instead of free window
 	public enum GlobalStatus { awake,asleep }
 	public static GlobalStatus globalStatus = GlobalStatus.awake;
 	public static GlobalStatus getGlobalStatus() { return(globalStatus); }
@@ -1699,7 +1701,7 @@ public static void setIdString(String str) { G.idString = str; }
 private static String idString = "";
 
 private static final String OS_VERSION = "os.version";
-private static final String OS_ARCH = "os.arch";
+public static final String OS_ARCH = "os.arch";
 private static final String OS_NAME = "os.name";
 private static final String JAVA_CLASS_VERSION = "java.class.version";
 private static final String JAVA_VENDOR_URL = "java.vendor.url";
@@ -2390,5 +2392,13 @@ public static String expandClassName(String classname)
 		public static boolean TURNBASED()
 		{	return TURNBASED ;
 		}
+		
+		public static Font menuFont()
+		{
+			return getFont(getGlobalDefaultFont(),
+					MenuTextStyle,
+					G.standardizeFontSize(MenuTextSize*getDisplayScale()));
+		}
+		
 	}
  	

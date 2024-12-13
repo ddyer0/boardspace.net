@@ -184,7 +184,7 @@ public class GoCell extends stackCell<GoCell,GoChip> implements LocationProvider
 	}
 	return(blackTerritory);   
   }
-  
+
 	public SimpleGroup getGroup() 
 		{ 	if(groupChangeClock != board.changeClock) { theGroup=null; }
 			if(theGroup==null)

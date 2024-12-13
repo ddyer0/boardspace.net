@@ -18,6 +18,7 @@ package bridge;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 
 import lib.G;
 import lib.NativeMenuInterface;
@@ -28,6 +29,7 @@ import lib.Plog;
 public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInterface
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String msg) { super(msg); } 
+	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? G.menuFont() : f); }
 	public int getItemCount() { return(getComponentCount()); }
 	public NativeMenuItemInterface getMenuItem(int n) 
 	{ Component c = getComponent(n);
@@ -53,5 +55,6 @@ public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInte
 			super.show(MasterForm.getMasterForm(),x,y);			
 		}
 	}
+
 }
 

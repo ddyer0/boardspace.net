@@ -2277,9 +2277,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
   	// if any of the boundaries seem to be insecure, this won't be a reliable territory
   	G.Assert(kind.isSafeTerritory(),"unsupported kind");
  
-  	Kind mixedKind = (kind==Kind.BlackTerritory) ? Kind.WhiteAndEmpty : Kind.BlackAndEmpty;
-
-	SimpleGroup mixedGroup = mixedKind==Kind.WhiteAndEmpty
+	SimpleGroup mixedGroup = (kind==Kind.BlackTerritory)
 				? emptyGroup.top().getBlackTerritory()
 				: emptyGroup.top().getWhiteTerritory();
 	return(mixedGroup.hCanMakeTerritory(emptyGroup));

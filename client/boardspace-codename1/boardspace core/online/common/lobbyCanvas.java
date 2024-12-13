@@ -412,7 +412,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int minw = (int)(G.Width(dim)*SCALE);
 		boolean wideMode = inWidth>inHeight && inWidth>=minw*1.6;
 		{
-		double s_minw = (s_USERIMAGEWIDTH+s_GAMEIMAGEWIDTH+2*ScrollArea.DEFAULT_SCROLL_BAR_WIDTH+s_PLAYINGIMAGEWIDTH);
+		double s_minw = (s_USERIMAGEWIDTH+s_GAMEIMAGEWIDTH+2*ScrollArea.getDefaultScrollbarWidth()+s_PLAYINGIMAGEWIDTH);
 		
 		{
 		int gameH = wideMode ? inHeight : inHeight*3/4;
@@ -441,7 +441,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		PLAYERCELLSIZE = (int)(s_PLAYERCELLSIZE*scale);
 		GAMEHEIGHT = (int)(s_GAMEHEIGHT*scale);		
 		GAMEIMAGEWIDTH = (int)(s_GAMEIMAGEWIDTH*scale);
-		int SCROLLBARWIDTH = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*scale);
+		int SCROLLBARWIDTH = (int)(ScrollArea.getDefaultScrollbarWidth());
 		USERIMAGEWIDTH = (int)(s_USERIMAGEWIDTH*scale);
 		int PLAYINGIMAGEWIDTH = (int)(s_PLAYINGIMAGEWIDTH*scale);
 		USERHEIGHT = (int)(s_USERHEIGHT*scale);
@@ -2432,7 +2432,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		if(mod==0)
 		{
 
-		boolean val = GameScrollArea.doMouseWheel(x,y,amount)
+		boolean val = super.doMouseWheel(x,y,amount)
+						|| GameScrollArea.doMouseWheel(x,y,amount)
 						|| UserScrollArea.doMouseWheel(x,y,amount)
 						|| theChat.doMouseWheel(x,y,amount);
 		if(val) { repaint(10,"mouse wheel");}

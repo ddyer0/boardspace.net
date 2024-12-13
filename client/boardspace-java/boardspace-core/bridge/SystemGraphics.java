@@ -80,7 +80,9 @@ public abstract class SystemGraphics
 		last_count++;
 	}
 	// constructors
-	protected SystemGraphics() {}
+	protected SystemGraphics() 
+	{
+	}
 	protected SystemGraphics(java.awt.Graphics g) { graphics = (Graphics2D)g; }
 
 	private Graphics create()
@@ -106,6 +108,7 @@ public abstract class SystemGraphics
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
 		gt.graphics = (java.awt.Graphics2D)g;
+		gt.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		gt.setActualSize(clipw,cliph);
 		return(gt);
 	}
@@ -119,6 +122,9 @@ public abstract class SystemGraphics
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
 		gt.graphics = (java.awt.Graphics2D)graphics;
+		gt.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
 		gt.setActualSize(client.getWidth(),client.getHeight());
 		return gt;
 	}

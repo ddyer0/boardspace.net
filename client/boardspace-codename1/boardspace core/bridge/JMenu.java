@@ -25,6 +25,7 @@ public class JMenu extends Menu
 {
 	public JMenu() { }
 	public JMenu(String msg) { super(msg);  }
+	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? G.menuFont() : f); }
 	public void add(Menu jsubmenu) { super.add(jsubmenu); }
 	public boolean isVisible() { return(false); }
 	public void setSelected(boolean v) {}

@@ -314,7 +314,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public void setBounds(int left, int top, int inWidth, int inHeight) {
 		G.SetRect(this,left,top,inWidth,inHeight);
 		mlCache = null;
-    	int barWidth = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+    	int barWidth = ScrollArea.getDefaultScrollbarWidth();
     	// the negative width keeps the scroll bar from doing any scroll actions in the main text area
     	// which handles it by itself
     	Rectangle messageRect = new Rectangle(left, top, inWidth-barWidth, inHeight);

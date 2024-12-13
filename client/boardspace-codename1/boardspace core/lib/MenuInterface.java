@@ -16,6 +16,8 @@
  */
 package lib;
 
+import com.codename1.ui.Font;
+
 import bridge.ActionListener;
 
 public interface MenuInterface {
@@ -28,4 +30,6 @@ public interface MenuInterface {
 	public void setVisible(boolean b);
 	public MenuInterface newSubMenu(String msg);
 	public boolean useSimpleMenu();
+	public void setFont(Font f);
+	
 }

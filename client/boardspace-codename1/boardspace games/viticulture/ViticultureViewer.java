@@ -3463,8 +3463,8 @@ private void drawPlayerBoard(Graphics gc,
      	ViticultureState state = gb.resetState;
      	boolean swapMode = false;
         int nToDiscard = state.discardCards();
-        boolean isDiscard = nToDiscard>=0;
-        StockArt mark = (isDiscard?StockArt.Exmark:StockArt.Checkmark);
+        //int nToKeep = state.keepCards();
+        StockArt mark = (nToDiscard>=0?StockArt.Exmark:StockArt.Checkmark);
         boolean quickExit = false;
         PlayerBoard pb = gb.getCurrentPlayerBoard();
        	ViticultureCell cards = pb.cards;
@@ -5912,6 +5912,7 @@ private void drawPlayerBoard(Graphics gc,
            			G.Assert(some, "structure to destroy not found");
            		}
            		break;
+ 
         	case DiscardCards:
         	case Discard1ForOracle:
         	case DiscardGreen:
@@ -5932,12 +5933,14 @@ private void drawPlayerBoard(Graphics gc,
        			}
        			break;
        		
+           	case Keep1ForOracle:
+        	case Keep2ForOracle:
            	case Select1Of1FromMarket:
         	case Select1Of2FromMarket:
         	case Select2Of2FromMarket:
         	case Select2Of3FromMarket:
         		{
-            		PerformAndTransmit("Select "+pb.oracleCards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
+            		PerformAndTransmit("Select "+pb.cards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
         		}
         		break;
         	case Pick2TopCards:

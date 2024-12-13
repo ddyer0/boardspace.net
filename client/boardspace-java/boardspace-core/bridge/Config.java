@@ -16,6 +16,7 @@
  */
 package bridge;
 
+import bridge.Platform.Style;
 import common.CommonConfig;
 
 public interface Config extends CommonConfig
@@ -47,4 +48,9 @@ public interface Config extends CommonConfig
    static final String[] BlacklistedDataFiles = {""};
    
    static final String DictionaryDir = "/dictionary/words/";
+	
+   public static final int DEFAULT_SCROLL_BAR_WIDTH = 20;			// default size, should still be scaled by G.getDisplayScale()
+   public static final int MenuTextSize = 14;
+   public static final Style MenuTextStyle = Style.Plain;
+
 }

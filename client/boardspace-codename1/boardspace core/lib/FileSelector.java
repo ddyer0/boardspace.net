@@ -914,7 +914,7 @@ public class FileSelector extends FullscreenPanel
     	}
     }
 
-    private boolean DoActionEvent(Object target,String command)
+    private boolean doActionEvent(Object target,String command)
     {
     	for(int i=0;i<sourceButtons.size();i++)
     	{
@@ -953,11 +953,16 @@ public class FileSelector extends FullscreenPanel
         		}
         }
         else if(target == saveButton)
-        {	selectedUrl = currentSource.selectedUrl(dirField.getText());
+        {	String name = dirField.getText();
+        	if(!"".equals(name))
+        	{
+        	selectedUrl = currentSource.selectedUrl(name);
         	if(selectedUrl!=null)
         		{ if(currentSource.modal) { exit = true; }
         		  sendSave();
         		}
+        }
+        	
         }
         else if(target==deleteButton)
         {
@@ -1023,7 +1028,7 @@ public class FileSelector extends FullscreenPanel
 
 	public boolean handleDeferredEvent(Object e, String command) 
 	{
-		DoActionEvent(e,command);
+		doActionEvent(e,command);
 		itemStateChanged(e);
 		return(true);
 	}

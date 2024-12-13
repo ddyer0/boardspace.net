@@ -10,6 +10,7 @@ import lib.NativeMenuItemInterface;
 public class MenuItem extends java.awt.MenuItem implements NativeMenuItemInterface
 {
 	public MenuItem(String string) { super(string); }
+	public MenuItem(String string,Font f) { this(string); setFont(f==null ? G.menuFont() : f); }
 	public Icon getNativeIcon() {	return null; }
 	public NativeMenuInterface getSubmenu() { return(null); }
 	

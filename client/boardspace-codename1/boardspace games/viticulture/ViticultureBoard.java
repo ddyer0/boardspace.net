@@ -2484,8 +2484,21 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		triggerCard = cw;
 
     		if(testOption(Option.DrawWithReplacement)) { replaceCards(from,pb,n+1,originalHeight); }
-
+    		if(revision>=163)
+    		{
+    		switch(n)
+    		{
+    		case 1: p1("keep 1");
+    				return ViticultureState.Keep1ForOracle;
+    		case 2: p1("keep 2");
+    				return ViticultureState.Keep2ForOracle;
+    		default: return ViticultureState.Discard1ForOracle;
+    		}
+    		}
+    		else
+    		{
     		return(ViticultureState.Discard1ForOracle);
+    		}
     		}
     		// if we didn't get the extra card, skip the oracle. 
     		// this is a real thing for the green deck in 6p games
@@ -3158,7 +3171,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
    				{
   					pb.oracleCards.reInit();
   	   				for(int i=0;i<gotncards;i++) { pb.oracleCards.addChip(pb.cards.removeTop()); }
-  	   				nextState = bonus|(revision>=156&&isFarmer) ? ViticultureState.Select2Of2FromMarket : ViticultureState.Select1Of1FromMarket;
+  	   				nextState = bonus|(revision>=156&&isFarmer) 
+  	   							? ViticultureState.Select2Of2FromMarket 
+  	   							: ViticultureState.Select1Of1FromMarket;
    				}
    				else if(nextState==ViticultureState.Discard1ForOracle)
    				{	if(revision>=158)
@@ -3997,6 +4012,36 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		}
 		return removed;
 	}
+
+	public void keepSelectedCards(PlayerBoard pb,replayMode replay,String msg) 
+	{	CardPointerStack selectedItems = pb.selectedCards;
+		ViticultureCell oracleCards = pb.oracleCards;
+		for(int lim = oracleCards.height()-1; lim>=0; lim--)
+		{
+			ViticultureChip chip = oracleCards.chipAtIndex(lim);
+			int targetIndex = pb.cards.findChip(chip);
+			
+			boolean keep = false;
+			for(int i=0;i<selectedItems.size(); i++)
+			{
+				CardPointer item = selectedItems.elementAt(i);
+				if(item.index==targetIndex) { keep = true; }
+			}
+			if(keep) {}
+			else 
+				{ 
+				discardCard(pb.cards,targetIndex,replay,msg);
+				// adjust the indexes of the selected cards to compensate
+				// for the removed item
+				for(int i=0;i<pb.selectedCards.size();i++)
+					{	CardPointer item = selectedItems.elementAt(i);
+						if(item.index>targetIndex) { item.index--; }
+					}
+				}
+		}
+	}
+
+
 
     private int doHarvest(PlayerBoard pb,replayMode replay)
     {	CellStack fields = pb.selectedCells;
@@ -6165,6 +6210,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	}
     }
     
+
     private void doRemove(PlayerBoard pb,Viticulturemovespec m,replayMode replay)
     {
 		ViticultureCell from = getCell(m.source,m.from_col,m.from_row);
@@ -6355,6 +6401,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		// dispense with new wakeup if the game will be over
        		} 		
     		break;
+    	case Keep2ForOracle:
+    	case Keep1ForOracle:
+    		{	
+    		keepSelectedCards(pb,replay,KeepSomething);
+       		pb.oracleCards.reInit();
+    		}
+       		break;
     	case Discard1ForOracle:
     		pb.oracleCards.reInit();
     		discardSelectedCards(pb,replay);
@@ -7965,6 +8018,20 @@ public int getMaxRevisionLevel() { return(REVISION); }
    		   }
   		   
    		   break;
+   	   case Keep1ForOracle:
+   	   case Keep2ForOracle:
+		   {
+   			   ViticultureChip card = pb.cards.chipAtIndex(m.from_index);
+   			   ViticultureChip removed = pb.selectedCards.remove(m.source,card,m.from_index);
+   			   if(removed==null) { pb.selectedCards.push(m.source,card,m.from_index); }
+   			   int finalh = resetState.nToTake();
+   			   int nSelected = pb.selectedCards.size();
+   			   setState(
+   					   (nSelected==finalh)
+   					   	? ViticultureState.Confirm 
+   					   	: resetState);
+   		   }		   
+   		   break;
    	   case Select2Of2FromMarket:
    	   case Select2Of3FromMarket:
    	   case Select1Of1FromMarket:
@@ -8305,6 +8372,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
                 	boolean confirm = false;
                 	switch(resetState)
                 	{
+                	case Keep1ForOracle:
+                		confirm = (pb.selectedCards.size()==1);
+                		break;
+                	case Keep2ForOracle:
+                		confirm = (pb.selectedCards.size()==2);
+                		break;
                 	case Discard1ForOracle:
                 	case DestroyStructure:
                 	case DiscardGreen:
@@ -11279,6 +11352,21 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		for(ViticultureCell c : pb.oracleColors)
 		{
 			all.push(new Viticulturemovespec(MOVE_SELECT,c.rackLocation(),whoseTurn));
+		}
+		break;
+
+	case Keep1ForOracle:
+	case Keep2ForOracle:
+		{
+		ViticultureCell cards = pb.oracleCards;
+		int ncards = cards.height();
+		for(int h=ncards-1; h>=0; h--)
+			 {	
+				ViticultureChip chip = cards.chipAtIndex(h);
+				int ind = pb.cards.findChip(chip);
+				Assert(ind>=0,"card %s disappeared",chip);
+			 	all.push(new Viticulturemovespec(MOVE_SELECT,pb.cards,ind,whoseTurn));
+			 }
 		}
 		break;
 	case Select1Of1FromMarket:

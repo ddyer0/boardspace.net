@@ -174,7 +174,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
         }
         startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
-        if(true || G.isCheerpj()) 
+        if(G.isCheerpj()) 
         {
         	testswitch = myFrame.addAction("test switch",deferredEvents);
         }

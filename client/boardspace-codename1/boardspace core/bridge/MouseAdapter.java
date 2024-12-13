@@ -429,7 +429,7 @@ public class MouseAdapter
 					break;
 				case Up:
 					{
-					MouseEvent ev = new MouseEvent(awtComponent,x,y,1);
+					MouseEvent ev = new MouseEvent(awtComponent,x,y,0);
 					listener.mouseMoved(ev);
 					}
 					break;

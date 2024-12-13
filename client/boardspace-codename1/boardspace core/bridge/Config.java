@@ -16,6 +16,7 @@
  */
 package bridge;
 
+import bridge.Platform.Style;
 import common.CommonConfig;
 
 public interface Config extends CommonConfig{
@@ -42,6 +43,10 @@ public interface Config extends CommonConfig{
    public static final String FONT_FAMILIES[] =  { "Serif","SansSerif","Monospaced"};
    // separate data file cache isn't used in the main line java, only in the codename1 branch
    public static final String BlacklistedDataFiles[] = {""};
+   
+   public static int DEFAULT_SCROLL_BAR_WIDTH = 25;			// default size, should still be scaled by G.getDisplayScale()
+   public static final int MenuTextSize = 18;
+   public static final Style MenuTextStyle = Style.Plain;
    
    //
 	// version 7.78 added new logic to the resource manager, so raw files can act as a single

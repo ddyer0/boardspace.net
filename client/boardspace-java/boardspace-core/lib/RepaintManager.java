@@ -1191,7 +1191,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	     public void redrawCanvas()
 	     {	if(shutdown) { return; }
 	     
-	     	switch(repaintStrategy)
+	     switch(repaintStrategy)
 	     	{
 	     	case Direct_Unbuffered:
 	     	case Direct_SingleBuffer:	

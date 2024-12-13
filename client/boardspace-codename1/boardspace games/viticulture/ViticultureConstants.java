@@ -94,6 +94,8 @@ public interface ViticultureConstants
 	static String BuildStructureMode = "Build a Structure";
 	static String DiscardCardMode = "Discard #1{##,# Card,# Cards}";
 	static String DiscardOracleMode = "Discard 1 Card";
+	static String Keep1OracleMode = "Keep 1 Card";
+	static String Keep2OracleMode = "Keep 2 Cards";
 	static String DiscardWineMode = "Discard Wine";
 	static String DiscardGrapeMode = "Discard Grapes";
 	static String ChooseCardsMode = "Take #1{##,# Card,# Cards}";
@@ -159,6 +161,7 @@ public interface ViticultureConstants
 	static String TradeReceive = "Trade Receive";
 	static String FromStudio = "Studio";
 	static String DiscardSomething = "Discard #1 #2";
+	static String KeepSomething = "Keep #1 #2";
 	static String PlayCardMessage = "#1 #2";
 	static String DrawSomething = "Draw #1";
 	static String PlantSomething = "Plant #1 #2";
@@ -310,6 +313,7 @@ public interface ViticultureConstants
 	{  "Viticulture",
 		PointsFrom,
 		DiscardGrapeMessage,
+		KeepSomething,
 		ScoreSummaryMessage,
 		ScoringFor,
 		NoCardMessage,
@@ -373,6 +377,8 @@ public interface ViticultureConstants
 		GiveCardsMode,
 		DiscardCardMode,
 		DiscardOracleMode,
+		Keep1OracleMode,
+		Keep2OracleMode,
 		DiscardWineMode,
 		DiscardGrapeMode,
 		SwitchVinesMode,
@@ -720,6 +726,8 @@ public interface ViticultureConstants
 		Harvesting(HarvestMode),
 		DiscardCards(DiscardCardMode),
 		DiscardOracle(DiscardOracleMode),
+		Keep1Oracle(Keep1OracleMode),
+		Keep2Oracle(Keep2OracleMode),
 		DiscardWines(DiscardWineMode),
 		DiscardGrapes(DiscardGrapeMode),
 		ChooseCards(ChooseCardsMode),
@@ -798,6 +806,8 @@ public interface ViticultureConstants
 	Discard3CardsAnd1WineFor3VP(Activity.DiscardCards,"Discard 1 wine and 3 visitor cards for + 3VP",false,false, UI.ShowCards),
 	Discard2CardsForAll(Activity.DiscardCards,"Discard 2 cards and draw 1 of each type of card",true,true, UI.ShowCards),
 	Discard1ForOracle(Activity.DiscardOracle,"Discard one of these cards (Oracle)",false,false, UI.ShowCards),
+	Keep1ForOracle(Activity.Keep1Oracle,"Select one of these cards (Oracle)",false,false, UI.ShowCards),
+	Keep2ForOracle(Activity.Keep2Oracle,"Select two of these cards (Oracle)",false,false, UI.ShowCards),
 	DiscardGreen(Activity.DiscardCards,"Discard a Green card",false,false, UI.ShowCards),
 	Discard2Green(Activity.DiscardCards,"Discard 2 Green cards",false,false, UI.ShowCards),
 	Flip(Activity.Flip,"Buy or Sell a field for $",false,false, UI.ShowCards),
@@ -958,10 +968,12 @@ public interface ViticultureConstants
 	{
 		switch(this)
 		{
+		case Keep2ForOracle:
 		case Select1Of2FromMarket:
 		case Select2Of2FromMarket:
 			return 2;
 			
+		case Keep1ForOracle:
 		case Select1Of1FromMarket:
 			return 1;
 	
@@ -978,10 +990,12 @@ public interface ViticultureConstants
 	{
 		switch(this)
 		{
+		case Keep2ForOracle:
 		case Select2Of3FromMarket:
 		case Select2Of2FromMarket:
 			return 2;
 			
+		case Keep1ForOracle:
 		case Select1Of2FromMarket:
 		case Select1Of1FromMarket:
 			return 1;

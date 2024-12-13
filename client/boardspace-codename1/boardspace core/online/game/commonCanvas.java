@@ -5328,7 +5328,10 @@ public abstract class commonCanvas extends exCanvas
         }
         
         hidden.showSgf = myFrame.addAction(ShowSGFMessage,deferredEvents);
+        if(!G.isCheerpj())
+        {
         hidden.emailSgf = myFrame.addAction(EmailSGFMessage,deferredEvents);
+        }
 
         if (canUseDone())
         {

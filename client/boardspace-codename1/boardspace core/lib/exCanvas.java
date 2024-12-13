@@ -35,8 +35,6 @@ import java.util.Vector;
 import lib.RepaintManager.RepaintHelper;
 import lib.RepaintManager.RepaintStrategy;
 
-// TODO: make font size menu appear in the designated size
-
 public abstract class exCanvas extends ProxyWindow 
 	implements SimpleObserver,DeferredEventHandler,
 		CanvasProtocol,Config,ActionListener,
@@ -57,7 +55,7 @@ public abstract class exCanvas extends ProxyWindow
 
     // the codename1 simulator supplies mouse move events, which is not
     // typical of real hardware, so normally we don't want the simulator
-    boolean SIMULATE_MOUSE_MOVE = !G.isSimulator();
+    boolean SIMULATE_MOUSE_MOVE = true;
     
     // this is initialized as part of the contract of preloadImages(), 
     // it's here instead of in commonCanvas because of the order of
@@ -500,12 +498,14 @@ public abstract class exCanvas extends ProxyWindow
         
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
         l.fontSizeMenu.setForeground(Color.blue);
+        Font ref = standardPlainFont();
         int[] sizes = { 8, 9, 10, 12, 14, 16 };
         for(int size : sizes)
         {
         	JCheckBoxMenuItem m  = new JCheckBoxMenuItem(""+size);
         	if(size==G.defaultFontSize) { m.setSelected(true); }
         	m.addItemListener(deferredEvents);
+        	if(!G.isCodename1()) { m.setFont(G.getFont(ref,size)); }
         	l.fontSizeMenu.add(m);
         }
         
@@ -532,7 +532,7 @@ public abstract class exCanvas extends ProxyWindow
         addMouseMotionListener(this);
         addMouseListener(this);
         addMouseWheelListener(this);
-        if(!G.isCodename1() || G.isRealWindroid())
+        if(!G.useTabInterface() && (!G.isCodename1() || G.isRealWindroid()))
         {
             
             sliderMenu = new SliderMenu(globalZoomRect);
@@ -543,14 +543,6 @@ public abstract class exCanvas extends ProxyWindow
             myFrame.addToMenuBar(zoomMenu,deferredEvents);
             zoomMenu.setVisible(true);
   
-        if(G.debug())
-        	{ l.rotate180Menu = new IconMenu(StockArt.Rotate.image); 
-         	  l.rotate90Menu = new IconMenu(StockArt.Rotate90.image);
-         	  l.rotate270Menu = new IconMenu(StockArt.Rotate270.image);
-         	  myFrame.addToMenuBar(l.rotate270Menu,deferredEvents);
-        	  myFrame.addToMenuBar(l.rotate180Menu,deferredEvents);
-        	  myFrame.addToMenuBar(l.rotate90Menu,deferredEvents);
-        	}
         }
 
    }
@@ -1556,6 +1548,10 @@ graphics when using a touch screen.
 			}
 
 		}
+        public boolean doMouseWheel(int x,int y,double amount)
+        {
+        	return (menu!=null ? menu.doMouseWheel(x,y,amount) : false);
+        }
         /**
          * this is a standard rectangle of all viewers - the rectangle that 
          * contains the board.  Your {@link #setLocalBounds} method still has

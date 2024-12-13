@@ -19,6 +19,8 @@ package lib;
 import bridge.*;
 import java.util.Hashtable;
 
+import com.codename1.ui.Font;
+
 //
 // 1/2008 some tweaks to allow non integer values
 //
@@ -46,27 +48,45 @@ public class PopupManager extends SimpleObservable implements ActionListener
 {
     // menu support.  
     //
+
+	// on Windows, awt menus have problems with chinese and japanese
+	// on Windows, swing menus have reliability problems due to multi threading
+	// pick your poison. [ddyer 1/2023]
+	// Note: 12/28/2023 cheerpj has problems with both flavors of menus.  AWT menus can overrun
+	// the visible window (and are clipped), whereas Swing menus sometimes fail to 
+	// appear at all.  Cheerpj was accidentally classified as a unix platform and so defaulted
+	// to using awt, which works better.
+	//
+	public static boolean useSwing = !G.isUnix() || G.isCheerpj();	// default to using swing menus
+
 	public boolean useSimpleMenu = false;
+	public boolean useSimpleMenu()
+	   { 
+		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+
+	   }
 	// constructor
-	private static boolean lightweightMenus = true;
+	private static boolean lightweightMenus = false;
 	
 	public class bsSwingMenu implements MenuInterface
 	{
-	public boolean useSimpleMenu() 
+		public boolean useSimpleMenu() 
 		{ 			
-		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+		  return PopupManager.this.useSimpleMenu();
 		}
-	private JPopupMenu swingPopupMenu = null;
-		   
-	public NativeMenuInterface getNativeMenu() { return(swingPopupMenu); }
-	public bsSwingMenu(String msg)
+
+		
+	private JPopupMenu popupSwingMenu = null;
+	public void setFont(Font f) { popupSwingMenu.setFont(f); }
+	public NativeMenuInterface getNativeMenu() { return(popupSwingMenu); }
+	public bsSwingMenu(String msg,Font f)
 	{
-		swingPopupMenu = new JPopupMenu(msg); 
+		popupSwingMenu = new JPopupMenu(msg,f); 
 		// just expetimentally, lightweight menus have fewer mystery 
 		// crashes [ddyer 1/2023]
-		swingPopupMenu.setLightWeightPopupEnabled(lightweightMenus);
+		popupSwingMenu.setLightWeightPopupEnabled(lightweightMenus);
 	}
-	public String toString() { return("<Box "+swingPopupMenu.toString()+">"); }
+	public String toString() { return("<Box "+popupSwingMenu.toString()+">"); }
 	   
 	// add a leaf item
 	public NativeMenuItemInterface add(Text item,ActionListener listener)
@@ -74,8 +94,8 @@ public class PopupManager extends SimpleObservable implements ActionListener
 		Icon ic = item.getIcon();
 		JMenuItem newitem = ic!=null 
 					   ? new JMenuItem(ic)
-					   : new JMenuItem(item.getString());	// this is where we get an icon instead
-		swingPopupMenu.add(newitem);
+					   : new JMenuItem(item.getString(),font);	// this is where we get an icon instead
+		popupSwingMenu.add(newitem);
 		newitem.addActionListener(listener);
 		return(newitem);			   
 	}
@@ -83,20 +103,20 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	// add a leaf item
 	public NativeMenuItemInterface add(String item,ActionListener listener)
 	{
-		JMenuItem newitem = new JMenuItem(item);
-		swingPopupMenu.add(newitem);
+		JMenuItem newitem = new JMenuItem(item,font);
+		popupSwingMenu.add(newitem);
 		newitem.addActionListener(listener);
 		return(newitem);
 	}
 
 	// add a submenu
 	public void add(MenuInterface item)
-	{   swingPopupMenu.add((JMenu)item.getNativeMenu());
+	{   popupSwingMenu.add((JMenu)item.getNativeMenu());
 	}
 
 	public boolean isVisible() 
 	{
-		return(swingPopupMenu.isVisible());
+		return(popupSwingMenu.isVisible());
 	}
 	public void show(MenuParentInterface parent, int x, int y) 
 	{	
@@ -114,7 +134,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 			{
 			lightweightMenus = !lightweightMenus;
 			Plog.log.addLog("trying lightweight ",lightweightMenus," after ",err);
-			swingPopupMenu.setLightWeightPopupEnabled(lightweightMenus);
+			popupSwingMenu.setLightWeightPopupEnabled(lightweightMenus);
 			}
 			else 
 			{ Plog.log.addLog("use AWT menus after ",err);
@@ -124,11 +144,11 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	}
 	public void setVisible(boolean b) 
 	{
-		swingPopupMenu.setVisible(b);
+		popupSwingMenu.setVisible(b);
 	}
 
 	public MenuInterface newSubMenu(String msg)
-	{	return(new bsSwingSubMenu(msg));
+	{	return(new bsSwingSubMenu(msg,font));
 	}
 
 	}
@@ -136,17 +156,17 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	public class bsSwingSubMenu implements MenuInterface
 	{
 		   private JMenu jsubmenu = null;
+		   public void setFont(Font f) { jsubmenu.setFont(f); }
 		   public boolean useSimpleMenu() 
-		   { 
+		   { 			
 				
-				  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
-
+			   return PopupManager.this.useSimpleMenu();
 		   }
 		   public NativeMenuInterface getNativeMenu() { return(jsubmenu); }
 		   // constructor for submenus
-		   public bsSwingSubMenu(String msg)
+		   public bsSwingSubMenu(String msg,Font f)
 		   {
-			   jsubmenu = new JMenu(msg);
+			   jsubmenu = new JMenu(msg,f);
 		   }
 	   
 		   public String toString() { return("<Box "+jsubmenu.toString()+">"); }
@@ -157,7 +177,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 			   Icon ic = item.getIcon();
 			   JMenuItem newitem = ic!=null 
 					   ? new JMenuItem(ic)
-					   : new JMenuItem(item.getString());	// this is where we get an icon instead
+					   : new JMenuItem(item.getString(),font);	// this is where we get an icon instead
 			   jsubmenu.add(newitem);
 			   newitem.addActionListener(listener);
 			   return(newitem);			   
@@ -166,7 +186,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 		   // add a leaf item
 		   public NativeMenuItemInterface add(String item,ActionListener listener)
 		   {
-			   JMenuItem newitem = new JMenuItem(item);
+			   JMenuItem newitem = new JMenuItem(item,font);
 			   jsubmenu.add(newitem);
 			   newitem.addActionListener(listener);
 			   return(newitem);
@@ -190,13 +210,14 @@ public class PopupManager extends SimpleObservable implements ActionListener
 			jsubmenu.setVisible(b);
 		}
 		public MenuInterface newSubMenu(String msg)
-		{	return(new bsSwingSubMenu(msg));
+		{	return(new bsSwingSubMenu(msg,font));
 		}
 	   }
 	
    public class bsAwtMenu implements MenuInterface
    {
 	   private PopupMenu awtPopupMenu = null;	
+	   public void setFont(Font f) { awtPopupMenu.setFont(f); }
 	   public boolean useSimpleMenu()
 	   { 
 		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
@@ -204,15 +225,15 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	   }
 	   public NativeMenuInterface getNativeMenu() { return(awtPopupMenu); }
 	   // constructor for submenus
-	   public bsAwtMenu(String msg)
+	   public bsAwtMenu(String msg,Font f)
 	   {
-		   awtPopupMenu = new PopupMenu(msg);  
+		   awtPopupMenu = new PopupMenu(msg,f);  
 	   }
 	   
 	   // add a leaf item
 	   public NativeMenuItemInterface add(Text item,ActionListener listener)
 	   {	
-		   MenuItem newitem = new MenuItem(item.getString());
+		   MenuItem newitem = new MenuItem(item.getString(),font);
 		   awtPopupMenu.add(newitem);
 		   newitem.addActionListener(listener);
 		   return(newitem);
@@ -221,7 +242,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	   // add a leaf item
 	   public NativeMenuItemInterface add(String item,ActionListener listener)
 	   {
-		   MenuItem newitem = new MenuItem(item);
+		   MenuItem newitem = new MenuItem(item,font);
 		   awtPopupMenu.add(newitem);
 		   newitem.addActionListener(listener);
 		   return(newitem);
@@ -253,7 +274,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	  {
 	  } 
 		public MenuInterface newSubMenu(String msg)
-		{	return(new bsAwtMenu(msg));
+		{	return(new bsAwtMenu(msg,font));
 		}
   
    }
@@ -265,15 +286,6 @@ public class PopupManager extends SimpleObservable implements ActionListener
    private MenuParentInterface parent = null;
    private MenuInterface menu = null;					// the actual menu if swing components
    
-   // on Windows, awt menus have problems with chinese and japanese
-   // on Windows, swing menus have reliability problems due to multi threading
-   // pick your poison. [ddyer 1/2023]
-   // Note: 12/28/2023 cheerpj has problems with both flavors of menus.  AWT menus can overrun
-   // the visible window (and are clipped), whereas Swing menus sometimes fail to 
-   // appear at all.  Cheerpj was accidentally classified as a unix platform and so defaulted
-   // to using awt, which works better.
-   //
-   public static boolean useSwing = G.isCheerpj() ? false : !G.isUnix();	// default to using swing menus
    private static Object nullValue=new Object();	// make it an object rather than a string
    public int showAtX = 0;
    public int showAtY = 0;
@@ -459,9 +471,14 @@ public class PopupManager extends SimpleObservable implements ActionListener
     	listener = listen;
     	observer = o;
     	parent = window;
-    	menu = useSwing ? new bsSwingMenu(null) : new bsAwtMenu(null);
+    	menu = useSwing ? new bsSwingMenu(null,font) : new bsAwtMenu(null,font);
+    	//G.print("\nsimple "+useSimpleMenu+" swing "+useSwing+" lightweight "+lightweightMenus);
     }
- 
+    private Font font = null;
+    public void setFont(Font f)
+    {	font = f;
+    	menu.setFont(f);
+    }
     public void newPopupMenu(MenuParentInterface window,ActionListener listen)
     {
     	newPopupMenu(window,listen,null);

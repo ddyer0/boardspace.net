@@ -1000,7 +1000,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
     	case MOVE_KOMI:
     		{
     		GoMovespec m = (GoMovespec)History.top();
-    		if(m.op==MOVE_KOMI) { popHistoryElement(); }
+    		if(m!=null && m.op==MOVE_KOMI) { popHistoryElement(); }
     		return(nmove);
     		}
      	case MOVE_OKUNDO:

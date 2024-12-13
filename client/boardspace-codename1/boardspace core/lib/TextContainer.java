@@ -314,7 +314,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public void setBounds(int left, int top, int inWidth, int inHeight) {
 		G.SetRect(this,left,top,inWidth,inHeight);
 		mlCache = null;
-    	int barWidth = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+    	int barWidth = ScrollArea.getDefaultScrollbarWidth();
     	// the negative width keeps the scroll bar from doing any scroll actions in the main text area
     	// which handles it by itself
     	Rectangle messageRect = new Rectangle(left, top, inWidth-barWidth, inHeight);
@@ -891,6 +891,9 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(editable && hasFocus())
 		{	int mod = e.getModifiersEx();
 			char code = e.getKeyChar();
+			//int ext = e.getExtendedKeyCode();
+			//G.print("key typed "+code+" "+mod);
+			//G.infoBox("key typed","code "+code+" int "+ext+" mod "+mod);
 			if((mod & KeyEvent.CTRL_DOWN_MASK)!=0)
 			{
 				doControlCodes(code);
@@ -1010,6 +1013,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public void keyPressed(KeyEvent e) {
 		int code = e.getExtendedKeyCode();
 		int mod = e.getModifiersEx();
+		//G.infoBox("key pressed","code "+code+" mod "+mod);
 		if(((mod & KeyEvent.CTRL_DOWN_MASK)!=0) && G.isCheerpj())
 		{	
 			doControlCodes(e.getKeyCode());

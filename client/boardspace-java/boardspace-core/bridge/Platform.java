@@ -113,12 +113,12 @@ static final public String getPlatformSubtype()
 static final public boolean isJavadroid()
 {
 	String prop = System.getProperty("jre.vendor");
-	return "Android-Coobbi".equals(prop)||G.getBoolean("javadroid",false);
+	return "Android-Coobbi".equals(prop)||G.getBoolean(G.JAVADROID,false);
 }
 
 static public boolean useTabInterface()
 {
-	return isJavadroid();
+	return G.getBoolean(G.TABINTERFACE,false) || isJavadroid();
 }
 static private Object makeObject = null;
 /**
@@ -453,6 +453,9 @@ public static Object MakeInstance(String classname)
     	    }
     	return(""+width+"x"+height);
     }
+    
+    static public boolean isGPPC() { return false; }
+    
     static public int getScreenWidth()
     {	if(SIMULATE_FIRE) { return(1184); }
     	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();

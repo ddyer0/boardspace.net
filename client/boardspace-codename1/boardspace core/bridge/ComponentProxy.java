@@ -34,6 +34,7 @@ public class ComponentProxy extends Component implements NullLayoutProtocol
 	    // setFocusable(true);
 	    mouse.setAwtComponent(c); 
 	}
+	public boolean isFocusable() { return false; }
 	public void doNullLayout()
 	{
 		client.doNullLayout();

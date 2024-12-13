@@ -113,7 +113,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		if(c!=null)
 			{
 			super.remove(getComponentZOrder(c));
-			super.add(c,0);
+			super.add(c,getComponentCount());
 			}
 	}
 
@@ -204,6 +204,9 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		Component top = getTopWindow();
 		return(child==top);
 	}
+	//
+	// note that for our purposes, the item at index 0 is the front window.
+	//
 	public boolean isCompletelyVisible(Component target)
 	{	if(this==target) { return(true); }
 		if(!useTabs) { return true; }
@@ -214,7 +217,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			}
 		
 		Rectangle targetRect = getClippedComponentBounds(target,child);
-		for(int cc = getComponentCount()-1; cc>=0; cc--)
+		for(int cc = 0,last = getComponentCount(); cc<last; cc++)
 		{
 			Component other = safeGetComponentAt(cc);
 			if(other!=null)
@@ -228,13 +231,16 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 		return(false);
 	}
-
+	//
+	// if not completely visible, is partly visible
+	// note that for our purposes, the item at index 0 is the front window.
+	//
 	public boolean isPartlyVisible(Component target)
 	{	if(!useTabs) { return true; }
 		Component child = getMyChildContaining(target);
 		if(child==null)  { return(false); }
 		Rectangle targetRect = getClippedComponentBounds(target,child);
-		for(int cc = getComponentCount()-1; cc>=0; cc--)
+		for(int cc = 0,last = getComponentCount(); cc<last; cc++)
 		{
 			Component other = safeGetComponentAt(cc);
 			if(other!=null)

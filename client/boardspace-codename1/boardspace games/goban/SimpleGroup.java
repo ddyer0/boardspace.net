@@ -1312,6 +1312,26 @@ public class SimpleGroup extends OStack<GoCell> implements ElementProvider,GoCon
 	{	int common = this.countSharedBorder(other);
 		return(common==getBorder().size());
 	}
+	public boolean allDead()
+	{
+		GroupStack adj = getEmbeddedColoredGroups();
+		boolean allRemoved = true;
+		for(int lim=adj.size()-1; lim>=0; lim--)
+		{
+			SimpleGroup gr = adj.elementAt(lim);
+			switch(gr.kind) {
+			case RemovedBlack:
+			case RemovedWhite:
+			case DeadBlack:
+			case DeadWhite:
+				break;
+			default:	
+				allRemoved = false;
+			}
+		}
+		return allRemoved;
+		
+	}
 
 	// check for endgame positions where a simple cut can kill,
 	// presumably because outside liberties are all filled.
@@ -2306,6 +2326,7 @@ private int countConnectedEyes()
 		int tsize = size();
 		int etsize = 0;	// size of embedded territories
 		int sweep = board.incrementSweepCounter();
+		boolean bridged = false;
 		GroupStack embeddedGroups = getEmbeddedColoredGroups();
 		for(int elim=embeddedGroups.size()-1; elim>=0; elim--) 
 			{ SimpleGroup egroup = embeddedGroups.elementAt(elim);
@@ -2343,12 +2364,22 @@ private int countConnectedEyes()
 				  for(int etlim=embeddedTerritories.size()-1; etlim>=0; etlim--)
 				  {
 					  SimpleGroup embedded = embeddedTerritories.elementAt(etlim);
-					  if((embedded.getSweepCounter()!=sweep) && embedded.isInside(this))
+					  if(embedded.getSweepCounter()!=sweep)
+					  {
+						if(embedded.isInside(this))
+									  
 							  {
 						  		etsize += embedded.size();
 							  }
-					  
-					  
+						else if(embedded.allDead())
+						{	// this is a change inspired by GO-ddyer-bobc-2024-12-10-0111
+							// where the black group at the top right was awarded undeserved
+							// eyes from the adjacent corner.   The key change is the black
+							// stone at m15 which changes the connectivity of the white-and-empty
+							// group that's adjacent to black.
+							bridged = true;
+						}
+					  }
 				  }
 				  break;
 			  }
@@ -2368,6 +2399,7 @@ private int countConnectedEyes()
 			// on the number of intron stones.  Clearly not admissable,
 			// but usually works well.  Tweaking these numbers is hazardous
 			if(sz+1==tsize) { eyes++; if(sz>4) {eyes++; }}
+			else if(bridged) {}
 			else if( etsize<tsize*0.4)
 			{
 			eyes += embeddedEyes;

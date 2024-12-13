@@ -209,7 +209,7 @@ public interface GoConstants
 			return(chipIsIncluded(ch));
 		}
 		public boolean chipIsIncluded(GoChip ch)
-		{
+		{	
 			if(ch==null) return(includeEmpty);
 			if(ch==GoChip.black) return(includeBlack);
 			if(ch==GoChip.white) return(includeWhite);

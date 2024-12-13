@@ -184,7 +184,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	// this is for an experiment in progress, to catch keys by pulling
 	// them into an invisible text window.
 	//
-	TextArea keys = new TextArea();
+	TextArea keys = new TextArea(1,20);
 	@SuppressWarnings("deprecation")
 	private MasterForm(String app) 
 	{ super(app);
@@ -223,10 +223,12 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  toolBar.add("West",tabs);
 	  toolBar.add("East",menus);
 	  toolBar.add("Center",centers);  
+	  TextField.setUseNativeTextInput(false);
 	}
 	public void setFocused(com.codename1.ui.Component p)
-	{	//G.print("set focused ",p);
+	{	//G.print("set focused ",p,p==null?"":p.isFocusable());
 		super.setFocused(p);
+		//G.print(getFocused());
 	}
 	public void requestFocus()
 	{	//G.print("request focused ");
@@ -487,14 +489,12 @@ public void addToMenus(JButton m)
 		}
 		return(null);
 	}
-	/*
 	public void pointerHover(int x[],int y[])
 	{	//as of 12/2022, this is called on the simulator but not on real devices
 		//G.print("Form Hover ",x[0]," ",y[0]);
 		super.pointerHover(x,y);
 	}
 	
-	*/
 	/*
 	private String toString(int ar[])
 	{

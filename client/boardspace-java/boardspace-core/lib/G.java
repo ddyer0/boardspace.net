@@ -18,7 +18,6 @@ package lib;
 
 import bridge.*;
 import bridge.TextArea;
-
 import java.awt.*;
 import java.net.URL;
 import java.security.AccessControlException;
@@ -50,7 +49,8 @@ public class G extends Platform implements Timestamp
 	public static final String LANGUAGE = "language";
 	public static final String TABLEWIDTH = "tablewidth";
 	public static final String TABLEHEIGHT = "tableheight";
-	
+	public static final String JAVADROID = "javadroid";			// jvm on android
+	public static final String TABINTERFACE = "tabinterface";	// use tabbed interface instead of free window
 	public enum GlobalStatus { awake,asleep }
 	public static GlobalStatus globalStatus = GlobalStatus.awake;
 	public static GlobalStatus getGlobalStatus() { return(globalStatus); }
@@ -2396,5 +2396,13 @@ public static String expandClassName(String classname)
 		public static boolean TURNBASED()
 		{	return TURNBASED ;
 		}
+		
+		public static Font menuFont()
+		{
+			return getFont(getGlobalDefaultFont(),
+					MenuTextStyle,
+					G.standardizeFontSize(MenuTextSize*getDisplayScale()));
+		}
+		
 	}
  	

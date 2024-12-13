@@ -40,8 +40,8 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	public Icon getNativeIcon() { return(icon); }
 	private Image cachedImage = null; 
 	private AwtComponent cachedParent = null;
-	static final int MenuTextSize = 30;
-	static final Style MenuTextStyle = Style.Bold;
+	static final int MenuTextSize = 14;
+	static final Style MenuTextStyle = Style.Plain;
 	private Color fgcolor = Color.black;
 	private Color bgcolor = new Color(0xccccff);
 	public Color getBackground() { return(bgcolor); }
@@ -51,11 +51,10 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	public void setFont(Font d) 
 	{ font = d; 
 	}
+
 	public Font getFont() 
 	{ if(font==null) 
-		{ font = G.getFont(G.getGlobalDefaultFont(),
-							MenuTextStyle,
-							G.standardizeFontSize(MenuTextSize));
+		{ font = G.menuFont();
 		}
 	  return(font);
 	}
@@ -92,12 +91,14 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	public void show(com.codename1.ui.Container c,int x,int y) throws AccessControlException {};	// dummy method
 	Vector<ItemListener>itemListeners=null;
 	Vector<ActionListener>actionListeners = null;
-
 	public JMenuItem() 
-	{  setFont(G.getFont(G.getGlobalDefaultFont(),
-							MenuTextStyle,
-							G.standardizeFontSize(MenuTextSize))); 
+	{  setFont(G.menuFont()); 
 	};
+	public JMenuItem(String item,Font f)
+	{
+		this(item);
+		setFont(f==null ? G.menuFont() : f); 
+	}
 	public String toString() 
 		{ 
 		return((text==null) ? super.toString() : text); 

@@ -16,7 +16,12 @@
  */
 package bridge;
 
+import com.codename1.ui.Font;
+
+import lib.G;
+
 public class JPopupMenu extends PopupMenu 
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String m) { super(m); }
+	public JPopupMenu(String m,Font f) { this(m); setFont(f==null ? G.menuFont() : f); }
 }

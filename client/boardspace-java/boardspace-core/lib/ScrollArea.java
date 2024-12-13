@@ -16,6 +16,8 @@
  */
 package lib;
 import java.awt.*;
+
+import bridge.Config;
 import bridge.Polygon;
 
 /**
@@ -25,7 +27,10 @@ import bridge.Polygon;
  *
  */
 public class ScrollArea
-{	public static int DEFAULT_SCROLL_BAR_WIDTH = 20;			// default size, should still be scaled by G.getDisplayScale()
+{	public static int getDefaultScrollbarWidth()
+	{
+		return (int)(Config.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+	}
 	private static int ACTIVE_SCROLLING_PERSISTANCE = 100;		// scrolling persists for 1/10 second after mouse up
 	private static int SCROLL_BAR_PERSISTANCE = 1000;			// scroll bar persists for 1 second after mouse leaves the area
 	private static int MOUSE_DOWN_PERSISTENCE = 100;			// mouse down persu 1/10 second
@@ -632,7 +637,7 @@ public class ScrollArea
 	   	//boolean scrolled = scrollbar.mouseIsActive();   
 		int scrollPos = 0;
 		if(barvisible)
-		{	int scrollw = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
+		{	int scrollw = (int)(Config.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
 			int h = G.Height(r);
 			int gameX = G.Left(r);
 			int gameColumnWidth = G.Width(r);

@@ -16,12 +16,17 @@
  */
 package bridge;
 
+import com.codename1.ui.Font;
+
+import lib.G;
+
 public class PopupMenu extends Menu {
 	private boolean showing = false;
 	public PopupMenu() 
 		{ super(); }
 	public PopupMenu(String m)
 		{ super(m); }
+	public PopupMenu(String m,Font f) { this(m); setFont(f==null?G.menuFont():f); }
 	
 	// this "light weight popup" stuff relates to using native menus
 	// rather than java widgets.

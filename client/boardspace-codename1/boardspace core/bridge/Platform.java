@@ -742,9 +742,30 @@ public abstract class Platform implements Config{
     	 if(G.isRealInfinityTable()) return G.Igt.toLowerCase();
     	 return getPlatformName().toLowerCase();
      }
+     static boolean isGPPC()
+     {	// android app running on a pc
+    	return "x86_64".equals(System.getProperty(G.OS_ARCH)) && !isRealWindroid();
+     }
+     /**
+      * google play on pc
+"[Java cpu=169% screen=1920x1080 diag=13.7 ppi=160 deviceDPI=160 scale =1.0 platform =Android 8.58 Codename1  java.version=0 java.vendor=The Android Project java.vendor.url=http://www.android.com/ java.class.version=50.0 os.name=Linux os.arch=x86_64 os.version=5.10.226-android12-9-07883-gb316ddb692d2-ab12600650] ip=0.0.0.0 "
+
+android
+[Dec 12 19:04:04] note from C1494 (Ddyer#1) on S16 session 0
+"[Java cpu=13% screen=1280x704 diag=6.85 ppi=213 deviceDPI=213 scale =1.33125 platform =Android 8.58 Codename1  java.version=0 java.vendor=The Android Project java.vendor.url=http://www.android.com/ java.class.version=50.0 os.name=Linux os.arch=armv7l os.version=5.4.210] ip=0.0.0.0 "
+
+windroid
+[Dec 12 19:20:24] note from C1477 (ddyer#1) on S12 session 0
+"[Java cpu=180% screen=1280x720 diag=9.17 ppi=160 deviceDPI=160 scale =1.0 platform =Android WinDroid 8.49 Codename1  java.version=0 java.vendor=The Android Project java.vendor.url=http://www.android.com/ java.class.version=50.0 os.name=Linux os.arch=x86_64 os.version=5.15.104-windows-subsystem-for-android-20230927+] ip=0.0.0.0 "
+
+      * @return
+      */
      static final public String getPlatformSubtype()
      {
     	 return 
+         isGPPC() 
+         ? "GPPC"	// google play for pc
+         :
     	 isRealWindroid()
     	  ? " WinDroid"
     	  : isRealLastGameBoard()

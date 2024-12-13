@@ -84,6 +84,7 @@ public class FontMetrics {
 			}
 		return m;
 	}
+	public int getMaxDescent() { return myFont.getDescent(); }
 	
 	public static FontMetrics getFontMetrics(Component c) 
 		{ return( getFontMetrics(G.getFont(c.getStyle()))); 

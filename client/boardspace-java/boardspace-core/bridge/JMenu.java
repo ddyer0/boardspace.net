@@ -32,6 +32,11 @@ import lib.SizeProvider;
 public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,NativeMenuItemInterface,SizeProvider
 {	public JMenu(String m) { super(m); }
 	public JMenu() { super(); }
+	public JMenu(String m,Font f)
+	{
+		this(m);
+		setFont(f==null ? G.menuFont() : f);
+	}
 	public void paintIcon(Component c, Graphics g, int x, int y) { G.Error("should be overridden");}
 	public void paintIcon(Component c, java.awt.Graphics g, int x, int y)
 	{
@@ -66,7 +71,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
 		FontMetrics fm = G.getFontMetrics(f);
-		return(fm.getHeight());
+		return(fm.getHeight()*5/4);
 		}
 	}
 	public static int Width(NativeMenuItemInterface mi)

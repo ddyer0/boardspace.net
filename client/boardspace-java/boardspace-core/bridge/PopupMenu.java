@@ -26,6 +26,7 @@ import lib.NativeMenuItemInterface;
 @SuppressWarnings("serial")
 public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface,NativeMenuItemInterface
 {	public PopupMenu(String m) { super(m==null?"":m); }
+	public PopupMenu(String m,Font f) { super(m); setFont(f==null ? G.menuFont() : f); }
 	public NativeMenuItemInterface getMenuItem(int n) { return((NativeMenuItemInterface)getItem(n)); }
 	public NativeMenuInterface getSubmenu() { return(this); }
 	public Icon getNativeIcon() {	return null;	}

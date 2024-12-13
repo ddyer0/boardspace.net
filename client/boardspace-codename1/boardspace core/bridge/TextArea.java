@@ -35,7 +35,7 @@ import com.codename1.ui.geom.Dimension;
 
 public class TextArea extends com.codename1.ui.TextArea 
 	implements ActionProvider,AwtComponent,AppendInterface,ActionListener
-{	
+{	TextArea(int r,int c) { super(r,c); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 	public void startEditing() { }
@@ -261,4 +261,9 @@ public class TextArea extends com.codename1.ui.TextArea
 		    upd.dispatchCommand(okCommand,new com.codename1.ui.events.ActionEvent(okCommand));
 		}}
 	}
+	public void keyPressed(int code)
+	{	//G.infoBox("textarea","key pressed "+code+"\n"+G.getStackTrace());
+		super.keyPressed(code);
+	}
+	
 }

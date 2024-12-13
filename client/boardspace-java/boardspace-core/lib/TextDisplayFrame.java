@@ -22,6 +22,7 @@ import javax.swing.JCheckBoxMenuItem;
 
 import bridge.*;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -114,11 +115,12 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
         // Create size menu
         sizeItems = new JCheckBoxMenuItem[sizes.length];
-
+        Font ref = G.getGlobalDefaultFont();
         for (int i = 0; i < sizes.length; i++)
         {
             sizeItems[i] = new JCheckBoxMenuItem(sizes[i]);
             sizeMenu.add(sizeItems[i]);
+            if(!G.isCodename1()) { sizeItems[i].setFont(G.getFont(ref,G.IntToken(sizes[i]))); }
 
             if (sizes[i].equals(String.valueOf(fsize)))
             {
