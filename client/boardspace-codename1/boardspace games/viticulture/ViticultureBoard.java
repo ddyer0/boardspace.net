@@ -41,6 +41,7 @@ import online.game.*;
  * Note that none of this class shows through to the game controller.  It's purely
  * a private entity used by the viewer and the robot.
  * 
+ * 
  * @author ddyer
  *
  */
@@ -97,7 +98,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 162;			// 100 represents the initial version of the game
+{	static int REVISION = 163;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -180,6 +181,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 160 introduces turn based games, which affects initialization
 										// revision 161 moves drawing residual cards to beginning of wakeup instead of end of residuals
 										// revision 162 fixes mafioso+fermentation tank interaction
+										// revision 163 switches oracle from "discard" to "keep"
+										//			also fix the "double star" bug related to gui changes of mind when the player has the banuet hall
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -1584,7 +1587,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v ^= Digest(r,choiceB.selected);
 		v ^= Digest(r,playedAsTurnBased);
 		v ^= Digest(r,options);
-
 		if(pendingMoves.size()>0)
 		{
 			for(int lim = pendingMoves.size()-1; lim>=0; lim--)
@@ -8630,6 +8632,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
  			ViticultureCell src = getCell(m.source,m.from_col,m.from_row);
  			if(isDest(src))
  				{ unDropObject();
+ 				
+           	  if(revision>=163 && src.rackLocation()==ViticultureId.StarTrack)
+          	  {	
+           		// this is the "double star" bug fix. If the user started to move
+           		// a star, and changed his mind to another, he got the benefit
+           		// from the banquet hall twice
+           		starDropped = starDropped2;
+          	    starDropped2 = null;
+          	  }
+
  				}
  			else
  			{

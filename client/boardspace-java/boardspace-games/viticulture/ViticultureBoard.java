@@ -41,6 +41,7 @@ import online.game.*;
  * Note that none of this class shows through to the game controller.  It's purely
  * a private entity used by the viewer and the robot.
  * 
+ * 
  * @author ddyer
  *
  */
@@ -181,6 +182,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 161 moves drawing residual cards to beginning of wakeup instead of end of residuals
 										// revision 162 fixes mafioso+fermentation tank interaction
 										// revision 163 switches oracle from "discard" to "keep"
+										//			also fix the "double star" bug related to gui changes of mind when the player has the banuet hall
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -1560,7 +1562,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
-		v ^= chip.Digest(r,pickedObject);
+        v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,pickedSourceIndex);
  		v ^= Digest(r,droppedDestStack);
@@ -1570,7 +1572,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
  		v ^= Digest(r, resetState.ordinal());
  		v ^= Digest(r,cardResolution==null?0:cardResolution.ordinal());
 		v ^= Digest(r,starPlacement);
- 		v ^= Digest(r,starDropped);
+		v ^= Digest(r,starDropped);
  		v ^= Digest(r,starDropped2);
 		v ^= Digest(r,targetPlayer);
 		v ^= Digest(r,tradeFrom);
@@ -1585,7 +1587,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v ^= Digest(r,choiceB.selected);
 		v ^= Digest(r,playedAsTurnBased);
 		v ^= Digest(r,options);
-
 		if(pendingMoves.size()>0)
 		{
 			for(int lim = pendingMoves.size()-1; lim>=0; lim--)
@@ -1607,7 +1608,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		{
 			v ^= Digest(r,suspendedWhoseTurn);
 		}
-        return (v);
+		return (v);
     }
 
 
@@ -8631,6 +8632,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
  			ViticultureCell src = getCell(m.source,m.from_col,m.from_row);
  			if(isDest(src))
  				{ unDropObject();
+ 				
+           	  if(revision>=163 && src.rackLocation()==ViticultureId.StarTrack)
+          	  {	
+           		// this is the "double star" bug fix. If the user started to move
+           		// a star, and changed his mind to another, he got the benefit
+           		// from the banquet hall twice
+           		starDropped = starDropped2;
+          	    starDropped2 = null;
+          	  }
+
  				}
  			else
  			{

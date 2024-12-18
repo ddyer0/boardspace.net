@@ -296,6 +296,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	// the white frame.
     	//
     	boolean was = releaseDirectDrawingLock();
+    	//G.print("show on "+parent);
     	parent.showNative(m,helper.unrotateCanvasX(x,y),helper.unrotateCanvasY(x,y)); 
     	if(was) { getDirectDrawingLock(); }
     }

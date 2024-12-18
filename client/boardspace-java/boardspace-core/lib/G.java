@@ -2266,7 +2266,7 @@ public static String expandClassName(String classname)
 		nativeMenu.show(window,x,y);
 		} catch(Throwable err)
 		{	// these occur, rarely, due to some java screwup
-			Plog.log.addLog("Show failed for ",nativeMenu," ",err);
+			Plog.log.addLog("Show failed for ",nativeMenu," on ",window," ",err,"\n",err.getStackTrace());
 			nativeMenu.hide(window);
 		}
 	}

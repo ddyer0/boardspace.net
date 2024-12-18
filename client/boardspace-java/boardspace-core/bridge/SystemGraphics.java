@@ -21,6 +21,7 @@ import static java.lang.Math.atan2;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -85,10 +86,48 @@ public abstract class SystemGraphics
 	}
 	protected SystemGraphics(java.awt.Graphics g) { graphics = (Graphics2D)g; }
 
+	/**
+	 * adding antialiasing for large fonts is nice, but smaller fonts are
+	 * noticeably damaged
+	 * 
+	 * @param graphics
+	 * @param f
+	 */
+	static private void setFontHints(java.awt.Graphics2D graphics,Font f)
+	{
+		int sz = f.getSize();
+		Object hint = sz<=17
+					? RenderingHints.VALUE_TEXT_ANTIALIAS_OFF  
+					: RenderingHints.VALUE_TEXT_ANTIALIAS_ON ;
+		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, hint);
+	}
+	/** antialiasing for general graphics is problematic
+	 * because the few places we draw graphics generally use
+	 * single width lines.  
+	 * @param graphics
+	 */
+	static private void setRenderingHints(java.awt.Graphics2D graphics)
+	{
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
+		setFontHints(graphics,graphics.getFont());
+		//gt.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	}
+	public void setAntialias(boolean on)
+	{
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				on ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+		
+	}
+	public void setFont(Font f)
+	{
+		graphics.setFont(f);
+		setFontHints(graphics,f);
+	}
 	private Graphics create()
 	{ 	if(logging) { Log.addLog("clone graphics"); }
 		Graphics n = new Graphics();
 		n.graphics = (Graphics2D)(graphics.create());
+		setRenderingHints(graphics);
 		return(n);
 	}
 	
@@ -108,7 +147,8 @@ public abstract class SystemGraphics
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
 		gt.graphics = (java.awt.Graphics2D)g;
-		gt.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		//this seems to make this worse
+		setRenderingHints(gt.graphics);
 		gt.setActualSize(clipw,cliph);
 		return(gt);
 	}
@@ -122,8 +162,8 @@ public abstract class SystemGraphics
 		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gt = new Graphics();
 		gt.graphics = (java.awt.Graphics2D)graphics;
-		gt.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
+		//this seems to make this worse
+		setRenderingHints(gt.graphics);
 
 		gt.setActualSize(client.getWidth(),client.getHeight());
 		return gt;
@@ -307,7 +347,7 @@ public abstract class SystemGraphics
     	// this would be the simple version
     	//graphics.drawString(msg,x,y);
     	//this descent to lower level constructs helps diagnose character set problems.
-    	graphics.drawGlyphVector(graphics.getFont().createGlyphVector(graphics.getFontRenderContext(), msg.toCharArray()),
+     	graphics.drawGlyphVector(graphics.getFont().createGlyphVector(graphics.getFontRenderContext(), msg.toCharArray()),
     			x,y);
     	}
     	if(logging) { Log.finishEvent(); }

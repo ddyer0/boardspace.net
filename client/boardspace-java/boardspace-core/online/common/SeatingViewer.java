@@ -1142,6 +1142,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 				icon.centerImage(gc, iconRect);
 				GC.frameRect(gc,Color.black,iconRect);
 			}
+			int boxh = vspace/2;
 			GameInfo variations[] = selectedGame.variationMenu(selectedGame.gameName,typeClass,nplayers);
 			if((variations!=null) && (variations.length>1) 
 					&& (selectedChart!=null))					
@@ -1149,7 +1150,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			GC.Text(gc,false,variantX,variantY,gameColumnWidth,vspace,Color.black,null,
 						s.get(VariantMsg,s.get(selectedGame.gameName),""+variations.length));
 			variantY += vspace;
-			int boxh = ((gameboxH-vspace*3)/vspace)*vspace;
+			boxh = ((gameboxH-vspace*3)/vspace)*vspace;
 			boolean barvisible = variations.length*vspace>boxh;
 			
 			int gameW = gameColumnWidth;
@@ -1170,10 +1171,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 					}
 				}
 			variantY += half/3;
+			}
 			if(selectedVariant!=null)
-				{ 
-				selectedVariant.drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY+boxh,gameColumnWidth,half));
-				}
+			{ 
+			selectedVariant.drawAuxGameLinks(gc,this,hp,new Rectangle(variantX,variantY+boxh,gameColumnWidth,half));
 			}
 
 		}

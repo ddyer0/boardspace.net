@@ -5930,12 +5930,16 @@ private void drawPlayerBoard(Graphics gc,
        		
            	case Keep1ForOracle:
         	case Keep2ForOracle:
+       			{
+        		PerformAndTransmit("Select "+pb.cards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
+       			}
+       			break;
           	case Select1Of1FromMarket:
         	case Select1Of2FromMarket:
         	case Select2Of2FromMarket:
         	case Select2Of3FromMarket:
         		{
-            		PerformAndTransmit("Select "+pb.cards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
+            		PerformAndTransmit("Select "+pb.oracleCards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
         		}
         		break;
         	case Pick2TopCards:

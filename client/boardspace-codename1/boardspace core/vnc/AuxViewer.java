@@ -96,7 +96,6 @@ public class AuxViewer extends exCanvas
 		
 	}
 	public void Pinch(int x, int y, double amount,double angle) {
-		// TODO Auto-generated method stub
 		
 	}
 	public void StartDragging(HitPoint hp) {

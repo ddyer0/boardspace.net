@@ -1635,8 +1635,9 @@ graphics when using a touch screen.
         private void drawVirtualMouse(Graphics gc,HitPoint hp)
         {	
            	if(mouse.virtualMouseMode())
-        	{	int x = G.Left(hp);
-        		int y = G.Top(hp);
+        	{	
+        		int x = mouse.getX();
+        		int y = mouse.getY();
         		int ms = G.minimumFeatureSize();
          		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
         	}

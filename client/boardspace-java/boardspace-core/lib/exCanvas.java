@@ -63,7 +63,7 @@ public abstract class exCanvas extends Canvas
 
     // the codename1 simulator supplies mouse move events, which is not
     // typical of real hardware, so normally we don't want the simulator
-    boolean SIMULATE_MOUSE_MOVE = !G.isSimulator();
+    boolean SIMULATE_MOUSE_MOVE = true;
     
     // this is initialized as part of the contract of preloadImages(), 
     // it's here instead of in commonCanvas because of the order of
@@ -1641,10 +1641,11 @@ graphics when using a touch screen.
         
         public boolean touchZoomEnabled() { return(false); }
         private void drawVirtualMouse(Graphics gc,HitPoint hp)
-        {
+        {	
         	if(mouse.virtualMouseMode())
-        	{	int x = G.Left(hp);
-        		int y = G.Top(hp);
+        	{	
+        		int x = mouse.getX();
+        		int y = mouse.getY();
         		int ms = G.minimumFeatureSize();
         		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
         	}
@@ -2055,8 +2056,8 @@ graphics when using a touch screen.
 	      int t = G.Top(hp);
 	      gc.setFont(largePlainFont());
 	      gc.setFrameColor(Color.yellow);
-    	  gc.drawBubble(l,t,help,getHelptextBounds(l,t,bounds),rotation); 
-    	  gc.setClip(oldClip);
+	      gc.drawBubble(l,t,help,getHelptextBounds(l,t,bounds),rotation); 
+	      gc.setClip(oldClip);
     	  repaint(maxIdleTime);
 	      }
 	      else { hp.setHelpText((String)null); }

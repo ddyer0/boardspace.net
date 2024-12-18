@@ -1532,7 +1532,6 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.okForTurnbased = false;
-	 mm.okForPassAndPlay = false;
 	 mm.hasHiddenInformation = false;
 	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",

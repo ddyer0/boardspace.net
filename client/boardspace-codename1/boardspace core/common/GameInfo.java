@@ -929,7 +929,6 @@ synchronized(allGames) {
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;
 	 mm.okForTurnbased = true;		// parallel setup
-	 mm.okForPassAndPlay = true;
 	
 	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
 				NoBots,null,
@@ -941,7 +940,6 @@ synchronized(allGames) {
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
 		 mm.okForTurnbased = true;		// parallel setup
-		 mm.okForPassAndPlay = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 
@@ -1534,7 +1532,6 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.okForTurnbased = false;
-	 mm.okForPassAndPlay = false;
 	 mm.hasHiddenInformation = false;
 	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",

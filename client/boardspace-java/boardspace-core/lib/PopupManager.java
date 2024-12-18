@@ -69,15 +69,14 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	public boolean useSimpleMenu = false;
 	public boolean useSimpleMenu()
 	   { 
-		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
-	
+		  return useSimpleMenu || G.isUnix() || (G.isCheerpj() && G.isTouchInterface());
 	   }
 	// constructor
-	private static boolean lightweightMenus = false;
+	private static boolean lightweightMenus = true;
 	
 	public class bsSwingMenu implements MenuInterface
 	{
-	public boolean useSimpleMenu() 
+		public boolean useSimpleMenu() 
 		{ 			
 		  return PopupManager.this.useSimpleMenu();
 		}
@@ -227,7 +226,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	   public void setFont(Font f) { awtPopupMenu.setFont(f); }
 	   public boolean useSimpleMenu()
 	   { 
-		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+		  return PopupManager.this.useSimpleMenu();
 
 	   }
 	   public NativeMenuInterface getNativeMenu() { return(awtPopupMenu); }
@@ -479,7 +478,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
     	observer = o;
     	parent = window;
     	menu = useSwing ? new bsSwingMenu(null,font) : new bsAwtMenu(null,font);
-    	//G.print("\nsimple "+useSimpleMenu+" swing "+useSwing+" lightweight "+lightweightMenus);
+    	G.print("\nunix "+G.isUnix()+" simple "+useSimpleMenu()+" swing "+useSwing+" lightweight "+lightweightMenus);
     }
     private Font font = null;
     public void setFont(Font f)

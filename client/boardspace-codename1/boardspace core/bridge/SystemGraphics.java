@@ -380,4 +380,11 @@ public abstract class SystemGraphics {
 		p.setX(x);
 		p.setY(y);
 	}
+
+	public void setFont(Font f) { graphics.setFont(f); }
+	
+	public void setAntialias(boolean on) {
+		
+	}
+
 }

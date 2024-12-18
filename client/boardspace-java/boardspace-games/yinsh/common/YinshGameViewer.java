@@ -475,7 +475,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
  
            //draw the actual board
         Color bgcolor = review ? reviewModeBackground : boardBackgroundColor;
-
+        Graphics.setAntialias(gc,true);
         gb.DrawGrid(gc, boardRect, use_grid, bgcolor, RingFillColor,
                 LineFillColor,GridColor);
     	

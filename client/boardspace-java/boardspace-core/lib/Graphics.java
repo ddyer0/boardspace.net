@@ -109,7 +109,7 @@ public class Graphics extends SystemGraphics
 		if(logging)
 		{ Log.appendNewLog("setfont "); Log.appendLog(f.toString()); 
 		}
-		graphics.setFont(f);
+		super.setFont(f);
 		if(logging) { Log.finishEvent(); }
 	}
 	public Font getFont() {
@@ -523,6 +523,9 @@ public class Graphics extends SystemGraphics
 				 			|| top>ah);	 
 		 return invisible;		  
 	  }
-
+	 static public void setAntialias(Graphics gc,boolean on)
+	 {
+		 if(gc!=null) { gc.setAntialias(on); }
+	 }
 
 }
