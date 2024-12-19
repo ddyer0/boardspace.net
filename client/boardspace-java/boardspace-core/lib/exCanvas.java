@@ -2298,8 +2298,8 @@ graphics when using a touch screen.
     public void paintSprites(Graphics g,HitPoint hp)
     {		    	
  		drawCanvasSprites(g,hp); 
-		drawVirtualMouse(g,hp);		// also draws tooltips
 		drawMenu(g,hp);
+		drawVirtualMouse(g,hp);		// also draws tooltips
 		//G.addLog("end acutalpaint");
 	}
 	public void handleError(String msg,String context,Throwable err)
@@ -2358,7 +2358,7 @@ graphics when using a touch screen.
 		int sy = unrotateCanvasY(ux,uy);
 		// sx, sy are real screen coordinates.
 		// zoom is not a factor to consider
-		if(useSimpleMenu || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
+		if(useSimpleMenu || mouse.virtualMouseMode() || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
 			{ 
 			menu = new SimpleMenu(this,popup,sx,sy); 
 			}

@@ -381,10 +381,16 @@ public abstract class SystemGraphics {
 		p.setY(y);
 	}
 
-	public void setFont(Font f) { graphics.setFont(f); }
+	public void setFont(Font f) 
+	{ 	graphics.setFont(f); 
+		int sz = G.getFontSize(f);
+		boolean v = G.isSimulator() ? sz>17 : true;
+		G.print("font aa ",f," ",sz," ",v);
+		graphics.setAntiAliasedText( v);
+	}
 	
 	public void setAntialias(boolean on) {
-		
+		graphics.setAntiAliased(on);
 	}
 
 }
