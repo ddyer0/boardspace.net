@@ -7960,20 +7960,13 @@ public void performPlayerInitialization(StringTokenizer his)
     }
 	
 }
+
 public void performHistoryTokens(StringTokenizer his)
 {	StringBuilder command = new StringBuilder();
     // now the rest
 	boolean ended = false;
 	boolean first = true;
 	int time = -1;
-	//
-	// history ought to be completely empty at this point, but typically isn't
-	// because it is initialized with a start or edit.  Start an edit ought to
-	// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
-	// this makes damn sure the history is empty when we start replaying a game, where
-	// the first move ought to be a "start"
-	//
-	resetHistory();
     while (his.hasMoreTokens() && !ended)
     {
         String token = his.nextToken();
@@ -8143,6 +8136,15 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 		// here we found the start token
 		performHistoryInitialization(his);
 		performPlayerInitialization(his);
+	  	//
+		// history ought to be completely empty at this point, but typically isn't
+		// because it is initialized with a start or edit.  Start an edit ought to
+		// be idempotent, but in some cases (such as ManhattanProject, 4-5 players) are not.
+		// this makes damn sure the history is empty when we start replaying a game, where
+		// the first move ought to be a "start"
+	    //
+		resetHistory();
+
 		performHistoryTokens(his);
 		
 		doScrollTo(FORWARD_TO_END);

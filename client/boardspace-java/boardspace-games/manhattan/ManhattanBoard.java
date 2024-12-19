@@ -276,6 +276,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private IStack pickedIndex = new IStack();
     private IStack droppedIndex = new IStack();
     private StateStack stateStack = new StateStack();
+    private ManhattanState lemayState = null;
     private LStack optionStack = new LStack();
     public ManhattanCell displayCell = null;		// cell for the gui to display in a "select" dialog
     public CellStack displayCells = new CellStack();
@@ -591,6 +592,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 	    }
 	    pickedObject = null;
 	    resetState = null;
+	    lemayState = null;
 	    lastDroppedObject = null;
 	    animationStack.clear();
         moveNumber = 1;
@@ -726,6 +728,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
+        lemayState = from_b.lemayState;
         lastPicked = null;
         options.copy(from_b.options);
         if(G.debug())
@@ -798,7 +801,9 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        // this is a good overall check that all the copy/check/digest methods
+        G.Assert(lemayState==from_b.lemayState,"lemayState mismatch");
+        G.Assert(resetState==from_b.resetState,"resetState mismatch");
+       // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
@@ -1510,6 +1515,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        		}
        	case Airstrike:
        		// this happens when the action is a "lemay" airstrike
+       		lemayState = resetState;
        		return ManhattanState.ConfirmSingleAirstrike;
        		
     	case Engineer:
@@ -1843,6 +1849,11 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        		// otherwise fall through into the next player
 			setState(espionageSteps>0 ? ManhattanState.PlayEspionage : ManhattanState.PlayLocal);
 			break;
+    	case ConfirmSingleAirstrike:	// lemay airstrike
+    		setState(lemayState);
+    		resetState = lemayState;
+    		lemayState = null;
+     		break;
     	case NoMovesState:
 		case ConfirmPersonality:
     		setNextPlayer(replay);
@@ -1851,18 +1862,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
        	case ConfirmNichols:
    		case Confirm:
     	case Puzzle:
-      	case ConfirmSingleAirstrike:	// lemay airstrike
        	case PlayLocal:
     	case Play:
     		{
     		PlayerBoard pb = getPlayerBoard(whoseTurn);
     		if(pb.nAvailableWorkers()==0) { setState(ManhattanState.Retrieve); }
-    		else if((pb.nPlacedWorkers==0)
-    				// lemay can't retrieve after only doing an airstrike.
-    				|| (board_state==ManhattanState.ConfirmSingleAirstrike)) 
-    			{
-    			  setState(ManhattanState.Play); 
-    			}
+    		else if(pb.nPlacedWorkers==0) { setState(ManhattanState.Play); }
     		else { setState(ManhattanState.PlayOrRetrieve); }
     		}
     		break;

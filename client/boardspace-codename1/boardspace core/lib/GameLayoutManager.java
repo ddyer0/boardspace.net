@@ -1564,7 +1564,7 @@ public class GameLayoutManager implements UniversalConstants
 		double targetPreference = targetLayoutHysterisis;
 		DefinedSeating best = null;
 		DefinedSeating currentSeating = client.seatingChart();
-		if(G.debug()) { G.print("initial ",currentSeating); }
+		if(G.debug()) { G.print("initial layout",currentSeating); }
 		margin = (int)((margin+0.49)/zoom);
     	rects.marginSize = margin;
     	preferredAspectRatio = desiredAspectRatio;
@@ -1602,7 +1602,7 @@ public class GameLayoutManager implements UniversalConstants
 	    { targetPreference = 1.0; 	// no target to prefer
 	      best = currentSeating;
 	    }
-	    if(G.debug() ) { G.print("after primary ",best," ",bestScore," ",bestPercent,"% ",selectedCellSize);}
+	    if(G.debug() ) { G.print("after primary layout ",best," ",bestScore," ",bestPercent,"% ",selectedCellSize);}
 		for(DefinedSeating s : tryThese)	// also try the generic layouts 
 		{
 			double v = sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);

@@ -385,7 +385,6 @@ public abstract class SystemGraphics {
 	{ 	graphics.setFont(f); 
 		int sz = G.getFontSize(f);
 		boolean v = G.isSimulator() ? sz>17 : true;
-		G.print("font aa ",f," ",sz," ",v);
 		graphics.setAntiAliasedText( v);
 	}
 	

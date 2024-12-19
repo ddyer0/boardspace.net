@@ -1224,13 +1224,6 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
      * 
      *  
      */
-    /* for debugging and initial development, leave this false */
-    boolean SIMULTANEOUS_PLAY = false;		
-    /** true if this game ever has simultaneous moves.  If true, formEphemeralHistoryString
-     * will do a second pass to collect the ephemeral moves, and {@link #useEphemeraBuffer} will
-     * expect there to be one.
-     */
-    public boolean gameHasEphemeralMoves() { return(SIMULTANEOUS_PLAY); }
     // these related methods can be wrapped or overridden to customize the behavior of the ephemeral part game records.
     //
     // public String formEphemeralHistoryString()
