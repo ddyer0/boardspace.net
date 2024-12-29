@@ -4386,7 +4386,7 @@ static void doSupervisor(User *SU,char *buf)
 				assert(u->session==s);
 			    if(userNameMatches(u,uname))
 				{ char obuf[SMALLBUFSIZE];
-				  char name[sizeof(u->clientRealName)];
+				  char name[sizeof(u->clientRealName)+1];
 				  strcpy(name,u->clientRealName);
 				  lsprintf(sizeof(obuf),obuf,ECHO_PLAYER_QUIT "%d killed by supervisor",u->userNUM);
 				  banUser(u);		// and ban him
@@ -5870,7 +5870,7 @@ void process_register_player(char *data,User *u,char *seq)
 	  int order;
 	  int uid = 0;
 	  int seat;
-	  char name[100];
+	  char name[CLIENTPUBLICNAMESIZE];
 	  int chan = 0;
 	  int rev = -1;
 	  int orderidx = safe_scanint(data,&order);
@@ -6169,6 +6169,27 @@ void process_sendmessageto(char *data,User *u,char *seq)
 
 	}
 
+void truncateTempBuf(char* buffer, size_t size)
+{
+	size_t len = strlen(buffer);
+	if (len >= size)
+	{	// the temp string is longer than the buffer, so it must be truncated.
+		// a subtle additional point is that the string may be utf8 encoded, and
+		// if the trailing chars are encoded, we have to back off all the way back
+		// to the beginning of the real character
+		buffer[len - 1] = (char)0;
+		int steps = 1;
+		while (steps < 7)
+		{
+			if (buffer[len - steps] == '\\' && buffer[len - steps - 1] == '\\')
+			{
+				buffer[len - steps - 1] = (char)0;
+				steps = 7;
+			}
+			steps++;
+		}
+	}
+}
 
 void process_send_name( char *data,User *u,char *seq)
 {	//remember the client names
@@ -6181,6 +6202,7 @@ void process_send_name( char *data,User *u,char *seq)
  if(nameidx>0)
   { 
 	lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_NAME "%s",tempString);
+	truncateTempBuf(tempString, sizeof(u->clientPublicName));
 	MyStrncpy(u->clientPublicName,tempString,sizeof(u->clientPublicName));	//record his name
 	if(u->clientRealName[0]==(char)0)
 	{ //only set the real client name once

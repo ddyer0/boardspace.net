@@ -34,7 +34,7 @@ in the current iteration.
 
 #define WEBSOCKET_BUFSIZE 65536
 #define WEBSOCKET_DBUFSIZE (WEBSOCKET_BUFSIZE * 3) / 4 - 20
-typedef enum HandshakeResult { HANDSHAKE_OK, HANDSHAKE_NONE, HANDSHAKE_SOME, HANDSHAKE_ERROR } HandshakeResult;
+typedef enum HandshakeResult { HANDSHAKE_OK, HANDSHAKE_NONE, HANDSHAKE_SOME, HANDSHAKE_SSL_ACCEPT, HANDSHAKE_ERROR } HandshakeResult;
 
 
 #define DAEMON 0
@@ -144,9 +144,29 @@ May 29, 2022
  *   Warning: not thread safe
  */
 settings_t settings;
-
+int ssl_errno = 0;
+int ssl_sock = 0;
 int minusErrNo()
 {
+#if INCLUDE_SSL
+        if(ssl_errno<0)
+	  {
+	    switch(ssl_errno)
+	      {
+	      case SSL_ERROR_WANT_READ:
+		logEntry(&mainLog, "[%s] SSL read would block %d S%d\n", timestamp(), ssl_sock);
+		return EWOULDBLOCK;
+	    
+
+	      case SSL_ERROR_WANT_WRITE:
+		logEntry(&mainLog, "[%s] SSL write would block %d S%d\n", timestamp(), ssl_sock);
+		return EWOULDBLOCK;
+		break;
+	      default:
+		return ssl_errno;
+	      }
+	  }
+#endif
     int e = ErrNo();
     return e<= 0 ? -1 : e;
 }
@@ -155,11 +175,15 @@ int minusErrNo()
  * SSL Wrapper Code
  */
 
-size_t ws_recv(ws_ctx_t *ctx,SOCKET fd, void *buf, size_t len) {
+size_t ws_recv(ws_ctx_t *ctx,SOCKET fd, void *buf, size_t len) 
+{
 #if INCLUDE_SSL
     if (ctx->ssl) {
         //handler_msg("SSL recv\n");
-        return SSL_read(ctx->ssl, buf, (int)len);
+        int ret = SSL_read(ctx->ssl, buf, (int)len);
+	ssl_sock = fd;
+	ssl_errno = ret<0 ? SSL_get_error(ctx->ssl,ret) : 0;
+        return ret;
     } else
 #endif
     {
@@ -171,7 +195,10 @@ int ws_send(ws_ctx_t *ctx,SOCKET fd, const void *buf, size_t len) {
 #if INCLUDE_SSL
     if (ctx->ssl) {
         //handler_msg("SSL send\n");
-        return SSL_write(ctx->ssl, buf, (int)len);
+        int ret = SSL_write(ctx->ssl, buf, (int)len);
+	ssl_sock = fd;
+	ssl_errno = ret<0 ? SSL_get_error(ctx->ssl,ret) : 0;
+        return ret;
     } else
 #endif
     {
@@ -204,11 +231,38 @@ void init_ssl()
 
 
 }
+
+HandshakeResult ws_socket_ssl_accept(ws_ctx_t *ctx, SOCKET sock)
+{
+    int ret = SSL_accept(ctx->ssl);
+
+    if(ret<=0)
+      {
+	int err = SSL_get_error(ctx->ssl,ret);
+	printf("ssl error code %d\n",err);
+	switch(err)
+	  {
+	  case SSL_ERROR_WANT_READ:
+	    logEntry(&mainLog, "[%s] SSL_accept wants read %d S%d\n", timestamp(),err, sock);
+	    return HANDSHAKE_SSL_ACCEPT;
+
+	  case SSL_ERROR_WANT_WRITE:
+	    logEntry(&mainLog, "[%s] SSL_accept wants write %d S%d\n", timestamp(),err, sock);
+	    return HANDSHAKE_SSL_ACCEPT;
+	  default: 
+	    logEntry(&mainLog, "[%s] SSL_accept failed code %d S%d\n", timestamp(),err, sock);
+	    return HANDSHAKE_ERROR;
+	}
+     }
+    else {
+        return HANDSHAKE_OK;
+    }
+}
+
 HandshakeResult ws_socket_ssl(ws_ctx_t *ctx, SOCKET sock, char * certfile, char * keyfile)
 {
 
     char* use_keyfile;
-    HandshakeResult result = HANDSHAKE_ERROR;
  
     init_ssl();
 
@@ -224,48 +278,35 @@ HandshakeResult ws_socket_ssl(ws_ctx_t *ctx, SOCKET sock, char * certfile, char 
     ctx->ssl_ctx = SSL_CTX_new(TLS_SERVER_METHOD());
     if (ctx->ssl_ctx == NULL) {
         logEntry(&mainLog, "[%s] Failed to configure SSL context socket S%d\n", timestamp(), sock);
-
+        return HANDSHAKE_ERROR;
     }
 
    // printf("keyfile %s\n",use_keyfile);
    if (SSL_CTX_use_PrivateKey_file(ctx->ssl_ctx, use_keyfile,
         SSL_FILETYPE_PEM) <= 0) {
         logEntry(&mainLog, "[%s] Unable to load private key file %s socket S%d\n", timestamp(), use_keyfile, sock);
+        return HANDSHAKE_ERROR;
     }
 
     // printf("certfile %s\n",certfile);
     if (SSL_CTX_use_certificate_chain_file(ctx->ssl_ctx, certfile) <= 0) {
         logEntry(&mainLog, "[%s] Unable to load certificate file %s socket S%d\n", timestamp(), certfile, sock);
+        return HANDSHAKE_ERROR;
     }
 
     // Associate socket and ssl object
 
     ctx->ssl = SSL_new(ctx->ssl_ctx);
     SSL_set_fd(ctx->ssl, (int)sock);
+
     //
     // it appears that the ancient openssl 1.1 installed on the server does not
-    // properly support nonblocking io.  If I experimentally disable nonblocking 
+
     // io (migs.c link 6857) then the ssl handshake succeeds
-    //
-    // modern openssl (3.1) proports to handle nonblocking sockets.
-    //
-    //int was = SSL_get_blocking_mode(ctx->ssl); 
-    //SSL_set_blocking_mode(ctx->ssl, 0);
-    //int is = SSL_get_blocking_mode(ctx->ssl);
-    //printf("blocking was %d is %d\n",was,is);
-
-    setBIO(sock);  // this makes it work, and "ought to" be safe. 
+    // This setBIO undoes the unblocking and makes it work in blocking mode
+    //setBIO(sock);  // this makes it work, and "ought to" be safe. 
  
-    int ret = SSL_accept(ctx->ssl);
-
-    if (ret < 0) {
-        logEntry(&mainLog, "[%s] SSL_accept failed S%d\n", timestamp(), sock);
-     }
-    else {
-        result = HANDSHAKE_OK;
-    }
-
-    return result;
+    return ws_socket_ssl_accept(ctx,sock);
 }
 #endif
 
@@ -417,6 +458,9 @@ int base64_decode(const char* in, unsigned char* out, size_t outlen)
 
 #endif
 
+#define MAX_OUT_SIZE 65535
+#define STR(x) #x
+
 int encode_hybi(User* u, u_char const* src, int srclength,
     char* target, int targsize, unsigned int opcode)
 {
@@ -441,13 +485,13 @@ int encode_hybi(User* u, u_char const* src, int srclength,
         target[1] = (char)len;
         payload_offset = 2;
     }
-    else if ((len > 125) && (len < 65536)) {
+    else if ((len > 125) && (len <= MAX_OUT_SIZE)) {
         target[1] = (char)126;
         *(u_short*)&(target[2]) = htons(len);
         payload_offset = 4;
     }
     else {
-        logEntry(&mainLog, "[%s] Sending frames larger than 65535 bytes not supported. size=%d S%d\n", timestamp(), len, socket);
+      logEntry(&mainLog, "[%s] Sending frames larger than " STR(MAX_OUT_SIZE) " bytes not supported. size=%d S%d\n", timestamp(), len, socket);
         u->websocket_errno = -1;
         return -1;
     }
@@ -746,7 +790,7 @@ int doselect(SOCKET socket, fd_set* rlist, fd_set* wlist, fd_set* elist, int tim
     return select((int)socket + 1, rlist, wlist, elist, &tv);
 }
 
-typedef enum PREAMBLE_RESULT { PREAMBLE_ASKAGAIN, PREAMBLE_ERROR, PREAMBLE_SSL, PREAMBLE_RAW } PREAMBLE_RESULT;
+typedef enum PREAMBLE_RESULT { PREAMBLE_ASKAGAIN, PREAMBLE_ERROR, PREAMBLE_SSL, PREAMBLE_SSL_ACCEPT, PREAMBLE_RAW } PREAMBLE_RESULT;
 //
 // inspect the handshake's first byte, see if ssl is appropriate
 // return 1 if ssl should be used 0 if plain socket, -1 if error 
@@ -779,9 +823,8 @@ PREAMBLE_RESULT handshake_preamble(SOCKET socket)
         }
         else if (len == 0) 
         {
-            int eno = minusErrNo();
-
-            return eno==EWOULDBLOCK ? PREAMBLE_ASKAGAIN : PREAMBLE_ERROR;
+	  int eno = minusErrNo();
+	  return eno==EWOULDBLOCK ? PREAMBLE_ASKAGAIN : PREAMBLE_ERROR;
         }
         else { return PREAMBLE_ERROR;  }
     }
@@ -798,7 +841,7 @@ HandshakeResult do_handshake(User* u)
 
     if (ctx->scheme == NULL)
     {   // preamble not yet decided
-      PREAMBLE_RESULT preamble = handshake_preamble(sock);
+      PREAMBLE_RESULT preamble = ctx->phase==HANDSHAKE_SSL_ACCEPT ? PREAMBLE_SSL_ACCEPT: handshake_preamble(sock);
 
         switch (preamble)
         {
@@ -810,6 +853,7 @@ HandshakeResult do_handshake(User* u)
             logEntry(&mainLog, "[%s] Empty handshake. S%d\n", timestamp(), sock);
             return HANDSHAKE_ERROR;
         }
+#if INCLUDE_SSL
         case PREAMBLE_SSL:
         {
             // SSL
@@ -822,16 +866,46 @@ HandshakeResult do_handshake(User* u)
 
                 return HANDSHAKE_ERROR;
             }
-            ws_socket_ssl(ctx, sock, websocketSslCert, websocketSslKey);
-            ctx->scheme = "wss";
-            //handler_msg("using SSL socket\n");
-        }
-        break;
+	    if(settings.verbose) { printf("ssl preamble\n"); }
+            HandshakeResult res = ws_socket_ssl(ctx, sock, websocketSslCert, websocketSslKey);
+	    switch(res)
+	      {
+	      default:
+	      case HANDSHAKE_SSL_ACCEPT:
+		ctx->phase = HANDSHAKE_SSL_ACCEPT;
+	      case HANDSHAKE_ERROR:
+		return res;
+	      case HANDSHAKE_OK:
+		ctx->scheme = "wss";
+		break;
+	      }
+          }
+          break;
+	case PREAMBLE_SSL_ACCEPT:
+	  {
+	    if(settings.verbose) { printf("ssl preamble accept\n"); }
+	    printf("ssl preamble accept\n");
+            HandshakeResult res = ws_socket_ssl_accept(ctx, sock);
+	    switch(res)
+	      {
+	      default:
+	      case HANDSHAKE_ERROR:
+	      case HANDSHAKE_SSL_ACCEPT:
+		
+		return res;
+	      case HANDSHAKE_OK:
+		ctx->scheme = "wss";
+		break;
+	      }
+	  }
+	    break;
+#endif
         case PREAMBLE_RAW:
         {   if (settings.ssl_only)
             {
                 logEntry(&mainLog, "[%s] non-SSL connection disallowed. S%d\n", timestamp(), sock);
                 return HANDSHAKE_ERROR;
+
             }
             ctx->scheme = "ws";
             //handler_msg("using plain (not SSL) socket\n");
@@ -851,7 +925,7 @@ HandshakeResult do_handshake(User* u)
     
     int len = (int) ws_recv(ctx, sock, buffer+index, size);
     if (len <= 0) {
-        int enn = minusErrNo();
+      int enn = minusErrNo();
         if (enn == EWOULDBLOCK)
         {
             return HANDSHAKE_SOME;
@@ -878,9 +952,9 @@ HandshakeResult do_handshake(User* u)
     if (!strstr(buffer, "\r\n\r\n")) { return HANDSHAKE_SOME;  }    // not all there yet
 
     
-    //if (logging >= log_all)
+    if (logging >= log_all)
     {
-        logEntry(&mainLog, "[%s] websocket handshake %s S%d.\n",
+        logEntry(&mainLog, "[%s] parsing websocket handshake %s S%d.\n",
             timestamp(), buffer, sock);
     }
      // found for the break in the http header
@@ -1012,7 +1086,7 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
     int bytes = (int)ws_recv(ctx, sock, inBuffer + inIndex, inSize);
     if (bytes <= 0) {
         //handler_emsg("target closed connection\n");
-        int eno = minusErrNo();
+      int eno = minusErrNo();
         u->websocket_errno = eno;
         if (eno == EWOULDBLOCK)
         {
@@ -1079,11 +1153,17 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
 // for websockets we need to construct a websocket frame in a private buffer
 // we always send all of the frame before refilling the buffer
 //
-int websocketSend(User* u, unsigned char* buf, int siz)
+int websocketSend(User* u, unsigned char* buf, int siz0)
 {
     int sent = 0;   // if we're continuing with a partial packet, we tell the caller
                     // we sent nothing this time.  
+    int siz = siz0;
     ws_ctx_t* ctx = (ws_ctx_t*)u->websocket_data;
+    if(siz>MAX_OUT_SIZE)
+      {
+	siz = MAX_OUT_SIZE;
+        logEntry(&mainLog, "[%s] output buffer trimmed from %d to %d S%d\n", timestamp(), siz0, MAX_OUT_SIZE, u->socket);
+      }
     if (ctx)
     {
         unsigned char* outbuf = ctx->cout_buf;
@@ -1118,7 +1198,7 @@ int websocketSend(User* u, unsigned char* buf, int siz)
             }
             else if(bsent<0)
             {
-                u->websocket_errno = minusErrNo();
+	      u->websocket_errno = minusErrNo();
                 sent = bsent;
             }
         }
@@ -1141,17 +1221,20 @@ int websocketRecv(User *u, unsigned char* buf, int siz)
 
     // initially, we have to read and parse the http headers
     // then enter the main phase with async data frames
+    if(settings.veryverbose) { printf("websocket recv %d\n",ctx->phase);}
     switch (ctx->phase)
     {
     case HANDSHAKE:
+    case HANDSHAKE_SSL_ACCEPT:
         {
         HandshakeResult res = do_handshake(u);
-        if (res == HANDSHAKE_ERROR) { simpleCloseClient(u, "websocket handshake"); }
+        if (res == HANDSHAKE_ERROR) { simpleCloseClient(u, "error in websocket handshake"); }
         else if (res == HANDSHAKE_OK)
             { ctx->phase = MAIN; 
               ctx->cin_buf_idx = 0;
               ctx->cin_start = 0;
             }
+	else if(settings.veryverbose) { printf("new phase %d\n",ctx->phase); }
         }
         break;
     case MAIN:

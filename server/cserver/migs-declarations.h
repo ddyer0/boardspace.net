@@ -202,7 +202,7 @@ typedef long DAYS;		//days since forever
 #define BANEXPIRED (60*60)			/* ban an ip address for 1 hour */
 #define NAMESIZE 20					/* length of user names */
 #define INFOSIZE 256				/* length of auxiliary info */
-#define CLIENTPUBLICNAMESIZE (NAMESIZE*4)	/* public names can be long due to translations and unicode */
+#define CLIENTPUBLICNAMESIZE (NAMESIZE*6)	/* public names can be long due to translations and unicode */
 #define FIRSTUSERNUM 1000			/* arbitrary number of the first user */
 
 // string opcodes

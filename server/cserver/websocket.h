@@ -1,9 +1,10 @@
 #include "migs-declarations.h"
 
-#define INCLUDE_SSL 1
+#define INCLUDE_SSL !WIN32
 
+#if INCLUDE_SSL
 #include <openssl/ssl.h>
-
+#endif
 
 #define SERVER_HANDSHAKE_HYBI "HTTP/1.1 101 Switching Protocols\r\n\
 Upgrade: websocket\r\n\
@@ -34,7 +35,7 @@ typedef struct {
     char key3[8+1];
 } headers_t;
 
-typedef enum ws_phase { HANDSHAKE, MAIN } ws_phase ;
+typedef enum ws_phase { HANDSHAKE, SSL_ACCEPT, MAIN } ws_phase ;
 
 typedef struct {
     char* scheme;
