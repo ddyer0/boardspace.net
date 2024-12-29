@@ -544,7 +544,6 @@ public class ConnectionManager
         { 
         	if (my.sendMessage(message))
             {	           	
-               // System.out.println("o   : "+getStats()+" "+message);
                 return (true);
             }
 

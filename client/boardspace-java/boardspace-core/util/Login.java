@@ -94,7 +94,8 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     			  	}
     			  if(KEYWORD_GUESTNAME.equals(key))
     			  	{ val = G.utfDecode(val); 	// if the guest name contained unicode it needs to be decoded
-    			  	  // and make sure it's a short name
+    			  	  // and make sure it's a short name,  Encoding can make this 6x as long, and the server
+    			  	  // only deals with the encoded version. 
     			  	  if(val.length()>9 ) { val = val.substring(0,9); }
     			  	}
     			  else if(G.LANGUAGE.equals(key) && val.endsWith("Strings"))
@@ -102,7 +103,7 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     				  val = val.substring(0,val.length()-"Strings".length());
     			  }
     			  G.putGlobal(key,val);			// load into the applet parameter table
-     			  System.out.println("K "+key+" V '"+val+"'");
+     			  //System.out.println("K "+key+" V '"+val+"'");
     			}
     		if(eol>0) { prev = eol+1; } else { prev = next+1; }
     	}

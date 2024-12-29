@@ -289,7 +289,6 @@ public class commonLobby extends commonPanel
   private int robot_launch_players=0;      //launch robot games when this many players are ready
   
   private String lastMessage=null;          //for error reporting
-
   public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
   
   public long lastInputTime;
@@ -774,7 +773,7 @@ private boolean processEchoExit(String messType,StringTokenizer localST,String f
 
 
   private void doCONNECTED(String messType,StringTokenizer localST,String fullMessage) {        // state 2
-    //System.out.println("doCONNECTED " + message);
+    //System.out.println("doCONNECTED " + fullMessage);
     boolean processed = process_ECHO_INTRO_SELF(messType,localST)
     		|| processIntro(messType,localST)
             || processEchoExit(messType,localST,fullMessage)
@@ -1598,7 +1597,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       boolean join = true;
       String theRealName=localST.nextToken();
       Session sess = getSession(sessNum);
-      String theUID = localST.nextToken();
+      String theUID = localST.hasMoreTokens() ? localST.nextToken() : null;
      if (sess!=null)
       {	// detail for real games (not the lobby)
         boolean rgp = sess.refreshGameInProgress;
@@ -2041,7 +2040,6 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
       } else if(myNetConn!=null)
       { String  message = myNetConn.getInputItem();
         lastMessage = message;  //for error reporting
-
         if((message==null) && (myNetConn.errstring!=null))
         {  ReStarting(true);  // error attempting input
         }

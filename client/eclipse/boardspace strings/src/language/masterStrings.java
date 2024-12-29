@@ -53,6 +53,7 @@ import epaminondas.EpaminondasConstants;
 import carnac.CarnacConstants;
 import checkerboard.CheckerConstants;
 import chess.ChessConstants;
+import circle.CircleConstants;
 import exxit.ExxitConstants;
 import fanorona.FanoronaConstants;
 import gipf.GipfConstants;
@@ -188,6 +189,9 @@ public class masterStrings extends InternationalStrings
         setContext("Game Timer");
         GameTimerConstants.putStrings();
         
+        setContext("circle");
+        CircleConstants.putStrings();
+
         setContext("epaminondas");
         EpaminondasConstants.putStrings();
         

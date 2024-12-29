@@ -58,6 +58,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("circle.CircleViewer",circle.CircleViewer.class);
     	classes.put("epaminondas.EpaminondasViewer",epaminondas.EpaminondasViewer.class);
     	classes.put("manhattan.ManhattanViewer",manhattan.ManhattanViewer.class);
     	classes.put("gametimer.GameTimerViewer",gametimer.GameTimerViewer.class);

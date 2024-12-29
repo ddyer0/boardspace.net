@@ -587,6 +587,22 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     		if(item!=null) { inQueue.setWaitStart(0); }
     	return(item);
     }
+    /*
+     * this is a debugging hack to show the encoded and decoded version of inputs
+    public void show(byte buf[],int off,int len)
+    {
+    	StringBuilder b = new StringBuilder(" o : ");
+    	for(int i=0;i<len;i++)
+    	{
+    		int ch = buf[off+i];
+    		if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z')) { b.append((char)ch); }
+    		else { b.append(""+ch); }
+    		b.append(" ");
+    	}
+    	G.print(b.toString());
+    }
+ */
+ 
     // decode a byte buffer as UTF8
     final String decodeAsUtf8(byte[]inBuf,int i,int inBufLength)
     {
@@ -595,6 +611,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         int escape = 0;
         int hexescape = 0;
         int escapeval = 0;
+        
 		for(;i<inBufLength;i++) 
 		{ 
 		 byte cc=inBuf[i];
@@ -624,6 +641,12 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
 		}
 		}
         String str = buf.toString();
+        /*
+        if(str.indexOf("guest.")>0)
+        {
+        show(inBuf,i,inBufLength);
+        G.print("decoded "+str);
+        }*/
         return(str);
     }
     public final void run()

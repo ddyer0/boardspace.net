@@ -14,13 +14,13 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package prototype;
+package circle;
 
 import javax.swing.JCheckBoxMenuItem;
 
 import common.GameInfo;
 
-import static prototype.Prototypemovespec.*;
+import static circle.CircleMovespec.*;
 
 import java.awt.*;
 import online.common.*;
@@ -34,7 +34,6 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.ImageStack;
-import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Toggle;
@@ -96,14 +95,14 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, PlacementProvider
+public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements CircleConstants, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "prototype"; // sgf game name
+    static final String Circle = "circle"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/prototype/images/";
+    static final String ImageDir = "/circle/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -116,7 +115,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 
      
     // private state
-    private PrototypeBoard bb = null; //the board from which we are displaying
+    private CircleBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
  
     // addRect is a service provided by commonCanvas, which supports a mode
@@ -136,13 +135,11 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
     private Toggle eyeRect = new Toggle(this,"eye",
- 			StockArt.NoEye,PrototypeId.ToggleEye,NoeyeExplanation,
- 			StockArt.Eye,PrototypeId.ToggleEye,EyeExplanation
+ 			StockArt.NoEye,CircleId.ToggleEye,NoeyeExplanation,
+ 			StockArt.Eye,CircleId.ToggleEye,EyeExplanation
  			);
     private Rectangle reverseRect = addRect("reverse");
     private Rectangle chipRects[] = addZoneRect("chip",2);
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	// private menu items
@@ -155,8 +152,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	PrototypeChip.preloadImages(loader,ImageDir);	// load the images used by stones
-		gameIcon = PrototypeChip.Icon.image;
+    {	CircleChip.preloadImages(loader,ImageDir);	// load the images used by stones
+		gameIcon = CircleChip.Icon.image;
     }
 
     /**
@@ -194,17 +191,17 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
-        	PrototypeConstants.putStrings();
+        	CircleConstants.putStrings();
         }
          
         rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
-        String type = info.getString(GameInfo.GAMETYPE, PrototypeVariation.prototype.name);
+        String type = info.getString(GameInfo.GAMETYPE, CircleVariation.CircleOfLife.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
-        bb = new PrototypeBoard(type,players_in_game,randomKey,getStartingColorMap(),PrototypeBoard.REVISION);
+        bb = new CircleBoard(type,players_in_game,randomKey,getStartingColorMap(),CircleBoard.REVISION);
         //
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
@@ -273,41 +270,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     //    return (val);
     //}
 
-	/**
-	 * this is the main method to do layout of the board and other widgets.  I don't
-	 * use swing or any other standard widget kit, or any of the standard layout managers.
-	 * they just don't have the flexibility to produce the results I want.  Your mileage
-	 * may vary, and of course you're free to use whatever layout and drawing methods you
-	 * want to.  However, I do strongly encourage making a UI that is resizable within
-	 * reasonable limits, and which has the main "board" object at the left.
-	 * <p>
-	 *  The basic layout technique used here is to start with a cell which is about the size
-	 *  of a board square, and lay out all the other objects relative to the board or to one
-	 *  another.  The rectangles don't all have to be on grid points, and don't have to
-	 *  be non-overlapping, just so long as the result generally looks good.
-	 *  <p>
-	 *  When "extraactions" is available, a menu option "show rectangles" works
-	 *  with the "addRect" mechanism to help visualize the layout.
-	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
 
-    boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	if(traditionalLayout) { super.setLocalBounds(x, y, width, height); }
-    	else { modernLayout(x,y,width,height); }
-    }
-    private void modernLayout(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -350,49 +316,41 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-    	
+        int stateH = fh*5/2;
+           	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean rotate = mainW<mainH;	
-        int nrows = rotate ? 24 : 15;  // b.boardRows
-        int ncols = rotate ? 15 : 24;	 // b.boardColumns
+        int nrows = 19;  // b.boardRows
+        int ncols = 24;	 // b.boardColumns
   	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-2*stateH)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-stateH*2-boardH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH;
         int stateX = boardX;
-        int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	if(rotate)
-    	{	// this conspires to rotate the drawing of the board
-    		// and contents if the players are sitting opposite
-    		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
-    		contextRotation = -Math.PI/2;
-    	}
-    	
+     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseRect);       
+    	placeRow( boardX, boardBottom,boardW,stateH,goalRect,reverseRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
@@ -408,7 +366,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	G.SetRect(chip,	x,	y,	4*unitsize,	3*unitsize);
+    	G.SetRect(chip,	x,	y,	2*unitsize,	2*unitsize);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
@@ -417,126 +375,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	pl.displayRotation = rotation;
     	return(box);
     }
-    
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int ncols = tallMode ? 29 : wideMode ? 42 : 37; // more cells wide to allow for the aux displays
-        int nrows = tallMode ? 27 : 20;  
-        int cellw = width / ncols;
-        int chatHeight = selectChatHeight(height);
-        int cellh = (height-(wideMode?0:chatHeight)) / nrows;
-        
-        CELLSIZE = ((chatHeight==0)&&wideMode) 
-        				? 0	// no chat, never select wide mode 
-        				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
-        return(CELLSIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        placeRow( CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE,goalRect);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
-
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
-    private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,PrototypeBoard gb)
+    private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,CircleBoard gb)
     {	int player = pl.boardIndex;
         boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
         if (canhit)
@@ -549,29 +391,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         if (gc != null)
         { // draw a random pile of chips.  It's just for effect
 
-            int spacex = G.Width(r) - CELLSIZE;
-            int spacey = G.Height(r) - CELLSIZE;
-            Random rand = new Random(4321 + player); // consistent randoms, different for black and white 
-
-            if (canhit)
-            {	// draw a highlight background if appropriate
-                GC.fillRect(gc, HighlightColor, r);
-            }
-
             GC.frameRect(gc, Color.black, r);
-            PrototypeChip chip = gb.getPlayerChip(player);
-            PrototypeCell cell = gb.getPlayerCell(player);
-            int nc = 20;	
-            // draw 20 chips
-            if(spacex>0 && spacey>0)
-            {
-            while (nc-- > 0)
-            {	int rx = Random.nextInt(rand, spacex);
-                int ry = Random.nextInt(rand, spacey);
-                // using the cell to draw the chip has the side effect of setting
-                // the cell's location for animation.
-                cell.drawChip(gc,this,chip,gb.cellSize(),G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
-             }}
+            CircleCell cell = gb.getPlayerCell(player);
+            int capsize = gb.captureSize[player];
+            cell.drawStack(gc,this,canhit?highlight:null,CELLSIZE,G.centerX(r),G.centerY(r),0,0,""+capsize);
         }
      }
     /**
@@ -593,7 +416,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	PrototypeChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	CircleChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -610,7 +433,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      * */
     public void drawFixedElements(Graphics gc)
     { 
-     PrototypeChip.backgroundTile.image.tileImage(gc, fullRect);   
+     CircleChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
     
@@ -619,11 +442,11 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     {	// note, drawing using disB is very important for boards which have different sizes
     	// and which are using copyies of the real board for drawing.
     	// Not so important for boards which are always the same dimensions, but it's always safe.
-    	PrototypeBoard gb = disB(gc);
+    	CircleBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
-         PrototypeChip.backgroundReviewTile.image.tileImage(gc,brect);   
+         CircleChip.backgroundReviewTile.image.tileImage(gc,brect);   
         }
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
@@ -646,13 +469,13 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-          PrototypeChip tile = lastRotation?PrototypeChip.hexTile:PrototypeChip.hexTileNR;
+          CircleChip tile = lastRotation?CircleChip.hexTile:CircleChip.hexTileNR;
           int left = G.Left(brect);
           int top = G.Bottom(brect);
           int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
-          for(Enumeration<PrototypeCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
+          for(Enumeration<CircleCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
           { //where we draw the grid
-        	  PrototypeCell cell = cells.nextElement();
+        	  CircleCell cell = cells.nextElement();
         	  int ypos = top - gb.cellToY(cell);
         	  int xpos = left + gb.cellToX(cell);
         	  int thiscol = cell.col;
@@ -692,21 +515,23 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      * @param brect	the rectangle containing the board
      * @param highlight	the mouse location
      */
-    public void drawBoardElements(Graphics gc, PrototypeBoard gb, Rectangle brect, HitPoint highlight)
+    public void drawBoardElements(Graphics gc, CircleBoard gb, Rectangle brect, HitPoint highlight)
     {
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-    	Hashtable<PrototypeCell,Prototypemovespec> targets = gb.getTargets();
+    	Hashtable<CircleCell,CircleMovespec> targets = gb.getTargets();
      	numberMenu.clearSequenceNumbers();
 
-    	for(PrototypeCell cell = gb.allCells; cell!=null; cell=cell.next)
+    	for(CircleCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
+            //String msg = ""+cell.critter();
+            //HitPoint.setHelpText(highlight,CELLSIZE,xpos,ypos,msg);
             if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
             		{
             		highlight.spriteColor = Color.red;
@@ -718,8 +543,34 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             }
         }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
+    	drawCircleOfLife(gc,boardRect);
     }
-
+    public void drawCircleOfLife(Graphics gc,Rectangle boardRect)
+    {	
+    	CR[] vals = CR.values();
+    	int rad = Math.min(G.Width(boardRect),G.Height(boardRect))/2	;
+    	int idx = 0;
+    	int nval = vals.length;
+    	int cx = G.centerX(boardRect)-CELLSIZE/2;
+    	int cy = G.centerY(boardRect);
+    	double qq = Math.PI/24;
+    	for(CR critter : vals)
+    	{	double angle = -Math.PI/12+Math.PI*2*idx/nval;
+        	//int h = critter.getIconHeight(CELLSIZE/2);
+        	//int w = critter.getIconWidth(CELLSIZE/2);
+        	int x = cx - (int)(rad*Math.sin(angle));
+        	int y = cy - (int)(rad*Math.cos(angle));
+    		critter.drawChip(gc,this,CircleChip.White,Math.PI-angle,CELLSIZE*2/3,x,y,null);
+    		double fudge = (idx==11?-qq/2 : 0);
+        	int x2 = cx - (int)(rad*Math.sin(angle+qq*3/2-fudge));
+        	int y2 = cy - (int)(rad*Math.cos(angle+qq*3/2-fudge));
+        	int x1 = cx - (int)(rad*Math.sin(angle+qq*2-fudge));
+        	int y1 = cy - (int)(rad*Math.cos(angle+qq*2-fudge));
+        	GC.setColor(gc,Color.black);
+        	GC.drawArrow(gc,x1,y1,x2,y2,CELLSIZE/4,CELLSIZE/8);
+    		idx++;
+     	}
+    }
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -749,8 +600,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
        // if direct drawing is in effect disB gets a copy of the board, which should be
        // used for everything called from here.  Also beware that the board structures
        // seen by the user interface are not the same ones as are seen by the execution engine.
-       PrototypeBoard gb = disB(gc);
-       PrototypeState state = gb.getState();
+       CircleBoard gb = disB(gc);
+       CircleState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
    	   if(gc!=null)
    		{
@@ -800,17 +651,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
        GC.setFont(gc,standardBoldFont());
        
        // draw the board control buttons 
-       boolean conf = (state==PrototypeState.ConfirmSwap) ;
-		if( conf
-			|| (state==PrototypeState.PlayOrSwap) 
-			|| (state==PrototypeState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-			swapButton.highlightWhenIsOn = true;
-        	swapButton.setIsOn(conf);
-        	swapButton.show(gc, buttonSelect);
-			}
 
-		if (state != PrototypeState.Puzzle)
+		if (state != CircleState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -823,14 +665,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
-        drawPlayerStuff(gc,(state==PrototypeState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
+        drawPlayerStuff(gc,(state==CircleState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
   
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==PrototypeState.Gameover?gameOverMessage(gb):s.get(state.description()),
-            				state!=PrototypeState.Puzzle,
+            				state==CircleState.Gameover?gameOverMessage(gb):s.get(state.description()),
+            				state!=CircleState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
@@ -838,7 +680,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        DrawReverseMarker(gc,reverseRect,selectPos,PrototypeId.ReverseView);
+        DrawReverseMarker(gc,reverseRect,selectPos,CircleId.ReverseView);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -946,7 +788,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  */
     public commonMove ParseNewMove(String st,int pl)
     {
-        return (new Prototypemovespec(st, pl));
+        return (new CircleMovespec(st, pl));
     }
 /**
  * prepare to add nmove to the history list, but also edit the history
@@ -1034,9 +876,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  */
     public void StartDragging(HitPoint hp)
     {
-        if (hp.hitCode instanceof PrototypeId)// not dragging anything yet, so maybe start
+        if (hp.hitCode instanceof CircleId)// not dragging anything yet, so maybe start
         {
-        PrototypeId hitObject =  (PrototypeId)hp.hitCode;
+        CircleId hitObject =  (CircleId)hp.hitCode;
  	    switch(hitObject)
 	    {
 	    default: break;
@@ -1046,7 +888,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
-	        PrototypeCell hitCell = hitCell(hp);
+	        CircleCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
 	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
@@ -1099,14 +941,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-       	if(!(id instanceof PrototypeId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
+       	if(!(id instanceof CircleId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
-        PrototypeId hitCode = (PrototypeId)id;
+        CircleId hitCode = (CircleId)id;
         
         // if direct drawing, hp.hitObject is a cell from a copy of the board
-        PrototypeCell hitObject = bb.getCell(hitCell(hp));
-		PrototypeState state = bb.getState();
+        CircleCell hitObject = bb.getCell(hitCell(hp));
+		CircleState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -1129,12 +971,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 			{
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
-			case Play:
-			case PlayOrSwap:
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
 			case Puzzle:
-				PerformAndTransmit((bb.pickedObject==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
+			case Play:
+				// fall through and pick up the previously dropped piece
+				PerformAndTransmit((hitObject.topChip()!=null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
 				break;
 			}
 			break;
@@ -1153,7 +993,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 
 
 
-    private boolean setDisplayParameters(PrototypeBoard gb,Rectangle r)
+    private boolean setDisplayParameters(CircleBoard gb,Rectangle r)
     {
       	boolean complete = false;
       	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
@@ -1230,7 +1070,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Circle); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -1352,7 +1192,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     //}
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
-    {  return(new PrototypePlay());
+    {  return(new CirclePlay());
     }
 
     /** replay a move specified in SGF format.  
@@ -1510,7 +1350,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 	 */
 	public double imageSize(ImageStack im)
 	  {
-		  return(super.imageSize(im) + PrototypeChip.imageSize(im));
+		  return(super.imageSize(im) + CircleChip.imageSize(im));
 	  }
     
     /**

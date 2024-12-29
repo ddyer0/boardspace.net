@@ -138,7 +138,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
 	public static final String ECHO_PLAYER_QUIT = "223";
 	public static final String ECHO_I_QUIT = "221";
 	public static final String SEND_REQUEST_EXIT_COMMAND = "220";
-	public static final String SEND_REQUEST_EXIT = SEND_REQUEST_EXIT_COMMAND+ " ";
+	public static final String SEND_REQUEST_EXIT = SEND_REQUEST_EXIT_COMMAND+" ";
 
 	// 208 used to be score by name, used by the cgi scripts, now obsolete
 	public static final String SEND_GROUP_COMMAND = "210";
@@ -489,7 +489,6 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
                         count_writes++;
                         sum_writes += (packet-i);
                         last_write = G.Date();
-
                         os.write(outBuf, i, packet);
                         if(writeErr!=0) { writeErr=0; throw new IOException(); }
 
@@ -528,9 +527,20 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
         return (true);
     }
 
-
-    
-   
+/*
+    public void show(byte buf[],int off,int len)
+    {
+    	StringBuilder b = new StringBuilder(" o : ");
+    	for(int i=0;i<len;i++)
+    	{
+    		int ch = buf[off+i];
+    		if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z')) { b.append((char)ch); }
+    		else { b.append(""+ch); }
+    		b.append(" ");
+    	}
+    	G.print(b.toString());
+    }
+  */ 
     int byteBufSize = 1024;
     byte []byteBuf = new byte[byteBufSize];
     int byteBufIndex=0;
@@ -645,7 +655,6 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
 
                
                str = decodeAsUtf8(inBuf,ii,inBufLength);
-               
                count_reads++;
                sum_reads += str.length();
                last_read = G.Date();

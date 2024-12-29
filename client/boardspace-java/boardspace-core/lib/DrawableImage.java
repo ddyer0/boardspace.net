@@ -600,13 +600,19 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	     * @return true if this is the hit object (even if not new)
 	     */
 	    public boolean registerChipHit(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int e_w,int e_h)
-	    	{
+	    {
+	      // if the id is null don't trigger a hit, but do return true to indicate
+	      // it would have been.  This has the effect of setting help text or allowing
+	      // the caller to take some other action.
+	      if(rackLocation!=null)
+	      {
      	  highlight.hitObject = this; 
       	  highlight.hit_x = e_x;
       	  highlight.hit_y = e_y;
       	  highlight.hit_width = e_w;
       	  highlight.hit_height = e_h;
       	  highlight.hitCode = rackLocation;
+	      }
       	  return(true);
 	    }
 	   

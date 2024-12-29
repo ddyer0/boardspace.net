@@ -92,16 +92,16 @@ class CN1Resources  implements ResourceInterface
 	}
 	
 	public InputStream getData(String name) {
-		return res.getData(name);
+		return res!=null ? res.getData(name) : null;
 	}
 	public Image getImage(String name) {
-		return res.getImage(name);
+		return res!=null ? res.getImage(name) : null;
 	}
 	public String[] getDataResourceNames() {
-		return res.getDataResourceNames();
+		return res!=null ? res.getDataResourceNames() : null;
 	}
 	public String[] getImageResourceNames() {
-		return res.getImageResourceNames();
+		return res!=null ? res.getImageResourceNames() : null;
 	}
 }
 
@@ -222,9 +222,12 @@ public class ResourceBundle
 		//G.print("Loading resource bundle "+file+":"+firstName);
 		Plog.log.addLog("open ",file);
 		res = openResourceFile(resFile);
+		if(res!=null)
+		{
     	dataNames = res.getDataResourceNames();
     	imageNames = res.getImageResourceNames();
     	loadedOK = true;
+		}
 	 }
 	 // constructor for resources in the data cache
 	 ResourceBundle(File in,String name)
@@ -299,7 +302,7 @@ public class ResourceBundle
     	{	
     		Plog.log.addLog("Load resource bundle ",file);
     		res = new ResourceBundle(file);
-     		if(res.loadedOK) { bundle = res; } else { res = null; }
+     		if(res!=null && res.loadedOK) { bundle = res; } else { res = null; }
     	}
     	return(res);
     	}

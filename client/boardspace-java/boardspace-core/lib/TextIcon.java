@@ -17,8 +17,6 @@
 package lib;
 
 import bridge.Icon;
-import bridge.IconBase;
-
 import java.awt.Component;
 import java.awt.FontMetrics;
 
@@ -28,7 +26,7 @@ import java.awt.FontMetrics;
  * @author Ddyer
  *
  */
-public class TextIcon extends IconBase implements Icon 
+public class TextIcon implements Icon 
 {	
 	Text originalText;
 	int width;

@@ -1567,12 +1567,14 @@ private static int fact(int n)
 {
     return(n==0 ? 1 : n*fact(n-1));
 }
+
 private static double speed = 0.0;
 public static double cpuTest()
 {	long now = G.Date();
-    for(int j=0;j<1000000;j++) { fact(20); }
+		for(int j=0;j<(10000000/2);j++) { fact(20); }
 	long later = G.Date();
-   	return(28.80/(later-now+1));	// 1.0 based on the codename1 simulator running on my machine 1/2016
+	//G.print("elapsed "+(later-now)/1000.0);
+   	return(126.0/(later-now+1));	// 1.0 based on the codename1 simulator running on my machine 1/2016
 } 
 /**
  * return the apparent cpu speed, where 1.0 is a normalized "standard" pc.  Other than the 
@@ -1705,7 +1707,7 @@ public static void setIdString(String str) { G.idString = str; }
 private static String idString = "";
 
 private static final String OS_VERSION = "os.version";
-private static final String OS_ARCH = "os.arch";
+public static final String OS_ARCH = "os.arch";
 private static final String OS_NAME = "os.name";
 private static final String JAVA_CLASS_VERSION = "java.class.version";
 private static final String JAVA_VENDOR_URL = "java.vendor.url";

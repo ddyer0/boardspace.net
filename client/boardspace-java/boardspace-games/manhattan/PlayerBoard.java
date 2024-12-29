@@ -98,7 +98,7 @@ public class PlayerBoard implements ManhattanConstants
 	MColor color;
 	ManhattanBoard b;
 	// 
-	// prototype objects used by this player
+	// CircleOfLife objects used by this player
 	//
 	ManhattanChip chip;			// the color chip for this player
 	ManhattanChip background;	// this main background for the player board

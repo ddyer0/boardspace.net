@@ -17,9 +17,14 @@
 package bridge;
 
 import java.awt.Component;
-import lib.Graphics;
+import java.awt.Graphics;
 
 public interface Icon extends javax.swing.Icon
 {
-	void paintIcon(Component c, Graphics g, int x, int y);
+	void paintIcon(Component c, lib.Graphics g, int x, int y);
+	
+	default public void paintIcon(Component c, Graphics g, int x, int y)
+	{	
+		paintIcon(c,lib.Graphics.create(g,c),x,y);		
+	}
 }

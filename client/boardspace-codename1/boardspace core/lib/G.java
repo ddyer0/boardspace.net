@@ -1563,12 +1563,14 @@ private static int fact(int n)
 {
     return(n==0 ? 1 : n*fact(n-1));
 }
+
 private static double speed = 0.0;
 public static double cpuTest()
 {	long now = G.Date();
-		for(int j=0;j<1000000;j++) { fact(20); }
+		for(int j=0;j<(10000000/2);j++) { fact(20); }
 	long later = G.Date();
-   	return(28.80/(later-now+1));	// 1.0 based on the codename1 simulator running on my machine 1/2016
+	//G.print("elapsed "+(later-now)/1000.0);
+   	return(126.0/(later-now+1));	// 1.0 based on the codename1 simulator running on my machine 1/2016
 } 
 /**
  * return the apparent cpu speed, where 1.0 is a normalized "standard" pc.  Other than the 
@@ -2262,7 +2264,7 @@ public static String expandClassName(String classname)
 		nativeMenu.show(window,x,y);	
 		} catch(Throwable err)
 		{	// these occur, rarely, due to some java screwup
-			Plog.log.addLog("Show failed for ",nativeMenu," ",err);
+			Plog.log.addLog("Show failed for ",nativeMenu," on ",window," ",err,"\n",err.getStackTrace());
 			nativeMenu.hide(window);
 		}
 	}

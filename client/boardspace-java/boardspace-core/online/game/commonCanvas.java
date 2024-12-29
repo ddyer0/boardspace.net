@@ -7184,7 +7184,7 @@ public abstract class commonCanvas extends exCanvas
 	        if (who != null)
 	        {if(who.robotStarted())
 	        	{
-	            startRobotTurn(who);
+	        	startRobotTurn(who);
 	        	}
 	       String m = who.getRobotMove();
 	       // this is where offline robot moves are made

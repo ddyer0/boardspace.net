@@ -929,6 +929,7 @@ synchronized(allGames) {
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;
 	 mm.okForTurnbased = true;		// parallel setup
+	 mm.okForPassAndPlay = true;
 	
 	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
 				NoBots,null,
@@ -940,6 +941,7 @@ synchronized(allGames) {
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = true;
 		 mm.okForTurnbased = true;		// parallel setup
+		 mm.okForPassAndPlay = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
 
@@ -1427,6 +1429,17 @@ synchronized(allGames) {
 			tumbleVideo,false, WhiteOverRed));
 
 	}
+	
+	{
+	String pRules = "/circle/english/Rules.html";
+	String pViewer = "circle.CircleViewer";  
+	put(new GameInfo(2590,ES.game,122,"PP",CapturingGames,"Circle","Circle",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_circle.html",
+			null,false, WhiteOverBlack));
+	}
+	
 	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
@@ -1728,6 +1741,16 @@ synchronized(allGames) {
 			gipfVideo,false, WhiteOverBlack));
 
 	}
+	{
+	String gipfClass = "gipf.GipfViewer";
+	String gipfRules = "/gipf/english/matrx-rules.htm";
+	String gipfVideo = "/gipf/english/gipf-video.html";
+	put(new GameInfo(201,ES.test,123,"G",GipfGames,"Matrx","Matrx",
+			TwoBotsPlus,
+			new double[]{0.3,1.0,0.01},gipfClass,gipfRules,"about_matrx.html",
+			gipfVideo,false, WhiteOverBlack));
+	}
+	
 	put(new GameInfo(210,ES.game,6,"PT",GipfGames,"Punct","Punct",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},

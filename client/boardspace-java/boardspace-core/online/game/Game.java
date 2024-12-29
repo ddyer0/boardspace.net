@@ -2793,12 +2793,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {
                 String badToken = myST.hasMoreTokens() ? myST.nextToken()+" " : "(blank)";
 
-				 if(NetConn.SEND_REQUEST_EXIT_COMMAND.equals(badToken))
+				 if(NetConn.SEND_REQUEST_EXIT.equals(badToken))
 					{//tell our side of it
 					 logExtendedError("server rejected "+fullMsg,null,true);
 					}
-				 else if (NetConn.SEND_INTRO.equals(badToken))
-                {	if(theChat!=null)
+				 else if (NetConn.SEND_INTRO.equals(badToken) 
+						 	|| NetConn.SEND_REGISTER_PLAYER.equals(badToken))
+                {	// send_register_player is what is echoed if the name is too long
+					// which happened once due to excessive unicode encoding length
+					if(theChat!=null)
                 	{
                     theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                         s.get(NoLaunchMessage) + fullMsg);
@@ -4783,10 +4786,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
     	   			// disConnected("test");
-    	   			 myNetConn.closeConn();
+    	   			 //myNetConn.closeConn();
     	   			 v.testSwitch();
-    	   			 //PopupManager.useSwing = !PopupManager.useSwing;
-    	   			 //G.infoBox(null,"swing popups "+PopupManager.useSwing);
+    	   			 PopupManager.useSwing = !PopupManager.useSwing;
+    	   			 G.infoBox(null,"swing popups "+PopupManager.useSwing);
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;
        				}
