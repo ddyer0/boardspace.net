@@ -43,7 +43,8 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	public static final int NEUROBOT_LEVEL = 11;
 	public static final int PURE_NEUROBOT_LEVEL = 12;
 	public static final int ALPHABOT_LEVEL = 13;
-	public static final int Automa = 14;
+	public static final int FILEBOT_LEVEL = 14;
+	public static final int Automa = 15;
 	public void setSearcher(CommonDriver c);
 	public CommonDriver getSearcher();
 	/**

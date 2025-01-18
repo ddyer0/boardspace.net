@@ -64,7 +64,7 @@ public interface OnlineConstants extends Config {
     	PureNeurobot("Pure Neurobot","9999",RobotProtocol.PURE_NEUROBOT_LEVEL,99),
     	TestBot_1("TestBot 1","9999",RobotProtocol.TESTBOT_LEVEL_1,99),
     	TestBot_2("TestBot 2","9999",RobotProtocol.TESTBOT_LEVEL_2,99),
-    	
+    	FileBot("FileBot","9999",RobotProtocol.FILEBOT_LEVEL,99),
     	Automa("Automa","38673",RobotProtocol.Automa,99),
     	;
     	public String name;

@@ -36,6 +36,7 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 	public GipfChip[] newComponentArray(int n) { return(new GipfChip[n]); }
 	int rowcode = 0;
 	boolean preserved = false;		// preserved on this move number
+	int centerRank = -1;
 	int sweep_counter = 0;
 	Potential potential = null;
 	

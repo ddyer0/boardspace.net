@@ -422,10 +422,29 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         		if((a!=null) && a.isEdgeCell()) { c.unCrossLinkTo(a); }
         		}
         	ecells.push(c);
+        	c.centerRank = 0;
         	}
+        	else { c.centerRank = -1; }
          }
+        int n=0;
+        while(setCenterRank(n)>0) { n++; }
         edgeCells = ecells.toArray();
         InitBallsAndBoard();
+    }
+    // centerRank is the distance from the edge
+    private int setCenterRank(int target) 
+    {	int n = 0;
+    	for(GipfCell c = allCells; c!=null; c=c.next)
+    	{	if(c.centerRank==target)
+    		{
+    			for(int dir=0;dir<c.geometry.n;dir++)
+    			{
+    				GipfCell adj = c.exitTo(dir);
+    				if(adj!=null && adj.centerRank==-1 ) { adj.centerRank = target+1; n++; }
+    			}
+    		}
+    	}
+    	return n;
     }
     public void sameboard(BoardProtocol f) { sameboard((GipfBoard)f); }
 
@@ -1517,9 +1536,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         {
         case MOVE_DONE:
         	doDone(replay);
-
             break;
-
  
         case MOVE_START:
         	finalizePlacement();
@@ -2067,14 +2084,16 @@ private void undoCaptures(int uncap,int who)
 }   
 
    // look for a win for player.  
-   public double ScoreForPlayer(int player,boolean print,boolean dumbot)
+   public double ScoreForPlayer(int player,boolean print,boolean dumbot,boolean testbot)
    {  	GipfCell normal = rack[player][Potential.None.ordinal()];
 		boolean matrx = variation==Variation.Gipf_Matrx;
 	    double finalv= captures[player].chipIndex*20;
+	    GColor myColor = playerColor[player];
 	    int gipfs = normal.height();
-	    int reserves = 0;
+	    int centerRank = 0;
 	    if(matrx)
 	    {
+		    int reserves = 0;
 	    	for(GipfCell r : rack[player])
 	    	{
 	    		if(r.potential!=Potential.None)
@@ -2083,6 +2102,7 @@ private void undoCaptures(int uncap,int who)
 	    			reserves += n;
 	    		}
 	    	}
+	    	finalv += reserves*5;
 	    }
 	    else
 	    {
@@ -2100,7 +2120,6 @@ private void undoCaptures(int uncap,int who)
    			{	// count x a x and x x x 
    				if(!c.isEdgeCell())
    				{	GipfChip ctop = c.topChip();
-   					if(matrx && ctop!=null && ctop.potential==Potential.None) { gipfs++; }
    					for(int dir=0;dir<3;dir++)
    					{
    					GipfCell left = c.exitTo(dir);
@@ -2109,16 +2128,34 @@ private void undoCaptures(int uncap,int who)
    					{
 	   				GipfCell right = c.exitTo(dir);
    					GipfChip rtop = right.topChip();
-   					if((rtop!=null) && (playerIndex(ltop)==player) && (playerIndex(rtop)==player))
+   					if((rtop!=null) && (ltop.color==myColor) && (rtop.color==myColor))
    					{	forks++;
-   						if((ctop!=null) && (playerIndex(ctop)==player)) { threes++; } 
+   						if((ctop!=null) && (ctop.color==myColor)) { threes++; } 
    					}
    					}
    					}
    				}
    			}
-   			finalv += gipfs*10+reserves*5+2*forks + 3*threes;
+   		
+   		finalv += 2*forks + 3*threes;
+   		 
    		}
+   		if(matrx)
+		{
+		for(GipfCell c = allCells;
+   				c!=null;
+   				c=c.next)
+   			{
+   				GipfChip ctop = c.topChip();
+   				if(ctop!=null && ctop.potential==Potential.None && ctop.color==myColor) 
+						{ gipfs++;
+						  centerRank += c.centerRank;
+						}
+   			}
+		finalv += gipfs*10;
+		// penalty for gipfs toward the center
+		finalv -= centerRank*2;
+ 		}
    		if(print) 
    			{ System.out.println("sum "+finalv); }
    		return(finalv);

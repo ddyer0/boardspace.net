@@ -42,6 +42,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     static final int BESTBOT_DEPTH = 7;
     int MAX_DEPTH = DUMBOT_DEPTH;
     boolean DUMBOT = false;
+    boolean TESTBOT = false;
     int boardSearchLevel = 0;				// the current search depth
 
  
@@ -73,7 +74,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
-    	return(evboard.ScoreForPlayer(player,print,DUMBOT));
+    	return(evboard.ScoreForPlayer(player,print,DUMBOT,TESTBOT));
 
     }
     public void InitRobot(ViewerProtocol newParam, ExtendedHashtable info, BoardProtocol gboard,
@@ -89,6 +90,8 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	DUMBOT = true;
         	break;
+        case TESTBOT_LEVEL_1:
+        	TESTBOT = true;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	DUMBOT = true;
