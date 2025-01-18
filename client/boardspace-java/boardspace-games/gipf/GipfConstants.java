@@ -27,7 +27,8 @@ import online.game.BaseBoard.BoardState;
 
 public interface GipfConstants 
 {	
-	static final String RetainGipfMessage = "Click on Gipf pieces to change their capture status";
+	static final String RetainGipfMessage = "Click on stacks to change their capture status";
+	static final String ClickEdgeMessage = "Click on an edge cell to designate the row to capture";
 	static final String GoalMessage = "Capture most of your opponent's pieces";
 	static final String GoalMessageP = "Capture 3 Gipf pieces, or make your opponent run out of playable pieces";
 	
@@ -140,8 +141,8 @@ public interface GipfConstants
     	PRECAPTURE_OR_START_GIPF_STATE("Designate stacks to capture before your move"),
     	SLIDE_GIPF_STATE("Slide the stack toward the center"),
     	PRECAPTURE_OR_START_NORMAL_STATE("Designate stacks to capture before your move"),
-    	MANDATORY_CAPTURE_STATE("You must designate some stack to be removed"),
-    	MANDATORY_PRECAPTURE_STATE("You must designate some stack to remove"),
+    	MANDATORY_CAPTURE_STATE("Designate some stack to be removed"),
+    	MANDATORY_PRECAPTURE_STATE("Designate some stack to remove before your move"),
     	PLACE_POTENTIAL_STATE("Place a Potential on a starting point"),
     	MOVE_POTENTIAL_STATE("Use a Potential"),
     	PLACE_OR_MOVE_POTENTIAL_STATE("Place a Potential, or use a Potential"),
@@ -153,6 +154,21 @@ public interface GipfConstants
     	public String getDescription() { return(description); }
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
+    	public boolean edgeCaptureMode()
+    	{
+    		switch(this)
+    		{
+    		case MANDATORY_PRECAPTURE_STATE:
+    		case MANDATORY_CAPTURE_STATE:
+    		case PRECAPTURE_OR_START_NORMAL_STATE:
+    		case DESIGNATE_CAPTURE_OR_DONE_STATE:
+    		case PRECAPTURE_STATE:
+    		case DESIGNATE_CAPTURE_STATE:
+    		case PRECAPTURE_OR_START_GIPF_STATE:
+    				return true;
+    		default: return false;
+    		}
+    	}
     	static void putStrings()
     	{
     		for(GipfState s : values()) { InternationalStrings.put(s.description); }
@@ -165,6 +181,7 @@ public interface GipfConstants
     	        GoalMessage,
     	        GoalMessageP,
     	        RetainGipfMessage,
+    	        ClickEdgeMessage,
      		};
     		String GipfStringPairs[][] = {
     				{"Gipf_family","Gipf"},

@@ -543,6 +543,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         //
      	GipfCell hitCell = null;
      	boolean perspective = usePerspective();
+     	boolean picked = rb.pickedObject!=null;
      	boolean matrx = isMatrx();
        	Enumeration<GipfCell>cells = rb.getIterator(Itype.TBRL);
        	while(cells.hasMoreElements())
@@ -587,7 +588,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
            		{StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
            		}
            	}
-           	if(isADest)
+           	if(picked && isADest)
 	       	{
 	       		GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
 	       	}
@@ -683,10 +684,22 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         				vstate!=GipfState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
+     	boolean edgeCap = gb.edgeCaptureMode();
+     	if(edgeCap)
+     	{
      	boolean gipfCap = gb.hasGipfCaptures();
-     	if(gipfCap) 
-     	{ GC.Text(gc,false,G.Left(stateRect),G.Bottom(stateRect)-G.Height(stateRect)/3,G.Width(stateRect),G.Height(stateRect),
-     				Color.black,null,s.get(RetainGipfMessage));
+     	int left = G.Left(boardRect);
+     	int top = G.Bottom(boardRect)-G.Height(stateRect)*3;
+     	int width = G.Width(stateRect);
+     	int height = G.Height(stateRect);
+     	GC.setFont(gc,largePlainFont());
+     	GC.Text(gc,false,left,top,width,height, Color.lightGray,null,s.get(ClickEdgeMessage));
+     	top += height*2/3;
+      	if(gipfCap) 
+     		{ 
+     		GC.Text(gc,false,left,top,width,height, Color.lightGray,null,s.get(RetainGipfMessage));
+     		
+     		}
      	}
         goalAndProgressMessage(gc,ourSelect,s.get(isMatrx()?GoalMessageP:GoalMessage),progressRect, goalRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc, this, iconRect,null);
@@ -877,6 +890,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 	    		case PLACE_TAMSK_FIRST_STATE:
 	    		case PLACE_TAMSK_LAST_STATE:
 	    		case PLACE_OR_MOVE_POTENTIAL_STATE:
+	    		case MOVE_POTENTIAL_STATE:
 	    			if(b.pickedObject==null && hitCell.topChip()!=null)
 	    			{
 	    			PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);

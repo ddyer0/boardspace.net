@@ -500,14 +500,23 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     // is a legal move
     public Hashtable<GipfCell,GipfCell> getMoveDests()
     {	Hashtable<GipfCell,GipfCell> dd = new Hashtable<GipfCell,GipfCell>();
-    	GipfCell src = pickedSource.top();
-    	
-    	if((src!=null)&&(pickedObject!=null))
-    	{	
-    		getDestsFrom(src,whoseTurn,dd,true);
-    		
+    
+    	if(pickedObject!=null)
+    	{
+    	GipfCell src = pickedSource.top();    	
+    	getDestsFrom(src,whoseTurn,dd,true);	
     	}
-   	return(dd);
+    	else
+    	{
+    	if(markForRemoval(whoseTurn))
+    	{
+    		for(GipfCell c = allCells; c!=null; c=c.next)
+    		{
+    			if(c.rowcode>0) { dd.put(c,c); }
+    		}
+    	}
+    	}
+    	return(dd);
     }
 
     public boolean hasGipfCaptures() 
@@ -520,6 +529,10 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}
     	return(false);
     }
+    public boolean edgeCaptureMode()
+    {
+    	return board_state.edgeCaptureMode();
+    }
     public void getDestsFrom(GipfCell src,int pl,Hashtable<GipfCell,GipfCell>d,boolean picked)
     {	switch(board_state)
     	{
@@ -529,6 +542,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	case PUZZLE_STATE: break;
     	case PLACE_TAMSK_FIRST_STATE:
     	case PLACE_TAMSK_LAST_STATE:
+    	case MOVE_POTENTIAL_STATE:
     	case PLACE_OR_MOVE_POTENTIAL_STATE:
     		if(src!=null) { getPotentialDestsFrom(src,picked ? pickedObject : null,d,pl); }
     		else { 
@@ -602,7 +616,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		//p1(markForRemoval(whoseTurn),"must be capturing");
     		switch(c.rowcode)
     		{	case 0:	
-    			default: return(c.isGipf());
+    			default: 
+    				return(c.isGipf() && dests.get(c)!=null);
     			case 1:
     			case 2:
     			case 4: return(true);
@@ -1512,7 +1527,11 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 		boolean animateFirst = pickedObject==null;
 		if(animateFirst) { pickFromRack(rack[whoseTurn][m.from_potential.ordinal()]); }
 		if(replay.animate && animateFirst)
-		{
+		{	if(pickedHeight==2)
+			{
+			animationStack.push(getSource());
+			animationStack.push(dest);
+			}
 			animationStack.push(getSource());
 			animationStack.push(dest);
 		}
@@ -1701,6 +1720,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 			case PLACE_POTENTIAL_STATE:
 			case PLACE_GIPF_STATE:
 			case PLACE_OR_MOVE_POTENTIAL_STATE:
+    		case MOVE_POTENTIAL_STATE:
 			case PLACE_TAMSK_LAST_STATE:
 			case PLACE_TAMSK_FIRST_STATE:
         		{
@@ -1725,6 +1745,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case PLACE_OR_MOVE_POTENTIAL_STATE:
         	case PLACE_TAMSK_FIRST_STATE:
         	case PLACE_TAMSK_LAST_STATE:  
+        	case MOVE_POTENTIAL_STATE:
         	case PRECAPTURE_STATE:
         		if(c==getDest()) { 
         			unDropObject();
