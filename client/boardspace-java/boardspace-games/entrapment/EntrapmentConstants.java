@@ -100,7 +100,7 @@ public interface EntrapmentConstants
     	EntrapmentState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); }
     }
 	
     static final int MOVE_PICK = 204; // pick a chip from a pool

@@ -57,7 +57,9 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     
     static final int BOARD_INDEX = 0;
     static final int BOARD_FLAT_INDEX = 1;
-    static final String ImageFileNames[] = { "board","board-flat" };
+    static final int MATRX_INDEX = 2;
+    static final int MATRX_FLAT_INDEX = 3;
+    static final String ImageFileNames[] = { "board","board-flat","matrx","matrx-flat" };
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;
     static final String TextureNames[] = 
@@ -75,10 +77,18 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     private Rectangle reserveRects[] =  addRect("reserve",2);
     private Rectangle captureRects[] = addRect("capture",2);
     private Rectangle chipRects[] = addRect("chip",2);
-
+    public void verifyGameRecord()
+    {	DISABLE_VERIFY = true;
+    	super.verifyGameRecord();
+    	
+    }
     private Rectangle standardRects[] = addRect("standard",2);
-    boolean usePerspective() { return(getAltChipset()==0); }
-
+    boolean usePerspective() { return(super.getAltChipset()==0); }
+    boolean isMatrx() { return (b.variation==Variation.Gipf_Matrx); }
+    public int getAltChipset()
+    {	// matrx pieces are 2 and 3, regular pieces are 0 and 1
+    	return (isMatrx() ? 2 : 0) + (usePerspective() ? 1 : 0);
+    }
     // this is a debugging hack to print the robot's evaluation of the
     // current position.  Not important in real play
     JCheckBoxMenuItem startEvaluator = null;
@@ -133,12 +143,13 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public commonMove EditHistory(commonMove m)
     {	boolean okno = ((m.op==MOVE_REMOVE));
   	  GipfState state = b.getState();
-  	  if((m.op==MOVE_DROPB)
+   	  if((m.op==MOVE_DROPB)
     			&&((state==GipfState.SLIDE_STATE)|(state==GipfState.SLIDE_GIPF_STATE))
     		)
     	{ GipfCell dest = b.getDest();
+    	  GipfCell src = b.getSource();
     	  int sz = History.size();
-    	  if((sz>=2) && (dest!=null) && dest.isEdgeCell())
+    	  if((sz>=2) && (dest!=null) && dest.isEdgeCell() && (src!=null) && (src.isEdgeCell()))
     	  {	{
     		commonMove m1 = History.elementAt(sz-1);
     	   	commonMove m2 = History.elementAt(sz-2);
@@ -237,6 +248,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackGroundColor,rackBackGroundColor);
+        if(isMatrx()) { CELLSIZE = CELLSIZE*9/10; }
         return boardW*boardH;
     }
     public int cellSize() { return b.cellSize()*2/3; }
@@ -244,6 +256,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int chipw = unitsize*2;
+    	boolean matrx = isMatrx();
         Rectangle box = pl.createRectangularPictureGroup(x+chipw+unitsize/2,y,unitsize);
         Rectangle chip = chipRects[player];
         Rectangle player1Reserve = reserveRects[player];
@@ -270,7 +283,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     		G.SetRect(player1Reserve,
     	        		bx,
     	        		y, 
-    	        		CELLSIZE,
+    	        		CELLSIZE*(matrx?2:1),
     	        		CELLSIZE*2);          
     		G.SetRect(player1Captures, 
     					G.Right(player1Reserve),
@@ -283,7 +296,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         G.SetRect(player1Reserve,
         		x,
         		bbox, 
-        		CELLSIZE,
+        		CELLSIZE*(matrx?2:1),
         		CELLSIZE*2);          
         G.SetRect(player1Captures, 
         		G.Right(player1Reserve)+unitsize,
@@ -298,11 +311,12 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
    	        		bx,
    	        		y, 
    	        		CELLSIZE*4,
-   	        		CELLSIZE);          
+   	        		CELLSIZE*(matrx?2:1));          
    	        G.SetRect(player1Captures, 
    	        		bx,
    	        		G.Bottom( player1Reserve)+unitsize,
-   	        		CELLSIZE*4,CELLSIZE);
+   	        		CELLSIZE*4,
+   	        		CELLSIZE);
  		
     	}
     	else
@@ -311,7 +325,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	        		x,
     	        		bbox, 
     	        		CELLSIZE*4,
-    	        		CELLSIZE);          
+    	        		CELLSIZE*(matrx?2:1));          
     	        G.SetRect(player1Captures, 
     	        		x,
     	        		G.Bottom( player1Reserve)+unitsize,
@@ -366,60 +380,147 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       boolean perspective = usePerspective();
-      Image board = images[perspective ? BOARD_INDEX : BOARD_FLAT_INDEX];
+      Image board = images[isMatrx() 
+    		  				? perspective ? MATRX_INDEX : MATRX_FLAT_INDEX 
+    		  				: perspective ? BOARD_INDEX : BOARD_FLAT_INDEX];
       if(board!=background) { scaled = null; }
       background = board;
       scaled = board.centerScaledImage(gc, boardRect,scaled);
-      if(perspective)
-      {
-      gb.SetDisplayParameters(
-	    		0.895,	// x scale 
-	    		 0.90,	// y scale
-	    		 0.17,	// x offset
-	    		 -0.68,	// y offset
-	    		13.1,	// rotation
-	    		 0.19,	// x perspective
-	    		 0.15,	// y perspective
-	    		 -0.084	// y as a function of x
-	    		 );
-      }
-      else {
-          gb.SetDisplayParameters(
-  	    		1.06,	// x scale 
-  	    		 0.89,	// y scale
-  	    		 -0.05,	// x offset
-  	    		 -0.48,	// y offset
-  	    		0,	// rotation
-  	    		0,	// x perspective
-  	    		0,	// y perspective
-  	    		0	// y as a function of x
-  	    		 );
-
-      }
-      
-  	 gb.SetDisplayRectangle(boardRect);
-  	
+      setDisplayParameters(gb,perspective);
       gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
- 
-    private void drawRack(Graphics gc,Rectangle r,HitPoint p,GipfBoard rb,GipfCell rack)
-    {	boolean canhit = rb.legalToHitChips(rack);
-		boolean perspective = usePerspective();
-		int w = G.Width(r);
-    	int xp = perspective ? G.centerX(r) : G.Left(r)+G.Height(r)/2;
-    	int cs = Math.min((int)(w*0.7),CELLSIZE);
-    	int yp = perspective ? G.Bottom(r)-cs/2 : G.centerY(r);
-    	rack.drawStack(gc,this,canhit?p:null,cs,xp,yp,0,
-    			perspective ? 0 : 0.1,
-    			perspective ? 0.2 : 0,
-    			null);
-        if((p!=null) && (p.hitObject==rack))
+    private void setDisplayParameters(GipfBoard gb,boolean perspective)
+    {
+        if(isMatrx())
         {
-        p.arrow = hasMovingObject(p) ? StockArt.DownArrow : StockArt.UpArrow;;
-        p.awidth = CELLSIZE/2;
-        p.spriteColor = Color.red;
+            if(perspective)
+            {
+            gb.SetDisplayParameters(
+      	    		0.775,	// x scale 
+      	    		 0.96,	// y scale
+      	    		 0.26,	// x offset
+      	    		 -0.52,	// y offset
+      	    		 22.0,	// rotation
+      	    		 0.28,	// x perspective
+      	    		 0.19,	// y perspective
+      	    		 -0.00	// y as a function of x
+      	    		 );
+            }
+            else {
+                gb.SetDisplayParameters(
+        	    		1.01,	// x scale 
+        	    		0.98,	// y scale
+        	    		 0.0,	// x offset
+        	    		 -0.60,	// y offset
+        	    		021,	// rotation
+        	    		0,	// x perspective
+        	    		0,	// y perspective
+        	    		0	// y as a function of x
+        	    		 );
+
+            }     	  
+        }
+        else
+        {
+        if(perspective)
+        {
+        gb.SetDisplayParameters(
+  	    		0.895,	// x scale 
+  	    		 0.90,	// y scale
+  	    		 0.17,	// x offset
+  	    		 -0.68,	// y offset
+  	    		13.1,	// rotation
+  	    		 0.19,	// x perspective
+  	    		 0.15,	// y perspective
+  	    		 -0.084	// y as a function of x
+  	    		 );
+        }
+        else {
+            gb.SetDisplayParameters(
+    	    		1.06,	// x scale 
+    	    		 0.89,	// y scale
+    	    		 -0.05,	// x offset
+    	    		 -0.48,	// y offset
+    	    		0,	// rotation
+    	    		0,	// x perspective
+    	    		0,	// y perspective
+    	    		0	// y as a function of x
+    	    		 );
+
+        }}
+        
+    	 gb.SetDisplayRectangle(boardRect);
+
+    }
+    private void drawRack(Graphics gc,Rectangle r,HitPoint p,GipfBoard rb,GipfCell rack[],HitPoint any)
+    {	// draw for matrx reserve
+    	int w = G.Width(r);
+    	int h = G.Height(r);
+    	int x = G.Left(r);
+    	int y = G.Top(r);
+    	int n = rack.length;
+    	int xsteps = w>h ? n/2 : 2;
+    	int ysteps = w>h ? 2 : n/2;
+    	double xstep = w/xsteps;
+    	double ystep = h/ysteps;
+    	int i=0;
+    	for(int xi=0;xi<xsteps;xi++)
+    	{
+    	for(int yi=0;yi<ysteps;yi++)
+    	{
+    		Rectangle r1 = new Rectangle((int)(x+xstep*xi),(int)(y+ystep*yi),w/xsteps,h/ysteps);
+    		drawRack(gc,r1,p,rb,rack[i],rack[i].height()>0?rack[i].potential.menuItem():null,any);
+    		i++;
+    	}
+    	// also draw the gipf pieces on the board, if there are some
+    	GipfCell gipf = rack[Potential.None.ordinal()];
+    	GipfChip top = gipf.topChip();
+    	if(top!=null)
+    	{	boolean canhit = rb.legalToHitChips(gipf);
+    		boolean perspective = usePerspective();
+    		double position[] = top.color==GColor.B 
+    				? perspective ? new double[] { 0.18,0.21,-Math.PI*0.15} : new double[] { 0.16,0.18,-Math.PI*0.1} 
+    				: perspective ? new double[] { 0.76,0.71,Math.PI*0.55} : new double[] { 0.77,0.84,Math.PI*0.55};
+    		int xp= G.interpolate(position[0],G.Left(boardRect),G.Right(boardRect));
+    		int yp= G.interpolate(position[1],G.Top(boardRect),G.Bottom(boardRect));
+    		double xs = Math.sin(position[2]);
+    		double ys = Math.cos(position[2]);
+    		drawStack(gc,gipf,canhit?p:null,
+    				(int)(CELLSIZE*(perspective && position[1]<0.5?0.85:1)),xp,yp,xs/3,ys/3);
+    		
+    	}
+    	}
+    }
+    private void drawRack(Graphics gc,Rectangle r,HitPoint p,GipfBoard rb,GipfCell rack,String tip,HitPoint any)
+    {	boolean canhit = rb.legalToHitChips(rack);
+		int w = G.Width(r);
+		int h = G.Height(r);
+		boolean vertical = w<h;
+		boolean matrx = isMatrx() ;
+    	int cs = Math.min((int)((matrx ? 1 : 0.8) * Math.min(h,w)),CELLSIZE);
+    	int xp = vertical ? G.centerX(r) : G.Left(r)+cs/2;
+    	int yp = vertical ? G.Bottom(r)-cs/2 : G.centerY(r);
+    	double sz = rack.height();
+    	double scl = sz==0 ? 1 : (sz*sz*7);
+    	drawStack(gc,rack,canhit?p:null,cs,xp,yp,
+    			vertical ? 0 : Math.min((w-cs)/scl,0.2),
+    			vertical ? Math.min((h-cs)/scl,0.2) : 0);
+    	HitPoint.setHelpText(any,r,tip);
+    }
+    private void drawStack(Graphics gc,GipfCell rack,HitPoint hp,int cs,int xp,int yp,double xscale,double yscale)
+    {
+    	boolean hit = rack.drawStack(gc,this,hp,cs,xp,yp,0,
+    			xscale,
+    			yscale,
+    			null);
+        if(hit)
+        {
+        hp.arrow = hasMovingObject(hp) ? StockArt.DownArrow : StockArt.UpArrow;;
+        hp.awidth = CELLSIZE/2;
+        hp.spriteColor = Color.red;
         }
     }
+
     private int scaleCellSize(int cellsize,int x,int y,Rectangle r)
     {	if(usePerspective() && G.pointInRect(x,y,r))
     	{ double scl = (((y-G.Top(r))*0.2)/G.Height(r))+0.8;
@@ -431,39 +532,52 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     
 
     /* draw the board and the chips on it. */
-    private void drawBoardElements(Graphics gc, GipfBoard rb, Rectangle brect, HitPoint highlight)
+    private void drawBoardElements(Graphics gc, GipfBoard rb, Rectangle brect, HitPoint highlight,HitPoint any)
     {	//Hashtable dests = null;//rb.getMoveDests();
+    	setDisplayParameters(rb,usePerspective());
      	int dotsize = Math.max(2,CELLSIZE/15);
      	Hashtable<GipfCell,GipfCell> dests = rb.getMoveDests();
-     	Hashtable<GipfCell,GipfCell> captures = rb.getCaptures();
      	GipfState state = rb.getState();
      	numberMenu.clearSequenceNumbers();
         // now draw the contents of the board and anything it is pointing at
         //
      	GipfCell hitCell = null;
      	boolean perspective = usePerspective();
+     	boolean matrx = isMatrx();
        	Enumeration<GipfCell>cells = rb.getIterator(Itype.TBRL);
        	while(cells.hasMoreElements())
        	{
        		GipfCell c = cells.nextElement();
             boolean isADest = dests.get(c)!=null;
-            boolean canHit = rb.legalToHitBoard(c);
-            boolean isCaptured = captures.get(c)!=null;
+            boolean canHit = rb.legalToHitBoard(c,dests);
+            boolean isCaptured = c.isMarkedForCapture();
             int ypos = G.Bottom(brect) - rb.cellToY(c);
             int xpos = G.Left(brect) + rb.cellToX(c);
             numberMenu.saveSequenceNumber(c,xpos,ypos);
             int cs = perspective ? scaleCellSize(CELLSIZE,xpos,ypos,brect) : CELLSIZE;
-            //StockArt.SmallO.drawChip(gc, this, CELLSIZE, xpos, ypos,null);     
-            c.drawStack(gc,this,canHit?highlight:null,cs,xpos,ypos,0,
-            		perspective ? 0 : 0.2,
-            		perspective ? 0.2 : 0,
-            		""+(c.preserved?"P":""));
+            //StockArt.SmallO.drawChip(gc, this, CELLSIZE, xpos, ypos,null);   
+            if(matrx)
+            {
+            	 c.drawStack(gc,this,canHit?highlight:null,cs,xpos,ypos,0,
+                 		perspective ? 0 : 0.1 ,
+                 		perspective ? 0.15 :0.15,
+                 		c.preserved ? "P" : null);
+            }
+            else
+            {	c.drawStack(gc,this,canHit?highlight:null,cs,xpos,ypos,0,
+            			perspective ? 0 : 0.2,
+                		perspective ? 0.2 : 0,
+                		c.preserved ? "P" : null);
+            }
+           
+            String help = c.height()==1 || c.isGipf() ? c.topChip().potential.menuItem() : null;
+            if(help!=null) { HitPoint.setHelpText(any,cs,xpos,ypos,help);}
             if((highlight!=null) && (highlight.hitObject==c))
             {
             hitCell = c;
             }
           // temp for grid setup
-          //G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
+          //GC.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
           if(isCaptured)
            	{	
            		if(state==GipfState.DONE_CAPTURE_STATE)
@@ -513,17 +627,24 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
       GipfState vstate = gb.getState();
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
      
-     drawBoardElements(gc, gb, boardRect, ot);
+     drawBoardElements(gc, gb, boardRect, ot,highlight);
      
      GC.setFont(gc,standardBoldFont());
      boolean planned = plannedSeating();
-     
+     boolean matrx = isMatrx();
      for(int player=0;player<2;player++)
     	{ commonPlayer pl = getPlayerOrTemp(player);
     	  pl.setRotatedContext(gc, select,false);
-    	gb.playerChip[player].drawChip(gc, this, chipRects[player],null);
-    	drawRack(gc,reserveRects[player],ot,gb,gb.reserve[player]);
-    	drawRack(gc,captureRects[player],select,gb,gb.captures[player]);
+    	String count = matrx ? ""+gb.gipfsOnBoard(player) : null;
+    	gb.playerChip[player].drawChip(gc, this, chipRects[player],count);
+    	if(isMatrx())
+    		{ 
+    		drawRack(gc,reserveRects[player],ot,gb,gb.rack[player],highlight);
+    		}
+    		else {
+    			drawRack(gc,reserveRects[player],ot,gb,gb.rack[player][Potential.None.ordinal()],null,highlight);
+    		}
+    	drawRack(gc,captureRects[player],ot,gb,gb.captures[player],null,null);
     	if(b.canTogglePlacementMode())
         {	if(GC.handleRoundButton(gc,standardRects[player],
         			b.canTogglePlacementMode(player)?select:null,
@@ -547,7 +668,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
      commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
      double messageRotation = pl.messageRotation();
      
-     DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),standardRects[gb.whoseTurn]);	// Not needed for barca
+//     DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),standardRects[gb.whoseTurn]);	// Not needed for barca
 
 		if (vstate != GipfState.PUZZLE_STATE)
         {
@@ -567,7 +688,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
      	{ GC.Text(gc,false,G.Left(stateRect),G.Bottom(stateRect)-G.Height(stateRect)/3,G.Width(stateRect),G.Height(stateRect),
      				Color.black,null,s.get(RetainGipfMessage));
      	}
-        goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(isMatrx()?GoalMessageP:GoalMessage),progressRect, goalRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc, this, iconRect,null);
         // no repetitions are possible in tzaar
         // DrawRepRect(gc,b.Digest(),repRect);
@@ -585,8 +706,10 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	{	// old game records contain MOVE_SLIDE, which we want to remove so the animations look nice.
     		Gipfmovespec m = (Gipfmovespec)mm;
     		removeIndexes = true;
-    		PerformAndTransmit(new Gipfmovespec(m.player,MOVE_DROPB,m.from_col,m.from_row),transmit,replay);
-    		return PerformAndTransmit(new Gipfmovespec(m.player,MOVE_SLIDEFROM,m.from_col,m.from_row,m.to_col,m.to_row),transmit,replay);
+    		PerformAndTransmit(new Gipfmovespec(MOVE_DROPB,m.from_col,m.from_row,m.player),transmit,replay);
+    		commonMove mc = m.Copy(null);
+    		mc.op = MOVE_SLIDEFROM;
+    		return PerformAndTransmit(mc,transmit,replay);
     	}
     	else
     	{
@@ -601,6 +724,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         	}
     	
     	handleExecute(b,mm,replay);
+    	if(b.pickedObject!=null) { lastDropped = b.pickedObject; }
     	numberMenu.recordSequenceNumber(b.activeMoveNumber()); 
     	
         startBoardAnimations(replay,b.animationStack,animationCellSize(b.animationStack),MovementStyle.Stack);
@@ -651,15 +775,17 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         case Second_Player_Reserve:
         case First_Player_Captures:
         case Second_Player_Captures:
-        	PerformAndTransmit("Pick "+hitCode.shortName);
+        	PerformAndTransmit("Pick "+hitCode.shortName+" "+hitCell.row);
         	break;
 	    case BoardLocation:
 	    	if(hitChip!=null)
 	    		{
 	    		switch(b.getState())
 	    		{
+	    		case DONE_CAPTURE_STATE:
 	    		case DESIGNATE_CAPTURE_STATE:
 	    		case DESIGNATE_CAPTURE_OR_DONE_STATE:
+	    		case MANDATORY_CAPTURE_STATE:
 	    			break;
 	    		case PUZZLE_STATE:
 	    			PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
@@ -728,8 +854,11 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 				default: throw G.Error("Not expecting %s in state %s",hitObject,b.getState());
 				case DESIGNATE_CAPTURE_OR_DONE_STATE:
 	    		case DESIGNATE_CAPTURE_STATE:
+	    		case MANDATORY_PRECAPTURE_STATE:
+	    		case MANDATORY_CAPTURE_STATE:
 	    		case PRECAPTURE_STATE:
 	    			if(toggleGipf(hitCell)) {}
+	    			else if(b.getCell(hitCell)==b.getDest()) { PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row); }
 	    			else { PerformAndTransmit("Remove "+hitCell.col+" "+hitCell.row); }
 	    			break;
 
@@ -741,9 +870,20 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 	    		case PUZZLE_STATE:
 	    		case SLIDE_GIPF_STATE:
 	    		case PLACE_STATE:
+	    		case PLACE_POTENTIAL_STATE:
 	    		case PLACE_GIPF_STATE:
 	    			PerformAndTransmit("Dropb "+hitCell.col+" "+hitCell.row);
 	    			break;
+	    		case PLACE_TAMSK_FIRST_STATE:
+	    		case PLACE_TAMSK_LAST_STATE:
+	    		case PLACE_OR_MOVE_POTENTIAL_STATE:
+	    			if(b.pickedObject==null && hitCell.topChip()!=null)
+	    			{
+	    			PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
+	    			}
+	    			else {
+	    			PerformAndTransmit("Dropb "+hitCell.col+" "+hitCell.row);
+	    			}
 				}
         	}
         	break;
@@ -751,7 +891,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         case Second_Player_Reserve:
         case First_Player_Captures:
         case Second_Player_Captures:
-        	PerformAndTransmit("Drop "+hitObject.shortName);
+        	PerformAndTransmit("Drop "+hitObject.shortName+" "+hitCell.row);
         	break;
         }
     	}
@@ -796,6 +936,18 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 /**
  * summary: 5/26/2023
  * 	10487 files visited 0 problems
+ * 
+ * 
+
+Note: these games are unique in that they have a [1,0] color map.  They cause problems if
+one is careless about playerIndex(chip)
+
+gipfgames\archive-2020\games-Feb-7-2020.zip G-Dumbot0-Elisa14-2020-01-31-2217.sgf 
+gipfgames\archive-2020\games-Feb-7-2020.zip G-Dumbot0-Elisa14-2020-01-31-2309.sgf 
+gipfgames\archive-2020\games-Feb-7-2020.zip G-Dumbot0-Elisa14-2020-01-31-2320.sgf 
+gipfgames\archive-2020\games-Feb-7-2020.zip G-Dumbot0-Jojajo-2020-02-02-1609.sgf 
+gipfgames\archive-2020\games-Feb-7-2020.zip G-SmartBot0-Jojajo-2020-02-01-2248.sgf
+
  */
 
     public void ReplayMove(sgf_node no)

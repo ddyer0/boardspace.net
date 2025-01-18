@@ -328,7 +328,6 @@ public enum CircleState implements BoardState,CircleConstants
 
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-	public boolean simultaneousTurnsAllowed() { return(false); }
 };
 
 //this would be a standard hex-hex board with 5-per-side

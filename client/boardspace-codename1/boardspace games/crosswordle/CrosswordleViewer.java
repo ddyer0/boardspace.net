@@ -626,7 +626,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
 				String theWord = inputField.getText().trim().toLowerCase();
-				boolean done = gb.canBeGuessed(theWord);
+			boolean done = gb.isReady() && gb.canBeGuessed(theWord);
 				if(gb.DoneState())
 				{
 					handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
@@ -1451,6 +1451,5 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     public void doGameTest()
     {	Builder.getInstance().generateCrosswords(G.Date(),bb.ncols,bb.nrows);
     }
-   
 }
 

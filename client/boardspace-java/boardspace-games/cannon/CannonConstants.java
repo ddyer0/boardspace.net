@@ -53,7 +53,7 @@ public interface CannonConstants
     	CannonState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); } 
     }
 
 //	these next must be unique integers in the dictionary

@@ -880,6 +880,11 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        
+        // this is the input for the "use aux slider" option, which allows dynamic adjustment
+        // of art size and position.  very useful when tuning the artwork!
+        if(bb.pickedObject!=null) { lastDropped = bb.pickedObject; }
+        
         // movenumber() vs activeMoveNumber().  ActiveMoveNumber causes the 
         // move arrows to disappear when the next move has started.  For games with from-to or more
         // complicated moves, the persistence of the arrows is annoying.  for games like Go

@@ -64,7 +64,7 @@ public interface DipoleConstants
     	DipoleState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); } 
     }
 
     static final int DD_INDEX = 0;		// index into diagInfo for diagonal down

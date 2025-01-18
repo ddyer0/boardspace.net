@@ -109,6 +109,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
 
     public void PrepareToMove(int playerIndex)
     {	board.copyFrom(GameBoard);
+    	board.initRobotValues(this);
     }
     
    Gipfmovespec nextMove = null;
@@ -123,7 +124,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     	try
            {
 
-               if (board.DoneState())
+               if (board.mandatoryDoneState())
                { // avoid problems with gameover by just supplying a done
                    move = new Gipfmovespec("Done", board.whoseTurn);
                }
@@ -158,12 +159,18 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
            if (move != null)
            {
                if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-               // normal exit with a move
+               // normal exit with a move. If its a slide move, change it to a drop+slide
                if(move.op==MOVE_SLIDE)
                {
             	   move.op = MOVE_SLIDEFROM;
             	   nextMove = move;
-            	   return(new Gipfmovespec(move.player,MOVE_DROPB,move.from_col,move.from_row));
+            	   return(new Gipfmovespec(MOVE_DROPB,move.from_col,move.from_row,move.player));
+               }
+               else if(move.op==MOVE_PSLIDE)
+               {
+            	   move.op = MOVE_SLIDEFROM;
+            	   nextMove = move;
+            	   return(new Gipfmovespec(MOVE_PDROPB,move.from_potential,move.from_col,move.from_row,move.player));
                }
                return (move);
            }

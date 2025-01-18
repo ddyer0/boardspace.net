@@ -249,7 +249,7 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 		public default boolean Puzzle() { return getRole()==StateRole.Puzzle; }
 		
 		public int ordinal();
-		public boolean simultaneousTurnsAllowed();
+		public default boolean simultaneousTurnsAllowed() { return false; }
 
 		public static  final  String[] StateStrings = {
 				ConfirmSwapDescription,

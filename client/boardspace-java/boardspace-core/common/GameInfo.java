@@ -1431,7 +1431,7 @@ synchronized(allGames) {
 	{
 	String pRules = "/circle/english/Rules.html";
 	String pViewer = "circle.CircleViewer";  
-	put(new GameInfo(2590,ES.game,122,"PP",CapturingGames,"Circle","Circle",
+	put(new GameInfo(2590,ES.game,122,"CR",CapturingGames,"Circle","Circle",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_circle.html",
@@ -1741,9 +1741,9 @@ synchronized(allGames) {
 	}
 	{
 	String gipfClass = "gipf.GipfViewer";
-	String gipfRules = "/gipf/english/matrx-rules.htm";
+	String gipfRules = "/gipf/english/matrx-rules.pdf";
 	String gipfVideo = "/gipf/english/gipf-video.html";
-	put(new GameInfo(201,ES.test,123,"G",GipfGames,"Matrx","Matrx",
+	put(new GameInfo(201,ES.game,123,"GX",GipfGames,"Matrx","Gipf-Matrx",
 			TwoBotsPlus,
 			new double[]{0.3,1.0,0.01},gipfClass,gipfRules,"about_matrx.html",
 			gipfVideo,false, WhiteOverBlack));

@@ -317,7 +317,10 @@ package crosswordle;
 				 && !hasBeenGuessed(word)
 				 && (dictionary.get(word)!=null));
 	 }
- 
+	 public boolean isReady()
+	 {
+		 return dictionary.isLoaded();
+	 }
 
 	 /** this is used to determine if the "Done" button in the UI is live
 	  *
@@ -531,10 +534,6 @@ package crosswordle;
         	setNextStateAfterDrop(null,null,replay);
         	}
         	break;
-        case MOVE_PASS:
-        	setState(CrosswordleState.Play);
-        	break;
-
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();

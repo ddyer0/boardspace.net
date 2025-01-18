@@ -897,6 +897,7 @@ class CircleBoard
  }
 		 return totalsize<=3;
 }
+ /**
  int sweep_counter = 1;
  private int countBlobSize(CircleCell from,CircleChip top,int sweep)
  {	int tot = 0;
@@ -915,7 +916,8 @@ class CircleBoard
 	 }
 	 return tot;
  }
- /** this is an independent check of the blob structure, for debugging */
+ */
+ /** this is an independent check of the blob structure, for debugging 
  private void verifyBlobSize(CircleCell from)
  {	int totalsize = 0;
  	int sweep = ++sweep_counter;
@@ -929,7 +931,7 @@ class CircleBoard
  		G.Assert(totalsize<=3,"totalsize too many");
  		}
  }
- 
+ */
  public boolean hasMoves()
  {
 	 return addLegalMoves(null,whoseTurn);

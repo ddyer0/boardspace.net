@@ -124,6 +124,7 @@ public class Dictionary implements Config
 			G.print("done waiting");
 			}
 	}
+
 	public void waitForDefinitions()
 	{	int n = 0;
 		while(!definitionsAllLoaded) 
@@ -147,6 +148,10 @@ public class Dictionary implements Config
 	public Entry get(String w)
 	{	waitForLoaded();
 		return getInternal(w);
+	}
+	public boolean isLoaded()
+	{
+		return loaded;
 	}
 	private Entry getInternal(String w)
 	{

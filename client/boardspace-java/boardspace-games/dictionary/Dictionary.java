@@ -148,6 +148,10 @@ public class Dictionary implements Config
 	{	waitForLoaded();
 		return getInternal(w);
 	}
+	public boolean isLoaded()
+	{
+		return loaded;
+	}
 	private Entry getInternal(String w)
 	{
 		int len = w.length();

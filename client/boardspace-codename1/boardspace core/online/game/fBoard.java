@@ -453,7 +453,7 @@ public class BoardIterator implements Enumeration<CELLTYPE>
  		{
 	 	boardIterator = new BoardIterator(e);
  		}
-	// boardIterator is the prototype, containing the sorted cell array
+	// boardIterator is the template, containing the sorted cell array
 	// we still need to return a unique copy so parallel users don't
 	// share state
  	return(new BoardIterator(boardIterator));

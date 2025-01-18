@@ -82,7 +82,7 @@ public interface DvonnConstants
  	public String getDescription() { return(description); }
  	public boolean GameOver() { return(this==GAMEOVER_STATE); }
  	public boolean Puzzle() { return(this==PUZZLE_STATE); }
- 	public boolean simultaneousTurnsAllowed() { return(false); }
+ 	
  }
 
 	

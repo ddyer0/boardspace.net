@@ -134,7 +134,6 @@ public interface ChessConstants
     	{	description = des;
     		role = r;
     	}
-    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
 
 

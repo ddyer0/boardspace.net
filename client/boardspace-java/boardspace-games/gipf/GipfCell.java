@@ -18,7 +18,6 @@ package gipf;
 
 import lib.Random;
 import lib.StackIterator;
-import gipf.GipfConstants.GipfId;
 import lib.G;
 import lib.OStack;
 import online.game.*;
@@ -32,14 +31,14 @@ class CellStack extends OStack<GipfCell>
 	}
 }
 
-public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementProvider
+public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementProvider,GipfConstants
 {	
 	public GipfChip[] newComponentArray(int n) { return(new GipfChip[n]); }
- 	int colorIndex = -1;	// color of chip we will contain
 	int rowcode = 0;
 	boolean preserved = false;		// preserved on this move number
 	int sweep_counter = 0;
-
+	Potential potential = null;
+	
 	public boolean sameCell(GipfCell other)
 	{
 		return(super.sameCell(other) 
@@ -60,18 +59,23 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 	{	return(super.Digest(r)+r.nextLong()*(preserved?1:2)); 
 	}
 	public void addChip(GipfChip cc)
-	{	if(onBoard) { G.Assert(chipIndex<=1,"height limit is 2"); }
+	{	
 		super.addChip(cc);
 	}
 	// consructor for off-board cells
-	public GipfCell(Random r,GipfId loc,int colr)
-	{	super(r,Geometry.Standalone,'@',-1);
+	public GipfCell(Random r,GipfId loc,int row)
+	{	super(r,Geometry.Standalone,'@',row);
 		onBoard=false;
 		rackLocation = loc;
-		colorIndex = colr;
 	}
 	public GipfId rackLocation() { return((GipfId)rackLocation); }
-	public boolean isGipf() { return(chipIndex==1); }
+	public boolean isGipf() 
+	{ 	// normally 1 for a 2 chip stack, but in matrx additional pieces can be stacked,
+		// and potentially a stack of 2 could be a mixed color stack of 2 potentials
+		if(chipIndex!=1) { return false; }
+		if(chipStack[0].color==chipStack[1].color) { return true; }
+		return false;
+	}
 	
 	// return true if there is an empty cell in the playing area
 	// in the designated direction.  This is used to see if we can 
@@ -101,16 +105,16 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 	}
 	
 	// row as defined by gipf, of same colored chips in a given direction
-	public boolean rowOfNInDirection(int n,int color,int dir)
+	public boolean rowOfNInDirection(int n,GipfChip chip,int dir)
 	{	if(n==0) { return(true); }
 		if(chipIndex<0) { return(false); }
 		GipfChip top = topChip();
 		if(top==null)
 			{ return(false); }
-		if(color==top.colorIndex) 
+		if(chip.color==top.color) 
 			{	GipfCell cc = exitTo(dir);
 				if(cc==null) { return(false); }
-				return(cc.rowOfNInDirection(n-1,color,dir)); }
+				return(cc.rowOfNInDirection(n-1,chip,dir)); }
 		return(false);
 	}
 	public static boolean sameCell(GipfCell c,GipfCell d) { return((c==null)?(d==null):c.sameCell(d)); }
@@ -151,12 +155,22 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 		lastEmptied = ot.lastEmptied;
 		lastCaptured = ot.lastCaptured;
 		lastContents = ot.lastContents;
+		potential = ot.potential;
+		rowcode = ot.rowcode;
 		previousLastPlaced = ot.previousLastPlaced;
 		previousLastEmptied = ot.previousLastEmptied;
 		previousLastCaptured = ot.previousLastCaptured;
 		previousLastContents = ot.previousLastContents;
 
 	}
+	public boolean isMarkedForCapture()
+	{
+		return (rowcode!=0) 
+				&& !preserved 
+				&& ((topChip()!=null) || isEdgeCell());
+	}
+			
+	public boolean labelAllChips() { return false; }
 	/**
 	 * reset back to the same state as when newly created.  This is used
 	 * when reinitializing a board.
@@ -166,6 +180,8 @@ public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementP
 		lastPlaced = -1;
 		lastEmptied = -1;
 		lastCaptured = -1;
+		preserved=false;
+		rowcode = 0;
 		previousLastPlaced = -1;
 		previousLastEmptied = -1;
 		previousLastCaptured = -1;

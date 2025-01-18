@@ -245,23 +245,25 @@ public class BSDate extends SystemDate
 			{
 				dateformat += " a";
 			}
-			if(timezone!=null) { dateformat += " zzz"; }
+			if(timezone!=null ) { if(!G.isCodename1()) { dateformat += " zzz"; }}
 			else { timezone = ""; }
 			SimpleDateFormat sd = new SimpleDateFormat(dateformat,Locale.ENGLISH);
 			// at the end of our ad-hoc parsing, construct a completely predictable date/time
 			// and feed it to the system parser 
-			String datestr = year+" "+month.substring(0,3)+" "+((day.length()==2)?day:("0"+day))
-					+ " "+hour + ":" + minute+":"+second+meridian+timezone;
+			String datestr1 = year+" "+month.substring(0,3)+" "+((day.length()==2)?day:("0"+day))
+					+ " "+hour + ":" + minute+":"+second+meridian;
+			String datestr = datestr1 + timezone;
 			
 			try { 
-				sd.setTimeZone(TimeZone.getTimeZone(timezone)); 
+				String tz = timezone.startsWith(" ") ? timezone.substring(1) : timezone;
+				sd.setTimeZone(TimeZone.getTimeZone(tz)); 
 				java.util.Date date = sd.parse(datestr);
 				return(date.getTime());
 				
 			}
 			catch(Exception err)
 			{
-				G.Advise(false,"Parse exception %s",err);
+				G.Advise(false,"Parse exception for %s %s",timezone,err);
 			}
 		}
 		return(new BSDate().getTime());

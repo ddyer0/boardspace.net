@@ -91,7 +91,6 @@ public interface ColoritoConstants
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==Gameover); }
     	public boolean Puzzle() { return(this==Puzzle);}
-    	public boolean simultaneousTurnsAllowed() { return(false); }
     }
     
     static void putStrings()

@@ -6288,7 +6288,9 @@ public abstract class commonCanvas extends exCanvas
            	     hidden.Games.pushArray(gg);
            	     phase = "play";
                  if((gg.length>0)) 
-                 { selectGame(gg[0]);
+                 { 
+     			   //G.print("game "+e);
+                   selectGame(gg[0]);
                    doReReplay();
                  /* repaintCanvas();*/}
 				}}

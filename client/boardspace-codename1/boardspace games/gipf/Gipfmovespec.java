@@ -39,7 +39,10 @@ public class Gipfmovespec extends commonMove implements GipfConstants
         	"Slide",MOVE_SLIDE,
         	"Preserve",MOVE_PRESERVE,
         	"Standard",MOVE_STANDARD,
-        	"SlideFrom", MOVE_SLIDEFROM);
+        	"SlideFrom", MOVE_SLIDEFROM
+  
+        	
+    			);
    }
 
     GipfId source;

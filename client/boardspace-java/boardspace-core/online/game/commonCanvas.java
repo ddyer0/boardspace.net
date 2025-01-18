@@ -296,12 +296,12 @@ public abstract class commonCanvas extends exCanvas
 	    			&& ((lastDropped.getAltChip(getAltChipset())==last))
 	    			)
 		    {	// use this to tune piece position
-	    		if(last!=hidden.lastLastDropped)
+	    		if(lastDropped!=hidden.lastLastDropped)
 		    	{
 		    		auxSRect.value=pscale[2];
 		    		auxXRect.value=pscale[0];
 		    		auxYRect.value=pscale[1];
-		    		hidden.lastLastDropped = last;
+		    		hidden.lastLastDropped = lastDropped;
 		        	auxSRect.centerValue();
 		        	auxXRect.centerValue();
 		        	auxYRect.centerValue();		
@@ -6298,7 +6298,9 @@ public abstract class commonCanvas extends exCanvas
            	     hidden.Games.pushArray(gg);
            	     phase = "play";
                  if((gg.length>0)) 
-                 { selectGame(gg[0]);
+                 { 
+     			   //G.print("game "+e);
+                   selectGame(gg[0]);
                    doReReplay();
                  /* repaintCanvas();*/}
 				}}

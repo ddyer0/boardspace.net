@@ -53,6 +53,7 @@ public class PrototypeCell
 	};
 	/** upcast racklocation to our local type */
 	public PrototypeId rackLocation() { return((PrototypeId)rackLocation); }
+	
 	/** sameCell is called at various times as a consistency check
 	 * 
 	 * @param other
@@ -100,6 +101,11 @@ public class PrototypeCell
 	public PrototypeChip[] newComponentArray(int size) {
 		return(new PrototypeChip[size]);
 	}
+	/**
+	 * if this method returns true, then the label associated with drawStack
+	 * will be drawn on all chips, not just the top.  If the label is being
+	 * used for tooltips, this probably should be true
+	 */
 	public boolean labelAllChips() { return(false); }
 	//public int drawStackTickSize(int sz) { return(0); }
 	//public int drawStackTickLocation() { return(0); }

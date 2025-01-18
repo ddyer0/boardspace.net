@@ -99,7 +99,6 @@ public enum CheckerState implements BoardState
 	{	description = des;
 		role = r;
 	}
-	public boolean simultaneousTurnsAllowed() { return(false); }
 }
 public enum CheckerId implements CellId
 {

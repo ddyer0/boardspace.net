@@ -85,9 +85,31 @@ class PrototypeBoard
 	public PrototypeChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 	public PrototypePlay robot = null;
 	
-	 public boolean p1(String msg)
+	
+	/* this can replace "G.Assert" in the this file, so if the assertion
+	 * fails in a search, the state is recorded automatically.
+	 */
+	 public boolean p1(boolean condition,String msg,Object... args)
+	 {	if(!condition)
+	 	{
+		 p1(G.concat(msg,args));
+		 G.Error(msg,args);
+	 	}
+	 	return condition;
+	 }
+	 
+	/**
+	 * save the current state of the search as a file in the /robot/ directory.  This
+	 * requires cooperation with the way the robot teats moves, and some behaviours
+	 * tend to cause problems.  In partular "auto-done" after robot moves assumes
+	 * that any time the current player changes, there was an implicit "done".
+	 * The robot's saveCurrentVariation method may need to be customized. 
+	 * @param msg
+	 * @return
+	 */
+	public boolean p1(String msg)
 		{
-			if(G.p1(msg) && robot!=null)
+			if(G.debug() && G.p1(msg) && robot!=null)
 			{	String dir = "g:/share/projects/boardspace-html/htdocs/prototype/prototypegames/robot/";
 				robot.saveCurrentVariation(dir+msg+".sgf");
 				return(true);

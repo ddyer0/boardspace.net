@@ -82,7 +82,7 @@ public interface CrossfireConstants
     	CrossfireState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); } 
     }
 	
 	// move commands, actions encoded by movespecs.  Values chosen so these
