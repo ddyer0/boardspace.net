@@ -78,7 +78,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     private Rectangle captureRects[] = addRect("capture",2);
     private Rectangle chipRects[] = addRect("chip",2);
     public void verifyGameRecord()
-    {	DISABLE_VERIFY = true;
+    {	//DISABLE_VERIFY = true;
     	super.verifyGameRecord();
     	
     }
@@ -122,8 +122,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         {
             startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
         }
-
-        b = new GipfBoard(info.getString(GameInfo.GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
+        String name =info.getString(GameInfo.GAMENAME,"Gipf");
+        b = new GipfBoard(name,getStartingColorMap(),GipfBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
     }

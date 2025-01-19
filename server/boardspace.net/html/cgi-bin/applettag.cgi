@@ -116,6 +116,10 @@ sub print_gameparams_tag()
 
 	&finishQuery($sth);
 }
+#
+# game has to the the main game name found in the "variation" table
+# param('variation') is what will be printed as gamename
+#
 sub print_jnlp_gameparams_tag()
 {	my ($dbh,$game) = @_;
 	my $language = &select_language();
@@ -123,10 +127,12 @@ sub print_jnlp_gameparams_tag()
 	my $q = "select directory_index,directory from variation where name=$qgame";
 	my $sth = &query($dbh,$q);
 	my ($num,$dir) = &nextArrayRow($sth);
+	my $variation = &param('variation');
+	if(!$variation) { $variation=$game; }
 	my $proto = $ENV{'REQUEST_SCHEME'};
 	print "<argument>gameindex</argument><argument>$num</argument>\n";
 	print "<argument>reviewerdir$num</argument><argument>$dir</argument>\n";
-	print "<argument>gamename</argument><argument>$game</argument>\n";
+	print "<argument>gamename</argument><argument>$variation</argument>\n";
 	print "<argument>reviewonly</argument><argument>true</argument>\n";
 	print "<argument>protocol</argument><argument>$proto</argument>\n";
 	&finishQuery($sth);
@@ -258,6 +264,8 @@ sub print_standard_reviewer()
 	my ($index,$dir) = &getGameDir($dbh,$game);
 	my $protocol = $ENV{'REQUEST_SCHEME'};
 	my $host = $ENV{'HTTP_HOST'};
+	my $variation=&param('variation');
+	if(!$variation) { $variation=$game; }
 	my $title = &trans("Review #1 games offline.  The games are archived at #2",$cgame,$dir);
 	print "<title>$title</title>\n";
 	print "<h2>$title</h2><p>";
@@ -287,7 +295,7 @@ print <<ENDBODY
                         "framewidth","$width",
 			"frameheight","$height",
                         "rootname","Offline viewer for $cgame",
-                        "gamename","$game",
+                        "gamename","$variation",
                         );
       }
       myInit();

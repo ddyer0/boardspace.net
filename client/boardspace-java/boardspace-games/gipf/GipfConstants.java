@@ -64,6 +64,7 @@ public interface GipfConstants
    	GColor color = null;
 	public String shortName() { return(shortName); }
    	GipfId(String sn,GColor c) { color = c; if(sn!=null) { shortName = sn; }}
+   	public boolean isReserve() { return ((this==First_Player_Reserve)||(this==Second_Player_Reserve)); }
 	static public GipfId find(String s)
 	{	
 		for(GipfId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}

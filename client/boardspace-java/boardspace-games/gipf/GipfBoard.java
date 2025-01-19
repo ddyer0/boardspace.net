@@ -18,7 +18,6 @@ package gipf;
 
 import java.util.*;
 
-import gipf.GipfConstants.GipfState;
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -360,10 +359,6 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	  while(rack[i][norm].chipIndex<lim)
         	  	{ rack[i][norm].addChip(standardChip[map[i]]); }
        	}
-        
-        removalStack.reInit();
-        removalCells.clear();
-        whoseTurn = firstPlayer;
        if(!tournament_setup)
         {
         for(int i=0;i<startPos.length;i++)
@@ -382,7 +377,10 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         }}}
         board_state = (firstPlayer >= 0) ? GipfState.DONE_STATE : GipfState.PUZZLE_STATE;
         TamskCenter= getCell('E',5);
-        dropUndo.clear();
+        dropUndo.clear();        
+        removalStack.reInit();
+        removalCells.clear();
+        whoseTurn = firstPlayer;
         pickedSource.clear();
         droppedDest.clear();
         tamskState = null;
@@ -708,7 +706,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         case PLACE_POTENTIAL_STATE:
         	return pickedObject==null 
         		? c.rackLocation().color==playerColor[whoseTurn]
-        			&& c.row!=Potential.None.ordinal() 
+        			&& c.rackLocation().isReserve()
+         			&& c.row!=Potential.None.ordinal() 
         			&& c.height()>=2
         		: c.row==pickedObject.potential.ordinal();
         case SLIDE_STATE:
@@ -730,8 +729,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         case PLACE_GIPF_STATE:
         {	GipfChip ch = c.topChip();
         	return((ch!=null) 
-        			&& ((c.rackLocation==GipfId.First_Player_Reserve)
-        					||(c.rackLocation==GipfId.Second_Player_Reserve))
+        			&& (c.rackLocation().isReserve())
         			&& (c.row==Potential.None.ordinal() || c.height()==0)
         			&& (playerIndex(ch)==whoseTurn));
         }
@@ -1549,7 +1547,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Gipfmovespec m = (Gipfmovespec)mm;
-        //G.print("E "+mm+ " " + moveNumber+" "+board_state);
+        //G.print("E "+mm+ " " + moveNumber+" "+board_state+" "+removalCells.size());
         //check_piece_count();
         switch (m.op)
         {
