@@ -123,7 +123,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
         }
         String name =info.getString(GameInfo.GAMENAME,"Gipf");
-        b = new GipfBoard(name,getStartingColorMap(),GipfBoard.REVISION);
+        String name2 = "matrx".equals(name) ? "gipf-matrx" : info.getString(GameInfo.GAMETYPE,"gipf");
+        b = new GipfBoard(name2,getStartingColorMap(),GipfBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
     }

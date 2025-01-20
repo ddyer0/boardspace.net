@@ -186,6 +186,7 @@ sub useCombinedParams()
 	$combined =~ s/ /+/g;
 	my $params = &xxtea_decrypt(&decode64($combined),$key);
 	#print "dec\n($params)\n";
+	#__d("UseCombinedParams: params=$params");
 	 my $valid = &validate($params);
          if(!$valid) { 
 		

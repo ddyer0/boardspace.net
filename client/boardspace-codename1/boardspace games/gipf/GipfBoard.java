@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package gipf;
 
@@ -27,7 +27,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 	
 	// revision 100 applies to some very old games.
 	// revision 101 reduces the count of chips by 1
-	public static final int REVISION = 101;
+	// revision 102 fixes the endgame rules for standard and tournament games
+	public static final int REVISION = 102;
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	
@@ -35,16 +36,34 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 	static final int N_BASIC_CHIPS = 15;
 	static final int MAXDESTS = 30;
 	static final String GIPF_GRID_STYLE[] = { "1", null, "A" };
-	static int[] ZfirstInCol = { 4, 3, 2, 1, 0, 1, 2, 3, 4 }; // these are indexes into the first ball in a column, ie B1 has index 2
-	static int[] ZnInCol = { 5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
 
 
 	public boolean hasExplicitRevision = false;
 	private GipfState board_state = GipfState.PUZZLE_STATE;
+	private StateStack stateStack = new StateStack();
+	private StateStack robotStateStack = new StateStack();
+	private GipfState tamskState = null;
 	private GipfState unresign = null;
 	public GipfState getState() { return(board_state); }
 	public CellStack animationStack = new CellStack();
-	public GipfChip playerChip[] = { GipfChip.getChip(0),GipfChip.getChip(1)};
+	public static final GipfChip standardChip[] = {GipfChip.White, GipfChip.Black};
+	public GipfChip playerChip[] = {GipfChip.White, GipfChip.Black};
+	public GColor playerColor[] = { GColor.W, GColor.B };
+	private GipfCell edgeCells[] = null;
+	public int gipfsOnBoard(int who)
+	{
+		int n = 0;
+		GipfCell cap = captures[nextPlayer[who]];
+		for(int lim = cap.height()-1; lim>=0; lim--)
+				{
+				if(cap.chipAtIndex(lim).potential==Potential.None) { n++; }
+				}
+		return 3-n;
+	}
+	public boolean swappedColors()
+	{
+		return playerChip[0]!=standardChip[0];
+	}
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
@@ -52,9 +71,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 	public void setState(GipfState st) 
 	{ 	unresign = (st==GipfState.RESIGN_STATE)?board_state:null;
 		board_state = st;
-		if(!board_state.GameOver()) 
-			{ AR.setValue(win,false); 	// make sure "win" is cleared
-			}
+		switch(st)
+		{
+		case GAMEOVER_STATE: 
+			break;
+		case PLACE_TAMSK_FIRST_STATE:
+		case PLACE_TAMSK_LAST_STATE:
+			tamskState = st;
+			//$FALL-THROUGH$
+		default:
+			AR.setValue(win,false); 	// make sure "win" is cleared
+		}
 	}
 	public static int PRESSTACK = 100000;
 	public static int REMOVESTACK = 100;
@@ -65,14 +92,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     public boolean standard_setup = false;
     public boolean tournament_setup = false;
     public boolean tournament_setup_done = false;
-    public GipfCell reserve[]=new GipfCell[2];
+    private GipfCell TamskCenter = null;
+    public GipfCell rack[][] = new GipfCell[2][Potential.values().length];
     public GipfCell captures[]=new GipfCell[2];
     public int initial_height = 0;
-    public int gipfCount[] = new int[2];				// count of gipfs ever comitted
-    public int currentGipfCount[] = new int[2];			// count of gipfs currently on the board
-    public int nongipfCount[] = new int[2];				// count of nongipfs ever committed
+    public int currentGipfCount[] = new int[2];					// count of double pieces currently on the board
+    public int currentSingleCount[] = new int[2];				// count of single pieces with potential=None
+    public int singlePiecesPlayed[] = new int[2];				// count of nongipfs ever committed
+    public int doublePiecesPlayed[] = new int[2];				// count of gipfs ever committed
     private int sweep_counter = 0;
     private CellStack pickedSource = new CellStack();
+    private int ignorePlease = 0;
     private CellStack droppedDest = new CellStack();
     private IStack robotPreservationStack = new IStack(); 
     private IStack preservationStack = new IStack();
@@ -84,7 +114,63 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	  return((ch==null)?NothingMoving:ch.pieceNumber()); 
     	}
   
-
+    public void addChip(GipfCell c,GipfChip ch)
+    {	
+    	c.addChip(ch);
+    	if(c.onBoard)
+    	{
+    	switch(c.height())
+    	{
+    	case 1:
+    		if(ch.potential==Potential.None) { currentSingleCount[playerIndex(ch)]++; }
+    		break;
+    	case 2:
+    		{
+    		GipfChip ch0 = c.chipAtIndex(0);
+     		if(ch0==ch) { currentGipfCount[playerIndex(ch)]++; }
+     		if(ch0.potential==Potential.None) { currentSingleCount[playerIndex(ch0)]--; }
+    		}
+    		break;
+    	case 3:	// 3 exactly, might have been a gipf
+     		{
+     			GipfChip ch0 = c.chipAtIndex(0);
+     			GipfChip ch1 = c.chipAtIndex(1);
+     			if(ch0==ch1) { currentGipfCount[playerIndex(ch0)]--; }
+     		}
+     		break;
+     	default: // more than 3, no way
+    	}
+    	}
+    }
+    public GipfChip removeChip(GipfCell c)
+    {	GipfChip ch = c.removeTop();
+    	if(c.onBoard)
+    	{
+    	switch(c.height())
+    	{
+    	case 0:
+    		if(ch.potential==Potential.None) { currentSingleCount[playerIndex(ch)]--; }
+    		break;
+    	case 1:
+    		{
+    		GipfChip ch0 = c.chipAtIndex(0);
+    		if(ch0.potential==Potential.None) { currentSingleCount[playerIndex(ch)]++; }
+    		if(ch0==ch) { currentGipfCount[playerIndex(ch0)]--; }
+    		}
+    		break;
+    	case 2:
+    		{
+    		GipfChip ch0 = c.chipAtIndex(0);
+    		GipfChip ch1 = c.chipAtIndex(1);
+     		if(ch0==ch1) { currentGipfCount[playerIndex(ch0)]++; }
+    		}
+    		break;
+     	default:	// 3 or more
+     		break;
+    	}
+    	}
+    	return ch;
+    }
     // not a draw state for us, but an end of game state
     public void SetDrawState()
     	{ setState(GipfState.DRAW_STATE); }
@@ -110,11 +196,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         //Grid_Style = GIPF_GRID_STYLE;
         Random r = new Random(63472);
         removalStack = new GipfCell(r,GipfId.NoHit,-11);
-        for(int i=0;i<reserve.length;i++)
-        {	reserve[i]=new GipfCell(r,PlayerReserve[i],i);
+        for(int i=0;i<2;i++)
+        {	for(Potential p : Potential.values())
+        		{
+        		GipfCell c = new GipfCell(r,PlayerReserve[i],p.ordinal());
+        		c.potential = p;
+        		rack[i][p.ordinal()]=c;
+        		
+        		}
         	captures[i]=new GipfCell(r,PlayerCaptures[i],nextPlayer[i]);
-        	gipfCount[i]=0;
-        	nongipfCount[i]=0;
+        	doublePiecesPlayed[i]=0;
+        	singlePiecesPlayed[i]=0;
         	currentGipfCount[i]=0;
         }
         setColorMap(map, 2);
@@ -138,41 +230,104 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	{{'B',2,1},{'B',5,0},
     	{'E',2,0},{'E',8,1},
     	{'H',2,1},{'H',5,0} };
-    private int playerIndex(GipfChip ch) { return(getColorMap()[ch.colorIndex]); }
+    
+    private int playerIndex(GipfChip ch) { return(ch.color==playerColor[0] ? 0 : 1); }
+    
     private void check_piece_count()
     {	int height=0;
-    	int cg0 = 0;
-    	int cg1 = 0;
+    	int singles0 = 0;
+    	int singles1 = 0;
+    	int gipf0 = 0;
+    	int gipf1 = 0;
     	for(GipfCell c=allCells; c!=null; c=c.next) 
     		{ int hh = c.height();
     		  height+= hh; 
-    		  if(hh==2) 
-    		  	{ GipfCell cc = c;
-    		  	  if(playerIndex(cc.topChip())==0) { cg0++; } else { cg1++; }} 
+    		  switch(hh)
+    		  {
+    		  case 0:
+    		  default: 
+    			  break;
+    		  case 1:
+    		  	{	
+    		  		GipfChip top = c.topChip();
+    		  		if(top.potential==Potential.None)
+    		  		{
+    		  			if(playerIndex(top)==0) { singles0++; } else { singles1++; }
+    		  		}
+    		  	}
+    		  	break;
+    		  case 2:
+    		  	{ GipfChip ch0 = c.chipAtIndex(0);
+    		  	  GipfChip ch1 = c.chipAtIndex(1);
+    		  	  if(ch0==ch1)
+    		  	  {
+    		  		  if(playerIndex(ch0)==0) { gipf0++; } else { gipf1++; }
+    		  	  }
+    		  	}
+    		  }
     		}
-    	int rh0 = reserve[0].height();
-    	int rh1 = reserve[1].height();
+    	for(int player = 0;player<2; player++)
+    	{	int sum = 0;
+    		for(GipfCell c : rack[player])
+    		{
+    			sum += c.height();
+    		}
+    		height += sum;
+    	}
     	int ch0 = captures[0].height();
     	int ch1 = captures[1].height();
-    	height += rh0+rh1+ch0+ch1;
+    	height += ch0+ch1;
      	height += pickedHeight;
-    	G.Assert(initial_height==height,"piece counts match");
-    	G.Assert(cg0==currentGipfCount[0],"gipf 0 matches");
-    	G.Assert(cg1==currentGipfCount[1],"gipf 1 matches"); 
+    	p1(initial_height==height,"piece counts match");
+    	p1(gipf0==currentGipfCount[0],"gipf 0 matches");
+    	p1(gipf1==currentGipfCount[1],"gipf 1 matches"); 
+    	p1(singles0==currentSingleCount[0],"singles 0 matches");
+    	p1(singles1==currentSingleCount[1],"singles 1 matches"); 
     }
+    
     private void InitBallsAndBoard()
     {	int map[] = getColorMap();
         setState(GipfState.PUZZLE_STATE);
         initial_height=0;
-        reInit(reserve);
+        reInit(rack);
         reInit(captures);
-        AR.setValue(gipfCount,0);
+        AR.setValue(doublePiecesPlayed,0);
         AR.setValue(currentGipfCount,0);
-        AR.setValue(nongipfCount,0);
-        for(int i=0;i<reserve.length;i++) 
-        	{ int lim = (standard_setup|tournament_setup)
+        AR.setValue(currentSingleCount,0);
+        AR.setValue(singlePiecesPlayed,0);
+        playerChip[map[0]] = standardChip[0];
+        playerChip[map[1]] = standardChip[1];
+        playerColor[map[0]] = GColor.W;
+        playerColor[map[1]] = GColor.B;
+        pickedHeight = 0;
+        pickedObject=null;
+        Potential monoculture[] = {null,null};	// hack to allow using only one type of potential
+        if(variation==Variation.Gipf_Matrx)
+        {
+        for(int i=0;i<2;i++)
+        	{
+        	for(Potential p : Potential.values())
+        		{
+        		int n = p==Potential.None ? 3 : (monoculture[i]==null ? 6 : 30);
+        		int norm = p.ordinal();
+        		if(p==Potential.None || monoculture[i]==null || p==monoculture[i])
+        		{
+        		for(int j=0;j<n;j++) 
+        			{ rack[i][norm].addChip(GipfChip.Chips[i][norm]); 
+        			  initial_height++; 
+        			}
+        		}}
+        	}
+        }
+        else
+        {
+        int norm = Potential.None.ordinal();
+        for(int i=0;i<2;i++) 
+        	{ 
+        	int lim = (standard_setup|tournament_setup)
         					?N_STANDARD_CHIPS-(revision<101 ? 0 : 1)
         					:N_BASIC_CHIPS-(revision<101 ? 0 : 1);
+        	
             switch(effective_date_algorithm)
             {
             default: throw G.Error("Not expected");
@@ -201,13 +356,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
  //       	  	  if(!tournament_error_date2) { lim+=1; }
  //       	  	}
 			  initial_height += lim+1;
-        	  while(reserve[i].chipIndex<lim) { reserve[i].addChip(GipfChip.getChip(map[i])); }
+        	  while(rack[i][norm].chipIndex<lim)
+        	  	{ rack[i][norm].addChip(standardChip[map[i]]); }
        	}
-        playerChip[map[0]] = GipfChip.getChip(0);
-        playerChip[map[1]] = GipfChip.getChip(1);
-        removalStack.reInit();
-        removalCells.clear();
-        whoseTurn = firstPlayer;
        if(!tournament_setup)
         {
         for(int i=0;i<startPos.length;i++)
@@ -215,43 +366,83 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	char col = (char)row[0];
         	int ro = row[1];
         	int pl = row[2];
-        	getCell(col,ro).addChip(reserve[pl].removeTop());
+        	GipfCell c = getCell(col,ro);
+        	addChip(c,rack[pl][norm].removeTop());
         	if(standard_setup) 
         		{ 
-        		  getCell(col,ro).addChip(reserve[pl].removeTop()); 
-        		  gipfCount[pl]++; 
-        		  currentGipfCount[pl]++; 
+        		  addChip(c,rack[pl][norm].removeTop()); 
+        		  doublePiecesPlayed[pl]++; 
         		  }
-        	else { nongipfCount[pl]++; }
-        }}
+        	else { singlePiecesPlayed[pl]++; }
+        }}}
         board_state = (firstPlayer >= 0) ? GipfState.DONE_STATE : GipfState.PUZZLE_STATE;
-        pickedHeight = 0;
-        pickedObject=null;
-        dropUndo.clear();
+        TamskCenter= getCell('E',5);
+        dropUndo.clear();        
+        removalStack.reInit();
+        removalCells.clear();
+        whoseTurn = firstPlayer;
         pickedSource.clear();
         droppedDest.clear();
+        tamskState = null;
         check_piece_count();
     }
-
-    private void Init_Standard(String type)
+    public Variation variation = Variation.Gipf;
+    private void Init_Standard(Variation type)
     {
-        gametype = type;
-        standard_setup = Gipf_Standard_Init.equalsIgnoreCase(type);
-        tournament_setup = Gipf_Tournament_Init.equalsIgnoreCase(type);
-        reInitBoard(ZfirstInCol, ZnInCol, null);
+        gametype = type.name;
+        variation = type;
+        standard_setup = false;
+        tournament_setup = false;
+        switch(type)
+        {
+        default:
+        	throw G.Error("Not expecting variation %s",type);
+        case Gipf_Standard:	
+        	standard_setup = true; 
+        	break;
+        case Gipf_Tournament:
+        	tournament_setup = true; 
+        	break;
+        case Gipf_Matrx:
+        case Gipf: 
+        	break;
+        }
+        reInitBoard(variation.fcols,variation.ncols, null);
+        
         preservationStack.clear();
         // remove edge-edge links
-        for(GipfCell c=allCells; c!=null; c=c.next)
+        CellStack ecells = new CellStack();
+        for(GipfCell c =allCells; c!=null; c=c.next)
         {	if(c.isEdgeCell())
-        	{	
-        		for(int i=0;i<c.nAdjacentCells();i++)
+        	{for(int i=0;i<c.nAdjacentCells();i++)
         		{
         			GipfCell a = c.exitTo(i);
         		if((a!=null) && a.isEdgeCell()) { c.unCrossLinkTo(a); }
         		}
+        	ecells.push(c);
+        	c.centerRank = 0;
         	}
-        }
+        	else { c.centerRank = -1; }
+         }
+        int n=0;
+        while(setCenterRank(n)>0) { n++; }
+        edgeCells = ecells.toArray();
         InitBallsAndBoard();
+    }
+    // centerRank is the distance from the edge
+    private int setCenterRank(int target) 
+    {	int n = 0;
+    	for(GipfCell c = allCells; c!=null; c=c.next)
+    	{	if(c.centerRank==target)
+    		{
+    			for(int dir=0;dir<c.geometry.n;dir++)
+    			{
+    				GipfCell adj = c.exitTo(dir);
+    				if(adj!=null && adj.centerRank==-1 ) { adj.centerRank = target+1; n++; }
+    			}
+    		}
+    	}
+    	return n;
     }
     public void sameboard(BoardProtocol f) { sameboard((GipfBoard)f); }
 
@@ -259,26 +450,19 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     {
         super.sameboard(from_b);
 
-       // G.Assert(GipfCell.sameCell(pickedSource,from_b.pickedSource),"source stack matches");
-       // G.Assert(cell.sameCell(droppedDest,from_b.droppedDest),"dest stack matches");
-      //  G.Assert(G.sameArrayContents(dropUndo,from_b.dropUndo),"undo matches");
-        G.Assert(AR.sameArrayContents(gipfCount,from_b.gipfCount),"gipf count matches");
-        G.Assert(AR.sameArrayContents(currentGipfCount,from_b.currentGipfCount),"gipf count matches");
-        G.Assert(AR.sameArrayContents(nongipfCount,from_b.nongipfCount),"non gipf count matches");
-        G.Assert(unresign==from_b.unresign,"unresign mismatch");
-            //G.Assert(G.same
-        for (int i = 0; i < 2; i++)
-        {	if (!captures[i].sameCell(from_b.captures[i]))
-        		{throw G.Error("Captures mismatch at %s",i);
-        		}
-            if (!reserve[i].sameCell(from_b.reserve[i]))
-            {
-            	throw G.Error("Reserve mismatch at %s", i);
-            }
-        }
-        
-        G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
-        G.Assert(Digest()==from_b.Digest(), "Digest matches");
+       // p1(GipfCell.sameCell(pickedSource,from_b.pickedSource),"source stack matches");
+       // p1(cell.sameCell(droppedDest,from_b.droppedDest),"dest stack matches");
+      //  p1(G.sameArrayContents(dropUndo,from_b.dropUndo),"undo matches");
+        p1(AR.sameArrayContents(doublePiecesPlayed,from_b.doublePiecesPlayed),"gipf played count matches");
+        p1(AR.sameArrayContents(currentGipfCount,from_b.currentGipfCount),"gipf count matches");
+        p1(AR.sameArrayContents(singlePiecesPlayed,from_b.singlePiecesPlayed),"single played matches");
+        p1(AR.sameArrayContents(currentSingleCount,from_b.currentSingleCount),"single count matches");
+        p1(unresign==from_b.unresign,"unresign mismatch");
+        p1(sameCells(captures,from_b.captures),"captures mismatch");
+        p1(sameCells(rack,from_b.rack),"rack mismatch");        
+        p1(pickedObject==from_b.pickedObject, "pickedObject matches");
+        p1(tamskState==from_b.tamskState,"tamskState mismatch");
+        p1(Digest()==from_b.Digest(), "Digest matches");
         
     }
 
@@ -288,20 +472,24 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     {
     	long v = 0;
         Random r = new Random(61 * 11465);
+        //G.print();
         for(GipfCell c=allCells; c!=null; c=c.next)
         {	v ^= c.Digest(r);
+        	//G.print(c," ",v);
         }
-        //G.print();
         //G.print("d1 ",v);
-        for(int i=0;i<2;i++) { v ^= (reserve[i].Digest(r)); v^=(captures[i].Digest(r)); }
-        //G.print("d2 ",v);
-		for(int i=0;i<2;i++) { v^= r.nextLong()^currentGipfCount[i]; }
-        //G.print("d3 ",v);
+        v ^= Digest(r,rack);
+        v ^= Digest(r,captures);
+        v ^= Digest(r,currentGipfCount);
+        v ^= Digest(r,currentSingleCount);
+        // G.print("d3 ",v);
 		v ^= chip.Digest(r,pickedObject);
         //G.print("d4 ",v);
-		v ^= cell.Digest(r,getSource());
+		//v ^= cell.Digest(r,getSource());
         //G.print("d5 ",v);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+		v ^= Digest(r,tamskState==null ? GipfState.PUZZLE_STATE : tamskState);
+		v ^= Digest(r,ignorePlease);
         //G.print("d6 ",v);
         return (v);
     }
@@ -310,28 +498,25 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     // is a legal move
     public Hashtable<GipfCell,GipfCell> getMoveDests()
     {	Hashtable<GipfCell,GipfCell> dd = new Hashtable<GipfCell,GipfCell>();
-    	GipfCell src = pickedSource.top();
-    	
-    	if((src!=null)&&(pickedObject!=null))
-    	{	
-    		getDestsFrom(src,whoseTurn,dd,true);
-    		
+    
+    	if(pickedObject!=null)
+    	{
+    	GipfCell src = pickedSource.top();    	
+    	getDestsFrom(src,whoseTurn,dd,true);	
     	}
-   	return(dd);
-    }
-    public Hashtable<GipfCell,GipfCell> getCaptures()
-    {	Hashtable<GipfCell,GipfCell> dd = new Hashtable<GipfCell,GipfCell>();
+    	else
+    	{
     	if(markForRemoval(whoseTurn))
     	{
-    	for(GipfCell c=allCells; c!=null; c=c.next)
-    	{	if((c.rowcode!=0) 
-    			&& !c.preserved 
-    			&& ((c.topChip()!=null)||(c.isEdgeCell())))
-    		{ dd.put(c,c); 
+    		for(GipfCell c = allCells; c!=null; c=c.next)
+    		{
+    			if(c.rowcode>0) { dd.put(c,c); }
     		}
-    	}}
+    	}
+    	}
     	return(dd);
     }
+
     public boolean hasGipfCaptures() 
     { 	if(markForRemoval(whoseTurn))
     	{	for(GipfCell c = allCells;
@@ -342,6 +527,10 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}
     	return(false);
     }
+    public boolean edgeCaptureMode()
+    {
+    	return board_state.edgeCaptureMode();
+    }
     public void getDestsFrom(GipfCell src,int pl,Hashtable<GipfCell,GipfCell>d,boolean picked)
     {	switch(board_state)
     	{
@@ -349,12 +538,23 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	case DONE_STATE:
     	case RESIGN_STATE:
     	case PUZZLE_STATE: break;
+    	case PLACE_TAMSK_FIRST_STATE:
+    	case PLACE_TAMSK_LAST_STATE:
+    	case MOVE_POTENTIAL_STATE:
+    	case PLACE_OR_MOVE_POTENTIAL_STATE:
+    		if(src!=null) { getPotentialDestsFrom(src,picked ? pickedObject : null,d,pl); }
+    		else { 
+    			getPotentialSources(d,pl);
+    		}
+    		break;
+    	//$FALL-THROUGH$
     	case PLACE_STATE:
         case PRECAPTURE_OR_START_GIPF_STATE:    	
         case PRECAPTURE_OR_START_NORMAL_STATE:
     	case PLACE_GIPF_STATE:
-    		for(GipfCell c=allCells; c!=null; c=c.next)
-    		{	if(c.isEdgeCell()) { d.put(c, c); }
+    	case PLACE_POTENTIAL_STATE:
+    		for(GipfCell c : edgeCells)
+    		{ d.put(c, c);
     		}
     		break;
     	case SLIDE_STATE:
@@ -367,29 +567,55 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}
     	
     }
-    public boolean legalToHitBoard(GipfCell c)
-    {
+    public boolean hasPlayablePieces(int who)
+    {	if(rack[who][Potential.None.ordinal()].height()>0) { return true; }
+    	if(variation==Variation.Gipf_Matrx)
+    	{
+    		for(GipfCell c : rack[who])
+    		{
+    			if(c.height()>=2) { return true; }
+    		}
+    	}
+    	return false;
+    }
+  
+    public boolean legalToHitBoard(GipfCell c,Hashtable<GipfCell,GipfCell>dests)
+    {	if((pickedObject==null) && c==getDest()) { return true; }
+    	if((pickedObject!=null) && (c==getSource())) { return true; }
     	switch(board_state)
     	{
     	default: throw G.Error("Not expecting state %s",board_state);
+    	case PLACE_TAMSK_LAST_STATE:
+    	case PLACE_TAMSK_FIRST_STATE:
+    		if(pickedObject==null)
+    		{
+    			return c==TamskCenter;
+    		}
+    		else
+    		{	return (c==TamskCenter)||c.isEdgeCell();
+    			
+    		}
     	case RESIGN_STATE:
     	case GAMEOVER_STATE: return(false);
     	
         case PRECAPTURE_OR_START_GIPF_STATE:
         case PRECAPTURE_OR_START_NORMAL_STATE:
         	if(c.isEdgeCell() 
-        			&& ((reserve[whoseTurn].height()>0) 
+        			&& (hasPlayablePieces(whoseTurn)
         				|| (pickedObject!=null)
         				|| capturesPending()))
         		{ return(true); }
 			//$FALL-THROUGH$
 		case PRECAPTURE_STATE:
+		case MANDATORY_PRECAPTURE_STATE:
+		case MANDATORY_CAPTURE_STATE:
     	case DESIGNATE_CAPTURE_STATE:
      	case DESIGNATE_CAPTURE_OR_DONE_STATE:
-    		G.Assert(markForRemoval(whoseTurn),"must be capturing");
+    		//p1(markForRemoval(whoseTurn),"must be capturing");
     		switch(c.rowcode)
     		{	case 0:	
-    			default: return(c.isGipf());
+    			default: 
+    				return(c.isGipf() && dests.get(c)!=null);
     			case 1:
     			case 2:
     			case 4: return(true);
@@ -397,8 +623,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		
     	case DONE_CAPTURE_STATE:
     		if((pickedObject==null)
-    			&& (c.isGipf())
-    			&& (c.rowcode!=0))
+    			&& (((c.isGipf())	&& (c.rowcode!=0))
+    					|| (c==getDest())))
     		{ return(true); 
     		}
     		//
@@ -418,7 +644,16 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     							?getSource()
     							:getDest();
     		    if(c==src) { return(true); }
-    			if(c.isAdjacentTo(src)
+    		    if(c==TamskCenter && stateStack.size()>0)
+    		    {
+    		    	switch(stateStack.top())
+    		    	{
+    		    	default: break;
+    		    	case PLACE_TAMSK_FIRST_STATE:
+    		    	case PLACE_TAMSK_LAST_STATE: return true;
+    		    	}
+    		    }
+    			if(src!=null && c.isAdjacentTo(src)
     				&& c.emptyCellInDirection(findDirection(src.col,src.row,c.col,c.row))
     				) { return(true); }
     		}
@@ -426,38 +661,76 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 		case PLACE_STATE:
      	case PLACE_GIPF_STATE:
     		return(c.isEdgeCell() && (c.height()==0));
-    	case PUZZLE_STATE: 
+		case PLACE_POTENTIAL_STATE:
+		case PLACE_OR_MOVE_POTENTIAL_STATE:
+			if(c.isEdgeCell()) { return pickedObject!=null && (c.height()==0); }
+			//$FALL-THROUGH$
+		case MOVE_POTENTIAL_STATE:		
+			if(c==droppedDest.top()) { return true; }
+			else { return (c==pickedSource.top()) 
+							|| pickedObject==null 
+								? hasPotentialMoves(c,whoseTurn)
+								: dests.get(c)!=null;
+			}
+			// insist they picked up something
+			
+		case PUZZLE_STATE: 
     		GipfChip ch = c.topChip();
     		return((pickedObject==null)
     				?ch!=null
     				:ch!=null 
     					? (((c.height()+pickedHeight)<=2) 
-    							&& (ch.colorIndex==pickedObject.colorIndex))
+    							&& (ch.color==pickedObject.color))
     					: true);
     	}
     }
 
     // legal to hit the chip reserve area
     public boolean legalToHitChips(GipfCell c)
-    {
+    {	if((pickedObject==null)
+    		&& (c==droppedDest.top())
+    		&& ((c.rackLocation()==GipfId.First_Player_Captures)
+    				|| (c.rackLocation()==GipfId.Second_Player_Captures)))
+    		{
+    		 return true;
+    		}
         switch (board_state)
         {
         default:
         	throw G.Error("Not expecting state %s", board_state);
+        case PLACE_TAMSK_FIRST_STATE:
+        case PLACE_TAMSK_LAST_STATE:
+        	if(pickedObject==null) { return false; }
+        	else return c==captures[nextPlayer[whoseTurn]];
+        case PLACE_OR_MOVE_POTENTIAL_STATE:
+        case PLACE_POTENTIAL_STATE:
+        	return pickedObject==null 
+        		? c.rackLocation().color==playerColor[whoseTurn]
+        			&& c.rackLocation().isReserve()
+         			&& c.row!=Potential.None.ordinal() 
+        			&& c.height()>=2
+        		: c.row==pickedObject.potential.ordinal();
         case SLIDE_STATE:
         case SLIDE_GIPF_STATE:
+        {	GipfId loc = c.rackLocation();
+        	if((tamskState!=null)
+        		&& (pickedObject!=null)
+        		&& (loc==captures[nextPlayer[whoseTurn]].rackLocation()))
+					{
+        			return true;
+					}
         	return((pickedObject!=null)
-        			&& ((whoseTurn==FIRST_PLAYER_INDEX) 
-        				? (c.rackLocation==GipfId.First_Player_Reserve)
-        				: (c.rackLocation==GipfId.Second_Player_Reserve)));
+        			&& loc==rack[whoseTurn][0].rackLocation())
+        			&& c.row==pickedObject.potential.ordinal();
+        }
         case PRECAPTURE_OR_START_GIPF_STATE:
         case PRECAPTURE_OR_START_NORMAL_STATE:
         case PLACE_STATE: 
         case PLACE_GIPF_STATE:
         {	GipfChip ch = c.topChip();
         	return((ch!=null) 
-        			&& ((c.rackLocation==GipfId.First_Player_Reserve)
-        					||(c.rackLocation==GipfId.Second_Player_Reserve))
+        			&& (c.rackLocation().isReserve())
+        			&& (c.row==Potential.None.ordinal() || c.height()==0)
         			&& (playerIndex(ch)==whoseTurn));
         }
         case DONE_STATE:
@@ -468,9 +741,16 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         case DESIGNATE_CAPTURE_STATE:
 		case GAMEOVER_STATE:
 		case RESIGN_STATE:
+		case MANDATORY_PRECAPTURE_STATE:
+		case MANDATORY_CAPTURE_STATE:
+		case MOVE_POTENTIAL_STATE:
 			return(false);
         case PUZZLE_STATE:
-        	return(pickedObject==null?(c.chipIndex>=0):pickedObject.colorIndex==c.colorIndex);
+        	return(pickedObject==null
+        		?(c.chipIndex>=0)
+        		: swappedColors() 
+        			? pickedObject.color!=c.rackLocation().color 
+        			: pickedObject.color==c.rackLocation().color);
         }
     }
     public GipfCell getCell(GipfCell c)
@@ -478,8 +758,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	switch(c.rackLocation())
     	{	default: throw G.Error("not expecting %s",c);
     		case BoardLocation: return(getCell(c.col,c.row));
-    		case First_Player_Reserve: return(reserve[0]);
-    		case Second_Player_Reserve: return(reserve[1]);
+    		case First_Player_Reserve: return(rack[0][c.row]);
+    		case Second_Player_Reserve: return(rack[1][c.row]);
     		case First_Player_Captures: return(captures[0]);
     		case Second_Player_Captures: return(captures[1]);
     	}
@@ -491,24 +771,25 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         pickedHeight = from_b.pickedHeight;
         pickedObject = from_b.pickedObject;
         board_state = from_b.board_state;
+        tamskState = from_b.tamskState;
+        variation = from_b.variation;
         tournament_setup_done = from_b.tournament_setup_done;
         unresign = from_b.unresign;
         dropUndo.copyFrom(from_b.dropUndo);
-        AR.copy(gipfCount,from_b.gipfCount);
+        AR.copy(doublePiecesPlayed,from_b.doublePiecesPlayed);
         AR.copy(currentGipfCount,from_b.currentGipfCount);
-        AR.copy(nongipfCount,from_b.nongipfCount);
-      
-        copyFrom(reserve,from_b.reserve);
+        AR.copy(singlePiecesPlayed,from_b.singlePiecesPlayed);
+        AR.copy(currentSingleCount,from_b.currentSingleCount);
+        copyFrom(rack,from_b.rack);
         copyFrom(captures,from_b.captures);
-        
+        stateStack.copyFrom(from_b.stateStack);
         getCell(pickedSource,from_b.pickedSource);
         getCell(droppedDest,from_b.droppedDest);
-
         preservationStack.copyFrom(from_b.preservationStack);
-
+        ignorePlease = from_b.ignorePlease;
          
         lastPlacedIndex = from_b.lastPlacedIndex;
-        sameboard(from_b);
+        if(G.debug()) {  sameboard(from_b); }
     }
     
     int effective_date_algorithm = 0;
@@ -544,17 +825,18 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     {	
     	adjustRevision(rev);
     	randomKey = key;
-        if (Gipf_Standard_Init.equalsIgnoreCase(gtype)
-        	|| Gipf_Tournament_Init.equalsIgnoreCase(gtype)
-        	|| Gipf_Init.equalsIgnoreCase(gtype))
+    	Variation var = Variation.find(gtype);
+    	
+        if (var!=null)
         {
-            Init_Standard(gtype);
+            Init_Standard(var);
         }
         else
         {
         	throw G.Error(WrongInitError,gtype);
         }
         tournament_setup_done = false;
+        stateStack.clear();
         whoseTurn = 0;
         moveNumber = 1;
         lastPlacedIndex = -1;
@@ -578,6 +860,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         case DESIGNATE_CAPTURE_OR_DONE_STATE:
         case DONE_STATE:
         case RESIGN_STATE:
+        case MANDATORY_CAPTURE_STATE:
+        case PLACE_TAMSK_LAST_STATE:
         case DRAW_STATE:
             moveNumber++;
             setWhoseTurn(nextPlayer[whoseTurn]);
@@ -587,18 +871,28 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	throw G.Error("Move not complete");
         }
     }
-
+    public boolean mandatoryDoneState()
+    {
+    	switch(board_state)
+    	{
+	    case DONE_CAPTURE_STATE:
+	    case RESIGN_STATE:
+	    case DRAW_STATE:
+	    case DONE_STATE:	
+	    	return true;
+	    default: 
+	    	return false;
+    	}
+    }
     public boolean DoneState()
-    {	
+    {	if(mandatoryDoneState()) { return true; }
+    
         switch (board_state)
         {
-        case RESIGN_STATE:
-        case DONE_CAPTURE_STATE:
-        case DESIGNATE_CAPTURE_OR_DONE_STATE:
-        case DRAW_STATE:
-        case DONE_STATE:
-            return (true);
-
+	    case DESIGNATE_CAPTURE_OR_DONE_STATE:
+	    	return true;
+        case MANDATORY_CAPTURE_STATE:
+        	return !allPreserved();
         default:
             return (false);
         }
@@ -617,13 +911,13 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	return(false);
     }
 
-    public GipfCell pickSource(GipfId src)
+    public GipfCell pickSource(GipfId src,int row)
     {
     	switch(src)
     	{
     	default: throw G.Error("not expecting %s",src);
-    	case First_Player_Reserve: return(reserve[FIRST_PLAYER_INDEX]);
-    	case Second_Player_Reserve: return(reserve[SECOND_PLAYER_INDEX]);
+    	case First_Player_Reserve: return(rack[FIRST_PLAYER_INDEX][row]);
+    	case Second_Player_Reserve: return(rack[SECOND_PLAYER_INDEX][row]);
     	case First_Player_Captures: return(captures[FIRST_PLAYER_INDEX]); 
     	case Second_Player_Captures: return(captures[SECOND_PLAYER_INDEX]); 
     	}
@@ -635,9 +929,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     }
     public void pickFromRack(GipfCell c)
     {	pickFromCell(c);
-    	if((board_state==GipfState.PLACE_GIPF_STATE)||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE))
-    		{ pickFromCell(c); 
-    		}
+    	switch(board_state)
+    	{
+    	default: break;
+    	case PLACE_POTENTIAL_STATE:
+    	case PLACE_OR_MOVE_POTENTIAL_STATE:
+    	case PLACE_GIPF_STATE:
+    	case PRECAPTURE_OR_START_GIPF_STATE:
+    		// pick a stack of 2
+    		pickedHeight++;
+    		c.removeTop();
+    	}
     }
     public void dropOnRack(GipfCell c)
     {  	while(pickedHeight>0) { pickedHeight--; c.addChip(pickedObject);  }
@@ -646,7 +948,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	pickedObject = null;
     }
     public void dropOnBoard(GipfCell dest)
-    {	droppedDest.push(dest);
+    {	if(dest==null) 
+    		{ p1("cant be null2");}
+    	droppedDest.push(dest);
     	dropUndo.push(removalCells.size()*100);
     	dropOnBoardCell(dest);
     	
@@ -656,35 +960,26 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 		
     }
     public void dropOnBoardCell(GipfCell dest)
-    {	G.Assert(dest.onBoard,"is on board");
+    {	p1(dest.onBoard,"is on board");
     	while(pickedHeight>0) 
     		{ pickedHeight--; 
-    		  dest.addChip(pickedObject);
-    		  int player = playerIndex(pickedObject);
-    		  if(dest.isGipf()) 
-    		  	{ currentGipfCount[player]++;
-    		  	  gipfCount[player]++;
-    		  	  nongipfCount[player]--;
-    		  	}
-    		  else { nongipfCount[player]++; }
+    		  addChip(dest,pickedObject);
     		}
     	pickedObject = null;
     }
-    public void pickFromBoard(GipfCell src)
+    public void pickFromBoard(GipfCell src,boolean single)
     {
     	pickedSource.push(src);
-    	pickFromBoardCell(src);
+    	pickFromBoardCell(src,single);
     	
     }
-    public void pickFromBoardCell(GipfCell src)
-    {	G.Assert(src.onBoard,"is a board cell");
-    	pickedHeight = src.height();
-    	while(src.topChip()!=null)
-    	{	boolean gipf = src.isGipf();
-    		GipfChip ch = pickedObject = src.removeTop();
-    		int player = playerIndex(ch);
-    		if(gipf) { nongipfCount[player]++; currentGipfCount[player]--; gipfCount[player]--; }
-    		else { nongipfCount[player]--; }
+    public void pickFromBoardCell(GipfCell src,boolean single)
+    {	p1(src.onBoard,"is a board cell");
+    	int n =single ? 1 : src.height();
+    	pickedHeight=0;
+    	while(pickedHeight<n)
+    	{	pickedHeight++;
+    		pickedObject = removeChip(src);   		
     	}
     	src.lastContents = src.previousLastContents;
 		src.lastEmptied = src.previousLastEmptied;
@@ -693,39 +988,41 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     }
     public boolean isDest(char col,int row)
     {	GipfCell c = getCell(col,row);
-    	return droppedDest.contains(c);
+    	return droppedDest.top()==c;
     }
-    public void unDropObject()
+    private void unDropObject()
     {	GipfCell dr = droppedDest.pop();
-    	if(dr!=null) 
-    	{ 	int dundo = dropUndo.pop();
-    		int undo = dundo%PRESSTACK;
-    		int presinfo = dundo/PRESSTACK;
-    		int dist = undo%REMOVESTACK;
-    		int uncap = undo/REMOVESTACK;
-    		if(uncap<removalCells.size())
-    		{
-    			undoCaptures(uncap,whoseTurn);
-    		}
-    		if(dist>0) 
-    			{ GipfCell s = pickedSource.top();
-    			  undoSlide(dr,s,dist);
-    			  if(presinfo<preservationStack.size())  
-    			  	{ discardPreservation(preservationStack);
-    			  	  //restorePreservation(preservationStack); 
+    	if(dr.onBoard)
+    	{
+    	int dundo = dropUndo.pop();
+		int undo = dundo%PRESSTACK;
+		int presinfo = dundo/PRESSTACK;
+		int dist = undo%REMOVESTACK;
+		int uncap = undo/REMOVESTACK;
+		if(uncap<removalCells.size())
+		{
+			undoCaptures(uncap,whoseTurn);
+		}
+		if(dist>0) 
+			{ GipfCell s = pickedSource.top();
+			  undoSlide(dr,s,dist);
+			  if(presinfo<preservationStack.size())  
+			  	{ discardPreservation(preservationStack);
+			  	  //restorePreservation(preservationStack); 
     			  	}
-    			  pickFromBoardCell(s);
+			  	pickFromBoardCell(s,false);
      			}
     		else
     		{	
-    			pickFromBoardCell(dr);
+    			pickFromBoardCell(dr,false);
      		}
     		dr.lastPlaced = dr.previousLastPlaced;
     		lastPlacedIndex--;
-    		
     	}
     	else
-    	{	pickFromBoardCell(dr);
+    	{	
+    		pickFromRack(dr);
+    		pickedSource.pop();
     	}
   
     }
@@ -745,7 +1042,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
    				  c.lastEmptied = c.previousLastEmptied;
     			} 
     			else 
-    			{ dropOnRack(c); }
+    			{ 	while(pickedHeight>0) { pickedHeight--; c.addChip(pickedObject);  }
+    			}
     		}
     		else if(pickedObject!=null)
     		{ throw G.Error("picked object has no source"); 
@@ -757,6 +1055,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	pickedSource.clear();
     	dropUndo.clear();
     	pickedObject = null;
+    	ignorePlease = 0;
+    	stateStack.clear();
     }
 
      // move a stack, bottom first
@@ -765,6 +1065,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	from.lastEmptied = lastPlacedIndex;
     	if(from.chipIndex>=0) { moveStack(from,to); }
     	to.addChip(ch);
+
+
     	to.lastPlaced = lastPlacedIndex++;
     	from.preserved = false;
     }
@@ -780,11 +1082,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
    		from.preserved = false;
    }
    
+   	private int doSlide(GipfCell from,GipfCell to,int dir,replayMode replay,boolean animateFirst)
+   	{     
+   		if(from.isGipf()) { doublePiecesPlayed[whoseTurn]++;}
+   			else { singlePiecesPlayed[whoseTurn]++; }
+   		return doSlideInternal(from,to,dir,replay,animateFirst);
+   	}
     // do the slide portion, return the number of stones moved
-    private int doSlide(GipfCell from,GipfCell to,int dir,replayMode replay,boolean animateFirst)
+    private int doSlideInternal(GipfCell from,GipfCell to,int dir,replayMode replay,boolean animateFirst)
     {	int val = 1;
-    	if(to.topChip()!=null) { val += doSlide(to,to.exitTo(dir),dir,replay,true); }
-    	//G.Assert(!to.isEdgeCell(),"not edge1");
+    	if(to.topChip()!=null) { val += doSlideInternal(to,to.exitTo(dir),dir,replay,true); }
+    	//p1(!to.isEdgeCell(),"not edge1");
     	moveStack(from,to); 
     	if(replay.animate && animateFirst)
     	{
@@ -797,19 +1105,30 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}
     	return(val);
     }
- 
-    // return true if something is available for removal
-    private boolean markForRemoval(int pl)
-    {	boolean val = false;
+    private void clearMarks()
+    {
     	for(GipfCell c =allCells; c!=null; c=c.next)
     	{	c.rowcode = 0;
     	}
+    }
+    // return true if something is available for removal
+    private boolean markForRemoval(int pl)
+    {	boolean val = false;
+    	clearMarks();
+    	switch(board_state)
+    	{
+    	case PLACE_TAMSK_FIRST_STATE:
+    	case PLACE_TAMSK_LAST_STATE:
+    		break;
+    	default:
+    	if(tamskState!=GipfState.PLACE_TAMSK_FIRST_STATE)
+    	{
     	for(int dir = 0;dir<3;dir++)
     	{	int dircode = (1<<dir);
     	for(GipfCell c = allCells; c!=null; c=c.next)
     	{	
     		if(!c.isEdgeCell() && ((c.rowcode&dircode)==0))
-    		{	boolean nr = c.rowOfNInDirection(4,getColorMap()[pl],dir);
+    		{	boolean nr = c.rowOfNInDirection(4,playerChip[pl],dir);
     			if(nr)
     				{ c.markRow(dir,dircode);
     				  c.markRow(dir+3,dircode);
@@ -817,7 +1136,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     				}
     		}
     	}
-    	}
+    	}}}
     	return(val);
     }
 
@@ -833,7 +1152,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 
     // returns true if everything is preserved by default
     private boolean markForPreservation(int pl)
-    {	boolean val = standard_setup || tournament_setup;
+    {	boolean val = standard_setup || tournament_setup || (variation==Variation.Gipf_Matrx);
     	int n = 0;
     	if(val)
     	{
@@ -896,13 +1215,13 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     {	
     	int pl = -1;
     	c.preserved = false;
- 		if(c.isGipf()) { currentGipfCount[playerIndex(c.topChip())]--; }
- 		while(c.chipIndex>=0)
-    	{	GipfChip top = c.removeTop();
+    	boolean stop = false;
+    	while(c.chipIndex>=0 && !stop)
+    	{	GipfChip top = removeChip(c);
     		removalStack.addChip(top);
     		removalCells.push(c);
     		pl = playerIndex(top);
-    		GipfCell dest = (pl==whoseTurn) ? reserve[whoseTurn] : captures[whoseTurn];
+    		GipfCell dest = (pl==whoseTurn) ? rack[whoseTurn][top.potential.ordinal()]: captures[whoseTurn];
     		dest.addChip(top);
     		c.lastContents = top;
     		c.previousLastCaptured = c.lastCaptured;
@@ -912,6 +1231,16 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		{
     			animationStack.push(c);
     			animationStack.push(dest);
+    		}
+    		switch(top.potential)
+    		{
+    		case Dvonn:
+    		case Punct:
+    			// capturing the a dvonn or punct stack only captures the top
+    			stop = (c.topChip()!=top);
+    			break;
+    		default: 
+    			break;
     		}
     	}
     }
@@ -927,13 +1256,16 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}}
     	return(false);
     }
+   
     private void doCaptures(replayMode replay)
     {	if(markForRemoval(whoseTurn))
-    	{	G.Assert(      (board_state==GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE)
+    	{	
+    		p1((board_state==GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE)
+    					|| (board_state==GipfState.MANDATORY_CAPTURE_STATE)
     					|| (board_state==GipfState.PRECAPTURE_OR_START_NORMAL_STATE)
     					|| (board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE)
     					|| simpleRemoval(),
-    					"must be simple");
+    					"must be simple %s",board_state);
     		for(GipfCell c = allCells; c!=null; c=c.next)
     		{
      		if((c.rowcode!=0) && !c.preserved)
@@ -973,38 +1305,62 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     }
     public boolean canTogglePlacementMode()
     {	return(	(tournament_setup && !tournament_setup_done)
-    			&& (gipfCount[whoseTurn]>0)
-    			&& ((nongipfCount[0]==0)||(nongipfCount[1]==0)));	
+    			&& (doublePiecesPlayed[whoseTurn]>0)
+    			&& ((singlePiecesPlayed[0]==0)||(singlePiecesPlayed[1]==0)));	
     }
     public boolean canTogglePlacementMode(int who)
     {	return(	(tournament_setup && !tournament_setup_done)
     			&& ((board_state==GipfState.PLACE_STATE) || (board_state==GipfState.PLACE_GIPF_STATE)||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE))
     			&& (who==whoseTurn)
-    			&& (gipfCount[whoseTurn]>0)
-    			&& (nongipfCount[who]==0));	
+    			&& (doublePiecesPlayed[whoseTurn]>0)
+    			&& (singlePiecesPlayed[who]==0));	
     }
     private boolean placingGipfPieces()
     {
     	return((tournament_setup && !tournament_setup_done) 
-		&& (nongipfCount[whoseTurn]==0));	
+		&& (singlePiecesPlayed[whoseTurn]==0));	
     }
     public boolean placingGipfPieces(int who)
     {
     	return((tournament_setup && !tournament_setup_done) 
-    			&& ((who!=whoseTurn) 
-    					? (nongipfCount[who]==0) 
-    					: ((board_state==GipfState.PLACE_GIPF_STATE)||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE))));	
+    			&& (singlePiecesPlayed[who]==0));	
     }
-    
+    private boolean hasPlayablePotentials(int who)
+    {
+    	for(GipfCell c : rack[who])
+    	{
+    		if((c.row!=Potential.None.ordinal()) && c.height()>=2) { return true; }
+    	}
+    	return false;
+    }
+    private boolean enterTamskState()
+    {
+    	if(TamskCenter.isGipf())
+		{
+		GipfChip top = TamskCenter.topChip();
+		return ((top.potential==Potential.Tamsk)
+				&& (top.color==playerColor[whoseTurn]));
+		}
+		return false;
+    }
     // set the first state of a new turn
     private void setFirstState()
     {	setState(GipfState.PUZZLE_STATE);
-    	if(markForRemoval(whoseTurn))
+    	if(enterTamskState())
+    	{	clearMarks();
+    		setState(GipfState.PLACE_TAMSK_FIRST_STATE);
+    	}
+    	else 
+    	{
+    	setState(GipfState.PUZZLE_STATE);
+    	{ if(markForRemoval(whoseTurn))
 	    	{
  	    	setState(markForPreservation(whoseTurn)
 	    					? (placingGipfPieces()
 	    							?GipfState.PRECAPTURE_OR_START_GIPF_STATE
-	    							:GipfState.PRECAPTURE_OR_START_NORMAL_STATE)
+	    							: ((variation==Variation.Gipf_Matrx) && allPreserved())
+	    								? GipfState.MANDATORY_PRECAPTURE_STATE
+	    								: GipfState.PRECAPTURE_OR_START_NORMAL_STATE)
 	    					: GipfState.PRECAPTURE_STATE);
 	    	
 	    	}
@@ -1017,31 +1373,64 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 	        setState(GipfState.PLACE_STATE);
 	    	}
         if(((board_state==GipfState.PLACE_GIPF_STATE)||(board_state==GipfState.PLACE_STATE)) 
-        		&& (reserve[whoseTurn].chipIndex<0))
-        {	setGameOver(false,true);
+        		&& (rack[whoseTurn][Potential.None.ordinal()].chipIndex<0))
+        {	
+        	if(variation==Variation.Gipf_Matrx)
+        	{	boolean potentialMoves = hasPotentialMoves(whoseTurn);
+        		if(currentSingleCount[whoseTurn]==0) { setGameOver(false,true); }	// all single gipfs captured
+        		else if(hasPlayablePotentials(whoseTurn)) 
+        			{ setState(potentialMoves ? GipfState.PLACE_OR_MOVE_POTENTIAL_STATE : GipfState.PLACE_POTENTIAL_STATE); 
+        			}
+        		else if(potentialMoves) { setState(GipfState.MOVE_POTENTIAL_STATE ); }
+        		else { setGameOver(false,true); }
+        	}
+        	else
+        	{
+        	// out of moves
+        	setGameOver(false,true);
+        	}
         }
         if((standard_setup || tournament_setup))
-        	{if((gipfCount[whoseTurn]>0)&&(currentGipfCount[whoseTurn]==0))
+        	{if((doublePiecesPlayed[whoseTurn]>0)&&(currentGipfCount[whoseTurn]==0))
         		{ setGameOver(false,true); }
         	 int next = nextPlayer[whoseTurn];
-        	 if((gipfCount[next]>0)&&(currentGipfCount[next]==0)) 
+        	 if((doublePiecesPlayed[next]>0)&&(currentGipfCount[next]==0)) 
         	 	{ setGameOver(true,false); }
-        	}
+        	}}}
     }
     // set the state appropriately after a slide move
     private void setLastState()
     {
- 		if(markForRemoval(whoseTurn))
-		{	
-
-    		setState(markForPreservation(whoseTurn)
-    				? GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE
-    				: (simpleRemoval()?GipfState.DONE_CAPTURE_STATE:GipfState.DESIGNATE_CAPTURE_STATE));
-   		}
-		else
-		{ 
-		  setState(GipfState.DONE_STATE);
-		}
+    	if(enterTamskState())	// a tamsk potential is now on the center
+    	{	clearMarks();
+    		if(tamskState!=GipfState.PLACE_TAMSK_FIRST_STATE)
+    		{
+    		setState(GipfState.PLACE_TAMSK_LAST_STATE);
+    		}
+    	}
+    	else if(tamskState==GipfState.PLACE_TAMSK_FIRST_STATE)
+    	{	tamskState = null;
+    		setFirstState();
+    	}
+    	else 
+    	{ setState(GipfState.PUZZLE_STATE);
+    	  if(markForRemoval(whoseTurn))
+			{ markForPreservation(whoseTurn);
+    		  if((variation==Variation.Gipf_Matrx) && allPreserved())
+    		  {
+    			  setState(GipfState.MANDATORY_CAPTURE_STATE);
+    		  }
+    		  else
+    		  {
+	    		setState(markForPreservation(whoseTurn)
+	    				? GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE
+	    				: (simpleRemoval()?GipfState.DONE_CAPTURE_STATE:GipfState.DESIGNATE_CAPTURE_STATE));
+    		  }
+    		}
+			else
+			{ 
+			  setState(GipfState.DONE_STATE);
+			}}
     }
     public void clearAllPreserved()
     {
@@ -1050,8 +1439,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     public void doDone(replayMode replay)
     {	
     	finalizePlacement();
+    	tamskState = null;
     	lastPlacedIndex++;
-    	tournament_setup_done = (nongipfCount[0]>0) && (nongipfCount[1]>0);
+    	tournament_setup_done = (singlePiecesPlayed[0]>0) && (singlePiecesPlayed[1]>0);
         // dont change lastmove
         if (board_state==GipfState.RESIGN_STATE)
         {
@@ -1065,8 +1455,20 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	{
         	default: throw G.Error("Not expecting state %s",board_state);
         	case DESIGNATE_CAPTURE_OR_DONE_STATE:
+        	case MANDATORY_CAPTURE_STATE:
+        	case PLACE_TAMSK_LAST_STATE:
         	case DONE_CAPTURE_STATE: 
         		doCaptures(replay);
+        		if((variation==Variation.Gipf_Matrx)
+        				&& markForRemoval(whoseTurn))
+        			{
+         			markForPreservation(whoseTurn);
+        			if(allPreserved())
+        				{
+        				setState(GipfState.MANDATORY_CAPTURE_STATE);
+        				break;
+        				}
+        			}
 				//$FALL-THROUGH$
 			case DONE_STATE:
                 SetNextPlayer();
@@ -1085,26 +1487,73 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     private void moveToRack(GipfCell c)
     {
     	dropOnRack(c);
-    	finalizePlacement();
     	switch(board_state)
     	{
-    	case SLIDE_STATE:	setState(GipfState.PLACE_STATE); break;
-    	case SLIDE_GIPF_STATE: setState(GipfState.PLACE_GIPF_STATE); break;
-    	case PUZZLE_STATE: break;
-    	default: break;
+    	case PLACE_TAMSK_LAST_STATE:
+    		setLastState();
+    		break;
+    	case PLACE_TAMSK_FIRST_STATE:
+    		tamskState=null;
+    		setFirstState();
+    		break;
+    	case SLIDE_STATE:	 
+        	finalizePlacement();
+        	setState(GipfState.PLACE_STATE); break;
+    	case SLIDE_GIPF_STATE: 
+        	finalizePlacement();
+        	setState(GipfState.PLACE_GIPF_STATE); break;
+    	case PUZZLE_STATE: 
+    	default: 
+        	finalizePlacement();
+        	break;
     	}
+    }
+    private void doSlideFrom(Gipfmovespec m,replayMode replay)
+    {
+    	int psize = preservationStack.size();        		
+		GipfCell dest = getCell(m.to_col,m.to_row);
+		GipfCell src = getCell(m.from_col,m.from_row);
+		// the forever counts are only changed by the slide
+		
+		int distance = doSlide(src,dest,
+				findDirection(src.col,src.row,dest.col,dest.row),replay,true);
+		m.undoinfo = psize*PRESSTACK+removalCells.size()*REMOVESTACK+distance;
+		setLastState();	// and mark for preservation
+    }
+    private void doPlacement(Gipfmovespec m,GipfCell dest,replayMode replay)
+    {
+		boolean animateFirst = pickedObject==null;
+		if(animateFirst) { pickFromRack(rack[whoseTurn][m.from_potential.ordinal()]); }
+		if(replay.animate && animateFirst)
+		{	if(pickedHeight==2)
+			{
+			animationStack.push(getSource());
+			animationStack.push(dest);
+			}
+			animationStack.push(getSource());
+			animationStack.push(dest);
+		}
+		stateStack.push(board_state);
+		m.from_potential = pickedObject.potential;
+		dropOnBoard(dest);
+		if(dest.isEdgeCell())
+		{
+		setState((dest.height()==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE); 
+		}
+		else 
+		{
+			setLastState();
+		}	
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Gipfmovespec m = (Gipfmovespec)mm;
-        //G.print("E "+mm);
+        //G.print("E "+mm+ " " + moveNumber+" "+board_state+" "+removalCells.size());
         //check_piece_count();
         switch (m.op)
         {
         case MOVE_DONE:
         	doDone(replay);
-
             break;
-
  
         case MOVE_START:
         	finalizePlacement();
@@ -1116,45 +1565,78 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	finalizePlacement();
         	break;
         case MOVE_PICK:
-        	pickFromRack(pickSource(m.source));
+        	{
+        	GipfCell c = pickSource(m.source,m.from_row);
+        	if(c==getDest())
+	        	{	setState(stateStack.pop());	// pop first so we'll guess correctly how many to pick
+	        		unDropObject();
+	        		
+	        	}
+        	else 
+	        	{	stateStack.push(board_state);
+	        		pickFromRack(c);
+	        	}
+        	}
         	break;
         case MOVE_DROP:
         	{
-        	GipfCell c = pickSource(m.source);
+        	GipfCell c = pickSource(m.source,m.from_row);
         	if(c==getSource())
-        	{
-        	unPickObject();	
-        	}
+	        	{
+	        	unPickObject();	
+	        	setState(stateStack.pop());
+	        	}
         	else
-        	{
-        	moveToRack(c);
-        	}}
-        	break;
+	        	{
+	        	switch(board_state)
+	        	{
+	        	default: break;
+	        	case SLIDE_STATE:
+	        	case SLIDE_GIPF_STATE:
+	        		// we dropped on the edge but balked
+	        		setState(stateStack.pop());
+	        		break;
+	        	}
+	        	stateStack.push(board_state); 
+	        	moveToRack(c);
+	        	}
+        	}
+	        break;
+ 		case MOVE_PSLIDE:
         case MOVE_SLIDE:
         	{ GipfCell src = getCell(m.from_col,m.from_row);
-       		  GipfCell from = reserve[whoseTurn];
-    		  GipfChip pick = from.removeTop();
-    		  src.addChip(pick);
-       		if(board_state==GipfState.PLACE_GIPF_STATE) 
-    		{	src.addChip(reserve[whoseTurn].removeTop());
-    			gipfCount[whoseTurn]++;
-    			currentGipfCount[whoseTurn]++;
-    		}
-    		else { nongipfCount[whoseTurn]++; }
-        	}
+        	  int index = m.from_potential.ordinal();
+       		  GipfCell from = rack[whoseTurn][index];
+    		  GipfChip pick = removeChip(from);
+    		  addChip(src,pick);
+    		  switch(board_state)
+	    		{
+	    		case PLACE_GIPF_STATE:
+	    		case PLACE_POTENTIAL_STATE:
+	    		case PLACE_OR_MOVE_POTENTIAL_STATE:
+	    			{	
+	    				addChip(src,removeChip(from));
+	     			}
+	    			break;
+	    		default:
+	    			}
+	        	}
 			//$FALL-THROUGH$
-		case MOVE_SLIDEFROM:
-        	{	int psize = preservationStack.size();        		
-        		GipfCell dest = getCell(m.to_col,m.to_row);
-        		GipfCell src = getCell(m.from_col,m.from_row);
-        		
-        		int distance = doSlide(src,dest,
-        				findDirection(src.col,src.row,dest.col,dest.row),replay,true);
-        		m.undoinfo = psize*PRESSTACK+removalCells.size()*REMOVESTACK+distance;
-        		setLastState();	// and mark for preservation
-        	}
-        	break;
-        case MOVE_DROPB:
+			case MOVE_SLIDEFROM:
+        	doSlideFrom(m,replay);
+        		break;
+			case MOVE_TAMSK:
+	  		   // tamsk slide
+				{
+				GipfCell from = getCell(m.from_col,m.from_row);
+				pickFromBoard(TamskCenter,true);
+				dropOnBoard(from);
+				doSlideFrom(m,replay);
+				}
+				break;
+
+	       case MOVE_PDROPB:
+	       case MOVE_DROPB:
         	{
         	GipfCell dest = getCell(m.to_col,m.to_row);
         	switch(board_state)
@@ -1165,20 +1647,33 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         		if(dest.isEdgeCell()) 
         			{ if(pickedObject==null) 
         				{unDropObject();  
+        				 m.from_potential = pickedObject.potential;
         				 dropOnBoard(dest);  
+        				 // this can be the same cell in some old game records
+        				 // this is a hack to ignore it if it is
+        				 ignorePlease++;
         				 } 
         				else
-        					{ 	
-        					moveToRack(reserve[whoseTurn]); 
-        					pickFromRack(reserve[whoseTurn]);
-        					dropOnBoard(dest); 
+        					{ 
+        					// picked a new edge cell to start from
+        					droppedDest.pop();
+        					m.from_potential = pickedObject.potential;
+         					dropOnBoard(dest); 
         					setState((dest.height()==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE); 
         					}
         			}
+        			else if (dest==TamskCenter)
+        			{	droppedDest.pop();
+        				m.from_potential=null;
+        				pickedSource.pop();	// we dropped on an edge cell, then completed the undo
+        				unPickObject();
+        				setState(stateStack.pop());
+        			}
         			else 
         			{ int psize =  preservationStack.size();
+    				  m.from_potential=null;
         			  boolean animateFirst = pickedObject==null; 
-        			  if(animateFirst) { pickFromBoard(droppedDest.top()); }
+        			  if(animateFirst) { pickFromBoard(droppedDest.top(),false); }
         			  GipfCell from = pickedSource.top();
         			  unPickObject(); 
          			  int cap = removalCells.size()*REMOVESTACK;
@@ -1191,6 +1686,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         					  findDirection(from.col,from.row,dest.col,dest.row),replay,animateFirst)); 
         			  droppedDest.push(dest);
         			  pickedSource.push(from);
+        			  stateStack.push(board_state);
         			  setLastState();
  
           			}
@@ -1203,28 +1699,40 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         		break;
         	case PRECAPTURE_OR_START_GIPF_STATE:
         	case PRECAPTURE_OR_START_NORMAL_STATE:
+        		{
         		if(pickedObject!=null) { unPickObject(); }
         		dropUndo.push(preservationStack.size()*PRESSTACK+removalCells.size()*REMOVESTACK);
-        		pickedSource.push(dest);
+        		pickedSource.push(getCell(m.from_col,m.from_row));
         		droppedDest.push(dest);
         		doCaptures(replay);		// might capture some gipf pieces
+        		if((variation==Variation.Gipf_Matrx) && markForRemoval(whoseTurn))
+        		{	// in the matrx game, all rows of 4 have to be resolved
+        			setFirstState();
+        			break;
+        		}
+        		doPlacement(m,dest,replay);
+        		}
+        		break;
 				//$FALL-THROUGH$
 			case PLACE_STATE: 
-        	case PLACE_GIPF_STATE:
-        		G.Assert(dest.isEdgeCell(),"can only drop on edges");
-        		boolean animateFirst = pickedObject==null;
-        		if(animateFirst) { pickFromRack(reserve[whoseTurn]); }
-        		if(replay.animate && animateFirst)
+			case PLACE_POTENTIAL_STATE:
+			case PLACE_GIPF_STATE:
+			case PLACE_OR_MOVE_POTENTIAL_STATE:
+    		case MOVE_POTENTIAL_STATE:
+			case PLACE_TAMSK_LAST_STATE:
+			case PLACE_TAMSK_FIRST_STATE:
         		{
-        			animationStack.push(getSource());
-        			animationStack.push(dest);
+        		if(dest==getSource())
+        		{
+        			unPickObject();
         		}
-        		dropOnBoard(dest);
-        		setState((dest.height()==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE); 
+        		else
+        		{
+        		doPlacement(m,dest,replay);
+        		}
+        		}
         		break;
-        	
-        	}
-        	}
+        	}}
         	break;
         case MOVE_PICKB:
         	{
@@ -1232,22 +1740,40 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	switch(board_state)
         	{
         	default: throw G.Error("Not expecting state %s",board_state);
+        	case PLACE_OR_MOVE_POTENTIAL_STATE:
+        	case PLACE_TAMSK_FIRST_STATE:
+        	case PLACE_TAMSK_LAST_STATE:  
+        	case MOVE_POTENTIAL_STATE:
+        	case PRECAPTURE_STATE:
+        		if(c==getDest()) { 
+        			unDropObject();
+        			setState(stateStack.pop());
+        		}
+        		else
+        		{
+        		stateStack.push(board_state);
+        		pickFromBoard(c,true);
+        		}
+        		break;
         	case DONE_STATE:
         	case DRAW_STATE:
         	case DONE_CAPTURE_STATE:
         	case DESIGNATE_CAPTURE_OR_DONE_STATE:
         	case DESIGNATE_CAPTURE_STATE:
-        		G.Assert(c==droppedDest.top(),"is dest");
+        		p1(c==droppedDest.top(),"is dest");
         		unDropObject();
-        		setState((pickedHeight==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE);
+        		setState(stateStack.pop());
         		break;
         	case SLIDE_GIPF_STATE:
          	case PLACE_STATE:	// unusual, piece already placed on the edge
         	case SLIDE_STATE:	
-        		pickFromBoard(c);
+        		pickFromBoard(c,false);
+        		// and do not unset the state
+        		// setState(stateStack.pop());
         		break;
            	case PUZZLE_STATE: 
-        		pickFromBoard(c);
+           		stateStack.push(board_state);
+        		pickFromBoard(c,false);
         		break;
         	}}
         	break;
@@ -1257,7 +1783,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
             break;
         case MOVE_STANDARD:
         	{
-        	G.Assert(canTogglePlacementMode(),"shouldn't try to switch modes here");
+        	p1(canTogglePlacementMode(),"shouldn't try to switch modes here");
         	switch(board_state)
         	{
         	default: throw G.Error("Not expecting state %s",board_state);
@@ -1289,47 +1815,97 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	switch(c.rowcode)
         	{
         	default: throw G.Error("Not expecting row code %s",c.rowcode);
+        	case 0:
+        	case -1:
+        		break;
+        	case 7:
+        	case 3:
         	case 1: 	direction = 0; break;
+        	case 6:
         	case 2:		direction = 1; break;
+        	case 5:
         	case 4: 	direction = 2; break;
         	}
-        	pickedSource.push(c);
-        	droppedDest.push(c);
         	dropUndo.push(removalCells.size()*100);
         	doRowCaptures(c.exitTo(direction),direction,replay);
         	doRowCaptures(c,direction+3,replay);
         	{	boolean mark = markForRemoval(whoseTurn);
-        			if((board_state==GipfState.PRECAPTURE_STATE)
-        					||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE)
-        					||(board_state==GipfState.PRECAPTURE_OR_START_NORMAL_STATE))
-        			{	if(mark)
-        				{ setState(markForPreservation(whoseTurn)
-        						?(placingGipfPieces()?GipfState.PRECAPTURE_OR_START_GIPF_STATE:GipfState.PRECAPTURE_OR_START_NORMAL_STATE)
-        						:GipfState.PRECAPTURE_STATE );
-        				  
-        				}
-        			else {
-        				clearAllPreserved();
-        				setState(GipfState.PLACE_STATE);
+        		if((board_state==GipfState.PRECAPTURE_STATE)
+        				||(board_state==GipfState.MANDATORY_PRECAPTURE_STATE)
+        				||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE)
+        				||(board_state==GipfState.PRECAPTURE_OR_START_NORMAL_STATE))
+        			{	
+        			if(variation!=Variation.Gipf_Matrx)
+        			{
+	        			if(mark)
+	    				{ setState(markForPreservation(whoseTurn)
+	    						?(placingGipfPieces()?GipfState.PRECAPTURE_OR_START_GIPF_STATE:GipfState.PRECAPTURE_OR_START_NORMAL_STATE)
+	    						:GipfState.PRECAPTURE_STATE );
+	    				  
+	    				}
+		    			else {
+		    				clearAllPreserved();
+		    				setState(GipfState.PLACE_STATE);
+		    			}
         			}
+        			else 
+        			{
+    					clearAllPreserved();
+    					if((variation!=Variation.Gipf_Matrx) && (revision<102))
+    					{
+    					// not completely correct - if you captured the last gipf piece
+    					// you win immediately.  Almost the same, but you actually might
+    					// be unable to make a normal move at this point.
+    					setState(GipfState.PLACE_STATE);	
+    					}
+    					else
+    					{
+    					setFirstState();
+    					}
+    				}
         			}
         			else 
         			{ // post captures
-        				setState(mark 
-        						? (simpleRemoval() 
-        							?GipfState.DONE_CAPTURE_STATE: 
-        											(allPreserved()?GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE:GipfState.DESIGNATE_CAPTURE_STATE))
-        						:GipfState.DONE_CAPTURE_STATE);
+        				if(mark)
+        				{
+        				   setState(allPreserved()
+							? GipfState.DESIGNATE_CAPTURE_OR_DONE_STATE
+							: simpleRemoval()
+								? GipfState.DONE_CAPTURE_STATE
+								: GipfState.DESIGNATE_CAPTURE_STATE);
+        				}
+        				else 
+        					{ setState(GipfState.DONE_CAPTURE_STATE);
+        					}
         			}
         	}}
         	break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;
-        	
+		case MOVE_PUNCT:
+		case MOVE_DVONN:
+		case MOVE_YINSH:
+		case MOVE_ZERTZ:
+			{
+			GipfCell from = getCell(m.from_col,m.from_row);
+			GipfCell to = getCell(m.to_col,m.to_row);
+			p1(from.isGipf(),"should be a gipf");
+			m.undoinfo = removalCells.size()*REMOVESTACK+0;
+			pickFromBoard(from,true);
+			dropOnBoard(to);
+			if(replay.animate) 
+				{
+				animationStack.push(from);
+				animationStack.push(to);
+				}	
+			setLastState();
+			}
+			break;
         default:
         	cantExecute(m);
         }
+       //G.print("X "+mm+" "+tournament_setup_done+" "+singlePiecesPlayed[0]+" "+singlePiecesPlayed[1]);
          
         //check_piece_count();
         return (true);
@@ -1373,76 +1949,62 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
    executing.
    */
    public void RobotExecute(Gipfmovespec m)
-   {   //G.print("R "+m);
-       m.undostate = board_state; //record the starting state. The most reliable
+   {    //G.print("R "+m+" "+moveNumber);
+   		robotStateStack.push(tamskState);
+   		robotStateStack.push(board_state); //record the starting state. The most reliable
        // to undo state transistions is to simple put the original state back.
        savePreservation(robotPreservationStack);
        robotPreservationStack.push(preservationStack.size());
-       G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-        if (Execute(m,replayMode.Replay))
+       p1(m.player == whoseTurn, "whoseturn doesn't agree");
+       if (Execute(m,replayMode.Replay))
        {
            if (m.op == MOVE_DONE)
            {
            }
-           else if (DoneState())
-           {
-               doDone(replayMode.Replay);
-           }
-           else if(board_state==GipfState.PRECAPTURE_OR_START_NORMAL_STATE) {}
-           else if(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE) {}
-           else if(board_state==GipfState.PRECAPTURE_STATE) {}		// capture before moving
-           else if(board_state==GipfState.DESIGNATE_CAPTURE_STATE) {}	// designate after slide
-           else if(board_state==GipfState.PLACE_STATE) {}		// place after early capture
-           else if(board_state==GipfState.PLACE_GIPF_STATE) {}	// place gipf after early capture
-           else
-           {
-        	   throw G.Error("Robot move should be in a done state");
-           }
+           else if (mandatoryDoneState())
+           { //G.print("autodone "+board_state+" "+whoseTurn);
+             doDone(replayMode.Replay);
+             //G.print("after auto "+board_state+" "+whoseTurn);
+           }           
        }
    }
 
 private void undoCaptures(int uncap,int who)
 {
- 		while(removalCells.size()>uncap)
-	   		{	GipfCell c = removalCells.pop();
-	   			GipfChip ch = removalStack.removeTop();
-	   			if(playerIndex(ch)==who)
-	   			{	reserve[who].removeTop();
-	   			}
-	   			else 
-	   			{	captures[who].removeTop();
-	   			}
-	   			c.addChip(ch);
-	   			c.lastCaptured = c.previousLastCaptured;
-	   			if(c.isGipf()) { currentGipfCount[playerIndex(ch)]++; }
-	   		}	
+	while(removalCells.size()>uncap)
+   		{	GipfCell c = removalCells.pop();
+   			GipfChip ch = removalStack.removeTop();
+   			int index = playerIndex(ch);
+   			if(index==who)
+   			{	rack[who][ch.potential.ordinal()].removeTop();
+   			}
+   			else 
+   			{	captures[who].removeTop();
+   			}
+   			addChip(c,ch);
+   			c.lastCaptured = c.previousLastCaptured;
+   		}	
 }
 	private void undoSlide(GipfCell to,GipfCell from,int distance)
 	{ 	int dir = findDirection(from.col,from.row,to.col,to.row);
+		if(to.isGipf()) { doublePiecesPlayed[whoseTurn]--; }
+			else { singlePiecesPlayed[whoseTurn]--;}
 		while(distance>0)
   	   		{	distance--;
   	   			unMoveStack(to,from);
    	   			from = to;
   	   			to = to.exitTo(dir);
   	   		}
- 	}
-	private void undoDrop(GipfCell from,Gipfmovespec m)
-	{	int who = m.player;
-		switch(m.undostate)
-	   		{	default: throw G.Error("Not expecting state %s",m.undostate);
-   			case PRECAPTURE_OR_START_NORMAL_STATE:
-	   			case PRECAPTURE_OR_START_GIPF_STATE:
-	   				if(from.isGipf()) 
-	   					{ currentGipfCount[who]--; gipfCount[who]--; } 
-	   					else { nongipfCount[who]--;} ;
-	   				break;
-	   			case PLACE_STATE:	nongipfCount[who]--; break;
-	   			case PLACE_GIPF_STATE: gipfCount[who]--; currentGipfCount[who]--; break;
-	   		}
-	   		while(from.chipIndex>=0) 
-	   			{ 	GipfChip ch = from.removeTop();
-	   				reserve[who].addChip(ch);
-	   			}
+		// the forever counts are only changed by a slide move
+		}
+	
+	private void undoDrop(GipfCell from)
+	{	
+		while(from.chipIndex>=0) 
+			{ 	
+			GipfChip ch = removeChip(from);
+			rack[playerIndex(ch)][ch.potential.ordinal()].addChip(ch);
+			}
 	}
   //
    // un-execute a move.  The move should only be unexecuted
@@ -1451,14 +2013,22 @@ private void undoCaptures(int uncap,int who)
    //
    public void UnExecute(Gipfmovespec m)
    {	int who = m.player;
-      	//G.print("U "+m+" for "+whoseTurn);
-   	   check_piece_count();
+    	   //check_piece_count();
+   	   setState(robotStateStack.pop());
+   	   tamskState = robotStateStack.pop();
+       if(whoseTurn!=who)
+       {	moveNumber--;
+       	setWhoseTurn(who);
+       }
+       //G.print("U "+m+" "+moveNumber);
+      
+   	   boolean single = false;
        switch (m.op)
        {
        case MOVE_DROPB:
     	   {	
     	   GipfCell from = getCell(m.from_col,m.from_row);
-    	   undoDrop(from,m);
+    	   undoDrop(from);
     	   }
     	   break;
        case MOVE_START:
@@ -1472,7 +2042,26 @@ private void undoCaptures(int uncap,int who)
   	   case MOVE_REMOVE:
   		   undoCaptures((m.undoinfo%PRESSTACK)/REMOVESTACK,who);
   		   break;
+  		 
+  	   case MOVE_DVONN:
+  	   case MOVE_PUNCT:
+  		   single = true;
+  		   //$FALL-THROUGH$
+  	   case MOVE_YINSH:
+  	   case MOVE_ZERTZ:
+  	   		{
+  	   		int uinfo = m.undoinfo%PRESSTACK;
+  	   		int uncap = uinfo/REMOVESTACK;
+   	   		undoCaptures(uncap,who);
+ 	   		GipfCell from = getCell(m.from_col,m.from_row);
+ 	   		GipfCell to = getCell(m.to_col,m.to_row);
+ 	   		pickFromBoardCell(to,single);
+ 	   		dropOnBoardCell(from);
+  	   		}
+  		   break;
+  	   case MOVE_TAMSK:
   	   case MOVE_SLIDEFROM:
+  	   case MOVE_PSLIDE:
   	   case MOVE_SLIDE:
   	   	{	int uinfo = m.undoinfo%PRESSTACK;
   	   		int distance = uinfo%REMOVESTACK;
@@ -1482,9 +2071,21 @@ private void undoCaptures(int uncap,int who)
   	   		GipfCell from = getCell(m.from_col,m.from_row);
   	   		GipfCell to = getCell(m.to_col,m.to_row);
   	   		undoSlide(to,from,distance);
-   	   		if(m.op==MOVE_SLIDE)
-   	   		{
-  	   		undoDrop(from,m);
+
+  	   		switch(m.op)
+  	   		{
+  	   		case MOVE_SLIDEFROM:
+  	   			break;
+  	   		case MOVE_SLIDE:
+  	   		case MOVE_PSLIDE:
+  	   			undoDrop(from);
+  	   			break;
+  	   		case MOVE_TAMSK:
+  	   			pickFromBoard(from,true);
+  	   			dropOnBoard(TamskCenter);
+  	   			break;
+  	   		default:
+  	   			G.Error("Not expecting %s",m.op);
    	   		}
   	   	}
   	   		break;
@@ -1493,22 +2094,39 @@ private void undoCaptures(int uncap,int who)
        case MOVE_RESIGN:
            break;
        }
-       setState(m.undostate);
-       if(whoseTurn!=who)
-       {	moveNumber--;
-       	setWhoseTurn(who);
-       }
-       check_piece_count();
-       tournament_setup_done = (nongipfCount[0]>0) && (nongipfCount[1]>0);
+
+       //check_piece_count();
+       tournament_setup_done = (singlePiecesPlayed[0]>0) && (singlePiecesPlayed[1]>0);
        int ps = robotPreservationStack.pop();
        while(preservationStack.size()>ps) { preservationStack.pop(); }
        restorePreservation(robotPreservationStack);
-
 }   
 
    // look for a win for player.  
-   public double ScoreForPlayer(int player,boolean print,boolean dumbot)
-   {  	double finalv=reserve[player].chipIndex*5+captures[player].chipIndex*20+currentGipfCount[player]*40;
+   public double ScoreForPlayer(int player,boolean print,boolean dumbot,boolean testbot)
+   {  	GipfCell normal = rack[player][Potential.None.ordinal()];
+		boolean matrx = variation==Variation.Gipf_Matrx;
+	    double finalv= captures[player].chipIndex*20;
+	    GColor myColor = playerColor[player];
+	    int gipfs = normal.height();
+	    int centerRank = 0;
+	    if(matrx)
+	    {
+		    int reserves = 0;
+	    	for(GipfCell r : rack[player])
+	    	{
+	    		if(r.potential!=Potential.None)
+	    		{
+	    			int n = r.height()/2;	// round down
+	    			reserves += n;
+	    		}
+	    	}
+	    	finalv += reserves*5;
+	    }
+	    else
+	    {
+	    	finalv += gipfs*5+currentGipfCount[player]*40;
+	    }
    		if(tournament_setup) 
    		{	finalv -= Math.max(0,(currentGipfCount[player]-3))*50;	// penalty for too many gipf pieces
    		}
@@ -1520,7 +2138,8 @@ private void undoCaptures(int uncap,int who)
    				c=c.next)
    			{	// count x a x and x x x 
    				if(!c.isEdgeCell())
-   				{	for(int dir=0;dir<3;dir++)
+   				{	GipfChip ctop = c.topChip();
+   					for(int dir=0;dir<3;dir++)
    					{
    					GipfCell left = c.exitTo(dir);
    					GipfChip ltop = left.topChip();
@@ -1528,23 +2147,40 @@ private void undoCaptures(int uncap,int who)
    					{
 	   				GipfCell right = c.exitTo(dir);
    					GipfChip rtop = right.topChip();
-   					if((rtop!=null) && (playerIndex(ltop)==player) && (playerIndex(rtop)==player))
+   					if((rtop!=null) && (ltop.color==myColor) && (rtop.color==myColor))
    					{	forks++;
-   						GipfChip ctop = c.topChip();
-   						if((ctop!=null) && (playerIndex(ctop)==player)) { threes++; } 
+   						if((ctop!=null) && (ctop.color==myColor)) { threes++; } 
    					}
    					}
    					}
    				}
    			}
-   			finalv += 2*forks + 3*threes;
+   		
+   		finalv += 2*forks + 3*threes;
+   		 
    		}
+   		if(matrx)
+		{
+		for(GipfCell c = allCells;
+   				c!=null;
+   				c=c.next)
+   			{
+   				GipfChip ctop = c.topChip();
+   				if(ctop!=null && ctop.potential==Potential.None && ctop.color==myColor) 
+						{ gipfs++;
+						  centerRank += c.centerRank;
+						}
+   			}
+		finalv += gipfs*10;
+		// penalty for gipfs toward the center
+		finalv -= centerRank*2;
+ 		}
    		if(print) 
    			{ System.out.println("sum "+finalv); }
    		return(finalv);
    }
    public String playerState(int pl)
-   {	return(""+(reserve[pl].chipIndex+1)+"x"+(captures[pl].chipIndex+1));
+   {	return(""+(rack[pl][Potential.None.ordinal()].chipIndex+1)+"x"+(captures[pl].chipIndex+1));
    }
    
    private void addSlideMoves(CommonMoveStack all,GipfCell c,int player,int op)
@@ -1552,72 +2188,436 @@ private void undoCaptures(int uncap,int who)
 	   for(int dir = 0;dir<CELL_FULL_TURN; dir++)
   		{	GipfCell d = c.exitTo(dir);
   			if((d!=null)
-  				&& d.emptyCellInDirection(dir)
-  				&& ((d.chipIndex>=0) || (d.sweep_counter!=sweep_counter))
-  				)
-  				{ d.sweep_counter = sweep_counter;
-  				  Gipfmovespec mm = new Gipfmovespec(player,op,c.col,c.row,d.col,d.row);
+  				&& ((d.topChip()==null)
+  					? (d.sweep_counter!=sweep_counter)
+  					: d.emptyCellInDirection(dir)))
+   				{ // sweep counter avoids effectively duplicate moves
+  				  // where you enter an empty cell from either of 2 edges
+  				  d.sweep_counter = sweep_counter;
+  				  Gipfmovespec mm = new Gipfmovespec(op,c,d,player);
   				  all.addElement(mm);
   		}   	}
    }
+   public boolean hasPotentialMoves(int who)
+   {
+	   if((variation==Variation.Gipf_Matrx) && currentGipfCount[who]>0)
+		{ 
+		   return addPotentialMoves(null,who);
+		}
+	   return false;
+   }
+   /**
+    * zertz potentials jump over at least one piece and end on the first empty space in a line
+    * 
+    * @param all
+    * @param from
+    * @param who
+    * @return
+    */
+   public boolean addZertzMoves(CommonMoveStack all,GipfCell from,int who)
+   {	boolean some = false;
+	   	for(int direction = 0; direction<from.geometry.n && (all!=null || !some); direction++)
+	   	{	GipfCell adj = from;
+	   		int steps = 0;
+	   		while( ((adj=adj.exitTo(direction))!=null)
+	   				&& !adj.isEdgeCell() 
+	   				&& adj.topChip()!=null)
+	   		{	steps++;
+	   		}
+	   		if(steps>0 && adj!=null && !adj.isEdgeCell())
+	   		{	some = true;
+	   			if(all!=null) { all.push(new Gipfmovespec(MOVE_ZERTZ,from,adj,who)); }
+	   		}
+	   	}
+   		return some;
+   }
+   /**
+    * yinsh potentials deploy across vacant spaces
+    * 
+    * @param all
+    * @param from
+    * @param who
+    * @return
+    */
+   public boolean addYinshMoves(CommonMoveStack all,GipfCell from,int who)
+   {	boolean some = false;
+	   	for(int direction = 0; direction<from.geometry.n && (all!=null || !some); direction++)
+	   	{	GipfCell adj = from;
+	   		while((adj=adj.exitTo(direction))!=null && !adj.isEdgeCell() && adj.topChip()==null)
+	   		{	some = true;
+	   			if(all!=null) { all.push(new Gipfmovespec(MOVE_YINSH,from,adj,who)); }
+	   		}
+	   	}
+   		return some;
+   }
    
+   public boolean addPunctDvonnMoves(CommonMoveStack all,GipfCell from,int who)
+   {	boolean some = false;
+   		GipfChip top = from.topChip();
+	   	for(int direction = 0; direction<from.geometry.n && (all!=null || !some); direction++)
+	   	{	GipfCell adj = from;
+	   		while((adj=adj.exitTo(direction))!=null && !adj.isEdgeCell())
+	   		{
+	   			GipfChip atop = adj.topChip();
+	   			if(atop!=null)
+	   			{
+	   				if((atop.potential==top.potential) && (atop.color!=top.color))
+	   				{
+	   				some = true;
+	   				if(all!=null)
+	   				{	// same type
+	   					all.push(new Gipfmovespec(atop.potential==Potential.Dvonn ? MOVE_DVONN : MOVE_PUNCT,from,adj,who)); }
+	   				}
+	   			break;
+	   			}
+	   		}
+	   	}
+   		return some;
+   }
+   private boolean addTamskMoves(CommonMoveStack all,int who)
+   {
+	   if(all==null) { return true; }
+	   if(TamskCenter.isGipf())
+	   {	GipfChip ch = TamskCenter.topChip();
+	   		if ((ch.potential==Potential.Tamsk)
+			   && (ch.color==playerColor[who]))
+	   		{	sweep_counter++;
+	   			for(GipfCell c : edgeCells)
+	   			{
+	   				addSlideMoves(all,c,whoseTurn,MOVE_TAMSK);
+	   			}
+	   		}
+	   		return true;
+	   }
+	   return false;
+   }
+   
+   public boolean addPotentialMoves(CommonMoveStack all,int who)
+   {
+		
+		boolean some = false;
+		for(GipfCell c=allCells; c!=null && (all!=null || !some); c=c.next)
+		   {	some |= addPotentialMovesFrom(all, c,null,who);
+		   }
+		return some;
+   }
+   public boolean addPotentialSlideMoves(CommonMoveStack all,int who)
+   {   boolean some = false;
+	   for(GipfCell c : rack[whoseTurn])
+	   {
+		   if((c.potential!=Potential.None)
+				   && c.height()>=2)
+		   { if(all==null) { return true; }
+			 some |= addPotentialSlideMovesFrom(all,c,who);  
+		   }
+	   }
+	   return some;
+   }
+   private boolean addPotentialSlideMovesFrom(CommonMoveStack all,GipfCell from,int who)
+   {
+	   boolean some = false;
+	   sweep_counter++;
+	   for(GipfCell c : edgeCells)
+	   {
+		   some |= addPotentialSlideMovesFrom(all,from,c,who);
+	   }
+	   return some;
+   }
+   private boolean addPotentialSlideMovesFrom(CommonMoveStack all,GipfCell potential,GipfCell c,int who)
+   {   boolean some = false;
+	   for(int dir = 0;dir<CELL_FULL_TURN && (all!=null || !some); dir++)
+  		{	GipfCell d = c.exitTo(dir);
+  			if((d!=null)
+  				&& ((d.topChip()==null)
+  						? (d.sweep_counter!=sweep_counter)
+  						: d.emptyCellInDirection(dir)))
+  				{ // sweep counter avoids effectively duplicate moves
+				  // where you enter an empty cell from either of 2 edges
+  				  d.sweep_counter = sweep_counter;
+  				  if(all!=null)
+  				  {
+  				  Gipfmovespec mm = new Gipfmovespec(potential.potential,c,d,who);
+  				  all.addElement(mm);
+  				  }
+  				  some = true;
+  				}
+  		}
+	   return some;
+  	}
+   public void getPotentialDestsFrom(GipfCell src,GipfChip chip,Hashtable<GipfCell,GipfCell>d,int who)
+   {
+	   CommonMoveStack all = new CommonMoveStack();
+	   addPotentialMovesFrom(all,src,chip,who);
+	   for(int lim=all.size()-1; lim>=0; lim--)
+	   {
+		   Gipfmovespec m = (Gipfmovespec)all.elementAt(lim);
+		   switch(m.op)
+		   {
+		   default: throw G.Error("not expecing op %s",m.op);
+		   case MOVE_ZERTZ:
+		   case MOVE_PUNCT:
+		   case MOVE_TAMSK:
+		   case MOVE_DVONN:
+		   case MOVE_YINSH:
+		   	{
+			   GipfCell e = getCell(m.to_col,m.to_row);
+			   d.put(e,e);
+		   	}
+		   }
+	   }
+   }
+   public void getPotentialSources(Hashtable<GipfCell,GipfCell>d,int who)
+   {
+	   for(GipfCell c = allCells;c!=null; c=c.next)
+	   {
+		   if(addPotentialMovesFrom(null,c,null,who))
+		   {
+			   d.put(c,c);
+		   }
+	   }
+   }
+   public boolean hasPotentialMoves(GipfCell c,int who)
+   {
+	   return addPotentialMovesFrom(null,c,null,who);
+   }
+   public boolean addPotentialMovesFrom(CommonMoveStack all,GipfCell src,GipfChip chip,int who)
+   {	boolean some = false;
+   		GipfChip top = chip==null ? src.topChip() : chip;
+   		if(chip!=null || src.isGipf())
+   		{	
+   			GColor myColor = playerColor[who];
+   			if(top.color == myColor)
+			   {
+				   switch(top.potential)
+				   {
+				   default:
+				   case None:		
+					   // stack of ordinary pieces
+					   throw G.Error("this shouldn't occur in matrx");
+				   case Tamsk:
+					   // trickey case
+					   if(src==TamskCenter) { some |= addTamskMoves(all,who); }
+					   break;
+				   case Zertz:
+					   	some |= addZertzMoves(all,src,who);
+					   	break;
+				   case Yinsh:
+					   	some |= addYinshMoves(all,src,who);
+					   	break;
+				   case Punct:
+				   case Dvonn:	// these are the same
+					   some |= addPunctDvonnMoves(all,src,who);
+					   break;
+				   }
+			   }
+		   }
+	   	return some;
+   }
+   private void addNormalSlideMoves(CommonMoveStack all,int who)
+   {
+	   sweep_counter++;
+	   for(GipfCell c : edgeCells)
+	   {	
+		   addSlideMoves(all,c,whoseTurn,MOVE_SLIDE);				
+	   }
+   }
+   public void addRemovalMoves(CommonMoveStack v,int dir, GipfCell c,int who)
+   {
+	   if(dir>=0)
+	   	{	v.addElement(new Gipfmovespec(MOVE_REMOVE,c.col,c.row,whoseTurn));
+			c.exitTo(dir).markRow(dir,-1);
+			c.markRow(dir+3,-1);
+	   	}
+   }
+   private void addRemovalMoves(CommonMoveStack v,GipfCell cc,int dir,int who)
+   {
+	   if(dir>=0)
+	   {	int edir = dir;
+	   		GipfCell c = cc;
+	   		while(!c.isEdgeCell()) { c=c.exitTo(edir); }
+	   		// rowcode is a bit mask of direction codes, we only want the
+	   		// bot to click on codes that correspond to a single direction
+	   		if(G.bitCount(c.rowcode)!=1)
+	   		{
+	   			edir = dir+3;
+	   			c = c.exitTo(edir);
+	   			while(!c.isEdgeCell()) { c=c.exitTo(edir); }
+	   		}
+	   		p1(G.bitCount(c.rowcode)==1,"should be a unique row");
+	   		v.addElement(new Gipfmovespec(MOVE_REMOVE,c.col,c.row,whoseTurn));
+	   		// mark the elements of the row so we won't add them again
+	   		cc.markRow(dir,-1);
+	   		cc.markRow(dir+3,-1);
+	   		
+	   }
+   }
+
+   private void addAllToggleGipfMoves(CommonMoveStack v,int whoseTurn)
+   {
+	   markForRemoval(whoseTurn);
+	   boolean some = false;
+	   for(GipfCell c=allCells; c!=null; c=c.next)
+	   {
+		   if((c.rowcode>0)  && c.isGipf())
+		   {   if(c.preserved)
+		   		{
+			     v.addElement(new Gipfmovespec(MOVE_REMOVE,c.col,c.row,whoseTurn));
+		   		}
+		   		else 
+		   		{ // a removed gipf
+		   		  some = true; 
+		   		}
+		   }
+	   }
+	   if(some)
+	   {
+				addRemovalMoves(v,whoseTurn);
+	   }
+   }
+   
+   private void addRemovalMoves(CommonMoveStack v,int who)
+   {  
+	   for(GipfCell c=allCells; c!=null; c=c.next)
+			{	if((c.topChip()!=null) && (!c.isGipf()||!c.preserved))
+				{
+				int sweep = c.rowcode;
+				switch(sweep)
+				{
+				default: throw G.Error("Unexpected sweep value %s",sweep);
+				case -1:
+				case 0: break;
+				case 7:
+					addRemovalMoves(v,c,2,who);
+				//$FALL-THROUGH$
+			case 3:
+					addRemovalMoves(v,c,1,who);
+				//$FALL-THROUGH$
+			case 1:	
+					addRemovalMoves(v,c,0,who);
+					break;
+				case 6:
+					addRemovalMoves(v,c,2,who);
+				//$FALL-THROUGH$
+			case 2: 
+					addRemovalMoves(v,c,1,who);
+					break;
+				case 5:
+					addRemovalMoves(v,c,0,who);
+				//$FALL-THROUGH$
+			case 4: 
+					addRemovalMoves(v,c,2,who);
+					break;
+				}
+				}
+			}
+   }
+   private void addNormalPlacementMoves(CommonMoveStack v,int who)
+   {
+	   if(variation==Variation.Gipf_Matrx) 
+			{
+			if(rack[who][Potential.None.ordinal()].height()==0)
+				{
+				addPotentialMoves(v,who);		
+				addPotentialSlideMoves(v,who);
+				}
+				else {
+				addNormalSlideMoves(v,who);
+				}
+			}
+			else
+			{
+  			addNormalSlideMoves(v,who);
+   		}
+   }
+
    public CommonMoveStack  GetListOfMoves()
    {	CommonMoveStack v = new CommonMoveStack();
    		switch(board_state)
    		{
-   		default: throw G.Error("not implemented");
+   		default: 
+   			p1("unimplemented "+board_state);
+   			throw G.Error("not implemented for state %s",board_state);
+   		case DESIGNATE_CAPTURE_OR_DONE_STATE:
+   		case DONE_CAPTURE_STATE:
+   			if(variation==Variation.Gipf_Matrx)
+   			{
+   				addAllToggleGipfMoves(v,whoseTurn);
+   			}
+			//$FALL-THROUGH$
+		case DONE_STATE:
+   			v.push(new Gipfmovespec(MOVE_DONE,whoseTurn));
+   			break;
    		case SLIDE_GIPF_STATE:
    		case SLIDE_STATE:
    			sweep_counter++;
    			addSlideMoves(v,getDest(),whoseTurn,MOVE_SLIDEFROM);
    			break;
-   		case PRECAPTURE_STATE:
+   		case MANDATORY_CAPTURE_STATE:
+   		case MANDATORY_PRECAPTURE_STATE:
+   			// only in Matrx
+   			addAllToggleGipfMoves(v,whoseTurn);
+   			break;
+   			
+		case PRECAPTURE_OR_START_NORMAL_STATE:
+		case PRECAPTURE_OR_START_GIPF_STATE:
+			addNormalPlacementMoves(v,whoseTurn);
+			//$FALL-THROUGH$
+		case PRECAPTURE_STATE:
    		case DESIGNATE_CAPTURE_STATE:
-   		{	
    			markForRemoval(whoseTurn);
-   			for(GipfCell c=allCells; c!=null; c=c.next)
-   			{	if((c.topChip()!=null) && !c.isGipf())
-   				{
-   				int sweep = c.rowcode;
-   				int dir = -1;
-   				switch(sweep)
-   				{
-   				default: break;
-   				case 1:	dir = 0; break;
-   				case 2: dir = 1; break;
-   				case 4: dir = 2; break;
-   				}
-   				if(dir>=0)
-   				{	v.addElement(new Gipfmovespec(whoseTurn,MOVE_REMOVE,c.col,c.row));
-   				c.exitTo(dir).markRow(dir,-1);
-   				c.markRow(dir+3,-1);
-   				}}
-  				}
-   			}
+   			if(variation==Variation.Gipf_Matrx) { addAllToggleGipfMoves(v,whoseTurn); }
+   			addRemovalMoves(v,whoseTurn);			
    			break;
    		case PLACE_GIPF_STATE:
    			// add the option to switch to regular
-   			if((reserve[whoseTurn].height()>0) && canTogglePlacementMode()) 
-   				{ v.addElement(new Gipfmovespec(whoseTurn,MOVE_STANDARD)); }
-			//$FALL-THROUGH$
-		case PRECAPTURE_OR_START_NORMAL_STATE:
-		case PRECAPTURE_OR_START_GIPF_STATE:
-			// in this state, there is a row of GIPF pieces which could be removed.
-			if(reserve[whoseTurn].height()==0) { new Gipfmovespec(whoseTurn,MOVE_RESIGN,'A',1); break; }
+   			if((rack[whoseTurn][Potential.None.ordinal()].height()>0) && canTogglePlacementMode()) 
+   				{ v.addElement(new Gipfmovespec(MOVE_STANDARD,whoseTurn)); }
 			//$FALL-THROUGH$
 		case PLACE_STATE:
-   		{	
-   			sweep_counter++;
-   			G.Assert(reserve[whoseTurn].height()>0,"must be pieces");
-   			for(GipfCell c=allCells; c!=null; c=c.next)
-   			{	if(c.isEdgeCell())
-   				{
-   				addSlideMoves(v,c,whoseTurn,MOVE_SLIDE);
-   				
-   			}}
-    		}
+   			addNormalPlacementMoves(v,whoseTurn);
+   			break;
+		case MOVE_POTENTIAL_STATE:
+			addPotentialMoves(v,whoseTurn);	
+			break;
+		case PLACE_OR_MOVE_POTENTIAL_STATE:
+			addPotentialMoves(v,whoseTurn);			
+			//$FALL-THROUGH$
+		case PLACE_POTENTIAL_STATE:
+			addPotentialSlideMoves(v,whoseTurn);
+			break;
+		case PLACE_TAMSK_FIRST_STATE:
+		case PLACE_TAMSK_LAST_STATE:
+			addTamskMoves(v,whoseTurn);
+			break;
+   		}
+   		if(v.size()==0) 
+   		{
+   			p1("no moves "+board_state+" "+moveNumber);
+   			G.Error("No moves");
    		}
 	   	return(v);
    }
-
+   
+	 GipfPlay robot = null;
+	 public void initRobotValues(GipfPlay r)
+	 {
+		 robot = r;
+	 }
+	 public boolean p1(boolean condition,String msg,Object... args)
+	 {	if(!condition)
+	 	{
+		 p1(G.concat(msg,args));
+		 G.Error(msg,args);
+	 	}
+	 	return condition;
+	 }
+	 public boolean p1(String msg)
+		{
+			if(G.p1(msg) && robot!=null)
+			{	String dir = "g:/share/projects/boardspace-html/htdocs/matrx/matrxgames/robot/";
+				robot.saveCurrentVariation(dir+msg+".sgf");
+				return(true);
+			}
+			return(false);
+		}
 }

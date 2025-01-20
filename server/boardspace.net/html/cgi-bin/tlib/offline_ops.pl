@@ -130,8 +130,8 @@ sub recordgame()
 			}
 			else 
 			{
-                         __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
-			 __d("saving file ($fullname)");
+                         #__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+			 #__d("saving file ($fullname)");
 			return "error problem writing $fullname";
 			}
 		}

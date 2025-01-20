@@ -110,7 +110,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     static final String Manhattan_SGF = "manhattan"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/manhattan/images/";
+    static final String ImageDir = 
+    		G.isCodename1() ? "/appdata/manhattan/images/" : "/manhattan/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);

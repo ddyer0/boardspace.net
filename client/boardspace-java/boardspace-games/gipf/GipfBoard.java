@@ -2437,13 +2437,13 @@ private void undoCaptures(int uncap,int who)
 	   		while(!c.isEdgeCell()) { c=c.exitTo(edir); }
 	   		// rowcode is a bit mask of direction codes, we only want the
 	   		// bot to click on codes that correspond to a single direction
-	   		if(Integer.bitCount(c.rowcode)!=1)
+	   		if(G.bitCount(c.rowcode)!=1)
 	   		{
 	   			edir = dir+3;
 	   			c = c.exitTo(edir);
 	   			while(!c.isEdgeCell()) { c=c.exitTo(edir); }
 	   		}
-	   		p1(Integer.bitCount(c.rowcode)==1,"should be a unique row");
+	   		p1(G.bitCount(c.rowcode)==1,"should be a unique row");
 	   		v.addElement(new Gipfmovespec(MOVE_REMOVE,c.col,c.row,whoseTurn));
 	   		// mark the elements of the row so we won't add them again
 	   		cc.markRow(dir,-1);

@@ -1440,6 +1440,16 @@ synchronized(allGames) {
 	
 	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
+	String pViewer = "pendulum.PendulumViewer";  
+	put(new GameInfo(3590,ES.test,999,"PL",EuroGames,"Pendulum","Pendulum",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_pendulum.html",
+			null,false, WhiteOverBlack));
+	}
+	
+	{
+	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",
 			OneBotPlus,

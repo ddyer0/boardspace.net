@@ -98,7 +98,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 163;			// 100 represents the initial version of the game
+{	static int REVISION = 164;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -161,7 +161,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 145 fixes handyman blindness to buildable structure cards
 										// revision 146 allows "mafioso twice" for structure cards with action spaces
 										// revision 147 consolidates some mafioso actions
-										// revision 148 fixes an interaction of inkeeper and soldato
+										// revision 148 fixes an interaction of innkeeper and soldato
 										// revision 149 fixes an interaction of mafioso and soldato
 										//   and fixes soldato cost of max 3 if soldatos are on the overflow space
 										// revision 150 fixed scholar "both" option with oracle drawing cards
@@ -183,6 +183,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 162 fixes mafioso+fermentation tank interaction
 										// revision 163 switches oracle from "discard" to "keep"
 										//			also fix the "double star" bug related to gui changes of mind when the player has the banuet hall
+										// revision 164 allows innkeeper to tax players on the dollar space
+
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -2847,13 +2849,28 @@ public int getMaxRevisionLevel() { return(REVISION); }
     }
     private boolean canStealACard(PlayerBoard pb,ViticultureCell dest)
     {
-    	if(dest.parentRow!=null) { for(ViticultureCell c : dest.parentRow) { if(canStealACardFrom(pb,c))  { return(true); }}}
+    	if((revision>=164) && (dest.rackLocation()==ViticultureId.DollarOrCardWorker))
+    	{
+    		for(int i=0;i<dest.height();i++)		// exclude last chip which is us
+    		{
+    			ViticultureChip worker = dest.chipAtIndex(i);
+    			PlayerBoard victim = playerWithColor(worker.color);
+    			if(victim.hasCard(ChipType.YellowCard)||victim.hasCard(ChipType.BlueCard))
+    			{
+    				return true; 
+    			}
+    		}
+    	}
+    	else if(dest.parentRow!=null)
+    		{ for(ViticultureCell c : dest.parentRow) 
+    			{ if(canStealACardFrom(pb,c))  { return(true); }}}
     	return(false);
     }
     private boolean canStealACardFrom(PlayerBoard pb,ViticultureCell dest)
     {	ViticultureChip top = dest.topChip();
     	if(top!=null)
-    	{
+    	{	// note that this implicitly excludes the overflow space, which is not an action space
+    		// because the top chip just placed there is yourself.
     		PlayerBoard victim = playerWithColor(top.color);
     		return ( (victim!=pb) && (victim.hasCard(ChipType.YellowCard)||victim.hasCard(ChipType.BlueCard)));
     	}

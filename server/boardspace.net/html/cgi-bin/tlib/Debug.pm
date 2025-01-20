@@ -69,9 +69,23 @@ Mail_contents
 
 	close SENDMAIL;
 }
+
+
+sub stacktrace()
+{
+	my $i = 1;
+	my $msg = "Stack Trace:<br>\n";
+	while ( (my @call_details = (caller($i++))) ){
+		my $detail = $call_details[1].":".$call_details[2]." in function ".$call_details[3]."<br>\n";
+		$msg = $msg . $detail;
+	}
+	return $msg;
+}
+
 sub showEnv()
 { my $who = `whoami`;
-  my $val = "$0\nrunning as $who\n";
+  my $val = "$0\nshowEnv running as $who\n";
+  #$val .= &stacktrace();
   foreach ( sort keys( %ENV)) {
        $val .= "$_ : $ENV{ $_}\n";
      }

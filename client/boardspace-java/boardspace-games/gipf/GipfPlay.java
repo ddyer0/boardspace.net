@@ -92,7 +92,8 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         	break;
         case TESTBOT_LEVEL_1:
         	TESTBOT = true;
-        case DUMBOT_LEVEL:
+			//$FALL-THROUGH$
+		case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	DUMBOT = true;
         	break;

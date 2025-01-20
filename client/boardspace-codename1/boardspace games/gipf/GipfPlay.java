@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package gipf;
 
@@ -42,6 +42,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     static final int BESTBOT_DEPTH = 7;
     int MAX_DEPTH = DUMBOT_DEPTH;
     boolean DUMBOT = false;
+    boolean TESTBOT = false;
     int boardSearchLevel = 0;				// the current search depth
 
  
@@ -73,7 +74,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
-    	return(evboard.ScoreForPlayer(player,print,DUMBOT));
+    	return(evboard.ScoreForPlayer(player,print,DUMBOT,TESTBOT));
 
     }
     public void InitRobot(ViewerProtocol newParam, ExtendedHashtable info, BoardProtocol gboard,
@@ -88,7 +89,10 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         case WEAKBOT_DEPTH:
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	DUMBOT = true;
-        	break;        
+        	break;
+        case TESTBOT_LEVEL_1:
+        	TESTBOT = true;
+        	//$FALL-THROUGH$
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	DUMBOT = true;
@@ -109,6 +113,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
 
     public void PrepareToMove(int playerIndex)
     {	board.copyFrom(GameBoard);
+    	board.initRobotValues(this);
     }
     
    Gipfmovespec nextMove = null;
@@ -119,11 +124,11 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
     	Gipfmovespec move = nextMove;
     	nextMove = null;
     	if(move!=null) { return(move); }
-
-           try
+    	
+    	try
            {
 
-               if (board.DoneState())
+               if (board.mandatoryDoneState())
                { // avoid problems with gameover by just supplying a done
                    move = new Gipfmovespec("Done", board.whoseTurn);
                }
@@ -158,12 +163,18 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
            if (move != null)
            {
                if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-               // normal exit with a move
+               // normal exit with a move. If its a slide move, change it to a drop+slide
                if(move.op==MOVE_SLIDE)
                {
             	   move.op = MOVE_SLIDEFROM;
             	   nextMove = move;
-            	   return(new Gipfmovespec(move.player,MOVE_DROPB,move.from_col,move.from_row));
+            	   return(new Gipfmovespec(MOVE_DROPB,move.from_col,move.from_row,move.player));
+               }
+               else if(move.op==MOVE_PSLIDE)
+               {
+            	   move.op = MOVE_SLIDEFROM;
+            	   nextMove = move;
+            	   return(new Gipfmovespec(MOVE_PDROPB,move.from_potential,move.from_col,move.from_row,move.player));
                }
                return (move);
            }
