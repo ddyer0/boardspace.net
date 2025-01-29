@@ -44,33 +44,23 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
  		{ return(image==null ? 0 : image.getWidth()); }
  	public int getHeight() 
  		{ return(image==null ? 0 : image.getHeight()); }
-	// implement "StackIterator".  This allows a singleton piece of art
-	// to be morped into a stack of art (if manipulated correctly)
-	public int size() { return(1); }		// stack size is always 1
-	@SuppressWarnings("unchecked")
-	public T elementAt(int n) { return((T)this); }	// return this item as its own zero'th element
+
 	@SuppressWarnings("unchecked")
 	public StackIterator<T> push(T item)			// add a new item, which converts us to a stack of items
 	{ 	
-		StackIterator<T> stack = (StackIterator<T>)new DrawableImageStack();
-		stack.push((T)this);
-		return(stack.push(item));
+ 		DrawableImageStack stack = new DrawableImageStack();
+		stack.push(this);
+		return (StackIterator<T>) (stack.push(item));
 	}
+
 	@SuppressWarnings("unchecked")
 	public StackIterator<T> insertElementAt(T item,int at)
 	{
-		StackIterator<T> stack = (StackIterator<T>)new DrawableImageStack();
-		stack.push((T)this);
-		return(stack.insertElementAt(item, at));
+ 		DrawableImageStack stack = new DrawableImageStack();
+		stack.push(this);
+		return (StackIterator<T>) (stack.insertElementAt(item, at));
 	}
-	public StackIterator<T> remove(T item) 
-	{
-		return(item==this ? null : this);
-	}
-	public StackIterator<T> remove(int n)
-	{	return((n==0) ? null : this);
-	}
-	
+
 	
 	/** the file from which this image was loaded */
 	@SuppressWarnings("rawtypes")

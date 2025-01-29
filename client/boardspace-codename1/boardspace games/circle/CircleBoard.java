@@ -897,7 +897,7 @@ class CircleBoard
  }
 		 return totalsize<=3;
 }
- /**
+ /*
  int sweep_counter = 1;
  private int countBlobSize(CircleCell from,CircleChip top,int sweep)
  {	int tot = 0;

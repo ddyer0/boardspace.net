@@ -782,11 +782,6 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 		return null;
 	}
 
-	// hooks for StackIterator
-	public commonMove elementAt(int i)
-	{	if(i==0) { return(this); }
-		return(null);
-	}
 	public StackIterator<commonMove>push(commonMove m)
 	{	StackIterator<commonMove> news = new CommonMoveStack();
 		news.push(this);
@@ -799,15 +794,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 		news.push(this);
 		return news.insertElementAt(m,at);
 	}
-	public StackIterator<commonMove> remove(int n)
-	{	if(n==0) { return(null); }
-		return(this);
-	}
-	public StackIterator<commonMove> remove(commonMove item)
-	{	if(item==this) { return(null); }
-		return(this);
-	}
-	public int size() { return(1); }
+
 	// this is available for debugging, return true if this is a move "of interest"
 	public boolean visit() { return(false); };
 	public String indexString() { int ind = index();  return (ind<0 ? "" : ind+" "); }

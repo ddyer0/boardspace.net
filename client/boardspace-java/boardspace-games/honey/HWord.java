@@ -63,33 +63,12 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		name = n;
 	}
 	
-
-	public int size() {
-		return(1);
-	}
-	public HWord elementAt(int n) 
-	{
-		return(this);
-	}
-
 	public StackIterator<HWord> push(HWord item) {
-		HWordStack s = new HWordStack();
-		s.push(this);
-		s.push(item);
-		return(s);
+		return new HWordStack().push(this).push(item);
 	}
 
-	public StackIterator<HWord> remove(HWord item) {
-		if(item==this) { return(null); }
-		return(this);
-	}
-
-	public StackIterator<HWord> remove(int n) {
-		if(n==0) { return(null); }
-		return(this);
-	}
 	public StackIterator<HWord> insertElementAt(HWord item, int at) {
-		return(push(item));		
+		return(new HWordStack().push(this).insertElementAt(item,at));		
 	}
 
 	public int compareTo(HWord o) {

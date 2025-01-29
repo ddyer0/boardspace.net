@@ -277,20 +277,8 @@ public enum CR implements StackIterator<CR>
 			
 		}
 		}
-		public int size() {
-			return 1;
-		}
-		public CR elementAt(int n) {
-			return n==0 ? this : null;
-		}
 		public StackIterator<CR> push(CR item) {
 			return new CRStack().push(this).push(item);
-		}
-		public StackIterator<CR> remove(CR item) {
-			return item==this ? null : this;
-		}
-		public StackIterator<CR> remove(int n) {
-			return null;
 		}
 		public StackIterator<CR> insertElementAt(CR item, int at) {
 			return new CRStack().push(this).insertElementAt(item,at);

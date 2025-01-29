@@ -29,14 +29,14 @@ class NodeStack extends OStack<sgf_node> implements StackIterator<sgf_node>
 
 }
 /*
- $Id: sgf_node.java,v 1.1.1.1.2.11.2.16 2023/09/22 06:45:09 ddyer Exp $
+ $Id: sgf_node.java,v 1.1.1.1.2.11.2.17 2025/01/29 00:16:47 ddyer Exp $
 
  $Log: sgf_node.java,v $
- Revision 1.1.1.1.2.11.2.16  2023/09/22 06:45:09  ddyer
- add copyright and license
+ Revision 1.1.1.1.2.11.2.17  2025/01/29 00:16:47  ddyer
+ clean up and improve the StackIterator class
 
- Revision 1.1.1.1.2.11.2.15  2023/01/09 02:01:41  ddyer
- add support for annotations
+ Revision 1.1.1.1.2.18  2023/09/22 03:57:33  ddyer
+ add copyright and license
 
  Revision 1.1.1.1.2.17  2022/01/08 02:32:04  ddyer
  clean up some error messages
@@ -285,28 +285,7 @@ public class sgf_node implements sgf_names, StackIterator<sgf_node>
             prop = prop.next;
         }
     }
-    //simple methods to allow next==null by default, saving a lot of space and hiding the interface
-    /**
-     * get the number of successors of this node
-     * 
-     * @return an integer
-     */
-    public int size()
-    {
-        return(1);
-    }
-    public StackIterator<sgf_node> remove(sgf_node n)
-    {
-    	return((n==this) ? null : this);
-    }
-    public StackIterator<sgf_node> remove(int n)
-    {
-    	return((n==0) ? null : this);
-    }
-    public sgf_node elementAt(int n) {
-    	if(n==0) { return(this); }
-    	throw G.Error("Element %s doesn't exist",n);
-	}
+
 	public StackIterator<sgf_node> push(sgf_node item) {
 		NodeStack sn = new NodeStack();
 		sn.push(this);

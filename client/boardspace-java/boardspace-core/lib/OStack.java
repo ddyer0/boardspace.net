@@ -298,6 +298,8 @@ public abstract class OStack<T> implements StackIterator<T>
 			remove(da,true);
 			return(this);
 		}
+		/** discard the top element */
+		public StackIterator<T>discardTop() { pop(); return (size()==0)?null:this; }
 		/**
 		 * remove an element from the stack and shuffle the array contents
 		 * return the stack (for compatibility with the StackInterator API)

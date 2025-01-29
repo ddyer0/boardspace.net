@@ -17,7 +17,6 @@
 package blackdeath;
 
 import lib.Random;
-import lib.StackIterator;
 import blackdeath.BlackDeathConstants.BlackDeathColor;
 import blackdeath.BlackDeathConstants.BlackDeathId;
 import blackdeath.BlackDeathConstants.DiseaseMod;
@@ -124,14 +123,6 @@ public class BlackDeathCell extends stackCell<BlackDeathCell,BlackDeathChip>
 	
 	public BlackDeathChip[] newComponentArray(int size) {
 		return(new BlackDeathChip[size]);
-	}
-	
-	// support for StackIterator interface
-	public StackIterator<BlackDeathCell> push(BlackDeathCell item) {
-		CellStack se = new CellStack();
-		se.push(this);
-		se.push(item);
-		return(se);
 	}
 	
 	// this makes the _BACK_ flag apply to the whole stack

@@ -37,11 +37,35 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.export.sgf_names;
 import online.game.sgf.export.sgf_names.Where;
 import online.search.*;
+import online.search.neat_jan_27.Genome;
+import online.search.neat_jan_27.GenomeEvaluator;
+import online.search.neat_jan_27.NeatEvaluator;
 import online.search.nn.CoordinateMap;
 import online.search.nn.GenericNetwork;
 import online.search.nn.Layer;
 import online.search.nn.Network;
 
+class XehEvaluator implements GenomeEvaluator
+{
+	Genome best = null;
+	XehBoard gameBoard = null;
+	XehBoard board = null;
+	NeatEvaluator evaluator = null;
+	XehViewer viewer = null;
+	
+	public double evaluate(Genome g) {
+
+		return 0;
+	}
+
+	public void setBest(Genome g) {
+		best = g;
+	}
+	public Genome createPrototypeNetwork()
+	{	int cells = board.getCellArray().length;
+		return Genome.createBlankNetwork(cells,1);
+	}
+}
 class TrainingData
 {
 	String file;
@@ -2815,13 +2839,23 @@ public void runGame_train(ViewerProtocol v,BoardProtocol b,String from,int maxPa
 	if((pass<maxPass) && (savedNet!=null)) { net.copyWeights(savedNet); }
 	G.print("training done "+from+" using "+net.getName());
 }
+
+NeatEvaluator evaluator = null;
+XehEvaluator trainer = null;
+
 public void runRobotTraining(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
-{
+{	
+	trainer = new XehEvaluator();
+	trainer.gameBoard = (XehBoard)b;
+	trainer.board = (XehBoard)b.cloneBoard();
+	evaluator = new NeatEvaluator("g:/temp/nn/train/",trainer);
+	trainer.evaluator = evaluator;
+	trainer.viewer = (XehViewer)v;
+	
 	new Thread(new Runnable() {
 		public void run() 
-		{ trainingSequence = "";
-		//runGame_train(v,b,"g:/temp/nn/"+((XehBoard)b).variation+"-2/",500,false);
-		runGame_train(v,b,"g:/temp/nn/train/",500,false);
+		{ 
+			evaluator.runEvaluation(10000);
 		}
 	}).start();
 }

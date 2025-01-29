@@ -389,14 +389,6 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		name = n;
 	}
 
-	public int size() {
-		return(1);
-	}
-	public Word elementAt(int n) 
-	{
-		return(this);
-	}
-
 	public StackIterator<Word> push(Word item) {
 		WordStack s = new WordStack();
 		s.push(this);
@@ -404,17 +396,11 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		return(s);
 	}
 
-	public StackIterator<Word> remove(Word item) {
-		if(item==this) { return(null); }
-		return(this);
-	}
-
-	public StackIterator<Word> remove(int n) {
-		if(n==0) { return(null); }
-		return(this);
-	}
 	public StackIterator<Word> insertElementAt(Word item, int at) {
-		return(push(item));		
+		WordStack s = new WordStack();
+		s.push(this);
+		s.insertElementAt(item,at);
+		return s;
 	}
 
 	public int compareTo(Word o) {

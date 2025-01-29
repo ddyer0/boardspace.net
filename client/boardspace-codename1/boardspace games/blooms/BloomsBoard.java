@@ -700,14 +700,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
      	{
      	// the central group captures something, but other friendly groups
      	// may be atari, and several enemy groups may be captured
-     	if(friendsInNeed!=null)
-     	{
-     		for(int lim=friendsInNeed.size()-1; lim>=0; lim--)
-     		{
-     			BloomsCell adj = friendsInNeed.elementAt(lim);
+     	while(friendsInNeed!=null)
+     	{	BloomsCell adj = friendsInNeed.top();
+     		friendsInNeed = friendsInNeed.discardTop();
      			// has to be adjacent to some of the captured stones
      			if(!adj.sweepIsAdjacent(++sweep_counter,captureTag)) { return(false); }
-     		}
      	}}
      	return(hasCap);
     }

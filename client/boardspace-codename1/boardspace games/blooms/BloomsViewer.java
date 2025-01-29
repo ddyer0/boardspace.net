@@ -222,7 +222,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
+    	placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return(boardW*boardH);

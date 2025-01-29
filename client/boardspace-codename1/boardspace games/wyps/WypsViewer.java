@@ -1520,6 +1520,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
             setComment(comments);
         }
     }
+    public boolean drawIsPossible() { return true; }
 /*
  * Its a word game, whose winning conditions are like the Game of Y - that is, connecting
 three sides of a triangular board. The interesting thing about this is that the winning

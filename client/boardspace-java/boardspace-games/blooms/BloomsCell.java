@@ -233,30 +233,16 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 		onBoard=false;
 	}
 
-	
-
-	public BloomsChip[] newComponentArray(int size) {
-		return(new BloomsChip[size]);
-	}
 	// support for StackIterator
-	public StackIterator<BloomsCell> push(BloomsCell item) {
-		StackIterator<BloomsCell> se = new CellStack();
-		se.push(this);
-		se.push(item);
-		return(se);
+	public StackIterator<BloomsCell> push(BloomsCell item) 
+	{
+		return new CellStack().push(this).push(item);
 	}
 	public StackIterator<BloomsCell> insertElementAt(BloomsCell item,int at)
-	{	StackIterator<BloomsCell> se = new CellStack();
-		se.push(this);
-		return(se.insertElementAt(item, at));		
+	{	
+		return new CellStack().push(this).insertElementAt(item, at);
 	}
-	public StackIterator<BloomsCell> remove(BloomsCell c)
-	{	return ((c==this) ? null : this);
-	}
-	public StackIterator<BloomsCell> remove(int i)
-	{
-		return((i==0) ? null : this);
-	}
+
 	public void reInit()
 	{
 		super.reInit();

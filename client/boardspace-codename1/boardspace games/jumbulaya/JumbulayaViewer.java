@@ -270,10 +270,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
-    	layout.alwaysPlaceDone = false;
-    	G.copy(endJRect,startJRect);
     	layout.placeTheVcr(this,vcrw,vcrw/2);
-      	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
+    	layout.alwaysPlaceDone = false;
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
+    	G.copy(endJRect,startJRect);
       	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = G.debug();
@@ -1864,6 +1864,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 			}
     	}
     }
+ 
     /*
     public void startRobotTurn(commonPlayer p)
     {	if(bb.pickedSourceStack.size()>10) 

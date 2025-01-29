@@ -202,16 +202,6 @@ public abstract class chipCell
 		drawStack(gc,null,posx,posy,c,0,size,1.0,msg);
 	}
 
-	// support for StackIterator
-	public int size() {
-		return 1;
-	}
-	@SuppressWarnings("unchecked")
-	public FINALTYPE elementAt(int n) {
-		if(n==0) { return (FINALTYPE)this; }
-		throw G.Error("Index out of range %s",n);
-	}
-
 	/**
 	 * create a bitmap of 1<<direction of the directions for which exit in that direction is null
 	 * this is used in some connection games to determine wins, and in some boards to decorate the borders

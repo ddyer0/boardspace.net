@@ -43,6 +43,14 @@ public class Tokenizer implements Enumeration<String>
 	String singletons = StandardSingletons;
 	StringBuilder builder = new StringBuilder();
 	
+	public void reload(String str)
+	{
+		basis = str;
+		maxIndex = str.length();
+		index = 0;
+		restIndex = 0;
+		next = null;
+	}
 	public Tokenizer(String str,String del)
 	{
 		basis = str;

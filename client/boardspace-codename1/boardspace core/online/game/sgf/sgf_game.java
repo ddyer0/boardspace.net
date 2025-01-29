@@ -24,14 +24,14 @@ import java.io.*;
 
 
 /*
- $Id: sgf_game.java,v 1.1.1.1.2.12.2.16 2023/09/22 06:45:09 ddyer Exp $
+ $Id: sgf_game.java,v 1.1.1.1.2.12.2.17 2025/01/29 00:16:46 ddyer Exp $
 
  $Log: sgf_game.java,v $
- Revision 1.1.1.1.2.12.2.16  2023/09/22 06:45:09  ddyer
- add copyright and license
+ Revision 1.1.1.1.2.12.2.17  2025/01/29 00:16:46  ddyer
+ clean up and improve the StackIterator class
 
- Revision 1.1.1.1.2.12.2.15  2023/01/09 02:01:40  ddyer
- add support for annotations
+ Revision 1.1.1.1.2.19  2023/09/22 03:57:33  ddyer
+ add copyright and license
 
  Revision 1.1.1.1.2.18  2021/05/26 19:06:06  ddyer
  *** empty log message ***

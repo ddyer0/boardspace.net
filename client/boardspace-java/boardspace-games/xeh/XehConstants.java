@@ -48,7 +48,8 @@ public interface XehConstants
 	{   {"Hex_family","Hex"},
 		{"Hex_variation","11x11 Hex"},
 		{"Hex-15_variation","15x15 Hex"},
-		{"Hex-19_variation","19x19 Hex"}
+		{"Hex-19_variation","19x19 Hex"},
+		{"Hex-4_variation","4x4 Hex"}
 	};
 
 	class StateStack extends OStack<XehState>

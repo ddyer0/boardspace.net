@@ -282,9 +282,9 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     			);
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
+    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
-       	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,noticeRect);
        	int doneW = G.Width(editRect);

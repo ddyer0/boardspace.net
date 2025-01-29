@@ -416,7 +416,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
     * presenting the motion of your opponent's pieces, and also during replay
     * when a piece is picked up and not yet placed.  While "obj" is nominally
     * a game piece, it is really whatever is associated with b.movingObject()
-    
       */
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     { 

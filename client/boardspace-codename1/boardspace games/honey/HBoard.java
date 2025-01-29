@@ -461,8 +461,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	   win[whoseTurn] = true;
     	   setState(HoneyState.Gameover);
     	   break;
-       case MOVE_PASS:
-    	   break;
         default:
         	cantExecute(m);
         }
