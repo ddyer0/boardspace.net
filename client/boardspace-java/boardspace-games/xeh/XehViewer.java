@@ -161,6 +161,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new XehBoard(type,players_in_game,randomKey,XehBoard.REVISION);
+        useDirectDrawing(true);
         doInit(false);
 
     }
@@ -528,7 +529,8 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
    // {
    // 	return(super.encodeScreenZone(x,y,p));
    // }
-
+    double rangeMin = -1;
+    double rangeMax = 1;
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -547,18 +549,15 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
         // this is the active part of the "Start Evaluator" feature
         commonPlayer activePlayer = getActivePlayer(); //viewerWhoseTurn()
     	XehPlay robot = (XehPlay)(extraactions ? (activePlayer.robotPlayer) : null);
-    	if(robot==null && extraactions) {
-    		robot = (XehPlay)(players[gb.whoseTurn].robotPlayer);
-    	}
+    	Hashtable<XehCell,Double> evals = null;
+    	//if(robot==null && extraactions) {robot = (XehPlay)(players[gb.whoseTurn].robotPlayer);}
     	if(robot!=null)
-    	{
-    	commonMove cm = getCurrentMove();
-    	if(cm!=null) { cm = cm.next; }
-    	if(cm!=null)
     		{
-    		robot.setTrainingData(cm);
+    			evals = robot.getEvaluations(gb);
     		}
-    	}
+    	
+    	double mineval = 999999;
+    	double maxeval = -999999;
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
         XehCell closestCell = gb.closestCell(highlight,brect);
@@ -601,20 +600,23 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
            	
             }
             */
-            if(cell!=null 
-            		&& cell.topChip()==null 
-            		&& robot!=null
-            		)
+            if(evals!=null)
             	{
-            	double ev =robot.getNeuroEval(cell);
+            	Double ev =evals.get(cell);
+            	if(ev!=null)
+            	{
             	//if((cell.row==11) && cell.col>='F') { G.print("c "+cell+" "+ev); }
             	//if(ev>10) {G.print(""+cell+" "+ev); }
-            	StockArt.SmallO.drawChip(gc,this,(int)(gb.cellSize()*ev*2),xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,2*(int)(gb.cellSize()*(ev-rangeMin)/(rangeMax-rangeMin)),xpos,ypos,null);
+            	mineval = Math.min(mineval,ev);
+            	maxeval = Math.max(maxeval,ev);
             	repaint(1000);
-            	}
+            	}}
             }
         }
-    }
+        rangeMin = mineval;
+        rangeMax = Math.max(mineval+1,maxeval);
+     }
 
     /**
      * draw the main window and things on it.  

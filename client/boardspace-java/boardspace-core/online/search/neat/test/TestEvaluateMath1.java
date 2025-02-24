@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import lib.G;
-import online.search.io.NetIo;
 import online.search.neat.*;
 
 /**

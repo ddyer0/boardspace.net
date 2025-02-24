@@ -17,6 +17,7 @@
 package lib;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 
 /**
@@ -25,9 +26,19 @@ import java.util.Arrays;
  * @author ddyer
  *
  */
-public abstract class OStack<T> implements StackIterator<T>
+public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 {		
-		private T data[]=null;
+		class InternalStackIterator implements Iterator<T>
+		{ int index = size()-1;
+
+		  public boolean hasNext() { return index>=0;  }
+		  
+		  public T next() {	return data[index--];  } 
+		  
+		  public void remove() {  OStack.this.remove(index+1,true); }
+		}
+		
+		protected T data[]=null;
 		//@SuppressWarnings("unchecked")
 		//private T[]newComponentArray(int sz)
 		//{	
@@ -408,5 +419,10 @@ public abstract class OStack<T> implements StackIterator<T>
 		public void shuffle(Random r)
 		{	r.shuffle(data,index);
 		}
+		
+	public Iterator<T> iterator() {
+		return new InternalStackIterator();
+	}
+
 }
 

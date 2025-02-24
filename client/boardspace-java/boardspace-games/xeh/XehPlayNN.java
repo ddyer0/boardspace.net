@@ -55,6 +55,26 @@ class NNTrainingData
 	double [] values;
 	double [] winrates;
 }
+class TrainingData
+{
+	String file;
+	int moveNumber;
+	int playerToMove;
+	char color;
+	boolean[] hasInputs;
+	double[] inputs;
+	double[] inputs2;
+	double[] inputs3;
+	double [] values;
+	double [] winrates;
+}
+class TDstack extends OStack<TrainingData>
+{
+	public TrainingData[] newComponentArray(int sz) {
+		return(new TrainingData[sz]);
+	}
+}
+
 class NNTDstack extends OStack<TrainingData>
 {
 	public TrainingData[] newComponentArray(int sz) {

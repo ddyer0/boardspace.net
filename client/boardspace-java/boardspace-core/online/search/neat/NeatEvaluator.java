@@ -1,4 +1,11 @@
 package online.search.neat;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 /*
 Copyright 2006-2025 by Dave Dyer
 
@@ -25,8 +32,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import online.search.io.NetIo;
+import lib.ErrorX;
+import lib.G;
+import lib.IntIntHashtable;
 
+/**
+ * General design details.  This works with a set of N variant Genomes, referred to as a Cohort
+ * currently N=100, but other numbers of Genomes ought to work with similar effect.  It's an open
+ * question what N is best for any partucular learning task.
+ * 
+ * The basic task is to "evaluate" each genome in the cohort, and rank them.  At the simplest
+ * level this involves just comparing the performance of each genome to the ideal.  For game
+ * play, each genome is compared to each other genome in the cohort, and the pairwise performances
+ * are tallied.
+ * 
+ * The evaluated genomes in the cohort are grouped into species by a black box function,
+ * based on their similarity, the number of species is desired to be about the square root
+ * of the cohort size, and the parameters are tweaked at runtime to get approximately the
+ * right number of species.  So with 100 genomes in the cohort, we'd ideally get 10 species
+ * of 10 members each.  It's unknown if this is the ideal number of species.
+ * 
+ * Within each species, the two fittest members are passed into the next generation, and a
+ * child is generated with these genomes as parents.  This is motivated by the idea of 
+ * "improving the species" but it's unknown if that's 2+1 is the best solution. 
+ * 
+ * This yields 3xNumberOfSpecies genomes for the next generation.  The remainder of the new
+ * cohort are generatedfrom pairs of genomes from the original set, weighted to selecting
+ * from the fitter species.
+ * 
+ * Children are created with crossover from 2 parents and some set of random mutations of
+ * various types; adding or deleting connections, adding or deleting nodes, disabling or
+ * enabling connections and so on.  The probabilities of these operations are themselves
+ * mutated and passed onto the new generation.  The idea being that mutation rates that
+ * are successfull will be passed on, and will tend toward ideal rates.  It also seems
+ * that these rates ought to change in the course of evolution - initially adding new
+ * connections and nodes is obviously needed, whereas eventually only fine tuning of
+ * parameter values is needed (if we're lucky!)
+ * 
+ * 
+ * 
+ */
 public class NeatEvaluator {
 	
 	GenomeEvaluator evaluator;
@@ -40,11 +85,9 @@ public class NeatEvaluator {
 	private double C2 = 1.0;
 	private double C3 = 0.4;
 	private double DT = 30.0;
-	private double targetNumberOfSpecies = 10;
 	private int populationSize;
 	
 	private List<Genome> genomes;
-	private List<Genome> nextGenGenomes;
 	
 	private List<Species> species;
 	
@@ -52,27 +95,97 @@ public class NeatEvaluator {
 	private Map<Genome, Double> scoreMap;
 	private double highestScore;
 	private Genome fittestGenome;
-	
+	private int startingGeneration = 0;
 	private String files = "output/";
 
-	public NeatEvaluator(String project,GenomeEvaluator e)
+	private String FITNESS_KEY = "Fitness";
+	private String STARTING_FITNESS_KEY = "StartingFitness";
+	private boolean saveCheckpoint = false;
+	public NeatEvaluator(String project,int population,GenomeEvaluator e,String resumeFrom)
 	{
 		files =project;
 		evaluator = e;
+		populationSize = population;
+		
+		if(resumeFrom!=null &&resumeFrom.endsWith(".txt"))
+		{	try {
+			FileInputStream f = new FileInputStream(new File(resumeFrom));
+			BufferedReader s = new BufferedReader(new InputStreamReader(f));
+			resumeFrom = s.readLine();
+			int idx = resumeFrom.lastIndexOf("-");
+			if(idx>0) 
+				{ 	String match = resumeFrom.substring(idx+1);
+					int idx2 = match.lastIndexOf("/");
+					if(idx2>0) { match = match.substring(0,idx2); }
+					startingGeneration = G.IntToken(match)+1;				
+				}
+			f.close();
+			}
+			catch (IOException err)
+			{
+				G.print("can't read checkpoint ",resumeFrom," : ",err);
+				resumeFrom = null;
+			}
+		}
+	
+		if(resumeFrom!=null)
+		{
+
+		reloadCohort(populationSize,resumeFrom);
+		}
+		else
+		{
+		createCohort(populationSize,e.createPrototypeNetwork());
+		}
+	}
+	public void sizeForPopulation(int populationSize)
+	{
+		this.populationSize = populationSize;
+		genomes = new ArrayList<Genome>(populationSize);
+		scoreMap = new HashMap<Genome, Double>();
+		mappedSpecies = new HashMap<Genome, Species>();
+		species = new ArrayList<Species>();
+
+	}
+	public void reloadCohort(int populationSize,String fromDirectory)
+	{	sizeForPopulation(populationSize);
+		File[] files = new File(fromDirectory).listFiles();
+		for(File f : files)
+		{	String name = f.getName();
+			int ind = name.lastIndexOf('.');
+			String type = ind>=0 ? name.substring(ind+1): "";
+			if("genome".equals(type))
+			{	try {
+					Genome g = (Genome)NetIo.load(f);
+					scoreMap.put(g,0.0);
+					double fit = g.getParameter(FITNESS_KEY);
+					g.setParameter(STARTING_FITNESS_KEY,fit);
+					genomes.add(g);		
+				}
+				catch (ErrorX err)
+				{
+					G.print("damaged genome ",f," ",err);
+				}
+			}
+		}
+		saveCheckpoint = genomes.size()>populationSize;
+		G.print(genomes.size()," genomes loaded");
 	}
 	
 	public void createCohort(int populationSize, Genome startingGenome) 
-	{	this.populationSize = populationSize;
-		targetNumberOfSpecies = Math.sqrt(populationSize);
-		genomes = new ArrayList<Genome>(populationSize);
-		for (int i = 0; i < populationSize; i++) {
-			genomes.add(new Genome(startingGenome));
+	{	sizeForPopulation(populationSize);
+		Random r = new Random();
+		for (int i = 0; i < populationSize; i++) 
+			{
+			// fill the initial pool with mutants
+			Genome newgenome = i==0 ? startingGenome
+					: makeNewGeneration(r.nextInt(),
+								genomes.get(r.nextInt(genomes.size())),
+								genomes.get(r.nextInt(genomes.size())));
+			scoreMap.put(newgenome,0.0);
+			genomes.add(newgenome);			
 		}	
-		
-		nextGenGenomes = new ArrayList<Genome>(populationSize);
-		mappedSpecies = new HashMap<Genome, Species>();
-		scoreMap = new HashMap<Genome, Double>();
-		species = new ArrayList<Species>();
+		fittestGenome = genomes.get(0);
 
 	}
 	
@@ -84,37 +197,78 @@ public class NeatEvaluator {
 	/**
 	 * Runs one generation
 	 */
-	public void evaluate() {
+	public void evaluate(int generation) 
+	{
 		// Reset everything for next generation
-		for (Species s : species) {
-			s.reset(random);
-		}
 		scoreMap.clear();
 		mappedSpecies.clear();
-		nextGenGenomes.clear();
 		highestScore = -100;
 		fittestGenome = null;
+
+		speciate();
+		List<FitnessGenome> totalFitness = new ArrayList<FitnessGenome>(genomes.size());
 		
+		// Evaluate genomes and assign score
+		evaluator.startGeneration();
+		
+		for (Genome g : genomes) {
+			Species s = mappedSpecies.get(g);		// Get species of the genome
+			
+			double score = evaluator.evaluate(g);
+			g.setParameter(FITNESS_KEY,score);
+			
+			s.addFitness(score);	
+			FitnessGenome fg = new FitnessGenome(g, score);
+			totalFitness.add(fg);
+			s.fitnessPop.add(fg);
+			scoreMap.put(g, score);
+			if (score > highestScore) {
+				highestScore = score;
+				fittestGenome = g;
+			}
+		}
+		
+		evaluator.finishGeneration();
+		//System.out.println("Fittest "+fittestGenome);
+		
+		if(saveCheckpoint || exitRequest || (generation % 50 == 0))
+				{	saveCheckpoint = false;
+					saveCheckpoint(generation,totalFitness);
+				}
+		
+	}
+	public void speciate()
+	{
+		int targetNumberOfSpecies = (int)Math.sqrt(genomes.size()+0.99);
+		int loops = 0;
+		do
+		{
+		for (Species s : species) {	s.reset(random); }
 		// Place genomes into species
 		for (Genome g : genomes) {
 			boolean foundSpecies = false;
 			for (Species s : species) {
-				if (Genome.compatibilityDistance(g, s.mascot, C1, C2, C3) < DT) { // compatibility distance is less than DT, so genome belongs to this species
+				{
+				double dis = Genome.compatibilityDistance(g, s.mascot, C1, C2, C3);
+				if (dis < DT) { // compatibility distance is less than DT, so genome belongs to this species
 					s.members.add(g);
+					g.setSpecies(s);
 					mappedSpecies.put(g, s);
 					foundSpecies = true;
 					break;
-				}
+				}}
 			}
 			if (!foundSpecies) { // if there is no appropiate species for genome, make a new one
 				Species newSpecies = new Species(g);
 				species.add(newSpecies);
+				g.setSpecies(newSpecies);
 				mappedSpecies.put(g, newSpecies);
+				//G.print("New species "+newSpecies+" "+g);
 			}
 		}
 		int ns = species.size();
-		if(ns>targetNumberOfSpecies+1) { DT *= 1.1; }
-		else if(ns<targetNumberOfSpecies+1) { DT *= 0.9; DT=Math.max(1,DT); }
+		if(ns>targetNumberOfSpecies+1) { DT *= 1.5; }
+		else if(ns<targetNumberOfSpecies+1) { DT *= 0.75; DT=Math.max(0.5,DT); }
 
 		// Remove unused species
 		Iterator<Species> iter = species.iterator();
@@ -122,70 +276,145 @@ public class NeatEvaluator {
 			Species s = iter.next();
 			if (s.members.isEmpty()) {
 				iter.remove();
+				//G.print("remove species "+s);
 			}
 		}
-		
-		// Evaluate genomes and assign score
-		for (Genome g : genomes) {
-			Species s = mappedSpecies.get(g);		// Get species of the genome
-			
-			double score = evaluator.evaluate(g);
-			g.setParameter("Fitness",score);
-			double adjustedScore = score / mappedSpecies.get(g).members.size();
-			
-			s.addAdjustedFitness(adjustedScore);	
-			s.fitnessPop.add(new FitnessGenome(g, score));
-			scoreMap.put(g, adjustedScore);
-			if (score > highestScore) {
-				highestScore = score;
-				fittestGenome = g;
-			}
-		}
+		} while(loops++<8
+				&& DT>0.5
+				&& ((species.size()>targetNumberOfSpecies+2) 
+				|| (species.size()<targetNumberOfSpecies-2)));
+	
+	}
+	//
+	// this was a very slow experiment without result.  Making each new child qualify as fitter than it's parent
+	// was exceptionally and inexplicably slow. About 70% of applicants were rejected
+	//
+	boolean qualifyNext = false;
+	public void makeNewGeneration()
+	{
+		List<Genome> nextGenGenomes = new ArrayList<Genome>(populationSize);
+		IntIntHashtable generationCounts = new IntIntHashtable();
+		int accepted = 0;
+		int rejected = 0;
 		
 		// put best genomes from each species into next generation
 		for (Species s : species) {
 			Collections.sort(s.fitnessPop, fitComp);
-			Collections.reverse(s.fitnessPop);
+			int nextSize= nextGenGenomes.size();
 			for(int i=0;i<Math.min(2,s.fitnessPop.size());i++)		// keep 2 from each species
 			{
 				FitnessGenome fittestInSpecies = s.fitnessPop.get(i);
-				nextGenGenomes.add(fittestInSpecies.genome);
+				Genome genome = fittestInSpecies.genome;
+				G.Assert(genome!=null,"fittest in species is null");
+				nextGenGenomes.add(genome);
+				int generation = genome.generation;
+				generationCounts.put(generation,generationCounts.get(generation)+1);
+				
 				//System.out.println("keep "+fittestInSpecies.genome+" "+fittestInSpecies.fitness);
 			}
+			if(false && nextGenGenomes.size()-nextSize==2)
+			{
+				// add a child of those two winning parents
+				Genome parent = nextGenGenomes.get(nextSize);
+				Genome parent2 = nextGenGenomes.get(nextSize+1);
+				Genome child = makeNewGeneration(random.nextInt(),
+						parent,parent2
+						);
+				if(qualifyNext)
+				{
+				double parentfit = scoreMap.get(parent);
+				double parent2fit = scoreMap.get(parent2);
+				G.Assert(parentfit>=parent2fit,"should be fitter");
+
+				G.Assert(child!=null,"child species is null");
+				double childfit = evaluator.evaluate(child);
+				if(childfit>parentfit)
+				{
+				accepted++;
+				nextGenGenomes.add(child);
+				}
+				else 
+				{
+					rejected++;
+				}
+				}
+				else
+				{
+					nextGenGenomes.add(child);
+				}
+			}
 		}
-		
+		/*
+		 * this prints a list of the generation map of the genomes surviving into the next round.
+		 * it shows the desired/expected behavior, that several distinct lines coexist and develop
+		 * in parallel.
+		int keys[] = generationCounts.getKeys();
+		Arrays.sort(keys);
+		System.out.print("carry over ");
+		for(int k :keys)
+		{
+			System.out.print("g"+k+":"+generationCounts.get(k)+" ");
+		}
+		System.out.println();
+		*/
 		// Breed the rest of the genomes
 		while (nextGenGenomes.size() < populationSize) { // replace removed genomes by randomly breeding
 			Species s = getRandomSpeciesBiasedAjdustedFitness(random);
 			
 			Genome p1 = getRandomGenomeBiasedAdjustedFitness(s, random);
 			Genome p2 = getRandomGenomeBiasedAdjustedFitness(s, random);
-			
-			
 			Genome child = makeNewGeneration(random.nextInt(),p1,p2);
+			if(qualifyNext)
+			{
 			
-
+			double p1fit = scoreMap.get(p1);
+			double p2fit = scoreMap.get(p2);
+			double parentfit = Math.max(p1fit,p2fit);
+			double childfit = evaluator.evaluate(child);
+			if(childfit>parentfit)
+			{
+			accepted++;
 			nextGenGenomes.add(child);
+			}
+			else
+			{
+				rejected++;
+			}
+			}
+			else
+			{
+				nextGenGenomes.add(child);
+			}
 		}
+		//G.print("rejected "+((double)rejected/(accepted+rejected)));
 		genomes = nextGenGenomes;
-		nextGenGenomes = new ArrayList<Genome>();
-		//System.out.println("Fittest "+fittestGenome);
 	}
+	
+	private static int errorCount = 1;
 	private Genome makeNewGeneration(int seed,Genome p1,Genome p2)
 	{	Random r = new Random(seed);
-	p1.audit();
-	p2.audit();
+		//p1.audit();
+		//p2.audit();
 		Genome child = mateWithCrossover(r,p1,p2);
+		try {
+		//child.audit();
+		child.killConnectionMutation(random);	// disable some random connections
 		//child.audit();
 		child.mutation(random);					// random mutations at the child's mutation rate
 		//child.audit();
 		child.addNodeMutation(random);			// random new nodes proportional to the child's count
 		//child.audit();
 		child.addConnectionMutation(random);	// random new connections proportional to the child's node count
-		//child.audit();
-		child.killConnectionMutation(random);	// disable some random connections
 		child.audit();
 		return child;
+		}
+		catch (Throwable err)
+		{
+			NetIo.save(child,"g:/temp/nn/train/error-makenewgeneration"+errorCount++,
+					"error in makenewgeneration "+err+"\n"+err.getStackTrace());
+		}
+		return null;
+	
 	}
 	private Genome mateWithCrossover(Random r,Genome p1,Genome p2)
 	{	
@@ -203,12 +432,12 @@ public class NeatEvaluator {
 	private Species getRandomSpeciesBiasedAjdustedFitness(Random random) {
 		double completeWeight = 0.0;	// sum of probablities of selecting each species - selection is more probable for species with higher fitness
 		for (Species s : species) {
-            completeWeight += s.totalAdjustedFitness;
+            completeWeight += s.averageFitness();
 		}
         double r = Math.random() * completeWeight;
         double countWeight = 0.0;
         for (Species s : species) {
-            countWeight += s.totalAdjustedFitness;
+            countWeight += s.averageFitness();
             if (countWeight >= r) {
             	 return s;
             }
@@ -263,53 +492,103 @@ public class NeatEvaluator {
 		public Genome mascot;
 		public List<Genome> members;
 		public List<FitnessGenome> fitnessPop;
-		public double totalAdjustedFitness = 0f;
-		
+		public double totalFitness = 0;
+		public static int speciesCount = 0;
+		int speciesNumber = 0;
+		public String toString() { return "<species #"+speciesNumber+" :"+members.size()+">";}
 		public Species(Genome mascot) {
 			this.mascot = mascot;
+			speciesCount++;
+			speciesNumber = speciesCount;
 			this.members = new LinkedList<Genome>(); 
 			this.members.add(mascot);
 			this.fitnessPop = new ArrayList<FitnessGenome>(); 
 		}
 		
-		public void addAdjustedFitness(double adjustedFitness) {
-			this.totalAdjustedFitness += adjustedFitness;
+		public double averageFitness() {
+			int size = members.size();
+			return size==0 ? 0 : totalFitness/size;
+		}
+
+		public void addFitness(double fitness) {
+			this.totalFitness += fitness;
 		}
 		
 		/*
 		 *	 Selects new random mascot + clear members + set totaladjustedfitness to 0f
 		 */
 		public void reset(Random r) {
+			if(members.size()>0)
+			{
 			int newMascotIndex = r.nextInt(members.size());
 			this.mascot = members.get(newMascotIndex);
 			members.clear();
 			fitnessPop.clear();
-			totalAdjustedFitness = 0f;
+			totalFitness = 0f;
+			}
 		}
 	}
-	
+
 	public class FitnessGenomeComparator implements Comparator<FitnessGenome> {
 
-		@Override
 		public int compare(FitnessGenome one, FitnessGenome two) {
-			if (one.fitness > two.fitness) {
+			if (one.fitness < two.fitness) {
 				return 1;
-			} else if (one.fitness < two.fitness) {
+			} else if (one.fitness > two.fitness) {
 				return -1;
 			}
 			return 0;
-		}
-		
+		}		
 	}
-	
+	/**
+	 * get the full cohort of genomes currently under test
+	 * @return
+	 */
+	public Genome[] getCohort() {
+		return (genomes.toArray(new Genome[genomes.size()]));
+	}
+	public boolean exitRequest = false;
 	public void runEvaluation(int generations) {
 		
-		for (int i = 0; i <= generations; i++) {
-			evaluate();
-			if(i%100==0)
-			{
-				report(i);
-			}	// TODO Auto-generated method stub
+		for (int i = startingGeneration; i <= generations && !exitRequest; i++) {
+			evaluate(i);
+			//if(i%100==0)
+			report(i);
+			makeNewGeneration();
+		}
+	}
+	public void saveCheckpoint(int generation,List<FitnessGenome>fitnessList)
+	{		
+		Genome fittest = getFittestGenome();
+		double fitness = getHighestFitness();
+		Collections.sort(fitnessList,fitComp);
+		
+		NetIo.save(fittest,files+"Generation "+generation+".genome","fitness "+fitness);	
+
+		// this reports on the species distribution to see if its working reasonably
+		// last time it ran the sizes and fitness of the species were plausible
+		
+		for (Species sspec : species) {
+				System.out.println("s: "+sspec+" "+sspec.averageFitness());
+		}
+	
+		int item = 0;
+		String cohort = files+"cohort-generation-"+generation+"/";
+		for(FitnessGenome fg : fitnessList)
+		{
+		NetIo.save(fg.genome,
+					 cohort+"item-"+generation+"-"+item+".genome",
+					"generaton "+generation);	
+		item++;
+		}
+		PrintStream f;
+		try {
+			f = new PrintStream(new FileOutputStream(files+"checkpoint.txt"));
+			f.println(cohort);
+			f.close(); 
+		}
+		catch (IOException err)
+		{
 		}
 	}
 	public void report(int generation)
@@ -317,26 +596,22 @@ public class NeatEvaluator {
 		Genome fittest = getFittestGenome();
 		double fitness = getHighestFitness();
 		System.out.print("Generation: "+generation);
-		System.out.print("\tHighest fitness: "+fitness);
-		System.out.print("\tAmount of species: "+getSpeciesAmount());
-		System.out.print("\tbest performer: "+fittest);
+		System.out.print("\tFitness: "+fitness);
+		System.out.print("\tSpecies: "+getSpeciesAmount());
+		System.out.print("\tbest: "+fittest);
+		Species s = mappedSpecies.get(fittest);
+		System.out.println(" "+s+" avg "+s.averageFitness());
+		/*
 		float weightSum = 0;
-		for (ConnectionGene cg : getFittestGenome().getConnectionGenes().values()) {
+		for (ConnectionGene cg :fittest.getConnectionGenes().values()) {
 			if (cg.isExpressed()) {
 				weightSum += Math.abs(cg.getWeight());
 			}
 		}
 		System.out.print("\tWeight sum: "+weightSum);
 		System.out.print("\n");
+		*/
 		
-		for (Species s : species) {
-			Collections.sort(s.fitnessPop, fitComp);
-			{
-				System.out.println("s: "+s.members.size()+" "+s.totalAdjustedFitness);
-			}
-		}
-		//GenomePrinter.printGenome(fittest, "output/connection_sum_100/"+i+".png");
-		NetIo.save(fittest,files+"Generation "+generation+".genome","Square root: fitness "+fitness);	
 	}
-	
+
 }

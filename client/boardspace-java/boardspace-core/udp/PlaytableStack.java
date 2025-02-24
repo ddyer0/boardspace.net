@@ -86,12 +86,13 @@ public class PlaytableStack extends OStack<PlaytableServer>
 			old.status = status;
 			old.hostName = host;
 			playtableServers.setChanged();
+			G.print("Found playtable server "+host+"@"+n+":"+p," ",status); 
 		}
 		else
 		{
 		playtableServers.push(new PlaytableServer(n,p,status,host));
 		playtableServers.setChanged();
-		G.print("Found playtable server "+host+"@"+n+":"+p); 
+		G.print("New playtable server "+host+"@"+n+":"+p+" "+status); 
 		}
 	}
 }

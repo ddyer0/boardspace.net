@@ -16,8 +16,6 @@
  */
 package pendulum;
 
-import javax.swing.JCheckBoxMenuItem;
-
 import common.GameInfo;
 
 import static pendulum.PendulumMovespec.*;
@@ -27,6 +25,7 @@ import online.common.*;
 import java.util.*;
 
 import lib.Graphics;
+import lib.AR;
 import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -34,16 +33,15 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.ImageStack;
-import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Toggle;
+import lib.Image;
 import lib.LFrameProtocol;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-
 
 /**
  * 
@@ -100,6 +98,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
+	// TODO: add logic to prevent pickup of strategem cards that can't be dropped
+	
     static final String Pendulum_SGF = "pendulum"; // sgf game name
 
     // file names for jpeg images and masks
@@ -107,14 +107,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
-    private Color GridColor = Color.black;
     private Color chatBackgroundColor = new Color(255,230,230);
     private Color rackBackGroundColor = new Color(225,192,182);
     private Color rackIdleColor = new Color(205,172,162);
     private Color boardBackgroundColor = new Color(220,165,155);
-    
-
-     
+         
     // private state
     private PendulumBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
@@ -139,17 +136,16 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  			StockArt.NoEye,PendulumId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,PendulumId.ToggleEye,EyeExplanation
  			);
-    private Rectangle reverseRect = addRect("reverse");
-    private Rectangle chipRects[] = addZoneRect("chip",2);
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
-	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
-	// private menu items
-    private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
+    private Rectangle chipRects[] = addZoneRect("chip",MAX_PLAYERS);
+    private Rectangle belowBoardRects[] = addZoneRect("below",MAX_PLAYERS);
     
+    private Rectangle boardRects[] = addZoneRect("playerboard",MAX_PLAYERS);
+    
+ 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
+			HighlightColor, rackBackGroundColor,rackIdleColor);
+    
+ 	private Rectangle councilRect = addRect("council");
+ 	private Rectangle timerRect = addRect("timer");
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -176,7 +172,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     {	
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
-       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,MAX_PLAYERS);
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -196,8 +192,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	// will be console chatter about strings not in the list yet.
         	PendulumConstants.putStrings();
         }
-         
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
         String type = info.getString(GameInfo.GAMETYPE, PendulumVariation.pendulum.name);
         // recommended procedure is to supply players and randomkey, even for games which
@@ -289,25 +283,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 	 *  When "extraactions" is available, a menu option "show rectangles" works
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
 
-    boolean traditionalLayout = false;
+
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	if(traditionalLayout) { super.setLocalBounds(x, y, width, height); }
-    	else { modernLayout(x,y,width,height); }
-    }
-    private void modernLayout(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -355,9 +335,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean rotate = mainW<mainH;	
-        int nrows = rotate ? 24 : 15;  // b.boardRows
-        int ncols = rotate ? 15 : 24;	 // b.boardColumns
+        int nrows = 24;  // b.boardRows
+        int ncols = 24;	 // b.boardColumns
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -381,18 +360,14 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	if(rotate)
-    	{	// this conspires to rotate the drawing of the board
-    		// and contents if the players are sitting opposite
-    		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
-    		contextRotation = -Math.PI/2;
-    	}
+    	
+    	G.SetRect(councilRect,(int)(boardX+0.19*boardW),(int)(boardY+0.73*boardH),(int)(0.30*boardW),(int)(0.22*boardH));
+    	G.SetRect(timerRect,(int)(boardX+0.37*boardW),(int)(boardY+0.43*boardH),(int)(0.13*boardW),(int)(0.3*boardH));
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseRect);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
@@ -408,170 +383,54 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	G.SetRect(chip,	x,	y,	4*unitsize,	3*unitsize);
+    	Rectangle board = boardRects[player];
+    	Rectangle below = belowBoardRects[player];
+    	G.SetRect(chip,	x,	y,	2*unitsize,	2*unitsize);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
-    	G.union(box, done,chip);
+    	G.SetRect(board,x,G.Bottom(box),unitsize*11,unitsize*7);
+    	G.SetRect(below,x,G.Bottom(board),unitsize*11,unitsize*2);
+    	G.union(box, done,chip,board,below);
     	pl.displayRotation = rotation;
     	return(box);
     }
     
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int ncols = tallMode ? 29 : wideMode ? 42 : 37; // more cells wide to allow for the aux displays
-        int nrows = tallMode ? 27 : 20;  
-        int cellw = width / ncols;
-        int chatHeight = selectChatHeight(height);
-        int cellh = (height-(wideMode?0:chatHeight)) / nrows;
-        
-        CELLSIZE = ((chatHeight==0)&&wideMode) 
-        				? 0	// no chat, never select wide mode 
-        				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
-        return(CELLSIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        placeRow( CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE,goalRect);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
-
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
-    private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,PendulumBoard gb)
+    private void drawPlayerBoard(Graphics gc, Rectangle r, Rectangle br,commonPlayer pl,
+    		HitPoint highlight,PendulumBoard gb,Hashtable<PendulumCell,PendulumMovespec>targets,HitPoint any)
     {	int player = pl.boardIndex;
-        boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
-        if (canhit)
-        {
-            highlight.hitCode = gb.getPlayerColor(player);
-            highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
-        }
-
-        if (gc != null)
-        { // draw a random pile of chips.  It's just for effect
-
-            int spacex = G.Width(r) - CELLSIZE;
-            int spacey = G.Height(r) - CELLSIZE;
-            Random rand = new Random(4321 + player); // consistent randoms, different for black and white 
-
-            if (canhit)
-            {	// draw a highlight background if appropriate
-                GC.fillRect(gc, HighlightColor, r);
-            }
-
-            GC.frameRect(gc, Color.black, r);
-            PendulumChip chip = gb.getPlayerChip(player);
-            PendulumCell cell = gb.getPlayerCell(player);
-            int nc = 20;	
-            // draw 20 chips
-            if(spacex>0 && spacey>0)
-            {
-            while (nc-- > 0)
-            {	int rx = Random.nextInt(rand, spacex);
-                int ry = Random.nextInt(rand, spacey);
-                // using the cell to draw the chip has the side effect of setting
-                // the cell's location for animation.
-                cell.drawChip(gc,this,chip,gb.cellSize(),G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
-             }}
+    
+    	if(gb.simultaneousTurnsAllowed()
+    			&& HitPoint.setHelpText(highlight,pl.nameRect,"use UI for this player"))
+    	{
+    		highlight.hitCode = PendulumId.Select;
+    		highlight.hit_index = player;
+    		highlight.hitData = pl;
+    		highlight.spriteRect = pl.nameRect;
+    		highlight.spriteColor = Color.red;
+    	}
+   	
+    	PlayerBoard pb = gb.getPlayerBoard(player);
+    	pb.setDisplayRectangle(br);
+    	pb.setLocations();
+    	PendulumCell tucked[] = pb.tucked;
+    	for(PendulumCell c : tucked)
+    	{
+    		 drawStack(gc,gb,c,highlight,targets,any);
+    	}
+    	gb.getPlayerChip(player).drawChip(gc,this,r,null);
+ 
+    	pb.mat.drawChip(gc,this,br,null);
+        
+        for(PendulumCell c = pb.allCells; c!=null; c=c.next)
+        {	if(AR.indexOf(tucked,c)<0)
+        	{
+            drawStack(gc,gb,c,highlight,targets,any);
+        	}
         }
      }
     /**
@@ -593,7 +452,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	PendulumChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	PendulumChip chip = PendulumChip.getChip(obj);
+    	chip.drawChip(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -614,6 +474,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
       drawFixedBoard(gc);
      }
     
+    Image scaledBoard = null;
+    
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	// note, drawing using disB is very important for boards which have different sizes
@@ -629,44 +491,19 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
 	  	setDisplayParameters(gb,brect);
-	      // if the board is one large graphic, for which the visual target points
-	      // are carefully matched with the abstract grid
-	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);
 
-	      // draw a picture of the board. In this version we actually draw just the grid
-	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
-	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
-	      // on the board to fine tune the exact positions of the text
-	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
-
-	      // draw the tile grid.  The positions are determined by the underlying board
-	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For games with simple graphics, we could use the
-	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
-	      // but for more complex graphics with overlapping shadows or stacked
-	      // objects, this double loop is useful if you need to control the
-	      // order the objects are drawn in.
-          PendulumChip tile = lastRotation?PendulumChip.hexTile:PendulumChip.hexTileNR;
-          int left = G.Left(brect);
-          int top = G.Bottom(brect);
-          int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
-          for(Enumeration<PendulumCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
-          { //where we draw the grid
-        	  PendulumCell cell = cells.nextElement();
-        	  int ypos = top - gb.cellToY(cell);
-        	  int xpos = left + gb.cellToX(cell);
-        	  int thiscol = cell.col;
-        	  int thisrow = cell.row;
-        	  // double scale[] = TILESCALES[hidx];
-        	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
-        	  // to fine tune the board rendering.
-        	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
-        	  //equivalent lower level draw image
-        	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
-        	  //
-	               
-	       }       	
+	  	PendulumChip board = nPlayers()<=3 ? PendulumChip.Board3 : PendulumChip.Board5;
+	  	
+	  	// if the board is one large graphic, for which the visual target points
+	  	// are carefully matched with the abstract grid
+	  	scaledBoard = board.getImage().centerScaledImage(gc, brect,scaledBoard);
+	  	
+	  	PendulumChip.councilBoard.getImage().centerImage(gc,councilRect);
+	  	if(gb.variation.timers)
+	  	{
+	  	PendulumChip.timerTrack.getImage().centerImage(gc,timerRect);
+	  	}
+     	
     }
     
     /**
@@ -692,34 +529,179 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      * @param brect	the rectangle containing the board
      * @param highlight	the mouse location
      */
-    public void drawBoardElements(Graphics gc, PendulumBoard gb, Rectangle brect, HitPoint highlight)
-    {
+    public void drawBoardElements(Graphics gc, PendulumBoard gb, Rectangle brect, HitPoint highlight,Hashtable<PendulumCell,PendulumMovespec> targets,HitPoint any)
+    {	
+
+    	gb.setLocations();
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-    	Hashtable<PendulumCell,PendulumMovespec> targets = gb.getTargets();
      	numberMenu.clearSequenceNumbers();
 
     	for(PendulumCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-            int xpos = G.Left(brect) + gb.cellToX(cell);
-            numberMenu.saveSequenceNumber(cell,xpos,ypos);
-            boolean canHit = gb.legalToHitBoard(cell,targets);
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
-            		{
-            		highlight.spriteColor = Color.red;
-                	highlight.awidth = CELLSIZE;
-            		}
-            if(eyeRect.isOnNow() && targets.get(cell)!=null)
-            {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
-            }
+            drawStack(gc,gb,cell,highlight,targets,any);
+
         }
+    	//centerImage(gc,councilRect)
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
-
+    private String timerText(PendulumCell c,Timer t)
+    {
+    	PendulumChip top = c.topChip();
+    	if(top!=null && top!=PendulumChip.purpleGlass)
+    	{
+    		return t.getText();
+    	}
+    	return null;
+    }
+    public String getToolTip(PendulumCell c)
+    {	PendulumId rack = c.rackLocation();
+    	String msg = rack.description;
+    	int ind = c.height();
+    	switch(rack)
+    	{
+    	case PlayerPopularityVP:
+    	case PlayerPrestigeVP:
+    	case PlayerMilitaryVP: ind = c.row; break;
+    	case Privilege: ind = c.row+1; break;
+    	default: break;
+    	}
+    	return s.get0or1(msg,ind);
+    }
+    
+    public boolean drawStack(Graphics gc,PendulumBoard gb,PendulumCell cell,HitPoint highlight,Hashtable<PendulumCell,PendulumMovespec> targets,HitPoint any)
+    {    
+        String back = null;
+        String cost = cell.cost.description;
+        String bene = cell.benefit.description;
+        String tip = (cell.cost==BC.None && cell.benefit==BB.None)
+        				? getToolTip(cell)
+        				: "".equals(cost) ? s.get(bene) : "".equals(bene) ? s.get(cost) : s.get(cost)+"\n"+s.get(bene);
+        double xstep = 0.005;
+        double ystep = 0.005;
+    	int ypos = gb.cellToY(cell);
+    	int xpos = gb.cellToX(cell);
+    	int siz = gb.cellSize(cell);
+    	boolean canHit = gb.legalToHitBoard(gb.getCell(cell),targets);
+        numberMenu.saveSequenceNumber(cell,xpos,ypos);
+        labelFont = largeBoldFont();
+        
+        switch(cell.rackLocation())
+        {
+        case PlayerStratCard:
+        	xstep = 0.7;
+        	ystep = 0;
+        	break;
+        case PlayerBrownBenefits:
+        case PlayerYellowBenefits:
+        case PlayerRedBenefits:
+        case PlayerBlueBenefits:
+        	ystep = 0.25;
+        	xstep = 0.03;
+        	ypos += (int)(siz*ystep*(cell.height()-1)); 
+        	break;
+        case BlackActionA:
+        case BlackActionB:
+        case BlackMeepleA:
+        case BlackMeepleB:
+        case GreenActionA:
+        case GreenActionB:
+        case GreenMeepleA:
+        case GreenMeepleB:
+        case PurpleActionA:
+        case PurpleActionB:
+        case PurpleMeepleA:
+        case PurpleMeepleB:
+        	xstep = 0.35;
+        	ystep = 0.0;
+        	xpos -= (cell.height()/2.0*siz)*xstep;
+        	break;
+        case RewardDeck:
+        case ProvinceCardStack:
+        case AchievementCardStack:
+        	back = PendulumChip.BACK;
+        	break;
+        case PlayerGrandeReserves:
+        case PlayerMeepleReserves:
+        case PlayerGrandes:
+        case PlayerMeeples:
+        	xstep = 0.3;
+        	ystep = 0;
+        	break;
+        case GreenHourglass:
+        	back = timerText(cell,gb.greenTimer);
+        	break;
+        case PurpleHourglass:
+    	   	back = timerText(cell,gb.purpleTimer);
+        	break;
+        case PlayerVotes:
+        	xstep = 0.2;
+        	ystep = 0.0;
+        	xpos -= (cell.height()/2.0*siz)*xstep;
+        	break;
+       	
+        case PlayerMilitaryReserves:
+        case PlayerCultureReserves:
+        case PlayerCashReserves:
+        case PlayerVotesReserves:
+        	xstep= 0.1;
+        	ystep = 0.0;
+        	break;
+        case PlayerMilitary:
+        case PlayerCulture:
+        case PlayerCash:
+        	xstep = 0.1;
+        	ystep = 0.1;
+        	xpos -= (cell.height()/2.0*siz)*xstep;
+        	ypos += (cell.height()/2.0*siz)*ystep;
+        	break;
+        case BlackHourglass:
+        	back = timerText(cell,gb.blackTimer);
+        	break;
+        default: break;
+        }
+        boolean hit = cell.drawStack(gc,this,canHit?highlight:null,siz,xpos,ypos,0,xstep,ystep,back);
+        if(hit)
+        		{
+        		highlight.spriteColor = Color.red;
+            	highlight.awidth = siz*3/4;
+            	highlight.hitData = targets.get(cell);
+        		}
+        if(tip!=null && !"".equals(tip))
+        {
+        	HitPoint.setHelpText(any,siz/2,xpos,ypos,tip);
+        }
+        //StockArt.SmallO.drawChip(gc,this,siz,xpos,ypos,null);
+        if(eyeRect.isOnNow() && targets.get(cell)!=null)
+        {
+        	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+        }
+        return hit;
+    }
+    //
+    // this determines if the UI is allowed maximum flexibility to move any player's pieces
+    //
+    public boolean allQuiet(PendulumBoard gb)
+    {
+    	return (reviewOnly
+    			&& gb.simultaneousTurnsAllowed()
+    			&& gb.allQuiet());
+    }
+    private String effectiveStateMessage(PendulumBoard gb,PendulumState state,commonPlayer ap)
+    {
+    	boolean sim = state.simultaneousTurnsAllowed();
+    	String msg = s.get(state.description());
+    	if(sim)
+    	{	PlayerBoard pb = gb.getPlayerBoard(ap.boardIndex);
+    		UIState ui = pb.uiState;
+    		if(ui!=UIState.Normal) {
+    			msg = s.get0or1(ui.description,pb.uiCount);
+    		}
+    	}
+    	return msg;
+    }
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -751,6 +733,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        // seen by the user interface are not the same ones as are seen by the execution engine.
        PendulumBoard gb = disB(gc);
        PendulumState state = gb.getState();
+       commonPlayer ap = getActivePlayer();
        boolean moving = hasMovingObject(selectPos);
    	   if(gc!=null)
    		{
@@ -772,13 +755,16 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        // hit any time nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
-       // for a multiplayer game, this would likely be redrawGameLog2
-       gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
+       gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       int movingPlayer = gb.simultaneousTurnsAllowed() ? ap.boardIndex : gb.whoseTurn;
+       Hashtable<PendulumCell,PendulumMovespec> targets = allQuiet(gb) 
+    		   	? gb.getAllTargets() 
+    		   	: gb.getTargets(movingPlayer);
+       drawBoardElements(gc, gb, boardRect, ourTurnSelect,targets,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
@@ -786,7 +772,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        for(int player=0;player<gb.players_in_game;player++)
        	{ commonPlayer pl = getPlayerOrTemp(player);
        	  pl.setRotatedContext(gc, selectPos,false);
-    	   DrawChipPool(gc, chipRects[player],pl, ourTurnSelect,gb);
+    	   drawPlayerBoard(gc, chipRects[player],boardRects[player],pl, ourTurnSelect,gb,targets,selectPos);
     	   if(planned && whoseTurn==player)
     	   {
     		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
@@ -799,18 +785,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        
        GC.setFont(gc,standardBoldFont());
        
-       // draw the board control buttons 
-       boolean conf = (state==PendulumState.ConfirmSwap) ;
-		if( conf
-			|| (state==PendulumState.PlayOrSwap) 
-			|| (state==PendulumState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-			swapButton.highlightWhenIsOn = true;
-        	swapButton.setIsOn(conf);
-        	swapButton.show(gc, buttonSelect);
-			}
 
-		if (state != PendulumState.Puzzle)
+       if (state != PendulumState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -823,13 +799,16 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
-        drawPlayerStuff(gc,(state==PendulumState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
+        drawPlayerStuff(gc,
+        			(state==PendulumState.Puzzle),
+        			buttonSelect,HighlightColor,rackBackGroundColor);
   
- 
         // draw the avatars
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==PendulumState.Gameover?gameOverMessage(gb):s.get(state.description()),
+            				state==PendulumState.Gameover
+            					?gameOverMessage(gb)
+            					:effectiveStateMessage(gb,state,ap),
             				state!=PendulumState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
@@ -838,7 +817,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        DrawReverseMarker(gc,reverseRect,selectPos,PendulumId.ReverseView);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -929,8 +907,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  {
 	 switch(mm.op)
 	 {
-	 case MOVE_DROPB:
-	 case MOVE_PICKB:
 	 case MOVE_PICK:
 	 case MOVE_DROP:
 		 playASoundClip(light_drop,100);
@@ -960,7 +936,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP);
+    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==SETACTIVE);
     	  commonMove rval = EditHistory(nmove,oknone);
      	     
     	  return(rval);
@@ -1040,19 +1016,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  	    switch(hitObject)
 	    {
 	    default: break;
-	    
- 	    case Black:
- 	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
-	    	break;
-	    case BoardLocation:
-	        PendulumCell hitCell = hitCell(hp);
-	        // this enables starting a move by dragging 
-	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
-	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
-	    		
-	    		}
-	    	break;
+
         } 
         }
     }
@@ -1106,7 +1070,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         
         // if direct drawing, hp.hitObject is a cell from a copy of the board
         PendulumCell hitObject = bb.getCell(hitCell(hp));
-		PendulumState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -1117,36 +1080,78 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
-        case ReverseView:
-        	bb.setReverseY(bb.reverseY());
-        	generalRefresh();
+        case PlayerCulture:
+        case PlayerStratCard:
+        case PlayerPlayedStratCard:
+        case PlayerCash:
+        case PlayerMilitary:
+        case PlayerCashReserves:
+        case PlayerMilitaryReserves:
+        case PlayerCultureReserves:
+        case PurpleHourglass:
+        case BlackHourglass:
+        case AchievementCard:
+        case GreenHourglass:
+        case Privilege:
+        case Achievement:
+        case AchievementCardStack:
+        case Province:
+        case PlayerPrestigeVP:
+        case PlayerMilitaryVP:
+        case PlayerPopularityVP:
+        case PlayerBlueBenefits:
+        case PlayerYellowBenefits:
+        case PlayerBrownBenefits:
+        case PlayerRedBenefits:
+        case ProvinceCardStack:
+        case GreenActionA:
+        case GreenActionB:
+        case BlackActionA:
+        case BlackActionB:
+        case PurpleActionA:
+        case PurpleActionB:
+        case BlackMeepleA:
+        case BlackMeepleB:
+        case GreenMeepleA:
+        case GreenMeepleB:
+        case PurpleMeepleA:
+        case PurpleMeepleB:
+        case PlayerMeeples:
+        case PlayerGrandeReserves:
+        case PlayerMeepleReserves:
+        case PlayerGrandes:
+        	{
+        	PendulumMovespec m = (PendulumMovespec)hp.hitData;
+        	int movingPlayer = m!=null
+        			? m.player
+        			: bb.simultaneousTurnsAllowed() 
+        				? getActivePlayer().boardIndex
+        				: bb.whoseTurn;
+        	PlayerBoard pb = bb.getPlayerBoard(movingPlayer);
+        	if(pb.pickedObject==null)
+        		{	
+        		  if(reviewOnly && bb.simultaneousTurnsAllowed())
+        		  	{ 
+        			PerformAndTransmit("SetActive "+movingPlayer,false,replayMode.Live);
+        		  	setActivePlayer(getPlayerOrTemp(movingPlayer)); 
+        		  	}
+        		  PerformAndTransmit("Pick "+hitObject.rackLocation()+" "+hitObject.col+" "+hitObject.row+" "+hp.hit_index);
+        		}
+        		else 
+        		{
+        		PerformAndTransmit("Drop "+hitObject.rackLocation()+" "+hitObject.col+" "+hitObject.row+" "+hp.hit_index);
+        		}
+        	}
+        	break;
+        case Select:
+   			PerformAndTransmit("SetActive "+hp.hit_index,false,replayMode.Live);
+        	setActivePlayer(getPlayerOrTemp(hp.hit_index));
         	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
-        case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state "+state);
-			case Confirm:
-			case Play:
-			case PlayOrSwap:
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case Puzzle:
-				PerformAndTransmit((bb.pickedObject==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
-        case Black:
-        case White:
-           if(bb.pickedObject!=null) 
-			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()));
-			}
-           break;
- 
+
+
         }
         }
     }
@@ -1156,22 +1161,10 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     private boolean setDisplayParameters(PendulumBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	  if(doRotation)
-      	  {
-      	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-          gb.SetDisplayParameters(0.95, 1.0, 0,0,60); // shrink a little and rotate 60 degrees
-     	  }
-      	  else
-      	  {
-          // the numbers for the square-on display are slightly ad-hoc, but they look right
-          gb.SetDisplayParameters( 0.825, 0.94, 0,0,28.2); // shrink a little and rotate 30 degrees
-      	  }
-      	}
       	gb.SetDisplayRectangle(r);
-      	if(complete) { generalRefresh(); }
+    	gb.setCouncilRectangle(councilRect);
+    	gb.setTimerRectangle(timerRect);
+       	if(complete) { generalRefresh(); }
       	return(complete);
     }
     /** this is the place where the canvas is actually repainted.  We get here
@@ -1261,13 +1254,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-        if(target==rotationOption)
-        {	handled=true;
-        	doRotation = rotationOption.getState();
-        	resetBounds();
-        	repaint(20);
-        }
-
         return (handled);
     }
 /** handle the run loop, and any special actions we need to take.
@@ -1298,10 +1284,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  * extending allowBackwardStep() and allowPartialUndo() to go back a step further
  *  */
     
-    //   public void ViewerRun(int wait)
-    //   {
-    //       super.ViewerRun(wait);
-    //   }
+    public void ViewerRun(int wait)
+    {
+        super.ViewerRun(wait);
+        bb.doTimers();
+    }
     /**
      * returns true if the game is over "right now", but also maintains 
      * the gameOverSeen instance variable and turns on the reviewer variable

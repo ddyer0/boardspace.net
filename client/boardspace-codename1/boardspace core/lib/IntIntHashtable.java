@@ -21,6 +21,13 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/.
  */
+// IntHashtable - a Hashtable that uses ints as the keys
+//
+// This is 90% based on JavaSoft's java.util.Hashtable.
+//
+// Visit the ACME Labs Java page for up-to-date versions of this and other
+// fine Java utilities: http://www.acme.com/java/
+
 package lib;
 /**
  * A Hashtable that uses ints as the keys and values.
@@ -29,7 +36,8 @@ package lib;
  *
  */
 
-public class IntIntHashtable
+@SuppressWarnings("deprecation")
+public class IntIntHashtable implements Cloneable
     {
     /// The hash table data.
     private IntHashtableEntry table[];
@@ -240,7 +248,40 @@ public class IntIntHashtable
 	return defaultValue;
 	}
 
-
+    public int[] getKeys()
+    {	int size = size();
+    	int v[] = new int[size];
+    	int idx = 0;
+    	IntHashtableEntry tab[] = table;
+    	for ( int index = tab.length; --index >= 0; )
+    	{
+    		IntHashtableEntry entry = tab[index];
+    		while(entry!=null)
+    		{
+    			v[idx++] = entry.key;
+    			entry = entry.next;
+    		}
+    	}
+    	G.Assert(idx==size,"got them all");
+    	return v;
+    }
+    public int[] getValues()
+    {	int size = size();
+    	int v[] = new int[size];
+    	int idx = 0;
+    	IntHashtableEntry tab[] = table;
+    	for ( int index = tab.length; --index >= 0; )
+    	{
+    		IntHashtableEntry entry = tab[index];
+    		while(entry!=null)
+    		{
+    			v[idx++] = entry.value;
+    			entry = entry.next;
+    		}
+    	}
+    	G.Assert(idx==size,"got them all");
+    	return v;
+    }
     /// Clears the hash table so that it has no more elements in it.
     public synchronized void clear()
 	{
@@ -250,11 +291,35 @@ public class IntIntHashtable
 	count = 0;
 	}
     
+    /// Creates a clone of the hashtable. A shallow copy is made,
+    // the keys and elements themselves are NOT cloned. This is a
+    // relatively expensive operation.
+    public synchronized Object clone()
+	{
+
+	    IntIntHashtable t = new IntIntHashtable();
+	    t.table = new IntHashtableEntry[table.length];
+	    for ( int i = table.length ; i-- > 0 ; )
+		t.table[i] = ( table[i] != null ) ?
+		    (IntHashtableEntry) table[i].clone() : null;
+	    return t;
+	}
+
 class IntHashtableEntry
     {
     int hash;
     int key;
     int value;
     IntHashtableEntry next;
+
+    protected Object clone()
+	{
+	IntHashtableEntry entry = new IntHashtableEntry();
+	entry.hash = hash;
+	entry.key = key;
+	entry.value = value;
+	entry.next = ( next != null ) ? (IntHashtableEntry) next.clone() : null;
+	return entry;
+	}
 
     }}

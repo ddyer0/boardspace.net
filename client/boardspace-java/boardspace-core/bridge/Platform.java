@@ -130,7 +130,7 @@ public static Object MakeInstance(String classname)
 {
 	String expname = "";
     expname = G.expandClassName(classname);
-    G.print("MakeInstance ",expname," from ",classname);
+    //G.print("MakeInstance ",expname," from ",classname);
     if(makeObject==null) { makeObject = new Object(); }
     Class<?>cl = G.classForName(expname,false);
     if(cl==null) 
@@ -343,7 +343,7 @@ public static Object MakeInstance(String classname)
     {	
     	try {
     		//Plog.log.addLog("classForName ",name);
-    		G.print("classForName ",name," ",testOnly);
+    		//G.print("classForName ",name," ",testOnly);
     		ClassLoader loader = Platform.class.getClassLoader();
     		return loader.loadClass(name);
 			} 

@@ -1319,10 +1319,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     {	throw G.Error("Not implemented");
     }
     
-    // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneousTurnsAllowed()
-    {	return super.simultaneousTurnsAllowed();
-    }
+ 
   // public RecordingStrategy gameRecordingMode()
   //  {	return(super.gameRecordingMode());
   //  }

@@ -19,10 +19,10 @@ import java.io.PrintStream;
 
 import lib.CompareTo;
 import lib.G;
+import lib.IoAble;
 import lib.OStack;
 import lib.StackIterator;
 import lib.Tokenizer;
-import online.search.io.IoAble;
 
 class NodeGeneStack extends OStack<NodeGene>
 {
@@ -104,10 +104,29 @@ public class NodeGene implements IoAble,CompareTo<NodeGene>,StackIterator<NodeGe
         }
         return 0.5 * Math.log((1 + x) / (1 - x));
     }
+    // twice as fast and very small difference from tanh
+    public static double approximateTanh(double x)
+    {// possible substute a faster approximation
+    	return 1-(2*(1/(1+Math.exp(x*2))));
+    }
     public static double tanh(double x) {
     	return sinh(x) / cosh(x);
     }
-    
+    /**
+     * 	Random r = new Random();
+	double toterr=0;
+	long start = G.Date();
+	for(int i=0;i<1000000;i++)
+	{	double d = r.nextDouble()*10-5;
+		//double v0 = Math.tanh(d);
+		double v0 = NodeGene.tanh(d);
+		toterr += v0;
+	}
+	G.print("total time error ",G.Date()-start);
+
+     * @param gen
+     * @return
+     */
 	public double getValue(int gen)
 	{	switch(type)
 		{
@@ -169,6 +188,7 @@ public class NodeGene implements IoAble,CompareTo<NodeGene>,StackIterator<NodeGe
 		if("N1".equals(ntype))
 		{
 			id = tok.intToken();
+			nodeCounter = Math.max(nodeCounter,id);
 			type = TYPE.valueOf(tok.nextElement());
 			return true;
 		}

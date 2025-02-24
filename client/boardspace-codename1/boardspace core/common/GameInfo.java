@@ -1441,13 +1441,15 @@ synchronized(allGames) {
 	}
 	
 	{
-	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
+	String pRules = "/pendulum/english/Rules.pdf";
 	String pViewer = "pendulum.PendulumViewer";  
-	put(new GameInfo(3590,ES.test,999,"PL",EuroGames,"Pendulum","Pendulum",
+	Color map[] = {Color.yellow,Color.white,Color.green,Color.blue,Color.red};
+	GameInfo mm = put(new GameInfo(3600,ES.test,124,"PL",EuroGames,"Pendulum","Pendulum",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
-			null,false, WhiteOverBlack));
+			null,false, map));
+	mm.maxPlayers = 5;	
 	}
 	
 	{
@@ -1816,8 +1818,8 @@ synchronized(allGames) {
 		String yinshVideo = "/yinsh/english/yinsh-video.html";
 		
 	put(new GameInfo(250,ES.game,3,"Y",GipfGames,"Yinsh","Yinsh",
-			TwoBotsPlus,
-			new double[]{0.26,1,0.01},
+			ThreeBotsPlus,
+			new double[]{0.26,1,1,0.01},
 			yinshClass,yinshRules,"about_yinsh.html",
 			yinshVideo,false, WhiteOverBlack));
 	put(new GameInfo(260,ES.game,3,"YB",GipfGames,"Yinsh","Yinsh-Blitz",

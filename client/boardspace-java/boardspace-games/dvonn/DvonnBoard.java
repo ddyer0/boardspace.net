@@ -629,7 +629,8 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	case PUZZLE_STATE:
     	case PLACE_RING_STATE:
     	case PLAY_STATE:
-    		setState(allPlaced()?DvonnState.PLAY_STATE:DvonnState.PLACE_RING_STATE);
+    		if(allPlaced()) { doGameEnd(); }
+    		else { setState(DvonnState.PLACE_RING_STATE); }
     		break;
     	}
 
@@ -651,7 +652,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     		finalizePlacement();
     		if(allPlaced())
     		{ // keep the same player, start regular play
-    		setState(DvonnState.PLAY_STATE);
+    		setNextStateAfterDone();
             if(board_state==DvonnState.PLAY_STATE)
             {	m.setLineBreak(true);
             }
@@ -1181,6 +1182,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
 	case PLAY_STATE:
 		{
 		DvonnCell temp[] = getTempDest();
+		boolean some = false;
 		for(DvonnCell c = allCells;
 		c !=null;
 		c=c.next)
@@ -1190,14 +1192,16 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
 				for(int i=0;i<n;i++)
 				{	DvonnCell dest = temp[i];
 					all.addElement(new DvonnMovespec(c.col,c.row,dest.col,dest.row,whoseTurn));
-					
+					some = true;
 				}
 			}
 		}
+		if(!some) { all.addElement(new DvonnMovespec(MOVE_PASS,whoseTurn)); }
 		returnTempDest(temp);
 		}
 		break;
 	}
+
   	return(all);
  }
 

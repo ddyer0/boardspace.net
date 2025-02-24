@@ -1221,8 +1221,8 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/26/2023
-     * 	12592 files visited 0 problems
+     * summary: 1/31/2025
+     * 12564 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

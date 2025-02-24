@@ -1410,7 +1410,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	private PlayMode selectedPlayMode = PlayMode.ranked;
 
 	Session sess = new Session(1);
-	private int firstPlayerIndex = 0;
 	static InternationalStrings s = G.getTranslations();
 	
 
@@ -1663,19 +1662,6 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			 }
 			 
 		 }
-	}
-	public void prepareLaunch()
-	{
-		sess.password = "start";
-		sess.seedValue = new Random().nextInt();
-		sess.seatingChart = null;
-
-		sess.selectedFirstPlayerIndex = firstPlayerIndex;
-		sess.launchUser = null;
-		sess.launchUsers = null;
-		sess.setCurrentGame(selectedVariant, false,false,true);
-		sess.setPlayMode(selectedPlayMode);
-		sess.startingName = sess.launchName(null,true);
 	}
 
 	private void selectInput(TextContainer b)

@@ -18,44 +18,182 @@ package xeh;
 
 import static xeh.XehMovespec.MOVE_DROPB;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 import lib.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;
-import online.game.sgf.sgf_game;
-import online.game.sgf.sgf_node;
-import online.game.sgf.export.sgf_names;
-import online.game.sgf.export.sgf_names.Where;
 import online.search.*;
-import online.search.neat_jan_27.Genome;
-import online.search.neat_jan_27.GenomeEvaluator;
-import online.search.neat_jan_27.NeatEvaluator;
+import online.search.neat.Genome;
+import online.search.neat.GenomeEvaluator;
+import online.search.neat.NeatEvaluator;
+import online.search.neat.NetIo;
+import online.search.neat.NodeGene;
 import online.search.nn.CoordinateMap;
-import online.search.nn.GenericNetwork;
 import online.search.nn.Layer;
 import online.search.nn.Network;
 
 class XehEvaluator implements GenomeEvaluator
 {
+	/**
+	 * this experiment trains a static evaluator.  The network consists
+	 * of a single output, and inputs that encode only the state of the
+	 * board.
+	 * 
+	 * training consists of running a complete playthrough of the game,
+	 * pitting evaluator1 against evaluator2, for all pairs of genenes
+	 * in the genome, and scoring fitness as the percentage wins. 
+	 * 
+	 * For current parameters, this means running 198 games against
+	 * the rest if the cohort; one as white and one as black against
+	 * each other member
+	 */
 	Genome best = null;
 	XehBoard gameBoard = null;
 	XehBoard board = null;
 	NeatEvaluator evaluator = null;
 	XehViewer viewer = null;
+	XehPlay robot = null;
+	private HashMap<String,Genome>matchup = new HashMap<String,Genome>();
+	private HashMap<String,Genome>oldMatchup = new HashMap<String,Genome>();
+	double totalFitness = 0;
+	int nFitness = 0;
 	
-	public double evaluate(Genome g) {
+	Genome target = null;
+	public void startGeneration()
+	{	totalFitness = 0;
+		nFitness = 0;
+		oldMatchup.clear();
+		for(String k : matchup.keySet())
+		{
+			oldMatchup.put(k,matchup.get(k));
+		}
+		matchup.clear();
+	}
+	
+	public void finishGeneration()
+	{
+		//G.print("Generation averate fitness "+(totalFitness/nFitness));
+	}
 
-		return 0;
+	public Genome playThroughGame(Genome player1,Genome player2)
+	{	String key = player1.toString()+"-"+player2.toString();
+
+		Genome value = matchup.get(key);
+		if(value==null) 
+			{ value = oldMatchup.get(key); 
+			  // a lot of matchups recur in the next generation
+			  if(value!=null) 
+			  	{ matchup.put(key,value);
+			  	//G.print("reuse "+key); 
+			  	}
+			}
+		if(value==null)
+		{
+		XehBoard testBoard = board.cloneBoard();
+		if(testBoard.getState().Puzzle()) 
+			{ testBoard.Execute(new XehMovespec("start p0",0),replayMode.Replay);
+			}
+		Genome players[]=new Genome[2];
+		{
+		int who = testBoard.whoseTurn();
+		players[who] = player1;
+		players[who^1] = player2;
+		}
+		robot.monitor = testBoard;
+		while(!testBoard.gameOverNow())
+		{
+			makeMove(testBoard,players[testBoard.whoseTurn()]);
+		}	
+		viewer.repaint(1000);
+		value = testBoard.WinForPlayer(0)
+				? players[0]
+				: players[1]; 	// black wins
+
+		if(player1==target || player2==target)
+		{
+			G.print(player1," x ",player2," = ",value);
+			G.print();
+		}
+		matchup.put(key,value);
+		}
+		return value;
+	}
+	public static double evaluatePosition(XehBoard testBoard,Genome player)
+	{	
+		loadBoardPosition(testBoard,player);
+		player.evaluate();
+		double val = player.getOutputs().get(0).getLastValue();
+		return val;
+	}
+	
+	public void makeMove(XehBoard testBoard,Genome player)
+	{
+		CommonMoveStack moves = testBoard.GetListOfMoves();
+		XehMovespec bestMove = null;
+		double bestValue = 0;
+		for(commonMove m : moves)
+		{	XehMovespec mm = (XehMovespec)m;
+			testBoard.RobotExecute(mm);
+			double val = evaluatePosition(testBoard,player);
+			//G.print(mm,val);
+			if(bestMove==null || val>bestValue) { bestValue = val; bestMove=mm; }
+			testBoard.UnExecute(mm);
+		}
+		testBoard.RobotExecute(bestMove);
+		//robot.monitor = testBoard;
+		//viewer.repaint();
+		//G.print(bestMove);
+	}
+	
+	public static void loadBoardPosition(XehBoard b,Genome player)
+	{
+		int index=0;
+		ArrayList<NodeGene> inputs = player.getInputs();
+		int swap = XehChip.White==b.getCurrentPlayerChip() ? 1 : -1;
+		for(XehCell c = b.allCells; c!=null; c=c.next,index++) 
+		{
+			NodeGene cc = inputs.get(index);
+			XehChip top = c.topChip();
+			// set the input values to white=1 black = -1, but swap if it's black's turn
+			int invalue = top==null ? 0 : top==XehChip.White ? 1*swap : -1*swap;
+			//G.print(cc,index,c,top,invalue);
+			cc.setInputValue(invalue);
+		}
+	}
+	public double evaluate(Genome g) 
+	{	//if(g.getName().equals("item-24.genome"))
+		//	{ target = g; 
+		//	}
+		Genome cohort[] = evaluator.getCohort();
+		int wins = 0;
+		int games = 0;
+		for(Genome opponent : cohort)
+		{	if(opponent != g)
+			{
+			Genome winFirst = playThroughGame(g,opponent);
+			Genome winSecond = playThroughGame(opponent,g);
+			//G.print(g," ",opponent," ",winFirst==g," ",winSecond==g);
+			if(winSecond==g) { wins++; }
+			if(winFirst==g) { wins++; }
+			games+=2;
+			}
+		}
+		// fitness is the win percentage
+		double fitness = (double)wins/games;
+		//G.print(g," ",fitness);
+		totalFitness += fitness;	// average fitness for the entire cohort ought to be 0.5
+		nFitness++;
+		// slop adds a slight preference for smaller genomes
+		double slop = 1.0/(g.getNodeGenes().size()+g.getConnectionGenes().size());
+		return fitness+slop;
 	}
 
 	public void setBest(Genome g) {
@@ -64,25 +202,6 @@ class XehEvaluator implements GenomeEvaluator
 	public Genome createPrototypeNetwork()
 	{	int cells = board.getCellArray().length;
 		return Genome.createBlankNetwork(cells,1);
-	}
-}
-class TrainingData
-{
-	String file;
-	int moveNumber;
-	int playerToMove;
-	char color;
-	boolean[] hasInputs;
-	double[] inputs;
-	double[] inputs2;
-	double[] inputs3;
-	double [] values;
-	double [] winrates;
-}
-class TDstack extends OStack<TrainingData>
-{
-	public TrainingData[] newComponentArray(int sz) {
-		return(new TrainingData[sz]);
 	}
 }
 
@@ -146,6 +265,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
 	Network evalNet = null;
 	
 	boolean NEUROBOT = false;
+
 	static final int DUMBOT_TRAINING_LEVEL = 100;
 	static final int UCT_NEUROBOT_PLAY_LEVEL = 101;
 	static final int UCT_NEUROBOT_TRAIN_LEVEL = 102;
@@ -153,7 +273,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
 	static final int TESTBOT_HYBRID_2 = 104;
 	static final int OLD_SMARTBOT_LEVEL = 106;
 	static final int NEUROBOT_HYBRID = 105;
-    static final double VALUE_OF_WIN = 10000.0;
+	static final double VALUE_OF_WIN = 10000.0;
     boolean UCT_WIN_LOSS = false;
     
     boolean EXP_MONTEBOT = false;
@@ -164,7 +284,9 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     double neuroWinRateWeight = 10;
     int minMovesPerSecond = 400000;
     int maxMovesPerSecond = 500000;
-    
+	Genome neurobotNetwork;
+	Random randombotRandom = null;
+	
     int storedChildLimit = UCTMoveSearcher.defaultStoredChildLimit;
     double NODE_EXPANSION_RATE = 1.0;
     double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive
@@ -348,8 +470,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     	}	
     	return(val);
     }
-
-
+     
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
      * to be stable and greater scores should indicate some degree of progress
@@ -380,20 +501,19 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      	// if the position is not a win, then estimate the value of the position
     	switch(Strategy)
     	{	default: throw G.Error("Not expecting strategy %s",Strategy);
+    		case NEUROBOT_LEVEL:
     		case TESTBOT_LEVEL_1:
     		case TESTBOT_LEVEL_2:
-    		case TESTBOT_HYBRID_1:
-    		case TESTBOT_HYBRID_2:
-    		case DUMBOT_LEVEL: 
+    			val = XehEvaluator.evaluatePosition(board,neurobotNetwork);
+    			break;
+     		case DUMBOT_LEVEL: 
     		case DUMBOT_TRAINING_LEVEL:
-    		case PURE_NEUROBOT_LEVEL:
-    		case NEUROBOT_HYBRID:
-    		case NEUROBOT_LEVEL:
     		case SMARTBOT_LEVEL:
     			// betterEval based on "two lines" developed by Adam Shepherd, Oct 2009
       			val = dumbotEval(evboard,blobs,player,print);
        	  		break;
-    		case OLD_SMARTBOT_LEVEL: 
+    		case RANDOMBOT_LEVEL:
+    			return 0;
     		case BESTBOT_LEVEL: 	// both the same for now
     		case MONTEBOT_LEVEL:
     			// this is the old dumbot based on connections
@@ -422,11 +542,15 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     {	int playerindex = m.player;
     	switch(Strategy)
     	{
+    	case TESTBOT_LEVEL_2:
+    	case TESTBOT_LEVEL_1:
+    	case NEUROBOT_LEVEL:
+    		return XehEvaluator.evaluatePosition(board,neurobotNetwork);
+    	case RANDOMBOT_LEVEL:
+    		return randombotRandom.nextDouble();
     	case PURE_NEUROBOT_LEVEL:
 		case TESTBOT_HYBRID_2:
 		case TESTBOT_HYBRID_1:
-    	case TESTBOT_LEVEL_2:
-    	case TESTBOT_LEVEL_1:
 		case SMARTBOT_LEVEL:
     		{
     		// run an alpha-beta robot using the learned static evaluator
@@ -668,840 +792,49 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      * @param c
      * @return
      */
-    public double getNeuroEval(XehCell c)
-    {	mode = TeachMode.Net;
-    	UCTMoveSearcher ss = monte_search_state;
-    	if(robotRunning && ss!=null)
+    Genome guiplayer = null;
+    
+    public Hashtable<XehCell,Double>getEvaluations(XehBoard b)
+    {
+    	if(b.getState()!=XehState.Gameover)
+    	{	Hashtable<XehCell,Double>evals=new Hashtable<XehCell,Double>();
+    		CommonMoveStack moves =b.GetListOfMoves();
+    		for(commonMove m : moves)
+    		{	if(m.op==MOVE_DROPB)
+    			{
+    			XehMovespec mm = (XehMovespec)m;
+    			XehCell c = b.getCell(mm.to_col,mm.to_row);
+    			board.RobotExecute(mm);
+    			double v = Static_Evaluate_Position(mm);
+    			evals.put(c,v);
+    			board.UnExecute(mm);
+    			}
+    		}
+    		return evals;
+    	}
+    	return null;
+    }
+    public double getNeuroEval(XehCell c,XehBoard b)
+    {	
+    	double val = 0;
+    	switch(Strategy)
     	{
-    		UCTNode root = ss.root;
-    		if(root!=null)
-    			{ commonMove children[] = root.cloneChildren();
-    			  if(children!=null)
-    			  {	
-    				  for(commonMove child0 : children)
-    				  {	  XehMovespec child = (XehMovespec)child0;
-    					  if(c.col==child.to_col
-    						  && c.row==child.to_row
-    						  )
-    					  {	
-    						 UCTNode node = child.uctNode();
-     						 if(node!=null)
-     						 {
-     							 double minv = 999;
-     							 double maxv = 0;
-    					  	
-     							for(commonMove ch : children) 
-    					  		{ UCTNode n = ch.uctNode();
-    					  		  if(n!=null)
-    					  		  {
-    					  		  int vis = n.getVisits();
-    					  		  minv = Math.min(Math.max(0,vis),minv);
-    					  		  maxv = Math.max(vis, maxv);
-    					  		}}
-    						 
-    							 int vis = node.getVisits();
-    							 if(vis>0)
-    							 {	return((Math.max(0, vis)-minv)/(maxv-minv));
-    							 }
-     						 }
-     						 return(0);
-    					  }}
-    				  }
-    			  }
-     	return(0);
-     	}
-    	else if(teachNet!=null)
-    	{	double minvalue = 999;
-    		double maxvalue = -1;
-    		double values[] = null;
-    		mode = TeachMode.Net;
-    		switch(mode)
+    	case NEUROBOT_LEVEL:
+    	case TESTBOT_LEVEL_1:
+    	case TESTBOT_LEVEL_2:
     		{
-    		case Net:
-    	        netCalculatePositive(teachNet,GameBoard);
-        		values = teachNet.getValues();
-        		break;
-    		case Live:
-    			values = lastNetworkValues;
-    			break;
-    		case Trained:
-    			values = trainedValues;
-    			break;
-    		default: break;
+    		if(guiplayer==null) {  guiplayer = new Genome(neurobotNetwork); }
+    		int who = b.whoseTurn();
+    		XehMovespec mv = new XehMovespec(MOVE_DROPB,c.col,c.row,b.getPlayerColor(who),who);
+    		b.RobotExecute(mv);
+    		val = XehEvaluator.evaluatePosition(b,guiplayer)/4;
+    		b.UnExecute(mv);
     		}
-    		//teachNet.dumpWeights(true);
-    		if(values!=null)
-    		{
-    		int index = getMoveIndex(teachNet,c.col,c.row);
-    		for(int lim=values.length-1; lim>0; lim--) { double v=values[lim]; minvalue = Math.min(Math.max(0, minvalue), v); maxvalue = Math.max(maxvalue, v); }
-    		//if(c.col=='F'&&c.row==1) {G.print(""+c+" "+values[index]);}
-    		double target = values[index];
-    		double v = ((target-minvalue)/(maxvalue-minvalue));
-    		//if(c.col=='A'&&c.row==1) { G.print("T "+target); }
-    		return(v/*10*target*/);
-    		//return(board.ncols*2*target);
-    		}
-    		return(0);
-    	
+    		break;
+    	default: break;
     	}
-    	
-    	return(0);
+    	return(val);
     }
-    double [] trainedValues = null;
-    // set the training data for visualization
-    public void setTrainingData(commonMove cm)
-    {	String data = (String)cm.getProperty(TrainingData);
-    	trainedValues = null;
-    	if(evalNet!=null && data!=null)
-    	{	TrainingData td = new TrainingData();
-    		parseValues(td,(GenericNetwork)evalNet,data,0);
-    		long now = G.Date();
-    		trainedValues = now%1000<500? td.winrates : td.values;
-    	}
-    }
-    // net with an extra input layer for last 2 moves, which
-    // feeds into 2 of the 4 filter stacks
-   @SuppressWarnings("unused")
-private GenericNetwork createF8PIB()
-    {	int ncells = board.nCells();
-    	return new GenericNetwork(
-    				"NAME F8PIB"
-    				// f8p with an extra input layer for the last 2 moves
-    				+ " LAYER 0 (TYPE I ID IN )"
-    				+ " LAYER 1 (TYPE I ID IN2 )"
-    				
-    				// these two layers get context free information so they can
-    				// learn board features
-    				+ " LAYER 2 (TO 0 TYPE FILTER)"
-    				+ " LAYER 3 (TO 2 TYPE FILTER)"
-    				+ " LAYER 4 (TO 3 TYPE FILTER)"
-    				+ " LAYER 5 (TO 4 TYPE POOL)"
-    				
-    				+ " LAYER 6 (TO 0 TYPE FILTER)"
-    				+ " LAYER 7 (TO 6 TYPE FILTER)"								
-    				+ " LAYER 8 (TO 7 TYPE FILTER)"
-    				+ " LAYER 9 (TO 8 TYPE POOL)"
-    				
-    				// these 2 layers also include "last move" information
-    				// so they can learn response to local activity
-    				+ " LAYER 10 (TO 0 TYPE FILTER TOSINGLE IN2)"
-    				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-    				+ " LAYER 12 (TO 11 TYPE FILTER)"
-    				+ " LAYER 13 (TO 12 TYPE POOL)"
-    				
-    				+ " LAYER 14 (TO 0 TYPE FILTER TOSINGLE IN2)"
-    				+ " LAYER 15 (TO 14 TYPE FILTER)"								
-    				+ " LAYER 16 (TO 15 TYPE FILTER)"
-    				+ " LAYER 17 (TO 16 TYPE POOL)"
-    																				
-    				
-    				+ " LAYER 18 (TYPE FC TO 5 TO 9 TO 13 TO 17)"
-     				
-    				+ " COORDINATES HEX "+board.ncols
-    				+ " LEARNING_RATE 0.005"
-    				+ " TRANSFER_FUNCTION SIGMOID"
-    				,
-    				ncells,			// 0 input layer
-    				ncells,			// 1 extra input layer
-    				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
-    				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
-    				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
-    				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-     				ncells,				// 18 fully connected layer 	
-    				ncells+1			// 20 output layer
-    				);	// learn with all sigmoid nodes
-    }
-   // net with an extra input layer for last 2 moves, which
-   // feeds into 2 of the 4 filter stacks
-  @SuppressWarnings("unused")
-private GenericNetwork createF8PIC()
-   {	int ncells = board.nCells();
-   	return new GenericNetwork(
-   				"NAME F8PIC"
-   				+ " LEARNING_RATE 0.0001"
-  				// f8p with an extra input layer for the last 2 moves
-   				+ " LAYER 0 (TYPE I ID IN )"
-   				+ " LAYER 1 (TYPE I ID IN2 )"
-   				
-   				// these two layers get context free information so they can
-   				// learn board features
-   				+ " LAYER 2 (TO IN TOSINGLE IN2 TYPE FILTER)"
-   				+ " LAYER 3 (TO 2 TYPE FILTER)"
-   				+ " LAYER 4 (TO 3 TYPE FILTER)"
-   				+ " LAYER 5 (TO 4 TYPE POOL ID POOL1 )"
-   				
-   				+ " LAYER 6 (TO IN TOSINGLE IN2 TYPE FILTER)"
-   				+ " LAYER 7 (TO 6 TYPE FILTER)"								
-   				+ " LAYER 8 (TO 7 TYPE FILTER)"
-   				+ " LAYER 9 (TO 8 TYPE POOL ID POOL2)"
-   				
-   				// these 2 layers also include "last move" information
-   				// so they can learn response to local activity
-   				+ " LAYER 10 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-   				+ " LAYER 12 (TO 11 TYPE FILTER)"
-   				+ " LAYER 13 (TO 12 TYPE POOL ID POOL3)"
-   				
-   				+ " LAYER 14 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 15 (TO 14 TYPE FILTER)"								
-   				+ " LAYER 16 (TO 15 TYPE FILTER)"
-   				+ " LAYER 17 (TO 16 TYPE POOL ID POOL4)"
-   																				
-   				
-   				+ " LAYER 18 (TYPE FC TO POOL1 TO POOL2 TO POOL3 TO POOL4)"
-    				
-   				+ " COORDINATES HEX "+board.ncols
-   				+ " TRANSFER_FUNCTION SIGMOID"
-   				,
-   				ncells,			// 0 input layer
-   				ncells,			// 1 extra input layer
-   				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
-   				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
-   				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
-   				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-    				ncells,				// 18 fully connected layer 	
-   				ncells+1			// 19 output layer
-   				);	// learn with all sigmoid nodes
-   }
-   // net with an extra input layer for last 2 moves, which
-   // feeds into 2 of the 4 filter stacks
-  @SuppressWarnings("unused")
-private GenericNetwork createF8PICW()
-   {	int ncells = board.nCells();
-   	return new GenericNetwork(
-   				"NAME F8PICW"
-   				+ " LEARNING_RATE 0.0005"
-  				// f8p with an extra input layer for the last 2 moves
-   				+ " LAYER 0 (TYPE I ID IN )"
-   				+ " LAYER 1 (TYPE I ID IN2 )"
-   				
-   				// these two layers get context free information so they can
-   				// learn board features
-   				+ " LAYER 2 (TO IN TOSINGLE IN2 TYPE FILTER)"
-   				+ " LAYER 3 (TO 2 TYPE FILTER)"
-   				+ " LAYER 4 (TO 3 TYPE FILTER)"
-   				+ " LAYER 5 (TO 4 TYPE POOL ID POOL1 )"
-   				
-   				+ " LAYER 6 (TO IN TOSINGLE IN2 TYPE FILTER)"
-   				+ " LAYER 7 (TO 6 TYPE FILTER)"								
-   				+ " LAYER 8 (TO 7 TYPE FILTER)"
-   				+ " LAYER 9 (TO 8 TYPE POOL ID POOL2)"
-   				
-   				// these 2 layers also include "last move" information
-   				// so they can learn response to local activity
-   				+ " LAYER 10 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-   				+ " LAYER 12 (TO 11 TYPE FILTER)"
-   				+ " LAYER 13 (TO 12 TYPE POOL ID POOL3)"
-   				
-   				+ " LAYER 14 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 15 (TO 14 TYPE FILTER)"								
-   				+ " LAYER 16 (TO 15 TYPE FILTER)"
-   				+ " LAYER 17 (TO 16 TYPE POOL ID POOL4)"
-   																				
-   				
-   				+ " LAYER 18 (TYPE FC TO POOL1 TO POOL2 TO POOL3 TO POOL4)"
-    				
-   				+ " COORDINATES HEX "+board.ncols
-   				+ " TRANSFER_FUNCTION SIGMOID"
-   				,
-   				ncells,			// 0 input layer
-   				ncells,			// 1 extra input layer
-   				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
-   				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
-   				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
-   				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-    			ncells*4,				// 18 fully connected layer 	
-   				ncells+1			// 19 output layer
-   				);	// learn with all sigmoid nodes
-   }
-
-  // net with an extra input layers for white black and empty
- @SuppressWarnings("unused")
-private GenericNetwork createF93I()
-  {	int ncells = board.nCells();
-  	return new GenericNetwork(
-  				"NAME F93I"
-  				+ " LEARNING_RATE 0.0005"
- 				// f8p with an extra input layer for the last 2 moves
-  				+ " LAYER 0 (TYPE I ID INE )"	// empty
-  				+ " LAYER 1 (TYPE I ID INB )"	// white cells (normalized to white to move)
-  				+ " LAYER 2 (TYPE I ID INW )"	// black cells (normalized to white to move)
-  
-  				+ " LAYER 3 (TO INE TO INB TO INW TYPE FILTER)"
-  				+ " LAYER 4 (TO 3 TYPE FILTER)"
-  				+ " LAYER 5 (TO 4 TYPE FILTER)"
-  				+ " LAYER 6 (TO 5 TYPE FC)"
-				
-  				+ " LAYER 7 (TYPE O TO 6 ID OUT)"
-   				+ " LAYER 8 (TYPE I TO 6 ID WINWATE)"
-  				
-  				+ " COORDINATES HEX "+board.ncols
-  				+ " TRANSFER_FUNCTION SIGMOID"
-  				,
-  				ncells,			// empty input layer
-  				ncells,			// white input layer
-  				ncells,			// black input layer
-  				ncells,ncells,ncells,ncells,	// 3 4 5 6 filter layers
-  				ncells+1			// 19 output layer
-  				);	// learn with all sigmoid nodes
-  }
-   // net with an extra input layer for last 2 moves, which
-   // feeds into 2 of the 4 filter stacks
-  @SuppressWarnings("unused")
-private GenericNetwork createF8PC()
-   {	int ncells = board.nCells();
-   	return new GenericNetwork(
-   				"NAME F8PC"
-   				+ " LEARNING_RATE 0.0005"
-  				// f8p with an extra input layer for the last 2 moves
-   				+ " LAYER 0 (TYPE I ID IN )"
-   				+ " LAYER 1 (TYPE I ID IN2 )"
-   				
-   				// these two layers get context free information so they can
-   				// learn board features
-   				+ " LAYER 2 (TO IN TYPE FILTER)"
-   				+ " LAYER 3 (TO 2 TYPE FILTER)"
-   				+ " LAYER 4 (TO 3 TYPE FILTER)"
-   				+ " LAYER 5 (TO 4 TYPE POOL ID POOL1 )"
-   				
-   				+ " LAYER 6 (TO IN TYPE FILTER)"
-   				+ " LAYER 7 (TO 6 TYPE FILTER)"								
-   				+ " LAYER 8 (TO 7 TYPE FILTER)"
-   				+ " LAYER 9 (TO 8 TYPE POOL ID POOL2)"
-   				
-   				// these 2 layers also include "last move" information
-   				// so they can learn response to local activity
-   				+ " LAYER 10 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-   				+ " LAYER 12 (TO 11 TYPE FILTER)"
-   				+ " LAYER 13 (TO 12 TYPE POOL ID POOL3)"
-   				
-   				+ " LAYER 14 (TO IN TYPE FILTER TOSINGLE IN2)"
-   				+ " LAYER 15 (TO 14 TYPE FILTER)"								
-   				+ " LAYER 16 (TO 15 TYPE FILTER)"
-   				+ " LAYER 17 (TO 16 TYPE POOL ID POOL4)"
-   																				
-   				
-   				+ " LAYER 18 (TYPE O ID OUT TO POOL1 TO POOL2 TO POOL3 TO POOL4)"
-    				
-   				+ " COORDINATES HEX "+board.ncols
-   				+ " TRANSFER_FUNCTION SIGMOID"
-   				,
-   				ncells,			// 0 input layer
-   				ncells,			// 1 extra input layer
-   				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
-   				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
-   				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
-   				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-    			ncells+1				// 18 fully connected layer 	
-   				);	// learn with all sigmoid nodes
-   }
-  @SuppressWarnings("unused")
-private GenericNetwork createF8PCB()
-  {	int ncells = board.nCells();
-  	return new GenericNetwork(
-  				"NAME F8PCB"
-  				+ " LEARNING_RATE 0.0005"
- 				// f8p with an extra input layer for the last 2 moves
-  				+ " LAYER 0 (TYPE I ID IN )"
-  				+ " LAYER 1 (TYPE I ID IN2 )"
-  				
-  				// these two layers get context free information so they can
-  				// learn board features
-  				+ " LAYER 2 (TO IN TYPE FILTER)"
-  				+ " LAYER 3 (TO 2 TYPE FILTER)"
-  				+ " LAYER 4 (TO 3 TYPE FILTER)"
-  				+ " LAYER 5 (TO 4 TYPE POOL ID POOL1 )"
-  				
-  				+ " LAYER 6 (TO IN TYPE FILTER)"
-  				+ " LAYER 7 (TO 6 TYPE FILTER)"								
-  				+ " LAYER 8 (TO 7 TYPE FILTER)"
-  				+ " LAYER 9 (TO 8 TYPE POOL ID POOL2)"
-  				
-  				// these 2 layers also include "last move" information
-  				// so they can learn response to local activity
-  				+ " LAYER 10 (TO IN TYPE FILTER)"
-  				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-  				+ " LAYER 12 (TO 11 TYPE FILTER)"
-  				+ " LAYER 13 (TO 12 TYPE POOL ID POOL3)"
-  				
-  				+ " LAYER 14 (TO IN TYPE FILTER)"
-  				+ " LAYER 15 (TO 14 TYPE FILTER)"								
-  				+ " LAYER 16 (TO 15 TYPE FILTER)"
-  				+ " LAYER 17 (TO 16 TYPE POOL ID POOL4)"
-  																				
-  				
-  				+ " LAYER 18 ( TYPE O ID OUT TO IN2 TO POOL1 TO POOL2 TO POOL3 TO POOL4)"
-   				
-  				+ " COORDINATES HEX "+board.ncols
-  				+ " TRANSFER_FUNCTION SIGMOID"
-  				,
-  				ncells,			// 0 input layer
-  				ncells,			// 1 extra input layer
-  				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
-  				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
-  				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
-  				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-   			ncells+1				// 18 fully connected layer 	
-  				);	// learn with all sigmoid nodes
-  }
-  private GenericNetwork createSimple()
-  {	int ncells = board.nCells();
-  	return new GenericNetwork(
-  				"NAME F8PCB"
-  				+ " LEARNING_RATE 0.0005"
-  				+ " LAYER 0 (TYPE I ID IN )"		// normalized to white pieces
-  				+ " LAYER 1 (TYPE I ID IN2 )"		// normalized to black pieces
-  				
-  				+ " LAYER 2 (TO IN TO IN2 TYPE FC)"
-  				+ " LAYER 3 (TO 2 TYPE FC)"
- 				+ " LAYER 4 (TO 3 TYPE FC)"
- 				+ " LAYER 5 (TO 4 TYPE FC)"
- 				+ " LAYER 6 (TO 5 TYPE FC)"
- 				+ " LAYER 7 (TO 6 TYPE FC)"
- 				+ " LAYER 8 (TO 7 TYPE O)"
-   				
-  				+ " COORDINATES HEX "+board.ncols
-  				+ " TRANSFER_FUNCTION SIGMOID"
-  				,
-  				ncells,			// 0 input layer
-  				ncells,			// 1 extra input layer
-  				// 7 connected layers
-  				ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,
-  				// output layer 	
-  				ncells				
-  				);	// learn with all sigmoid nodes
-  }
-
-  // net with an extra input layer for last 2 moves, which
-  // feeds into 2 of the 4 filter stacks
- @SuppressWarnings("unused")
-private GenericNetwork createF8PID()
-  {	int ncells = board.nCells();
-  	return new GenericNetwork(
-  				"NAME F8PID"
-  				+ " LEARNING_RATE 0.0001"
- 				// f8pi with an extra input layer and deeper network
-  				+ " LAYER 0 (TYPE I ID IN )"
-  				+ " LAYER 1 (TYPE I ID IN2 )"
-  				
-  				// these two layers get context free information so they can
-  				// learn board features
-  				+ " LAYER 2 (TO IN TOSINGLE IN2 TYPE FILTER)"
-  				+ " LAYER 3 (TO 2 TYPE FILTER)"
-  				+ " LAYER 4 (TO 3 TYPE FILTER)"
-  				+ " LAYER 5 (TO 4 TYPE FILTER)"
-  				+ " LAYER 6 (TO 5 TYPE POOL ID POOL1 )"
-  				
-  				+ " LAYER 7 (TO IN TYPE FILTER)"
-  				+ " LAYER 8 (TO 7 TYPE FILTER)"								
- 				+ " LAYER 9 (TO 8 TYPE FILTER)"
- 				+ " LAYER 10 (TO 9 TYPE FILTER)"
-  				+ " LAYER 11 (TO 10 TYPE POOL ID POOL2)"
-  				
-   				
-  				+ " LAYER 12 (TYPE FC TO POOL1 TO POOL2)"
- 				+ " LAYER 13 (TYPE FC TO 12 )"
- 				+ " LAYER 14 (TYPE O ID OUT TO 13)"
-				   				
-  				+ " COORDINATES HEX "+board.ncols
-  				+ " TRANSFER_FUNCTION SIGMOID"
-  				,
-  				ncells,			// 0 input layer
-  				ncells,			// 1 extra input layer
-  				ncells,ncells,ncells,ncells,0,	// 2 3 4 5 filter layers 6 pool layer
-  				ncells,ncells,ncells,ncells,0,	// 7 8 9 10 filter layers 11 pool layer
-  				ncells,ncells,		// 12 13 Fc layers 
-  				ncells+1	// 14 output layer
-  				);	// learn with all sigmoid nodes
-  }
- 
- @SuppressWarnings("unused")
-private GenericNetwork createF8PCBW()
- {	int ncells = board.nCells();
- 	return new GenericNetwork(
- 				"NAME F8PCBW"
- 				+ " LEARNING_RATE 0.0005"
-				// f8p with an extra input layer for the last 2 moves
- 				+ " LAYER 0 (TYPE I ID IN )"
- 				+ " LAYER 1 (TYPE I ID IN2 )"
- 				
- 				// these two layers get context free information so they can
- 				// learn board features
- 				+ " LAYER 2 (TO IN TYPE FILTER)"
- 				+ " LAYER 3 (TO 2 TYPE FILTER)"
- 				+ " LAYER 4 (TO 3 TYPE FILTER)"
- 				+ " LAYER 5 (TO 4 TYPE POOL ID POOL1 )"
- 				
- 				+ " LAYER 6 (TO IN TYPE FILTER)"
- 				+ " LAYER 7 (TO 6 TYPE FILTER)"								
- 				+ " LAYER 8 (TO 7 TYPE FILTER)"
- 				+ " LAYER 9 (TO 8 TYPE POOL ID POOL2)"
- 				
- 				// these 2 layers also include "last move" information
- 				// so they can learn response to local activity
- 				+ " LAYER 10 (TO IN TYPE FILTER)"
- 				+ " LAYER 11 (TO 10 TYPE FILTER)"								
- 				+ " LAYER 12 (TO 11 TYPE FILTER)"
- 				+ " LAYER 13 (TO 12 TYPE POOL ID POOL3)"
- 				
- 				+ " LAYER 14 (TO IN TYPE FILTER)"
- 				+ " LAYER 15 (TO 14 TYPE FILTER)"								
- 				+ " LAYER 16 (TO 15 TYPE FILTER)"
- 				+ " LAYER 17 (TO 16 TYPE POOL ID POOL4)"
- 																				
- 				
- 				+ " LAYER 18 ( TYPE O ID OUT TO IN2 TO POOL1 TO POOL2 TO POOL3 TO POOL4 )"
-  				+ " LAYER 19 ( TYPE O ID WINRATE TO POOL1 TO POOL2 TO POOL3 TO POOL4 )"
- 				+ " COORDINATES HEX "+board.ncols
- 				+ " TRANSFER_FUNCTION SIGMOID"
- 				,
- 				ncells,			// 0 input layer
- 				ncells,			// 1 extra input layer
- 				ncells,ncells,ncells,ncells,	// 2 3 4 5 filter layers
- 				ncells,ncells,ncells,ncells,	// 6 7 8 9 filter layers
- 				ncells,ncells,ncells,ncells,	// 10 11 12 13 filter layers with extra input
- 				ncells,ncells,ncells,ncells,	// 14 15 16 17 filter layers with extra input
-  			ncells+1,			// 18 fully connected layer for visit counts
-  			ncells+1			// 19 fully connected layer for winrates
- 				);	// learn with all sigmoid nodes
- }
- // no bias for recent moves
- @SuppressWarnings("unused")
-private GenericNetwork createF8PW()
- {	int ncells = board.nCells();
- 	return new GenericNetwork(
- 				"NAME F8PW"
- 				+ " LEARNING_RATE 0.0005"
-				+ " LAYER 0 (TYPE I ID IN )"
- 				
- 				// these two layers get context free information so they can
- 				// learn board features
- 				+ " LAYER 1 (TO IN TYPE FILTER)"
- 				+ " LAYER 2 ( TYPE FILTER)"
- 				+ " LAYER 3 ( TYPE FILTER)"
- 				+ " LAYER 4 ( TYPE POOL ID POOL1 )"
- 				
- 				+ " LAYER 5 (TO IN TYPE FILTER)"
- 				+ " LAYER 6 ( TYPE FILTER)"								
- 				+ " LAYER 7 ( TYPE FILTER)"
- 				+ " LAYER 8 ( TYPE POOL ID POOL2)"
- 				
- 				+ " LAYER 9 (TO IN TYPE FILTER)"
- 				+ " LAYER 10 ( TYPE FILTER)"								
- 				+ " LAYER 11 ( TYPE FILTER)"
- 				+ " LAYER 12 ( TYPE POOL ID POOL3)"
- 				
- 				+ " LAYER 13 (TO IN TYPE FILTER)"
- 				+ " LAYER 14 ( TYPE FILTER)"								
- 				+ " LAYER 15( TYPE FILTER)"
- 				+ " LAYER 16 ( TYPE POOL ID POOL4)"
- 																				
- 				
- 				+ " LAYER 17 ( TYPE O ID OUT TO POOL1 TO POOL2 TO POOL3 TO POOL4 )"
-  				+ " LAYER 18 ( TYPE O ID WINRATE TO POOL1 TO POOL2 TO POOL3 TO POOL4 )"
- 				+ " COORDINATES HEX "+board.ncols
- 				+ " TRANSFER_FUNCTION SIGMOID"
- 				,
- 				ncells,			// 0 input layer
- 				ncells,ncells,ncells,ncells,	// 1 2 3 4  filter layers
- 				ncells,ncells,ncells,ncells,	// 5 6 7 8  filter layers
- 				ncells,ncells,ncells,ncells,	// 9 10 11 12 filter layers with extra input
- 				ncells,ncells,ncells,ncells,	// 13 14 15 16 filter layers with extra input
-  			ncells+1,			// 17 fully connected layer for visit counts
-  			ncells+1			// 18 fully connected layer for winrates
- 				);	// learn with all sigmoid nodes
- }
- 
- //
-//no bias for recent moves.  Same as F8PX, just a different name
-//
-private GenericNetwork createF8PXC()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-				"NAME F8PXC"
-				+ " LEARNING_RATE 0.001"	// reduced learning rate, was 0.0005 then 0.0002
-				+ " LAYER NEXT (TYPE I ID INE )"	// empty stones
-				+ " LAYER NEXT (TYPE I ID INW )"	// white stones
-				+ " LAYER NEXT (TYPE I ID INB )"	// black stones
-				+ " LAYER NEXT (TYPE I ID INC )"	// constant color to move 
-				
-				+ " LAYER NEXT (TO INE TO INW TO INB TO INC TYPE FC)"
-				+ " LAYER NEXT (TYPE FC)"
-				+ " LAYER NEXT (TYPE FC)"
-				+ " LAYER NEXT (TYPE FC)"																				
-				+ " LAYER NEXT (TYPE FC ID FINAL)"
-				+ " LAYER NEXT ( TYPE O ID OUT TO FINAL)"
-				+ " LAYER NEXT ( TYPE O ID WINRATE TO FINAL)"
-				+ " COORDINATES HEX "+board.ncols
-				+ " TRANSFER_FUNCTION SIGMOID"
-				,
-				ncells,	ncells,ncells,1,		// 0,1,2,3 input layers
-				ncells,ncells,ncells,ncells,ncells,	// 5 fully connected filter layers
-				ncells+1,			// fully connected layer for visit counts
-				ncells+1			// fully connected layer for winrates
-				);	// learn with all sigmoid nodes
-}
-
-//
-//no bias for recent moves.  Same as F8PX, just a different name
-//
- GenericNetwork createF8PXA()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-				"NAME F8PXA"
-				+ " LEARNING_RATE 0.0002"	// reduced learning rate, was 0.0005
-				+ " LAYER 0 (TYPE I ID IN )"
-				
-				// these two layers get context free information so they can
-				// learn board features
-				+ " LAYER 1 (TO IN TYPE FILTER)"
-				+ " LAYER 2 ( TYPE FILTER)"
-				+ " LAYER 3 ( TYPE FILTER)"
-				+ " LAYER 4 ( TYPE FILTER)"
-				+ " LAYER 5 ( TYPE POOL ID POOL1 )"
-				
-				+ " LAYER 6 (TO IN TYPE FILTER)"
-				+ " LAYER 7 ( TYPE FILTER)"								
-				+ " LAYER 8 ( TYPE FILTER)"
-				+ " LAYER 9 ( TYPE FILTER)"
-				+ " LAYER 10 ( TYPE POOL ID POOL2)"
-				
-				+ " LAYER 11 (TO IN TYPE FILTER)"
-				+ " LAYER 12 ( TYPE FILTER)"								
-				+ " LAYER 13 ( TYPE FILTER)"
-				+ " LAYER 14 ( TYPE FILTER)"
-				+ " LAYER 15 ( TYPE POOL ID POOL3)"
-				
-				+ " LAYER 16 (TO IN TYPE FILTER)"
-				+ " LAYER 17 ( TYPE FILTER)"								
-				+ " LAYER 18( TYPE FILTER)"
-				+ " LAYER 19( TYPE FILTER)"
-				+ " LAYER 20 ( TYPE POOL ID POOL4)"
-																				
-				+ " LAYER 21 (TO IN TYPE FILTER)"
-				+ " LAYER 22 ( TYPE FILTER)"								
-				+ " LAYER 23( TYPE FILTER)"
-				+ " LAYER 24( TYPE FILTER)"
-				+ " LAYER 25 ( TYPE POOL ID POOL5)"
-				
-				+ " LAYER 26 ( TYPE O ID OUT TO POOL1 TO POOL2 TO POOL3 TO POOL4 TO POOL5)"
-				+ " LAYER 27 ( TYPE O ID WINRATE TO POOL1 TO POOL2 TO POOL3 TO POOL4 TO POOL5)"
-				+ " COORDINATES HEX "+board.ncols
-				+ " TRANSFER_FUNCTION SIGMOID"
-				,
-				ncells,			// 0 input layer
-				ncells,ncells,ncells,ncells,ncells,	// 1 2 3 4 5  filter layers
-				ncells,ncells,ncells,ncells,ncells,	// 6 7 8 9 10 filter layers
-				ncells,ncells,ncells,ncells,ncells,	// 11 12 13 14 15 filter layers with extra input
-				ncells,ncells,ncells,ncells,ncells,	// 16 17 18 19 20 filter layers with extra input
-				ncells,ncells,ncells,ncells,ncells,	// 21 22 23 34 35 filter layers with extra input
-			ncells+1,			// 26 fully connected layer for visit counts
-			ncells+1			// 27 fully connected layer for winrates
-				);	// learn with all sigmoid nodes
-}
-@SuppressWarnings("unused")
-private GenericNetwork createF8PI()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-				"NAME F8PI"
-				+ " LAYER 0 (TYPE I ID IN )"
-				// f8p with an extra input layer for the last 2 moves
-				+ " LAYER 1 (TO 0 TYPE FILTER)"
-				+ " LAYER 2 (TO 1 TYPE FILTER)"
-				+ " LAYER 3 (TO 2 TYPE FILTER)"
-				+ " LAYER 4 (TO 3 TYPE POOL)"
-				
-				+ " LAYER 5 (TO 0 TYPE FILTER)"
-				+ " LAYER 6 (TO 5 TYPE FILTER)"								
-				+ " LAYER 7 (TO 6 TYPE FILTER)"
-				+ " LAYER 8 (TO 7 TYPE POOL)"
-				
-				+ " LAYER 9 (TO 0 TYPE FILTER)"
-				+ " LAYER 10 (TO 9 TYPE FILTER)"								
-				+ " LAYER 11 (TO 10 TYPE FILTER)"
-				+ " LAYER 12 (TO 11 TYPE POOL)"
-				
-				+ " LAYER 13 (TO 0 TYPE FILTER)"
-				+ " LAYER 14 (TO 13 TYPE FILTER)"								
-				+ " LAYER 15 (TO 14 TYPE FILTER)"
-				+ " LAYER 16 (TO 15 TYPE POOL)"
-																				
-				+ " LAYER 17 (TYPE I ID IN2 )"
-				+ " LAYER 18 (TYPE FC TO 17 TO 4 TO 8 TO 12 TO 16)"
-
-				+ " COORDINATES HEX "+board.ncols
-				+ " LEARNING_RATE 0.005"
-				+ " TRANSFER_FUNCTION SIGMOID"
-				,
-				ncells,			// 0 input layer
-				ncells,ncells,ncells,ncells,	// 1 2 3 4 filter layers
-				ncells,ncells,ncells,ncells,	// 5 6 7 8 filter layers
-				ncells,ncells,ncells,ncells,	// 9 10 11 12 filter layers
-				ncells,ncells,ncells,ncells,	// 13 14 15 16 filter layers
-				ncells,				// 17 extra input layer
-				ncells,				// 18 fully connected layer 		
-				ncells+1			// 19 output layer
-				);	// learn with all sigmoid nodes
-}
-@SuppressWarnings("unused")
-private GenericNetwork createF8PS()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-				"NAME F8PS"
-				+ " LAYER 0 (TYPE I ID IN )"
-				+ " LAYER 1 (TO IN TYPE FILTER)"
-				+ " LAYER 2 (TO 1 TYPE FILTER)"
-				+ " LAYER 3 (TO 2 TYPE POOL ID POOL1)"
-				
-				+ " LAYER 4 (TO IN TYPE FILTER)"
-				+ " LAYER 5 (TO 4 TYPE FILTER)"								
-				+ " LAYER 6 (TO 5 TYPE POOL ID POOL2)"
-				
-				+ " LAYER 7 (TO IN TYPE FILTER)"
-				+ " LAYER 8 (TO 7 TYPE FILTER)"								
-				+ " LAYER 9 (TO 8 TYPE POOL ID POOL3)"
-				
-				+ " LAYER 10 (TO IN TYPE FILTER)"
-				+ " LAYER 11 (TO 10 TYPE FILTER)"								
-				+ " LAYER 12 (TO 11 TYPE POOL ID POOL4)"
-				
-				+ " LAYER 13 (TO IN TYPE FILTER)"
-				+ " LAYER 14 (TO 13 TYPE FILTER)"
-				+ " LAYER 15 (TO 14 TYPE POOL ID POOL5)"
-																				
-				+ " LAYER 16 (TYPE FC TO POOL1 TO POOL2 TO POOL3 TO POOL4 TO POOL5)"
-
-				+ " COORDINATES HEX "+board.ncols
-				+ " LEARNING_RATE 0.0025"
-				+ " TRANSFER_FUNCTION SIGMOID"
-				,
-				ncells,			// 0 input layer
-				ncells,ncells,ncells,	// 1 2 3  filter layers
-				ncells,ncells,ncells,	// 4 5 6  filter layers
-				ncells,ncells,ncells,	// 7 8 9  filter layers
-				ncells,ncells,ncells,	// 10 11 12 filter layers
-				ncells,ncells,ncells,	// 13 14 15 filter layers
-				ncells,				// 16 fully connected layer 		
-				ncells+1			// 17 output layer
-				);	// learn with all sigmoid nodes
-}
-@SuppressWarnings("unused")
-private GenericNetwork createF8P()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-				"NAME F8P"
-				+ " LAYER 0 (TYPE I ID IN )"
-				+ " LAYER 1 (TO IN TYPE FILTER)"
-				+ " LAYER 2 (TO 1 TYPE FILTER)"
-				+ " LAYER 3 (TO 2 TYPE FILTER)"
-				+ " LAYER 4 (TO 3 TYPE POOL ID POOL1)"
-				
-				+ " LAYER 5 (TO IN TYPE FILTER)"
-				+ " LAYER 6 (TO 5 TYPE FILTER)"								
-				+ " LAYER 7 (TO 6 TYPE FILTER)"
-				+ " LAYER 8 (TO 7 TYPE POOL ID POOL2)"
-				
-				+ " LAYER 9 (TO IN TYPE FILTER)"
-				+ " LAYER 10 (TO 9 TYPE FILTER)"								
-				+ " LAYER 11 (TO 10 TYPE FILTER)"
-				+ " LAYER 12 (TO 11 TYPE POOL ID POOL3)"
-				
-				+ " LAYER 13 (TO IN TYPE FILTER)"
-				+ " LAYER 14 (TO 13 TYPE FILTER)"								
-				+ " LAYER 15 (TO 14 TYPE FILTER)"
-				+ " LAYER 16 (TO 15 TYPE POOL ID POOL4)"
-																				
-				+ " LAYER 17 (TYPE FC TO POOL1 TO POOL2 TO POOL3 TO POOL4)"
-
-				+ " COORDINATES HEX "+board.ncols
-				+ " LEARNING_RATE 0.0025"
-				+ " TRANSFER_FUNCTION SIGMOID"
-				,
-				ncells,			// 0 input layer
-				ncells,ncells,ncells,ncells,	// 1 2 3 4 filter layers
-				ncells,ncells,ncells,ncells,	// 5 6 7 8 filter layers
-				ncells,ncells,ncells,ncells,	// 9 10 11 12 filter layers
-				ncells,ncells,ncells,ncells,	// 13 14 15 16 filter layers
-				ncells,				// 17 extra input layer
-				ncells,				// 18 fully connected layer 		
-				ncells+1			// 19 output layer
-				);	// learn with all sigmoid nodes
-}
-
-//small network with fully connected layers
-@SuppressWarnings("unused")
-private GenericNetwork createS4()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-		"NAME S4"
-		+ " COORDINATES HEX "+board.ncols
-		+ " LEARNING_RATE 0.0025"
-		+ " TRANSFER_FUNCTION SIGMOID",
-		ncells,			// 0 input layer
-		ncells,ncells,	// 1 2 filter layers
-		ncells+1		// 3 output layer
-		);
-}
-// medium network with filters
-@SuppressWarnings("unused")
-private GenericNetwork createF2()
-{	int ncells = board.nCells();
-	return new GenericNetwork (
-			"NAME F2"
-			+ " LAYER 1 (TO 0 TYPE FILTER)"
-			+ " LAYER 2 (TO 1 TYPE FILTER)"
-			+ " LAYER 3 (TO 0 TYPE FILTER)"
-			+ " LAYER 4 (TO 3 TYPE FILTER)"
-		
-			+ " LAYER 5 (TYPE FC TO 2 TO 4 )"
-			+ " LAYER 6 (TYPE O TO 5)"
-			+ " COORDINATES HEX "+board.ncols
-			+ " LEARNING_RATE 0.001"
-			+ " TRANSFER_FUNCTION SIGMOID",
-	ncells,			// 0 input layer
-	ncells,ncells,	// 1 2 filter layers
-	ncells,ncells,	// 3 4 filter layers 
-	ncells*2,		// 5 fully connected layer 		
-	ncells+1		// 6 output layer
-	);
-}
-@SuppressWarnings("unused")
-private GenericNetwork createF4()
-{	int ncells = board.nCells();
-	return new GenericNetwork(
-			"NAME F4"
-	+ " LAYER 1 (TO 0 TYPE FILTER)"
-	+ " LAYER 2 (TO 1 TYPE FILTER)"
-	
-	+ " LAYER 3 (TO 0 TYPE FILTER)"
-	+ " LAYER 4 (TO 3 TYPE FILTER)"
-	
-	+ " LAYER 5 (TO 0 TYPE FILTER)"
-	+ " LAYER 6 (TO 5 TYPE FILTER)"
-	
-	+ " LAYER 7 (TO 0 TYPE FILTER)"
-	+ " LAYER 8 (TO 7 TYPE FILTER)"
-	
-	+ " LAYER 9 (TYPE FC TO 2 TO 4 TO 6 TO 8)"
-
-	+ " COORDINATES HEX "+board.ncols
-			
-	+ " LEARNING_RATE 0.005"
-	+ " TRANSFER_FUNCTION SIGMOID",
-	ncells,			// 0 input layer
-	ncells,ncells,	// 1 2 filter layers
-	ncells,ncells,	// 3 4 filter layers 
-	ncells,ncells,	// 5 6 filter layers
-	ncells,ncells,	// 7 8 filter layers 
-	
-	ncells*4,			// 9 fully connected layer 		
-	ncells*2,			// 10 fully connected layer 		
-	ncells+1		// 11 output layer
-	);
-
-}
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
  * are parameters from the applet that can be interpreted as desired.  The debugging 
@@ -1509,6 +842,7 @@ private GenericNetwork createF4()
  * really used at this point, but was intended to be the class name of a plugin
  * evaluator class
  */
+ 
  public void InitRobot(ViewerProtocol newParam, ExtendedHashtable info, BoardProtocol gboard,
         String evaluator, int strategy)
     {
@@ -1542,102 +876,28 @@ private GenericNetwork createF4()
         	verbose=1;
         	break;
 		case TESTBOT_HYBRID_2:
-			name = "TESTBOT_HYBRID_2";
-			//$FALL-THROUGH$
-		case TESTBOT_LEVEL_2:
-		{	// run an alpha-beta bot using the learned network as the static eval
-			if(strategy==TESTBOT_LEVEL_2) { name = "TESTBOT2"; }
-			teachNet = evalNet = GenericNetwork.loadNetwork(
-					//"g:/temp/nn/F8PX-121-upto-f8px-121-4b.txt"
-					//"g:/temp/nn/F8PX-121-upto-f8px-121-4a.txt"
-					//"g:/temp/nn/F8PXA-25-hex5-raw-5.txt"
-					//"g:/temp/nn/F8PXB-121-hex11-raw-3.txt"
-					//"g:/temp/nn/F8PXB-25-xeh_5-raw-54.txt"
-					//"g:/temp/nn/F8PXB-49-xeh_7-raw-17a.txt"	// 0.0002 learning rate
-					//"g:/temp/nn/F8PXB-49-xeh_7-raw-3b.txt"	// 0.001 learning rate
-					//"g:/temp/nn/F8PXB-49-xeh_7-1-85a.txt" // rms 68360=0.3935216907750162 control 7596=0.39891015698433085
-					"g:/temp/nn/F8PXB-49-xeh_7-2-13a.txt"	//  rms 68768=0.37521682999399714 control 7644=0.37722832170526016
-					);
-			evalNet.saveNetwork("g:/temp/nn/testbot2save.txt","resaved");
-			MONTEBOT = true;
-			//minMovesPerSecond = 100000;	// train at a constant playout rate
-			//maxMovesPerSecond = 100000;
-			winRateWeight = neuroWinRateWeight;
-			timePerMove = 1;
-        	ALPHA = 0.5;	// standard alpha
-        	BETA = 0.25;
-        	CHILD_SHARE = 0.85;
-			NEUROBOT = true;
-		}
-		break;
-		case PURE_NEUROBOT_LEVEL:
-		{	// run an alpha-beta bot using the learned network as the static eval
-			teachNet = evalNet = GenericNetwork.loadNetwork(
-					//"g:/temp/nn/F8PX-121-upto-f8px-121-4b.txt"
-					//"g:/temp/nn/F8PX-121-upto-f8px-121-4a.txt"
-					//"g:/temp/nn/F8PXB-25-hex5-raw-5.txt"
-					//"g:/temp/nn/F8PXB-49-xeh_7-2-13a.txt"
-					"g:/temp/nn/F8PXC-49-train-44.txt"
-					);
-			//evalNet.saveNetwork("g:/temp/nn/testbot2save.txt","resaved");
+			break;
+		case RANDOMBOT_LEVEL:
+			randombotRandom = new Random();
+			MAX_DEPTH = 2;
+			break;
+			
+		case NEUROBOT_LEVEL:		// neat neuralbot with no lookahead
 			MONTEBOT = false;
-			MAX_DEPTH = 1;
+			MAX_DEPTH = 2;
+			verbose = 3;
 			RANDOMIZE = false;
-			//minMovesPerSecond = 100000;	// train at a constant playout rate
-			//maxMovesPerSecond = 100000;
-			winRateWeight = neuroWinRateWeight;
-			deadChildOptimization = false;
-        	ALPHA = 0.5;	// standard alpha
-        	BETA = 0.25;
-        	CHILD_SHARE = 0.85;
-			NEUROBOT = true;
-		}
-		break;
+			G.print("neat bot with no lookahead");
+			neurobotNetwork = (Genome)NetIo.load(neatest);
+			guiplayer = null;
+			break;
 
 		case SMARTBOT_LEVEL:
 			name = "SMARTBOT";
 			//$FALL-THROUGH$
 		case TESTBOT_HYBRID_1:
-			if(strategy==TESTBOT_HYBRID_1) { name = "TESTBOT_HYBRID_1"; }
-			//$FALL-THROUGH$
-		//case TESTBOT_LEVEL_1:
-		{	// run an alpha-beta bot using the learned network as the static eval
-			if(strategy==TESTBOT_LEVEL_1) { name = "TESTBOT1"; }
-			teachNet = evalNet = GenericNetwork.loadNetwork(
-
-					"g:/temp/nn/hex-5-raw.txt"
-					);
-			evalNet.saveNetwork("g:/temp/nn/testbot1save.txt","resaved");
-			MONTEBOT = true;
-			timePerMove = 30;
-        	winRateWeight = neuroWinRateWeight*2;
-        	deadChildOptimization = false;
-        	ALPHA = 0.5;
-        	BETA = 0.25;
-        	CHILD_SHARE = 0.85;
-			NEUROBOT = true;
-		}
-		break;
 		
 		case UCT_NEUROBOT_PLAY_LEVEL:
-		{	// run an alpha-beta bot using the learned network as the static eval
-			teachNet = evalNet = GenericNetwork.loadNetwork(
-					"g:/temp/nn/F8PXB-25-hex5-raw-5.txt" // 
-					);
-			evalNet.saveNetwork("g:/temp/nn/testbot1save.txt","resaved");
-			MONTEBOT = true;
-			name = "Testbot1";
-			//minMovesPerSecond = 20000;	// train at a constant playout rate
-			//maxMovesPerSecond = 20000;
-			minMovesPerSecond = 0;
-        	winRateWeight = 0;
-        	ALPHA = 0.5;
-        	BETA = 0.25;
-        	CHILD_SHARE = 0.85;
-
-			NEUROBOT = true;
-		}
-		break;
 
 		case DUMBOT_TRAINING_LEVEL:
 			MONTEBOT=true;
@@ -1650,140 +910,9 @@ private GenericNetwork createF4()
         	BETA = 0.25;
         	CHILD_SHARE = 0.85;
 			break;
-		case UCT_NEUROBOT_TRAIN_LEVEL:
-			name = "Neurobot";
-			if(NEURO_MONTEBOT)
-			{	// start from scratch
-	        	timePerMove = 5;	// after partial training, 10, before 2
-	        		evalNet = teachNet;
-					if(evalNet ==null)
-					{
-					try {
-					evalNet =
-							GenericNetwork.loadNetwork(
-							//"g:/temp/nn/f8pcb-upto-f8pcb-16.txt"	// best 3/9/2008
-							//"g:/temp/nn/f8pcb-upto-f8pcb-17.txt"	// not significantly better
-							//"g:/temp/nn/f8pcb-upto-f8pcb-18.txt" 	// not significantly better 
-							//"g:/temp/nn/F8PCBW-121-upto-f8pcbw-2a.txt" // 22:16
-									"g:/temp/nn/F8PCBW-neutral-121-upto-f8pcbw-1a.txt"
-							);
-
-					}
-					catch (ErrorX x)
-					{}
-					if(evalNet==null)
-						{	
-						evalNet = 
-								//createS4();
-								//createF4();
-								//createF8P();	// 4 filter layers
-								//createF8PS();	// shallower, 5 filter layers
-								//createF8PI()	// 4 filter layers with lastmove info after pooling
-								//createF8PIB()
-								//createF8PIC()	// 4 filter layers with lastmove at the head
-								//createF8PID()	// 2 filter layers, deeper network
-								//createF8PC()
-								//createF8PCB()	// 4 filter layers, lastmove only at output
-								//createF8PICW()
-						createSimple()	// 7 fully connected layers
-								;			
-						}
-					}
-				((GenericNetwork)evalNet).testNetwork();
-				teachNet = evalNet;
-				minMovesPerSecond = 200000;	// train at a constant playout rate
-				maxMovesPerSecond = 200000;
-				MONTEBOT=true;
-	        	verbose = 1;
-	        	deadChildOptimization = false;
-	        	storedChildLimit = 2*UCTMoveSearcher.defaultStoredChildLimit;
-	        	winRateWeight = 0;
-	        	ALPHA = 0.5;
-	        	BETA = 0.25;
-	        	CHILD_SHARE = 0.85;
-				NEUROBOT = true;
-			}
-			else
-			{
-			if(level1Net==null)
-				{
-				// learn the static evaluation function used by dumbot
-				// start fresh
-				//level1Net = new GenericNetwork("OUTPUT_TRANSFER_FUNCTION LINEAR",49,20,20,2);
-				//level8Net = new GenericNetwork("OUTPUT_TRANSFER_FUNCTION LINEAR",49,20,20,20,20,1);
-				// resume learning
-				int ncells = board.getCellArray().length;
-
-				level1Net = GenericNetwork.loadNetwork("g:/temp/nn/hexnet1-"+ncells+".txt");
-				level8Net = GenericNetwork.loadNetwork("g:/temp/nn/hexnet8-"+ncells+".txt");
-				}
-			
-			MAX_DEPTH = 6;
-			NEUROBOT = true;
-			}
-			break;			
 		case NEUROBOT_HYBRID:
 			name = "Neurobot_hybrid";
 			//$FALL-THROUGH$
-		case NEUROBOT_LEVEL:
-			if(strategy==NEUROBOT_LEVEL) { name = "Neurobot"; }
-			if(NEURO_MONTEBOT)
-			{	// start from scratch
-	        	timePerMove = 2;	// weak playouts
-	        	evalNet = teachNet;
-	        	if(evalNet ==null)
-					{
-					try {
-					evalNet =
-							GenericNetwork.loadNetwork(
-									//"g:/temp/nn/hex5-raw.txt"
-									//"g:/temp/nn/"+board.variation+"-raw.txt"
-									//"g:/temp/nn/F8PXB-49-xeh_7-raw-3b.txt"	// 0.001 learning rate
-									"g:/temp/nn/F8PXB-49-xeh_7-1-85a.txtx"
-									);
-
-					}
-					catch (ErrorX x)
-					{}
-					if(evalNet==null)
-						{	
-						evalNet = 
-								createF8PXC();	// 5 filter layers, lastmove only at output, + winrates
-								;			
-						}
-					}
-				((GenericNetwork)evalNet).testNetwork();
-				teachNet = evalNet;
-				MONTEBOT=true;
-	        	verbose = 1;
-	        	deadChildOptimization = false;
-	        	storedChildLimit = 2*UCTMoveSearcher.defaultStoredChildLimit;
-	        	winRateWeight = neuroWinRateWeight;
-	        	ALPHA = 0.5;	// standard exploration
-	        	BETA = 0.25;
-	        	CHILD_SHARE = 0.85;
-				NEUROBOT = true;
-			}
-			else
-			{
-			if(level1Net==null)
-				{
-				// learn the static evaluation function used by dumbot
-				// start fresh
-				//level1Net = new GenericNetwork("OUTPUT_TRANSFER_FUNCTION LINEAR",49,20,20,2);
-				//level8Net = new GenericNetwork("OUTPUT_TRANSFER_FUNCTION LINEAR",49,20,20,20,20,1);
-				// resume learning
-				int ncells = board.getCellArray().length;
-
-				level1Net = GenericNetwork.loadNetwork("g:/temp/nn/hexnet1-"+ncells+".txt");
-				level8Net = GenericNetwork.loadNetwork("g:/temp/nn/hexnet8-"+ncells+".txt");
-				}
-			
-			MAX_DEPTH = 6;
-			NEUROBOT = true;
-			}
-			break;
-			
 		case TESTBOT_LEVEL_1:
          	MONTEBOT=DEPLOY_MONTEBOT;
            	name = WEAKBOT ? "WeakBot" : "Weak MonteBot";
@@ -1794,6 +923,17 @@ private GenericNetwork createF4()
         	deadChildOptimization = false;
         	CHILD_SHARE = 0.85;
         	break;
+
+		case TESTBOT_LEVEL_2:	// neat neurobot with 3 ply lookahead
+			MONTEBOT = false;
+			MAX_DEPTH = 4;
+			verbose = 1;
+			RANDOMIZE = false;
+			G.print("neat bot with 3 ply lookahead");
+			neurobotNetwork = (Genome)NetIo.load(neatest);
+			guiplayer = null;
+			break;
+
         case MONTEBOT_LEVEL:
           	MONTEBOT=DEPLOY_MONTEBOT;
            	name = WEAKBOT ? "WeakBot" : "MonteBot";
@@ -1853,7 +993,9 @@ public void PrepareToMove(int playerIndex)
             }
 
             // it's important that the robot randomize the first few moves a little bit.
-            int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
+            int randomn = RANDOMIZE
+            				? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) 
+            				: 0;
             boardSearchLevel = 0;
 
             int depth = MAX_DEPTH;	// search depth
@@ -1883,15 +1025,7 @@ public void PrepareToMove(int playerIndex)
             	// doesn't really matter, but some games have disastrous
             	// opening moves that we wouldn't want to choose randomly
                 move = (XehMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-                if((move!=null) && (level8Net!=null))
-                {
-                	double eval = move.evaluation();
-        	        netCalculatePositive(level8Net,board);
-                	level8Net.learn(new double[] {eval});
-                	int ncells = board.getCellArray().length;
-                	level8Net.saveNetwork("G:/temp/nn/"+level8Net.getName()+"-"+ncells+".txt","Level 8 network");
-                }
-            }
+             }
         }
         finally
         {
@@ -2005,6 +1139,8 @@ public void PrepareToMove(int playerIndex)
  {	
 	 switch(Strategy)
 	 {
+	 case RANDOMBOT_LEVEL:
+		 return board.Get_Random_Hex_Move(rand);
 	 case TESTBOT_HYBRID_1:
 	 case TESTBOT_HYBRID_2:
 	 case SMARTBOT_LEVEL:
@@ -2015,7 +1151,6 @@ public void PrepareToMove(int playerIndex)
 	 case MONTEBOT_LEVEL:
 		 G.p1("using smart random hex moves");
 		 return(board.Get_Localrandom_Hex_Move_M(rand));
-	 case NEUROBOT_LEVEL:
 	 case DUMBOT_TRAINING_LEVEL:
 		 G.p1("using dumb random hex moves");
 		 return board.Get_Random_Hex_Move(rand);
@@ -2039,7 +1174,6 @@ public void PrepareToMove(int playerIndex)
 	{
 	default: G.Error("Not expected");
 		break;
-	case NEUROBOT_LEVEL:
 	case NEUROBOT_HYBRID:
 	case TESTBOT_LEVEL_1:
 	case TESTBOT_LEVEL_2:
@@ -2056,7 +1190,6 @@ public void PrepareToMove(int playerIndex)
 	 switch(Strategy)
 	 {
 	 default: return("unknown training method");
-	 case NEUROBOT_LEVEL:
 	 case NEUROBOT_HYBRID:
 	 case TESTBOT_LEVEL_1:
 	 case TESTBOT_LEVEL_2:
@@ -2141,8 +1274,6 @@ public void PrepareToMove(int playerIndex)
         	}
         	
         }
-        if(LIVE_TRAINING) { teachMonteNetwork(evalNet,monte_search_state); }
-        else { printTrainingData(trainingData,monte_search_state); }
         }
  		}
       finally { ; }
@@ -2157,9 +1288,9 @@ public void PrepareToMove(int playerIndex)
   */
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
- 	boolean win = board.winForPlayerNow(player);
+ 	boolean win = board.hasWinningPath(player);
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
- 	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
+ 	boolean win2 = board.hasWinningPath(nextPlayer[player]);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
  	return(0);
  }
@@ -2215,642 +1346,26 @@ public void PrepareToMove(int playerIndex)
   	return(super.Static_Evaluate_Search_Move(mm,current_depth, master)); 
   	
   }
-	public void runGame_play(ViewerProtocol viewer,commonRobot<?> otherBot)
-	 {	
-		int rep = 0;
-		int wins[] = new int[2];
-		beingMonitored = true;
-	 	monitor = GameBoard;
-		while(beingMonitored())
-		{
-		CommonMoveStack gameMoves = new CommonMoveStack();
-		boolean firstPlayer = ((rep&1)==0);
-		commonRobot<?> robots[] = new commonRobot[] 
-									{ firstPlayer ? this : otherBot,
-									  firstPlayer ? otherBot : this};
-		RepeatedPositions positions = new RepeatedPositions();
-		commonMove start = viewer.ParseNewMove("start p0", 0);
-		gameMoves.push(start);
-		GameBoard.doInit();
-		GameBoard.Execute(start,replayMode.Replay);
-	 	while(!GameBoard.GameOver() && beingMonitored())
-	 	{	int who = GameBoard.whoseTurn();
-	 		robots[who].PrepareToMove(who);
-	 		commonMove m = robots[who].DoFullMove();
-	 		gameMoves.push(m);
-	 		GameBoard.Execute(m,replayMode.Replay); 
-	 		positions.checkForRepetition(GameBoard,m);
-	 	}
-	 	wins[firstPlayer?0:1] += GameBoard.WinForPlayer(0)?1:0;
-	 	wins[firstPlayer?1:0] += GameBoard.WinForPlayer(1)?1:0;
-	 	if(beingMonitored()) { G.print("Wins "+getName()+" "+firstPlayer+" ="+wins[0]+" "+otherBot.getName()+" ="+wins[1]); }
-	 	viewer.addGame(gameMoves,null);
-	 	rep++;
-	 	}
-	 }
-	
-	//
-	// play self and save training data with the currently selected bot
-	//
-	static int rep = 0;
-	static BSDate startTime = new BSDate();
-	StringBuilder trainingData = null;
-	public void runGame_playself(ViewerProtocol viewer)
-	 {	
-		int wins[] = new int[2];
-	 	beingMonitored = true;
-	 	monitor = GameBoard;
-	 	
-		while(beingMonitored())
-		{
-		boolean firstPlayer = ((rep&1)==0);
-		RepeatedPositions positions = new RepeatedPositions();
-		commonMove start = viewer.ParseNewMove("start p0", 0);
-		GameBoard.doInit();
-		GameBoard.Execute(start,replayMode.Replay);
-		trainingData = LIVE_TRAINING ? null : new StringBuilder();
- 		String trainingMessage = trainingString();
-	
-	 	while(!GameBoard.GameOver() && beingMonitored())
-	 	{	int who = GameBoard.whoseTurn();
-	 		PrepareToMove(who);
-	 		commonMove m = DoFullMove();
-	 		if(m!=null) 
-	 			{GameBoard.Execute(m,replayMode.Replay); 
-	 			positions.checkForRepetition(GameBoard,m);
-	 			}
-	 	}
-	 	wins[firstPlayer?0:1] += GameBoard.WinForPlayer(0)?1:0;
-	 	wins[firstPlayer?1:0] += GameBoard.WinForPlayer(1)?1:0;
-	 	rep++;
-	 	if(beingMonitored() && trainingData!=null)
-	 		{
-	 		saveTrainingData(
-	 				trainingData,
-	 				"g:/temp/nn/train/hex-"+board.nCells()+"-"+startTime.DateString()+"-"+rep+".txt",
-	 				trainingMessage
-	 				);
-	 		}
-	 	}
-	 }
-	 // play neurobot against itself, train
-	 // monte carlo priors based on each search
-	 public void runRobotGameSelf(final ViewerProtocol v,BoardProtocol b,SimpleRobotProtocol otherBot)
-	 {	
-	 	BoardProtocol cloneBoard = b.cloneBoard();
 
-	 	InitRobot(v,v.getSharedInfo(),cloneBoard,null,MONTEBOT_LEVEL);
-	 	StopRobot();
-	 	new Thread(new Runnable() {
-	 		public void run() { runGame_playself(v); }
-	 	}).start();
-	 
-	 }
-	 // play two different robots against each other
-	 // report wins and losses
-	 public void runRobotGameDumbot(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
-	   {	
-		 	BoardProtocol cloneBoard = b.cloneBoard();
-		 	// g:/temp/nn/F8PXB-49-xeh_7-1-85a.txt Wins TESTBOT2 false =12 MonteBot =64
-		 	// train from 1000 games Wins Wins TESTBOT2 false =23 MonteBot =105 "g:/temp/nn/F8PXB-49-xeh_7-raw-3b.txt"
-		 	// train from 1000 games Wins TESTBOT2 false =14 MonteBot =64 "g:/temp/nn/F8PXB-49-xeh_7-raw-17a.txt"
-		 	// Wins Weak MonteBot false =8 MonteBot =62 using testbot_level_1 (1 sec) vs montebot (30 sec) on hex-7
-		 	InitRobot(v,v.getSharedInfo(),cloneBoard,null,TESTBOT_LEVEL_2);
-		 	otherBot.InitRobot(v,v.getSharedInfo(),cloneBoard,null,MONTEBOT_LEVEL);
-		 	otherBot.StopRobot();
-		 	StopRobot();
-
-		 	new Thread(new Runnable() {
-		 		public void run() { runGame_play(v,(commonRobot<?>)otherBot); }
-		 	}).start();
-	 }
-	
-// train a network with last-played layer as well as the standard input layer
-public double trainNetworkP(GenericNetwork n,double inputsE[],double inputsB[],double inputsW[],
-	 			double values[],double winrates[],boolean rmsonly,double color[])
-	 	 {	double oldvals[] = n.calculateValues(n.getLayer("INE"),inputsE,n.getLayer("INB"),inputsB,n.getLayer("INW"),inputsW,n.getLayer("INC"),color);
-	 	 	double setvals[] = new double[oldvals.length];
-	 	 	double rms = 0;
-	 	 	double rmsn = 0;
-	 	 	for(int lim=values.length-1; lim>=0; lim--)
-	 	 	{	double v = values[lim];
-	 	 		if(v!=-1)
-	 	 			{ double dif = oldvals[lim]-v;
-	 	 			  setvals[lim]=v;
-	 	 			  rms += dif*dif;
-	 	 			  rmsn++;
-	 	 			}
-	 	 		else { 
-	 	 			double dif = oldvals[lim];
-	 	 			setvals[lim]=0; 
-	 	 			rms += dif*dif;
-	 	 			rmsn++;
-	 	 			}
-	 	 	}
-	 	 	Layer winlayer = n.getLayer("WINRATE");
-	 	 	double oldwins[] = winlayer!=null ? n.getValues(winlayer) : null;
-	 	 	double setwins[] = oldwins!=null ? new double[oldwins.length] : null;
-	 	 	if(setwins!=null)
-	 	 	{
-	 	 	for(int lim=winrates.length-1; lim>=0; lim--)
-	 	 	{	double v = winrates[lim];
-	 	 		if(v!=-1)
-	 	 			{ double dif = oldwins[lim]-v;
-	 	 			  setwins[lim]=(v+1)/2;	// normalize to 0.0-1.0
-	 	 			  rms += dif*dif;
-	 	 			  rmsn++;
-	 	 			}
-	 	 		else { 
-	 	 			double dif = oldwins[lim];
-	 	 			setwins[lim]=0.5; 
-	 	 			rms += dif*dif;
-	 	 			rmsn++;
-	 	 			}
-	 	 	}}
-	 	 	if(rmsn>0)
-	 	 	{
-	 	 	//((GenericNetwork)n).learningRate=0.001;
-	 	 	if(!rmsonly) 
-	 	 		{ n.learn(setvals); 
-	 	 		  if(winlayer!=null) { n.learn(winlayer,setwins); } 
-	 	 		}
-	 	 	//double []newvals = n.calculateValues(inputs);
-	 	 	lastNetworkValues = null;//setvals;
-	 	 	return(Math.sqrt(rms/rmsn));
-	 	 	}
-	 	 	return(0);
-	 	 }
-// train a network with last-played layer as well as the standard input layer
-public double trainNetworkI(GenericNetwork n,double inputs[],double inputs2[],
-			double values[],double winrates[],boolean rmsonly)
-	 {	double oldvals[] = n.calculateValues(n.getLayer("IN"),inputs,n.getLayer("IN2"),inputs2);
-	 	double setvals[] = new double[oldvals.length];
-	 	double rms = 0;
-	 	double rmsn = 0;
-	 	for(int lim=values.length-1; lim>=0; lim--)
-	 	{	double v = values[lim];
-	 		if(v!=-1)
-	 			{ double dif = oldvals[lim]-v;
-	 			  setvals[lim]=v;
-	 			  rms += dif*dif;
-	 			  rmsn++;
-	 			}
-	 		else { 
-	 			double dif = oldvals[lim];
-	 			setvals[lim]=0; 
-	 			rms += dif*dif;
-	 			rmsn++;
-	 			}
-	 	}
-	 	Layer winlayer = n.getLayer("WINRATE");
-	 	double oldwins[] = winlayer!=null ? n.getValues(winlayer) : null;
-	 	double setwins[] = oldwins!=null ? new double[oldwins.length] : null;
-	 	if(setwins!=null)
-	 	{
-	 	for(int lim=winrates.length-1; lim>=0; lim--)
-	 	{	double v = winrates[lim];
-	 		if(v!=-1)
-	 			{ double dif = oldwins[lim]-v;
-	 			  setwins[lim]=(v+1)/2;	// normalize to 0.0-1.0
-	 			  rms += dif*dif;
-	 			  rmsn++;
-	 			}
-	 		else { 
-	 			double dif = oldwins[lim];
-	 			setwins[lim]=0.5; 
-	 			rms += dif*dif;
-	 			rmsn++;
-	 			}
-	 	}}
-	 	if(rmsn>0)
-	 	{
-	 	//((GenericNetwork)n).learningRate=0.001;
-	 	if(!rmsonly) 
-	 		{ n.learn(setvals); 
-	 		  if(winlayer!=null) { n.learn(winlayer,setwins); } 
-	 		}
-	 	//double []newvals = n.calculateValues(inputs);
-	 	lastNetworkValues = null;//setvals;
-	 	return(Math.sqrt(rms/rmsn));
-	 	}
-	 	return(0);
-	 }
-// train a network with only the standard input layer
-public double trainNetwork(GenericNetwork n,double inputs[],double values[],double winrates[],boolean rmsonly)
-{	double oldvals[] = n.calculateValues(n.getLayer("IN"),inputs);
-	double setvals[] = new double[oldvals.length];
-	double rms = 0;
-	double rmsn = 0;
-	for(int lim=values.length-1; lim>=0; lim--)
-	{	double v = values[lim];
-		if(v!=-1)
-			{ double dif = oldvals[lim]-v;
-			  setvals[lim]=v;
-			  rms += dif*dif;
-			  rmsn++;
-			}
-		else { 
-			double dif = oldvals[lim];
-			setvals[lim]=0; 
-			rms += dif*dif;
-			rmsn++;
-			}
-	}
- 	Layer winlayer = n.getLayer("WINRATE");
- 	double oldwins[] = winlayer!=null ? n.getValues(winlayer) : null;
- 	double setwins[] = oldwins!=null ? new double[oldwins.length] : null;
- 	if(setwins!=null)
- 	{
- 		for(int lim=winrates.length-1; lim>=0; lim--)
- 		{	double v = winrates[lim];
- 			if(v!=-1)
- 				{ double dif = oldwins[lim]-v;
- 				  setwins[lim]=(v+1)/2;		// normalized to 0-1
- 				  rms += dif*dif;
- 				  rmsn++;
- 				}
- 			else { 
- 				double dif = oldwins[lim];
- 				setwins[lim]=0; 
- 				rms += dif*dif;
- 				rmsn++;
- 				}
- 		}
-		
- 	}
-	if(rmsn>0)
-	{
-		((GenericNetwork)n).learningRate=0.001;
-	if(!rmsonly) 
-		{ n.learn(setvals); 
-		  if(winlayer!=null)
-		  	{  n.learn(winlayer,setwins);
-		  	}
-	}
-	//double []newvals = n.calculateValues(inputs);
-	lastNetworkValues = null;//setvals;
-	return(Math.sqrt(rms/rmsn));
-	}
-	return(0);
+public void stopTraining()
+{
+	evaluator.exitRequest = true;
 }
-
-public void setInd(double []in,int ind,char piece)
-{	
-	switch(piece)
-	{
-		case 'w':
-		case 'W': in[ind] = WhiteValue; break;
-		case 'b':
-		case 'B': in[ind] = BlackValue; break;
-		default: G.Error("opps, bad color %s",piece);
-		}
-
-}
-
-double [][] inm2 = new double[4][];
-double [][] inm1 = new double[4][];
-
-// parse the inputs of a training data entry
-public void parseInputs(TrainingData td,GenericNetwork n,String str,int permutation)
-{	int size = n.inputNetworkSize();
-	double in[] = new double[size];
-	boolean has[] = new boolean[size];
-	Layer in2Layer = n.getLayer("IN2");
-	double in2[] = (in2Layer!=null) ? new double[size] : null;
-	double in3[] = null;
-	double in2S[] = null;
-	double in3S[] = null;
-	
-
-	boolean swapColor = false;
-	int ncols = board.ncols;
-	StringTokenizer tok = new StringTokenizer(str);
-	td.playerToMove = G.IntToken(tok);	// the player, we don't need it.
-	char color = G.CharToken(tok);
-	int hits = 0;
-	td.color = color;
-	
-	if(n.getLayer("INE")!=null)
-	{	// positive inputs for empty, black and white
-		in2 = new double[size];
-		in3 = new double[size];
-		AR.setValue(in,1);	// default to filled
-		in2S = swapColor ? in3 : in2;
-		in3S = swapColor ? in2 : in3;
-	}
-	
-	while(tok.hasMoreTokens())
-	{
-		char col = G.CharToken(tok);
-		int row = G.IntToken(tok);
-		if((permutation&1)!=0) { row = ncols+1-row; }
-		if((permutation&2)!=0) { col = (char)(('A'+ncols-1)-col+'A'); }
-		char piece = G.CharToken(tok);
-		int ind = getMoveIndex(n,col,row);
-		hits++;
-		has[ind] = true;
-		if(in3!=null)
-		{	in[ind] = 0;
-			// positive input for empty black and white
-			switch(piece)
-			{
-			case 'B': case 'b':
-				in2S[ind] = 1;
-				break;
-			case 'W':
-				in3S[ind] = 1;
-				break;
-			default:
-				G.Error("Not expecting "+piece);
-			}
-		}
-		else
-		{
-		setInd(in,ind,piece);
-		if(in2!=null)
-		{
-		if(inm2[permutation]!=null)
-		{
-			if(inm2[permutation][ind]==0) { setInd(in2,ind,piece); }
-		}
-		else if(inm1[permutation]!=null)
-		{
-			if(inm1[permutation][ind]==0) { setInd(in2,ind,piece); }
-		}}}
-		
-	}
-	td.hasInputs = has;
-	td.inputs = in;
-	td.inputs2 = in2;
-	td.inputs3 = in3;
-	
-	if(hits==0) { inm2[permutation] = null; inm1[permutation] = null; }
-	else 
-		{ 	inm2[permutation] = inm1[permutation];
-			inm1[permutation] = in;
-		}
-}
-
-// parse the values part of a training data entry
-public void parseValues(TrainingData td,GenericNetwork n,String str,int permutation)
-{	double values[] = n.getValues("OUT");
-	double wins[] = n.getValues("WINRATE");
-	StringTokenizer tok = new StringTokenizer(str);
-	int ncols = board.ncols;
-	AR.setValue(values, -1);
-	int lastIndex = 0;
-	int nvalues=0;
-	while(tok.hasMoreTokens())
-	{
-		String column = tok.nextToken();
-		if(SWAP.equalsIgnoreCase(column))
-		{	
-			String value = tok.nextToken();
-			String pairvalue[] = G.split(value, ',');
-			double v = Math.abs(G.DoubleToken(pairvalue[0]));
-			double v2 = (pairvalue.length>1) ? G.DoubleToken(pairvalue[1]) : v; 
-			CoordinateMap map = n.getCoordinateMap();
-			lastIndex = 0;
-			int ind = map.getMaxIndex();
-			values[ind] = v;
-			wins[ind] = v2;			
-			nvalues++;
-		}
-		else {
-			char col = column.charAt(0);
-			int row = G.IntToken(tok);
-			String value = tok.nextToken();
-			String pairvalue[] = G.split(value, ',');
-			double v = Math.abs(G.DoubleToken(pairvalue[0]));
-			double v2 = (pairvalue.length>1) ? G.DoubleToken(pairvalue[1]) : v; 
-
-			if((permutation&1)!=0) { row = ncols+1-row; }
-			if((permutation&2)!=0) { col = (char)(('A'+ncols-1)-col+'A'); }
-			int ind = getMoveIndex(n,col,row);
-			values[ind] = v;
-			wins[ind]=v2;
-			lastIndex = ind;
-			nvalues++;
-			
-		}
-	}
-	// special case, reported percentages are arbitrary where there is
-	// only one choice.
-	if(nvalues==1) { values[lastIndex]=0.99; }	
-	td.values = values;
-	td.winrates = wins;
-}
-public commonMove constructMove(GenericNetwork n,TrainingData current,TrainingData prev)
-{	CoordinateMap map = n.getCoordinateMap();
-	boolean hasIn[] = current.hasInputs;
-	boolean prevIn[] = prev.hasInputs;
-	for(int idx = hasIn.length-1; idx>=0; idx--)
-	{
-		if(hasIn[idx]!=prevIn[idx])
-		{
-			char col = map.getColForIndex(idx);
-			int row = map.getRowForIndex(idx);
-			G.Assert(idx==map.getIndex(col, row),"index inverse map");
-
-			return (new XehMovespec(MOVE_DROPB,col,row,
-					XehId.get(""+prev.color),
-					prev.playerToMove));
-			//m.putProp(TrainingData,prev);
-		}
-	}
-	// no difference, must be a swap move
-	//G.Assert(current.moveNumber==2,"should be move 2");
-	return(new XehMovespec(SWAP,prev.playerToMove));
-
-}
-// parse and train on the data in one file
-public double trainNetwork(GenericNetwork n,BufferedReader ps,String file,TDstack save,sgf_game moves) throws IOException
-{	int rmsn = 0;
-	double rms = 0;
-	String line = null;
-	int lastPerm = recordPermutations ? 3 : 0;
-	int moveNumber = 0;
-	TrainingData prevTd = null;
-	sgf_node rootNode = moves.getRoot();
-	sgf_node prevNode = rootNode;
-	{
-	sgf_node startNode = new sgf_node();
-	commonMove start = new XehMovespec("Start p0",0);
-	startNode.set_property(start.playerString(), start.longMoveString());
-    prevNode.addElement(startNode, Where.atEnd);
-    prevNode = startNode;
-	}
-	String prevLine2 = null;
-
-	while((line=ps.readLine())!=null)
-	{
-		if(!"".equals(line))
-		{
-			if(line.charAt(0)!='/') 
-			{
-			String line2 = ps.readLine();
-			if(line2!=null)
-			{	
-				for(int perm0 = 0;perm0<=lastPerm;perm0++)
-				{
-				TrainingData td = new TrainingData();
-				int perm = perm0;
-				parseInputs(td,n,line,perm);
-				parseValues(td,n,line2,perm);
-				td.moveNumber = moveNumber;
-				td.file = file;
-				save.push(td); 
-				
-				if(perm==0 && moves!=null)
-				{
-					TrainingData rawTD = new TrainingData();
-					// construct a training data with no permutations or black/white swap
-					parseInputs(rawTD,n,line,0);
-					rawTD.moveNumber = moveNumber;
-					if(prevTd!=null)
-					{
-					commonMove m = constructMove(n,rawTD,prevTd);
-					sgf_node node = new sgf_node();
-				    node.set_property(m.playerString(), m.longMoveString());
-				    if(prevLine2!=null) { node.set_property(TrainingData,prevLine2); }
-				    prevNode.addElement(node);
-				    prevNode = node;
-					{
-						sgf_node doneNode = new sgf_node();
-						commonMove done = new XehMovespec("done",m.player);
-						doneNode.set_property(done.playerString(), done.longMoveString());
-					    prevNode.addElement(doneNode, Where.atEnd);
-					    prevNode = doneNode;
-						}}
-				prevTd = rawTD;
-				}
-				}
-			prevLine2 = line2;
-			moveNumber++;
-			}
-		}
-		}
-	}
-	return(rmsn>0?0:rms/rmsn);
-}
-
-// train on one file, or collect the training data from one file
-public sgf_game trainNetwork(GenericNetwork n,String file,TDstack ts,sgf_game theGame)
-{	
-	InputStream s=null;
-	G.print("Train from "+file);
-	try {
-		s = new FileInputStream(new File(file));
-		if(s!=null)
-			{BufferedReader ps = new BufferedReader(new InputStreamReader(s));
-			 trainNetwork(n,ps,file,ts,theGame);
-			s.close();
-			}
-	} catch (IOException e) {
-		throw G.Error("Load network error in %s %s",file,e);
-	}
-	return(theGame);
-}
-
-// run the training in its own thread.  Must edit the source folder
-// for the current training set
-public String trainingSequence = "";
-public void runGame_train(ViewerProtocol v,BoardProtocol b,String from,int maxPass,boolean untilWorse)
-{	boolean onceThrough = false;
-	GameBoard = (XehBoard)b;
-	board = (XehBoard)GameBoard.cloneBoard();
- 	InitRobot(v,v.getSharedInfo(),board,null,RobotProtocol.NEUROBOT_LEVEL);
-	
-	int ncells = board.nCells();
-	File dirfile = new File(
-			from
-			);
-	String trainingName = dirfile.getName();
-	File files[] = dirfile.listFiles();
-	new Random().shuffle(files);
-	TDstack data = new TDstack();
-	GenericNetwork net = (GenericNetwork)evalNet;
-	trainingSequence += from+" ";
-	for(File f : files)
-		{ // collect an internal representation of the training data
-			String path = f.getPath();
-			sgf_game theGame = new sgf_game();
-			sgf_game moves = trainNetwork(net,path,data,theGame);
-			sgf_node root = moves.getRoot();
-			moves.set_short_name(f.getName());
-			root.set_property(sgf_names.setup_property, ((commonCanvas)v).gameType());
-		    root.set_property(sgf_names.game_property,((commonCanvas)v).sgfGameType());
-			v.addGame(moves);
-			G.print(""+moves);
-		}
-	G.print(""+files.length+" games in "+from+" using "+net.getName());
-	int rmsn2 = 0;
-	double rms2 = 0;
-	double prev_rms2 = 999;
-	int pass = 0;
-	Network savedNet = null;
-	do
-	{
-	int rmsn = 0;
-	double rms = 0;
-	savedNet = net.duplicate();
-	if(rmsn2>0) { prev_rms2 = rms2/rmsn2; }
-	rms2 = 0;
-	rmsn2 = 0;
-	pass++;
-	int resn=0;
-	int last = data.size();
-		int reserve = onceThrough ? last-1 : ((last*9/10)/4)*4;			// use the last 10% as training validation
-		for(int lim=0; lim<last; lim++)
-		{	
-			TrainingData d = data.elementAt(lim);
-			boolean res = lim>=reserve;
-			double rmsv;
-			if(res) { resn++; }
-			//net.learningRate = 0.0001;
-			if(d.inputs3!=null)
-			{
-				rmsv = trainNetworkP(net,d.inputs,d.inputs2,d.inputs3,d.values,d.winrates,res,new double[] {d.color=='W'?1.0:0});
-			}
-			else if(d.inputs2!=null)
-					{
-					rmsv = trainNetworkI(net,d.inputs,d.inputs2,d.values,d.winrates,res);
-					}
-				else {
-					rmsv = trainNetwork(net,d.inputs,d.values,d.winrates,res);
-					}
-			if(res)
-			{
-			rms2 += rmsv;
-			rmsn2++;
-			}
-			else {
-			rms += rmsv;
-			rmsn++;
-			}
-		}
-		String msg = "Pass "+pass+" rms "+rmsn+"="+(rms/rmsn)+" control "+resn+"="+(rms2/rmsn2);
-		G.print(msg);
-		net.testNetwork();
-		net.saveNetwork("g:/temp/nn/"+net.getName()+"-"+ncells+"-"+trainingName+"-"+(pass%100)+".txt", "trained from "+trainingSequence+"\n//"+msg);
-		 
-	}
-	while(pass<maxPass && (!untilWorse || ((rms2/rmsn2)<prev_rms2)));
-	if((pass<maxPass) && (savedNet!=null)) { net.copyWeights(savedNet); }
-	G.print("training done "+from+" using "+net.getName());
-}
-
 NeatEvaluator evaluator = null;
 XehEvaluator trainer = null;
+String neatest = "G:/share/projects/boardspace-java/boardspace-games/xeh/data/generation 3015.genome";
 
 public void runRobotTraining(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
-{	
+{	GameBoard = (XehBoard) b;
 	trainer = new XehEvaluator();
 	trainer.gameBoard = (XehBoard)b;
 	trainer.board = (XehBoard)b.cloneBoard();
-	evaluator = new NeatEvaluator("g:/temp/nn/train/",trainer);
+	evaluator = new NeatEvaluator("g:/temp/nn/train/",
+				100,trainer,
+				"g:/temp/nn/train/checkpoint.txt");
 	trainer.evaluator = evaluator;
 	trainer.viewer = (XehViewer)v;
+	trainer.robot = this;
 	
 	new Thread(new Runnable() {
 		public void run() 

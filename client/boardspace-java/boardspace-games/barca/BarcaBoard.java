@@ -651,11 +651,13 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
         if (board_state==BarcaState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;
+            setNextPlayer(replay);
     		setState(BarcaState.Gameover);
         }
         else
         {	if(winForPlayerNow(whoseTurn)) 
         		{ win[whoseTurn]=true;
+        		  setNextPlayer(replay);
         		  setState(BarcaState.Gameover); 
         		}
         	else {setNextPlayer(replay);

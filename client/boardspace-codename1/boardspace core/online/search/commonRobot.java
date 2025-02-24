@@ -277,7 +277,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     {	CommonDriver sd = search_driver;
     	BoardProtocol result = sd!=null ? sd.disB() : null;   	
     	if(result==null) 
-    		{  BoardProtocol cb = robotRunning ? board : GameBoard;
+    		{  BoardProtocol cb = (robotRunning&&board!=null) ? board : GameBoard;
     		   result = cb.cloneBoard();  	// no active search, clone the game board in case a search is starting up
     		   result.setName("robot "+cb.getName());
     		}

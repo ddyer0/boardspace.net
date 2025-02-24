@@ -29,4 +29,6 @@ public interface GenomeEvaluator {
 	public double evaluate(Genome g);
 	public Genome createPrototypeNetwork();
 	public void setBest(Genome g);
+	default public void startGeneration() {}
+	default public void finishGeneration() {}
 }

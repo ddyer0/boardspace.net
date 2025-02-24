@@ -826,6 +826,7 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem runGameDumbot = null;	// run a test game
 	    private JMenuItem runGameSelf = null;	// run a test game
 	    private JMenuItem train = null;		// run training
+	    private JMenuItem stopTrain = null;	// request stop
 	    private JMenuItem startShell = null; 	// start a bean shell
 	    /**
 	     * this is a {@link lib.Slider} this is a rectangle embedded in the VCR control cluster
@@ -906,6 +907,10 @@ public abstract class commonCanvas extends exCanvas
 	       {
 	       	SimpleRobotProtocol rr = l.extraBot = newRobotPlayer();
 	       	rr.runRobotTraining(commonCanvas.this,getBoard(),newRobotPlayer());
+	       }
+	       private void stopTraining()
+	       {
+	    	   if(l.extraBot!=null) { l.extraBot.stopTraining(); }
 	       }
 	       private void saveRobotVariation()
 	       {
@@ -1018,6 +1023,7 @@ public abstract class commonCanvas extends exCanvas
 	        else if (target == runGameDumbot) { runRobotGameDumbot(); }
 	        else if (target == runGameSelf) { runRobotGameSelf(); }
 	        else if (target == train) { runRobotTraining(); }
+	        else if (target == stopTrain) { stopTraining(); }
 	        else if (target == loadGame)
 	        {
 	        	doLoadGame();
@@ -5316,6 +5322,7 @@ public abstract class commonCanvas extends exCanvas
         	hidden.runGameDumbot = myFrame.addAction(robotMenu,"play against dumbot",deferredEvents);
         	hidden.runGameSelf = myFrame.addAction(robotMenu,"play against self",deferredEvents);
         	hidden.train = myFrame.addAction(robotMenu, "run training",deferredEvents);
+        	hidden.stopTrain = myFrame.addAction(robotMenu,"stop training",deferredEvents);
         	}
         	hidden.startShell = myFrame.addAction("start shell",deferredEvents);
             hidden.editMove = myFrame.addAction("edit this game",deferredEvents);
@@ -6070,7 +6077,6 @@ public abstract class commonCanvas extends exCanvas
         if (useAlternateBoard)
         {	if(dupBoard!=null) { return(dupBoard); }	// duplicate for editHistory
             commonPlayer p = currentRobotPlayer();
-
             if (p != null)
             {
                 SimpleRobotProtocol rob = p.robotBeingMonitored();
@@ -6079,6 +6085,9 @@ public abstract class commonCanvas extends exCanvas
                 {
                     return (rob.disB());
                 }
+            }
+            if(l.extraBot!=null)
+            {	return l.extraBot.disB();
             }
         }
 

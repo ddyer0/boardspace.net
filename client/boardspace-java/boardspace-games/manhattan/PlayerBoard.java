@@ -452,7 +452,7 @@ public class PlayerBoard implements ManhattanConstants
 		G.Assert(nFighters==other.nFighters,"nFighters mismatch");
 		G.Assert(nBombers==other.nBombers,"nBombers mismatch");
 		G.Assert(b.sameContents(buildings,other.buildings),"seeBuilding mismatch");
-		G.Assert(workers.sameContents(other.workers),"workers mismatch");
+		G.Assert(workers.sameContents(other.workers),"meeples mismatch");
 		G.Assert(scientists.sameContents(other.scientists),"scientists mismatch");
 		G.Assert(engineers.sameContents(other.engineers),"engineers mismatch");
 		G.Assert(pendingChoices.eqContents(other.pendingChoices),"pending choices mismatch");
@@ -598,13 +598,13 @@ public class PlayerBoard implements ManhattanConstants
 				default:
 						throw G.Error("not expecting %s",ch);
 				}					
-				// with espionage, some of these workers may be visitors
+				// with espionage, some of these meeples may be visitors
 			}
 		}
 	}
 	//
-	// retrieve workers of a particular color from buildings of another player
-	// this can leave behind cells which are partially populated by gray workers
+	// retrieve meeples of a particular color from buildings of another player
+	// this can leave behind cells which are partially populated by gray meeples
 	//
 	void retrieveColoredWorkers(MColor color,replayMode replay)
 	{
@@ -622,7 +622,7 @@ public class PlayerBoard implements ManhattanConstants
 					if(ch.color==color) 
 					{ 
 					c.removeChipAtIndex(lim);  
-					// with espionage, some of these workers may be visitors
+					// with espionage, some of these meeples may be visitors
 					b.returnWorker(c,ch,replay);
 					}
 					
@@ -673,7 +673,7 @@ public class PlayerBoard implements ManhattanConstants
 	}
 	//
 	// an ordinary worker is picked or known to be available, can it be placed on 'c' ?
-	// turn true if that's a valid move considering all the additional workers and resources
+	// turn true if that's a valid move considering all the additional meeples and resources
 	// that will be needed to complete the move. 
 	//
 	private boolean workerSatisfies(CommonMoveStack all,ManhattanCell c,Cost requirements,int who,int op)
@@ -716,7 +716,7 @@ public class PlayerBoard implements ManhattanConstants
 			break;
 			
 		case  Any2WorkersAndRetrieve:	
-			// germany nations card, takes 2 workers and retrieves a scientist or engineer
+			// germany nations card, takes 2 meeples and retrieves a scientist or engineer
 			some = ((nAvailableWorkers()+prepicked>=2) && hasRetrieveSorEMoves());
 			break;
 			
@@ -839,7 +839,7 @@ public class PlayerBoard implements ManhattanConstants
 		if(hasPersonality(ManhattanChip.Groves)
 				&& source==engineers		// using 1 engineer as 2
 				&& !testOption(TurnOption.GrovesWorker))	
-		{ 	// pretend we picked 2 workers up
+		{ 	// pretend we picked 2 meeples up
 			prepicked++; 
 		}
 		switch(requirements)
@@ -1073,7 +1073,7 @@ public class PlayerBoard implements ManhattanConstants
 		if(hasPersonality(ManhattanChip.Oppenheimer) 
 				&& source==scientists		// using a scientits as 2
 				&& !testOption(TurnOption.OppenheimerWorker))	
-			{ // pretend we picked 2 workers up
+			{ // pretend we picked 2 meeples up
 			prepicked++; 
 			}
 
@@ -1349,9 +1349,9 @@ public class PlayerBoard implements ManhattanConstants
 	}
 
 	// nothing is picked yet. This is used to generate moves only for the initial
-	// placement.  It looks for an available complement of workers plus whatever
+	// placement.  It looks for an available complement of meeples plus whatever
 	// other resources are needed.  After the initial placement, the state machine
-	// counts down the required workers and when all are present, it collects the
+	// counts down the required meeples and when all are present, it collects the
 	// ancillary resources.  Sometimes this involves a supplementary dialog.
 	//
 	private boolean satisfies(CommonMoveStack all,boolean allowPersonalities,ManhattanCell c,Cost requirements,int who)
@@ -1465,7 +1465,7 @@ public class PlayerBoard implements ManhattanConstants
 		{	if(all==null) { return true; }
 			all.push(new ManhattanMovespec(op,workers,-1,dest,who));
 			some = true;
-			if(some && b.robot!=null) { return some; }	// use workers if possible
+			if(some && b.robot!=null) { return some; }	// use meeples if possible
 		}
 		if((engineers.height()>0)||(picked==WorkerType.E))
 		{	if(all==null) { return true; }
@@ -1738,7 +1738,7 @@ public class PlayerBoard implements ManhattanConstants
 	public boolean addIsraelBombMoves(CommonMoveStack all,ManhattanChip pickedObject,ManhattanCell c,int who)
 	{	
 		Cost is = c.chipAtIndex(0).getIsraeliCost();
-		// special case for "little boy" which needs no workers in israel mode
+		// special case for "little boy" which needs no meeples in israel mode
 		if((is==Cost.Uranium3)
 				&& (nUranium>=3)
 				&& (pickedObject==null) 
@@ -1774,8 +1774,8 @@ public class PlayerBoard implements ManhattanConstants
 	 * bomb stacking protocol: 
 	 * 	the 0 element is always the bomb card
 	 *  the 1 element is always the "built" chip for built bombs.  It may be a worker if a build is in progress.
-	 *  the higher elements may be workers or a bomber or a bombtest card.
-	 *  the workers will disappear when workers are retrieved, leaving the built, bomber, and bombtest chips
+	 *  the higher elements may be meeples or a bomber or a bombtest card.
+	 *  the meeples will disappear when meeples are retrieved, leaving the built, bomber, and bombtest chips
 	 * @param bomb
 	 * @return
 	 */
@@ -2177,7 +2177,7 @@ public class PlayerBoard implements ManhattanConstants
 	}
 	
 	/**
-	 * collect workers or temporary workers from the general supply
+	 * collect meeples or temporary meeples from the general supply
 	 * @param n	howmany
 	 * @param t what type
 	 * @param dest where to put them
@@ -2673,8 +2673,8 @@ public class PlayerBoard implements ManhattanConstants
 			}
 			break;
 		case Nations_CHINA:
-			// retrieve your regular workers from buildings.  This excludes the china card itself,
-			// buildings occupied by scientists or engineers or temporary workers.
+			// retrieve your regular meeples from buildings.  This excludes the china card itself,
+			// buildings occupied by scientists or engineers or temporary meeples.
 			for(int lim=buildings.size()-1; lim>=0; lim--)
 			{	ManhattanCell c= buildings.elementAt(lim);
 				int h = c.height();

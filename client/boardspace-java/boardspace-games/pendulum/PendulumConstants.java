@@ -17,8 +17,11 @@
 package pendulum;
 
 import lib.CellId;
+import lib.Digestable;
+import lib.EnumMenu;
 import lib.InternationalStrings;
 import lib.OStack;
+import lib.Random;
 import online.game.BaseBoard.BoardState;
 import online.game.BaseBoard.StateRole;
 
@@ -32,35 +35,209 @@ public interface PendulumConstants
 {	
 //	these next must be unique integers in the PendulumMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
-	enum PendulumId implements CellId
+	static String PlaceWorkerString = "Place workers here when the timer is not present";
+
+	static int STARTING_CASH = 10;
+	static int STARTING_MILITARY = 10;
+	static int STARTING_CULTURE = 10;
+	static int STARTING_VOTES = 10;
+	static int MAX_AVAILABLE_RESOURCES = STARTING_MILITARY + STARTING_CULTURE+STARTING_CASH;
+	
+	enum PendulumId implements CellId,EnumMenu
 	{
-		Black, // positive numbers are trackable
-		White,
-		BoardLocation,
-		ReverseView,
 		ToggleEye, 
+		ProvinceCard("Province Card"), 
+		PlayerStratCard("Stategem card"), 
+		PlayerPlayedStratCard, RewardDeck, Province, AchievementCard, 
+		AchievementCardStack("Achievement cards"), 
+		BlackHourglass("Black timer"),
+		GreenHourglass("Green timer"),
+		PurpleHourglass("Purple timer"),
+		ProvinceCardStack("Province card deck"),
+		
+		Privilege("Privilege Position #1"), RewardCard, 
+		BlackMeepleA(PlaceWorkerString),GreenMeepleA(PlaceWorkerString),PurpleMeepleA(PlaceWorkerString),
+		BlackActionA,GreenActionA,PurpleActionA,
+		BlackMeepleB(PlaceWorkerString),GreenMeepleB(PlaceWorkerString),PurpleMeepleB(PlaceWorkerString),
+		BlackActionB,GreenActionB,PurpleActionB,
+		TimerTrack, 
+		Legendary("#1{##No Legandary Achievement,##Your Legendary Achievement}"),
+		PurpleGlass,
+		GrayGlass,
+		Vote,
+		Cube,
+		Post,
+		Achievement("Achievement Marker"), 
+		PlayerMilitaryReserves("#1{##No available military, available military, available military}"),
+		PlayerCashReserves("$#1{ available cash, available cash, available cash}"), 
+		PlayerCultureReserves("#1{##No available culture, available culture, available culture}"),
+		PlayerVotesReserves("unlimited available votes"), 
+		PlayerBlueBenefits("Blue province benefits"),
+		PlayerRedBenefits("Red province benefits"),
+		PlayerYellowBenefits("Yellow province benefits"),
+		PlayerBrownBenefits("Brown province benefits"), Select, 
+		PlayerGrandeReserves("Grande workers not yet in play"),
+		PlayerMeepleReserves("regular workers not yet in play"),
+		PlayerMeeples("#1{##No regular workers, regular worker, regular workers}"),
+		PlayerGrandes("#1{##No Grande workers, Grande Worker, Grande Workers}"), 
+		PlayerMilitary("#1{##No Military, Military, Military}"),
+		PlayerCulture("#1{##No Culture, Culture, Culture}"),
+		PlayerCash("$#1 Cash"),
+		PlayerVotes("#1{##No Votes, Vote, Votes}"),
+		
+		PlayerMilitaryVP("#1{ Military points, Military point}"),
+		PlayerPrestigeVP("#1{ Prestige points, Prestige points}"),
+		PlayerPopularityVP("#1{ Popularity points, Popularity Point}"),
 		;
 		PendulumChip chip;
-	
+		String description = "";
+		PendulumId() { }
+		PendulumId(String s)
+		{
+			description = s;
+		}
+		public String menuItem() {
+			return description;
+		}
 	}
-
+	enum PColor { Yellow,White,Green,Blue,Red }
+enum BB implements EnumMenu
+{
+	// board benefits
+	YellowPB("get the Yellow benefits from your player board"),		// yellow player board benefit
+	RedPB("get the Red benefits from your player board"), 			// red player board benefit
+	BrownPB("get the Brown benefits from your player board"),		// brown player board benefit
+	BluePB("get the Blue benefits from your player board"),			// blue player board benefit
+	Vote1("get 1 vote"),			// 1 vote
+	Province("conquer a province"),		// conquer a province
+	Resource1("get 1 Resource"),		// 1 resource1
+	Culture2("get 2 Culture"),	// 2 popularity
+	Military1Vote2("get 1 Military + 2 Votes"),	// 1 military 2 votes
+	Popularity1Prestige1Vote1("get 1 Popularity + 1 Prestige + 2 Votes"),	// one of each
+	None("No Benefit"), 
+	PerCard("Benefit depends on the card played"),
+	;
+	String description = "";
+	BB(String des) { description=des; }
+	public String menuItem() {
+		return description;
+	}
+}
+enum BC implements EnumMenu
+{
+	// board costs
+	D2("Cost is 2$"),		// 2 $
+	M4("Cost is 4 Military"),		// 4 military
+	None("Free"), 
+	PerCard("Cost depends on the card played"),
+	;
+	String description = "";
+	BC(String s) { description=s; }
+	public String menuItem() {
+		return description;
+	}
+	
+}
+enum PC 
+{
+	None(""),
+	Pow2("2 Military VP"),
+	M7("7 Military Cubes"),
+	V3("3 Votes"),
+	V4("4 Votes"),
+	C1("1 Culture Cube"),
+	C3("3 Culture Cube"),
+	C4V2("4 Culture Cubes + 2 Votes"),
+	C7("7 Culture Cubes"),
+	D7("$7"),
+	M4D4("4 Military Cubes + $4"), 
+	R2("Any 2 Resource Cubes"),
+	R8("Any 8 Resource cubes"),
+	MesPaci_3(""), 
+	Pop3("3 Popularity VP"),
+	;
+	String description = "";
+	PC(String f) { description = f;}
+	
+}
+// provice and other card benefits
+enum PB {
+	None(""),	// no benefit
+	Pow1("get 1 Power VP"), 	// 1 power
+	Pop1("get 1 Popularity VP"), 	// 1 popularity
+	Pres1("get 1 Prestige VP"),	// 1 prestige vp
+	Pres2("get 2 Prestige VP"),	// 2 prestige vp
+	Retrieve("retrieve a worker from a timer action"),
+	Province("conquer 1 province"),
+	Recruit("recruit a regular worker"),
+	
+	D1("get 1 Dollar"),	// 1 dollar
+	D2("get 2 Dollars"),	// 2 dollar
+	D3("get 3 Dollars"),	// 3 dollar
+	
+	M1("get 1 Military Cube"),	// 1 military
+	M2("get 2 Military Cubes"),	// 2 military
+	M3("get 3 Military Cubes"),	// 3 military
+	M4("get 4 Military Cubes"),	// 4 military
+	M3D2("get 3 Military Cubes and $1"),	// 3 culture and 2 dollars
+	
+	C1("get 1 Culture Cube"),	// 1 culture
+	C2("get 2 Culture Cubes"),	// 2 culture
+	C3("get 3 Culture Cubes"),	// 3 culture
+	C4("get 4 Culture Cubes"),	// 4 culture
+	C5("get 5 Culture Cubes"),	// 5 culture
+	
+	V1("get 1 Vote"),	// 1 vote
+	V2("get 2 Votes"),	// 2 votes
+	V3("get 3 Votes"),	// 3votes
+	
+	R1("get any 1 resource"),
+	R3("get any 3 resources"),
+	R4("get any 4 resources"),
+	R5("get any 5 resources"), 
+	BolkWar_2(""), BolkWar_3(""), Dhkty_3(""), Gambinsurg_3(""),
+	RetrieveStrat("Retrieve 1 Strategy Card"), Mespaci_2(""), Mespaci_3(""),
+	;
+	String description = "";
+	PB(String desc)
+	{
+	description = desc;
+	}
+};
+static int MAX_PLAYERS = 5;
 class StateStack extends OStack<PendulumState>
 {
 	public PendulumState[] newComponentArray(int n) { return(new PendulumState[n]); }
 }
+
+public enum UIState implements Digestable
+{
+	Normal(""),
+	GetColony("Select a colony"),
+	RetrieveWorker("Retrieve a worker from an active action space"),
+	Province("Select a province to conquer"),
+	CollectResources("Select #1{ resources, resource, resources}"),
+	;
+	String description;
+	UIState(String d) { description = d; }
+	public long Digest(Random r) {
+
+		return (this.ordinal()+1)*r.nextLong();
+	}
+}
 //
 // states of the game
 //
-public enum PendulumState implements BoardState,PendulumConstants
+public enum PendulumState implements BoardState
 {
 	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
 	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
-	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
-	Play(StateRole.Play,PlayState,false,false);
+	Play(StateRole.Play,PlayState,false,false),
+	PlayGrande(StateRole.Play,PlayGrandeState,false,false),
+	PlayMeeple(StateRole.Play,PlayMeepleState,false,false);
 	
 	PendulumState(StateRole r,String des,boolean done,boolean digest)
 	{	role = r;
@@ -77,25 +254,29 @@ public enum PendulumState implements BoardState,PendulumConstants
 
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-	public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean simultaneousTurnsAllowed() 
+	{	switch(this)
+		{
+		case Play: return true;
+		default: return(false); }
+		}
 };
-    /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
-    where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
-    calculating adjacency and connectivity. */
- static final int[] ZfirstInCol = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
- static final int[] ZnInCol = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 }; // depth of columns, ie A has 4, B 5 etc.
-
+ 
  enum PendulumVariation
     {
-    	pendulum("pendulum",ZfirstInCol,ZnInCol);
+    	pendulum("pendulum",false,true),
+    	pendulum_advanced("pendulum-advanced",true,true),
+    	pendulum_notimers("pendulum-notimers",false,false),
+    	pendulum_advanced_notimers("pendulum-advanced-notimers",true,false)
+    	;
     	String name ;
-    	int [] firstInCol;
-    	int [] ZinCol;
+    	boolean advanced;
+    	boolean timers;
     	// constructor
-    	PendulumVariation(String n,int []fin,int []zin) 
+    	PendulumVariation(String n,boolean adv,boolean tim) 
     	{ name = n; 
-    	  firstInCol = fin;
-    	  ZinCol = zin;
+    	  advanced = adv;
+    	  timers = tim;
     	}
     	// match the variation from an input string
     	static PendulumVariation findVariation(String n)
@@ -105,62 +286,17 @@ public enum PendulumState implements BoardState,PendulumConstants
     	}
      	
     }
-
-// this would be a standard hex-hex board with 4-per-side
-//    static int[] ZfirstInCol = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.
-//
-// this would be a standard hex-hex board with 5-per-side
-//    static int[] ZfirstInCol = { 4, 3, 2, 1, 0, 1, 2, 3, 4 };
-//    static int[] ZnInCol =     {5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
-//
-// this would be a standard hex-hex board with 7-per-side
-//	  static int[] ZfirstInCol7 = { 6, 5, 4, 3,  2,   1,  0,  1,  2,  3, 4, 5 ,6};
-//	  static int[] ZnInCol7 =     { 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7 }; // depth of columns, ie A has 4, B 5 etc.
-//
- 
-// this would be a standard yinsh board, 5-per side with the corners missing
-//    static int[] ZfirstInCol = { 6, 3, 2, 1, 0, 1, 0, 1, 2, 3, 6 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol = { 4, 7, 8, 9, 10, 9, 10, 9, 8, 7, 4 }; // depth of columns, ie A has 4, B 5 etc.
-//    static int[] ZfirstCol = { 1, 0, 0, 0, 0, 1, 1, 2, 3, 4, 6 }; // number of the first visible column in this row, 
-//	 standard "volo" board, 6 per side with missing corners
-//    static int[] ZfirstInCol = { 8, 5, 4, 3, 2, 1, 2, 1,  2, 3, 4, 5, 8 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol =   { 5, 8, 9, 10, 11, 12, 11, 12, 11, 10, 9, 8, 5 }; // depth of columns, ie A has 4, B 5 etc.
-//    static int[] ZfirstCol = { 1, 0, 0,  0,  0,  0,  1,  0,  0,  0, 0, 0, 1 };
-
-//  "snowflake" hexagonal board with crinkly edges, 5 per side. 
-//  Used for "crossfire" and lyngk
-//    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
-//    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.''
- 
- //
-//asymmetric hex board (for meridians) with 5 vertices on opposite sides, 6 vertices on the other four sides
-//
-//static int[] M5FirstInCol = {  5, 4, 3,  2,  1,   0,  1,  2, 3, 4, 5,};
-//static int[] M5NInCol =     {  5, 6, 7,  8,  9,  10,  9,  8, 7, 6, 5,}; // depth of columns, ie A has 4, B 5 etc.
-
-//
-//asymmetric hex board (for meridians) with 6 vertices on opposite sides, 7 vertices on the other four sides
-//
-//static int[] M6FirstInCol = { 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6};
-//static int[] M6NInCol =     { 6, 7, 8, 9, 10, 11, 12, 11, 10, 9, 8, 7, 6}; // depth of columns, ie A has 4, B 5 etc.
-
-//
-//asymmetric hex board (for meridians) with 7 vertices on opposite sides, 8 vertices on the other four sides
-//
-//static int[] M7FirstInCol = { 7, 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6, 7};
-//static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7}; // depth of columns, ie A has 4, B 5 etc.
-
-	static final String VictoryCondition = "connect opposite sides with a chain of markers";
-	static final String PlayState = "Place a marker on any empty cell";
-	static final String PlayOrSwapState = "Place a marker on any empty cell, or Swap Colors";
-	
+	static final String VictoryCondition = "Maximize all the scoring tracks";
+	static final String PlayState = "Place workers or Take Actions";
+	static final String PlayGrandeState = "Place your grande worker";
+	static final String PlayMeepleState = "Place your regular worker";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Pendulum",
 			PlayState,
-	    PlayOrSwapState,
+			PlayGrandeState,
+			PlayMeepleState,
 	    VictoryCondition
 			
 		};
@@ -170,6 +306,9 @@ public enum PendulumState implements BoardState,PendulumConstants
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);
+		InternationalStrings.put(BB.values());
+		InternationalStrings.put(BC.values());
+		InternationalStrings.put(PendulumId.values());
 		
 	}
 

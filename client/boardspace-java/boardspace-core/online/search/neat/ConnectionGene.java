@@ -19,11 +19,19 @@ import java.io.PrintStream;
 
 import lib.CompareTo;
 import lib.G;
+import lib.IoAble;
+import lib.OStack;
+import lib.StackIterator;
 import lib.Tokenizer;
-import online.search.io.IoAble;
 
-
-public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>
+class ConnectionGeneStack extends OStack<ConnectionGene>
+{
+	public ConnectionGene[] newComponentArray(int sz) {
+		return new ConnectionGene[sz];
+	}
+	
+}
+public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>,StackIterator<ConnectionGene>
 {
 	
 	private int inNode;
@@ -136,6 +144,7 @@ public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>
 			actualWeight = tok.intToken();
 			expressed = tok.boolToken();
 			innovation = tok.intToken();
+			highestInnovationNumber = Math.max(highestInnovationNumber,innovation);
 			return true;
 		}
 		return false;
@@ -147,6 +156,12 @@ public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>
 	}
 	public int altCompareTo(ConnectionGene o) {
 		return G.signum(o.innovation-innovation);
+	}
+	public StackIterator<ConnectionGene> push(ConnectionGene item) {
+		return new ConnectionGeneStack().push(this);
+	}
+	public StackIterator<ConnectionGene> insertElementAt(ConnectionGene item, int at) {
+		return new ConnectionGeneStack().push(this).insertElementAt(item,at);
 	}
 
 	

@@ -1721,6 +1721,30 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     	return ((col==from_col && row==from_row)
     			|| (col==to_col && row==to_row));
     }
+    public Yinshmovespec  randomLegalFives(Random r)
+    {	cell<YinshCell> all[] = getCellArray();
+    	int firstIdx = r.nextInt(all.length);
+    	int firstDir = r.nextInt(3);
+        char match = chipChar[whoseTurn];
+        for(int i=0,len=all.length;i<len;i++)
+        {	YinshCell c = (YinshCell)all[(i+firstIdx)%len];
+        	if(c.contents==match)
+        	{
+        		for(int dir = 0;dir<3; dir++)
+        		{	YinshCell nc = c;
+        			boolean valid = true;
+         			for(int dis=1;(dis<5) && valid;dis++) 
+         			{	nc = nc.exitTo(dir+firstDir);
+         				if((nc==null) || (nc.contents!=match)) { valid = false; }
+        			}
+         			if(valid) 
+         			{	return new Yinshmovespec(match,c.col,c.row,nc.col,nc.row,whoseTurn);
+         			}
+        		}
+        	}
+        }
+        return (null);
+    }
 
     public CommonMoveStack  legalFives(CommonMoveStack  result)
     {
@@ -1854,6 +1878,95 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
 
         return (result);
     }
+    // expand result with more moves, assuming that
+    // col,row was originally occupied by a ring, 
+    // if result is null, just count stats for the evalutor
+    public Yinshmovespec  randomMoveFromPosition(YinshCell c, Random r,int forplayer)
+    {	int firstdir = r.nextInt(6);
+        for (int dir = 0; dir < 6; dir++)
+        {	YinshCell nc = c;
+            int state = 0;
+
+            for (; state < 2; )
+            {	
+                 nc = nc.exitTo(dir+firstdir);
+                
+                if (nc==null)
+                {
+                    state = 3;
+
+                    break;
+                }
+
+                char contents = nc.contents;
+
+                switch (contents)
+                {
+                default:
+                	throw G.Error("Unexpected contents " + contents);
+
+                case WRing:
+                case BRing:
+                    state = 3;
+
+                    break;
+
+                case White:
+                case Black:
+
+                    switch (state)
+                    {
+                    case 0:
+                        state = 1;
+
+						//$FALL-THROUGH$
+					case 1:
+                        break;
+
+                    case 2:
+                        state = 3;
+
+                        break; // seen a row or chips + empty
+
+                    default:
+                    	throw G.Error("state error");
+                    }
+
+                    break;
+
+                case Empty:
+
+                    switch (state)
+                    {
+                    default:
+                    	throw G.Error("State error");
+
+                    case 0:
+                        break;
+
+                    case 1:
+                        state = 2; // empty after chips
+
+                        break;
+
+                    case 2:
+                        state = 3; // second empty after chips
+
+                        break;
+                    }
+                }
+                if ((state == 2) || (state == 0))
+                    {
+                        //String msg = "Move " + col + " " + row + " " + nc.col + " " +nc.row;
+                       return new Yinshmovespec(c.col,c.row,nc.col,nc.row, whoseTurn);
+                    }
+                }
+
+            }
+
+        return (null);
+    }
+
 
     public CommonMoveStack  legalRingRemoves(CommonMoveStack  result)
     {
@@ -1892,6 +2005,18 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         }
         return (result);
     }
+    public Yinshmovespec  randomLegalIfEmpty(Random r)
+    {	cell<YinshCell> all[] = getCellArray();
+    	int n = 0;
+    	do {n++;
+    		YinshCell c = (YinshCell)all[r.nextInt(all.length)];
+    		if(c.contents==Empty)
+    			{
+    			return new Yinshmovespec(c.col,c.row,ringCacheIndex[whoseTurn],whoseTurn);
+    			}
+    	} while (n<10);
+    	return null;
+     }
 
     // rings you can pick up and move
     public CommonMoveStack  legalRingMoves(CommonMoveStack  result, boolean countonly)
@@ -1918,6 +2043,63 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         return (result);
     }
 
+    // rings you can pick up and move
+    public Yinshmovespec  randomRingMove(Random r)
+    {
+        int firsti = r.nextInt(5);
+        for (int i = 0; i < 5; i++)
+        {	YinshCell c = ringCell[whoseTurn][(i+firsti)%5];
+            if (c!=null)
+            {
+                Yinshmovespec m = randomMoveFromPosition(c, r, whoseTurn);
+                if(m!=null) { return m; }
+            }
+        }
+        return null;
+    }
+    
+    public Yinshmovespec  GetRandomMove(Random r)
+    {
+        switch (board_state)
+        {
+        case PUZZLE_STATE:
+        case GAMEOVER_STATE:
+        case DROP_RING_STATE:default:
+        	throw G.Error("No Moves for state %s", board_state);
+
+        case SELECT_EARLY_REMOVE_RING_STATE:
+        case SELECT_LATE_REMOVE_RING_STATE:
+        	return null;
+            //legalRingRemoves(v);
+
+
+        case PICK_RING_STATE: // pick a ring to move
+        	{
+        		Yinshmovespec m = randomRingMove(r);
+        		if(m==null) { return new Yinshmovespec(MOVE_PASS,whoseTurn); }
+        		return m;
+        	}
+
+        case PLACE_RING_STATE: // drop one of the initial rings
+            return randomLegalIfEmpty(r);
+
+        case SELECT_EARLY_REMOVE_CHIP_STATE: // select 5 to remove
+        case SELECT_LATE_REMOVE_CHIP_STATE: // select 5 to remove
+            	randomLegalFives(r);
+        	return null;
+
+        case SELECT_EARLY_REMOVE_RING_DONE_STATE:
+        case SELECT_EARLY_REMOVE_CHIP_DONE_STATE:
+        case SELECT_LATE_REMOVE_RING_DONE_STATE:
+        case SELECT_LATE_REMOVE_CHIP_DONE_STATE:
+        case PLACE_DONE_STATE:
+        case MOVE_DONE_STATE:
+        case RESIGN_STATE:
+            return new Yinshmovespec(MOVE_DONE, whoseTurn);
+        }
+
+    }
+ 
     CommonMoveStack  List_Of_Legal_Moves(CommonMoveStack  v)
     {
         if (v == null)

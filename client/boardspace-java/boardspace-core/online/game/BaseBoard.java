@@ -332,7 +332,7 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
     public long Digest(Random r,long n) { return(r.nextLong()*(n^246675775)); }
     public long Digest(Random r,boolean n) { return(r.nextLong()*(n?0x52342356:0x47568)); }
     public long Digest(Random r,boolean n[]) { long v=0; for(boolean b : n) { v ^= Digest(r,b); } return(v); }
-    public long Digest(Random r,BoardState m) { return r.nextLong()*(m.ordinal()^7356356); }
+    public long Digest(Random r,BoardState m) { return r.nextLong()*(m==null ? 1 : (m.ordinal()^7356356)); }
     
     public boolean sameContents(IStack a,IStack b)
     {

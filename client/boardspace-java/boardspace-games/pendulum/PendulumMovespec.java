@@ -26,22 +26,21 @@ import online.game.*;
 import pendulum.PendulumConstants.PendulumId;
 import lib.ExtendedHashtable;
 public class PendulumMovespec 
-		extends commonMove	// for a multiplayer game, this will be commonMPMove
+		extends commonMPMove	// for a multiplayer game, this will be commonMPMove
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
-    static final int MOVE_PICK = 204; // pick a chip from a pool
-    static final int MOVE_DROP = 205; // drop a chip
-    static final int MOVE_PICKB = 206; // pick from the board
-    static final int MOVE_DROPB = 207; // drop on the board
- 
+    static final int MOVE_PICK = 204; 	// pick a chip from a pool
+    static final int MOVE_DROP = 205; 	// drop a chip
+    static final int MOVE_FROM_TO = 206;// move a chip from a to b
+    static final int SETACTIVE = 207;	// set the active player
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
         	"Pick", MOVE_PICK,
-        	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
-        	"Dropb", MOVE_DROPB);
+        	"Move", MOVE_FROM_TO,
+        	"SetActive",SETACTIVE);
   }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
@@ -58,8 +57,12 @@ public class PendulumMovespec
     //
     // variables to identify the move
     PendulumId source; // where from/to
-    char to_col; // for from-to moves, the destination column
+    PendulumId dest;
+    char to_col;
+    char from_col;
     int to_row; // for from-to moves, the destination row
+    int from_row;
+    int from_index;
     PendulumChip chip;
     
     // these provide an interface to log annotations that will be seen in the game log
@@ -83,11 +86,13 @@ public class PendulumMovespec
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
      */
-    public PendulumMovespec(int opc,char col,int row,int who)
+    public PendulumMovespec(int opc,PendulumCell c,int idx,int who)
     {
     	op = opc;
-     	to_col = col;
-    	to_row = row;
+    	source = dest = c.rackLocation();
+    	from_row = to_row = c.row;
+      	from_index = idx;
+     	to_col = from_col = c.col;
     	player = who;
     }
     /* constructor */
@@ -96,7 +101,20 @@ public class PendulumMovespec
         parse(ss, p);
     }
 
-    /**
+    public PendulumMovespec(int moveFromTo, PendulumCell from, int indx, PendulumCell to, int who) 
+    {
+		op = moveFromTo;
+		source = from.rackLocation();
+		from_row = from.row;
+		from_col = from.col;
+		from_index = indx;
+		dest = to.rackLocation();
+		to_row = to.row;
+		to_col = to.col;
+		player = who;
+	}
+
+	/**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
      */
@@ -106,16 +124,24 @@ public class PendulumMovespec
 
         return ((op == other.op) 
 				&& (source == other.source)
+				&& (dest == other.dest)
+				&& (from_row == other.from_row)
 				&& (to_row == other.to_row) 
-				&& (to_col == other.to_col)
+				&& (from_index == other.from_index)
+				&& (from_col==other.from_col)
+				&& (to_col==other.to_col)
 				&& (player == other.player));
     }
 
     public void Copy_Slots(PendulumMovespec to)
     {	super.Copy_Slots(to);
-        to.to_col = to_col;
+        to.from_row = from_row;
         to.to_row = to_row;
         to.source = source;
+        to.from_index = from_index;
+        to.from_col = from_col;
+        to.to_col = to_col;
+        to.dest = dest;
         to.chip = chip;
     }
 
@@ -154,19 +180,30 @@ public class PendulumMovespec
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         	
-        case MOVE_DROPB:
-		case MOVE_PICKB:
-            source = PendulumId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
-
-            break;
-
+        case MOVE_FROM_TO:
+        	source = PendulumId.valueOf(msg.nextToken());
+        	from_col = G.CharToken(msg);
+        	from_row = G.IntToken(msg);
+        	from_index = G.IntToken(msg);
+        	dest = PendulumId.valueOf(msg.nextToken());
+        	to_col = G.CharToken(msg);
+        	to_row = G.IntToken(msg);
+        	break;
         case MOVE_DROP:
-        case MOVE_PICK:
-            source = PendulumId.valueOf(msg.nextToken());
+            source = dest = PendulumId.valueOf(msg.nextToken());
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
             break;
-
+        	
+        case MOVE_PICK:
+            source = dest = PendulumId.valueOf(msg.nextToken());
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
+            if(msg.hasMoreTokens()) { from_index = G.IntToken(msg); }
+            break;
+        case SETACTIVE:
+        	player = G.IntToken(msg);
+        	break;
         case MOVE_START:
             player = D.getInt(msg.nextToken());
 
@@ -199,15 +236,11 @@ public class PendulumMovespec
     {
         switch (op)
         {
-        case MOVE_PICKB:
-            return icon(v,to_col , to_row);
-
-		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
-
+        case MOVE_FROM_TO:
+        	return icon(v,source.name()," ",from_col," ",dest.name());
         case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.name());
+            return icon(v,source.name(),from_col);
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -229,14 +262,16 @@ public class PendulumMovespec
         // review mode
         switch (op)
         {
-        case MOVE_PICKB:
-		case MOVE_DROPB:
-	        return G.concat(opname , to_col , " " , to_row);
-
+        case MOVE_FROM_TO:
+        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",from_index," ",dest.name()," ",to_col," ",to_row);
+        	
         case MOVE_DROP:
+        	return G.concat(opname, dest.name()," ",to_col," ",to_row);
+        	
         case MOVE_PICK:
-            return G.concat(opname , source.name());
-
+            return G.concat(opname , source.name()," ",from_col," ",from_row," ",from_index);
+            
+        case SETACTIVE:
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
 

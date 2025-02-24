@@ -58,7 +58,6 @@ public class CommonMoveStack extends OStack<commonMove> implements SequenceStack
 		commonMove cm = currentHistoryMove();
 		if(cm.Same_Move_P(targetMove)) { return cm; }
 		return null;
-		
 	}
 
 }

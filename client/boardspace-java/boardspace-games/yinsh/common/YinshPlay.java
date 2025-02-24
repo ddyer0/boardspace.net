@@ -85,7 +85,12 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
             boardSearchLevel++;
         }
     }
-
+    public commonMove Get_Random_Move(Random r)
+    {
+    	commonMove m = board.GetRandomMove(r);
+    	if(m!=null) { return m; }
+    	return super.Get_Random_Move(r); 
+    }
     public CommonMoveStack  List_Of_Legal_Moves()
     {
         return(board.List_Of_Legal_Moves(null));
@@ -129,6 +134,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
         	OPENING_DEPTH = DEFAULT_OPENING_DEPTH-1;
             MAX_DEPTH = DEFAULT_MAX_DEPTH-1;
         	WEAKBOT = true;
+        	MONTEBOT = DEPLOY_MONTEBOT;
         	break;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DEFAULT_MAX_DEPTH;
@@ -141,12 +147,20 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
         	MONTE_TIME = 15;
         	break;
         case BESTBOT_LEVEL: 
-        	MAX_DEPTH = DEFAULT_MAX_DEPTH+2;
-        	OPENING_DEPTH = DEFAULT_OPENING_DEPTH+2;
-        	MONTE_TIME = 20; 
+        	MAX_DEPTH = DEFAULT_MAX_DEPTH+1;
+        	OPENING_DEPTH = DEFAULT_OPENING_DEPTH+1;
+        	MONTE_TIME = 15;
+        	MONTEBOT = DEPLOY_MONTEBOT;
         	break;
+        case MONTEBOT_LEVEL:
+        	MAX_DEPTH = DEFAULT_MAX_DEPTH+1;
+        	OPENING_DEPTH = DEFAULT_OPENING_DEPTH+1;
+        	MONTE_TIME = 15;
+        	MONTEBOT = DEPLOY_MONTEBOT;
+        	break;
+       	
          }
-        MONTEBOT = (blitz || (strategy==MONTEBOT_LEVEL)) && DEPLOY_MONTEBOT;
+        MONTEBOT |= (blitz && DEPLOY_MONTEBOT);
     }
 
     public void PrepareToMove(int playerindex)
@@ -257,7 +271,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
            monte_search_state.verbose = verbose;
            monte_search_state.alpha = 0.5;
            monte_search_state.dead_child_optimization=true;
-           monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 200000;
+           monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 500000;
            monte_search_state.simulationsPerNode = EXP_MONTEBOT ? 10 : 1;
            monte_search_state.maxThreads = DEPLOY_THREADS;
            move = monte_search_state.getBestMonteMove();

@@ -48,16 +48,17 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	@SuppressWarnings("unchecked")
 	public StackIterator<T> push(T item)			// add a new item, which converts us to a stack of items
 	{ 	
-		StackIterator<T> stack = (StackIterator<T>)new DrawableImageStack();
-		stack.push((T)this);
-		return(stack.push(item));
+ 		DrawableImageStack stack = new DrawableImageStack();
+		stack.push(this);
+		return (StackIterator<T>) (stack.push(item));
 	}
+
 	@SuppressWarnings("unchecked")
 	public StackIterator<T> insertElementAt(T item,int at)
 	{
-		StackIterator<T> stack = (StackIterator<T>)new DrawableImageStack();
-		stack.push((T)this);
-		return(stack.insertElementAt(item, at));
+ 		DrawableImageStack stack = new DrawableImageStack();
+		stack.push(this);
+		return (StackIterator<T>) (stack.insertElementAt(item, at));
 	}
 
 	

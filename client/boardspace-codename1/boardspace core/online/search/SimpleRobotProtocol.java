@@ -16,6 +16,7 @@
  */
 package online.search;
 import lib.ExtendedHashtable;
+import lib.G;
 import online.game.BoardProtocol;
 import online.game.export.ViewerProtocol;
 import online.game.commonMove;
@@ -113,6 +114,7 @@ public interface SimpleRobotProtocol {
     public void runRobotGameSelf(ViewerProtocol v,BoardProtocol board,SimpleRobotProtocol r);
     /** this is a UI hool for robot experiments */
     public void runRobotTraining(ViewerProtocol v,BoardProtocol board,SimpleRobotProtocol r);
+    public default void stopTraining() { G.print("Not implemented"); }
     public String getName();
 	public void setName(String n);
 

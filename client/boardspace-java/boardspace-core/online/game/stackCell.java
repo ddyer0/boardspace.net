@@ -278,7 +278,7 @@ public abstract class stackCell
 	 * @param ch
 	 */
 	public void setChipAtIndex(int n,COMPONENTTYPE ch) 
-	{	if(n<0 || n>chipIndex) { G.Error("index doesn't exists %s",n); }
+	{	if(n<0 || n>chipIndex) { G.Error("index %s doesn't exist",n); }
 		chipStack[n]=ch;
 	}
 	/**
@@ -288,7 +288,7 @@ public abstract class stackCell
 	 */
 	public COMPONENTTYPE removeChipAtIndex(int idx)
 	{	
-		if(idx<0 || idx>chipIndex) { G.Error("index doesn't exists %s",idx); }
+		if(idx<0 || idx>chipIndex) { G.Error("index %s doesn't exist",idx); }
 		COMPONENTTYPE c = chipStack[idx];
 		while(idx<chipIndex)
 		{	chipStack[idx]=chipStack[idx+1];
@@ -304,7 +304,7 @@ public abstract class stackCell
 	 * @param ch
 	 */
 	public void insertChipAtIndex(int idx,COMPONENTTYPE ch)
-	{	if(idx<0 || idx>chipIndex+1) { G.Error("index doesn't exists %s",idx); }
+	{	if(idx<0 || idx>chipIndex+1) { G.Error("index %s doesn't exist",idx); }
 		addChip(ch);	// first add it to the top
 		for(int i=chipIndex;i>idx;i--)	// shuffle the stack up
 		{ chipStack[i]=chipStack[i-1];

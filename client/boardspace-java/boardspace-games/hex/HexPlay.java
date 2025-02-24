@@ -561,9 +561,9 @@ public void PrepareToMove(int playerIndex)
   */
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
- 	boolean win = board.winForPlayerNow(player);
+ 	boolean win = board.hasWinningPath(player);
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
- 	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
+ 	boolean win2 = board.hasWinningPath(nextPlayer[player]);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
  	return(0);
  }

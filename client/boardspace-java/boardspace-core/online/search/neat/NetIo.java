@@ -1,4 +1,4 @@
-package online.search.io;
+package online.search.neat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import lib.G;
+import lib.IoAble;
 import lib.StreamTokenizer;
 
 public class NetIo {
@@ -22,15 +23,18 @@ public class NetIo {
 	
 	
 	public static IoAble load(String file) 
+	{	return load(new File(file));
+	}
+	public static IoAble load(File file)
 	{
 		InputStream s=null;
 		IoAble net = null;
 		try {
-			s = new FileInputStream(new File(file));
+			s = new FileInputStream(file);
 			if(s!=null)
 				{BufferedReader ps = new BufferedReader(new InputStreamReader(s));
 				net = loadNetwork(ps);
-				net.setName(file);
+				net.setName(file.getName());
 				s.close();
 				}
 		} catch (IOException e) {
@@ -68,6 +72,7 @@ public class NetIo {
 		out.println(EndString+" "+name);
 	}
 	
+	@SuppressWarnings("unused")
 	public static IoAble loadNetwork(BufferedReader s)
 	{	
 		StreamTokenizer tok = new StreamTokenizer(s);
@@ -79,7 +84,7 @@ public class NetIo {
 			String className = tok.nextElement();
 			if(CommentString.equals(tok.nextElement()))
 			{
-				G.print(tok.nextElement());
+				String comment = tok.nextElement();
 
 				IoAble target = (IoAble)G.MakeInstance(className);
 			

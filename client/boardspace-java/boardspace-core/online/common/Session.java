@@ -18,7 +18,6 @@ package online.common;
 
 import java.awt.Color;
 import java.util.Hashtable;
-
 import common.GameInfo;
 import common.GameInfo.ES;
 import lib.AR;

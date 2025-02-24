@@ -43,7 +43,7 @@ class Random implements java.io.Serializable {
     private static final double DOUBLE_UNIT = 0x1.0p-53; // 1.0 / (1L << 53)
 
     // IllegalArgumentException messages
-    static final String BadBound = "bound must be positive";
+    static final String BadBound = "random bound must be positive";
 
     /**
      * Creates a new random number generator. This constructor sets

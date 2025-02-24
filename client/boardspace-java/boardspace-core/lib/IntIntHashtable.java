@@ -240,7 +240,40 @@ public class IntIntHashtable implements Cloneable
 	return defaultValue;
 	}
 
-
+    public int[] getKeys()
+    {	int size = size();
+    	int v[] = new int[size];
+    	int idx = 0;
+    	IntHashtableEntry tab[] = table;
+    	for ( int index = tab.length; --index >= 0; )
+    	{
+    		IntHashtableEntry entry = tab[index];
+    		while(entry!=null)
+    		{
+    			v[idx++] = entry.key;
+    			entry = entry.next;
+    		}
+    	}
+    	G.Assert(idx==size,"got them all");
+    	return v;
+    }
+    public int[] getValues()
+    {	int size = size();
+    	int v[] = new int[size];
+    	int idx = 0;
+    	IntHashtableEntry tab[] = table;
+    	for ( int index = tab.length; --index >= 0; )
+    	{
+    		IntHashtableEntry entry = tab[index];
+    		while(entry!=null)
+    		{
+    			v[idx++] = entry.value;
+    			entry = entry.next;
+    		}
+    	}
+    	G.Assert(idx==size,"got them all");
+    	return v;
+    }
     /// Clears the hash table so that it has no more elements in it.
     public synchronized void clear()
 	{

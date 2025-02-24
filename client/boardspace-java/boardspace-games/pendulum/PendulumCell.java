@@ -17,9 +17,12 @@
 package pendulum;
 
 import lib.Random;
+import lib.exCanvas;
+import lib.G;
+import lib.GC;
+import lib.Graphics;
 import lib.OStack;
 import online.game.*;
-import pendulum.PendulumConstants.PendulumId;
 
 class CellStack extends OStack<PendulumCell>
 {
@@ -37,22 +40,39 @@ class CellStack extends OStack<PendulumCell>
  */
 public class PendulumCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<PendulumCell,PendulumChip>	 implements PlacementProvider
+	extends stackCell<PendulumCell,PendulumChip>	 implements PlacementProvider,PendulumConstants
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	
+	double posx = 0.5;
+	double posy = 0.5;
+	double scale = 0.1;
+	public String toString() { return "<cell "+rackLocation+" "+col+" "+row+">"; }
+	public BC cost = BC.None;	// board cost
+	public BB benefit = BB.None;	// board benefit
+	public PB pb = PB.None;		// player benefit
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
 	public void initRobotValues() 
 	{
 	}
+	public PendulumCell(PendulumId stratcard) {
+		
+		super(stratcard);
+	}
 	public PendulumCell(Random r,PendulumId rack) { super(r,rack); }		// construct a cell not on the board
+	public PendulumCell(PendulumId rack,char r)
+	{
+		super(cell.Geometry.Standalone,rack,r,-1);
+	}
 	public PendulumCell(PendulumId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
-		super(cell.Geometry.Hex,rack,c,r);
+		super(cell.Geometry.Standalone,rack,c,r);
 	};
 	/** upcast racklocation to our local type */
 	public PendulumId rackLocation() { return((PendulumId)rackLocation); }
+	
+	public int drawStackTickSize(int sz) { return(0); }
+	
 	/** sameCell is called at various times as a consistency check
 	 * 
 	 * @param other
@@ -72,6 +92,9 @@ public class PendulumCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
+		posx = ot.posx;
+		posy = ot.posy;
+		scale = ot.scale;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -100,7 +123,7 @@ public class PendulumCell
 	public PendulumChip[] newComponentArray(int size) {
 		return(new PendulumChip[size]);
 	}
-	public boolean labelAllChips() { return(false); }
+	public boolean labelAllChips() { return(true); }
 	//public int drawStackTickSize(int sz) { return(0); }
 	//public int drawStackTickLocation() { return(0); }
 	
@@ -112,5 +135,58 @@ public class PendulumCell
 		return empty ? -1 : lastPlaced;
 	}
 
-	
+	public void setLocation(double px,double py,double sc)
+	{	posx = px; 
+		posy = py;
+		scale = sc;
+	}
+	public static void setHLocation(PendulumCell c[], double px0,double px1, double py, double sc)
+	{	// assign a horizontal row
+		for(int i=0,lim = c.length;i<lim;i++)
+			{	c[i].setLocation(G.interpolateD((double)i/lim,px0,px1),py,sc);
+			
+			}
+	}
+	public static void setVLocation(PendulumCell c[], double px,double py0, double py1, double sc)
+	{	// assign a vertical row
+		for(int i=0,lim = c.length;i<lim;i++)
+			{	c[i].setLocation(px,G.interpolateD((double)i/lim,py0,py1),sc);
+			
+			}
+	}
+	public static void setCouncilLocation(PendulumCell c[], double px0,double px1,double py0, double py1, double sc)
+	{	// assign 2d rows, special for the council cards
+		for(int row=0;row<2;row++)
+		{
+		for(int i=0;i<4;i++)
+			{	c[i+row*4].setLocation(
+					G.interpolateD((double)i/3,px0,px1),
+					G.interpolateD((double)row/1,py0,py1),
+					sc);			
+			}
+		}
+	}
+    public void drawChipRotated(double rot,Graphics gc,exCanvas drawOn,chip<?> piece,int SQUARESIZE,double xscale,int e_x,int e_y,String thislabel)
+    {
+     	GC.setRotation(gc,rot,e_x,e_y);
+		super.drawChip(gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);
+		GC.setRotation(gc,-rot,e_x,e_y);
+    }
+    public void drawChip(Graphics gc,exCanvas drawOn,chip<?> piece,int SQUARESIZE,double xscale,int e_x,int e_y,String thislabel)
+    {
+    	switch(rackLocation())
+    	{
+    	case PlayerBrownBenefits:
+    		drawChipRotated(Math.PI,gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);
+    		break;
+    	case PlayerRedBenefits:
+    		drawChipRotated(-Math.PI/2,gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);
+    		break;
+    	case PlayerBlueBenefits:
+    		drawChipRotated(Math.PI/2,gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);  		
+    		break;
+    	default:
+    		super.drawChip(gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);
+    	}
+    }
 }

@@ -625,7 +625,7 @@ class CircleBoard
  
         acceptPlacement();
 
-        doCaptures(dest,m,replay);
+        if(dest!=null) { doCaptures(dest,m,replay); }
         
         if(captureSize[whoseTurn]>=20) { win[whoseTurn]=true; }
         
@@ -969,6 +969,7 @@ class CircleBoard
  	case Play:
  		addLegalMoves(all,whoseTurn);
  		break;
+ 	case Resign:
  	case Confirm:
  		all.push(new CircleMovespec(MOVE_DONE,whoseTurn));
  		break;

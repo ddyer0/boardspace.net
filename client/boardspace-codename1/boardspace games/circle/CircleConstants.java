@@ -277,11 +277,9 @@ public enum CR implements StackIterator<CR>
 			
 		}
 		}
-
 		public StackIterator<CR> push(CR item) {
 			return new CRStack().push(this).push(item);
 		}
-
 		public StackIterator<CR> insertElementAt(CR item, int at) {
 			return new CRStack().push(this).insertElementAt(item,at);
 		}
@@ -318,7 +316,6 @@ public enum CircleState implements BoardState,CircleConstants
 
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-	public boolean simultaneousTurnsAllowed() { return(false); }
 };
 
 //this would be a standard hex-hex board with 5-per-side

@@ -193,7 +193,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
         
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
-        
+        UDPService.stop();
         if(G.isTable() && !G.isCheerpj())
         {
         UDPService.start(true);	// listen for tables
@@ -371,7 +371,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	public void prepareLaunch()
 	{
 		sess.password = "start";
-		sess.seedValue = new Random().nextInt();
+		int seedValue = sess.seedValue = new Random().nextInt();
 		sess.seatingChart = selectedChart;
 		int nseats = sess.startingNplayers = selectedChart.getNSeats();
 		LaunchUserStack lusers = new LaunchUserStack();
@@ -382,7 +382,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		{	lusers.addUser(sess.players[i],i,i);
 		}
 		
-		sess.selectedFirstPlayerIndex = firstPlayerIndex;
+		sess.selectedFirstPlayerIndex = selectedVariant.randomizeFirstPlayer 
+					? new Random(seedValue).nextInt(Math.max(nseats,1))
+					: firstPlayerIndex;
 		sess.launchUser = sess.startingPlayer = lusers.size()>0 ? lusers.elementAt(0) : null;
 		sess.launchUsers = lusers.toArray();	 
 		sess.setCurrentGame(selectedVariant, false,true,false);

@@ -189,10 +189,10 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
        	Rectangle rack = rackRects[1];
        	G.copy(swapButton,rack);
+    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
     		}
@@ -1006,12 +1006,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     }
 
     private int ppn = -1;
-    /* 5/23/2023 
+    /* 1/31/2925 
     summary:
     	3975: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-ddyer-Qarl-2004-10-29-2141.sgf lib.ErrorX: Destination cell not empty!
     	4051: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-Qarl-ddyer-2004-10-29-2155.sgf lib.ErrorX: Destination is not empty
 
-	82263 files visited 2 problems
+	83634 files visited 2 problems
     	*/
     public void ReplayMove(sgf_node no)
     {

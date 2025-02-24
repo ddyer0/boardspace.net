@@ -964,5 +964,5 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 public int getLastPlacement(boolean empty) {
 	return b.placementCount;
 }
-
+public boolean drawIsPossible() { return true; }
 }

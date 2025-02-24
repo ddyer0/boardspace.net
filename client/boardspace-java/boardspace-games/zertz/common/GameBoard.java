@@ -1136,10 +1136,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	break;
         case PUZZLE_STATE:
             break;
+        case RESIGN_STATE:
+        	RemoveCapturedBalls(replay);
+            moveNumber++;
+            setWhoseTurn(nextPlayer[whoseTurn]);
+            break;
         case DRAW_STATE:
         case DONE_CAPTURE_STATE:
         case DONE_STATE:
-        case RESIGN_STATE:
             //System.out.println("up2 "+moveNumber);
             RemoveCapturedBalls(replay);
             moveNumber++;
@@ -1461,16 +1465,15 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_DONE:
             // dont change lastmove
         	ringRemoved=null;
+        	SetNextPlayer(replay);
         	if(board_state==ZertzState.DRAW_STATE)
-        	{ setState(ZertzState.GAMEOVER_STATE);
+        	{ 
+        		setState(ZertzState.GAMEOVER_STATE);
         	}
         	else if (board_state==ZertzState.RESIGN_STATE)
             {
-                win[nextPlayer[whoseTurn]] = true;
+                win[whoseTurn] = true;
                 setState(ZertzState.GAMEOVER_STATE);
-            }
-            else
-            {	SetNextPlayer(replay);
             }
 
             break;
@@ -1502,6 +1505,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
+			SetNextPlayer(replay);
 			setState(ZertzState.GAMEOVER_STATE);
 			break;
          

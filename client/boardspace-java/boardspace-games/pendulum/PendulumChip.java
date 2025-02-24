@@ -16,14 +16,16 @@
  */
 package pendulum;
 
+import lib.AR;
 import lib.DrawableImageStack;
+import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import online.game.chip;
-import pendulum.PendulumConstants.PendulumId;
 import common.CommonConfig;
 class ChipStack extends OStack<PendulumChip>
 {
@@ -37,57 +39,386 @@ class ChipStack extends OStack<PendulumChip>
  * @author ddyer
  *
  */
-public class PendulumChip extends chip<PendulumChip> implements CommonConfig
+public class PendulumChip extends chip<PendulumChip> implements CommonConfig,PendulumConstants
 {
 
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
-	private static DrawableImageStack stoneChips = new DrawableImageStack();
 	private static DrawableImageStack otherChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
+	public PColor color;
 	public PendulumId id;
-	public String contentsString() { return(id==null ? file : id.name()); }
-
+	public PendulumChip back = null;
+	private int chipNumber = 0;
+	public PC pc = PC.None;		// cost for strategy cards
+	public PB pb[] = null;		// province benefits for province cards
+	public String contentsString() { return(color==null ? file : color.name()); }
+	public int resources[] = null;	// initial resources for player boards
+	public int vps[] = null;		// initial vps for player boards
 	// constructor for the chips on the board, which are the only things that are digestable.
-	private PendulumChip(String na,double[]sc,PendulumId con)
+
+	private PendulumChip(String na,double[]sc,PColor con)
 	{	
 		scale=sc;
 		file = na;
-		id = con;
-		if(con!=null) { con.chip = this; }
+		color = con;
 		randomv = r.nextLong();
-		stoneChips.push(this);
+		chipNumber = otherChips.size();
+		otherChips.push(this)
+
+		;
 	}
-	
+	private PendulumChip(String na,PColor con,int[]v,PB[]bene,int... res)
+	{
+		this(na,noscale,con);
+		resources = res;
+		vps = v;
+		pb = bene;
+	}
+	private PendulumChip(String na,double[]sc,PColor con,PendulumChip ba)
+	{
+		this(na,sc,con);
+		back = ba;
+	}
+	private PendulumChip(String na,double[]sc,PendulumId con)
+	{
+		this(na,sc,(PColor)null);
+		id = con;
+	}
+	private PendulumChip(String na,double[]sc,PendulumId con,PendulumChip ba,PB...benefits)
+	{
+		this(na,sc,con);
+		back = ba;
+		pb = benefits;
+	}
+	private PendulumChip(String na,double[]sc,PendulumId con,PendulumChip ba,PC cost,PB ...benefits)
+	{
+		this(na,sc,con);
+		back = ba;
+		pb = benefits;
+		pc = cost;
+	}
 	// constructor for all the other random artwork.
 	private PendulumChip(String na,double[]sc)
 	{	
 		scale=sc;
 		file = na;
+		chipNumber = otherChips.size();
 		otherChips.push(this);
 	}
+	static final double noscale[] = {0.5,0.5,1.0};
 	
-	public int chipNumber() { return(id==null?-1:id.ordinal()); }
+	public int chipNumber() { return(chipNumber); }
 	
+	public static PendulumChip Board3 = new PendulumChip("board_r12-2",null);
+	public static PendulumChip Board5 = new PendulumChip("board_r12-1",null);
+	public static PendulumChip councilBoard = new PendulumChip("council-board",null);
+	private static PendulumChip boards[] = { Board3,Board5};
+	
+	public static PendulumChip timerTrack = new PendulumChip("timer",noscale,PendulumId.TimerTrack);
+	private static double smallMeepleScale[] = {0.5,0.5,0.8};
+	static public PendulumChip chips[] = {		
+			new PendulumChip("bits/yellow-meeple",smallMeepleScale,PColor.Yellow),
+			new PendulumChip("bits/white-meeple",smallMeepleScale,PColor.White),
+			new PendulumChip("bits/green-meeple",smallMeepleScale,PColor.Green),
+			new PendulumChip("bits/blue-meeple",smallMeepleScale,PColor.Blue),
+			new PendulumChip("bits/red-meeple",noscale,PColor.Red),
+	};
 
-	static public PendulumChip Black = new PendulumChip("slate",new double[]{0.50,0.510,1.44},PendulumId.Black);
-	static public PendulumChip black_slate_1 = new PendulumChip("slate-1",new double[]{0.53,0.40,1.87},null);
-	static public PendulumChip black_slate_2 = new PendulumChip("slate-2",new double[]{0.573,0.420,1.82},null);
-	//static public GoChip white_stone_1 = new GoChip("shell-1",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
-	//static public GoChip white_stone_2 = new GoChip("shell-2",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
-	//static public GoChip white_stone_3 = new GoChip("shell-3",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
-	static public PendulumChip White = new PendulumChip("shell-4",new double[]{0.47,0.49,1.58},PendulumId.White);
-	static public PendulumChip white_stone_5 =  new PendulumChip("shell-5",new double[]{0.549,0.432,1.59},null);
-	static public PendulumChip white_stone_6 =  new PendulumChip("shell-6",new double[]{0.54,0.47,1.8},null);
-	static public PendulumChip white_stone_7 =  new PendulumChip("shell-7",new double[]{0.53,0.46,1.98},null);
-	static public PendulumChip white_stone_8 =  new PendulumChip("shell-8",new double[]{0.579,0.487,1.72},null);
-
-	static {
-		Black.alternates = new PendulumChip[]{ Black, black_slate_2,black_slate_1};
-		White.alternates = new PendulumChip[]{ White, white_stone_5,white_stone_6,white_stone_7,white_stone_8};
+	public boolean isGrande()
+	{
+		return AR.indexOf(bigchips,this)>=0;
 	}
+	static public PendulumChip bigchips[] = {
+			new PendulumChip("bits/yellow-grande",noscale,PColor.Yellow),
+			new PendulumChip("bits/white-grande",noscale,PColor.White),
+			new PendulumChip("bits/green-grande",noscale,PColor.Green),
+			new PendulumChip("bits/blue-grande",noscale,PColor.Blue),
+			new PendulumChip("bits/red-grande",noscale,PColor.Red),
+	};
+	
+	static public PendulumChip hexes[] = {		
+			new PendulumChip("bits/yellow-hexagon",new double[] {0.5,0.5,0.8},PColor.Yellow),
+			new PendulumChip("bits/white-hexagon",new double[] {0.5,0.5,0.75},PColor.White),
+			new PendulumChip("bits/green-hexagon",new double[] {0.5,0.5,0.8},PColor.Green),
+			new PendulumChip("bits/blue-hexagon",new double[] {0.5,0.5,0.85},PColor.Blue),
+			new PendulumChip("bits/red-hexagon",noscale,PColor.Red),
+	};
 
+	
+	static public PendulumChip cylinders[] = {
+			new PendulumChip("bits/yellow-cylinder",new double[] {0.5,0.5,0.9},PColor.Yellow),
+			new PendulumChip("bits/white-cylinder",new double[] {0.5,0.5,0.9},PColor.White),
+			new PendulumChip("bits/green-cylinder",new double[] {0.55,0.5,0.9},PColor.Green),
+			new PendulumChip("bits/blue-cylinder",new double[] {0.5,0.4,0.65},PColor.Blue),
+			new PendulumChip("bits/red-cylinder",noscale,PColor.Red),
+	};
+
+	
+	static public PendulumChip mats[] = {
+			new PendulumChip("playermats/bolk_r5-1-nomask",PColor.Yellow,
+					new int[]{0,3,6},
+					new PB[] {PB.Pow1, PB.M4, PB.C5, PB.D2 },
+					2,0,4,0),
+			new PendulumChip("playermats/dhrenkir_r5-1-nomask",PColor.White,new int[]{4,4,1},
+					new PB[] { PB.Pow1, PB.M4, PB.C5, PB.D2 },
+					0,0,4,1),
+			new PendulumChip("playermats/gambal_r6-1-nomask",PColor.Green,
+					new int[]{3,6,0},
+					new PB[] { PB.Pow1, PB.M4, PB.C5, PB.D2 },
+					0,0,6,0),
+			new PendulumChip("playermats/licinia_r7-1-nomask",PColor.Blue,
+					new int[]{3,3,3},
+					new PB[] { PB.Pow1, PB.M4, PB.C5, PB.D2 },
+					1,1,4,0),
+			new PendulumChip("playermats/mesoat_r3-1-nomask",PColor.Red,
+					new int[]{6,0,3},
+					new PB[] { PB.Pow1, PB.M4, PB.C5, PB.D2},
+					0,2,4,0),
+	};
+	static public PendulumChip advancedmats[] = {
+			new PendulumChip("playermats/bolk_r5-2-nomask",PColor.Yellow,
+					new int[]{0,7,2},
+					new PB[] { PB.Pow1, PB.M4, PB.M3D2, PB.D2 },
+					4,0,2,0),
+			new PendulumChip("playermats/dhrenkir_r5-2-nomask",PColor.White,
+					new int[]{4,1,3},
+					new PB[] { PB.V3, PB.M4, PB.C5, PB.D2 },
+					0,0,2,2),
+			new PendulumChip("playermats/gambal_r6-2-nomask",PColor.Green,
+					new int[]{2,5,2},
+					new PB[] { PB.Pow1, PB.Retrieve, PB.C5, PB.D2},
+					2,0,3,0),
+			new PendulumChip("playermats/licinia_r7-2-nomask",PColor.Blue,
+					new int[]{2,2,3},
+					new PB[] {PB.Pow1, PB.R4, PB.R5, PB.D2 },
+					1,1,2,0),
+			new PendulumChip("playermats/mesoat_r3-2-nomask",PColor.Red,
+					new int[]{7,0,0},
+					new PB[] { PB.C2, PB.Province, PB.C5, PB.D2},
+					0,0,2,0),
+	};
+	
+	static public PendulumChip Cardback = new PendulumChip("provinces/cards_r8-back",noscale,PendulumId.ProvinceCard);
+	static public PendulumChip provinceCards[] = {
+		new PendulumChip("provinces/cards_r8-1",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-2",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-3",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-4",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-5",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.M2,PB.Pow1,PB.M3),
+		new PendulumChip("provinces/cards_r8-6",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.C2,PB.Pres1,PB.C3),
+		new PendulumChip("provinces/cards_r8-7",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.D2,PB.Pop1,PB.D3),
+		new PendulumChip("provinces/cards_r8-8",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-9",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-10",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-11",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-12",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-13",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.M2,PB.Pow1,PB.M3),
+		new PendulumChip("provinces/cards_r8-14",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.C2,PB.Pres1,PB.C3),
+		new PendulumChip("provinces/cards_r8-15",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.D2,PB.Pop1,PB.D3),
+		new PendulumChip("provinces/cards_r8-16",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-17",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-18",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-19",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-20",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-21",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.M2,PB.Pow1,PB.M3),
+		new PendulumChip("provinces/cards_r8-22",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.C2,PB.Pres1,PB.C3),
+		new PendulumChip("provinces/cards_r8-23",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.D2,PB.Pop1,PB.D3),
+		new PendulumChip("provinces/cards_r8-24",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-25",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-26",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-27",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-28",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-29",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.M2,PB.Pow1,PB.M3),
+		new PendulumChip("provinces/cards_r8-30",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.C2,PB.Pres1,PB.C3),
+		new PendulumChip("provinces/cards_r8-31",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.D2,PB.Pop1,PB.D3),
+		new PendulumChip("provinces/cards_r8-32",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-33",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-34",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-35",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-36",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-37",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.M2,PB.Pow1,PB.M3),
+		new PendulumChip("provinces/cards_r8-38",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.C2,PB.Pres1,PB.C3),
+		new PendulumChip("provinces/cards_r8-39",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.D2,PB.Pop1,PB.D3),
+		new PendulumChip("provinces/cards_r8-40",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-41",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-42",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-43",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-44",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-45",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.Pow1,PB.Pow1,PB.Pow1),
+		new PendulumChip("provinces/cards_r8-46",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.Pres1,PB.Pres1,PB.Pres1),
+		new PendulumChip("provinces/cards_r8-47",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.Pop1,PB.Pop1,PB.Pop1),
+		new PendulumChip("provinces/cards_r8-48",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		new PendulumChip("provinces/cards_r8-49",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-50",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-51",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-52",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.M2,PB.Pow1,PB.C3),
+		new PendulumChip("provinces/cards_r8-53",noscale,PendulumId.ProvinceCard,Cardback,PB.M1,PB.Pow1,PB.Pow1,PB.Pow1),
+		new PendulumChip("provinces/cards_r8-54",noscale,PendulumId.ProvinceCard,Cardback,PB.C1,PB.Pres1,PB.Pres1,PB.Pres1),
+		new PendulumChip("provinces/cards_r8-55",noscale,PendulumId.ProvinceCard,Cardback,PB.D1,PB.Pop1,PB.Pop1,PB.Pop1),
+		new PendulumChip("provinces/cards_r8-56",noscale,PendulumId.ProvinceCard,Cardback,PB.V1,PB.V2,PB.Pow1,PB.V3),
+		Cardback
+	};
+	
+	static PendulumChip stratBacks[] = {
+			new PendulumChip("stratcards/bolkchamp-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/bolkwar-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/dhkinsid-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/dhkty-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/gambbriber-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/gambinsurg-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/licimp-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/licalc-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/mespaci-5",noscale,PendulumId.PlayerStratCard),
+			new PendulumChip("stratcards/mesjust-5",noscale,PendulumId.PlayerStratCard)
+
+	};
+	
+	static public PendulumChip stratcards[] = {
+		// these are in the same order as the playermats
+		new PendulumChip("stratcards/bolkchamp-1",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/bolkchamp-2",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.R1),
+		new PendulumChip("stratcards/bolkchamp-3",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/bolkchamp-4",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.M7,PB.Recruit),
+		
+		new PendulumChip("stratcards/bolkwar-1",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/bolkwar-2",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.BolkWar_2),
+		new PendulumChip("stratcards/bolkwar-3",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.BolkWar_3),
+		new PendulumChip("stratcards/bolkwar-4",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.Pow2,PB.Recruit),
+
+		new PendulumChip("stratcards/dhkinsid-1",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/dhkinsid-2",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.R1),
+		new PendulumChip("stratcards/dhkinsid-3",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/dhkinsid-4",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.V3,PB.Recruit),
+
+		new PendulumChip("stratcards/dhkty-1",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.C3,PB.Pres2),
+		new PendulumChip("stratcards/dhkty-2",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.C1,PB.R3),
+		new PendulumChip("stratcards/dhkty-3",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.None,PB.Dhkty_3),
+		new PendulumChip("stratcards/dhkty-4",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.V4,PB.Recruit),
+
+		new PendulumChip("stratcards/gambbriber-1",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/gambbriber-2",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.R1),
+		new PendulumChip("stratcards/gambbriber-3",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/gambbriber-4",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.D7,PB.Retrieve),
+
+		new PendulumChip("stratcards/gambinsurg-1",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/gambinsurg-2",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.R1),
+		new PendulumChip("stratcards/gambinsurg-3",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.Gambinsurg_3),
+		new PendulumChip("stratcards/gambinsurg-4",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.M4D4,PB.Recruit),
+
+		new PendulumChip("stratcards/licimp-1",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/licimp-2",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.R1),
+		new PendulumChip("stratcards/licimp-3",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/licimp-4",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.R8,PB.Recruit),
+
+
+		new PendulumChip("stratcards/licalc-1",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
+		new PendulumChip("stratcards/licalc-2",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.RetrieveStrat),
+		new PendulumChip("stratcards/licalc-3",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
+		new PendulumChip("stratcards/licalc-4",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R8,PB.Recruit),
+
+		new PendulumChip("stratcards/mesjust-1",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.Pres1),
+		new PendulumChip("stratcards/mesjust-2",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.R1),
+		new PendulumChip("stratcards/mesjust-3",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/mesjust-4",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.C7,PB.Recruit),
+
+		new PendulumChip("stratcards/mespaci-1",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.C1,PB.Pres1),
+		new PendulumChip("stratcards/mespaci-2",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.C4V2,PB.Mespaci_2),
+		new PendulumChip("stratcards/mespaci-3",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.MesPaci_3,PB.Mespaci_3),
+		new PendulumChip("stratcards/mespaci-4",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.Pop3,PB.Recruit),
+
+	};
+	static PendulumChip finalBack = new PendulumChip("council/finalrew-back",noscale,PendulumId.RewardDeck);
+	static public PendulumChip finalrewardcards[] = {
+			new PendulumChip("council/finalrew-1",noscale,PendulumId.RewardDeck,finalBack),
+			new PendulumChip("council/finalrew-2",noscale,PendulumId.RewardDeck,finalBack),
+			new PendulumChip("council/finalrew-3",noscale,PendulumId.RewardDeck,finalBack),
+			new PendulumChip("council/finalrew-4",noscale,PendulumId.RewardDeck,finalBack),
+			new PendulumChip("council/finalrew-5",noscale,PendulumId.RewardDeck,finalBack),
+			finalBack
+	};
+	static PendulumChip councilBack = new PendulumChip("council/reward-back",noscale,PendulumId.RewardDeck);
+	static public PendulumChip rewardcards[] = {
+			new PendulumChip("council/reward-1",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-2",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-3",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-4",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-5",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-6",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-7",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-8",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-9",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-10",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-11",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-12",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-13",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-14",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-15",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-16",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-17",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-18",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-19",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-20",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-21",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-22",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-23",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-24",noscale,PendulumId.RewardDeck,councilBack),
+			new PendulumChip("council/reward-25",noscale,PendulumId.RewardDeck,councilBack),
+
+			councilBack
+	};
+	static PendulumChip flipBack = new PendulumChip("council/flip-back",noscale,PendulumId.RewardDeck);
+	static PendulumChip flipcard = new PendulumChip("council/flip",noscale,PendulumId.RewardDeck,flipBack);
+	static PendulumChip defcard =  new PendulumChip("council/default",noscale,PendulumId.RewardDeck);
+	static PendulumChip extraCouncilCards[] = {
+		flipBack,flipcard,defcard	
+	};
+
+	static PendulumChip achievementBack =new PendulumChip("achievement/achievement-back",noscale,PendulumId.AchievementCard,null);
+	static public PendulumChip achievementcards[] = {
+			new PendulumChip("achievement/achievement-1",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-2",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-3",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-4",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-5",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-6",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-7",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-8",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-8",noscale,PendulumId.AchievementCard,achievementBack),
+			new PendulumChip("achievement/achievement-10",noscale,PendulumId.AchievementCard,achievementBack),
+			achievementBack 
+	};
+	
+	static PendulumChip legendary = new PendulumChip("bits/legendary",new double[] {0.5,0.5,0.7},PendulumId.Legendary);	
+	static PendulumChip purpleGlass = new PendulumChip("bits/purpleglass",noscale,PendulumId.PurpleGlass);
+	static PendulumChip grayGlass = new PendulumChip("bits/grayglass",noscale,PendulumId.GrayGlass);
+	static PendulumChip vote = new PendulumChip("bits/vote",noscale,PendulumId.Vote);
+	static PendulumChip singleChips[] = { 
+		legendary, purpleGlass,vote,councilBoard,grayGlass,
+	};
+	static PendulumChip redCube = new PendulumChip("bits/red-cube",noscale,PendulumId.Cube);
+	static PendulumChip blueCube = new PendulumChip("bits/blue-cube",noscale,PendulumId.Cube);
+	static PendulumChip yellowCube = new PendulumChip("bits/yellow-cube",noscale,PendulumId.Cube);
+	static PendulumChip cubes[] = 
+		{
+				redCube,blueCube,yellowCube,
+		};
+	
+	static PendulumChip redPost = new PendulumChip("bits/red-post",noscale,PendulumId.Post);
+	static PendulumChip bluePost = new PendulumChip("bits/blue-post",noscale,PendulumId.Post);
+	static PendulumChip yellowPost = new PendulumChip("bits/yellow-post",noscale,PendulumId.Post);
+	static PendulumChip posts[] = 
+		{
+				redPost,bluePost,yellowPost,
+		};
+	
+	static PendulumChip blackHourglass = new PendulumChip("bits/black-timer",noscale,PendulumId.BlackHourglass,null);
+	static PendulumChip greenHourglass = new PendulumChip("bits/green-timer",noscale,PendulumId.GreenHourglass,null);
+	static PendulumChip purpleHourglass = new PendulumChip("bits/purple-timer",noscale,PendulumId.PurpleHourglass,null);
+	static PendulumChip hourglasses[] = {
+		blackHourglass,greenHourglass,purpleHourglass	
+	};
     // indexes into the balls array, usually called the rack
-    static final PendulumChip getChip(int n) { return(PendulumId.values()[n].chip); }
+    static final PendulumChip getChip(int n) { return((PendulumChip)otherChips.elementAt(n)); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
@@ -104,21 +435,6 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig
     static public PendulumChip backgroundTile = new PendulumChip("background-tile-nomask",null);
     static public PendulumChip backgroundReviewTile = new PendulumChip("background-review-tile-nomask",null);
    
-    static private double hexScale[] = {0.50,0.50,1.60};
-    static private double hexScaleNR[] = {0.58,0.50,1.54};
-    static public PendulumChip hexTile = new PendulumChip("hextile",hexScale,null);
-    static public PendulumChip hexTile_1 = new PendulumChip("hextile-1",hexScale,null);
-    static public PendulumChip hexTile_2 = new PendulumChip("hextile-2",hexScale,null);
-    static public PendulumChip hexTile_3 = new PendulumChip("hextile-3",hexScale,null);
-    static public PendulumChip hexTileNR = new PendulumChip("hextile-nr",hexScaleNR,null);
-    static public PendulumChip hexTileNR_1 = new PendulumChip("hextile-nr-1",hexScaleNR,null);
-    static public PendulumChip hexTileNR_2 = new PendulumChip("hextile-nr-2",hexScaleNR,null);
-    static public PendulumChip hexTileNR_3 = new PendulumChip("hextile-nr-3",hexScaleNR,null);
-
-    static {
-    	hexTile.alternates = new PendulumChip[] {hexTile,hexTile_1,hexTile_2,hexTile_3};
-       	hexTileNR.alternates = new PendulumChip[] {hexTileNR,hexTileNR_1,hexTileNR_2,hexTileNR_3};
-    }
 
     public static PendulumChip Icon = new PendulumChip("hex-icon-nomask",null);
 
@@ -134,9 +450,27 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
-				& forcan.load_masked_images(Dir,otherChips);
-		Image.registerImages(stoneChips);
+		otherChips.autoloadMaskGroup(Dir,"board_r12-mask",boards);
+		otherChips.autoloadGroup(Dir,chips);
+		otherChips.autoloadGroup(Dir,bigchips);
+		otherChips.autoloadGroup(Dir,hexes);
+		otherChips.autoloadGroup(Dir,cylinders);
+		otherChips.autoloadMaskGroup(Dir,"provinces/cards_r8-mask",provinceCards);
+		otherChips.autoloadMaskGroup(Dir,"cards-mask",stratBacks);
+		otherChips.autoloadMaskGroup(Dir,"cards-mask",stratcards);
+		otherChips.autoloadMaskGroup(Dir,"cards-mask",rewardcards);
+		otherChips.autoloadMaskGroup(Dir,"cards-mask",extraCouncilCards);
+		otherChips.autoloadMaskGroup(Dir,"cards-mask",finalrewardcards);
+		otherChips.autoloadMaskGroup(Dir,"achievement/achievement-mask",achievementcards);
+		otherChips.autoloadMaskGroup(Dir,"bits/timer-mask",hourglasses);
+		otherChips.autoloadMaskGroup(Dir,"bits/red-cube-mask",cubes);
+		otherChips.autoloadMaskGroup(Dir,"bits/blue-post-mask",posts);
+		otherChips.autoloadGroup(Dir,mats);
+		otherChips.autoloadGroup(Dir,advancedmats);
+		
+		otherChips.autoloadGroup(Dir,singleChips);
+		
+		imagesLoaded = forcan.load_masked_images(Dir,otherChips);
 		Image.registerImages(otherChips);
 		}
 	}   
@@ -167,22 +501,22 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig
 	 */
 	/*
 	 * this is a standard trick to display card backs as an alternate to the normal face.
-	public static PendulumChip cardBack = new PendulumChip("cards",null,defaultScale);
+	 * */
 	
 	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
 	
-    public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
+	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{
 		boolean isBack = BACK.equals(label);
-		if(cardBack!=null && isBack)
+		if(back!=null && isBack)
 		{
-		 cardBack.drawChip(gc,canvas,SQUARESIZE, xscale, cx, cy,null);
+		 back.drawChip(gc,canvas,SQUARESIZE, xscale, cx, cy,null);
 		}
 		else
-		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
+		{
+		super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
 		}
 	}
-
-	 */
+  
 
 }

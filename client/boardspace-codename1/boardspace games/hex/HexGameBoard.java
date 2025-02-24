@@ -408,64 +408,13 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	}
        	return(all);
     }
-
-
-    // flood fill the blob to make it as large as possible, but don't
-    // look for connections.  This is used when the blob os only being
-    // checked as a possible win
-    private boolean expandBlobForWin(hexblob blob,hexCell cell)
-    {	if(cell==null) {}
-    	else if((cell.sweep_counter!=sweep_counter))
-    	{
-    	cell.sweep_counter = sweep_counter;
-    	cell.blob = blob;
-     	if(cell.topChip()==blob.color)
-    	  {
-    	   	blob.addCell(cell);
-    	   	if(blob.span()==ncols) { return(true); } 	// a win
-    	   	for(int dir = 0; dir<6; dir++)
-    		{	if(expandBlobForWin(blob,cell.exitTo(dir))) { return(true); }
-    		}
-    	  }
-    	}
-    	return(false);
-    }
-    
-    // scan blobs only connected to the home row for the player
-    // this is the fast version that only checks for a win
-    private boolean findWinningBlob(int player)
-    {
-    	hexCell home = getCell('A',1);
-    	hexChip pch = playerChip[player];
-    	sweep_counter++;
-    	int scanDirection =  (pch==hexChip.White)
-    		? directionWhiteHome
-    		: directionBlackHome;
-    	while(home!=null)
-    	{	
-       	if((home.sweep_counter!=sweep_counter) && (home.topChip()==pch))
-        {
-        	hexblob blob = new hexblob(pch);
-        	if(expandBlobForWin(blob,home)) { return(true); }
-        }
-        home = home.exitTo(scanDirection);
-    	}    	
-    	return(false);
-    }
-    public boolean gameOverNow() { return(board_state.GameOver()); }
-    public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
-    	boolean win = findWinningBlob(player);
-    	return(win);
-    }
     // this method is also called by the robot to get the blobs as a side effect
     public boolean winForPlayerNow(int player,BlobStack blobs)
     {
      	findBlobs(player,blobs);
     	return(someBlobWins(blobs,player));
-   	
-    }
 
+    		}
     public boolean someBlobWins(BlobStack blobs,int player)
     {	// if the span of any blobs is the whole board, we have a winner
     	// in Hex, there is only one winner.
@@ -474,12 +423,94 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     		int span = blob.span();
     		if(span==ncols)
     		{ return(true); }
-     	}
+    	  }
         return (false);
     }
-
-
     
+    
+    // scan the home row for the player
+    // this is the fast version that only checks for a win
+    boolean hasWinningPath(int player)
+    {	if(chips_on_board+2<ncols*2) { return false; }
+    	hexCell home = getCell('A',1);
+    	hexChip pch = playerChip[player];
+    	sweep_counter++;
+    	int scanDirection =  (pch==hexChip.White)
+    		? directionWhiteHome
+    		: directionBlackHome;
+    	while(home!=null)
+    	{	
+    		if(winningPath(home,pch,sweep_counter)) { return true; }
+        home = home.exitTo(scanDirection);
+    	}    	
+    	return(false);
+    }
+    private boolean winningPath(hexCell c,hexChip top,int sweep)
+    {
+    	if(c.sweep_counter==sweep) { return false; }
+    	if(c.topChip()!=top) { return false; }
+    	c.sweep_counter = sweep;
+    	if((top==hexChip.White) ? c.col==('A'-1)+ncols : c.row==ncols) { return true; }
+    	for(int dir=0;dir<6;dir++) 
+    	{
+    		hexCell nx = c.exitTo(dir);
+    		if(nx !=null && winningPath(nx,top,sweep)) { return true; }
+    	}
+    	return false;
+    }
+    public boolean gameOverNow() { return(board_state.GameOver()); }
+ 
+    enum margin { hasMin, hasMax, hasBoth, hasNone;
+    	
+    	public margin merge(margin with)
+    	{
+    	if(this==hasNone) { return with; }
+    	switch(with)
+    	{
+    	case hasMin: 
+    		if(this==hasMax) { return hasBoth; } else { return this; }
+    	case hasMax:
+    		if(this==hasMin) { return hasBoth; } else { return this; }
+    	default: throw G.Error("Not expecting to merge with %s",with);
+    }
+    	}
+    }
+    
+    // scan only the line in the current play. this ought to be the fastest "no"
+    public boolean hasWinningPath(hexCell dest,int who)
+    {	if(dest==null) { return hasWinningPath(who); }
+    	if(chips_on_board+2<ncols*2) { return false; }
+    	hexChip top = dest.topChip();
+      	hexChip pch = playerChip[who];
+      	G.Assert(top==pch,"should be the player last played");
+      	sweep_counter++;
+      	if(hasWinningPathFrom(dest,top,sweep_counter,margin.hasNone)==margin.hasBoth) { return true; }
+      	return false;
+    }
+    private margin hasWinningPathFrom(hexCell c,hexChip top,int sweep,margin edges)
+    {
+    	if(c.sweep_counter==sweep) { return edges; }
+    	if(c.topChip()!=top) { return edges; }
+    	c.sweep_counter = sweep;
+    	margin newEdges = edges;
+    	if ((top==hexChip.White) ? c.col==('A'-1)+ncols : c.row==ncols)
+    		{ newEdges = newEdges.merge(margin.hasMax);}
+    	if((top==hexChip.White) ? c.col=='A' : c.row==1)
+    		{ newEdges = newEdges.merge(margin.hasMin); 
+    		}
+    	if(newEdges==margin.hasBoth) { return newEdges; }
+   	
+    	for(int dir=0;dir<6;dir++) 
+    	{
+    		hexCell nx = c.exitTo(dir);
+    		if(nx !=null)
+    			{ newEdges = hasWinningPathFrom(nx,top,sweep,newEdges);
+    			  if(newEdges==margin.hasBoth) { return newEdges; }
+    }
+     	}
+    	return newEdges;
+    }
+
     // set the contents of a cell, and maintain the books
     // this logic uses ch==null to clear the cell, needs
     // to be adjusted if hexCell is based on stackCell
@@ -667,17 +698,18 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
        	resetState = board_state;
     }
     private void doDone(replayMode replay)
-    {
+    {	hexCell dest = droppedDestStack.top();
         acceptPlacement();
 
         if (board_state==HexState.Resign)
-        {
-            win[nextPlayer[whoseTurn]] = true;
+        {	setNextPlayer(replay);
+            win[whoseTurn] = true;
     		setState(HexState.Gameover);
         }
         else
-        {	if(winForPlayerNow(whoseTurn)) 
+        {	if(hasWinningPath(dest,whoseTurn)) 
         		{ win[whoseTurn] = true;
+        		  setNextPlayer(replay);
         		  setState(HexState.Gameover); 
         		}
         	else {setNextPlayer(replay);
@@ -819,8 +851,8 @@ void doSwap(replayMode replay)
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
             setState(HexState.Puzzle);	// standardize the current state
-            if((win[whoseTurn]=winForPlayerNow(whoseTurn))
-               ||(win[nextp]=winForPlayerNow(nextp)))
+            if((win[whoseTurn]=hasWinningPath(whoseTurn))
+               ||(win[nextp]=hasWinningPath(nextp)))
                	{ setState(HexState.Gameover); 
                	}
             else {  setNextStateAfterDone(replay); }

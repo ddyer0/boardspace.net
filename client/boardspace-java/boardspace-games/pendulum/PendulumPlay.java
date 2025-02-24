@@ -92,7 +92,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
+    private int forPlayer = 0;
     
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -180,7 +180,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves());
+            return(board.GetListOfMoves(forPlayer));
         }
 
         /**
@@ -374,6 +374,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues(this);
+    forPlayer = playerIndex;
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
