@@ -6634,8 +6634,9 @@ static User *processCheckSummedMessages(char *cmd,User *u,char *rawcmd,char *seq
 		// to hackers about what is acceptable.
 			if (u->session != WAITINGSESSION)
 			{
-				lsprintf(u->tempBufSize, u->tempBufPtr, ECHO_GROUP_SELF "%s", cmd);
-				sendSingle(u->tempBufPtr, u);
+				char obuf[SMALLBUFSIZE];
+				lsprintf(SMALLBUFSIZE, obuf, ECHO_GROUP_SELF "%s", cmd);
+				sendSingle(obuf, u);
 			}
 			else {
 				simpleCloseClientOnly(u,"bad input from waiting session");

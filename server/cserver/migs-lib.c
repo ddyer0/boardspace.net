@@ -316,11 +316,12 @@ int lsprintf
 	 char *fmt,	//@parm the format string
 	 ...)		//@parmvar the arguments
 {	int rval = 0;
+	assert((size > 0) && (buf != NULL) && (fmt != NULL));
 	va_list lst;
 	va_start(lst,fmt);
 	rval = lvsprintf(size,buf,fmt,lst);
 	va_end(lst);
-	assert((size>0) && (buf!=NULL) && (fmt!=NULL));
+	
 	return(rval);
 }
 
