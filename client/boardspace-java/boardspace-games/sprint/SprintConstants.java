@@ -73,7 +73,7 @@ public interface SprintConstants
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
 	Endgame(EndGameDescription,true,true),
-	EndingGame(EndingGameDescription,true,true),
+	EndingGame(EndingGameDescription,false,false),
 
 	Play(SprintPlayState,false,false),
 	;

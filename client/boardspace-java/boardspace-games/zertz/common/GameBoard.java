@@ -1505,7 +1505,6 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
-			SetNextPlayer(replay);
 			setState(ZertzState.GAMEOVER_STATE);
 			break;
          

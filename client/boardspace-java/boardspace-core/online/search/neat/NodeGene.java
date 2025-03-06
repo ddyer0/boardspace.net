@@ -173,7 +173,7 @@ public class NodeGene implements IoAble,CompareTo<NodeGene>,StackIterator<NodeGe
 		while(in!=null) 
 		{ int from = in.getInNode();
 		  if(from==target) { return true; }
-		  in = in.next;
+		  in = in.getNext();
 		}
 		return false;
 	}

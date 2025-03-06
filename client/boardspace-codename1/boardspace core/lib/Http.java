@@ -116,8 +116,8 @@ public class Http implements Config {
      */
     static public UrlResult postEncryptedURL(String server,String urlStr,String data,int sockets[],UrlResult result)
     {
-    	String params = data;
-    	params = "params=" + XXTEA.combineParams(params, XXTEA.getTeaKey());
+    	String combined = XXTEA.combineParams(data, XXTEA.getTeaKey());
+    	String params = "params=" + combined;
     	if(G.debug()) { G.print(params); }
     	Http.postURL(server,urlStr,params,sockets,result);
     	if(result.error==null)
@@ -133,10 +133,20 @@ public class Http implements Config {
     			// In any case, these can be difficult to diagnose so it's important to try
     			// to report them back to the server.
     			result.error = "result validation failed";
+    			String invalid = result.text;
+    			// limit the size of data put into error messages
+    			if(invalid!=null && invalid.length()>1024)
+    			{
+    				invalid = invalid.substring(0,1024)+"\n...\n";
+    			}
+    			if(combined!=null && combined.length()>1024)
+    			{
+    				combined = combined.substring(0,1024)+"\n...\n";
+    			}
     			String err = G.concat("postEncryped returned an invalid result\n",
     					"url=",urlStr,
     					"\nparams=",params,
-    					"\nresult=",result.text,
+    					"\nresult=",invalid,
     					"\ndecoded=",dec);
     			postError(result,err,null);
     			//logError
@@ -492,7 +502,7 @@ public class Http implements Config {
     		try {
     			G.setPostedError(message+":"+err);
     	        if (!(err instanceof ThreadDeath) 	// don't post ThreadDeath events
-    	        		&& (errors_posted < 10))
+    	        		&& (errors_posted < 5))
     	        {
     	            errors_posted++;
 

@@ -51,17 +51,22 @@ import online.game.*;
  * @author ddyer
  *
  */
-class Timer
+class Timer implements PendulumConstants
 {
 	long timeToRun = 0;
 	long timeStart = 0;
 	PendulumChip icon = null;
 	boolean running = false;
-	
-	public Timer(PendulumChip chip,long time)
+	TColor color = null;
+	public Timer(PendulumChip chip,TColor c,long time)
 	{
 		timeStart = time;
+		color = c;
 		icon = chip;
+	}
+	public String toString()
+	{
+		return "<timer "+color+">";
 	}
 	void flip()
 	{
@@ -114,35 +119,35 @@ class PendulumBoard
 		};
 	PlayerBoard pbs[] = null;
 	
-	public Timer blackTimer = new Timer(PendulumChip.blackHourglass,45*1000);
-	public Timer purpleTimer = new Timer(PendulumChip.purpleHourglass,3*60*1000);
-	public Timer greenTimer = new Timer(PendulumChip.greenHourglass,2*60*1000);
+	public Timer blackTimer = new Timer(PendulumChip.blackTimer,TColor.Black,45*1000);
+	public Timer purpleTimer = new Timer(PendulumChip.purpleTimer,TColor.Purple,3*60*1000);
+	public Timer greenTimer = new Timer(PendulumChip.greenTimer,TColor.Green,2*60*1000);
 	public boolean timersRunning = false;
 	public long lastTimerTime = 0;
 	public int councilPhase = 0;
 	public PendulumCell councilCards[] = newcell(PendulumId.RewardCard,8);
 	public PendulumCell councilRewardsDeck = councilCards[0];
 	public PendulumCell timerTrack[] = newcell(PendulumId.TimerTrack,11);
-	
+	public PendulumCell trash = newcell(PendulumId.Trash);
 	public PendulumCell provinceCards = newcell(PendulumId.ProvinceCardStack);
 	public PendulumCell achievementCards = newcell(PendulumId.AchievementCardStack);
-	public PendulumCell currentAchievement = newcell(PendulumId.AchievementCard);
-	public PendulumCell greenHourglass[] = newcell(PendulumId.GreenHourglass,2);
-	public PendulumCell purpleHourglass[] = newcell(PendulumId.PurpleHourglass,4);
-	public PendulumCell blackHourglass[] = newcell(PendulumId.BlackHourglass,2);
+	public PendulumCell currentAchievement = newcell(PendulumId.AchievementCard,BC.Achievement,BB.Achievement);
+	public PendulumCell greenTimers[] = newcell(PendulumId.GreenTimer,2);
+	public PendulumCell purpleTimers[] = newcell(PendulumId.PurpleTimer,4);
+	public PendulumCell blackTimers[] = newcell(PendulumId.BlackTimer,2);
 	
 	public boolean purpleHourglassTop()
 	{
-		return (purpleHourglass[0].topChip()==PendulumChip.purpleHourglass)
-				|| (purpleHourglass[1].topChip()==PendulumChip.purpleHourglass);
+		return (purpleTimers[0].topChip()==PendulumChip.purpleTimer)
+				|| (purpleTimers[1].topChip()==PendulumChip.purpleTimer);
 	}
 	public boolean blackHourglassTop()
 	{
-		return blackHourglass[0].topChip()==PendulumChip.blackHourglass;
+		return blackTimers[0].topChip()==PendulumChip.blackTimer;
 	}
 	public boolean greenHourglassTop()
 	{
-		return greenHourglass[0].topChip()==PendulumChip.greenHourglass;
+		return greenTimers[0].topChip()==PendulumChip.greenTimer;
 	}
 	public PendulumCell privilege[] = newcell(PendulumId.Privilege,MAX_PLAYERS);
 	public PendulumCell achievement[] = newcell(PendulumId.Achievement,MAX_PLAYERS);
@@ -151,28 +156,28 @@ class PendulumBoard
 	public PendulumCell greenMeepleA[] = newcell(PendulumId.GreenMeepleA,3);
 	public PendulumCell greenMeepleB[] = newcell(PendulumId.GreenMeepleB,3);
 	public PendulumCell greenActionA[] = newcell(PendulumId.GreenActionA,
-				new BC[] {BC.D2,BC.D2,BC.D2},
+				new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
 				new BB[] {BB.RedPB,BB.Culture2,BB.Military1Vote2});
 	public PendulumCell greenActionB[] = newcell(PendulumId.GreenActionB,
-				new BC[] {BC.D2,BC.D2,BC.D2},
+				new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
 				new BB[] {BB.RedPB,BB.Culture2,BB.Military1Vote2});
 	
 	public PendulumCell blackMeepleA[] = newcell(PendulumId.BlackMeepleA,4);
 	public PendulumCell blackMeepleB[] = newcell(PendulumId.BlackMeepleB,4);
 	public PendulumCell blackActionA[] = newcell(PendulumId.BlackActionA,
-			new BC[] {BC.None,BC.None,BC.M4,BC.None},
+			new BC[] {BC.None,BC.None,BC.M4Board,BC.None},
 			new BB[] {BB.YellowPB,BB.Vote1,BB.Province,BB.Resource1});
 	public PendulumCell blackActionB[] = newcell(PendulumId.BlackActionB,
-			new BC[] {BC.None,BC.None,BC.M4,BC.None},
+			new BC[] {BC.None,BC.None,BC.M4Board,BC.None},
 			new BB[] {BB.YellowPB,BB.Vote1,BB.Province,BB.Resource1});
 
 	public PendulumCell purpleMeepleA[] = newcell(PendulumId.PurpleMeepleA,3);
 	public PendulumCell purpleMeepleB[] = newcell(PendulumId.PurpleMeepleB,3);
 	public PendulumCell purpleActionA[] = newcell(PendulumId.PurpleActionA,
-			new BC[] {BC.D2,BC.D2,BC.D2},
+			new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
 			new BB[] {BB.BrownPB,BB.Popularity1Prestige1Vote1,BB.BluePB});
 	public PendulumCell purpleActionB[] = newcell(PendulumId.PurpleActionB,
-			new BC[] {BC.D2,BC.D2,BC.D2},
+			new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
 			new BB[] {BB.BrownPB,BB.Popularity1Prestige1Vote1,BB.BluePB});
 
     // get the chip pool and chip associated with a player.  these are not 
@@ -239,9 +244,6 @@ class PendulumBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() { setState(PendulumState.Draw); }	CellStack animationStack = new CellStack();
 
-	// intermediate states in the process of an unconfirmed move should
-    // be represented explicitly, so unwinding is easy and reliable.
-    private int round = 0;
     // save strings to be shown in the game log
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
@@ -267,6 +269,14 @@ class PendulumBoard
 			}
 		return row;
 	}
+	
+	public PendulumCell newcell(PendulumId id,BC cost,BB bene)
+	{	PendulumCell c = newcell(id);
+		c.cost = cost;
+		c.benefit = bene;
+		return c;
+	}
+	
 	// factory method to generate a board cell
 	public PendulumCell[] newcell(PendulumId id,BC[]costs,BB[]benefits)
 	{	PendulumCell row[] = new PendulumCell[costs.length];
@@ -339,7 +349,6 @@ class PendulumBoard
 		for(PendulumCell c = allCells; c!=null; c=c.next) { c.reInit(); }
  		
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    round = 0;
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
@@ -383,14 +392,14 @@ class PendulumBoard
         animationStack.clear();
         moveNumber = 1;
         timerTrack[0].addChip(PendulumChip.grayGlass);
-        greenHourglass[0].addChip(PendulumChip.greenHourglass);
-        blackHourglass[0].addChip(PendulumChip.blackHourglass);
-        purpleHourglass[0].addChip(PendulumChip.purpleHourglass);
+        greenTimers[0].addChip(PendulumChip.greenTimer);
+        blackTimers[0].addChip(PendulumChip.blackTimer);
+        purpleTimers[0].addChip(PendulumChip.purpleTimer);
         timersRunning = false;
         lastTimerTime = 0;
         
         // mark the future purple timer slots
-        for(int i=1;i<=3;i++) { purpleHourglass[i].addChip(PendulumChip.purpleGlass); }
+        for(int i=1;i<=3;i++) { purpleTimers[i].addChip(PendulumChip.purpleGlass); }
         animationStack.shuffle(r);
         // randomize the initial privilege
         int par[] = AR.intArray(players_in_game);
@@ -438,7 +447,6 @@ class PendulumBoard
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         provinceCards.copyFrom(from_b.provinceCards);
-        round = from_b.round;
         blackTimer = from_b.blackTimer;
         greenTimer = from_b.greenTimer;
         purpleTimer = from_b.purpleTimer;
@@ -451,9 +459,10 @@ class PendulumBoard
         copyFrom(councilCards,from_b.councilCards);
         copyFrom(timerTrack,from_b.timerTrack);
         copyFrom(provinces,from_b.provinces);
-        copyFrom(greenHourglass,from_b.greenHourglass);
-        copyFrom(blackHourglass,from_b.blackHourglass);
-        copyFrom(purpleHourglass,from_b.purpleHourglass);
+        copyFrom(greenTimers,from_b.greenTimers);
+        copyFrom(blackTimers,from_b.blackTimers);
+        copyFrom(purpleTimers,from_b.purpleTimers);
+        copyFrom(trash,from_b.trash);
         copyFrom(privilege,from_b.privilege);
         copyFrom(achievement,from_b.achievement);
         
@@ -496,7 +505,6 @@ class PendulumBoard
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
         G.Assert(provinceCards.sameContents(from_b.provinceCards),"province cards mismatch");
-        G.Assert(round==from_b.round,"round mismatch");
         G.Assert(achievementCards.sameContents(from_b.achievementCards),"achievementCards mismatch");
         G.Assert(currentAchievement.sameContents(from_b.currentAchievement),"currentAchievement mismatch");
         G.Assert(sameContents(provinces,from_b.provinces),"province mismatch");
@@ -572,14 +580,14 @@ class PendulumBoard
 		v ^= Digest(r,councilCards);
 		v ^= Digest(r,timerTrack);
 		v ^= Digest(r,provinceCards);
-		v ^= Digest(r,round);
 		v ^= Digest(r,achievementCards);
 		v ^= Digest(r,currentAchievement);
-		v ^= Digest(r,greenHourglass);
-		v ^= Digest(r,purpleHourglass);
+		v ^= Digest(r,greenTimers);
+		v ^= Digest(r,purpleTimers);
+		v ^= Digest(r,trash);
 		v ^= Digest(r,privilege);
 		v ^= Digest(r,achievement);
-		v ^= Digest(r,blackHourglass);
+		v ^= Digest(r,blackTimers);
 		
 		v ^= Digest(r,provinces);
 		
@@ -617,6 +625,7 @@ class PendulumBoard
         case Puzzle:
             break;
         case Play:
+        case CouncilPlay:
         	// some damaged games have 2 dones in a row
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
@@ -691,7 +700,7 @@ class PendulumBoard
         	return achievementCards;
         case ProvinceCardStack:
         	return provinceCards;
-        	
+        case PlayerFreeD2Card:
         case PlayerStratCard:
         case PlayerPlayedStratCard:
         case PlayerBlueBenefits:
@@ -713,6 +722,8 @@ class PendulumBoard
         case PlayerMilitaryReserves:
         case PlayerCultureReserves:
         case PlayerCashReserves:
+        case PlayerLegendary:
+        case PlayerMax3Cards:
         	return getPlayerBoard(col).getCell(source,row);
         	
         case BlackMeepleA:
@@ -741,19 +752,21 @@ class PendulumBoard
         	return purpleActionA[row];
         case PurpleActionB:
         	return purpleActionB[row];
-            	
+        case Trash:
+        	return trash;
+        	
         case TimerTrack:
         	return timerTrack[row];
         case RewardCard:
         	return councilCards[row];
         case RewardDeck:
         	return councilRewardsDeck;
-        case GreenHourglass:
-        	return greenHourglass[row];
-        case BlackHourglass:
-        	return blackHourglass[row];
-        case PurpleHourglass:
-        	return purpleHourglass[row];
+        case GreenTimer:
+        	return greenTimers[row];
+        case BlackTimer:
+        	return blackTimers[row];
+        case PurpleTimer:
+        	return purpleTimers[row];
         case Privilege:
         	return privilege[row];
         case Achievement:
@@ -784,6 +797,7 @@ class PendulumBoard
         case Confirm:
         	setNextStateAfterDone(replay);
          	break;
+        case CouncilPlay:
         case Play:
         	pb.setNextStateAfterDrop(replay);
         	break;
@@ -807,7 +821,11 @@ class PendulumBoard
     	if(from.topChip()==null) { from = to0; to=from0; }
     	if(replay.animate) { animationStack.push(from); animationStack.push(to); }
     	timer.flip();
-    	if(to.topChip()!=null) { to.removeTop(); }
+    	if(to.topChip()!=null) 
+    		{ trash.addChip(to.removeTop()); 
+    		  animationStack.push(to);
+    		  animationStack.push(trash); 
+    		}
     	to.addChip(from.removeTop());
     }
     private void flipAllTimers(replayMode replay)
@@ -819,26 +837,27 @@ class PendulumBoard
     }
     private void flipGreenTimer(replayMode replay)
     {
-    	moveTimer(greenTimer,greenHourglass[0],greenHourglass[1],replay);
+    	moveTimer(greenTimer,greenTimers[0],greenTimers[1],replay);
     }
     private void flipBlackTimer(replayMode replay)
     {
-    	moveTimer(blackTimer,blackHourglass[0],blackHourglass[1],replay);
+    	moveTimer(blackTimer,blackTimers[0],blackTimers[1],replay);
     }
     private void flipPurpleTimer(replayMode replay)
     {	switch(councilPhase)
     	{
     	case 0:
-    		moveTimer(purpleTimer,purpleHourglass[0],purpleHourglass[2],replay);
+    		moveTimer(purpleTimer,purpleTimers[0],purpleTimers[2],replay);
     		break;
     	case 1:
-    		moveTimer(purpleTimer,purpleHourglass[2],purpleHourglass[1],replay);
+    		moveTimer(purpleTimer,purpleTimers[2],purpleTimers[1],replay);
     		break;
     	case 2:
-    		moveTimer(purpleTimer,purpleHourglass[1],purpleHourglass[3],replay);
+    		moveTimer(purpleTimer,purpleTimers[1],purpleTimers[3],replay);
     		break;
     	case 3:
-    		moveTimer(purpleTimer,purpleHourglass[3],purpleHourglass[0],replay);
+    		moveTimer(purpleTimer,purpleTimers[3],purpleTimers[0],replay);
+    		setState(PendulumState.CouncilPlay);
     		break;
     	default: G.Error("no phase 5!");
     	}
@@ -881,6 +900,9 @@ class PendulumBoard
     			G.Error("Not expecting confirm from %s",resetState);
     		}
     		break;
+    	case CouncilPlay:
+    		setState(PendulumState.CouncilPlay);
+    		break;
     	case Puzzle:
     	case Play:
     		setState(PendulumState.Play);
@@ -922,7 +944,22 @@ class PendulumBoard
 
             break;
 
-
+        case MOVE_FROM_TO:
+        	{
+        	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
+        	PlayerBoard pb = getPlayerBoard(m.player);
+        	if(pb.isDest(c)) { pb.unDropObject(); }
+        	else { pb.pickObject(c,m.from_index); }
+        	}
+        	{
+        	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
+        	PlayerBoard pb = getPlayerBoard(m.player);
+        	if(pb.isSource(c)) { pb.unPickObject(); }
+        	else 
+        	{ pb.doDrop(c,board_state,replay);
+    		  setNextStateAfterDrop(pb,replay);
+        	}}
+        	break;
         case MOVE_PICK:
         	{
         	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
@@ -942,29 +979,36 @@ class PendulumBoard
     		  setNextStateAfterDrop(pb,replay);
         	}}
             break;
-        case SETACTIVE:
+        case MOVE_SETACTIVE:
         	G.Assert(simultaneousTurnsAllowed(),"should be anymove");
         	setWhoseTurn(m.player);
         	break;
         	
         case MOVE_START:
-        	if(round==0)
+        	if((councilPhase==0) && !timersRunning)
         		{ setWhoseTurn(getPlayerIndex(privilege[0].topChip())); 
         		  setState(PendulumState.PlayGrande);
         		}
         	else
         	{
+        	for(int i=0;i<purpleTimers.length;i++)
+        	{
+        		if(purpleTimers[i].topChip()==PendulumChip.purpleTimer)
+        		{	switch(i)
+        			{	
+        			case 0:	councilPhase = 0; break;
+        			case 1: councilPhase = 2; break;
+        			case 2: councilPhase = 1; break;
+        			case 3: councilPhase = 3; break;
+        			default: break;
+        			}
+        		}
+        	}
             setWhoseTurn(m.player);
             acceptPlacement();
-            int nextp = nextPlayer[whoseTurn];
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
-            setState(PendulumState.Puzzle);	// standardize the current state
-            if((win[whoseTurn]=winForPlayerNow(whoseTurn))
-               ||(win[nextp]=winForPlayerNow(nextp)))
-               	{ setState(PendulumState.Gameover); 
-               	}
-            else {  setNextStateAfterDone(replay); }
+            setState(PendulumState.Play);	// standardize the current state
         	}
             break;
 
@@ -980,9 +1024,38 @@ class PendulumBoard
     	   win[whoseTurn] = true;
     	   setState(PendulumState.Gameover);
     	   break;
-
+       case MOVE_FLIP:
+       		{
+       			PendulumCell c = getCell(m.source,m.from_col,m.to_row);
+       			switch(c.rackLocation())
+       			{
+       			case BlackTimer:
+       				flipBlackTimer(replay);
+       				break;
+       			case GreenTimer:
+       				flipGreenTimer(replay);
+       				break;
+       			case PurpleTimer:
+       				flipPurpleTimer(replay);
+       				break;
+       			default: G.Error("can't flip %s",c);
+       			}
+       		}
+       		break;
         default:
         	cantExecute(m);
+        }
+        if(replay==replayMode.Live)
+        {
+        	m.blackTimer = (int)blackTimer.timeToRun;
+        	m.greenTimer = (int)greenTimer.timeToRun;
+        	m.purpleTimer = (int)purpleTimer.timeToRun;
+        }
+        else
+        {
+        	blackTimer.timeToRun = m.blackTimer;
+        	greenTimer.timeToRun = m.greenTimer;
+        	purpleTimer.timeToRun = m.purpleTimer;
         }
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
 
@@ -998,6 +1071,7 @@ class PendulumBoard
         {
         case Puzzle:
 		case Play:
+		case CouncilPlay:
 		case PlayGrande:
 		case PlayMeeple:
 			return(targets.get(c)!=null);
@@ -1032,32 +1106,6 @@ class PendulumBoard
     }
  
 
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(PendulumMovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	PendulumState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
- 
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
- 
  private void addActionMoves(CommonMoveStack all,int who)
  {	boolean greenTop = greenHourglassTop();
  	boolean blackTop = blackHourglassTop();
@@ -1120,6 +1168,52 @@ class PendulumBoard
  	 	}
  	 }}
  	 return some;
+ }
+ private void addFlipTimerMoves(CommonMoveStack all,int who)
+ {
+	 addFlipTimerMoves(all,greenTimer,greenTimers,who);
+	 addFlipTimerMoves(all,blackTimer,blackTimers,who);
+	 addFlipTimerMoves(all,purpleTimer,purpleTimers,who);
+ }
+ private void addClaimAchievementMoves(CommonMoveStack all,int who)
+ {		PlayerBoard pb = pbs[who];
+ 		PColor color = pb.color;
+ 		if(pb.pickedSource!=null && pb.pickedSource.rackLocation()==PendulumId.Achievement)
+ 		{
+ 			addClaimAchievementMoves(all,pb.pickedSource,pb.pickedObject,who);
+ 		}
+ 		for(PendulumCell c : achievement)
+ 		{
+ 			PendulumChip ch = c.topChip();
+ 			if(ch!=null && ch.color==color)
+ 			{
+ 				addClaimAchievementMoves(all,c,ch,who);
+ 			}
+ 		}
+ }
+ private void addClaimAchievementMoves(CommonMoveStack all,PendulumCell from,PendulumChip top,int who)
+ {	PlayerBoard pb = pbs[who];
+ 	PendulumChip current = currentAchievement.chipAtIndex(0);
+ 	if(pb.canPayCost(current.pc))
+ 	{
+ 		all.push(new PendulumMovespec(MOVE_FROM_TO,from,-1,currentAchievement,who));
+ 	}
+ }
+ private void addFlipTimerMoves(CommonMoveStack all,Timer timer,PendulumCell cells[],int who)
+ {	PlayerBoard pb = pbs[who];
+ 	if(pb.pickedObject==null)
+ 	{
+	 if(timer.running && timer.timeToRun<=0)
+	 {	 PendulumId rack = cells[0].rackLocation();
+		 for(PendulumCell c : cells)
+		 {
+			 PendulumChip top = c.topChip();
+			 if((top!=null) && top.id==rack)
+			 {
+				 all.push(new PendulumMovespec(MOVE_FLIP,c,0,who));
+			 }
+		 }
+	 }}
  }
  private void addWorkerMoves(CommonMoveStack all,int who)
  {	
@@ -1285,6 +1379,8 @@ class PendulumBoard
  	case PlayMeeple:
  		addMeepleMoves(all,who);
  		break;
+ 
+ 	case CouncilPlay:
  	case Play:
  		{
  		PlayerBoard pb = pbs[who];
@@ -1296,6 +1392,8 @@ class PendulumBoard
 	 		addMeepleMoves(all,who);	// place a regular worker from the reserve
 	 		addActionMoves(all,who);	// take the action a worker is elgible for
 	 		pb.addPlayStrategem(all,who);	// play a strategem card
+	 		if(board_state!=PendulumState.CouncilPlay) { addFlipTimerMoves(all,who);	}// flip timers
+	 		addClaimAchievementMoves(all,who);	// claim the achievement card
 	 		break;
  		case RetrieveWorker:
  			addRetrieveWorkerMoves(all,who);
@@ -1305,6 +1403,10 @@ class PendulumBoard
  			break;
  		case Province:
  			pbs[who].addCollectProvinceMoves(all);
+ 			break;
+ 		case AchievementOrLegandary:
+ 			all.push(new PendulumMovespec(MOVE_STANDARD_ACHIEVEMENT,who));
+ 			all.push(new PendulumMovespec(MOVE_FROM_TO,currentAchievement,1,pbs[who].legendary,who));
  			break;
  		default:
  			throw G.Error("Not expecting uiState %s",pb.uiState);
@@ -1391,6 +1493,7 @@ class PendulumBoard
  			targets.put(getCell(m.source,m.from_col,m.from_row),m);
  			break;
  		case MOVE_DROP:
+ 		case MOVE_FLIP:
  			targets.put(getCell(m.dest,m.to_col,m.to_row),m);
  			break;
  		case MOVE_FROM_TO:
@@ -1403,7 +1506,9 @@ class PendulumBoard
  					targets.put(getCell(m.dest,m.to_col,m.to_row),m);
  				}
  			break;
- 		case SETACTIVE: break;
+ 		case MOVE_SETACTIVE: 
+ 		case MOVE_STANDARD_ACHIEVEMENT:
+ 			break;
  		default: G.Error("Not expecting "+m);
  		
  		}
@@ -1430,15 +1535,15 @@ public void setLocations()
 	achievementCards.setLocation(0.541,0.172,0.117);
 	currentAchievement.setLocation(0.541,0.354,0.117);
 	// hourglasses
-	greenHourglass[0].setLocation(0.95,0.15,0.09);
-	greenHourglass[1].setLocation(0.95,0.38,0.09);
-	blackHourglass[0].setLocation(0.95,0.6,0.09);
-	blackHourglass[1].setLocation(0.95,0.84,0.09);
-	purpleHourglass[0].setLocation(0.045,0.125,0.09);
-	purpleHourglass[1].setLocation(0.045,0.18,0.09);
-	purpleHourglass[2].setLocation(0.045,0.36,0.09);
-	purpleHourglass[3].setLocation(0.045,0.41,0.09);
-
+	greenTimers[0].setLocation(0.95,0.15,0.09);
+	greenTimers[1].setLocation(0.95,0.38,0.09);
+	blackTimers[0].setLocation(0.95,0.6,0.09);
+	blackTimers[1].setLocation(0.95,0.84,0.09);
+	purpleTimers[0].setLocation(0.045,0.125,0.09);
+	purpleTimers[1].setLocation(0.045,0.18,0.09);
+	purpleTimers[2].setLocation(0.045,0.36,0.09);
+	purpleTimers[3].setLocation(0.045,0.41,0.09);
+	trash.setLocation(0.09,0.25,0.05);
 	PendulumCell.setHLocation(purpleMeepleA,0.125,0.42,0.09,0.1);
 	PendulumCell.setHLocation(purpleActionA,0.125,0.42,0.19,0.1);
 	PendulumCell.setHLocation(purpleMeepleB,0.125,0.42,0.325,0.1);

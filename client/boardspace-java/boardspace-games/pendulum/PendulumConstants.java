@@ -50,9 +50,9 @@ public interface PendulumConstants
 		PlayerStratCard("Stategem card"), 
 		PlayerPlayedStratCard, RewardDeck, Province, AchievementCard, 
 		AchievementCardStack("Achievement cards"), 
-		BlackHourglass("Black timer"),
-		GreenHourglass("Green timer"),
-		PurpleHourglass("Purple timer"),
+		BlackTimer("Black timer"),
+		GreenTimer("Green timer"),
+		PurpleTimer("Purple timer"),
 		ProvinceCardStack("Province card deck"),
 		
 		Privilege("Privilege Position #1"), RewardCard, 
@@ -60,7 +60,7 @@ public interface PendulumConstants
 		BlackActionA,GreenActionA,PurpleActionA,
 		BlackMeepleB(PlaceWorkerString),GreenMeepleB(PlaceWorkerString),PurpleMeepleB(PlaceWorkerString),
 		BlackActionB,GreenActionB,PurpleActionB,
-		TimerTrack, 
+		TimerTrack, Trash,
 		Legendary("#1{##No Legandary Achievement,##Your Legendary Achievement}"),
 		PurpleGlass,
 		GrayGlass,
@@ -88,6 +88,10 @@ public interface PendulumConstants
 		PlayerMilitaryVP("#1{ Military points, Military point}"),
 		PlayerPrestigeVP("#1{ Prestige points, Prestige points}"),
 		PlayerPopularityVP("#1{ Popularity points, Popularity Point}"),
+		PlayerLegendary("the Legendary achievement"),
+		PlayerMax3Cards("limit of 3 province cards per stack"),
+		PlayerFreeD2Card("Your next $2 worker action is free"),
+		
 		;
 		PendulumChip chip;
 		String description = "";
@@ -101,6 +105,8 @@ public interface PendulumConstants
 		}
 	}
 	enum PColor { Yellow,White,Green,Blue,Red }
+	enum TColor { Purple, Black, Green };
+	
 enum BB implements EnumMenu
 {
 	// board benefits
@@ -115,6 +121,7 @@ enum BB implements EnumMenu
 	Military1Vote2("get 1 Military + 2 Votes"),	// 1 military 2 votes
 	Popularity1Prestige1Vote1("get 1 Popularity + 1 Prestige + 2 Votes"),	// one of each
 	None("No Benefit"), 
+	Achievement("Achievement Benefit"),
 	PerCard("Benefit depends on the card played"),
 	;
 	String description = "";
@@ -126,9 +133,10 @@ enum BB implements EnumMenu
 enum BC implements EnumMenu
 {
 	// board costs
-	D2("Cost is 2$"),		// 2 $
-	M4("Cost is 4 Military"),		// 4 military
+	D2Board("Cost is 2$"),		// 2 $
+	M4Board("Cost is 4 Military"),		// 4 military
 	None("Free"), 
+	Achievement("No cost, but you must have the resources"),
 	PerCard("Cost depends on the card played"),
 	;
 	String description = "";
@@ -142,19 +150,43 @@ enum PC
 {
 	None(""),
 	Pow2("2 Military VP"),
+	M2("2 Military Cubes"),
+	M3("3 Military Cubes"), 
+	M5("5 Military Cubes"),	
 	M7("7 Military Cubes"),
+	V2("2 Votes"), 
 	V3("3 Votes"),
 	V4("4 Votes"),
 	C1("1 Culture Cube"),
-	C3("3 Culture Cube"),
+	C2("2 Culture Cubes"), 
+	C3("3 Culture Cubes"),
 	C4V2("4 Culture Cubes + 2 Votes"),
+	C5("5 Culture Cubes"),
 	C7("7 Culture Cubes"),
+	D2("$2"),
+	D5("$5"),
 	D7("$7"),
 	M4D4("4 Military Cubes + $4"), 
 	R2("Any 2 Resource Cubes"),
-	R8("Any 8 Resource cubes"),
+	R8("Any 8 Resource Cubes"),
+	R10("Any 10 Resource Cubes"),
+
 	MesPaci_3(""), 
-	Pop3("3 Popularity VP"),
+	Pop3("3 Popularity VP"), 
+	
+	M6XC2V3("6 Military + 2 Culture + 3 Votes"),	// achivement card 1
+	M2C6V3("2 Military + 6 Culture + 3 Votes"),		// achievement card 2
+	R12V3("any 12 Resources + 3 Votes"),
+	M8V3("8 Mulitary + 3 Votes"),
+	D8V3("8 Dollars + 3 Votes"),
+	D3M3C3V3("$3 + 3 Military + 3 Culture + 3 Votes"),
+	C4D4V3("4 Culture + $4 + 3 Votes"),
+	M4C4V3("4 Militry + 4 Culture + 3 Votes"),
+	M4D4V3("4 Military + $4 + 3 Votes"),
+	C8V3("8 Culture + 3 Votes"), 
+	MeepleAndGrande("a regular worker available to promote"),
+	NoMax3("No Max3 card in hand"), 
+
 	;
 	String description = "";
 	PC(String f) { description = f;}
@@ -168,17 +200,18 @@ enum PB {
 	Pres1("get 1 Prestige VP"),	// 1 prestige vp
 	Pres2("get 2 Prestige VP"),	// 2 prestige vp
 	Retrieve("retrieve a worker from a timer action"),
-	Province("conquer 1 province"),
+	Province("conquer a province"),
 	Recruit("recruit a regular worker"),
 	
 	D1("get 1 Dollar"),	// 1 dollar
 	D2("get 2 Dollars"),	// 2 dollar
 	D3("get 3 Dollars"),	// 3 dollar
-	
+	D5("get 5 Dollars"),	// 5 dollars
 	M1("get 1 Military Cube"),	// 1 military
 	M2("get 2 Military Cubes"),	// 2 military
 	M3("get 3 Military Cubes"),	// 3 military
 	M4("get 4 Military Cubes"),	// 4 military
+	M5("get 5 Military Cubes"),	// 5 military
 	M3D2("get 3 Military Cubes and $1"),	// 3 culture and 2 dollars
 	
 	C1("get 1 Culture Cube"),	// 1 culture
@@ -190,13 +223,36 @@ enum PB {
 	V1("get 1 Vote"),	// 1 vote
 	V2("get 2 Votes"),	// 2 votes
 	V3("get 3 Votes"),	// 3votes
-	
+	V5("get 5 Votes"),	// 5 votes
 	R1("get any 1 resource"),
 	R3("get any 3 resources"),
 	R4("get any 4 resources"),
 	R5("get any 5 resources"), 
-	BolkWar_2(""), BolkWar_3(""), Dhkty_3(""), Gambinsurg_3(""),
-	RetrieveStrat("Retrieve 1 Strategy Card"), Mespaci_2(""), Mespaci_3(""),
+	BolkWar_2("Exchange military and culture cubes"),
+	BolkWar_3("When taking a worker action, Also take an adjacent action"), 
+	Dhkty_3("Claim the achievement twice"),
+	Gambinsurg_3("Play a worker directly on an action"),	// with timer, except the color production places
+	RetrieveStrat("Retrieve 1 Strategy Card"),
+	Mespaci_2("Claim the achievement"),
+	Mespaci_3("When taking a worker action, take the action twice"),  //card where the arrow points to a blank when taking a worker action, pay twice and receive twice
+	
+	M2C2D2("get 2 Military + 2 Culture + $2"),		// achievement card 1
+	BluePB("get the Blue benefits from your player board"),
+	RedPB("get the Red benefits from your player board"),
+	Pow1Pres1Pop1("get 1 Power VP + 1 Prestige VP + 1 Popularity VP"),
+	Pres1Pop1("get 1 Prestige VP + 1 Popularity VP"),
+	Pow1Pres1("get 1 Power VP + 1 Prestige VP"),
+	Pow1Pop1("get 1 Power VP + 1 Popularity VP"),
+	Pop3("get 3 Popularity VP"),
+	Pow3("get 4 Power VP"),
+	Pres3("get 3 Prestige VP"),
+	Legendary("get the Legendary achievement"),
+	Grande("promote a worker to grande"), 
+	Max3("Increase your province limit to 3"), 
+	RetrieveAll("Retrieve all your Strategem cards"),
+	SwapVotes("swap 1 vote among Power Presige and Popularity"),
+	FreeD2("Your next $2 worker action is free"),
+	
 	;
 	String description = "";
 	PB(String desc)
@@ -216,7 +272,10 @@ public enum UIState implements Digestable
 	GetColony("Select a colony"),
 	RetrieveWorker("Retrieve a worker from an active action space"),
 	Province("Select a province to conquer"),
-	CollectResources("Select #1{ resources, resource, resources}"),
+	CollectResources("Select #1{ resources, resource, resources}"), 
+	PayResources("Pay #1{ resources, resource, resources}"),
+	AchievementOrLegandary("Take the legendary achievement or the default benefits"),
+	SwapVotes("decrease 1 vote and increase 1 vote"),
 	;
 	String description;
 	UIState(String d) { description = d; }
@@ -235,6 +294,8 @@ public enum PendulumState implements BoardState
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
+	Council(StateRole.Play,CouncilState,false,false),	// pending council mode
+	CouncilPlay(StateRole.Play,CouncilPlayState,false,false),	// pending council mode
 	Play(StateRole.Play,PlayState,false,false),
 	PlayGrande(StateRole.Play,PlayGrandeState,false,false),
 	PlayMeeple(StateRole.Play,PlayMeepleState,false,false);
@@ -257,6 +318,7 @@ public enum PendulumState implements BoardState
 	public boolean simultaneousTurnsAllowed() 
 	{	switch(this)
 		{
+		case CouncilPlay:
 		case Play: return true;
 		default: return(false); }
 		}
@@ -290,11 +352,15 @@ public enum PendulumState implements BoardState
 	static final String PlayState = "Place workers or Take Actions";
 	static final String PlayGrandeState = "Place your grande worker";
 	static final String PlayMeepleState = "Place your regular worker";
+	static final String CouncilPlayState = "Place workers and take actions, No timers";
+	static final String CouncilState = "Council phase";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Pendulum",
 			PlayState,
+			CouncilPlayState,
+			CouncilState,
 			PlayGrandeState,
 			PlayMeepleState,
 	    VictoryCondition

@@ -34,11 +34,13 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 	private PendulumCell votes = newcell(PendulumId.PlayerVotes);
 	private PendulumCell grandeReserves = newcell(PendulumId.PlayerGrandeReserves);
 	private PendulumCell meepleReserves = newcell(PendulumId.PlayerMeepleReserves);
-	
+	PendulumCell legendary = newcell(PendulumId.PlayerLegendary);
 	private PendulumCell militaryReserves = newcell(PendulumId.PlayerMilitaryReserves);
 	private PendulumCell cultureReserves = newcell(PendulumId.PlayerCultureReserves);
 	private PendulumCell cashReserves = newcell(PendulumId.PlayerCashReserves);
 	private PendulumCell votesReserves = newcell(PendulumId.PlayerVotesReserves);
+	private PendulumCell max3Cards = newcell(PendulumId.PlayerMax3Cards);
+	private PendulumCell freeD2 = newcell(PendulumId.PlayerFreeD2Card);
 	
 	private PendulumCell militaryVP[] = newcell(PendulumId.PlayerMilitaryVP,22);
 	private PendulumCell prestigeVP[] = newcell(PendulumId.PlayerPrestigeVP,22);
@@ -55,7 +57,7 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 	public int uiCount = 0;
 	public UIState uiState = UIState.Normal;
 	
-	public String xtoString() { return "<pb "+color+">"; }
+	public String toString() { return "<pb "+color+">"; }
 	
 	private PendulumCell newcell(PendulumId id)
 	{
@@ -106,6 +108,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		v ^= military.Digest(r);
 		v ^= culture.Digest(r);
 		v ^= cash.Digest(r);
+		v ^= max3Cards.Digest(r);
+		v ^= freeD2.Digest(r);
+		v ^= legendary.Digest(r);
 		v ^= votes.Digest(r);
 		v ^= cashReserves.Digest(r);
 		v ^= militaryReserves.Digest(r);
@@ -153,7 +158,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		
 		grandes.addChip(grande);
 		meeples.addChip(meeple);
+		
 		grandeReserves.addChip(grande);
+		meepleReserves.addChip(meeple);
 		meepleReserves.addChip(meeple);
 		pickedSource = droppedDest = null;
 		pickedObject = droppedObject = null;
@@ -232,7 +239,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		military.copyFrom(other.military);
 		culture.copyFrom(other.culture);
 		cash.copyFrom(other.cash);
-		
+		max3Cards.copyFrom(other.max3Cards);
+		freeD2.copyFrom(other.freeD2);
+		legendary.copyFrom(other.legendary);
 		cashReserves.copyFrom(other.cashReserves);
 		militaryReserves.copyFrom(other.militaryReserves);
 		cultureReserves.copyFrom(other.cultureReserves);
@@ -270,7 +279,10 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		G.Assert(military.sameContents(other.military),"military mismatch");
 		G.Assert(culture.sameContents(other.culture),"culture mismatch");
 		G.Assert(cash.sameContents(other.cash),"cash mismatch");
+		G.Assert(max3Cards.sameContents(other.max3Cards),"max3Cards mismatch");
+		G.Assert(freeD2.sameContents(other.freeD2),"freeD2 mismatch");
 		G.Assert(votes.sameContents(other.votes),"votes mismatch");
+		G.Assert(legendary.sameContents(other.legendary),"legendary mismatch");
 
 		G.Assert(militaryReserves.sameContents(other.militaryReserves),"militaryReserves mismatch");
 		G.Assert(cultureReserves.sameContents(other.cultureReserves),"cultureReserves mismatch");
@@ -315,6 +327,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		case PlayerMilitaryVP: return militaryVP[idx];
 		case PlayerPrestigeVP: return prestigeVP[idx];
 		case PlayerPopularityVP: return popularityVP[idx];
+		case PlayerLegendary: return legendary;
+		case PlayerMax3Cards: return max3Cards;
+		case PlayerFreeD2Card: return freeD2;
 		case PlayerMilitaryReserves: return militaryReserves;
 		case PlayerCashReserves: return cashReserves;
 		case PlayerCultureReserves: return cultureReserves;
@@ -336,7 +351,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		culture.setLocation(0.76,0.7,0.14);
 		cash.setLocation(0.90,0.7,0.14);
 		votes.setLocation(0.84,0.47,0.14);
-		
+		max3Cards.setLocation(0.1,0.5,0.14);
+		freeD2.setLocation(0.0,0.5,0.14);
+		legendary.setLocation(0.655,0.34,0.17);
 		militaryReserves.setLocation(0.25,0.60,0.06);
 		cultureReserves.setLocation(0.25,0.64,0.06);
 		cashReserves.setLocation(0.25,0.68,0.06);
@@ -422,8 +439,13 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		switch(cost)
 		{
 		case None:	return true;
-		case D2: return cash.height()>=2;
-		case M4: return military.height()>=4;
+		case D2Board: return cash.height()>=2 || !freeD2.isEmpty();
+		case M4Board: return military.height()>=4;
+		case Achievement:
+			{
+			PendulumChip ch = parent.currentAchievement.chipAtIndex(0);
+			return canPayCost(ch.pc);
+			}
 		case PerCard:
 			return canPayCost(droppedObject.pc);
 		default: throw G.Error("Not expecting cost %s",cost);
@@ -438,18 +460,120 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		switch(cost)
 		{
 		case None:	return true;
+		case M2: return military.height()>=2;
+		case M3: return military.height()>=3;
+		case M5: return military.height()>=5;
 		case M7: return military.height()>=7;
+		case V2: return votes.height()>=2;
 		case V3: return votes.height()>=3;
 		case V4: return votes.height()>=4;
 		case C1: return culture.height()>=1;
+		case C2: return culture.height()>=2;
 		case C3: return culture.height()>=3;
+		case C5: return culture.height()>=5;
 		case C4V2: return culture.height()>=4 && votes.height()>=2;
 		case C7: return culture.height()>=7;
+		case D2: return cash.height()>=2;
+		case D5: return cash.height()>=5;
 		case D7: return cash.height()>=7;
 		case Pow2: return militaryVPvalue>=2;
 		case M4D4: return military.height()>=4 && cash.height()>=4;
 		case R2: return totalResources()>=2;
 		case R8: return totalResources()>=8;
+		case R10: return totalResources()>=10;
+
+		case C4D4V3: return culture.height()>=4 && cash.height()>=4 && votes.height()>=3;
+		case M6XC2V3: return military.height()>=6 && culture.height()>=2 && votes.height()>=3;
+		case M2C6V3: return military.height()>=2 && culture.height()>=6 && votes.height()>=3;
+		case R12V3: return totalResources()>=12 && votes.height()>=3;
+		case M8V3: return military.height()>=8 && votes.height()>=3;
+		case D8V3: return cash.height()>=8 && votes.height()>=3;
+		case D3M3C3V3: return cash.height()>=3 && military.height()>=3 && culture.height()>=3 && votes.height()>=3;
+		case M4C4V3: return military.height()>=4 && culture.height()>=4 && votes.height()>=3;
+		case M4D4V3: return military.height()>=4 && cash.height()>=4 && votes.height()>=3;
+		case C8V3: return culture.height()>=8 && votes.height()>=3;
+		case MeepleAndGrande: return grandeReserves.height()>=1;
+		case NoMax3: return max3Cards.isEmpty();
+		default: throw G.Error("Not expecting cost %s",cost);
+		}
+	}
+	public void payCost(PendulumCell c,PC cost,replayMode replay)
+	{
+		switch(cost)
+		{
+		case MeepleAndGrande:	// no cost
+		case None:	
+			break;
+		case M2:
+			transfer(2,military,militaryReserves,replay);
+			break;			
+		case M3:
+			transfer(3,military,militaryReserves,replay);
+			break;			
+		case M5:
+			transfer(5,military,militaryReserves,replay);
+			break;			
+		case M7: 
+			transfer(7,military,militaryReserves,replay);
+			break;
+		case V2:
+			transfer(2,votes,votesReserves,replay);
+			break;
+		case V3: 
+			transfer(3,votes,votesReserves,replay);
+			break;
+		case V4: 
+			transfer(4,votes,votesReserves,replay);
+			break;
+			
+		case C1: 
+			transfer(1,culture,cultureReserves,replay);
+			break;
+		case C2: 
+			transfer(2,culture,cultureReserves,replay);
+			break;
+		case C3:
+			transfer(3,culture,cultureReserves,replay);
+			break;
+		case C5:
+			transfer(5,culture,cultureReserves,replay);
+			break;
+
+		case C4V2: 
+			transfer(4,culture,cultureReserves,replay);
+			transfer(2,votes,votesReserves,replay);
+			break;
+		case C7: 
+			transfer(7,culture,cultureReserves,replay);
+			break;
+
+		case D2:
+			transfer(2,cash,cashReserves,replay);
+			break;
+
+		case D5:
+			transfer(5,cash,cashReserves,replay);
+			break;
+
+		case D7:
+			transfer(7,cash,cashReserves,replay);
+			break;
+		case Pow2: 
+			setMilitaryVP(militaryVPvalue-2,replay);
+			break;
+		case M4D4: 
+			transfer(4,military,militaryReserves,replay);
+			transfer(4,cash,cashReserves,replay);
+			break;
+		case R2: 
+			setUIState(UIState.PayResources,2);
+			break;
+		case R8: 
+			setUIState(UIState.PayResources,8);
+			break;
+		case R10: 
+			setUIState(UIState.PayResources,10);
+			break;
 		default: throw G.Error("Not expecting cost %s",cost);
 		}
 	}
@@ -464,25 +588,45 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 	public void payCost(PendulumCell c, replayMode replay) {
 		G.Assert(canPayCost(c.cost),"can't pay cost #1",effectiveCost(c));
 		switch(c.cost){
-		default:
-		case None: break;
-		case M4:
+		default: throw G.Error("Not expecting cost %s",c.cost);
+		case Achievement:	// no actual cost, but must have the named resources.
+			break;
+		case None:
+			break;
+		case PerCard:
+			payCost(c,droppedObject.pc,replay);
+			break;
+		case M4Board:
 			for(int i=0;i<4;i++)
 			{
 				militaryReserves.addChip(military.removeTop());
 				if(replay.animate) { parent.animate(military,militaryReserves); }
 			}
 			break;
-		case D2: 
-			cashReserves.addChip(cash.removeTop());
-			cashReserves.addChip(cash.removeTop());
-			if(replay.animate)
-				{ parent.animate(cash,cashReserves);
-				  parent.animate(cash,cashReserves);
-				}
+		case D2Board: 
+			if(freeD2.isEmpty())
+			{
+			transfer(2,cash,cashReserves,replay);
+			}
+			else
+			{
+			transfer(1,freeD2,playedStratCards,replay);
+			}
+			break;
 		}
 		
 	}
+	// transfer, insist that the items are available (used for payments)
+	public void transfer(int n,PendulumCell from,PendulumCell to,replayMode replay)
+	{	G.Assert(from.height()>=n,"not enough to transfer");
+		for(int i=0;i<n;i++)
+		{
+			to.addChip(from.removeTop());
+			if(replay.animate) { parent.animate(from,to); }
+		}
+	}
+	
+	// transfer, up to the number but stop quietly if not enough are available. (used for adding resources)
 	public void transferIfAvailable(int n,PendulumCell from,PendulumCell to,replayMode replay)
 	{	for(int i=0;i<n;i++)
 		{
@@ -491,6 +635,7 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		  if(replay.animate) { parent.animate(from,to); }
 		}}
 	}
+	// transfer, add new items if we run out (used for adding votes)
 	public void transferAlwaysAvailable(int n,PendulumCell from,PendulumCell to,replayMode replay)
 	{	for(int i=0;i<n;i++)
 		{
@@ -500,25 +645,25 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		}
 	}
 	public void collectProvinceBenefits(PendulumCell c,replayMode replay)
-	{	collectBenefit(c.pb,replay);
+	{	collectBenefit(c,c.pb,replay);
 		PendulumId rack = c.rackLocation();
 		for(int lim=c.height()-1; lim>=0; lim--)
 		{
 			PendulumChip ch = c.chipAtIndex(lim);
-			PB pbs[] = ch.pb;
+			PB benefits[] = ch.pb;
 			switch(rack)
 			{
 			case PlayerRedBenefits:
-				collectBenefit(pbs[1],replay);
+				collectBenefit(c,benefits[1],replay);
 				break;
 			case PlayerBlueBenefits:
-				collectBenefit(pbs[3],replay);
+				collectBenefit(c,benefits[3],replay);
 				break;
 			case PlayerYellowBenefits:
-				collectBenefit(pbs[0],replay);
+				collectBenefit(c,benefits[0],replay);
 				break;
 			case PlayerBrownBenefits:
-				collectBenefit(pbs[2],replay);
+				collectBenefit(c,benefits[2],replay);
 				break;
 				
 			default: throw G.Error("Not expecting %c",rack);
@@ -541,24 +686,42 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 			setUIState(UIState.CollectResources,n); 
 		}
 	}
-	public void collectBenefit(PB benefit,replayMode replay)
+
+	public void collectBenefit(PendulumCell c,PB benefit,replayMode replay)
 	{
 		switch(benefit)
 		{
-		case None:
-			break;
+		case None: break;
 		case Pres1:
 			setPrestigeVP(prestigeVPvalue+1,replay);
+			break;
+		case Pres3:
+			setPrestigeVP(prestigeVPvalue+3,replay);
+			break;
+		case Legendary:
+			legendary.addChip(PendulumChip.legendary);
 			break;
 		case Pop1:
 			setPopularityVP(popularityVPvalue+1,replay);
 			break;
+		case Pop3:
+			setPopularityVP(popularityVPvalue+3,replay);
+			break;
 		case Pow1:
 			setMilitaryVP(militaryVPvalue+1,replay);
 			break;
-		case Retrieve:
-			setUIState(UIState.RetrieveWorker);
+			
+		case Pow3:
+			setMilitaryVP(militaryVPvalue+3,replay);
 			break;
+		case SwapVotes:
+			// TODO: consider the bizarre case where no votes have been earned yet.
+			setUIState(UIState.SwapVotes,1);
+			break;
+		case Retrieve:
+			if(parent.hasRetrieveWorkerMoves(boardIndex)) { setUIState(UIState.RetrieveWorker,1); }
+			break;
+			
 		case Province:
 			setUIState(UIState.Province);
 			break;
@@ -574,6 +737,9 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 			
 		case R1:
 			setCollectResources(1);
+			break;
+		case R3:
+			setCollectResources(3);
 			break;
 		case R4:
 			setCollectResources(4);
@@ -621,93 +787,81 @@ public class PlayerBoard implements PendulumConstants,Digestable{
 		case C5:
 			transferIfAvailable(5,cultureReserves,culture,replay);
 			break;
-			
-		default: throw G.Error("Not expecting benefit %s",benefit);
-		}
-	}
-	public void collectBenefit(PendulumCell c,PB benefit,replayMode replay)
-	{
-		switch(benefit)
-		{
-		case None: break;
-		case M1:
-			transferIfAvailable(1,militaryReserves,military,replay);
+		case FreeD2:
+			transfer(1,c,freeD2,replay);
 			break;
-		case M2:
+		case Max3:
+			transfer(1,c,max3Cards,replay);
+			break;		
+		case RetrieveAll:
+			transfer(playedStratCards.height(),playedStratCards,stratCards,replay);
+			break;
+		case M2C2D2:
 			transferIfAvailable(2,militaryReserves,military,replay);
-			break;
-		case M3:
-			transferIfAvailable(3,militaryReserves,military,replay);
-			break;
-		case M4:
-			transferIfAvailable(4,militaryReserves,military,replay);
-			break;
-		case M3D2:
-			transferIfAvailable(3,militaryReserves,military,replay);
-			transferIfAvailable(2,cashReserves,cash,replay);
-			break;
-		case D1:
-			transferIfAvailable(1,cashReserves,cash,replay);
-			break;
-		case D2:
-			transferIfAvailable(2,cashReserves,cash,replay);
-			break;
-		case D3:
-			transferIfAvailable(3,cashReserves,cash,replay);
-			break;
-		case Recruit:
-			transferIfAvailable(1,meepleReserves,meeples,replay);
-			break;
-		case C5:
-			transferIfAvailable(5,cultureReserves,culture,replay);
-			break;
-		case C4:
-			transferIfAvailable(4,cultureReserves,culture,replay);
-			break;
-		case C3:
-			transferIfAvailable(3,cultureReserves,culture,replay);
-			break;
-		case C2:
 			transferIfAvailable(2,cultureReserves,culture,replay);
+			transferIfAvailable(2,cashReserves,cash,replay);
 			break;
-		case C1:
-			transferIfAvailable(1,cultureReserves,culture,replay);
+		case BluePB:
+			collectProvinceBenefits(blueBenefits,replay);
 			break;
-		case V1:
-			transferAlwaysAvailable(1,votesReserves,votes,replay);
+		case RedPB:
+			collectProvinceBenefits(redBenefits,replay);
 			break;
-		case V2:
-			transferAlwaysAvailable(2,votesReserves,votes,replay);
+		case Pow1Pres1Pop1:
+			setMilitaryVP(militaryVPvalue+1,replay);
+			setPrestigeVP(prestigeVPvalue+1,replay);
+			setPopularityVP(popularityVPvalue+1,replay);
 			break;
-		case V3:
-			transferAlwaysAvailable(3,votesReserves,votes,replay);
-			break;
-		case Pres1:
+		case Pow1Pres1:
+			setMilitaryVP(militaryVPvalue+1,replay);
 			setPrestigeVP(prestigeVPvalue+1,replay);
 			break;
-		case R5:
-			setCollectResources(5);
+		case Pow1Pop1:
+			setMilitaryVP(militaryVPvalue+1,replay);
+			setPopularityVP(popularityVPvalue+1,replay);
 			break;
-		case R4:
-			setCollectResources(4);
+		case Pres1Pop1:
+			setPrestigeVP(prestigeVPvalue+1,replay);
+			setPopularityVP(popularityVPvalue+1,replay);
 			break;
-		case R3:
-			setCollectResources(3);
+		case D5:
+			transferIfAvailable(5,cashReserves,cash,replay);
 			break;
-		case R1:
-			setCollectResources(1); 
+		case Recruit:
+			if(meepleReserves.height()>0)
+			{
+			transferIfAvailable(1,meepleReserves,meeples,replay);
+			}
 			break;
-		case Retrieve:
-			if(parent.hasRetrieveWorkerMoves(boardIndex)) { setUIState(UIState.RetrieveWorker,1); }
+		case V5:
+			transferAlwaysAvailable(5,votesReserves,votes,replay);
 			break;
+		case Grande:
+			// if there are 2 meeples deployed, enter a UI state to designate which one
+			// if there is 1 deployed, find and swap automatically
+			// also flip the card so it can't be chosen again
+			throw G.Error("Not implemented");
 		default: 
 			throw G.Error("Not expecting benefit %s",benefit);
 		}
 	}
 	public void collectBenefit(PendulumCell c, replayMode replay) {
+
 		switch(c.benefit)
 		{
 		default: throw G.Error("Not expecting benefit #1",c.benefit);
+		case Achievement:
+			{
+			int index = c.findChip(PendulumChip.legendary);
+			if(index>=0  && legendary.isEmpty())
+			{
+			setUIState(UIState.AchievementOrLegandary,1);	
+			}
+			else
+			{
+			collectBenefit(c,c.chipAtIndex(0).pb[0],replay);
+			}}
+			break;
 		case PerCard:
 			collectBenefit(c,droppedObject.pb[0],replay);
 			break;
@@ -814,6 +968,7 @@ public class PlayerBoard implements PendulumConstants,Digestable{
      		case RetrieveWorker:
      		case Province:
      		case CollectResources:
+     		case AchievementOrLegandary:
      			uiCount--;
      			if(!hasCollectResourceMoves()) { uiCount = 0; }	// ran out of resources
      			if(uiCount<=0) { setUIState(UIState.Normal); }

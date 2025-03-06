@@ -212,6 +212,8 @@ public class NeatEvaluator {
 		evaluator.startGeneration();
 		
 		for (Genome g : genomes) {
+			if(g!=null)
+			{
 			Species s = mappedSpecies.get(g);		// Get species of the genome
 			
 			double score = evaluator.evaluate(g);
@@ -225,7 +227,7 @@ public class NeatEvaluator {
 			if (score > highestScore) {
 				highestScore = score;
 				fittestGenome = g;
-			}
+			}}
 		}
 		
 		evaluator.finishGeneration();
@@ -246,6 +248,8 @@ public class NeatEvaluator {
 		for (Species s : species) {	s.reset(random); }
 		// Place genomes into species
 		for (Genome g : genomes) {
+			if(g!=null)
+			{
 			boolean foundSpecies = false;
 			for (Species s : species) {
 				{
@@ -264,7 +268,7 @@ public class NeatEvaluator {
 				g.setSpecies(newSpecies);
 				mappedSpecies.put(g, newSpecies);
 				//G.print("New species "+newSpecies+" "+g);
-			}
+			}}
 		}
 		int ns = species.size();
 		if(ns>targetNumberOfSpecies+1) { DT *= 1.5; }
@@ -381,7 +385,7 @@ public class NeatEvaluator {
 				rejected++;
 			}
 			}
-			else
+			else if(child!=null)
 			{
 				nextGenGenomes.add(child);
 			}
@@ -397,9 +401,9 @@ public class NeatEvaluator {
 		//p2.audit();
 		Genome child = mateWithCrossover(r,p1,p2);
 		try {
-		//child.audit();
+		child.audit();
 		child.killConnectionMutation(random);	// disable some random connections
-		//child.audit();
+		child.audit();
 		child.mutation(random);					// random mutations at the child's mutation rate
 		//child.audit();
 		child.addNodeMutation(random);			// random new nodes proportional to the child's count
@@ -409,7 +413,7 @@ public class NeatEvaluator {
 		return child;
 		}
 		catch (Throwable err)
-		{
+		{	G.print("error creating next generation from ",p1,p2," : ",err);
 			NetIo.save(child,"g:/temp/nn/train/error-makenewgeneration"+errorCount++,
 					"error in makenewgeneration "+err+"\n"+err.getStackTrace());
 		}
@@ -612,6 +616,9 @@ public class NeatEvaluator {
 		System.out.print("\n");
 		*/
 		
+	}
+	public void setExitRequest(boolean b) {
+		exitRequest = b;
 	}
 
 }

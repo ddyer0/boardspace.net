@@ -3483,56 +3483,59 @@ public abstract class commonCanvas extends exCanvas
         case BackButton:
         	{
         	doScrollTo(BACKWARD_NEXT_BRANCH);
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case VarButton:
         	{
             doVcrVar();
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case FrontButton:
         	{
             doScrollTo(FORWARD_NEXT_BRANCH);
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case WayBackButton:
         	{
             doScrollTo(BACKWARD_TO_START);
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
        case BackStepButton:
         	{
             doScrollTo(BACKWARD_ONE);
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case ForeStepButton:
         	{
              doScrollTo(FORWARD_ONE);
-            jointReviewStep = GET_CURRENT_POSITION;
+             setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case ForeMostButton:
         	scrollFarForward();
+        	setJointReviewStep(GET_CURRENT_POSITION);
         	break;
         case ForePlayerButton:
         	{
          	doScrollTo(FORWARD_PLAYER);
+         	setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case BackPlayerButton:
         	{
         	doScrollTo(BACKWARD_PLAYER);
+        	setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case Slider:
         	{
             doVcrSlider(hp);
-            jointReviewStep = GET_CURRENT_POSITION;
+            setJointReviewStep(GET_CURRENT_POSITION);
         	}
         	break;
         case AnimateButton:
@@ -3578,7 +3581,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	LogMessage("scroll far forward");
         doScrollTo(FORWARD_TO_END);
-        jointReviewStep = -2;	
+        setJointReviewStep(GET_CURRENT_POSITION);
     }
     public void leaveLockedReviewMode()
     { if( reviewMode()			// and may not even realize it.
@@ -4122,8 +4125,10 @@ public abstract class commonCanvas extends exCanvas
      * 
      */
     public void setJointReviewStep(int v)
-    {
+    {	if(v!=jointReviewStep)
+    	{
         jointReviewStep = v;
+    	}
     }
 /**
  * get the desired joint review position
@@ -7132,7 +7137,9 @@ public abstract class commonCanvas extends exCanvas
         ps.println(")");
     }
     public void printDebugInfo(PrintStream ps)
-    {	printGameRecord(ps,"Game Record",History,"");
+    {	String er = errorContext();
+    	if(er!=null) { ps.print(er); }
+    	printGameRecord(ps,"Game Record",History,"");
         if (rawHistory.size() > 0)
         {
             printGameRecord(ps, "Raw History", rawHistory, "");

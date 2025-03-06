@@ -40,33 +40,80 @@ import online.search.nn.CoordinateMap;
 import online.search.nn.Layer;
 import online.search.nn.Network;
 
-class XehEvaluator implements GenomeEvaluator
+/**
+ * this interface bridges between evaluation by genomes verses some more traditional evaluator
+ */
+interface RobotOpponent{
+	boolean isRepeatable();		// true for deterministic robots.  false for randombot
+	String getKey();			// key to use in caching pairwise results
+	double evaluatePosition(XehBoard testBoard,int forPlayer);	// evaluate the current board position
+	
+}
+/**
+ * evaluator for genomes
+ */
+class GenomeOpponent implements RobotOpponent
+{	
+	Genome genome = null;
+	public void setGenome(Genome g) { genome = g; }
+	public double evaluatePosition(XehBoard testBoard,int forPlayer) {
+		return XehCommonEvaluator.evaluateGenomePosition(testBoard,genome,forPlayer);
+	}
+	public String getKey() { return genome.toString(); }
+	public boolean isRepeatable() { return true; }
+}
+class GenomeRandomizingOpponent implements RobotOpponent
+{	Random r = new Random();
+	Genome genome = null;
+	public void setGenome(Genome g) { genome = g; }
+	public double evaluatePosition(XehBoard testBoard,int forPlayer) {
+		return (r.nextDouble()*0.1+XehCommonEvaluator.evaluateGenomePosition(testBoard,genome,forPlayer));
+	}
+	public String getKey() { return genome.toString(); }
+	public boolean isRepeatable() { return false; }
+}
+/**
+ *  random evaluator
+ *
+ */
+class RandomOpponent implements RobotOpponent
 {
-	/**
-	 * this experiment trains a static evaluator.  The network consists
-	 * of a single output, and inputs that encode only the state of the
-	 * board.
-	 * 
-	 * training consists of running a complete playthrough of the game,
-	 * pitting evaluator1 against evaluator2, for all pairs of genenes
-	 * in the genome, and scoring fitness as the percentage wins. 
-	 * 
-	 * For current parameters, this means running 198 games against
-	 * the rest if the cohort; one as white and one as black against
-	 * each other member
-	 */
+	Random r = new Random();
+	public double evaluatePosition(XehBoard testBoard,int forPlayer) {
+		return r.nextDouble();
+	}
+	public String getKey() { return "<random>"; }
+	public boolean isRepeatable() { return false;	}
+}
+
+class DumbotOpponent implements RobotOpponent
+{	XehPlay robot = null;
+	DumbotOpponent(XehPlay rob) { robot=rob; }
+	
+	public double evaluatePosition(XehBoard testBoard,int forPlayer) {
+		return robot.StaticEval(testBoard,forPlayer,RobotProtocol.DUMBOT_LEVEL);
+	}
+	public String getKey() { return "<dumbot>"; }
+	public boolean isRepeatable() { return true; }
+}
+/**
+ * common methods to set up playouts, currently serving two styles
+ * one where a cohort of genomes are scored against each other
+ * one where a cohort of genomes are scored against a fixed opponent
+ */
+class XehCommonEvaluator
+{	enum Result { First, Second, Nither }
+	double totalFitness = 0;
+	int nFitness = 0;
+	XehBoard board = null;
 	Genome best = null;
 	XehBoard gameBoard = null;
-	XehBoard board = null;
 	NeatEvaluator evaluator = null;
 	XehViewer viewer = null;
 	XehPlay robot = null;
-	private HashMap<String,Genome>matchup = new HashMap<String,Genome>();
-	private HashMap<String,Genome>oldMatchup = new HashMap<String,Genome>();
-	double totalFitness = 0;
-	int nFitness = 0;
-	
-	Genome target = null;
+	private HashMap<String,Result>matchup = new HashMap<String,Result>();
+	private HashMap<String,Result>oldMatchup = new HashMap<String,Result>();
+
 	public void startGeneration()
 	{	totalFitness = 0;
 		nFitness = 0;
@@ -82,82 +129,31 @@ class XehEvaluator implements GenomeEvaluator
 	{
 		//G.print("Generation averate fitness "+(totalFitness/nFitness));
 	}
-
-	public Genome playThroughGame(Genome player1,Genome player2)
-	{	String key = player1.toString()+"-"+player2.toString();
-
-		Genome value = matchup.get(key);
-		if(value==null) 
-			{ value = oldMatchup.get(key); 
-			  // a lot of matchups recur in the next generation
-			  if(value!=null) 
-			  	{ matchup.put(key,value);
-			  	//G.print("reuse "+key); 
-			  	}
-			}
-		if(value==null)
-		{
-		XehBoard testBoard = board.cloneBoard();
-		if(testBoard.getState().Puzzle()) 
-			{ testBoard.Execute(new XehMovespec("start p0",0),replayMode.Replay);
-			}
-		Genome players[]=new Genome[2];
-		{
-		int who = testBoard.whoseTurn();
-		players[who] = player1;
-		players[who^1] = player2;
-		}
-		robot.monitor = testBoard;
-		while(!testBoard.gameOverNow())
-		{
-			makeMove(testBoard,players[testBoard.whoseTurn()]);
-		}	
-		viewer.repaint(1000);
-		value = testBoard.WinForPlayer(0)
-				? players[0]
-				: players[1]; 	// black wins
-
-		if(player1==target || player2==target)
-		{
-			G.print(player1," x ",player2," = ",value);
-			G.print();
-		}
-		matchup.put(key,value);
-		}
-		return value;
-	}
-	public static double evaluatePosition(XehBoard testBoard,Genome player)
-	{	
-		loadBoardPosition(testBoard,player);
-		player.evaluate();
-		double val = player.getOutputs().get(0).getLastValue();
-		return val;
-	}
 	
-	public void makeMove(XehBoard testBoard,Genome player)
+	public Result getCachedResult(String key)
 	{
-		CommonMoveStack moves = testBoard.GetListOfMoves();
-		XehMovespec bestMove = null;
-		double bestValue = 0;
-		for(commonMove m : moves)
-		{	XehMovespec mm = (XehMovespec)m;
-			testBoard.RobotExecute(mm);
-			double val = evaluatePosition(testBoard,player);
-			//G.print(mm,val);
-			if(bestMove==null || val>bestValue) { bestValue = val; bestMove=mm; }
-			testBoard.UnExecute(mm);
+		Result r = matchup.get(key);
+		if(r==null) { 
+			r = oldMatchup.get(key);
+			if(r!=null) 
+		  	{ matchup.put(key,r);
+		  	}
 		}
-		testBoard.RobotExecute(bestMove);
-		//robot.monitor = testBoard;
-		//viewer.repaint();
-		//G.print(bestMove);
+		return r;
 	}
-	
-	public static void loadBoardPosition(XehBoard b,Genome player)
+	public void setCachedResult(String key,Result v)
+	{
+		matchup.put(key,v);
+	}
+	public String makeKey(RobotOpponent p1, RobotOpponent p2)
+	{
+		return p1.getKey()+"-"+p2.getKey();
+	}
+	public static void loadBoardPosition(XehBoard b,Genome player,int forPlayer)
 	{
 		int index=0;
 		ArrayList<NodeGene> inputs = player.getInputs();
-		int swap = XehChip.White==b.getCurrentPlayerChip() ? 1 : -1;
+		int swap = XehChip.White==b.getPlayerChip(forPlayer) ? 1 : -1;
 		for(XehCell c = b.allCells; c!=null; c=c.next,index++) 
 		{
 			NodeGene cc = inputs.get(index);
@@ -168,33 +164,66 @@ class XehEvaluator implements GenomeEvaluator
 			cc.setInputValue(invalue);
 		}
 	}
-	public double evaluate(Genome g) 
-	{	//if(g.getName().equals("item-24.genome"))
-		//	{ target = g; 
-		//	}
-		Genome cohort[] = evaluator.getCohort();
-		int wins = 0;
-		int games = 0;
-		for(Genome opponent : cohort)
-		{	if(opponent != g)
-			{
-			Genome winFirst = playThroughGame(g,opponent);
-			Genome winSecond = playThroughGame(opponent,g);
-			//G.print(g," ",opponent," ",winFirst==g," ",winSecond==g);
-			if(winSecond==g) { wins++; }
-			if(winFirst==g) { wins++; }
-			games+=2;
-			}
-		}
-		// fitness is the win percentage
-		double fitness = (double)wins/games;
-		//G.print(g," ",fitness);
-		totalFitness += fitness;	// average fitness for the entire cohort ought to be 0.5
-		nFitness++;
-		// slop adds a slight preference for smaller genomes
-		double slop = 1.0/(g.getNodeGenes().size()+g.getConnectionGenes().size());
-		return fitness+slop;
+	
+	public static double evaluateGenomePosition(XehBoard testBoard,Genome player,int forPlayer)
+	{	
+		loadBoardPosition(testBoard,player,forPlayer);
+		player.evaluate();
+		double val = player.getOutputs().get(0).getLastValue();
+		return val;
 	}
+	
+	// try and evaluate all moves, then use the best one
+	public static void makeMove(XehBoard testBoard,RobotOpponent player)
+	{
+		CommonMoveStack moves = testBoard.GetListOfMoves();
+		XehMovespec bestMove = null;
+		double bestValue = 0;
+		for(commonMove m : moves)
+		{	XehMovespec mm = (XehMovespec)m;
+			testBoard.RobotExecute(mm);
+			double val = player.evaluatePosition(testBoard,mm.player);
+			//G.print(mm,val);
+			if(bestMove==null || val>bestValue) { bestValue = val; bestMove=mm; }
+			testBoard.UnExecute(mm);
+		}
+		testBoard.RobotExecute(bestMove);
+		//robot.monitor = testBoard;
+		//viewer.repaint();
+		//G.print(bestMove);
+	}
+	
+	double quality = 0;
+	public Result playThroughGame(RobotOpponent player1,RobotOpponent player2)
+	{	String key = makeKey(player1,player2);
+		boolean cache = player1.isRepeatable() && player2.isRepeatable();
+		Result value = cache ? getCachedResult(key) : null;
+
+		if(value==null)
+		{
+		XehBoard testBoard = board.cloneBoard();
+		if(testBoard.getState().Puzzle()) 
+			{ testBoard.Execute(new XehMovespec("start p0",0),replayMode.Replay);
+			}
+		RobotOpponent players[]=new RobotOpponent[2];
+		{
+		int who = testBoard.whoseTurn();
+		players[who] = player1;
+		players[who^1] = player2;
+		}
+		robot.monitor = testBoard;
+		while(!testBoard.gameOverNow())
+		{
+			makeMove(testBoard,players[testBoard.whoseTurn()]);
+		}	
+		quality = 1.0/testBoard.moveNumber;
+		viewer.repaint(1500);
+		value = testBoard.WinForPlayer(0) ? Result.First : Result.Second;
+		if(cache) { setCachedResult(key,value); }
+		}
+		return value;
+	}
+	
 
 	public void setBest(Genome g) {
 		best = g;
@@ -205,6 +234,114 @@ class XehEvaluator implements GenomeEvaluator
 	}
 }
 
+class XehEvaluator extends XehCommonEvaluator implements GenomeEvaluator
+{
+	/**
+	 * this experiment trains a static evaluator.  The network consists
+	 * of a single output, and inputs that encode only the state of the
+	 * board.
+	 * 
+	 * training consists of running a complete playthrough of the game,
+	 * pitting evaluator1 against evaluator2, for all pairs of genenes
+	 * in the genome, and scoring fitness as the percentage wins. 
+	 * 
+	 * For current parameters, this means running 198 games against
+	 * the rest if the cohort; one as white and one as black against
+	 * each other member
+	 */
+
+	public GenomeRandomizingOpponent genome1 = new GenomeRandomizingOpponent();
+	public GenomeRandomizingOpponent genome2 = new GenomeRandomizingOpponent();
+
+	public double evaluate(Genome g) 
+	{	//if(g.getName().equals("item-24.genome"))
+		//	{ target = g; 
+		//	}
+		Genome cohort[] = evaluator.getCohort();
+		int wins = 0;
+		int games = 0;
+		double totalQuality = 0;
+		for(Genome opponent : cohort)
+		{	if((opponent!=null) && (opponent != g))
+			{
+			genome1.setGenome(g);
+			genome2.setGenome(opponent);
+			Result winFirst = playThroughGame(genome1,genome2);
+			if(winFirst==Result.First) { wins++; totalQuality += quality; }
+			Result winSecond = playThroughGame(genome2,genome1);
+			//G.print(g," ",opponent," ",winFirst==g," ",winSecond==g);
+			if(winSecond==Result.Second) { wins++; totalQuality+= quality;}
+			games+=2;
+			}
+		}
+		// fitness is the win percentage
+		int fitness = (int)((double)wins*10000/games);
+		//G.print(g," ",fitness);
+		totalFitness += fitness;	// average fitness for the entire cohort ought to be 0.5
+		nFitness++;
+		// slop adds a slight preference for smaller genomes
+		double slop = 1.0/(g.getNodeGenes().size()+g.getConnectionGenes().size());
+		double averageQuality = totalQuality/(1+wins);
+		return fitness+slop+averageQuality;
+	}
+
+}
+
+class XehRobotEvaluator extends XehCommonEvaluator implements GenomeEvaluator
+{
+	/**
+	 * this experiment trains a static evaluator.  The network consists
+	 * of a single output, and inputs that encode only the state of the
+	 * board.
+	 * 
+	 * training consists of running a complete playthrough of the game,
+	 * pitting evaluator1 against evaluator2, for all pairs of genenes
+	 * in the genome, and scoring fitness as the percentage wins. 
+	 * 
+	 * For current parameters, this means running 198 games against
+	 * the rest if the cohort; one as white and one as black against
+	 * each other member
+	 */
+
+	
+	RobotOpponent opponent = null;
+	int reps = 0;
+	GenomeOpponent genomeOpponent = new GenomeOpponent();
+	public void setOpponent(RobotOpponent r,int n)
+	{
+		opponent = r;
+		reps = n;
+	}
+	public double evaluate(Genome g) 
+	{	if(genomeOpponent==null) { genomeOpponent = new GenomeOpponent(); }
+		genomeOpponent.setGenome(g);
+		int wins = 0;
+		int games = 0;
+		double totalQuality = 0;
+		
+		for(int i=0;i<reps;i++)
+		{
+		Result winFirst = playThroughGame(genomeOpponent,opponent);
+		if(winFirst==Result.First)
+				{ wins++; totalQuality += quality; }
+		Result winSecond = playThroughGame(opponent,genomeOpponent);
+		if(winSecond==Result.Second) 
+				{ wins++; totalQuality+= quality;}
+		games+=2;
+		}
+		// fitness is the win percentage
+		int fitness = (int)((wins*10000.0)/games);
+		//G.print(g," ",fitness);
+		totalFitness += fitness;	// average fitness for the entire cohort ought to be 0.5
+		nFitness++;
+		// slop adds a slight preference for smaller genomes
+		double slop = 1.0/(g.getNodeGenes().size()+g.getConnectionGenes().size());
+		// a little bonus for winning in fewer moves
+		double averageQuality = totalQuality/(1+wins);
+		return fitness+slop+averageQuality;
+	}
+
+}
 /** 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
@@ -478,7 +615,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      * @param player
      * @return
      */
-    double ScoreForPlayer(XehBoard evboard,int player,boolean print)
+    double ScoreForPlayer(XehBoard evboard,int player,boolean print,int strat)
     {	
     	
     	BlobStack blobs = new BlobStack();
@@ -499,12 +636,12 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      		}
      	
      	// if the position is not a win, then estimate the value of the position
-    	switch(Strategy)
-    	{	default: throw G.Error("Not expecting strategy %s",Strategy);
+    	switch(strat)
+    	{	default: throw G.Error("Not expecting strategy %s",strat);
     		case NEUROBOT_LEVEL:
     		case TESTBOT_LEVEL_1:
     		case TESTBOT_LEVEL_2:
-    			val = XehEvaluator.evaluatePosition(board,neurobotNetwork);
+    			val = XehEvaluator.evaluateGenomePosition(board,neurobotNetwork,player);
     			break;
      		case DUMBOT_LEVEL: 
     		case DUMBOT_TRAINING_LEVEL:
@@ -545,7 +682,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     	case TESTBOT_LEVEL_2:
     	case TESTBOT_LEVEL_1:
     	case NEUROBOT_LEVEL:
-    		return XehEvaluator.evaluatePosition(board,neurobotNetwork);
+    		return XehEvaluator.evaluateGenomePosition(board,neurobotNetwork,m.player);
     	case RANDOMBOT_LEVEL:
     		return randombotRandom.nextDouble();
     	case PURE_NEUROBOT_LEVEL:
@@ -567,8 +704,8 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     		}
     	default:
     	{
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
+        double val0 = ScoreForPlayer(board,playerindex,false,Strategy);
+        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false,Strategy);
         // don't dilute the value of wins with the opponent's positional score.
         // this avoids the various problems such as the robot comitting suicide
         // because it's going to lose anyway, and the position looks better than
@@ -777,11 +914,17 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      * information about the static analysis of the current position.
      * */
     public void StaticEval()
+    {	XehBoard evboard = GameBoard.cloneBoard();
+    	double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true,Strategy);
+    	double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true,Strategy);
+    	System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
+    }
+    
+    public double StaticEval(XehBoard evboard,int forPlayer,int strat)
     {
-            XehBoard evboard = GameBoard.cloneBoard();
-            double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
-            double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-            System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
+    	double val0 = ScoreForPlayer(evboard,forPlayer,false,strat);
+    	double val1 = ScoreForPlayer(evboard,nextPlayer[forPlayer],false,strat);
+    	return val0-val1;
     }
     enum TeachMode { Net, Trained, Live }
     TeachMode mode = TeachMode.Net;
@@ -827,7 +970,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     		int who = b.whoseTurn();
     		XehMovespec mv = new XehMovespec(MOVE_DROPB,c.col,c.row,b.getPlayerColor(who),who);
     		b.RobotExecute(mv);
-    		val = XehEvaluator.evaluatePosition(b,guiplayer)/4;
+    		val = XehEvaluator.evaluateGenomePosition(b,guiplayer,b.whoseTurn)/4;
     		b.UnExecute(mv);
     		}
     		break;
@@ -1349,15 +1492,54 @@ public void PrepareToMove(int playerIndex)
 
 public void stopTraining()
 {
-	evaluator.exitRequest = true;
+	evaluator.setExitRequest(true);
 }
 NeatEvaluator evaluator = null;
-XehEvaluator trainer = null;
-String neatest = "G:/share/projects/boardspace-java/boardspace-games/xeh/data/generation 3015.genome";
+// "G:/share/projects/boardspace-java/boardspace-games/xeh/data/generation 3015.genome"
+String neatest = "G:/share/projects/boardspace-java/boardspace-games/xeh/data/Random 1050.genome";
 
 public void runRobotTraining(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
-{	GameBoard = (XehBoard) b;
-	trainer = new XehEvaluator();
+{
+	 runRobotTrainingSelf(v, b,otherBot);
+	//runRobotTrainingRandom(v, b,otherBot);
+	//runRobotTrainingDumbot(v,b,otherBot);
+}
+//
+// this creates a cohort of networks and runs them all against a random player.
+// the interesting result of this experiment is that the networks advance rapidly
+// to 90-95% win rate against randombot, but what they have learned is to run a line
+// of stones from one edge to the other; not how to cope with randomness.
+//
+public void runRobotTrainingRandom(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
+{
+	GameBoard = (XehBoard) b;
+	XehRobotEvaluator trainer = new XehRobotEvaluator();
+	trainer.setOpponent(new RandomOpponent(),100);
+	trainer.gameBoard = (XehBoard)b;
+	trainer.board = (XehBoard)b.cloneBoard();
+	evaluator = new NeatEvaluator("g:/temp/nn/random/",
+				100,trainer,
+				"g:/temp/nn/random/checkpoint.txt");
+	trainer.evaluator = evaluator;
+	trainer.viewer = (XehViewer)v;
+	trainer.robot = this;
+	
+	new Thread(new Runnable() {
+		public void run() 
+		{ 
+			evaluator.runEvaluation(10000);
+		}
+	}).start();
+}
+
+//
+//this creates a cohort of networks and runs them all against each other
+//learning seems to be very slow
+//
+public void runRobotTrainingSelf(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
+{
+	GameBoard = (XehBoard) b;
+	XehEvaluator trainer = new XehEvaluator();
 	trainer.gameBoard = (XehBoard)b;
 	trainer.board = (XehBoard)b.cloneBoard();
 	evaluator = new NeatEvaluator("g:/temp/nn/train/",
@@ -1374,4 +1556,32 @@ public void runRobotTraining(final ViewerProtocol v,BoardProtocol b,final Simple
 		}
 	}).start();
 }
+//
+//this creates a cohort of networks and runs them all against dumbot's evaluator
+//it's possible to start from scratch, or from any cohort of evolved networks
+//the interesting result of this experiment is that dumbot is still soo much smarter
+//than any of the networks, that learning never starts.
+//
+public void runRobotTrainingDumbot(final ViewerProtocol v,BoardProtocol b,final SimpleRobotProtocol otherBot)
+{
+	GameBoard = (XehBoard) b;
+	XehRobotEvaluator trainer = new XehRobotEvaluator();
+	trainer.setOpponent(new DumbotOpponent(this),1);
+	trainer.gameBoard = (XehBoard)b;
+	trainer.board = (XehBoard)b.cloneBoard();
+	evaluator = new NeatEvaluator("g:/temp/nn/dumbot/",
+				100,trainer,
+				"g:/temp/nn/dumbot/checkpoint.txt");
+	trainer.evaluator = evaluator;
+	trainer.viewer = (XehViewer)v;
+	trainer.robot = this;
+	
+	new Thread(new Runnable() {
+		public void run() 
+		{ 
+			evaluator.runEvaluation(10000);
+		}
+	}).start();
+}
+
 }

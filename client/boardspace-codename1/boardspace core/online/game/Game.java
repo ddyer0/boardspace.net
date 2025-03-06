@@ -3946,15 +3946,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	
             int where = v.getReviewPosition();
             sentReviewHint = false;
-
             if (oldval == false)
             {	//just coming on, send a request for scroll position
             	String scrollMessage = NetConn.SEND_GROUP+KEYWORD_SCROLL+" "+GET_CURRENT_POSITION;
             	sendMessage(scrollMessage);
 
             }
-
-            if ((where!=-1) && (v.getJointReviewStep() != where))
+            int joint = v.getJointReviewStep();
+            if (((where!=-1) && (joint != where)) || (joint==GET_CURRENT_POSITION))
             {
                 v.setJointReviewStep(where);
                 int step = v.getJointReviewStep();

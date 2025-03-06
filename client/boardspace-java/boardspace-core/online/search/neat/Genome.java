@@ -57,8 +57,6 @@ public class Genome implements IoAble
 	  CONNECTION_CHANGE_RATE(0.2,true),	// probability of adding or removing any connections
 	  NEW_CONNECTION_RATE(0.01,true), 	// probability of adding new connections (proportional to the network size)
 	  CONNECTION_DECAY_RATE(0.001,true),	// normally less than the creation rate
-	  CONNECTION_REMOVAL_RATE(0.2,true),	// percentage of inactive connections to remove
-	  NODE_REMOVAL_RATE(1.0,false),		// percentage of unused nodes to remove
 	  NEW_NODE_RATE(0.01,true),		// probability of adding new nodes (proportional to the network size)
 	  MAX_NETWORK_SIZE(2000,false),		// limit the overall size of the network
 	  MAX_CONNECTOME_SIZE(20000,false), 	// limit the overall number of connections in the network
@@ -255,6 +253,7 @@ public class Genome implements IoAble
 		connectionsRemoved++;
 		connectionsRemovedList= (connectionsRemovedList==null) ? c : connectionsRemovedList.push(c);
 		ConnectionGene x = connections.remove(c.getInnovation());
+		c.next=ConnectionGene.disconnected;
 		G.Assert(x==c,"gene %s wasn't removed, already removed?",c);
 	}
 	private ConnectionGene[] getAllConnections()
@@ -332,9 +331,13 @@ public class Genome implements IoAble
 		//G.print("retain ",retain," modify ",modify," reset ",reset);
 		}
 	}
-	
+	private boolean getsInputFrom(NodeGene node1,NodeGene target)
+	{
+		evalStep++;
+		return getsInputFrom(node1,target,evalStep);
+	}
 	// transitively recurse to determine if node1 is below us
-	private boolean dependsOn(NodeGene node1,NodeGene target,int generation)
+	private boolean getsInputFrom(NodeGene node1,NodeGene target,int generation)
 	{
 		if(node1.getType()==TYPE.INPUT) { return false; }
 		if(node1.generation==generation) { return false; }
@@ -344,8 +347,8 @@ public class Genome implements IoAble
 		while(connections!=null)
 		{
 			NodeGene from = getGene(connections.getInNode());
-			if(dependsOn(from,target,generation)) { return true; }
-			connections = connections.next;
+			if(getsInputFrom(from,target,generation)) { return true; }
+			connections = connections.getNext();
 		}
 		
 		return false;
@@ -354,14 +357,13 @@ public class Genome implements IoAble
 	// pass over the connections and permanently remove some of them that are inactive
 	public void removeUnusedConnections(Random r)
 	{
-		evalStep++;
-		double rate = getParameter(MutationParameter.CONNECTION_REMOVAL_RATE);
 		for(NodeGene g : outputNodes)
 		{
-			removeUnusedConnections(r,g,evalStep,rate);
+			evalStep++;
+			removeUnusedConnections(r,g,evalStep);
 		}
 	}
-	private void removeUnusedConnections(Random r,NodeGene g,int generation,double rate)
+	private void removeUnusedConnections(Random r,NodeGene g,int generation)
 	{
 		if(g.generation==generation) { return; }
 		g.generation = generation;	// node was reached
@@ -370,8 +372,8 @@ public class Genome implements IoAble
 		//audit();
 		while(inputs!=null)
 		{	ConnectionGene current = inputs;
-			inputs = inputs.next;
-			if(!current.isExpressed() && r.nextDouble()<rate)
+			inputs = inputs.getNext();
+			if(!current.isExpressed())
 			{
 				removeConnectionGene(current);
 				if(prev!=null) { prev.next = inputs; current=prev; }
@@ -379,7 +381,7 @@ public class Genome implements IoAble
 			}
 			else
 			{
-				removeUnusedConnections(r,getGene(current.getInNode()),generation,rate);
+				removeUnusedConnections(r,getGene(current.getInNode()),generation);
 			}
 			prev = current;
 		}
@@ -399,7 +401,7 @@ public class Genome implements IoAble
 			int nodeNum = inputs.getInNode();
 			NodeGene next = getGene(nodeNum);
 			n += sweep(next,generation);
-			inputs = inputs.next;
+			inputs = inputs.getNext();
 		}
 		return n;
 		
@@ -429,7 +431,7 @@ public class Genome implements IoAble
 			{
 				ConnectionGene d = getConnection(inputs.getInnovation());
 				G.Assert(inputs==d,"mismatched connection %s %s for %s",inputs,d,g);
-				inputs = inputs.next;
+				inputs = inputs.getNext();;
 			}
 		}
 		
@@ -457,10 +459,9 @@ public class Genome implements IoAble
 	private void removeUnusedNodes(Random r)
 	{
 		evalStep++;
-		double rate = getParameter(MutationParameter.NODE_REMOVAL_RATE);
 		for(NodeGene g : outputNodes)
 		{
-			removeUnusedNodes(r,g,evalStep,rate);
+			removeUnusedNodes(r,g,evalStep);
 		}
 		// remove any nodes that are now completely unconnected
 		StackIterator<NodeGene> toBeRemoved = null;
@@ -480,7 +481,7 @@ public class Genome implements IoAble
 			g.setInputs(null);
 			while(inputs!=null)
 			{	ConnectionGene ne = inputs;
-				inputs = inputs.next;
+				inputs = inputs.getNext();
 				removeConnectionGene(ne);					
 			}
 				
@@ -492,7 +493,7 @@ public class Genome implements IoAble
 	// that have no inputs, remove the connection.  This allows the node with
 	// no input to be actually removed.
 	//
-	private void removeUnusedNodes(Random r,NodeGene g,int generation,double rate)
+	private void removeUnusedNodes(Random r,NodeGene g,int generation)
 	{
 		if(g.generation==generation) { return; }
 		g.generation = generation;	// node was reached
@@ -503,12 +504,12 @@ public class Genome implements IoAble
 		while(inputs!=null)
 		{
 			ConnectionGene current = inputs;
-			inputs = inputs.next;
+			inputs = inputs.getNext();
 			NodeGene below = getGene(current.getInNode());
 			if(below.getType()==TYPE.HIDDEN)
 			{
 			ConnectionGene belowIn = below.getInputs();
-			if(belowIn==null && r.nextDouble()<rate)
+			if(belowIn==null)
 			{
 				removeConnectionGene(current);
 				if(prev==null) { g.setInputs(inputs); current = null;}
@@ -516,7 +517,7 @@ public class Genome implements IoAble
 			}
 			else 
 			{		
-				removeUnusedNodes(r,below,generation,rate);
+				removeUnusedNodes(r,below,generation);
 			}}
 			prev = current;
 		}}
@@ -533,9 +534,9 @@ public class Genome implements IoAble
 		connectionsRemoved = 0;
 		connectionsRemovedList = null;
 		removeUnusedConnections(r);
-		//audit();
+		audit();
 		removeUnusedNodes(r);
-		//audit();
+		audit();
 		//if(nodesRemoved>0 || connectionsRemoved>0) { G.print("Removed ",connectionsRemoved," connections ",nodesRemoved," nodes"); }
 		int nToKill = (int)(connections.size()*getParameter(MutationParameter.CONNECTION_DECAY_RATE));
 		if(nToKill>0)
@@ -650,9 +651,9 @@ public class Genome implements IoAble
 		for (NodeGene parent1Node : nodes.values()) {
 			child.addNodeGeneCopy(parent1Node);
 		}
-		
 		for (ConnectionGene add : connections.values())
-		{	int outNode = add.getOutNode();
+		{		
+			int outNode = add.getOutNode();
 			ConnectionGene p2Connection = parent2.getConnection(add.getInnovation());
 			if ((p2Connection!=null) 
 					&& (r.nextDouble()<getParameter(MutationParameter.CROSSOVER_PROBABILITY)))
@@ -663,7 +664,8 @@ public class Genome implements IoAble
 				}
 			child.addConnectionGeneCopy(add);
 		}
-		child.audit();
+		//if(skipped>0) { G.print(this," eliminated ",skipped," connections"); }
+		//child.audit();
 		return child;
 	}
 	
@@ -681,9 +683,13 @@ public class Genome implements IoAble
 	// the network integrity and keeping it a DAG from.
 	//
 	public boolean addNodeConnection(NodeGene fromNode,NodeGene toNode,double strength)
-	{
+	{	
 		if(fromNode==toNode) { return false; }
-		
+		ConnectionGene added = null;
+		boolean repeat = true;
+		while(repeat)
+		{
+		repeat = false;
 		TYPE fromNodeType = fromNode.getType();
 		TYPE toNodeType = toNode.getType();
 		boolean reversed = false;
@@ -722,12 +728,12 @@ public class Genome implements IoAble
 				break;
 			case HIDDEN:
 				// maintain the connections are a directed graph, no recurrency
-				boolean toDependsOnFrom = dependsOn(fromNode,toNode,++evalStep);
+				boolean toGetsInputFromFrom = getsInputFrom(fromNode,toNode);
 				// redundancy, remove eventually
-				// boolean fromDependsOnTo = dependsOn(toNode,fromNode,++evalStep);
+				// boolean fromDependsOnTo = dependsOn(toNode,fromNode);
 				// G.Assert(!(toDependsOnFrom&&fromDependsOnTo),"shouldn't be mutual");
 				
-				reversed = toDependsOnFrom;
+				reversed = toGetsInputFromFrom;
 				//if(reversed) { System.out.println("swapping "+fromNode+toNode);}
 				break;
 			default: throw G.Error("Not expecting %s",toNodeType);
@@ -741,9 +747,33 @@ public class Genome implements IoAble
 		
 		if(n1.hasInput(n2))	{ return false; }	// already an immediate child
 
-		addConnectionGene(n1, n2, strength, true);
-		//System.out.println("Added connection "+n1+" to "+n2 );
-		return true;
+		try 
+			{
+			added = addConnectionGene(n1, n2, strength, true);
+			// now, n2 always gets input from n1, but it's possible that adding the connection
+			// can create a loop if some other connection has the right position in the graph.
+			boolean n1GetsInputFromN2 = getsInputFrom(n1,n2);
+			if(n1GetsInputFromN2)
+				{	// undo the new connection
+					G.Assert(added==n2.getInputs(),"set as first");
+					n2.setInputs(added.next);
+					connections.remove(added.getInnovation());
+					added = null;
+					//System.out.println("Un-Added connection "+n1+" to "+n2 );
+				}
+			}
+		catch (Throwable e)
+		{
+		if(added!=null)
+			{
+			G.Assert(added==n2.getInputs(),"set as first");
+			n2.setInputs(added.next);
+			connections.remove(added.getInnovation());
+			}
+			//repeat = true;
+		}
+		} 
+		return added!=null;
 	}
 	
 	
@@ -901,6 +931,7 @@ public class Genome implements IoAble
 		catch (Throwable err)
 		{
 			NetIo.save(this,"g:/temp/nn/train/error-"+errorCount++,"error in evaluation"+err);
+			throw err;
 		}
 	}
 	//
@@ -935,7 +966,7 @@ public class Genome implements IoAble
 			}
 			v += inputs.getWeight()*inGene.getValue(generation);			
 			}
-			inputs = inputs.next;
+			inputs = inputs.getNext();
 		}
 		
 		if(c.getType()==TYPE.OUTPUT) { c.setComputedValue(v,generation); }

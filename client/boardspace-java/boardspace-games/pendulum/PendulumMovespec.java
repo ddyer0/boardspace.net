@@ -32,7 +32,10 @@ public class PendulumMovespec
     static final int MOVE_PICK = 204; 	// pick a chip from a pool
     static final int MOVE_DROP = 205; 	// drop a chip
     static final int MOVE_FROM_TO = 206;// move a chip from a to b
-    static final int SETACTIVE = 207;	// set the active player
+    static final int MOVE_SETACTIVE = 207;	// set the active player
+    static final int MOVE_FLIP = 208;		// flip a timer
+    static final int MOVE_STANDARD_ACHIEVEMENT = 209;	// take the standard benefit instead of the legendary
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -40,8 +43,10 @@ public class PendulumMovespec
         	"Pick", MOVE_PICK,
         	"Drop", MOVE_DROP,
         	"Move", MOVE_FROM_TO,
-        	"SetActive",SETACTIVE);
-  }
+        	"Flip",MOVE_FLIP,
+        	"standardAchievement",MOVE_STANDARD_ACHIEVEMENT,
+        	"SetActive",MOVE_SETACTIVE);
+    }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
     //needed when doing chi square testing of random move generation, but possibly
@@ -64,6 +69,9 @@ public class PendulumMovespec
     int from_row;
     int from_index;
     PendulumChip chip;
+    int blackTimer = 0;
+    int greenTimer = 0;
+    int purpleTimer = 0;
     
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
@@ -143,6 +151,9 @@ public class PendulumMovespec
         to.to_col = to_col;
         to.dest = dest;
         to.chip = chip;
+        to.blackTimer = blackTimer;
+        to.greenTimer = greenTimer;
+        to.purpleTimer = purpleTimer;
     }
 
     public commonMove Copy(commonMove to)
@@ -189,6 +200,7 @@ public class PendulumMovespec
         	to_col = G.CharToken(msg);
         	to_row = G.IntToken(msg);
         	break;
+        case MOVE_FLIP:
         case MOVE_DROP:
             source = dest = PendulumId.valueOf(msg.nextToken());
             from_col = to_col = G.CharToken(msg);
@@ -201,7 +213,8 @@ public class PendulumMovespec
             from_row = to_row = G.IntToken(msg);
             if(msg.hasMoreTokens()) { from_index = G.IntToken(msg); }
             break;
-        case SETACTIVE:
+        case MOVE_STANDARD_ACHIEVEMENT:
+        case MOVE_SETACTIVE:
         	player = G.IntToken(msg);
         	break;
         case MOVE_START:
@@ -212,6 +225,16 @@ public class PendulumMovespec
         default:
 
             break;
+        }
+        if(msg.hasMoreElements())
+        {	String tok = msg.nextToken();
+         	if("t".equals(tok))
+         	{
+         		purpleTimer = G.IntToken(msg);
+         		greenTimer = G.IntToken(msg);
+         		blackTimer = G.IntToken(msg);
+         	}
+         	else { G.Error("unexpected token "+tok); }
         }
     }
 
@@ -238,6 +261,9 @@ public class PendulumMovespec
         {
         case MOVE_FROM_TO:
         	return icon(v,source.name()," ",from_col," ",dest.name());
+        case MOVE_STANDARD_ACHIEVEMENT:
+        	return TextChunk.create("take standard");
+        case MOVE_FLIP:
         case MOVE_DROP:
         case MOVE_PICK:
             return icon(v,source.name(),from_col);
@@ -263,15 +289,21 @@ public class PendulumMovespec
         switch (op)
         {
         case MOVE_FROM_TO:
-        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",from_index," ",dest.name()," ",to_col," ",to_row);
-        	
+        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",from_index," ",dest.name()," ",to_col," ",to_row,
+        			" t ",purpleTimer," ",greenTimer," ",blackTimer);
+        case MOVE_FLIP:	
         case MOVE_DROP:
-        	return G.concat(opname, dest.name()," ",to_col," ",to_row);
+        	return G.concat(opname, dest.name()," ",to_col," ",to_row,
+        			" t ",purpleTimer," ",greenTimer," ",blackTimer);
         	
         case MOVE_PICK:
-            return G.concat(opname , source.name()," ",from_col," ",from_row," ",from_index);
+            return G.concat(opname , source.name()," ",from_col," ",from_row," ",from_index,
+            		" t ",purpleTimer," ",greenTimer," ",blackTimer);
+
+        case MOVE_STANDARD_ACHIEVEMENT:
+        case MOVE_SETACTIVE:
+            return opname+player;
             
-        case SETACTIVE:
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
 

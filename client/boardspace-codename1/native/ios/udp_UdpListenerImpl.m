@@ -28,7 +28,7 @@ static void _resume() {
 // get something and/or wait
 -(NSString*)getMessage:(int)waitTime
 {   NSString *m=nil;
-    if(!exitRequest)
+    if(!exitRequest && messages!=nil)
     { 
     if((waitTime>=0) && ([messages count]==0))
     {

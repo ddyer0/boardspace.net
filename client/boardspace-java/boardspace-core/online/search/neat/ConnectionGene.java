@@ -45,9 +45,13 @@ public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>,StackIte
 	private boolean expressed;
 	private int innovation;		// innovation number for this connection
 	private static int highestInnovationNumber = 0;
-	
-	public ConnectionGene next;
-	
+	static ConnectionGene disconnected = new ConnectionGene();
+	public ConnectionGene next = disconnected;
+	public ConnectionGene getNext()
+	{
+		if(next==disconnected) { G.Error("next is disconnected %s",this); }
+		return next;
+	}
 	public double getWeight() { return actualWeight*weightScale; }
 	public void setWeight(double v) 
 		{ actualWeight = (int)(v/weightScale); 
@@ -75,15 +79,7 @@ public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>,StackIte
 		this.innovation = newConnectionNumber();
 	}
 	
-	public ConnectionGene(NodeGene inNode, NodeGene outNode, double weight, boolean expressed, int innovation) {
-		highestInnovationNumber = Math.max(highestInnovationNumber,innovation);
-		this.inNode = inNode.getId();
-		this.outNode = outNode.getId();
-		G.Assert(inNode!=outNode,"can't connect to self");
-		this.actualWeight = (int)(weight/weightScale);
-		this.expressed = expressed;
-		this.innovation = innovation;
-	}
+
 	private ConnectionGene(int inNode, int outNode, int actualWeight, boolean expressed, int innovation) 
 	{	highestInnovationNumber = Math.max(highestInnovationNumber,innovation);
 		this.inNode = inNode;

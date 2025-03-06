@@ -499,7 +499,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 	  	scaledBoard = board.getImage().centerScaledImage(gc, brect,scaledBoard);
 	  	
 	  	PendulumChip.councilBoard.getImage().centerImage(gc,councilRect);
-	  	if(gb.variation.timers)
+	  	if(!gb.variation.timers)
 	  	{
 	  	PendulumChip.timerTrack.getImage().centerImage(gc,timerRect);
 	  	}
@@ -562,7 +562,18 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	int ind = c.height();
     	switch(rack)
     	{
+        case RewardCard:
+    	case AchievementCard:
+    		{
+    		PendulumChip top = c.chipAtIndex(0);
+    		PC cost = top.pc;
+    		PB bene = top.pb[0];
+    		msg = s.get(cost.description)+"\n"+s.get(bene.description);
+    		return msg;
+    		}
     	case PlayerPopularityVP:
+    	case PlayerLegendary:
+    	case PlayerMax3Cards:
     	case PlayerPrestigeVP:
     	case PlayerMilitaryVP: ind = c.row; break;
     	case Privilege: ind = c.row+1; break;
@@ -590,8 +601,18 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         
         switch(cell.rackLocation())
         {
+        case TimerTrack:
+        	if(gb.variation.timers) { return false; }
+        	break;
+        case PlayerPlayedStratCard:
+        	xstep = 0.3;
+        	break;
         case PlayerStratCard:
         	xstep = 0.7;
+        	ystep = 0;
+        	break;
+        case Trash:
+        	xstep = 0.3;
         	ystep = 0;
         	break;
         case PlayerBrownBenefits:
@@ -630,10 +651,10 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	xstep = 0.3;
         	ystep = 0;
         	break;
-        case GreenHourglass:
+        case GreenTimer:
         	back = timerText(cell,gb.greenTimer);
         	break;
-        case PurpleHourglass:
+        case PurpleTimer:
     	   	back = timerText(cell,gb.purpleTimer);
         	break;
         case PlayerVotes:
@@ -657,7 +678,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	xpos -= (cell.height()/2.0*siz)*xstep;
         	ypos += (cell.height()/2.0*siz)*ystep;
         	break;
-        case BlackHourglass:
+        case BlackTimer:
         	back = timerText(cell,gb.blackTimer);
         	break;
         default: break;
@@ -936,7 +957,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==SETACTIVE);
+    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==MOVE_SETACTIVE);
     	  commonMove rval = EditHistory(nmove,oknone);
      	     
     	  return(rval);
@@ -1080,6 +1101,12 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
+        case Trash:
+        case PlayerVotes:
+        case PlayerVotesReserves:
+        case PurpleTimer:
+        case BlackTimer:
+        case GreenTimer:
         case PlayerCulture:
         case PlayerStratCard:
         case PlayerPlayedStratCard:
@@ -1088,10 +1115,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         case PlayerCashReserves:
         case PlayerMilitaryReserves:
         case PlayerCultureReserves:
-        case PurpleHourglass:
-        case BlackHourglass:
         case AchievementCard:
-        case GreenHourglass:
         case Privilege:
         case Achievement:
         case AchievementCardStack:
@@ -1099,6 +1123,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         case PlayerPrestigeVP:
         case PlayerMilitaryVP:
         case PlayerPopularityVP:
+        case PlayerLegendary:
+        case PlayerMax3Cards:
         case PlayerBlueBenefits:
         case PlayerYellowBenefits:
         case PlayerBrownBenefits:
@@ -1128,19 +1154,26 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         				? getActivePlayer().boardIndex
         				: bb.whoseTurn;
         	PlayerBoard pb = bb.getPlayerBoard(movingPlayer);
-        	if(pb.pickedObject==null)
+        	if(m.op==MOVE_FLIP)
+        			{
+        			PerformAndTransmit(G.concat("Flip ",hitObject.rackLocation(),
+        				" ",hitObject.col," ",hitObject.row));
+        			}
+        	else if(pb.pickedObject==null)
         		{	
         		  if(reviewOnly && bb.simultaneousTurnsAllowed())
         		  	{ 
         			PerformAndTransmit("SetActive "+movingPlayer,false,replayMode.Live);
         		  	setActivePlayer(getPlayerOrTemp(movingPlayer)); 
         		  	}
-        		  PerformAndTransmit("Pick "+hitObject.rackLocation()+" "+hitObject.col+" "+hitObject.row+" "+hp.hit_index);
+         		  PerformAndTransmit(G.concat("Pick ",hitObject.rackLocation(),
+          				" ",hitObject.col," ",hitObject.row," ",hp.hit_index));
         		}
         		else 
         		{
-        		PerformAndTransmit("Drop "+hitObject.rackLocation()+" "+hitObject.col+" "+hitObject.row+" "+hp.hit_index);
-        		}
+           		PerformAndTransmit(G.concat("Drop ",hitObject.rackLocation(),
+        				" ",hitObject.col," ",hitObject.row));
+      		}
         	}
         	break;
         case Select:
