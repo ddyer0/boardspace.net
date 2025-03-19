@@ -699,7 +699,10 @@ private void playSounds(commonMove m)
     public void StopDragging( HitPoint hp)
     {
         CellId id = hp.hitCode;
-        if(!(id instanceof SantorId)) {   missedOneClick = performStandardActions(hp,missedOneClick);}
+        if(!(id instanceof SantorId)) 
+        	{   missedOneClick = performStandardActions(hp,missedOneClick);
+        		if(missedOneClick) { bigGod = null; }
+        	}
     	else {
     	missedOneClick = false;
    		SantorId hitObject = (SantorId)hp.hitCode;

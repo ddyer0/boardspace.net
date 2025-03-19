@@ -60,10 +60,5 @@ public class CarnacCell extends chipCell<CarnacCell,CarnacChip> implements Compa
 		}}
 		return(this);
 	}
-	public int altCompareTo(CarnacCell o) 
-	{	
-		return (row==o.row ?  -(col-o.col) : -(o.row - row));
-	}
-
 
 }

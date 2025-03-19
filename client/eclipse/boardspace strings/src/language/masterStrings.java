@@ -86,6 +86,7 @@ import online.game.NumberMenu;
 import online.game.Opcodes;
 import ordo.OrdoConstants;
 import palago.PalagoConstants;
+import pendulum.PendulumConstants;
 import plateau.common.PlateauConstants;
 import oneday.OnedayConstants;
 import rithmomachy.RithmomachyConstants;
@@ -188,6 +189,9 @@ public class masterStrings extends InternationalStrings
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
+        
+        setContext("pendulum");
+        PendulumConstants.putStrings();
         
         setContext("circle");
         CircleConstants.putStrings();

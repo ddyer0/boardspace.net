@@ -112,8 +112,22 @@ public class RectangleManager
 		if(rel!=r && G.debug() && r.intersects(rel))
 		{
 		failedPlacements++;
-		messages.addLog(G.format("spare rectangles overlap\n%s\n%s\n%s",rel,r,r.intersection(rel)));
+		String msg = G.format("spare rectangles overlap\n%s\n%s\n%s",rel,r,r.intersection(rel));
+		messages.addLog(msg);
+		if(G.debug())
+			{
+			G.Error(msg);
+			}
 		}
+		}
+    	if(!fullRect.contains(r) && G.Width(r)>0 && G.Height(r)>0) 
+		{ 
+		failedPlacements++;
+		String msg = G.format("spare rectangle overlaps main\n%s\n%s",
+				r,fullRect);
+		messages.addLog(msg);
+		if(G.debug())
+			{ G.Error(msg); }
 		}
 	}
 	public void checkRectangles()
@@ -121,11 +135,6 @@ public class RectangleManager
 		for(int i=spareRects.size()-1; i>=0; i--)
 		{	Rectangle r = spareRects.elementAt(i);
 			checkRectangles(r);
-			if(!fullRect.contains(r)) 
-				{ 
-				failedPlacements++;
-				messages.addLog(G.format("spare rectangle overlaps main\n%s\n%s\n%s",r,r.intersection(fullRect)));
-				}
 		}
 	}
 	
@@ -160,6 +169,10 @@ public class RectangleManager
 				 	{ 
 				 	  //G.print("combine horizontal ",rel,r);
 				 	  G.union(rel,r); 
+				 	 if(G.debug())
+					  {
+						  checkRectangles();
+					  }
 				 	  done=true; 
 				 	}
 				}
@@ -169,15 +182,18 @@ public class RectangleManager
 				 {
 				 	  //G.print("combine horizontal ",rel,r);
 				 	  G.union(rel,r);
+				 	 if(G.debug())
+					  {
+						  checkRectangles();
+					  }
 					 done = true;
 				 }
 				}
 			}
-			if(!done) { spareRects.push(r); } 
-			if(G.debug())
-	    	{
-			checkRectangles(r);
-	    	}
+			if(!done)
+				{ spareRects.push(r);
+				  // we already checked r against the rectangles
+				}
 
 			}
 	}
@@ -428,7 +444,6 @@ public class RectangleManager
     	placeInSpare_bestLeftOrRight = null;
     	placeAboveOrBelow = false;
     	boolean bestis1 = false;
-    	
     	for(int idx=0,lim=spareRects.size(); idx<=lim; idx++)
     	{	Rectangle r = idx==lim ? mainRectangle : spareRects.elementAt(idx);
     		if((r!=mainRectangle) || (placeInSpare_best==null))

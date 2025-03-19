@@ -74,11 +74,6 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	public int compareTo(HWord o) {
 		return G.compareTo(name,o.name);
 	}
-
-	public int altCompareTo(HWord o) {
-		return -compareTo(o);
-	}
-	
 	public long Digest(Random r) {
 		return seed.Digest(r);
 	}

@@ -2692,7 +2692,8 @@ public abstract class commonCanvas extends exCanvas
     public commonPlayer currentRobotPlayer()
     {
     	commonPlayer who = currentGuiPlayer();
-    	if(who==null) { who=getActivePlayer(); }
+    	commonPlayer act = getActivePlayer();
+    	if(who==null) { who=act; }
     	return(who);
     }
     static int NoRemoteViewer = -999;
@@ -3250,6 +3251,11 @@ public abstract class commonCanvas extends exCanvas
   		return ((m!=null) 
   				&& (b!=null)
   				&& ((m.op!=MOVE_START) && (m.op!=MOVE_EDIT))
+  				// note that this test is to prevent undoing past a variation.  In live games
+  				// this is not a problem. In replays, it prevents using "undo" to remove a 
+  				// temporary variation with the side effect of losing the main line.
+  				&& (m.next==null)
+  				&& (m.nVariations()<=1)
   				&& (allPlayersLocal() || (m.player==b.whoseTurn())));
   	}
   	return(false);
@@ -3342,7 +3348,7 @@ public abstract class commonCanvas extends exCanvas
 		  return handlePleaseUndoButton(gc,G.isApproximatelySquare(r) ? pl.displayRotation:rotation,r,any,highlightColor,backgroundColor);		  
 	  }
 	  }
-	  else if(allowed_to_edit)
+	  else if(allowed_to_edit || G.debug())
 	  {if (GC.handleRoundButton(gc, r, p,s.get(EditAction),highlightColor, backgroundColor))
 		 	{
 			 p.hitCode = GameId.HitEditButton;
@@ -4416,9 +4422,9 @@ public abstract class commonCanvas extends exCanvas
      int player =
     		 (replay==replayMode.Replay) 
     		 ? -1 
-    		 : ((replay!=replayMode.Replay) && simultaneousTurnsAllowed())
+    		 : (simultaneousTurnsAllowed()
    		  		? getActivePlayer().boardIndex
-   		  		: getBoard().whoseTurn();
+   		  		: getBoard().whoseTurn());
    	return(PerformAndTransmit(str,player,transmit,replay));
 
  }
@@ -4767,8 +4773,8 @@ public abstract class commonCanvas extends exCanvas
        	if(History.viewStep>0)
         	{
         	commonMove m = History.elementAt(History.viewStep-1);
-        	m.next = null; 
-        	m.setVariations(null);
+        	commonMove next = m.next;
+        	m.removeVariation(next);
         	}
        	doScrollTo(FORWARD_TO_END);
        	l.changeMove = getCurrentMove();	// inhibit turn change sound
@@ -7186,7 +7192,8 @@ public abstract class commonCanvas extends exCanvas
         	{ repaintSprites(); 
         	}
        
-        if(( ((reviewOnly || mutable_game_record) && extraactions)  || isOfflineGame()) && !reviewMode() && idle)
+        if(( ((reviewOnly || mutable_game_record) && extraactions) || isOfflineGame())
+        		&& !reviewMode() && idle)
         {	
             commonPlayer who = currentRobotPlayer();
 	        if (who != null)
@@ -9107,7 +9114,10 @@ public void verifyGameRecord()
 		}
 		public boolean allowRobotsToRun()
 		{	// don't allow robots during simultaneous moves
-			return(gameRecordingMode()==RecordingStrategy.All);
+			RecordingStrategy rm = gameRecordingMode();
+			return((rm==RecordingStrategy.All) 
+					|| (rm==RecordingStrategy.None)
+					|| (rm==RecordingStrategy.Single));
 		}
 	    public void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight,CellId id)
 	    {	StockArt.Rotate180.drawChip(gc, this, r,highlight, id, s.get(ReverseViewExplanation));

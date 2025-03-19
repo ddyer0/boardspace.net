@@ -407,10 +407,6 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		return G.signum(points-o.points);
 	}
 
-	public int altCompareTo(Word o) {
-		return -compareTo(o);
-	}
-
 }
 
 class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstants

@@ -35,7 +35,17 @@ public class PendulumMovespec
     static final int MOVE_SETACTIVE = 207;	// set the active player
     static final int MOVE_FLIP = 208;		// flip a timer
     static final int MOVE_STANDARD_ACHIEVEMENT = 209;	// take the standard benefit instead of the legendary
-    
+    static final int MOVE_REST = 210;	// rest until the other players are ready too
+    static final int MOVE_STARTCOUNCIL = 211;	// enter council mode
+    static final int MOVE_SELECT = 212;		// select but do not pick up something
+    static final int MOVE_READY = 213;
+    static final int MOVE_STARTPLAY = 214;
+    static final int MOVE_AUTOFLIP = 215;
+    static final int MOVE_LEGENDARY_ACHIEVEMENT = 216;
+    static final int MOVE_SWAPVOTES = 217;
+    static final int MOVE_PAUSE = 218;	// for privilege testing
+    static final int MOVE_RESUME = 219;	
+    static final int MOVE_WAIT = 220;
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -44,7 +54,18 @@ public class PendulumMovespec
         	"Drop", MOVE_DROP,
         	"Move", MOVE_FROM_TO,
         	"Flip",MOVE_FLIP,
+        	"Rest",MOVE_REST,
+        	"Ready",MOVE_READY,
+        	"Play",MOVE_STARTPLAY,
+        	"AutoFlip",MOVE_AUTOFLIP,
+        	"Select",MOVE_SELECT,
+        	"SwapVotes",MOVE_SWAPVOTES,
+        	"pause",MOVE_PAUSE,
+        	"resume",MOVE_RESUME,
         	"standardAchievement",MOVE_STANDARD_ACHIEVEMENT,
+        	"legendaryAchievement",MOVE_LEGENDARY_ACHIEVEMENT,
+        	"Council",MOVE_STARTCOUNCIL,
+        	"Wait",MOVE_WAIT,
         	"SetActive",MOVE_SETACTIVE);
     }
     //
@@ -63,11 +84,11 @@ public class PendulumMovespec
     // variables to identify the move
     PendulumId source; // where from/to
     PendulumId dest;
+    int forPlayer;
     char to_col;
     char from_col;
     int to_row; // for from-to moves, the destination row
     int from_row;
-    int from_index;
     PendulumChip chip;
     int blackTimer = 0;
     int greenTimer = 0;
@@ -89,19 +110,21 @@ public class PendulumMovespec
     public PendulumMovespec(int opc , int p)
     {
     	op = opc;
-    	player = p;
+    	forPlayer = player = p;
     }
+  
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
      */
-    public PendulumMovespec(int opc,PendulumCell c,int idx,int who)
+    public PendulumMovespec(int opc,PendulumCell c,PendulumChip ch,int who)
     {
     	op = opc;
     	source = dest = c.rackLocation();
     	from_row = to_row = c.row;
-      	from_index = idx;
+      	chip = ch;
      	to_col = from_col = c.col;
-    	player = who;
+    	forPlayer = player = who;
+    	G.Assert(chip!=null,"should be a chip");
     }
     /* constructor */
     public PendulumMovespec(StringTokenizer ss, int p)
@@ -109,17 +132,18 @@ public class PendulumMovespec
         parse(ss, p);
     }
 
-    public PendulumMovespec(int moveFromTo, PendulumCell from, int indx, PendulumCell to, int who) 
+    public PendulumMovespec(int moveFromTo, PendulumCell from, PendulumChip ch, PendulumCell to, int who) 
     {
 		op = moveFromTo;
 		source = from.rackLocation();
 		from_row = from.row;
 		from_col = from.col;
-		from_index = indx;
+		chip = ch;
 		dest = to.rackLocation();
 		to_row = to.row;
 		to_col = to.col;
-		player = who;
+		forPlayer = player = who;
+		G.Assert(chip!=null,"should be a chip");
 	}
 
 	/**
@@ -135,18 +159,19 @@ public class PendulumMovespec
 				&& (dest == other.dest)
 				&& (from_row == other.from_row)
 				&& (to_row == other.to_row) 
-				&& (from_index == other.from_index)
+				&& (chip == other.chip)
 				&& (from_col==other.from_col)
 				&& (to_col==other.to_col)
+				&& (forPlayer==other.forPlayer)
 				&& (player == other.player));
     }
 
     public void Copy_Slots(PendulumMovespec to)
     {	super.Copy_Slots(to);
+    	to.forPlayer = forPlayer;
         to.from_row = from_row;
         to.to_row = to_row;
         to.source = source;
-        to.from_index = from_index;
         to.from_col = from_col;
         to.to_col = to_col;
         to.dest = dest;
@@ -186,16 +211,18 @@ public class PendulumMovespec
         }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
+        forPlayer = msg.hasMoreTokens() ? D.getInt(msg.nextToken()) : p;
+        
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
-        	
+        case MOVE_SWAPVOTES:	
         case MOVE_FROM_TO:
         	source = PendulumId.valueOf(msg.nextToken());
         	from_col = G.CharToken(msg);
         	from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
+        	chip = PendulumChip.find(msg.nextToken());
         	dest = PendulumId.valueOf(msg.nextToken());
         	to_col = G.CharToken(msg);
         	to_row = G.IntToken(msg);
@@ -206,22 +233,28 @@ public class PendulumMovespec
             from_col = to_col = G.CharToken(msg);
             from_row = to_row = G.IntToken(msg);
             break;
-        	
+        case MOVE_WAIT:
+        	from_row = to_row = G.IntToken(msg);
+        	break;
+        case MOVE_SELECT:
         case MOVE_PICK:
             source = dest = PendulumId.valueOf(msg.nextToken());
             from_col = to_col = G.CharToken(msg);
             from_row = to_row = G.IntToken(msg);
-            if(msg.hasMoreTokens()) { from_index = G.IntToken(msg); }
+            if(msg.hasMoreTokens()) { chip = PendulumChip.find(msg.nextToken()); }
             break;
+        case MOVE_REST:
+        case MOVE_READY:
+        case MOVE_LEGENDARY_ACHIEVEMENT:
         case MOVE_STANDARD_ACHIEVEMENT:
         case MOVE_SETACTIVE:
-        	player = G.IntToken(msg);
-        	break;
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
-
             break;
-
+        case MOVE_AUTOFLIP:    
+        case MOVE_STARTCOUNCIL:
+        case MOVE_PAUSE:
+        case MOVE_RESUME:
+        case MOVE_STARTPLAY:
         default:
 
             break;
@@ -259,18 +292,94 @@ public class PendulumMovespec
     {
         switch (op)
         {
+        case MOVE_DROP:
+        case MOVE_SWAPVOTES:
         case MOVE_FROM_TO:
-        	return icon(v,source.name()," ",from_col," ",dest.name());
+        	switch(dest)
+        	{
+         	case PurpleActionA:
+        	case PurpleActionB:
+        		setLineBreak(true);
+        		return icon(v,"Purple action");
+        	case GreenActionA:
+        	case GreenActionB:
+        		setLineBreak(true);
+        		return icon(v,"Green action");
+        	case BlackActionA:
+        	case BlackActionB:
+        		setLineBreak(true);
+       		return icon(v,"Black action");
+        	case PurpleMeepleA:
+        	case PurpleMeepleB:
+        		setLineBreak(true);
+       		return icon(v,"to Purple");
+        	case BlackMeepleA:
+        	case BlackMeepleB:
+        		setLineBreak(true);
+        		return icon(v,"to Black");
+        	case GreenMeepleA:
+        	case GreenMeepleB:
+        		setLineBreak(true);
+        		return icon(v,"to Green");
+        	case PlayerCash:
+        	case PlayerMilitary:
+        	case PlayerCulture:
+        		return icon(v,"Gained");
+        	case PlayerCashReserves:
+        	case PlayerMilitaryReserves:
+        	case PlayerCultureReserves:
+        		return icon(v,"Paid");
+        	case PlayerPlayedStratCard:
+        		setLineBreak(true);
+        		return icon(v,"Card Played");
+        	default:
+        		return icon(v,dest.name());
+        	}
+        	
+        case MOVE_READY:
+        	return TextChunk.create("");
+        case MOVE_REST:
+        	return TextChunk.create("");
+        case MOVE_LEGENDARY_ACHIEVEMENT:
+        	chip = PendulumChip.legendary;
+        	return icon(v,"achievement");
+        	
         case MOVE_STANDARD_ACHIEVEMENT:
         	return TextChunk.create("take standard");
         case MOVE_FLIP:
-        case MOVE_DROP:
-        case MOVE_PICK:
-            return icon(v,source.name(),from_col);
-
+        	switch(source)
+        	{
+        	case BlackTimer:
+        		chip = PendulumChip.blackTimer;
+        		return icon(v,"Flip");
+        	case GreenTimer:
+        		chip = PendulumChip.greenTimer;
+        		return icon(v,"Flip");
+        	case PurpleTimer:
+        		chip = PendulumChip.purpleTimer;
+        		return icon(v,"Flip");
+        	default: break;
+        	}
+        	
+        case MOVE_SELECT:
+        	switch(source)
+        	{
+        	case RewardCard:
+        		return icon(v,"Council Reward");
+        	default: break;
+        	}
+			//$FALL-THROUGH$
+		case MOVE_PICK:
+        	return icon(v,source.name(),from_col);
+        case MOVE_SETACTIVE:
         case MOVE_DONE:
             return TextChunk.create("");
-
+        case MOVE_AUTOFLIP:
+        case MOVE_STARTCOUNCIL:
+        case MOVE_STARTPLAY:
+        case MOVE_PAUSE:
+        case MOVE_RESUME:
+        case MOVE_WAIT:
         default:
             return TextChunk.create(D.findUniqueTrans(op));
 
@@ -282,31 +391,43 @@ public class PendulumMovespec
     public String moveString()
     {
 		String indx = indexString();
-		String opname = indx+D.findUnique(op)+" ";
+		String opname = indx+D.findUnique(op)+" P"+forPlayer+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
+        case MOVE_SWAPVOTES:
         case MOVE_FROM_TO:
-        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",from_index," ",dest.name()," ",to_col," ",to_row,
+        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",chip.idString()," ",dest.name()," ",to_col," ",to_row,
         			" t ",purpleTimer," ",greenTimer," ",blackTimer);
         case MOVE_FLIP:	
         case MOVE_DROP:
         	return G.concat(opname, dest.name()," ",to_col," ",to_row,
         			" t ",purpleTimer," ",greenTimer," ",blackTimer);
         	
+        case MOVE_SELECT:
         case MOVE_PICK:
-            return G.concat(opname , source.name()," ",from_col," ",from_row," ",from_index,
+            return G.concat(opname , source.name()," ",from_col," ",from_row," ",chip.idString(),
             		" t ",purpleTimer," ",greenTimer," ",blackTimer);
 
+        case MOVE_WAIT:
+        	return G.concat(opname ,from_row);
+        	
         case MOVE_STANDARD_ACHIEVEMENT:
+        case MOVE_LEGENDARY_ACHIEVEMENT:
+        case MOVE_REST:
+        case MOVE_READY:
         case MOVE_SETACTIVE:
-            return opname+player;
-            
+            return opname;
+        case MOVE_EDIT:
+        	return "Edit";
         case MOVE_START:
-            return G.concat(indx,"Start P" , player);
-
+        case MOVE_AUTOFLIP:
+        case MOVE_STARTCOUNCIL:
+        case MOVE_PAUSE:
+        case MOVE_RESUME:
+        case MOVE_STARTPLAY:
         default:
             return G.concat(opname);
         }

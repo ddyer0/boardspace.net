@@ -1528,7 +1528,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 		SantoriniCell rack[]=playerRack[who];
 		for(int i=0;i<rack.length;i++)
 			{	SantoriniCell c = rack[i].location;
-				if(!canAscend)
+				if(c!=null && !canAscend)
 				{	// can't ascend is prometheus, having built first,
 					// and we must also be adjacent to the built space.
 					if(!c.isAdjacentTo(lastBuild[who])) { c = null; }
@@ -1590,7 +1590,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  	{
  	for(int i=0;i<rack.length;i++)
 		{	SantoriniCell c = rack[i].location;
-			if(canBuildAndMove(who,c))
+			if(c!=null && canBuildAndMove(who,c))
 			{	
 				for(int dir=0;dir<CELL_FULL_TURN;dir++)
 				 {	SantoriniCell d = c.exitTo(dir);

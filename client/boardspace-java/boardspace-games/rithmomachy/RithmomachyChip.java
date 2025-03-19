@@ -48,10 +48,7 @@ public class RithmomachyChip extends chip<RithmomachyChip> implements CompareTo<
     public int compareTo(RithmomachyChip c)
     {	return(Integer.signum(c.value-value));
     }
-    public int altCompareTo(RithmomachyChip c)
-    {	return(Integer.signum(c.value-value));
-    }
-	private RithmomachyChip(String na,int pla,Image im,long rv,double scl[],int specs[])
+ 	private RithmomachyChip(String na,int pla,Image im,long rv,double scl[],int specs[])
 	{	name = na;
 		chipNumber=pla;
 		colorIndex = (chipNumber>=FIRST_WHITE_CHIP_INDEX)?1:0;

@@ -165,7 +165,7 @@ public class UCTTreeViewer extends TreeViewer
 								}
 						else { kid.setEvaluation(0); }
 					}
-					Sort.sort(children,false);
+					Sort.sort(children);
 					
 					for(int i=0;i<nChildren;i++)
 					{

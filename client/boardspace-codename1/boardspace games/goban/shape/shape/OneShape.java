@@ -194,13 +194,6 @@ public class OneShape extends SimpleShape implements Globals,ShapeProtocol,Exter
 		return(a>b ? 1 : a==b ? 0 : -1);
 	}
 	
-	@Override
-	public int altCompareTo(OneShape o) {
-		long a = (long)hashCode();
-		long b = (long)o.hashCode();
-		return(a>b ? 1 : a==b ? 0 : -1);
-		}
-	
 	public int getVersion() {
 		return((int)serialVersionUID);
 	}

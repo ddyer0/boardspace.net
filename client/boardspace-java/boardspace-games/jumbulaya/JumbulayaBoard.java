@@ -194,11 +194,6 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 	public int compareTo(Word o) {
 		return G.signum(points-o.points);
 	}
-
-	public int altCompareTo(Word o) {
-		return G.signum(o.points-points);
-	}
-	
 	public int wordScore()
 	{
 		int tileScore = JumbulayaBoard.WordScores[nTiles];

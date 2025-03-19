@@ -616,7 +616,7 @@ public class GameLayoutManager implements UniversalConstants
 		int rem = nPlayers%3;
 		if(rem!=0)
 			{
-			addToSpare(left+rem*playerWM,bottom+playerHX,playerWM*(3-rem),playerHM+marginSize);
+			addToSpare(left+rem*playerWM,bottom+playerHM*rows,playerWM*(3-rem),playerHM);
 			}
 		}
 	break;
@@ -2772,8 +2772,8 @@ public class GameLayoutManager implements UniversalConstants
         }
         if(extraH>0)
         {
-        	deallocate(new Rectangle(mainX,mainY,mainW,extraH));
-        	deallocate(new Rectangle(mainX,mainY+mainH-extraH,mainW,extraH));
+        	deallocate(new Rectangle(mainX+extraW,mainY,mainW-extraW*2,extraH));
+        	deallocate(new Rectangle(mainX+extraW,mainY+mainH-extraH,mainW-extraW*2,extraH));
         }
     }
 }

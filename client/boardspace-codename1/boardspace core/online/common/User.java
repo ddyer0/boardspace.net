@@ -189,7 +189,6 @@ public class User implements LobbyConstants,CompareTo<User>
         return (val.toString());
     }
     public String toString() { return("<user "+prettyName()+"#"+uid+">"); }
-    public int altCompareTo(User bb) { return(compareTo(bb)); }
     public int compareTo(User b)
     { boolean mas = waitingForMaster;
       int as = sortscore(mas);

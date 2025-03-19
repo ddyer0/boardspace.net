@@ -29,7 +29,6 @@ public class SimpleUser implements CompareTo<SimpleUser>
 			return(false);
 		}
 	public String toString()  { return("("+name+")@"+channel); }
-	public int altCompareTo(SimpleUser oo) { return(compareTo(oo)); }
 	public int compareTo(SimpleUser o) 
 		{
 		  return(name.compareToIgnoreCase(o.name));

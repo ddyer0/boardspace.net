@@ -123,7 +123,4 @@ public class Word implements StackIterator<Word>,CompareTo<Word>
 		return G.signum(points-o.points);
 	}
 
-	public int altCompareTo(Word o) {
-		return G.signum(o.points-points);
-	}
 }

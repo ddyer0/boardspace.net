@@ -75,18 +75,17 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
     private static final double VALUE_OF_WIN =1.0;	// keep scores normalized in the 0.0-1.0 range
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
     private PendulumChip movingForPlayer = null;	// optional, some evaluators care
-   
+    private int forPlayer = -1;
 	// alpha beta parameters
   
     // mcts parameters
     // also set MONTEBOT = true;
-    private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
-    private boolean EXP_MONTEBOT = false;		// test version
-    private double ALPHA = 0.5;
+    @SuppressWarnings("unused")
+	private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
+    private double ALPHA = 0.75;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-    private int forPlayer = 0;
     
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -172,7 +171,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves(forPlayer));
+            return(board.GetListOfMoves(board.whoseTurn));
         }
 
         /**
@@ -195,9 +194,9 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
      */
     double ScoreForPlayer(PendulumBoard evboard,int player,boolean print)
     {	
-		double val = 0.0;
-		G.Error("Score for player not implemented");
-     	return(val);
+    	double sc = evboard.scoreForPlayer(player)/14000.0;
+    	G.Assert(Math.abs(sc)<=1,"should be normalized %s",sc);
+    	return sc;
     }
 
 
@@ -236,7 +235,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
            	MONTEBOT=true;
          	break;
         	
-        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
+        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true;  break;
         }
     }
 
@@ -261,15 +260,20 @@ public void PrepareToMove(int playerIndex)
 	//use this for a friendly robot that shares the board class
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
+    board.purpleTimer = new Timer(GameBoard.purpleTimer);
+    board.greenTimer = new Timer(GameBoard.greenTimer);
+    board.blackTimer = new Timer(GameBoard.blackTimer);
     board.initRobotValues(this);
+    board.setWhoseTurn(playerIndex);
     forPlayer = playerIndex;
+    board.revertPartialMoves();
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
 	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
 	public commonMove getCurrentVariation()
 	{	
-		return getCurrent2PVariation();
+		return super.getCurrentVariation();
 	}
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
@@ -288,7 +292,10 @@ public void PrepareToMove(int playerIndex)
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	UCT_WIN_LOSS = EXP_MONTEBOT;
+ 	UCT_WIN_LOSS = false;
+ 	G.print("start "+forPlayer);
+ 	while(move==null)
+ 	{
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm
@@ -309,9 +316,9 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = 15;		// seconds per move
+        monte_search_state.timePerMove = 10;		// seconds per move
         monte_search_state.stored_child_limit = 100000;
-        monte_search_state.verbose = verbose;
+        monte_search_state.verbose = 0;//verbose;
         monte_search_state.alpha = ALPHA;
         monte_search_state.blitz = true;
         monte_search_state.sort_moves = false;
@@ -322,7 +329,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = 0;//DEPLOY_THREADS;
+        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
@@ -340,8 +347,34 @@ public void PrepareToMove(int playerIndex)
 
  		}
       finally { ; }
-      if(move==null) { continuous = false; }
-     return(move);
+
+ 	if(move!=null && GameBoard.simultaneousTurnsAllowed())
+ 	{	
+
+ 		if(move.op==PendulumMovespec.MOVE_WAIT)
+ 		{	PendulumMovespec mm = (PendulumMovespec)move;
+ 			G.print("robot "+forPlayer+" sleeping");
+ 			G.doDelay(mm.from_row);
+ 			move = null;
+ 	 		PrepareToMove(forPlayer);	// re-prepare after a delay
+ 		}
+ 		else 
+ 		{
+ 		PrepareToMove(forPlayer);
+ 		CommonMoveStack all = List_Of_Legal_Moves();
+ 		boolean match = false;
+ 		for(int lim=all.size()-1; lim>=0 && !match;lim--)
+ 		{	PendulumMovespec comp = (PendulumMovespec)all.elementAt(lim);
+ 			match |= move.Same_Move_P(comp);
+ 		}
+ 		if(!match) {
+ 			G.print("Move ",move," went away while robot was thinking");
+ 			move = null;
+ 		}}
+ 	}
+ 	}
+ 	G.print("finish "+forPlayer+" "+move);
+ 	return(move);
  }
  /**
   * this is called as each move from a random simulation is unwound

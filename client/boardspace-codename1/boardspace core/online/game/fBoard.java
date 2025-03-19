@@ -131,9 +131,6 @@ class cellSorter implements CompareTo<cellSorter>
 		}
 		return 0;
 	}
-	public int altCompareTo(cellSorter o) {
-		return -compareTo(o);
-	}
 
 }
 
@@ -199,7 +196,7 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 			int yp= cellToY(c.col,c.row);
 			sort[i] = new cellSorter(xp,yp,c,type);
 		}
-		Sort.sort(sort,false);
+		Sort.sort(sort);
 		for(int i=0;i<len;i++)
 		{
 			cells[i] = (CELLTYPE)sort[i].c;
@@ -453,7 +450,7 @@ public class BoardIterator implements Enumeration<CELLTYPE>
  		{
 	 	boardIterator = new BoardIterator(e);
  		}
-	// boardIterator is the template, containing the sorted cell array
+	// boardIterator is the prototype, containing the sorted cell array
 	// we still need to return a unique copy so parallel users don't
 	// share state
  	return(new BoardIterator(boardIterator));

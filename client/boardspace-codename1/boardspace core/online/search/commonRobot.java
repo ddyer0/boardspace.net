@@ -290,7 +290,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     public synchronized commonMove getResult() 
     { commonMove m = theResult;
       if(m!=null) 
-      { robotRunning=false;   theResult=null; 
+      { robotRunning=false;   
+        theResult=null; 
         if(!continuous) 
         	{ exitFlag = true; 
         	  setPause(false);
@@ -484,6 +485,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
         {
         	throw G.Error("robot already running");
         }
+        if(theResult==null)	// don't start a new turn if we already have a result pending
+        {
         exitFlag = false;
         setPause(false);
         paused = false;
@@ -491,6 +494,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
         PrepareToMove(playerindex);			// capture the board state
         robotMoveNow = true;				// let the robot awaken
         notify();
+    }
     }
     
     public void DoGameOver()

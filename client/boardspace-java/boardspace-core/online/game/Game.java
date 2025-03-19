@@ -3670,7 +3670,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     } 
    private void startRobotTurn(commonPlayer p)
     {
-        if (!GameOver() && AllRobotsIdle() && v.allowRobotsToRun())
+        if (!GameOver()
+        		&& (AllRobotsIdle() || (v.simultaneousTurnsAllowed()))
+        		&& v.allowRobotsToRun())
         {	
             v.startRobotTurn(p);
         }

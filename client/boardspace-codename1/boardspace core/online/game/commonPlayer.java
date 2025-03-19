@@ -937,9 +937,6 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     {	
     	return(order-p.order);
     }
-    public int altCompareTo(commonPlayer other)
-    {	return(compareTo(other));
-    }
     /**
      * reorder the players, ascending by p.order
      * @param players

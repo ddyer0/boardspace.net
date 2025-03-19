@@ -1259,7 +1259,7 @@ public class UCTMoveSearcher extends CommonDriver
 					  if(G.isCheerpj()) { Thread.yield(); }
 					  if(later-now>1000)
 					  {	  now=later;
-						  G.print("Single search "+loops," T ",traverseMoves," R ",randomMoves);
+						 // G.print("Single search "+loops," T ",traverseMoves," R ",randomMoves);
 						  
 					  }
 					  before += s.pausedTime;

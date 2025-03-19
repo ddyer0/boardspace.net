@@ -286,9 +286,6 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		// same chip count too, resolve randomly but consistently
 		return(G.signum(randomLong()-o.randomLong()));
 	}
-	public int altCompareTo(PlayerBoard o) {
-		return -compareTo(o);
-	}
 
 }
 

@@ -18,6 +18,7 @@ package pendulum;
 
 import lib.AR;
 import lib.DrawableImageStack;
+import lib.G;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
@@ -49,6 +50,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	public PendulumId id;
 	public PendulumChip back = null;
 	private int chipNumber = 0;
+	private String idString = null;
 	public PC pc = PC.None;		// cost for strategy cards
 	public PB pb[] = null;		// province benefits for province cards
 	public String contentsString() { return(color==null ? file : color.name()); }
@@ -63,11 +65,19 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		color = con;
 		randomv = r.nextLong();
 		chipNumber = otherChips.size();
+		idString = "c"+otherChips.size();
 		otherChips.push(this)
 
 		;
 	}
 	private PendulumChip(String na,PColor con,int[]v,PB[]bene,int... res)
+	{
+		this(na,noscale,con);
+		resources = res;
+		vps = v;
+		pb = bene;
+	}
+	private PendulumChip(String na,PColor con,int[]v,PC co,PB[]bene,int... res)
 	{
 		this(na,noscale,con);
 		resources = res;
@@ -99,10 +109,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	}
 	// constructor for all the other random artwork.
 	private PendulumChip(String na,double[]sc)
-	{	
-		scale=sc;
-		file = na;
-		chipNumber = otherChips.size();
+	{	this(na,sc,(PColor)null);
 		otherChips.push(this);
 	}
 	static final double noscale[] = {0.5,0.5,1.0};
@@ -153,7 +160,6 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 			new PendulumChip("bits/red-cylinder",noscale,PColor.Red),
 	};
 
-	
 	static public PendulumChip mats[] = {
 			new PendulumChip("playermats/bolk_r5-1-nomask",PColor.Yellow,
 					new int[]{0,3,6},
@@ -184,6 +190,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 					new int[]{4,1,3},
 					new PB[] { PB.V3, PB.M4, PB.C5, PB.D2 },
 					0,0,2,2),
+			// TODO: special case for player mat gambal_r6-2 retrieve benefit
 			new PendulumChip("playermats/gambal_r6-2-nomask",PColor.Green,
 					new int[]{2,5,2},
 					new PB[] { PB.Pow1, PB.Retrieve, PB.C5, PB.D2},
@@ -277,48 +284,48 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		// these are in the same order as the playermats
 		new PendulumChip("stratcards/bolkchamp-1",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/bolkchamp-2",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.R1),
-		new PendulumChip("stratcards/bolkchamp-3",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.None,PB.Retrieve),
-		new PendulumChip("stratcards/bolkchamp-4",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.M7,PB.Recruit),
+		new PendulumChip("stratcards/bolkchamp-3",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.CanRetrieve,PB.Retrieve),
+		new PendulumChip("stratcards/bolkchamp-4",noscale,PendulumId.PlayerStratCard,stratBacks[0],PC.M7Recruit,PB.Recruit),
 		
 		new PendulumChip("stratcards/bolkwar-1",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/bolkwar-2",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.BolkWar_2),
 		new PendulumChip("stratcards/bolkwar-3",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.None,PB.BolkWar_3),
-		new PendulumChip("stratcards/bolkwar-4",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.Pow2,PB.Recruit),
+		new PendulumChip("stratcards/bolkwar-4",noscale,PendulumId.PlayerStratCard,stratBacks[1],PC.Pow2Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/dhkinsid-1",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/dhkinsid-2",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.R1),
-		new PendulumChip("stratcards/dhkinsid-3",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.None,PB.Retrieve),
-		new PendulumChip("stratcards/dhkinsid-4",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.V3,PB.Recruit),
+		new PendulumChip("stratcards/dhkinsid-3",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.CanRetrieve,PB.Retrieve),
+		new PendulumChip("stratcards/dhkinsid-4",noscale,PendulumId.PlayerStratCard,stratBacks[2],PC.V3Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/dhkty-1",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.C3,PB.Pres2),
 		new PendulumChip("stratcards/dhkty-2",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.C1,PB.R3),
 		new PendulumChip("stratcards/dhkty-3",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.None,PB.Dhkty_3),
-		new PendulumChip("stratcards/dhkty-4",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.V4,PB.Recruit),
+		new PendulumChip("stratcards/dhkty-4",noscale,PendulumId.PlayerStratCard,stratBacks[3],PC.V4Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/gambbriber-1",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/gambbriber-2",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.R1),
-		new PendulumChip("stratcards/gambbriber-3",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.Retrieve),
-		new PendulumChip("stratcards/gambbriber-4",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.D7,PB.Retrieve),
+		new PendulumChip("stratcards/gambbriber-3",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.CanRetrieve,PB.Retrieve),
+		new PendulumChip("stratcards/gambbriber-4",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.D7Retrieve,PB.Retrieve),
 
 		new PendulumChip("stratcards/gambinsurg-1",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/gambinsurg-2",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.R1),
 		new PendulumChip("stratcards/gambinsurg-3",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.Gambinsurg_3),
-		new PendulumChip("stratcards/gambinsurg-4",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.M4D4,PB.Recruit),
+		new PendulumChip("stratcards/gambinsurg-4",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.M4D4Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/licimp-1",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/licimp-2",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.R1),
 		new PendulumChip("stratcards/licimp-3",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Retrieve),
-		new PendulumChip("stratcards/licimp-4",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.R8,PB.Recruit),
+		new PendulumChip("stratcards/licimp-4",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.R8Recruit,PB.Recruit),
 
 
 		new PendulumChip("stratcards/licalc-1",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
 		new PendulumChip("stratcards/licalc-2",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.RetrieveStrat),
 		new PendulumChip("stratcards/licalc-3",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
-		new PendulumChip("stratcards/licalc-4",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R8,PB.Recruit),
+		new PendulumChip("stratcards/licalc-4",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R8Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/mesjust-1",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/mesjust-2",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.R1),
-		new PendulumChip("stratcards/mesjust-3",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/mesjust-3",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.CanRetrieve,PB.Retrieve),
 		new PendulumChip("stratcards/mesjust-4",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.C7,PB.Recruit),
 
 		new PendulumChip("stratcards/mespaci-1",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.C1,PB.Pres1),
@@ -340,7 +347,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	static public PendulumChip rewardcards[] = {
 			new PendulumChip("council/reward-1",noscale,PendulumId.RewardDeck,councilBack,PB.BluePB),
 			new PendulumChip("council/reward-2",noscale,PendulumId.RewardDeck,councilBack,PB.RedPB),
-			new PendulumChip("council/reward-3",noscale,PendulumId.RewardDeck,councilBack,PB.Province),
+			new PendulumChip("council/reward-3",noscale,PendulumId.RewardDeck,councilBack,PB.ProvinceReward),
 			new PendulumChip("council/reward-4",noscale,PendulumId.RewardDeck,councilBack,PC.NoMax3,PB.Max3),
 			new PendulumChip("council/reward-5",noscale,PendulumId.RewardDeck,councilBack,PC.NoMax3,PB.Max3),
 			new PendulumChip("council/reward-6",noscale,PendulumId.RewardDeck,councilBack,PB.Pow1Pres1Pop1),
@@ -350,12 +357,12 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 			new PendulumChip("council/reward-10",noscale,PendulumId.RewardDeck,councilBack,PB.D5),
 			new PendulumChip("council/reward-11",noscale,PendulumId.RewardDeck,councilBack,PB.V1),
 			new PendulumChip("council/reward-12",noscale,PendulumId.RewardDeck,councilBack,PB.V1),
-			new PendulumChip("council/reward-13",noscale,PendulumId.RewardDeck,councilBack,PB.SwapVotes),
-			new PendulumChip("council/reward-14",noscale,PendulumId.RewardDeck,councilBack,PB.Province),
-			new PendulumChip("council/reward-15",noscale,PendulumId.RewardDeck,councilBack,PC.M2,PB.Retrieve),
-			new PendulumChip("council/reward-16",noscale,PendulumId.RewardDeck,councilBack,PC.C2,PB.Retrieve),
-			new PendulumChip("council/reward-17",noscale,PendulumId.RewardDeck,councilBack,PC.M3,PB.Province),
-			new PendulumChip("council/reward-18",noscale,PendulumId.RewardDeck,councilBack,PC.M3,PB.Province),
+			new PendulumChip("council/reward-13",noscale,PendulumId.RewardDeck,councilBack,PC.Vote,PB.SwapVotes),
+			new PendulumChip("council/reward-14",noscale,PendulumId.RewardDeck,councilBack,PB.ProvinceReward),
+			new PendulumChip("council/reward-15",noscale,PendulumId.RewardDeck,councilBack,PC.M2Retrieve,PB.Retrieve),
+			new PendulumChip("council/reward-16",noscale,PendulumId.RewardDeck,councilBack,PC.C2Retrieve,PB.Retrieve),
+			new PendulumChip("council/reward-17",noscale,PendulumId.RewardDeck,councilBack,PC.M3Retrieve,PB.Province),
+			new PendulumChip("council/reward-18",noscale,PendulumId.RewardDeck,councilBack,PC.M3Retrieve,PB.Province),
 			new PendulumChip("council/reward-19",noscale,PendulumId.RewardDeck,councilBack,PB.FreeD2),
 			new PendulumChip("council/reward-20",noscale,PendulumId.RewardDeck,councilBack,PC.D2,PB.Pop1),
 			new PendulumChip("council/reward-21",noscale,PendulumId.RewardDeck,councilBack,PC.M2,PB.Pow1),
@@ -389,7 +396,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	};
 	
 	static PendulumChip legendary = new PendulumChip("bits/legendary",new double[] {0.5,0.5,0.7},PendulumId.Legendary);	
-	static PendulumChip purpleGlass = new PendulumChip("bits/purpleglass",noscale,PendulumId.PurpleGlass);
+	static PendulumChip purpleGlass = new PendulumChip("bits/purpleglass",new double[] {0.5,0.45,0.75},PendulumId.PurpleGlass);
 	static PendulumChip grayGlass = new PendulumChip("bits/grayglass",noscale,PendulumId.GrayGlass);
 	static PendulumChip vote = new PendulumChip("bits/vote",noscale,PendulumId.Vote);
 	static PendulumChip singleChips[] = { 
@@ -413,7 +420,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	
 	static PendulumChip blackTimer = new PendulumChip("bits/black-timer",noscale,PendulumId.BlackTimer,null);
 	static PendulumChip greenTimer = new PendulumChip("bits/green-timer",noscale,PendulumId.GreenTimer,null);
-	static PendulumChip purpleTimer = new PendulumChip("bits/purple-timer",noscale,PendulumId.PurpleTimer,null);
+	static PendulumChip purpleTimer = new PendulumChip("bits/purple-timer",new double[] {0.5,0.55,1},PendulumId.PurpleTimer,null);
 	static PendulumChip hourglasses[] = {
 		blackTimer,greenTimer,purpleTimer	
 	};
@@ -516,6 +523,19 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		{
 		super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
 		}
+	}
+	public static PendulumChip find(String nextElement) {
+		if(nextElement.charAt(0)=='c')
+		{
+			int idx = G.IntToken(nextElement.substring(1));
+			PendulumChip ch = (PendulumChip)otherChips.elementAt(idx);
+			G.Assert(ch!=null,"null!");
+			return ch;
+		}
+		throw G.Error("Not a chip id");
+	}
+	public String idString() {
+		return idString;
 	}
   
 

@@ -64,6 +64,12 @@ class Timer implements PendulumConstants
 		color = c;
 		icon = chip;
 	}
+	public Timer(Timer from)
+	{
+		this(from.icon,from.color,from.timeStart);
+		timeToRun = from.timeToRun;
+		running = from.running;
+	}
 	public String toString()
 	{
 		return "<timer "+color+">";
@@ -84,7 +90,9 @@ class Timer implements PendulumConstants
 	public void useTime(long n)
 	{	if(running)
 		{
+		//long ttr = timeToRun;
 		timeToRun -=n;
+		//if(ttr>0 && timeToRun<0) { Plog.log.addLog("timer negative"); }
 		}
 	}
 }
@@ -94,7 +102,7 @@ class PendulumBoard
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 	PendulumVariation variation = PendulumVariation.pendulum;
-	private PendulumState board_state = PendulumState.Puzzle;	
+	PendulumState board_state = PendulumState.Puzzle;	
 	private PendulumState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public PendulumState getState() { return(board_state); }
@@ -108,6 +116,10 @@ class PendulumBoard
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
+	}
+	public int scoreForPlayer(int n)
+	{
+		return pbs[n].winnerScore();
 	}
 	private PlayerBoard initial_pbs[] = 
 		{
@@ -123,10 +135,13 @@ class PendulumBoard
 	public Timer purpleTimer = new Timer(PendulumChip.purpleTimer,TColor.Purple,3*60*1000);
 	public Timer greenTimer = new Timer(PendulumChip.greenTimer,TColor.Green,2*60*1000);
 	public boolean timersRunning = false;
-	public long lastTimerTime = 0;
-	public int councilPhase = 0;
+	public int privilegeResolutions = 0;
+	private int flipCount = 0;
+	private int flipsSinceLastPurple = 0;
+	public int purpleTimerPhase = 0;
 	public PendulumCell councilCards[] = newcell(PendulumId.RewardCard,8);
 	public PendulumCell councilRewardsDeck = councilCards[0];
+	public PendulumCell councilRewardsUsed = newcell(PendulumId.UsedRewardCard);
 	public PendulumCell timerTrack[] = newcell(PendulumId.TimerTrack,11);
 	public PendulumCell trash = newcell(PendulumId.Trash);
 	public PendulumCell provinceCards = newcell(PendulumId.ProvinceCardStack);
@@ -135,7 +150,12 @@ class PendulumBoard
 	public PendulumCell greenTimers[] = newcell(PendulumId.GreenTimer,2);
 	public PendulumCell purpleTimers[] = newcell(PendulumId.PurpleTimer,4);
 	public PendulumCell blackTimers[] = newcell(PendulumId.BlackTimer,2);
-	
+	public PendulumCell restButton = newcell(PendulumId.Rest);
+	private PlayerBoard neutralPlayer = null;
+	public PColor neutralColor()
+	{
+		return neutralPlayer==null ? null : neutralPlayer.color;
+	}
 	public boolean purpleHourglassTop()
 	{
 		return (purpleTimers[0].topChip()==PendulumChip.purpleTimer)
@@ -157,10 +177,10 @@ class PendulumBoard
 	public PendulumCell greenMeepleB[] = newcell(PendulumId.GreenMeepleB,3);
 	public PendulumCell greenActionA[] = newcell(PendulumId.GreenActionA,
 				new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
-				new BB[] {BB.RedPB,BB.Culture2,BB.Military1Vote2});
+				new BB[] {BB.Military1Vote2,BB.Culture2,BB.RedPB});
 	public PendulumCell greenActionB[] = newcell(PendulumId.GreenActionB,
 				new BC[] {BC.D2Board,BC.D2Board,BC.D2Board},
-				new BB[] {BB.RedPB,BB.Culture2,BB.Military1Vote2});
+				new BB[] {BB.Military1Vote2,BB.Culture2,BB.RedPB});
 	
 	public PendulumCell blackMeepleA[] = newcell(PendulumId.BlackMeepleA,4);
 	public PendulumCell blackMeepleB[] = newcell(PendulumId.BlackMeepleB,4);
@@ -194,21 +214,22 @@ class PendulumBoard
 	}
 	
 	// get the player's position on the privilege track
-	public int getPlayerPrivilege(PendulumChip from)
-	{	PColor color = from.color;
-		for(int i=0;i<players_in_game; i++)
+	public int getPlayerPrivilege(PColor color)
+	{	
+		for(int i=0,lim=players_in_game==2?3:players_in_game;i<lim; i++)
 		{
 			if(privilege[i].topChip().color==color) { return i; }
 		}
-		throw G.Error("Can't find %s on the privilege track",from);
+		throw G.Error("Can't find %s on the privilege track",color);
 	}
-	public int getPlayerPrivilege(int who) { return getPlayerPrivilege(pbs[who].hexagon); }
+	public int getPlayerPrivilege(int who) { return getPlayerPrivilege(pbs[who].color); }
 	
 	public PlayerBoard getPlayerBoard(PendulumChip ch)
 	{
 		PColor color = ch.color;
 		for(PlayerBoard pb : pbs) { if(pb.meeple.color==color) { return pb; }}
-		throw G.Error("no active player with color %s",color);
+		// edit mode, picking up a neutral piece
+		return null;
 	}
 	public PlayerBoard getPlayerBoard(int n) { return pbs[n]; }
 	public PlayerBoard getPlayerBoard(char n) 
@@ -332,13 +353,19 @@ class PendulumBoard
  		setState(PendulumState.Puzzle);
 		variation = PendulumVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
-		councilPhase = 0;
+		purpleTimerPhase = 0;
+		privilegeResolutions = 0;
+		flipCount = 0;
+		flipsSinceLastPurple = 0;
 		robotState.clear();
 		gametype = gtype;
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case pendulum:
+		case pendulum_notimers:
+		case pendulum_advanced:
+		case pendulum_advanced_notimers:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			// or initBoard(variation.firstInCol,variation.ZinCol,null);
@@ -347,7 +374,15 @@ class PendulumBoard
 		}
 
 		for(PendulumCell c = allCells; c!=null; c=c.next) { c.reInit(); }
- 		
+		
+		// randomize the starting mats
+	    int matmap[] = AR.intArray(initial_pbs.length);
+	    {
+	    Random rr = new Random(randomKey+345235);
+	    rr.shuffle(matmap);
+	    for(int i=0;i<matmap.length;i++) { initial_pbs[i].setMat(matmap[i]); }
+	    }
+		
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    resetState = null;
 	    lastDroppedObject = null;
@@ -358,14 +393,34 @@ class PendulumBoard
 	    	pbs[i] = initial_pbs[map[i]];
 	    	pbs[i].doInit(variation.advanced,i);
 	    }
+	    if(players_in_game==2)
+	    {	// create a neutral player and give them 3 votes
+	    	for(int i=0;i<initial_pbs.length;i++)
+	    	{	// unused color
+	    	if(initial_pbs[i]!=pbs[0] && initial_pbs[i]!=pbs[1])
+	    	{
+	    	neutralPlayer = initial_pbs[i];
+	    	neutralPlayer.doInit(variation.advanced,2);
+	    	neutralPlayer.collectBenefit(null,PB.V3Exactly,false,replayMode.Replay);
+	    	purpleMeepleA[1].addChip(neutralPlayer.meeple);
+	    	greenMeepleA[1].addChip(neutralPlayer.meeple);
+	    	purpleMeepleB[0].addChip(neutralPlayer.meeple);
+	    	greenMeepleB[0].addChip(neutralPlayer.grande);
+	    	privilege[2].addChip(neutralPlayer.hexagon);
+	    	break;
+	    	}}
+	    }
+	    else { neutralPlayer = null; }
 	    
 	    // prepare the council deck
+	    {
 	    Random r = new Random(randomKey);
 	    for(int lim=PendulumChip.rewardcards.length-2; lim>=0; lim--)
 	    {
 	    	councilRewardsDeck.addChip(PendulumChip.rewardcards[lim]);
 	    }
 	    councilRewardsDeck.shuffle(r);
+	    }
 	    for(int i=0;i<10;i++) { councilRewardsDeck.removeTop(); }	// discard 10
 	    
 	    for(int lim= PendulumChip.finalrewardcards.length-2; lim>=0; lim--) 
@@ -377,6 +432,8 @@ class PendulumBoard
 	    {
 	    	provinceCards.addChip(PendulumChip.provinceCards[lim]);
 	    }
+	    {
+	    Random r = new Random(randomKey+346346);
 	    provinceCards.shuffle(r);
 	    for(PendulumCell c : provinces) {c.addChip(provinceCards.removeTop()); }
 	    
@@ -386,8 +443,23 @@ class PendulumBoard
 	    	achievementCards.addChip(PendulumChip.achievementcards[lim]);
 	    }
 	    achievementCards.shuffle(r);
+	    }
 	    currentAchievement.addChip(achievementCards.removeTop());
-	    if(players_in_game >=4) { currentAchievement.addChip(PendulumChip.legendary); }
+	    if(players_in_game >=4) 
+	    	{ currentAchievement.addChip(PendulumChip.legendary); 
+	    	  greenMeepleA[2].rackLocation = PendulumId.GreenMeepleA;
+	    	  greenMeepleB[2].rackLocation = PendulumId.GreenMeepleB;
+	    	  purpleMeepleA[2].rackLocation = PendulumId.PurpleMeepleA;
+	    	  purpleMeepleB[2].rackLocation = PendulumId.PurpleMeepleB;
+	    	}
+	    else
+	    {	// different board for 2-3 player game
+	    	  greenMeepleA[2].rackLocation = PendulumId.Unused;
+	    	  greenMeepleB[2].rackLocation = PendulumId.Unused;
+	    	  purpleMeepleA[2].rackLocation = PendulumId.Unused;
+	    	  purpleMeepleB[2].rackLocation = PendulumId.Unused;
+    	
+	    }
 	    
         animationStack.clear();
         moveNumber = 1;
@@ -396,35 +468,58 @@ class PendulumBoard
         blackTimers[0].addChip(PendulumChip.blackTimer);
         purpleTimers[0].addChip(PendulumChip.purpleTimer);
         timersRunning = false;
-        lastTimerTime = 0;
         
         // mark the future purple timer slots
-        for(int i=1;i<=3;i++) { purpleTimers[i].addChip(PendulumChip.purpleGlass); }
+        placePurpleTimers(replayMode.Replay);
+        {
+        Random r = new Random(randomKey+2352);
         animationStack.shuffle(r);
         // randomize the initial privilege
         int par[] = AR.intArray(players_in_game);
         r.shuffle(par);
         for(int i=0;i<players_in_game; i++) 
         	{ privilege[i].addChip(pbs[par[i]].hexagon); 
-        	  achievement[i].addChip(pbs[par[i]].cylinder);
+        	  achievement[i].addChip(pbs[i].cylinder);
         	}
-	    dealCouncilCards();
-	    
-        
-        // note that firstPlayer is NOT initialized here
-    }
-    private void dealCouncilCards()
-    {	
+        }
+	    dealCouncilCards(replayMode.Replay);
+	}
+    private void dealCouncilCards(replayMode replay)
+    {
     	for(int i=1;i<=5;i++)
     	{	int idx = i>3 ? i+2 : i;
+    		if(councilCards[idx].topChip()!=null)
+    		{
+    			councilRewardsUsed.addChip(councilCards[idx].removeTop());
+    			if(replay.animate)
+    			{
+    				animate(councilCards[idx],councilRewardsUsed);
+    			}
+    			
+    		}
     		councilCards[idx].reInit();
     		councilCards[idx].addChip(councilRewardsDeck.removeTop());
+    		if(replay.animate) { 
+    			animate(councilRewardsDeck,councilCards[idx]);
+    		}
     	}
     	councilCards[4].addChip(PendulumChip.defcard);
     	councilCards[5].addChip(PendulumChip.flipcard);
     	
     }
-    
+    public void placePurpleTimers(replayMode replay)
+    {	purpleTimerPhase = 0;
+		trash.reInit();	// don't depend on the contents of the trash, so it can be
+						// used ad-hoc as a trash
+    	for(PendulumCell c : purpleTimers)
+    	{
+    		if(c.isEmpty())
+    		{
+    			c.addChip(PendulumChip.purpleGlass);
+    			if(replay.animate) { animate(trash,c); }
+    		}
+    	}
+    }
     /** create a copy of this board */
     public PendulumBoard cloneBoard() 
 	{ PendulumBoard dup = new PendulumBoard(gametype,players_in_game,randomKey,getColorMap(),revision); 
@@ -438,7 +533,8 @@ class PendulumBoard
      * the board that is being displayed.
      *  */
     public void copyFrom(PendulumBoard from_b)
-    {
+    {	
+    	
         super.copyFrom(from_b);
         
         for(int i=0;i<players_in_game;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
@@ -451,18 +547,19 @@ class PendulumBoard
         greenTimer = from_b.greenTimer;
         purpleTimer = from_b.purpleTimer;
         timersRunning = from_b.timersRunning;
-        lastTimerTime = from_b.lastTimerTime;
         
         achievementCards.copyFrom(from_b.achievementCards);
         currentAchievement.copyFrom(from_b.currentAchievement);
         councilRewardsDeck.copyFrom(from_b.councilRewardsDeck);
         copyFrom(councilCards,from_b.councilCards);
+        copyFrom(councilRewardsUsed,from_b.councilRewardsUsed);
         copyFrom(timerTrack,from_b.timerTrack);
         copyFrom(provinces,from_b.provinces);
         copyFrom(greenTimers,from_b.greenTimers);
         copyFrom(blackTimers,from_b.blackTimers);
         copyFrom(purpleTimers,from_b.purpleTimers);
         copyFrom(trash,from_b.trash);
+        restButton.copyFrom(from_b.restButton);
         copyFrom(privilege,from_b.privilege);
         copyFrom(achievement,from_b.achievement);
         
@@ -483,11 +580,17 @@ class PendulumBoard
        
  
         resetState = from_b.resetState;
-        councilPhase = from_b.councilPhase;
+        purpleTimerPhase = from_b.purpleTimerPhase;
+        privilegeResolutions = from_b.privilegeResolutions;
+        flipCount = from_b.flipCount;
+        flipsSinceLastPurple = from_b.flipsSinceLastPurple;
         sameboard(from_b); 
     }
 
-    
+    public int round()
+    {
+    	return 4-councilRewardsDeck.height()/5;
+    }
 
     public void sameboard(BoardProtocol f) { sameboard((PendulumBoard)f); }
 
@@ -524,11 +627,17 @@ class PendulumBoard
 
         G.Assert(councilRewardsDeck.sameContents(from_b.councilRewardsDeck),"council rewards mismatch");
         G.Assert(sameContents(councilCards,from_b.councilCards),"councilCards mismatch");
+        G.Assert(councilRewardsUsed.sameContents(from_b.councilRewardsUsed),"councilRewardsUsed mismatch");
         G.Assert(sameContents(timerTrack,from_b.timerTrack),"timerTrack mismatch");
         G.Assert(sameContents(privilege,from_b.privilege),"privilege mismatch");
         G.Assert(sameContents(achievement,from_b.achievement),"achievement mismatch");
-        G.Assert(councilPhase==from_b.councilPhase,"councilPhase mismatch");
-        // this is a good overall check that all the copy/check/digest methods
+        G.Assert(purpleTimerPhase==from_b.purpleTimerPhase,"purpleTimerPhase mismatch");
+        G.Assert(privilegeResolutions==from_b.privilegeResolutions,"privilegeResolutions mismatch");
+        G.Assert(flipCount==from_b.flipCount,"flipCount mismatch");
+        G.Assert(flipsSinceLastPurple==from_b.flipsSinceLastPurple,"flipsSinceLastPurple mismatch");
+        G.Assert(restButton.sameContents(from_b.restButton),"rest button mismatch");
+        G.Assert(trash.sameContents(from_b.trash),"trash mismatch");
+       // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
@@ -578,6 +687,7 @@ class PendulumBoard
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,councilRewardsDeck);
 		v ^= Digest(r,councilCards);
+		v ^= Digest(r,councilRewardsUsed);
 		v ^= Digest(r,timerTrack);
 		v ^= Digest(r,provinceCards);
 		v ^= Digest(r,achievementCards);
@@ -585,6 +695,7 @@ class PendulumBoard
 		v ^= Digest(r,greenTimers);
 		v ^= Digest(r,purpleTimers);
 		v ^= Digest(r,trash);
+		v ^= Digest(r,restButton);
 		v ^= Digest(r,privilege);
 		v ^= Digest(r,achievement);
 		v ^= Digest(r,blackTimers);
@@ -606,7 +717,10 @@ class PendulumBoard
 	    v ^= Digest(r,purpleMeepleA);
 	    v ^= Digest(r,purpleMeepleB);
 
-	    v ^= Digest(r,councilPhase);
+	    v ^= Digest(r,purpleTimerPhase);
+	    v ^= Digest(r,privilegeResolutions);
+	    v ^= Digest(r,flipCount);
+	    v ^= Digest(r,flipsSinceLastPurple);
 		v ^= Digest(r,whoseTurn);
         return (v);
     }
@@ -616,13 +730,14 @@ class PendulumBoard
     //
     // change whose turn it is, increment the current move number
     //
-    public void setNextPlayer(replayMode replay)
+    public void setNextPlayer(replayMode replay,boolean reverse)
     {
         switch (board_state)
         {
         default:
         	throw G.Error("Move not complete, can't change the current player in state ",board_state);
         case Puzzle:
+        
             break;
         case Play:
         case CouncilPlay:
@@ -630,17 +745,31 @@ class PendulumBoard
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
         case Confirm:
+        case CouncilRewards:
+        case CouncilTrim:
+        case PendingPlay:
         case Resign:
             moveNumber++; //the move is complete in these states
-            PlayerBoard pb = pbs[whoseTurn];
-            int po = getPlayerPrivilege(pb.hexagon);
-            int pn = (po+1)%players_in_game;
-            PlayerBoard next = getPlayerBoard(privilege[pn].topChip());
-            setWhoseTurn(next.boardIndex);
+            setWhoseTurn(nextPlayer(whoseTurn,reverse));
             return;
         }
     }
-
+    public int nextPlayer(int n,boolean reverse)
+    {
+        PlayerBoard pb = pbs[n];
+        int po = getPlayerPrivilege(pb.color);
+        int privilegeNPlayers = (players_in_game==2?3:players_in_game);
+        int inc = (reverse ? -1 : 1);
+        int pn = (po+privilegeNPlayers+inc)%privilegeNPlayers;
+        PendulumChip ch = privilege[pn].topChip();
+        if(neutralPlayer!=null && ch == neutralPlayer.hexagon)
+        {
+        	pn = (pn + privilegeNPlayers +inc ) % privilegeNPlayers;
+        	ch = privilege[pn].topChip();
+        }
+        PlayerBoard next = getPlayerBoard(ch);
+        return next.boardIndex;
+    }
     /** this is used to determine if the "Done" button in the UI is live
      *
      * @return
@@ -673,7 +802,7 @@ class PendulumBoard
     // to draw when tracking the mouse.
     // caution! this method is called in the mouse event process
     public int movingObjectIndex()
-    { 	if(!simultaneousTurnsAllowed())
+    { 	
     	{
     	PlayerBoard pb = pbs[whoseTurn];
     	PendulumChip ch = pb.pickedObject;
@@ -694,6 +823,8 @@ class PendulumBoard
         {
         default:
         	throw G.Error("Not expecting source " + source);
+        case Unused:
+        	return null;
         case AchievementCard:
         	return currentAchievement;
         case AchievementCardStack:
@@ -711,7 +842,7 @@ class PendulumBoard
         case PlayerCulture:
         case PlayerCash:
         case PlayerVotes:
-        case PlayerMilitaryVP:
+        case PlayerPowerVP:
         case PlayerPrestigeVP:
         case PlayerPopularityVP:
         case PlayerGrandes:       	
@@ -754,11 +885,14 @@ class PendulumBoard
         	return purpleActionB[row];
         case Trash:
         	return trash;
-        	
+        case Rest:
+        	return restButton;
         case TimerTrack:
         	return timerTrack[row];
         case RewardCard:
         	return councilCards[row];
+        case UsedRewardCard:
+        	return councilRewardsUsed;
         case RewardDeck:
         	return councilRewardsDeck;
         case GreenTimer:
@@ -788,21 +922,29 @@ class PendulumBoard
     // in the actual game, picks are optional; allowed but redundant.
     //
 
-    private void setNextStateAfterDrop(PlayerBoard pb,replayMode replay)
-    {
+    private void setNextStateAfterDrop(PlayerBoard pb,PendulumCell c,replayMode replay)
+    {	resetState = board_state;
         switch (board_state)
         {
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
-        case Confirm:
-        	setNextStateAfterDone(replay);
-         	break;
+        //case Confirm:
+        //	setNextStateAfterDone(replay);
+        // 	break;
         case CouncilPlay:
         case Play:
-        	pb.setNextStateAfterDrop(replay);
+        	pb.setNextStateAfterDrop(c,replay);
         	break;
+        case CouncilTrim:
+        	if(!pb.needsCouncilTrim())
+        	{
+        		setState(PendulumState.Confirm);
+        	}
+        	break;
+        case CouncilRewards:
         case PlayMeeple:
         case PlayGrande:
+        	pb.setNextStateAfterDrop(c,replay);
         	resetState = board_state;
 			setState(PendulumState.Confirm);
 			break;
@@ -823,8 +965,11 @@ class PendulumBoard
     	timer.flip();
     	if(to.topChip()!=null) 
     		{ trash.addChip(to.removeTop()); 
+    		  if(replay.animate)
+    		  {
     		  animationStack.push(to);
     		  animationStack.push(trash); 
+    		  }
     		}
     	to.addChip(from.removeTop());
     }
@@ -836,44 +981,89 @@ class PendulumBoard
     	timersRunning=true;
     }
     private void flipGreenTimer(replayMode replay)
-    {
+    {	unRest();
+		flipsSinceLastPurple++;
     	moveTimer(greenTimer,greenTimers[0],greenTimers[1],replay);
     }
+    private void unRest()
+    {	flipCount++;
+    	for(PlayerBoard pb : pbs) { pb.unRest(); }
+    }
     private void flipBlackTimer(replayMode replay)
-    {
+    {	
+    	unRest();
+    	flipsSinceLastPurple++;
     	moveTimer(blackTimer,blackTimers[0],blackTimers[1],replay);
     }
     private void flipPurpleTimer(replayMode replay)
-    {	switch(councilPhase)
+    {	// first locate the timer!
+    	unRest();
+    	flipsSinceLastPurple = 0;
+    	for(int i=0;i<purpleTimers.length;i++)
     	{
-    	case 0:
-    		moveTimer(purpleTimer,purpleTimers[0],purpleTimers[2],replay);
-    		break;
-    	case 1:
-    		moveTimer(purpleTimer,purpleTimers[2],purpleTimers[1],replay);
-    		break;
-    	case 2:
-    		moveTimer(purpleTimer,purpleTimers[1],purpleTimers[3],replay);
-    		break;
-    	case 3:
-    		moveTimer(purpleTimer,purpleTimers[3],purpleTimers[0],replay);
-    		setState(PendulumState.CouncilPlay);
-    		break;
-    	default: G.Error("no phase 5!");
-    	}
-    	councilPhase++;
-    	
+    		PendulumCell from = purpleTimers[i];
+    		if(from.topChip()==PendulumChip.purpleTimer)
+    		{
+    			// next locate a destination
+    			int destIndex = i<2 ? 2 : 0;
+    			for(int d=0;d<2;d++)
+    			{
+    				PendulumCell to = purpleTimers[d+destIndex];
+    				if(!to.isEmpty())
+    				{
+    					// found one
+    					moveTimer(purpleTimer,from,to,replay);
+    					purpleTimerPhase++;
+    					if(purpleTimerPhase==3)
+    					{
+    						setState(PendulumState.CouncilPlay);
+    					}
+    					return;
+    				}
+    			}
+    		}
+    	}   	
     }
-    public void doTimers()
-    {	long now = G.Date();
+    public void doTimers(long dif)
+    {	
     	if(timersRunning) 
     	{
-    		long dif = now-lastTimerTime;
     		greenTimer.useTime(dif);
     		blackTimer.useTime(dif);
     		purpleTimer.useTime(dif);
     	}
-    	lastTimerTime = now;
+    }
+    private int gamePhase()
+    {	
+    	return 4-(councilRewardsDeck.height()/5);
+    }
+    private void advanceCouncilTrim(replayMode replay)
+    {	
+    	PlayerBoard pb = pbs[whoseTurn];
+    	while(board_state==PendulumState.CouncilTrim && !pb.needsCouncilTrim())
+    	{	setNextPlayer(replay,true);
+    		if(whoseTurn==privilegeLastPlayer())
+    		{
+    				setState(PendulumState.PendingPlay);
+    				placePurpleTimers(replay);
+    	          	trash.addChip(currentAchievement.chipAtIndex(0));
+    	          	currentAchievement.reInit();
+    	           	currentAchievement.addChip(achievementCards.removeTop());
+    	     	    currentAchievement.addChip(PendulumChip.legendary); 
+    	     	    if(replay.animate) {
+    	     	    	animate(currentAchievement,trash);
+    	     	    	animate(achievementCards,currentAchievement);
+    	     	    	animate(achievementCards,currentAchievement);
+    	     	    }
+    	        	dealCouncilCards(replay);
+
+    		}
+    	}
+    	G.Assert(councilRewardsDeck.height()%5==0,"should be a multiple");
+    }
+    private void doGameOver()
+    {
+    	setState(PendulumState.Gameover);
     }
     private void setNextStateAfterDone(replayMode replay)
     {	
@@ -887,8 +1077,7 @@ class PendulumBoard
     		{
     		case PlayMeeple:
     			if(getPlayerPrivilege(whoseTurn)==0) 
-    				{ setState(PendulumState.Play); 
-    				  flipAllTimers(replay);
+    				{ setState(PendulumState.PendingPlay); 
     				}
     			else { setState(resetState); }
     			break;
@@ -896,7 +1085,32 @@ class PendulumBoard
     			if(getPlayerPrivilege(whoseTurn)==0) { setState(PendulumState.PlayMeeple); }
     			else { setState(resetState); }
     			break;
+    		case CouncilRewards:
+    			{
+    			PlayerBoard pb = pbs[whoseTurn];
+     			if(pb.uiState==UIState.Normal)	// some enter a collect province phase
+    			{
+    			if(whoseTurn==privilegeFirstPlayer())	// back to the start?
+    				{
+    				if(gamePhase()==4) { doGameOver(); }
+    				else
+    				{
+    				setState(resetState = PendulumState.CouncilTrim);
+    				setNextPlayer(replay,true);	// step backwards
+    				advanceCouncilTrim(replay);
+    				}}
+    				else 
+    				{ setState(resetState = PendulumState.CouncilRewards); 
+    				}
+    			}}
+    			break;
+    		case CouncilTrim:
+    			setNextPlayer(replay,true);	// reverse the advance made by doDone
+    			setState(resetState);		// confirm->counciltrim
+    			advanceCouncilTrim(replay);
+    			break;
     		default:
+    			p1("confirm-"+resetState);
     			G.Error("Not expecting confirm from %s",resetState);
     		}
     		break;
@@ -913,6 +1127,33 @@ class PendulumBoard
     }
     private void doDone(replayMode replay)
     {
+    	switch(resetState)
+    	{	
+    	case CouncilRewards:
+    		PlayerBoard pb = pbs[whoseTurn];
+    		switch(pb.uiState)
+    		{
+    		default: throw G.Error("Not expecting UI state %s",pb.uiState);
+    		case Normal:
+    			pb.payAndCollectCouncil(replay);
+     			if(pb.uiState!=UIState.Normal)
+     				{ setState(resetState);
+     				  return; 
+     				}
+    			break;
+    		case PromoteMeeple:
+    			pb.doMeeplePromotion(replay);
+    			pb.setUIState(UIState.Normal);
+    			break;
+    		case ProvinceReward:
+    			pb.setUIState(UIState.Normal);
+    			break;
+       		}
+    		 
+    		break;
+    	default: break;
+    	}
+
         acceptPlacement();
 
         if (board_state==PendulumState.Resign)
@@ -925,68 +1166,303 @@ class PendulumBoard
         		{ win[whoseTurn]=true;
         		  setState(PendulumState.Gameover); 
         		}
-        	else {setNextPlayer(replay);
+        	else {setNextPlayer(replay,false);
         		setNextStateAfterDone(replay);
         	}
         }
     }
+	public boolean allResting()
+	{
+		for(PlayerBoard pb : pbs) { if(!pb.isResting()) { return false; }}
+		return true;
+	}
+	public boolean allReady()
+	{
+		for(PlayerBoard pb : pbs) { if(!pb.isReady()) { return false; }}
+		return true;
+	}
+	public void startNormalPlay(replayMode replay)
+	{	restButton.reInit();
+		setState(resetState=PendulumState.Play);
+		restButton.reInit();
+		for(PlayerBoard pb : pbs)
+		{
+			pb.setUIState(UIState.Normal);
+		}
+		whoseTurn = privilegeFirstPlayer();
+	}
+	public void startCouncil(replayMode replay)
+	{	setState(resetState=PendulumState.CouncilRewards);
+		restButton.reInit();
+		for(PlayerBoard pb : pbs)
+		{
+			pb.setUIState(UIState.Normal);
+		}
+		reorderPrivilege(replay);	// reorder the privilege and clear votes
+		whoseTurn = privilegeFirstPlayer();
+	}
+	
+	// get the first player in privilege order
+	private int privilegeFirstPlayer()
+	{	PendulumChip ch = privilege[0].topChip();
+		if(neutralPlayer!=null && neutralPlayer.hexagon==ch) { ch = privilege[1].topChip(); }
+		return getPlayerBoard(ch).boardIndex;
+	}
+	private int privilegeLastPlayer()
+	{	int first = privilegeFirstPlayer();
+		int v = nextPlayer(first,true);
+		return v;
+	}
+	private void reorderPrivilege(replayMode replay)
+	{
+		PlayerBoard newpb[] = new PlayerBoard[players_in_game==2?3:players_in_game];
+		PendulumCell original[] = new PendulumCell[privilege.length];
+		AR.copy(original,privilege);
+		for(int i=0;i<players_in_game;i++)
+		{	// don't use AR.copy because lengths may not match
+			newpb[i]=pbs[i];
+		}
+		if(players_in_game==2) 
+		{ // neutral player has 3 votes
+		  newpb[2] = neutralPlayer; 
+		}
+		Sort.sort(newpb);
+		for(int i=0;i<newpb.length;i++)
+		{
+			privilege[i].reInit();
+			privilege[i].addChip(newpb[i].hexagon);
+		}
+		for(int i=0;i<players_in_game; i++)
+			{ achievement[i].reInit();
+			  achievement[i].addChip(pbs[i].cylinder);
+			}
+		
+		if(replay.animate)
+		{
+			for(int i=0;i<newpb.length;i++)
+			{	PlayerBoard pb = newpb[i];
+				if(original[i].topChip()!=pb.hexagon)
+				{
+					for(int j=0;j<original.length;j++)
+					{
+						if(original[j].topChip()==pb.hexagon)
+						{
+							animate(original[j],privilege[i]);
+						}
+					}
+				}
+			}
+		}
+		for(PlayerBoard pb : pbs) { pb.clearVotes(replay); }
+	}
+	public void advanceFlipTimer(replayMode replay)
+	{	for(PlayerBoard pb : pbs) { pb.setUIState(UIState.Normal); }
+		setState(PendulumState.Play);
+		restButton.reInit();
+		moveNumber++;
+		for(int i=0,limit=timerTrack.length;i<limit;i++)
+		{	PendulumCell from = timerTrack[i];
+			if(!from.isEmpty())
+			{	PendulumCell to = timerTrack[(i+1)%limit];
+				if(replay.animate){ animate(from,to); }
+				to.addChip(from.removeTop());
+				switch(i+1)
+				{
+				case 0:	break;
+				case 1:
+				case 2: 
+				case 4:
+				case 6:
+				case 8:
+				case 9:
+					flipBlackTimer(replay); 
+					break;
+				case 3:
+				case 7:
+					flipGreenTimer(replay);
+					break;
+				case 10:
+					flipGreenTimer(replay);
+					setState(PendulumState.CouncilPlay);
+					//$FALL-THROUGH$
+				case 5:
+					flipBlackTimer(replay); 
+					flipPurpleTimer(replay);
+					break;
+				case 11:
+					startCouncil(replay);
+					break;
+				default: G.Error("Not expecting %s",i);
+				}
+			break;
+			}
+		}
+	}
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	PendulumMovespec m = (PendulumMovespec)mm;
+    	m.player = m.forPlayer;
         if(replay.animate) { animationStack.clear(); }
-
-        //G.print("E "+m+" for "+whoseTurn+" "+state);
+        try {
+        //G.print("E "+m+" for "+whoseTurn+" "+ board_state);
         switch (m.op)
         {
+        case MOVE_WAIT:
+        	// this is used by the robot to advance the timers in its search
+        	{
+        	int amount = m.from_row;
+        	purpleTimer.useTime(amount);
+        	greenTimer.useTime(amount);
+        	blackTimer.useTime(amount);
+        	}
+        	break;
+        case MOVE_LEGENDARY_ACHIEVEMENT:
+        	{
+        	PlayerBoard pb = pbs[m.forPlayer];
+        	pb.legendary.addChip(currentAchievement.removeChipAtIndex(1));
+        	if(replay.animate)
+        		{
+        		animate(currentAchievement,pb.legendary);
+        		}	
+        	pb.setUIState(UIState.Normal);
+        	}
+        	break;
+        case MOVE_STANDARD_ACHIEVEMENT:
+        	{
+        	PlayerBoard pb = pbs[m.forPlayer];
+        	PendulumChip chip = currentAchievement.chipAtIndex(0);
+        	pb.collectBenefit(currentAchievement,chip.pb[0],false,replay);
+        	pb.setUIState(UIState.Normal);
+        	}
+        	break;
         case MOVE_DONE:
 
          	doDone(replay);
 
             break;
-
+        case MOVE_STARTPLAY:
+        	// additional startplay may arrive late, just ignore them
+        	if(board_state==PendulumState.StartPlay)
+        	{
+        	flipAllTimers(replay);
+         	startNormalPlay(replay);
+        	}
+        	break;
+        case MOVE_AUTOFLIP:
+        	// additional flip may arrive late, just ignore them
+        	if(board_state==PendulumState.Flip)
+        	{
+        	advanceFlipTimer(replay);
+        	}
+        	break;
+        case MOVE_STARTCOUNCIL:
+        	// additional start council may arrive late, just ignore them
+        	if(board_state==PendulumState.StartCouncil)
+        	{
+        	startCouncil(replay);
+        	}
+        	break;
+        case MOVE_READY:
+        	{
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        	// additional "ready" can arrive late, just ignore them
+        	if(resetState==PendulumState.PendingPlay)
+        	{
+        	restButton.addChip(pb.cylinder);
+        	pb.setUIState(UIState.Ready,1);
+        	if(allReady())
+        		{
+        		for(PlayerBoard p : pbs) { p.setUIState(UIState.Normal); }
+        		setState(PendulumState.StartPlay);
+        		}
+        	else {
+        		setWhoseTurn(nextPlayer(whoseTurn,false));
+        		}
+        	}}
+        	break;
+        case MOVE_REST:
+        	if(simultaneousTurnsAllowed())
+        	{
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        	restButton.addChip(pb.cylinder);
+        	pb.setUIState(UIState.Rest,1);
+        	if(allResting())
+        		{
+        		if(!variation.timers) { setState(PendulumState.Flip); }
+        		else { setState(PendulumState.StartCouncil);} 
+        		}
+        		else 
+        		{
+        			setWhoseTurn(nextPlayer(whoseTurn,false));
+        		}
+        	}
+        	break;
+        case MOVE_SWAPVOTES:
+        	{
+        		PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        		PendulumCell from = getCell(m.source,m.from_col,m.from_row);
+        		PendulumCell to = getCell(m.dest,m.to_col,m.to_row);
+        		pb.changeVP(from,-1,replay);
+        		pb.changeVP(to,1,replay);
+        		pb.setUIState(UIState.Normal);
+        	}
+        	break;
         case MOVE_FROM_TO:
         	{
         	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
-        	PlayerBoard pb = getPlayerBoard(m.player);
-        	if(pb.isDest(c)) { pb.unDropObject(); }
-        	else { pb.pickObject(c,m.from_index); }
-        	}
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        	G.Assert(pb.uiState!=UIState.Rest,"shouldn't be resting");
+        	if(!pb.pickObject(c,m.chip))
+        		{	// the pick can fail in case of simultaneous activity
+        		break;
+        		}
+         	}
         	{
-        	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
-        	PlayerBoard pb = getPlayerBoard(m.player);
-        	if(pb.isSource(c)) { pb.unPickObject(); }
-        	else 
-        	{ pb.doDrop(c,board_state,replay);
-    		  setNextStateAfterDrop(pb,replay);
-        	}}
+        	PendulumCell c = getCell(m.dest,m.to_col,m.to_row);
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        	if(pb.doDrop(c,board_state,true,replay))
+        		{
+        		c.lastMoved = flipCount;
+            	setNextStateAfterDrop(pb,c,replay);
+        		}
+        	else { pb.unPickObject(); }
+        	}
         	break;
+        case MOVE_SELECT:
+	    	{
+	    	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
+	    	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+	    	PendulumCell sel = pb.selectCell(c,replay);
+	    	setState(sel!=null ? PendulumState.Confirm : resetState);
+	    	}
+	    	break;
         case MOVE_PICK:
         	{
         	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
-        	PlayerBoard pb = getPlayerBoard(m.player);
-        	if(pb.isDest(c)) { pb.unDropObject(); }
-        	else { pb.pickObject(c,m.from_index); }
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
+        	if(pb.isDest(c)) {  pb.unDropObject(); setState(resetState); }
+        	else { pb.pickObject(c,m.chip); }
         	}
             break;
 
         case MOVE_DROP: // drop on chip pool;
         	{
-        	PendulumCell c = getCell(m.source,m.from_col,m.from_row);
-        	PlayerBoard pb = getPlayerBoard(m.player);
+        	PendulumCell c = getCell(m.dest,m.to_col,m.to_row);
+        	PlayerBoard pb = getPlayerBoard(m.forPlayer);
         	if(pb.isSource(c)) { pb.unPickObject(); }
         	else 
-        	{ pb.doDrop(c,board_state,replay);
-    		  setNextStateAfterDrop(pb,replay);
+        	{ pb.doDrop(c,board_state,false,replay);
+        	  c.lastMoved = flipCount;
+    		  setNextStateAfterDrop(pb,c,replay);
         	}}
             break;
         case MOVE_SETACTIVE:
-        	G.Assert(simultaneousTurnsAllowed(),"should be anymove");
-        	setWhoseTurn(m.player);
+        	setWhoseTurn(m.forPlayer);
         	break;
         	
         case MOVE_START:
-        	if((councilPhase==0) && !timersRunning)
-        		{ setWhoseTurn(getPlayerIndex(privilege[0].topChip())); 
+        	if((purpleTimerPhase==0) && !timersRunning)
+        		{ setWhoseTurn(privilegeFirstPlayer()); 
         		  setState(PendulumState.PlayGrande);
         		}
         	else
@@ -996,15 +1472,15 @@ class PendulumBoard
         		if(purpleTimers[i].topChip()==PendulumChip.purpleTimer)
         		{	switch(i)
         			{	
-        			case 0:	councilPhase = 0; break;
-        			case 1: councilPhase = 2; break;
-        			case 2: councilPhase = 1; break;
-        			case 3: councilPhase = 3; break;
+        			case 0:	purpleTimerPhase = 0; break;
+        			case 1: purpleTimerPhase = 2; break;
+        			case 2: purpleTimerPhase = 1; break;
+        			case 3: purpleTimerPhase = 3; break;
         			default: break;
         			}
         		}
         	}
-            setWhoseTurn(m.player);
+            setWhoseTurn(m.forPlayer);
             acceptPlacement();
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
@@ -1027,6 +1503,7 @@ class PendulumBoard
        case MOVE_FLIP:
        		{
        			PendulumCell c = getCell(m.source,m.from_col,m.to_row);
+       			moveNumber++;
        			switch(c.rackLocation())
        			{
        			case BlackTimer:
@@ -1045,20 +1522,30 @@ class PendulumBoard
         default:
         	cantExecute(m);
         }
-        if(replay==replayMode.Live)
+        if(robot==null)
         {
+        if(replay==replayMode.Live)
+        {	
         	m.blackTimer = (int)blackTimer.timeToRun;
         	m.greenTimer = (int)greenTimer.timeToRun;
         	m.purpleTimer = (int)purpleTimer.timeToRun;
         }
         else
-        {
+        {   
         	blackTimer.timeToRun = m.blackTimer;
         	greenTimer.timeToRun = m.greenTimer;
         	purpleTimer.timeToRun = m.purpleTimer;
-        }
+        }}
+        //G.print("p "+purpleTimer.timeToRun);
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
-
+        }
+        catch (Throwable err)
+        {
+        	if(robot!=null) { p1("error "+moveNumber); 
+        	G.print("error ",m,err,"\n",err.getStackTrace());
+        	}
+        	throw err;
+        }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
@@ -1071,15 +1558,20 @@ class PendulumBoard
         {
         case Puzzle:
 		case Play:
+		case PendingPlay:
 		case CouncilPlay:
 		case PlayGrande:
+		case CouncilRewards:
+		case CouncilTrim:
 		case PlayMeeple:
+		case StartPlay:
+		case StartCouncil:
+		case Flip:
+		case Confirm:
 			return(targets.get(c)!=null);
 		case Gameover:
 		case Resign:
 			return(false);
-		case Confirm:
-			return(getPlayerBoard(whoseTurn).isDest(getCell(c)));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         }
@@ -1097,91 +1589,200 @@ class PendulumBoard
     {
         robotState.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
-        
+        //G.print("R "+m);
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
         Execute(m,replayMode.Replay);
-        acceptPlacement();
-       
+        
     }
  
 
- private void addActionMoves(CommonMoveStack all,int who)
- {	boolean greenTop = greenHourglassTop();
+ private boolean addActionMoves(CommonMoveStack all,int who)
+ {	boolean some = false;
+ 	{boolean greenTop = greenHourglassTop();
+ 	{
+ 	if(greenTop)
+ 	{
+ 		some |= addAction2_1Moves(all,greenMeepleA,greenActionA,who);
+ 	}
+ 	else
+ 	{
+ 		some |= addAction1_2Moves(all,greenMeepleB,greenActionB,who);
+ 	}}}
+ 	if(some && all==null) { return some; }
+ 	{
+	boolean purpleTop = purpleHourglassTop();
+ 	if(purpleTop)
+ 	{
+ 		some |= addAction2_1Moves(all,purpleMeepleA,purpleActionA,who);
+ 	}
+ 	else
+ 	{
+ 		some |= addAction1_2Moves(all,purpleMeepleB,purpleActionB,who);
+ 	}
+ 	}
+ 	if(some && all==null) { return some; }
+ 	
+ 	{
  	boolean blackTop = blackHourglassTop();
- 	boolean purpleTop = purpleHourglassTop();
- 	PendulumCell[] greenRow = greenTop ? greenMeepleA : greenMeepleB;
  	PendulumCell[] blackRow = blackTop ? blackMeepleA : blackMeepleB;
- 	PendulumCell[] purpleRow = purpleTop ? purpleMeepleA : purpleMeepleB;
- 	PendulumCell[] greenARow = greenTop ? greenActionA : greenActionB;
- 	PendulumCell[] blackARow = blackTop ? blackActionA : blackActionB;
- 	PendulumCell[] purpleARow = purpleTop ? purpleActionA : purpleActionB;
- 	addActionMoves(all,greenRow,greenARow,who);
- 	addActionMoves(all,blackRow,blackARow,who);
- 	addActionMoves(all,purpleRow,purpleARow,who);
+	PendulumCell[] blackARow = blackTop ? blackActionA : blackActionB;
+	some |= addAction1_1Moves(all,blackRow,blackARow,who);
+ 	}
+ 	return some;
  }
  public boolean hasRetrieveWorkerMoves(int who)
  {
 
 	return addRetrieveWorkerMoves(null,who); 
  }
- private boolean addRetrieveWorkerMoves(CommonMoveStack all,int who)
+ public boolean hasProvincesAvailable()
  {
+	 if(provinceCards.height()>0) { return true; }
+	 for(PendulumCell c : provinces)
+	 {
+		if(c.height()>0) { return true; } 
+	 }
+	 return false;
+ }
+ private boolean addRetrieveWorkerMoves(CommonMoveStack all,int who)
+ {	boolean some = false;
+ 	{
+	 boolean greenTop = greenHourglassTop();
+	 PendulumCell[] greenRow = greenTop ? greenMeepleA : greenMeepleB;
+	 some |= addWorkerMoves(all,greenRow,true,who);
+	 if(some && all==null) { return true; }
+	 PendulumCell[] greenARow = greenTop ? greenActionA : greenActionB;
+	 some |= addWorkerMoves(all,greenARow,true,who);
+	 if(some && all==null) { return some; }
 
-	 PendulumCell[] greenRow = greenHourglassTop() ? greenMeepleA : greenMeepleB;
-	 PendulumCell[] blackRow = blackHourglassTop() ? blackMeepleA : blackMeepleB;
-	 PendulumCell[] purpleRow = purpleHourglassTop() ? purpleMeepleA : purpleMeepleB;
-
-	 boolean some = addWorkerMoves(all,greenRow,who);
-	 some |= addWorkerMoves(all,blackRow,who);
-	 some |= addWorkerMoves(all,purpleRow,who);
-	 return some;
-	 
+ 	}
+ 	{
+ 	 boolean blackTop = blackHourglassTop();
+	 PendulumCell[] blackRow = blackTop ? blackMeepleA : blackMeepleB;
+	 some |= addWorkerMoves(all,blackRow,true,who);
+	 if(some && all==null) { return true; }
+	 PendulumCell[] blackARow = blackTop ? blackActionA : blackActionB;
+	 some |= addWorkerMoves(all,blackARow,true,who);
+	 if(some && all==null) { return true; }
+ 	}	 
+ 	{
+	 boolean purpleTop = purpleHourglassTop();
+	 PendulumCell[] purpleRow = purpleTop ? purpleMeepleA : purpleMeepleB;
+	 some |= addWorkerMoves(all,purpleRow,true,who);
+	 if(some && all==null) { return true; }	 
+	 PendulumCell[] purpleARow = purpleTop ? purpleActionA : purpleActionB;
+	 some |= addWorkerMoves(all,purpleARow,true,who);
+	 if(some && all==null) { return true; }
+ 	}
+ 	return some;
+ }
+ private boolean addAction1_2Moves(CommonMoveStack all,PendulumCell from[],PendulumCell to[],int who)
+ {	boolean some = false;
+ 	if(players_in_game>=4)
+	{
+	 some |= addAction1_1Moves(all,from,to,who);
+	}
+ 	else
+ 	{
+ 		some |= addActionMoves(all,from[0],to[0],who);
+ 	 	if(some && all==null) { return some; }
+ 		some |=  addActionMoves(all,from[1],to[1],who);
+ 	 	if(some && all==null) { return some; }
+		some |=  addActionMoves(all,from[1],to[2],who);
+ 	}
+ 	return some;
+ }
+ private boolean addAction2_1Moves(CommonMoveStack all,PendulumCell from[],PendulumCell to[],int who)
+ {	boolean some = false;
+ 	if(players_in_game>=4)
+ 	{
+	 some |= addAction1_1Moves(all,from,to,who);
+ 	}
+ else
+ 	{
+	 some |= addActionMoves(all,from[0],to[0],who);
+	 	if(some && all==null) { return some; }
+	 some |= addActionMoves(all,from[0],to[1],who);
+	 	if(some && all==null) { return some; }
+	 some |= addActionMoves(all,from[1],to[2],who);
+ 	}
+ 	return some;
  }
  
- 
- private void addActionMoves(CommonMoveStack all,PendulumCell from[],PendulumCell to[],int who)
- {
+ private boolean addAction1_1Moves(CommonMoveStack all,PendulumCell from[],PendulumCell to[],int who)
+ {	boolean some = false;
 	 for(int i=0;i<from.length;i++)
 	 {	
-		 addActionMoves(all,from[i],to[i],who);
+		 some |= addActionMoves(all,from[i],to[i],who);
+		if(some && all==null) { return some; }
 	 }
+	 return some;
  }
  private boolean addActionMoves(CommonMoveStack all,PendulumCell from,PendulumCell to,int who)
  {	 PColor color = getPlayerColor(who);
  	 boolean some = false;
  	 PlayerBoard pb = pbs[who];
- 	 if((from==pb.pickedSource) && pb.canPayCost(to.cost))
+ 	 if(pb.pickedObject!=null)
+ 	 {
+ 	 if((from==pb.pickedSource) && pb.canPayCost(to.cost,pb.pickedObject))
  	 {
  		some = true;
- 		if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,pb.pickedIndex,to,who)); }
- 	 }
+ 		if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,pb.pickedObject,to,who)); }
+ 	 }}
  	 else
  	 {
  	 for(int lim=from.height()-1; lim>=0; lim--)
  	 {
  	 PendulumChip chip = from.chipAtIndex(lim);
- 	 if((chip.color==color) && pb.canPayCost(to.cost))
+ 	 if((chip.color==color) && pb.canPayCost(to.cost,chip))
  	 	{some = true;
- 		 if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,lim,to,who)); }
+ 		 if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,from.chipAtIndex(lim),to,who)); }
  		 else { break; }
  	 	}
  	 }}
  	 return some;
  }
- private void addFlipTimerMoves(CommonMoveStack all,int who)
- {
-	 addFlipTimerMoves(all,greenTimer,greenTimers,who);
-	 addFlipTimerMoves(all,blackTimer,blackTimers,who);
-	 addFlipTimerMoves(all,purpleTimer,purpleTimers,who);
+ private boolean addFlipTimerMoves(CommonMoveStack all,int who)
+ {	 boolean some = false;
+ 	 int flipable = 0;
+	 if(robot==null || flipsSinceLastPurple<20)
+ 	 {
+	 // this logic prevents the game from going on forever if the
+	 // robots just want to run up the green and black resource actions.
+	 if(addFlipTimerMoves(all,greenTimer,greenTimers,who))
+	 {
+		 flipable++;
+	 }
+	 if(addFlipTimerMoves(all,blackTimer,blackTimers,who))
+	 {
+		 flipable++;
+	 }
+ 	 }
+	 if(addFlipTimerMoves(all,purpleTimer,purpleTimers,who))
+	 {
+		 flipable++;
+	 }
+	 if(flipable<3)
+	 {
+	 // consider a small delay
+	 PendulumMovespec m = new PendulumMovespec(MOVE_WAIT,who);
+	 m.from_row =m.to_row = 10000;	// 10 seconds
+	 all.push(m);	// wait for the timers
+	 some = true;
+	 }
+	 return some;
  }
  private void addClaimAchievementMoves(CommonMoveStack all,int who)
  {		PlayerBoard pb = pbs[who];
  		PColor color = pb.color;
- 		if(pb.pickedSource!=null && pb.pickedSource.rackLocation()==PendulumId.Achievement)
+ 		
+ 		if(pb.pickedObject!=null)
+ 		{ if(pb.pickedSource.rackLocation()==PendulumId.Achievement)
  		{
  			addClaimAchievementMoves(all,pb.pickedSource,pb.pickedObject,who);
- 		}
+ 		}}
+ 		else
+ 		{
  		for(PendulumCell c : achievement)
  		{
  			PendulumChip ch = c.topChip();
@@ -1189,18 +1790,40 @@ class PendulumBoard
  			{
  				addClaimAchievementMoves(all,c,ch,who);
  			}
- 		}
+ 		}}
+ }
+ //
+ // return true if (as far as we know) anyone else is currently deciding
+ // if they should accept the legendary achievement
+ //
+ PlayerBoard someoneIsDeciding()
+ {	
+	 for(PlayerBoard pb : pbs) { if(pb.uiState==UIState.AchievementOrLegandary) { return pb; }}
+	 return null;
  }
  private void addClaimAchievementMoves(CommonMoveStack all,PendulumCell from,PendulumChip top,int who)
  {	PlayerBoard pb = pbs[who];
  	PendulumChip current = currentAchievement.chipAtIndex(0);
  	if(pb.canPayCost(current.pc))
- 	{
- 		all.push(new PendulumMovespec(MOVE_FROM_TO,from,-1,currentAchievement,who));
+ 	{	// special conflict resolution for claiming the legendary achievement.
+ 		// if we could claim it, and anyone else is pondering claiming it, we
+ 		// can't drop on the claim card.  This puts any multiple attempts to 
+ 		// claim the achievement in the privilege resolution zone
+ 		if(pb.legendary.isEmpty()
+ 				&& (currentAchievement.findChip(PendulumChip.legendary)>=0)
+ 				&& someoneIsDeciding()!=null)
+ 		{
+ 			p1("avoid legendary conflict");
+ 		}
+ 		else
+ 		{
+ 		all.push(new PendulumMovespec(MOVE_FROM_TO,from,top,currentAchievement,who));
+ 		}
  	}
  }
- private void addFlipTimerMoves(CommonMoveStack all,Timer timer,PendulumCell cells[],int who)
+ private boolean addFlipTimerMoves(CommonMoveStack all,Timer timer,PendulumCell cells[],int who)
  {	PlayerBoard pb = pbs[who];
+ 	boolean some = false;
  	if(pb.pickedObject==null)
  	{
 	 if(timer.running && timer.timeToRun<=0)
@@ -1210,82 +1833,89 @@ class PendulumBoard
 			 PendulumChip top = c.topChip();
 			 if((top!=null) && top.id==rack)
 			 {
-				 all.push(new PendulumMovespec(MOVE_FLIP,c,0,who));
+				 all.push(new PendulumMovespec(MOVE_FLIP,c,top,who));
+				 some = true;
 			 }
 		 }
 	 }}
+ 	return some;
  }
  private void addWorkerMoves(CommonMoveStack all,int who)
  {	
 	 if(greenHourglassTop())
 	 {
-		 addWorkerMoves(all,greenMeepleB,who);
-		 addWorkerMoves(all,greenActionB,who);
+		 addWorkerMoves(all,greenMeepleB,false,who);
+		 addWorkerMoves(all,greenActionB,false,who);
 	 }
 	 else
 	 {
-		 addWorkerMoves(all,greenMeepleA,who);
-		 addWorkerMoves(all,greenActionA,who);
+		 addWorkerMoves(all,greenMeepleA,false,who);
+		 addWorkerMoves(all,greenActionA,false,who);
 	 }
 	 
 	 if(blackHourglassTop())
 	 {
-		 addWorkerMoves(all,blackMeepleB,who);
-		 addWorkerMoves(all,blackActionB,who);	 
+		 addWorkerMoves(all,blackMeepleB,false,who);
+		 addWorkerMoves(all,blackActionB,false,who);	 
 	 }
 	 else
 	 {
-		 addWorkerMoves(all,blackMeepleA,who);
-		 addWorkerMoves(all,blackActionA,who);
+		 addWorkerMoves(all,blackMeepleA,false,who);
+		 addWorkerMoves(all,blackActionA,false,who);
 	 }
 	 
 	 if(purpleHourglassTop())
 	 {
-		 addWorkerMoves(all,purpleMeepleB,who);
-		 addWorkerMoves(all,purpleActionB,who); 
+		 addWorkerMoves(all,purpleMeepleB,false,who);
+		 addWorkerMoves(all,purpleActionB,false,who); 
 	 }
 	 else
 	 {
-		 addWorkerMoves(all,purpleMeepleA,who);
-		 addWorkerMoves(all,purpleActionA,who);
+		 addWorkerMoves(all,purpleMeepleA,false,who);
+		 addWorkerMoves(all,purpleActionA,false,who);
 	 }
 
  }
- private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from[],int who)
+ private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from[],boolean retrieve,int who)
  {	boolean some = false;
 	 for(PendulumCell c : from)
 	 {
-		 some |= addWorkerMoves(all,c,who);
+		 some |= addWorkerMoves(all,c,retrieve,who);
 		 if(some && all==null) { return some; }
 	 }
 	 return some;
  }
- private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,int who)
+ private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,boolean retrieve,int who)
  {	 PlayerBoard pb = pbs[who];
  	 PColor color = pb.color;
  	 boolean some = false;
+ 	 if(!retrieve && robot!=null && from.lastMoved==flipCount) 
+ 	 	{// the intent of this is to prevent the robot shuffling workers from one action
+ 		 // space to another.
+ 		 return false; 
+ 	 	}
  	 PendulumChip picked = pb.pickedObject;
  	 if(picked!=null)
  	 {  if(pb.pickedSource==from)
  	 	{
  		boolean grande = picked==pb.grande;
- 		addWorkerMoves(all,from,pb.pickedIndex,grande,who);
+ 		addWorkerMoves(all,from,pb.pickedObject,grande,who);
  		if(grande)
  			{
- 			some |= addWorkerMoves(all,from,pb.pickedIndex,pb.grandes,true,who);
+ 			some |= addWorkerMoves(all,from,pb.pickedObject,pb.grandes,true,who);
  			}
  			else
  			{
- 			some |= addWorkerMoves(all,from,pb.pickedIndex,pb.meeples,true,who);
+ 			some |= addWorkerMoves(all,from,pb.pickedObject,pb.meeples,true,who);
  			}
  	 	}
  	 }
  	 else
  	 {for(int lim=from.height()-1; lim>=0 && !(all==null && some); lim--)
 	 {	 PendulumChip worker = from.chipAtIndex(lim);
-		 if(from.chipAtIndex(lim).color==color)
-		 { 	
-			 some |= addWorkerMoves(all,from,lim,worker==pb.grande,who);
+		 if(worker.color==color)
+		 {
+			 some |= addWorkerMoves(all,from,worker,worker==pb.grande,who);
 		 }
 	 }}
  	 return some;
@@ -1293,47 +1923,49 @@ class PendulumBoard
  private void addGrandeMoves(CommonMoveStack all,int who)
  {
 	 PlayerBoard pb = pbs[who];
-	 int from = (pb.pickedSource==pb.grandes && pb.pickedObject!=null)
-			 		? pb.pickedIndex
-			 		: pb.grandes.findChip(pb.grande);
-	 if(from>=0) { addWorkerMoves(all,pb.grandes,from,true,who); }
+	 PendulumChip top =  (pb.pickedSource==pb.grandes && pb.pickedObject!=null)
+			 		? pb.pickedObject
+			 		: pb.grandes.topChip();
+	 if(top!=null) { addWorkerMoves(all,pb.grandes,top,true,who); }
  }
  
  private void addMeepleMoves(CommonMoveStack all,int who)
  {
 	 PlayerBoard pb = pbs[who];
-	 int from = (pb.pickedSource==pb.meeples && pb.pickedObject!=null)
-			 		? pb.pickedIndex 
-			 		: pb.meeples.findChip(pb.meeple);
-	 if(from>=0) {  addWorkerMoves(all,pb.meeples,from,false,who); }
+	 PendulumChip top = (pb.pickedSource==pb.meeples && pb.pickedObject!=null)
+			 		? pb.pickedObject 
+			 		: pb.meeples.topChip();
+	 if(top!=null) {  addWorkerMoves(all,pb.meeples,top,false,who); }
  }
- private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,int indx,boolean any,int who)
+ private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,PendulumChip chip,boolean any,int who)
  {
 	 PendulumCell[] greenRow = greenHourglassTop() ? greenMeepleB : greenMeepleA;
 	 PendulumCell[] blackRow = blackHourglassTop() ? blackMeepleB : blackMeepleA;
 	 PendulumCell[] purpleRow = purpleHourglassTop() ? purpleMeepleB : purpleMeepleA;
-	 boolean some = addWorkerMoves(all,from,indx,greenRow,any,who);
+	 boolean some = addWorkerMoves(all,from,chip,greenRow,any,who);
 	 if(all==null && some) { return some; }
-	 some |= addWorkerMoves(all,from,indx,blackRow,true,who);
+	 some |= addWorkerMoves(all,from,chip,blackRow,true,who);
 	 if(all==null && some) { return some; }
-	 some |= addWorkerMoves(all,from,indx,purpleRow,any,who);
+	 some |= addWorkerMoves(all,from,chip,purpleRow,any,who);
 	 return some;
 	 
  }
- private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,int indx,PendulumCell to[],boolean any,int who)
+ private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,PendulumChip chip,PendulumCell to[],boolean any,int who)
  {	boolean some = false;
 	for(PendulumCell dest : to) 
-	{
-		some |= addWorkerMoves(all,from,indx,dest,any,who);
+	{	if(from!=dest)
+		{
+		some |= addWorkerMoves(all,from,chip,dest,any,who);
 		if(all==null && some) { return some; }
+		}
 	}
 	return some;
  }
- private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,int indx,PendulumCell to,boolean any,int who)
+ private boolean addWorkerMoves(CommonMoveStack all,PendulumCell from,PendulumChip chip,PendulumCell to,boolean any,int who)
  {
-	if(any || to.topChip()==null)
+	if((to.rackLocation()!=PendulumId.Unused) && (any || to.topChip()==null))
 	{
-		if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,indx,to,who)); }
+		if(all!=null) { all.push(new PendulumMovespec(MOVE_FROM_TO,from,chip,to,who)); }
 		return true;
 	}
 	return false;
@@ -1345,16 +1977,68 @@ class PendulumBoard
 	 {
 		 for(PendulumCell c = cells; c!=null; c=c.next ) 
 		 {
-			 if(c.height()>0) { all.push(new PendulumMovespec(MOVE_PICK,c,-1,who));}
+			 if(c.height()>0 && (c.rackLocation()!=PendulumId.Unused)) { all.push(new PendulumMovespec(MOVE_PICK,c,c.topChip(),who));}
 		 }
 	 }
 	 else {
 		 for(PendulumCell c = cells; c!=null; c=c.next) 
-		 {
-			 all.push(new PendulumMovespec(MOVE_DROP,c,-1,who));
+		 {	if(c.rackLocation()!=PendulumId.Unused)
+		 	{
+			 all.push(new PendulumMovespec(MOVE_DROP,c,pb.pickedObject,who));
+		 	}
 		 }
 	 }
  }
+ 
+	public void addCouncilRewardMoves(CommonMoveStack all, int who) 
+	{	PlayerBoard pb = pbs[who];
+		// skip the first element, which is the unused deck
+		for(int i=1;i<councilCards.length; i++)
+		{	PendulumCell card = councilCards[i];
+			PendulumChip ch = card.topChip();
+			if(ch!=null && ch.pb!=null)	// benefit is null for filler card backs
+			{
+			PC cost =ch.pc;
+			if(pb.canPayCost(cost))
+			{	
+				all.push(new PendulumMovespec(MOVE_SELECT,card,ch,pb.boardIndex));
+			}
+			}
+		}
+	}
+	public void addPromoteMeepleMoves(CommonMoveStack all,int who)
+	{
+		addPromoteMeepleMoves(all,greenMeepleA,who);
+		addPromoteMeepleMoves(all,greenMeepleB,who);
+		addPromoteMeepleMoves(all,blackMeepleA,who);
+		addPromoteMeepleMoves(all,blackMeepleB,who);
+		addPromoteMeepleMoves(all,purpleMeepleA,who);
+		addPromoteMeepleMoves(all,purpleMeepleB,who);
+		addPromoteMeepleMoves(all,greenActionA,who);
+		addPromoteMeepleMoves(all,greenActionB,who);
+		addPromoteMeepleMoves(all,blackActionA,who);
+		addPromoteMeepleMoves(all,blackActionB,who);
+		addPromoteMeepleMoves(all,purpleActionA,who);
+		addPromoteMeepleMoves(all,purpleActionB,who);
+		pbs[who].addPromoteMeepleMoves(all,who);
+	}
+	public void addPromoteMeepleMoves(CommonMoveStack all,PendulumCell row[],int who)
+	{	PlayerBoard pb = pbs[who];
+		PendulumChip target = pb.meeple;
+		for(PendulumCell c : row)
+		{
+			if(c.containsChip(target))
+			{
+				all.push(new PendulumMovespec(MOVE_SELECT,c,target,who));
+			}
+		}
+	}
+
+	public void addPendingPlayMoves(CommonMoveStack all,int who)
+	{
+		all.push(new PendulumMovespec(MOVE_READY,who));
+	}
+
  CommonMoveStack  GetListOfMoves(int who)
  {	CommonMoveStack all = new CommonMoveStack();
  	getListOfMoves(all,who);
@@ -1362,13 +2046,61 @@ class PendulumBoard
  }
  private void getListOfMoves(CommonMoveStack all,int who)
  {
- 	switch(board_state)
+	 if(resetState!=null && robot==null)
+	 {
+		 switch(resetState)
+		 {
+		 case CouncilRewards:
+			 // allow reselects
+			 getListOfMoves(all,resetState,who); 
+			 break;
+		 default:			 
+			 break;
+		 }
+	 }
+	 getListOfMoves(all,board_state,who);
+	 if(robot!=null)
+	 {
+		// G.print("All "+all.size());
+		 if((all.size()==0) && (board_state!=PendulumState.Gameover)) 
+			{ throw new Error("No moves, but not game over"); 
+			}
+	 }
+	 if(robot!=null && all.size()==0)
+	 {
+		 p1("No moves "+moveNumber+" "+board_state);
+	 }
+	 
+ }
+ public void addRefillProvinceMoves(CommonMoveStack all,int who)
+ {	if(provinceCards.height()>0)
+ 	{
+	 	for(PendulumCell c : provinces)
+	 	{
+		 if(c.isEmpty()) {
+			 all.push(new PendulumMovespec(MOVE_FROM_TO,provinceCards,provinceCards.topChip(),c,who));
+		 }
+	 	}
+	 }
+ }
+ private void getListOfMoves(CommonMoveStack all,PendulumState state,int who)
+ {
+ 	switch(state)
  	{
  	case Puzzle:
  		{
  		addPuzzleMoves(all,allCells,who);
  		for(PlayerBoard pb : pbs) { addPuzzleMoves(all,pb.allCells,who); }
  		}
+ 		break;
+ 	case Flip:
+ 		all.push(new PendulumMovespec(MOVE_AUTOFLIP,who));
+ 		break;
+ 	case StartPlay:
+ 		all.push(new PendulumMovespec(MOVE_STARTPLAY,who));
+ 		break;
+ 	case StartCouncil:
+ 		all.push(new PendulumMovespec(MOVE_STARTCOUNCIL,who));
  		break;
  	case Confirm:
  		all.push(new PendulumMovespec(MOVE_DONE,who));
@@ -1380,21 +2112,65 @@ class PendulumBoard
  		addMeepleMoves(all,who);
  		break;
  
+ 	case PendingPlay:
+ 		addPendingPlayMoves(all,who);
+ 		break;
  	case CouncilPlay:
  	case Play:
  		{
  		PlayerBoard pb = pbs[who];
- 		switch(pb.uiState)
+		if(robot==null) { addRefillProvinceMoves(all,who); }
+		
+		switch(pb.uiState)
+		{
+		default: break;
+		
+		case Province:
+			if(!hasProvincesAvailable()
+					&& (pb.pickedObject==null || pb.pickedObject.id==PendulumId.ProvinceCard))
+				{
+				pb.setUIState(UIState.Normal);
+				}
+			break;
+		case RetrieveWorker:
+			if(!hasRetrieveWorkerMoves(who))
+			{	// the opportunity to retrieve has gone away, probably because of a timer flip
+				pb.setUIState(UIState.Normal);
+			}
+		}
+		if((pb.uiState==UIState.Province)
+				&& !hasProvincesAvailable()
+				)
+		{	// crash out of province state if there are none available.
+			pb.setUIState(UIState.Normal);
+		}
+		switch(pb.uiState)
  		{
  		case Normal:
+ 			{
 	 		addWorkerMoves(all,who);	// move a worker instead of taking the action
 	 		addGrandeMoves(all,who);	// place a grande from the reserve
 	 		addMeepleMoves(all,who);	// place a regular worker from the reserve
-	 		addActionMoves(all,who);	// take the action a worker is elgible for
+	 		boolean hasAction = addActionMoves(all,who);	// take the action a worker is elgible for
 	 		pb.addPlayStrategem(all,who);	// play a strategem card
-	 		if(board_state!=PendulumState.CouncilPlay) { addFlipTimerMoves(all,who);	}// flip timers
+	 		if(variation.timers && state!=PendulumState.CouncilPlay) { addFlipTimerMoves(all,who);	}// flip timers
 	 		addClaimAchievementMoves(all,who);	// claim the achievement card
+	 		// don't consider resting if an action is available.  There may be occasional
+	 		// cases where this is the wrong thing to do, but it's more important to get
+	 		// the benefits that are available.
+	 		if(!hasAction && !variation.timers) { all.push(new PendulumMovespec(MOVE_REST,who)); }
+	 		if(state==PendulumState.CouncilPlay)
+	 			{
+	 			all.push(new PendulumMovespec(MOVE_REST,who));
+	 			}
+ 			}
 	 		break;
+ 		case Ready:
+ 			all.push(new PendulumMovespec(MOVE_READY,who));
+ 			break;
+		case Rest:
+ 			all.push(new PendulumMovespec(MOVE_SETACTIVE,nextPlayer(who,false)));
+ 			break;
  		case RetrieveWorker:
  			addRetrieveWorkerMoves(all,who);
  			break;
@@ -1402,18 +2178,76 @@ class PendulumBoard
  			pbs[who].addCollectResourceMoves(all);
  			break;
  		case Province:
+ 			if(robot!=null)
+ 			{
+ 				addRefillProvinceMoves(all,who);
+ 				// refill the provinces before choosing one
+ 				if(all.size()>0) { break; }
+ 			}
  			pbs[who].addCollectProvinceMoves(all);
  			break;
  		case AchievementOrLegandary:
  			all.push(new PendulumMovespec(MOVE_STANDARD_ACHIEVEMENT,who));
- 			all.push(new PendulumMovespec(MOVE_FROM_TO,currentAchievement,1,pbs[who].legendary,who));
+ 			all.push(new PendulumMovespec(MOVE_LEGENDARY_ACHIEVEMENT,who));
+ 			break;
+ 		case PayResources:
+ 			pb.addPayResourceMoves(all,who);
+ 			break;
+ 		case SwapVotes:
+ 			pb.addSwapVoteMoves(all,who);
  			break;
  		default:
+ 			p1("uistate-"+pb.uiState);
  			throw G.Error("Not expecting uiState %s",pb.uiState);
  		}}
  		break;
+ 	case CouncilRewards:
+ 		{
+ 		PlayerBoard pb = pbs[who];
+ 		if(robot==null) { addRefillProvinceMoves(all,who); }
+ 		if(robot!=null && pb.selectedCell!=null) 
+			{
+			p1("allread selected "+pb.uiState);
+			G.Error("already selected %s",pb.uiState); 
+			}
+ 		switch(pb.uiState)
+ 		{
+ 		case PromoteMeeple:
+ 			addPromoteMeepleMoves(all,who);
+ 			break;
+ 		case Normal: 
+ 			addCouncilRewardMoves(all,who);
+ 			break;
+ 		case ProvinceReward:
+ 		case Province:
+ 			if(robot!=null)
+ 			{
+ 				addRefillProvinceMoves(all,who);
+ 				// refill the provinces before choosing one
+ 				if(all.size()>0) { break; }
+ 			}
+ 			pb.addCollectProvinceMoves(all);
+ 			break;
+ 		case SwapVotes:
+ 			pb.addSwapVoteMoves(all,who);
+ 			break;
+ 		default:
+ 			p1("councilreward-"+pb.uiState);
+ 			G.Error("Not expecting ui state %s",pb.uiState);
+ 		}}
+ 		break;
+ 	case CouncilTrim:
+ 		{
+ 		if(robot==null) { addRefillProvinceMoves(all,who); }
+ 		PlayerBoard pb = pbs[who];
+ 		pb.addCouncilTrimMoves(all);
+ 		}
+ 		break;
+ 	case Gameover:
+ 		break;
  	default:
- 			G.Error("Not expecting state ",board_state);
+ 			p1("getmoves-"+state);
+ 			G.Error("Not expecting state ",state);
  	}
 
  }
@@ -1463,11 +2297,11 @@ class PendulumBoard
  	PlayerBoard pb = pbs[player];
  	if((pb.pickedObject!=null) && (pb.pickedSource!=null))
  		{
- 		all.push(new  PendulumMovespec(MOVE_DROP,pb.pickedSource,-1,player));
+ 		all.push(new  PendulumMovespec(MOVE_DROP,pb.pickedSource,pb.pickedObject,player));
  		}
  	if((pb.droppedObject!=null) && (pb.droppedDest!=null))
 		{
-		all.push(new PendulumMovespec(MOVE_PICK,pb.droppedDest,-1,player));
+		all.push(new PendulumMovespec(MOVE_PICK,pb.droppedDest,pb.droppedObject,player));
 		}
  }
  public Hashtable<PendulumCell, PendulumMovespec> getAllTargets() 
@@ -1490,24 +2324,54 @@ class PendulumBoard
  		case MOVE_DONE:
  			break;
  		case MOVE_PICK:
+ 		case MOVE_SELECT:
  			targets.put(getCell(m.source,m.from_col,m.from_row),m);
  			break;
  		case MOVE_DROP:
  		case MOVE_FLIP:
- 			targets.put(getCell(m.dest,m.to_col,m.to_row),m);
+  			targets.put(getCell(m.dest,m.to_col,m.to_row),m);
  			break;
- 		case MOVE_FROM_TO:
- 			PlayerBoard pb = pbs[m.player];
- 			if(pb.pickedObject==null)
- 				{	targets.put(getCell(m.source,m.from_col,m.from_row),m);
+ 		case MOVE_SWAPVOTES:
+ 			{
+ 			PendulumCell from = getCell(m.source,m.from_col,m.from_row);
+ 			PlayerBoard pb = pbs[m.forPlayer];
+ 			m.op = MOVE_SELECT;
+ 			if(pb.selectedCell!=null) { targets.put(from,m); }
+ 			}
+			//$FALL-THROUGH$
+		case MOVE_FROM_TO:
+ 			PlayerBoard pb = pbs[m.forPlayer];
+ 			boolean usedest = false;
+ 			boolean changeOp = true;
+ 			switch(pb.uiState)
+ 			{
+ 			case CollectResources:
+ 				usedest = true;
+				//$FALL-THROUGH$
+			case PayResources:
+ 				m.op = MOVE_SELECT;
+ 				changeOp = false;	// already changed
+				//$FALL-THROUGH$
+			default:
+			{
+ 			if(!usedest && (pb.pickedObject==null) && pb.selectedCell==null)
+ 				{	if(changeOp) { m.op = MOVE_PICK; }
+ 					targets.put(getCell(m.source,m.from_col,m.from_row),m);
  				}
  				else
- 				{
+ 				{	if(changeOp) { m.op = MOVE_DROP; }
  					targets.put(getCell(m.dest,m.to_col,m.to_row),m);
- 				}
+ 				}}}
  			break;
  		case MOVE_SETACTIVE: 
+ 		case MOVE_REST:
+ 		case MOVE_STARTPLAY:
+ 		case MOVE_READY:
+ 		case MOVE_AUTOFLIP:
+ 		case MOVE_STARTCOUNCIL:
  		case MOVE_STANDARD_ACHIEVEMENT:
+ 		case MOVE_LEGENDARY_ACHIEVEMENT:
+ 		case MOVE_WAIT:
  			break;
  		default: G.Error("Not expecting "+m);
  		
@@ -1535,23 +2399,33 @@ public void setLocations()
 	achievementCards.setLocation(0.541,0.172,0.117);
 	currentAchievement.setLocation(0.541,0.354,0.117);
 	// hourglasses
-	greenTimers[0].setLocation(0.95,0.15,0.09);
-	greenTimers[1].setLocation(0.95,0.38,0.09);
-	blackTimers[0].setLocation(0.95,0.6,0.09);
-	blackTimers[1].setLocation(0.95,0.84,0.09);
-	purpleTimers[0].setLocation(0.045,0.125,0.09);
-	purpleTimers[1].setLocation(0.045,0.18,0.09);
-	purpleTimers[2].setLocation(0.045,0.36,0.09);
-	purpleTimers[3].setLocation(0.045,0.41,0.09);
-	trash.setLocation(0.09,0.25,0.05);
-	PendulumCell.setHLocation(purpleMeepleA,0.125,0.42,0.09,0.1);
+	greenTimers[0].setLocation(0.95,0.15,0.11);
+	greenTimers[1].setLocation(0.95,0.38,0.11);
+	blackTimers[0].setLocation(0.95,0.6,0.11);
+	blackTimers[1].setLocation(0.95,0.84,0.11);
+	purpleTimers[0].setLocation(0.045,0.125,0.11);
+	purpleTimers[1].setLocation(0.045,0.18,0.11);
+	purpleTimers[2].setLocation(0.045,0.36,0.11);
+	purpleTimers[3].setLocation(0.045,0.41,0.11);
+	trash.setLocation(0.11,0.25,0.05);
+	if(players_in_game>=4)
+		{
+			PendulumCell.setHLocation(purpleMeepleA,0.125,0.42,0.09,0.1);
+			PendulumCell.setHLocation(purpleMeepleB,0.125,0.42,0.325,0.1);
+			PendulumCell.setHLocation(greenMeepleA,0.68,0.97,0.09,0.1);
+			PendulumCell.setHLocation(greenMeepleB,0.68,0.97,0.325,0.1);
+		}
+		else
+		{
+			PendulumCell.setHLocation(purpleMeepleA,0.19,0.61,0.092,0.1);
+			PendulumCell.setHLocation(purpleMeepleB,0.14,0.54,0.325,0.1);
+			PendulumCell.setHLocation(greenMeepleA,0.74,1.2,0.092,0.1);
+			PendulumCell.setHLocation(greenMeepleB,0.70,1.07,0.325,0.1);		
+		}
 	PendulumCell.setHLocation(purpleActionA,0.125,0.42,0.19,0.1);
-	PendulumCell.setHLocation(purpleMeepleB,0.125,0.42,0.325,0.1);
 	PendulumCell.setHLocation(purpleActionB,0.125,0.42,0.425,0.1);
 
-	PendulumCell.setHLocation(greenMeepleA,0.68,0.97,0.09,0.1);
 	PendulumCell.setHLocation(greenActionA,0.68,0.97,0.19,0.1);
-	PendulumCell.setHLocation(greenMeepleB,0.68,0.97,0.325,0.1);
 	PendulumCell.setHLocation(greenActionB,0.68,0.97,0.425,0.1);
 
 	PendulumCell.setHLocation(blackMeepleA,0.55,0.94,0.55,0.1);
@@ -1562,8 +2436,9 @@ public void setLocations()
 	PendulumCell.setVLocation(privilege,0.41,0.11,0.35,0.1);
 	PendulumCell.setVLocation(achievement,0.47,0.31,0.44,0.08);
 	PendulumCell.setVLocation(timerTrack,0.28,0.21,0.84,0.45);
-	
+	restButton.setLocation(0.435,0.7,0.06);
 	PendulumCell.setCouncilLocation(councilCards,0.22,0.795,0.29,0.7,0.2);
+	councilRewardsUsed.setLocation(0.21,0.795,0.04);
 
 	for(PlayerBoard pb : pbs) { pb.setLocations(); }
 
@@ -1640,6 +2515,91 @@ public boolean allQuiet() {
 	for(PlayerBoard pb : pbs) { if(!pb.isUIQuiet()) { return false; }}
 	return true;
 }
+public boolean isSelected(PendulumCell c)
+{
+	for(PlayerBoard pb : pbs) { if(pb.isSelected(c)) { return true; }}
+	return false;
+}
+
+public void revertPartialMoves()
+{	for(PlayerBoard pb : pbs)
+	{	pb.revertPartialMoves();
+	}
+}
+//
+// when a pick can't find the object to be picked, probably there is a conflict
+// and it can be resolved in privilege order
+//
+public Privilege resolvePrivilege(PlayerBoard forPlayer, PendulumChip item) 
+{	int myOrder = getPlayerPrivilege(forPlayer.color);
+	privilegeResolutions++;
+	for(PlayerBoard pb : pbs)
+	{
+		if(pb!=forPlayer)
+		{
+			if((pb.pickedObject==item)||(pb.droppedObject==item))
+			{
+				int hisOrder = getPlayerPrivilege(pb.color);
+				if(myOrder>hisOrder)
+				{
+					pb.unPickObject();
+					logGameEvent(Privilege.Override.description);
+					return Privilege.Override;
+				}
+				else 
+				{ 	logGameEvent(Privilege.Ignore.description);
+					return Privilege.Ignore; 
+				}
+			}
+		}
+	}
+	logGameEvent(Privilege.Error.description);
+	return Privilege.Error;
+}
+//
+// when we're about to drop on the board, verify that it's ok given
+// the placement rules.  Only a few cases are possible.
+// 
+public boolean verifyDropOk(PlayerBoard forPlayer,PendulumCell c, PendulumChip pickedObject) {
+	// TODO Auto-generated method stub
+	switch(c.rackLocation())
+	{
+	case Province:
+		// province card must be empty.  If not, two players are trying to fill the empty slot at the same time
+		if(c.isEmpty()) { return true; }
+		break;
+	case GreenMeepleA:
+	case GreenMeepleB:
+	case PurpleMeepleA:
+	case PurpleMeepleB:
+		if((pickedObject==forPlayer.meeple) && !c.isEmpty()) { break; }
+		return true;
+	default: return true;
+	}
+	// conflict to be resolved
+	int myPrivilege = getPlayerPrivilege(forPlayer.color);
+	privilegeResolutions++;
+	for(PlayerBoard pb : pbs)
+	{
+		if(pb!=forPlayer)
+		{
+			if(pb.droppedDest==c)
+			{
+				int hisOrder = getPlayerPrivilege(pb.color);
+				if(myPrivilege>hisOrder)
+				{	logGameEvent(Privilege.Override.description);
+					pb.unDropObject();
+					return true;
+				}
+				logGameEvent(Privilege.Ignore.description);
+				return false;
+			}
+		}
+	}
+	logGameEvent(Privilege.Error.description);
+	return false;
+}
+
 
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.

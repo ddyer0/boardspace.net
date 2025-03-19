@@ -200,7 +200,13 @@ public interface ViewerProtocol extends ViewGameProtocol
 	public Object getUrlNotes();
 	public void setScored(boolean v);
 	public boolean isScored();
-	public enum RecordingStrategy { All, Single, Fixed, None};
+	public enum RecordingStrategy 
+	{ All,		// usual mode for syncronous play, where all players record their moves
+	  Single, 	// for simultaneous play games, a single player is designated as the recorder
+	  Fixed,	// for games with a temporary simultaneous play state, hold off recording
+	  None		// all the other players if someone is the single recorder
+	  };
+
 	/**
 	 * recording strategy for this client.  Normal mode is All, each client records
 	 * what it sees and what it does. This is appropriate for normal synchonous play.

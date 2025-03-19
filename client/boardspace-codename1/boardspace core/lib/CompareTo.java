@@ -34,6 +34,6 @@ public interface CompareTo<T> {
 	 * @param o
 	 * @return 1 0 -1 depending on the relationship
 	 */
-	public int altCompareTo(T o);
+	default public int altCompareTo(T o) { return -compareTo(o); }
 	
 }

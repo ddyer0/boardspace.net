@@ -1044,10 +1044,6 @@ public class ViticultureChip extends chip<ViticultureChip>
 	public int compareTo(ViticultureChip o) {
 		return(o.type.sortOrder()-type.sortOrder());
 	}
-
-	public int altCompareTo(ViticultureChip o) {
-		return(- compareTo(o));
-	}
 	public boolean limitPoints()
 	{
 		switch(type)

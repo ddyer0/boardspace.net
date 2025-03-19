@@ -1040,8 +1040,6 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     private int bigX = 0;
     private int bigY = 0;
     
-    private boolean iAmSpectator() { return isSpectator(); }
-
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  SprintBoard gb = disB(gc);
        SingleBoard pboard = currentPlayerBoard(gb);
@@ -1094,7 +1092,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	   }
     	   GC.setFont(gc, largeBoldFont());
     	   drawNotice(gc,noticeRects[player],gb);
-    	   if((mutable_game_record || iAmSpectator()) && G.pointInRect(selectPos,pl1.playerBox))
+    	   if((mutable_game_record || isSpectator()) && G.pointInRect(selectPos,pl1.playerBox))
     	   {
     		   selectPos.hitCode = SprintId.Switch;
     		   selectPos.hit_index = player;
@@ -1120,7 +1118,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
        if(!planned)
       	{  
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator =  iAmSpectator()&&!allowed_to_edit;
+    	   boolean censorSpectator =  isSpectator()&&!allowed_to_edit;
     	   drawRack(gc,pboard,bigRack,
     			    pboard.getPlayerRack(),pboard.getPlayerMappedRack(),
     			    pboard.getRackMap(),pboard.getMapPick(),
@@ -1206,7 +1204,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	setViewPlayer(getPlayerOrTemp(m.player));
         }
         else if(m.op==MOVE_PULLSTART)
-        {	if((replay==replayMode.Live) && !iAmSpectator())
+        {	if((replay==replayMode.Live) && !isSpectator())
         	{
         	int pl = getActivePlayer().boardIndex;
         	// synchronously pull new tiles
@@ -1654,7 +1652,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         super.ViewerRun(wait);
         if(!reviewOnly 
         	 && !GameOver()
-        	 && !iAmSpectator()
+        	 && !isSpectator()
            	 && !reviewMode())
         {	SingleBoard pb = currentPlayerBoard(bb);
         	SprintState state = pb.getState();
@@ -1775,16 +1773,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             setComment(comments);
         }
     }
-    public void setLimbo(boolean v)
-    {
-    	boolean oldLimbo = inLimbo;
-    	super.setLimbo(v);
-    	if(oldLimbo!=inLimbo)
-    	{
-    		setGameRecorder();
-    	}
-    }
-    
+   
     /**
      * Sprint strategy for recording games is different from all others.  One player
      * is designated as the recorder, and that client does all the recording of game
@@ -1818,6 +1807,16 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	gameRecorder = least;	
     }
     
+    public void setLimbo(boolean v)
+    {
+    	boolean oldLimbo = inLimbo;
+    	super.setLimbo(v);
+    	if(oldLimbo!=inLimbo)
+    	{
+    		setGameRecorder();
+    	}
+    }
+   
     public RecordingStrategy gameRecordingMode()
     {
     	return getActivePlayer().boardIndex==gameRecorder ? RecordingStrategy.Single : RecordingStrategy.None;

@@ -174,9 +174,6 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public int compareTo(Image o) {
 		return(G.signum(o.imageSize()-imageSize()));
 	}
-	public int altCompareTo(Image o) {
-		return(-compareTo(o));
-	}
 	/**
 	 * return a new rectangle that will snugly fix this chip centered on the supplied rectangle
 	 * 

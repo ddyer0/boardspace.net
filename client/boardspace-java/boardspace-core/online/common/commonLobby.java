@@ -160,6 +160,9 @@ Change log:
   
   // boardspace versions
    * 1.4 change lobby robots to appear next to the game instead of in the player area
+   * 
+   * TODO: the user name sort is slightly unstable.  should be stable.
+   * 
 */
   
 public class commonLobby extends commonPanel 

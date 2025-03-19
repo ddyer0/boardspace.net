@@ -111,10 +111,6 @@ public class SimpleGroup extends OStack<GoCell> implements ElementProvider,GoCon
 	{
 		return(Integer.signum(size()-other.size()));
 	}
-	public int altCompareTo(SimpleGroup other)
-	{	// opposite sort, not currently used..
-		return(other.size()-Integer.signum(size()));
-	}
 	public SimpleGroup copy()
 	{
 		SimpleGroup c = new SimpleGroup(board,kind,"copy of "+reason);

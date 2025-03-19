@@ -64,10 +64,6 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
 	{
 		return(RajChip.compareTo(this,o));
 	}
-	public int altCompareTo(RajChip o)
-	{
-		return(RajChip.compareTo(o,this));
-	}
 	
 	// constructor for everything except the player CARDS
 	private RajChip(int i,Image im,String na,double[]sc,long ran)

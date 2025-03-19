@@ -1441,12 +1441,25 @@ synchronized(allGames) {
 	String pRules = "/pendulum/english/Rules.pdf";
 	String pViewer = "pendulum.PendulumViewer";  
 	Color map[] = {Color.yellow,Color.white,Color.green,Color.blue,Color.red};
-	GameInfo mm = put(new GameInfo(3600,ES.test,124,"PL",EuroGames,"Pendulum","Pendulum",
+	GameInfo mm = put(new GameInfo(3600,ES.game,124,"PL",EuroGames,"Pendulum","Pendulum",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
 			null,false, map));
-	mm.maxPlayers = 5;	
+	mm.maxPlayers = 5;
+	mm.randomizeFirstPlayer = true;
+	mm.okForTurnbased = false;		// parallel setup
+	mm.okForPassAndPlay = false;
+	
+	mm = put(new GameInfo(3601,ES.game,124,"PL",EuroGames,"Pendulum","Pendulum-notimers",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_pendulum.html",
+			null,false, map));
+	mm.maxPlayers = 5;
+	mm.randomizeFirstPlayer = true;
+	mm.okForTurnbased = false;		// parallel setup
+	mm.okForPassAndPlay = false;
 	}
 	
 	{

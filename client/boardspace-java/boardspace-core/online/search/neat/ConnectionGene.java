@@ -150,9 +150,6 @@ public class ConnectionGene implements IoAble,CompareTo<ConnectionGene>,StackIte
 	public int compareTo(ConnectionGene o) {
 		return G.signum(innovation-o.innovation);
 	}
-	public int altCompareTo(ConnectionGene o) {
-		return G.signum(o.innovation-innovation);
-	}
 	public StackIterator<ConnectionGene> push(ConnectionGene item) {
 		return new ConnectionGeneStack().push(this);
 	}

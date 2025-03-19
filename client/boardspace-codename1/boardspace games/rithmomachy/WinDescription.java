@@ -82,9 +82,6 @@ public class WinDescription implements CompareTo<WinDescription>
 	public int compareTo(WinDescription other)
 	{	return(Integer.signum(key()-other.key()));
 	}
-	public int altCompareTo(WinDescription other)
-	{	return(Integer.signum(other.key()-key()));
-	}
 	public String dString()
 	{	return(""+anchor+" "+pivot+" "+end+((annotation==null)?"":annotation));
 	}

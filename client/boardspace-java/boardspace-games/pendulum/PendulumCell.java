@@ -46,6 +46,7 @@ public class PendulumCell
 	double posx = 0.5;
 	double posy = 0.5;
 	double scale = 0.1;
+	int lastMoved = 0;
 	public String toString() { return "<cell "+rackLocation+" "+col+" "+row+">"; }
 	public BC cost = BC.None;	// board cost
 	public BB benefit = BB.None;	// board benefit
@@ -95,7 +96,23 @@ public class PendulumCell
 		posx = ot.posx;
 		posy = ot.posy;
 		scale = ot.scale;
+		lastMoved = ot.lastMoved;
 	}
+
+	/**
+	 * return the X offset for the n'th chip in the stack.  Normally
+	 * this is just linear, but some special cases can be accommodated
+	 * here.  For example, twixt the bridges are all drawn at height 1.
+	 */
+	public int stackXAdjust(double xscale,int lift,int SQUARESIZE)
+	{	int adj = super.stackXAdjust(xscale,lift,SQUARESIZE);
+		if(rackLocation()==PendulumId.AchievementCard && lift>0)
+		{ adj -= (int)(xscale*(height())/2 * SQUARESIZE);
+		}
+		return adj;
+	}
+
+
 	/**
 	 * reset back to the same state as when newly created.  This is used
 	 * when reinitializing a board.
@@ -103,6 +120,7 @@ public class PendulumCell
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		lastMoved = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public PendulumCell(PendulumChip cont)
