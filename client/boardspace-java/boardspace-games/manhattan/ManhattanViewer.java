@@ -320,18 +320,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
 
-    Rectangle centerOnBox = null;
-    int centerOnBoxRotation = 0;
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	setLocalBoundsV(x,y,width,height,new double[] {0.5,1,2});
-    	if(centerOnBox!=null) 
-    		{ Rectangle r = G.copy(null,centerOnBox);
-    		  centerOnBox = null; 
-    		  G.setRotation(r,centerOnBoxRotation*Math.PI/2);
-    		  centerOnBox(r); 
-    		}
-
+    	zoomer.reCenter();
     }
     public double setLocalBoundsA(int x, int y, int width, int height,double v)
     {	G.SetRect(fullRect, x, y, width, height);
@@ -639,7 +631,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	drawBoardArray(gc,highlight,gb,targets,gb.playMine, cellSize*2, 0.00, 0.00, null,hitAny);
     	drawBoardArray(gc,highlight,gb,targets,gb.playUniversity, cellSize*2, 0.00, 0.00, null,hitAny);
     	
-    	drawMagnifier(gc,hitAny,boardRect,0);
+    	zoomer.drawMagnifier(gc,hitAny,brect,0.04,0.98,0.97,0);
     }
     public void drawPlayerArray(Graphics gc,HitPoint hp,ManhattanBoard gb,PlayerBoard pb,Hashtable<ManhattanCell, ManhattanMovespec> targets,
     		CellStack cells, ManhattanCell exclude, int cellSize, double xstep, 
@@ -923,20 +915,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     {
     	return (hp==null);
     }
-    Rectangle currentZoomRect = null;
-    public void drawMagnifier(Graphics gc,HitPoint hp,Rectangle r,int rot)
-    {	int size = CELLSIZE*2/3;
-    	DrawableImage<?> icon = (r==currentZoomRect) ? StockArt.UnMagnifier : StockArt.Magnifier;
-    	int xp = G.Right(r)-size/2;
-    	int yp = G.Bottom(r)-size/2;
-    	if(icon.drawChip(gc,this,size,xp,yp,hp,ManhattanId.Magnifier,null))
-    	{
-    		hp.hitData = r;
-    		hp.hit_index = rot;
-    	}
-    	
-    	
-    }
+
     public void drawPlayerBoard(Graphics gc,  HitPoint hp,ManhattanBoard gb,PlayerBoard pb,commonPlayer pl, Rectangle r, 
     			Hashtable<ManhattanCell,ManhattanMovespec>targets,HitPoint hitAny)
     {	
@@ -1063,7 +1042,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	}
     	drawPlayerCell(gc,hp,gb,pb,targets,pb.airstrikeHelp,cellSize,0.0,0.4, null,hitAny);
     	
-    	drawMagnifier(gc,hitAny,pl.playerBox,G.rotationQuarterTurns(pl.displayRotation));
+    	zoomer.drawMagnifier(gc,hitAny,pl.playerBox,0.04,0.98,0.97,G.rotationQuarterTurns(pl.displayRotation));
 
     }
     
@@ -1919,28 +1898,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		 StockArt.FancyCloseBox.drawChip(gc, this, sz, scrimLeft+scrimW-sz/2, scrimTop+sz/2, hitAny,ManhattanId.CloseOverlay,null);
 	 }
 	 }
-	    private void setGlobalMagnifier(Rectangle box,int qt)
-	    {	if(getGlobalZoom()<=1) { currentZoomRect = null; }
-	    	if(box==currentZoomRect) { setGlobalZoom(1,0); currentZoomRect=null; }
-	    	else if(box!=null)
-	    	{
-	    	currentZoomRect = box;
-			boolean swap = (qt&1)!=0;
-			int w = G.Width(box);
-			int h = G.Height(box);
-			
-			double fullh = G.Height(fullRect);
-			double fullw = G.Width(fullRect);
-			double expand = 0.9;
-			double hscale = fullh/((swap?w:h));
-			double wscale = fullw/((swap?h:w));
-			double ratio = expand*Math.min(wscale, hscale);
-			setGlobalZoom(ratio,0);
-			centerOnBox = box;
-			centerOnBoxRotation = 1;
-			resetBounds();
-	    	}
-	    }
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -2023,12 +1981,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		default:
         	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
-        	else if(hitCode==ManhattanId.Magnifier)
-        	{	
-        		Rectangle r = (Rectangle)hp.hitData;
-        		setGlobalMagnifier(r,hp.hit_index);
-        	}
-        	else if(hp.hitData!=null)
+         	else if(hp.hitData!=null)
         	{	ManhattanMovespec m = (ManhattanMovespec)hp.hitData;
         		//if(m.op==MOVE_SELECT) { m.to_index = m.from_index = hp.hit_index; }
         		PerformAndTransmit(m.longMoveString());

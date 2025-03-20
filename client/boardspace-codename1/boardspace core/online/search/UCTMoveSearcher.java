@@ -1246,7 +1246,6 @@ public class UCTMoveSearcher extends CommonDriver
 				for(UCTThread th : threads) { th.start(); }
 			}
 			long now = G .Date();
-			long loops = 0;
 			do
 			{	
 				before += commonPause();// just in case we pause
@@ -1255,7 +1254,6 @@ public class UCTMoveSearcher extends CommonDriver
 					{ UCTThread s = threads[0];
 					  s.simUsingTree();
 					  long later = G.Date();
-					  loops++;
 					  if(G.isCheerpj()) { Thread.yield(); }
 					  if(later-now>1000)
 					  {	  now=later;

@@ -358,7 +358,8 @@ public class PendulumMovespec
         	case PurpleTimer:
         		chip = PendulumChip.purpleTimer;
         		return icon(v,"Flip");
-        	default: break;
+        	default: 
+        		return TextChunk.create("flip");
         	}
         	
         case MOVE_SELECT:

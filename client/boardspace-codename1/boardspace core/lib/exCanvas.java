@@ -50,8 +50,10 @@ public abstract class exCanvas extends ProxyWindow
     {
     	HitZoomSlider,
 		HitMagnifier,
+		Magnifier,
 		;
     };
+    public Zoomer zoomer = new Zoomer(this);
 
     // the codename1 simulator supplies mouse move events, which is not
     // typical of real hardware, so normally we don't want the simulator
@@ -2161,6 +2163,7 @@ graphics when using a touch screen.
 			changeZoomAndRecenter(getGlobalZoom());
 			return(true);
 			}
+		if(zoomer.performStandardButtons(id,hitPoint)) { return true; }
 		return(false);
 	}
 	public boolean performVcrButton(CellId hc,HitPoint hp) { return(false); }

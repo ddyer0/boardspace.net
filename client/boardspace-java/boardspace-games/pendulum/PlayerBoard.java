@@ -373,7 +373,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		military.setLocation(0.6,0.7,0.14);
 		culture.setLocation(0.76,0.7,0.14);
 		cash.setLocation(0.90,0.7,0.14);
-		votes.setLocation(0.84,0.47,0.14);
+		votes.setLocation(0.84,0.48,0.12);
 		max3Cards.setLocation(0.1,0.5,0.14);
 		freeD2.setLocation(0.0,0.5,0.14);
 		legendary.setLocation(0.655,0.34,0.17);
@@ -900,6 +900,24 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			setUIState(UIState.SwapVotes,1);
 			break;
 		case Retrieve:
+			/*
+			The "should be" problem where privilege is applicable is for
+			instantaneous events, in this case 4 of the
+			(1) pick up a card
+			(2) drop the card
+			(3) pick up a worker
+			(4) drop a worker.
+			
+			Inbetween all these instantaneous events, a timer or timers might
+			flip in such a way that the next event isn't legal, or changes 
+			context in a way that makes the whole 1-4 sequence undesirable,
+			pointless, or illegal.
+			
+			in interval 1-2 you can always put the card back.
+			in interval 2-3 you can always un-drop and un-pickup the card
+			in interval 3-4 you can always put the worker back on your player board.
+			or back where it came from.
+			*/
 			if(parent.hasRetrieveWorkerMoves(boardIndex)) { setUIState(UIState.RetrieveWorker,1); }
 			break;
 			
@@ -1108,6 +1126,13 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		case None: 
 			switch(c.rackLocation())
 			{
+			case BlackMeepleA:
+			case BlackMeepleB:
+			case GreenMeepleA:
+			case GreenMeepleB:
+			case PurpleMeepleA:
+			case PurpleMeepleB:
+				break;
 			default:
 				allowUndrop = true;
 				break;

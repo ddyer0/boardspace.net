@@ -80,7 +80,7 @@ public interface PendulumConstants
 		PlayerGrandeReserves("Grande workers not yet in play"),
 		PlayerMeepleReserves("regular workers not yet in play"),
 		PlayerMeeples("#1{##No regular workers, regular worker, regular workers}"),
-		PlayerGrandes("#1{##No Grande workers, Grande Worker, Grande Workers}"), 
+		PlayerGrandes("#1{##No Grande workers, Grande AnyWorker, Grande Workers}"), 
 		PlayerMilitary("#1{##No Military, Military, Military}"),
 		PlayerCulture("#1{##No Culture, Culture, Culture}"),
 		PlayerCash("$#1 Cash"),
@@ -98,7 +98,8 @@ public interface PendulumConstants
 		ShowCard(""),
 		TakeStandard("Take the standard achievement benefit"),
 		TakeLegendary("Take the legendary achievement benefit"),
-		TestPrivilege("Test Privilege"),
+		TestPrivilege("Test Privilege"), 
+		AnyWorker("Regular worker or Grande"),
 		;
 		PendulumChip chip;
 		String description = "";
@@ -395,7 +396,7 @@ public enum PendulumState implements BoardState
 	static final String PlayState = "Place workers or Take Actions";
 	static final String PlayGrandeState = "Place your grande worker";
 	static final String PlayMeepleState = "Place your regular worker";
-	static final String CouncilPlayState = "Place workers and take actions, No timers flip";
+	static final String CouncilPlayState = "Place workers and take actions, No timers";
 	static final String CouncilState = "Select your council benefit";
 	static final String StartCouncilMessage = "Start Council";
 	static final String StartPlayMessage = "Start Timers";

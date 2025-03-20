@@ -1895,8 +1895,10 @@ class PendulumBoard
  		 return false; 
  	 	}
  	 PendulumChip picked = pb.pickedObject;
- 	 if(picked!=null)
- 	 {  if(pb.pickedSource==from)
+ 	 if((picked!=null) && (picked.id==PendulumId.AnyWorker))
+ 	 {  // this code is encountered when dropping the retrieve worker card
+ 		// and at that point the pickedobject is not relevant
+ 		if(pb.pickedSource==from)
  	 	{
  		boolean grande = picked==pb.grande;
  		addWorkerMoves(all,from,pb.pickedObject,grande,who);
@@ -2073,7 +2075,10 @@ class PendulumBoard
 	 
  }
  public void addRefillProvinceMoves(CommonMoveStack all,int who)
- {	if(provinceCards.height()>0)
+ {	PlayerBoard pb = pbs[who];
+ 	if((provinceCards.height()>0) 
+ 		&& (pb.pickedObject==null 
+ 			|| pb.pickedSource==provinceCards))
  	{
 	 	for(PendulumCell c : provinces)
 	 	{

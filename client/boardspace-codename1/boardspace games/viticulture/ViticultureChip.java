@@ -35,7 +35,6 @@ import lib.InternationalStrings;
 import lib.OStack;
 import lib.Random;
 import lib.StackIterator;
-import lib.StockArt;
 import lib.exCanvas;
 import online.game.chip;
 
@@ -165,9 +164,6 @@ public class ViticultureChip extends chip<ViticultureChip>
 		return(ar);
 	}
 	
-	public static ViticultureChip Magnifier = new ViticultureChip(ViticultureId.Magnifier,StockArt.Magnifier);
-	public static ViticultureChip UnMagnifier = new ViticultureChip(ViticultureId.UnMagnifier,StockArt.UnMagnifier);
-
 	@SuppressWarnings("unused")
 	private static void preloadMaskGroup(ImageLoader forcan,String Dir,ViticultureChip chips[],String mask)
 	{	String names[] = new String[chips.length];
@@ -1045,7 +1041,6 @@ public class ViticultureChip extends chip<ViticultureChip>
 	public int compareTo(ViticultureChip o) {
 		return(o.type.sortOrder()-type.sortOrder());
 	}
-
 	public boolean limitPoints()
 	{
 		switch(type)

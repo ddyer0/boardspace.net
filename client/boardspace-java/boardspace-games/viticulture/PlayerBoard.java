@@ -319,7 +319,6 @@ public class PlayerBoard
 	// user interface only
 	ViticultureCell cashDisplay = null;
 	ViticultureCell coinDisplay = null;
-	ViticultureCell magnifier = null;
 	ViticultureCell vpDisplay = null;
 	ViticultureCell redGrapeDisplay = null;
 	ViticultureCell whiteGrapeDisplay = null;
@@ -470,7 +469,6 @@ public class PlayerBoard
 
 		whiteGrapeDisplay = newUIcell(ViticultureId.WhiteGrapeDisplay,colCode,0,ChipType.WhiteGrape);
 		roosterDisplay = newUIcell(ViticultureId.RoosterDisplay,colCode,0,ChipType.Rooster);
-		magnifier = newUIcell(ViticultureId.Magnifier,colCode,0,null);
 		pendingWorker = newUIcell(ViticultureId.PendingWorker,colCode,0,ChipType.Worker);
 		workerTypes = newcell(ViticultureId.PendingWorker,colCode,1,ChipType.Worker,null);
 		workerCells = new ViticultureCell[]{ pendingWorker,yokeWorker,destroyStructureWorker,structures[0],structures[1],fields[0],fields[1],fields[2]};
@@ -512,7 +510,6 @@ public class PlayerBoard
 		}
 		hiddenCardsOnTop = false;
 		hiddenCensoring = true;
-		magnifier.addChip(ViticultureChip.Magnifier);
 		vpDisplay.addChip(ViticultureChip.VictoryPoint_1);
 		redGrapeDisplay.addChip(ViticultureChip.RedGrape);
 		whiteGrapeDisplay.addChip(ViticultureChip.WhiteGrape);

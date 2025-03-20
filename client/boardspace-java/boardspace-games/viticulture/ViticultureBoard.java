@@ -969,11 +969,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
   	ViticultureCell tradeVP = newUIcell(ViticultureId.VP,'@',1);
   	ViticultureCell tradeRedGrape = newUIcell(ViticultureId.RedGrape,'@',1);
   	ViticultureCell tradeWhiteGrape = newUIcell(ViticultureId.WhiteGrape,'@',1);
-
-  	ViticultureCell boardMagnifier = newUIcell(ViticultureId.Magnifier,'@',0);
-	ViticultureCell starMagnifier = newUIcell(ViticultureId.Magnifier,'@',1);
-	ViticultureCell wakeupMagnifier = newUIcell(ViticultureId.Magnifier,'@',2);
-	ViticultureCell magnifiers[] = { boardMagnifier, wakeupMagnifier, starMagnifier};
 	
 
 	private ViticultureState board_state = ViticultureState.Puzzle;	
@@ -1323,9 +1318,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	   	
 	   	for(ViticultureChip ch : ViticultureChip.AutomaDeck) { automaCards.addChip(ch); }
 	   	automaCards.shuffle(random);
-	   	
-	    reInit(magnifiers);
-	    for(ViticultureCell c : magnifiers) { c.addChip(ViticultureChip.Magnifier); } 
 	   	
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    seasonRow = 0;
@@ -8947,10 +8939,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     {
     	switch(c.rackLocation())
     	{
-       	case UnMagnifier:
-    	case Magnifier:
-    		return(c.topChip()!=null);
-    		
+     		
     	case SpecialWorkerCards:
     		return(true);
     	case GreenDiscards:

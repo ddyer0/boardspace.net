@@ -39,7 +39,6 @@ import lib.TextButton;
 import lib.Toggle;
 import lib.Image;
 import lib.LFrameProtocol;
-import lib.Plog;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -103,16 +102,15 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 	// TODO: add logic to prevent pickup of strategem cards that can't be dropped
 	
     static final String Pendulum_SGF = "pendulum"; // sgf game name
-
-    // file names for jpeg images and masks
+   // file names for jpeg images and masks
     static final String ImageDir = "/pendulum/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color chatBackgroundColor = new Color(255,230,230);
-    private Color rackBackGroundColor = new Color(225,192,182);
-    private Color rackIdleColor = new Color(205,172,162);
-    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color rackBackGroundColor = Color.lightGray;
+    private Color rackIdleColor = Color.lightGray;
+    private Color boardBackgroundColor = Color.lightGray;
          
     // private state
     private PendulumBoard bb = null; //the board from which we are displaying
@@ -396,11 +394,13 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         bb.SetDisplayRectangle(boardRect);
        	int rx = bb.cellToX(bb.restButton);
        	int ry = bb.cellToY(bb.restButton);
-       	G.SetRect(restButton,rx-buttonW/2,ry-buttonW/15,buttonW,buttonW/3);
+       	int bw = buttonW*6/5;
+       	G.SetRect(restButton,rx-bw/2,ry-bw/15,bw,bw/3);
        	G.copy(councilButton,restButton);
        	G.copy(playButton,restButton);
        
- 	
+       	zoomer.reCenter();
+
     }
     /**
      * create all per-player boxes.  Nothing is required, but the standard methods
@@ -426,8 +426,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	pl.displayRotation = rotation;
     	return(box);
     }
-    
-
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void drawPlayerBoard(Graphics gc, Rectangle r, Rectangle br,commonPlayer pl,
@@ -462,6 +460,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
             drawStack(gc,gb,c,highlight,targets,any);
         	}
         }
+        zoomer.drawMagnifier(gc,any,pl.playerBox,0.05,0.98,0.78,G.rotationQuarterTurns(pl.displayRotation));
      }
     /**
      * return the dynamically adjusted size during an animation.  This allows
@@ -691,16 +690,20 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         				: "".equals(cost) ? s.get(bene) : "".equals(bene) ? s.get(cost) : s.get(cost)+"\n"+s.get(bene);
         double xstep = 0.005;
         double ystep = 0.005;
-    	int ypos = gb.cellToY(cell);
-    	int xpos = gb.cellToX(cell);
-    	int siz = gb.cellSize(cell);
+    	int ypos0 = gb.cellToY(cell);
+    	int xpos0 = gb.cellToX(cell);
+    	int siz0 = gb.cellSize(cell);
+    	int xpos = xpos0;
+    	int ypos = ypos0;
+    	int siz = siz0;
     	boolean canHit = gb.legalToHitBoard(gb.getCell(cell),targets);
     	PendulumState state = gb.getState();
         labelFont = largeBoldFont();
         boolean isSelected = gb.isSelected(cell);
         boolean helpPerCard = false;
         boolean colorMatch = false;
-        switch(cell.rackLocation())
+        PendulumId rack = cell.rackLocation();
+        switch(rack)
         {
         case TimerTrack:
         	if(gb.variation.timers) { return false; }
@@ -781,7 +784,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         case PlayerCultureReserves:
         case PlayerCashReserves:
         case PlayerVotesReserves:
-        	xstep= 0.1;
+        	xstep= 0.08;
         	ystep = 0.0;
         	break;
         case PlayerMilitary:
@@ -801,7 +804,13 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	break;
         default: break;
         }
-        CellId preCode = (highlight!=null ? highlight.hitCode : null);
+        CellId preCode = (any!=null ? any.hitCode : null);
+        Object preobj = (any!=null ? any.hitObject : null);
+        int preind = any.hit_index;
+        int prewid = any.hit_width;
+        int prehei = any.hit_height;
+        int prex = any.hit_x;
+        int prey = any.hit_y;
         // this uses a slightly nonstandard selection method to get the selection for
         // any item, even if it can't be selected according to the "canhit" and "hitpoint"
         // logic.  If canhit+hitpoint wouldn't have allowed selection, it is unselected.
@@ -814,6 +823,10 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         		boolean misMatch = highlight==null || !canHit;	// not really selectable
         		
         		int hitIndex = any.hit_index;
+        		int hx =any.hit_x;
+        		int hy =any.hit_y;
+        		//int hw =any.hit_width;
+        		//int hh =any.hit_height;
         		if(colorMatch)
         		{	// another case of un-selectable is picking up a meeple from a stack
         			// that isn't one of your meeples.
@@ -824,7 +837,14 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         		}
         		if(misMatch)
 	        		{
+        			hit = false;
 	        		any.hitCode = preCode;	// undo the selection/hit on this cell
+	        		any.hitObject = preobj;
+	        		any.hit_x = prex;
+	        		any.hit_y = prey;
+	        		any.hit_index = preind;
+	        		any.hit_width = prewid;
+	        		any.hit_height = prehei;
 	        		}
 	        		else
 	        		{
@@ -836,21 +856,22 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         		if(helpPerCard)
         		{
         		// generate tool tips to describe particular cards
-        		int index = (cell.rackLocation()==PendulumId.AchievementCard) ? 0 : hitIndex;
+         		int index = (cell.rackLocation()==PendulumId.AchievementCard) ? 0 : hitIndex;
         		int size = siz;
         		int h = size*4/3;
         		PendulumChip ch = cell.chipAtIndex(index);
         		if(ch!=null)
         		{
         		tip = getToolTip(ch);	
-        		Rectangle r = new Rectangle(any.hit_x-size/2,any.hit_y-size*2/3,size,h);
+        		Rectangle r = new Rectangle(hx-size/2,hy-size*2/3,size,h);
         		//GC.frameRect(gc,Color.green,r);
         		HitPoint.setHelpText(any,r,tip);
         		G.SetHeight(r,h/4);
         		boolean province = ch.id==PendulumId.ProvinceCard;     		
         		G.SetTop(r,G.Top(r)+(province? h*2/3 : h*3/4));
         		// hit the bottom 1/4 of cards to pop up an enlarged version
-        		if(G.pointInRect(any,r))
+           		PlayerBoard pb = gb.getPlayerBoard(reviewOnly ? guiPlayer : getActivePlayer().boardIndex);
+           		if(pb.pickedObject==null && G.pointInRect(any,r))
         			{ any.spriteRect = r;
         			  any.spriteColor = Color.red;
         			  any.hitCode = PendulumId.ShowCard;
@@ -865,6 +886,37 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         {
         	HitPoint.setHelpText(any,siz/2,xpos,ypos,tip);
         }
+        
+        // decorate some cells with the stack height
+        int xp = xpos0;
+        int yp = ypos0;
+        int sz = siz0;
+        boolean draw = true;
+        switch(rack)
+        {
+        case PlayerVotes:
+        	xp += sz/3;
+        	yp += sz/4;
+        	break;
+        case PlayerMilitary:
+        case PlayerCulture:
+        case PlayerCash:
+        	xp += sz/5;
+        	yp += (int)(sz*0.4);
+        	break;
+        	
+        default: draw=false;
+        }
+        if(draw)
+        	{	int h = cell.height();
+        		//if(h>0)
+        		{
+        		GC.setFont(gc,largeBoldFont());
+        		GC.setColor(gc,Color.darkGray);
+        		GC.Text(gc,""+h,xp,yp);
+        		}
+        	}
+
         //StockArt.SmallO.drawChip(gc,this,siz,xpos,ypos,null);
         if(eyeRect.isOnNow() && targets.get(cell)!=null)
         {
@@ -999,6 +1051,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	    		PlayerBoard pb = gb.getPlayerBoard(getActivePlayer().boardIndex);
     	    		if(pb.uiState==UIState.Normal)
     	    		{
+    	    		GC.setFont(gc,largeBoldFont());
     	    		if(!gb.variation.timers) { restButton.show(gc,selectPos); }
 	    	    	if(gb.allResting())
 	    	    	{
@@ -1066,7 +1119,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         {	testButton.setOnText("Resume "+pendingMoves.size()); 
         	testButton.draw(gc,selectPos);
         }
-
+        zoomer.drawMagnifier(gc,selectPos,boardRect,0.05,0.96,0.93,0);
     }
 
     /**
@@ -1458,7 +1511,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         			PerformAndTransmit("SetActive P"+boardPlayer);
         		}
         	}
-        	int who = bb.whoseTurn;
+        	int who = reviewOnly ? guiPlayer : getActivePlayer().boardIndex;
         	PlayerBoard pb = bb.getPlayerBoard(who);
         	if(m.op==MOVE_SELECT)
         	{

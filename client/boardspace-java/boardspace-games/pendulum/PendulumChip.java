@@ -34,9 +34,11 @@ class ChipStack extends OStack<PendulumChip>
 }
 
 /**
- * this is a specialization of {@link chip} to represent the stones used by pushfight;
- * and also other tiles, borders and other images that are used to draw the board.
- * 
+ * note that the "idString" field is derived from the order that these chips are
+ * created.  ANY change in the number or order will invalidate all existing game
+ * records.  Add new items only at the end of the file, and remove items at your
+ * peril.
+ *  
  * @author ddyer
  *
  */
@@ -65,11 +67,17 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		color = con;
 		randomv = r.nextLong();
 		chipNumber = otherChips.size();
-		idString = "c"+otherChips.size();
+		idString = "c"+otherChips.size();	// this is used in PendulumMovespec
 		otherChips.push(this)
 
 		;
 	}
+	private PendulumChip(String na,double[]sc,PendulumId pid,PColor con)
+	{
+		this(na,sc,con);
+		id = pid;
+	}
+	
 	private PendulumChip(String na,PColor con,int[]v,PB[]bene,int... res)
 	{
 		this(na,noscale,con);
@@ -124,11 +132,11 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	public static PendulumChip timerTrack = new PendulumChip("timer",noscale,PendulumId.TimerTrack);
 	private static double smallMeepleScale[] = {0.5,0.5,0.8};
 	static public PendulumChip chips[] = {		
-			new PendulumChip("bits/yellow-meeple",smallMeepleScale,PColor.Yellow),
-			new PendulumChip("bits/white-meeple",smallMeepleScale,PColor.White),
-			new PendulumChip("bits/green-meeple",smallMeepleScale,PColor.Green),
-			new PendulumChip("bits/blue-meeple",smallMeepleScale,PColor.Blue),
-			new PendulumChip("bits/red-meeple",noscale,PColor.Red),
+			new PendulumChip("bits/yellow-meeple",smallMeepleScale,PendulumId.AnyWorker,PColor.Yellow),
+			new PendulumChip("bits/white-meeple",smallMeepleScale,PendulumId.AnyWorker,PColor.White),
+			new PendulumChip("bits/green-meeple",smallMeepleScale,PendulumId.AnyWorker,PColor.Green),
+			new PendulumChip("bits/blue-meeple",smallMeepleScale,PendulumId.AnyWorker,PColor.Blue),
+			new PendulumChip("bits/red-meeple",noscale,PendulumId.AnyWorker,PColor.Red),
 	};
 
 	public boolean isGrande()
@@ -136,11 +144,11 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		return AR.indexOf(bigchips,this)>=0;
 	}
 	static public PendulumChip bigchips[] = {
-			new PendulumChip("bits/yellow-grande",noscale,PColor.Yellow),
-			new PendulumChip("bits/white-grande",noscale,PColor.White),
-			new PendulumChip("bits/green-grande",noscale,PColor.Green),
-			new PendulumChip("bits/blue-grande",noscale,PColor.Blue),
-			new PendulumChip("bits/red-grande",noscale,PColor.Red),
+			new PendulumChip("bits/yellow-grande",noscale,PendulumId.AnyWorker,PColor.Yellow),
+			new PendulumChip("bits/white-grande",noscale,PendulumId.AnyWorker,PColor.White),
+			new PendulumChip("bits/green-grande",noscale,PendulumId.AnyWorker,PColor.Green),
+			new PendulumChip("bits/blue-grande",noscale,PendulumId.AnyWorker,PColor.Blue),
+			new PendulumChip("bits/red-grande",noscale,PendulumId.AnyWorker,PColor.Red),
 	};
 	
 	static public PendulumChip hexes[] = {		

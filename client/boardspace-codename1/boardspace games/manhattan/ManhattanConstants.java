@@ -37,8 +37,6 @@ public interface ManhattanConstants
 	enum ManhattanId implements CellId
 	{	
 		ToggleEye, 
-		Magnifier,
-		Unmagnifier,
 		HitRetrieve,
 		SeeBombs,
 		SeeEspionage, Espionage, SeeBribes, Building, Mine, 

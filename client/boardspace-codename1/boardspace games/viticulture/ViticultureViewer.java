@@ -429,7 +429,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     {	// try different aspect ratios
        	double aspects[] = new double[]{ 1.2 , 1.5, 2.2, 2.5, 1.8};
        	setLocalBoundsV(x,y,width,height,aspects);
-       	if(centerOnBox!=null) { centerOnBox(centerOnBox); centerOnBox=null; }
+       	zoomer.reCenter();
     }
     
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
@@ -829,100 +829,25 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         while(cash>=2) { c.addChip(ViticultureChip.Coin_2); cash-=2; }
         while(cash>=1) { c.addChip(ViticultureChip.Coin_1); cash-=1; }
     }
-    private Rectangle centerOnBox = null;
-    private double boxExpansion = 1.2;
 
-    public void setGlobalUnZoomButton(ViticultureBoard gb)
-    {
-    	super.setGlobalUnZoomButton();
-    	setGlobalMagnifiers(null,gb,null,0);
-    }
     public double getPreferredRotation()
     {	double sup = super.getPreferredRotation();
     	commonPlayer pl = getPlayerOrTemp(mainBoard.whoseTurn);
     	return(sup+pl.displayRotation);
     }
-    private void setGlobalMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box,double rotation)
-    {	if(box!=null)
-    	{	
-		int qt = G.rotationQuarterTurns(rotation);
-		boolean swap = (qt&1)!=0;
-		int w = G.Width(box);
-		int h = G.Height(box);
-		double expansion = on.col > '@' ? boxExpansion : 1.08;
-		int fullh = G.Height(fullRect);
-		int fullw = G.Width(fullRect);
-		double hscale = fullh/((swap?w:h)*expansion);
-		double wscale = fullw/((swap?h:w)*expansion);
-		double ratio = Math.min(wscale, hscale);
-		setGlobalZoom(ratio,rotation);
-		centerOnBox =box;
-    	}
-    	else { setGlobalZoom(1.0,getRotation());
-    	}
-    	setMagnifiersOn(on,gb);
+
+    private void setBoardMagnifiers(Rectangle box0)
+    {	Rectangle box = box0;   
+    	if(currentZoomZone!=null && box!=null && currentZoomZone.equals(box)) 
+    		{ box = null; 
     }
-    private void setBoardMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box0)
-    {	Rectangle box = box0;
-    	
     	currentZoomZone = box;
     	autoZoom = false;
-    	setMagnifiersOn(on,gb);
-    }
-    private void setMagnifiersOn(ViticultureCell on,ViticultureBoard gb)
-    {
-    	for(PlayerBoard pb : gb.pbs)
-    	{
-    		ViticultureCell c = pb.magnifier;
-    		if(c.topChip()!=null) { c.removeTop(); }
-    		if(c!=on) { c.addChip(ViticultureChip.Magnifier); }
-    	}
-    	for(ViticultureCell c : gb.magnifiers) {
-    		if(c.topChip()!=null) { c.removeTop(); }
-    		if(c==gb.boardMagnifier) { 
-    			if(c!=on) { gb.boardMagnifier.addChip( ViticultureChip.Magnifier); }
-    		}
-    		else
-    		{
-    		c.addChip(c==on ? ViticultureChip.UnMagnifier : ViticultureChip.Magnifier);
-    		}
-    	}
     }
     
-    private void togglePlayerMagnifier(ViticultureCell c,ViticultureBoard gb)
-    {	if(c!=null)
-    	{
-    	ViticultureChip ch = c.topChip();
-    	if(ch!=null)
-    	{
-    	ViticultureId current = ch.id;
-    	switch(current)
-    	{
-    	case Magnifier:
-    		{
-    		if(c.col>'@') 
-    			{ commonPlayer pl = getPlayerOrTemp(c.col-'A');
-    			  setGlobalMagnifiers(c,gb,pl.playerBox,pl.displayRotation);
-    			}
-    		else if(c==gb.boardMagnifier) { setGlobalMagnifiers(c,gb,boardRect,0); }
-    		else if(c==gb.starMagnifier) { setBoardMagnifiers(c,gb, starRect); }
-    		else if(c==gb.wakeupMagnifier) { setBoardMagnifiers(c,gb,wakeupRect); }
-    		}
-    		break;
-    	case UnMagnifier:
-    	default:
-    		if((c==gb.starMagnifier)||(c==gb.wakeupMagnifier)) {  setBoardMagnifiers(null,gb,null); }
-    		else { 	setGlobalMagnifiers(null,gb,null,0); }
-    	}}}
-    }
-    
-    public boolean setGlobalZoom(double zoom,double rot)
-    {
-    	return super.setGlobalZoom(zoom, rot);
-    }
     public void setGlobalUnZoomButton()
-    {	setGlobalMagnifiers(null,mainBoard,null,0);
-		setBoardMagnifiers(null,mainBoard,null);
+    {	
+		setBoardMagnifiers(null);
 		super.setGlobalUnZoomButton();
     	
     }
@@ -1017,11 +942,6 @@ private double structuresLoc[][] = {
 private double destroyLoc[][] = {
 		{0.5,0.48,0.4}	
 };
-private double magnifierLoc[][] = {
-		{0.98,0.97,0.1},
-		{0.95,0.07,0.15}
-};
-
 
 PlayerBoard touchPlayer = null;
 private PlayerBoard showPlayerCards()
@@ -1194,8 +1114,7 @@ private void drawPlayerBoard(Graphics gc,
         else if(G.pointInRect(highlightAll,br))
         {	highlightAll.hitCode = ViticultureId.ShowPlayerBoard;
         }
-                 
-        drawArray(gc,false,state,pl,gb,br,highlightAll,highlightAll,targets,magnifierLoc,0,0,null,pb.magnifier,pb.isStartPlayer);
+        zoomer.drawMagnifier(gc,highlightAll,pl.playerBox,0.08,0.99,0.98,pl.displayRotation);
     }
     /**
     * sprites are normally a game piece that is "in the air" being moved
@@ -1358,7 +1277,6 @@ private void drawPlayerBoard(Graphics gc,
         drawArray(gc,true,ViticultureState.Puzzle,pl,gb,brect,hitBoard,highlightAll,targets,purpleLoc,0.004,0.007,ViticultureChip.BACK,gb.purpleCards);
         drawArray(gc,true,ViticultureState.Puzzle,pl,gb,brect,hitBoard,highlightAll,targets,blueLoc,0.004,0.007,ViticultureChip.BACK,gb.blueCards);
         drawArray(gc,true,ViticultureState.Puzzle,pl,gb,brect,hitBoard,highlightAll,targets,structureLoc,0.004,0.007,ViticultureChip.BACK,gb.structureCards);
-
     }
     public void drawPlayerBackgroundElements(Graphics gc,ViticultureBoard gb,commonPlayer pl,PlayerBoard pb,Rectangle br,Rectangle sr,Hashtable<ViticultureCell,Viticulturemovespec>targets)
     {
@@ -2782,7 +2700,6 @@ private void drawPlayerBoard(Graphics gc,
     		highlight.hitCode = ViticultureId.MakeWine;
     		highlight.hitObject = prev;
     	}
-		drawStack(gc,resetState,null, gb.boardMagnifier,highlight,highlightAll,step/2,x+w-step/4,y+h-step/4,0,0,0,null);
        	StockArt.FancyCloseBox.drawChip(gc, this, csize, x+w-csize,y+csize, highlightAll,ViticultureId.CloseOverlay,null);
 
     }
@@ -4706,12 +4623,6 @@ private void drawPlayerBoard(Graphics gc,
     		{0.12,0.975,0.04},	// grosseto
     };
     
-    double magnifierLocs[][] = {
-    		{0.91,0.98,0.03},	// board
-    		{0.2,0.58,0.03},	// wakeup
-    		{0.21,0.98,0.03},	// stars
-    		{0,0,0},
-    };
 
     private boolean showBigStack = false;
     private ViticultureCell showBigStackFrom = null;
@@ -4793,7 +4704,7 @@ private void drawPlayerBoard(Graphics gc,
         	break;
         case Main: 
             if(previousUI!=ui) 
-        		{ 	setBoardMagnifiers(null,gb,null); 
+        		{ 	setBoardMagnifiers(null); 
         		}
         	autoZoom = true; 
         	
@@ -4820,11 +4731,26 @@ private void drawPlayerBoard(Graphics gc,
             	GC.frameRect(gc,Color.red,passWarnRect);
              	}
              }}
+        	if(currentZoomZone==null || currentZoomZone==starRect)
+        	{
+        	Rectangle scale = zoomScale(starRect);
+            if(zoomer.drawMagnifier(gc,highlightAll,scale,currentZoomZone!=null,0.06,0.65,0.8,0))
+            {	highlight.hitData = starRect;
+            	highlightAll.hitCode = ViticultureId.Magnifier;
+            }}
+        	if(currentZoomZone==null || currentZoomZone==wakeupRect)
+        	{
+        	Rectangle scale2 = zoomScale(wakeupRect);
+        	if(zoomer.drawMagnifier(gc,highlightAll,scale2,currentZoomZone!=null,0.06,0.65,0.78,0))
+            {	highlight.hitData = wakeupRect;
+            	highlightAll.hitCode = ViticultureId.Magnifier;
+            }}
+
         	break;
         default: 
         	if(previousUI!=ui) 
     			{
-        		setBoardMagnifiers(null,gb,null); 
+        		setBoardMagnifiers(null); 
     			}
         	autoZoom = true;
         	
@@ -4860,12 +4786,6 @@ private void drawPlayerBoard(Graphics gc,
         		gb.starTrack);
         drawScoringTrack(gc,gb,brect,hitBoard,targets,gb.scoringTrack);
         drawResidualTrack(gc,pl,gb,brect,hitBoard,targets,gb.residualTrack);
-        
-        drawArray(gc,true,state,pl,gb,brect,highlightAll,tipHighlight,targets,magnifierLocs,0.0,0.0,null,gb.magnifiers);
-        if(gb.boardMagnifier.topChip()!=null)
-        {
-        drawArray(gc,true,state,pl,gb,brect,tipHighlight,tipHighlight,targets,magnifierLocs,0.0,0.0,null,gb.boardMagnifier);
-        }
         
         int cx = G.centerX(brect);
         int cy = G.centerY(brect);
@@ -4915,6 +4835,7 @@ private void drawPlayerBoard(Graphics gc,
         showOverlay(ui,gc,rotatedBoard,
         		gb,showBigStack,bc,highlight,highlightAll,targets);
  
+        zoomer.drawMagnifier(gc,highlightAll,brect,0.03,0.93,0.99,0);
         GC.setRotation(gc,-pl.displayRotation,cx,cy);
         G.setRotation(highlightAll, -pl.displayRotation,cx, cy);
 
@@ -5007,15 +4928,32 @@ private void drawPlayerBoard(Graphics gc,
     	break;
     	
     case ShowStars:
-    	if(autoZoom) { setBoardMagnifiers(gb.starMagnifier,gb, starRect); }
+    	if(autoZoom) { setBoardMagnifiers(starRect); }
     	break;
     case ShowWakeup:
-    	if(autoZoom) { setBoardMagnifiers(gb.wakeupMagnifier,gb, wakeupRect); }
+    	if(autoZoom) { setBoardMagnifiers(wakeupRect); }
     	break;
     }}
    
    boolean autoZoom = true;
    Rectangle currentZoomZone = null;
+   double zoomscale;
+   int zoomleft;
+   int zoomtop;
+   
+   Rectangle zoomScale(Rectangle r)
+   {	if(currentZoomZone==null) { return r; }
+   		else {
+		double neww = (G.Width(r)*zoomscale);
+		double newh = (G.Height(r)*zoomscale);
+		Rectangle newbr = new Rectangle(
+				(int)((G.Left(r)-zoomleft)),
+				(int)((G.Top(r)-zoomtop)),
+				(int)neww,
+				(int)newh);
+		return newbr;
+   		}
+   }
     // draw the board zoomed to bounds[]
 //    private void drawZoomedBoardElements(Graphics gc, EuphoriaBoard gb, Rectangle brect, HitPoint highlight,HitPoint highlightAll,
 //    		Hashtable<EuphoriaCell,EuphoriaMovespec>sources,Hashtable<EuphoriaCell,EuphoriaMovespec>dests,double bounds[],HitPoint tip)
@@ -5027,15 +4965,19 @@ private void drawPlayerBoard(Graphics gc,
        PlayerBoard showcards = showPlayerCards();
        if(showcards!=null) { ui=UI.ShowAPCards; }
        if(ui==UI.ScoreSheet && !scoreRect.isOnNow()) { ui=UI.Main; }
-       if((showcards!=null) || showBigStack || (zoom==null)) { drawBoardElements(gc,gb,brect,highlight,highlightAll,targets,ui); }
+       if((showcards!=null) || showBigStack || (zoom==null)) 
+       	{ drawBoardElements(gc,gb,brect,highlight,highlightAll,targets,ui); 
+       	}
     	else
     	{
     	int boardX = G.Left(boardRect);
     	int boardY = G.Top(boardRect);
     	int boardW = G.Width(boardRect);
     	int boardH = G.Height(boardRect);
-    	double left = (double)(G.Left(zoom)-boardX)/boardW;
-    	double top = (double)(G.Top(zoom)-boardY)/boardH;
+    	zoomleft = G.Left(zoom)-boardX;
+    	zoomtop = G.Top(zoom)-boardY;
+    	double zleft = (double)(zoomleft)/boardW;
+    	double ztop = (double)(zoomtop)/boardH;
     	double right = (double)(G.Right(zoom)-boardX)/boardW;
     	double bottom = (double)(G.Bottom(zoom)-boardY)/boardH;
 		double boardRatio = (double)boardW/boardH;
@@ -5045,7 +4987,6 @@ private void drawPlayerBoard(Graphics gc,
 		int viewL = G.Left(brect);
 		int viewT = G.Top(brect);
 		Rectangle dispR;
-		double scale;
 		// 
 		// this is extra tricky because the board aspect ratio is sacrosanct.  All the objects
 		// on the board are relative to the full board size, and the shape of the display rectangle
@@ -5055,17 +4996,17 @@ private void drawPlayerBoard(Graphics gc,
 		{	// dominated by view height
 			int vieww = (int)(viewH*boardRatio);
 			dispR = new Rectangle(viewL+(viewW-vieww)/2 , viewT, vieww, viewH);
-			scale = (viewH/(boardH*(bottom-top)));
+			zoomscale = (viewH/(boardH*(bottom-ztop)));
 		}
 		else
 		{	// dominated by view width
 			int viewh = (int)(G.Width(brect)/boardRatio);
 			dispR = new Rectangle(viewL, viewT+(viewH-viewh)/2 , viewW, viewh);
-			scale = viewW/(boardW*(right-left));
+			zoomscale = viewW/(boardW*(right-zleft));
 		}
-		double neww = (boardW*scale);
-		double newh = (boardH*scale);
-    	Rectangle newBR = new Rectangle(boardX-(int)(left*neww),boardY-(int)(top*newh),(int)neww,(int)newh);
+		double neww = (boardW*zoomscale);
+		double newh = (boardH*zoomscale);
+    	Rectangle newBR = new Rectangle(boardX-(int)(zleft*neww),boardY-(int)(ztop*newh),(int)neww,(int)newh);
      	if(gc!=null)
     	{	Rectangle oldClip = GC.combinedClip(gc,brect);
     		GC.unsetRotatedContext(gc,highlightAll);
@@ -5080,15 +5021,15 @@ private void drawPlayerBoard(Graphics gc,
     	int hx = G.Left(highlightAll);
     	int hy = G.Top(highlightAll);
      	try {
-    		CELLSIZE = (int)(STANDARD_CELLSIZE*scale);
+    		CELLSIZE = (int)(STANDARD_CELLSIZE*zoomscale);
     		gb.SetDisplayRectangle(newBR);
     	    int w = G.Width(newBR);
     	    int h = G.Height(newBR);
     	    int x = G.Left(newBR);
     	    int y = G.Top(newBR);
 
-        	double xpos = left+(double)(hx-G.Left(brect))/w;
-        	double ypos = top+(double)(hy-G.Top(brect))/h;
+        	double xpos = zleft+(double)(hx-G.Left(brect))/w;
+        	double ypos = ztop+(double)(hy-G.Top(brect))/h;
         	
         	
         	G.SetLeft(highlightAll,(int)(x+xpos*w));		// adjust the mouse coordinates
@@ -5984,7 +5925,7 @@ private void drawPlayerBoard(Graphics gc,
         	break;
         case Magnifier:
         	{
-        	togglePlayerMagnifier(hitObject,gb);
+        	setBoardMagnifiers((Rectangle)hp.hitData);
         	}
         	break;
         case Field:

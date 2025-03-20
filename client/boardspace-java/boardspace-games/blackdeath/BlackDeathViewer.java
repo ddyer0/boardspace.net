@@ -196,7 +196,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     double aspects[]= {1.2,1.8,1.5};
     public void setLocalBounds(int x, int y, int width, int height)
     {	setLocalBoundsV(x,y,width,height,aspects);
-    	if(centerOnBox!=null) { centerOnBox(centerOnBox); centerOnBox=null; }
+    	zoomer.reCenter();
     }
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {
@@ -385,7 +385,6 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             Rectangle cards = cardRects[player];
             int h = G.Height(cards);
             int l = G.Left(cards);
-            int t = G.Top(cards);
             int cw = h*2;
             int cx = G.centerX(cards);
             int cy = G.centerY(cards)+cw/30;
@@ -425,13 +424,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             	StockArt.SolidRightArrow.drawChip(gc, this,cw/4,l,cy,null);
             	}
             // draw a magnifier for the player stuff
-            int cs = CELLSIZE/2;
-            if(StockArt.Magnifier.drawChip(gc, this, cs, l, t+cs/2,
-            		highlightAll, BlackDeathId.Magnify,null))
-            	{
-            		highlightAll.hitObject = r;
-            	}
-        	
+            zoomer.drawMagnifier(gc,highlightAll,pl.playerBox,0.04,0.99,0.6,G.rotationQuarterTurns(pl.displayRotation));
         }
     }
     /**
@@ -709,23 +702,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         		pb.chip.drawChip(gc,this,thisPlayer==who?boxi*3/2:boxi,left+(int)(i*boxw),top,null);
         	}
         }
-        int sh = G.Height(stateRect);
-        if(StockArt.Magnifier.drawChip(gc, this, sh, G.Right(mortalityRect)-sh/2,
-        		G.Bottom(mortalityRect)-sh/2,highlightAll,BlackDeathId.MagnifyBoard,null))
-        	{
-        		highlightAll.hitObject = rotatedMortalityRect;
-        	}
-        
-        /*
-         * the board is always big enough that this magnifier does nothing
-        if(StockArt.Magnifier.drawChip(gc, this, sh, G.Right(boardRect)-sh/2,
-        		G.Bottom(boardRect)-sh/2,highlightAll,BlackDeathId.MagnifyBoard,null))
-        	{
-        		highlightAll.hitObject = boardRect;
-        	}
-        	        	*/
-
+ 
         GC.frameRect(gc, Color.red, mortalityRect);
+
         if(bc!=null)
         {	int margin = wid/10;
         	int scrimW = wid-margin*2;
@@ -744,6 +723,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 
 
         }
+        zoomer.drawMagnifier(gc,highlightAll,brect,0.03,0.98,0.97,0);
+        zoomer.drawMagnifier(gc,highlightAll,mortalityRect,0.2,0.98,0.97,0);
+
     }
     private BlackDeathChip bigChip = null;
     private boolean noBigChip = false;
@@ -1114,31 +1096,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 		
 		}
 	}
-    private Rectangle centerOnBox = null;
 
-    private Rectangle globalMag = null;
-    private void setGlobalMagnifier(Rectangle box,double rotation)
-    {	if(getGlobalZoom()<=1) { globalMag = null; }
-    	if(box==globalMag) { setGlobalZoom(1,0); globalMag=null; }
-    	else if(box!=null)
-    	{
-    	globalMag = box;
-		int qt = G.rotationQuarterTurns(rotation);
-		boolean swap = (qt&1)!=0;
-		int w = G.Width(box);
-		int h = G.Height(box);
-		
-		int fullh = G.Height(fullRect);
-		int fullw = G.Width(fullRect);
-		double expand = 0.9;
-		double hscale = fullh/((swap?w:h));
-		double wscale = fullw/((swap?h:w));
-		double ratio = expand*Math.min(wscale, hscale);
-		setGlobalZoom(ratio,rotation);
-		centerOnBox = box;
-		resetBounds();
-    	}
-    }
     public boolean allowPartialUndo()
     {	if(super.allowPartialUndo())
     	{	
@@ -1202,20 +1160,6 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	break;
         case PerfectRoll:
         	PerformAndTransmit("PerfectNext");
-        	break;
-        case MagnifyBoard:
-	    	{
-	    	Rectangle r = (Rectangle) hp.hitObject;
-	    	setGlobalMagnifier(r,0);
-	    	}
-        	break;
-        case Magnify:
-        	{
-        	Rectangle r = (Rectangle)hp.hitObject;
-        	// rotation perspective for the current player
-        	double rotation = getPlayerOrTemp(bb.whoseTurn).displayRotation;
-        	setGlobalMagnifier(r,rotation);
-        	}
         	break;
         case Roll:
         	{

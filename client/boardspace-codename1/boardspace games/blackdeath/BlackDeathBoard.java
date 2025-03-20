@@ -286,6 +286,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		// same chip count too, resolve randomly but consistently
 		return(G.signum(randomLong()-o.randomLong()));
 	}
+
 }
 
 class BlackDeathLink implements Digestable
