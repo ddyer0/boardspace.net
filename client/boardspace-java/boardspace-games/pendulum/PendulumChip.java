@@ -164,7 +164,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 			new PendulumChip("bits/yellow-cylinder",new double[] {0.5,0.5,0.9},PColor.Yellow),
 			new PendulumChip("bits/white-cylinder",new double[] {0.5,0.5,0.9},PColor.White),
 			new PendulumChip("bits/green-cylinder",new double[] {0.55,0.5,0.9},PColor.Green),
-			new PendulumChip("bits/blue-cylinder",new double[] {0.5,0.4,0.65},PColor.Blue),
+			new PendulumChip("bits/blue-cylinder",new double[] {0.5,0.4,0.85},PColor.Blue),
 			new PendulumChip("bits/red-cylinder",noscale,PColor.Red),
 	};
 
@@ -313,7 +313,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		new PendulumChip("stratcards/gambbriber-1",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/gambbriber-2",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.None,PB.R1),
 		new PendulumChip("stratcards/gambbriber-3",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.CanRetrieve,PB.Retrieve),
-		new PendulumChip("stratcards/gambbriber-4",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.D7Retrieve,PB.Retrieve),
+		new PendulumChip("stratcards/gambbriber-4",noscale,PendulumId.PlayerStratCard,stratBacks[4],PC.D7Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/gambinsurg-1",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/gambinsurg-2",noscale,PendulumId.PlayerStratCard,stratBacks[5],PC.None,PB.R1),
@@ -322,24 +322,24 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 
 		new PendulumChip("stratcards/licimp-1",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/licimp-2",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.R1),
-		new PendulumChip("stratcards/licimp-3",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.None,PB.Retrieve),
+		new PendulumChip("stratcards/licimp-3",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.CanRetrieve,PB.Retrieve),
 		new PendulumChip("stratcards/licimp-4",noscale,PendulumId.PlayerStratCard,stratBacks[6],PC.R8Recruit,PB.Recruit),
 
 
-		new PendulumChip("stratcards/licalc-1",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
+		new PendulumChip("stratcards/licalc-1",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.P2P2P2),
 		new PendulumChip("stratcards/licalc-2",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.RetrieveStrat),
-		new PendulumChip("stratcards/licalc-3",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2,PB.Retrieve),
+		new PendulumChip("stratcards/licalc-3",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R2Retrieve,PB.Retrieve),
 		new PendulumChip("stratcards/licalc-4",noscale,PendulumId.PlayerStratCard,stratBacks[7],PC.R8Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/mesjust-1",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.Pres1),
 		new PendulumChip("stratcards/mesjust-2",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.None,PB.R1),
 		new PendulumChip("stratcards/mesjust-3",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.CanRetrieve,PB.Retrieve),
-		new PendulumChip("stratcards/mesjust-4",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.C7,PB.Recruit),
+		new PendulumChip("stratcards/mesjust-4",noscale,PendulumId.PlayerStratCard,stratBacks[8],PC.C7Recruit,PB.Recruit),
 
 		new PendulumChip("stratcards/mespaci-1",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.C1,PB.Pres1),
 		new PendulumChip("stratcards/mespaci-2",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.C4V2,PB.Mespaci_2),
 		new PendulumChip("stratcards/mespaci-3",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.MesPaci_3,PB.Mespaci_3),
-		new PendulumChip("stratcards/mespaci-4",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.Pop3,PB.Recruit),
+		new PendulumChip("stratcards/mespaci-4",noscale,PendulumId.PlayerStratCard,stratBacks[9],PC.Pop3Recruit,PB.Recruit),
 
 	};
 	static PendulumChip finalBack = new PendulumChip("council/finalrew-back",noscale,PendulumId.RewardDeck);

@@ -3622,12 +3622,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         if(!reviewOnly && !GameOver())
         {
-        if ((whoseTurn != null) 
-        		&& !whoseTurn.isSpectator()
-        		&& (whoseTurn.robotStarted()))
-	        {
-	            startRobotTurn(whoseTurn);
-	        }
+        	startRobotTurns();
         	makeRobotMoves();
         }
 
@@ -3647,10 +3642,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         if(!reviewOnly && !GameOver())
         	{
-        	if ((whoseTurn != null) && (whoseTurn.robotStarted()))
-			  {
-			  startRobotTurn(whoseTurn);
-			  }
+        	startRobotTurns();
 			makeRobotMoves();
         	}
         StandardProcessing("doMYTURN",cmd,localST,fullMsg);
@@ -4743,7 +4735,28 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}   		
     	}
     }
-
+    public void startRobotTurns()
+    {	if(v.simultaneousTurnsAllowed())
+    	{
+    	if(playerConnections!=null)
+    		{
+    		for(commonPlayer p : playerConnections)
+    			{
+    			if(p.robotStarted())
+    				{
+    				startRobotTurn(p);
+    				}
+    			}
+    		}
+    	}
+    	else
+    	{
+		if(whoseTurn!=null &&  whoseTurn.robotStarted())
+			{
+			startRobotTurn(whoseTurn);
+			}
+    	}
+    }
     public void makeRobotMoves()
     {	if((v!=null) && (v.getReviewPosition()<0))
     	{

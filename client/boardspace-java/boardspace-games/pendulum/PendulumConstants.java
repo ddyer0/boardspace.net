@@ -100,6 +100,7 @@ public interface PendulumConstants
 		TakeLegendary("Take the legendary achievement benefit"),
 		TestPrivilege("Test Privilege"), 
 		AnyWorker("Regular worker or Grande"),
+		Pause("Pause timers"),
 		;
 		PendulumChip chip;
 		String description = "";
@@ -178,17 +179,20 @@ enum PC
 	C4V2("4 Culture cubes + 2 cotes"),
 	C5("5 Culture cubes"),
 	C7("7 Culture cubes"),
+	C7Recruit("7 Culture cubes  and less than 4 workers"),
 	D2("$2"),
 	D5("$5"),
 	D7("$7"),
-	D7Retrieve("$7 and has a worker to retrieve"),
+	D7Recruit("$7 and has a worker to recruit"),
 	M4D4Recruit("4 Military cubes + $4"), 
 	R2("Any 2 Resource cubes"),
+	R2Retrieve("Any 2 Resource cubes and can retrieve a worker"),
 	R8Recruit("Any 8 Resource cubes"),
 	R10("Any 10 Resource cubes and no Legendary achievement"),
 
 	MesPaci_3(""), 
 	Pop3("3 Popularity VP"), 
+	Pop3Recruit("3 Popularity VP and less than 4 workers"),
 	
 	M6XC2V3("6 Military + 2 Culture + 3 Votes"),	// achivement card 1
 	M2C6V3("2 Military + 6 Culture + 3 Votes"),		// achievement card 2
@@ -203,7 +207,7 @@ enum PC
 	MeepleAndGrande("a regular worker available to promote"),
 	NoMax3("No Max3 card in hand"),
 	Vote("Some vote gained"),
-	CanRetrieve("have a worker that can be retrieved"),
+	CanRetrieve("have a worker that can be retrieved"), 
 
 
 	;
@@ -273,6 +277,7 @@ enum PB {
 	RetrieveAll("Retrieve all your Strategem cards"),
 	SwapVotes("swap 1 vote among Power Presige and Popularity"),
 	FreeD2("Your next $2 worker action is free"),
+	P2P2P2("2 Power VP or 2 Prestige VP or 2 Popularity VP"),
 	
 	;
 	String description = "";
@@ -299,10 +304,11 @@ public enum UIState implements Digestable
 	PayResources("Pay #1{ resources, resource, resources}"),
 	AchievementOrLegandary("Take the legendary achievement or the default benefits"),
 	SwapVotes("decrease 1 vote and increase 1 vote"),
-	Rest("wait for the other players"),
-	Ready("wait for the other players"),
+	Rest("you are waiting for the other players"),
+	Ready("you are waiting for the other players"),
 	PromoteMeeple("select the worker to promote to Grande"),
 	ProvinceReward("Select a province to conquer"),
+	P2P2P2("2 Power VP or 2 Prestige VP or 2 Popularity VP"),
 	;
 	String description;
 	UIState(String d) { description = d; }
@@ -396,7 +402,7 @@ public enum PendulumState implements BoardState
 	static final String PlayState = "Place workers or Take Actions";
 	static final String PlayGrandeState = "Place your grande worker";
 	static final String PlayMeepleState = "Place your regular worker";
-	static final String CouncilPlayState = "Place workers and take actions, No timers";
+	static final String CouncilPlayState = "Place workers and take actions, No timers can flip";
 	static final String CouncilState = "Select your council benefit";
 	static final String StartCouncilMessage = "Start Council";
 	static final String StartPlayMessage = "Start Timers";
@@ -407,12 +413,20 @@ public enum PendulumState implements BoardState
 	static final String StartPlayState = "All are ready to start simultaneous play";
 	static final String RestPlayMessage = "Ready to flip";
 	static final String ExplainRestMessage = "Click when you have finished all the actions you want to make";
+	static final String PausePlayMessage = "Pause Timers";
+	static final String ExplainPauseMessage = "Temporarily stop the timers";
+	static final String ResumePlayMessage = "Restart Timers";
+	static final String ExplainResumeMessage = "Restart the timers";
 	static final String FlipReadyState = "ready to advance the flip track";
 	static final String RoundMessage = "Round #1";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Pendulum",
+			ResumePlayMessage,
+			ExplainResumeMessage,
+			PausePlayMessage,
+			ExplainPauseMessage,
 			RoundMessage,
 			FlipReadyState,
 			CouncilTrimState,

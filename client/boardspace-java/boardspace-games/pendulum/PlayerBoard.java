@@ -607,7 +607,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		case V3: return votes.height()>=3;
 		case V3Recruit: return votes.height()>=3 && totalRecruits<4;
 		case V4: return votes.height()>=4;
-		case V4Recruit: return votes.height()>=4;
+		case V4Recruit: return votes.height()>=4  && totalRecruits<4;
 		case C1: return culture.height()>=1;
 		case C2: return culture.height()>=2;
 		case C2Retrieve: return culture.height()>=2 && parent.hasRetrieveWorkerMoves(boardIndex);
@@ -615,13 +615,15 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		case C5: return culture.height()>=5;
 		case C4V2: return culture.height()>=4 && votes.height()>=2;
 		case C7: return culture.height()>=7;
+		case C7Recruit:  return culture.height()>=7 && totalRecruits<4;
 		case D2: return cash.height()>=2;
 		case D5: return cash.height()>=5;
 		case D7: return cash.height()>=7;
-		case D7Retrieve: return cash.height()>=7 && parent.hasRetrieveWorkerMoves(boardIndex);
+		case D7Recruit: return cash.height()>=7 && totalRecruits<4;
 		case Pow2: return powerVPvalue>=2;
 		case M4D4Recruit: return military.height()>=4 && cash.height()>=4  && totalRecruits<4;
 		case R2: return totalResources()>=2;
+		case R2Retrieve: return totalResources()>=2 && parent.hasRetrieveWorkerMoves(boardIndex);
 		case R8Recruit: return totalResources()>=8 && totalRecruits<4;
 		case R10: return totalResources()>=10 && legendary.isEmpty();
 
@@ -700,6 +702,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			transfer(2,votes,votesReserves,replay);
 			break;
 		case C7: 
+		case C7Recruit:
 			transfer(7,culture,cultureReserves,replay);
 			break;
 
@@ -711,7 +714,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			transfer(5,cash,cashReserves,replay);
 			break;
 		case D7:
-		case D7Retrieve:
+		case D7Recruit:
 			transfer(7,cash,cashReserves,replay);
 			break;
 		case Pow2: 
@@ -723,6 +726,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			transfer(4,cash,cashReserves,replay);
 			break;
 		case R2: 
+		case R2Retrieve:
 			setUIState(UIState.PayResources,2);
 			break;
 		case R8Recruit: 
@@ -869,11 +873,14 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		}
 	}
 
-	public void collectBenefit(PendulumCell c,PB benefit,boolean councilMode,replayMode replay)
-	{
+	public boolean collectBenefit(PendulumCell c,PB benefit,boolean councilMode,replayMode replay)
+	{	boolean allowUndo = false;
 		switch(benefit)
 		{
 		case None: break;
+		case P2P2P2:
+			setUIState(UIState.P2P2P2,1);
+			break;
 		case Pres1:
 			setPrestigeVP(prestigeVPvalue+1,replay);
 			break;
@@ -898,6 +905,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			break;
 		case SwapVotes:
 			setUIState(UIState.SwapVotes,1);
+			allowUndo = true;
 			break;
 		case Retrieve:
 			/*
@@ -919,13 +927,16 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			or back where it came from.
 			*/
 			if(parent.hasRetrieveWorkerMoves(boardIndex)) { setUIState(UIState.RetrieveWorker,1); }
+			allowUndo = true;
 			break;
 			
 		case ProvinceReward:
 			setUIState(UIState.ProvinceReward);
+			allowUndo = true;
 			break;
 		case Province:
 			if(parent.hasProvincesAvailable()) { setUIState(UIState.Province); }
+			allowUndo = true;
 			break;
 		case D1:
 			transferIfAvailable(1,cashReserves,cash,replay);
@@ -1048,10 +1059,12 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			// if there is 1 deployed, find and swap automatically
 			// also flip the card so it can't be chosen again
 			setUIState(UIState.PromoteMeeple);
+			allowUndo = true;
 			break;
 		default: 
 			throw G.Error("Not expecting benefit %s",benefit);
 		}
+		return allowUndo;
 	}
 	public void collectBenefit(PendulumCell c, PendulumChip chip,replayMode replay) {
 		boolean allowUndrop = false;
@@ -1084,11 +1097,11 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			}
 			else
 			{
-			collectBenefit(c,c.chipAtIndex(0).pb[0],false,replay);
+			allowUndrop = collectBenefit(c,c.chipAtIndex(0).pb[0],false,replay);
 			}}
 			break;
 		case PerCard:
-			collectBenefit(c,chip.pb[0],false,replay);
+			allowUndrop = collectBenefit(c,chip.pb[0],false,replay);
 			break;
 		case Popularity1Prestige1Vote1:
 			setPopularityVP(popularityVPvalue+1,replay);
@@ -1336,7 +1349,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		return val;
 	}
 	public int compareTo(PlayerBoard o) {
-		return G.signum(privilegeScore()-o.privilegeScore());
+		return o.privilegeScore()-G.signum(privilegeScore());
 	}
 
 	// clear votes at the beginning of the council phase
