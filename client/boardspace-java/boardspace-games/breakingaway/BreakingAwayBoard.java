@@ -1009,6 +1009,10 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			}
 		}
 	}
+	public boolean isDoneAdjusting(int who)
+	{
+		return doneAdjusting[who];
+	}
 	public boolean Execute(commonMove mm,replayMode replay) {
 		BreakingAwayMovespec m = (BreakingAwayMovespec) mm;
 		//if(replay.animate) { G.print("E "+m+" "+Digest()); }

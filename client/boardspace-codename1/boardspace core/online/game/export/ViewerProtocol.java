@@ -194,7 +194,7 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * robot when it's not its turn.
 	 * @return
 	 */
-	public boolean allowRobotsToRun();
+	public boolean allowRobotsToRun(commonPlayer p);
 	public String fixedServerRecordString(String string, boolean includePlayerNames);
 	public String fixedServerRecordMessage(String fixedHist);
 	public Object getUrlNotes();

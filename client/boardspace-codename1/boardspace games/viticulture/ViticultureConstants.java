@@ -1090,6 +1090,7 @@ public interface ViticultureConstants
 		ShowHidden(null),	// see cards on side screens
 		Board(null),
 		Magnifier(null),
+		UnMagnifier(null),
 		Magnify(null),
 		ShowPlayerBoard(null),
 		OverValue(null),

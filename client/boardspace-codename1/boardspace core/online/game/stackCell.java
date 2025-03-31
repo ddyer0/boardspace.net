@@ -446,7 +446,7 @@ public abstract class stackCell
 	public boolean labelAllChips() { return(false); }
 	
 /**
- * if this returns true, drawStack will set highlight.hit_index based on the nearesst
+ * if this returns true, drawStack will set highlight.hit_index based on the nearest
  * center point of the objects drawn.  Otherwise, it will set hit_index based on the
  * last drawn object to contain the pointer.
  * If a stack is spread enough so individual items (ie; cards) are indistinguishable, point at center

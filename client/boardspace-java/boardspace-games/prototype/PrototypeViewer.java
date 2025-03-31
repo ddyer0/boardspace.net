@@ -1500,8 +1500,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     // by default, not allowed in simultaneous phases.  Return true 
     // to let them run "in their normal turn", but this will not allow
     // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
+    public boolean allowRobotsToRun(commonPlayer pl) {
+    	return super.allowRobotsToRun(pl);
     }
     //
     // support for the last move "numberMenu" logic

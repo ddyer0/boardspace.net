@@ -2385,13 +2385,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			? Reviewing
     			: vprogressString());
     }
-    // if there are simultaneous turns, robot start/stop can be tricky
-    // by default, not allowed in simultaneous phases.  Return true 
-    // to let them run "in their normal turn", but this will not allow
-    // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
-    }
+
     //
     // support for the last move "numberMenu" logic
     //

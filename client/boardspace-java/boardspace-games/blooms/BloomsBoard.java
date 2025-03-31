@@ -1001,7 +1001,10 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         }}
     }
 
-
+    public boolean hasApproved(int who)
+    {
+    	return endgameApproved[who];
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Bloomsmovespec m = (Bloomsmovespec)mm;
         if(replay.animate) { animationStack.clear(); }

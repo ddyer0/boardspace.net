@@ -1960,7 +1960,7 @@ graphics when using a touch screen.
         	// elements within the image.
         int xtrim = (scalew+imw)/(imw+1)+1;
         int ytrim = (scaleh+imh)/ (imh+1)+1;
-        Rectangle sh = GC.combinedClip(gc,ax+xtrim , Math.max(0,ay+ytrim) , scalew2 - xtrim*2, scaleh - ytrim*2);
+        Rectangle sh = GC.combinedClip(gc,ax+xtrim ,ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2);
         //
         // this clipping ought to be unnecessary, but there seems to be a bug with
         // images that are both scaled and transparent, that the edges are not

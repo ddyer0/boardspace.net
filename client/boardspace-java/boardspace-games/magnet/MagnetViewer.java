@@ -1236,31 +1236,11 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	return (reviewMode()? (MagnetState)History.pre_review_state : bb.getState());
     }
 
-    //
-    // start robots if this is an asynchronous phase
-    // if it's a normal, synchronous phase, the main game
-    // controller will do it.
-    //
-    public void runAsyncRobots()
-    {	MagnetState state = activeGameState();
-       	if((state!=null) && bb.simultaneousTurnsAllowed(state))
-    	{
-    	
-    		for(commonPlayer pp : players)
-    			{  if((pp!=null)
-    					&& !bb.setupDone[pp.boardIndex]
-    					// keep placing staring pieces until all placed,
-    					// but don't generate the final "done" until the other
-    					// player has also clicked done.
-    					&& (!bb.allStartupPlaced(pp.boardIndex)
-    							|| (state==MagnetState.WaitForStart))
-    					) 
-    				{ startRobotTurn(pp); 
-    				} 
-    			}
-    	}
+    public boolean allowRobotsToRun(commonPlayer p)
+    {
+    	if(simultaneousTurnsAllowed() && bb.setupDone[p.boardIndex]) { return false; }
+    	return true;
     }
-    
     public void startSynchronousPlay()
     {
  	   if(!reviewMode() 
@@ -1283,7 +1263,6 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     {
            super.ViewerRun(wait);
            startSynchronousPlay();		// start synchronous play when all are ready
-           runAsyncRobots();			// run robot in the async phase
     }
 
 }

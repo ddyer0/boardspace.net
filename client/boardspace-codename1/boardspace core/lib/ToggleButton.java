@@ -48,8 +48,11 @@ abstract public class ToggleButton extends Rectangle
 	CellId onId;
 	CellId offId;
 	exCanvas canvas;
+	private boolean currentMouse = false;
 
 	public abstract boolean actualDraw(Graphics gc,HitPoint hp);
+	
+	public boolean isMouseOver() { return currentMouse; }
 	
 	public boolean isOnNow() 
 		{ return(!temporarilyOff 
@@ -63,7 +66,7 @@ abstract public class ToggleButton extends Rectangle
    		// it on and off
    		if(G.Height(this)>0)
    		{
-   		if(actualDraw(gc,hp))
+   		if((currentMouse = actualDraw(gc,hp)))
    		{
    			if(!isOn && !justTurnedOff && activateOnMouse)
    			{ mouseOverNow = true; 

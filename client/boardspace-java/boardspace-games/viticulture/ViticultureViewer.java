@@ -4725,21 +4725,8 @@ private void drawPlayerBoard(Graphics gc,
             	GC.Text(gc, true, passWarnRect,Color.red,Color.black,UnplacedWorkerWarning);
             	GC.frameRect(gc,Color.red,passWarnRect);
              	}
-             }}
-        	if(currentZoomZone==null || currentZoomZone==starRect)
-        	{
-        	Rectangle scale = zoomScale(starRect);
-            if(zoomer.drawMagnifier(gc,highlightAll,scale,currentZoomZone!=null,0.06,0.65,0.8,0))
-            {	highlight.hitData = starRect;
-            	highlightAll.hitCode = ViticultureId.Magnifier;
             }}
-        	if(currentZoomZone==null || currentZoomZone==wakeupRect)
-        	{
-        	Rectangle scale2 = zoomScale(wakeupRect);
-        	if(zoomer.drawMagnifier(gc,highlightAll,scale2,currentZoomZone!=null,0.06,0.65,0.78,0))
-            {	highlight.hitData = wakeupRect;
-            	highlightAll.hitCode = ViticultureId.Magnifier;
-            }}
+
 
         	break;
         default: 
@@ -4754,7 +4741,21 @@ private void drawPlayerBoard(Graphics gc,
         }
         hintRect.setTemporarilyOff(tempOff);
     	previousUI = ui;
- 
+    	
+       	if(currentZoomZone==null || currentZoomZone==starRect)
+    	{
+    	Rectangle scale = zoomScale(starRect);
+        if(zoomer.drawMagnifier(gc,highlightAll,scale,currentZoomZone!=null,0.06,0.65,0.8,0))
+        {	highlightAll.hitData = starRect;
+        	highlightAll.hitCode = ViticultureId.Magnifier;
+        }}
+    	if(currentZoomZone==null || currentZoomZone==wakeupRect)
+    	{
+    	Rectangle scale2 = zoomScale(wakeupRect);
+    	if(zoomer.drawMagnifier(gc,highlightAll,scale2,currentZoomZone!=null,0.06,0.65,0.78,0))
+        {	highlightAll.hitData = wakeupRect;
+        	highlightAll.hitCode = ViticultureId.Magnifier;
+        }}
     	
     	drawBoardBackgroundElements(BACKGROUND_OPTIMIZATION?null:gc,pl,gb,brect,hitBoard,tipHighlight,targets); 
     	

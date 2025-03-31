@@ -110,6 +110,7 @@ public class BreakingAwayPlay extends commonRobot<BreakingAwayBoard> implements 
 public void PrepareToMove(int playerIndex)
 {
     board.copyFrom(GameBoard);
+    board.setWhoseTurn(playerIndex);
 
 }
 

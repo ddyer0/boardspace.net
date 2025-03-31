@@ -3664,7 +3664,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         if (!GameOver()
         		&& (AllRobotsIdle() || (v.simultaneousTurnsAllowed()))
-        		&& v.allowRobotsToRun())
+        		&& v.allowRobotsToRun(p))
         {	
             v.startRobotTurn(p);
         }
@@ -4742,7 +4742,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		{
     		for(commonPlayer p : playerConnections)
     			{
-    			if(p.robotStarted())
+    			if(p!=null && p.robotStarted())
     				{
     				startRobotTurn(p);
     				}

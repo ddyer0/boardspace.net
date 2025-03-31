@@ -1077,7 +1077,6 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         public void ViewerRun(int wait)
         {
             super.ViewerRun(wait);
-            runAsyncRobots();
             RajState state = bb.getState();
             
             if(initialized && !reviewMode())
@@ -1141,24 +1140,6 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     }
 
     //
-    // if we're in a simultaneous move state, start the robot immediately rather 
-    // than the normal wait for his turn.
-    //
-    public void startRobotTurn(commonPlayer p)
-    {
-       	switch(bb.getState())
-    	{
-    	case PLAY_STATE:
-	    	if(!bb.hasDroppedCard(p.boardIndex))
-					{ super.startRobotTurn(p); 
-					}
-	    	break;
-	    default: 
-	    	super.startRobotTurn(p);
-    	}
-
-    }
-    //
     // get the player who may be running a robot. This is used
     // for board and progress displays.
     //
@@ -1185,27 +1166,12 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	}
     	return(super.currentRobotPlayer());
     }
-    //
-    // start robots if this is an asynchronous phase
-    // if it's a normal, synchronous phase, the main game
-    // controller will do it.
-    //
-    public void runAsyncRobots()
-    {	
-       	switch(bb.getState())
-    	{
-    	case PLAY_STATE:
-    		if( !GameOver() && allRobotsIdle())
-    		{ 	for(commonPlayer pp : players)
-				{	if((pp!=null) && !bb.hasDroppedCard(pp.boardIndex))
-					{ startRobotTurn(pp); 
-					}
-			}}
-			break;
-		default: break;
-    	}
-    }
 
+    public boolean allowRobotsToRun(commonPlayer p)
+    {
+    	if(simultaneousTurnsAllowed() && bb.hasDroppedCard(p.boardIndex)) { return false; }
+    	return true;
+    }
     /**
      * the trickiest bit of simultaneous play is the inherent uncertainty that
      * the players will all see the same sequence of moves.  With up to 5 players

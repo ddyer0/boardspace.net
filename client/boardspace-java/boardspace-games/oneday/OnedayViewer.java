@@ -1476,6 +1476,11 @@ private void playSounds(commonMove m)
     	
     	}
     }
+    
+    public boolean allowRobotsToRun(commonPlayer p)
+    {	if(simultaneousTurnsAllowed() && b.rackFull(p.boardIndex)) { return false; }
+        return true;
+    }
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically
  *  */
@@ -1487,7 +1492,6 @@ private void playSounds(commonMove m)
        {
        default: throw G.Error("not expecting %s",b.variation);
        case Standard:
-           runAsyncRobots();
            startSynchronousPlay();
            gameOverAnimation();
            break;
@@ -1507,32 +1511,7 @@ private void playSounds(commonMove m)
 		   PerformAndTransmit("NormalStart",false,replayMode.Live);
 	   }
    }
-   public void startRobotTurn(commonPlayer pp)
-   {  OnedayState state = b.getState();
-	   if((state==OnedayState.SynchronousPlace)||(state==OnedayState.Place))
-	   {
-		   if((pp!=null)&&!b.rackFull(pp.boardIndex)) { super.startRobotTurn(pp); }
-	   }
-	   else { super.startRobotTurn(pp); }
-   }
 
-    //
-    // start robots if this is an asynchronous phase
-    // if it's a normal, synchronous phase, the main game
-    // controller will do it.
-    //
-    public void runAsyncRobots()
-    {	
-       	switch(b.getState())
-    	{
-    	case Place:
-    		{
-    		for(int i=0,lim=nPlayers(); i<lim; i++) {  startRobotTurn(getPlayerOrTemp(i)); }
-    		}
-			break;
-		default: break;
-    	}
-    }
     public BoardProtocol getBoard()   {    return (b);   }
     public SimpleRobotProtocol newRobotPlayer() { return(new OnedayPlay()); }
 

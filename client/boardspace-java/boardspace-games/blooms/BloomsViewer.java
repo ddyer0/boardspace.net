@@ -995,43 +995,34 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     {	
   	  return null;
     }
-
-     public void ViewerRun(int n)
-        {
-        	super.ViewerRun(n);
-        	if(bb.simultaneousTurnsAllowed())	// if allowed in the current state
-        	{
-            if(!reviewOnly 
-          	 && !reviewMode() 
-          	 && (bb.allApproved())
-          	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
-            	{	 
-            	// this triggers the conversion from ephemeral state to running with a 
-            	// particular endgame condition.
-          	  	PerformAndTransmit("Select R "+bb.endgameCondition);
-          	  	// test rejection of surplus ephemeral moves
-          	  	// PerformAndTransmit("ESelect R Capture5");
-            	}
-            else {
-            // run async robots. Normally robots only run when it is the robot's turn
-            // and not at all when simultaneous turns are in effect.   For blooms, the
-            // robot will only accept whatever endgame option the user wants, so all it
-            // will do is accept what the user selects.
-            //
-            for(commonPlayer pp : players)
-            { if( canStartRobotTurn(pp))
-            	{
-            	CommonMoveStack all = bb.GetListOfLegalMoves(pp.boardIndex);
-            	if(all.size()>0)
-            		{	// robot generates moves only if it hasn't accepted the
-            			// or needs to confirm the final selection.
-            			startRobotTurn(pp);
-            		}
-            	}
-            }}
-  
-        	}}
-     
+    
+    // nominally based on GameRecordingMode, which turns off robots during simultaneous moves.
+    // this allows them to start anyway in the normal sequence
+    public boolean allowRobotsToRun(commonPlayer pl)
+    {	if(simultaneousTurnsAllowed()
+    		&& (bb.hasApproved(pl.boardIndex)))
+    		{ return false; }
+    	return true;
+    }
+    
+    public void ViewerRun(int n)
+    {
+    	super.ViewerRun(n);
+    	if(bb.simultaneousTurnsAllowed())	// if allowed in the current state
+    	{
+        if(!reviewOnly 
+      	 && !reviewMode() 
+      	 && (bb.allApproved())
+      	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+        	{	  
+        	// this triggers the conversion from ephemeral state to running with a 
+        	// particular endgame condition.
+      	  	PerformAndTransmit("Select R "+bb.endgameCondition);
+      	  	// test rejection of surplus ephemeral moves
+      	  	// PerformAndTransmit("ESelect R Capture5");
+        	}
+ 
+    	}}
  	public int getLastPlacement(boolean empty) {
 		return bb.lastPlacement;
 	}

@@ -66,18 +66,6 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
     	return(bb.getState());
     }
     
-    /** if we're running asynchronously, the robot
-     * may also need to be run asynchronously.
-     */
-    public void runAsyncRobots()
-    {	if(simultaneousTurnsAllowed() )
-    	{	
-    		for(commonPlayer pp : players)
-    			{ startRobotTurn(pp);
-    			}
-    		}
-    }
-    
     private boolean canRunNow(commonPlayer pp)
     {
     	if(pp!=null )
@@ -94,16 +82,10 @@ public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
     	}
     	return(false);
     }
-			
-    public void startRobotTurn(commonPlayer pp)
-    {	if(!reviewMode() 
-    		&& (simultaneousTurnsAllowed() 
-    				? canRunNow(pp) 
-    				: (bb.whoseTurn==pp.boardIndex)))
+   public boolean allowRobotsToRun(commonPlayer pp)
     	{
-    	G.Assert(!bb.currentAuction.isEmpty(),"must be an auction");
-    	super.startRobotTurn(pp);
-    	}
+		if(simultaneousTurnsAllowed() && !canRunNow(pp)) { return false; }
+		return true;
     }
 
 public commonMove convertToSynchronous(commonMove m)
@@ -129,15 +111,8 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
 	}
     return(val);
 }
-public void ViewerRun(int wait)
-{
-    super.ViewerRun(wait);
-    if(simultaneousTurnsAllowed())
-	{ 
-		runAsyncRobots();
-	}
-}
-	int whoseMove()
+
+	private int whoseMove()
 	{
 		return(simultaneousTurnsAllowed() 
 			? getActivePlayer().boardIndex

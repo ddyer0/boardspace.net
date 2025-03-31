@@ -1151,6 +1151,16 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     		return(performStandardButtons(hp.hitCode,hp));
     	}
     }
+    // simultaneous turns only factor in the beginning set up, and we treat
+    // them as synchronous - we make robot moves when their turn is set.
+    public boolean allowRobotsToRun(commonPlayer pl)
+    	{ 
+    	if((b.whoseTurn!=pl.boardIndex) 
+				|| b.isDoneAdjusting(pl.boardIndex)) { return false; }
+
+    	return(true);
+    	}
+
     /** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1468,9 +1478,6 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 	   		return new HiddenGameWindow(name,index,this,width,height);
 	   	}
  
-    // support for simultaneous turns
-    public boolean allowRobotsToRun()
-    	{ return(true); }
     
     public String serverRecordString()
     {	String base = super.serverRecordString();

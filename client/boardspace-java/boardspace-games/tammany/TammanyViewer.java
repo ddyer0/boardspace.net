@@ -1060,29 +1060,20 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 	 default: break;
 	 }
  }
-
-
- public void runAsyncRobots()
- {	
-   	if(bb.simultaneousTurnsAllowed())
- 	{
- 		{
- 		for(commonPlayer pp : players)
- 			{ if(pp!=null)
- 				{ startRobotTurn(pp); }
- 			}
- 		}
- 	}
+ public boolean allowRobotsToRun(commonPlayer pp)
+ {
+	 if(simultaneousTurnsAllowed())
+	 {
+		 if(!(bb.playerCanVote(pp.boardIndex)
+				 &&(!bb.playerHasPlayed(pp.boardIndex)) || (bb.whoseTurn==pp.boardIndex)))
+		 {
+			 return false;
+		 }
+	 }
+	 return true;
+	 
  }
- public void startRobotTurn(commonPlayer pp)
- {	if(!reviewMode() 
-		 && ( ((bb.simultaneousTurnsAllowed()
-				 && bb.playerCanVote(pp.boardIndex)
-				 &&!bb.playerHasPlayed(pp.boardIndex)) || (bb.whoseTurn==pp.boardIndex))))
- 	{
- 	super.startRobotTurn(pp);
- 	}
- }
+
 /**
  * parse a move specifier on behalf of the current player.  This is called by the 
  * "game" object when it receives a move from the other player.  Note that it may
@@ -1393,11 +1384,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     public void ViewerRun(int wait)
     {
         super.ViewerRun(wait);
-        if(simultaneousTurnsAllowed())
-        { 
-        	runAsyncRobots();
-        }
-        //
+         //
         // delay sending votes until it's our natural turn
         // the usual "OurMove" logic is not correct because
         // it explicitly considers simultunous moves as ok

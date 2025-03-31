@@ -2398,7 +2398,4 @@ private void playSounds(commonMove m)
 		throw G.Error("Not needed with manual layout");
 	}
 
-
-    
-
 }

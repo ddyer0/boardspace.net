@@ -192,9 +192,10 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * if its' good enough that the robot will run synchronously when
 	 * it is its turn.  Otherwise some special code has to start the
 	 * robot when it's not its turn.
+	 * @param pl TODO
 	 * @return
 	 */
-	public boolean allowRobotsToRun();
+	public boolean allowRobotsToRun(commonPlayer pl);
 	public String fixedServerRecordString(String string, boolean includePlayerNames);
 	public String fixedServerRecordMessage(String fixedHist);
 	public Object getUrlNotes();

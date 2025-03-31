@@ -9112,7 +9112,7 @@ public void verifyGameRecord()
 		{
 			deferredEvents.actionPerformed(e);
 		}
-		public boolean allowRobotsToRun()
+		public boolean allowRobotsToRun(commonPlayer pl)
 		{	// don't allow robots during simultaneous moves
 			RecordingStrategy rm = gameRecordingMode();
 			return((rm==RecordingStrategy.All) 

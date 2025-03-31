@@ -871,7 +871,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 			if(!allowed_to_edit)
 			{
 	       	StockArt button = showMovements ? StockArt.NoEye : StockArt.Eye;
-	       	if(allPlayersLocal() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton))
+	       	if(isOfflineGame() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton))
 	       		{
 	       		selectPos.hit_index = i;
 	       		}
@@ -1113,7 +1113,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         }
     }
     private boolean doneAdjusting()
-    {	if(allPlayersLocal())
+    {	if(isOfflineGame())
     	{
     	if(remoteViewer>=0) { return(false); }
     	for(int i=0;i<b.nPlayers();i++) { if(!b.doneAdjustingUI[i]) { return(false); }}
@@ -1151,6 +1151,16 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     		return(performStandardButtons(hp.hitCode,hp));
     	}
     }
+    // simultaneous turns only factor in the beginning set up, and we treat
+    // them as synchronous - we make robot moves when their turn is set.
+    public boolean allowRobotsToRun(commonPlayer pl)
+    	{
+    	if((b.whoseTurn!=pl.boardIndex) 
+				|| b.isDoneAdjusting(pl.boardIndex)) { return false; }
+
+    	return(true);
+    }
+
     /** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1165,9 +1175,9 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 		if ((state==BreakState.ADJUST_MOVEMENT_STATE) 
 			&& (id==GameId.HitDoneButton))
 			{	
-			if(allPlayersLocal())
+			if(isOfflineGame())
 				{
-				PerformAndTransmit("DoneAdjust "+playerIndex+" "+b.readyString(playerIndex),allPlayersLocal(),replayMode.Live);
+				PerformAndTransmit("DoneAdjust "+playerIndex+" "+b.readyString(playerIndex),isOfflineGame(),replayMode.Live);
 			}
 			else {
 				b.doneAdjusting(playerIndex);
@@ -1237,7 +1247,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         case MinusOne:
         	{
         	int col = hp.col-'A';;
-         	PerformAndTransmit(hitObject.name()+" "+cell.player+" "+cell.index+" "+col,allPlayersLocal(),replayMode.Live);
+         	PerformAndTransmit(hitObject.name()+" "+cell.player+" "+cell.index+" "+col,isOfflineGame(),replayMode.Live);
         	}
         	break;
         case HitAdjustButton:
@@ -1468,9 +1478,6 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 	   		return new HiddenGameWindow(name,index,this,width,height);
 	   	}
  
-    // support for simultaneous turns
-    public boolean allowRobotsToRun()
-    	{ return(true); }
     
     public String serverRecordString()
     {	String base = super.serverRecordString();

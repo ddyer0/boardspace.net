@@ -7207,7 +7207,8 @@ public abstract class commonCanvas extends exCanvas
         {	
             commonPlayer who = currentRobotPlayer();
 	        if (who != null)
-	        {if(who.robotStarted())
+	        {if(allowRobotsToRun(who)
+	        	&& who.robotStarted())
 	        	{
 	        	startRobotTurn(who);
 	        	}
@@ -9122,7 +9123,7 @@ public void verifyGameRecord()
 		{
 			deferredEvents.actionPerformed(e);
 		}
-		public boolean allowRobotsToRun()
+		public boolean allowRobotsToRun(commonPlayer pl)
 		{	// don't allow robots during simultaneous moves
 			RecordingStrategy rm = gameRecordingMode();
 			return((rm==RecordingStrategy.All) 

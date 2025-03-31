@@ -186,24 +186,16 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	  	return(false);
 	  }
 	 
-    public void runAsyncRobots()
-    {	
-       	if(simultaneousTurnsAllowed())
+
+    public boolean allowRobotsToRun(commonPlayer p)
     	{
+    	if(simultaneousTurnsAllowed() && bb.getPlayer(p.boardIndex).hasReducedRecruits()) 
     		{
-    		for(commonPlayer pp : players)
-    			{ if((pp!=null) && !bb.getPlayer(pp.boardIndex).hasReducedRecruits())
-    				{ startRobotTurn(pp); }
-    			}
-    		}
+    		return false;
     	}
+    	return true;
     }
-    public void startRobotTurn(commonPlayer pp)
-    {	if(!reviewMode() && (simultaneousTurnsAllowed() || (bb.whoseTurn==pp.boardIndex)))
-    	{
-    	super.startRobotTurn(pp);
-    	}
-    }
+
     public boolean startSynchronousPlay()
     {
  	   if(!reviewOnly 
@@ -3327,10 +3319,7 @@ private Color playerBackground[] = {
     {
         super.ViewerRun(wait);
         if(simultaneousTurnsAllowed())
-        { if(! startSynchronousPlay())
-        	{
-        	runAsyncRobots();
-        	}
+        { 	startSynchronousPlay();
         }
         
     }

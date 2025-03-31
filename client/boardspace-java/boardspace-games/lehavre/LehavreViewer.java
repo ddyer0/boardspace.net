@@ -761,7 +761,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	public RecordingStrategy gameRecordingMode() {
 		return RecordingStrategy.All;
 	}
-	public boolean allowRobotsToRun() {
+	public boolean allowRobotsToRun(commonPlayer pl) {
 		return false;
 	}
 	public int timeRemaining(int pl) {

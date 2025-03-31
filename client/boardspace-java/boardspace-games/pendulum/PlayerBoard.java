@@ -1,10 +1,9 @@
 package pendulum;
 
-import static pendulum.PendulumMovespec.MOVE_FROM_TO;
-import static pendulum.PendulumMovespec.MOVE_SELECT;
-import static pendulum.PendulumMovespec.MOVE_SWAPVOTES;
+import static pendulum.PendulumMovespec.*;
 
 import java.awt.Rectangle;
+import java.io.PrintStream;
 
 import lib.CompareTo;
 import lib.Digestable;
@@ -59,9 +58,25 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	private int prestigeVPvalue = 0;
 	private int popularityVPvalue = 0;
 	private int totalRecruits = 0;
+	// stats
+	int blackActions = 0;
+	int greenActions = 0;
+	int purpleActions = 0;
+	int blackMissedActions = 0;
+	int greenMissedActions = 0;
+	int purpleMissedActions = 0;
+	int yellowBenefitCount = 0;
+	int blueBenefitCount = 0;
+	int brownBenefitCount = 0;
+	int redBenefitCount = 0;
+	int yellowBenefitMultiplier = 0;
+	int blueBenefitMultiplier = 0;
+	int brownBenefitMultiplier = 0;
+	int redBenefitMultiplier = 0;
+	
 	public int uiCount = 0;
 	public UIState uiState = UIState.Normal;
-	
+	public PendulumCell refill = newcell(PendulumId.PlayerRefill,BC.C5Board,BB.Reload);
 	public String toString() { return "<pb "+color+" "+uiState+">"; }
 	
 	private PendulumCell newcell(PendulumId id)
@@ -209,6 +224,23 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		for(int i=0;i<resources[1];i++) { culture.addChip(cultureReserves.removeTop()); }
 		for(int i=0;i<resources[2];i++) { cash.addChip(cashReserves.removeTop()); }
 		for(int i=0;i<resources[3];i++) { votes.addChip(votesReserves.removeTop()); }
+		refill.addChip(PendulumChip.Refill);
+		
+		// stats
+		blackActions = 0;
+		greenActions = 0;
+		purpleActions = 0;
+		blackMissedActions = 0;
+		greenMissedActions = 0;
+		purpleMissedActions = 0;
+		yellowBenefitCount = 0;
+		brownBenefitCount = 0;
+		blueBenefitCount = 0;
+		redBenefitCount = 0;
+		yellowBenefitMultiplier = 0;
+		brownBenefitMultiplier = 0;
+		blueBenefitMultiplier = 0;
+		redBenefitMultiplier = 0;
 	}
 	
 	private void setPopularityVP(int i,replayMode replay) {
@@ -247,6 +279,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	}
 	public void copyFrom(PlayerBoard other) {
 		stratCards.copyFrom(other.stratCards);
+		refill.copyFrom(other.refill);
 		playedStratCards.copyFrom(other.playedStratCards);
 		meeples.copyFrom(other.meeples);
 		grandeReserves.copyFrom(other.grandeReserves);
@@ -287,6 +320,23 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		dropPair = other.dropPair;
 		dropStateCount = other.dropStateCount;
 		pickedIndex = other.pickedIndex;
+		
+		// stats
+		blackActions = other.blackActions;
+		greenActions = other.greenActions;
+		purpleActions = other.purpleActions;
+		blackMissedActions = other.blackMissedActions;
+		greenMissedActions = other.greenMissedActions;
+		purpleMissedActions = other.purpleMissedActions;
+		yellowBenefitCount = other.yellowBenefitCount;
+		brownBenefitCount = other.brownBenefitCount;
+		blueBenefitCount = other.blueBenefitCount;
+		redBenefitCount = other.redBenefitCount;
+		yellowBenefitMultiplier = other.yellowBenefitMultiplier;
+		brownBenefitMultiplier = other.brownBenefitMultiplier;
+		blueBenefitMultiplier = other.blueBenefitMultiplier;
+		redBenefitMultiplier = other.redBenefitMultiplier;
+
 	}
 
 	public void sameboard(PlayerBoard other) {
@@ -337,6 +387,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	{
 		switch(id)
 		{
+		case PlayerRefill: return refill;
 		case PlayerGrandeReserves: return grandeReserves;
 		case PlayerMeepleReserves: return meepleReserves;
 		case PlayerMeeples: return meeples;
@@ -367,30 +418,31 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	}
 	
 	public void setLocations() {
-		stratCards.setLocation(0.2,0.4,0.1);
-		grandes.setLocation(0.63,0.48,0.14);
-		meeples.setLocation(0.68,0.48,0.14);
-		military.setLocation(0.6,0.7,0.14);
-		culture.setLocation(0.76,0.7,0.14);
-		cash.setLocation(0.90,0.7,0.14);
-		votes.setLocation(0.84,0.48,0.12);
-		max3Cards.setLocation(0.1,0.5,0.14);
-		freeD2.setLocation(0.0,0.5,0.14);
-		legendary.setLocation(0.655,0.34,0.17);
-		militaryReserves.setLocation(0.25,0.60,0.06);
-		cultureReserves.setLocation(0.25,0.64,0.06);
-		cashReserves.setLocation(0.25,0.68,0.06);
-		votesReserves.setLocation(0.25,0.74,0.06);
-		grandeReserves.setLocation(0.2,0.6,0.1);
-		meepleReserves.setLocation(0.2,0.7,0.1);
-		brownBenefits.setLocation(0.13,0.875,0.24);
-		redBenefits.setLocation(0.38,0.875,0.24);
-		blueBenefits.setLocation(0.625,0.875,0.24);
-		yellowBenefits.setLocation(0.87,0.875,0.24);
-		playedStratCards.setLocation(0.085,0.66,0.1);
-		PendulumCell.setHLocation(powerVP,0.034,1.01, 0.09, 0.1);
-		PendulumCell.setHLocation(prestigeVP,0.038,1.01, 0.165, 0.1);
-		PendulumCell.setHLocation(popularityVP,0.038,1.01, 0.24, 0.1);
+		refill.setLocation(1.5,1.5,0.164, 0.4, 0.055);
+		stratCards.setLocation(0,0,0.28, 0.4, 0.1);
+		grandes.setLocation(0,0,0.63, 0.48, 0.14);
+		meeples.setLocation(0,0,0.68, 0.48, 0.14);
+		military.setLocation(0,0,0.6, 0.7, 0.14);
+		culture.setLocation(0,0,0.76, 0.7, 0.14);
+		cash.setLocation(0,0,0.90, 0.7, 0.14);
+		votes.setLocation(0,0,0.84, 0.48, 0.12);
+		max3Cards.setLocation(0,0,0.1, 0.5, 0.14);
+		freeD2.setLocation(0,0,0.0, 0.5, 0.14);
+		legendary.setLocation(0,0,0.655, 0.34, 0.17);
+		militaryReserves.setLocation(0,0,0.25, 0.60, 0.06);
+		cultureReserves.setLocation(0,0,0.25, 0.64, 0.06);
+		cashReserves.setLocation(0,0,0.25, 0.68, 0.06);
+		votesReserves.setLocation(0,0,0.25, 0.74, 0.06);
+		grandeReserves.setLocation(0,0,0.2, 0.6, 0.1);
+		meepleReserves.setLocation(0,0,0.2, 0.7, 0.1);
+		brownBenefits.setLocation(0,0.5,0.13, 0.78, 0.24);
+		redBenefits.setLocation(0,0.5,0.38, 0.78, 0.24);
+		blueBenefits.setLocation(0,0.5,0.625, 0.78, 0.24);
+		yellowBenefits.setLocation(0,0.5,0.87, 0.78, 0.24);
+		playedStratCards.setLocation(0,0,0.085, 0.66, 0.1);
+		PendulumCell.setHLocation(0,0,powerVP, 0.034, 1.01, 0.09, 0.1);
+		PendulumCell.setHLocation(0,0,prestigeVP, 0.038, 1.01, 0.165, 0.1);
+		PendulumCell.setHLocation(0,0,popularityVP, 0.038, 1.01, 0.24, 0.1);
 	}
 	
 	public Rectangle bbox = null;
@@ -457,9 +509,27 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     		throw G.Error("item not found %s",item);
     	}
     }
-    // undo an object pickup.  this ought to always be possible.
-    public void unPickObject()
-    {	if(pickedIndex==-1) { pickedSource.addChip(pickedObject); }
+    // undo an object pickup.  this ought to always be possible, but due to realtime interactions
+    // it sometimes is not.
+    public boolean unPickObject(PendulumMovespec m)
+    {	
+    	if(pickedSource.col=='@')
+    	{
+    		if(!parent.verifyUnpickOk(this,m,pickedSource,pickedObject)) 
+    			{ return(false); 
+    			}
+    	}
+    	// save this for the contingency of resolving privilege
+    	pickedSource.dropper = m;
+    	alwaysUnpickObject();
+    	return true;
+    }
+    // unconditionally unpick
+    public void alwaysUnpickObject()
+    {    	
+    	if(pickedIndex==-1 || pickedSource.height()<pickedIndex) 
+    		{ pickedSource.addChip(pickedObject); 
+    		}
     	else { pickedSource.insertChipAtIndex(pickedIndex,pickedObject); }
     	pickedObject = null;
     	pickedSource = null;
@@ -467,11 +537,11 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     }
     
     // drop the picked-up item.  PickedSource remains, so use pickedObject!=null as the test for something moving.
-    public boolean dropObject(PendulumCell c,boolean pair)
+    public boolean dropObject(PendulumCell c,PendulumMovespec m,boolean pair)
     {	G.Assert(c.col=='@' || c.col==(char)('A'+gameIndex),"not my cell %s",c);
     	if(c.col=='@')
     	{
-    		if(!parent.verifyDropOk(this,c,pickedObject)) { return(false); }
+    		if(!parent.verifyDropOk(this,m,c,pickedObject)) { return(false); }
     	}
     	droppedDest = c;
     	dropPair = pair;
@@ -479,6 +549,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     	dropState = uiState;
     	dropStateCount = uiCount;
     	c.addChip(pickedObject);
+    	c.dropper = m;
     	pickedObject = null;
     	return true;
     }
@@ -545,13 +616,13 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	// only be done for droppings that did not have a direct cost or benefit
     public void unDropObject()
     {
-    	pickedObject = droppedDest.removeChip(droppedObject);
     	setUIState(dropState);
+    	pickedObject = droppedDest.removeChip(droppedObject);
     	uiCount = dropStateCount;
     	droppedDest = null;
     	droppedObject = null;
     	dropStateCount = 0;
-    	if(dropPair) { unPickObject(); }
+    	if(dropPair) { alwaysUnpickObject(); }
     	dropPair = false;
     	dropState = null;
     }
@@ -563,9 +634,11 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		dropState = null;
 		dropPair = false;
 		dropStateCount = 0;
-		selectedCell = null;
 		pickedIndex = -1;
-		
+	}
+	public void unSelect()
+	{
+		selectedCell = null;
 	}
 	public boolean isDest(PendulumCell c) { return c==droppedDest; }
 	public boolean isSource(PendulumCell c) { return c==pickedSource;}
@@ -644,16 +717,32 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		default: throw G.Error("Not expecting cost %s",cost);
 		}
 	}
-	public boolean payCost(PendulumCell c,PC cost,replayMode replay)
-	{	boolean free = false;
+	//
+	// this is separate from paycost so the costs that are capabilities
+	// can be accounted for separately.  In particular if you're trying
+	// to retrieve a meeple, but someone flips a timer and there is no
+	// meeple to retrieve
+	//
+	public boolean costIsFree(PC cost)
+	{
 		switch(cost)
 		{
 		case Vote:	// no actual cost, there just have to be votes available to swap
 		case CanRetrieve:
 		case MeepleAndGrande:	// no cost
 		case None:	
-			free=true;
-			break;
+			return true;
+		default: 
+			return false;
+		}
+	}
+	public boolean payCost(PendulumCell c,PC cost,replayMode replay)
+	{	
+		if(costIsFree(cost)) { return true ; }
+		
+		switch(cost)
+		{
+		
 		case M2:
 		case M2Retrieve:
 			transfer(2,military,militaryReserves,replay);
@@ -737,18 +826,10 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			break;
 		default: throw G.Error("Not expecting cost %s",cost);
 		}
-		return free;
+		return false;
 	}
-	private Object effectiveCost(PendulumCell c,PendulumChip chip)
-	{
-		if((c.cost==BC.PerCard) && chip!=null)
-		{
-			return chip.pc;
-		}
-		else { return c.cost; }
-	}
+
 	public void payCost(PendulumCell c, PendulumChip chip, replayMode replay) {
-		G.Assert(canPayCost(c.cost,chip),"can't pay cost %s",effectiveCost(c,chip));
 		boolean allowUndrop = false;
 		switch(c.cost){
 		default: throw G.Error("Not expecting cost %s",c.cost);
@@ -758,25 +839,12 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		case None:
 			allowUndrop = true;
 			break;
+		case C5Board:
+			transfer(5,culture,cultureReserves,replay);
+			break;
 		case PerCard:
 			{
-			boolean free = payCost(c,chip.pc,replay);
-			if(free)
-				{
-				switch(c.rackLocation())
-				{
-				case GreenMeepleA:
-				case GreenMeepleB:
-				case BlackMeepleA:
-				case BlackMeepleB:
-				case PurpleMeepleA:
-				case PurpleMeepleB:
-					break;
-				default: 
-					allowUndrop = true;
-					break;
-				}
-				}
+			allowUndrop = payCost(c,chip.pc,replay);
 			}
 			break;
 		case M4Board:
@@ -797,7 +865,10 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			}
 			break;
 		}
-		if(!allowUndrop) { acceptPlacement(); }
+		if(!allowUndrop) 
+		{ acceptPlacement(); 
+		  unSelect();
+		}
 	}
 	// transfer, insist that the items are available (used for payments)
 	public void transfer(int n,PendulumCell from,PendulumCell to,replayMode replay)
@@ -841,15 +912,23 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			{
 			case PlayerRedBenefits:
 				collectBenefit(c,benefits[1],false,replay);
+				redBenefitCount++;
+				redBenefitMultiplier += c.height()+1;
 				break;
 			case PlayerBlueBenefits:
 				collectBenefit(c,benefits[3],false,replay);
+				blueBenefitCount++;
+				blueBenefitMultiplier += c.height()+1;
 				break;
 			case PlayerYellowBenefits:
 				collectBenefit(c,benefits[0],false,replay);
+				yellowBenefitCount++;
+				yellowBenefitMultiplier += c.height()+1;
 				break;
 			case PlayerBrownBenefits:
 				collectBenefit(c,benefits[2],false,replay);
+				brownBenefitCount++;
+				brownBenefitMultiplier += c.height()+1;
 				break;
 				
 			default: throw G.Error("Not expecting %c",rack);
@@ -861,7 +940,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	{	setUIState(d,0);
 	}
 	public void setUIState(UIState d,int n)
-	{
+	{	if(pickedObject!=null) { G.print("\nshouldn't be moving ",pickedObject); }
 		uiCount = n+1;	// +1 so the first setNextState does nothing
 		uiState = d;
 	}
@@ -1068,9 +1147,30 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	}
 	public void collectBenefit(PendulumCell c, PendulumChip chip,replayMode replay) {
 		boolean allowUndrop = false;
+		
+		// collect stats on actions taken
+		switch(c.rackLocation())
+		{
+		case GreenActionA:
+		case GreenActionB:
+			greenActions++;
+			break;
+		case BlackActionA:
+		case BlackActionB:
+			blackActions++;
+			break;
+		case PurpleActionA:
+		case PurpleActionB:
+			purpleActions++;
+			break;
+		default: break;
+		}
 		switch(c.benefit)
 		{
 		default: throw G.Error("Not expecting benefit #1",c.benefit);
+		case Reload:
+			transfer(playedStratCards.height(),playedStratCards,stratCards,replay);
+			break;
 		case Achievement:
 			{
 			int index = c.findChip(PendulumChip.legendary);
@@ -1100,6 +1200,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			allowUndrop = collectBenefit(c,c.chipAtIndex(0).pb[0],false,replay);
 			}}
 			break;
+			
 		case PerCard:
 			allowUndrop = collectBenefit(c,chip.pb[0],false,replay);
 			break;
@@ -1145,17 +1246,30 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 			case GreenMeepleB:
 			case PurpleMeepleA:
 			case PurpleMeepleB:
-				break;
+				// note that it's important that dropping on the meeple placement spots 
+				// is undoable, because that's what allows privilege to be resolved.
 			default:
 				allowUndrop = true;
 				break;
 			}
 			break;
 		}
-		if(!allowUndrop) { acceptPlacement(); }
+		if(!allowUndrop) 
+		{ acceptPlacement(); 
+		  unSelect();
+		}
 		
 	}
-
+	public void printStats(PrintStream s)
+	{	s.println(""+color);
+		s.println("Black actions "+blackActions+" missed "+blackMissedActions);
+		s.println("Green actions "+greenActions+" missed "+greenMissedActions);
+		s.println("Purple actions "+purpleActions+" missed "+purpleMissedActions);
+		s.println("Yellow Benefits "+yellowBenefitCount+" x "+yellowBenefitMultiplier);
+		s.println("Blue Benefits "+blueBenefitCount+" x "+blueBenefitMultiplier);
+		s.println("Brown Benefits "+brownBenefitCount+" x "+brownBenefitMultiplier);
+		s.println("Red Benefits "+redBenefitCount+" x "+redBenefitMultiplier);
+	}
 	public boolean isUIQuiet() {
 		return (uiState==UIState.Normal) && pickedObject==null;
 	}
@@ -1281,30 +1395,33 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	 		{
 	 		parent.animate(selectedCell,dest);
 	 		}
-		 selectedCell = null;
+		 unSelect();
 	 }
 
-	 public boolean doDrop(PendulumCell c,PendulumState state,boolean pair,replayMode replay)
+	 public boolean doDrop(PendulumMovespec m,PendulumCell c,PendulumState state,boolean pair,replayMode replay)
 	 {	PendulumChip po = pickedObject;
-		if(dropObject(c,pair))
+		if(dropObject(c,m,pair))
 		{
 			payCost(c,po,replay);
 			collectBenefit(c,po,replay);
-			return true; 
+			return true;
 		}
 		return false;
 	 }
 
-	public void addPlayStrategem(CommonMoveStack all, int who) 
-	{	G.Assert(uiState==UIState.Normal,"should be");
+	public void addPlayStrategem(CommonMoveStack all, int who) 		{	G.Assert(uiState==UIState.Normal,"should be");
 		if((pickedObject!=null && pickedSource.rackLocation()==PendulumId.PlayerStratCard))
 		{	if(canPayCost(pickedObject.pc))
 				{
 				all.push(new PendulumMovespec(MOVE_FROM_TO,stratCards,pickedObject,playedStratCards,boardIndex));
 				}
 		}
-		else
+		else if(pickedObject==null)
 		{
+		if(playedStratCards.height()>0 && culture.height()>=5)
+			{
+				all.push(new PendulumMovespec(MOVE_REFILL,who));
+			}
 		for(int lim=stratCards.height()-1; lim>=0; lim--)
 		{
 			PendulumChip ch = stratCards.chipAtIndex(lim);
@@ -1327,10 +1444,12 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	{	return (votes.height()*100+parent.getPlayerPrivilege(color));
 	}
 	static int parchmentLevel = 13;
+	static int LEGENDARY_SCORE = 10000;
+	static int PARCHMENT_SCORE = 100;
 	public int winnerScore()
 	{	// not quite complete, but a good start
 		boolean legendaryAchievement = !legendary.isEmpty();
-		int val = (prestigeVPvalue+powerVPvalue+popularityVPvalue) + ( legendaryAchievement ? 10000 : 0);
+		int val = (prestigeVPvalue+powerVPvalue+popularityVPvalue) + ( legendaryAchievement ? LEGENDARY_SCORE : 0);
 		if(legendaryAchievement)
 		{
 			if( prestigeVPvalue>parchmentLevel 
@@ -1349,7 +1468,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		return val;
 	}
 	public int compareTo(PlayerBoard o) {
-		return o.privilegeScore()-G.signum(privilegeScore());
+		return G.signum(o.privilegeScore()-privilegeScore());
 	}
 
 	// clear votes at the beginning of the council phase
@@ -1428,6 +1547,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 				}
 			}
 		}
+		unSelect();
 	}
 
 	public void addPayResourceMoves(CommonMoveStack all, int who) 
@@ -1504,8 +1624,27 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	// the state of the other players before starting a run
 	public void revertPartialMoves()
 	{
-		if(selectedCell!=null) { selectedCell = null; }
 		if(droppedDest!=null) { acceptPlacement(); }
-		else if(pickedObject!=null) { unPickObject(); }
+		else if(pickedObject!=null) { alwaysUnpickObject(); }
+	}
+
+	// this is called when a timer flips to cement the placements of the timed rows
+	public void acceptPlacements(PendulumCell[] row) {
+		for(PendulumCell c : row) { if(c==droppedDest) { acceptPlacement(); }}
+	}
+
+	// count the meeples that are our color in this row.  The row
+	// is an action or meeple row, and contains only meeples.
+	public int countMeeples(PendulumCell[] row) {
+		int n=0;
+		for(PendulumCell c : row)
+		{
+			for(int lim=c.height()-1; lim>=0; lim--)
+			{
+				PendulumChip ch = c.chipAtIndex(lim);
+				if(ch.color==color) { n++; }
+			}
+		}
+		return n;
 	}
 }

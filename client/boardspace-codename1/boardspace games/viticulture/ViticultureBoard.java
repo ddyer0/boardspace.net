@@ -971,6 +971,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
   	ViticultureCell tradeWhiteGrape = newUIcell(ViticultureId.WhiteGrape,'@',1);
 
 
+  	ViticultureCell boardMagnifier = newUIcell(ViticultureId.Magnifier,'@',0);
+	ViticultureCell starMagnifier = newUIcell(ViticultureId.Magnifier,'@',1);
+	ViticultureCell wakeupMagnifier = newUIcell(ViticultureId.Magnifier,'@',2);
+	ViticultureCell magnifiers[] = { boardMagnifier, wakeupMagnifier, starMagnifier};
+	
+
 	private ViticultureState board_state = ViticultureState.Puzzle;	
 	public ViticultureState resetState = ViticultureState.Puzzle;
 	private ViticultureState unresign = null;	// remembers the orignal state when "resign" is hit

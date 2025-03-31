@@ -1345,13 +1345,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
   //  {	return(super.gameRecordingMode());
   //  }
     
-    // if there are simultaneous turns, robot start/stop can be tricky
-    // by default, not allowed in simultaneous phases.  Return true 
-    // to let them run "in their normal turn", but this will not allow
-    // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
-    }
 
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);
