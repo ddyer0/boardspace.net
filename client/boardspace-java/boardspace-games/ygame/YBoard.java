@@ -955,10 +955,6 @@ void doSwap(replayMode replay)
  
  public void initRobotValues(YPlay ro)
  {	robot = ro;
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
  }
 
  YPlay robot = null;

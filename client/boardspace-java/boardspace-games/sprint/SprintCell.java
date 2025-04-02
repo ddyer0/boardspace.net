@@ -55,9 +55,6 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 		return(ch);
 	}
 
-	public void initRobotValues() 
-	{
-	}
 	public SprintCell(Random r,SprintId rack) { super(r,rack); }		// construct a cell not on the board
 	public SprintCell(SprintId rack,char c,int r,Geometry g) 		// construct a cell on the board
 	{	super(g,rack,c,r);

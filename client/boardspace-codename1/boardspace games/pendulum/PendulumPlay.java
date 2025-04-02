@@ -103,6 +103,8 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
     	PendulumPlay cc = (PendulumPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.forPlayer = forPlayer;
+    	cc.board.initRobotValues(this);
     	return(c);
     }
 
@@ -332,7 +334,7 @@ boolean split = false;
         monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads =  -1;// DEPLOY_THREADS;
+        monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 2300000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results

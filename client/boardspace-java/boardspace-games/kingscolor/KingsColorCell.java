@@ -46,9 +46,7 @@ public class KingsColorCell
 	public boolean castle = false;		// true if this is part of the castle
 	public ColorId castleOwner = null;	// the owner of the castle
 	public boolean marked = false;
-	public void initRobotValues() 
-	{
-	}
+
 	public KingsColorCell(Random r,ColorId rack) { super(r,rack); }		// construct a cell not on the board
 	public KingsColorCell(ColorId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

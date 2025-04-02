@@ -1155,8 +1155,9 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     // them as synchronous - we make robot moves when their turn is set.
     public boolean allowRobotsToRun(commonPlayer pl)
     	{
-    	if((b.whoseTurn!=pl.boardIndex) 
-				|| b.isDoneAdjusting(pl.boardIndex)) { return false; }
+    	if(simultaneousTurnsAllowed()
+    			&& ((b.whoseTurn!=pl.boardIndex) 
+				|| b.isDoneAdjusting(pl.boardIndex))) { return false; }
 
     	return(true);
     }

@@ -63,9 +63,6 @@ public class YCell extends chipCell<YCell,YChip> implements YConstants
     	return(ior);
     }
 
-	public void initRobotValues() 
-	{
-	}
 	public YCell(Random r,YId rack) { super(r,rack); }		// construct a cell not on the board
 	public YCell(YId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Network,rack,c,r);

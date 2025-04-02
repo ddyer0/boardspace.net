@@ -107,6 +107,7 @@ public class KingsColorPlay extends commonRobot<KingsColorBoard> implements Runn
     {	RobotProtocol c = super.copyPlayer(from);
     	KingsColorPlay cc = (KingsColorPlay)c;
     	cc.Strategy = Strategy;
+    	cc.board.initRobotValues(this,randomize());
     	return(c);
     }
 

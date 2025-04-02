@@ -1218,10 +1218,6 @@ class ImagineBoard
  	return(all);
  }
  
- public void initRobotValues()
- {
-
- }
 public int cellToX(ImagineCell c) {
 	return 0;
 }

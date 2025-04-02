@@ -42,9 +42,7 @@ public class MeridiansCell
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int lastPlaced = -1;
 	MGroup group; 
-	public void initRobotValues() 
-	{
-	}
+
 	public MeridiansCell(Random r,MeridiansId rack) { super(r,rack); }		// construct a cell not on the board
 	public MeridiansCell(MeridiansId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

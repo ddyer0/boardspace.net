@@ -45,9 +45,7 @@ public class MijnlieffCell
 	{
 		super(Geometry.Standalone,c);
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public MijnlieffCell(Random r,MijnlieffId rack) { super(r,rack); }		// construct a cell not on the board
 	public MijnlieffCell(MijnlieffId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);

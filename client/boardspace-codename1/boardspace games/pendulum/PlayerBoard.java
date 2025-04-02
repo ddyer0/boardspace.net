@@ -436,10 +436,10 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 		votesReserves.setLocation(0,0,0.25, 0.74, 0.06);
 		grandeReserves.setLocation(0,0,0.2, 0.6, 0.1);
 		meepleReserves.setLocation(0,0,0.2, 0.7, 0.1);
-		brownBenefits.setLocation(0,0.5,0.13, 0.78, 0.24);
-		redBenefits.setLocation(0,0.5,0.38, 0.78, 0.24);
-		blueBenefits.setLocation(0,0.5,0.625, 0.78, 0.24);
-		yellowBenefits.setLocation(0,0.5,0.87, 0.78, 0.24);
+		brownBenefits.setLocation(0,1,0.13, 0.78, 0.24);
+		redBenefits.setLocation(0,1,0.38, 0.78, 0.24);
+		blueBenefits.setLocation(0,1,0.625, 0.78, 0.24);
+		yellowBenefits.setLocation(0,1,0.87, 0.78, 0.24);
 		playedStratCards.setLocation(0,0,0.085, 0.66, 0.1);
 		PendulumCell.setHLocation(0,0,powerVP, 0.034, 1.01, 0.09, 0.1);
 		PendulumCell.setHLocation(0,0,prestigeVP, 0.038, 1.01, 0.165, 0.1);

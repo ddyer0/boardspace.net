@@ -72,6 +72,7 @@ public class TamskPlay extends commonRobot<TamskBoard> implements Runnable, Tams
     	TamskPlay cc = (TamskPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues(ROBOTDONETIME,ROBOTDELAYTIME);
     	return(c);
     }
 

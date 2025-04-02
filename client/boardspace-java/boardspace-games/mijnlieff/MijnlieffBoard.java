@@ -1049,10 +1049,7 @@ class MijnlieffBoard
  	return(all);
 
  }
- 
- public void initRobotValues()
- {
- }
+
 public Hashtable<MijnlieffCell, Mijnlieffmovespec> getTargets() 
 {
 	Hashtable<MijnlieffCell, Mijnlieffmovespec> targets = new Hashtable<MijnlieffCell, Mijnlieffmovespec>();

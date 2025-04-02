@@ -43,9 +43,7 @@ public class EpaminondasCell
 	
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public EpaminondasCell(Random r,EpaminondasId rack) { super(r,rack); }		// construct a cell not on the board
 	public EpaminondasCell(EpaminondasId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);

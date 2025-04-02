@@ -39,9 +39,7 @@ public class StymieCell extends stackCell<StymieCell,StymieChip> implements Stym
 	public boolean primeArea=false;		
 	public boolean edgeArea = false;	
 	public int altChipIndex = 0;
-	public void initRobotValues() 
-	{
-	}
+
 	public StymieCell(StymieId id)
 	{
 		super(Geometry.Standalone,id,'@',0);

@@ -109,6 +109,7 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
     	PrototypePlay cc = (PrototypePlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues(this);
     	return(c);
     }
 

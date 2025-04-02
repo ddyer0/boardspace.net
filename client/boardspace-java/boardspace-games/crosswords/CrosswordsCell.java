@@ -57,9 +57,6 @@ public class CrosswordsCell extends stackCell<CrosswordsCell,CrosswordsChip>
 		return(ch);
 	}
 
-	public void initRobotValues() 
-	{
-	}
 	public CrosswordsCell(Random r,CrosswordsId rack) { super(r,rack); }		// construct a cell not on the board
 	public CrosswordsCell(CrosswordsId rack,char c,int r,Geometry g) 		// construct a cell on the board
 	{	super(g,rack,c,r);

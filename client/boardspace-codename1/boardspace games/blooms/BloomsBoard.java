@@ -1431,13 +1431,6 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  	return(all);
  }
  
- public void initRobotValues()
- {
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
- }
 
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)

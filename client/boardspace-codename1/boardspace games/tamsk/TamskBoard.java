@@ -1486,7 +1486,6 @@ class TamskBoard
  	 			targets.put(getCell(m.to_col,m.to_row),m);
  	 			break;
  	 		case MOVE_DONE:
- 	 		case MOVE_PASS:
  	 			break;
  	 		default: G.Error("Not expecting "+m);
  	 		
@@ -1502,7 +1501,6 @@ class TamskBoard
   			targets.put(getCell(m.from_col,m.from_row),m);
  			break;
  		case MOVE_DONE:
- 		case MOVE_PASS:
  			break;
 
  		default: G.Error("Not expecting "+m);

@@ -470,7 +470,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
    	
     	PlayerBoard pb = gb.getPlayerBoard(player);
     	pb.setDisplayRectangle(br);
-    	pb.setLocations();
+    	//pb.setLocations();
     	PendulumCell tucked[] = pb.tucked;
     	for(PendulumCell c : tucked)
     	{
@@ -587,7 +587,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     public void drawBoardElements(Graphics gc, PendulumBoard gb, Rectangle brect, HitPoint highlight,Hashtable<PendulumCell,PendulumMovespec> targets,HitPoint any)
     {	
   
-    	gb.setLocations();
+    	//gb.setLocations();
     	UIState uis = getUIState(gb);
     	UIState uioverlay = uis;
     	switch(uis)
@@ -807,10 +807,12 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	ystep = 0;
         	break;
         case GreenTimer:
-        	back = timerText(gb,cell,gb.greenTimer);
+        	// note this is using the real board timer deliberately
+        	back = timerText(bb,cell,gb.greenTimer);
         	break;
         case PurpleTimer:
-    	   	back = timerText(gb,cell,gb.purpleTimer);
+          	// note this is using the real board timer deliberately
+       	   	back = timerText(bb,cell,gb.purpleTimer);
         	break;
         case PlayerVotes:
         	xstep = 0.2;
@@ -838,7 +840,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	helpPerCard = true;
         	break;
         case BlackTimer:
-        	back = timerText(gb,cell,gb.blackTimer);
+        	// note this is using the real board timer deliberately
+        	back = timerText(bb,cell,gb.blackTimer);
         	break;
         default: break;
         }

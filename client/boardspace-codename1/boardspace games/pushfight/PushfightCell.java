@@ -62,9 +62,6 @@ public class PushfightCell extends stackCell<PushfightCell,PushfightChip> implem
 	    }
 	}
 	
-	public void initRobotValues() 
-	{
-	}
 	public PushfightCell(PushfightId loc) { rackLocation = loc; }
 	public PushfightCell(Random r,PushfightId rack) { super(r,rack); }		// construct a cell not on the board
 	public PushfightCell(PushfightId rack,char c,int r) 		// construct a cell on the board

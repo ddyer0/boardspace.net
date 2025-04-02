@@ -327,7 +327,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH/2,boardW,stateH,goalRect);       
+    	placeRow(boardX, boardBottom-stateH/2,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	

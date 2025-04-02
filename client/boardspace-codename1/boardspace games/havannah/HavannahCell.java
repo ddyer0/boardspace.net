@@ -70,9 +70,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements
 		depth = other.depth;
 		lastPlaced = other.lastPlaced;
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public HavannahCell(Random r,HavannahId rack) { super(r,rack); }		// construct a cell not on the board
 	public HavannahCell(HavannahId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

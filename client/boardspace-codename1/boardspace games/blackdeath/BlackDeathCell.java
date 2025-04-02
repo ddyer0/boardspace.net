@@ -62,9 +62,7 @@ public class BlackDeathCell extends stackCell<BlackDeathCell,BlackDeathChip>
 	{
 		links.push(l);
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public BlackDeathCell(Random r,BlackDeathId rack,String na)	// named cell on the board
 	{
 		super(r,rack);

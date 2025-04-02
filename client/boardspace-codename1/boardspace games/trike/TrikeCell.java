@@ -45,9 +45,7 @@ public class TrikeCell
 	int lastPlaced = -1;
 	int lastEmptied = -1;
 	
-	public void initRobotValues() 
-	{
-	}
+
 	public TrikeCell(Random r,TrikeId rack) { super(r,rack); }		// construct a cell not on the board
 	public TrikeCell(TrikeId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

@@ -597,6 +597,8 @@ class CircleBoard
     private void doCaptures(CircleCell dest,CircleMovespec m,replayMode replay)
     {	m.critter = null;
     	Critter myGroup = dest.critter();
+    	if(myGroup!=null) //this prevents a nullpointerexception, but something is already wrong; there must be a critter
+    	{
     	CR captureType = myGroup.identity().Eats;
     	for(int lim=myGroup.size()-1; lim>=0; lim--)
     	{
@@ -616,7 +618,7 @@ class CircleBoard
     				}
     			}
     		}
-    	}
+    	}}
     }
     
     
@@ -672,7 +674,8 @@ class CircleBoard
 				{ unPickObject(); 
 				}
 				else 
-				{		           
+				{		
+				if(pickedObject==null) { unDropObject(); }
 	            dropObject(dest);
             	m.critter = dest.critter();     
 	            /**
@@ -983,10 +986,6 @@ class CircleBoard
  
  public void initRobotValues(CirclePlay m)
  {	robot = m;
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
  }
 
  // small ad-hoc adjustment to the grid positions

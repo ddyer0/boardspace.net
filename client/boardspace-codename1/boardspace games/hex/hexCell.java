@@ -44,9 +44,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int borders = -1;		// bitmask of possible borders
 	int lastPlaced = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public hexCell(Random r,HexId rack) { super(r,rack); }		// construct a cell not on the board
 	public hexCell(HexId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

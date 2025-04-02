@@ -1217,11 +1217,7 @@ class ImagineBoard
  	G.Error("Not implemented");
  	return(all);
  }
- 
- public void initRobotValues()
- {
 
- }
 public int cellToX(ImagineCell c) {
 	return 0;
 }

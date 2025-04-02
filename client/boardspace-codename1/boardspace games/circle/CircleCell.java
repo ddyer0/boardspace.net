@@ -65,9 +65,7 @@ public class CircleCell
 	}
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public CircleCell(Random r,CircleId rack) { super(r,rack); }		// construct a cell not on the board
 	public CircleCell(CircleId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square

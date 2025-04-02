@@ -57,9 +57,7 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	{
 		return("<Cell "+rackLocation+" "+col+row+" "+contentsString()+">");
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public int drawStackTickSize(int sz) { return(0); }
 	public boolean labelAllChips() { 
 		switch(contentType)

@@ -40,9 +40,7 @@ public class ImagineCell
 	extends stackCell<ImagineCell,ImagineChip>	
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	public void initRobotValues() 
-	{
-	}
+
 	public ImagineCell(Random r,ImagineId rack) { super(r,rack); }		// construct a cell not on the board
 	public ImagineCell(ImagineId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Standalone,rack,c,r);

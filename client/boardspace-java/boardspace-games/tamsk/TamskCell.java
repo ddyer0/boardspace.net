@@ -45,9 +45,7 @@ public class TamskCell
 	TamskId timer = null;
 	int lastPicked = -1;
 	int lastDropped = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public TamskCell(Random r,TamskId rack) { super(r,rack); }		// construct a cell not on the board
 	public TamskCell(TamskId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

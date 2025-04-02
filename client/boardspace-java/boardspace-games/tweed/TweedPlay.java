@@ -111,6 +111,7 @@ public class TweedPlay extends commonRobot<TweedBoard> implements Runnable, Twee
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
     	cc.greedy = greedy;
+    	cc.board.initRobotValues();
     	return(c);
     }
 

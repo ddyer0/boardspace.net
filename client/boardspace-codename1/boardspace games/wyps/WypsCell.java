@@ -48,9 +48,6 @@ public class WypsCell extends stackCell<WypsCell,WypsChip> implements WypsConsta
 		return(ch);
 	}
 
-	public void initRobotValues() 
-	{
-	}
 	public WypsCell(Random r,WypsId rack) { super(r,rack); }		// construct a cell not on the board
 	public WypsCell(WypsId rack,char c,int r,Geometry g) 		// construct a cell on the board
 	{	super(g,rack,c,r);

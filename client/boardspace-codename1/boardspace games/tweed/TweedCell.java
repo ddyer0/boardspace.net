@@ -41,9 +41,7 @@ public class TweedCell
 {	
 	int seen[] = new int[2];
 	int lastPlaced = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public TweedCell(Random r,TweedId rack) { super(r,rack); }		// construct a cell not on the board
 	public TweedCell(TweedId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);

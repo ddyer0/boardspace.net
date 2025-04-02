@@ -972,14 +972,6 @@ void doSwap(replayMode replay)
  	return(all);
  }
  
- public void initRobotValues()
- {
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
- }
- 
  // precompute which border cell decorations needs to be drawn 
  // this is peculiar to the way we draw the borders of the havannah board
  // not a general game requirement.

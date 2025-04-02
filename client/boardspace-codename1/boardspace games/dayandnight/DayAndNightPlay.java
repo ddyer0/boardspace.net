@@ -109,6 +109,7 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
     	DayAndNightPlay cc = (DayAndNightPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues(robotStrategy);
     	return(c);
     }
 

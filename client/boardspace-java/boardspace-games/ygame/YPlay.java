@@ -106,6 +106,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
     	YPlay cc = (YPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues(this);
     	return(c);
     }
 

@@ -50,9 +50,6 @@ public class TrenchCell
 	int visibleFromTrench = 0;
 	TrenchChip lastContents = null;
 	
-	public void initRobotValues() 
-	{
-	}
 	public TrenchCell(Random r,TrenchId rack) { super(r,rack); }		// construct a cell not on the board
 	public TrenchCell(TrenchId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);

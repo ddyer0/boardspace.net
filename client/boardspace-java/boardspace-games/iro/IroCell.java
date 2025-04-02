@@ -53,9 +53,7 @@ public class IroCell
 	{
 		return empty ? lastPicked : lastDropped;
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public IroCell(Random r,IroId rack) { super(r,rack); }		// construct a cell not on the board
 	public IroCell(IroId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);

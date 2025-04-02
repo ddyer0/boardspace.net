@@ -959,10 +959,6 @@ void doSwap(replayMode replay)
  	return(all);
  }
  
- public void initRobotValues()
- {
- }
-
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
  {   if(Character.isDigit(txt.charAt(0)))

@@ -235,8 +235,7 @@ public void PrepareToMove(int playerIndex)
 	//use this for a friendly robot that shares the board class
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
-    board.initRobotValues();
-}
+ }
 
 
 	public commonMove getCurrentVariation()

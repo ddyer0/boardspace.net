@@ -41,9 +41,7 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 {	
 	private int sweep_counter1;		// the sweep counter for which blob is accurate
 	public int lastPlaced = -1;
-	public void initRobotValues() 
-	{
-	}
+
 	public int getSweep() { return(sweep_counter1); }
 	public void setSweep(int n) 
 	{	sweep_counter1 = n;

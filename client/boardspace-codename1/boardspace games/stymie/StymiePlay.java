@@ -102,6 +102,7 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
     	StymiePlay cc = (StymiePlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.board.initRobotValues();
     	return(c);
     }
 

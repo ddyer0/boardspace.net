@@ -3133,12 +3133,6 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 		}
 		return(false);
 	}
- 
- public void initRobotValues()
- {
-
- }
-
 
 public int cellToX(BlackDeathCell c) {
 	return((int)(G.Left(boardRect)+c.xpos*G.Width(boardRect)/100));

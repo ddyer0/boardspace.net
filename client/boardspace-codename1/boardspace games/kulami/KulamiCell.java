@@ -40,9 +40,6 @@ public class KulamiCell extends chipCell<KulamiCell,KulamiChip>
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	public SubBoard subBoard = null;	// the subBoard covering this cell
 	
-	public void initRobotValues() 
-	{
-	}
 	public KulamiCell(Random r,KulamiId rack) { super(r,rack); }		// construct a cell not on the board
 	public KulamiCell(KulamiId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Square,rack,c,r);

@@ -58,10 +58,6 @@ public class PendulumCell
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
 	long dropWorkerTime = 0;
-	
-	public void initRobotValues() 
-	{
-	}
 
 	public PendulumCell(PendulumId stratcard) {
 		

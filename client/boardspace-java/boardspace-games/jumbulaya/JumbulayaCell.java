@@ -58,9 +58,7 @@ public class JumbulayaCell extends stackCell<JumbulayaCell,JumbulayaChip>
 		row = r;
 		col = c;
 	}
-	public void initRobotValues() 
-	{
-	}
+
 	public JumbulayaCell(Random r,JumbulayaId rack,int rn) { super(r,rack); row=rn; col='@'; }		// construct a cell not on the board
 	public JumbulayaCell(Random r,JumbulayaId rack) { super(r,rack); }		// construct a cell not on the board
 	public JumbulayaCell(JumbulayaId rack,char c,int r,Geometry g) 		// construct a cell on the board

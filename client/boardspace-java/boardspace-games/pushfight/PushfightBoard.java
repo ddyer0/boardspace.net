@@ -1723,11 +1723,6 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		return(false);
 	}
  
-
- public void initRobotValues()
- {
- }
-
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
  {   char col = txt.charAt(0);

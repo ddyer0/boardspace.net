@@ -1544,10 +1544,6 @@ class IroBoard
  	return(all);
  }
  
- public void initRobotValues()
- {
-
- }
  private void addSetupMoves(CommonMoveStack all,int who)
  {
 	 switch(board_state)

@@ -220,6 +220,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		return G.signum(points-o.points);
 	}
 
+
 }
 
 class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
