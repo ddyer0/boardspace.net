@@ -237,4 +237,25 @@ public class PendulumCell
     		default: return super.findChipHighlight(highlight,piece,scaledWidth(squareWidth),scaledHeight(squareHeight),x,y);
     	}
     }
+    
+	/**
+	 * this is a trap for the "card backs" mechanism used in drawStack.  It's
+	 * important because it keeps the actual cards from being loaded when only
+	 * the card backs will be seen.
+	 */
+	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
+	{	
+		if( PendulumChip.BACK.equals(thislabel)
+				&& (piece instanceof PendulumChip)
+				&& ((PendulumChip)piece).back!=null)
+				
+			{ 
+			return super.drawChip(gc,((PendulumChip)piece).back,drawOn,highlight,squareWidth,scale,e_x,e_y,null);
+			}	
+		else
+			{ 
+			return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
+			}
+	}
+
 }

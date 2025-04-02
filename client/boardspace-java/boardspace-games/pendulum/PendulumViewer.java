@@ -419,6 +419,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        	int bw = buttonW*6/5;
        	G.SetRect(restButton,rx-bw/2,ry-bw/15,bw,bw/4);
        	G.copy(pauseButton,restButton);
+       	G.SetTop(pauseButton,(int)(ry-boardH*0.23));
        	G.copy(councilButton,restButton);
        	G.copy(playButton,restButton);
        
@@ -805,11 +806,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	break;
         case GreenTimer:
         	// note this is using the real board timer deliberately
-        	back = timerText(bb,cell,gb.greenTimer);
+        	back = timerText(gb,cell,bb.greenTimer);
         	break;
         case PurpleTimer:
           	// note this is using the real board timer deliberately
-       	   	back = timerText(bb,cell,gb.purpleTimer);
+       	   	back = timerText(gb,cell,bb.purpleTimer);
         	break;
         case PlayerVotes:
         	xstep = 0.2;
@@ -838,7 +839,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	break;
         case BlackTimer:
         	// note this is using the real board timer deliberately
-        	back = timerText(bb,cell,gb.blackTimer);
+        	back = timerText(gb,cell,bb.blackTimer);
         	break;
         default: break;
         }
@@ -1089,19 +1090,20 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	    	case CouncilPlay:
     	    		councilButton.setIsOn(bb.getPlayerBoard(ap).uiState!=UIState.Normal);
     	    		councilButton.show(gc,buttonSelect); 
+    	    		if(gb.variation.timers) { pauseButton.show(gc,buttonSelect); }
     	    		break;
     	    	case Play:
     	    		{
     	    		GC.setFont(gc,largeBoldFont());
+    	    		if(gb.variation.timers)
+	    			{
+	    			pauseButton.show(gc,buttonSelect);
+	    			}
     	    		if(gb.allResting())
     	    		{	
     	    			councilButton.show(gc,buttonSelect); 
     	    		}
-    	    		else if(gb.variation.timers)
-    	    			{
-    	    			pauseButton.show(gc,buttonSelect);
-    	    			}
-    	    			else
+    	    		else if(!gb.variation.timers)
     	    			{
     	    			restButton.setIsOn(bb.getPlayerBoard(ap).uiState!=UIState.Normal);
     	    			restButton.show(gc,buttonSelect); 
@@ -1200,25 +1202,29 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      * @return true if successful
      */
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
-    {	
-    	if(m.op==MOVE_PAUSE)
-    	{
-    		testButton.setValue(true);
-    		return true;
-    	}
-    	else if(m.op==MOVE_RESUME)
-    	{
-    		testButton.setValue(false);
-    		while(pendingMoves.size()>0)
-    		{
-    			commonMove rep = pendingMoves.remove(0,true);
-    			Boolean tr = (Boolean)rep.getProperty("transmit");
-    			replayMode rm = (replayMode)rep.getProperty("replaymode");
-    			PerformAndTransmit(rep,tr,rm);
+    {	switch(m.op) {
+    		case MOVE_PAUSE_COMMUNICATION:
+    			testButton.setValue(true);
+    			return true;
+    		case MOVE_RESUME_COMMUNICATION:
+    			testButton.setValue(false);
+        		while(pendingMoves.size()>0)
+        		{
+        			commonMove rep = pendingMoves.remove(0,true);
+        			Boolean tr = (Boolean)rep.getProperty("transmit");
+        			replayMode rm = (replayMode)rep.getProperty("replaymode");
+        			PerformAndTransmit(rep,tr,rm);
+        		}
+        		return true;
+    		case MOVE_SETACTIVE:
+            	{	PendulumMovespec mm = (PendulumMovespec)m;
+            		guiPlayer = mm.forPlayer;
+            	}
+            	break;
+    		default: break;
     		}
-    		return true;
-    	}
-    	else if(testButton.isOn())
+ 
+    	if(testButton.isOn())
     	{
     		m.setProperty("delayed",true);
     		m.setProperty("transmit",transmit);
@@ -1227,11 +1233,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     		return true;
     	}
     	else
-    	{
-    	if(m.op==MOVE_SETACTIVE)
-    	{	PendulumMovespec mm = (PendulumMovespec)m;
-    		guiPlayer = mm.forPlayer;
-    	}
+    	{  	
     	return(super.PerformAndTransmit(m,transmit,replay));
     	}
     }
@@ -1244,22 +1246,34 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      * @return true if all went well.  Normally G.Error would be called if anything went
      * seriously wrong.
      */
-     public boolean Execute(commonMove mm,replayMode replay)
+    public boolean Execute(commonMove mm,replayMode replay)
     {	//PendulumMovespec m = (PendulumMovespec)mm;
     	//G.print("before "+m+" "+m.purpleTimer+" "+replay+" "+bb.purpleTimer.timeToRun);
-    	 if(mm.op==MOVE_RESET && simultaneousTurnsAllowed())
+    	 switch(mm.op) 
     	 {
-    		PendulumMovespec m = (PendulumMovespec)mm;
-    		PlayerBoard pb = bb.getPlayerBoard(m.forPlayer);
-    		if(pb.pickedObject!=null)
-    		{	PendulumMovespec m2 = new PendulumMovespec(MOVE_DROP,pb.pickedSource,pb.pickedObject,m.forPlayer);
-    			PerformAndTransmit(m2,true,replayMode.Live);
-    		}
+    	 case MOVE_PAUSE:	
+    		 pauseButton.setValue(true);
+    		 return true;
+    	 case MOVE_RESUME:
+    		 pauseButton.setValue(false);
+    		 return true;
+    	 case MOVE_RESET:
+    		 if(simultaneousTurnsAllowed())
+	    	 {
+	    		PendulumMovespec m = (PendulumMovespec)mm;
+	    		PlayerBoard pb = bb.getPlayerBoard(m.forPlayer);
+	    		if(pb.pickedObject!=null)
+	    		{	PendulumMovespec m2 = new PendulumMovespec(MOVE_DROP,pb.pickedSource,pb.pickedObject,m.forPlayer);
+	    			PerformAndTransmit(m2,true,replayMode.Live);
+	    		}
+	    		return true;
+	    	 }
+    		 break;
+    	 default: break; 
     	 }
-    	 else
-    	 {
-    		 handleExecute(bb,mm,replay);
-    	 }
+    	 
+    	 handleExecute(bb,mm,replay);
+    	 
         //G.print("after "+m+" "+m.purpleTimer+" "+replay+" "+bb.purpleTimer.timeToRun);
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -1273,7 +1287,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay.animate) { playSounds(mm); }
-       return (true);
+		return (true);
     }
      /**
       * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
@@ -1335,13 +1349,21 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP) 
-    			  			|| (nmove.op==MOVE_SETACTIVE) 
-    			  			|| (nmove.op==MOVE_STARTCOUNCIL)
-    			  			|| (nmove.op==MOVE_AUTOFLIP)
-    			  			|| (nmove.op==MOVE_STARTPLAY)
-    			  			|| (nmove.op==MOVE_REST)
-    			  			|| (nmove.op==MOVE_READY);
+    	  boolean oknone = false;
+    	  switch(nmove.op) {
+    	  	case MOVE_DROP: 
+    	  	case MOVE_SETACTIVE:
+    	  	case MOVE_STARTCOUNCIL:
+    	  	case MOVE_AUTOFLIP:
+    	  	case MOVE_STARTPLAY:
+    	  	case MOVE_REST:
+    	  	case MOVE_READY:
+    	  	case MOVE_PAUSE:
+    	  	case MOVE_RESUME:
+    	  		oknone = true;
+    	  		break;
+    	  	default: break;
+    	  }
     	  commonMove rval = EditHistory(nmove,oknone);
      	     
     	  return(rval);
@@ -1502,14 +1524,15 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
             }
         	break;
         case Pause:
-        	pauseButton.toggle();
+        	if(pauseButton.isOn()) { PerformAndTransmit("Resume P"+who); }
+        	else { PerformAndTransmit("Pause P"+who); }
         	break;
         case TestPrivilege:
         	{
         	boolean newval = !testButton.isOn();
         	testButton.setValue(newval);
-        	if(newval) { PerformAndTransmit("Pause P"+who); }
-        	else { PerformAndTransmit("Resume P"+who); }
+        	if(newval) { PerformAndTransmit("PauseCommunication P"+who); }
+        	else { PerformAndTransmit("ResumeCommunication P"+who); }
         	}
         	break;
         case ShowCard:
@@ -1797,7 +1820,10 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     {
         super.ViewerRun(Math.min(400,wait));
         long now = G.Date();
-        if(!inLimbo && !pauseButton.isOnNow()) 
+        if(!GameOver()
+        		&& !reviewMode()
+        		&& !inLimbo
+        		&& !pauseButton.isOnNow()) 
         	{ 
         		if(lastTimerTime>0) { bb.doTimers(now-lastTimerTime); } 
         	}

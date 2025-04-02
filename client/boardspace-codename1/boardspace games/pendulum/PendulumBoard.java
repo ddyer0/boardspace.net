@@ -583,6 +583,7 @@ class PendulumBoard
     public void copyFrom(PendulumBoard from_b)
     {	
     	getLock();
+    	try {
         super.copyFrom(from_b);
         
         for(int i=0;i<players_in_game;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
@@ -637,7 +638,10 @@ class PendulumBoard
         blackTimer = new Timer(from_b.blackTimer);
 
         sameboard(from_b); 
+    	}
+    	finally {
         releaseLock();
+    }
     }
 
     public int round()
@@ -1106,14 +1110,15 @@ class PendulumBoard
     {	// first locate the timer!
     	unRest();
     	flipsSinceLastPurple = 0;
-    	for(int i=0;i<purpleTimers.length;i++)
+    	boolean satisfied = false;
+    	for(int i=0;i<purpleTimers.length && !satisfied;i++)
     	{
     		PendulumCell from = purpleTimers[i];
     		if(from.topChip()==PendulumChip.purpleTimer)
     		{
     			// next locate a destination
     			int destIndex = i<2 ? 2 : 0;
-    			for(int d=0;d<2;d++)
+    			for(int d=0;d<2 && !satisfied;d++)
     			{
     				PendulumCell to = purpleTimers[d+destIndex];
     				if(!to.isEmpty())
@@ -1123,9 +1128,9 @@ class PendulumBoard
     					purpleTimerPhase++;
     					if(purpleTimerPhase==3)
     					{
-    						setState(PendulumState.CouncilPlay);
+    						setState(resetState = PendulumState.CouncilPlay);
     					}
-    					return;
+    					satisfied=true;
     				}
     			}
     		}
@@ -1285,7 +1290,7 @@ class PendulumBoard
     			pb.setUIState(UIState.Normal);
     			break;
        		}
-    		 
+    		pb.acceptPlacement();
     		break;
     	default: break;
     	}}
@@ -1322,7 +1327,7 @@ class PendulumBoard
 		setState(resetState=PendulumState.Play);
 		restButton.reInit();
 		for(PlayerBoard pb : pbs)
-		{
+		{	pb.acceptPlacement();
 			pb.setUIState(UIState.Normal);
 		}
 		whoseTurn = privilegeFirstPlayer();
@@ -1331,7 +1336,7 @@ class PendulumBoard
 	{	setState(resetState=PendulumState.CouncilRewards);
 		restButton.reInit();
 		for(PlayerBoard pb : pbs)
-		{
+		{	pb.acceptPlacement();
 			pb.setUIState(UIState.Normal);
 		}
 		reorderPrivilege(replay);	// reorder the privilege and clear votes
@@ -1437,6 +1442,7 @@ class PendulumBoard
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	getLock();
+    	try {
 		//G.print("E "+mm);
     	PendulumMovespec m = (PendulumMovespec)mm;
     	m.player = m.forPlayer;
@@ -1712,7 +1718,10 @@ class PendulumBoard
         	throw err;
         }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
+    	}
+    	finally {
         releaseLock();
+    	}
         return (true);
     }
 

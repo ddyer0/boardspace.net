@@ -43,10 +43,12 @@ public class PendulumMovespec
     static final int MOVE_AUTOFLIP = 215;
     static final int MOVE_LEGENDARY_ACHIEVEMENT = 216;
     static final int MOVE_SWAPVOTES = 217;
-    static final int MOVE_PAUSE = 218;	// for privilege testing
-    static final int MOVE_RESUME = 219;	
+    static final int MOVE_PAUSE_COMMUNICATION = 218;	// for privilege testing
+    static final int MOVE_RESUME_COMMUNICATION = 219;	
     static final int MOVE_WAIT = 220;
     static final int MOVE_REFILL = 221;
+    static final int MOVE_PAUSE = 222;	// pause timers
+    static final int MOVE_RESUME = 223;	// resume timers
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -61,10 +63,12 @@ public class PendulumMovespec
         	"AutoFlip",MOVE_AUTOFLIP,
         	"Select",MOVE_SELECT,
         	"SwapVotes",MOVE_SWAPVOTES,
-        	"pause",MOVE_PAUSE,
-        	"resume",MOVE_RESUME,
+        	"pausecommunication",MOVE_PAUSE_COMMUNICATION,
+        	"resumecommunication",MOVE_RESUME_COMMUNICATION,
         	"standardAchievement",MOVE_STANDARD_ACHIEVEMENT,
         	"legendaryAchievement",MOVE_LEGENDARY_ACHIEVEMENT,
+        	"pause",MOVE_PAUSE,
+        	"resume",MOVE_RESUME,
         	"Council",MOVE_STARTCOUNCIL,
         	"Wait",MOVE_WAIT,
         	"PlayerRefill",MOVE_REFILL,
@@ -256,6 +260,8 @@ public class PendulumMovespec
             break;
         case MOVE_AUTOFLIP:    
         case MOVE_STARTCOUNCIL:
+        case MOVE_PAUSE_COMMUNICATION:
+        case MOVE_RESUME_COMMUNICATION:
         case MOVE_PAUSE:
         case MOVE_RESUME:
         case MOVE_STARTPLAY:
@@ -394,8 +400,8 @@ public class PendulumMovespec
         case MOVE_AUTOFLIP:
         case MOVE_STARTCOUNCIL:
         case MOVE_STARTPLAY:
-        case MOVE_PAUSE:
-        case MOVE_RESUME:
+        case MOVE_PAUSE_COMMUNICATION:
+        case MOVE_RESUME_COMMUNICATION:
         case MOVE_WAIT:
         default:
             return TextChunk.create(D.findUniqueTrans(op));
@@ -443,6 +449,8 @@ public class PendulumMovespec
         case MOVE_START:
         case MOVE_AUTOFLIP:
         case MOVE_STARTCOUNCIL:
+        case MOVE_PAUSE_COMMUNICATION:
+        case MOVE_RESUME_COMMUNICATION:
         case MOVE_PAUSE:
         case MOVE_RESUME:
         case MOVE_STARTPLAY:

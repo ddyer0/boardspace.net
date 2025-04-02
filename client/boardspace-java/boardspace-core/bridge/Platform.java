@@ -352,7 +352,7 @@ public static Object MakeInstance(String classname)
 				if(!testOnly)
 					{ System.out.println("classForName failed for "+name+" "+e);
 					  Plog.log.addLog("classForName failed for ",name," ",e);
-					  throw new ErrorX(e);
+					  //throw new ErrorX(e);
 					}
 			}
     	return(null);

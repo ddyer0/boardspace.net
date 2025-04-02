@@ -519,6 +519,8 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	 */
 	/*
 	 * this is a standard trick to display card backs as an alternate to the normal face.
+	 * there is a second piece in PendulumCell to substitute BACK all the way down, so
+	 * the entire card deck is not required to be present.
 	 * */
 	
 	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip

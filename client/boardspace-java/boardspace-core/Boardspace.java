@@ -358,6 +358,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 					// synchronized so only one copy can be in progress at a time
 					info.cacheFile(this,webHost(),localCacheDir);
 					if(!info.loaded) { log(""+info+" failed to load"); }
+					else { log(""+info+" newly loaded"); }
 				}
 				catch (Exception e)
 				{
@@ -399,9 +400,10 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	/**
 	 * this isn't documented.  But starting with jdk19 unless this is called, 
 	 * the jars added by findClass won't be used by the class loader.
+	 * this must NOT be synchronized, doing so causes deadlocks when doing demand loading
 	 * 
 	 */
-    public synchronized void addURL(URL url) {
+    public void addURL(URL url) {
     	if(verbose) { log("addurl "+url); }
         super.addURL(url);
     }
@@ -882,7 +884,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		{	//log("arg "+i+" "+args[i]);
 			String arg = args[i];
 			String arg1 = i+1<args.length ? args[i+1] : "";
-			if("-v".equals(args[i])) 		// verbose output as a pop-up
+			if("-v".equals(arg)) 		// verbose output as a pop-up
 				{ CacheInfo.verbose = verbose = true; }
 			else if("-setup".equals(arg))
 			{
