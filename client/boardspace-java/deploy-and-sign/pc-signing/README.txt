@@ -15,7 +15,7 @@ in the launch4j sources, embodied in l4jsign.bat
 Sign with l4jsign-yubikey.bat
 
 use launch4j and boardspace-embedded.xml to generate unsigned/boardspace.net.exe
-sign with launch4jembedded.bat
+sign with l4jsign-yubikey-embedded.bat
 compress to boardspace.net.zip
 
 

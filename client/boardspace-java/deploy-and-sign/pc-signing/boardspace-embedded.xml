@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>G:\share\projects\boardspace-html\htdocs\java\v102\boardspace.jar</jar>
+  <outfile>G:\share\projects\boardspace-java\deploy-and-sign\pc-signing\unsigned\boardspace.net.exe</outfile>
+  <errTitle>gamemaster@boardspace.net</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>gamemaster@boardspace.net</supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>G:\share\projects\boardspace-java\deploy-and-sign\pc-signing\boardspace_icon_128-indexed.ico</icon>
+  <jre>
+    <path>Java</path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>jdkOnly</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+</launch4jConfig>
