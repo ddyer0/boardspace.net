@@ -90,7 +90,17 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);
     private Rectangle tilesetRect = addRect("tilesetRect");
-    private Rectangle reverseRect = addRect("reverseRect");
+    
+ //   private Toggle reverseRect = new Toggle(this,"reverse",
+ //   		StockArt.Rotate180,HiveId.ReverseRect,false,ReverseViewExplanation);
+
+    private Toggle swingCWRect = new Toggle(this,"swingcw",
+    		StockArt.SwingCCW,HiveId.SwingCW,RotateNormalMessage,
+    		StockArt.SwingCW,HiveId.SwingCW,RotateCWMessage);
+    private Toggle swingCCWRect = new Toggle(this,"swingccw",
+    		StockArt.SwingCW,HiveId.SwingCCW,RotateNormalMessage,
+    		StockArt.SwingCCW,HiveId.SwingCCW,RotateCCWMessage);
+   
     private Toggle seeMobile = new Toggle(this,"eye",StockArt.Eye,HiveId.SeeMovable,true,SeeMovableMessage);
  //    public void verifyGameRecord()
  //   {	DISABLE_VERIFY=true;
@@ -101,6 +111,12 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{ return(tileColorSet); }
     private JCheckBoxMenuItem textNotation = null;
     public boolean useTextNotation = false;
+
+    int targetRotation = 0;
+    int startingRotation = 0;
+    int currentRotation = 0;
+    long startingRotationTime = 0;
+    long endingRotationTime = 0;
 
     public boolean reverse_y() { return(b.reverseY());}
     
@@ -278,9 +294,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
 
     	Rectangle main = layout.getMainRectangle();
-    	int mainX = G.Left(main);
+    	int mainX = G.Left(main)+100;
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main);
+    	int mainW = G.Width(main)-200;
     	
     	// calculate a suitable cell size for the board
     	CELLSIZE = fh*3;;
@@ -300,7 +316,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
         placeStateRow(stateX,stateY,mainW,stateH,iconRect,stateRect,annotationMenu,numberMenu,seeMobile,noChatRect);
-        placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,reverseRect,liftRect,tilesetRect);
+        placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,//reverseRect,
+        		swingCWRect,swingCCWRect,liftRect,tilesetRect);
         
         G.placeRight(goalRect, zoomRect, zoomW);
 
@@ -506,11 +523,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
      }
     /* draw the board and the chips on it. */
- 
+     int stableCellSize = 1;
      private void drawBoardElements(Graphics gc, HiveGameBoard gb, Rectangle tbRect,HitPoint ourTurnSelect,HitPoint anySelect)
-     {	
+     {	boolean rotate = currentRotation!=0;
+    	double extra = rotate ? (2*Math.PI)*(currentRotation/360.0) : 0;
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
      	int csize = gb.cellSize();
+     	stableCellSize = csize;
      	boolean somehit = draggingBoard();
      	boolean dolift = !somehit && doLiftAnimation(); 
      	boolean see = seeMobile.isOnNow();
@@ -574,10 +593,18 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              		ourTurnSelect.arrow = moving?StockArt.DownArrow:StockArt.UpArrow;
              		ourTurnSelect.awidth = cellSize/2;
              		ourTurnSelect.spriteColor = Color.red;
-             		}
+             		}     
+             	if(rotate)
+             	{	//G.print("xx ",xp," ",yp," r= ",G.Left(tbRect)," ",G.Top(tbRect)," ",G.Right(tbRect)," ",G.Bottom(tbRect));
              	
+             		GC.setRotation(gc,-extra,xp,yp);
+             	}
                	drawpiece.drawChip(gc,this,(int)actCellSize, xp, yp,null);
-               	if(lvl==cheight-1)
+            	if(rotate)
+             	{
+             		GC.setRotation(gc,extra,xp,yp);
+             	}
+              	if(lvl==cheight-1)
                	{	numberMenu.saveSequenceNumber(cell,xp-xo,yp-yo);
                	}
                	if(id!=null)
@@ -629,8 +656,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         
        	doBoardDrag(tbRect,anySelect,csize,HiveId.InvisibleDragBoard);
 
-        GC.setClip(gc,oldClip);
-        
+        GC.setClip(gc,oldClip); 
     }
  
     public boolean canOfferDraw(HiveGameBoard gb)
@@ -645,15 +671,35 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     // draw the board and things on it.  If gc!=null then actually 
     // draw, otherwise just notice if the highlight should be on
     //
+ 
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  
-
+    	if(targetRotation!=currentRotation)
+    	{long time = endingRotationTime - startingRotationTime;
+    	 long now = G.Date();
+    	 long elapsed = now-startingRotationTime;
+    	 double percent = Math.max(0,Math.min(1,(double)elapsed/time));
+    	 currentRotation = G.interpolate(percent,startingRotation,targetRotation);
+    	 repaint(10);
+    	}
        HiveGameBoard gb = disB(gc);
        if(gc!=null)
        {
        gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,30.0); // shrink a little and rotate 30 degrees
        gb.SetDisplayRectangle(boardRect);
-       }
+       // for reasons that are somewhere between mysterious and accidental, when you change the
+       // rotation of the board, the cell size also changes.  Messing with the logic would probably
+       // break a lot of things, so instead we post-hoc rescale them to get back to the original size
+       if(currentRotation!=0)
+       {
+       double siz1 = gb.cellSize();
+       gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,currentRotation+30.0); // shrink a little and rotate 30 degrees
+       gb.SetDisplayRectangle(boardRect);
+       double siz2 = gb.cellSize();
+       gb.SetDisplayParameters(zoomRect.value*siz1/siz2,1.0,board_center_x,board_center_y,currentRotation+30.0); // shrink a little and rotate 30 degrees
+       gb.SetDisplayRectangle(boardRect);
+       
+       }}
        int whoseTurn = gb.whoseTurn();
        boolean moving = hasMovingObject(selectPos);
        HitPoint ourTurnSelect = OurMove() ? selectPos : null;
@@ -682,7 +728,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         DrawTilesetRect(gc,nonDraggingSelect);
  
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
-        DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
+        //reverseRect.draw(gc,nonDraggingSelect);
+        swingCCWRect.draw(gc,nonDraggingSelect);
+        swingCWRect.draw(gc,nonDraggingSelect);
         seeMobile.draw(gc,nonDraggingSelect);
         
         GC.setFont(gc,standardBoldFont());
@@ -817,7 +865,20 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	return(EditHistory(nmove,(nmove.op==MOVE_PASS)||(nmove.op==MOVE_PLAYWHITE)||(nmove.op==MOVE_PLAYBLACK))); 
     }
 
-    
+    private void newTargetRotation(int n)
+    {
+       	startingRotation = targetRotation;
+    	targetRotation = targetRotation==n ? 0 : n;
+    	startingRotationTime = G.Date();
+    	endingRotationTime = startingRotationTime+750;
+    	generalRefresh();
+
+    }
+    public int netRotation()
+    {
+    	int ex = (targetRotation==60) ? -1 : targetRotation==-60 ? 1 : 0;
+    	return (reverse_y() ? 3 : 0) + ex;
+    }
 
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
@@ -834,10 +895,20 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 		switch(hitObject)
 	    {
 	    default: break;
-        case ReverseRect:
-          	 b.setReverseY(!b.reverseY());
-          	 generalRefresh();
-          	 break;
+        //case ReverseRect:
+        //	b.setReverseY(!b.reverseY());
+        //	generalRefresh();
+        //	break;
+        case SwingCW:
+        	newTargetRotation(-60);
+        	swingCCWRect.setValue(targetRotation>0);
+        	swingCWRect.setValue(targetRotation<0);
+        	break;
+        case SwingCCW:     	
+        	newTargetRotation(60);
+        	swingCCWRect.setValue(targetRotation>0);
+        	swingCWRect.setValue(targetRotation<0);
+        	break;
         case InvisibleDragBoard:
         	break;
 		case ZoomSlider:
@@ -897,6 +968,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         	break;
         case ReverseRect:	
         case ZoomSlider:
+        case SwingCCW:
+        case SwingCW:
         case InvisibleDragBoard:
         	break;
         case BoardLocation:	// we hit an occupied part of the board 

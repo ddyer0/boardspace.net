@@ -58,6 +58,9 @@ public class StockArt extends DrawableImage<StockArt> implements Digestable{
 	static public StockArt Rotate90 = new StockArt("rotateq-nomask.png",new double[]{0.5,0.5,1});
 	static public StockArt Rotate270 = new StockArt("rotateqc-nomask.png",new double[]{0.5,0.5,1});
 
+	static public StockArt SwingCW = new StockArt("swing-cw",new double[]{0.5,0.5,1});
+	static public StockArt SwingCCW = new StockArt("swing-ccw",new double[]{0.5,0.5,1});
+
 	/** a semi-transparent clockwise rotation  symbol */
 	static public StockArt Rotate_CW=new StockArt( "recycle" ,defaultAdjust);
 	/** a semi-transparent counter clockwise rotation  symbol */

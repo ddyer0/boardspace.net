@@ -337,13 +337,14 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	case 3: return(" below-left ");
     	}
     }
-    private double[]attachScale(boolean reverse)
+
+    private double[]attachScale(int rot)
     {	double scl = 2.4;
     	double val[] = null;
-    	switch(attachDirection)
+    	int dir = (attachDirection+rot+6)%6;
+    	switch(dir)
     	{
     	default: 
-    	case -1: val = new double[]{3.6,-0.3,0.0}; break;
     	case 4:  val = new double[]{scl,  0.5, 0.0}; break;
     	case 5:	val = new double[]{scl,  0.3, 0.45}; break;
     	case 0: val = new double[]{scl, -0.3, 0.45}; break;
@@ -351,20 +352,20 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	case 2: val = new double[]{scl, -0.3,-0.45}; break;
     	case 3: val = new double[]{scl,  0.3, -0.45}; break;
     	}
-    	if(reverse) { val[1]=-val[1]; val[2]=-val[2]; }
-    	return(val);
+    	return val;
     }
-    private double attachYShift(boolean reverse)
+ 
+    private double attachYShift(int rot)
     {
-    	double scl[] = attachScale(reverse);
+    	double scl[] = attachScale(rot);
     	return(-0.25 -scl[2]/2);
     }
     private double glyphScale = 0.75;
     private double lineScale = 2.0;
     private double attachScale = 2.8;
     private Text attachmentGlyph(HiveGameViewer v,Drawable mainGlyph)
-    {	boolean reverse = v.reverse_y();
-    	if(attachObject==null)
+    {	int netRotation = v.netRotation();
+     	if(attachObject==null)
     	{	if((op==MOVE_MOVE) && (mainGlyph!=null))
     		{ 
     		  return(TextGlyph.create("xxxx",mainGlyph,v,new double[]{lineScale,4,0,0}));
@@ -377,8 +378,8 @@ public class Hivemovespec extends commonMove implements HiveConstants
     		{
     		 MultiGlyph glyph = MultiGlyph.create();	
     		 glyph.append(mainGlyph,new double[]{attachScale,0,0});
-    		 glyph.prepend(attachObject,attachScale(reverse));
-    		 return(TextGlyph.create("xxxx",glyph,v,new double[]{lineScale,glyphScale*2.2,1.0,attachYShift(reverse)}));
+    		 glyph.prepend(attachObject,attachScale(netRotation));
+    		 return(TextGlyph.create("xxxx",glyph,v,new double[]{lineScale,glyphScale*2.2,1.0,attachYShift(netRotation)}));
     		}
     		else
     		{

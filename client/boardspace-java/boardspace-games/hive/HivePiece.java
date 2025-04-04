@@ -437,7 +437,7 @@ public class HivePiece extends chip<HivePiece>
 	static HivePiece WhiteQueen = null;
 	static HivePiece BlackQueen = null;
 	static HivePiece BugIcon = new HivePiece(null,new double[] {0.5,0.4,1.5});
-	
+	// TODO: make the carbon pieces reloadable
 	public static void preloadImages(ImageLoader forcan,String Dir)
 		{	if(gameIcon==null	)
 			{

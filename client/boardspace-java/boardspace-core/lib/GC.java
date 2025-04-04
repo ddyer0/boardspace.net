@@ -163,20 +163,44 @@ public class GC {
 		g1.drawArrow(ox, oy, dest_x, dest_y, ticksize, thickness);
 		}
 	}
-
+	/**
+	 * set the current rotation, in radians
+	 * @param g
+	 * @param ang
+	 */
 	public static void setRotation(Graphics g,double ang)
 	{	if((g!=null) && (ang!=0))
 		{
 			g.setRotation(ang);
 		}
 	}
+	/**
+	 * set the current rotation, in radians, centered on x, y
+	 * @param g
+	 * @param ang
+	 * @param cx
+	 * @param cy
+	 */
 	public static void setRotation(Graphics g,double ang,int cx,int cy)
 	{	if((g!=null) && (ang!=0))
 		{
 			g.setRotation(ang,cx,cy);
 		}
 	}
-
+	/**
+	 * get the current rotation in radians
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public static double getRotation(Graphics g)
+	{
+		return g==null ? 0 : g.getRotation();
+	}
+	/**
+	 * reset the matrix transformation to an identity matrix
+	 * @param g
+	 */
 	public static void resetAffine(Graphics g)
 	{	if(g!=null)
 		{
@@ -185,6 +209,7 @@ public class GC {
 	}
 
 	/**
+	 * fill a rectangle with the current color
 	 * 
 	 * @param g
 	 * @param left
@@ -198,13 +223,27 @@ public class GC {
 	        g.fillRect(left, top, w, h);
 	    	}
 	    }
-
+	/**
+	 * get the bounds of a specified substring, which might span multiple lines
+	 * @param g
+	 * @param fm
+	 * @param line
+	 * @param firstChar
+	 * @param lastChar
+	 * @return
+	 */
 	public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar)
 	{
 		Rectangle2D d = Graphics.getStringBounds(g, fm, line, firstChar, lastChar);
 		return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));
 	}
-
+/**
+ * get the bounds of a string, which might span multiple lines
+ * @param g
+ * @param fm
+ * @param line
+ * @return
+ */
 	public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line) {
 		Rectangle2D d = Graphics.getStringBounds(g, fm, line);
 		return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));

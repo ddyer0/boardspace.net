@@ -36,6 +36,9 @@ public interface HiveConstants
 	static final String PlayBlackAction = "I will play with the black pieces";
 	static final String TextLogMessage = "use text in Game Log";
     static final String SeeMovableMessage = "Show movable bugs";
+    static final String RotateNormalMessage = "Rotate the board back to normal";
+    static final String RotateCWMessage = "Rotate the board to +60 degrees (clockwise)";
+    static final String RotateCCWMessage = "Rotate the board -60 degrees (counter-clockwise)";
     
     enum HiveId implements CellId
     {
@@ -50,7 +53,9 @@ public interface HiveConstants
     	Black_Setup_Pool("BS"),
     	HitPlayWhiteAction("PlayWhite"),
     	HitPlayBlackAction("PlayBlack"), 
-    	SeeMovable(null);
+    	SeeMovable(null),
+    	SwingCW(null),
+    	SwingCCW(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	HiveId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -182,6 +187,9 @@ public interface HiveConstants
     	        PlayWhiteAction,
     	        PlayBlackAction,
     	        SeeMovableMessage,
+    	        RotateNormalMessage,
+    	        RotateCWMessage,
+    	        RotateCCWMessage,
     		};
     
     		String HiveStringPairs[][] = 

@@ -1897,11 +1897,16 @@ graphics when using a touch screen.
 
     /**
      * this is the primary method to draw an images with transparent
-     * backgrounds on a canvas.  The images are clipped to a slightly smaller box to avoid the "edge garbage"
-     * bug.
+     * backgrounds on a canvas.  If there's no rotation, the images are clipped 
+     * to a slightly smaller box to avoid the "edge garbage" bug.
      * <p>
      * Another feature of this interface is that the images are displayed
      * quickly at first, then "slow scaled" to the desired size.
+     * <p>
+     * Another feature of this interface is that if the images are completely
+     * invisible, they aren't drawn at all.  This makes the zoom-up feature
+     * much more effecient because the completely invisible parts are clipped
+     * away before the main drawing machinery even considers them.
      * 
      * @param gc the graphics context
      * @param im the image to draw
@@ -1960,7 +1965,20 @@ graphics when using a touch screen.
         	// elements within the image.
         int xtrim = (scalew+imw)/(imw+1)+1;
         int ytrim = (scaleh+imh)/ (imh+1)+1;
-        Rectangle sh = GC.combinedClip(gc,ax+xtrim ,ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2);
+        //
+        // this clip is using the clipping region to clip out the "bad pixels" that tend to occur
+        // on the edges of images that are being dynamically scaled.  The basic idea is to temporarily
+        // clip down to just inside the bounds of the image.  This is meaningless and impossible
+        // if the rotation isn't a multiple of 90 degrees.  But normal usage is only rotation 0 and
+        // that's the case we handle here.
+        // If rotation isn't 0, we just accept the bad edges if they occur.  This tweak to not try
+        // to clip was put in place for Hive bugs, which doesn't suffer from weak edges. Maybe it's
+        // not a big problem any more, since the images tend to be pre scaled to the exact size.
+        //
+        boolean clip = GC.getRotation(gc)==0.0;
+        Rectangle sh = clip 
+        		? GC.combinedClip(gc,ax+xtrim ,ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2)
+        		: null;
         //
         // this clipping ought to be unnecessary, but there seems to be a bug with
         // images that are both scaled and transparent, that the edges are not
@@ -1972,7 +1990,7 @@ graphics when using a touch screen.
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());
         
         cached.drawImage(gc, ax, ay,scalew2 , scaleh);
-        GC.setClip(gc,sh);	// reset the clipping rectangle before drawing the label
+        if(clip) { GC.setClip(gc,sh); };	// reset the clipping rectangle before drawing the label
         if(text!=null)
         { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);
           // draw the text centered on the tile.  This is really important

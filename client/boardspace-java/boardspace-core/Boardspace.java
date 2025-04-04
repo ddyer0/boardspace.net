@@ -358,7 +358,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 					// synchronized so only one copy can be in progress at a time
 					info.cacheFile(this,webHost(),localCacheDir);
 					if(!info.loaded) { log(""+info+" failed to load"); }
-					else { log(""+info+" newly loaded"); }
+					else if(verbose) { log(""+info+" newly loaded"); }
 				}
 				catch (Exception e)
 				{

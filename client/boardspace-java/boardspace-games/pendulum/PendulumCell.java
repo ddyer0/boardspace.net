@@ -18,7 +18,6 @@ package pendulum;
 
 import lib.Random;
 import lib.exCanvas;
-import manhattan.ManhattanChip;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
