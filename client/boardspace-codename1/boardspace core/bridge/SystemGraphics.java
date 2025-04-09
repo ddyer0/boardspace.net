@@ -208,7 +208,8 @@ public abstract class SystemGraphics {
  		double xscale = w/(double)sw;
  		double yscale = h/(double)sh;
 	   	int[]clip = gc.getClip();
-
+	   	// clip the destination to exclude pixels from the source.
+	   	// note that this only works for unrotated images.
 		if(clip!=null && (clip instanceof int[]) && (clip.length>=4))
 		{
 	   	gc.clipRect(dx,dy,w,h);			// combine with proper clipping region

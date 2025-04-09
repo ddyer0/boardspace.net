@@ -795,15 +795,17 @@ typedef enum PREAMBLE_RESULT { PREAMBLE_ASKAGAIN, PREAMBLE_ERROR, PREAMBLE_SSL, 
 // inspect the handshake's first byte, see if ssl is appropriate
 // return 1 if ssl should be used 0 if plain socket, -1 if error 
 //
-PREAMBLE_RESULT handshake_preamble(SOCKET socket)
+PREAMBLE_RESULT handshake_preamble(User *u,SOCKET socket)
 {
     fd_set rlist, elist;
     char buf[10];
     int n = doselect(socket, &rlist, NULL, &elist, 10);
-    if (n < 0) { return PREAMBLE_ERROR;  }
-    if (n == 0) { return PREAMBLE_ASKAGAIN;  }
+    if (n < 0) { u->badReadCount++; return PREAMBLE_ERROR; }
+    else if (n == 0) { u->badReadCount++; return PREAMBLE_ASKAGAIN; }
+    
     if (FD_ISSET(socket, &elist))
     {
+        u->badReadCount++; 
         logEntry(&mainLog, "[%s] handshake preamble exception. S%d\n", timestamp(), socket);
         return PREAMBLE_ERROR;
     }
@@ -813,6 +815,8 @@ PREAMBLE_RESULT handshake_preamble(SOCKET socket)
         int len = recv(socket, buf, 1, MSG_PEEK);
         if (len == 1)
         {
+            u->badReadCount = 0;
+            u->goodReadCount++;
             if (buf[0] == 0x16 || buf[0] == 0x80)
             {
                 return PREAMBLE_SSL;
@@ -823,10 +827,11 @@ PREAMBLE_RESULT handshake_preamble(SOCKET socket)
         }
         else if (len == 0) 
         {
+            u->badReadCount++;
 	  int eno = minusErrNo();
 	  return eno==EWOULDBLOCK ? PREAMBLE_ASKAGAIN : PREAMBLE_ERROR;
         }
-        else { return PREAMBLE_ERROR;  }
+        else { u->badReadCount++;  return PREAMBLE_ERROR; }
     }
     return PREAMBLE_ERROR;  // shouldn't ever get here.
 }
@@ -841,7 +846,7 @@ HandshakeResult do_handshake(User* u)
 
     if (ctx->scheme == NULL)
     {   // preamble not yet decided
-      PREAMBLE_RESULT preamble = ctx->phase==HANDSHAKE_SSL_ACCEPT ? PREAMBLE_SSL_ACCEPT: handshake_preamble(sock);
+      PREAMBLE_RESULT preamble = ctx->phase==HANDSHAKE_SSL_ACCEPT ? PREAMBLE_SSL_ACCEPT: handshake_preamble(u,sock);
 
         switch (preamble)
         {
@@ -925,12 +930,18 @@ HandshakeResult do_handshake(User* u)
     
     int len = (int) ws_recv(ctx, sock, buffer+index, size);
     if (len <= 0) {
+        u->badReadCount++;
       int enn = minusErrNo();
         if (enn == EWOULDBLOCK)
         {
             return HANDSHAKE_SOME;
         }
         return HANDSHAKE_ERROR;
+    }
+    else
+    {
+        u->badReadCount = 0;
+        u->goodReadCount++;
     }
  
     ctx->cin_buf_idx = index + len;
@@ -1007,7 +1018,9 @@ HandshakeResult do_handshake(User* u)
 
         //handler_msg("response: %s\n", response);
         size_t len = strlen(response);
-        size_t sent = ws_send(ctx, u->socket, response, len);
+        int sent = ws_send(ctx, u->socket, response, len);
+        if (sent <= 0) { u->badWriteCount++;  }
+        else { u->badWriteCount = 0; u->goodWriteCount++; }
         return len==sent ?  HANDSHAKE_OK : HANDSHAKE_ERROR;
 
     }
@@ -1086,12 +1099,17 @@ int recv_decoded(User* u, unsigned char* outBuf, int outSiz)
     int bytes = (int)ws_recv(ctx, sock, inBuffer + inIndex, inSize);
     if (bytes <= 0) {
         //handler_emsg("target closed connection\n");
+      u->badReadCount++;
       int eno = minusErrNo();
         u->websocket_errno = eno;
         if (eno == EWOULDBLOCK)
         {
             bytes = 0;
         }
+    }
+    else {
+        u->badReadCount = 0;
+        u->goodReadCount++;
     }
     int inEnd = inIndex + bytes;
 
@@ -1186,6 +1204,8 @@ int websocketSend(User* u, unsigned char* buf, int siz0)
             int bsent = ws_send(ctx, u->socket, outbuf + outstart, len);
             if (bsent > 0)
             {
+                u->badWriteCount = 0;
+                u->goodWriteCount++;
                 outstart += bsent;
                 if (outstart == outend)
                 {   // start next time with a clean buffer
@@ -1198,8 +1218,13 @@ int websocketSend(User* u, unsigned char* buf, int siz0)
             }
             else if(bsent<0)
             {
-	      u->websocket_errno = minusErrNo();
+                u->badWriteCount++;
+	            u->websocket_errno = minusErrNo();
                 sent = bsent;
+            }
+            else {
+                // not an immediate error, but might persist
+                u->badWriteCount++;
             }
         }
     }

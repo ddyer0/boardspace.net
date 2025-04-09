@@ -139,7 +139,7 @@ public class Graphics extends SystemGraphics
 		shadow.setRotation(r);
 	}
 	public void setRotation(double ang,int cx,int cy)
-	{	rotation = ang;
+	{	rotation += ang;
 		super.setRotation(ang,cx,cy);
 		shadow.setRotation(ang,cx,cy);
 	}

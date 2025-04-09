@@ -1047,6 +1047,10 @@ void increaseInputBufferSize(User *u,int min)
 static void ClearUser(User *u)
 {		u->socket = -1;
 		u->ip=0;
+		u->badReadCount = 0;
+		u->badWriteCount = 0;
+		u->goodReadCount = 0;
+		u->goodWriteCount = 0;
 #if PROXY
 		u->proxyFor = NULL;
 		u->proxyOut = NULL;
@@ -1127,6 +1131,10 @@ static void CopyUser(User *from,User *to)
 {
 		if(to!=from)
 		{to->socket = from->socket;
+		to->badReadCount = from->badReadCount;
+		to->badWriteCount = from->badWriteCount;
+		to->goodReadCount = from->goodReadCount;
+		to->goodWriteCount = from->goodWriteCount;
 		 to->ip=from->ip;
 		 to->serverKey=from->serverKey;
 		 to->keyIndex=from->keyIndex;
@@ -3490,7 +3498,18 @@ char *addChecksum(User *u,char *inStr,int *outsize)
   return(tempFB);
 }
 
-
+int socketSend(User* u, SOCKET sock, char* buf, int len)
+{
+	int n = send(sock, buf, len,0);
+	if (n <= 0) {
+		u->badWriteCount++;
+	}
+	else {
+		u->badWriteCount = 0;
+		u->goodWriteCount++;
+	}
+	return n;
+}
 
 /* start output for a user, return positive if some was sent, negative if error
    or zero if not sent, but not error either */
@@ -3519,7 +3538,7 @@ int startOutput(User *u)
 	  int len = err = isRealSocket(sock)
 			?u->websocket
 				? websocketSend(u, u->outbufPtr + from, slen)
-				: send(sock,u->outbufPtr+from,slen,0)
+				: socketSend(u,sock,u->outbufPtr+from,slen)
 		    :-2;
 	  if(slen==u->outbufSize)
 	  {	// improbable, full buffer
@@ -6803,7 +6822,19 @@ static int containsNewline(User *u,int count,int end)
 	}
 	return(eol);
 }
-
+int socketRecv(User *u,SOCKET sock, char* buf, int len)
+{
+	int n = recv(sock, buf, len, 0);
+	if (n <= 0) {
+		u->badReadCount++;
+	}
+	else
+	{
+		u->badReadCount = 0;
+		u->goodReadCount++;
+	}
+	return n;
+}
 // fill the input buffer when a socket is believed to be active.
 // the command structure is uniformly 1 line = 1 command.  Sometimes
 // this results in very int lines (with embedded linefeeds encoded)
@@ -6870,7 +6901,7 @@ static int fillBuffer(User *u)
 	  SOCKET sock = u->socket;
 	  int readResult = u->websocket
 						? websocketRecv(u,buffer+put,siz)
-						: recv(sock, buffer+put, siz,0);
+						: socketRecv(u,sock, buffer+put, siz);
 	  switch(readResult)
 	  { case 0:	
 			// note that reading zero bytes always seems to be an error.  Sometimes
@@ -6959,6 +6990,24 @@ static int fillBuffer(User *u)
 			eol=containsNewline(u,u->inbuf_take_index,put+readResult);
 			doneReading = (eol!=0);
 			}
+	  }
+	  if (u->badWriteCount >= 100 || u->badReadCount >= 100)
+	  {
+		  // this shouldn't happen, but shit happens.  Its even worse to spin forever.
+		  // the motivation for this was on 4/7/2025, when the network was behaving badly
+		  // for other reasons, I saw the server go to 100% runtime.  After a restart, it
+		  // happened again.  Nothing odd appeared in the logs.  I believe the most likely
+		  // cause of this is a bug, or unexpected failure mode, which causes the "select"
+		  // to always return true, but no I/O is actually accomplished.   So I've added
+		  // some simple counts to detect the most obvious cases of this hypothetical
+		  // failure mode.
+		  if (logging >= log_errors)
+		  {
+			  logEntry(&mainLog, "[%s] Emergency Close C%d (%s#%d) S%d error reading, bad reads=%d bad writes=%d good reads=%d good writes=%d\n",
+				  timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, 
+				  u->badReadCount,u->badWriteCount,u->goodReadCount,u->goodWriteCount);
+		  }
+		  simpleCloseClientOnly(u, "emergency close");
 	  }
 	}
 	  /* end of actually reading */

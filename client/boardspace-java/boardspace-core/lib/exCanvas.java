@@ -1975,7 +1975,8 @@ graphics when using a touch screen.
         // to clip was put in place for Hive bugs, which doesn't suffer from weak edges. Maybe it's
         // not a big problem any more, since the images tend to be pre scaled to the exact size.
         //
-        boolean clip = GC.getRotation(gc)==0.0;
+        double rot = GC.getRotation(gc);
+        boolean clip = Math.abs(rot)<0.0001;
         Rectangle sh = clip 
         		? GC.combinedClip(gc,ax+xtrim ,ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2)
         		: null;
@@ -1989,7 +1990,16 @@ graphics when using a touch screen.
         //
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());
         
-        cached.drawImage(gc, ax, ay,scalew2 , scaleh);
+        if(clip || G.isCodename1()) { cached.drawImage(gc, ax, ay,scalew2 , scaleh); }
+        else { int ww = cached.getWidth();
+        	   int hh = cached.getHeight();
+        	   if(ww>3 && hh>3)
+        	   {
+        		cached.drawImage(gc,
+        			ax,ay,ax+scalew2,ay+scaleh,
+        			1,1,ww-2,hh-2);
+        	   }
+        	}
         if(clip) { GC.setClip(gc,sh); };	// reset the clipping rectangle before drawing the label
         if(text!=null)
         { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);

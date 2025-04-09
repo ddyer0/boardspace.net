@@ -352,6 +352,10 @@ struct User
 	char cookie[BANSIZE];		// @field cookie presented
 	int errorsLogged;			// @field errors logged since connection
 	SOCKET socket;				// @field unix socket number
+	int badReadCount;			// @field count of consecutive unsuccessful read attempts
+	int badWriteCount;			// @field count of consecutive unsuccessful write attempts;
+	int goodReadCount;			// @field count of successful reads
+	int goodWriteCount;			// @field count of successful writes
 	unsigned int ip;			// @field user ip address
 	unsigned int serverKey;		// @field user server supplied key.  See comments about "strict" logins
 	registeredUser *keyIndex;	// @field our index in the registered user structure
