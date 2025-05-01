@@ -24,6 +24,7 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import bridge.Config;
 import lib.Graphics;
 import lib.AR;
 import lib.Random;
@@ -45,7 +46,8 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
 /**
- * 
+ * TODO: sounds for start of council phase, etc.
+ * TODO: add a "no money dummy" to the meeple tracks
  * This is intended to be maintained as the reference example how to interface to boardspace.
  * <p>
  * The overall structure here is a collection of classes specific to Hex, which extend
@@ -99,7 +101,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-	// TODO: add logic to prevent pickup of strategem cards that can't be dropped
 	
     static final String Pendulum_SGF = "pendulum"; // sgf game name
    // file names for jpeg images and masks
@@ -107,6 +108,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     		? "/appdata/pendulum/images/" 
     		: "/pendulum/images/";
 
+	static final String flipSound = ImageDir + "flip" + Config.SoundFormat;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color chatBackgroundColor = new Color(240,240,240);
@@ -729,6 +731,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         boolean helpPerCard = false;
         boolean colorMatch = false;
         boolean benefitsPosition = false;
+        boolean selectPerCard = false;
         PendulumId rack = cell.rackLocation();
         switch(rack)
         {
@@ -739,11 +742,12 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	break;
         case PlayerPlayedStratCard:
         	xstep = 0.2;
-        	helpPerCard = true;
+         	helpPerCard = true;
         	break;
         case PlayerStratCard:
         	xstep = 0.7;
         	ystep = 0;
+        	selectPerCard = true;	// not all cards are playable
         	helpPerCard = true;
         	break;
         case Trash:
@@ -803,6 +807,29 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         case PlayerMeeples:
         	xstep = 0.3;
         	ystep = 0;
+        	break;
+        case Privilege:
+        	{	
+        	if(cell.topChip()!=null)
+        	{
+        	PendulumState res = gb.resetState;
+        	if(res!=null)
+        	{
+        	PlayerBoard pb = gb.getPlayerBoard(cell.topChip());
+        	switch(res)
+	        	{
+	        	case CouncilRewards: 
+	        		back = ""+ (pb==null ? 3 : pb.councilVotes.height());
+	        		labelFont = standardPlainFont();
+	        		break;
+	        	case Play: 
+	        	case CouncilPlay:
+	        		back = ""+(pb==null ? 3 : pb.votes.height()); 
+	        		labelFont = standardPlainFont();
+	        		break;
+	        	default: break;
+	        	}
+        	}}}
         	break;
         case GreenTimer:
         	// note this is using the real board timer deliberately
@@ -878,6 +905,13 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         			PendulumMovespec m = targets.get(cell);
         			misMatch |= ch!=null && m!=null && m.op==MOVE_PICK && ch.color!=pb.color;
         		}
+        		if(selectPerCard)
+        		{	// strat cards are not all selectable
+        			PlayerBoard pb = gb.getPlayerBoard(cell);
+        			PendulumChip ch = cell.chipAtIndex(hitIndex);
+        			if(ch!=null && !pb.canPlayStratCard(ch)) { misMatch = true; }
+        			
+        		}
         		if(misMatch)
 	        		{
         			hit = false;
@@ -913,8 +947,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         		boolean province = ch.id==PendulumId.ProvinceCard;     		
         		G.SetTop(r,G.Top(r)+(province? h*2/3 : h*3/4));
         		// hit the bottom 1/4 of cards to pop up an enlarged version
-           		PlayerBoard pb = gb.getPlayerBoard(reviewOnly ? guiPlayer : getActivePlayer().boardIndex);
-           		if(pb.pickedObject==null && G.pointInRect(any,r))
+           		if(G.pointInRect(any,r))
         			{ any.spriteRect = r;
         			  any.spriteColor = Color.red;
         			  any.hitCode = PendulumId.ShowCard;
@@ -1168,6 +1201,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	testButton.draw(gc,selectPos);
         }
         zoomer.drawMagnifier(gc,selectPos,boardRect,0.05,0.96,0.93,0);
+        zoomer.drawMagnifier(gc,selectPos,councilRect,0.1,0.94,0.94,0);
     }
 
     /**
@@ -1323,6 +1357,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 	 case MOVE_SELECT:
 	 case MOVE_DROP:
 		 playASoundClip(light_drop,100);
+		 break;
+	 case MOVE_STARTPLAY:
+	 case MOVE_FLIP:
+	 case MOVE_AUTOFLIP:
+		 playASoundClip(flipSound,100);
 		 break;
 	 default: break;
 	 }
@@ -1829,9 +1868,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         	}
         lastTimerTime = now;
         
-        if( !GameOver()
-             && !inLimbo
-        	 && iAmTheLeadPlayer()
+        if( !inLimbo
+        	 && (G.offline() || iAmTheLeadPlayer())
            	 && !reviewMode())
         {	PendulumState state = bb.getState();
      		switch(state)

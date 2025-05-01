@@ -695,6 +695,4 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	{
 		return registeredImages.imageSize(stack);
 	}
-
-
 }

@@ -7007,7 +7007,7 @@ static int fillBuffer(User *u)
 				  timestamp(), u->userNUM, u->clientRealName, u->clientUid, u->socket, 
 				  u->badReadCount,u->badWriteCount,u->goodReadCount,u->goodWriteCount);
 		  }
-		  simpleCloseClientOnly(u, "emergency close");
+		  simpleCloseClient(u, "emergency close");
 	  }
 	}
 	  /* end of actually reading */

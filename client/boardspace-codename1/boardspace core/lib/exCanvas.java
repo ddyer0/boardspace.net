@@ -1952,47 +1952,10 @@ graphics when using a touch screen.
        if(!invisible)
         {
         
-        	// the scales and offsets are empirically adjusted.  This is a simpler solution than
-        	// requiring the actual images to have particular size and placement of the interesting
-        	// elements within the image.
-        int xtrim = (scalew+imw)/(imw+1)+1;
-        int ytrim = (scaleh+imh)/ (imh+1)+1;
-        //
-        // this clip is using the clipping region to clip out the "bad pixels" that tend to occur
-        // on the edges of images that are being dynamically scaled.  The basic idea is to temporarily
-        // clip down to just inside the bounds of the image.  This is meaningless and impossible
-        // if the rotation isn't a multiple of 90 degrees.  But normal usage is only rotation 0 and
-        // that's the case we handle here.
-        // If rotation isn't 0, we just accept the bad edges if they occur.  This tweak to not try
-        // to clip was put in place for Hive bugs, which doesn't suffer from weak edges. Maybe it's
-        // not a big problem any more, since the images tend to be pre scaled to the exact size.
-        //
-        double rot = GC.getRotation(gc);
-        boolean clip = Math.abs(rot)<0.0001;
-        Rectangle sh = clip 
-        		? GC.combinedClip(gc,ax+xtrim ,ay+ytrim , scalew2 - xtrim*2, scaleh - ytrim*2)
-        		: null;
-        //
-        // this clipping ought to be unnecessary, but there seems to be a bug with
-        // images that are both scaled and transparent, that the edges are not
-        // handled correctly, resulting in non-transparent turds at the edges.
-        //
-        // also, the clipping done by drawImage based on the relative sizes of the
-        // image and the presentation won't know about the scaled copy we make.
-        //
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());
         
-        if(clip || G.isCodename1()) { cached.drawImage(gc, ax, ay,scalew2 , scaleh); }
-        else { int ww = cached.getWidth();
-        	   int hh = cached.getHeight();
-        	   if(ww>3 && hh>3)
-        	   {
-        		cached.drawImage(gc,
-        			ax,ay,ax+scalew2,ay+scaleh,
-        			1,1,ww-2,hh-2);
-        	   }
-        	}
-        if(clip) { GC.setClip(gc,sh); };	// reset the clipping rectangle before drawing the label
+        cached.drawImage(gc, ax, ay,scalew2 , scaleh); 
+        
         if(text!=null)
         { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);
           // draw the text centered on the tile.  This is really important

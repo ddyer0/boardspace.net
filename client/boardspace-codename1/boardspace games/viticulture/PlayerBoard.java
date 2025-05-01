@@ -161,7 +161,6 @@ public class PlayerBoard
 		}
 	}
 	ScoreStack scoreEvents = new ScoreStack();
-	
 	int boardIndex;
 	int colorIndex;
 	char colCode;
@@ -271,6 +270,11 @@ public class PlayerBoard
 	int usedTastingRoom = 0;		// year it was used
 	ViticultureChip flashChip = null;
 	boolean papaResolved = false;
+	String initialBonus = "none";
+	boolean initialBonusDeclined = false;
+	ChipType extraWorker1 = null;
+	ChipType extraWorker2 = null;
+
 	int cash;
 	int score;
 	int wineSalePoints;
@@ -537,6 +541,12 @@ public class PlayerBoard
 		usedTastingRoom = 0;
 		residual = 0;
 		playerSeason = 0;
+		
+		initialBonus = "none";
+		initialBonusDeclined = false;
+		extraWorker1 = null;
+		extraWorker2 = null;
+
 		startingScore = score;
 		startingCash = cash;
 		selectedOptions.clear();
@@ -611,6 +621,10 @@ public class PlayerBoard
         cashDisplay.copyFrom(other.cashDisplay);
         AR.copy(statSummary,other.statSummary);
 		papaResolved = other.papaResolved;
+		initialBonus = other.initialBonus;
+		initialBonusDeclined = other.initialBonusDeclined;
+		extraWorker1 = other.extraWorker1;
+		extraWorker2 = other.extraWorker2;
 		wakeupPosition = bb.getCell(other.wakeupPosition);
 		activeWakeupPosition = bb.getCell(other.activeWakeupPosition);
 		messengerCell = bb.getCell(other.messengerCell);
@@ -647,6 +661,7 @@ public class PlayerBoard
 	
 	ViticultureChip mama;
 	ViticultureChip papa;
+	
 	
 	public void resolveMama()
 	{	// everybody gets three meeples
@@ -758,105 +773,144 @@ public class PlayerBoard
 		{
 		case 1:	// andrew
 			cash += 4;			
+			initialBonus = "trellis";
 			if(first) 
 			{
 			  trellis.addChip(building =  ViticultureChip.Trellises[colorIndex]);
 			}
 			else 
 			{ cash += 2;
+			  initialBonusDeclined = true;
 			}
 			break;
 		case 2: // christian
 			cash += 3;
+			initialBonus = "water tower";
 			if(first)
 				{ waterTower.addChip(building = ViticultureChip.Watertowers[colorIndex]);
 				}
-			else { cash += 3; }
+			else { cash += 3; 
+			initialBonusDeclined = true;
+			}
 			break;
 		case 3:	// jay
 			cash += 5;
+			initialBonus = "yoke";
 			if(first) { yoke.addChip(building = ViticultureChip.Yokes[colorIndex]); }
-			else {  cash +=2; }
+			else {  cash +=2;
+			initialBonusDeclined = true;}
 			break;
 		case 4:	// josh
+			initialBonus = "medium cellar";
 			cash += 3;
 			if(first) { mediumCellar.addChip(building = ViticultureChip.MediumCellars[colorIndex]);  }
-			else { cash +=4; }
+			else { cash +=4; 
+			initialBonusDeclined = true;}
 			break;
 		case 5:	// kozi
+			initialBonus = "cottage";
 			cash += 2;
 			if(first) { cottage.addChip(building = ViticultureChip.Cottages[colorIndex]); }
-			else { cash += 4; }
+			else { cash += 4;
+			initialBonusDeclined = true;}
 			break;
 		case 6:	// matthew
 			cash += 1;
+			initialBonus = "windmill";
 			if(first) 
 			{ 
 			  windmill.addChip(building = ViticultureChip.Windmills[colorIndex]);
 			}
 			else 
 			{ cash += 5;
+			initialBonusDeclined = true;
 			}
 			break;
 		case 7: // matt
 			cash += 0;
+			initialBonus = "tasting room";
 			if(first) {tastingRoom.addChip(building = ViticultureChip.Tastingrooms[colorIndex]);  }
-			else { cash += 6; }
+			else { cash += 6;
+			initialBonusDeclined = true; }
 			break;
 		case 8: // paul
 			cash += 5;
+			initialBonus = "trellis";
 			if(first) { trellis.addChip(building = ViticultureChip.Trellises[colorIndex]);  }
-			else { cash += 1;}
+			else { cash += 1;
+			initialBonusDeclined = true; }
 			break;
 		case 9:	// stephan
 			cash += 4;
+			initialBonus = "water tower";
 			if(first) { waterTower.addChip(building = ViticultureChip.Watertowers[colorIndex]); }
-			else { cash += 2;}
+			else { cash += 2;
+			initialBonusDeclined = true;}
 			break;
 		case 10: // steven
 			cash += 6;
+			initialBonus = "yoke";
 			if(first) { yoke.addChip(building = ViticultureChip.Yokes[colorIndex]); }
-			else { cash += 1; }
+			else { cash += 1;
+			initialBonusDeclined = true;}
 			break;
 		case 11: //joel
 			cash += 4;
+			initialBonus = "medium cellar";
 			if(first) { mediumCellar.addChip(building = ViticultureChip.MediumCellars[colorIndex]); }
-			else { cash +=3 ; }
+			else { cash +=3 ;
+			initialBonusDeclined = true;}
 			break;
 		case 12: //raymond
 			cash += 3;
+			initialBonus = "cottage";
 			if(first) { cottage.addChip(building = ViticultureChip.Cottages[colorIndex]); }
-			else { cash += 3; }
+			else { cash += 3; 
+			initialBonusDeclined = true;}
 			break;
 		case 13: //jerry
 			cash += 2;
+			initialBonus = "windmill";
 			if(first) { windmill.addChip(building = ViticultureChip.Windmills[colorIndex]); }
-			else { cash += 4;}
+			else { cash += 4;
+			initialBonusDeclined = true;}
 			break;
 		case 14: // trevor
 			cash += 1;
+			initialBonus = "tasting room";
 			if(first) { tastingRoom.addChip(building = ViticultureChip.Tastingrooms[colorIndex]); }
-			else { cash += 5; }
+			else { cash += 5;
+			initialBonusDeclined = true;}
 			break;
 		case 15: //rafael
 			cash += 2;
+			initialBonus = "extra worker";
 			if(first) { workers.addChip(building = ViticultureChip.Meeples[colorIndex]); nWorkers++; }
-			else { cash += 4;}
+			else { cash += 4;
+			initialBonusDeclined = true;}
 			break;
 		case 16: //gary
 			cash += 3;
+			initialBonus = "extra worker";
 			if(first) {  workers.addChip(building = ViticultureChip.Meeples[colorIndex]); nWorkers++; }
-			else { cash += 3; }
+			else { cash += 3;
+			initialBonusDeclined = true;}
 			break;
 		case 17: //morten
 			cash += 4;
+			initialBonus = "vp";
 			if(first) { score +=1; resources += " 1VP";}
-			else { cash +=3; }
+			else { cash +=3;
+			initialBonusDeclined = true;
+			}
 			break;
 		case 18: // alan
 			cash += 5;
+			initialBonus = "vp";
 			if(first) { score += 1; resources += " 1VP";}
-			else { cash +=2; }
+			else { cash +=2;
+			initialBonusDeclined = true;
+			}
 			break;
 		default: G.Error("Not expecting %s",papa);
 		}
@@ -1492,6 +1546,20 @@ public class PlayerBoard
 			if(item.index+nfree<ntotal) { cost++; }
 		}
 		return cost;
+	}
+	
+	public void addWorker(ViticultureCell dest, ViticultureChip worker) {
+		dest.addChip(worker);
+		nWorkers++;
+		switch(worker.type) {
+		case Worker:
+		case GrandeWorker:
+			break;
+		default:
+			if(extraWorker1==null) { extraWorker1 = worker.type; }
+			else if(extraWorker2==null) { extraWorker2 = worker.type; }
+		}
+		
 	}
 
 }

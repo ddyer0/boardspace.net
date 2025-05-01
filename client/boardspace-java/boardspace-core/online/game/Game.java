@@ -4465,14 +4465,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	// the player who just ended the game will also send the official record
             if (GameOver())
             {
-            switch(v.gameRecordingMode())
+            RecordingStrategy mode = v.gameRecordingMode();
+            switch(mode)
             	{
 	            case All:
 	            case Single:
+	            case None:            	
 	            	FinishUp(true);
 	            	break;
 	            case Fixed:
-	            case None:
 	            default:
 	            	break;
             	}
@@ -4736,7 +4737,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     }
     public void startRobotTurns()
-    {	if(v.simultaneousTurnsAllowed())
+    {	if(v!=null && v.simultaneousTurnsAllowed())
     	{
     	if(playerConnections!=null)
     		{

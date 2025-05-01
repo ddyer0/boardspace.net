@@ -233,7 +233,8 @@ public class PendulumCell
     public boolean findChipHighlight(HitPoint highlight,chip<?> piece,int squareWidth,int squareHeight,int x,int y)
     {	
     	switch(rackLocation())
-    	{	
+    	{	case PlayerPlayedStratCard:
+    			return super.findChipHighlight(highlight,piece,scaledWidth(squareWidth)*2,2*scaledHeight(squareHeight),x,y);
     		default: return super.findChipHighlight(highlight,piece,scaledWidth(squareWidth),scaledHeight(squareHeight),x,y);
     	}
     }

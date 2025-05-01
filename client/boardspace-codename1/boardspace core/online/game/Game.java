@@ -62,6 +62,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private static final String ReconOkMessage = "reconok"; //ok, we did it
     private static final String LocalGames = "Local Games";
 
+    private static final long serialVersionUID = 1L;
     private static final String ROBOTSTART = "robotstart";
     private static final String ROBOTEXIT = "robotexit";
     private static final String ROBOTLEVEL = "robotLevel";
@@ -4462,14 +4463,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	// the player who just ended the game will also send the official record
             if (GameOver())
             {
-            switch(v.gameRecordingMode())
+            RecordingStrategy mode = v.gameRecordingMode();
+            switch(mode)
             	{
 	            case All:
 	            case Single:
+	            case None:            	
                 FinishUp(true);
 	            	break;
 	            case Fixed:
-	            case None:
 	            default:
 	            	break;
             	}
@@ -4733,7 +4735,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     }
     public void startRobotTurns()
-    {	if(v.simultaneousTurnsAllowed())
+    {	if(v!=null && v.simultaneousTurnsAllowed())
     	{
     	if(playerConnections!=null)
     		{

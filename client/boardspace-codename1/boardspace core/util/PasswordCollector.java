@@ -400,7 +400,7 @@ import udp.PlaytableStack;
 			 	{ 
 			 	  return(true); 
 			 	}
-			 else if("Error".equals(posted.error))
+			 else if(result!=null && ((posted.error==null)||!posted.error.toLowerCase().startsWith("error")))
 			 {
 				if(result.startsWith("bad")) { errorMessage = result.substring(4); }
 				else if(result.startsWith("nouser")) { errorMessage = s.get(NoUserMessage,name); }

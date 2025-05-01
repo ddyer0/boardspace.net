@@ -268,13 +268,12 @@ public abstract class SystemImage implements ImageObserver
 	   int imh = mask.getHeight();
 	   G.Assert((imw==w)&&(imh==h),"Image and Mask size mismatched: "+mask+" "+foreground);
    	}
-   int mspan = 2 + w;
-   int mspan2 = mspan * 2;
-   int[] ipix = new int[mspan * h];
-   int[] mpix = new int[mspan * (2 + h)]; // plus 1 pixel all around
-   boolean gotfg = false;
+   int mspan = w+(blur?2:0);
+   int mheight = h+(blur ? 2 : 0);
+   int[] ipix = new int[w * h];
+   int[] mpix = new int[mspan * mheight]; // plus 1 pixel all around
    boolean gotma = false;
-
+   boolean gotfg = false;
    try
    {
        // note that there are problems with pixelgrabber from images created with
@@ -286,64 +285,96 @@ public abstract class SystemImage implements ImageObserver
     	   }
     	   else
     	   {
-           gotfg = new PixelGrabber(mask.getImage(), 0, 0, w, h, ipix, 0, mspan).grabPixels();
+           gotfg = new PixelGrabber(mask.getImage(), 0, 0, w, h, ipix, 0, w).grabPixels();
     	   }
-        gotma = new PixelGrabber(foreground.getImage(), 0, 0, w, h, mpix, w + 3, mspan).grabPixels();
+        gotma = new PixelGrabber(foreground.getImage(), 0, 0, w, h, mpix, blur ? w + 3 : 0, mspan).grabPixels();
         if(gotma) { }
    }
    catch (InterruptedException e)
    {
    }
-
-   // fill the extra space in the mask with nearest neighbor
-   for (int i = 1, j = (h * mspan) + 1; i <= w; i++)
+   if(gotfg && gotma)
    {
-       mpix[i] = mpix[i + mspan];
-       mpix[j + mspan] = mpix[j];
-   }
-
-   for (int i = 0, j = w, row = 0; row < (h + 2);
-           row++, i += mspan, j += mspan)
-   {
-       mpix[i] = mpix[i + 1];
-       mpix[j + 1] = mpix[j];
-   }
-
-   if (gotfg && gotma)
-   {
-	   for(int i=0;i<mpix.length;i++) { mpix[i]=(mpix[i]>>component)&0xff;}
-	   
-	   for (int i = 0,end=mspan*h-2; i < end; i++)
-       {
-           int ma = (mpix[i + mspan + 1]); // center pixel
-
-           if (blur)
-           { //if blurring, do a simple gaussian weight on the 3x3.  This assures that
-             //the mask has no sharp edges at any scale, since we have already scaled it
-             //and add the blur on top of the scaled mask.
-               ma = (ma * 10) + (mpix[i] * 2) +
-                   (mpix[i + 1]  * 5) +
-                   (mpix[i + 2]  * 2) +
-                   (mpix[i + mspan] * 5) +
-                   (mpix[i + mspan + 2] * 5) +
-                   (mpix[i + mspan2] * 2) +
-                   (mpix[i + mspan2 + 1] * 5) +
-                   (mpix[i + mspan2 + 2] * 2);
-               ma = ma / 38;
-           }
-
-           ma = 0xff - ma;
-           int fg = ipix[i];
-           ipix[i] = (fg & 0xffffff) | (ma << 24);
-       }
-	   SystemImage.pixelCount += w*h;
-	   createImageFromInts(ipix,w,h,0,mspan);
-       return (true);
+	if(blur)
+		{ 
+		actualCompositeBlur(w,h,mpix,mspan,component,ipix,w);
+		}
+	else
+	{
+		actualCompositeNoBlur(w,h,mpix,mspan,component,ipix,w);
+	}
+   	SystemImage.pixelCount += w*h;
+   	createImageFromInts(ipix,w,h,0,w);
+   	return (true);
    }
    Plog.log.addLog("Composite failed");
    return(false);
 }
-   
+ 
+/**
+ * the actual mask should be positioned in 1 pixel from the edge all the way around, and
+ * we expect mspan to be ispan+2.  The real edge pixels are copied to the edges and an 
+ * approximate gaussean filter is applied to each 3x3 neighborhood to make the actual
+ * mask pixel 
+ * @param w
+ * @param h
+ * @param mpix
+ * @param mspan
+ * @param component
+ * @param ipix
+ * @param ispan
+ */
+	public void actualCompositeBlur(int w,int h, int mpix[],int mspan,int component,int ipix[],int ispan)
+	{	int mspanx2 = mspan+mspan;
+		int mspanp1 = mspan+1;
+
+		// fill the extra space in the mask with nearest neighbor
+		for (int i = 1, j = (h * mspan) + 1; i <= w; i++,j++)
+		{
+			mpix[i] = mpix[i + mspan];
+			mpix[j + mspan] = mpix[j];
+		}
+		
+		for (int i = 0, j = w, row = 0; row < (h + 2);
+				row++, i += mspan, j += mspan)
+		{
+			mpix[i] = mpix[i + 1];
+			mpix[j + 1] = mpix[j];
+		}		
+				
+		for(int mindex=0;mindex<mpix.length;mindex++) { mpix[mindex]=(mpix[mindex]>>component)&0xff;} 
+		for(int row=0,iindex=0,mindex=0;row<h;row++,iindex+=ispan,mindex+=mspan)
+		{
+		   	   for (int mi=mindex,ii=iindex,end=iindex+w; ii < end; ii++,mi++)
+		       {
+				   int ma = (mpix[mi + mspanp1]); // center pixel
+		           //if blurring, do a simple gaussian weight on the 3x3.  This assures that
+		           //the mask has no sharp edges at any scale, since we have already scaled it
+		           //and add the blur on top of the scaled mask.
+		           ma = (ma * 10) + (mpix[mi] * 2) +
+		                   (mpix[mi + 1]  * 5) +
+		                   (mpix[mi + 2]  * 2) +
+		                   (mpix[mi + mspan] * 5) +
+		                   (mpix[mi + mspan + 2] * 5) +
+		                   (mpix[mi + mspanx2] * 2) +
+		                   (mpix[mi + mspanx2 + 1] * 5) +
+		                   (mpix[mi + mspanx2 + 2] * 2);
+		           ma = ma / 38;
+		           ipix[ii] = (ipix[ii] & 0xffffff) | ((ma^0xff) << 24);
+		       }}
+	}
+		
+	public void actualCompositeNoBlur(int w,int h, int mpix[],int mspan,int component,int ipix[],int ispan)
+		{
+			if(component>0) { for(int i=0;i<mpix.length;i++) { mpix[i]=(mpix[i]>>component)&0xff;} } 
+			for(int mindex = 0,iindex=0,row=0; row<h; row++,iindex+=ispan,mindex+=mspan)
+			{
+			   for (int ii = iindex,mi=mindex,end=iindex+w; ii < end; ii++,mi++)
+			 
+		       {  
+		           ipix[ii] = (ipix[ii] & 0xffffff) | ((mpix[mi]^0xff) << 24);
+		       }}
+		}
 public void createImageFromInts(int ipix[],int w,int h,int off,int mspan)
 {	setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, ipix, off, mspan)));
 }

@@ -114,12 +114,14 @@ public class UdpListenerImpl implements UdpListener ,NativeInterface
 	    	}
 	    	else 
 	    	{ messages.add("error: socket creation failed for "+broadcastPort); 
+	    	  G.print("socket creation failed for ",broadcastPort);
 	    	}
 	    	
 	    	}
 	    	catch (IOException e)
 	    	{
 	        	messages.add("error: on receive: "+e);
+	        	G.print("udp socket error: ",e);
 	
 	    	}
 	    	Plog.log.addLog("Udp listener exit");

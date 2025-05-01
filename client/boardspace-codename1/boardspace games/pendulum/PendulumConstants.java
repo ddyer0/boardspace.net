@@ -167,7 +167,6 @@ enum PC implements EnumMenu
 	M2("2 Military cubes"),
 	M2Retrieve("2 Military cubes and can retrieve a worker"), 
 	M3("3 Military cubes"), 
-	M3Retrieve("3 Military cubes and can retrieve a worker"),
 	M5("5 Military cubes"),	
 	M7("7 Military cubes"),
 	M7Recruit("7 Military Cubes and less than 4 workers"),
@@ -286,6 +285,7 @@ enum PB implements EnumMenu
 	SwapVotes("swap 1 vote among Power Presige and Popularity"),
 	FreeD2("Your next $2 worker action is free"),
 	P2P2P2("2 Power VP or 2 Prestige VP or 2 Popularity VP"),
+	P1P1P1("1 Power VP or 1 Prestige VP or 1 Popularity VP"),
 	
 	;
 	String description = "";
@@ -320,6 +320,9 @@ public enum UIState implements Digestable
 	Ready("you are waiting for the other players"),
 	PromoteMeeple("select the worker to promote to Grande"),
 	ProvinceReward("Select a province to conquer"),
+	P1P1P1("1 Power VP or 1 Prestige VP or 1 Popularity VP"),
+	P1P1P1Twice("2 VP or 1VP each on two tracks"),
+	P1P1P1Once("1 Power VP or 1 Prestige VP or 1 Popularity VP"),	// same as p1p1p1 but before selecting benefit
 	P2P2P2("2 Power VP or 2 Prestige VP or 2 Popularity VP"),
 	;
 	String description;
@@ -438,10 +441,12 @@ public enum PendulumState implements BoardState
 	static final String ResumeMovesMessage = "Resume Moves";
 	static final String PauseMovesMessage = "Pause Moves";
 	static final String CardCountMessage = "#1 Cards";
+	static final String SimultaneousFlipMessage = "simultaneous flip, ignored";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Pendulum",
+			SimultaneousFlipMessage,
 			CardCountMessage,
 			PauseMovesMessage,
 			ResumeMovesMessage,

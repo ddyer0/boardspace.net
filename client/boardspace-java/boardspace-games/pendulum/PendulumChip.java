@@ -54,6 +54,7 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	public PendulumId id;
 	public PendulumChip back = null;
 	private int chipNumber = 0;
+	public boolean councilCardToHand = false;
 	private String idString = null;
 	public PC pc = PC.None;		// cost for strategy cards
 	public PB pb[] = null;		// province benefits for province cards
@@ -110,12 +111,22 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 		back = ba;
 		pb = benefits;
 	}
+	private PendulumChip(String na,double[]sc,PendulumId con,PendulumChip ba,boolean toHand,PB...benefits)
+	{	this(na,sc,con,ba,benefits);
+		councilCardToHand = toHand;
+	}
 	private PendulumChip(String na,double[]sc,PendulumId con,PendulumChip ba,PC cost,PB ...benefits)
 	{
 		this(na,sc,con);
 		back = ba;
 		pb = benefits;
 		pc = cost;
+	}
+	private PendulumChip(String na,double[]sc,PendulumId con,PendulumChip ba,boolean toHand,PC cost,PB ...benefits)
+	{
+		this(na,sc,con,ba,cost,benefits);
+		councilCardToHand = true;
+		
 	}
 	// constructor for all the other random artwork.
 	private PendulumChip(String na,double[]sc)
@@ -365,27 +376,27 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 			new PendulumChip("council/reward-8",noscale,PendulumId.RewardDeck,councilBack,PB.M5),
 			new PendulumChip("council/reward-9",noscale,PendulumId.RewardDeck,councilBack,PB.C5),
 			new PendulumChip("council/reward-10",noscale,PendulumId.RewardDeck,councilBack,PB.D5),
-			new PendulumChip("council/reward-11",noscale,PendulumId.RewardDeck,councilBack,PB.V1),
-			new PendulumChip("council/reward-12",noscale,PendulumId.RewardDeck,councilBack,PB.V1),
-			new PendulumChip("council/reward-13",noscale,PendulumId.RewardDeck,councilBack,PC.Vote,PB.SwapVotes),
-			new PendulumChip("council/reward-14",noscale,PendulumId.RewardDeck,councilBack,PB.ProvinceReward),
-			new PendulumChip("council/reward-15",noscale,PendulumId.RewardDeck,councilBack,PC.M2Retrieve,PB.Retrieve),
-			new PendulumChip("council/reward-16",noscale,PendulumId.RewardDeck,councilBack,PC.C2Retrieve,PB.Retrieve),
-			new PendulumChip("council/reward-17",noscale,PendulumId.RewardDeck,councilBack,PC.M3Retrieve,PB.Province),
-			new PendulumChip("council/reward-18",noscale,PendulumId.RewardDeck,councilBack,PC.M3Retrieve,PB.Province),
-			new PendulumChip("council/reward-19",noscale,PendulumId.RewardDeck,councilBack,PB.FreeD2),
-			new PendulumChip("council/reward-20",noscale,PendulumId.RewardDeck,councilBack,PC.D2,PB.Pop1),
-			new PendulumChip("council/reward-21",noscale,PendulumId.RewardDeck,councilBack,PC.M2,PB.Pow1),
-			new PendulumChip("council/reward-22",noscale,PendulumId.RewardDeck,councilBack,PC.C2,PB.Pres1),
-			new PendulumChip("council/reward-23",noscale,PendulumId.RewardDeck,councilBack,PB.FreeD2),
-			new PendulumChip("council/reward-24",noscale,PendulumId.RewardDeck,councilBack,PB.D1),
-			new PendulumChip("council/reward-25",noscale,PendulumId.RewardDeck,councilBack,PC.V2,PB.Province),
+			new PendulumChip("council/reward-11",noscale,PendulumId.RewardDeck,councilBack,true,PB.V1),
+			new PendulumChip("council/reward-12",noscale,PendulumId.RewardDeck,councilBack,true,PB.V1),
+			new PendulumChip("council/reward-13",noscale,PendulumId.RewardDeck,councilBack,true,PC.Vote,PB.SwapVotes),
+			new PendulumChip("council/reward-14",noscale,PendulumId.RewardDeck,councilBack,false,PB.ProvinceReward),
+			new PendulumChip("council/reward-15",noscale,PendulumId.RewardDeck,councilBack,true,PC.M2Retrieve,PB.Retrieve),
+			new PendulumChip("council/reward-16",noscale,PendulumId.RewardDeck,councilBack,true,PC.C2Retrieve,PB.Retrieve),
+			new PendulumChip("council/reward-17",noscale,PendulumId.RewardDeck,councilBack,true,PC.M3,PB.Province),
+			new PendulumChip("council/reward-18",noscale,PendulumId.RewardDeck,councilBack,true,PC.M3,PB.Province),
+			new PendulumChip("council/reward-19",noscale,PendulumId.RewardDeck,councilBack,true,PB.FreeD2),
+			new PendulumChip("council/reward-20",noscale,PendulumId.RewardDeck,councilBack,true,PC.D2,PB.Pop1),
+			new PendulumChip("council/reward-21",noscale,PendulumId.RewardDeck,councilBack,true,PC.M2,PB.Pow1),
+			new PendulumChip("council/reward-22",noscale,PendulumId.RewardDeck,councilBack,true,PC.C2,PB.Pres1),
+			new PendulumChip("council/reward-23",noscale,PendulumId.RewardDeck,councilBack,true,PB.FreeD2),
+			new PendulumChip("council/reward-24",noscale,PendulumId.RewardDeck,councilBack,true,PB.D1),
+			new PendulumChip("council/reward-25",noscale,PendulumId.RewardDeck,councilBack,true,PC.V2,PB.Province),
 
 			councilBack
 	};
 	static PendulumChip flipBack = new PendulumChip("council/flip-back",noscale,PendulumId.RewardDeck);
 	static PendulumChip flipcard = new PendulumChip("council/flip",noscale,PendulumId.RewardDeck,flipBack,PC.MeepleAndGrande,PB.Grande);
-	static PendulumChip defcard =  new PendulumChip("council/default",noscale,PendulumId.RewardDeck,councilBack,PB.Pow1Pres1Pop1);
+	static PendulumChip defcard =  new PendulumChip("council/default",noscale,PendulumId.RewardDeck,councilBack,PB.P1P1P1);
 	static PendulumChip extraCouncilCards[] = {
 		flipBack,flipcard,defcard	
 	};

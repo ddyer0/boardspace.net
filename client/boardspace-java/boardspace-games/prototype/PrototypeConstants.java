@@ -106,7 +106,16 @@ public enum PrototypeState implements BoardState,PrototypeConstants
     	}
      	
     }
+//this would be a standard hex-hex board with 2-per-side
+//static int[] ZfirstInCol = {  1, 0, 1,}; // these are indexes into the first ball in a column, ie B1 has index 2
+//static int[] ZnInCol = { 2, 3, 2 }; // depth of columns, ie A has 4, B 5 etc.
 
+ //
+ // 3 per side
+ // static int[] ZfirstInCol = {  2, 1, 0, 1, 2,}; // these are indexes into the first ball in a column, ie B1 has index 2
+ //static int[] ZnInCol = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5 etc.
+ //
+ 
 // this would be a standard hex-hex board with 4-per-side
 //    static int[] ZfirstInCol = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
 //    static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.

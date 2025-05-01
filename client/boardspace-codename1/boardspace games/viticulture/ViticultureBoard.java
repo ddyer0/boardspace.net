@@ -2770,10 +2770,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	default: break;
     	}
 		ViticultureCell dest = useNow?pb.workers : pb.pendingWorker;
-		dest.addChip(worker);
-		
-		pb.nWorkers++;
-		
+		pb.addWorker(dest,worker);
 		for(PlayerBoard p : pbs) 
 			{ // even in the base game, there can be more
 			  // than one acadamy!

@@ -46,15 +46,26 @@ public class ViticultureStats implements ViticultureConstants
 	String gameName;
 	String playerName;
 	ViticultureColor playerColor; 
+	String bonus = "unknown";
+	boolean bonusDeclined = false;
+	ChipType extraWorker1;
+	ChipType extraWorker2;
+	boolean papa2 = false;
 	int playerPoints = 0;
+	boolean winner = false;
 	int categories[] = new int[ScoreType.values().length];
-	
-	ViticultureStats(String ga,ViticultureBoard b,PlayerBoard p,String na)
+	ViticultureStats(String ga,ViticultureBoard b,PlayerBoard p,boolean win,String na)
 	{	gameName = ga;
 		if((ga!=null) && ga.endsWith(".sgf")) { ga=ga.substring(0,ga.length()-4); }
 		playerName = na;
 		playerColor = p.color;
 		playerPoints = p.score;
+		bonus = p.initialBonus;
+		bonusDeclined = p.initialBonusDeclined;
+		extraWorker1 = p.extraWorker1;
+		extraWorker2 = p.extraWorker2;
+		papa2 = b.testOption(Option.DraftPapa);
+		winner = win;
 		ScoreStack ss = p.scoreEvents;
 		for(int lim = ss.size()-1; lim>=0; lim--)
 		{
@@ -65,8 +76,15 @@ public class ViticultureStats implements ViticultureConstants
 	static void printLegend(PrintStream out)
 	{	printC(out,"Row#");
 		printC(out,"Game Name");
+		printC(out,"2Papa");
 		printC(out,"Player");
+		printC(out,"winner?");
 		printC(out,"Points");
+		printC(out,"Papa");
+		printC(out,"Declined");
+		printC(out,"Special Worker 1");
+		printC(out,"Special Worker 2");
+		
 		for(ScoreType s : ScoreType.values())
 		{
 			printC(out,s.name());
@@ -77,8 +95,14 @@ public class ViticultureStats implements ViticultureConstants
 	}
 	void printRecord(PrintStream out)
 	{	printC(out,gameName);
+		printC(out,papa2);
 		printC(out,playerName); 
+		printC(out,winner);
 		printC(out,playerPoints);
+		printC(out,bonus);
+		printC(out,bonusDeclined);
+		printC(out,(extraWorker1==null ? "none":""+extraWorker1));
+		printC(out,(extraWorker2==null ? "none":""+extraWorker2));
 		
 		for(int v : categories)
 		{
@@ -106,7 +130,7 @@ public class ViticultureStats implements ViticultureConstants
 
 	static StatStack allStats=new StatStack();
 	
-	public static boolean bestplayer = false;
+	public static boolean bestplayer = true;
 	public static boolean otherplayers = true;
 	public static void collectStats(sgf_game g,ViticultureBoard b,commonPlayer players[])
 	{	if(b.nPlayers()>1)
@@ -116,22 +140,23 @@ public class ViticultureStats implements ViticultureConstants
 		{	if(best==null || best.tiebreakScore()<p.tiebreakScore()) 
 			{	best = p; }
 		}
-		if(bestplayer) { collect1Stat(g,b,best,players); }
+		if(bestplayer) { collect1Stat(g,b,best,true,players); }
 		if(otherplayers)
 			{
 			for(PlayerBoard p : b.pbs)
 			{	if(p!=best)
-				{	collect1Stat(g,b,p,players);
+				{	collect1Stat(g,b,p,false,players);
 				}
 			}
 			}
 		}
 	}
-	public static void collect1Stat(sgf_game g,ViticultureBoard b,PlayerBoard p,commonPlayer players[])
+	public static void collect1Stat(sgf_game g,ViticultureBoard b,PlayerBoard p,boolean winner,commonPlayer players[])
 	{
 		commonPlayer player = commonPlayer.findPlayerByIndex(players,p.boardIndex);
-			allStats.push(new ViticultureStats(g.short_name(),b,p,
-					player==null ? "unknown" : player.trueName));
+			allStats.push(new ViticultureStats(g.short_name(),b,p,winner,
+					player==null ? "unknown" : player.trueName)
+					);
 	}
 	public static void saveStats()
 	{
