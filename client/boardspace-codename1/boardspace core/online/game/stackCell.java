@@ -582,8 +582,14 @@ public abstract class stackCell
     public boolean drawStack(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,int liftSteps,double yscale,
     		String label)
     {	
-    	return(drawStack(gc,canvas,highlight,G.Width(r),G.centerX(r),G.centerY(r),liftSteps,0.0,yscale,label));
+    	return(drawStack(gc,canvas,r,highlight,liftSteps,0.0,yscale,label));
     }
+    public boolean drawStack(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,int liftSteps,double xscale,double yscale,
+    		String label)
+    {	
+    	return(drawStack(gc,canvas,highlight,G.Width(r),G.centerX(r),G.centerY(r),liftSteps,xscale,yscale,label));
+    }
+
 	/**
 	 * draw a stack of chips, and detect the mouse inside the stack.
 	 * 
@@ -614,5 +620,14 @@ public abstract class stackCell
 	{
 		drawStack(gc,c,null,size,posx,posy,0,lastXScale(),lastYScale(),msg);
 	}
-
+	/**
+	 * get a copy of the cell contents as an array
+	 * @return
+	 */
+	public COMPONENTTYPE[] toArray()
+	{	int h = height();
+		COMPONENTTYPE ar[] = newComponentArray(h);
+		for(int i=0;i<h;i++) { ar[i] = chipStack[i]; }
+		return ar;
+	}
 }

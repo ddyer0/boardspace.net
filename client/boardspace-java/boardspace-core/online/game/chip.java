@@ -104,7 +104,7 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
 	 * return the digest identity of this chip
 	 */
 	public long Digest() 
-		{ G.Advise(randomv!=0,"randomv is zero");
+		{ G.Advise(randomv!=0,"randomv for chip is zero");
 		return(randomv); 
 		}
 	/** return the identity of this chip in context R

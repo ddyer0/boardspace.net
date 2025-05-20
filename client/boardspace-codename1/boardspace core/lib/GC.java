@@ -1061,7 +1061,22 @@ public class GC {
 		setColor(g,c);
 		fillRect(g,left,top,width,height);
 	}
-
+	static public void fillPolygon(Graphics g,Color c,int... pts)
+	{
+		setColor(g,c);
+		fillPolygon(g,pts);
+	}
+	/**
+	 * fill a polygon defined by a list of x,y points
+	 * @param g
+	 * @param pts
+	 */
+	static public void fillPolygon(Graphics g,int... pts)
+	{	if(g!=null)
+		{
+		g.fillPolygon(pts);
+		}
+	}
 	/*
 	 * rotate all objects being drawn inside a rectangle, nominally a board rectangle.
 	 * the hitpoint "select" is also rotated in the board centered coordinate system,
@@ -1153,8 +1168,38 @@ public class GC {
 	  * @param h
 	  * @return
 	  */
-	 public static boolean isNotVisible(Graphics gc,int x,int y,int w,int h)
-	 {	if(gc==null) { return false; }
-	 	return gc.isNotVisible(x,y,w,h);
+	 public static boolean isInvisible(Graphics gc,int x,int y,int w,int h)
+	 {	if(gc==null) { return true; }
+	 	return gc.isInvisible(x,y,w,h);
+	 }
+	  
+	  /**
+	   * return true of the rectangle is at least partially visible.  If we think it is invisible
+	   * we draw a blue box, which if you see it means it was incorrectly categorized as invisible.
+	   * this is used to avoid creating scaled images that won't be used because they are going
+	   * to be invisible.
+	   * @param gc
+	   * @param ax
+	   * @param ay
+	   * @param w
+	   * @param h
+	   * @return
+	   */
+	 public static boolean checkVisibility(Graphics gc,int ax,int ay,int w,int h)
+	  {
+		  boolean invisible = GC.isInvisible(gc,ax,ay,w,h);
+	      // if the image is completely invisible at the current pan/zoom settings,
+		  // then skip all the clipping and scaling and the actual drawing.
+	      if(invisible && gc!=null)
+	      {   gc.setColor(Color.blue);
+	    	  gc.fillRect(ax,ay,w,h);
+	          if(gc.flag)
+	          {	
+	          	gc.flag = false;
+	          	gc.setColor(Color.red);
+	          	gc.drawRect(ax-100,ay-100,w+200,h+200);
+	          }
+	      }
+	      return !invisible;
 	 }
 }

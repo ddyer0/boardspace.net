@@ -46,6 +46,14 @@ public class Graphics extends SystemGraphics
 	protected int actualWidth = 0;
 	protected int actualHeight = 0;
 	public boolean flag = false;
+	
+	/**
+	 * this is a hack to allow images to immediately get the slow-scaled version
+	 * instead of temporay pixellated images.
+	 */
+	public boolean alwaysHighres = false;
+	public boolean alwaysHighres() { return alwaysHighres; }
+	
 	public int actualWidth() { return actualWidth; }
 	public int actualHeight() { return actualHeight; }
 	public double getRotation() { return rotation; }
@@ -440,9 +448,9 @@ public class Graphics extends SystemGraphics
 	  * @param h
 	  * @return
 	  */
-	 public boolean isNotVisible(int x,int y,int w,int h)
+	 public boolean isInvisible(int x,int y,int w,int h)
 	 {	
-		 boolean alt = isNotVisibleAlt(x,y,w,h);
+		 boolean alt = isInvisibleAlt(x,y,w,h);
 		 /*
 		 if(G.debug())
 		 {
@@ -459,7 +467,7 @@ public class Graphics extends SystemGraphics
 		 return alt;
 	 }
 	 @SuppressWarnings("unused")
-	private boolean isNotVisibleStd(int x,int y,int w,int h)
+	private boolean isInvisibleStd(int x,int y,int w,int h)
 	  {	 
 		 int aw = actualWidth();
 		 int ah = actualHeight();
@@ -493,7 +501,7 @@ public class Graphics extends SystemGraphics
 	 private AffineTransform shadow = new AffineTransform();
 	 public AffineTransform getShadowTransform() { return shadow; }
 	 
-	 private boolean isNotVisibleAlt(int x,int y,int w,int h)
+	 private boolean isInvisibleAlt(int x,int y,int w,int h)
 	  {
 		 int aw = actualWidth();
 		 int ah = actualHeight();
@@ -527,5 +535,44 @@ public class Graphics extends SystemGraphics
 	 {
 		 if(gc!=null) { gc.setAntialias(on); }
 	 }
-
+	 private Polygon scratch = null;
+	 public void fillPolygon(int[] pts) {
+		 if(scratch==null) { scratch=new Polygon(); }
+		 scratch.reset();
+		 for(int i=0,len=pts.length-1; i<len; i+=2)
+		 {
+		 scratch.addPoint(pts[i],pts[i+1]);
+		 }
+		// scratch.addPoint(pts[0],pts[1]);
+		 scratch.fillPolygon(this);
+		}
+	  /**
+	   * return true of the rectangle is at least partially visible.  If we think it is invisible
+	   * we draw a blue box, which if you see it means it was incorrectly categorized as invisible.
+	   * this is used to avoid creating scaled images that won't be used because they are going
+	   * to be invisible.
+	   * @param ax
+	   * @param ay
+	   * @param w
+	   * @param h
+	   * @return
+	   */
+	  public boolean checkVisibility(int ax,int ay,int w,int h)
+	  {
+		  boolean invisible = isInvisible(ax,ay,w,h);
+	      // if the image is completely invisible at the current pan/zoom settings,
+		  // then skip all the clipping and scaling and the actual drawing.
+	      if(invisible)
+	      {   setColor(Color.blue);
+	    	  fillRect(ax,ay,w,h);
+	          if(flag)
+	          {	
+	          	flag = false;
+	          	setColor(Color.red);
+	          	drawRect(ax-100,ay-100,w+200,h+200);
+	          }
+	      }
+	      return !invisible;
+	  }
+	  
 }

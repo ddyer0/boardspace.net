@@ -17,7 +17,10 @@
 package bugs;
 
 import lib.Random;
-import bugs.BugsConstants.PrototypeId;
+import lib.exCanvas;
+import bugs.BugsConstants.BugsId;
+import lib.Graphics;
+import lib.HitPoint;
 import lib.OStack;
 import online.game.*;
 
@@ -46,14 +49,15 @@ public class BugsCell
 	public void initRobotValues() 
 	{
 	}
-	public BugsCell(Random r,PrototypeId rack) { super(r,rack); }		// construct a cell not on the board
-	public BugsCell(PrototypeId rack,char c,int r) 		// construct a cell on the board
+	public BugsCell(Random r,BugsId rack,int n) { super(r,rack); col='@'; row=n; }		// construct a cell not on the board
+	public BugsCell(Random r,BugsId rack) { super(r,rack); }		// construct a cell not on the board
+	public BugsCell(BugsId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
 		super(cell.Geometry.Hex,rack,c,r);
 	};
 	/** upcast racklocation to our local type */
-	public PrototypeId rackLocation() { return((PrototypeId)rackLocation); }
-	
+	public BugsId rackLocation() { return((BugsId)rackLocation); }
+	public boolean labelAllChips() { return(true); }
 	/** sameCell is called at various times as a consistency check
 	 * 
 	 * @param other
@@ -96,17 +100,11 @@ public class BugsCell
 	public long Digest(Random r) { return(super.Digest(r)); }
 	
 	//this could be used to eliminate the "tick" in stacks
-	//public int drawStackTickSize(int sz) { return(0); }
+	public int drawStackTickSize(int sz) { return(0); }
 	
 	public BugsChip[] newComponentArray(int size) {
 		return(new BugsChip[size]);
 	}
-	/**
-	 * if this method returns true, then the label associated with drawStack
-	 * will be drawn on all chips, not just the top.  If the label is being
-	 * used for tooltips, this probably should be true
-	 */
-	public boolean labelAllChips() { return(false); }
 	//public int drawStackTickSize(int sz) { return(0); }
 	//public int drawStackTickLocation() { return(0); }
 	
@@ -117,6 +115,17 @@ public class BugsCell
 	public int getLastPlacement(boolean empty) {
 		return empty ? -1 : lastPlaced;
 	}
+	
+	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
 
+    {
+    	if(piece instanceof BugCard)
+    	{
+    		return ((BugCard)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    	}
+    	else {
+    		return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    	}
+    }
 	
 }

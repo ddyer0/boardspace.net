@@ -26,6 +26,9 @@ public class Polygon
 {
 	GeneralPath path = new GeneralPath();
 	public Polygon() { }
+	
+	public void reset() { path.reset(); }
+	
 	public void addPoint(int x,int y) 
 	{ 	if(path.getCurrentPoint()==null) 
 			{ path.moveTo(x,y); } 

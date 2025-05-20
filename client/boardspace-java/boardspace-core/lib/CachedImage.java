@@ -49,4 +49,10 @@ public class CachedImage {
 		return(im.getScaledInstance(w,h,scal));
 	}
 
+	public Image completeImage(Image k)
+	{
+		im = CachedImage.getScaledInstance(k,ScaledW,ScaledH,Image.ScaleType.defaultScale);
+		return im;
+	}
+
 }

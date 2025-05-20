@@ -285,7 +285,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      scaled = StacChip.board.getImage(loader).centerScaledImage(gc, boardRect,scaled);
+      scaled = StacChip.board.getImage().centerScaledImage(gc, boardRect,scaled);
       /*
 	 	    gb.SetDisplayParameters(
 	 	    		new double[]{0.20,0.33},

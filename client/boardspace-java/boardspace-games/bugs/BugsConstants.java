@@ -30,9 +30,10 @@ import online.game.BaseBoard.StateRole;
 
 public interface BugsConstants
 {	
+	int N_MARKETS = 10;
 //	these next must be unique integers in the BugsMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
-	enum PrototypeId implements CellId
+	enum BugsId implements CellId
 	{
 		Black, // positive numbers are trackable
 		White,
@@ -40,6 +41,9 @@ public interface BugsConstants
 		BoardLocation,
 		ReverseView,
 		ToggleEye, 
+		MasterDeck,
+		ActiveDeck,
+		Market, Description,
 		;
 		BugsChip chip;
 	

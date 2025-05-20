@@ -493,7 +493,7 @@ public class MicropulChip extends chip<MicropulChip>
 	 	double pscale[]=alt.getScale();
 	    // use this to tune piece position
 	    canvas.adjustScales(pscale,alt);
-	    canvas.drawImage(gc, alt.getImage(canvas.loader), pscale,cx, cy, SQUARESIZE, 1.0,0.0,null,true);
+	    canvas.drawImage(gc, alt.getImage(), pscale,cx, cy, SQUARESIZE, 1.0,0.0,null,true);
 	    
 	    // now draw ornaments
 	    int firstx = components[0];

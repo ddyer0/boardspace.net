@@ -70,6 +70,10 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	private int mouseExpandPos1 = -1;
 	private int MARGIN = 4;
 	public boolean flagExtensionLines = true;	// if true, flag extension lines
+	/** if true, draw a frame around the box and fill it with the fill color
+	 * 
+	 */
+	public boolean frameAndFill = true;
 	boolean mouseSelecting = false;		// true if the mouse is being used to select text, initiated by a horizontal movement
 	private boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
 	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
@@ -352,7 +356,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		int nLines = lines.size()+(eol?1:0);
 		int availableHeight = G.Height(this)-MARGIN*2;
 		int textSize = fontH*nLines;
-		if(textSize<availableHeight) { setScrollY(0); }
+		if(textSize<=availableHeight) { setScrollY(0); }
 		else if(pos>=0)
 		{	int caratPos = MARGIN+findCaratY(lines,fontH);
 			if((caratPos>=scrollY)&&(caratPos+fontH<scrollY+availableHeight)) {}
@@ -591,8 +595,9 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		  		  nextSplit = curline;
 		  		}
 		  		else
-		  		{
-		  		  nextSplit = curline.substring(0,splitw);
+		  		{// if we're flagging extension lines with black bars, leaving the leading 
+		  		 // space is attractive.  If not, it looks wierd.
+		  		  nextSplit = curline.substring(0,splitw+(flagExtensionLines ?0:1));
 		  		}
 		  	thisw = fm.stringWidth(nextSplit);
 		  	
@@ -648,6 +653,34 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		mlCache = newLines;
 		return(newLines);
 	}
+	/**
+	 * for paragraph style frames, select a smaller font size that will allow the whole
+	 * frame to be displayed, within some limits.
+	 */
+	public void selectFontSize()
+	{
+		Font initialFont = font;		
+		int h = G.Height(this)-MARGIN*2;
+		int linew = G.Width(this)-MARGIN*2;
+		int size = G.getFontSize(font);
+		boolean done = false;
+		// do not segment lines by length
+		do
+		{
+		FontMetrics fm = G.getFontMetrics(font);
+		int lineh = fm.getHeight();
+		mlCache = null;
+		StringStack lines = resplit(data,fm,linew);
+		int available = h/lineh;
+		done = lines.size()<=available;
+		if(!done)
+		{
+			size--;
+			font = G.getFont(initialFont,size);
+			
+		}}
+		while( !done && size>6);
+	}
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
 	{	
 		boolean isIn = G.pointInRect(hp,this);
@@ -664,11 +697,14 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		maxScroll = Math.max(0, lineh*nLines-height/2+lineh);
 		scrollBar.setScrollHeight(maxScroll);
 		if(autoScroll && !mouseActive) { autoScroll(lineh,lines); }
+		if(frameAndFill)
+		{
 		GC.fillRect(g,backgroundColor,this);
 		GC.frameRect(g, isIn? Color.blue : Color.black, this);
+		}
 		Rectangle oldclip = GC.combinedClip(g,x+1,y+MARGIN,x+width-MARGIN-1,y+height-MARGIN);
 		
-		int availableH = height-lineh-MARGIN*2;
+		int availableH = height-MARGIN*2;
 		int mousePos1 = -1;
 		int charCount = -1;
 		doFocus();

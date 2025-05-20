@@ -101,7 +101,7 @@ public class TwixtChip extends chip<TwixtChip> implements TwixtConstants
 	public Image getImage(ImageLoader s) 
 	{ 	if(image==null && (altImage!=null)) 
 			{ Image im = altImage.getImage(s); 
-			  if(ghost) { im = Image.makeTransparent(null,im,0.25); }
+			  if(ghost) { im = im.makeTransparent(0.25); }
 			  image = im;
 			}
 		return(image); 

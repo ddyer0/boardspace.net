@@ -61,6 +61,8 @@ class BugsBoard
 	private BugsState board_state = BugsState.Puzzle;	
 	private BugsState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
+	public BugsCell masterDeck = null;
+	public BugsCell activeDeck = null;
 	public BugsState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -73,14 +75,15 @@ class BugsBoard
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-
-    private PrototypeId playerColor[]={PrototypeId.White,PrototypeId.Black};    
+	public BugsCell market[] = null;
+	
+    private BugsId playerColor[]={BugsId.White,BugsId.Black};    
     private BugsChip playerChip[]={BugsChip.White,BugsChip.Black};
     private BugsCell playerCell[]=new BugsCell[2];
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public BugsChip getPlayerChip(int p) { return(playerChip[p]); }
-	public PrototypeId getPlayerColor(int p) { return(playerColor[p]); }
+	public BugsId getPlayerColor(int p) { return(playerColor[p]); }
 	public BugsCell getPlayerCell(int p) { return(playerCell[p]); }
 	public BugsChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 	public BugsPlay robot = null;
@@ -157,7 +160,7 @@ class BugsBoard
 
 	// factory method to generate a board cell
 	public BugsCell newcell(char c,int r)
-	{	return(new BugsCell(PrototypeId.BoardLocation,c,r));
+	{	return(new BugsCell(BugsId.BoardLocation,c,r));
 	}
 	
 	// constructor 
@@ -168,12 +171,20 @@ class BugsBoard
         setColorMap(map, players);
         
 		Random r = new Random(734687);
+		masterDeck =  new BugsCell(r,BugsId.MasterDeck);
+		activeDeck =  new BugsCell(r,BugsId.ActiveDeck);
+		for(int i=0;i<BugCard.bugCount();i++) { masterDeck.addChip(BugCard.getCard(i)); }
+		
 		// do this once at construction
-	    blackChipPool = new BugsCell(r,PrototypeId.Black);
+	    blackChipPool = new BugsCell(r,BugsId.Black);
 	    blackChipPool.addChip(BugsChip.Black);
-	    whiteChipPool = new BugsCell(r,PrototypeId.White);
+	    whiteChipPool = new BugsCell(r,BugsId.White);
 	    whiteChipPool.addChip(BugsChip.White);
-
+	    market = new BugsCell[N_MARKETS];
+	    for(int i=0;i<N_MARKETS;i++)
+	    {
+	    	market[i] = new BugsCell(r,BugsId.Market,i);
+	    }
         doInit(init,key,players,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
     }
@@ -213,7 +224,14 @@ class BugsBoard
 			// allCells.setDigestChain(r);		// set the randomv for all cells on the board
 		}
 
- 		
+		activeDeck.copyFrom(masterDeck);
+		Random r = new Random(randomKey);
+		activeDeck.shuffle(r);
+		reInit(market);
+ 		for(int i=0;i<market.length;i++)
+ 		{
+ 			market[i].addChip(activeDeck.removeTop());
+ 		}
 	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
 	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
 	    
@@ -227,8 +245,8 @@ class BugsBoard
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
-		playerColor[map[0]]=PrototypeId.White;
-		playerColor[map[1]]=PrototypeId.Black;
+		playerColor[map[0]]=BugsId.White;
+		playerColor[map[1]]=BugsId.Black;
 		playerChip[map[0]]=BugsChip.White;
 		playerChip[map[1]]=BugsChip.Black;
 	    // set the initial contents of the board to all empty cells
@@ -262,6 +280,9 @@ class BugsBoard
         fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
+        copyFrom(market,from_b.market);
+        copyFrom(activeDeck,from_b.activeDeck);
+        copyFrom(market,from_b.market);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
@@ -273,7 +294,6 @@ class BugsBoard
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
@@ -302,6 +322,8 @@ class BugsBoard
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
+        G.Assert(activeDeck.sameContents(from_b.activeDeck),"active deck mismatch");
+        G.Assert(sameCells(market,from_b.market),"market mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -347,6 +369,8 @@ class BugsBoard
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
+		v ^= activeDeck.Digest(r);
+		v ^= Digest(r,market);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
@@ -503,12 +527,18 @@ class BugsBoard
      * @param row
      * @return
      */
-    private BugsCell getCell(PrototypeId source, char col, int row)
+    private BugsCell getCell(BugsId source, char col, int row)
     {
         switch (source)
         {
         default:
         	throw G.Error("Not expecting source " + source);
+        case MasterDeck:
+        	return masterDeck;
+        case ActiveDeck:
+        	return activeDeck;
+        case Market:
+        	return market[row];
         case BoardLocation:
         	return(getCell(col,row));
         case Black:
@@ -622,7 +652,7 @@ class BugsBoard
         }
     }
 void doSwap(replayMode replay)
-{	PrototypeId c = playerColor[0];
+{	BugsId c = playerColor[0];
 	BugsChip ch = playerChip[0];
 	playerColor[0]=playerColor[1];
 	playerChip[0]=playerChip[1];
@@ -670,7 +700,7 @@ void doSwap(replayMode replay)
         case MOVE_DROPB:
         	{
 			BugsChip po = pickedObject;
-			BugsCell dest =  getCell(PrototypeId.BoardLocation,m.to_col,m.to_row);
+			BugsCell dest =  getCell(BugsId.BoardLocation,m.to_col,m.to_row);
 			
 			if(isSource(dest)) 
 				{ unPickObject(); 

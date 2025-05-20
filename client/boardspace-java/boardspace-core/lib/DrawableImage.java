@@ -478,12 +478,13 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 							int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
 	{ 
       double aspect = getAspectRatio(drawOn);
-      boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,(int)(squareWidth*aspect),squareWidth,sscale);
+      int aw = (int)(squareWidth*aspect);
+      boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,aw,squareWidth,sscale);
       String draw = helptext!=null && helptext.startsWith(NotHelp) 
     		  			? helptext.startsWith(NotHelpDraw) ? helptext.substring(NotHelpDraw.length()) : helptext
     		  			: null;
       String help = draw==null ? helptext : null;
-      drawChip(gc,drawOn,(int)((val&&rackLocation!=null)?expansion*squareWidth:squareWidth),1.0,e_x,e_y,draw);
+      drawChip(gc,drawOn,(int)((val&&rackLocation!=null)?expansion*aw:aw),1.0,e_x,e_y,draw);
       if(val)
       	{
     	  highlight.setHelpText(help);

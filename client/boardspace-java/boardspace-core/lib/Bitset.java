@@ -103,6 +103,15 @@ public class Bitset <P extends Enum<?>> implements Digestable
 		return(0!=(members & (1L<<val.ordinal())));
 	}
 	/**
+	 * 
+	 * @param a
+	 * @return true if the union of this and the other set is not empty
+	 */
+	public boolean test(Bitset<P>a)
+	{
+		return 0!=(members&a.members);
+	}
+	/**
 	 * copy from another instance
 	 * 
 	 * @param from

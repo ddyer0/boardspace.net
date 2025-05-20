@@ -98,7 +98,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 164;			// 100 represents the initial version of the game
+{	static int REVISION = 165;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -184,7 +184,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 163 switches oracle from "discard" to "keep"
 										//			also fix the "double star" bug related to gui changes of mind when the player has the banuet hall
 										// revision 164 allows innkeeper to tax players on the dollar space
-
+										// revision 165, discard selected cards in the order selected
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -4014,17 +4014,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	// for the rest of the game as the decks are reshuffled and
 	// also with the blue "inkeeper" can be directly acessible.
 	//
-	public ViticultureChip discardTopSelectedCard(PlayerBoard pb,replayMode replay,String msg) 
-	{	CardPointerStack selectedItems = pb.selectedCards;
-		Assert(selectedItems.size()>0,"must be some");
-		CardPointer top = selectedItems.pop();
-		ViticultureChip removed = discardCard(pb.cards,top.index,replay,msg);
-		Assert(removed==top.card,"wrong card, is %s should be %s",removed,top.card);
-		for(int i=0;i<pb.selectedCards.size();i++)
-		{	CardPointer item = selectedItems.elementAt(i);
-			if(item.index>top.index) { item.index--; }
-		}
-		return removed;
+	public ViticultureChip discardSelectedCard(PlayerBoard pb,replayMode replay,String msg) 
+	{	// revision 165 discards cards in order of selection
+		CardPointer removed = pb.removeSelectedCard(revision>=165);
+		return discardCard(pb.cards,removed.index,replay,msg);
 	}
 
 	public void keepSelectedCards(PlayerBoard pb,replayMode replay,String msg) 
@@ -6220,7 +6213,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private void discardSelectedCards(PlayerBoard pb,replayMode replay)
     {
     	while(pb.nSelectedCards()>0)
-    	{	discardTopSelectedCard(pb,replay,DiscardSomething);
+    	{	discardSelectedCard(pb,replay,DiscardSomething);
     	}
     }
 
@@ -6433,13 +6426,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	case TakeYellowOrBlue:
     	case TakeYellowOrGreen:
     		{
-    		CardPointer selectedChip = pb.removeTopSelectedCard();
+    		CardPointer selectedChip = pb.removeSelectedCard(false);
     		ViticultureCell selectedCard = cardPile(selectedChip.card);
     		nextState = drawCards(1,selectedCard,pb,replay,m);
     		}
     		break;
     	case SelectCardColor:
-    		CardPointer selectedChip = pb.removeTopSelectedCard();
+    		CardPointer selectedChip = pb.removeSelectedCard(false);
     		ViticultureCell selectedCard = cardPile(selectedChip.card);
     		for(ViticultureCell c : pb.oracleColors)
     		{	// draw all the other cards
@@ -6654,7 +6647,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			}
 			else
 			{
-			CardPointer card = pb.removeTopSelectedCard();
+			CardPointer card = pb.removeSelectedCard(false);
 			ViticultureCell field = pb.selectedCells.pop();
 			ViticultureCell vine = pb.vines[field.row];
 			ViticultureChip vineCard = pb.cards.removeChip(card.card);
@@ -7130,7 +7123,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
     		if(pb.hasVeranda()) { changeScore(pb,1,replay,VerandaBonus,ViticultureChip.VerandaCard,ScoreType.OrangeCard); }
     		if(pb.hasWineParlor()) { changeCash(pb,2,yokeCash,replay); }
-    		ViticultureChip card = pb.removeTopSelectedCard().card;
+    		ViticultureChip card = pb.removeSelectedCard(false).card;
     		if(replay.animate) { flashChip = card;	}			// if the viewer notices this card, it will flash up for 2 seconds
     		purpleDiscards.addChip(card);	// put on the discard pile, otherwise it would just vanish
     		pb.cards.removeChip(card);
@@ -7157,7 +7150,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		case DestroyStructure:
 		case DestroyStructureOptional:
 			{
-			ViticultureChip ch = pb.removeTopSelectedCard().card;
+			ViticultureChip ch = pb.removeSelectedCard(false).card;
 			boolean found = false;
 			for(ViticultureCell structure : pb.buildStructureCells)
 				{
@@ -7207,7 +7200,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			break;
 		case GiveYellow:
 			{
-			ViticultureChip card = pb.removeTopSelectedCard().card;
+			ViticultureChip card = pb.removeSelectedCard(false).card;
 			pb.cards.removeChip(card);
 			ViticultureCell dest = pbs[targetPlayer].cards;
 			dest.addChip(card);
@@ -7268,7 +7261,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			changeCash(pb,-cost,pb.cashDisplay,replay);
 			while(pb.selectedCards.size()>0)
 				{
-					int ind = pb.removeTopSelectedCard().index;
+					int ind = pb.removeSelectedCard(false).index;
 					ViticultureChip ch = pb.oracleCards.removeChipAtIndex(ind);
 					pb.cards.addChip(ch);  		
 					if(replay.animate)

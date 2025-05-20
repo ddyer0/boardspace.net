@@ -16,6 +16,7 @@
  */
 package bugs;
 
+import lib.CompareTo;
 import lib.DrawableImageStack;
 import lib.Image;
 import lib.ImageLoader;
@@ -23,7 +24,9 @@ import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
 import online.game.chip;
-import bugs.BugsConstants.PrototypeId;
+
+import bugs.BugsConstants.BugsId;
+import bugs.data.Profile;
 import common.CommonConfig;
 class ChipStack extends OStack<BugsChip>
 {
@@ -37,17 +40,18 @@ class ChipStack extends OStack<BugsChip>
  * @author ddyer
  *
  */
-public class BugsChip extends chip<BugsChip> implements CommonConfig
+public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<BugsChip>
 {
-
+	public BugsChip() {}
+	public boolean isBugCard() { return false; }
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack otherChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
-	public PrototypeId id;
+	public BugsId id;
 	public String contentsString() { return(id==null ? file : id.name()); }
 
 	// constructor for the chips on the board, which are the only things that are digestable.
-	private BugsChip(String na,double[]sc,PrototypeId con)
+	private BugsChip(String na,double[]sc,BugsId con)
 	{	
 		scale=sc;
 		file = na;
@@ -67,19 +71,19 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig
 	
 	public int chipNumber() { return(id==null?-1:id.ordinal()); }
 	
-	static public BugsChip PrarieTile = new BugsChip("prarie",new double[]{0.50,0.510,1.44},PrototypeId.Prarie);
-	static public BugsChip JungleTile = new BugsChip("jungle",new double[]{0.50,0.510,1.44},PrototypeId.Jungle);
-	static public BugsChip MarshTile = new BugsChip("marsh",new double[]{0.50,0.510,1.44},PrototypeId.Marsh);
-	static public BugsChip ForestTile = new BugsChip("forest",new double[]{0.50,0.510,1.44},PrototypeId.Forest);
+	static public BugsChip PrarieTile = new BugsChip("prarie",new double[]{0.50,0.510,1.44},BugsId.Prarie);
+	static public BugsChip JungleTile = new BugsChip("jungle",new double[]{0.50,0.510,1.44},BugsId.Jungle);
+	static public BugsChip MarshTile = new BugsChip("marsh",new double[]{0.50,0.510,1.44},BugsId.Marsh);
+	static public BugsChip ForestTile = new BugsChip("forest",new double[]{0.50,0.510,1.44},BugsId.Forest);
 
 	static BugsChip Tiles[] = {
 			PrarieTile,JungleTile,MarshTile,ForestTile,
 	};
-	static public BugsChip Black = new BugsChip("slate",new double[]{0.50,0.510,1.44},PrototypeId.Black);
-	static public BugsChip White = new BugsChip("shell-4",new double[]{0.47,0.49,1.58},PrototypeId.White);
+	static public BugsChip Black = new BugsChip("slate",new double[]{0.50,0.510,1.44},BugsId.Black);
+	static public BugsChip White = new BugsChip("shell-4",new double[]{0.47,0.49,1.58},BugsId.White);
 
     // indexes into the balls array, usually called the rack
-    static final BugsChip getChip(int n) { return(PrototypeId.values()[n].chip); }
+    static final BugsChip getChip(int n) { return(BugsId.values()[n].chip); }
     
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
@@ -99,7 +103,13 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig
 
     public static BugsChip Icon = new BugsChip("hex-icon-nomask",null);
 
-    
+    static double defaultScale[] = {0.5,0.5,1.0};
+    public static BugsChip Parasite = new BugsChip("parasite.png",defaultScale);
+    public static BugsChip Scavenger = new BugsChip("scavenger.png",defaultScale);
+    public static BugsChip Vegetarian = new BugsChip("vegetarian.png",defaultScale);
+    public static BugsChip Predator = new BugsChip("carnivore.png",defaultScale);
+    public static BugsChip Wings = new BugsChip("wings.png",defaultScale);
+    public static BugsChip Negavore = new BugsChip("negavore.png",defaultScale);
    
     /**
      * this is a fairly standard preloadImages method, called from the
@@ -141,12 +151,15 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig
 
 	    }
 	 */
-	/*
-	 * this is a standard trick to display card backs as an alternate to the normal face.
-	public static BugsChip cardBack = new BugsChip("cards",null,defaultScale);
+	
+	public static BugsChip cardBack = new BugsChip("cards",new double[] {0.5,0.5,1.0});
+	public static BugsChip yellowBack = new BugsChip("yellowbackground-nomask",new double[] {0.5,0.5,1.0});
+	public static BugsChip brownBack = new BugsChip("brownbackground-nomask",new double[] {0.5,0.5,1.0});
+	public static BugsChip greenBack = new BugsChip("greenbackground-nomask",new double[] {0.5,0.5,1.0});
+	public static BugsChip blueBack = new BugsChip("bluebackground-nomask",new double[] {0.5,0.5,1.0});
 	
 	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
-	
+	/*
     public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{
 		boolean isBack = BACK.equals(label);
@@ -158,7 +171,13 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig
 		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
 		}
 	}
+	*/
+	public int compareTo(BugsChip o) {
+		return 0;
+	}
+	public Profile getProfile() { return null; }
 
-	 */
+
+	
 
 }

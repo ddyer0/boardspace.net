@@ -261,7 +261,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
       
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, boardRect,scaled);
+      scaled = images[BOARD_INDEX].getImage(loader).centerScaledImage(gc, boardRect,scaled);
 	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
 	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
 	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);

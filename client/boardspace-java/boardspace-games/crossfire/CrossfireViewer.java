@@ -439,7 +439,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
       {
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     tileImages[HEXTILE_PBOARD_INDEX].getImage(loader).centerImage(gc, boardRect);
+     tileImages[HEXTILE_PBOARD_INDEX].getImage().centerImage(gc, boardRect);
       
       gb.SetDisplayParameters( 0.93, 0.825,
       		  0,0.35,
@@ -450,7 +450,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
       {
     	  // if the board is one large graphic, for which the visual target points
           // are carefully matched with the abstract grid
-         tileImages[HEXTILE_NP_INDEX].getImage(loader).centerImage(gc, boardRect);
+         tileImages[HEXTILE_NP_INDEX].getImage().centerImage(gc, boardRect);
           
           gb.SetDisplayParameters( 0.97,0.97,0.1,-0.5,0); // shrink a little and rotate 30 degrees
 

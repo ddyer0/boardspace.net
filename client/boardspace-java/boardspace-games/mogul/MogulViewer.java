@@ -292,7 +292,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
       
       
       if(remoteViewer<0) 
-      	{	scaled = images[BOARD_INDEX].getImage(loader).centerScaledImage(gc, boardRect, scaled);
+      	{	scaled = images[BOARD_INDEX].getImage().centerScaledImage(gc, boardRect, scaled);
       	}
 
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);

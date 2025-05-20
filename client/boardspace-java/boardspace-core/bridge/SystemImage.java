@@ -17,12 +17,12 @@
 package bridge;
 
 import java.awt.AlphaComposite;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -145,14 +145,17 @@ public abstract class SystemImage implements ImageObserver
 	{	//G.print("Load "+url);
 		if(url.charAt(0)=='/')
 		{
-		URL res = Platform.class.getResource(url);
-		if(G.Advise(res!=null,"resource image %s is missing",url))
-			{ getImage(res); 
-			}
+			URL res = Platform.class.getResource(url);
+			if(G.Advise(res!=null,"resource image %s is missing",url))
+				{ getImage(res);
+				}
 		}
 		else
 		{
-		try { setImage(Toolkit.getDefaultToolkit().getImage(url),url); }
+		try 
+			{ setImage(Toolkit.getDefaultToolkit().getImage(url),url); 
+			
+			}
 		catch (Throwable err)
 		{
 			G.Advise(false,"Error loading image %s %s",url,err.toString());			
@@ -160,7 +163,8 @@ public abstract class SystemImage implements ImageObserver
 		if(image==null) { createImage(1,1); }
 		}
 	}
-
+	public abstract boolean compositeSelf(SystemImage foreground,int component,SystemImage mask,int bgcolor);
+	
 	/* get the image, possibly after loading it */
 	public java.awt.Image getImage() 
 	{ 	
@@ -216,6 +220,26 @@ public abstract class SystemImage implements ImageObserver
 			   }
 			}
 	}
+	@SuppressWarnings("serial")
+	static private Component dummyComponent = new Component() {};
+	static private MediaTracker dummyTracker = new MediaTracker(dummyComponent);
+	protected void waitForImage()
+	{	/*
+		not good enuough
+		int h = -1;
+		while((h = image.getHeight(this))<0)
+		{
+			G.waitAWhile(this,1);
+		}
+		height = h;
+		*/
+		dummyTracker.addImage(image, 0);		
+		try {
+			dummyTracker.waitForAll();
+		} catch (InterruptedException e) {
+		}
+		dummyTracker.removeImage(image);
+	}
 
 	public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int awidth, int aheight) 
 	{	 if((infoflags & ImageObserver.WIDTH)!=0)
@@ -247,136 +271,9 @@ public abstract class SystemImage implements ImageObserver
 		 }
 		 return(true);
 	}
-    private static final boolean blur = true;	// if true, add a slight blur to masks so no sharp edges
-
-    /** call this to pre-composite two rgb images loaded from source files.
-    *
-    * @param who the component for whom to composite
-    * @param foreground the mask (with black for parts to keep from the foreground)
-    * @param component the shift for the mask (normally 0,8,16)
-    * @param mask the optional mask image to be composited
-    * @param bgcolor alternatively, the fixed color to composite against
-    * @return a new, composited image
-    */
-   public boolean compositeSelf(SystemImage foreground,int component,SystemImage mask,int bgcolor)
-   {
-   int w = foreground.getWidth();
-   int h = foreground.getHeight();
-   if(mask!=null) 
-   	{
-	   int imw = mask.getWidth();
-	   int imh = mask.getHeight();
-	   G.Assert((imw==w)&&(imh==h),"Image and Mask size mismatched: "+mask+" "+foreground);
-   	}
-   int mspan = w+(blur?2:0);
-   int mheight = h+(blur ? 2 : 0);
-   int[] ipix = new int[w * h];
-   int[] mpix = new int[mspan * mheight]; // plus 1 pixel all around
-   boolean gotma = false;
-   boolean gotfg = false;
-   try
-   {
-       // note that there are problems with pixelgrabber from images created with
-       // createimage, but apparently not with images from loadimage
-	   if(mask==null)
-    	   {
-    	   for(int i=0;i<ipix.length;i++) { ipix[i]=bgcolor; }
-    	   gotfg=true;
-    	   }
-    	   else
-    	   {
-           gotfg = new PixelGrabber(mask.getImage(), 0, 0, w, h, ipix, 0, w).grabPixels();
-    	   }
-        gotma = new PixelGrabber(foreground.getImage(), 0, 0, w, h, mpix, blur ? w + 3 : 0, mspan).grabPixels();
-        if(gotma) { }
-   }
-   catch (InterruptedException e)
-   {
-   }
-   if(gotfg && gotma)
-   {
-	if(blur)
-		{ 
-		actualCompositeBlur(w,h,mpix,mspan,component,ipix,w);
-		}
-	else
-	{
-		actualCompositeNoBlur(w,h,mpix,mspan,component,ipix,w);
-	}
-   	SystemImage.pixelCount += w*h;
-   	createImageFromInts(ipix,w,h,0,w);
-   	return (true);
-   }
-   Plog.log.addLog("Composite failed");
-   return(false);
-}
- 
-/**
- * the actual mask should be positioned in 1 pixel from the edge all the way around, and
- * we expect mspan to be ispan+2.  The real edge pixels are copied to the edges and an 
- * approximate gaussean filter is applied to each 3x3 neighborhood to make the actual
- * mask pixel 
- * @param w
- * @param h
- * @param mpix
- * @param mspan
- * @param component
- * @param ipix
- * @param ispan
- */
-	public void actualCompositeBlur(int w,int h, int mpix[],int mspan,int component,int ipix[],int ispan)
-	{	int mspanx2 = mspan+mspan;
-		int mspanp1 = mspan+1;
-
-		// fill the extra space in the mask with nearest neighbor
-		for (int i = 1, j = (h * mspan) + 1; i <= w; i++,j++)
-		{
-			mpix[i] = mpix[i + mspan];
-			mpix[j + mspan] = mpix[j];
-		}
-		
-		for (int i = 0, j = w, row = 0; row < (h + 2);
-				row++, i += mspan, j += mspan)
-		{
-			mpix[i] = mpix[i + 1];
-			mpix[j + 1] = mpix[j];
-		}		
-				
-		for(int mindex=0;mindex<mpix.length;mindex++) { mpix[mindex]=(mpix[mindex]>>component)&0xff;} 
-		for(int row=0,iindex=0,mindex=0;row<h;row++,iindex+=ispan,mindex+=mspan)
-		{
-		   	   for (int mi=mindex,ii=iindex,end=iindex+w; ii < end; ii++,mi++)
-		       {
-				   int ma = (mpix[mi + mspanp1]); // center pixel
-		           //if blurring, do a simple gaussian weight on the 3x3.  This assures that
-		           //the mask has no sharp edges at any scale, since we have already scaled it
-		           //and add the blur on top of the scaled mask.
-		           ma = (ma * 10) + (mpix[mi] * 2) +
-		                   (mpix[mi + 1]  * 5) +
-		                   (mpix[mi + 2]  * 2) +
-		                   (mpix[mi + mspan] * 5) +
-		                   (mpix[mi + mspan + 2] * 5) +
-		                   (mpix[mi + mspanx2] * 2) +
-		                   (mpix[mi + mspanx2 + 1] * 5) +
-		                   (mpix[mi + mspanx2 + 2] * 2);
-		           ma = ma / 38;
-		           ipix[ii] = (ipix[ii] & 0xffffff) | ((ma^0xff) << 24);
-		       }}
-	}
-		
-	public void actualCompositeNoBlur(int w,int h, int mpix[],int mspan,int component,int ipix[],int ispan)
-		{
-			if(component>0) { for(int i=0;i<mpix.length;i++) { mpix[i]=(mpix[i]>>component)&0xff;} } 
-			for(int mindex = 0,iindex=0,row=0; row<h; row++,iindex+=ispan,mindex+=mspan)
-			{
-			   for (int ii = iindex,mi=mindex,end=iindex+w; ii < end; ii++,mi++)
-			 
-		       {  
-		           ipix[ii] = (ipix[ii] & 0xffffff) | ((mpix[mi]^0xff) << 24);
-		       }}
-		}
-public void createImageFromInts(int ipix[],int w,int h,int off,int mspan)
-{	setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, ipix, off, mspan)));
+ public void createImageFromInts(int ipix[],int w,int h,int off,int mspan)
+{	
+	setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, ipix, off, mspan)));
 }
 
 public static Image createImage(java.awt.Image im)
@@ -396,6 +293,7 @@ public void setSize(int w,int h)
 public static Image createImage(java.awt.Image im,String nam)
 {	Image nim = new Image(nam);
 	nim.setImage(im);
+	
 	return(nim);
 }
 
@@ -411,33 +309,47 @@ public lib.Graphics getGraphics()
 
 // bits to save images
 // this incantation stolen from stackoverflow, to somehow set the dpi of png images
-private static void saveGridImage(File output,RenderedImage gridImage,int dpi) throws IOException {
-output.delete();
-
-final String formatName = "png";
-
-for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
-   ImageWriter writer = iw.next();
-   ImageWriteParam writeParam = writer.getDefaultWriteParam();
-   ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
-   IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier, writeParam);
-   if (metadata.isReadOnly() || !metadata.isStandardMetadataFormatSupported()) {
-      continue;
-   }
-
-   setDPI(metadata,dpi);
-
-   final ImageOutputStream stream = ImageIO.createImageOutputStream(output);
-   try {
-      writer.setOutput(stream);
-      writer.write(metadata, new IIOImage(gridImage, null, metadata), writeParam);
-   } finally {
-      stream.close();
-   }
-   break;
-}
+private static void saveGridImage(File output,RenderedImage gridImage,int dpi) throws IOException 
+{
+	output.delete();
+	
+	String formatName = "png";
+	int ind = output.toString().lastIndexOf('.');
+	if(ind>=0) { formatName = output.toString().substring(ind+1); }
+	
+	for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
+	   ImageWriter writer = iw.next();
+	   ImageWriteParam writeParam = writer.getDefaultWriteParam();
+	   ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
+	   IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier, writeParam);
+	   if (metadata.isReadOnly() || !metadata.isStandardMetadataFormatSupported()) {
+	      continue;
+	   }
+	
+	   setDPI(metadata,dpi);
+	
+	   final ImageOutputStream stream = ImageIO.createImageOutputStream(output);
+	   try {
+	      writer.setOutput(stream);
+	      writer.write(metadata, new IIOImage(gridImage, null, metadata), writeParam);
+	   } finally {
+	      stream.close();
+	   }
+	   break;
+	}
  }
-
+ public boolean saveImage(String output)
+ {	int ind = output.lastIndexOf('.');
+ 	String type = ind>=0 ? output.substring(ind+1) : "jpg";
+    boolean result = false;
+	try {
+		result = ImageIO.write((BufferedImage)getImage(),type, new File(output));
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+    return result;
+ }
+ 
  private static void setDPI(IIOMetadata metadata,int dpi) throws IIOInvalidTreeException {
 
 // for PMG, it's dots per millimeter
@@ -463,7 +375,16 @@ metadata.mergeTree("javax_imageio_1.0", root);
  public void SaveImage(String name)
     {  	
 		try {
-			saveGridImage(new File(name),(RenderedImage)this.getImage(),300);
+			java.awt.Image im = getImage();
+			if(! (im instanceof RenderedImage))
+			{	int w = getWidth();
+				int h = getHeight();
+				BufferedImage im2 = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+				Graphics gr = Graphics.create(im2.getGraphics(),w,h);
+				((Image)this).drawImage(gr,0,0,w,h);
+				im = im2;
+			}
+			saveGridImage(new File(name),(RenderedImage)im,300);
 			//FileOutputStream stream = new FileOutputStream(name);
 			//ImageIO.write((BufferedImage)im, "png",stream);
 			//stream.close();
@@ -496,8 +417,11 @@ public Image getScaledInstance(int w,int h,ScaleType typ)
 		else 
 		{
 		java.awt.Image scl = getImage().getScaledInstance(w, h, typ.v);		
-		
 		newImage = Image.createImage(scl,"{scaled}"+getName());
+		// this is necessary because getScaledInstance stupidly permits the scaling
+		// to be completed at a later time, even if the entire source image is already
+		// available.  This came up making bugspiel decks
+		newImage.waitForImage();
 		}
 		
 		long last = G.Date();
@@ -535,42 +459,6 @@ public void setRGB(int x,int y,int w,int h,int[]data,int off,int span)
 	G.Error("not handled");
 	}
 }
-/** 
-     * call this to rotate an image around its center by an angle in radians.  
-     * This ignores the right and bottom edges of the input image, because the
-     * pixel values the edges of jpeg images are unreliable.  The output image is
-     * one pixel smaller than the input, and the corners of the rotated image are
-     * copied from nearby pixels in the source image.  The intended use for this
-     * is artwork which has a uniform edge, and enough padding so the interesting
-     * part of the image is always inside that edge.
-     * @param who the window doing the rotating, or null to create a trashed temp
-     * @param im the input image
-     * @param angle the angle (in radians) to rotate counter clockwise
-     * @return a rotated version of the input image. 
-     * */
-   public Image rotate( double angle, int fillColor)
-   { 
-     int w = getWidth();
-     int h = getHeight();
-     int opix[] = new int[w*h];
-     int ipix[] = new int[w*h];
-     boolean gotin = false;
-     try {
-    	 gotin = new PixelGrabber(getImage(), 0, 0, w, h, ipix, 0, w).grabPixels();
-     } 
-     catch (InterruptedException e)
-     {
-     }
-   
-     G.Assert(gotin,"got the input image pixels");
-
-     G.Rotate(ipix,opix,w,h,angle,fillColor);
-     SystemImage.pixelCount += w*h;
-     Image fin = new Image("temp for rotate");
-     fin.setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, opix, 0, w)));
-     	
-     return(fin);
-   }
 
  
 public static boolean getImageValid(Component c,Image m)
@@ -617,39 +505,7 @@ public static Image getVolatileImage(Component c,int width,int height)
    		bim.setImage(im);
    		return(bim);
    }
-/**
-    * make a more transparent copy of the input image.  This is used to make "ghosted" images.
-    * @param who the canvas (needed for pixelgrabber..)
-    * @param im	the input image
-    * @param percent the new transparency
-    * @return the new image
-    */
-   static public Image makeTransparent(Component who,Image im0,double percent)
-   {   java.awt.Image im = im0.getImage();
-	   if(who==null) { who = new Canvas(); }
-	   int w = im0.getWidth();
-	   int h = im0.getHeight();
-	   int ipix[] = new int[w*h];
-	   boolean gotin = false;
-	   try {
-	    	 gotin = new PixelGrabber(im, 0, 0, w, h, ipix, 0, w).grabPixels();
-	   } 
-	   catch (InterruptedException e)
-	   {
-	   }
-	   
-	   G.Assert(gotin,"got the input image pixels");
-	   for(int lim = ipix.length-1; lim>=0; lim--)
-	   {
-		   int pix = ipix[lim];
-		   int trans = 0xff&(pix>>24);
-	       trans = (int)(trans*percent);
-		   ipix[lim]=(trans<<24)|(0xffffff&pix);
-	   }
-	   Image fin = new Image("temp for transparent image");
-	   fin.setImage(who.createImage(new MemoryImageSource(w, h, ipix, 0, w)));
-	   return(fin);
-   }
+
 /**
     * clear a rectangle of a transparent image back to the transparent state
     * @param im

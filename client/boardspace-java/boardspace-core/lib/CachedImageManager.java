@@ -73,6 +73,19 @@ public class CachedImageManager
     }
     
     private long lastManageTime = 0;
+    
+    public Image completeImage(Image k,CachedImage v)
+    {
+    	if(LOG_CACHE) { Plog.log.addLog("Scaled ",k," ",v.ScaledW," ",v.ScaledH); }
+			 
+    	Image im = CachedImage.getScaledInstance(k,v.ScaledW,v.ScaledH,Image.ScaleType.defaultScale);
+    	v.im = im;
+    	if(IMMEDIATE_UNCACHE && k.isUnloadable() && k.getWidth()>v.ScaledW*3)
+    		{
+		    	k.unload();
+		    }
+    	return im;
+    }
     /**
      * 
      * @param timeToSpend time to spend doing this, in milliseconds
@@ -120,16 +133,7 @@ public class CachedImageManager
     					{
     					// if we haven't made this scaled version yet, and we've been
     					// idle for a few cycles, do it now.
-         				
-     					if(LOG_CACHE) { Plog.log.addLog("Scaled ",k," ",v.ScaledW," ",v.ScaledH); }
- 
-      					Image im = CachedImage.getScaledInstance(k,v.ScaledW,v.ScaledH,Image.ScaleType.defaultScale);
-    					v.im = im;
-    				    created++;
-    				    if(IMMEDIATE_UNCACHE && k.isUnloadable() && k.getWidth()>v.ScaledW*3)
-    				    {
-    				    	k.unload();
-    				    }
+         				completeImage(k,v);
     				    long later =  G.Date();
     				    exit = (later>=exitDate); 
     				    if(exit && LOG_CACHE) { Plog.log.addLog("c ",timeToSpend," ",((int)(later-now))," added ",created); }
@@ -200,7 +204,12 @@ public class CachedImageManager
      * @param zoom if true, don't create new slots
      * @return a cached image to display
      */ 
-     public Image getCachedImage(Image im,int w, int h,boolean zoom)
+    public Image getCachedImage(Image im,int w, int h,boolean zoom)
+    {
+    	return getCachedImage(im,w,h,zoom,false);
+    }
+    
+    public Image getCachedImage(Image im,int w,int h,boolean zoom,boolean immediateHighres)
     {	int srcW = im.getWidth();
     	int srcH = im.getHeight();
     	if (!cache_images 
@@ -261,8 +270,9 @@ public class CachedImageManager
     			{ Plog.log.addLog("Add scaled stub ",im," ",w,"x",h); 
     			}
     		cachedImages.put(im,cim);
+    		if(immediateHighres) { result = completeImage(im,cim); }
     		needManagement = true;
-        	if(now-lastManageTime>10000)	// if it's been a while since any management happened
+    		if(now-lastManageTime>10000)	// if it's been a while since any management happened
         	{	// at least do the freeing steps
         		//System.out.println("salvage cached images");
         		manageCachedImages(10,false);
@@ -295,5 +305,5 @@ public class CachedImageManager
     	}
     	return(im);
     }
-   
+ 
 }

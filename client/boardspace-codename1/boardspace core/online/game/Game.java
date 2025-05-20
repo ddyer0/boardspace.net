@@ -62,7 +62,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private static final String ReconOkMessage = "reconok"; //ok, we did it
     private static final String LocalGames = "Local Games";
 
-    private static final long serialVersionUID = 1L;
     private static final String ROBOTSTART = "robotstart";
     private static final String ROBOTEXIT = "robotexit";
     private static final String ROBOTLEVEL = "robotLevel";

@@ -89,17 +89,19 @@ public class JButton extends Button
 		Font f = getFont();
 		Dimension dim = null;
 		if(im!=null)
-		{	// images prefer to be the size of the font
-			double sz = G.getFontSize(f);
+		{	// images prefer to be the size of the font.  This is the magic spot
+			// where the toolbar gets its height
+			FontMetrics fm = G.getFontMetrics(f);
+			int sz = fm.getHeight()*3/2;
 			int w = im.getWidth();
 			int h = im.getHeight();
-			dim = new Dimension((int)(sz*w/h),(int)sz);
+			dim = new Dimension((int)(sz*w/h),sz);
 		}
 		else if(label!=null)
 		{	// use the actual font metrics to specify the size
 			FontMetrics fm = G.getFontMetrics(f);
 			int w = fm.stringWidth(label);
-			int h = fm.getHeight();
+			int h = fm.getHeight()*3/2;
 			dim = new Dimension(w+h,h);
 		}
 		else

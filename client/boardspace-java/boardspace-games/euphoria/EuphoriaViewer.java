@@ -706,7 +706,7 @@ private Color playerBackground[] = {
     	int x1 = boardX+(int)(boardW*cardzone[2]/100);
     	int y0 = boardY+(int)(boardH*cardzone[1]/100);
     	int y1 = boardY+(int)(boardH*cardzone[3]/100);
-    	EuphoriaChip.CardMarket.getImage().centerImage(gc, x0,y0,x1-x0,y1-y0);
+    	EuphoriaChip.CardMarket.getImage(loader).centerImage(gc, x0,y0,x1-x0,y1-y0);
       }}
     }
     private void drawDecorations(Graphics gc, EuphoriaBoard gb,Rectangle brect)
@@ -1072,7 +1072,7 @@ private Color playerBackground[] = {
     private void framePlayer(Graphics gc,EPlayer p,Rectangle r)
     {
      	GC.fillRect(gc,playerBackground[p.color.ordinal()],r);
-     	//EuphoriaChip.PlayMat.getImage().centerImage(gc,r);
+     	//EuphoriaChip.PlayMat.getImage(loader).centerImage(gc,r);
     	GC.frameRect(gc,Color.black,r);
 
     }

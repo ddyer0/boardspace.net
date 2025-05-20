@@ -18,7 +18,7 @@ package bugs;
 
 import java.util.*;
 
-import bugs.BugsConstants.PrototypeId;
+import bugs.BugsConstants.BugsId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
@@ -57,7 +57,7 @@ public class BugsMovespec
     //}
     //
     // variables to identify the move
-    PrototypeId source; // where from/to
+    BugsId source; // where from/to
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
     BugsChip chip;
@@ -156,7 +156,7 @@ public class BugsMovespec
         	
         case MOVE_DROPB:
 		case MOVE_PICKB:
-            source = PrototypeId.BoardLocation;
+            source = BugsId.BoardLocation;
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
 
@@ -164,7 +164,7 @@ public class BugsMovespec
 
         case MOVE_DROP:
         case MOVE_PICK:
-            source = PrototypeId.valueOf(msg.nextToken());
+            source = BugsId.valueOf(msg.nextToken());
             break;
 
         case MOVE_START:

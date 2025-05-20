@@ -222,17 +222,17 @@ public class PlayerBoard
 	{ return selectedCards.pop().index;
 	}
 
-	public CardPointer removeTopSelectedCard() 
+	public CardPointer removeSelectedCard(boolean bottom) 
 		{  
-		CardPointer top = selectedCards.pop();
+		CardPointer removed = bottom ? selectedCards.remove(0,true) : selectedCards.pop();
 		// renumber the other cards in the stack if they refer to the same source
 		// and removing the selected card would change the index
 		for(int i=0;i<selectedCards.size();i++)
 		{	CardPointer item = selectedCards.elementAt(i);
-			if(item.source==top.source && item.index>top.index) { item.index--; }
+			if(item.source==removed.source && item.index>removed.index) { item.index--; }
 		}
 		
-		return top;
+		return removed;
 		}
 	
 	public void clearSelectedCards()

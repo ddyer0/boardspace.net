@@ -453,7 +453,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  
        ChessChip banner = b.variation.banner;
-       banner.getImage(loader).centerImage(gc, bannerRect);
+       banner.getImage().centerImage(gc, bannerRect);
        GC.frameRect(gc,Color.red,bannerRect);
        DrawReverseMarker(gc,reverseViewRect,highlight,ChessId.ReverseViewButton);
        eyeRect.activateOnMouse=true;

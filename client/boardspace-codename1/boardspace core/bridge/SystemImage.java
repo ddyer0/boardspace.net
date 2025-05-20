@@ -24,7 +24,6 @@ import com.codename1.ui.RGBImage;
 import com.codename1.ui.URLImage;
 import com.codename1.ui.URLImage.ImageAdapter;
 
-import lib.AR;
 import lib.AwtComponent;
 import lib.G;
 import lib.Graphics;
@@ -175,6 +174,8 @@ public static Image getURLImage(URL name)
 			createBlankImage(1,1);
 		}
 	}
+	
+	public abstract boolean compositeSelf(SystemImage foreground,int component,SystemImage mask,int bgcolor);
 
 	/* get the image, possibly after loading it */
 	public com.codename1.ui.Image getImage() 
@@ -219,8 +220,6 @@ public static Image getURLImage(URL name)
 	   }
 
 
-    private static final boolean blur = true;	// if true, add a slight blur to masks so no sharp edges
-
     // these are final to make sure they're not accidentally overridden
     protected final int[] getRGBCached()
     {
@@ -258,135 +257,8 @@ public static Image getURLImage(URL name)
     	}
     	return(data);
     }
-    
 
-    /** call this to pre-composite two rgb images loaded from source files.
-    *
-    * @param who the component for whom to composite
-    * @param mask the mask (with black for parts to keep from the foreground)
-    * @param component the shift for the mask (normally 0,8,16)
-    * @param im the optional image to be composited
-    * @param bgcolor alternatively, the fixed color to composite against
-    * @return a new, composited image
-    */
-   public void compositeSelf(SystemImage mask,int component,SystemImage im,int bgcolor)
-   {   
-	   int w = mask.getWidth();
-       int h = mask.getHeight();
-       if(im!=null) 
-       	{
-    	   int imw = im.getWidth();
-    	   int imh = im.getHeight();
-    	   G.Assert((imw==w)&&(imh==h),"Image and Mask size mismatched: "+im+" "+mask);
-       	}
-       int mspan = w+(blur ? 2 : 0);
-       int mheight = h+(blur ? 2 : 0);
-       int[] ipix = new int[w * h];
-       byte[] mpix = new byte[mspan * mheight]; // plus 1 pixel all around
- 
-       if(im==null)
-       	   {
-       		   AR.setValue(ipix,bgcolor);
-       	   }
-       	   else
-       	   {   // uses a temporary full sized array until the APO is exposed
-   		   int rawIm[] = im.getRGBCached();	
-   		   System.arraycopy(rawIm,0,ipix,0,ipix.length);
-   	   }
-       {
-       int rawMa[] = mask.getRGBCached();
-       // copy the desired component of the mask to a temporary byte array
-       // with an extra pixel all the way around
-       for(int row=0; row<h; row++)
-       	   {	
-    		   for(int col=row*w,end=col+w,dest=blur ? (row+1)*mspan+1 : row*mspan; col<end; col++,dest++)
-    		   {
-    			   mpix[dest] = (byte)(rawMa[col]>>component);
-    		   }
-       	   }
-       }
-       if(blur)
-       {
-    	   actualCompositeBlur(w,h,mpix,mspan,ipix,w);  
-       }
-       else
-       {
-    	   actualCompositeNoBlur(w,h,mpix,mspan,ipix,w);
-       }
-	   SystemImage.pixelCount += w*h;
-	   com.codename1.ui.Image imr[] = new com.codename1.ui.Image[1];
-	   G.runInEdt(new Runnable() 
-	   {
-	   public String toString() { return("create image "+w+"x"+h); }
-	   public void run()
-	   	{ 
-		   imr[0] = makeEncodedImages 
-						? EncodedImage.createFromImage(com.codename1.ui.Image.createImage(ipix,w, h),false)
-						: com.codename1.ui.Image.createImage(ipix,w, h);
-		    }});
- 	   	setImage(imr[0]);
-   }
-   
-   /**
-    * the actual mask should be positioned in 1 pixel from the edge all the way around, and
-    * we expect mspan to be ispan+2.  The real edge pixels are copied to the edges and an 
-    * approximate gaussean filter is applied to each 3x3 neighborhood to make the actual
-    * mask pixel 
-    * @param w
-    * @param h
-    * @param mpix
-    * @param mspan
-    * @param component
-    * @param ipix
-    * @param ispan
-    */
-	public void actualCompositeBlur(int w,int h, byte mpix[],int mspan,int ipix[],int ispan)
-	{	int mspanx2 = mspan+mspan;
-		int mspanp1 = mspan+1;
-		// fill the extra space in the mask with nearest neighbor
-		for (int i = 1, j = (h * mspan) + 1; i <= w; i++,j++)
-			{
-				mpix[i] = mpix[i + mspan];
-				mpix[j + mspan] = mpix[j];
-			}
-			   
-		for (int i = 0, j = w, row = 0; row < (h + 2);
-					row++, i += mspan, j += mspan)
-			{
-				mpix[i] = mpix[i + 1];
-				mpix[j + 1] = mpix[j];
-			}		   	   
-		for(int row=0,iindex=0,mindex=0;row<h;row++,iindex+=ispan,mindex+=mspan)
-			       {
-			   	   for (int mi=mindex,ii=iindex,end=iindex+w; ii < end; ii++,mi++)
-			       {
-					   int ma = (mpix[mi + mspanp1])&0xff; // center pixel
-			           //if blurring, do a simple gaussian weight on the 3x3.  This assures that
-			           //the mask has no sharp edges at any scale, since we have already scaled it
-			           //and add the blur on top of the scaled mask.
-			           ma = (ma * 10) + ( (mpix[mi]&0xff) * 2) +
-			                   ((mpix[mi + 1]&0xff)  * 5) +
-			                   ((mpix[mi + 2]&0xff)  * 2) +
-			                   ((mpix[mi + mspan]&0xff) * 5) +
-			                   ((mpix[mi + mspan + 2]&0xff) * 5) +
-			                   ((mpix[mi + mspanx2]&0xff) * 2) +
-			                   ((mpix[mi + mspanx2 + 1]&0xff) * 5) +
-			                   ((mpix[mi + mspanx2 + 2]&0xff) * 2);
-			               ma = ma / 38;
-			           ipix[ii] = (ipix[ii] & 0xffffff) | ((ma^0xff) << 24);
-			       }}
-	}
-
-	public void actualCompositeNoBlur(int w,int h, byte mpix[],int mspan,int ipix[],int ispan)
-	{	
-		for(int mindex = 0,iindex=0,row=0; row<h; row++,iindex+=ispan,mindex+=mspan)
-		{
-			for (int ii = iindex,mi=mindex,end=iindex+w; ii < end; ii++,mi++) 
-		       {
-		           ipix[ii] = (ipix[ii] & 0xffffff) | ((mpix[mi]^0xff) << 24);
-		       }
-		}
-	}
+	
    public void createImageFromInts(int opix[],int w,int h,int off,int span)
    {	G.Assert(off==0 && span==w,"not supported");
 	   	setImage(createImageFromInts(opix,w,h));
@@ -537,36 +409,6 @@ public void setRGB(int x,int y,int w,int h,int[]ipix,int off,int mspan)
 	setRGB(x,y,new RGBImage(ipix,w,h));
 	}
 }
-/** 
-     * call this to rotate an image around its center by an angle in radians.  
-     * This ignores the right and bottom edges of the input image, because the
-     * pixel values the edges of jpeg images are unreliable.  The output image is
-     * one pixel smaller than the input, and the corners of the rotated image are
-     * copied from nearby pixels in the source image.  The intended use for this
-     * is artwork which has a uniform edge, and enough padding so the interesting
-     * part of the image is always inside that edge.
-     * @param who the window doing the rotating, or null to create a trashed temp
-     * @param angle the angle (in radians) to rotate counter clockwise
-     * @return a rotated version of the input image. 
-    */
-   public Image rotate(double angle,  int fillColor)
-   { 
-	 //the native codename1 code to rotate images also works.
-	 //int iang = (int)((angle/(-2*Math.PI))*360);
-	 //return(im.rotate(iang));
-
-	 int w = getWidth();
-     int h = getHeight();
-     int ipix[] = getRGBCached();
-     int opix[] = new int[ipix.length];
-
-     G.Rotate(ipix,opix,w,h,angle,fillColor);
-
-     SystemImage.pixelCount += w*h;
-     Image fin = createImage(createImageFromInts(opix,w, h),getName());
-     return(fin);
-   }
-
 
 
 public static Image getVolatileImage(Object out,int w,int h)
@@ -578,29 +420,7 @@ public static boolean getImageValid(Component c,Image e)
 {
 	return(true);	// always true for codename1, java version uses volatile images
 }
-/**
-    * make a more transparent copy of the input image.  This is used to make "ghosted" images.
-    * @param who the canvas (needed for pixelgrabber..)
-    * @param im	the input image
-    * @param percent the new transparency
-    * @return the new image
-    */
-   static public Image makeTransparent(Component who,Image im,double percent)
-   {
-	   int ipix[] = im.getRGBCached();
 
-	   for(int lim = ipix.length-1; lim>=0; lim--)
-	   {
-		   int pix = ipix[lim];
-		   int trans = 0xff&(pix>>24);
-	       trans = (int)(trans*percent);
-		   ipix[lim]=(trans<<24)|(0xffffff&pix);
-	   }
-	   int w = im.getWidth();
-	   int h = im.getHeight();
-	   Image fin = createImage(createImageFromInts(ipix,w, h),im.getName());
-	   return(fin);
-   }
 /**
     * clear a transparent image back to the clear state, return the cleared image, which
     * may not the the same image.

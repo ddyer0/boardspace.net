@@ -1876,16 +1876,15 @@ graphics when using a touch screen.
    */
   public void drawImage(Graphics gc,Image im,int x,int y,int w,int h)
   {
-      if(gc!=null) 
-      {   // this extra clipping region avoids messy edges on scaled images
-    	  double scale = im.getWidth()/(double)w;
-    	  int margin = (int)(1.0+scale);
-    	  Rectangle clip = GC.combinedClip(gc,x+margin,y+margin,w-2*margin,h-2*margin);
+	  boolean visible = GC.checkVisibility(gc,x,y,w,h);
+    	  if(visible)
+    	  {
+    	  // this extra clipping region avoids messy edges on scaled images
+    	  //Rectangle clip = GC.combinedClip(gc,x+1,y+1,w-2,h-2);
     	  imageCache.getCachedImage(im,w,h,zoomIsActive()).drawImage(gc, x, y, w, h);
-    	  GC.setClip(gc,clip);
+    	  //GC.setClip(gc,clip);
+    	  }
       }
-
-  }
 
     /**
      * this is the primary method to draw an images with transparent
@@ -1936,20 +1935,9 @@ graphics when using a touch screen.
         int ax = x - posx;
         int ay = y - posy;
         
-        boolean invisible = GC.isNotVisible(gc,ax,ay,scalew2,scaleh);
+        boolean visible = GC.checkVisibility(gc,ax,ay,scalew2,scaleh);
         Rectangle rr = new Rectangle(ax,ay,scalew2,scaleh);
-       // if the image is completely invisible at the current pan/zoom settings,
-       // then skip all the clipping and scaling and the actual drawing.
-        if(invisible)
-        {  	GC.fillRect(gc,Color.blue,ax,ay,scalew2,scaleh);
-            if(gc.flag)
-            {
-            	gc.flag = false;
-            	GC.setColor(gc,Color.red);
-            	GC.frameRect(gc,ax-100,ay-100,scalew2+200,scaleh+200);
-            }
-        }
-       if(!invisible)
+        if(visible)
         {
         
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());

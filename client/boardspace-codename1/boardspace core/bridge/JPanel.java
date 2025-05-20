@@ -26,5 +26,8 @@ public class JPanel extends Panel
 	}
 	public JPanel(Layout flowLayout) { super(flowLayout); setOpaque(false);	}
 	public JPanel() { super(); setOpaque(false); }
+	public void setHeight(int n) 
+	{ super.setHeight(n); 
+	}
 
 }

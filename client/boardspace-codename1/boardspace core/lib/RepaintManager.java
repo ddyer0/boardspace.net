@@ -126,7 +126,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	public boolean drawLockRequired = true;		// lock is required for direct drawing
 	private int repaintReadyCount = 0;
 	public boolean deferSprites() { return(deferSprites && (repaintStrategy!=RepaintStrategy.Deferred)); }
-	public boolean useBackgroundBitmap = true; 
+	public boolean useBackgroundBitmap = !G.isIOS(); 
 	public boolean trigger = true;
 	public String showTimers() { return timers.show(); }
 	public enum RepaintStrategy {

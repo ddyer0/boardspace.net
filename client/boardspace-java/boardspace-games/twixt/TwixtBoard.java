@@ -186,7 +186,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 		case ghost:
 			ghost = true;
 			//$FALL-THROUGH$
-		case twixt:
+		case twixt:		
 			int siz = variation.boardSize;
 			char last = (char)('A'+siz-1);
 			initBoard(siz,siz);
