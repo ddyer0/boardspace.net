@@ -20,6 +20,7 @@ import static com.codename1.util.MathUtil.atan2;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
+import bridge.SystemFont;
 
 // TODO: magnifier shows some "flashy" behavior in some rotated modes
 public class TouchMagnifier {
@@ -146,7 +147,7 @@ public class TouchMagnifier {
     					? Image.createImage(dsize,dsize) 
     					: magnifierDisplay;
     	Graphics g2 = temp.getGraphics();
-    	g2.setFont(G.getGlobalDefaultFont());
+    	g2.setFont(SystemFont.getGlobalDefaultFont());
 
     	MouseManager mouse = client.getMouse();
 		int ssize = getMagnifierSourceSize()/2;	// offset to the center of the unmagnified source

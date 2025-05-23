@@ -218,7 +218,7 @@ public class GameLog implements Opcodes
       	boolean baractive = scrollbar.mouseIsActive();
       	boolean scrolled = baractive;
       	int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
-      	FontMetrics myFM = G.getFontMetrics(lineFont);
+      	FontMetrics myFM = lib.Font.getFontMetrics(lineFont);
             int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
          
             int sz = history.size();
@@ -515,7 +515,7 @@ public class GameLog implements Opcodes
     	boolean scrolled = scrollbar.mouseIsActive();   
 	    	
        
-	   FontMetrics myFM = G.getFontMetrics(normal);
+	   FontMetrics myFM = lib.Font.getFontMetrics(normal);
            int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
            int sz = history.size();
        int historyStep = history.viewStep();

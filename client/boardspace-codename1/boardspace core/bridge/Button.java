@@ -17,7 +17,6 @@
 package bridge;
 
 import lib.AwtComponent;
-import lib.G;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Font;
@@ -28,7 +27,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider,Aw
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
 	Image theImage = null;
-	public Button(Image image) { super(image.getImage()); theImage = image; }
+	public Button(Image image) { super(image.getSystemImage()); theImage = image; }
 	public Image getImage() { return theImage; }
 	public Button(String label)
 	{ super(label);
@@ -43,7 +42,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider,Aw
 		// on android on 9/2017
 		setCapsTextDefault(false);
 	}
-	public Font getFont() { return(G.getFont(getStyle())); };
+	public Font getFont() { return(SystemFont.getFont(getStyle())); };
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))
 		{ 
@@ -77,7 +76,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider,Aw
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 	public void pointerPressed(int x,int y)
 	{	if(contains(x,y)) { x = getX()+1; y=getY()+1; }

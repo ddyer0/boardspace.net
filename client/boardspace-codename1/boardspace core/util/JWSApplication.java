@@ -19,11 +19,11 @@ package util;
 import java.util.StringTokenizer;
 
 import bridge.*;
-import bridge.ThreadDeath;
 import common.GameInfo;
 import lib.CanvasProtocol;
 import lib.DataCache;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
@@ -317,7 +317,7 @@ public class JWSApplication implements Config,OnlineConstants
 			G.setDrawers(false);	// for lastgameboard
 
 			G.getOSInfo();
-			G.print("Ask fontsize "+G.defaultFontSize," get ",G.getFontSize(G.getGlobalDefaultFont()));
+			G.print("Ask fontsize "+Font.defaultFontSize," get ",SystemFont.getFontSize(SystemFont.getGlobalDefaultFont()));
 			G.print(Component.getHierarchy(MasterForm.getMasterPanel()));
 			G.print("\n");
 			G.print(Component.getHierarchy(MasterForm.getMasterForm().getTitleBar()));

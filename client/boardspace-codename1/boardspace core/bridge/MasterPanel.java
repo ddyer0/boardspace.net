@@ -311,7 +311,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			 super.paint(offG.getGraphics());
 			}
 			topLevelGraphics = null;
-			g.drawImage(off.getImage(),0,0);
+			g.drawImage(off.getSystemImage(),0,0);
 		}
 		else 
 			{ //String msg = "standard paint from the top "+overlappingWindows();
@@ -390,7 +390,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			
 		}
 		else
-		{	b = new JButton(newName!=null ? newName : "",G.defaultFontSize());
+		{	b = new JButton(newName!=null ? newName : "",SystemFont.defaultFontSize());
 		}
 		b.setUIID("ButtonMasterForm");
 		return b;

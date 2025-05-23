@@ -40,15 +40,15 @@ class SimpleImage extends Component
 	Image image;
 	SimpleImage(Image im) 
 		{ image = im; 
-		  setWidth(im.getImage().getWidth());
-		  setHeight(im.getImage().getHeight());
+		  setWidth(im.getSystemImage().getWidth());
+		  setHeight(im.getSystemImage().getHeight());
 		  Style s = getStyle();
 		  s.setBorder(Border.createEmpty());
 		}
-	public Dimension getPreferredSize() { return(new Dimension(image.getImage().getWidth(),image.getImage().getHeight())); }
+	public Dimension getPreferredSize() { return(new Dimension(image.getSystemImage().getWidth(),image.getSystemImage().getHeight())); }
 	public void paint(Graphics g) 
 		{ 	g.setClip(getX(),getY(),getWidth(),getHeight());
-			g.drawImage(image.getImage(),getX(),getY()); 
+			g.drawImage(image.getSystemImage(),getX(),getY()); 
 		}
 }
 // renderer extension that knows about our item types

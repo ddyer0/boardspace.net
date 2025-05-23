@@ -28,6 +28,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.FontMetrics;
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.Image;
 import lib.Graphics;
@@ -6514,7 +6515,7 @@ private void drawPlayerBoard(Graphics gc,
   	int top = G.Top(bounds);
   	int width = G.Width(bounds);
   	int height = G.Height(bounds);
-  	int fh = G.getFontSize(largeBoldFont());
+  	int fh = SystemFont.getFontSize(largeBoldFont());
   	boolean censor = !pb.hiddenCardsOnTop;
   	
   	int stateH = 100;

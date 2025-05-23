@@ -16,8 +16,6 @@
  */
 package bridge;
 
-import lib.G;
-
 import java.util.Hashtable;
 
 import com.codename1.ui.Font;
@@ -87,7 +85,7 @@ public class FontMetrics {
 	public int getMaxDescent() { return myFont.getDescent(); }
 	
 	public static FontMetrics getFontMetrics(Component c) 
-		{ return( getFontMetrics(G.getFont(c.getStyle()))); 
+		{ return( getFontMetrics(SystemFont.getFont(c.getStyle()))); 
 		}
 	public static FontMetrics getFontMetrics(SystemGraphics g) 
 		{ return(getFontMetrics(g.getFont())); 
@@ -111,7 +109,7 @@ public class FontMetrics {
 	}
 
 	public Font getFont() { return(myFont); }
-	public int getSize() { return(G.getFontSize(myFont)); }
+	public int getSize() { return(SystemFont.getFontSize(myFont)); }
 	
 	public int stringWidth(String str) 
 	{ 	int w = widthCache.getValue(str);
@@ -125,7 +123,7 @@ public class FontMetrics {
 	public int getHeight() { return(myFont.getHeight()); }
 	public int getDescent() { return(myFont.getDescent()); }
 	public int getAscent() { return(myFont.getAscent()); }
-	public static Font deriveFont(Font f,int sz) { return(G.getFont(f,sz)); }
+	public static Font deriveFont(Font f,int sz) { return(SystemFont.getFont(f,sz)); }
 	public int getMaxAscent() 
 		{ // the standard spec is a little fuzzy, it says
 		  // "ascent" is the height for most alphanumeric characters,

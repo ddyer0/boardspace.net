@@ -72,7 +72,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 
 	public Font getFont() 
 		{ Style s = getStyle();
-		  return G.getFont(s);
+		  return SystemFont.getFont(s);
 		}
 	public Component getComponent() { return(this); }
 	
@@ -175,7 +175,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 
     public void addKeyListener(KeyListener who)

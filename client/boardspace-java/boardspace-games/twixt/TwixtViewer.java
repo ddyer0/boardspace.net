@@ -27,6 +27,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -296,7 +297,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
        	layout.placeRectangle(swapButton,buttonW, buttonW/2,BoxAlignment.Center);
-        layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+        layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

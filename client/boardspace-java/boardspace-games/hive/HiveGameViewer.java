@@ -19,6 +19,7 @@ package hive;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import bridge.SystemFont;
 import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.game.*;
@@ -163,9 +164,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         use_grid = false;
         gridOption.setState(false);
         int FontHeight = standardFontSize();
-        gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+4);
-        gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight+2);
-        pieceLabelFont = G.getFont(largeBoldFont(),FontHeight*2);
+        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+4);
+        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight+2);
+        pieceLabelFont = SystemFont.getFont(largeBoldFont(),FontHeight*2);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),HiveId.ZoomSlider);
         zoomRect.min=1.5;
         zoomRect.max=5.0;
@@ -253,8 +254,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	G.SetRect(fullRect, x, y, width, height);
 		int fh = standardFontSize();
     	double zoom = getGlobalZoom();
-    	gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, (int)(zoom*(fh)));
-    	gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,(int)(zoom*(fh)));
+    	gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, (int)(zoom*(fh)));
+    	gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,(int)(zoom*(fh)));
     	GameLayoutManager layout = selectedLayout;
     	int maxDim = (int)(Math.min(height,width)/(zoom*G.getDisplayScale()));
     	// the intended effect of this is to allow the tiles in the tile rack

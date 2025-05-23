@@ -17,6 +17,7 @@
 package lib;
 
 import bridge.Icon;
+
 import java.awt.Component;
 import java.awt.FontMetrics;
 
@@ -33,9 +34,9 @@ public class TextIcon implements Icon
 	int height;
 	public TextIcon(Component c,Text o) 
 		{ originalText=o;
-		  FontMetrics fm = G.getFontMetrics(c);
+		  FontMetrics fm = Font.getFontMetrics(c);
 		  width = originalText.width(fm);
-		  height = originalText.height(G.getFontMetrics(c));
+		  height = originalText.height(Font.getFontMetrics(c));
 		}
 	public TextIcon(Text o,int w,int h) 
 	{ originalText=o;

@@ -1112,7 +1112,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		    // have to be very careful because GC may be null, and in rare
 		    // circumstances, this.getFont() may also be null.
 		    GC.setFont(gc,lb);
-		    FontMetrics fm = G.getFontMetrics(lb);
+		    FontMetrics fm = lib.Font.getFontMetrics(lb);
 		    int fonth = fm.getHeight();
 		    int topPart = fonth*3;
 		    int messageY = G.Bottom(helpRect)+topPart/3;
@@ -1335,7 +1335,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		newNameField.setVisible(true);
 		newNameField.setBackground(bsBlue);
 
-		FontMetrics fm = G.getFontMetrics(newNameField.getFont());
+		FontMetrics fm = lib.Font.getFontMetrics(newNameField.getFont());
 		
 		int w = (int)(fm.stringWidth(TypeinMessage)*1.2);
 		int h = fm.getHeight()*2;

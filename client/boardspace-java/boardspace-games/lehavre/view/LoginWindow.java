@@ -22,6 +22,7 @@ import java.io.*;
 
 import javax.swing.*;
 
+import bridge.SystemFont;
 import lehavre.main.*;
 import lehavre.model.GameState;
 import lehavre.util.*;
@@ -206,8 +207,8 @@ extends GameWindow
 		JPanel panel = new JPanel(new GridLayout(3, 2, gap.width, gap.height));
 		panel.setOpaque(false);
 		login.add(panel, BorderLayout.CENTER);
-		Font font = G.getFont("SansSerif", G.Style.Plain, new GUIHelper("font").getInt("LoginLabels"));
-		Font bold = G.getFont(font,G.Style.Bold,0);
+		Font font = SystemFont.getFont("SansSerif", SystemFont.Style.Plain, new GUIHelper("font").getInt("LoginLabels"));
+		Font bold = SystemFont.getFont(font,SystemFont.Style.Bold,0);
 		Color text = gui.getColor("Text");
 
 		/* Create the game part */

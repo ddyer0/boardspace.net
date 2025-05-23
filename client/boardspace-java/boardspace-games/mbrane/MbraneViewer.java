@@ -23,10 +23,12 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -179,7 +181,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	FontMetrics fm = G.getFontMetrics(standardBoldFont());
+    	FontMetrics fm = Font.getFontMetrics(standardBoldFont());
     	int minLogW = fh*12;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
@@ -255,7 +257,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        labelFont = G.getFont(largeBoldFont(),CELLSIZE/3);
+        labelFont = SystemFont.getFont(largeBoldFont(),CELLSIZE/3);
  	
     }
     

@@ -319,7 +319,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			topLevelGraphics = offG;
 			super.paint(offG.getGraphics());
 			topLevelGraphics = null;
-			g.drawImage(off.getImage(),0,0,this);
+			g.drawImage(off.getSystemImage(),0,0,this);
 		}
 		else 
 			{ //String msg = "standard paint from the top "+overlappingWindows();

@@ -17,7 +17,7 @@
 package bridge;
 
 import lib.AwtComponent;
-import lib.G;
+
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
 
@@ -26,7 +26,7 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , Actio
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
-	public Font getFont() { return(G.getFont(getStyle())); }	
+	public Font getFont() { return(SystemFont.getFont(getStyle())); }	
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))
 		{ 
@@ -52,6 +52,6 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , Actio
 
 	public void select(int index) { setSelectedIndex(index);	}
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 }

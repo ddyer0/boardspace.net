@@ -24,6 +24,7 @@ import online.common.*;
 import java.util.*;
 
 import bridge.JMenuItem;
+import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
@@ -1836,7 +1837,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     	if (remoteViewer<0)
     		{ StockArt.Scrim.image.stretchImage(gc, bounds);
     	}
-    	Font myFont = G.getFont(largeBoldFont(), step/2);
+    	Font myFont = SystemFont.getFont(largeBoldFont(), step/2);
     	GC.setFont(gc, myFont);
     	JumbulayaChip chip = bb.getPlayerChip(bb.whoseTurn);
     	chip.drawChip(gc,this, icon,null);

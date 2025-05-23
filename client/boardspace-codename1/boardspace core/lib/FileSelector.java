@@ -17,9 +17,6 @@
 package lib;
 
 import bridge.*;
-import bridge.File;
-import bridge.FileNotFoundException;
-import bridge.ThreadDeath;
 
 import com.codename1.ui.geom.Dimension;
 import net.sf.jazzlib.ZipEntry;
@@ -241,7 +238,7 @@ public class FileSelector extends FullscreenPanel
         moveField.setEditable(false);
         moveField.setText("");
         moveField.setBackground(Config.FrameBackgroundColor);
-        moveField.setFont(G.getFont(s.get("fontfamily"), G.Style.Bold, G.standardizeFontSize(G.defaultFontSize)));
+        moveField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, G.standardizeFontSize(Font.defaultFontSize)));
 
         filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));
@@ -252,7 +249,7 @@ public class FileSelector extends FullscreenPanel
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
         filterField.setText("");
-        filterField.setFont(G.getFont(s.get("fontfamily"), G.Style.Bold, 12));
+        filterField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, 12));
         //filterField.setMaximumSize(new Dimension(1000,30));
         filterPanel.setBackground(Config.FrameBackgroundColor);
         filterPanel.setOpaque(true);

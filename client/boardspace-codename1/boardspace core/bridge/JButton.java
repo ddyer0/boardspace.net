@@ -21,7 +21,6 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Dimension;
 
 import bridge.SystemImage.ScaleType;
-import lib.G;
 import lib.Image;
 
 public class JButton extends Button 
@@ -32,7 +31,7 @@ public class JButton extends Button
 	public JButton(String label,int fontsize)
 	{
 		this(label);
-		setFont(G.getFont(getFont(),fontsize));
+		setFont(SystemFont.getFont(getFont(),fontsize));
 	}
 	public JButton(Image label)
 		{ 
@@ -46,8 +45,8 @@ public class JButton extends Button
 		{
 		int w = image.getWidth();
 		int h = image.getHeight();
-		Font def = G.getGlobalDefaultFont();
-		double sz = G.getFontSize(def)*setsize;
+		Font def = SystemFont.getGlobalDefaultFont();
+		double sz = SystemFont.getFontSize(def)*setsize;
 		int neww = (int)(sz*w/h);
 		int newh = (int)sz;
 		return image.getScaledInstance(neww,newh,ScaleType.SCALE_SMOOTH);
@@ -91,7 +90,7 @@ public class JButton extends Button
 		if(im!=null)
 		{	// images prefer to be the size of the font.  This is the magic spot
 			// where the toolbar gets its height
-			FontMetrics fm = G.getFontMetrics(f);
+			FontMetrics fm = lib.Font.getFontMetrics(f);
 			int sz = fm.getHeight()*3/2;
 			int w = im.getWidth();
 			int h = im.getHeight();
@@ -99,7 +98,7 @@ public class JButton extends Button
 		}
 		else if(label!=null)
 		{	// use the actual font metrics to specify the size
-			FontMetrics fm = G.getFontMetrics(f);
+			FontMetrics fm = lib.Font.getFontMetrics(f);
 			int w = fm.stringWidth(label);
 			int h = fm.getHeight()*3/2;
 			dim = new Dimension(w+h,h);

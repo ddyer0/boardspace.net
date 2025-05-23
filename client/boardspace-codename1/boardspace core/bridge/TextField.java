@@ -17,7 +17,7 @@
 package bridge;
 
 import lib.AwtComponent;
-import lib.G;
+
 import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
 
@@ -62,7 +62,7 @@ public class TextField extends com.codename1.ui.TextField implements AwtComponen
 
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
 	public void setForeground(Color color) { getStyle().setFgColor(color.getRGB()); }
-	public Font getFont() { return(G.getFont(getStyle())); }
+	public Font getFont() { return(SystemFont.getFont(getStyle())); }
 	public void setFont(Font f) { getStyle().setFont(f); getSelectedStyle().setFont(f); }
 
 	private String actionCommand = "Done";
@@ -106,6 +106,6 @@ public class TextField extends com.codename1.ui.TextField implements AwtComponen
 		}
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 }

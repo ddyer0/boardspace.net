@@ -5,8 +5,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 
-import bridge.Platform.Style;
-import bugs.BugsConstants.BugsId;
+import bridge.SystemFont;
 import bugs.data.DataHelper;
 import bugs.data.DataHelper.Diet;
 import bugs.data.DataHelper.Flying;
@@ -25,7 +24,8 @@ import lib.StockArt;
 import lib.TextContainer;
 import lib.exCanvas;
 
-public class BugCard extends BugsChip {
+public class BugCard extends BugsChip implements BugsConstants 
+{
 	private static DrawableImageStack bugCards = new DrawableImageStack();
 	public boolean isBugCard() { return true; }
 	public String key = null;
@@ -273,11 +273,11 @@ public class BugCard extends BugsChip {
 			
 			image.centerImage(gc,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
 			//canvas.drawImage(gc,image,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
-			GC.setFont(gc,G.getFont(baseFont,Style.Bold,headHeight));
+			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight));
 			GC.Text(gc,true,xp,yp,headHeight,headHeight,Color.black,null,  ""+profile.cardPoints);	
 			GC.Text(gc,true,xp+headHeight+headHeight/2,yp,SQUARESIZE-headHeight*2,headHeight,Color.black,null,  getCommonName());
 
-			GC.setFont(gc,G.getFont(baseFont,Style.Italic,subheadHeight));
+			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Italic,subheadHeight));
 			GC.Text(gc,true,xp+SQUARESIZE/2,yp+headHeight+subheadHeight/4,subheadWidth,subheadHeight,Color.blue,null, "("+getScientificName()+")" );
 	
 			String sd = profile.getShortDescription();
@@ -285,7 +285,7 @@ public class BugCard extends BugsChip {
 			{	
 				textContainer.setBounds(xp+SQUARESIZE/2,yp+headHeight+subheadHeight,subheadWidth,SQUARESIZE/4);
 				textContainer.setText(sd);
-				textContainer.setFont(G.getFont(baseFont,SQUARESIZE/5));
+				textContainer.setFont(SystemFont.getFont(baseFont,SQUARESIZE/5));
 				textContainer.selectFontSize();
 				textContainer.flagExtensionLines = false;
 				textContainer.frameAndFill=false;
@@ -312,7 +312,7 @@ public class BugCard extends BugsChip {
 			if(profile.flying==Flying.YES)
 				{
 				BugsChip.Wings.getImage().centerImage(gc,l-ims*6/5,t+ims*2/5,ims/2,ims/2);
-				HitPoint.setHelpText(hitAny,l-ims*6/5,t+ims*2/5,ims/2,ims/2,s.get("Can Fly"));
+				HitPoint.setHelpText(hitAny,l-ims*6/5,t+ims*2/5,ims/2,ims/2,s.get(CanFlyMessage));
 				}
 			}
 		}
@@ -326,10 +326,6 @@ public class BugCard extends BugsChip {
 	public void drawDietIcon(Graphics gc,Diet diet,int l,int t,int ims,HitPoint hitany)
 	{	BugsChip icon = null;
 		String h = "";
-		if(profile.getScientificName().equals("Ameletus ludens"))
-		{
-			G.print("P ",profile,profile.diet);
-		}
 		InternationalStrings s = G.getTranslations();
 		switch(diet)
 		{
@@ -337,25 +333,25 @@ public class BugCard extends BugsChip {
 		default: break;
 		case NEGAVORE:
 			icon = BugsChip.Negavore;
-			h = s.get("Doesn't eat");
+			h = s.get(NoEatMessage);
 			break;
 		case HERBIVORE:
 		case FUNGIVORE:
 				icon = BugsChip.Vegetarian;
-				h = s.get("Vegetarian");
+				h = s.get(VegetarianMessage);
 				break;
 		case CARNIVORE:
 		case OMNIVORE:
 				icon = BugsChip.Predator;
-				h = s.get("Predator");
+				h = s.get(PredatorMessage);
 				break;
 		case DETRITIVORE:
 				icon = BugsChip.Scavenger;
-				h = s.get("Scavenger");
+				h = s.get(ScavengerMessage);
 				break;
 		case PARASITE:
 				icon = BugsChip.Parasite;
-				h = s.get("Parasite");
+				h = s.get(ParasiteMessage);
 				break;
 		}
 		if(icon!=null)

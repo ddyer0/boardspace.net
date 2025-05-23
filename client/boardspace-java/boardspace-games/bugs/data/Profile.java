@@ -119,7 +119,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     			if(s.endsWith(".jpg"))
     			{
     				mask = s.substring(0,s.length()-4)+"-mask.jpg";
-    				 im = new Image(imagePath+s,imagePath+mask);
+    				im = new Image(imagePath+s,imagePath+mask);
     			}
     			else
     			{

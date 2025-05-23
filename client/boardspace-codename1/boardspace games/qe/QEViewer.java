@@ -29,6 +29,7 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.FontMetrics;
 import bridge.JCheckBoxMenuItem;
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.*;
 
@@ -1590,10 +1591,10 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     	int top = G.Top(bounds)+margin;
     	int width = G.Width(bounds)-margin*2;
     	int height = G.Height(bounds)-margin*2;
-  	    int fh = G.getFontSize(largeBoldFont());
+  	    int fh = SystemFont.getFontSize(largeBoldFont());
   	    boolean censor = pl.hiddenCensoring;
     	int stateH = fh*8;
-    	Font myfont = G.getFont(largeBoldFont(), stateH/3);
+    	Font myfont = SystemFont.getFont(largeBoldFont(), stateH/3);
         if (remoteViewer<0) 
         { QEChip.backgroundTile.image.tileImage(gc, bounds);
         }

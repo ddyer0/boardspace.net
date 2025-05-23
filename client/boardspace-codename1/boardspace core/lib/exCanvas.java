@@ -24,7 +24,6 @@ import com.codename1.ui.geom.Rectangle;
 
 /* below here should be the same for codename1 and standard java */
 import bridge.*;
-import bridge.ThreadDeath;
 
 import java.io.PrintStream;
 import java.util.Enumeration;
@@ -294,7 +293,7 @@ public abstract class exCanvas extends ProxyWindow
 	}
 
     public int standardFontSize() 
-    { 	int v = G.getFontSize(standardPlainFont());
+    { 	int v = SystemFont.getFontSize(standardPlainFont());
     	return v; 
     }
 
@@ -451,10 +450,10 @@ public abstract class exCanvas extends ProxyWindow
     	//G.print("adjust font from "+height+" to "+FontHeight);
         String fontfam = (s==null) ? "fixed" : s.get("fontfamily");
         //G.print("Font size "+FontHeight);
-        l.standardPlainFont = G.getFont(fontfam, G.Style.Plain, FontHeight - 2);
-        l.largePlainFont = G.getFont(fontfam, G.Style.Plain, FontHeight +2);
-        l.standardBoldFont = G.getFont(standardPlainFont(),G.Style.Bold,FontHeight);
-        l.largeBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+5);
+        l.standardPlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight - 2);
+        l.largePlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight +2);
+        l.standardBoldFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Bold,FontHeight);
+        l.largeBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+5);
         labelFont = standardBoldFont();
     }
     public exCanvas()
@@ -475,7 +474,7 @@ public abstract class exCanvas extends ProxyWindow
         chatPercent = info.getInt(ChatInterface.BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
  
-        adjustStandardFonts(G.defaultFontSize);
+        adjustStandardFonts(lib.Font.defaultFontSize);
         
         globalZoomRect = addSlider(".globalZoom",s.get(ZoomMessage),OnlineId.HitZoomSlider);
         globalZoomRect.min=1.0;
@@ -505,16 +504,16 @@ public abstract class exCanvas extends ProxyWindow
         for(int size : sizes)
         {
         	JCheckBoxMenuItem m  = new JCheckBoxMenuItem(""+size);
-        	if(size==G.defaultFontSize) { m.setSelected(true); }
+        	if(size==lib.Font.defaultFontSize) { m.setSelected(true); }
         	m.addItemListener(deferredEvents);
-        	if(!G.isCodename1()) { m.setFont(G.getFont(ref,size)); }
+        	if(!G.isCodename1()) { m.setFont(SystemFont.getFont(ref,size)); }
         	l.fontSizeMenu.add(m);
         }
         
         if(G.debug())
         {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
         	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
-        	String current = G.defaultFontFamily();
+        	String current = lib.Font.defaultFontFamily();
         	for(String font : fonts)
         	{
         		JCheckBoxMenuItem m  = new JCheckBoxMenuItem(font);
@@ -561,9 +560,9 @@ public abstract class exCanvas extends ProxyWindow
     		if(item==target)
     		{	
     			int val = G.IntToken(item.getText());
-    			if(isSel && (val>6) && (val!=G.defaultFontSize)) 
+    			if(isSel && (val>6) && (val!=lib.Font.defaultFontSize)) 
     				{ 
-    					G.setDefaultFontSize(val);
+    					lib.Font.setDefaultFontSize(val);
     					G.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
@@ -595,7 +594,7 @@ public abstract class exCanvas extends ProxyWindow
     			String val = item.getText();
     			if(isSel) 
     				{ 
-    					G.setDefaultFontFamily(val);
+    					lib.Font.setDefaultFontFamily(val);
     					G.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
@@ -725,7 +724,7 @@ public abstract class exCanvas extends ProxyWindow
         }
         else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
         	{	String fam = G.getTranslations().get("fontfamily");
-	 			G.setDefaultFontFamily(fam);
+	 			lib.Font.setDefaultFontFamily(fam);
 	 			G.setGlobalDefaultFont();
 	 			doNullLayout();  
 	 			generalRefresh(); 
@@ -1748,7 +1747,7 @@ graphics when using a touch screen.
             {  
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
-               GC.setFont(gc, G.getGlobalDefaultFont());
+               GC.setFont(gc, SystemFont.getGlobalDefaultFont());
                ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }
@@ -2171,7 +2170,7 @@ graphics when using a touch screen.
   	  	int hh = (int)(h*zoom);
 
   	  	double fac = zoom*G.adjustWindowFontSize(w,h);
-  	  	adjustStandardFonts(fac*G.defaultFontSize);
+  	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
 	  
   	  	setLocalBoundsSync(0,0,ww,hh);
   	  	initialized=true; 

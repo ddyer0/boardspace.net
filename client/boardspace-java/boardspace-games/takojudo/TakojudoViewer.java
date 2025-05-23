@@ -18,11 +18,13 @@ package takojudo;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
+
 import java.awt.Rectangle;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.*;
+import lib.Font;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -181,7 +183,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
-        layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+        layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
         layout.placeRectangle(logoRect, fh*10,fh*10, BoxAlignment.Edge);
 
     	Rectangle main = layout.getMainRectangle();

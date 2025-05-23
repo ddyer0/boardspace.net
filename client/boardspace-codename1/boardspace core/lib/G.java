@@ -19,7 +19,6 @@ package lib;
 import bridge.*;
 
 import com.codename1.ui.Component;
-import com.codename1.ui.Font;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import java.util.Calendar;
@@ -2280,17 +2279,7 @@ public static String expandClassName(String classname)
     	return(map);
     }
 
-    public static String defaultFontFamily = "Arial Unicode MS";
-    public static String defaultFontFamily() { 	return defaultFontFamily; }
-    public static void setDefaultFontFamily(String n) { defaultFontFamily = n; }
-
-    public static int defaultFontSize = Default.getInt(Default.fontsize);
-        
-    public static void setDefaultFontSize(int n)
-	    {	defaultFontSize = Math.max(6, n);
-	    	Default.setInt(Default.fontsize,defaultFontSize);
-	    }
-	    /**
+    	/**
 	     * append all strings to a stringbuilder, so the syntax is approximately
 	     * as compact - instead of s+= x+y+z; use G.append(s,x,y,z); 
 	     * @param val
@@ -2393,13 +2382,6 @@ public static String expandClassName(String classname)
 		// feature test for turnbased included
 		public static boolean TURNBASED()
 		{	return TURNBASED ;
-		}
-		
-		public static Font menuFont()
-		{
-			return getFont(getGlobalDefaultFont(),
-					MenuTextStyle,
-					G.standardizeFontSize(MenuTextSize*getDisplayScale()));
 		}
 		
 	}

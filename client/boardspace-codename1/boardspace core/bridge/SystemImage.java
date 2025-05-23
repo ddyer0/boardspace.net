@@ -176,35 +176,12 @@ public static Image getURLImage(URL name)
 	}
 	
 	public abstract boolean compositeSelf(SystemImage foreground,int component,SystemImage mask,int bgcolor);
-
+	public abstract void assureImageLoaded();
+	
 	/* get the image, possibly after loading it */
-	public com.codename1.ui.Image getImage() 
+	public com.codename1.ui.Image getSystemImage() 
 	{ 	
-		if(image==null)
-		{	String url = getUrl();
-			if(url!=null)
-			{
-			String maskUrl = getMaskUrl();
-			if(maskUrl!=null)
-			{
-				Image mi = Image.getCachedImage(maskUrl);
-				loadImage(url);
-				if(G.Advise(mi!=null,"mask not found %s",maskUrl))
-				{
-				compositeSelf(mi,0,this,0);	
-				}
-			}
-			else {
-				loadImage(url);
-			}
-			//Plog.log.addLog("reload ",this);
-		}}
-		if(image==null)
-		{	setFlagsOn(Image.Error);
-			createBlankImage(1,1);
-		}		
-		G.Advise(width>=0,"didn't get width");
-		setLastUsed(G.Date()); 
+		assureImageLoaded();
 		return(image);
 	}
 
@@ -226,7 +203,7 @@ public static Image getURLImage(URL name)
     	int raw[][] = new int[1][];
     	G.runInEdt(new Runnable() {
     		public String toString() { return("getRGB"); }
-    		public void run() { raw[0]=getImage().getRGBCached(); }});
+    		public void run() { raw[0]=getSystemImage().getRGBCached(); }});
     	return(raw[0]);
     }
     protected final int[] getRGB()
@@ -235,7 +212,7 @@ public static Image getURLImage(URL name)
     	G.runInEdt(new Runnable() 
     	{
     		public String toString() { return("getRGB"); }
-    		public void run() { raw[0]= getImage().getRGB(); }});
+    		public void run() { raw[0]= getSystemImage().getRGB(); }});
     	return(raw[0]);
     }
     protected int[] getRGB(int data[])
@@ -248,12 +225,12 @@ public static Image getURLImage(URL name)
     			public String toString() { return("getRGB"); }
 
     			public void run() 
-    			{	getImage().getRGB(d); 
+    			{	getSystemImage().getRGB(d); 
     			}
     		});
     	}
     	else 
-    	{getImage().getRGB(data); 
+    	{getSystemImage().getRGB(data); 
     	}
     	return(data);
     }
@@ -362,7 +339,7 @@ public Image getScaledInstance(int w,int h,ScaleType scal)
 		{ Display.getInstance().setProperty("encodedImageScaling", "false");
 		  scaleAsEncodedImage = true;
 		}
-	com.codename1.ui.Image from = getImage();
+	com.codename1.ui.Image from = getSystemImage();
 	Image im = Image.createImage(from.scaled(w,h),"scaled "+getName());
 	//if(from instanceof com.codename1.ui.EncodedImage)
 	//{
@@ -409,7 +386,9 @@ public void setRGB(int x,int y,int w,int h,int[]ipix,int off,int mspan)
 	setRGB(x,y,new RGBImage(ipix,w,h));
 	}
 }
-
+public void setSize(int w,int h)
+{	createBlankImage(w,h);
+}
 
 public static Image getVolatileImage(Object out,int w,int h)
 {	return createTransparentImage(w, h);
@@ -427,7 +406,7 @@ public static boolean getImageValid(Component c,Image e)
     * @param im
     */
    static public Image clearTransparentImage(Image im)
-   {	return(createTransparentImage(im.getImage().getWidth(),im.getImage().getHeight()));
+   {	return(createTransparentImage(im.getSystemImage().getWidth(),im.getSystemImage().getHeight()));
    }
 /** create a blank image with the specified size, which is initially transparent
     * 
@@ -485,7 +464,7 @@ public boolean isEncoded()
 }
 
 public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
-	g.getGraphics().drawImage(this.getImage(),x,y);
+	g.getGraphics().drawImage(this.getSystemImage(),x,y);
 }
 public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) 
 {

@@ -22,7 +22,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
+
 import lib.LFrameProtocol;
 import lib.Plog;
 import lib.commonChatApplet;
@@ -157,46 +157,7 @@ public static Object MakeInstance(String classname)
 
 	static int color = 0;
 
-
-    static public FontMetrics getFontMetrics(Component c,Font f) 
-	   {
-		   return(f==null ? null : c.getFontMetrics(f));
-	   }
-	   static public FontMetrics getFontMetrics(Component c)
-	   {
-		   return(getFontMetrics(c,c.getFont()));
-	   }
-
-	   @SuppressWarnings("deprecation")
-	   static public FontMetrics getFontMetrics(Font f)
-	   {	
-		   return(Toolkit.getDefaultToolkit().getFontMetrics(f));
-	   }
-	   
-	   public enum Style
-	   {   Plain(Font.PLAIN),
-		   Italic(Font.ITALIC),
-		   Bold(Font.BOLD);
-		   int s;
-		   Style(int style) { s=style;}
-	   }
-
-		public static  Font getFont(String family,Style style,int size)
-		{	if(!G.Advise(size>0,"not zero size font %s %s",family,style)) { size = 1; }
-			return(new Font(family, style.s ,size));
-		}
-		
-		public static Font getFont(Font f,int size)
-		{	if(!G.Advise(size>0,"not zero size font %s",f)) { size = 1; }
-			return(f.deriveFont(f.getStyle(),size));
-		}
-		
-		public static  Font getFont(Font f,Style style,int size)
-		{	if(!G.Advise(size>0,"not zero size font %s",f)) { size = 1; }
-			return(f.deriveFont(style.s,size<=0?f.getSize():size));
-		}
-
-    /**
+	/**
      * @param r
      * @return the bottom coordinate of a rectangle
      */
@@ -662,11 +623,6 @@ public static Object MakeInstance(String classname)
 	public static Clipboard getSystemClipboard(Component c) 
 	{ return(c.getToolkit ().getSystemClipboard ()); 
 	}
-	public static String[] getFontFamilies()
-	{	
-	    return(java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-	}
-
 	
 	public static AudioClip getAudioClip(URL url)
 	{	
@@ -716,7 +672,7 @@ public static Object MakeInstance(String classname)
 	private static Font defaultFont = null;
 	public static int defaultFontSize() 
 	{ 
-		return Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(G.defaultFontSize)));
+		return Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(lib.Font.defaultFontSize)));
 	}
 	public static Font getGlobalDefaultFont()
 	{
@@ -749,7 +705,7 @@ public static Object MakeInstance(String classname)
      */
     public static void setGlobalDefaultFont()
     {	int fontHeight = defaultFontSize();
-		Font f = G.getFont(G.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, G.Style.Plain, fontHeight);
+		Font f = SystemFont.getFont(lib.Font.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, SystemFont.Style.Plain, fontHeight);
     	setGlobalDefaultFont (f);
     }
     public static int getAbsoluteX(Component c)	// absolute up to the frame

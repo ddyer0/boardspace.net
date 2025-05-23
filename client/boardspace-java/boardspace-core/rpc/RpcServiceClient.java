@@ -21,6 +21,8 @@ import java.awt.Font;
 import java.awt.Rectangle;
 
 import java.util.StringTokenizer;
+
+import bridge.SystemFont;
 import lib.Base64;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -116,7 +118,7 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 		GC.setColor(gc, Color.gray);
 		GC.fillRect(gc, 10,10,width-20,height-20);
 		int lineh = G.getFontSize(dfont)*3;
-		GC.setFont(gc,G.getFont(dfont,lineh));
+		GC.setFont(gc,SystemFont.getFont(dfont,lineh));
 		int nServices = choices.size();
 		int ypos = 20+lineh * 2;
 		if(nServices>0)

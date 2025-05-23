@@ -2,7 +2,6 @@ package bridge;
 
 import java.awt.Font;
 
-import lib.G;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
@@ -12,7 +11,7 @@ public class JMenuItem extends javax.swing.JMenuItem implements NativeMenuItemIn
 	public Icon getNativeIcon() { return(ic); }
 	public JMenuItem(Icon m) { super(m); ic = m; }
 	public JMenuItem(String s) { super(s); value=s; }
-	public JMenuItem(String s,Font f) { super(s); setFont(f==null ? G.menuFont() : f); }
+	public JMenuItem(String s,Font f) { super(s); setFont(f==null ? lib.Font.menuFont() : f); }
 	public NativeMenuInterface getSubmenu() { return(null);	}
 	public int getNativeWidth() { return(JMenu.Width(this)); }
 	public int getNativeHeight() { return(JMenu.Height(this)); }	

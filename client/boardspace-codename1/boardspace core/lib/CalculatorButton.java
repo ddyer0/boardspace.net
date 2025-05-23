@@ -19,6 +19,7 @@ package lib;
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
+import bridge.SystemFont;
 
 /** buttons on the calculator */
 public class CalculatorButton {
@@ -227,7 +228,7 @@ public class CalculatorButton {
 			}
 		}
 		Font f = showOn.largeBoldFont();
-		Font keyFont = G.getFont(f,(int)(G.getFontSize(f)*1.5));
+		Font keyFont = SystemFont.getFont(f,(int)(SystemFont.getFontSize(f)*1.5));
 		GC.setFont(gc,keyFont);
 		if(rightJustify)
 			{

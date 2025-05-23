@@ -1,0 +1,170 @@
+package bridge;
+
+import java.util.Hashtable;
+
+import com.codename1.ui.Font;
+
+import lib.AwtComponent;
+import lib.G;
+
+public class SystemFont
+{
+	public enum Style
+	   {   Plain(Font.STYLE_PLAIN),
+		   Italic(Font.STYLE_ITALIC),
+		   Bold(Font.STYLE_BOLD);
+		   int s;
+		   Style(int style) { s=style;}
+	   }
+
+	Font font;
+	static Font defaultFont = null;
+	static int fontcount = 0;
+	static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
+	static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
+	static Hashtable<Font,Integer> fontUid = new Hashtable<Font,Integer>();
+	public static Hashtable<Font,String> fontOrigin = new Hashtable<Font,String>();
+	public static Hashtable<Font,Integer> fontSize = new Hashtable<Font,Integer>();
+	public SystemFont() {};
+	public Font getSystemFont() { return font; }
+	/**
+	 * get the font from a style object, and try to assure that
+	 * the result has a known pixel size.
+	 * @param style
+	 * @return
+	 */
+	public static Font getFont(com.codename1.ui.plaf.Style style)
+	{	Font f = style.getFont();
+		double sz = Platform.GetPixelSize(f);
+		if(sz<=0)
+		{	boolean isttf = f.isTTFNativeFont();
+			if(isttf && sz==-1)
+				{ int oldh = f.getHeight();
+				  // this papers over a bug where a font with size 0 is stuck in the cache
+				  Font f1 = deriveFont(f,oldh,f.getStyle());
+				  if(f1==f) { f1=deriveFont(f,oldh+1,f.getStyle()); }
+				  f = f1;
+				}
+			else {
+			String bad = "Unregistered font "+f
+				+ " ttf="+isttf
+				+ " h=" + f.getHeight()
+				+ " s=" + f.getSize()
+				+ " px=" + f.getPixelSize()
+				;
+			G.print(bad);
+			f = getGlobalDefaultFont();
+			style.setFont(f);
+			}
+		}
+		return(f);
+	}
+	public static int getFontSize(Font f)
+	{	double fs = Platform.GetPixelSize(f);
+		if(fs>0) { return((int)fs); }
+		
+		int sz = fontSize.containsKey(f) ? fontSize.get(f) : -1;
+		if(!G.Advise(sz>=0,"Unregistered font %s %s %s",f,f.isTTFNativeFont(),fs))
+			{ sz = 1; }
+		return(sz);
+	}
+	public static Font getGlobalDefaultFont()
+	{
+		if(defaultFont==null) 
+		{ defaultFont = getFont("fixed", Style.Plain, defaultFontSize());
+		}
+		return(defaultFont);
+	}
+	public static int defaultFontSize() { return (int)(14*G.getDisplayScale()); }
+	public static  Font getFont(Font f,Style style,int size)
+	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
+		Font fd = deriveFont(f,size<=0?SystemFont.getFontSize(f):size,style.s);
+		if(Platform.GetPixelSize(fd)==size) { return(fd); }
+		fontSize.put(fd,size);
+		return(fd);
+	}
+	public static Font getFont(Font f,int size)
+	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
+		Font fd = deriveFont(f,size,f.getStyle());
+		if(Platform.GetPixelSize(fd)==size) { return(fd); }
+		fontSize.put(fd,size);
+		return(fd);
+	}
+	// a lot of trouble is caused because codename1 doesn't reliably cache derived fonts
+	public static Font deriveFont(Font f, int size, int style)
+	{	int code = derivedFontCode(f,size,style);
+		Font derived = derivedFont.get(code);
+		if(derived==null)
+		{
+		derived = f.derive(size,style);
+		derivedFont.put(code,derived);
+		}	
+		return derived;
+	}
+	static int getUid(Font f)
+	{	synchronized (fontUid)
+		{
+		Integer id = fontUid.get(f);
+		if(id==null)
+		{
+			id = fontcount++;
+			fontUid.put(f,id);
+			uidFont.put(id,f);
+		}
+		return id;
+		}
+	}
+	static int derivedFontCode(Font f, int size, int style)
+	{
+		return SystemFont.getUid(f)+style*0x10000+size*0x100000;
+	}
+	public static Font getFont(String family,Style style,int size)
+	{	
+		if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
+		Font f = Font.createSystemFont(fontFaceCode(family),style.s,size);
+		if(Platform.GetPixelSize(f)==size) 
+			{ return(f); 
+			}
+		return(SystemFont.getFont(f,size));	// convert to a truetype font
+		//return(new Font(0, style ,size));
+	}
+	static int fontFaceCode(String spec)
+	   {
+		   if ("monospaced".equalsIgnoreCase(spec)) { return Font.FACE_MONOSPACE; }
+		   if ("serif".equalsIgnoreCase(spec)) { return Font.FACE_PROPORTIONAL; }
+		   return Font.FACE_SYSTEM;
+	   }
+	SystemFont(Font f)
+	{
+		font = f;
+	}
+	
+	public static com.codename1.ui.Font menuFont()
+	{
+		return SystemFont.getFont(SystemFont.getGlobalDefaultFont(),
+				G.MenuTextStyle,
+				G.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
+	}
+
+	static public FontMetrics getFontMetrics(ProxyWindow c) 
+	   {
+		   return(getFontMetrics(SystemFont.getFont(c.getStyle())));
+	   }
+
+	static public FontMetrics getFontMetrics(bridge.Component c) 
+	   {
+		   return(getFontMetrics(SystemFont.getFont(c.getStyle())));
+	   }
+
+	static public FontMetrics getFontMetrics(Font f)
+	   {
+		   return(f==null ? null : FontMetrics.getFontMetrics(f));
+	   }
+
+	static public FontMetrics getFontMetrics(AwtComponent c)
+	   {
+		   return(getFontMetrics(c.getFont()));
+	   }
+
+	
+}

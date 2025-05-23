@@ -29,7 +29,7 @@ import lib.Plog;
 public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInterface
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String msg) { super(msg); } 
-	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? G.menuFont() : f); }
+	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? lib.Font.menuFont() : f); }
 	public int getItemCount() { return(getComponentCount()); }
 	public NativeMenuItemInterface getMenuItem(int n) 
 	{ Component c = getComponent(n);

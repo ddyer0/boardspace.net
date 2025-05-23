@@ -30,7 +30,7 @@ import bridge.Color;
 import bridge.FileDialog;
 import bridge.FontMetrics;
 import bridge.JMenuItem;
-import bridge.Platform.Style;
+import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
@@ -306,7 +306,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
       	G.SetRect(guessRect,G.centerX(keytextRect)-stateH*6,tt+stateH/2,stateH*12,stateH*2);    	
       	keys.setBounds(keyboardRect);
        	inputField.setBounds(guessRect);
-       	inputField.setFont(G.getFont(largeBoldFont(),stateH*9/5));
+       	inputField.setFont(SystemFont.getFont(largeBoldFont(),stateH*9/5));
        		
        	
        	
@@ -524,7 +524,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		} 
     	
     	StringBuilder message = new StringBuilder();
-     	FontMetrics fm = G.getFontMetrics(standardPlainFont());
+     	FontMetrics fm = SystemFont.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(boardRect)/2;
     	if(target!=null && (words.size()>0) && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)
@@ -589,7 +589,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       Font f = G.getFont("monospaced",Style.Bold,G.getFontSize(standardBoldFont()));
+       Font f = SystemFont.getFont("monospaced",SystemFont.Style.Bold,SystemFont.getFontSize(standardBoldFont()));
        gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),f);
        
        GC.frameRect(gc, Color.black, logRect);

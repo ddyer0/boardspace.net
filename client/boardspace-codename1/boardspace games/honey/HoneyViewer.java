@@ -28,6 +28,7 @@ import java.util.*;
 
 import bridge.Config;
 import bridge.JMenuItem;
+import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
@@ -608,7 +609,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         }
         if(leadin)
         {	String secs = ""+ ( ((5000-time)/1000)+1);
-        	Font cf = G.getFont(largeBoldFont(),200);
+        	Font cf = SystemFont.getFont(largeBoldFont(),200);
         	GC.setFont(gc,cf);
         	int ww = G.Width(brect)/5;
         	GC.Text(gc,true,G.Left(brect),G.Top(brect),ww,ww,Color.black,null,secs);

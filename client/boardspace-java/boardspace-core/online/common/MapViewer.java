@@ -77,7 +77,7 @@ public synchronized boolean sendMessage(String msg)
            if(map!=null)
            {
         	   MediaTracker tr = new MediaTracker(this);
-        	   tr.addImage(map.getImage(),0);
+        	   tr.addImage(map.getSystemImage(),0);
         	   try { tr.waitForAll(); } catch (InterruptedException ee) {};
            }
         }

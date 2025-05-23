@@ -1329,11 +1329,11 @@ public abstract class commonCanvas extends exCanvas
 	    	int hgt = G.Height(pl.timeRect);
 	    	if(hgt>0)
 	    	{
-	    	Font timeFont = G.getFont(nameFont,hgt);
+	    	Font timeFont = SystemFont.getFont(nameFont,hgt);
 	    	GC.printTimeC(gc, pl.timeRect,timeString,
 	    				   review?Color.blue:Color.black,null, timeFont);
 	    	if(G.Height(pl.extraTimeRect)>0)
-	    	{	Font timeFont2 = G.getFont(nameFont,hgt*2/3);
+	    	{	Font timeFont2 = SystemFont.getFont(nameFont,hgt*2/3);
     			printExtraTime(gc,pl,pl.extraTimeRect,timeControl,timeFont2);
     	    }}
     		pl.setRotatedContext(gc, hp, true);
@@ -1829,7 +1829,7 @@ public abstract class commonCanvas extends exCanvas
     {	if(chatFramed) { return(0); }
     	if(hidden.separateChat || hidden.hiddenChat) { return(0); }
     	int nominal = hidden.chatSizeAdj+(height*chatPercent)/100;
-    	int fs = G.getFontSize(standardPlainFont());
+    	int fs = SystemFont.getFontSize(standardPlainFont());
     	int fh = fs*14;		// minimum lines, about 7
     	int fm = fs*20;		// maximum lines, about 10
     	int maxh = height*2/3;
@@ -7657,7 +7657,7 @@ public void standardGameMessage(Graphics gc,double rotation,Color cc,Text defaul
     	if(addPlayer) { msg = TextChunk.join(TextChunk.create(currentPlayerPrettyName(who)), msg);	}
     }
 	GC.setColor(gc,cc);
-	GC.setFont(gc,G.getFont(standardBoldFont(),G.Height(stateRect)/2));
+	GC.setFont(gc,SystemFont.getFont(standardBoldFont(),G.Height(stateRect)/2));
     if(rotation==0) { msg.draw(gc,0, false, stateRect, cc, null); }
     else {
     // rotate and right justify.  This puts the game message at the left of the 
@@ -8626,14 +8626,14 @@ public void verifyGameRecord()
     		neww = r.nextInt(w-minw)+minw;
     		newh = r.nextInt(h-minh)+minh;
     		double fac = G.adjustWindowFontSize(neww,newh);
-      	  	adjustStandardFonts(fac*G.defaultFontSize);
+      	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
       	  	setLocalBoundsSync(0,0,neww,newh);
     		if(layoutErrors==0) { layoutErrors += checkLayoutBounds(); }
     	}
     	if(layoutErrors==0) 
     		{ 
     		  double fac = G.adjustWindowFontSize(w,h);
-      	  	  adjustStandardFonts(fac*G.defaultFontSize);
+      	  	  adjustStandardFonts(fac*lib.Font.defaultFontSize);
 
       	  	  setLocalBoundsSync(0,0,w,h); 
     		  G.print("ok"); 

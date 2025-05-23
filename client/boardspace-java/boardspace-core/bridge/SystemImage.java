@@ -164,36 +164,12 @@ public abstract class SystemImage implements ImageObserver
 		}
 	}
 	public abstract boolean compositeSelf(SystemImage foreground,int component,SystemImage mask,int bgcolor);
+	public abstract void assureImageLoaded();
 	
 	/* get the image, possibly after loading it */
-	public java.awt.Image getImage() 
-	{ 	
-		if(image==null)
-		{	String url = getUrl();
-			if(url!=null)
-			{
-			String maskUrl = getMaskUrl();
-			if(maskUrl!=null)
-			{	
-				Image mi = Image.getCachedImage(maskUrl);
-				loadImage(url);
-				if(G.Advise(mi!=null,"mask not found %s",maskUrl))
-				{
-				compositeSelf(mi,0,this,0);	
-				}
-			}
-			else {
-				loadImage(url);
-			}
-			//G.print("reload "+this);
-		}}
-		if(image==null)
-		{	setFlagsOn(Image.Error);
-			setSize(1,1);
-		}		
-		G.Advise(width>=0,"didn't get width %s",this);
-		setLastUsed(G.Date()); 
-		return(image);
+	public java.awt.Image getSystemImage() 
+	{ 	assureImageLoaded();
+		return image;
 	}
 
     public void createImage(byte[]byBuf)
@@ -202,7 +178,7 @@ public abstract class SystemImage implements ImageObserver
 
 	protected void getSystemImageWidth()
 	{
-		if(isUnloaded()) { getImage(); }
+		if(isUnloaded()) { getSystemImage(); }
 		 while(width<0) 
 		 {	synchronized(this)
 			 {width = image.getWidth(this);
@@ -212,7 +188,7 @@ public abstract class SystemImage implements ImageObserver
 	}
 	protected void getSystemImageHeight()
 	{
-		if(isUnloaded()) { getImage(); }
+		if(isUnloaded()) { getSystemImage(); }
 		while(height<0)
 			{ synchronized(this)
 			   {height = image.getHeight(this);
@@ -343,7 +319,7 @@ private static void saveGridImage(File output,RenderedImage gridImage,int dpi) t
  	String type = ind>=0 ? output.substring(ind+1) : "jpg";
     boolean result = false;
 	try {
-		result = ImageIO.write((BufferedImage)getImage(),type, new File(output));
+		result = ImageIO.write((BufferedImage)getSystemImage(),type, new File(output));
 	} catch (IOException e) {
 		e.printStackTrace();
 	}
@@ -375,7 +351,7 @@ metadata.mergeTree("javax_imageio_1.0", root);
  public void SaveImage(String name)
     {  	
 		try {
-			java.awt.Image im = getImage();
+			java.awt.Image im = getSystemImage();
 			if(! (im instanceof RenderedImage))
 			{	int w = getWidth();
 				int h = getHeight();
@@ -416,7 +392,7 @@ public Image getScaledInstance(int w,int h,ScaleType typ)
 			}
 		else 
 		{
-		java.awt.Image scl = getImage().getScaledInstance(w, h, typ.v);		
+		java.awt.Image scl = getSystemImage().getScaledInstance(w, h, typ.v);		
 		newImage = Image.createImage(scl,"{scaled}"+getName());
 		// this is necessary because getScaledInstance stupidly permits the scaling
 		// to be completed at a later time, even if the entire source image is already
@@ -432,12 +408,16 @@ public Image getScaledInstance(int w,int h,ScaleType typ)
 	}
 
 public void Dispose() 
-{ 	java.awt.Image ai = getImage();
-	if(ai!=null) { ai.flush(); }
-	setImage(null);
+{ 	java.awt.Image ai = image;
+	if(ai!=null)
+		{
+		 ai.flush(); 
+		}
+	 setImage(null);
 }
+
 public boolean getRGB(int x,int y,int w,int h,int[]data,int off,int span)
-{	java.awt.Image im = getImage();
+{	java.awt.Image im = getSystemImage();
 	if (im instanceof BufferedImage)
 	{
 	((BufferedImage)im).getRGB(x, y,w,h,data,off,span);
@@ -451,7 +431,7 @@ else {
 	return(false);
 }}
 public void setRGB(int x,int y,int w,int h,int[]data,int off,int span)
-{	java.awt.Image ai = getImage();
+{	java.awt.Image ai = getSystemImage();
 	if (ai instanceof BufferedImage)
 	{((BufferedImage)ai).setRGB(x,y,w,h,data,off,span);  
 	}
@@ -462,7 +442,7 @@ public void setRGB(int x,int y,int w,int h,int[]data,int off,int span)
 
  
 public static boolean getImageValid(Component c,Image m)
-{	java.awt.Image mm = m.getImage();
+{	java.awt.Image mm = m.getSystemImage();
 	if(mm instanceof java.awt.image.VolatileImage)
 	{	// when moving from screen to screen, image becomes incompatible
 		java.awt.image.VolatileImage vim = ((java.awt.image.VolatileImage)mm);
@@ -498,8 +478,8 @@ public static Image getVolatileImage(Component c,int width,int height)
     * @param im0
     */
    static public Image clearTransparentImage(Image im0)
-   {	G.Assert(im0.getImage() instanceof BufferedImage, "must be a buffered image from createTransparentImage");
-   		BufferedImage im = (BufferedImage)im0.getImage();
+   {	G.Assert(im0.getSystemImage() instanceof BufferedImage, "must be a buffered image from createTransparentImage");
+   		BufferedImage im = (BufferedImage)im0.getSystemImage();
         clearTransparentImage(im,0,0,im.getWidth(),im.getHeight());
    		Image bim = new Image("temp transparent image");
    		bim.setImage(im);
@@ -553,10 +533,10 @@ public static Image getVolatileImage(Component c,int width,int height)
    // allow images to act as icons
    //
    public void paintIcon(Component c, java.awt.Graphics g, int x, int y) {
-		g.drawImage(this.getImage(),x,y,c);
+		g.drawImage(this.getSystemImage(),x,y,c);
 	}
    public void paintIcon(Component c, Graphics g, int x, int y) {
-		g.getGraphics().drawImage(this.getImage(),x,y,c);
+		g.getGraphics().drawImage(this.getSystemImage(),x,y,c);
 	}
 	
 }

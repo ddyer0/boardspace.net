@@ -237,7 +237,7 @@ public abstract class SystemGraphics
 	    		Log.appendNewLog("drawImage-2 "); Log.appendLog(allFixed.toString());Log.appendLog(" ");
 	    		Log.appendLog(i);Log.appendLog("x");Log.appendLog(j);
 				}
-			  java.awt.Image im = allFixed.getImage();
+			  java.awt.Image im = allFixed.getSystemImage();
 			  if(G.Advise(im!=null,"should be an image %s",allFixed))
 			  {
 			  graphics.drawImage(im,i,j,allFixed);  
@@ -263,7 +263,7 @@ public abstract class SystemGraphics
 	    		Log.appendLog(fx);Log.appendLog(",");Log.appendLog(fy);Log.appendLog(" - ");
 	    		Log.appendLog(fx2);Log.appendLog(",");Log.appendLog(fy2);
 	    		}
-			  	java.awt.Image sim = im.getImage();
+			  	java.awt.Image sim = im.getSystemImage();
 			  	if(G.Advise(sim!=null,"should be an image %s",im))
 			  	{
 			  	graphics.drawImage(sim,dx,dy,dx2,dy2,fx,fy,fx2,fy2,im); 
@@ -288,7 +288,7 @@ public abstract class SystemGraphics
 				Log.appendLog(dx);Log.appendLog(",");Log.appendLog(dy);Log.appendLog(" - ");
 				Log.appendLog(fx);Log.appendLog(",");Log.appendLog(fy);
 				}
-	  		java.awt.Image sim = im.getImage();
+	  		java.awt.Image sim = im.getSystemImage();
 	  		if(G.Advise(sim!=null,"should be an image %s",im))
 		  		{
 		  		graphics.drawImage(sim,dx,dy,dx+w,dy+h,fx,fy,fx+w,fy+h,im); 
@@ -315,7 +315,7 @@ public abstract class SystemGraphics
     		}
 	    	if(G.Advise(im!=null,"there ought to be an image"))
 	    	{   
-	  			java.awt.Image sim = im.getImage();
+	  			java.awt.Image sim = im.getSystemImage();
 	  			if(G.Advise(sim!=null,"should be an image %s",im))
 	  			{
 	  			Log.addLog("actual drawing "+this+" "+w+"x"+h);

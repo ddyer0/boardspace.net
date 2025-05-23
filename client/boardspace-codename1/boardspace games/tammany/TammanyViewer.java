@@ -1517,7 +1517,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	int textX = l+topSpace;
     	Rectangle infoRect = addRect("sideinfo",textX,t,textW,topPart);
     	Rectangle alertRect =addRect("sidealert",textX, t+h-topPart,textW,topPart);
-    	Font myfont = G.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
    	   	GC.setFont(gc,myfont);
    	   	if(remoteViewer<0)
     	{

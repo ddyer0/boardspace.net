@@ -22,7 +22,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
-import lib.G;
+import bridge.SystemFont;
 
 /**
  *
@@ -55,7 +55,7 @@ extends JFrame
 		/* Load the 1st special font. */
 		Font font = GUIHelper.getBoldFont();
 
-		boldFont = (font != null ? font : G.getFont("SansSerif", G.Style.Plain, 1));
+		boldFont = (font != null ? font : SystemFont.getFont("SansSerif", SystemFont.Style.Plain, 1));
 		GUIHelper gui = new GUIHelper("font");
 		FONT14 = boldFont.deriveFont((float)gui.getInt("SmallButtons"));
 		FONT15 = boldFont.deriveFont((float)gui.getInt("GoodLabels"));
@@ -64,7 +64,7 @@ extends JFrame
 
 		/* Load the 2nd special font. */
 		font = GUIHelper.getPlainFont();
-		cardFont = (font != null ? font : G.getFont("SansSerif", G.Style.Plain, 1));
+		cardFont = (font != null ? font : SystemFont.getFont("SansSerif", SystemFont.Style.Plain, 1));
 		SFONT18 = cardFont.deriveFont((float)gui.getInt("SettingLabels"));
 		SFONT24 = cardFont.deriveFont((float)gui.getInt("LobbyLabels"));
 

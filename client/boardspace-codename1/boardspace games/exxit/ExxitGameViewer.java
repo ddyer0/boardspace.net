@@ -140,8 +140,8 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
         setMouseColors();
         int FontHeight = standardFontSize();
-        gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+2);
-        gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight);
+        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+2);
+        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),ExxitId.ZoomSlider);
         zoomRect.min=1.0;
         zoomRect.max=5.0;

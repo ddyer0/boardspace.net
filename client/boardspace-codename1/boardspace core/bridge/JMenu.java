@@ -18,14 +18,13 @@ package bridge;
 
 import com.codename1.ui.Font;
 
-import lib.G;
 import lib.NativeMenuItemInterface;
 
 public class JMenu extends Menu
 {
 	public JMenu() { }
 	public JMenu(String msg) { super(msg);  }
-	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? G.menuFont() : f); }
+	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? lib.Font.menuFont() : f); }
 	public void add(Menu jsubmenu) { super.add(jsubmenu); }
 	public boolean isVisible() { return(false); }
 	public void setSelected(boolean v) {}
@@ -44,7 +43,7 @@ public class JMenu extends Menu
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = G.getFontMetrics(f);
+		FontMetrics fm = lib.Font.getFontMetrics(f);
 		return(fm.getHeight());
 		}
 	}
@@ -59,7 +58,7 @@ public class JMenu extends Menu
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = G.getFontMetrics(f);
+		FontMetrics fm = lib.Font.getFontMetrics(f);
 		return(fm.stringWidth(str));
 		}
 	}

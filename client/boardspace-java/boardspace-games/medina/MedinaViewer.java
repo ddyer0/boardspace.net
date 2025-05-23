@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import javax.swing.JCheckBoxMenuItem;
 
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -428,7 +429,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
       gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       { int ybase = G.Bottom(brect);
    		int xbase = G.Left(brect);
-   		Font giantFont = G.getFont(standardPlainFont(), G.Style.Bold, 60);
+   		Font giantFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, 60);
    		Color bignum = (gb.variation==Variation.Medina_V1)
    							?new Color(0.7f,0.3f,0.3f)
    							:new Color(0.4f,0.7f,0.2f);

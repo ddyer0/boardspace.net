@@ -394,11 +394,9 @@ class BugsBoard
         case Puzzle:
             break;
         case Play:
-        case PlayOrSwap:
         	// some damaged games have 2 dones in a row
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
-		case ConfirmSwap:
         case Confirm:
         case Resign:
             moveNumber++; //the move is complete in these states
@@ -603,7 +601,6 @@ class BugsBoard
         	setNextStateAfterDone(replay);
          	break;
         case Play:
-        case PlayOrSwap:
 			setState(BugsState.Confirm);
 			break;
         case Puzzle:
@@ -617,16 +614,10 @@ class BugsBoard
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
     	case Gameover: break;
-    	case ConfirmSwap: 
-    		setState(BugsState.Play); 
-    		break;
-    	case Confirm:
+     	case Confirm:
     	case Puzzle:
     	case Play:
-    	case PlayOrSwap:
-    		setState(((chips_on_board==1)&&(whoseTurn==SECOND_PLAYER_INDEX)&&!swapped) 
-    				? BugsState.PlayOrSwap
-    				: BugsState.Play);
+    		setState(BugsState.Play);
     		
     		break;
     	}
@@ -670,12 +661,6 @@ void doSwap(replayMode replay)
 		// some damaged game records have double swap
 		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
 		//$FALL-THROUGH$
-	case PlayOrSwap:
-		  setState(BugsState.ConfirmSwap);
-		  break;
-	case ConfirmSwap:
-		  setState(BugsState.PlayOrSwap);
-		  break;
 	case Gameover:
 	case Puzzle: break;
 	}
@@ -741,7 +726,7 @@ void doSwap(replayMode replay)
         	case Puzzle:
          		break;
         	case Confirm:
-        		setState(((chips_on_board==1) && !swapped) ? BugsState.PlayOrSwap : BugsState.Play);
+        		setState( BugsState.Play);
         		break;
         	default: ;
         	}}}
@@ -808,13 +793,11 @@ void doSwap(replayMode replay)
         {
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
-        case PlayOrSwap:
         case Play:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
-		case ConfirmSwap:
 		case Resign:
 		case Gameover:
 			return(false);
@@ -828,9 +811,6 @@ void doSwap(replayMode replay)
         switch (board_state)
         {
 		case Play:
-		case PlayOrSwap:
-			return(targets.get(c)!=null || isDest(c) || isSource(c));
-		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
@@ -900,10 +880,6 @@ void doSwap(replayMode replay)
 
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
- 	if(board_state==BugsState.PlayOrSwap)
- 	{
- 		all.addElement(new BugsMovespec(SWAP,whoseTurn));
- 	}
  	switch(board_state)
  	{
  	case Puzzle:
@@ -918,7 +894,6 @@ void doSwap(replayMode replay)
  		}
  		break;
  	case Play:
- 	case PlayOrSwap:
  	case Confirm:
  		all.push(new BugsMovespec(MOVE_DONE,whoseTurn));
  		break;

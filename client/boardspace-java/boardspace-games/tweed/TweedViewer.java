@@ -18,6 +18,7 @@ package tweed;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import bridge.SystemFont;
 import common.GameInfo;
 
 import static tweed.TweedMovespec.*;
@@ -515,7 +516,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     	Hashtable<TweedCell,TweedMovespec> targets = gb.getTargets();
     	boolean show = eyeRect.isOnNow();
     	boolean numbers = numberRect.isOnNow();
-    	Font labels = G.getFont(largeBoldFont(),CELLSIZE/3);
+    	Font labels = SystemFont.getFont(largeBoldFont(),CELLSIZE/3);
     	double xscale = 0.1;
     	boolean showCaptures = captureRect.isOnNow();
     	double yscale = 0.08;

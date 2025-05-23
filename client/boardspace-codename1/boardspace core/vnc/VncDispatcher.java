@@ -19,6 +19,7 @@ package vnc;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.Component;
+import bridge.SystemFont;
 import lib.Graphics;
 import lib.CellId;
 import lib.G;
@@ -76,14 +77,14 @@ public class VncDispatcher extends OffscreenWindow implements Runnable,VncServic
 		redrawBoard(gc,null);
 	}
 	public void redrawBoard(Graphics gc,HitPoint hp)
-	{	Font dfont = G.getGlobalDefaultFont();
+	{	Font dfont = SystemFont.getGlobalDefaultFont();
 		InternationalStrings s = G.getTranslations();
 		GC.setColor(gc, Color.white);
 		GC.fillRect(gc, 0,0,width,height);
 		GC.setColor(gc, Color.gray);
 		GC.fillRect(gc, 10,10,width-20,height-20);
-		int lineh = G.getFontSize(dfont)*3;
-		GC.setFont(gc,G.getFont(dfont,lineh));
+		int lineh = SystemFont.getFontSize(dfont)*3;
+		GC.setFont(gc,SystemFont.getFont(dfont,lineh));
 		int nServices = VNCService.getNServices();
 		int ypos = 20+lineh * 2;
 		if(nServices>0)

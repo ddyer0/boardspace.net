@@ -29,6 +29,7 @@ import java.awt.event.FocusListener;
 import java.net.URL;
 import java.security.AccessControlException;
 import bridge.Config;
+import bridge.SystemFont;
 import bridge.Utf8OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -230,7 +231,7 @@ public class ChatWidget
         if(PRESPLIT_LINES)
         {
         // old style, try to break lines before adding them
-        FontMetrics myFM = G.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
         AddMessage(s.lineSplit(G.replaceAll(inStr,"\n", " <br> "), myFM, useWidth, Spaces),see);
         }
         else
@@ -353,7 +354,7 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
-        basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, G.standardizeFontSize(G.defaultFontSize));
+        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, G.standardizeFontSize(lib.Font.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));
         setUser(ERRORCHANNEL, s.get("Error"));
@@ -547,9 +548,9 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = G.standardizeFontSize((int)(G.defaultFontSize*(G.isCodename1()?1.2:1)));
-        basicFont = G.getFont(G.defaultFontFamily(), G.Style.Plain, fs);
-        boldFont = G.getFont(basicFont,G.Style.Bold,fs);
+    	int fs = G.standardizeFontSize((int)(lib.Font.defaultFontSize*(G.isCodename1()?1.2:1)));
+        basicFont = SystemFont.getFont(lib.Font.defaultFontFamily(), SystemFont.Style.Plain, fs);
+        boldFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,fs);
 
         //G.print("font "+fs+" "+G.defaultFontSize);
         sendButton.setFont(boldFont);
@@ -558,7 +559,7 @@ public class ChatWidget
         messages.setFont(basicFont);
         comments.setFont(basicFont);
         
-        FontMetrics myFM = G.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
         int messageTop = t;
         int textHeight = (int)(myFM.getHeight()*1.8);
         if (textHeight < MINTEXTHEIGHT)

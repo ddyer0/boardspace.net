@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -130,8 +131,8 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         MouseDotColors = FrogsMouseDotColors;
         MouseColors = FrogsMouseColors;
         int FontHeight = standardFontSize();        
-        gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+2);
-        gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight);
+        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+2);
+        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),FrogId.ZoomSlider);
         zoomRect.min=2.0;
         zoomRect.max=5.0;

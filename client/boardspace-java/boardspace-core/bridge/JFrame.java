@@ -115,7 +115,7 @@ public void validateTree()
 	}
 	
 	public void changeImageIcon(Image im) {
-		setIconImage(im==null ? null : im.getImage());
+		setIconImage(im==null ? null : im.getSystemImage());
 	}
 
 	public void paint(Graphics g) 

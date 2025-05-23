@@ -35,7 +35,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	public JMenu(String m,Font f)
 	{
 		this(m);
-		setFont(f==null ? G.menuFont() : f);
+		setFont(f==null ? lib.Font.menuFont() : f);
 	}
 	public void paintIcon(Component c, Graphics g, int x, int y) { G.Error("should be overridden");}
 	public void paintIcon(Component c, java.awt.Graphics g, int x, int y)
@@ -70,7 +70,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = G.getFontMetrics(f);
+		FontMetrics fm = lib.Font.getFontMetrics(f);
 		return(fm.getHeight()*5/4);
 		}
 	}
@@ -85,7 +85,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = G.getFontMetrics(f);
+		FontMetrics fm = lib.Font.getFontMetrics(f);
 		return(fm.stringWidth(str));
 		}
 	}

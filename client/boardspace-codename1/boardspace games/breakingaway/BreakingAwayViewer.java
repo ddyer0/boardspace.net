@@ -174,8 +174,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         
         riderCountOption = myFrame.addOption("show rider counts",false,deferredEvents);
         int FontHeight = standardFontSize();
-        gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+2);
-        gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight);
+        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+2);
+        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight);
         sizeRect = addSlider(TileSizeMessage,s.get(RiderSize),BreakId.ZoomSlider);
         sizeRect.min=1.5;
         sizeRect.max=4.0;
@@ -1443,7 +1443,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	HitPoint select = (adjust && !b.doneAdjustingUI[index])
     							? hp
     							: null;
-    	Font myfont = G.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
     	GC.setFont(gc, myfont);
     	if(remoteViewer<0) { GC.fillRect(gc,boardBackgroundColor,r); }
     	String msg = s.get(ServiceName,name);

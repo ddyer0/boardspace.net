@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -168,7 +169,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
-       	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+       	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

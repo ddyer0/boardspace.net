@@ -75,7 +75,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 		}
 
 	public Font getFont()
-	{ return(G.getFont(getStyle())); 
+	{ return(SystemFont.getFont(getStyle())); 
 	}
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
@@ -96,7 +96,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
             return popupDialog;
      }
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 	public void paint(com.codename1.ui.Graphics g0)
 	{	

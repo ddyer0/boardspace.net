@@ -17,7 +17,7 @@
 package bridge;
 
 import lib.AwtComponent;
-import lib.G;
+
 import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
@@ -37,9 +37,9 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 	}
 	public Label(Image ic)
 	{
-		super(ic.getImage());
+		super(ic.getSystemImage());
 	}
-	public Font getFont() { return(G.getFont(getStyle())); }
+	public Font getFont() { return(SystemFont.getFont(getStyle())); }
 	public void setLabelFor(XPasswordField passwordField) {
 		
 	}
@@ -113,6 +113,6 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 }

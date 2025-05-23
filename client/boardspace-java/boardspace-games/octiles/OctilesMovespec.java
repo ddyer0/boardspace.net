@@ -28,6 +28,7 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.ExtendedHashtable;
+import lib.Font;
 
 
 public class OctilesMovespec extends commonMPMove implements OctilesConstants
@@ -222,7 +223,7 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     
     private Text makeGraph(int dis,int player,commonCanvas canvas)
     {
-    	int height = G.getFontMetrics(canvas).getHeight()*2/3;
+    	int height = Font.getFontMetrics(canvas).getHeight()*2/3;
     	double distance = Math.min(7, Math.max(0,dis))/7.0;
     	Color color = canvas.getMouseColor(player);
     	HorizontalBar graph = new HorizontalBar(height*8,height,distance,color);

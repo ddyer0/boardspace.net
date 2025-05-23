@@ -156,6 +156,7 @@ public class CachedImageManager
     			if(toFlush)
     			{
 					Image im = v.im;
+					if(im!=null) { im.discard(); }
     				v.im=null; 
     				v.next = null;
     				if(LOG_CACHE) { Plog.log.addLog("remove scaled ",k," ",im," ",v.ScaledW,"x",v.ScaledH); }
@@ -295,9 +296,9 @@ public class CachedImageManager
     }
     
     private Hashtable<String,Image>cachedImageNames = new Hashtable<String,Image>();
-    public Image getCachedImage(String imname)
+    public Image getCachedImage(String imname,boolean load)
     {	Image im = cachedImageNames.get(imname);
-    	if(im==null)
+    	if(load && im==null)
     	{	im = Image.getImage(imname);
     		im.setUnloadable(true);
     		cachedImageNames.put(imname, im);
@@ -305,5 +306,22 @@ public class CachedImageManager
     	}
     	return(im);
     }
+    public Image getCachedImage(String imname)
+    {
+    	return getCachedImage(imname,true);
+    }
+	public void setCachedImage(String name, Image im) {
+		cachedImageNames.put(name,im);
+		
+	}
+	public void discardCachedImage(String name) {
+		Image im = cachedImageNames.get(name);
+		if(im!=null)
+		{
+			cachedImageNames.remove(name);
+			im.discard();
+		}
+		
+	}
    
 }

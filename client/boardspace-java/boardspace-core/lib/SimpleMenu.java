@@ -239,7 +239,7 @@ public class SimpleMenu {
 		if(f!=lastFont)
 			{
 			lastFont = f;
-			FontMetrics desc = G.getFontMetrics(f);
+			FontMetrics desc = lib.Font.getFontMetrics(f);
 			maxDescent = Math.max(maxDescent,desc.getMaxDescent());
 			subwidth = desc.stringWidth(subMenuString);
 			}

@@ -45,7 +45,7 @@ public class TextGlyph extends TextChunk implements Text
 		return(copy);
 	}
 	public Icon getIcon() 
-	{ 	FontMetrics fm = G.getFontMetrics(canvas.getFont());
+	{ 	FontMetrics fm = Font.getFontMetrics(canvas.getFont());
 		return(new TextIcon(this,width(fm),height(fm))); 
 	}
 	/**

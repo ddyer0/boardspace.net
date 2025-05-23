@@ -363,7 +363,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
       MorelliState vstate = gb.getState();
       int FontHeight = standardFontSize();
       gameLog.redrawGameLog(gc, ourSelect, logRect, Color.black,Color.white,standardPlainFont(),
-    		  	G.getFont("monospaced",G.Style.Bold,FontHeight+5));
+    		  	SystemFont.getFont("monospaced",SystemFont.Style.Bold,FontHeight+5));
     
         drawBoardElements(gc, gb, boardRect, ot,SQUARESIZE);
         if(gb.getState()==MorelliState.FirstPlay)

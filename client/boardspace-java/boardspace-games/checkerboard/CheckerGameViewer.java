@@ -34,6 +34,7 @@ import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -248,7 +249,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       	layout.placeTheVcr(this,vcrW,vcrMW);
  
       	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
-    	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+    	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
       

@@ -18,7 +18,6 @@ package bridge;
 
 import com.codename1.ui.Font;
 import lib.AwtComponent;
-import lib.G;
 
 public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvider,AwtComponent
 {	private final MouseAdapter mouse = new MouseAdapter(this);
@@ -29,7 +28,7 @@ public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvide
 		  super.repaint();
 		} 
 	}
-	public Font getFont() { return(G.getFont(getStyle())); }
+	public Font getFont() { return(SystemFont.getFont(getStyle())); }
 	public Checkbox(String string, boolean b) { super(string); setSelected(b); }
 	public Checkbox(boolean b) { super();  setSelected(b); }
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
@@ -39,6 +38,6 @@ public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvide
 
 	public void setState(boolean b) { setSelected(b); }
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 }

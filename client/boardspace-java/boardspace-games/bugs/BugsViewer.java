@@ -797,19 +797,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
        double messageRotation = pl.messageRotation();
        
        GC.setFont(gc,standardBoldFont());
-       
-       // draw the board control buttons 
-       boolean conf = (state==BugsState.ConfirmSwap) ;
-		if( conf
-			|| (state==BugsState.PlayOrSwap) 
-			|| (state==BugsState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-			swapButton.highlightWhenIsOn = true;
-        	swapButton.setIsOn(conf);
-        	swapButton.show(gc, buttonSelect);
-			}
-
-		if (state != BugsState.Puzzle)
+       if (state != BugsState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -1134,7 +1122,6 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
 			case Play:
-			case PlayOrSwap:
 				// fall through and pick up the previously dropped piece
 				//$FALL-THROUGH$
 			case Puzzle:
@@ -1257,6 +1244,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 
     }
 
+     public static String bugdeck = "g:/share/projects/boardspace-html/htdocs/deck/";
 
     /** handle action events from menus.  Don't do any real work, just note
      * state changes and if necessary set flags for the run loop to pick up.
@@ -1268,7 +1256,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         if(target==makeDeck)
         {	handled=true;
         	BugsCell deck = bb.masterDeck;
-        	String html = Profile.uncomposite+ImageDir+"../deck/deck.html";
+        	String html = bugdeck+"deck.html";
         	try {
         	PrintStream out = new PrintStream(new FileOutputStream(html));
         	out.print("<h1><cener>Prototype BugSpiel Card Deck</center></h1>\n");
@@ -1281,7 +1269,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         		Image im = ch.makeCardImage(this,1024,512);
         		File f = new File(im.getName());
         		String basename = f.getName()+".png";
-				String imname = Profile.uncomposite+ImageDir+"../deck/"+basename;
+				String imname = bugdeck+basename;
 				out.print("<a href=\""+basename+"\"><image src=\""+basename+"\" width=200 height=100>\n</a>");
 				if(i%5==4) { out.println("<nl>"); }
 				im.saveImage(imname);

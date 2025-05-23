@@ -26,6 +26,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
+
+import bridge.SystemFont;
 // TODO: selecting text, the bounds of the clipboard aren't quite right
 /**
  * This is a window-free replacement for TextArea, coded to be used with
@@ -158,7 +160,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	
 	public Dimension getPreferredSize()
 	{
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		Rectangle sz = GC.getStringBounds(null,fm,data.toString());
 		return(new Dimension(G.Width(sz),G.Height(sz)));
 	}
@@ -368,7 +370,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		}}
 	}
 	public boolean drawAsButton(Graphics g,HitPoint hp,Rectangle r,String line)
-	{	FontMetrics fm = G.getFontMetrics(font);
+	{	FontMetrics fm = lib.Font.getFontMetrics(font);
 		lastLineHeight = fm.getHeight();
 		if(GC.handleSquareButton(g, r, hp,line,backgroundColor,backgroundColor))
 		{	
@@ -411,7 +413,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(!mouseSelecting) { setCaratPosition(visibleCaratPosition); }
 		int lineLen = line.length();
 		boolean isIn = G.pointInRect(hp,this);
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int width = G.Width(this);
 		int height = G.Height(this);
 		int x = G.Left(this);
@@ -667,7 +669,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		// do not segment lines by length
 		do
 		{
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int lineh = fm.getHeight();
 		mlCache = null;
 		StringStack lines = resplit(data,fm,linew);
@@ -676,7 +678,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(!done)
 		{
 			size--;
-			font = G.getFont(initialFont,size);
+			font = SystemFont.getFont(initialFont,size);
 			
 		}}
 		while( !done && size>6);
@@ -684,7 +686,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
 	{	
 		boolean isIn = G.pointInRect(hp,this);
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int lineh = lastLineHeight = fm.getHeight();
 		int linew = G.Width(r)-MARGIN*2;
 		// do not segment lines by length

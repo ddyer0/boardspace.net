@@ -18,6 +18,7 @@ package qe;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import bridge.SystemFont;
 import common.GameInfo;
 
 import static qe.QEmovespec.*;
@@ -1592,7 +1593,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
   	    int fh = G.getFontSize(largeBoldFont());
   	    boolean censor = pl.hiddenCensoring;
     	int stateH = fh*8;
-    	Font myfont = G.getFont(largeBoldFont(), stateH/3);
+    	Font myfont = SystemFont.getFont(largeBoldFont(), stateH/3);
         if (remoteViewer<0) 
         { QEChip.backgroundTile.image.tileImage(gc, bounds);
         }

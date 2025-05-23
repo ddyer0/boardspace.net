@@ -26,6 +26,7 @@ import java.util.*;
 
 import javax.swing.JMenuItem;
 
+import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -77,7 +78,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     private Color rackBackGroundColor = new Color(178,212,168);
     private Color boardBackgroundColor = new Color(178,212,168);
     
-    Font cardDeckFont = G.getFont("Dialog", G.Style.Bold, 25);
+    Font cardDeckFont = SystemFont.getFont("Dialog", SystemFont.Style.Bold, 25);
     // images, shared among all instances of the class so loaded only once
     private static Image[] textures = null;// background textures
     JMenuItem printButton = null;

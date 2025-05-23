@@ -18,11 +18,9 @@ package bridge;
 
 import com.codename1.ui.Font;
 
-import lib.G;
-
 public class MenuItem extends JMenuItem 
 {	
 	public MenuItem(Icon m) { super(m); }
 	public MenuItem(String m) { super(m); }
-	public MenuItem(String m,Font f) { this(m); setFont(f==null ? G.menuFont() : f); }
+	public MenuItem(String m,Font f) { this(m); setFont(f==null ? lib.Font.menuFont() : f); }
 }

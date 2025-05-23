@@ -19,9 +19,8 @@ package jumbulaya;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.FontMetrics;
-
+import bridge.SystemFont;
 import lib.DrawableImageStack;
-import lib.G;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -262,9 +261,9 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = G.getFont(canvas.labelFont,ss);
+    		Font f = SystemFont.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
-    		FontMetrics fm = G.getFontMetrics(f);
+    		FontMetrics fm = lib.Font.getFontMetrics(f);
     		Text ww = TextChunk.create("W");
      		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2-ss/10,cy+(int)(SQUARESIZE*0.2));

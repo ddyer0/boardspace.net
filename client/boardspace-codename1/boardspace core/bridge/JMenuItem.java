@@ -19,7 +19,6 @@ package bridge;
 import java.util.Vector;
 
 import lib.AwtComponent;
-import lib.G;
 import lib.GC;
 import lib.Graphics;
 import lib.NativeMenuInterface;
@@ -27,7 +26,6 @@ import lib.NativeMenuItemInterface;
 import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
-import bridge.Platform.Style;
 
 
 public class JMenuItem extends Component implements ActionListener,AwtComponent,NativeMenuItemInterface
@@ -41,7 +39,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	private Image cachedImage = null; 
 	private AwtComponent cachedParent = null;
 	static final int MenuTextSize = 14;
-	static final Style MenuTextStyle = Style.Plain;
+	static final SystemFont.Style MenuTextStyle = SystemFont.Style.Plain;
 	private Color fgcolor = Color.black;
 	private Color bgcolor = new Color(0xccccff);
 	public Color getBackground() { return(bgcolor); }
@@ -54,7 +52,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 
 	public Font getFont() 
 	{ if(font==null) 
-		{ font = G.menuFont();
+		{ font = lib.Font.menuFont();
 		}
 	  return(font);
 	}
@@ -64,7 +62,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 		String text = getText();
 		if(text==null) { text="xxxx"; }
 		Font f = getFont();
-		FontMetrics fm = G.getFontMetrics(f);
+		FontMetrics fm = lib.Font.getFontMetrics(f);
 		int w = fm.stringWidth(text);
 		int h = fm.getHeight();
 		return(new Dimension(w,h));
@@ -92,12 +90,12 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	Vector<ItemListener>itemListeners=null;
 	Vector<ActionListener>actionListeners = null;
 	public JMenuItem() 
-	{  setFont(G.menuFont()); 
+	{  setFont(lib.Font.menuFont()); 
 	};
 	public JMenuItem(String item,Font f)
 	{
 		this(item);
-		setFont(f==null ? G.menuFont() : f); 
+		setFont(f==null ? lib.Font.menuFont() : f); 
 	}
 	public String toString() 
 		{ 
@@ -164,7 +162,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 	/**
 	 * get an image that corresponds to the text .
@@ -176,7 +174,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	 * @return a new Image
 	 */
 	public Image getTextImage(String text,Font f,Color foreground,Color background)
-	{	FontMetrics fm = G.getFontMetrics(f);
+	{	FontMetrics fm = lib.Font.getFontMetrics(f);
 		int h = Math.max(1, fm.getHeight());
 		int w = Math.max(1, fm.stringWidth(text));
 		Image im = Image.createImage(w,h);

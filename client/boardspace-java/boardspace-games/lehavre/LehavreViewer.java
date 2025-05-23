@@ -135,12 +135,12 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		Plog.log.finishEvent();
 		if(file.endsWith(".png"))
 			{ 
-			return(lib.Image.getImage(file).getImage());
+			return(lib.Image.getImage(file).getSystemImage());
 			}
 		else
 		{	String mainName = file+".jpg";
 			String maskName = file+"-mask.jpg";
-			Image mask = resourceExists(maskName)?lib.Image.getImage(maskName).getImage():null;	// ok if no mask
+			Image mask = resourceExists(maskName)?lib.Image.getImage(maskName).getSystemImage():null;	// ok if no mask
 
 			// special logic for card masks - they all use the same mask
 			if(mask==null)
@@ -150,12 +150,12 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 					{ maskName=file.substring(0,ind+7) + "card-mask.jpg"; 
 					mask = cachedImages.get(maskName);
 					if(mask==null) 
-						{ mask = lib.Image.getImage(maskName).getImage();
+						{ mask = lib.Image.getImage(maskName).getSystemImage();
 						  cachedImages.put(maskName,mask);	// save for re-use
 						}
 					}
 				}
-			Image main = lib.Image.getImage(mainName).getImage();
+			Image main = lib.Image.getImage(mainName).getSystemImage();
 			if(mask!=null) 
 			{ 
 			  int maskw = mask.getWidth(this);
@@ -166,7 +166,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 			  	{ mask = mask.getScaledInstance(mainw,mainh,Image.SCALE_SMOOTH);	// resize the mask to match
 			  	//G.print("Resizing mask for "+mainName); 
 			  	}
-			  main = lib.Image.createImage(main).compositeSelf(lib.Image.createImage(mask)).getImage(); 
+			  main = lib.Image.createImage(main).compositeSelf(lib.Image.createImage(mask)).getSystemImage(); 
 			 } 
 			cachedImages.put(file,main);
 			return(main);

@@ -29,6 +29,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -185,7 +186,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
        	layout.placeTheVcr(this,vcrW,vcrW*3/2);    	
-    	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
+    	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
               
     	Rectangle main = layout.getMainRectangle();

@@ -30,6 +30,7 @@ import lib.Image;
 import lib.BSDate;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -187,7 +188,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-       	int ruleW = (int)(optionWidth(G.getFontMetrics(standardPlainFont()))*1.05);
+       	int ruleW = (int)(optionWidth(Font.getFontMetrics(standardPlainFont()))*1.05);
        	int ruleH = fh*4;
        	
     	int minLogW = fh*15;	

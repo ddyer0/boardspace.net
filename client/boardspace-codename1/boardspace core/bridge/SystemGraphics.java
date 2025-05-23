@@ -127,7 +127,7 @@ public abstract class SystemGraphics {
 		}
     	if(im!=null)
     	{
-    	com.codename1.ui.Image image = im.getImage();
+    	com.codename1.ui.Image image = im.getSystemImage();
      	if(image!=null) 
     	{ 
      	  try { graphics.drawImage(image,x, y, w, h); }
@@ -159,7 +159,7 @@ public abstract class SystemGraphics {
     	// and drawtext at x,y, the text is below the line.
     	if(logging) { Log.appendNewLog("Text "); Log.appendLog(msg);  }
     	if(msg!=null)
-    		{int h = G.getFontSize(f);
+    		{int h = SystemFont.getFontSize(f);
     		 graphics.drawString(msg, x, y-h);	
     		}
     	if(logging) { Log.finishEvent(); } 
@@ -172,7 +172,7 @@ public abstract class SystemGraphics {
     		if(logging) 
     			{ Log.appendNewLog("drawImage-2 "); Log.appendLog(im.toString()); Log.appendLog(x); Log.appendLog(","); Log.appendLog(y);
     			}
-    		com.codename1.ui.Image im2 = im.getImage();
+    		com.codename1.ui.Image im2 = im.getSystemImage();
     		if(im2!=null)
     		{
     		graphics.drawImage(im2,x, y);
@@ -202,7 +202,7 @@ public abstract class SystemGraphics {
  		int sw = fx2-fx;
  		int sh = fy2-fy;
  		com.codename1.ui.Graphics gc = graphics;
- 		com.codename1.ui.Image im = im0.getImage();
+ 		com.codename1.ui.Image im = im0.getSystemImage();
  		int imw = im.getWidth();
  		int imh = im.getHeight();
  		double xscale = w/(double)sw;
@@ -384,7 +384,7 @@ public abstract class SystemGraphics {
 
 	public void setFont(Font f) 
 	{ 	graphics.setFont(f); 
-		int sz = G.getFontSize(f);
+		int sz = SystemFont.getFontSize(f);
 		boolean v = G.isSimulator() ? sz>17 : true;
 		graphics.setAntiAliasedText( v);
 	}

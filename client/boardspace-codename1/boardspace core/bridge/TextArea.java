@@ -146,7 +146,7 @@ public class TextArea extends com.codename1.ui.TextArea
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
 	public void setForeground(Color color) { getStyle().setFgColor(color.getRGB()); }
 
-	public Font getFont() { return(G.getFont(getStyle())); }
+	public Font getFont() { return(SystemFont.getFont(getStyle())); }
 	public Font myFont = null;
 	public void setFont(Font f) { myFont = f; getStyle().setFont(f); getSelectedStyle().setFont(f);  }
 	public void selectAll() { System.out.println("TextArea.SelectAll() not implemented");	}
@@ -247,7 +247,7 @@ public class TextArea extends com.codename1.ui.TextArea
     {	return(new TextPrintStream(new Utf8OutputStream(),this));
     }
 	public FontMetrics getFontMetrics(Font f) {
-		return G.getFontMetrics(f);
+		return lib.Font.getFontMetrics(f);
 	}
 	// this hard won bit of business allows a text area
 	// to activate when you type a newline on the virtual keyboard

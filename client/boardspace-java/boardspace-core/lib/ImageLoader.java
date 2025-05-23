@@ -33,7 +33,7 @@ public class ImageLoader
 	    try
 	    {
 	    MediaTracker tracker = new MediaTracker(master.getMediaComponent());
-	    tracker.addImage(image.getImage(), 0);
+	    tracker.addImage(image.getSystemImage(), 0);
 	    tracker.waitForID(0);
 	    ok=true;
 	    }
@@ -93,7 +93,7 @@ public Image[][] load_images(String baseDir, String prefix,
             {
 			names.put(im,namestr);
             ar[j][i] = im;
-            tr.addImage(im.getImage(), id);
+            tr.addImage(im.getSystemImage(), id);
     	}
             else
             {
@@ -178,7 +178,7 @@ public Image[] load_images(String baseDir, String[] namelist,String suffix)
         if(im!=null)
      	{
 		names.put(im,maskName);
-        tr.addImage(im.getImage(), id);
+        tr.addImage(im.getSystemImage(), id);
         id++;
         ar[i] = im;
      	}

@@ -78,8 +78,8 @@ public class TabLayout extends com.codename1.ui.layouts.Layout
 	int getFullHeight(Container parent)
 	{	int nc = parent.getComponentCount();
 		// use font height as the basic scale metric
-		Font f = G.getGlobalDefaultFont();
-		int fs = G.getFontSize(f);
+		Font f = SystemFont.getGlobalDefaultFont();
+		int fs = SystemFont.getFontSize(f);
 		int max = (int)(fs*2.2);
 		//G.print("Font "+f+" sz ",fs," h ",max);
 		for(int i=0;i<nc;i++) { max = Math.max(parent.getComponentAt(i).getPreferredSize().getHeight(),max); }

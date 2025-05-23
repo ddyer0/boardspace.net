@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import bridge.Icon;
+import bridge.SystemFont;
 
 /**
  * class TextChunk is used to prepare strings for drawing colorized colors, with size
@@ -326,8 +327,8 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
         int xoff = -1;
         while ((xoff < 0) && (siz > 6))
         	{	// find a smaller font, within reason
-        	f = G.getFont(f0,siz--);
-            myFM = G.getFontMetrics(f);
+        	f = SystemFont.getFont(f0,siz--);
+            myFM = lib.Font.getFontMetrics(f);
             neww = width(myFM);
             xoff = (inWidth - neww);
         	}

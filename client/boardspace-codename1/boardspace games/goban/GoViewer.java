@@ -16,8 +16,6 @@
  */
 package goban;
 import bridge.*;
-import bridge.Color;
-import bridge.JCheckBoxMenuItem;
 import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
@@ -34,6 +32,7 @@ import lib.CellId;
 import lib.DrawableImage;
 import lib.ErrorX;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -282,7 +281,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
-       	int undosize = Math.max(G.getFontMetrics(standardBoldFont()).stringWidth(s.get(UndoRequest)),
+       	int undosize = Math.max(Font.getFontMetrics(standardBoldFont()).stringWidth(s.get(UndoRequest)),
        						buttonW*2+margin*2);
         int nrows = b.boardRows;  
         int ncols = b.boardColumns;

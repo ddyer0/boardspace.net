@@ -52,7 +52,10 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public void setFlagsOn(int b) { flags|=b; }
 	public String getName() { return(url);}
 	public static CachedImageManager cache = new CachedImageManager();
-	public static Image getCachedImage(String name) { return(cache.getCachedImage(name)); }
+	public static void setCachedImage(String name,Image im) { cache.setCachedImage(name,im); }
+	public static void discardCachedImage(String name) { cache.discardCachedImage(name); }
+	public static Image getCachedImage(String name) { return(name==null ? null : cache.getCachedImage(name)); }
+	public static Image getCachedImage(String name,boolean load) { return(name==null ? null : cache.getCachedImage(name,load)); }
 	public static CachedImageManager getImageCache() { return(cache); }
 	
 	/**
@@ -104,7 +107,9 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	{ 
 	  flags |= Discarded; 
 	  setImage(null); 
-	  setLastUsed(0); }
+	  setLastUsed(0); 
+	  
+	}
 	public void unload() 
 	{ 
 	  setImage(null);
@@ -129,13 +134,13 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 
 	public int getWidth() 
 	{ 	// get the width.  If it is incompletely loaded, it will be updated later 
-		if(width<=0 && isUnloaded()) { getImage(); }
+		if(width<=0 && isUnloaded()) { assureImageLoaded(); }
 		G.Assert(width>=0,"Width not determined ",this);
 		return(width);
 	}
 	public int getHeight()
 	{ 	// get the height.  If it is incompletely loaded, it will be updated later
-		if(height<=0 && isUnloaded()) { getImage(); }
+		if(height<=0 && isUnloaded()) { assureImageLoaded(); }
 		G.Assert(height>=0, "Height not determined", this);
 		return(height); 
 	}
@@ -941,4 +946,41 @@ public Image makeTransparent(double percent)
 	   fin.createImageFromInts(ipix,w,h, 0, w);
 	   return(fin);
 }
+
+/* make sure the images is fully loaded and ready to use
+ * and as a side effect, make sure the width and height are known.
+ *  
+ */
+public void assureImageLoaded() 
+{ 	long now = G.Date();
+	if(image==null)
+	{	String url = getUrl();
+		if(url!=null)
+		{
+		String maskUrl = getMaskUrl();
+		if(maskUrl!=null)
+		{	Image mi0 = getCachedImage(maskUrl,false);			// get the mask if already loaded
+			Image mi = mi0==null ? getCachedImage(maskUrl) : mi0;	// get the mask otherwise
+			loadImage(url);
+			if(G.Advise(mi!=null,"mask not found %s",maskUrl))
+			{
+			compositeSelf(mi,0,this,0);	
+			if(mi0==null) { discardCachedImage(maskUrl); }		// if we loaded it, discard it
+				else {
+					mi.setLastUsed(now);
+				}}
+		}
+		else {
+			loadImage(url);
+		}
+		setCachedImage(url,(Image)this);
+		//G.print("reload "+this);
+	}}
+	if(image==null)
+	{	setFlagsOn(Image.Error);
+		setSize(1,1);
+	}		
+	G.Advise(width>=0,"didn't get width %s",this);
+	setLastUsed(now); 
+	}
 }

@@ -63,8 +63,6 @@ public enum BugsState implements BoardState,BugsConstants
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
-	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
 	Play(StateRole.Play,PlayState,false,false);
 	
 	BugsState(StateRole r,String des,boolean done,boolean digest)
@@ -162,14 +160,24 @@ static int[] ZnInCol = { 2, 3, 2 }; // depth of columns, ie A has 4, B 5 etc.
 
 	static final String VictoryCondition = "connect opposite sides with a chain of markers";
 	static final String PlayState = "Place a marker on any empty cell";
-	static final String PlayOrSwapState = "Place a marker on any empty cell, or Swap Colors";
+	static final String ScavengerMessage = "Scavenger";
+	static final String CanFlyMessage =  "Can Fly";
+	static final String PredatorMessage = "Predator";
+	static final String VegetarianMessage = "Vegetarian";
+	static final String NoEatMessage = "Doesn't eat";
+	static final String ParasiteMessage = "Parasite";
 	
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Prototype",
 			PlayState,
-	    PlayOrSwapState,
+	    ScavengerMessage,
+	    CanFlyMessage,
+	    PredatorMessage,
+	    VegetarianMessage,
+	    NoEatMessage,
+	    ParasiteMessage,
 	    VictoryCondition
 			
 		};

@@ -149,7 +149,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	Color backgroundColor = Color.white;
 	Color foregroundColor = Color.black;
 	Color buttonColor = Color.gray;
-	Font font = G.getGlobalDefaultFont();
+	Font font = SystemFont.getGlobalDefaultFont();
 	int scrollX=0;
 	int scrollY=0;
 	private boolean isVisible = false;
@@ -158,7 +158,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	
 	public Dimension getPreferredSize()
 	{
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		Rectangle sz = GC.getStringBounds(null,fm,data.toString());
 		return(new Dimension(G.Width(sz),G.Height(sz)));
 	}
@@ -368,7 +368,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		}}
 	}
 	public boolean drawAsButton(Graphics g,HitPoint hp,Rectangle r,String line)
-	{	FontMetrics fm = G.getFontMetrics(font);
+	{	FontMetrics fm = lib.Font.getFontMetrics(font);
 		lastLineHeight = fm.getHeight();
 		if(GC.handleSquareButton(g, r, hp,line,backgroundColor,backgroundColor))
 		{	
@@ -411,7 +411,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(!mouseSelecting) { setCaratPosition(visibleCaratPosition); }
 		int lineLen = line.length();
 		boolean isIn = G.pointInRect(hp,this);
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int width = G.Width(this);
 		int height = G.Height(this);
 		int x = G.Left(this);
@@ -662,12 +662,12 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		Font initialFont = font;		
 		int h = G.Height(this)-MARGIN*2;
 		int linew = G.Width(this)-MARGIN*2;
-		int size = G.getFontSize(font);
+		int size = SystemFont.getFontSize(font);
 		boolean done = false;
 		// do not segment lines by length
 		do
 		{
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int lineh = fm.getHeight();
 		mlCache = null;
 		StringStack lines = resplit(data,fm,linew);
@@ -676,7 +676,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(!done)
 		{
 			size--;
-			font = G.getFont(initialFont,size);
+			font = SystemFont.getFont(initialFont,size);
 			
 		}}
 		while( !done && size>6);
@@ -684,7 +684,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
 	{	
 		boolean isIn = G.pointInRect(hp,this);
-		FontMetrics fm = G.getFontMetrics(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
 		int lineh = lastLineHeight = fm.getHeight();
 		int linew = G.Width(r)-MARGIN*2;
 		// do not segment lines by length
