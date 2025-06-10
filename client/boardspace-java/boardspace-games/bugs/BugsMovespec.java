@@ -33,11 +33,15 @@ public class BugsMovespec
     static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
+    static final int MOVE_ROTATECW = 208;
+    static final int MOVE_ROTATECCW = 209;
  
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
+    		"RotateCW",MOVE_ROTATECW,
+    		"RotateCCW",MOVE_ROTATECCW,
         	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
@@ -80,15 +84,15 @@ public class BugsMovespec
     	op = opc;
     	player = p;
     }
-    /** constructor for robot moves.  Having this "binary" constor is dramatically faster
-     * than the standard constructor which parses strings
-     */
-    public BugsMovespec(int opc,char col,int row,int who)
+   
+    public BugsMovespec(int opc,BugsCell c,int who)
     {
-    	op = opc;
-     	to_col = col;
-    	to_row = row;
+       	op = opc;
+       	source = c.rackLocation();
+     	to_col = c.col;
+    	to_row = c.row;
     	player = who;
+ 
     }
     /* constructor */
     public BugsMovespec(StringTokenizer ss, int p)
@@ -154,6 +158,8 @@ public class BugsMovespec
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         	
+        case MOVE_ROTATECW:
+        case MOVE_ROTATECCW:
         case MOVE_DROPB:
 		case MOVE_PICKB:
             source = BugsId.BoardLocation;
@@ -165,6 +171,8 @@ public class BugsMovespec
         case MOVE_DROP:
         case MOVE_PICK:
             source = BugsId.valueOf(msg.nextToken());
+            to_col = G.CharToken(msg);
+            to_row = G.IntToken(msg);
             break;
 
         case MOVE_START:
@@ -205,14 +213,17 @@ public class BugsMovespec
 		case MOVE_DROPB:
             return icon(v,to_col ,to_row);
 
-        case MOVE_DROP:
+			
+		case MOVE_DROP:
         case MOVE_PICK:
             return icon(v,source.name());
 
         case MOVE_DONE:
             return TextChunk.create("");
 
-        default:
+		case MOVE_ROTATECW:
+		case MOVE_ROTATECCW:
+		default:
             return TextChunk.create(D.findUniqueTrans(op));
 
         }
@@ -229,13 +240,15 @@ public class BugsMovespec
         // review mode
         switch (op)
         {
+		case MOVE_ROTATECW:
+		case MOVE_ROTATECCW:
         case MOVE_PICKB:
 		case MOVE_DROPB:
 	        return G.concat(opname , to_col , " " , to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.name());
+            return G.concat(opname , source.name()," ", to_col," ",to_row);
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

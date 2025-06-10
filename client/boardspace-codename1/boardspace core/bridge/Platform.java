@@ -892,10 +892,6 @@ windroid
 	}
 
 
-	public static String[] getFontFamilies()
-	{
-	    return(new String[]{"sansserif","serif","monospace"});
-	}
 	public static boolean useFileClips = true;
 	public static AudioClip getAudioClip(URL url)
 	{	
@@ -938,22 +934,7 @@ windroid
 		String uid = G.globalUserid();
 		return(uid+"|"+getPlatformName());
 	}
-/*
-	public static int Fact(int n) { return((n==0) ? 1 : n*Fact(n-1)); } 
-	public static int ackerman(int m,int n) 
-	{ 	if(m==0) { return(n+1); }
-		else if(n==0) { return(ackerman(m-1,1)); }
-		else { return(ackerman(m-1,ackerman(m,n-1)));  }
-	}
-*/
-	public static void setGlobalDefaultFont(Font f)
-	{	SystemFont.defaultFont = f;
-	}
-	public static void setGlobalDefaultFont()
-	{
-		setGlobalDefaultFont(SystemFont.getGlobalDefaultFont());
-	}
-	public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
+public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
 	public static int getAbsoluteY(Component c) { return(c.getAbsoluteY()); }
 
 	@SuppressWarnings("unchecked")
@@ -1036,15 +1017,9 @@ windroid
 			return((tim-basetime)*1000000);
 			}
 		}
-	    public static double adjustWindowFontSize(int w,int h)
-	    {	// on IOS platforms, everything starts scaled to full screen
-	    	return(1.0);
-	    }
 	
-	    @SuppressWarnings("unused")
-
-	    // cribbed from standard java String
-	    public static final Comparator<String> CASE_INSENSITIVE_ORDER
+	 // cribbed from standard java String
+	 public static final Comparator<String> CASE_INSENSITIVE_ORDER
         	= new CaseInsensitiveComparator();
 	    
 	private static class CaseInsensitiveComparator implements Comparator<String>

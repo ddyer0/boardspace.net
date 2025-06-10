@@ -21,7 +21,6 @@ import java.applet.AudioClip;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 
 import lib.LFrameProtocol;
 import lib.Plog;
@@ -54,8 +53,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.plaf.FontUIResource;
 
 import lib.ChatInterface;
 import lib.ChatWidget;
@@ -202,9 +199,7 @@ public static Object MakeInstance(String classname)
 	   r.width = w;
 	   r.height = h;
    }
-	public static int getFontSize(Font f) { return(f.getSize()); }
-
-	public static String getStackTrace(Throwable t)
+   public static String getStackTrace(Throwable t)
 	{	Utf8OutputStream stream = new Utf8OutputStream();
 		PrintStream p = Utf8Printer.getPrinter(stream);
 		t.printStackTrace(p);
@@ -669,46 +664,7 @@ public static Object MakeInstance(String classname)
 	    }
 	}
 
-	private static Font defaultFont = null;
-	public static int defaultFontSize() 
-	{ 
-		return Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(lib.Font.defaultFontSize)));
-	}
-	public static Font getGlobalDefaultFont()
-	{
-		if(defaultFont==null)
-		{
-			setGlobalDefaultFont();
-		}
-		return(defaultFont);
-	}
-	/**
-	 * set font as the global default font
-	 * @param font
-	 */
-    public static void setGlobalDefaultFont(Font font)
-    {	defaultFont = font;
-    	FontUIResource f = new javax.swing.plaf.FontUIResource(font);
-        java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements())
-        {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof javax.swing.plaf.FontUIResource)
-            {
-                UIManager.put(key, f);
-            }
-        }
-    }
-    /**
-     * set a global default font scaled to the size of the and resolution of the screen
-     */
-    public static void setGlobalDefaultFont()
-    {	int fontHeight = defaultFontSize();
-		Font f = SystemFont.getFont(lib.Font.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, SystemFont.Style.Plain, fontHeight);
-    	setGlobalDefaultFont (f);
-    }
-    public static int getAbsoluteX(Component c)	// absolute up to the frame
+	public static int getAbsoluteX(Component c)	// absolute up to the frame
     {	int x = 0;
     	Container next=null;
     	while(c!=null && ((next=c.getParent())!=null)) { x += c.getX()-next.getInsets().left; c = next; }
@@ -761,14 +717,6 @@ public static Object MakeInstance(String classname)
 			return(System.nanoTime());
 		}
 		
-		public static double adjustWindowFontSize(int w,int h)
-	    {	// this allows the fonts to grow when the windows get larger
-	    	double wfac = w/(double)standardWindowWidth;
-	    	double hfac = h/(double)standardWindowHeight;
-	    	double adj = Math.sqrt(Math.min(wfac,hfac));
-	    	return(adj);
-	    }
-	    
 	 public static final Comparator<String> CASE_INSENSITIVE_ORDER = String.CASE_INSENSITIVE_ORDER;
 	 // this is a factory for chat windows which conceals that we
 	 // removed the source code for the old style "window based" interface on codename1 

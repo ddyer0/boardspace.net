@@ -1463,6 +1463,22 @@ synchronized(allGames) {
 	}
 	
 	{
+	String pRules = "/bugs/english/Rules.pdf";
+	String pViewer = "bugs.BugsViewer";  
+	Color map[] = {Color.yellow,Color.green,Color.blue,Color.red};
+	GameInfo mm = put(new GameInfo(3700,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_pendulum.html",
+			null,false, map));
+	mm.maxPlayers = 4;
+	mm.randomizeFirstPlayer = true;
+	mm.okForTurnbased = false;		// parallel setup
+	mm.okForPassAndPlay = false;
+
+	}
+	
+	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",

@@ -16,6 +16,16 @@
  */
 package viticulture;
 
+/*
+ * 
+ * plan for a purple card market:
+ * create 2 new decks, one with "+1 cost" in each wine, the other with -1 vp for each payout
+ * mark these in the artwork asdowngrades.
+ * 
+ * plan for a special worker market:
+ * add 2 more special workers to each game, but still allow only 2 total to be purchased.
+ * 
+ */
 
 
 import com.codename1.ui.geom.Rectangle;

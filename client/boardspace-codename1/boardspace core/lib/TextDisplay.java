@@ -53,7 +53,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
         area.setVisible(true);
         fname = "Courier";
         fstyle = SystemFont.Style.Plain;
-        fsize = G.standardizeFontSize(Font.defaultFontSize);
+        fsize = Font.standardizeFontSize(Font.defaultFontSize);
 
         // Create edit menu
         editMenu.add(selectAllItem);

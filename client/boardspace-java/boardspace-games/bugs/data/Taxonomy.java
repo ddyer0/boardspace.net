@@ -5,7 +5,8 @@ import java.util.Hashtable;
 import lib.G;
 
 public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
-{
+{	public int uid;
+	public int getUid() { return uid+TAX_OFFSET;}
     public String name;
     public String getKey() { return name; }
     public Rank rank = Rank.UNKNOWN;
@@ -17,7 +18,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
 
     public String commonName;
     public String getCommonName() { return commonName==null ? "(no common name)" : commonName;}
-    public String getScientificName() { return rank + " : "+name; }
+    public String getScientificName() { return rank.name().toLowerCase() + " : "+name; }
     public String lastModified;
     public int speciesCount;
     public int split1;
@@ -27,7 +28,8 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     public Profile getProfile() { return Profile.get(name); }
     public String serialize() {
         return String.join("\t",
-            escape(name),
+        	escape(""+uid),
+        	escape(name),
             escape(rank.name()),
             escape(parent),
             escape(description),
@@ -43,17 +45,17 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     	Taxonomy entry = new Taxonomy();
         
         //name	rank	parent	description	last_modified	common_name	species_count	split1
-        
-        entry.name = unescape(fields[0]);
-        entry.rank = Rank.valueOf(unescape(fields[1].toUpperCase()));
-        entry.parent = unescape(fields[2]);
-        entry.description = unescape(fields[3]);
-        entry.lastModified = unescape(fields[4]);
-        entry.commonName = unescape(fields[5]);
-        entry.speciesCount = Integer.parseInt(fields[6]);
-        entry.split1 = Integer.parseInt(fields[7]);
+        entry.uid = Integer.parseInt(fields[0]);
+        entry.name = unescape(fields[1]);
+        entry.rank = Rank.valueOf(unescape(fields[2].toUpperCase()));
+        entry.parent = unescape(fields[3]);
+        entry.description = unescape(fields[4]);
+        entry.lastModified = unescape(fields[5]);
+        entry.commonName = unescape(fields[6]);
+        entry.speciesCount = Integer.parseInt(fields[7]);
+        entry.split1 = Integer.parseInt(fields[8]);
         entry.split1Count = entry.speciesCount;
-        entry.shortDescription = unescape(fields[8]);
+        entry.shortDescription = unescape(fields[9]);
         return entry;
     }
     

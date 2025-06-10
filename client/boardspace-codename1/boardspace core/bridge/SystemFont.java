@@ -4,11 +4,15 @@ import java.util.Hashtable;
 
 import com.codename1.ui.Font;
 
+import common.CommonConfig.Default;
 import lib.AwtComponent;
 import lib.G;
 
 public class SystemFont
 {
+	public static int defaultFontSize = Default.getInt(Default.fontsize);
+	public static final Style MenuTextStyle = Style.Plain;
+
 	public enum Style
 	   {   Plain(Font.STYLE_PLAIN),
 		   Italic(Font.STYLE_ITALIC),
@@ -17,8 +21,6 @@ public class SystemFont
 		   Style(int style) { s=style;}
 	   }
 
-	Font font;
-	static Font defaultFont = null;
 	static int fontcount = 0;
 	static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
 	static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
@@ -26,7 +28,6 @@ public class SystemFont
 	public static Hashtable<Font,String> fontOrigin = new Hashtable<Font,String>();
 	public static Hashtable<Font,Integer> fontSize = new Hashtable<Font,Integer>();
 	public SystemFont() {};
-	public Font getSystemFont() { return font; }
 	/**
 	 * get the font from a style object, and try to assure that
 	 * the result has a known pixel size.
@@ -68,6 +69,10 @@ public class SystemFont
 			{ sz = 1; }
 		return(sz);
 	}
+	static Font defaultFont = null;
+	public static void setGlobalDefaultFont(Font f)
+	{	defaultFont = f;
+	}
 	public static Font getGlobalDefaultFont()
 	{
 		if(defaultFont==null) 
@@ -78,7 +83,7 @@ public class SystemFont
 	public static int defaultFontSize() { return (int)(14*G.getDisplayScale()); }
 	public static  Font getFont(Font f,Style style,int size)
 	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
-		Font fd = deriveFont(f,size<=0?SystemFont.getFontSize(f):size,style.s);
+		Font fd = deriveFont(f,size<=0?getFontSize(f):size,style.s);
 		if(Platform.GetPixelSize(fd)==size) { return(fd); }
 		fontSize.put(fd,size);
 		return(fd);
@@ -116,7 +121,7 @@ public class SystemFont
 	}
 	static int derivedFontCode(Font f, int size, int style)
 	{
-		return SystemFont.getUid(f)+style*0x10000+size*0x100000;
+		return getUid(f)+style*0x10000+size*0x100000;
 	}
 	public static Font getFont(String family,Style style,int size)
 	{	
@@ -125,7 +130,7 @@ public class SystemFont
 		if(Platform.GetPixelSize(f)==size) 
 			{ return(f); 
 			}
-		return(SystemFont.getFont(f,size));	// convert to a truetype font
+		return(getFont(f,size));	// convert to a truetype font
 		//return(new Font(0, style ,size));
 	}
 	static int fontFaceCode(String spec)
@@ -134,26 +139,22 @@ public class SystemFont
 		   if ("serif".equalsIgnoreCase(spec)) { return Font.FACE_PROPORTIONAL; }
 		   return Font.FACE_SYSTEM;
 	   }
-	SystemFont(Font f)
-	{
-		font = f;
-	}
 	
 	public static com.codename1.ui.Font menuFont()
 	{
-		return SystemFont.getFont(SystemFont.getGlobalDefaultFont(),
-				G.MenuTextStyle,
-				G.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
+		return getFont(getGlobalDefaultFont(),
+				lib.Font.MenuTextStyle,
+				lib.Font.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
 	}
 
 	static public FontMetrics getFontMetrics(ProxyWindow c) 
 	   {
-		   return(getFontMetrics(SystemFont.getFont(c.getStyle())));
+		   return(getFontMetrics(getFont(c.getStyle())));
 	   }
 
 	static public FontMetrics getFontMetrics(bridge.Component c) 
 	   {
-		   return(getFontMetrics(SystemFont.getFont(c.getStyle())));
+		   return(getFontMetrics(getFont(c.getStyle())));
 	   }
 
 	static public FontMetrics getFontMetrics(Font f)
@@ -165,6 +166,14 @@ public class SystemFont
 	   {
 		   return(getFontMetrics(c.getFont()));
 	   }
+	public static void setGlobalDefaultFont()
+	{
+		setGlobalDefaultFont(getGlobalDefaultFont());
+	}
 
-	
+	public static double adjustWindowFontSize(int w,int h)
+	{	// on IOS platforms, everything starts scaled to full screen
+		return(1.0);
+	}
+
 }

@@ -255,7 +255,7 @@ public class FileSelector extends FullscreenPanel
         moveField.setEditable(false);
         moveField.setText("");
         moveField.setBackground(Config.FrameBackgroundColor);
-        moveField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, G.standardizeFontSize(Font.defaultFontSize)));
+        moveField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, Font.standardizeFontSize(Font.defaultFontSize)));
 
         filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));

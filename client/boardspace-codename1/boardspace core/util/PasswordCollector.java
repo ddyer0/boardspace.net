@@ -84,7 +84,6 @@ import udp.PlaytableStack;
 	 public static final String AccountManagement = "Edit or Delete Account";
 	 
 	 public static final String Feedback = "Send Feedback";
-	 public static final String Appstore = "App Store";
 	 // for registration
 	 public static final String YourRealName = "Your real name";
 	 public static final String YourEmail = "Your email address";
@@ -129,7 +128,6 @@ import udp.PlaytableStack;
 		 AccountManagement,
 		 ForgotPassword,
 		 ReviewMessage,
-		 Appstore,
 		 Feedback,
 		 FINALREGISTER,
 		 REGISTER,
@@ -215,7 +213,6 @@ import udp.PlaytableStack;
 	 private JButton reviewButton;
 	 private JButton turnBasedButton;		// play turn based games
 	 private JButton visitSiteButton;	// visit the web site
-	 private JButton appstoreButton;	// visit the app store
 	 private JButton feedbackButton;
 	 private JButton okButton;				// ok from login
 	 private JButton finalRegisterButton;	// ok after confirming registration
@@ -626,13 +623,6 @@ import udp.PlaytableStack;
 		 panel.addC(country);
 		 return(panel);
 	 }
-	 private Component createAppstoreButton()
-	 {	String message = s.get(Appstore);
-	 	appstoreButton = new JButton(message);
-	 	appstoreButton.addActionListener(this);
-	 	appstoreButton.setActionCommand(message);
-	 	return(appstoreButton);
-	 }
 	 
 	 private StringPair lastIndex = null;
 	 private void doLink()
@@ -729,11 +719,6 @@ import udp.PlaytableStack;
 			}
 		va += " "+G.build;
 		p.addC(new Label(va));
-		if(G.isCodename1()
-				&& 	!G.isRealInfinityTable()
-				&& (!G.isIOS() || (appversionD<=prefVersionD)))
-			{ p.addC(createAppstoreButton()); 
-	 		}
 		}
 		else 
 		{ 
@@ -820,7 +805,6 @@ import udp.PlaytableStack;
 	 	TextArea text = new TextArea();
 	 	text.setText(s.get(VersionRejectedMessage));
 		vpanel.addC(text);
-		if(!G.isRealInfinityTable()) { vpanel.addC(createAppstoreButton()); } 
 		addC(vpanel);
 	 }
 
@@ -956,15 +940,7 @@ import udp.PlaytableStack;
         if(source==cancelButton) 
         	{ exitValue = cancel; 
         	}
-        if(source==appstoreButton)
-        {	String url = G.isIOS() 
-        					? iosAppStoreUrl 
-        					: G.isAmazon() 
-        						? amazonAppStoreUrl
-        						: androidAppStoreUrl;
-         	G.showDocument(url,"App Store");
-         	return;
-        }
+
         if(source==feedbackButton)
         {	G.getFeedback();
         	exitValue = null;

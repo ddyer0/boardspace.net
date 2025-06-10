@@ -5,6 +5,7 @@ import java.util.Hashtable;
 public class MasterSpecies extends DataHelper<MasterSpecies> implements KeyProvider
 {
     public int uid;
+    public int getUid() { return uid+SPEC_OFFSET; }
     public String name;
     public String getScientificName() { return name; }
     public String getKey() { return name; }

@@ -319,7 +319,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     	FontMetrics myFM = GC.getFontMetrics(inG);
         int neww = width(myFM);
         int nlines = nLines();
-        int siz = G.getFontSize(f0);
+        int siz = lib.Font.getFontSize(f0);
         int linesize = ((myFM.getAscent() + myFM.getDescent())*9)/10;
         if((inHeight>8)&&nlines>1)
         	{ siz = Math.max(8,Math.min(linesize,inHeight/nlines)); 		// limit the font size vertically

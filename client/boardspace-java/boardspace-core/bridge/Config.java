@@ -50,6 +50,5 @@ public interface Config extends CommonConfig
 	
    public static final int DEFAULT_SCROLL_BAR_WIDTH = 20;			// default size, should still be scaled by G.getDisplayScale()
    public static final int MenuTextSize = 14;
-   public static final SystemFont.Style MenuTextStyle = SystemFont.Style.Plain;
 
 }

@@ -143,7 +143,7 @@ public class commonChatApplet extends FullscreenPanel
     public commonChatApplet(LFrameProtocol frame,ExtendedHashtable info,boolean emb)
     {	embedded = emb;
         s = G.getTranslations();
-        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, G.standardizeFontSize(lib.Font.defaultFontSize));
+        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.Font.standardizeFontSize(lib.Font.defaultFontSize));
         theFrame = frame;
         for(String sn : soundNames) { SoundManager.loadASoundClip(sn); }
 

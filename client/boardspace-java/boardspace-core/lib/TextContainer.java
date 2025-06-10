@@ -151,7 +151,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	Color backgroundColor = Color.white;
 	Color foregroundColor = Color.black;
 	Color buttonColor = Color.gray;
-	Font font = G.getGlobalDefaultFont();
+	Font font = lib.Font.getGlobalDefaultFont();
 	int scrollX=0;
 	int scrollY=0;
 	private boolean isVisible = false;
@@ -664,7 +664,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		Font initialFont = font;		
 		int h = G.Height(this)-MARGIN*2;
 		int linew = G.Width(this)-MARGIN*2;
-		int size = G.getFontSize(font);
+		int size = lib.Font.getFontSize(font);
 		boolean done = false;
 		// do not segment lines by length
 		do

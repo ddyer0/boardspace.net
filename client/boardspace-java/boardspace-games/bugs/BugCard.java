@@ -2,6 +2,7 @@ package bugs;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 
@@ -13,7 +14,6 @@ import bugs.data.DataHelper.Habitat;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
 import lib.CellId;
-import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -23,26 +23,36 @@ import lib.InternationalStrings;
 import lib.StockArt;
 import lib.TextContainer;
 import lib.exCanvas;
-
+/*
+ * possible additional features of bug cards:
+ *  "when played" features that allow immediate bonus scoring
+ *  "when played" feature to allow a second card to be played
+ */
 public class BugCard extends BugsChip implements BugsConstants 
 {
-	private static DrawableImageStack bugCards = new DrawableImageStack();
 	public boolean isBugCard() { return true; }
+	public String name() { return id.name()+" "+profile.name; }
+	public String getName() { return name(); }
 	public String key = null;
 	public Profile profile = null;
 	public Profile getProfile() { return profile; }
 	public DataHelper<?> species = null;
 	private static Hashtable<String,BugCard> cards = new Hashtable<String,BugCard>();
-	public static BugCard get(String key) { return cards.get(key); }
+	private static Hashtable<Integer,BugCard> indexCards = new Hashtable<Integer,BugCard>();
+	public static BugCard getBugCard(String key) { return cards.get(key); }
+	public static BugCard getBugCard(int key) { return indexCards.get(key); }
+	
 	public BugCard(String k,Profile p,DataHelper<?> m)
-	{
+	{	id = BugsId.BugCard;
 		key = k;
 		profile = p;
 		species = m;
 		randomv = key.hashCode();
 		bugCards.push(this);
 		cards.put(k,this);
+		indexCards.put(chipNumber(),this);
 	}
+	public int chipNumber() { return(species.getUid()+BUGOFFSET); }
 	public static int bugCount() { return bugCards.size(); }
 	public static BugCard getCard(int n) { return (BugCard)bugCards.elementAt(n); }
 	public String getCommonName() { return species.getCommonName(); }
@@ -77,7 +87,15 @@ public class BugCard extends BugsChip implements BugsConstants
 		return firstColor;
 
 	}
-	
+	/**
+	 * this is the unused version that uses solid backgrounds
+	 * 
+	 * @param gc
+	 * @param xp
+	 * @param yp
+	 * @param w
+	 * @param h
+	 */
 	@SuppressWarnings("unused")
 	private void drawCardBackground(Graphics gc,int xp, int yp, int w,int h)
 	{
@@ -135,6 +153,15 @@ public class BugCard extends BugsChip implements BugsConstants
 		GC.frameRect(gc,Color.black,xp,yp,w,h);
 
 	}
+	/**
+	 * draw a background in 1-4 parts that denotes the terrains allowed for the bug
+	 * 
+	 * @param gc
+	 * @param xp
+	 * @param yp
+	 * @param w
+	 * @param h
+	 */
 	private void drawTerrainBackground(Graphics gc,int xp, int yp, int w,int h)
 	{
 		boolean isWater = profile.hasWaterHabitat();
@@ -214,22 +241,28 @@ public class BugCard extends BugsChip implements BugsConstants
 		drawChip(gc,canvas,r,null,null,thislabel,1.0);
 	}
 	
+	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
+	{	drawChip(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
+	}
+
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
 	{	return drawChip(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
-	public boolean drawChip(Graphics gc,exCanvas canvas,BugsCell c,HitPoint highlight,int squareWidth,double scale,int cx,int cy,String label)
-	{
-		return drawChip(gc,canvas,squareWidth,cx,cy,highlight,c.rackLocation(),label,1.0,1.0);
-	}
+
 	static boolean PRECALCULATE = false;
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
 	{	
 	 	if(helptext==BACK)
     	{
-    	cardBack.drawChip(gc,drawOn,squareWidth,e_x,e_y,null);	
-    	return false;
-    	}
+    	boolean hit = cardBack.drawChip(gc,drawOn,squareWidth/2,e_x,e_y,highlight,rackLocation,null,1,1);	
+    	if(hit) { 
+    		highlight.hitData = this;
+    		highlight.spriteColor = Color.red;
+    		highlight.spriteRect = new Rectangle(e_x-squareWidth/2,e_y-squareWidth/4,squareWidth,squareWidth/2);
+     		}
+    	return hit;
+       	}
 	 	else
 	 	{
 	 	if(PRECALCULATE)
@@ -243,7 +276,10 @@ public class BugCard extends BugsChip implements BugsConstants
 	 		image.drawChip(gc,drawOn,squareWidth,e_x-squareWidth/2,e_y-squareWidth/4,null);
 	 		gc=null;
 	 	}}
- 		return actualDrawChip(gc,  drawOn.standardPlainFont(),  highlight, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
+	 	HitPoint action = helptext==NOHIT ? null : highlight;
+ 		return squareWidth<200 
+ 					? actualDrawCompactChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight)
+ 					: actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
 	 	}
 	}
 	public boolean actualDrawChip(Graphics gc, Font baseFont,
@@ -251,30 +287,35 @@ public class BugCard extends BugsChip implements BugsConstants
 			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
 		{
     	InternationalStrings s = G.getTranslations();
-		Image image = profile.illustrationImage;
+		Image bugImage = profile.illustrationImage;
 		boolean hit = false;
-		if(image!=null)
-		{	int xp = cx-SQUARESIZE/2;
-			int yp = cy-SQUARESIZE/4;
-			Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
-			hit = G.pointInRect(highlight,r);
-			if(hit)
-			{
-				highlight.spriteColor = Color.red;
-	    		highlight.spriteRect = r;
-	    		highlight.hitCode = id;
-			}
+		
+		int xp = cx-SQUARESIZE/2;
+		int yp = cy-SQUARESIZE/4;
+		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
+		hit = G.pointInRect(highlight,r);
+		if(hit)
+		{	highlight.hitData = this;
+			highlight.spriteColor = Color.red;
+    		highlight.spriteRect = r;
+    		highlight.hitCode = id;
+		}
+		
+		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		
+		if(bugImage!=null)
+		{	
 			int headHeight = SQUARESIZE/15;
+			int scoreHeight = SQUARESIZE/10;
 			int subheadHeight = SQUARESIZE/30;
 			int subheadWidth = (int)(SQUARESIZE*0.45);
 			
-			//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-			drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-			
-			image.centerImage(gc,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
+			bugImage.centerImage(gc,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
 			//canvas.drawImage(gc,image,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
+			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,scoreHeight));
+			GC.Text(gc,true,xp,yp+SQUARESIZE/2-scoreHeight,scoreHeight,scoreHeight,Color.black,null,  ""+profile.cardPoints);	
 			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight));
-			GC.Text(gc,true,xp,yp,headHeight,headHeight,Color.black,null,  ""+profile.cardPoints);	
 			GC.Text(gc,true,xp+headHeight+headHeight/2,yp,SQUARESIZE-headHeight*2,headHeight,Color.black,null,  getCommonName());
 
 			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Italic,subheadHeight));
@@ -296,13 +337,13 @@ public class BugCard extends BugsChip implements BugsConstants
 			if(cat!=null)
 			{	Image im = cat.illustrationImage;
 				int ims = SQUARESIZE/6;
-				String name = cat.getCommonName();
+				String name = cat.getCommonName()+"\n"+cat.getScientificName();
 				int l = xp+SQUARESIZE-ims;
 				int t = yp+SQUARESIZE/2-ims;
 				if(im!=null)
 				{
 				im.centerImage(gc,l,t,ims,ims);	
-				HitPoint.setHelpText(hitAny,l,t,ims,ims,"Group: "+name);
+				HitPoint.setHelpText(hitAny,l,t,ims,ims,name);
 				}
 				else
 				{
@@ -322,6 +363,85 @@ public class BugCard extends BugsChip implements BugsConstants
 		}
 		return hit;
 	}
+	
+	public boolean actualDrawCompactChip(Graphics gc, Font baseFont,
+			HitPoint highlight, BugsId id,
+			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
+		{
+    	InternationalStrings s = G.getTranslations();
+		Image bugImage = profile.illustrationImage;
+		boolean hit = false;
+		
+		int xp = cx-SQUARESIZE/2;
+		int yp = cy-SQUARESIZE/4;
+		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
+		hit = G.pointInRect(highlight,r);
+		if(hit)
+		{	highlight.hitData = this;
+			highlight.spriteColor = Color.red;
+    		highlight.spriteRect = r;
+    		highlight.hitCode = id;
+		}
+		
+		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		
+		int headHeight = SQUARESIZE/10;
+		
+		bugImage.centerImage(gc,xp,yp,SQUARESIZE/4,SQUARESIZE/4);
+		Font font = SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight);
+		GC.setFont(gc,font);
+		FontMetrics fm =  lib.Font.getFontMetrics(font);
+		int textW = SQUARESIZE-SQUARESIZE/3;
+		String name = getCommonName();
+		int nameW = fm.stringWidth(name);
+		int split = -1;
+		if(nameW>=textW)
+		{
+			split = name.indexOf(' ',name.length()/2);
+			if(split<0) { split = name.indexOf(' '); }
+		}
+		if(split<0)
+		{
+			GC.Text(gc,true,xp+SQUARESIZE/4,yp+headHeight,textW,headHeight,Color.black,null,  name);
+		}
+		else
+		{	
+			GC.Text(gc,true,xp+SQUARESIZE/4,yp+headHeight/4,textW,headHeight,Color.black,null,  name.substring(0,split));
+			GC.Text(gc,true,xp+SQUARESIZE/4,yp+headHeight+headHeight/4,textW,headHeight,Color.black,null,  name.substring(split+1));
+		}
+		
+
+		{	
+			int ims = SQUARESIZE/4;		
+			int wingSize = ims*3/4;
+			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,ims));
+			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+profile.cardPoints);	
+
+			Profile cat = profile.getCategory().getProfile();
+			if(cat!=null)
+			{	Image im = cat.illustrationImage;
+				String sname = cat.getCommonName()+"\n"+cat.getScientificName();
+				int l = xp+wingSize*3;
+				int cats = ims+ims/4;
+				int t = yp+SQUARESIZE/2-ims;
+				if(im!=null)
+				{
+				im.centerImage(gc,l,t-ims/4,xp+SQUARESIZE-l,cats);	
+				HitPoint.setHelpText(hitAny,l,t-ims/4,cats,cats,sname);
+				}
+
+			drawDietIcon(gc,profile.diet,xp+wingSize*2,t+ims/8,ims*3/4,hitAny);
+			if(profile.flying==Flying.YES)
+				{
+				BugsChip.Wings.getImage().centerImage(gc,xp+wingSize,t+wingSize/4,wingSize,wingSize);
+				HitPoint.setHelpText(hitAny,xp+wingSize,t,wingSize,wingSize,s.get(CanFlyMessage));
+				}
+			}
+		}
+
+		return hit;
+	}	
 
 	public void drawDietIcon(Graphics gc,Diet diet,int l,int t,int ims,HitPoint hitany)
 	{	BugsChip icon = null;

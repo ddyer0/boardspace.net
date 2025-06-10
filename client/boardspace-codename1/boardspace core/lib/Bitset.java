@@ -130,4 +130,24 @@ public class Bitset <P extends Enum<?>> implements Digestable
 	public long Digest(Random r) {
 		return r.nextLong()*members;
 	}
+	public Bitset<P> and(Bitset<P>from)
+	{
+		members = members&from.members;
+		return this;
+	}
+	public Bitset<P> or(Bitset<P>from)
+	{
+		members = members|from.members;
+		return this;
+	}
+	public Bitset<P> xor(Bitset<P>from)
+	{
+		members = members ^ from.members;
+		return this;
+	}
+	public Bitset<P> difference(Bitset<P>from) 
+	{
+		members = members & ~from.members;
+		return this;
+	}
 }

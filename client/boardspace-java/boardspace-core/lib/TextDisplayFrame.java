@@ -64,7 +64,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         //if(!"Console".equalsIgnoreCase(title)) { area.setReport(true); }
         fname = "Monospaced";
         fstyle = SystemFont.Style.Plain;
-        fsize = G.standardizeFontSize(lib.Font.defaultFontSize);
+        fsize = lib.Font.standardizeFontSize(lib.Font.defaultFontSize);
 
         // Create edit menu
         editMenu.add(selectAllItem);
@@ -115,7 +115,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
         // Create size menu
         sizeItems = new JCheckBoxMenuItem[sizes.length];
-        Font ref = G.getGlobalDefaultFont();
+        Font ref = lib.Font.getGlobalDefaultFont();
         for (int i = 0; i < sizes.length; i++)
         {
             sizeItems[i] = new JCheckBoxMenuItem(sizes[i]);

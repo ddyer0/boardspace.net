@@ -19,7 +19,6 @@ package bridge;
 import java.awt.Component;
 import java.awt.Font;
 
-import lib.G;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
@@ -45,7 +44,7 @@ public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface
 	public Font getFont() 
 	{
 		Font f = super.getFont();
-		if(f==null) { f = G.getGlobalDefaultFont(); }
+		if(f==null) { f = lib.Font.getGlobalDefaultFont(); }
 		return(f);
 	}
 }

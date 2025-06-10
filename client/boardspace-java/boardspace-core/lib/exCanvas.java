@@ -302,7 +302,7 @@ public abstract class exCanvas extends Canvas
 	}
 	
     public int standardFontSize() 
-    { 	int v = G.getFontSize(standardPlainFont());
+    { 	int v = lib.Font.getFontSize(standardPlainFont());
     	return v; 
     }
 
@@ -455,7 +455,7 @@ public abstract class exCanvas extends Canvas
     {	double zoom = getGlobalZoom();
     	int FontHeight = Math.min((int)(maxFontHeight*zoom),
     					  Math.max((int)(minFontHeight*zoom),
-    							  G.standardizeFontSize(height)));
+    							  lib.Font.standardizeFontSize(height)));
     	//G.print("adjust font from "+height+" to "+FontHeight);
         String fontfam = (s==null) ? "fixed" : s.get("fontfamily");
         //G.print("Font size "+FontHeight);
@@ -572,7 +572,7 @@ public abstract class exCanvas extends Canvas
     			if(isSel && (val>6) && (val!=lib.Font.defaultFontSize)) 
     				{ 
     					lib.Font.setDefaultFontSize(val);
-    					G.setGlobalDefaultFont();
+    					lib.Font.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -604,7 +604,7 @@ public abstract class exCanvas extends Canvas
     			if(isSel) 
     				{ 
     					lib.Font.setDefaultFontFamily(val);
-    					G.setGlobalDefaultFont();
+    					lib.Font.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -734,7 +734,7 @@ public abstract class exCanvas extends Canvas
         else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
         	{	String fam = G.getTranslations().get("fontfamily");
 	 			lib.Font.setDefaultFontFamily(fam);
-	 			G.setGlobalDefaultFont();
+	 			lib.Font.setGlobalDefaultFont();
 	 			doNullLayout();  
 	 			generalRefresh(); 
 	 			return(true); 
@@ -1756,7 +1756,7 @@ graphics when using a touch screen.
             {  
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
-               GC.setFont(gc, G.getGlobalDefaultFont());
+               GC.setFont(gc, lib.Font.getGlobalDefaultFont());
                ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }
@@ -2178,7 +2178,7 @@ graphics when using a touch screen.
   	  	int ww = (int)(w*zoom);
   	  	int hh = (int)(h*zoom);
 
-  	  	double fac = zoom*G.adjustWindowFontSize(w,h);
+  	  	double fac = zoom*lib.Font.adjustWindowFontSize(w,h);
   	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
 	  
   	  	setLocalBoundsSync(0,0,ww,hh);

@@ -98,7 +98,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 165;			// 100 represents the initial version of the game
+{	static int REVISION = 166;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -185,6 +185,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										//			also fix the "double star" bug related to gui changes of mind when the player has the banuet hall
 										// revision 164 allows innkeeper to tax players on the dollar space
 										// revision 165, discard selected cards in the order selected
+										// revision 166 fix extraneous "steal" when innkeeper placed on the dollar space
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -2850,7 +2851,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
     			ViticultureChip worker = dest.chipAtIndex(i);
     			PlayerBoard victim = playerWithColor(worker.color);
-    			if(victim.hasCard(ChipType.YellowCard)||victim.hasCard(ChipType.BlueCard))
+    			if((revision<166 || victim!=pb) 
+    					&& (victim.hasCard(ChipType.YellowCard)||victim.hasCard(ChipType.BlueCard)))
     			{
     				return true; 
     			}

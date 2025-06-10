@@ -4199,12 +4199,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             handleError("outside game main loop", fullMsg, err, true);
         }
         finally
-        {	if(!initialized)
+        {	/*
+        	if(!initialized)
         		{
         	sendMessage(NetConn.SEND_LOG_REQUEST
         			+ "Early quit\n"
     				+  myNetConn.PrintLog());
         		}
+        		*/
             shutDown();
         }
     }

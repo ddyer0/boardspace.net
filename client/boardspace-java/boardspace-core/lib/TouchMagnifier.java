@@ -146,7 +146,7 @@ public class TouchMagnifier {
     					? Image.createImage(dsize,dsize) 
     					: magnifierDisplay;
     	Graphics g2 = temp.getGraphics();
-    	g2.setFont(G.getGlobalDefaultFont());
+    	g2.setFont(Font.getGlobalDefaultFont());
 
     	MouseManager mouse = client.getMouse();
 		int ssize = getMagnifierSourceSize()/2;	// offset to the center of the unmagnified source

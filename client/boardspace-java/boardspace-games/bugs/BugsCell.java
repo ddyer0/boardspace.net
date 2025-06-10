@@ -19,6 +19,8 @@ package bugs;
 import lib.Random;
 import lib.exCanvas;
 import bugs.BugsConstants.BugsId;
+import bugs.data.Profile;
+import lib.G;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.OStack;
@@ -42,7 +44,11 @@ public class BugsCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
 	extends stackCell<BugsCell,BugsChip>	 implements PlacementProvider
 {	
-	int sweep_counter;		// the sweep counter for which blob is accurate
+	
+	BugsCell above = null;
+	BugsCell below = null;
+	BugsChip background = null;
+	int rotation = 0;
 	
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
@@ -51,9 +57,25 @@ public class BugsCell
 	}
 	public BugsCell(Random r,BugsId rack,int n) { super(r,rack); col='@'; row=n; }		// construct a cell not on the board
 	public BugsCell(Random r,BugsId rack) { super(r,rack); }		// construct a cell not on the board
+	public BugsCell(BugsId d)
+	{
+		super(d);
+	}
+	public BugsCell(BugsId rack,char c)
+	{
+		super(Geometry.Standalone,c,0);
+		rackLocation = rack;
+		onBoard = false;
+	}
 	public BugsCell(BugsId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
 		super(cell.Geometry.Hex,rack,c,r);
+		above = new BugsCell(rack);
+		above.row = 100+r;
+		above.col = c;
+		below = new BugsCell(rack);
+		below.row =200+r;
+		below.col = c;
 	};
 	/** upcast racklocation to our local type */
 	public BugsId rackLocation() { return((BugsId)rackLocation); }
@@ -77,6 +99,8 @@ public class BugsCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
+		background = ot.background;
+		if(onBoard) { above.copyFrom(ot.above); below.copyFrom(ot.below); rotation = ot.rotation; }
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -85,6 +109,7 @@ public class BugsCell
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		if(onBoard) { above.reInit(); below.reInit(); rotation = 0; }
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public BugsCell(BugsChip cont)
@@ -97,7 +122,16 @@ public class BugsCell
 	 * This method is called, with a random sequence, to digest the cell in unusual
 	 * roles, or when the diest of contents is complex.
 	 */
-	public long Digest(Random r) { return(super.Digest(r)); }
+	public long Digest(Random r) 
+	{ long v = super.Digest(r); 
+	  if(onBoard)
+	  {
+		  v ^= above.Digest(r);
+		  v ^= below.Digest(r);
+		  v ^= r.nextLong()*rotation;
+	  }
+	  return v;
+	}
 	
 	//this could be used to eliminate the "tick" in stacks
 	public int drawStackTickSize(int sz) { return(0); }
@@ -119,13 +153,38 @@ public class BugsCell
 	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
 
     {
-    	if(piece instanceof BugCard)
+    	if(piece instanceof BugsChip)
     	{
-    		return ((BugCard)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    		return ((BugsChip)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     	else {
-    		return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    		return super.drawChip(gc,piece,drawOn,thislabel==BugsChip.NOHIT ? null : highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     }
+	/**
+	 * return true of this chip can be played here
+	 * @param c
+	 * @return
+	 */
+	public boolean canPlay(BugCard c)
+	{	Profile profile = c.getProfile();
+		if(background==BugsChip.ForestTile)
+		{
+			return profile.hasForestHabitat();
+		}	
+		else if(background==BugsChip.PrarieTile)
+		{
+			return profile.hasGrassHabitat();
+		}
+		else if(background==BugsChip.GroundTile)
+		{
+			return profile.hasGroundHabitat();
+		}
+		else if(background==BugsChip.MarshTile)
+		{
+			return profile.hasWaterHabitat();
+		}
+		else { throw G.Error("Not expecting background %s",background); }
+	}
 	
 }

@@ -18,13 +18,19 @@ package bugs;
 
 import lib.CompareTo;
 import lib.DrawableImageStack;
+import lib.GC;
+import lib.Graphics;
+import lib.HitPoint;
 import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import online.game.chip;
 
+import java.awt.Color;
+import java.awt.Font;
 import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
 import common.CommonConfig;
@@ -41,7 +47,10 @@ class ChipStack extends OStack<BugsChip>
  *
  */
 public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<BugsChip>
-{
+{	static int BUGOFFSET =      0x10000;
+	static int TAXONOMYOFFSET = 0x20000;
+	static DrawableImageStack bugCards = new DrawableImageStack();
+	
 	public BugsChip() {}
 	public boolean isBugCard() { return false; }
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
@@ -49,7 +58,7 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	private static boolean imagesLoaded = false;
 	public BugsId id;
 	public String contentsString() { return(id==null ? file : id.name()); }
-
+	public String name() { return id.name(); }
 	// constructor for the chips on the board, which are the only things that are digestable.
 	private BugsChip(String na,double[]sc,BugsId con)
 	{	
@@ -72,19 +81,30 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	public int chipNumber() { return(id==null?-1:id.ordinal()); }
 	
 	static public BugsChip PrarieTile = new BugsChip("prarie",new double[]{0.50,0.510,1.44},BugsId.Prarie);
-	static public BugsChip JungleTile = new BugsChip("jungle",new double[]{0.50,0.510,1.44},BugsId.Jungle);
+	static public BugsChip GroundTile = new BugsChip("ground",new double[]{0.50,0.510,1.44},BugsId.Jungle);
 	static public BugsChip MarshTile = new BugsChip("marsh",new double[]{0.50,0.510,1.44},BugsId.Marsh);
 	static public BugsChip ForestTile = new BugsChip("forest",new double[]{0.50,0.510,1.44},BugsId.Forest);
 
 	static BugsChip Tiles[] = {
-			PrarieTile,JungleTile,MarshTile,ForestTile,
+			PrarieTile,GroundTile,MarshTile,ForestTile,
 	};
-	static public BugsChip Black = new BugsChip("slate",new double[]{0.50,0.510,1.44},BugsId.Black);
-	static public BugsChip White = new BugsChip("shell-4",new double[]{0.47,0.49,1.58},BugsId.White);
+	static public BugsChip Yellow = new BugsChip("yellow-stone-np",new double[]{0.50,0.510,1.44},BugsId.Yellow);
+	static public BugsChip Green = new BugsChip("green-stone-np",new double[]{0.47,0.49,1.44},BugsId.Green);
+	static public BugsChip Blue = new BugsChip("blue-stone-np",new double[]{0.50,0.510,1.44},BugsId.Blue);
+	static public BugsChip Red = new BugsChip("red-stone-np",new double[]{0.47,0.49,1.44},BugsId.Red);
 
+	static BugsChip getGoalCard(int n) { return null; }
+	static BugsChip getBugCard(int n) { return null; }
+	
     // indexes into the balls array, usually called the rack
-    static final BugsChip getChip(int n) { return(BugsId.values()[n].chip); }
-    
+    static final BugsChip getChip(int n) 
+    { return(
+    		n>=TAXONOMYOFFSET
+    			? GoalCard.getGoalCard(n)
+    			: n>=BUGOFFSET 
+    				? BugCard.getBugCard(n) 
+    				: BugsId.values()[n].chip); 
+    }
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
      * method is called from drawChip, and the result is passed here to substitute a different chip.
@@ -153,12 +173,16 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	 */
 	
 	public static BugsChip cardBack = new BugsChip("cards",new double[] {0.5,0.5,1.0});
+	public static BugsChip goalCardBack = new BugsChip("goals",new double[] {0.5,0.5,1.0});
 	public static BugsChip yellowBack = new BugsChip("yellowbackground-nomask",new double[] {0.5,0.5,1.0});
 	public static BugsChip brownBack = new BugsChip("brownbackground-nomask",new double[] {0.5,0.5,1.0});
 	public static BugsChip greenBack = new BugsChip("greenbackground-nomask",new double[] {0.5,0.5,1.0});
 	public static BugsChip blueBack = new BugsChip("bluebackground-nomask",new double[] {0.5,0.5,1.0});
+	public static BugsChip blankBack = new BugsChip("blank-card",new double[] {0.5,0.5,1.0});
 	
 	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
+	public static String NORMAL = NotHelp+"_normal_";
+	public static String NOHIT = NotHelp+"_nohit_";
 	/*
     public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{
@@ -176,8 +200,29 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 		return 0;
 	}
 	public Profile getProfile() { return null; }
-
-
 	
+	public boolean drawChip(Graphics gc,exCanvas canvas,BugsCell c,HitPoint highlight,int squareWidth,double scale,int cx,int cy,String label)
+	{
+		boolean hit = drawChip(gc,canvas,squareWidth,cx,cy,highlight,c.rackLocation(),label,1.0,1.0);
+		if(hit) { highlight.hitObject = c;}
+		return hit;
+	}
+
+	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
+	{	if(image!=null)
+		{	super.drawChip(gc,canvas,SQUARESIZE,xscale,cx,cy,label);
+		}
+		else
+		{
+		actualDrawChip(gc,canvas.standardPlainFont(),null,null,SQUARESIZE,cx,cy,null);
+		}
+	}
+	public boolean actualDrawChip(Graphics gc, Font baseFont,
+			HitPoint highlight, BugsId id,
+			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
+	{	GC.frameRect(gc,Color.blue,cx-SQUARESIZE/2,cy-SQUARESIZE/4,SQUARESIZE,SQUARESIZE/2);
+		return false;
+	}
+
 
 }

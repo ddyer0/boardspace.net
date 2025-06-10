@@ -356,10 +356,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	{
 	    String fam = s.get("fontfamily");
 	    double scale = scale0*lib.Font.defaultFontSize/standardFontHeight;
-	    basicFont = SystemFont.getFont(fam,SystemFont.Style.Plain,G.standardizeFontSize(14*scale));
-	    smallerBoldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,G.standardizeFontSize(13*scale));
-	    boldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,G.standardizeFontSize(14*scale));
-	    bigFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,G.standardizeFontSize(24*scale));
+	    basicFont = SystemFont.getFont(fam,SystemFont.Style.Plain,lib.Font.standardizeFontSize(14*scale));
+	    smallerBoldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(13*scale));
+	    boldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(14*scale));
+	    bigFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(24*scale));
 	}
 	public void addSelfTo(Container p)
 	{

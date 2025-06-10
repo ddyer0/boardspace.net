@@ -8625,14 +8625,14 @@ public void verifyGameRecord()
     	{
     		neww = r.nextInt(w-minw)+minw;
     		newh = r.nextInt(h-minh)+minh;
-    		double fac = G.adjustWindowFontSize(neww,newh);
+    		double fac = lib.Font.adjustWindowFontSize(neww,newh);
       	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
       	  	setLocalBoundsSync(0,0,neww,newh);
     		if(layoutErrors==0) { layoutErrors += checkLayoutBounds(); }
     	}
     	if(layoutErrors==0) 
     		{ 
-    		  double fac = G.adjustWindowFontSize(w,h);
+    		  double fac = lib.Font.adjustWindowFontSize(w,h);
       	  	  adjustStandardFonts(fac*lib.Font.defaultFontSize);
 
       	  	  setLocalBoundsSync(0,0,w,h); 

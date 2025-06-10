@@ -1590,7 +1590,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     	int top = G.Top(bounds)+margin;
     	int width = G.Width(bounds)-margin*2;
     	int height = G.Height(bounds)-margin*2;
-  	    int fh = G.getFontSize(largeBoldFont());
+  	    int fh = lib.Font.getFontSize(largeBoldFont());
   	    boolean censor = pl.hiddenCensoring;
     	int stateH = fh*8;
     	Font myfont = SystemFont.getFont(largeBoldFont(), stateH/3);

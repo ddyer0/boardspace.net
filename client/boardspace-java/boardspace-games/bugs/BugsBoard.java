@@ -22,6 +22,8 @@ import static bugs.BugsMovespec.*;
 import java.awt.Color;
 import java.util.*;
 
+import bugs.data.Profile;
+import bugs.data.Taxonomy;
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -58,11 +60,24 @@ class BugsBoard
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel;
-	private BugsState board_state = BugsState.Puzzle;	
+	BugsState board_state = BugsState.Puzzle;	
 	private BugsState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public BugsCell masterDeck = null;
 	public BugsCell activeDeck = null;
+	public BugsCell masterGoalDeck = null;
+	public BugsCell goalDeck = null;
+	
+	public PlayerBoard pbs[] = null;
+	public PlayerBoard allPbs[] = 
+		{ new PlayerBoard(this,BugsId.Yellow,BugsChip.Yellow,0),
+		  new PlayerBoard(this,BugsId.Green,BugsChip.Green,1),
+		  new PlayerBoard(this,BugsId.Blue,BugsChip.Blue,2),
+		  new PlayerBoard(this,BugsId.Red,BugsChip.Red,3)
+		};
+	
+	public PlayerBoard getPlayerBoard(int n) { return pbs[n]; }
+	
 	public BugsState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -76,16 +91,13 @@ class BugsBoard
 			}
 	}
 	public BugsCell market[] = null;
+	public BugsCell goals[] = null;
 	
-    private BugsId playerColor[]={BugsId.White,BugsId.Black};    
-    private BugsChip playerChip[]={BugsChip.White,BugsChip.Black};
-    private BugsCell playerCell[]=new BugsCell[2];
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
-	public BugsChip getPlayerChip(int p) { return(playerChip[p]); }
-	public BugsId getPlayerColor(int p) { return(playerColor[p]); }
-	public BugsCell getPlayerCell(int p) { return(playerCell[p]); }
-	public BugsChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
+	public BugsChip getPlayerChip(int p) { return(pbs[p].chip); }
+	public BugsId getPlayerColor(int p) { return(pbs[p].color); }
+	public BugsChip getCurrentPlayerChip() { return(getPlayerChip(whoseTurn)); }
 	public BugsPlay robot = null;
 	
 	
@@ -128,17 +140,12 @@ class BugsBoard
 // dithering by the user, or the "Digest()" method is not returning unique results
 // other parts of this mechanism: the Viewer ought to have a "repRect" and call
 // DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() { setState(BugsState.Draw); }	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
-
-    private boolean swapped = false;
+	public void SetDrawState() { G.Error("Not expected"); }
+	CellStack animationStack = new CellStack();
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public BugsChip pickedObject = null;
     public BugsChip lastPicked = null;
-    private BugsCell blackChipPool = null;	// dummy source for the chip pools
-    private BugsCell whiteChipPool = null;
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
@@ -154,7 +161,6 @@ class BugsBoard
  		}
  	}
 
-    private CellStack emptyCells=new CellStack();
     private BugsState resetState = BugsState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -173,18 +179,23 @@ class BugsBoard
 		Random r = new Random(734687);
 		masterDeck =  new BugsCell(r,BugsId.MasterDeck);
 		activeDeck =  new BugsCell(r,BugsId.ActiveDeck);
+		masterGoalDeck = new BugsCell(r,BugsId.MasterGoalDeck);
+		goalDeck = new BugsCell(r,BugsId.GoalDeck);
+		
 		for(int i=0;i<BugCard.bugCount();i++) { masterDeck.addChip(BugCard.getCard(i)); }
 		
 		// do this once at construction
-	    blackChipPool = new BugsCell(r,BugsId.Black);
-	    blackChipPool.addChip(BugsChip.Black);
-	    whiteChipPool = new BugsCell(r,BugsId.White);
-	    whiteChipPool.addChip(BugsChip.White);
 	    market = new BugsCell[N_MARKETS];
+	    goals = new BugsCell[N_GOALS];
 	    for(int i=0;i<N_MARKETS;i++)
 	    {
 	    	market[i] = new BugsCell(r,BugsId.Market,i);
 	    }
+	    for(int i=0;i<N_GOALS;i++)
+	    {
+	    	goals[i] = new BugsCell(r,BugsId.Goal,i);
+	    }
+
         doInit(init,key,players,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
     }
@@ -201,6 +212,125 @@ class BugsBoard
     	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
     	doInit(typ,ran,np,rev);
     }
+    
+    public int nBoardCells() { return getCellArray().length; }
+    
+    public void buildActiveDeck()
+    {
+		Hashtable <String,Taxonomy> cats = new Hashtable<String,Taxonomy>();
+		Random r = new Random(randomKey+154135);
+		int map[] = AR.intArray(masterDeck.height());
+		int nCells = nBoardCells();
+		int deckSize = (int)(DECKSIZE_MULTIPLIER*nCells*3);
+		Taxonomy animals = Taxonomy.get("Animalia");
+		int ncards = masterDeck.height();
+		int lim = ncards;
+		r.shuffle(map);
+		activeDeck.reInit();
+		while((cats.size()<N_ACTIVE_CATEGORIES
+				|| activeDeck.height()<deckSize)
+				&& lim-->0
+				)
+		{	
+			BugCard ch = (BugCard)masterDeck.chipAtIndex(map[lim]);
+			Profile prof = ch.getProfile();
+			Taxonomy cat = prof.getCategory();
+			String catName = cat.getScientificName();
+			boolean include = cat!=animals && cats.get(catName)==null;
+			if(include)
+			{	cats.put(catName,cat);
+				for(int i=0;i<lim; i++)
+				{
+					BugCard in = (BugCard)masterDeck.chipAtIndex(i);
+					Taxonomy bugCat = in.getProfile().getCategory();
+					if(bugCat==cat) { activeDeck.addChip(in); }				
+				}
+			}
+		}
+		int nWild = (int)(deckSize*WILDPERCENT);
+		lim = ncards;
+		while(nWild > 0 && lim-->0)
+		{
+			BugCard ch = (BugCard)masterDeck.chipAtIndex(map[lim]);
+			Taxonomy cat = ch.getProfile().getCategory();
+			if(cat==animals) 
+				{ nWild--; activeDeck.addChip(ch); 
+				}
+		}
+		G.print("cats ",cats.size()," deck ",activeDeck.height());
+		activeDeck.shuffle(r);
+    }
+    
+    /**
+     * assign habitats to the board cells, in a proportion that's appropriate
+     * for the bugs that are in the deck.
+     */	
+    public void buildHabitat()
+    {
+    	int onlyWater = 0;
+    	int onlyForest = 0;
+    	int onlyGrass = 0;
+    	int onlyGround = 0;
+    	int hasGround = 0;
+    	int hasWater = 0;
+    	int hasGrass = 0;
+    	int hasForest = 0;
+    	// characterize the requirements of the deck
+    	for(int lim=activeDeck.height()-1; lim>=0; lim--)
+    	{
+    		BugCard ch = (BugCard)activeDeck.chipAtIndex(lim);
+    		Profile pr = ch.getProfile();
+    		if(pr.hasOnlyWater()) { onlyWater=1; }
+    		if(pr.hasOnlyForest()) { onlyForest=1; }
+    		if(pr.hasOnlyGround()) { onlyGround=1; }
+    		if(pr.hasOnlyGrass()) { onlyGrass=1; }
+    		if(pr.hasGroundHabitat()) { hasGround++; }
+    		if(pr.hasWaterHabitat()) { hasWater++; }
+    		if(pr.hasForestHabitat()) { hasForest++; }
+    		if(pr.hasGrassHabitat()) { hasGrass++; }
+ 	   	}
+    	int nCells = nBoardCells();
+    	double hTotal = hasGround + hasWater + hasForest + hasGrass;
+    	int nWaterCells = Math.max(onlyWater,(int)(0.5+hasWater / hTotal * nCells));
+       	int nForestCells = Math.max(onlyForest,(int)(0.5+hasForest / hTotal * nCells));
+       	int nGrassCells = Math.max(onlyGrass,(int)(0.5+hasGrass / hTotal * nCells));
+       	int nGroundCells = Math.max(onlyGround,(int)(0.5+hasGround / hTotal * nCells));
+       	int allocCells = nWaterCells + nForestCells + nGrassCells + nGroundCells;
+       	while(allocCells<nCells)
+       	{
+       		Random r = new Random(2626+randomKey);
+       		switch(r.nextInt(4))
+       		{
+       		default:
+       		case 0: nWaterCells++; break;
+       		case 1: nGroundCells++; break;
+       		case 2: nForestCells++; break;
+       		case 3: nGrassCells++; break;
+       		}
+       		allocCells++;
+       	}
+       	while(allocCells>nCells)
+       	{
+       		Random r = new Random(236726+randomKey);
+       		switch(r.nextInt(4))
+       		{
+       		default:
+       		case 0: if(nWaterCells>onlyWater) {  nWaterCells--; allocCells--; } break;
+       		case 1: if(nGroundCells>onlyGround) { nGroundCells--; allocCells--; } break;
+       		case 2: if(nForestCells>onlyForest) { nForestCells--; allocCells--; } break;
+       		case 3: if(nGrassCells>onlyGrass) { nGrassCells--; allocCells--; } break;
+       		}
+       	}
+       	// we now have determined the right number of cells of appropriate types
+       	BugsCell cells = allCells;
+       	cells.reInit();
+       	while(nWaterCells-- > 0) { cells.addChip(BugsChip.MarshTile); }
+       	while(nForestCells-- > 0) { cells.addChip(BugsChip.ForestTile); }
+       	while(nGroundCells-- > 0) { cells.addChip(BugsChip.GroundTile); }
+       	while(nGrassCells-- > 0) { cells.addChip(BugsChip.PrarieTile); }
+       	cells.shuffle(new Random(7337+randomKey));
+       	while(cells!=null) { cells.background = allCells.removeTop(); cells=cells.next; }
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
     {	randomKey = key;
@@ -216,6 +346,7 @@ class BugsBoard
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case bugspiel:
+		case bugspiel2:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
@@ -223,20 +354,27 @@ class BugsBoard
 			// Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
 			// allCells.setDigestChain(r);		// set the randomv for all cells on the board
 		}
+		
+		buildActiveDeck();
+		buildHabitat();
+		// the goal deck is built based on the active deck
+		GoalCard.buildGoalDeck(activeDeck.toArray(),goalDeck);
+		
+		Random r = new Random(randomKey+14125);
+		goalDeck.shuffle(r);
 
-		activeDeck.copyFrom(masterDeck);
-		Random r = new Random(randomKey);
-		activeDeck.shuffle(r);
 		reInit(market);
+		reInit(goals);
  		for(int i=0;i<market.length;i++)
  		{
  			market[i].addChip(activeDeck.removeTop());
  		}
-	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
-	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
+ 		for(int i=0;i<goals.length;i++)
+ 		{
+ 			goals[i].addChip(goalDeck.removeTop());
+ 		}
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    chips_on_board = 0;
 	    droppedDestStack.clear();
 	    pickedSourceStack.clear();
 	    stateStack.clear();
@@ -245,17 +383,10 @@ class BugsBoard
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
-		playerColor[map[0]]=BugsId.White;
-		playerColor[map[1]]=BugsId.Black;
-		playerChip[map[0]]=BugsChip.White;
-		playerChip[map[1]]=BugsChip.Black;
-	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(BugsCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
+	    pbs = new PlayerBoard[players_in_game];
+	    for(int i=0;i<players_in_game; i++) { pbs[i] = allPbs[map[i]]; pbs[i].doInit(); }
 	    
         animationStack.clear();
-        swapped = false;
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -267,6 +398,7 @@ class BugsBoard
 	  dup.copyFrom(this);
 	  return(dup); 
    	}
+
     public void copyFrom(BoardProtocol b) { copyFrom((BugsBoard)b); }
 
     /* make a copy of a board.  This is used by the robot to get a copy
@@ -276,26 +408,20 @@ class BugsBoard
     public void copyFrom(BugsBoard from_b)
     {
         super.copyFrom(from_b);
-        chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
-        getCell(emptyCells,from_b.emptyCells);
         copyFrom(market,from_b.market);
+        copyFrom(goals,from_b.goals);
         copyFrom(activeDeck,from_b.activeDeck);
-        copyFrom(market,from_b.market);
+        copyFrom(goalDeck,from_b.goalDeck);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
-        copyFrom(whiteChipPool,from_b.whiteChipPool);		// this will have the side effect of copying the location
-        copyFrom(blackChipPool,from_b.blackChipPool);		// from display copy boards to the main board
-        getCell(playerCell,from_b.playerCell);
         stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-        AR.copy(playerColor,from_b.playerColor);
-        AR.copy(playerChip,from_b.playerChip);
+        for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
  
         sameboard(from_b); 
     }
@@ -315,19 +441,16 @@ class BugsBoard
         super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
-        G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor mismatch");
-        G.Assert(AR.sameArrayContents(playerChip,from_b.playerChip),"playerChip mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
-        G.Assert(chips_on_board == from_b.chips_on_board,"chips_on_board mismatch");
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
         G.Assert(activeDeck.sameContents(from_b.activeDeck),"active deck mismatch");
         G.Assert(sameCells(market,from_b.market),"market mismatch");
-        // this is a good overall check that all the copy/check/digest methods
-        // are in sync, although if this does fail you'll no doubt be at a loss
-        // to explain why.
+        G.Assert(sameCells(goals,from_b.goals),"goals mismatch");
+        for(int i=0;i<pbs.length;i++) { pbs[i].sameBoard(from_b.pbs[i]); }
+        
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
+        
 
     }
 
@@ -368,15 +491,17 @@ class BugsBoard
         long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
-		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
 		v ^= activeDeck.Digest(r);
+		v ^= goalDeck.Digest(r);
 		v ^= Digest(r,market);
+		v ^= Digest(r,goals);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,whoseTurn);
+		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
         return (v);
     }
 
@@ -432,16 +557,9 @@ class BugsBoard
 
 
     // set the contents of a cell, and maintain the books
-    private int lastPlaced = -1;
     public BugsChip SetBoard(BugsCell c,BugsChip ch)
     {	BugsChip old = c.topChip();
-    	if(c.onBoard)
-    	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
-     		else { c.lastPlaced = lastPlaced; }
-    	}
-       	if(old!=null) { c.removeTop();}
+    	if(old!=null) { c.removeTop();}
        	if(ch!=null) { c.addChip(ch);  }
     	return(old);
     }
@@ -486,8 +604,14 @@ class BugsBoard
         {
         default:
         	throw G.Error("Not expecting dest " + c.rackLocation);
-        case Black:
-        case White:		// back in the pool, we don't really care where
+        case PlayerGoals:
+        case PlayerBugs:
+        case ActiveDeck:
+        case Green:
+        case Goal:
+        case Market:
+        case Yellow:		// back in the pool, we don't really care where
+        	c.addChip(pickedObject);
         	pickedObject = null;
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
@@ -530,19 +654,34 @@ class BugsBoard
         switch (source)
         {
         default:
-        	throw G.Error("Not expecting source " + source);
+        	return pbs[col-'A'].getCell(source,col,row);
+        case Goal:
+        	return goals[row];
         case MasterDeck:
         	return masterDeck;
         case ActiveDeck:
         	return activeDeck;
+        case GoalDeck:
+        	return goalDeck;
         case Market:
         	return market[row];
         case BoardLocation:
-        	return(getCell(col,row));
-        case Black:
-        	return(blackChipPool);
-        case White:
-        	return(whiteChipPool);
+        {	int rem = 0;
+        	if(row>=100)
+        		{  
+        		rem = row/100; 
+        		row = row%100; 
+        		}
+        	BugsCell c = getCell(col,row);
+        	switch(rem)
+        	{
+        	default:
+        	case 0: break;
+        	case 1: c = c.above; break;
+        	case 2: c = c.below; break;
+        	}
+        	return c;
+        	}
         } 	
     }
     /**
@@ -563,6 +702,10 @@ class BugsBoard
         {
         default:
         	throw G.Error("Not expecting rackLocation " + c.rackLocation);
+        case Market:
+        case Goal:
+        case GoalDeck:
+        case ActiveDeck:
         case BoardLocation:
         	{
             lastPicked = pickedObject = c.topChip();
@@ -571,8 +714,8 @@ class BugsBoard
         	}
             break;
 
-        case Black:
-        case White:
+        case Green:
+        case Yellow:
         	lastPicked = pickedObject = c.topChip();
         }
     }
@@ -609,7 +752,7 @@ class BugsBoard
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
@@ -642,29 +785,6 @@ class BugsBoard
         	}
         }
     }
-void doSwap(replayMode replay)
-{	BugsId c = playerColor[0];
-	BugsChip ch = playerChip[0];
-	playerColor[0]=playerColor[1];
-	playerChip[0]=playerChip[1];
-	playerColor[1]=c;
-	playerChip[1]=ch;
-	BugsCell cc = playerCell[0];
-	playerCell[0]=playerCell[1];
-	playerCell[1]=cc;
-	swapped = !swapped;
-	switch(board_state)
-	{	
-	default: 
-		throw G.Error("Not expecting swap state "+board_state);
-	case Play:
-		// some damaged game records have double swap
-		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
-		//$FALL-THROUGH$
-	case Gameover:
-	case Puzzle: break;
-	}
-	}
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	BugsMovespec m = (BugsMovespec)mm;
@@ -673,9 +793,6 @@ void doSwap(replayMode replay)
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
         {
-		case MOVE_SWAP:	// swap colors with the other player
-			doSwap(replay);
-			break;
         case MOVE_DONE:
 
          	doDone(replay);
@@ -709,7 +826,20 @@ void doSwap(replayMode replay)
 				}
         	}
              break;
-
+        case MOVE_ROTATECCW:
+        	{	
+        	BugsCell src = getCell(m.source,m.to_col,m.to_row);
+        	src.rotation++;
+        	if(src.rotation>1) { src.rotation = -1; }
+        	}
+        	break;
+        case MOVE_ROTATECW:
+        	{
+        	BugsCell src = getCell(m.source,m.to_col,m.to_row);
+        	src.rotation--;
+        	if(src.rotation<-1) { src.rotation = 1; }
+        	}
+        	break;
         case MOVE_PICK:
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
@@ -802,7 +932,7 @@ void doSwap(replayMode replay)
 		case Gameover:
 			return(false);
         case Puzzle:
-            return ((pickedObject!=null)?(pickedObject==playerChip[player]):true);
+            return ((pickedObject!=null)?(pickedObject==getCurrentPlayerChip()):true);
         }
     }
 
@@ -859,11 +989,6 @@ void doSwap(replayMode replay)
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
             break;
-            
-        case MOVE_SWAP:
-        	setState(state);
-        	doSwap(replayMode.Replay);
-        	break;
         case MOVE_DROPB:
         	SetBoard(getCell(m.to_col,m.to_row),null);
         	break;
@@ -876,21 +1001,45 @@ void doSwap(replayMode replay)
         	setWhoseTurn(m.player);
         }
  }
-  
+ 
+ void addPickDrop(CommonMoveStack all,BugsCell c,int who)
+ {	if(c.onBoard)
+ 	{
+	 addPickDrop(all,c.above,who);
+	 addPickDrop(all,c.below,who);
+ 	}
+	 if(pickedObject==null)
+	 {
+		 if(c.topChip()!=null)
+		 {	
+			 all.push(new BugsMovespec(c.onBoard ? MOVE_PICKB : MOVE_PICK,c,who));
+		 }
+	 }
+	 else
+	 {
+		 all.push(new BugsMovespec(c.onBoard ? MOVE_DROPB : MOVE_DROP,c,who));
+	 }
+ }
 
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
  	switch(board_state)
  	{
  	case Puzzle:
- 		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
+ 		{
  			for(BugsCell c = allCells;
  			 	    c!=null;
  			 	    c = c.next)
- 			 	{	if(c.topChip()==null)
- 			 		{all.addElement(new BugsMovespec(op,c.col,c.row,whoseTurn));
- 			 		}
+ 			 	{	addPickDrop(all,c,whoseTurn);
  			 	}
+  		}
+ 		for(BugsCell c : market) { addPickDrop(all,c,whoseTurn); }
+ 		for(BugsCell c : goals) { addPickDrop(all,c,whoseTurn); }
+ 		addPickDrop(all,activeDeck,whoseTurn);
+ 		addPickDrop(all,goalDeck,whoseTurn);
+ 		for(PlayerBoard pb : pbs)
+ 		{
+ 			pb.getListOfMoves(all,whoseTurn);
  		}
  		break;
  	case Play:
@@ -906,10 +1055,7 @@ void doSwap(replayMode replay)
  
  public void initRobotValues(BugsPlay m)
  {	robot = m;
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
+
  }
 
  // small ad-hoc adjustment to the grid positions
@@ -917,6 +1063,7 @@ void doSwap(replayMode replay)
  {   if(Character.isDigit(txt.charAt(0)))
 	 	{ switch(variation)
 	 		{
+	 		case bugspiel2:
 	 		case bugspiel:
 	 			xpos -= cellsize/2;
 	 			break;
@@ -949,7 +1096,9 @@ void doSwap(replayMode replay)
  		{
  		case MOVE_PICKB:
  		case MOVE_DROPB:
- 			targets.put(getCell(m.to_col,m.to_row),m);
+ 		case MOVE_DROP:
+ 		case MOVE_PICK:
+ 			targets.put(getCell(m.source,m.to_col,m.to_row),m);
  			break;
  		case MOVE_SWAP:
  		case MOVE_DONE:

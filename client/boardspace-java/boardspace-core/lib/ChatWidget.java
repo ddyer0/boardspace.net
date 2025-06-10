@@ -354,7 +354,7 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
-        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, G.standardizeFontSize(lib.Font.defaultFontSize));
+        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.Font.standardizeFontSize(lib.Font.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));
         setUser(ERRORCHANNEL, s.get("Error"));
@@ -548,7 +548,7 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = G.standardizeFontSize((int)(lib.Font.defaultFontSize*(G.isCodename1()?1.2:1)));
+    	int fs = lib.Font.standardizeFontSize((int)(lib.Font.defaultFontSize*(G.isCodename1()?1.2:1)));
         basicFont = SystemFont.getFont(lib.Font.defaultFontFamily(), SystemFont.Style.Plain, fs);
         boldFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,fs);
 

@@ -30,6 +30,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -3436,6 +3437,8 @@ private void drawPlayerBoard(Graphics gc,
         boolean showWines = false;
         boolean selectWines = false;
         boolean harvesting  = false;
+        if(!apCards)
+        {
         switch(state.activity) {
 
         case DiscardWines: 
@@ -3449,8 +3452,7 @@ private void drawPlayerBoard(Graphics gc,
         	break;
         default: break;
         }
-        
-     	switch(state)
+      	switch(state)
      	{
      	
         case DiscardCards: 
@@ -3476,7 +3478,7 @@ private void drawPlayerBoard(Graphics gc,
      		uncensored = true;
      		break;
      	default: break;
-     	}
+     	}}
         int wineIndex = 0;
     	ViticultureCell fields[] = pb.fields;
     	ViticultureCell vines[] = pb.vines;
@@ -4210,12 +4212,12 @@ private void drawPlayerBoard(Graphics gc,
 		doneButton(gc,r,(done ? highlight : null));
 
  		int cardStep = (int) Math.min(cardH*0.6, cardW*0.6);
- 		int cardV = (int)(cardStep*0.72);
+ 		int cardV = (int)(cardStep*0.72*1.1);
 		int cardY = (int)(yp+step*0.78);
-
+		int cardW1 = (int)(cardStep*1.1);
 		int cardX = xp+cardStep*2/3;
-		Rectangle m1Rect = new Rectangle(cardX-cardStep/2,cardY-cardV/2,cardStep,cardV);
-		if(m1.drawChip(gc,this,cardStep,cardX,cardY,highlight,ViticultureId.MamaCards,null,1,1))
+		Rectangle m1Rect = new Rectangle(cardX-cardW1/2,cardY-cardV/2,cardW1,cardV);
+		if(m1.drawChip(gc,this,m1Rect,highlight,ViticultureId.MamaCards,(Text)null))
 		{	highlight.hitObject = pb.cards;
 			highlight.hit_index = 3;
 			highlight.spriteRect = m1Rect;
@@ -4224,8 +4226,8 @@ private void drawPlayerBoard(Graphics gc,
 		if(selected.contains(m1)) {  mark.drawChip(gc,this,cardStep/4,cardX,cardY,null);  }
 
 		int m2Y = (int)(cardY+cardStep*0.8);
-		Rectangle m2Rect = new Rectangle(cardX-cardStep/2,m2Y-cardV/2,cardStep,cardV);
-		if(m2.drawChip(gc,this,cardStep,cardX,m2Y,highlight,ViticultureId.MamaCards,null,1,1))
+		Rectangle m2Rect = new Rectangle(cardX-cardW1/2,m2Y-cardV/2,cardW1,cardV);
+		if(m2.drawChip(gc,this,m2Rect,highlight,ViticultureId.MamaCards,(Text)null))
 		{	highlight.hitObject = pb.cards;
 			highlight.hit_index = 2;
 			highlight.spriteRect = m2Rect;
@@ -6509,7 +6511,7 @@ private void drawPlayerBoard(Graphics gc,
   	int top = G.Top(bounds);
   	int width = G.Width(bounds);
   	int height = G.Height(bounds);
-  	int fh = G.getFontSize(largeBoldFont());
+  	int fh = Font.getFontSize(largeBoldFont());
   	boolean censor = !pb.hiddenCardsOnTop;
   	
   	int stateH = 100;

@@ -12,7 +12,7 @@ import lib.Tokenizer;
 public class Profile extends DataHelper<Profile> implements KeyProvider {
 	
     public String name;
-    
+    public int getUid() { return -1; }
     public String toString() {
     	 return "<profile "+name+">";  
     }
@@ -138,7 +138,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     			p.illustrationImage = im;
 				DataHelper<?> source = MasterSpecies.species.get(key);
 				if(source==null) { source = Taxonomy.taxonomies.get(key); }
-				else if(BugCard.get(key)==null)
+				else if(BugCard.getBugCard(key)==null)
 				{	p.calculatePoints();
 					new BugCard(key,p,source);
 				}
@@ -149,21 +149,50 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     /*
      * map the varios classification for habitat into just 4 choices.
      */
-	private Bitset<Habitat> waterHabitat = new Bitset<Habitat>(Habitat.MARINE,Habitat.FRESHWATER);
-	private Bitset<Habitat> groundHabitat = new Bitset<Habitat>(Habitat.DESERT,Habitat.SOIL,Habitat.VARIED);
-	private Bitset<Habitat> grassHabitat = new Bitset<Habitat>(Habitat.GRASSLAND,Habitat.URBAN,Habitat.VARIED);
-	private Bitset<Habitat> forestHabitat = new Bitset<Habitat>(Habitat.FOREST,Habitat.VARIED);
+	private static Bitset<Habitat> waterHabitat = new Bitset<Habitat>(Habitat.MARINE,Habitat.FRESHWATER);
+	private static Bitset<Habitat> groundHabitat = new Bitset<Habitat>(Habitat.DESERT,Habitat.SOIL,Habitat.VARIED);
+	private static Bitset<Habitat> grassHabitat = new Bitset<Habitat>(Habitat.GRASSLAND,Habitat.URBAN,Habitat.VARIED);
+	private static Bitset<Habitat> forestHabitat = new Bitset<Habitat>(Habitat.FOREST,Habitat.VARIED);
+	private static Bitset<Habitat> nonWaterHabitat = new Bitset<Habitat>(Habitat.values()).difference(waterHabitat);
+	private static Bitset<Habitat> nonGroundHabitat = new Bitset<Habitat>(Habitat.values()).difference(groundHabitat);
+	private static Bitset<Habitat> nonGrassHabitat = new Bitset<Habitat>(Habitat.values()).difference(grassHabitat);
+	private static Bitset<Habitat> nonForestHabitat = new Bitset<Habitat>(Habitat.values()).difference(forestHabitat);
 	
+	// true if this bug can live in the water
 	public boolean hasWaterHabitat() {
 		return habitat.test(waterHabitat);
 	}
+	// true if this bug can live on the ground
 	public boolean hasGroundHabitat() {
 		return habitat.test(groundHabitat);
 	}
+	// true if this bug can live in the grass
 	public boolean hasGrassHabitat() {
 		return habitat.test(grassHabitat);
 	}
+	// true if this bug can live in the forest
 	public boolean hasForestHabitat() {
 		return habitat.test(forestHabitat);
 	}
+	// true if this bug lives only in the water
+	public boolean hasOnlyWater()
+	{
+		return !habitat.test(nonWaterHabitat);
+	}
+	// true if this bug lives only in the forest
+	public boolean hasOnlyForest()
+	{
+		return !habitat.test(nonForestHabitat);
+	}
+	// true if this bug lives only in the ground
+	public boolean hasOnlyGround()
+	{
+		return !habitat.test(nonGroundHabitat);
+	}
+	// true if this bug lives only in the grass
+	public boolean hasOnlyGrass()
+	{
+		return !habitat.test(nonGrassHabitat);
+	}
+
 }

@@ -35,7 +35,9 @@ public abstract class DataHelper<T extends KeyProvider> {
 	public abstract String getCommonName();
 	public abstract String getScientificName();
 	public abstract Profile getProfile();
-	
+	static int TAX_OFFSET = 0;
+	static int SPEC_OFFSET = 100;
+	public abstract int getUid();
 	static String DefaultProfile = "Animalia";
     public enum Habitat {
         FRESHWATER, MARINE, SOIL, FOREST, GRASSLAND, DESERT,

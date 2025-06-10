@@ -1839,7 +1839,7 @@ public abstract class commonCanvas extends exCanvas
     {	if(chatFramed) { return(0); }
     	if(hidden.separateChat || hidden.hiddenChat) { return(0); }
     	int nominal = hidden.chatSizeAdj+(height*chatPercent)/100;
-    	int fs = G.getFontSize(standardPlainFont());
+    	int fs = lib.Font.getFontSize(standardPlainFont());
     	int fh = fs*14;		// minimum lines, about 7
     	int fm = fs*20;		// maximum lines, about 10
     	int maxh = height*2/3;
@@ -8636,14 +8636,14 @@ public void verifyGameRecord()
     	{
     		neww = r.nextInt(w-minw)+minw;
     		newh = r.nextInt(h-minh)+minh;
-    		double fac = G.adjustWindowFontSize(neww,newh);
+    		double fac = lib.Font.adjustWindowFontSize(neww,newh);
       	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
       	  	setLocalBoundsSync(0,0,neww,newh);
     		if(layoutErrors==0) { layoutErrors += checkLayoutBounds(); }
     	}
     	if(layoutErrors==0) 
     		{ 
-    		  double fac = G.adjustWindowFontSize(w,h);
+    		  double fac = lib.Font.adjustWindowFontSize(w,h);
       	  	  adjustStandardFonts(fac*lib.Font.defaultFontSize);
 
       	  	  setLocalBoundsSync(0,0,w,h); 

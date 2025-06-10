@@ -2,7 +2,6 @@ package bridge;
 
 import java.awt.Font;
 
-import lib.G;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
@@ -19,7 +18,7 @@ public class MenuItem extends java.awt.MenuItem implements NativeMenuItemInterfa
 	public int getNativeWidth() { return(JMenu.Width(this)); }
 	public Font getFont() 
 	{ Font f = super.getFont();
-	  if(f==null) { f = G.getGlobalDefaultFont(); }
+	  if(f==null) { f = lib.Font.getGlobalDefaultFont(); }
 	  return(f);
 	}
 	public String getText() { return(getLabel()); }

@@ -57,7 +57,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         //if(!"Console".equalsIgnoreCase(title)) { area.setReport(true); }
         fname = "Monospaced";
         fstyle = SystemFont.Style.Plain;
-        fsize = G.standardizeFontSize(lib.Font.defaultFontSize);
+        fsize = lib.Font.standardizeFontSize(lib.Font.defaultFontSize);
 
         // Create edit menu
         editMenu.add(selectAllItem);

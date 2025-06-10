@@ -17,8 +17,10 @@
 package bugs;
 
 import lib.CellId;
+import lib.Digestable;
 import lib.InternationalStrings;
 import lib.OStack;
+import lib.Random;
 import online.game.BaseBoard.BoardState;
 import online.game.BaseBoard.StateRole;
 
@@ -30,24 +32,40 @@ import online.game.BaseBoard.StateRole;
 
 public interface BugsConstants
 {	
-	int N_MARKETS = 10;
+	int N_MARKETS = 8;
+	int N_GOALS = N_MARKETS;
+	int STARTING_POINTS = 100;
+	int MAX_PLAYERS = 4;
+	int N_ACTIVE_CATEGORIES = 7;
+	double WILDPERCENT = 0.1;
+	double DECKSIZE_MULTIPLIER = 4;
+	
 //	these next must be unique integers in the BugsMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
 	enum BugsId implements CellId
 	{
-		Black, // positive numbers are trackable
-		White,
+		Green, // positive numbers are trackable
+		Yellow,
+		Red,
+		Blue,
 		Prarie,Jungle,Forest,Marsh,
 		BoardLocation,
-		ReverseView,
 		ToggleEye, 
 		MasterDeck,
 		ActiveDeck,
-		Market, Description,
+		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals, RotateCW,RotateCCW,
 		;
 		BugsChip chip;
 	
 	}
+	
+enum UIState implements Digestable {
+	Normal,Purchase;
+
+	public long Digest(Random r) {
+		return r.nextLong()*(ordinal()+1);
+	}
+}
 
 class StateStack extends OStack<BugsState>
 {
@@ -59,9 +77,10 @@ class StateStack extends OStack<BugsState>
 public enum BugsState implements BoardState,BugsConstants
 {
 	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
-	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),
+	Purchase(StateRole.Play,PurchaseExplanation,false,false),
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
+	Bonus(StateRole.Play,BonusExplanation,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
 	Play(StateRole.Play,PlayState,false,false);
 	
@@ -80,7 +99,7 @@ public enum BugsState implements BoardState,BugsConstants
 
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-	public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean simultaneousTurnsAllowed() { return(this==Purchase || this==Bonus); }
 };
     /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
     where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
@@ -89,12 +108,13 @@ public enum BugsState implements BoardState,BugsConstants
 static int[] ZfirstInCol = {  1, 0, 1,}; // these are indexes into the first ball in a column, ie B1 has index 2
 static int[] ZnInCol = { 2, 3, 2 }; // depth of columns, ie A has 4, B 5 etc.
 // 3 per side
-//static int[] ZfirstInCol = {  2, 1, 0, 1, 2,}; // these are indexes into the first ball in a column, ie B1 has index 2
-//static int[] ZnInCol = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5 etc.
+static int[] ZfirstInCol2 = {  2, 1, 0, 1, 2,}; // these are indexes into the first ball in a column, ie B1 has index 2
+static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5 etc.
 
  enum BugsVariation
     {
-    	bugspiel("bugspiel",ZfirstInCol,ZnInCol);
+    	bugspiel("bugspiel",ZfirstInCol,ZnInCol),
+	 	bugspiel2("bugspiel2",ZfirstInCol2,ZnInCol2);
     	String name ;
     	int [] firstInCol;
     	int [] ZinCol;
@@ -166,12 +186,15 @@ static int[] ZnInCol = { 2, 3, 2 }; // depth of columns, ie A has 4, B 5 etc.
 	static final String VegetarianMessage = "Vegetarian";
 	static final String NoEatMessage = "Doesn't eat";
 	static final String ParasiteMessage = "Parasite";
+	static final String PurchaseExplanation = "Buy bugs or goals";
+	static final String BonusExplanation = "Score bonus cards";
 	
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Prototype",
 			PlayState,
+			PurchaseExplanation,
 	    ScavengerMessage,
 	    CanFlyMessage,
 	    PredatorMessage,
