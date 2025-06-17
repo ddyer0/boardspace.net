@@ -29,7 +29,7 @@ use Mysql;
  my $xhta = "";
  while($nr-- > 0)
  {my ($name,$dir) = &nextArrayRow($sth);
-  my $gamedir  = "$'www_root$dir";
+  my $gamedir  = "$::www_root$dir";
   my $hta = "$gamedir/.htaccess";
   $namestr .= "gametype$idx,$name\n";
   $gamestr .= "gamedir$idx,$gamedir\n";

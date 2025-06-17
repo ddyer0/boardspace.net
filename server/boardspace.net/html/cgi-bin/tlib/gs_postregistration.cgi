@@ -41,14 +41,14 @@ use strict;
 		my $mm = &trans('recent_registration_message') . "\n" . $msg;
 		if($test)
 		{
-		print "from: $'from_email to: $e_mail su: $su<br>$mm<br>";
+		print "from: $::from_email to: $e_mail su: $su<br>$mm<br>";
 		}
 		else
 		{
 		my $q = "update players set note_sent='yes' where player_name = $qplay";
 		print "to: $player<br>";
 		&commandQuery($dbh,$q);
-		&send_mail($'supervisor_email,$e_mail,$su,$mm);
+		&send_mail($::supervisor_email,$e_mail,$su,$mm);
 		}
 		}
 	}

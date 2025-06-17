@@ -44,7 +44,7 @@ sub init {
 sub make_log {
 	my ( $msg ) = @_;
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
-	open( F_OUT, ">>$'server_logon_log" );
+	open( F_OUT, ">>$::server_logon_log" );
  	printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n", 1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
         close F_OUT;
 }
@@ -54,10 +54,10 @@ sub check_and_start_server
    my $server_status = &check_server($username,$usernum);
    if(!$server_status)
    {
-       my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
-       my $val = $test ? `$'test_server_start` : `$'server_start`;
-       __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
-       __d("server down attempting restart: $'server_start = $? ($val)");
+       my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
+       my $val = $test ? `$::test_server_start` : `$::server_start`;
+       __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
+       __d("server down attempting restart: $::server_start = $? ($val)");
        sleep(2);
        $server_status = check_server($username,$usernum);
        if (! $server_status )
@@ -77,23 +77,23 @@ sub check_and_start_server
 #
 sub check_server
 { my ($username,$usernum)=@_;
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
+  unless (socket(SOCK, PF_INET, SOCK_STREAM, $::proto))
   {
     my $msg = scalar(localtime) . ": socket: $!\n";
-    open LOG, ">>$'perl_log";
+    open LOG, ">>$::perl_log";
     print LOG $msg;
     close LOG;
     return 0;
   }
-  my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
+  my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
   my $num = inet_aton("localhost");
-  my $port = $test ? $'test_server_port : $'game_server_port;
+  my $port = $test ? $::test_server_port : $::game_server_port;
   unless (connect(SOCK,sockaddr_in($port, $num))) 
     {
     my $numx = ord(substr($num,0,1)) . "." . ord(substr($num,1,1)) 
         . "." . ord(substr($num,2,1)) .  "." . ord(substr($num,3,1));
-    my $msg = scalar(localtime) . ": connect: port $'ip_name($numx):$port $!\n";
-    open LOG, ">>$'perl_log";
+    my $msg = scalar(localtime) . ": connect: port $::ip_name($numx):$port $!\n";
+    open LOG, ">>$::perl_log";
     print LOG $msg;
     close LOG;
     return 0;
@@ -103,8 +103,8 @@ sub check_server
 	my $rand2=int(rand(255.99));
 	my $rand3=int(rand(255.99));
 	my $rand4=int(rand(255.99));
-	$'serverKey="$rand1.$rand2.$rand3.$rand4";
-  print SOCK "200 -1 $username#$usernum $'serverKey\n";
+	$::serverKey="$rand1.$rand2.$rand3.$rand4";
+  print SOCK "200 -1 $username#$usernum $::serverKey\n";
   # this is an attempt to force the socket data to actually
   # be received before we leave.  Under some odd circumstances
   # the output-only socket isn't received in a timely fashion
@@ -124,17 +124,17 @@ sub print_jws_applet()
   my $cheerpj = lc(param('cheerpj')) eq 'true';
   my $guestnamepar = param('guestname');
   my ($guestname) = split(' ',$guestnamepar);
-  my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
+  my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
   my $testserver = $test ? "testserver=true\n" : "";
   my $stealth = (($bannermode eq 'S')&&(param('stealth') eq 'true'))
 	? "<param name=stealth value=true>\n"
 	: "";
 
-   if($use_class_dir eq "") { $use_class_dir = $'class_dir; }
-   if($test) { $use_class_dir = $'test_class_dir; }
+   if($use_class_dir eq "") { $use_class_dir = $::class_dir; }
+   if($test) { $use_class_dir = $::test_class_dir; }
 
-  my $extra = $'extramouse;
-  my $feat = $'features;
+  my $extra = $::extramouse;
+  my $feat = $::features;
   if(param('extra')) { $extra='true'; }
   my $banner="";  # this used to be part of a cookie based protol to exclude undesirables
   if(!($bannermode eq ""))
@@ -161,18 +161,18 @@ sub print_jws_applet()
   &finishQuery($sth);
   }
 	if($fav) { $fav = "favorites=$fav\n"; }
-   my $actualPort = ($test ? $'test_server_port : $'game_server_port);
+   my $actualPort = ($test ? $::test_server_port : $::game_server_port);
    my $port = $cheerpj
-		? ($test ? $'cheerpj_test_server_port : $'cheerpj_game_server_port)
+		? ($test ? $::cheerpj_test_server_port : $::cheerpj_game_server_port)
 		: $actualPort;
    my $guestnameout = (($pname eq 'guest') && $guestname) ? "guestname=$guestname\n" : "";
    my $msg = utfEncode("$banner$fav$testserver$dd
-codebase=/$'java_dir/$use_class_dir/
+codebase=/$::java_dir/$use_class_dir/
 documentbase=/$languageName/
 servername=$ENV{'HTTP_HOST'}
-gameservername=$'ip_name
+gameservername=$::ip_name
 localIP=$ENV{'REMOTE_ADDR'}
-serverKey=$'serverKey
+serverKey=$::serverKey
 lobbyportnumber=$port
 reallobbyportnumber=$actualPort
 robotlobby=solo
@@ -339,7 +339,7 @@ sub logon()
 	my $isok = 0;
 	my $bannercookie = &identityParameter();	
 
-	#__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	#__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
   
 	{
 	my $qpass = $dbh->quote($clearpasswd);
@@ -399,8 +399,8 @@ sub logon()
 	 my $mq = "SELECT stamp from email where toplayer=$slashpname order by stamp";
 	 my $sth2 = &query($dbh,$mq);
 	 my $nr2 = &numRows($sth2);
-	 if($'jws_message)
-	 { print "message\n$'jws_message\n"
+	 if($::jws_message)
+	 { print "message\n$::jws_message\n"
 	 }
 	 else
 	 {
@@ -419,7 +419,7 @@ sub logon()
 	 my $uidrank = "";
    my $latupdate = "";
    my ($pclass) = ($is_master eq 'y')?2 : ((0>=900) ? 1 : ($games_played>100?0:-1));
-   if($'geocode)
+   if($::geocode)
    {
    my %location = &getLocation($ENV{'REMOTE_ADDR'});
     my $myplace;
@@ -441,14 +441,14 @@ sub logon()
     my $last_logon = time();	# num seconds since Jan 1, 1970
 	my $fav = &favorite_games($dbh,$uid,90,3);
     #add the robots' rank
-    my ($sth2) = &query($dbh,"SELECT players.uid,value,variation FROM players left join ranking "
-          . " on ranking.uid=players.uid WHERE is_robot='y' OR players.uid=$uid ");
+    my ($sth2) = &query($dbh,"SELECT players.uid,value,variation,ranking.is_master FROM players left join ranking "
+          . " on ranking.uid=players.uid WHERE (ranking.is_master='No' or ranking.is_master='Yes') and (is_robot='y' OR players.uid=$uid) ");
     {my $nrows = &numRows($sth2);
      my $i=0;
      while($i<$nrows)
-	  	{ my ($pl,$ra,$va) = &nextArrayRow($sth2);
+	  	{ my ($pl,$ra,$va,$ma) = &nextArrayRow($sth2);
 	  	  if(($ra eq "") || ($ra eq "0") ) { $ra = "New"; }
-      $va = &gamename_to_gamecode($dbh,$va);
+      $va = &gamename_to_gamecode($dbh,$va,$ma);
       if($va) { $uidrank .= "$pl $va $ra "; }
 	  	  $i++;
 	  	}
@@ -482,7 +482,7 @@ sub logon()
 	  if($sth) { ($timec) = &nextArrayRow($sth); &finishQuery($sth); }
     }
 	
-	my $imagename=$ENV{'DOCUMENT_ROOT'}.$'image_dir.lc($pname).".jpg";
+	my $imagename=$ENV{'DOCUMENT_ROOT'}.$::image_dir.lc($pname).".jpg";
 	my $haspicture;
 		if(-r $imagename) { $haspicture="true"; }
 		else { $haspicture="false"; }
@@ -505,7 +505,7 @@ sub logon()
         my $q = "UPDATE players SET language=$qlang,$tz identity=$qb,num_logon=$num_logon, last_ip='$host',last_logon=$last_logon$latupdate "
 										. "WHERE uid=$uid";
 	      &commandQuery($dbh,$q);
-#__dStart( "$'debug_log", $'parent_script );
+#__dStart( "$::debug_log", $::parent_script );
 #__d($q);
 #__dEnd();
  
@@ -555,10 +555,10 @@ sub logon()
 # print start_html('Logon');
 if( param() ) 
 {	&logForm("login");
-    #__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+    #__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated
-	my $ok = &useCombinedParams($'tea_key);
+	my $ok = &useCombinedParams($::tea_key);
 	if($ok && checkChecksumVersion())
 	{
 	my $pname = param('pname');

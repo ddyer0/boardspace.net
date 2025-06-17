@@ -7,8 +7,8 @@ use strict;
 require "config.pl";
 require "../$lib'lib/common.pl";
 
-$'extraargs = "";  # /P to get a message box
-$'native_perl = 1; # if 1, use native stuff,otherwise use win32 process
+$::extraargs = "";  # /P to get a message box
+$::native_perl = 1; # if 1, use native stuff,otherwise use win32 process
 #
 # the native=1 version has no known problems, and is simpler.
 # the native=0 version has problems passing & to graphic services.
@@ -16,8 +16,8 @@ $'native_perl = 1; # if 1, use native stuff,otherwise use win32 process
 # ... in the native=0 version, (we hope) have since been fixed.
 #
 #
-$'graphic_services = "\\apache\\graphic-services\\graphic services.exe";
-$'plugins_dir = "\\apache\\graphic-services\\plug-ins\\";
+$::graphic_services = "\\apache\\graphic-services\\graphic services.exe";
+$::plugins_dir = "\\apache\\graphic-services\\plug-ins\\";
 
 use vars qw($in);
 use CGI  qw(:cgi);
@@ -68,7 +68,7 @@ sub service_runner()
 	$out = "\"$out\"";
    # run the filter
    #
-   my $com = "\"$'graphic_services\" /c /i$in /o$out /l$log $'extraargs";
+   my $com = "\"$::graphic_services\" /c /i$in /o$out /l$log $::extraargs";
 
 	 my $ee = "";
    {my $index = index($preset,'!');
@@ -122,7 +122,7 @@ sub service_runner_x()
    #
    # run the filter
    #
-    my $com = "\"$'graphic_services\" /c /i$in /o$out $'extraargs";
+    my $com = "\"$::graphic_services\" /c /i$in /o$out $::extraargs";
 	  my $ee = "";
    {my $index = index($preset,'!');
    if($index>0)
@@ -514,7 +514,7 @@ sub print_effects_categories()
 }
 sub print_filter_selector()
 {	 	my ($default) = @_;
-		my @plugs = &list_dir($'plugins_dir);
+		my @plugs = &list_dir($::plugins_dir);
 		my $filename;
 		print "<select name=filtername>\n";
   	foreach $filename(@plugs)

@@ -20,8 +20,8 @@ require "tlib/params.pl";
 #
 # the actual information providers set error and result strings.
 #
-var $'error = '';
-var $'result = '';
+var $::error = '';
+var $::result = '';
 
 sub init {
 	$| = 1;				# force writes
@@ -33,7 +33,7 @@ sub init {
 #
 sub regError()
 {	my ($msg) = @_;
-	$'error = $'error . $msg . "\n";
+	$::error = $::error . $msg . "\n";
 }
 
 # version that only works in unix
@@ -44,16 +44,16 @@ sub send_welcome()
   my $auth = &userAuthenticator($pname);
   my $regmsg = &trans("Thank you for registering at Boardspace.net.  To complete registration, click on this link:");
 
-                open( SENDMAIL, "| $'sendmail -f $'from_email $email" );
+                open( SENDMAIL, "| $::sendmail -f $::from_email $email" );
 
 #
 # note, the exact form of the link is known to 
-# the "$'bounce_targets list used by procmail
+# the "$::bounce_targets list used by procmail
 #
                 print SENDMAIL <<Mail_header;
 $auth
-Sender: $'from_email
-From: $'from_email
+Sender: $::from_email
+From: $::from_email
 To: $email
 Subject: $regsub
 
@@ -63,7 +63,7 @@ $regmsg
 
 Mail_header
         close SENDMAIL;
-  $'result = "ok\n";
+  $::result = "ok\n";
 
 }
 
@@ -77,13 +77,13 @@ Mail_header
 sub setup_php()
 {
 	my ($user,$pass,$email,$date,$status) = @_;
-	my $db_type = $'db_type;
-	my $database= $'php_database;
-	my $db_host = $'db_host;
+	my $db_type = $::db_type;
+	my $database= $::php_database;
+	my $db_host = $::db_host;
 	my $ok = 1;
 	if($database)
 	{
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$'db_user,$'db_password);
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$::db_user,$::db_password);
 	if($dbh)
 	{
 
@@ -151,7 +151,7 @@ sub register()
 	my $bannercookie = $cookies{'client'};
 	my $myaddr = $ENV{'REMOTE_ADDR'};
 	if($bannercookie)
-    {  $bannercookie = &decrypt($bannercookie->value,$'tea_key);
+    {  $bannercookie = &decrypt($bannercookie->value,$::tea_key);
     } 
 	if(&allow_ip_register($dbh,$myaddr)
        && &allow_ip_register($dbh,$bannercookie))
@@ -293,13 +293,13 @@ sub doRegister()
 # input is a single parameter "params" which is base64, encrypted, checksummed
 #
 sub doit()
-{	__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+{	__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 
   	print header;
 
 	if( param() ) 
 	{
-	my $ok = &useCombinedParams($'tea_key,1);
+	my $ok = &useCombinedParams($::tea_key,1);
 	if($ok)
 	{
 	my $dbh = &connect();
@@ -311,25 +311,25 @@ sub doit()
 		&doRegister($dbh);	
 		}
 		else {
-			$'error = "database connect refused";
+			$::error = "database connect refused";
 		}
 		&disconnect($dbh);
 	}
 	else 
 	{
-	$'error = "database connect failed";
+	$::error = "database connect failed";
  	}}
  	
- 	else { $'error = "invalid main input parameters"; }
+ 	else { $::error = "invalid main input parameters"; }
  	}
- 	else { $'error = "no input parameters"; }
+ 	else { $::error = "no input parameters"; }
  	 	
- 	if($'error)
- 	{	&printResult("Error",$'error);
+ 	if($::error)
+ 	{	&printResult("Error",$::error);
  	}
  	else
  	{
- 		&printResult("Ok",$'result);
+ 		&printResult("Ok",$::result);
  	}
 
   __dEnd( "end!" );

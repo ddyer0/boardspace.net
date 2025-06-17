@@ -218,8 +218,8 @@ sub doit()
 
    if($dbh)
 	{
-	if($'sendmessage_password 
-    		&& ($password eq $'sendmessage_password))
+	if($::sendmessage_password 
+    		&& ($password eq $::sendmessage_password))
   	{
   	 if((&allow_ip_access($dbh,$myaddr)>=0)
   	 	&& (&allow_ip_access($dbh,$bannercookie)>=0))
@@ -238,7 +238,7 @@ sub doit()
  	}
   	else
   	{
-   	if($password && !($password eq $'sendmessage_password))
+   	if($password && !($password eq $::sendmessage_password))
   		{
   		&note_failed_login($dbh,$myaddr,"IP: view '$ENV{'REQUEST_URI'}");
                 &note_failed_login($dbh,$bannercookie,"CK: view '$ENV{'REQUEST_URI'}");

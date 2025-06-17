@@ -8,7 +8,7 @@ use CGI::Cookie;
 #
 # common database utilities
 #
-$'parent_script="gs_db.pl";
+$::parent_script="gs_db.pl";
 
 #
 # scheme for penalizing abusive database users.  Keep two timers for "short time" and "long time"
@@ -17,15 +17,15 @@ $'parent_script="gs_db.pl";
 # when performing queries, accumulate the time used and when disconnecting, set up short time
 # and long time "for next time"
 #
-$'single_ip_ip;						# the ip address associated with this connection
-$'standard_database_connection;		# a copy of the standard database connection
-$'single_ip_uid=0;					# the ipinfo uid associated with this ip
-$'single_ip_query_time=0;			# seconds spent executing queries for this connection
-$'long_time_multiplier = 5;			# long term penalty accumulates this much faster than short time.
-$'long_time_ban_threshold = 120;	# when long time exceeds now by this amount you get banned.
-$'single_ip_penalty_time=0;			# "time" penalty for malformed parameters
-$'single_ip_penalty_string='';		# the strings which caused the penalty
-$'single_ip_penalty_threshold = 10;	# tolerance for bad parameters
+$::single_ip_ip;						# the ip address associated with this connection
+$::standard_database_connection;		# a copy of the standard database connection
+$::single_ip_uid=0;					# the ipinfo uid associated with this ip
+$::single_ip_query_time=0;			# seconds spent executing queries for this connection
+$::long_time_multiplier = 5;			# long term penalty accumulates this much faster than short time.
+$::long_time_ban_threshold = 120;	# when long time exceeds now by this amount you get banned.
+$::single_ip_penalty_time=0;			# "time" penalty for malformed parameters
+$::single_ip_penalty_string='';		# the strings which caused the penalty
+$::single_ip_penalty_threshold = 10;	# tolerance for bad parameters
 
 #log errors as messages and in the database exception log
 
@@ -57,7 +57,7 @@ sub printForm()
 sub logError()
 { my ($context,$com)=@_;
 	my $e = "($ENV{'REMOTE_ADDR'} $ENV{'REQUEST_URI'} : $context) $DBI::errstr";
-  __dStart( "$'debug_log", $'parent_script );
+  __dStart( "$::debug_log", $::parent_script );
   __d("Error $com:\n ->$e\n");
   my $trace = &stacktrace();
   __d("$trace");
@@ -68,7 +68,7 @@ sub logError()
   # on a live site, this is probably a sql injection attack, so don't
   # give them a roadmap how to continue
   #
-  if($'debug_mysql) 
+  if($::debug_mysql) 
   { print "Error $com:<br> $e<p>\n"; }
   else
   { print "Sorry, There was a problem processing your request<p>\n"; 
@@ -78,7 +78,7 @@ sub logError()
 sub logSilent()
 { my ($context,$com)=@_;
 	my $e = "($ENV{'REMOTE_ADDR'} $ENV{'REQUEST_URI'} : $context) $DBI::errstr";
-  __dStart( "$'debug_log", $'parent_script );
+  __dStart( "$::debug_log", $::parent_script );
   __d("$com:\n ->$e\n");
   __dEnd();
 }
@@ -87,7 +87,7 @@ sub logSilent()
 sub logMessage()
 { my ($context,$com)=@_;
 	my $e = "($ENV{'REMOTE_ADDR'} $ENV{'REQUEST_URI'} : $context)";
-  __dStart( "$'debug_log", $'parent_script );
+  __dStart( "$::debug_log", $::parent_script );
   __dm("$com:\n ->$e\n");
   &showForm();
   __dEnd();
@@ -95,7 +95,7 @@ sub logMessage()
 sub logForm()
 { my ($context,$com)=@_;
 	my $e = "($ENV{'REMOTE_ADDR'} $ENV{'REQUEST_URI'} : $context) $DBI::errstr";
-  __dStart( "$'debug_log", $'parent_script );
+  __dStart( "$::debug_log", $::parent_script );
   __d("$com:\n ->$e\n");
  &showForm();
   __dEnd();
@@ -107,25 +107,25 @@ sub bless_parameter_length()
 	my $len = length($str);
 	my $dif = $len-$xlen*2;
 	if($dif>0)
-	{	$'single_ip_penalty_time += $dif;
-		$'single_ip_ip = &ip_to_int($ENV{'REMOTE_ADDR'});
-		$'single_ip_penalty_string = ("" eq $'single_ip_penalty_string) ? $str : "$'single_ip_penalty_string\n$str";
+	{	$::single_ip_penalty_time += $dif;
+		$::single_ip_ip = &ip_to_int($ENV{'REMOTE_ADDR'});
+		$::single_ip_penalty_string = ("" eq $::single_ip_penalty_string) ? $str : "$::single_ip_penalty_string\n$str";
 	}
 }
 
 #connect to the database
 sub connect()
 { my ($script)=@_;
-	my $db_type = $'db_type;
-	my $database= $'database;
-	my $db_host = $'db_host;
-	if($script!="") {$'parent_script=$script; }
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host};mysql_multi_statements=1",$'db_user,$'db_password);
+	my $db_type = $::db_type;
+	my $database= $::database;
+	my $db_host = $::db_host;
+	if($script!="") {$::parent_script=$script; }
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host};mysql_multi_statements=1",$::db_user,$::db_password);
 	if(!$dbh)
-	{ &logError("Trying to connect","db: ${database}\@${db_host} user:$'db_user");
+	{ &logError("Trying to connect","db: ${database}\@${db_host} user:$::db_user");
 	}
 
-	$'standard_database_connection = $dbh;
+	$::standard_database_connection = $dbh;
 	return($dbh);
 }
 
@@ -150,24 +150,24 @@ sub disconnect()
 	if($dbh)
 	{
 	my $kk;
-	if($dbh == $'standard_database_connection)
+	if($dbh == $::standard_database_connection)
 	{
 	#
 	# if too much junk was detected in the parameter stream, 
 	# just ban this guy.
-	if($'single_ip_penalty_time>$'single_ip_penalty_threshold)
+	if($::single_ip_penalty_time>$::single_ip_penalty_threshold)
 	{	# bad guy feeding stuff to the queries
-	my $qc = $dbh->quote("bad input $ENV{'SCRIPT_NAME'}: $'single_ip_penalty_string" );
+	my $qc = $dbh->quote("bad input $ENV{'SCRIPT_NAME'}: $::single_ip_penalty_string" );
 	my $da = $dbh->quote(&datestring());
-	if($'single_ip_uid)
+	if($::single_ip_uid)
 		{
-		my $quid = $'single_ip_uid;
+		my $quid = $::single_ip_uid;
 		my $q = "update ipinfo set status='autobanned',comment=concat(comment,'\n',$da,$qc) WHERE uid=$quid";
 		&commandQuery($dbh,$q);
 		}
-		elsif($'single_ip_ip)
+		elsif($::single_ip_ip)
 		{
-		my $qip = $dbh->quote($'single_ip_ip);
+		my $qip = $dbh->quote($::single_ip_ip);
 		my $q = "Insert into ipinfo set status='autobanned',min=$qip,max=$qip,comment=$qc"
 				. " ON DUPLICATE KEY UPDATE status='autobanned',comment=concat(comment,'\n',$da,$qc)";
 		&commandQuery($dbh,$q);
@@ -175,34 +175,34 @@ sub disconnect()
 	}
 	
 	# if he accumulated enough time to incur a penalty
-	# print "Disconnect times $'single_ip_query_time for $'single_ip_ip ($'single_ip_uid)<p>";
-	if(($'single_ip_ip!=0) && ($'single_ip_query_time>1.0))
+	# print "Disconnect times $::single_ip_query_time for $::single_ip_ip ($::single_ip_uid)<p>";
+	if(($::single_ip_ip!=0) && ($::single_ip_query_time>1.0))
 	{
-	my $itime = int($'single_ip_query_time);
-	my $ltime = $itime*$'long_time_multiplier;
+	my $itime = int($::single_ip_query_time);
+	my $ltime = $itime*$::long_time_multiplier;
 	my $newtime = "short_time=UNIX_TIMESTAMP()+$itime,long_time=GREATEST(long_time+$ltime,UNIX_TIMESTAMP()+$ltime)";
 	my $qtime = $dbh->quote("excess time=$itime from $ENV{'SCRIPT_NAME'}");
 	my $da = $dbh->quote(&datestring());
 	
-	if($'single_ip_uid)
+	if($::single_ip_uid)
 		{
-		my $quid = $'single_ip_uid;
+		my $quid = $::single_ip_uid;
 		&commandQuery($dbh,"update ipinfo set $newtime,comment=concat(comment,'\n',$da,$qtime,'(',long_time-UNIX_TIMESTAMP(),')') WHERE uid=$quid");
 		}
 		else
 		{
-		my $qip = $dbh->quote($'single_ip_ip);
+		my $qip = $dbh->quote($::single_ip_ip);
 		&commandQuery($dbh,"Insert into ipinfo set status='auto',min=$qip,comment=$qtime,max=$qip,short_time=UNIX_TIMESTAMP()+$itime,long_time=UNIX_TIMESTAMP()+$ltime"
 				. " ON DUPLICATE KEY UPDATE $newtime,comment=concat(comment,'\n',$da,$qtime,'(',long_time-UNIX_TIMESTAMP(),')')");
 		}
 	}
-	$'standard_database_connection = 0;
+	$::standard_database_connection = 0;
 	}
 	
     for $kk (keys(%'lastquery))
         {
-		my $db = $'lastdbh{$kk};
-		my $key = $'lastquery{$kk};
+		my $db = $::lastdbh{$kk};
+		my $key = $::lastquery{$kk};
         if(($db eq $dbh) && $key) { &logError("query not finished at disconnect:",$key); }
         }
 	     $dbh->disconnect();
@@ -215,26 +215,26 @@ sub query()
   #print "Q: $com\n";
   my $start = Time::HiRes::time();
   my $sth = $dbh->prepare($com);
-  $'lastquery{$sth} = $com;
-  $'lastdbh{$sth} = $dbh;
+  $::lastquery{$sth} = $com;
+  $::lastdbh{$sth} = $dbh;
   if(!$sth->execute) 
 	{ &logError("execute",$com);
-	 if(! $'debug_mysql)
+	 if(! $::debug_mysql)
 	 {
-	 my $x = $'debug_mysql;
-	 $'debug_mysql = 1;	#prevent recursive errors
+	 my $x = $::debug_mysql;
+	 $::debug_mysql = 1;	#prevent recursive errors
 	 &note_failed_login($dbh,$ENV{'REMOTE_ADDR'},"IP: failed query - see log");
-	 $'debug_mysql = $x;
+	 $::debug_mysql = $x;
 	 }
 	 &finishQuery($sth); 
 	 $sth=0;
   }
   my $end = Time::HiRes::time();
   my $tot = ($end-$start);
-  $'single_ip_query_time += $tot;
-  if($tot>$'db_slow_query_time) 
+  $::single_ip_query_time += $tot;
+  if($tot>$::db_slow_query_time) 
 	{  my $msg = "slow query: ${tot} seconds: $com";
-	   if($tot>$'db_very_slow_query_time) { &logMessage("slow query",$msg); }
+	   if($tot>$::db_very_slow_query_time) { &logMessage("slow query",$msg); }
 	   else { &logForm("slow query",$msg); }
 	}
   return($sth);
@@ -269,8 +269,8 @@ sub nextArrayRow()
 sub finishQuery()
 {	my ($sth)=@_;
 	if($sth) 
-		{ $'lastquery{$sth} = 0; 
-		  $'lastdbh{$sth}= 0;
+		{ $::lastquery{$sth} = 0; 
+		  $::lastdbh{$sth}= 0;
 		  $sth->finish() || &logError("finish","");
 		}
 	# return the actual $sth, which can still be used to
@@ -311,10 +311,10 @@ sub check_logon()
 #
 sub check_bonus()
 {	my ($dbh,$game) = @_;
-	my $active = time()-60*60*24*30*($'retire_months);
+	my $active = time()-60*60*24*30*($::retire_months);
 	my $query = "select 1500-sum(value)/count(value) from players left join ranking "
        . " on players.uid=ranking.uid and ranking.variation='$game'"
-			. " where (games_won>=$'bonus_games) AND (status='ok') AND (ranking.last_played>$active)";
+			. " where (games_won>=$::bonus_games) AND (status='ok') AND (ranking.last_played>$active)";
 	my $sth = &query($dbh,$query);
 	my ($deficit) = &nextArrayRow($sth);
 	&finishQuery($sth);
@@ -412,14 +412,14 @@ sub allow_ip_access()
    # don't do this with no IP, as happens for the "cookie" pass if there is no cookie
    my $loginok = 1;
    my $ii = $dbh->quote($intip);
-   my $bantime = $'bad_login_time*60;
+   my $bantime = $::bad_login_time*60;
    my $range = "($ii>=min and $ii<=max)";
    my $query = "SELECT status,uid,if((UNIX_TIMESTAMP(changed)+$bantime)>UNIX_TIMESTAMP(),1,0),min,max,UNIX_TIMESTAMP(changed),UNIX_TIMESTAMP(),short_time,long_time from ipinfo where $range";
    my $sth = &query($dbh,$query);
    my $numrows = &numRows($sth);
    my $gooduid = 0;
    
-   if(index($ip,'.')>0) { $'single_ip_ip = $intip; }
+   if(index($ip,'.')>0) { $::single_ip_ip = $intip; }
 
    while ($numrows>0)
    {   $numrows--;
@@ -448,7 +448,7 @@ sub allow_ip_access()
        #print "Short $penalty Long $long_penalty / $short_time $long_time <br>";
        my $da = $dbh->quote(&datestring());
 
-       if($long_penalty > $'long_time_ban_threshold)	# if he accumulates enough penalties, ban him
+       if($long_penalty > $::long_time_ban_threshold)	# if he accumulates enough penalties, ban him
 		{
 		my $bancom = $dbh->quote("excess long penalty=$long_penalty");
 		my $quid = $dbh->quote($uid);
@@ -456,13 +456,13 @@ sub allow_ip_access()
 		my $gooduid = 0;
         }
        
-       $'single_ip_uid = $uid;
+       $::single_ip_uid = $uid;
        if($penalty>0)
 		{
 		# short time is the earliest time when the guy is allowed to
 		# use the database again.  If it's too soon, just delay a while.
 		sleep($penalty);
-		$'single_ip_start_time = $now+$penalty;
+		$::single_ip_start_time = $now+$penalty;
 		}
        }
    }
@@ -501,7 +501,7 @@ sub allow_ip_register()
 {  my ($dbh,$ip) = @_;
    my ($intip) = &ip_to_int($ip);
    if(!$intip) { return(1); }
-   my $bantime = $'bad_login_time*60;
+   my $bantime = $::bad_login_time*60;
    my $cond = "( ((status='autobanned') and ((UNIX_TIMESTAMP(changed)+$bantime)>UNIX_TIMESTAMP()))"
            . " or (status='banned') or (status='noregister') )";
    my $ii = $dbh->quote($intip);
@@ -599,7 +599,7 @@ sub note_failed_login()
 	#print "Ban $uid $oldcom () $info<p>";
 
 	# if within the last hour, accumulate and possibly ban this guy
-	if(($now-60*$'bad_login_interval)>$changed)
+	if(($now-60*$::bad_login_interval)>$changed)
 	{	#old news, start a new sequence
 		if(lc($status) eq 'autobanned')
         { # remember past bannings by converting to "wasbanned"
@@ -619,7 +619,7 @@ sub note_failed_login()
 	}
 	$comm = $dbh->quote($comm);
 	&commandQuery($dbh,"UPDATE ipinfo SET comment=$comm WHERE uid=$uid");
-	if(($badlogin+1)>=$'bad_login_count && (lc($status) eq 'auto'))
+	if(($badlogin+1)>=$::bad_login_count && (lc($status) eq 'auto'))
 	{	# convert to a ban.  The ban only lasts an hour or so
 		&commandQuery($dbh,"UPDATE ipinfo SET status='autobanned' WHERE uid=$uid");
 		my $qmsg = $dbh->quote("auto-banned ip=$ip for excess failed logins: $info");
@@ -648,10 +648,10 @@ sub load_game_to_code()
 	while($nr-- > 0)
 		{
 		my ($un,$cd,$vv,$ff) = &nextArrayRow($sth);
-		$'gamename_to_code{lc($un)} = lc($cd);
-		$'gamecode_to_name{lc($cd)} = lc($un);
-		$'gamecode_to_viewer{lc($cd)} = $vv;
-		$'gamename_to_family{lc($un)} = $ff;
+		$::gamename_to_code{lc($un)} = lc($cd);
+		$::gamecode_to_name{lc($cd)} = lc($un);
+		$::gamecode_to_viewer{lc($cd)} = $vv;
+		$::gamename_to_family{lc($un)} = $ff;
 		}
 	&finishQuery($sth);
 
@@ -659,18 +659,19 @@ sub load_game_to_code()
 sub gamename_to_family()
 {	my ($dbh,$name) = @_;
 	$name = lc($name);
-	my $fa = $'gamename_to_family{$name};
-	if(!$fa) { &load_game_to_code($dbh); $fa = $'gamename_to_family{$name}; }
+	my $fa = $::gamename_to_family{$name};
+	if(!$fa) { &load_game_to_code($dbh); $fa = $::gamename_to_family{$name}; }
 	return($fa ? $fa : $name);
 }
 sub gamename_to_gamecode()
-{	my ($dbh,$name) = @_;
+{	my ($dbh,$name,$master) = @_;
 	$name = lc($name);
-	my $gc = $'gamename_to_code{$name};
+	my $gc = $::gamename_to_code{$name};
 	if(!$gc)
 	{
 	&load_game_to_code($dbh);
-	$gc = $'gamename_to_code{$name};
+	$gc = $::gamename_to_code{$name};
+	if($master eq 'Yes') { $gc = "M$gc"; }
 	}
 	if(!$gc) 
 		{ # used to include $name, but that led to junk in the database due to some
@@ -683,11 +684,11 @@ sub gamecode_to_gamename()
 {
 	my ($dbh,$name) = @_;
 	$name = lc($name);
-	my $gc = $'gamecode_to_name{$name};
+	my $gc = $::gamecode_to_name{$name};
 	if(!$gc)
 	{
 	&load_game_to_code($dbh);
-	$gc = $'gamecode_to_name{$name};
+	$gc = $::gamecode_to_name{$name};
 	}
 	if(!$gc) 
 		{ # used to include $name, but that led to junk in the database due to some
@@ -700,11 +701,11 @@ sub gamecode_to_gameviewer()
 {
 	my ($dbh,$name) = @_;
 	$name = lc($name);
-	my $gc = $'gamecode_to_viewer{$name};
+	my $gc = $::gamecode_to_viewer{$name};
 	if(!$gc)
 	{
 	&load_game_to_code($dbh);
-	$gc = $'gamecode_to_viewer{$name};
+	$gc = $::gamecode_to_viewer{$name};
 	}
 	if(!$gc) 
 		{ # used to include $name, but that led to junk in the database due to some
@@ -885,7 +886,7 @@ sub countDBevent()
 	if(($nn eq $panic_alert) && ($panic_alert>0))
 	 {
 		my $msg = "panic: reached $panic_alert items for event $eventname";
-		__dStart($'debug_log,$ENV{'SCRIPT_NAME'});
+		__dStart($::debug_log,$ENV{'SCRIPT_NAME'});
 		__dmsg($msg);
 		__dEnd();
 	 }
@@ -895,12 +896,12 @@ sub countDBevent()
 sub changePhp()
 {
 	my ($uid,$user,$pass) = @_;
-	my $db_type = $'db_type;
-	my $database= $'php_database;
-	my $db_host = $'db_host;
+	my $db_type = $::db_type;
+	my $database= $::php_database;
+	my $db_host = $::db_host;
 	if($database)
 	{
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$'db_user,$'db_password);
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$::db_user,$::db_password);
 	if($dbh)
 		{
 		my $quid = $dbh->quote($uid);

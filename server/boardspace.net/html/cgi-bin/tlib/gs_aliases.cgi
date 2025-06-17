@@ -23,7 +23,7 @@ use CGI qw(:standard);
 sub normal_form($dbh)
 {	my ($dbh) = @_;
 	my $months = &param('months');
-  if($months == '') { $months=$'retire_months; };
+  if($months == '') { $months=$::retire_months; };
   my $sunset = int(time() - $months * 60 * 60 * 24 * 31);
 	my $q = "select p1.player_name,p2.player_name,UNIX_TIMESTAMP(cip0.last_date),cip0.count,cip0.type,cip1.count,cip2.count"
 		. " from coincident_ip as cip0"
@@ -60,8 +60,8 @@ sub doit()
   print "<title>$ENV{'HTTP_HOST'} Alias Monitor</title><h2>$ENV{'HTTP_HOST'} Alias Monitor</h2>\n";
   
 
-  if($'sendmessage_password 
-  	&& ($password eq $'sendmessage_password))
+  if($::sendmessage_password 
+  	&& ($password eq $::sendmessage_password))
   {
    my $dbh = &connect();
 	 if($dbh) { &normal_form($dbh); }

@@ -24,7 +24,7 @@ sub doit()
 	 my $nr = &numRows($sth);
 	 while($nr-- > 0)
 	 {my ($code,$dir) = &nextArrayRow($sth);
-	  print " $'webroot$dir ${code}- ";
+	  print " $::webroot$dir ${code}- ";
 	 }
 	 &finishQuery($sth);
 	}
@@ -36,7 +36,7 @@ sub doit()
 	 my $nr = &numRows($sth);
 	 while($nr-- > 0)
 	 {my ($name,$dir,$key) = &nextArrayRow($sth);
-	  print " $'webroot$dir $name $key ";
+	  print " $::webroot$dir $name $key ";
 	 }
 	 &finishQuery($sth);
 	}

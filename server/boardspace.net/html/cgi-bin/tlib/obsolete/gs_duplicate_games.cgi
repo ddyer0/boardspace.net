@@ -25,7 +25,7 @@ sub match_dir
 		if("." eq $file) {}
 		elsif (".." eq $file) {}
 		elsif ("challenge" eq $file) {}
-		elsif ($'games{$file})
+		elsif ($::games{$file})
 		{ my $of = &dircat($rootdir,$file);
 		  if(! -e $of)
 		   {print "<br>found $of";
@@ -73,10 +73,10 @@ my @parameters = param();
 		while($num>0)
 		{	$num--;
 			my ($name) = $sth->fetchrow();
-			$'games{"${name}.sgf"}=1;
+			$::games{"${name}.sgf"}=1;
 		}
 		my $r = $ENV{'DOCUMENT_ROOT'};
-		my $gdir = &dircat($r,$'game_dir);
+		my $gdir = &dircat($r,$::game_dir);
 		my $cdir = &dircat($gdir,"/challenge/$randomseed");
 		if(! -e $cdir) { mkdir($cdir,755); }
 		&match_dir($cdir,$gdir);

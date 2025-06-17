@@ -199,9 +199,9 @@ sub update_rankings
 		my $qcountry = $dbh->quote($country);
 		$country_clause = " AND country=$qcountry";
 	}
-  if($months=='') { $months=$'retire_months; }
+  if($months=='') { $months=$::retire_months; }
 	if($nitems=='') { $nitems=100; }
-	my $order_key = $'order_keys{$order};
+	my $order_key = $::order_keys{$order};
 	if($order_key eq "") 
 		{ $order_key="value desc"; 
 		}

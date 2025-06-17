@@ -2,10 +2,11 @@
 #
 # nitems=nn
 #
+
 use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);
-use Mysql;
-use Debug;
+#use Mysql;
+#use Debug;
 use Time::Local;
 use strict;
 
@@ -13,6 +14,7 @@ require "include.pl";
 require "tlib/gs_db.pl";
 require "tlib/common.pl";
 require "tlib/top_games.pl";
+
 
 sub rank_header 
 { my $t0 = &trans('The games at Boardspace.net');
@@ -40,7 +42,7 @@ sub show_activity
   {
   &readtrans_db($dbh);
   print "<center>\n";
-  &top_games_table($dbh,$'top_players_per_row,'english','',@'top_player_variations);
+  &top_games_table($dbh,$::top_players_per_row,'english','',@'top_player_variations);
   print "</center>\n";
   if(!param('embed')) { &standard_footer(); }
   }

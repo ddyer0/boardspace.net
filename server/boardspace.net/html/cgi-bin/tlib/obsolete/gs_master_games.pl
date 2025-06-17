@@ -14,7 +14,7 @@ require "../include.pl";
 require "../gs_db.pl";
 use strict;
 
-$'recurse = 1;
+$::recurse = 1;
 
 var @'months = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
@@ -25,9 +25,9 @@ sub link_master()
    {
    # parts>6 is to distinguish new format games with scores from old format games without.
    # we presume that all the old format games have been collected already
-   my $master = &dircat(&dircat($'webroot,$'game_dir),"master") ;
+   my $master = &dircat(&dircat($::webroot,$::game_dir),"master") ;
    my $myr = &dircat($master,$parts[4]);
-   my $mmo = &dircat($myr,$'months[$parts[5]]);
+   my $mmo = &dircat($myr,$::months[$parts[5]]);
    my $mfi = &dircat($mmo,$file);
    if( ! -e $myr) { mkdir($myr,0755); }
    if( ! -e $mmo) { mkdir($mmo,0755); }
@@ -49,7 +49,7 @@ sub match_dir
 	 elsif ("challenge" eq $file) {}
 	 elsif ("master" eq $file) {}
 	 elsif (-d $cf)
-	 { if($'recurse)
+	 { if($::recurse)
 		{&match_dir($cf);
 	     }
 	 }
@@ -61,7 +61,7 @@ sub match_dir
 }
 
 {	print "Running master game collection\n";
-	my $gdir = &dircat($'webroot,$'game_dir);
+	my $gdir = &dircat($::webroot,$::game_dir);
 	&match_dir($gdir);
 }
 

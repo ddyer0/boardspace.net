@@ -14,7 +14,7 @@ sub init {
 }
 
 
-var $'testdel = 0;
+var $::testdel = 0;
 sub markdelinquent()
 {
 	my ($dbh,$status,$speed,$oldmark,$newmark,$days) = @_;
@@ -22,7 +22,7 @@ sub markdelinquent()
 	my $qspeed= $speed ? " and speed = " . $dbh->quote($speed) : "";
 	my $mark = $oldmark ? " marked = " . $dbh->quote($oldmark) : " marked is null ";
 	my $qnewmark = $dbh->quote($newmark);
-	my $sel = $'testdel
+	my $sel = $::testdel
 			? "select gameuid,variation,status from offlinegame "
 			: $newmark 
 				? "update offlinegame set marked = $qnewmark "

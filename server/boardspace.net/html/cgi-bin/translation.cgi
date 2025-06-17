@@ -33,7 +33,7 @@ require "tlib/common.pl";
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 #
@@ -465,7 +465,7 @@ sub do_translation()
   my $daystosee = &param('daystosee');
   if($daystosee<=0) { $daystosee = 9999; }
   &print_header(); 
-  if($admin && (!$'translation_password || !($admin eq $'translation_password)) ) 
+  if($admin && (!$::translation_password || !($admin eq $::translation_password)) ) 
 	{ $admin = ''; 
 	  print "<b>Incorrect admin password<b><p>\n";
 	}

@@ -18,7 +18,7 @@ require "tlib/common.pl";
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 # print a row of a table, one cell per arg
@@ -191,7 +191,7 @@ __d("$ENV{'REQUEST_URI'} $myaddr");
   		if($n>0)
   			{	my ($owner,$title,$description,$cre,$cb,$sta) = &nextArrayRow($sth);
 
-  				if( $super ? ($'proposal_password && ($spass eq $'proposal_password)) : ($owner == $uid) )
+  				if( $super ? ($::proposal_password && ($spass eq $::proposal_password)) : ($owner == $uid) )
   				{	# copy data from proposal to input parameters
   					if( ! ($approve || $deliver || $delete))
   						{$subject = $title;

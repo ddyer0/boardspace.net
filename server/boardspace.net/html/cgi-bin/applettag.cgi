@@ -69,11 +69,11 @@ ENDTAG2
 
 sub print_applet_tag()
 {
-	print " codebase=\"/$'java_dir/$'class_dir/\" ";
-	print " archive=\"$'jar_collection\" code=\"$'root_applet\"";
+	print " codebase=\"/$::java_dir/$::class_dir/\" ";
+	print " archive=\"$::jar_collection\" code=\"$::root_applet\"";
 }
 sub print_class_dir()
-{	print "$'class_dir";
+{	print "$::class_dir";
 }
 sub print_gamedir()
 {
@@ -99,7 +99,7 @@ sub print_gameparams_tag()
 	my $q = "select directory_index,directory from variation where name=$qgame";
 	my $sth = &query($dbh,$q);
 	my ($num,$dir) = &nextArrayRow($sth);
-	print "<param name='permissions' value='$'applet_permissions'>\n";
+	print "<param name='permissions' value='$::applet_permissions'>\n";
 	print "<param name='gameindex' value='$num'>\n";
 	print "<param name='reviewerdir$num' value='$dir'>\n";
 	print "<param name='gamename' value='$game'>\n";
@@ -141,7 +141,7 @@ sub print_jnlp_gameparams_tag()
 sub print_language_list()
 {	my @ll;
 	foreach my $key (keys(%'language_codes)) 
-	{	my $val = $'language_codes{$key};
+	{	my $val = $::language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }
 	}
 	my $prev;
@@ -191,7 +191,7 @@ sub make_log()
 {
  my ($msg ) = @_;
  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
- open( F_OUT, ">>$'contact_log" );
+ open( F_OUT, ">>$::contact_log" );
  printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n",1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
  close F_OUT;
 }
@@ -203,7 +203,7 @@ sub print_mobileinfo()
 	# no particular order is required, but start with languages
 	my @ll;
 	foreach my $key (keys(%'language_codes)) 
-	{	my $val = $'language_codes{$key};
+	{	my $val = $::language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }
 	}
 	my $prev;
@@ -215,9 +215,9 @@ sub print_mobileinfo()
 	}
 	$val .= &encode64long($llist) . "\n";
 
-	$val .= "message " . &encode64long($'mobile_login_message) . "\n";
+	$val .= "message " . &encode64long($::mobile_login_message) . "\n";
 
-	$val .= "versions " . &encode64long($'mobile_version_info) . "\n";
+	$val .= "versions " . &encode64long($::mobile_version_info) . "\n";
 
 	print($val);
 
@@ -271,7 +271,7 @@ sub print_standard_reviewer()
 	print "<h2>$title</h2><p>";
 print <<ENDBODY
 <head>
-  <script src="$'cheerpj">
+  <script src="$::cheerpj">
 </script>
 <script src="/js/site.js"> </script>
 <script src="/js/cheerpj.js"></script>
@@ -310,7 +310,7 @@ ENDBODY
 }
 sub print_appcookies()
 {	my %cookies = fetch CGI::Cookie();
-       __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+       __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 	foreach my $key (keys(%cookies))
 	{ my $val = $cookies{$key};
 	  my $ind = index($val,'=');
@@ -339,15 +339,15 @@ sub print_appletcookies()
 		}
 	 }
 	 print "<param name=\"jws_parameters\" value=\"$parameters\" />\n";
-	print "<param name=permissions value='$'applet_permissions'/>\n";
+	print "<param name=permissions value='$::applet_permissions'/>\n";
 }
 
 # print a list of the jars in the class directory.
 sub print_appjars()
 {	my $test = &param('test');
 	my $dir = $test 
-			? $ENV{'DOCUMENT_ROOT'} . "/$'java_dir/$'test_class_dir/" 
-			: $ENV{'DOCUMENT_ROOT'} . "/$'java_dir/$'class_dir/";
+			? $ENV{'DOCUMENT_ROOT'} . "/$::java_dir/$::test_class_dir/" 
+			: $ENV{'DOCUMENT_ROOT'} . "/$::java_dir/$::class_dir/";
 	#print "Dir = $dir<p>";
 	my $refdir = $test ? "test" : "jws";
 	my (@jars) = &list_dir($dir);
@@ -360,13 +360,13 @@ sub print_appjars()
 # print a list of the jars and their modification dates in the class directory.
 sub print_appjarinfo()
 {	my $test = &param('test');
-	my $host = $test ? "/$'java_dir/$'test_class_dir/" : "/$'java_dir/$'class_dir/";
+	my $host = $test ? "/$::java_dir/$::test_class_dir/" : "/$::java_dir/$::class_dir/";
 	my $dir = $ENV{'DOCUMENT_ROOT'} . $host;
 	#print "Dir = $dir<p>";
 	#my $par = &param('environment');
 	#print "Env = $par\n";
 	my (@jars) = &list_dir($dir);
-	print "version,$'appjar_version,$host\n";
+	print "version,$::appjar_version,$host\n";
 	foreach my $jar (@jars)
 	{ if( (index(lc($jar),'launcher.jar')<0)
 			&& (index(lc($jar),".jar")>0))
@@ -380,7 +380,7 @@ sub print_appjarinfo()
 # print a list of the .res files and their modification dates in the data directory.
 sub print_appdata()
 {	my $test = &param('test');
-	my $host = $test ? "/$'java_dir/testappdata/" : "/$'java_dir/appdata/";
+	my $host = $test ? "/$::java_dir/testappdata/" : "/$::java_dir/appdata/";
 	my $dir = $ENV{'DOCUMENT_ROOT'} . $host;
 	#print "Dir = $dir<p>";
 	my (@jars) = &list_dir($dir);
@@ -397,8 +397,8 @@ sub print_appdata()
 # two start options, for regular jws and guest jws
 sub print_jws()
 {	my ($guest) = @_;
-	if($'jws_link)
-	{	my $link = ($guest eq 'true') ? "'$'jws_guest_link'" : "'$'jws_link'";
+	if($::jws_link)
+	{	my $link = ($guest eq 'true') ? "'$::jws_guest_link'" : "'$::jws_link'";
 		my $message = &param('text');
 		if ('' eq $message) { $message = "java web start message"; }
 		my $jws_message = "<a href=$link>" . &trans("java web start") . "</a>";
@@ -410,8 +410,8 @@ sub print_jws()
 # two start options, for regular jws and guest jws
 sub print_jws_raw()
 {	my ($guest) = @_;
-	if($'jws_link)
-	{	my $link = ($guest eq 'true') ? "$'jws_guest_link" : "$'jws_link";
+	if($::jws_link)
+	{	my $link = ($guest eq 'true') ? "$::jws_guest_link" : "$::jws_link";
 		print "$link";
 	}
 }

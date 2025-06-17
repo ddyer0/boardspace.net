@@ -32,7 +32,7 @@ sub confirm()
  	my $slashpname = $dbh->quote($pname);
 
    if($bannercookie)
-      {  $bannercookie = &decrypt($bannercookie->value,$'tea_key);
+      {  $bannercookie = &decrypt($bannercookie->value,$::tea_key);
       } 
 
   if(&allow_ip_register($dbh,$ENV{'REMOTE_ADDR'})

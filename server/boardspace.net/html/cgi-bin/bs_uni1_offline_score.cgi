@@ -37,7 +37,7 @@ $| = 1;                         # force writes
 print header;
 my $ok = 0;
 	
-__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 
 sub checkServer()
 { my ($u) = @_;
@@ -45,10 +45,10 @@ sub checkServer()
   my $key = param('key');
   my $port = param('sock');
   my $alscored = (param('first') eq 'true');
-  if($port<2240) { $port=$'game_server_port}
+  if($port<2240) { $port=$::game_server_port}
   if($alscored && !&check_server($port,$session,$key,$u,$u))
       {
-       __dm( __LINE__." scoring rejected: \"$'reject_line\" $ENV{'QUERY_STRING'}" );
+       __dm( __LINE__." scoring rejected: \"$::reject_line\" $ENV{'QUERY_STRING'}" );
        print "\n** Ranking update was rejected by the server **\n";
        return 0;
       }
@@ -81,7 +81,7 @@ sub timestr()
 
 sub doit()
 {
-  $ok = &useCombinedParams($'tea_key,1);
+  $ok = &useCombinedParams($::tea_key,1);
   if($ok)
   {
   __d("from $ENV{'REMOTE_ADDR'} $ENV{'QUERY_STRING'}" );
@@ -116,13 +116,13 @@ sub doit()
   if($unranked || $serverless || $offline || &checkServer(param('u1')))
   {	my $nr =0;
 	my $selector = $offline ? "deviceid=$deviceid" : "player1=$u1";
- 	my $q = "select uid,gmtdate from sp_record where $selector and puzzleid=$puzzleid and mode=$mode";
+ 	my $q = "select gmtdate from sp_record where $selector and puzzleid=$puzzleid and mode=$mode";
 	my $sth = &query($dbh,$q);
   	my $nr = &numRows($sth);
-
+	#print "q: $q\n";
 	if($nr>0)
 	{
-	my ($uid,$gmtdate) = &nextArrayRow($sth);
+	my ($gmtdate) = &nextArrayRow($sth);
 	&finishQuery($sth);
  	print "You already solved this puzzle on $gmtdate\n";
 	}

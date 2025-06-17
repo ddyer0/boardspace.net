@@ -24,13 +24,13 @@ sub timestamp_date()
 sub timestamp()
 {	my ($offset) = @_;
 	my $val = &timestamp_date($offset);
-	return(&encode_entities(&encrypt($val,$'tea_key)),$val);
+	return(&encode_entities(&encrypt($val,$::tea_key)),$val);
 
 }
 
 sub check_timestamp()
 {	my ($var) = @_;
-	my $dv = &decrypt(&decode_entities($var),$'tea_key);
+	my $dv = &decrypt(&decode_entities($var),$::tea_key);
 	return( ($dv eq &timestamp_date(0)) || ($dv eq &timestamp_date(1)));
 }
 

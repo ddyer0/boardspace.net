@@ -13,7 +13,7 @@ sub update_turnbased()
 # check to see if the server is up, and thinks this is a
 # legitimate result.  log problems!
 #
-$'reject_line='';
+$::reject_line='';
 sub contains()
 {  my ($value,$aref) = @_;
    my @array = @{$aref};
@@ -51,12 +51,12 @@ sub check_turnbased
    if ($p12 && !&contains($p12,\@players) && &contains($p12,\@accepted) ) { push @players,$p12; }
    $ok = ($#accepted==$#players);
    if(!$ok) 
-	{ $'reject_line = "players list mismatch (@players) (@accepted)"; 
+	{ $::reject_line = "players list mismatch (@players) (@accepted)"; 
           print "reject @players + @accepted\n";
 	}
    }
    else
-   { $'reject_line = "no game matches $q";
+   { $::reject_line = "no game matches $q";
    }
  &finishQuery($sth);
  return $ok;
@@ -67,7 +67,14 @@ sub check_server
   my ($port,$session,$key,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12)=@_;
   #print "not checking server\n";
   #return(1);
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
+  # a bug passed the websocket port.  Better to not pass port numbers at all.
+  #
+  if($port eq 'standard') { $port = $::game_server_port; }
+  elsif($port eq 'test') { $port = $::test_server_port }
+  elsif(($port eq $::game_server_port) || ($port eq $::test_server_port)) {}
+  else { $port = $::game_server_port; }
+
+  unless (socket(SOCK, PF_INET, SOCK_STREAM, $::proto))
   { __d("socket failed  $!\n");
     return 0;
   }
@@ -99,7 +106,7 @@ sub check_server
   $line = substr($line,1,5);
   my $ok=($line eq "219 1");						#209 1 means the server likes it
   #print "check $msg = ($line) ($ok)\n";
-  $'reject_line = $line;
+  $::reject_line = $line;
   close(SOCK);
   return ($ok);
 }
@@ -108,7 +115,7 @@ sub make_log()
 {
  my ($msg ) = @_;
  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
- open( F_OUT, ">>$'game_completed_log" );
+ open( F_OUT, ">>$::game_completed_log" );
  printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n",1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
  close F_OUT;
 }

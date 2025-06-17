@@ -52,7 +52,7 @@ sub standard_stuff()
      &show_recent(5);
    print "</td>";
    print "<td>";
-   &show_ordinal_rankings($dbh,10,$'retire_months,2);
+   &show_ordinal_rankings($dbh,10,$::retire_months,2);
    print "</td>";
    print "</tr></table>";
    if($top) { &top_players_table($dbh,0,$language,$pname,@'top_player_variations); }

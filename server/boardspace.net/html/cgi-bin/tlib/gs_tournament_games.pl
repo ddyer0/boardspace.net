@@ -13,7 +13,7 @@ require "../include.pl";
 require "gs_db.pl";
 use strict;
 
-$'recurse = 1;
+$::recurse = 1;
 
 var @'months = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
@@ -21,13 +21,13 @@ sub link_tournament()
 {  my ($gamedir,$dir,$file,$doubles) = @_;
    my @parts = split(/-/,$file);
    {
-   my $master = &dircat(&dircat($'webroot,$gamedir),"tournament") ;
+   my $master = &dircat(&dircat($::webroot,$gamedir),"tournament") ;
    if(! -e $master) { mkdir($master,0755); }
    my $yr = $parts[3];
    if(0+$yr>1900)
    {
    my $myr = &dircat($master,$yr);
-   my $mmo = &dircat($myr,$'months[$parts[4]]);
+   my $mmo = &dircat($myr,$::months[$parts[4]]);
    my $mfi = &dircat($mmo,$file);
    if( ! -e $myr) { mkdir($myr,0755); }
    if( ! -e $mmo) { mkdir($mmo,0755); }
@@ -50,7 +50,7 @@ sub match_dir
 	 elsif ("challenge" eq $file) {}
 	 elsif ("master" eq $file) {}
 	 elsif (-d $cf)
-	 { if($'recurse)
+	 { if($::recurse)
 		{&match_dir($gamedir,$cf);
 	     }
 	 }
@@ -70,7 +70,7 @@ sub match_dir
 	my $dir;
 	foreach $dir (@'game_dirs)
             {
-            my $gdir = &dircat($'webroot,$dir);
+            my $gdir = &dircat($::webroot,$dir);
 	    &match_dir($dir, $gdir);
             #onetime match from unofficial archives
 	    #&match_dir($dir,"$gdir/../xGames/");

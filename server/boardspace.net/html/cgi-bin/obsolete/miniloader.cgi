@@ -7,9 +7,9 @@ use Debug;
 
 $| = 1;				# force writes
 
-$'javadir = "miniloader";
-$'jardir = "$ENV{'DOCUMENT_ROOT'}/$'javadir";
-$'host = $'ENV{'HTTP_HOST'};
+$::javadir = "miniloader";
+$::jardir = "$ENV{'DOCUMENT_ROOT'}/$::javadir";
+$::host = $::ENV{'HTTP_HOST'};
 #
 # list the files in a directory, given a fullpath.  The returned list
 # is names-only, but includes . and ..
@@ -25,12 +25,12 @@ sub list_dir()
 
 # print a list of the jars and their modification dates in the class directory.
 sub print_appjarinfo()
-{	my $dir = $ENV{'DOCUMENT_ROOT'} . "/$'java_dir/$'class_dir/";
+{	my $dir = $ENV{'DOCUMENT_ROOT'} . "/$::java_dir/$::class_dir/";
 	#print "Dir = $dir<p>";
-	my $dir = $'jardir;
+	my $dir = $::jardir;
 	my (@jars) = &list_dir($dir);
-	my $host = "/$'javadir";
-	print "version,1,$'host\n";
+	my $host = "/$::javadir";
+	print "version,1,$::host\n";
 	print "# following the version, lines contain the unix date and file name of jar files\n";
 	foreach my $jar (@jars)
 	{ if( (index(lc($jar),'launcher.jar')<0)

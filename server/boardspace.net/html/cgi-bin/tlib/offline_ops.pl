@@ -130,7 +130,7 @@ sub recordgame()
 			}
 			else 
 			{
-                         #__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+                         #__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 			 #__d("saving file ($fullname)");
 			return "error problem writing $fullname";
 			}
@@ -476,7 +476,7 @@ sub sendNotification()
    if($nr==1)
 	  {
 	   my ($player_name,$e_mail,$discord) = &nextArrayRow($sth);
-	  &send_silent_notification($player_name,$type,$'from_email,$e_mail,$discord,$message);
+	  &send_silent_notification($player_name,$type,$::from_email,$e_mail,$discord,$message);
 	  }
    &finishQuery($sth);
 }

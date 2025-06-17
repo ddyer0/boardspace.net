@@ -27,10 +27,10 @@ sub top_games_table
   {
   my $language = &select_language($lan);
   my $idx = 0;
-  my $months = $'retire_months;
+  my $months = $::retire_months;
   my $sunset = time()-60*60*24*30*$months; 
   my $t1 = &trans('Games at Boardspace.net');
-  my $ncols = $'top_players_columns;
+  my $ncols = $::top_players_columns;
   my $imagedir = &dircat(&dircat($www_root,"images"),"samples");
   print "<b>$t1</b>";
   print "<table border=1 caption='$t1'><tr>";
@@ -49,8 +49,8 @@ sub top_games_table
 	{ print "</tr><tr>"; 
 	}
   print "<td valign=top>";
-  print "<b><center><a href='$vlink'>$vtr</a></center></b>";
-  print "<a href='$vlink'><img width=120 src='$imdir'></a>";
+  print "<b><center><a target=_new href='$vlink'>$vtr</a></center></b>";
+  print "<a target=_new href='$vlink'><img width=120 src='$imdir'></a>";
   print "</td>\n";
   $idx++;
   }

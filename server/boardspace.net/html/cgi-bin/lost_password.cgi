@@ -16,8 +16,8 @@ require "tlib/password_tools.pl";
 use strict;
 use Crypt::Tea;
 
-$'minPasswordLength = 6;
-$'maxPasswordLength = 25;
+$::minPasswordLength = 6;
+$::maxPasswordLength = 25;
 
 sub init()
 {
@@ -138,12 +138,12 @@ sub blesspassword()
 	my $message = '';
 	my $blankpw = $jws ? "nopassword" : &trans("You have entered a blank password.  Please enter a password (up to ten characters).");
 	my $difpw = $jws ? "nopassword" : &trans("You must enter the same password twice.  Please try again.");
-	my $plen = $jws ? "nopassword" : &trans("passwords must be $'minPasswordLength to $'maxPasswordLength characters");
+	my $plen = $jws ? "nopassword" : &trans("passwords must be $::minPasswordLength to $::maxPasswordLength characters");
 	my $line = $jws ? "\n" : "<br>\n";
 	if(('' eq $password) && ('' eq $password2)) { return(0); }
 	if('' eq $password) { print "$blankpw$line"; return(0); }
 	if(! ($password eq $password2)) { print "$difpw$line"; return(0); }
-	if( (length($password)<$'minPasswordLength) || (length($password)>$'maxPasswordLength)) { print "$plen$line"; return(0); }
+	if( (length($password)<$::minPasswordLength) || (length($password)>$::maxPasswordLength)) { print "$plen$line"; return(0); }
 	return(1);
 }
 
@@ -160,8 +160,8 @@ sub doreset()
 	my $password = param('password');
 	my $password2 = param('password2');
 	
- 	$password = &despace(substr($password,0,$'maxPasswordLength+10));
-	$password2 = &despace(substr($password2,0,$'maxPasswordLength+10));
+ 	$password = &despace(substr($password,0,$::maxPasswordLength+10));
+	$password2 = &despace(substr($password2,0,$::maxPasswordLength+10));
 
 	my $valid = &validateKey($uid,$key);
 	if(!$valid) { $problem = 'key not valid'; }
@@ -204,7 +204,7 @@ sub doreset()
 				print "<input type=hidden name='uid' value='$uid'>\n";
 				print "<input type=hidden name='key' value='$key'>\n";
 				print "<input type=hidden name='pname' value='$name'>\n";
-				print &trans("$'minPasswordLength to $'maxPasswordLength characters, letters and numbers only");
+				print &trans("$::minPasswordLength to $::maxPasswordLength characters, letters and numbers only");
 				print "<br>\n";
 				print &trans("new password for #1 (#2)",$pname,&encode_entities(&utfDecode($fullname)));
 				print " ";

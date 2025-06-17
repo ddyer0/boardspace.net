@@ -13,10 +13,9 @@ require "gs_db.pl";
 #
 sub lcheck_bonus()
 {	my ($dbh,$game) = @_;
-	my $active = time()-60*60*24*30*($'retire_months);
   my $query = "select 1500-sum(value)/count(value),sum(value),count(value) from players left join ranking\n "
         . " on players.uid=ranking.uid and ranking.variation='$game'"
-	. "  where ranking.variation='$game' AND games_won>=$'bonus_games AND status='ok' AND (ranking.last_played>$active)";
+	. "  where ranking.variation='$game' AND games_won>=$::bonus_games AND status='ok' AND (ranking.last_played>0)";
 
 	my $sth = &query($dbh,$query);
 	my ($deficit,$sum,$count) = &nextArrayRow($sth);

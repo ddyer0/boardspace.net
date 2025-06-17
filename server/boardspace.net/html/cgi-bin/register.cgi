@@ -56,12 +56,12 @@ Body
 #  "Thank you for registering at Boardspace.net.  To complete\n"
 # . "registration, click on this link:\n"
 # . "  http://$ENV{'HTTP_HOST'}/cgi-bin/confirm_register.cgi?uid=$uid&pname=$pname\n";
-#      my $res = $val->MailMsg({  smtp => $'mailer, 
+#      my $res = $val->MailMsg({  smtp => $::mailer, 
 #      on_errors => 'code',
 #      subject => "Registration for BoardSpace.net",
-#      replyto => $'supervisor_email,
-#      fake_from => $'supervisor_email,
-#      from =>$'from_email,
+#      replyto => $::supervisor_email,
+#      fake_from => $::supervisor_email,
+#      from =>$::from_email,
 #      msg => $msg,
 #      to => $email
 #            } );
@@ -83,16 +83,16 @@ sub send_welcome()
   my $auth = &userAuthenticator($pname);
   my $regmsg = &trans("Thank you for registering at Boardspace.net.  To complete registration, click on this link:");
 
-                open( SENDMAIL, "| $'sendmail -f $'from_email $email" );
+                open( SENDMAIL, "| $::sendmail -f $::from_email $email" );
 
 #
 # note, the exact form of the link is known to 
-# the "$'bounce_targets list used by procmail
+# the "$::bounce_targets list used by procmail
 #
                 print SENDMAIL <<Mail_header;
 $auth
-Sender: $'from_email
-From: $'from_email
+Sender: $::from_email
+From: $::from_email
 To: $email
 Subject: $regsub
 
@@ -120,13 +120,13 @@ Mail_header
 sub setup_php()
 {
 	my ($jws,$user,$pass,$email,$date,$status) = @_;
-	my $db_type = $'db_type;
-	my $database= $'php_database;
-	my $db_host = $'db_host;
+	my $db_type = $::db_type;
+	my $database= $::php_database;
+	my $db_host = $::db_host;
 	my $ok = 1;
 	if($database)
 	{
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$'db_user,$'db_password);
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$::db_user,$::db_password);
 	if($dbh)
 	{
 
@@ -199,7 +199,7 @@ sub register()
 	my $bannercookie = $cookies{'client'};
 	my $myaddr = $ENV{'REMOTE_ADDR'};
 	if($bannercookie)
-    {  $bannercookie = &decrypt($bannercookie->value,$'tea_key);
+    {  $bannercookie = &decrypt($bannercookie->value,$::tea_key);
     } 
 	if(&allow_ip_register($dbh,$myaddr)
        && &allow_ip_register($dbh,$bannercookie))
@@ -294,11 +294,11 @@ if( param() )
 {
 
 	my ($dbh) = &connect();
-	my $ok = &useCombinedParams($'tea_key);
+	my $ok = &useCombinedParams($::tea_key);
 	my $jws = param('jws');		# if true, registration from the app rather than the browser
 	if($ok && $dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
 	{
-	__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'} );
 
 	my $fullname = param('fullname');
 	 if('' eq $fullname) { $fullname = param('realName'); }

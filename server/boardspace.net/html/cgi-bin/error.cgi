@@ -27,7 +27,7 @@ my $e=param();
 my $name=param('name');
 my $data=param('data');
 my $caller = $ENV{'REMOTE_ADDR'};
-open(FILE,">>$'java_error_log");
+open(FILE,">>$::java_error_log");
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
 if($year<1900) { $year += 1900; }
 printf FILE "[%d/%02d/%02d %02d:%02d:%02d]", $year,$mon+1,$mday,$hour,$min,$sec;
@@ -38,7 +38,7 @@ close(FILE);
 
 print "Ok\n";
 
-&countEvent($'java_error_log,$'java_error_alert_level,$'java_error_panic_level);
+&countEvent($::java_error_log,$::java_error_alert_level,$::java_error_panic_level);
 
 }
 &doit();

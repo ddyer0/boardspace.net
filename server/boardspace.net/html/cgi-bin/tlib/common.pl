@@ -9,7 +9,7 @@ use Digest::MD5 'md5_hex';
 # note that when adding languages, it's also necessary
 # to change the enum in the translations table
 #
-%'language_codes = 
+%::language_codes = 
 	( 
 	#"" => "english",			#default language
 	"en"=>"english",
@@ -90,8 +90,8 @@ sub select_language_menu()
 	print "<OPTION VALUE='' $issel>"
 	. &trans("Select Language")
 	. "</OPTION>\n";
-	foreach $key (keys(%'language_codes)) 
-	{	my $val = $'language_codes{$key};
+	foreach $key (keys(%::language_codes)) 
+	{	my $val = $::language_codes{$key};
 	    my $tval = &trans($val);
 		print &select_option($tval,$val,$def);
 	}
@@ -205,7 +205,7 @@ sub write_file()
 #
 sub player_retired_time()
 {	my $months=&param('months');
-	if($months=='') { $months=$'retire_months; }
+	if($months=='') { $months=$::retire_months; }
 	my $sunset = time()-60*60*24*30*$months; 
 	return($sunset);
 }
@@ -291,7 +291,7 @@ sub filename_split()
 # standard anti-spam email
 sub standard_email()
 {  my ($em) = @_;
-   if($em eq '') { $em = $'supervisor_email;  }
+   if($em eq '') { $em = $::supervisor_email;  }
     &obfuscateHTML("<a href='mailto:$em'>$em</a>");
 }
 
@@ -321,7 +321,7 @@ Footer
 }
 
 
-@'countries = (
+@::countries = (
 	"Select country",
 	"Afghanistan",
 	"Albania",
@@ -536,7 +536,7 @@ sub validate_country()
 	my ($target) = @_;
         my $c;
 	$target = lc($target);
-	foreach $c (@'countries)
+	foreach $c (@::countries)
 	       {
 	       if(lc($c) eq $target) { return $c; }
 	       }
@@ -546,7 +546,7 @@ sub validate_country()
 sub print_country_selector
 {  my ($current) = @_;
    my $selectedindex = 0;
-   my @cc = @'countries;
+   my @cc = @::countries;
    my $c = 0;
 
    $current = lc($current);
@@ -561,7 +561,7 @@ sub print_country_selector
    print "<select name=country>\n";
    while ($c <= $#cc) 
      { my $sel = ($c == $selectedindex) ? "selected" : "";
-       my $tc = &trans($'countries[$c]);
+       my $tc = &trans($::countries[$c]);
        print "<option $sel value=\"$cc[$c]\">$tc</option>\n";
       $c++;
      }
@@ -653,7 +653,7 @@ sub log_event()
 	my $uri = $ENV{'REQUEST_URI'};
 	my $caller = $ENV{'REMOTE_ADDR'};
 	my $root = $ENV{'DOCUMENT_ROOT'};
-	if($logfile eq "") { $logfile = $'perl_log; };
+	if($logfile eq "") { $logfile = $::perl_log; };
 	my $filename = ">>$logfile";
 	open(FILE,$filename);
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
@@ -667,7 +667,7 @@ sub log_error_event()
 {	my ($logfile,$name,$message) = @_;
 	&log_event($logfile,$name,$message);
 	&dprint("<br>\n<b>error from $name</b>:<blockquote> $message</blockquote><br>\n");
-	&countEvent($logfile,$'perl_error_alert_level,$'perl_error_panic_level);
+	&countEvent($logfile,$::perl_error_alert_level,$::perl_error_panic_level);
 }
 
 sub log_error()
@@ -675,7 +675,7 @@ sub log_error()
 	my ($package, $filename, $line) = caller;
 	if($source eq "") { $source = "$filename line $line"; }
 	$source = $source . "\n" . &stacktrace();
-	&log_error_event($'perl_log,$source,$message);
+	&log_error_event($::perl_log,$source,$message);
 }
 
 
@@ -696,7 +696,7 @@ sub CgiError {
     @msg = ("Error: script $name encountered fatal error\n");
   };
 
-  if (!$cgi_lib'headerout) { #')
+  if (!$cgi_lib::headerout) { #')
     &PrintHtmlHeader();  
   }
   print "<br><b>$msg[0]</b>\n";
@@ -705,18 +705,18 @@ sub CgiError {
   }
   print "<br>\n";
   
-  $cgi_lib'headerout++;
+  $cgi_lib::headerout++;
 }
-$cgi_lib'header_printed=0;
+$cgi_lib::header_printed=0;
 sub PrintHeader {
   return "Content-type: text/html\n\n";
 }
 
 sub PrintHtmlHeader()
 {  my ($batch) = @_;
-  if(!$cgi_lib'header_printed)
+  if(!$cgi_lib::header_printed)
   {  if(!$batch) { print &PrintHeader(); }
-    $cgi_lib'header_printed=1;
+    $cgi_lib::header_printed=1;
   }
 }
 
@@ -726,7 +726,7 @@ sub PrintHtmlHeader()
 sub CgiDie {
   my (@msg) = @_;
   &CgiError (@msg);
-  my $trace = $'debug_mysql ? &stacktrace() : "";
+  my $trace = $::debug_mysql ? &stacktrace() : "";
   die "fatal error (@msg)$trace";
 }
 
@@ -764,7 +764,7 @@ sub xparam()
 sub readconfigfile()
 {	my ($file) = @_;
 	my (%info) = ();
-	$lib'nullval = "(null)";
+	$lib::nullval = "(null)";
 	if(!$file) { $file = "missing.config"; }
 	if(open(IMAGE, $file))
   {	my $var='';
@@ -785,32 +785,32 @@ sub readconfigfile()
   				elsif($com>0)
   					{ $var = substr($line,0,$com);
   						my $val = substr($line,$com+1,-1);
- 		 				if(!$val) { $val = $lib'nullval; }
+ 		 				if(!$val) { $val = $lib::nullval; }
  						my $len  = length($line);
    					#print "$com $len $var = ($val)<br>\n";
    					my $oldval=$info{$var};
 		   			if($oldval) 
-		   				{ &log_error_event($lib'logfile,"readconfig",
+		   				{ &log_error_event($lib::logfile,"readconfig",
 		   							"config var $var already has value $oldval, new value is $val");
 		   				}
 		 				$info{$var}=$val;
 		  				}
 		  				else
-  					{	&log_error_event($lib'logfile,"readconfig","no comma in log line:$loop: $line");
+  					{	&log_error_event($lib::logfile,"readconfig","no comma in log line:$loop: $line");
   					}
   				}
   		}
   	close(IMAGE);
   }else
 	{ 
-		&log_error_event($lib'logfile,"readconfig","missing config file: $file");
+		&log_error_event($lib::logfile,"readconfig","missing config file: $file");
 	}
 	return(%info);
 }
 
 sub addNewTrans()
 {	my ($newk,$cxt) = @_;
-	if($lib'translations_loaded && ($'lib'language eq 'english'))
+	if($lib::translations_loaded && ($::lib::language eq 'english'))
         {
 	my $dbh = &connect();
 	if($dbh)
@@ -852,25 +852,25 @@ sub stacktrace()
 #
 sub rawtrans_caller()
 {	my ($enc,$package,$file,$line,$varname,@args) = @_;
-    if(!$lib'language) 
+    if(!$lib::language) 
 		{ my ($package,$file,$line) = caller;
 		  &log_error("translations for \"$varname\" not set up yet,called from $file:$line"); 
 		  }
-	my $val = $lib'translations{$varname};
+	my $val = $lib::translations{$varname};
 	if($val eq "") 
 	{ 
 		my $vn = $varname;
 		$vn =~ s/</&lt;/g;
-		#&log_error_event("","$file line $line","Missing $'language translation key: $vn val=$val");
+		#&log_error_event("","$file line $line","Missing $::language translation key: $vn val=$val");
 		my ($na,$pa,$ty) = &filename_split($file);
 		&addNewTrans($varname,"$na$ty : $line");
 		$val = "<font color='red'>$varname</font>";
 		#my $key;
-		#foreach $key(keys(%lib'translations))
-		#{print "key : $key val = $lib'translations{$key}<br>";
+		#foreach $key(keys(%lib::translations))
+		#{print "key : $key val = $lib::translations{$key}<br>";
 		#}
 	}
-	elsif($val eq $lib'nullval) { $val = "" };
+	elsif($val eq $lib::nullval) { $val = "" };
   if($enc) 
 	{ # this protects standard ascii characters from encoding, including cr, lf and tab 
 	  $val = encode_entities($val,'^\n\r\t\x20-\x25\x27-\x7e'); 
@@ -887,13 +887,13 @@ sub rawtrans_caller()
 	{	substr($val,$ll,length($ss),$args[$i]);
 	}
 	else
-	{	if($'debug_mysql)
+	{	if($::debug_mysql)
 			{ 
-			&log_error("missing $'language translation key $ss for $varname in value $val");
+			&log_error("missing $::language translation key $ss for $varname in value $val");
 			}
 			else
 			{
-			&log_event("missing $'language translation key $ss for $varname in value $val");
+			&log_event("missing $::language translation key $ss for $varname in value $val");
 			}
 	}
    }
@@ -1083,9 +1083,9 @@ sub send_mail_to()
 	my $msg = 	"$auth\nSender: $from\nFrom: $from\nTo: \"$touser\" <$to>\nSubject: $sub\n\n$body\n";
 
 	#print "<br>($auth)send -f $from $to\n$msg\n";
-	if($'sendmail)
+	if($::sendmail)
 	{
-	open( SENDMAIL, "| $'sendmail -f $from $to" );
+	open( SENDMAIL, "| $::sendmail -f $from $to" );
 	print SENDMAIL $msg;
     	close SENDMAIL;
 	}
@@ -1095,9 +1095,9 @@ sub send_mail()
 {	my ($from,$to,$sub,$body) = @_;
 	my $msg = "Sender: $from\nFrom: $from\nTo: $to\nSubject: $sub\n$body\n";
 	#print "<br>send -f $from $to\n$msg\n";
-	if($'sendmail)
+	if($::sendmail)
 	{
-	open( SENDMAIL, "| $'sendmail -f $from $to" );
+	open( SENDMAIL, "| $::sendmail -f $from $to" );
 	print SENDMAIL $msg;
 	close SENDMAIL;
 	}
@@ -1113,7 +1113,7 @@ sub bannerCookie()
   my %cookies = fetch CGI::Cookie();
   my $bannercookie = $cookies{'client'};
   if($bannercookie)
-    {  $bannercookie = &decrypt($bannercookie->value,$'tea_key);
+    {  $bannercookie = &decrypt($bannercookie->value,$::tea_key);
        #partial defense against junk cookies.  
        if(length($bannercookie)<4) { $bannercookie=0; }
     } 
@@ -1157,7 +1157,7 @@ sub select_language()
   my $val;
   my $found = 0;
   $languageName=lc($languageName);
-  foreach $val (values(%'language_codes))
+  foreach $val (values(%::language_codes))
    { if($val eq $languageName) {$found=1; }
    }
   if(!$found) { $languageName = ""; } 
@@ -1168,17 +1168,17 @@ sub select_language()
 	{
     my ($lang) = split(/[,-]/,$ENV{'HTTP_ACCEPT_LANGUAGE'}."-a" );
 	$lang = lc($lang);
-	$languageName = $'language_codes{$lang};
-	if($languageName eq "") { $languageName=$'language_codes{""}};
+	$languageName = $::language_codes{$lang};
+	if($languageName eq "") { $languageName=$::language_codes{""}};
 	}
   if("" eq $languageName) { $languageName="english"; }
   return($languageName);
 }
 
-%lib'translations=();
-$lib'nullval="";
-$lib'language='';
-$lib'translations_loaded=0;
+%lib::translations=();
+$lib::nullval="";
+$lib::language='';
+$lib::translations_loaded=0;
 
 #
 # read the translations from the database
@@ -1189,10 +1189,10 @@ sub readtrans_db()
 	if($ll eq '') { $ll = param('language'); }
 	my $lan = &select_language($ll);
 	if($lan eq '') { $lan = 'english'; }
-	$'language = $lan;
-	if(!($lib'language eq $lan))
+	$::language = $lan;
+	if(!($lib::language eq $lan))
 	{
-	$lib'language = $lan;
+	$lib::language = $lan;
 	my %tr;
 	#print "reading db translations for $lan<p>";
 	my $qlang = $dbh->quote($lan);
@@ -1214,10 +1214,10 @@ sub readtrans_db()
 		$tr{$key}=$trans;
 	}
 	&finishQuery($sth);
-	%lib'translations = %tr;
-    $lib'translations_loaded=1;
+	%lib::translations = %tr;
+    $lib::translations_loaded=1;
 	}
-	return(%lib'translations);
+	return(%lib::translations);
 }
 sub dprint()
 {  my ($msg) = @_;

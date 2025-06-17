@@ -19,7 +19,7 @@ use Crypt::Tea;
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 # --------------------------------------------
@@ -53,4 +53,5 @@ __d( "messageboard...");
 	my $sub = decode_entities($subject);
 	do_messageboard($dbh,$fromname,$passwd,$sub,$expires,$link);
 	}
+	&disconnect($dbh);
 }

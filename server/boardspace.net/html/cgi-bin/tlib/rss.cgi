@@ -3,13 +3,13 @@
 #
 sub show_recent()
 {	my ($number,$feed) = @_;
-	my $db_type = $'db_type;
-	my $database= $'php_database;
-	my $db_host = $'db_host;
+	my $db_type = $::db_type;
+	my $database= $::php_database;
+	my $db_host = $::db_host;
 	$number = 0+$number;	# force treatment as an int
 	if($database)
 	{
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$'db_user,$'db_password);
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$::db_user,$::db_password);
 	if($dbh)
 	{
 
@@ -25,8 +25,8 @@ sub show_recent()
 	print "<tr><td><b>$forum</b></td><td><b>$topic</b></td></tr>";
 	while($num-->0)
 	{ my ($post,$forum,$fid,$tid) = &nextArrayRow($sth);
-	  print "<tr><td><a href='/BB/viewforum.php?f=$fid'>$forum</a></td><td>"
-		. "<a href='/BB/viewtopic.php?t=$tid'>$post</a></td></tr>\n";
+	  print "<tr><td><a target=_new href='/BB/viewforum.php?f=$fid'>$forum</a></td><td>"
+		. "<a target=_new href='/BB/viewtopic.php?t=$tid'>$post</a></td></tr>\n";
 	 }
 	 &finishQuery($sth);
 	 }
@@ -37,9 +37,9 @@ sub show_recent()
 
 sub show_recent_rss()
 {	my ($number) = @_;
-	my $db_type = $'db_type;
-	my $database= $'php_database;
-	my $db_host = $'db_host;
+	my $db_type = $::db_type;
+	my $database= $::php_database;
+	my $db_host = $::db_host;
 	$number = 0+$number;	# force treatment as an int
 	print "<channel>\n";
 	print "<title>Boardspace.net forums</title>\n";
@@ -48,7 +48,7 @@ sub show_recent_rss()
 
 	if($database)
 	{
-	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$'db_user,$'db_password);
+	my $dbh = DBI->connect("DBI:${db_type}:${database}:${db_host}",$::db_user,$::db_password);
 	if($dbh)
 	{
 

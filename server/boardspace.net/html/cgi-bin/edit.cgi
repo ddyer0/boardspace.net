@@ -26,7 +26,7 @@ use Crypt::Tea;
 
 sub init {
 	$| = 1;				# force writes
-  __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+  __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 sub print_form_header()
@@ -252,7 +252,7 @@ sub is_valid_supervisor()
 	 my $sth = &query($dbh,$supq);
 	 my $issup = &numRows($sth)>=1;
      &finishQuery($sth);
-	 my $val = !($'sendmessage_password eq "") && ($passwd eq $'sendmessage_password) && $issup;
+	 my $val = !($::sendmessage_password eq "") && ($passwd eq $::sendmessage_password) && $issup;
 	 my $bannercookie = &bannerCookie();
 	 if($val && &allow_ip_login($dbh,$myaddr)
 	  && &allow_ip_login($dbh,$bannercookie))
@@ -314,11 +314,11 @@ sub send_changes
 	}
 
   my $auth = &userAuthenticator($pname);
-  open( SENDMAIL, "| $'sendmail $old_email" );
+  open( SENDMAIL, "| $::sendmail $old_email" );
   print SENDMAIL <<Mail_header;
 $auth
-Sender: $'from_email
-From: $'from_email
+Sender: $::from_email
+From: $::from_email
 To: $old_email
 ${bcc}Subject: ${super}Changes to your registration at Boardspace.net
 $stames
@@ -364,7 +364,7 @@ sub do_gs_edit()
 {
 param();
   {
-  __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+  __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
   __d( "Checking Parameters...");
   __d( "REMOTE_HOST ".$ENV{'REMOTE_ADDR'});
 	my $dbh = &connect();
@@ -648,7 +648,7 @@ param();
      &commandQuery($dbh,$opstr);
      if(!(lc($pname) eq lc($update_pname)))
        { __d("name change from $pname to $update_pname");
-         open( F_OUT, ">>$'name_change_log" );
+         open( F_OUT, ">>$::name_change_log" );
          printf F_OUT "%s %s\n", &date_string(time()),"name change from $pname to $update_pname";
          close F_OUT;
       }
@@ -656,15 +656,15 @@ param();
     
     # if name changed, change the picture file too
     if(!($pname eq $update_pname))
-     { my ($picname) = $ENV{'DOCUMENT_ROOT'}.$'image_dir.lc($pname).".jpg";
-       my ($newpicname) = $ENV{'DOCUMENT_ROOT'}.$'image_dir.lc($update_pname).".jpg";
+     { my ($picname) = $ENV{'DOCUMENT_ROOT'}.$::image_dir.lc($pname).".jpg";
+       my ($newpicname) = $ENV{'DOCUMENT_ROOT'}.$::image_dir.lc($update_pname).".jpg";
     if(-e $newpicname) { unlink($newpicname); print "remove $newpicname<br>\n"; }
     if(-e $picname) { rename($picname,$newpicname); print "rename $picname to $newpicname<br>\n"; }
-	if($'php_database)
+	if($::php_database)
 	{ # if we have a phpbb, try to keep the user names in sync
 	  my $qp = $dbh->quote($pname);
 	  my $qn = $dbh->quote($update_pname);
-	  my $db = $'php_database;
+	  my $db = $::php_database;
 	   my $q = "update ${db}.phpbb_users set username=$qn where username=$qp";
 	  if($deleted==0) { print "Your forum ID also changed from $pname to $update_pname<br>"; }
 	  else { $newpname = ""; }
@@ -673,8 +673,8 @@ param();
 
 	}
 
-	  if($hasNewStatus && $'php_database)
-	  {	my $db = $'php_database;
+	  if($hasNewStatus && $::php_database)
+	  {	my $db = $::php_database;
 	    my $qn = $dbh->quote($update_pname);
 		my $sth = &query($dbh,"select user_id from ${db}.phpbb_users where username=$qn");
 	    # 
@@ -702,10 +702,10 @@ param();
 	  }
 
     $pname=$update_pname;
-    my $bcc = (($supervisor eq "")&&(lc($master) eq 'y')) ? "bcc: $'supervisor_email\n" : "";
+    my $bcc = (($supervisor eq "")&&(lc($master) eq 'y')) ? "bcc: $::supervisor_email\n" : "";
 
     if($stuff || ( !($comma eq '') && ($status eq 'unconfirmed')))
-      { &send_changes(($supervisor?$'supervisor_email:$old_email),$email,$pname,$name,$country,$city,
+      { &send_changes(($supervisor?$::supervisor_email:$old_email),$email,$pname,$name,$country,$city,
          ($supervisor?"Supervisor $supervisor ":""),$stuff,$bcc,$nomail,$status,$uid);
       }
       } # end of got interesting data
@@ -1049,8 +1049,8 @@ param();
 	my $root=$ENV{'DOCUMENT_ROOT'};
  
   # picture this
-	if(-e "$root/$'image_dir$lcname.jpg")
-	 { print "<img src=\"$'image_dir$lcname.jpg\">";
+	if(-e "$root/$::image_dir$lcname.jpg")
+	 { print "<img src=\"$::image_dir$lcname.jpg\">";
     if(!$readonly)
 	{print "<br><a href=/$language/pictureupload.html>"
 		. &trans("Click here to upload a new picture")

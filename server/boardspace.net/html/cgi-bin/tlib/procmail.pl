@@ -20,7 +20,7 @@
 # to the log files it tries to write, but perl has problems as suid
 # 
 # second choice is to share a group with the vpopmail program (edit the /etc/group file)
-# and set $'procmail_debug_log to a file whose group is that group.
+# and set $::procmail_debug_log to a file whose group is that group.
 #
 # procmail.pl
 use CGI qw(:standard);
@@ -33,7 +33,7 @@ require "common.pl";
 
 sub doit()
 {  
- __dStart($'procmail_debug_log,"procmail $0");
+ __dStart($::procmail_debug_log,"procmail $0");
  my $dbh = &connect();
  if($dbh) 
  {
@@ -60,7 +60,7 @@ sub doit()
   { my $smsg = (length($msg)>1000) ? substr($msg,0,1000) : $msg;
     __d("unexpected message\n$smsg");
    #__env();
-    &countEvent($'procmail_debug_log,$'procmail_error_alert_level,$'procmail_error_panic_level);
+    &countEvent($::procmail_debug_log,$::procmail_error_alert_level,$::procmail_error_panic_level);
   }
 }
  __dEnd( "end!" );

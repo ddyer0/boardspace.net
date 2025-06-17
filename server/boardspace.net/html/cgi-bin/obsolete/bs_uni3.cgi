@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# record results of game (OBSOLETE current version is bs_uni3)
+# record results of 2 player game, and also update the ladder
 #
 
 use CGI qw(:standard);
@@ -13,157 +13,21 @@ use IO::File;
 require "include.pl";
 require "tlib/common.pl";
 require "tlib/gs_db.pl";
+require "tlib/ranking.pl";
+require "tlib/ladder.pl";
+require "tlib/params.pl";
 
-# check to see if the server is up, and thinks this is a
-# legitimate result.  log problems!
-#
-$'reject_line='';
-
-sub check_server
-{ my ($port,$session,$key,$p1,$p2)=@_;
-  #print "not checking server\n";
-  #return(1);
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
-  { __d("socket failed  $!\n");
-    return 0;
-  }
-  unless (connect(SOCK,sockaddr_in($port, inet_aton($'ip_name)))) {
-    __d("connect($port,$'ip_name) failed: $!\n");
-    return 0;
-  }
-  autoflush SOCK 1;
-  my $msg = "218 $session $p1 $p2 $key";
-  print SOCK "$msg\n";
-  my $line = <SOCK>;
-  $line = substr($line,1,5);
-  my $ok=($line eq "219 1");						#209 1 means the server likes it
-  #print "check $msg = ($line) ($ok)\n";
-  $'reject_line = $line;
-  close(SOCK);
-  return ($ok);
-}
-
-sub make_log()
-{
- my ($msg ) = @_;
- my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
- open( F_OUT, ">>$'game_completed_log" );
- printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n",1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
- close F_OUT;
-}
-
-sub getrank()
-{ my($dbh,$u1,$game,$master)=@_;
-  my $qgame = $dbh->quote($game);
-  my $mstr = $master ? " AND ranking.is_master='yes'" : "AND ranking.is_master!='yes'";
-  my $q = "SELECT player_name,value,max_rank,is_robot,fixed_rank,games_won "
-    . " FROM players left join ranking on players.uid=ranking.uid "
-    . " WHERE players.uid='$u1' $mstr AND ranking.variation=$qgame ";
-	my $sth = &query($dbh,$q);
-	my $nr = &numRows($sth);
-
-	if($nr==0) 
-	  {  # no hits, must be a new variation in the ranking table. try only the player table.
- 		&finishQuery($sth);
-		my $q = "SELECT player_name,0,0,is_robot,fixed_rank,0 FROM players WHERE uid='$u1'";
-		$sth = &query($dbh,$q);
-		$nr = &numRows($sth);
-	  }
-
-	if($nr != 1 )
-	{ __dm("$ENV{'SCRIPT_NAME'} Line " .  __LINE__.": $nr players match for $u1\nquery: $q" ); 
-		#this shouldn't happen but it did once with a very sick machine
-    &finishQuery($sth);
-		return(0,0,0,0,0,0);
-	}
-	else
-	{ my ($name,$oldrank,$oldmax,$is_robot,$fixed_rank,$games_won) = &nextArrayRow($sth);
-    &finishQuery($sth);
- 	  if( $oldrank <= 0 ) 
-       {  $oldrank = 1500; 
-          # create the missing ranking table
-		  my $mm = $master ? "'yes'" : "'no'";
-          &commandQuery($dbh,"replace into ranking set is_master=$mm,uid='$u1',value='$oldrank',variation='$game'");          
-       }
-	  if($oldmax eq '') { $oldmax = '0'; }
-    # is_robot is y for a real robot, g for a guest
-    return($name,$oldrank,$oldmax,$is_robot,$fixed_rank,$games_won);
-	}
-}
-
-my $handicap_change_rate=0.01;
-my $confidence_change_rate=0.01;
-my $max_confidence = 1.0;
-
-sub next_handicap()
-{	my ($draw,$p1_handicap,$p1_confidence,$p2_handicap,$p2_confidence,$score)=@_;
-	my $handicap_spread = $p1_handicap - $p2_handicap;
-	if($draw) { $score = $score/2; }
-	my $spread = $score-$handicap_spread;
-	my $rate = ($p2_confidence+(1.0-$p1_confidence))*$handicap_change_rate;
-
-	my $new_handicap = $p1_handicap + $rate*$spread;
-	my $new_confidence = $p1_confidence + $confidence_change_rate;
-
-	#print "draw $draw $rate $p1_handicap $new_handicap score $score spread $spread\n";
-	
-	if ($new_confidence > $max_confidence) { $new_confidence=$max_confidence; }
-	#print "old $p1_handicap($p1_confidence) $p2_handicap($p2_confidence) $score = $new_handicap\n";
-	return(($new_handicap,$new_confidence));
-}
-sub next_rank()
-{	my ($draw,$winner,$loser,$winner_games,$loser_games,$dir) = @_;
-	$winner = ($winner-1500.0)/1000.0;
-	$loser = ($loser-1500.0)/1000.0;
-  my $wconf = ($winner_games+1)/20;  #confidence increases until you get 20 wins
-  my $lconf = ($loser_games+1)/20;
-  if($wconf>1) { $wconf=1; }
-  if($lconf>1) { $lconf=1; }
-  
-  my ($nextr,$nextc) = &next_handicap($draw,$winner,$wconf,$loser,$lconf,1.1*$dir);
-
-  return(1500 + int($nextr*1000.0));
-}
-
-sub printrank()
-{ my ($type,$p,$new_ranking,$oldrank) = @_;
-	if($oldrank eq $new_ranking)
-		{print "${p}'s $type is $oldrank (unchanged)\n";
-    }
-    else
-   {my $dir = ($oldrank > $new_ranking) ? "decreased" : "increased";
-		print "${p}'s $type $dir from $oldrank to $new_ranking\n";
-   }
-}
-#
-# check a game digest against the database, looking for duplicate
-# games, which are probably indicators of fraud.
-#
-sub checkdigest()
-{  my ($dbh,$msg,$q) = @_;
-   my $sth = &query($dbh,"$q LIMIT 10");
-   my $nr = &numRows($sth);
-   if($nr>0)
-  { my $n = $nr;
-    my $v = "";
-    while($n-- > 0)
-    { my ($a) = &nextArrayRow($sth);
-      $v .= " $a";
-    }
-    my $qstr = $dbh->quote("Duplicate Digest at $msg: $nr games: $v");
-    &commandQuery($dbh,"INSERT into messages SET type='alert',message=$qstr");
-  }
-  &finishQuery($sth);
-  return($nr);
-}
-        
 $| = 1;                         # force writes
-print header;
 	
-__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 if( param() ) 
 {
   $| = 1;                         # force writes
+  my $ok = &useCombinedParams($::tea_key,1) && checkChecksumVersion();
+  if($ok)
+  {
+  print header;
+
   __d("from $ENV{'REMOTE_ADDR'} $ENV{'QUERY_STRING'}" );
   my $game0 = param('game');
   my $fname = param('fname');
@@ -171,7 +35,8 @@ if( param() )
   my $digest_mid = param('dm');
   my $digest_end = param('de');
   my $master = (param('mm') eq 'true');
-
+  my $turnbased = param('turnbased');
+  my $ism = $turnbased ? "'turnbased'" : $master ? "'yes'" : "'no'";
   if($game0)
  {
   my $dbh = &connect();              # connect to local mysqld
@@ -180,7 +45,7 @@ if( param() )
   my $game = &gamecode_to_gamename($dbh,$game0);
   my $error = 0;
   my (@pname,@s,@nr,@u,@t,@c,@fch);
-  my (@oldrank,@maxrank,@robo,@fixedrank,@new_ranking,@gameswon);
+  my (@oldrank,@maxrank,@robo,@fixedrank,@new_ranking,@gameswon,@ladder_level,@ladder_order,@ladder_mentor);
   my $i;
   my $fsw = &param('fsw');	# follower state warning
   for($i=1;$i<=2;$i++)
@@ -192,7 +57,13 @@ if( param() )
 	$nr[$i] = param("nr$i");  # unranked request
 	if($u[$i] ne "") 
 		{ ($pname[$i],$oldrank[$i],$maxrank[$i],$robo[$i],$fixedrank[$i],
-		   $gameswon[$i])=&getrank($dbh,$u[$i],$game,$master); 
+		   $gameswon[$i],
+		   $ladder_level[$i],$ladder_order[$i],$ladder_mentor[$i])
+						= &getrank($dbh,$u[$i],$game,$master,$turnbased); 
+						
+	      if($ladder_level[$i] eq "") { $ladder_level[$i]=0; }
+	      if($ladder_order[$i] eq "") { $ladder_order[$i]=0; }
+
 		   if($oldrank[$i] == 0) 
 				{ # watch out that sick puppies don't corrupt the database
 					$error++; 
@@ -217,11 +88,13 @@ if( param() )
 		my $session=param('session');
 		my $key = param('key');
 		my $port = param('sock');
-		if($port<2240) { $port=$'game_server_port}
+		if($port<2240) { $port=$::game_server_port}
 
-		if( !&check_server($port,$session,$key,$u[1],$u[2]))
+		if( $turnbased 
+			? !&check_turnbased($dbh,$session,$key,$u[1],$u[2])
+			: !&check_server($port,$session,$key,$u[1],$u[2]))
 		{
-		 __dm( __LINE__." scoring rejected: \"$'reject_line\" $ENV{'QUERY_STRING'}" );
+		 __dm( __LINE__." scoring rejected: \"$::reject_line\" $ENV{'QUERY_STRING'}" );
 		 print "\n** Ranking update was rejected by the server **\n";
 		}
 		elsif (($robo[1] ne "g") && ($robo[2] ne "g"))
@@ -325,8 +198,7 @@ if( param() )
 	}
 	my $newmax = $maxrank[$winner];
 	my $newmax2 = $maxrank[$loser];
-    my $qgame = $dbh->quote($game);
-    my $ism = $master ? 'yes' : 'no';
+    	my $qgame = $dbh->quote($game);
 	my $mmstr = $master ? "Master " : "";
 	my $plaism = $master ? "AND players.is_master='y'" : "";
 	if($new_ranking[$winner]>$newmax) { $newmax= $new_ranking[$winner]; }
@@ -335,69 +207,170 @@ if( param() )
 	if($new_ranking[$loser]>$newmax2) { $newmax2=$new_ranking[$loser]; }  
 	$newmax = $dbh->quote($newmax);
 	$newmax2 = $dbh->quote($newmax2);
+  
+	my $loserLadder="";
+	my $winnerLadder="";
+	my $ladderUpdate1 = "";
+	my $newWin = 0;
+	my $hasLadder = 0;
+	if(!$unranked1 && !$unranked2 && !$robo[$winner] && !$robo[$loser])
+	{
+	# figure the ladder updates
+	$hasLadder = 1;
+	if($ladder_level[$winner] <= 0)
+		 { my $ll = &entry_ladder_level($dbh,'ranking',$qgame);
+		   $ladder_level[$winner] = $ll;
+		   $winnerLadder = "ladder_level = $ll,";  
+		   $newWin = 1;
+		 }
+	if($ladder_level[$loser] <= 0) 
+		{ my $ll = &entry_ladder_level($dbh,'ranking',$qgame);
+		  $ladder_level[$loser] = $ll;
+		  $loserLadder = "ladder_level = $ll,"; 
+		}
+	#
+	# add some components to the main update
+	#
+	if( $ladder_level[$winner] >= $ladder_level[$loser])	   # winner at same or a higher level
+			{
+			#move the winner up and the loser left
+			my $oldWinLevel = $ladder_level[$winner];
+			my $newWinLevel = $oldWinLevel;
+			my $movedup=0;
+			# winner will be moved up a level by the primary update
+			if(($oldWinLevel>1) 
+				&& !$newWin 
+				&& !($ladder_mentor[$winner] eq $u[$loser])	# dont allow the same loser to advance you twice
+				)
+			{ $winnerLadder .= "ladder_level=ladder_level-1,ladder_mentor='$u[$loser]',";
+			  $ladder_level[$winner] -= 1;
+			  $newWinLevel -= 1;
+			  $movedup=1;
+			}
+			if(($robo[$winner] eq '') || $movedup)
+			{
+			#robot doesn't move just for playing
+			$winnerLadder .= "ladder_order=-1,";	# move up and left
+			}
+			# loser will be repositioned to 0 by the primary update
+			$loserLadder .= "ladder_order=0,";
+			$ladderUpdate1 = &reorder_ladder_query('ranking',$qgame,$newWinLevel);
+			if($newWinLevel!=$oldWinLevel)
+				{	$ladderUpdate1 .= &reorder_ladder_query('ranking',$qgame,$oldWinLevel);
+				}
+			if(($ladder_level[$loser] != $oldWinLevel) && ($ladder_level[$loser]!=$newWinLevel))
+				{	$ladderUpdate1 .= &reorder_ladder_query('ranking',$qgame,$ladder_level[$loser]);
+				}
+			}
+			else
+			{
+			#move both left
+			my $oldWinLevel = $ladder_level[$winner];
+			my $oldLoseLevel = $ladder_level[$loser];
+			# both players move left
+			if($robo[$winner] eq '')
+			{
+			$winnerLadder .= "ladder_order=0,";	# move up and left, leave room for 1
+			}
+			if($robo[$loser] eq '')
+			{
+			$loserLadder .= "ladder_order=0,";
+			}
+			$ladderUpdate1 = &reorder_ladder_query('ranking',$qgame,$oldWinLevel)
+					. &reorder_ladder_query('ranking',$qgame,$oldLoseLevel);
+			}
+	}
+	
 	if(!$unranked1)
-    {my $command="UPDATE players,ranking
+    		{
+		my $command="UPDATE players,ranking
 	   				SET players.last_played=$last_played,
                     ranking.last_played=$last_played,
 	    			value=$new_ranking[ $winner ],
+	    			$winnerLadder
 		    		games_won=games_won+$newwon,
                     players.games_played=players.games_played+1,
                     ranking.games_played=ranking.games_played+1,
 		    		max_rank = $newmax
-		    		WHERE players.uid='$u[ $winner ]' $plaism AND ranking.is_master='$ism' AND ranking.uid='$u[ $winner ]' AND variation=$qgame";
-				&commandQuery($dbh,$command);
+		    		WHERE players.uid='$u[ $winner ]' $plaism AND ranking.is_master=$ism AND ranking.uid='$u[ $winner ]' AND variation=$qgame";
+		#print "$command\n";
+		&commandQuery($dbh,$command);
     }
     else 
     { $new_ranking[$winner]=$oldrank[$winner]; 
       my $command="UPDATE players 
-	   				SET players.last_played=$last_played
+	   			SET players.last_played=$last_played
 		    		WHERE players.uid='$u[ $winner ]'";
 	  &commandQuery($dbh,$command);
     }
-    &printrank("${mmstr}ranking",$pname[$winner],$new_ranking[$winner],$oldrank[$winner]);
+    &printrank("${mmstr}ranking",$pname[$winner],$new_ranking[$winner],$oldrank[$winner],
+		$hasLadder ? $ladder_level[$winner] : 0);
 	  
 	if(!$unranked2)
-   {my $command="UPDATE players,ranking
+	   {	
+		my $command="UPDATE players,ranking
 	   			   SET players.last_played=$last_played,
                    ranking.last_played=$last_played,
 	    		   value=$new_ranking[ $loser ],
 		    	   games_lost=games_lost+$newlost,
+		    	   $loserLadder
                    players.games_played=players.games_played+1,
                    ranking.games_played=ranking.games_played+1,
                    max_rank = $newmax2
-		    	   WHERE players.uid='$u[ $loser ]' $plaism  AND ranking.is_master='$ism'  AND ranking.uid='$u[ $loser ]' AND variation=$qgame";
-			 &commandQuery($dbh,$command);
+	    	   WHERE players.uid='$u[ $loser ]' $plaism  AND ranking.is_master=$ism  AND ranking.uid='$u[ $loser ]' AND variation=$qgame";
+		#print "$command\n";
+		 &commandQuery($dbh,$command);
 	  } 
     else 
     { $new_ranking[$loser]=$oldrank[$loser]; 
     my $command="UPDATE players 
 	   				SET players.last_played=$last_played
 		    		WHERE players.uid='$u[ $loser ]'";
+	#print "$command\n";
 	&commandQuery($dbh,$command);
     }
-    &printrank("${mmstr}ranking",$pname[$loser],$new_ranking[$loser],$oldrank[$loser]);
+    &printrank("${mmstr}ranking",$pname[$loser],$new_ranking[$loser],$oldrank[$loser],
+		$hasLadder ? $ladder_level[$loser] : 0);
 
+	#print "ladder $ladderUpdate1\n";
+	if(!($ladderUpdate1 eq ""))
+	{
+		#print "$ladderUpdate1\n";
+		&commandQuery($dbh,$ladderUpdate1);
+	}
+    if($turnbased)
+	{
+	&update_turnbased($dbh,$session,$key);
+	}
     &make_log("$pname[1]($new_ranking[1])\t$s[1]\t$pname[2]($new_ranking[2])\t$s[2]\t$fname");
 				
 	} 
   #update zertz_gamerecord set date=date,gmtdate=reverse(substring(reverse(gamename),1,15)) 
 	# if we have uids, record a game record
 	{
-	my $mode = $master ? 'master' 
-				:($unranked1 && $unranked2) 
-					? 'Unranked' : 'Normal';
-    my $winp = $draw ? 'draw' : (($winner==1) ? "player1" : "player2");
-    my $now = $dbh->quote(&ctime());
-    my $q = "INSERT INTO zertz_gamerecord SET player1='$u[$winner]',player2='$u[$loser]',"
-     . " time1='$t[$winner]',time2='$t[$loser]',"
-     . " rank1='$new_ranking[$winner]',rank2='$new_ranking[$loser]',"
-     . " variation='$game',mode='$mode',tournament='$tourney',"
-     . " digest_end='$digest_end',digest_mid='$digest_mid',"
-     . " winner='$winp',"
-     . " gmtdate=$now,"
-     . " gamename='$fname'";
-	#print "Q: $q\n";
-	&commandQuery($dbh,$q);
+	my $mode = $master
+			? 'Master' 
+			:($unranked1 && $unranked2) 
+			    ? 'Unranked' 
+			    : 'Normal';
+    	my $winp = $draw ? 'draw' : (($winner==1) ? "player1" : "player2");
+    	my $now = $dbh->quote(&ctime());
+        my $qtb = $turnbased ? "turnbased='yes'," : "";
+        my $qgame = $dbh->quote($game);
+	my $qfname = $dbh->quote($fname);
+	my $qdigest_end = $dbh->quote($digest_end);
+	my $qdigest_mid = $dbh->quote($digest_mid);
+    	my $q = "INSERT INTO zertz_gamerecord SET player1='$u[$winner]',player2='$u[$loser]',"
+		. " time1='$t[$winner]',time2='$t[$loser]',"
+		. " rank1='$new_ranking[$winner]',rank2='$new_ranking[$loser]',"
+		. " variation=$qgame,mode='$mode',tournament='$tourney',"
+		. $qtb
+		. " digest_end=$qdigest_end,digest_mid=$qdigest_mid,"
+		. " winner='$winp',"
+		. " gmtdate=$now,"
+		. " gamename=$qfname";
+		#print "Q: $q\n";
+		&commandQuery($dbh,$q);
 	}
 	
 	} #end of ranking update
@@ -412,10 +385,12 @@ if( param() )
     else
     { print "Unknown game type: $game0\n";
     }
-  
+  }
   }
   else 
   {
+  print header;
+
   __d( "No update parameters parameter found..." );
   print "score update failed\n";
   }

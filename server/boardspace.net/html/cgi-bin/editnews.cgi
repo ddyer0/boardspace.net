@@ -22,7 +22,7 @@ require "tlib/common.pl";
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 
@@ -51,7 +51,7 @@ sub do_gs_edit()
 	my $newsname = "$ENV{'DOCUMENT_ROOT'}/$languagename/news.txt";
 	$written=0;
 	if($languagename 
-		&& ($'changenews_password && ($passwd eq $'changenews_password)) )
+		&& ($::changenews_password && ($passwd eq $::changenews_password)) )
 		{
 		if(&allow_ip_login($dbh,$myaddr))
 		{

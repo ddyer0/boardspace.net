@@ -37,7 +37,7 @@ sub doit()
 	{
 	&standard_header();
 	if($num==0) { $num=40; }
-	if($months==0) { $months = $'retire_months; }
+	if($months==0) { $months = $::retire_months; }
 	&readtrans_db($dbh);
 
 	&show_ordinal_rankings($dbh,$num,$months,-1);

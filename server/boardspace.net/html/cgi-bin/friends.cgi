@@ -171,5 +171,5 @@ my ($pname) = param('pname');
 my $months = param('months');
 my $klicks = param('klicks');
 if($klicks <=0 ) { $klicks = 100; }
-if($months<=0) { $months = $'retire_months; }
+if($months<=0) { $months = $::retire_months; }
 &show_friends($pname,$months,$klicks);

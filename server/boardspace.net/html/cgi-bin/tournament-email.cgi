@@ -19,7 +19,7 @@ use Crypt::Tea;
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 
@@ -224,7 +224,7 @@ param();
            { my ($na,$v,$bounce);
 		     if($nr<0)
 			 { $na = "gamemaster";
-			   $v = $'supervisor_email
+			   $v = $::supervisor_email
 			 } else
 			 { ($na,$v,$bounce) = &nextArrayRow($sth); 
 			 }
@@ -233,7 +233,7 @@ param();
 	     my $ub = ($bounce>0 && $unbounce) ? " and unbouncing" : "";
              print "<p>Sending$ub to $addr1";
              if(!$test)
-	     { &send_email($v,$na,$addr,$'announce_email,$date,$subject,$body); 
+	     { &send_email($v,$na,$addr,$::announce_email,$date,$subject,$body); 
 	       if($bounce>0 && $unbounce)
 	       { my $qname = $dbh->quote($na);
 		 &commandQuery($dbh,"update players set e_mail_bounce='0',e_mail_bounce_date=null"

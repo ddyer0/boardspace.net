@@ -129,13 +129,13 @@ sub send_password_real
    #never expose this, it's a reset link anyone can use
    #print "link <a href='$pwlink'> click </a><p>";
    my $auth = &userAuthenticator($pname);   
-   open( SENDMAIL, "| $'sendmail -f $'from_email $old_email" );
+   open( SENDMAIL, "| $::sendmail -f $::from_email $old_email" );
    my $eplate = &trans("EmailResetPassword",$stalink,$pname);
    #print "Pass $eplate<p>";
    print SENDMAIL <<Mail_header;
 $auth
-Sender: $'from_email
-From: $'from_email
+Sender: $::from_email
+From: $::from_email
 To: $old_email
 $eplate
 $pwlink

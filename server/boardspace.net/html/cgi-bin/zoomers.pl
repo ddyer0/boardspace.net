@@ -22,7 +22,7 @@ require "bs_offline_maintenance.pl";
 { my $zoom_threshold=50;
   my $master_zoom_threshold=100;
   my $rank_threshold=825;
-  my $mailto=$'supervisor_email;
+  my $mailto=$::supervisor_email;
   my $dbh = &connect();
   my $target_date = time()-60*60*12;
   my $sth2 = &query($dbh,"SELECT date+0,message,type FROM messages WHERE UNIX_TIMESTAMP(date)>$target_date ORDER BY date");
@@ -54,7 +54,7 @@ require "bs_offline_maintenance.pl";
   my $master = ($num3>0)?"$num3 new potential masters":"";
   my $alert = ($num2>0)?" $num2 alerts":"";
   my $zoom = ($num>0) ? " $num players zoom in the rankings":"";
-  open( SENDMAIL, "| $'sendmail $mailto" );
+  open( SENDMAIL, "| $::sendmail $mailto" );
   print SENDMAIL "subject: boardspace.net:$master$alert$zoom$trans\n";
   if($sumtrans>0) { print SENDMAIL "\ntranslations: $sumtransstr\n"; }
   if($num3>0)
@@ -107,7 +107,7 @@ require "bs_offline_maintenance.pl";
 	}
 	&finishQuery($sthz);
 	#the old version that grepped the log
-	#my $msg = `grep -i $id $'game_completed_log | tail`;
+	#my $msg = `grep -i $id $::game_completed_log | tail`;
     #print SENDMAIL "$msg\n";
 
   }

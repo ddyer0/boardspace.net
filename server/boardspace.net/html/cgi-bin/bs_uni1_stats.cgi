@@ -37,7 +37,7 @@ $| = 1;                         # force writes
 print header;
 my $ok = 0;
 	
-__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 
 sub timestr()
 {
@@ -140,7 +140,7 @@ sub getUid()
 
 sub doit()
 {
-  $ok = &useCombinedParams($'tea_key,1);
+  $ok = &useCombinedParams($::tea_key,1);
   if($ok)
   {
   __d("from $ENV{'REMOTE_ADDR'} $ENV{'QUERY_STRING'}" );

@@ -15,13 +15,7 @@ use strict;
 require "include.pl";
 require "tlib/common.pl";
 require "tlib/gs_db.pl";
-require "tlib/getLocation.pl";
-require "tlib/lock.pl";
-require "tlib/top_players.pl";
-require "tlib/favorite-games.pl";
-require "tlib/show-recent.pl";
-require "tlib/messageboard.pl";
-require "tlib/ordinal-rankings.pl";
+
 
 use Crypt::Tea;
 
@@ -30,12 +24,15 @@ sub init {
 }
 
 #
-# check to see if the server is up, and try to launch it if not
-# log problems!
-#
+# check to see if the server is accepting connections
+# and the database is accepting connections and can do
+# a minimal query.
+# 
+# this is designed to be called from /uptime-probe.shtml
+# and is monitored from uptime_robot
 sub check_server()
 { my ($username,$usernum)=@_;
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
+  unless (socket(SOCK, PF_INET, SOCK_STREAM, $::proto))
   {
     return 0;
   }

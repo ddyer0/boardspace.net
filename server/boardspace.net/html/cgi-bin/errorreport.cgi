@@ -11,7 +11,7 @@ use strict;
 #
 # main program
 #
-$'java_error_log = "g:/temp/logs/miniloader_error.txt";
+$::java_error_log = "g:/temp/logs/miniloader_error.txt";
 
 $| = 1;                         # force writes
 sub doit()
@@ -23,7 +23,7 @@ my $e=param();
 my $name=param('name');
 my $data=param('data');
 my $caller = $ENV{'REMOTE_ADDR'};
-open(FILE,">>$'java_error_log");
+open(FILE,">>$::java_error_log");
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
 if($year<1900) { $year += 1900; }
 printf FILE "[%d/%02d/%02d %02d:%02d:%02d]", $year,$mon+1,$mday,$hour,$min,$sec;

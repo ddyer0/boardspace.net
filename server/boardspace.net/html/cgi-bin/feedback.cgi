@@ -19,7 +19,7 @@ require "tlib/timestamp.pl";
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 
@@ -79,7 +79,7 @@ param();
   $message = "from: $fromname\nfrom email: $email\ninfo: $info\n\n$message";
 
   #($toemail,$toname,$to,$from,$date,$subj,$body)
-  &send_email($'supervisor_email,"feedback form",$'supervisor_email,$subject,$message);
+  &send_email($::supervisor_email,"feedback form",$::supervisor_email,$subject,$message);
   print &trans("Message sent"); 
   print "<br>";
   }

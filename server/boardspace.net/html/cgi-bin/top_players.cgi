@@ -41,7 +41,7 @@ sub show_activity
   &readtrans_db($dbh);
   if(!param('embed')) { &standard_header(); }
   print "<center>\n";
-  &top_players_table($dbh,$'top_players_per_row,'english','',@'top_player_variations);
+  &top_players_table($dbh,$::top_players_per_row,'english','',@'top_player_variations);
   print "</center>\n";
   if(!param('embed')) { &standard_footer(); }
   }

@@ -6,7 +6,7 @@ sub top_players_table
   {
   my $language = &select_language($lan);
   my $idx = 0;
-  my $months = $'retire_months;
+  my $months = $::retire_months;
   my $sunset = time()-60*60*24*30*$months; 
 
   my $t1 = ($number>0) 
@@ -23,7 +23,7 @@ sub top_players_table
   my $jname = &gamename_to_gamecode($dbh,$game);
   my $variation = &gamecode_to_gamename($dbh,$jname);
   my $vtr = &trans("${variation}-pretty-name");
-  my $ncols = $'top_players_columns;  # new rows every 5 cols
+  my $ncols = $::top_players_columns;  # new rows every 5 cols
   if((($idx>0)&&(($idx%$ncols)==0))) { print "</tr><tr>"; }
   print "<td valign=top>";
   print "<b><center><a target=_new href='$vlink'>$vtr</a></center></b>";

@@ -148,10 +148,10 @@ sub validate()
   my $checkv = index($params,"checksumversion=");
   my $checkve = $checkv>=0 ? index($params,"&",$checkv+16) : -1;
   my $checktype = $checkve>$checkv ? substr($params,$checkv+16,$checkve-$checkv-16) : "";
-  if($checktype eq '1') { $rest = $'checksum_salt1 . $rest; }
-  elsif($checktype eq '2') { $rest = $'checksum_salt2 . $rest; }
+  if($checktype eq '1') { $rest = $::checksum_salt1 . $rest; }
+  elsif($checktype eq '2') { $rest = $::checksum_salt2 . $rest; }
   elsif($checktype eq "") {}
-  else { $rest = $'checksum_saltx . $checktype . $rest; }
+  else { $rest = $::checksum_saltx . $checktype . $rest; }
   my $restlen = length($rest);
   my $cs = &simplecs($rest);
   my $ok = $cs eq $checksum;
@@ -204,10 +204,10 @@ sub useCombinedParams()
 # sensitive scripts require that the checksum used is the one specified to the login process
 #
 sub checkChecksumVersion()
-{	if($'checksum_version>0)
+{	if($::checksum_version>0)
 	{
 	my $vers = param('checksumversion');
-	if(!($vers eq $'checksum_version))
+	if(!($vers eq $::checksum_version))
 		{
 		my $from = $ENV{'SCRIPT_NAME'};
 		__d("user banned from $from\n");
@@ -228,14 +228,14 @@ sub printResult()
 	my $cs = &simplecs($msg);
 	my $ll = length($msg);
 	$msg = "len=$ll\ncalc=$cs\n" . $msg  ;
-	my $encr = &xxtea_encrypt($msg,$'tea_key);
+	my $encr = &xxtea_encrypt($msg,$::tea_key);
 	my $base64 = &encode64($encr);
 	# encrypted, base64'd
 	print $base64;
 	if(&debugging())
 	{
 	my $dec64 = &decode64($base64);
-	my $dec = &xxtea_decrypt($dec64,$'tea_key);
+	my $dec = &xxtea_decrypt($dec64,$::tea_key);
 	print "\n$dec\n";
 	}
 }

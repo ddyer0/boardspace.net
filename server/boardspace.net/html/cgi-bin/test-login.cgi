@@ -36,7 +36,7 @@ sub init {
 sub make_log {
 	my ( $msg ) = @_;
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdast) = gmtime(time);
-	open( F_OUT, ">>$'server_logon_log" );
+	open( F_OUT, ">>$::server_logon_log" );
  	printf F_OUT "[%d/%02d/%02d %02d:%02d:%02d] %s\n", 1900+$year,$mon+1,$mday,$hour,$min,$sec,$msg;
         close F_OUT;
 }
@@ -46,10 +46,10 @@ sub check_and_start_server
    my $server_status = &check_server($username,$usernum);
    if(!$server_status)
    {
-       my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
-       my $val = $test ? `$'test_server_start` : `$'server_start`;
-       __dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
-       __d("server down attempting restart: $'server_start = $? ($val)");
+       my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
+       my $val = $test ? `$::test_server_start` : `$::server_start`;
+       __dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
+       __d("server down attempting restart: $::server_start = $? ($val)");
        sleep(2);
        $server_status = check_server($username,$usernum);
        if (! $server_status )
@@ -69,23 +69,23 @@ sub check_and_start_server
 #
 sub check_server
 { my ($username,$usernum)=@_;
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
+  unless (socket(SOCK, PF_INET, SOCK_STREAM, $::proto))
   {
     my $msg = scalar(localtime) . ": socket: $!\n";
-    open LOG, ">>$'perl_log";
+    open LOG, ">>$::perl_log";
     print LOG $msg;
     close LOG;
     return 0;
   }
-  my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
-  my $num = inet_aton($'ip_name);
-  my $port = $test ? $'test_server_port : $'game_server_port;
+  my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
+  my $num = inet_aton($::ip_name);
+  my $port = $test ? $::test_server_port : $::game_server_port;
   unless (connect(SOCK,sockaddr_in($port, $num))) 
     {
     my $numx = ord(substr($num,0,1)) . "." . ord(substr($num,1,1)) 
         . "." . ord(substr($num,2,1)) .  "." . ord(substr($num,3,1));
-    my $msg = scalar(localtime) . ": connect: port $'ip_name($numx):$port $!\n";
-    open LOG, ">>$'perl_log";
+    my $msg = scalar(localtime) . ": connect: port $::ip_name($numx):$port $!\n";
+    open LOG, ">>$::perl_log";
     print LOG $msg;
     close LOG;
     return 0;
@@ -95,8 +95,8 @@ sub check_server
 	my $rand2=int(rand(255.99));
 	my $rand3=int(rand(255.99));
 	my $rand4=int(rand(255.99));
-	$'serverKey="$rand1.$rand2.$rand3.$rand4";
-  print SOCK "200 -1 $username#$usernum $'serverKey\n";
+	$::serverKey="$rand1.$rand2.$rand3.$rand4";
+  print SOCK "200 -1 $username#$usernum $::serverKey\n";
   close(SOCK);
   return 1;
 }
@@ -106,19 +106,19 @@ sub print_applet()
       $pclass,$played,$timec,$banner,$bannermode) = @_;
   my $language=$languageName."Strings";
   my $use_class_dir = param('classes');
-  my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
+  my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
   my $testserver = $test ? "<param name=testserver value=true>\n" : "";
   my $stealth = (($bannermode eq 'S')&&(&param('stealth') eq 'true'))
 	? "<param name=stealth value=true>\n"
 	: "";
 
-   if($use_class_dir eq "") { $use_class_dir = $'class_dir; }
-   if($test) { $use_class_dir = $'test_class_dir; }
+   if($use_class_dir eq "") { $use_class_dir = $::class_dir; }
+   if($test) { $use_class_dir = $::test_class_dir; }
 
-  my $rootclass = $'root_applet;
-  my $jarclass = $'jar_collection;
+  my $rootclass = $::root_applet;
+  my $jarclass = $::jar_collection;
   my $java = param('java');
-  my $extra = $'extramouse;
+  my $extra = $::extramouse;
   if(param('extra')) { $extra='true'; }
   if(!($java eq "")) { $java = "<param name=jdk value=$java>\n"; }
   if(!($banner eq ""))
@@ -148,13 +148,13 @@ sub print_applet()
   &finishQuery($sth);
   }
 	if($fav) { $fav = "<param name=favorites value='$fav'>"; }
-   my $port = $test ? $'test_server_port : $'game_server_port;
+   my $port = $test ? $::test_server_port : $::game_server_port;
    print <<End;
-	<applet codebase="/$'java_dir/$use_class_dir" archive="$jarclass" code=$rootclass width=200 height=0>
+	<applet codebase="/$::java_dir/$use_class_dir archive=$jarclass" code=$rootclass width=200 height=0>
 	<!-- *** -->
 	<param name=servername value="$ENV{'HTTP_HOST'}">
 	<param name=localIP value=$ENV{'REMOTE_ADDR'}>
-	<param name=serverKey value="$'serverKey">
+	<param name=serverKey value="$::serverKey">
 	$java $banner $stealth $fav $testserver
 	<param name=lobbyportnumber value="$port">
 	<param name=robotlobby value="solo">
@@ -192,18 +192,18 @@ sub print_jws_applet()
       $pclass,$played,$timec,$banner,$bannermode) = @_;
   my $language=$languageName."Strings";
   my $use_class_dir = param('classes');
-  my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
+  my $test = (param('test') eq 'true') && !($::class_dir eq $::test_class_dir);
   my $testserver = $test ? "testserver=true\n" : "";
   my $stealth = (($bannermode eq 'S')&&(&param('stealth') eq 'true'))
 	? "<param name=stealth value=true>\n"
 	: "";
 
-   if($use_class_dir eq "") { $use_class_dir = $'class_dir; }
-   if($test) { $use_class_dir = $'test_class_dir; }
+   if($use_class_dir eq "") { $use_class_dir = $::class_dir; }
+   if($test) { $use_class_dir = $::test_class_dir; }
 
-  my $rootclass = $'root_applet;
-  my $jarclass = $'jar_collection;
-  my $extra = $'extramouse;
+  my $rootclass = $::root_applet;
+  my $jarclass = $::jar_collection;
+  my $extra = $::extramouse;
   if(param('extra')) { $extra='true'; }
   if(!($banner eq ""))
   {  $banner = "bannerString=$banner\n";
@@ -232,15 +232,15 @@ sub print_jws_applet()
   &finishQuery($sth);
   }
 	if($fav) { $fav = "favorites=$fav\n"; }
-   my $port = $test ? $'test_server_port : $'game_server_port;
+   my $port = $test ? $::test_server_port : $::game_server_port;
    my $msg = "$banner$fav$testserver$dd
-codebase=$'java_dir$use_class_dir/ 
+codebase=$::java_dir$use_class_dir/ 
 documentbase=/$languageName/
 archive=$jarclass
 code=$rootclass
 servername=$ENV{'HTTP_HOST'}
 localIP=$ENV{'REMOTE_ADDR'}
-serverKey=$'serverKey
+serverKey=$::serverKey
 lobbyportnumber=$port
 robotlobby=solo
 username=$pname
@@ -416,7 +416,7 @@ sub standard_stuff()
    print "</td>";
   
    print "<td>";
-     &show_ordinal_rankings($dbh,10,$'retire_months);
+     &show_ordinal_rankings($dbh,10,$::retire_months);
    print "</td>";
    print "</tr></table>";
 
@@ -538,7 +538,7 @@ sub logon()
        my $pcook = $cookies{$cookiename}; 
        if($pcook) 
          { $cookieval = $pcook->value;
-           $passwd = substr(&decrypt($cookieval,$'tea_key),10); 
+           $passwd = substr(&decrypt($cookieval,$::tea_key),10); 
          }
     }
    #if the cookie got lost, try to give him back the same one
@@ -556,8 +556,8 @@ sub logon()
      }
 
    my $pstr = substr(time,0,10) . $passwd;
-   my $cpass = &encode_entities(&encrypt($pstr, $'tea_key));
-   my $rpass = &decrypt($cpass,$'tea_key);
+   my $cpass = &encode_entities(&encrypt($pstr, $::tea_key));
+   my $rpass = &decrypt($cpass,$::tea_key);
    # check password;
    if( ($pass eq '') || !(lc($passwd) eq lc($pass)))
     { $n=-1; # password mismatch
@@ -570,7 +570,7 @@ sub logon()
     {
      
      # set new cookie with password and name. 
-     my $bpass = encode_entities(&encrypt($bannercookie,$'tea_key));
+     my $bpass = encode_entities(&encrypt($bannercookie,$::tea_key));
      my $bcookie = new CGI::Cookie(-name=>'client',-value=>$bpass,-expires=>'+8d');
      if(!(lc($locked) eq 'y'))
       {
@@ -626,7 +626,7 @@ sub logon()
    my $latupdate = "";
    my ($pclass) = ($is_master eq 'y')?2 : ((0>=900) ? 1 : ($games_played>100?0:-1));
   
-   if($'geocode)
+   if($::geocode)
    {
    my %location = &getLocation($ENV{'REMOTE_ADDR'});
     my $myplace;
@@ -689,7 +689,7 @@ sub logon()
 	  if($sth) { ($timec) = &nextArrayRow($sth); &finishQuery($sth); }
     }
 	
-	my $imagename=$ENV{'DOCUMENT_ROOT'}.$'image_dir.lc($pname).".jpg";
+	my $imagename=$ENV{'DOCUMENT_ROOT'}.$::image_dir.lc($pname).".jpg";
 	my $haspicture;
 		if(-r $imagename) { $haspicture="true"; }
 		else { $haspicture="false"; }
