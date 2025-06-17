@@ -47,33 +47,40 @@ public class BugsCell
 	
 	BugsCell above = null;
 	BugsCell below = null;
+	boolean purchased = false;
+	BugsChip player;
+	BugsChip xPlayer;
+	int cost = 0;
 	BugsChip background = null;
 	int rotation = 0;
-	
+	BugsBoard owningBoard = null;
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
 	public void initRobotValues() 
 	{
 	}
-	public BugsCell(Random r,BugsId rack,int n) { super(r,rack); col='@'; row=n; }		// construct a cell not on the board
-	public BugsCell(Random r,BugsId rack) { super(r,rack); }		// construct a cell not on the board
-	public BugsCell(BugsId d)
+	public BugsCell(BugsBoard o,Random r,BugsId rack,int n) { super(r,rack); owningBoard = o; col='@'; row=n; }		// construct a cell not on the board
+	public BugsCell(BugsBoard o,Random r,BugsId rack) { super(r,rack); owningBoard = o; }		// construct a cell not on the board
+	public BugsCell(BugsBoard o,BugsId d)
 	{
 		super(d);
+		owningBoard = o;
 	}
-	public BugsCell(BugsId rack,char c)
+	public BugsCell(BugsBoard o,BugsId rack,char c)
 	{
 		super(Geometry.Standalone,c,0);
 		rackLocation = rack;
+		owningBoard = o;
 		onBoard = false;
 	}
-	public BugsCell(BugsId rack,char c,int r) 		// construct a cell on the board
+	public BugsCell(BugsBoard o,BugsId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
 		super(cell.Geometry.Hex,rack,c,r);
-		above = new BugsCell(rack);
+		owningBoard = o;
+		above = new BugsCell(o,rack);
 		above.row = 100+r;
 		above.col = c;
-		below = new BugsCell(rack);
+		below = new BugsCell(o,rack);
 		below.row =200+r;
 		below.col = c;
 	};
@@ -100,7 +107,12 @@ public class BugsCell
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
 		background = ot.background;
-		if(onBoard) { above.copyFrom(ot.above); below.copyFrom(ot.below); rotation = ot.rotation; }
+		cost = ot.cost;
+		rotation = ot.rotation;
+		player = ot.player;
+		xPlayer = ot.xPlayer;
+		purchased = ot.purchased;
+		if(onBoard) { above.copyFrom(ot.above); below.copyFrom(ot.below);  }
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -109,7 +121,11 @@ public class BugsCell
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
-		if(onBoard) { above.reInit(); below.reInit(); rotation = 0; }
+		purchased = false;
+		player = null;
+		xPlayer = null;
+		rotation = 0; 
+		if(onBoard) { above.reInit(); below.reInit(); }
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public BugsCell(BugsChip cont)
@@ -123,12 +139,14 @@ public class BugsCell
 	 * roles, or when the diest of contents is complex.
 	 */
 	public long Digest(Random r) 
-	{ long v = super.Digest(r); 
+	{
+	  long v = super.Digest(r); 
 	  if(onBoard)
 	  {
 		  v ^= above.Digest(r);
 		  v ^= below.Digest(r);
-		  v ^= r.nextLong()*rotation;
+		  v ^= r.nextLong()*(player==null ? 0 : player.chipNumber());
+		  v += r.nextLong()*rotation;
 	  }
 	  return v;
 	}
@@ -161,30 +179,30 @@ public class BugsCell
     		return super.drawChip(gc,piece,drawOn,thislabel==BugsChip.NOHIT ? null : highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     }
+	public BugsId getTerrain()
+	{
+		return background.id;
+	}
+
 	/**
 	 * return true of this chip can be played here
 	 * @param c
 	 * @return
 	 */
-	public boolean canPlay(BugCard c)
+	public boolean canPlaceInHabitat(BugCard c)
 	{	Profile profile = c.getProfile();
-		if(background==BugsChip.ForestTile)
+		switch(getTerrain())
 		{
+		case Forest:
 			return profile.hasForestHabitat();
-		}	
-		else if(background==BugsChip.PrarieTile)
-		{
+		case Prarie:
 			return profile.hasGrassHabitat();
-		}
-		else if(background==BugsChip.GroundTile)
-		{
+		case Ground:
 			return profile.hasGroundHabitat();
-		}
-		else if(background==BugsChip.MarshTile)
-		{
+		case Marsh:	
 			return profile.hasWaterHabitat();
-		}
-		else { throw G.Error("Not expecting background %s",background); }
+		default:
+			throw G.Error("Not expecting background %s",background); }
 	}
 	
 }

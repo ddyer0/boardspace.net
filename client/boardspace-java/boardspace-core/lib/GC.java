@@ -888,7 +888,6 @@ public class GC {
 			 Color frameColor, Color HighlightColor, Color BackgroundColor)
 	 {
 		 boolean inbutton = (highlight != null) && r.contains(G.Left(highlight), G.Top(highlight));
-	
 	     if (gc != null)
 	        {	Color cl = inbutton&&highlight.upCode!=MouseState.LAST_IS_IDLE ? HighlightColor : BackgroundColor;
 	        	gc.drawRoundTextButton(r,bevel, text, textColor,frameColor,cl);
@@ -1111,7 +1110,7 @@ public class GC {
 		{
 			gc.setRotatedContext(cx,cy,select,rotation);
 		}
-		else if(select!=null)
+		if(select!=null)
 		{
 			select.setRotatedContext(rotation,cx,cy);
 		}}

@@ -31,8 +31,8 @@ import online.game.BaseBoard.StateRole;
  */
 
 public interface BugsConstants
-{	
-	int N_MARKETS = 8;
+{	int COSTS[] = { 8, 7, 6, 5, 4, 3, 2, 1};
+	int N_MARKETS = COSTS.length;
 	int N_GOALS = N_MARKETS;
 	int STARTING_POINTS = 100;
 	int MAX_PLAYERS = 4;
@@ -44,23 +44,23 @@ public interface BugsConstants
 //  they represent places you can click to pick up or drop a stone
 	enum BugsId implements CellId
 	{
-		Green, // positive numbers are trackable
-		Yellow,
-		Red,
-		Blue,
-		Prarie,Jungle,Forest,Marsh,
+		Prarie,Ground,Forest,Marsh,
 		BoardLocation,
+		BoardTopLocation,
+		BoardBottomLocation,
 		ToggleEye, 
 		MasterDeck,
 		ActiveDeck,
-		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals, RotateCW,RotateCCW,
+		PlayerChip,
+		Ready,
+		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals, RotateCW,RotateCCW, Select,
 		;
 		BugsChip chip;
 	
 	}
 	
 enum UIState implements Digestable {
-	Normal,Purchase;
+	Normal,Ready,Confirm;
 
 	public long Digest(Random r) {
 		return r.nextLong()*(ordinal()+1);
@@ -81,7 +81,6 @@ public enum BugsState implements BoardState,BugsConstants
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Bonus(StateRole.Play,BonusExplanation,false,false),
-	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
 	Play(StateRole.Play,PlayState,false,false);
 	
 	BugsState(StateRole r,String des,boolean done,boolean digest)
@@ -133,51 +132,6 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
      	
     }
 
-// this would be a standard hex-hex board with 4-per-side
-//    static int[] ZfirstInCol = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.
-//
-// this would be a standard hex-hex board with 5-per-side
-//    static int[] ZfirstInCol = { 4, 3, 2, 1, 0, 1, 2, 3, 4 };
-//    static int[] ZnInCol =     {5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
-//
-// this would be a standard hex-hex board with 7-per-side
-//	  static int[] ZfirstInCol7 = { 6, 5, 4, 3,  2,   1,  0,  1,  2,  3, 4, 5 ,6};
-//	  static int[] ZnInCol7 =     { 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7 }; // depth of columns, ie A has 4, B 5 etc.
-//
- 
-// this would be a standard yinsh board, 5-per side with the corners missing
-//    static int[] ZfirstInCol = { 6, 3, 2, 1, 0, 1, 0, 1, 2, 3, 6 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol = { 4, 7, 8, 9, 10, 9, 10, 9, 8, 7, 4 }; // depth of columns, ie A has 4, B 5 etc.
-//    static int[] ZfirstCol = { 1, 0, 0, 0, 0, 1, 1, 2, 3, 4, 6 }; // number of the first visible column in this row, 
-//	 standard "volo" board, 6 per side with missing corners
-//    static int[] ZfirstInCol = { 8, 5, 4, 3, 2, 1, 2, 1,  2, 3, 4, 5, 8 }; // these are indexes into the first ball in a column, ie B1 has index 2
-//    static int[] ZnInCol =   { 5, 8, 9, 10, 11, 12, 11, 12, 11, 10, 9, 8, 5 }; // depth of columns, ie A has 4, B 5 etc.
-//    static int[] ZfirstCol = { 1, 0, 0,  0,  0,  0,  1,  0,  0,  0, 0, 0, 1 };
-
-//  "snowflake" hexagonal board with crinkly edges, 5 per side. 
-//  Used for "crossfire" and lyngk
-//    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
-//    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.''
- 
- //
-//asymmetric hex board (for meridians) with 5 vertices on opposite sides, 6 vertices on the other four sides
-//
-//static int[] M5FirstInCol = {  5, 4, 3,  2,  1,   0,  1,  2, 3, 4, 5,};
-//static int[] M5NInCol =     {  5, 6, 7,  8,  9,  10,  9,  8, 7, 6, 5,}; // depth of columns, ie A has 4, B 5 etc.
-
-//
-//asymmetric hex board (for meridians) with 6 vertices on opposite sides, 7 vertices on the other four sides
-//
-//static int[] M6FirstInCol = { 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6};
-//static int[] M6NInCol =     { 6, 7, 8, 9, 10, 11, 12, 11, 10, 9, 8, 7, 6}; // depth of columns, ie A has 4, B 5 etc.
-
-//
-//asymmetric hex board (for meridians) with 7 vertices on opposite sides, 8 vertices on the other four sides
-//
-//static int[] M7FirstInCol = { 7, 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6, 7};
-//static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7}; // depth of columns, ie A has 4, B 5 etc.
-
 	static final String VictoryCondition = "connect opposite sides with a chain of markers";
 	static final String PlayState = "Place a marker on any empty cell";
 	static final String ScavengerMessage = "Scavenger";
@@ -188,13 +142,20 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 	static final String ParasiteMessage = "Parasite";
 	static final String PurchaseExplanation = "Buy bugs or goals";
 	static final String BonusExplanation = "Score bonus cards";
-	
+	static final String ReadyButton = "Ready";
+	static final String ExplainReady = "Click when you're done buying";
+	static final String CostMessage = "cost #1 VP";
+	static final String ConfirmDescription = "Click on Done to confirm this move";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Prototype",
 			PlayState,
 			PurchaseExplanation,
+			ConfirmDescription,
+		CostMessage,
+		ReadyButton,
+		ExplainReady,
 	    ScavengerMessage,
 	    CanFlyMessage,
 	    PredatorMessage,

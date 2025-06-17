@@ -66,14 +66,25 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
             diet != null ? diet.name() : ""
         );
     }
+    public boolean isHerbivore()
+    {
+    	return diet.isHerbivore;
+    }
+    public boolean isCarnivore()
+    {
+    	return diet.isCarnivore;
+    }
+    public boolean isFlying()
+    {
+    	return flying==Flying.YES;
+    }
     public void calculatePoints()
     {
         Taxonomy p = getCategory();
         double sz = Taxonomy.largestCategorySize/2+1;
-        cardPoints = (int)(sz/p.split1Count+0.5);
-        
-        
+        cardPoints = (int)(sz/p.split1Count+0.5+(isCarnivore()?0.6:0) + (isFlying()?0.5 : 0));
     }
+    
     public Profile deserialize(String fields[]) {
  
         Profile profile = new Profile();

@@ -50,7 +50,7 @@ import javax.swing.JTextArea;
 
 
 //TODO: add special handling for error is : java.io.IOException: write failed: ENOSPC (No space left on device)
-
+//TODO: replace loader protocol with one that's tree structured, so fewer files need to be checked at startup
 /**
  * Load a java application defined by an executable jar loaded from a web site
  * Maintain a lazy cache of all the jar files in the application

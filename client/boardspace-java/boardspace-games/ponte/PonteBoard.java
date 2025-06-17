@@ -720,10 +720,11 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 
     private boolean canPlayTwoTileMoves()
     {	PonteCell target = rack[playerRack[whoseTurn]];
+    	PonteChip chip = getPlayerChip(whoseTurn);
     	if(target.height()<2) { return(false); }
 		CommonMoveStack tileMoves = new CommonMoveStack();
 		boolean some = false;
-		addTileMoves(tileMoves,target);
+		addTileMoves(tileMoves,target,chip);
 		if(tileMoves.size()>=2)
 		{	PonteChip targetChip = rack[playerRack[whoseTurn]].topChip();
 			for(int lim = tileMoves.size()-1; !some && lim>=0; lim--)
@@ -732,7 +733,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 				PonteCell c = getCell(m.col,m.row);
 				addChip(c,targetChip);
 				blobsValid = false;
-				some = addTileMoves(null,target);
+				some = addTileMoves(null,target,chip);
 				removeChip(c);
 				blobsValid = false;
 			}
@@ -1357,9 +1358,8 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 	 }
 	 return(false);
  }
- boolean addTileMoves(CommonMoveStack  all,PonteCell targetCell,PonteCell c)
+ boolean addTileMoves(CommonMoveStack  all,PonteCell targetCell,PonteChip targetColor,PonteCell c)
  {	
- 	PonteChip targetColor = targetCell.topChip();
  	if(validTileMove(c,targetColor))
  	{
  		if(all!=null) 
@@ -1371,12 +1371,12 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
  	return(false);
  }
  	
- boolean addTileMoves(CommonMoveStack  all,PonteCell target)
+ boolean addTileMoves(CommonMoveStack  all,PonteCell target,PonteChip targetColor)
  {	findBlobs();
  	boolean some = false;
  	for(int lim = emptyCells.size()-1; lim>=0; lim--)
  	{	PonteCell c = emptyCells.elementAt(lim);
- 		some |= addTileMoves(all,target,c);	
+ 		some |= addTileMoves(all,target,targetColor,c);	
  		if(some && (all==null)) { return(some); }
 	 }
  	return(some);
@@ -1390,7 +1390,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 		}
 	else 
 		{
-		addTileMoves(all,rack[playerRack[who]]);
+		addTileMoves(all,rack[playerRack[who]],getPlayerChip(who));
 		}
 	
  	while(all.size()>0)
@@ -1451,7 +1451,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
  	if(moves==null)
  	{
  	moves = new CommonMoveStack();
- 	addTileMoves(moves,rack[playerRack[whoseTurn]]);
+ 	addTileMoves(moves,rack[playerRack[whoseTurn]],getPlayerChip(whoseTurn));
  	cachedTileMoves[playerRack[whoseTurn]] = moves;
  	if(all!=null) 
  		{for(int lim=moves.size()-1; lim>=0; lim--)

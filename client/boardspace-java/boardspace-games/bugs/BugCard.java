@@ -282,6 +282,10 @@ public class BugCard extends BugsChip implements BugsConstants
  					: actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
 	 	}
 	}
+	public int pointValue()
+	{
+		return profile.cardPoints;
+	}
 	public boolean actualDrawChip(Graphics gc, Font baseFont,
 			HitPoint highlight, BugsId id,
 			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
@@ -314,7 +318,7 @@ public class BugCard extends BugsChip implements BugsConstants
 			bugImage.centerImage(gc,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
 			//canvas.drawImage(gc,image,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
 			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,scoreHeight));
-			GC.Text(gc,true,xp,yp+SQUARESIZE/2-scoreHeight,scoreHeight,scoreHeight,Color.black,null,  ""+profile.cardPoints);	
+			GC.Text(gc,true,xp,yp+SQUARESIZE/2-scoreHeight,scoreHeight,scoreHeight,Color.black,null,  ""+pointValue());	
 			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight));
 			GC.Text(gc,true,xp+headHeight+headHeight/2,yp,SQUARESIZE-headHeight*2,headHeight,Color.black,null,  getCommonName());
 
@@ -416,7 +420,7 @@ public class BugCard extends BugsChip implements BugsConstants
 			int ims = SQUARESIZE/4;		
 			int wingSize = ims*3/4;
 			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,ims));
-			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+profile.cardPoints);	
+			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+pointValue());	
 
 			Profile cat = profile.getCategory().getProfile();
 			if(cat!=null)
@@ -442,7 +446,6 @@ public class BugCard extends BugsChip implements BugsConstants
 
 		return hit;
 	}	
-
 	public void drawDietIcon(Graphics gc,Diet diet,int l,int t,int ims,HitPoint hitany)
 	{	BugsChip icon = null;
 		String h = "";

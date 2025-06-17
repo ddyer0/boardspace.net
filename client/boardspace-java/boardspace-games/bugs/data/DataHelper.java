@@ -48,10 +48,24 @@ public abstract class DataHelper<T extends KeyProvider> {
     public enum Flying {
         YES, NO, UNKNOWN
     }
-
+  
     public enum Diet {
-        HERBIVORE, FUNGIVORE, CARNIVORE, OMNIVORE, DETRITIVORE, SCAVENGER, NEGAVORE,
-        PARASITE, UNKNOWN
+        HERBIVORE(false,true),
+        FUNGIVORE(false,true),
+        CARNIVORE(true,false),
+        OMNIVORE(true,false),
+        DETRITIVORE(false,true),
+        SCAVENGER(false,true),
+        NEGAVORE(false,true),	// eaten by carnivores
+        PARASITE(false,false),
+        UNKNOWN(false,false);
+    	boolean isCarnivore = false;
+    	boolean isHerbivore = false;
+        Diet(boolean car,boolean veg)
+        {
+        	isCarnivore = car;
+        	isHerbivore = veg;
+        }
     }
     public enum Rank {
         DOMAIN, KINGDOM, PHYLUM, CLASS, ORDER, FAMILY, GENUS, GENUSANDSPECIES, UNKNOWN;

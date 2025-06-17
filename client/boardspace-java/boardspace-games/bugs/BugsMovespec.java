@@ -26,7 +26,7 @@ import lib.TextGlyph;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class BugsMovespec 
-		extends commonMove	// for a multiplayer game, this will be commonMPMove
+		extends commonMPMove	// for a multiplayer game, this will be commonMPMove
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static final int MOVE_PICK = 204; // pick a chip from a pool
@@ -35,7 +35,11 @@ public class BugsMovespec
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_ROTATECW = 208;
     static final int MOVE_ROTATECCW = 209;
- 
+    static final int MOVE_SELECT = 210;
+    static final int MOVE_SETACTIVE = 211;
+    static final int MOVE_READY = 212;
+    static final int MOVE_TO_BOARD = 213;
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -45,26 +49,21 @@ public class BugsMovespec
         	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
+        	"Select",MOVE_SELECT,
+        	"Ready",MOVE_READY,
+        	"Move",MOVE_TO_BOARD,
+        	"Setactive",MOVE_SETACTIVE,
         	"Dropb", MOVE_DROPB);
   }
-    //
-    // adding these makes the move specs use Same_Move_P instead of == in hash tables
-    //needed when doing chi square testing of random move generation, but possibly
-    //hazardous to keep in generally.
-    //public int hashCode()
-    //{
-    //	return(to_row<<12+to_col<<18+player<<24+op<<25);
-    //}
-    //public boolean equals(Object a)
-    //{
-    //	return( (a instanceof commonMove) && Same_Move_P((commonMove)a)); 
-    //}
-    //
     // variables to identify the move
     BugsId source; // where from/to
+    char from_col;
+    int from_row;
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
     BugsChip chip;
+    int forPlayer = -1;	// the player making this move.  This is explicit separate from the regular "player" slot.
+						// games with simultaneous moves can't use the game state to guess the player
     
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
@@ -82,16 +81,16 @@ public class BugsMovespec
     public BugsMovespec(int opc , int p)
     {
     	op = opc;
-    	player = p;
+    	forPlayer = player = p;
     }
    
     public BugsMovespec(int opc,BugsCell c,int who)
     {
        	op = opc;
        	source = c.rackLocation();
-     	to_col = c.col;
-    	to_row = c.row;
-    	player = who;
+     	from_col = to_col = c.col;
+    	from_row = to_row = c.row;
+    	forPlayer = player = who;
  
     }
     /* constructor */
@@ -100,7 +99,20 @@ public class BugsMovespec
         parse(ss, p);
     }
 
-    /**
+    public BugsMovespec(int moveToBoard, BugsCell from, BugsChip chip2, BugsCell to,int who) 
+    {
+    	op = moveToBoard;
+		source = from.rackLocation();
+		from_col = from.col;
+		from_row = from.row;
+		chip = chip2;
+		to_col = to.col;
+		to_row = to.row;
+		forPlayer = player = who;
+		
+	}
+
+	/**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
      */
@@ -112,6 +124,9 @@ public class BugsMovespec
 				&& (source == other.source)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
+				&& (from_row == other.from_row)
+				&& (from_col == other.from_col)
+				&& (forPlayer == other.forPlayer)
 				&& (player == other.player));
     }
 
@@ -120,6 +135,8 @@ public class BugsMovespec
         to.to_col = to_col;
         to.to_row = to_row;
         to.source = source;
+        to.from_col = from_col;
+        to.from_row = from_row;
         to.chip = chip;
     }
 
@@ -153,6 +170,8 @@ public class BugsMovespec
         }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
+        forPlayer = msg.hasMoreTokens() ? D.getInt(msg.nextToken()) : p;
+
         switch (op)
         {
         case MOVE_UNKNOWN:
@@ -161,23 +180,41 @@ public class BugsMovespec
         case MOVE_ROTATECW:
         case MOVE_ROTATECCW:
         case MOVE_DROPB:
-		case MOVE_PICKB:
-            source = BugsId.BoardLocation;
+        	source = BugsId.BoardLocation;
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
+            break;
+        case MOVE_TO_BOARD:
+        	source = BugsId.valueOf(msg.nextToken());
+        	from_col = G.CharToken(msg);
+        	from_row = G.IntToken(msg);
+        	chip = BugsChip.getChip(G.IntToken(msg.nextToken()));
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
-
+            break;
+		case MOVE_PICKB:
+        	source = BugsId.BoardLocation;
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
+            chip = BugsChip.getChip(G.IntToken(msg));
+            break;
+		case MOVE_SELECT:
+        case MOVE_DROP:
+            source = BugsId.valueOf(msg.nextToken());
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
             break;
 
-        case MOVE_DROP:
         case MOVE_PICK:
             source = BugsId.valueOf(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            from_col = to_col = G.CharToken(msg);
+            from_row = to_row = G.IntToken(msg);
+            chip = BugsChip.getChip(G.IntToken(msg));
             break;
-
+            
+        case MOVE_SETACTIVE:
+        case MOVE_READY:
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
-
             break;
 
         default:
@@ -213,7 +250,10 @@ public class BugsMovespec
 		case MOVE_DROPB:
             return icon(v,to_col ,to_row);
 
+		case MOVE_TO_BOARD:
+			return icon(v,from_col,from_row," ",to_col,to_row);
 			
+		case MOVE_SELECT:
 		case MOVE_DROP:
         case MOVE_PICK:
             return icon(v,source.name());
@@ -234,7 +274,7 @@ public class BugsMovespec
     public String moveString()
     {
 		String indx = indexString();
-		String opname = indx+D.findUnique(op)+" ";
+		String opname = indx+D.findUnique(op)+" P"+forPlayer+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -242,17 +282,30 @@ public class BugsMovespec
         {
 		case MOVE_ROTATECW:
 		case MOVE_ROTATECCW:
-        case MOVE_PICKB:
-		case MOVE_DROPB:
+ 		case MOVE_DROPB:
 	        return G.concat(opname , to_col , " " , to_row);
-
+	        
+        case MOVE_PICKB:
+        	return G.concat(opname , from_col , " " , from_row," ",chip.chipNumber()," \"",chip.getName(),"\"");
+        	
+        case MOVE_SELECT:
         case MOVE_DROP:
-        case MOVE_PICK:
             return G.concat(opname , source.name()," ", to_col," ",to_row);
+            
+        case MOVE_TO_BOARD:
+        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",chip.chipNumber()," ",to_col," ",to_row);
+        	
+        case MOVE_PICK:
+        	return G.concat(opname , source.name()," ", from_col," "+from_row," ",chip.chipNumber()," \"",chip.getName(),"\"");
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
-
+            
+        case MOVE_EDIT:
+        	return "Edit";
+        	
+        case MOVE_READY:
+        case MOVE_SETACTIVE:
         default:
             return G.concat(opname);
         }

@@ -460,6 +460,8 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	private double rotatedAmount = 0;
 	private int rotatedCX = 0;
 	private int rotatedCY = 0;
+	private int originalX = 0;
+	private int originalY = 0;
 	public boolean hasRotatedContext() { return(rotatedAmount!=0); }
 	public void setRotatedContext(double ang)
 	{
@@ -469,6 +471,9 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 	{	rotatedAmount = ang;
 		rotatedCX = cx;
 		rotatedCY = cy;
+		// remembering the original x,y is important to avoid drift when this code is used a lot
+		originalX = G.Left(this);
+		originalY = G.Top(this);
 		setRotation(ang,cx,cy);
 	}
 	public void unsetRotatedContext()
@@ -476,6 +481,8 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 		if(rotatedAmount!=0)
 		{
 			setRotation(-rotatedAmount,rotatedCX,rotatedCY);
+			G.SetLeft(this,originalX);
+			G.SetTop(this,originalY);
 			rotatedAmount = 0;
 		}
 	}

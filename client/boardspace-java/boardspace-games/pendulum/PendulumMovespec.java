@@ -49,6 +49,7 @@ public class PendulumMovespec
     static final int MOVE_REFILL = 221;
     static final int MOVE_PAUSE = 222;	// pause timers
     static final int MOVE_RESUME = 223;	// resume timers
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -90,7 +91,9 @@ public class PendulumMovespec
     // variables to identify the move
     PendulumId source; // where from/to
     PendulumId dest;
-    int forPlayer;
+    
+    int forPlayer;		// the player making this move.  This is explicit separate from the regular "player" slot.
+    					// games with simultaneous moves can't use the game state to guess the player
     char to_col;
     char from_col;
     int to_row; // for from-to moves, the destination row
@@ -455,7 +458,7 @@ public class PendulumMovespec
         case MOVE_RESUME:
         case MOVE_STARTPLAY:
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

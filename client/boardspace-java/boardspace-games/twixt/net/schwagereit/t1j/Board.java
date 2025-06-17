@@ -524,7 +524,7 @@ public final class Board
     *           x
     * @param y
     *           y
-    * @return 0 (==empty) or owner of pin
+    * @return 0 (==empty) or owningBoard of pin
     */
    public int getPin(final int x, final int y)
    {

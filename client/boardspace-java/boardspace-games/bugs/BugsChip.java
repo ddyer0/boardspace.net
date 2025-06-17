@@ -81,17 +81,17 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	public int chipNumber() { return(id==null?-1:id.ordinal()); }
 	
 	static public BugsChip PrarieTile = new BugsChip("prarie",new double[]{0.50,0.510,1.44},BugsId.Prarie);
-	static public BugsChip GroundTile = new BugsChip("ground",new double[]{0.50,0.510,1.44},BugsId.Jungle);
+	static public BugsChip GroundTile = new BugsChip("ground",new double[]{0.50,0.510,1.44},BugsId.Ground);
 	static public BugsChip MarshTile = new BugsChip("marsh",new double[]{0.50,0.510,1.44},BugsId.Marsh);
 	static public BugsChip ForestTile = new BugsChip("forest",new double[]{0.50,0.510,1.44},BugsId.Forest);
 
 	static BugsChip Tiles[] = {
 			PrarieTile,GroundTile,MarshTile,ForestTile,
 	};
-	static public BugsChip Yellow = new BugsChip("yellow-stone-np",new double[]{0.50,0.510,1.44},BugsId.Yellow);
-	static public BugsChip Green = new BugsChip("green-stone-np",new double[]{0.47,0.49,1.44},BugsId.Green);
-	static public BugsChip Blue = new BugsChip("blue-stone-np",new double[]{0.50,0.510,1.44},BugsId.Blue);
-	static public BugsChip Red = new BugsChip("red-stone-np",new double[]{0.47,0.49,1.44},BugsId.Red);
+	static public BugsChip Yellow = new BugsChip("yellow-cube",new double[]{0.50,0.510,1.44});
+	static public BugsChip Green = new BugsChip("green-cube",new double[]{0.47,0.49,1.44});
+	static public BugsChip Blue = new BugsChip("blue-cube",new double[]{0.50,0.510,1.44});
+	static public BugsChip Red = new BugsChip("red-cube",new double[]{0.47,0.49,1.44});
 
 	static BugsChip getGoalCard(int n) { return null; }
 	static BugsChip getBugCard(int n) { return null; }

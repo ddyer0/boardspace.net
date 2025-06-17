@@ -2193,7 +2193,7 @@ public static String expandClassName(String classname)
     				break;
     			case 0:
     				dx = G.Left(r)-cx;
-    				dy = G.Top(r)-dy;
+    				dy = G.Top(r)-cy;
     				break;
     		}
     		SetLeft(r,(int)(cx+cosa*dx-sina*dy));

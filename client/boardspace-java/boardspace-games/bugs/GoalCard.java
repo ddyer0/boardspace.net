@@ -96,7 +96,8 @@ public class GoalCard extends BugsChip
 		
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
+		int cardH = (int)(SQUARESIZE/1.45);
+		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,cardH);
 		hit = G.pointInRect(highlight,r);
 		if(hit)
 		{	highlight.hitData = this;
@@ -107,21 +108,23 @@ public class GoalCard extends BugsChip
 		blankBack.getImage().centerImage(gc,r);
 		
 		if(prof1==prof2)
-		{	Rectangle r1 = new Rectangle(cx-SQUARESIZE/4,cy-SQUARESIZE/4,SQUARESIZE/2,SQUARESIZE/2);
+		{	Rectangle r1 = new Rectangle(cx-SQUARESIZE/6,cy-SQUARESIZE/6,SQUARESIZE/2,SQUARESIZE/2);
 			im1.centerImage(gc,r1);
 			HitPoint.setHelpText(hitAny,r,cat1.getCommonName()+"\n"+cat1.getScientificName());
-			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/8));
-			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.4),cy+SQUARESIZE/10,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,"2x");
+			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/5));
+			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.43),cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,"2x");
 		}
 		else
-		{	Rectangle r1 = new Rectangle(cx-SQUARESIZE/3,cy-SQUARESIZE/5,SQUARESIZE/3,SQUARESIZE/3);
-			Rectangle r2 = new Rectangle(cx,cy-SQUARESIZE/5,SQUARESIZE/3,SQUARESIZE/3);
+		{	int xs = (int)(SQUARESIZE*0.4);
+			int yo = (int)(SQUARESIZE*0.15);
+			Rectangle r1 = new Rectangle(cx-xs,cy-yo,xs,xs);
+			Rectangle r2 = new Rectangle(cx+(int)(SQUARESIZE*0.05),cy-yo,xs,xs);
 			im1.centerImage(gc,r1);
 			im2.centerImage(gc,r2);
 			HitPoint.setHelpText(hitAny,r1,cat1.getCommonName()+"\n"+cat1.getScientificName());
 			HitPoint.setHelpText(hitAny,r2,cat2.getCommonName()+"\n"+cat1.getScientificName());
-			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/10));
-			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/10,SQUARESIZE,SQUARESIZE/8,Color.black,null,"1x + 1x");
+			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/8));
+			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/5,SQUARESIZE,SQUARESIZE/5,Color.black,null,"1x + 1x");
 		}
 		return hit;
 	}

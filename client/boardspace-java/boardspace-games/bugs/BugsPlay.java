@@ -74,8 +74,8 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
 	// common parameters
     private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
-    private BugsChip movingForPlayer = null;	// optional, some evaluators care
-    
+    private BugsChip movingForPlayer = null;		// optional, some evaluators care
+    private int forPlayer = -1;						// robot moving for this player
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
     private int DUMBOT_DEPTH = 7;
@@ -181,7 +181,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves());
+            return(board.getListOfMoves(forPlayer));
         }
 
         /**
@@ -375,6 +375,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues(this);
+    forPlayer = playerIndex;
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
