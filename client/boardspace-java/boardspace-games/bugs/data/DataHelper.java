@@ -134,11 +134,13 @@ public abstract class DataHelper<T extends KeyProvider> {
                 	list.put(s.getKey(),s);
                 }
             }
+           res.close();
         }
         catch (IOException f)
         {
         	G.Error("Loading ",file);
         }
+        //G.print("read file: ",file," ",list.size());
         return (list);
     }
 
@@ -155,12 +157,12 @@ public abstract class DataHelper<T extends KeyProvider> {
             }
         }
     }
-    
+
     public List<String> getImageResources(String path) 
     {
         URL resource = Platform.class.getResource(path);
         if (resource == null) {
-            return new ArrayList<>();
+             return new ArrayList<>();
         }
         try {
         List<String> imageFiles = new ArrayList<>();

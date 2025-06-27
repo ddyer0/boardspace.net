@@ -248,7 +248,10 @@ public class BugCard extends BugsChip implements BugsConstants
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
 	{	return drawChip(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
-
+//	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
+//	{
+//		return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,sscale);
+//	}
 	static boolean PRECALCULATE = false;
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
@@ -277,9 +280,22 @@ public class BugCard extends BugsChip implements BugsConstants
 	 		gc=null;
 	 	}}
 	 	HitPoint action = helptext==NOHIT ? null : highlight;
- 		return squareWidth<200 
+ 		Boolean hit = squareWidth<100 
+ 				? actualDrawMicroChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight)
+ 				: squareWidth<200 
  					? actualDrawCompactChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight)
  					: actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
+ 		if(!drawOn.hasMovingObject(highlight)
+ 			&& G.pointInRect(highlight,e_x-squareWidth/2,e_y+squareWidth/8,squareWidth,squareWidth/8))
+ 			{
+ 			 highlight.spriteRect = new Rectangle(e_x-squareWidth/2,e_y+squareWidth/8,squareWidth,squareWidth/8);
+ 			 highlight.spriteColor = Color.red;
+ 			 highlight.hitCode = BugsId.HitChip;
+ 			 //GC.frameRect(gc,Color.green,highlight.spriteRect);
+ 			 highlight.hitData = this;
+ 			 hit = true;
+ 			}
+ 		return hit;
 	 	}
 	}
 	public int pointValue()
@@ -292,18 +308,10 @@ public class BugCard extends BugsChip implements BugsConstants
 		{
     	InternationalStrings s = G.getTranslations();
 		Image bugImage = profile.illustrationImage;
-		boolean hit = false;
 		
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
-		hit = G.pointInRect(highlight,r);
-		if(hit)
-		{	highlight.hitData = this;
-			highlight.spriteColor = Color.red;
-    		highlight.spriteRect = r;
-    		highlight.hitCode = id;
-		}
+		boolean hit = registerHit(gc,highlight,xp,yp,SQUARESIZE);
 		
 		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
 		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
@@ -374,19 +382,11 @@ public class BugCard extends BugsChip implements BugsConstants
 		{
     	InternationalStrings s = G.getTranslations();
 		Image bugImage = profile.illustrationImage;
-		boolean hit = false;
 		
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
-		hit = G.pointInRect(highlight,r);
-		if(hit)
-		{	highlight.hitData = this;
-			highlight.spriteColor = Color.red;
-    		highlight.spriteRect = r;
-    		highlight.hitCode = id;
-		}
-		
+		boolean hit = registerHit(gc,highlight,xp,yp,SQUARESIZE);
+
 		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
 		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
 		
@@ -446,6 +446,66 @@ public class BugCard extends BugsChip implements BugsConstants
 
 		return hit;
 	}	
+	
+	public boolean registerHit(Graphics gc,HitPoint highlight,int xp, int yp, int SQUARESIZE)
+	{
+		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
+		boolean hit = G.pointInRect(highlight,r);
+		if(hit)
+		{	highlight.hitData = this;
+			highlight.spriteColor = Color.red;
+    		highlight.spriteRect = r;
+    		highlight.hitCode = id;
+		}
+		return hit;
+	}
+	public boolean actualDrawMicroChip(Graphics gc, Font baseFont,
+			HitPoint highlight, BugsId id,
+			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
+		{
+    	InternationalStrings s = G.getTranslations();
+		Image bugImage = profile.illustrationImage;
+		int xp = cx-SQUARESIZE/2;
+		int yp = cy-SQUARESIZE/4;
+		boolean hit = registerHit(gc,highlight,xp,yp,SQUARESIZE);
+
+		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		
+		int ims = SQUARESIZE/4;		
+	
+		bugImage.centerImage(gc,xp+ims,yp,SQUARESIZE/4,SQUARESIZE/4);
+
+		{	
+			int wingSize = ims*3/4;
+			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,ims));
+			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+pointValue());	
+
+			Profile cat = profile.getCategory().getProfile();
+			if(cat!=null)
+			{	Image im = cat.illustrationImage;
+				String sname = cat.getCommonName()+"\n"+cat.getScientificName();
+				int l = cx;
+				int cats = (int)(SQUARESIZE*0.4);
+				int t = yp;
+				if(im!=null)
+				{
+				im.centerImage(gc,l,t+ims/4,cats	,cats);	
+				HitPoint.setHelpText(hitAny,l,t+ims/4,cats,cats,sname);
+				}
+
+			drawDietIcon(gc,profile.diet,xp+wingSize,cy,ims,hitAny);
+			if(profile.flying==Flying.YES)
+				{
+				BugsChip.Wings.getImage().centerImage(gc,xp+ims/3,yp+ims/3,wingSize,wingSize);
+				HitPoint.setHelpText(hitAny,xp+wingSize,yp,wingSize,wingSize,s.get(CanFlyMessage));
+				}
+			}
+		}
+
+		return hit;
+	}	
+	
 	public void drawDietIcon(Graphics gc,Diet diet,int l,int t,int ims,HitPoint hitany)
 	{	BugsChip icon = null;
 		String h = "";

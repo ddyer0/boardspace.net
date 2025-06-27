@@ -2138,7 +2138,7 @@ public static String expandClassName(String classname)
     }
     /**
      *  translate an angle which should be near a multiple of PI/2 (1/4 turn) to the number
-     * of quater turns clockwise, range 0-3
+     * of quarter turns clockwise, range 0-3
      * @param ang
      * @return 0-3
      */

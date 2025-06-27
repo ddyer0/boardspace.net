@@ -37,6 +37,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     {
         // these int values must be unique in the dictionary
     	addStandardMoves(D,
+    		"Swap",MOVE_SWAP,
         	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
@@ -339,7 +340,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     }
 
     private double[]attachScale(int rot)
-    {	double scl = 2.4;
+    {	double scl = 2.0;
     	double val[] = null;
     	int dir = (attachDirection+rot+6)%6;
     	switch(dir)
@@ -360,12 +361,13 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	double scl[] = attachScale(rot);
     	return(-0.25 -scl[2]/2);
     }
-    private double glyphScale = 0.75;
-    private double lineScale = 2.0;
-    private double attachScale = 2.8;
     private Text attachmentGlyph(HiveGameViewer v,Drawable mainGlyph)
     {	int netRotation = v.netRotation();
-     	if(attachObject==null)
+    	double glyphScale = 0.5;
+    	double lineScale = 2.0;
+    	double attachScale = 2.8;
+    	double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
+        	if(attachObject==null)
     	{	if((op==MOVE_MOVE) && (mainGlyph!=null))
     		{ 
     		  return(TextGlyph.create("xxxx",mainGlyph,v,new double[]{lineScale,4,0,0}));
@@ -463,14 +465,15 @@ public class Hivemovespec extends commonMove implements HiveConstants
     public Text shortMoveText(commonCanvas v)
     {	return(shortMoveText((HiveGameViewer)v));
     }
-    double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
     public Text shortMoveText(HiveGameViewer v)
     {	if(v.useTextNotation)
     		{ String msg = shortMoveString(v.reverse_y());
     		
     		  return TextChunk.create(msg);
     		}
-        switch (op)
+		double glyphScale = 0.75;
+    	double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
+    	switch (op)
         {
         case MOVE_PLAYBLACK:
         	return(TextChunk.create("Play Black"));

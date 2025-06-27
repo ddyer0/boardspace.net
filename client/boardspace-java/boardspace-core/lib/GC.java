@@ -1110,7 +1110,7 @@ public class GC {
 		{
 			gc.setRotatedContext(cx,cy,select,rotation);
 		}
-		if(select!=null)
+		else if(select!=null)
 		{
 			select.setRotatedContext(rotation,cx,cy);
 		}}
@@ -1128,7 +1128,7 @@ public class GC {
 	public static void setRotatedContext(Graphics gc,HitPoint select,double rotation)
 	{	if(rotation!=0)
 		{
-		if(gc!=null && select!=null)
+		if(gc!=null)
 		{
 			gc.setRotatedContext(select, rotation);
 		}

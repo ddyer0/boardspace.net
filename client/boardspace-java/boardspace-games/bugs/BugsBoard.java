@@ -61,20 +61,26 @@ class BugsBoard
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel;
 	BugsState board_state = BugsState.Puzzle;	
-	private BugsState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 
 	public BugsCell masterDeck = null;
 	public BugsCell activeDeck = null;
+	public int minDeckValue = 6;
 	public BugsCell masterGoalDeck = null;
 	public BugsCell goalDeck = null;
-	
+	public BugsCell goalDiscards = null;
+	public BugsCell bugDiscards = null;
+	public int roundNumber = 0;
+	int roundProgress = 0;
+	boolean rotated = false;
+	int progress = 0;
+	public boolean lackOfProgress = false;
 	public PlayerBoard pbs[] = null;
 	public PlayerBoard allPbs[] = 
-		{ new PlayerBoard(this,BugsChip.Yellow,0),
-		  new PlayerBoard(this,BugsChip.Green,1),
-		  new PlayerBoard(this,BugsChip.Blue,2),
-		  new PlayerBoard(this,BugsChip.Red,3)
+		{ new PlayerBoard(this,0),
+		  new PlayerBoard(this,1),
+		  new PlayerBoard(this,2),
+		  new PlayerBoard(this,3)
 		};
 	
 	public PlayerBoard getPlayerBoard(int n) { return pbs[n]; }
@@ -85,7 +91,7 @@ class BugsBoard
      * @param st
      */
 	public void setState(BugsState st) 
-	{ 	unresign = (st==BugsState.Resign)?board_state:null;
+	{ 	
 		board_state = st;
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
@@ -93,8 +99,7 @@ class BugsBoard
 	}
 	public BugsCell market[] = null;
 	public BugsCell goals[] = null;
-	
-    // get the chip pool and chip associated with a player.  these are not 
+	// get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public BugsChip getPlayerChip(int p) { return(pbs[p].chip); }
 	public BugsChip getCurrentPlayerChip() { return(getPlayerChip(whoseTurn)); }
@@ -174,6 +179,8 @@ class BugsBoard
 		activeDeck =  new BugsCell(this,r,BugsId.ActiveDeck);
 		masterGoalDeck = new BugsCell(this,r,BugsId.MasterGoalDeck);
 		goalDeck = new BugsCell(this,r,BugsId.GoalDeck);
+		goalDiscards = new BugsCell(this,r,BugsId.GoalDiscards);
+		bugDiscards = new BugsCell(this,r,BugsId.BugDiscards);
 		
 		for(int i=0;i<BugCard.bugCount();i++) { masterDeck.addChip(BugCard.getCard(i)); }
 		
@@ -217,11 +224,14 @@ class BugsBoard
 		int map[] = AR.intArray(masterDeck.height());
 		int nCells = nBoardCells();
 		int deckSize = (int)(DECKSIZE_MULTIPLIER*nCells*3);
-		Taxonomy animals = Taxonomy.get("Animalia");
+		Taxonomy animals = Taxonomy.getWildType();
 		int ncards = masterDeck.height();
 		int lim = ncards;
 		r.shuffle(map);
 		activeDeck.reInit();
+		int min = 9999;
+		@SuppressWarnings("unused")
+		int carnivore = 0;
 		while((cats.size()<N_ACTIVE_CATEGORIES
 				|| activeDeck.height()<deckSize)
 				&& lim-->0
@@ -238,9 +248,14 @@ class BugsBoard
 				{
 					BugCard in = (BugCard)masterDeck.chipAtIndex(i);
 					Taxonomy bugCat = in.getProfile().getCategory();
-					if(bugCat==cat) { activeDeck.addChip(in); }				
+					if(bugCat==cat)
+						{ activeDeck.addChip(in); 
+						  min = Math.min(in.pointValue(),min);
+						  if(in.getProfile().isCarnivore()) { carnivore++; }
+						}				
 				}
 			}
+			minDeckValue = min;
 		}
 		int nWild = (int)(deckSize*WILDPERCENT);
 		lim = ncards;
@@ -250,9 +265,11 @@ class BugsBoard
 			Taxonomy cat = ch.getProfile().getCategory();
 			if(cat==animals) 
 				{ nWild--; activeDeck.addChip(ch); 
+				  if(ch.getProfile().isCarnivore()) { carnivore++; }
 				}
 		}
-		activeDeck.shuffle(r);
+		activeDeck.shuffle(new Random(randomKey+2356366));
+		//G.print(cats.size()," categories"," ",activeDeck.height()," cards ",(int)(carnivore*100)/activeDeck.height(),"% carnivore");
 		
     }
     
@@ -333,7 +350,7 @@ class BugsBoard
     	do {
     		index = r.nextInt(activeDeck.height());
     		ch = (BugCard)activeDeck.chipAtIndex(index);
-    	} while (ch.pointValue()>1);
+    	} while (ch.pointValue()>minDeckValue);
     	activeDeck.removeChipAtIndex(index);
     	return ch;
     	
@@ -349,6 +366,10 @@ class BugsBoard
 		G.Assert(variation!=null,WrongInitError,gtype);
 		robotState.clear();
 		gametype = gtype;
+		rotated = false;
+		roundNumber = 1;
+		roundProgress = progress = 0;
+		lackOfProgress = false;
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
@@ -381,7 +402,8 @@ class BugsBoard
  		{
  			goals[i].addChip(goalDeck.removeTop());
  		}
-	    
+	    goalDiscards.reInit();
+	    bugDiscards.reInit();
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    resetState = null;
 	    lastDroppedObject = null;
@@ -391,7 +413,8 @@ class BugsBoard
 	    {
 	    Random r = new Random(randomKey+34646);
 	    for(int i=0;i<players_in_game; i++) 
-	    	{ PlayerBoard pb = pbs[i] = allPbs[map[i]];
+	    	{ PlayerBoard pb = pbs[i] = allPbs[i];
+	    	  pb.setChip(bugChips[map[i]]);
 	    	  pb.doInit(); 
 	    	  // give a random goal and a random 1 point bug
 	    	  pb.goals.addChip(goalDeck.removeTop());
@@ -427,10 +450,18 @@ class BugsBoard
         copyFrom(market,from_b.market);
         copyFrom(goals,from_b.goals);
         copyFrom(activeDeck,from_b.activeDeck);
+        minDeckValue = from_b.minDeckValue;
         copyFrom(goalDeck,from_b.goalDeck);
-        unresign = from_b.unresign;
+        copyFrom(goalDiscards,from_b.goalDiscards);
+        copyFrom(bugDiscards,from_b.bugDiscards);
+        
         board_state = from_b.board_state;
         resetState = from_b.resetState;
+        rotated = from_b.rotated;
+        roundNumber = from_b.roundNumber;
+        roundProgress = from_b.roundProgress;
+        progress = from_b.progress;
+        lackOfProgress = from_b.lackOfProgress;
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
  
         sameboard(from_b); 
@@ -449,10 +480,16 @@ class BugsBoard
     public void sameboard(BugsBoard from_b)
     {
         super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
-        G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
         G.Assert(activeDeck.sameContents(from_b.activeDeck),"active deck mismatch");
+        G.Assert(goalDiscards.sameContents(from_b.goalDiscards),"goalDiscards deck mismatch");
+        G.Assert(bugDiscards.sameContents(from_b.bugDiscards),"bugDiscards deck mismatch");
         G.Assert(sameCells(market,from_b.market),"market mismatch");
+        G.Assert(rotated==from_b.rotated,"rotated mismatch");
+        G.Assert(progress==from_b.progress,"progress mismatch");
+        G.Assert(lackOfProgress==from_b.lackOfProgress,"lackOfProgress mismatch");
+        G.Assert(roundNumber==from_b.roundNumber,"roundNumber mismatch");
+        G.Assert(roundProgress==from_b.roundProgress,"roundProgress mismatch");
         G.Assert(sameCells(goals,from_b.goals),"goals mismatch");
         for(int i=0;i<pbs.length;i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         
@@ -499,11 +536,19 @@ class BugsBoard
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= activeDeck.Digest(r);
+		v ^= Digest(r,minDeckValue);
 		v ^= goalDeck.Digest(r);
+		v ^= goalDiscards.Digest(r);
+		v ^= bugDiscards.Digest(r);
 		v ^= Digest(r,market);
 		v ^= Digest(r,goals);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,board_state);
+		v ^= Digest(r,rotated);
+		v ^= Digest(r,progress);
+		v ^= Digest(r,lackOfProgress);
+		v ^= Digest(r,roundNumber);
+		v ^= Digest(r,roundProgress);
 		v ^= Digest(r,whoseTurn);
 		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
         return (v);
@@ -523,15 +568,19 @@ class BugsBoard
         case Puzzle:
             break;
         case Play:
-            moveNumber++; //the move is complete in these states
-            setWhoseTurn(nextPlayer(whoseTurn));
-            return;
-            
-        case Resign:
-            moveNumber++; //the move is complete in these states
+        case Purchase:
+        case Bonus:
+        	moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer(whoseTurn));
             return;
         }
+    }
+    public void setNextActivePlayer(replayMode replay)
+    {
+    	do 
+		{ setNextPlayer(replay);
+		}
+		while(isReady(whoseTurn));
     }
 
     /** this is used to determine if the "Done" button in the UI is live
@@ -562,8 +611,28 @@ class BugsBoard
     	boolean win = false;
     	return(win);
     }
-
-
+    public double robotScore(int player)
+    {	PlayerBoard pb = pbs[player];
+    	if(win[player])
+    	{
+    		return Math.min(1.0,0.9 + (0.1*Math.max(0,pb.score+200))/(WinningScore+200));
+    	}
+    	return Math.min(0.9,(0.9*Math.max(0,pb.score+200))/(WinningScore+200));
+    }
+    public void setGameOver()
+    {
+    	setState(BugsState.Gameover);
+    	PlayerBoard winner = null;
+    	for(PlayerBoard pb : pbs)
+    	{
+    		if(winner==null || pb.score>winner.score) { winner = pb; }
+    	}
+    	win[winner.boardIndex] = true;
+    }
+    public int scoreForPlayer(int pl)
+    {
+    	return pbs[pl].score;
+    }
     // set the contents of a cell, and maintain the books
     public BugsChip SetBoard(BugsCell c,BugsChip ch)
     {	BugsChip old = c.topChip();
@@ -657,9 +726,11 @@ class BugsBoard
     	return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
     }
 
-    private void acceptPlacement()
-    {	
-    	for(PlayerBoard pb : pbs) { pb.acceptPlacement(); }
+    public int maxScore()
+    {
+    	PlayerBoard m = null;
+    	for(PlayerBoard pb : pbs) { if(m==null || pb.score > m.score) { m = pb; }}
+    	return m.score;
     }
     private void setNextStateAfterDone(replayMode replay)
     {	
@@ -667,20 +738,22 @@ class BugsBoard
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
     	case Gameover: break;
+    	case Bonus:
+    		setState(BugsState.Bonus);
+    		break;
     	case Play:
-    		if(allReady()) 
-    		{
+     		{	
+     		if(allReady())
+     		{
+     			for(PlayerBoard pb : pbs) { pb.setUIState(UIState.Normal); }
+    			lackOfProgress = progress==roundProgress;
     			setState(BugsState.Bonus);
-    		}
-    		else
-    		{
-    			do 
-    			{ setNextPlayer(replay);
-    			}
-    			while(isReady(whoseTurn));
-    			
+     		}
+     		else
+     		{
+     		setNextActivePlayer(replay);	
     		setState(BugsState.Play);
-    		}
+    		}}
     		break;
     	
     	case Puzzle:
@@ -691,22 +764,16 @@ class BugsBoard
     }
     private void doDone(replayMode replay)
     {
-
-        if (board_state==BugsState.Resign)
-        {
-            win[nextPlayer[whoseTurn]] = true;
-    		setState(BugsState.Gameover);
-        }
-        else
-        {	if(winForPlayerNow(whoseTurn)) 
-        		{ win[whoseTurn]=true;
-        		  setState(BugsState.Gameover); 
-        		}
-        	else 
-        	{	
-        		setNextStateAfterDone(replay);
-        	}
-        }
+    	rotated = false;
+    	if(winForPlayerNow(whoseTurn)) 
+    		{ win[whoseTurn]=true;
+    		  setState(BugsState.Gameover); 
+    		}
+    	else 
+    	{	
+    		setNextStateAfterDone(replay);
+    	}
+        
     }
 	public boolean allReady()
 	{
@@ -785,6 +852,31 @@ class BugsBoard
 			ti--;
 		}
 	}
+	public void findPickedObject(PlayerBoard pb)
+	{
+		if(board_state==BugsState.Puzzle)
+		{
+			// in free mode, trying to move pieces between players
+			for(PlayerBoard p : pbs)
+			{
+				if(p!=pb && p.pickedObject!=null)
+				{
+					pb.pickedObject = p.pickedObject;
+					pb.pickedSource = p.pickedSource;
+					p.pickedObject = null;
+					p.pickedSource = null;
+				}
+			}
+		}
+	}
+	public boolean lastRound()
+	{
+		return goals[0].topChip()==null 
+					|| market[0].topChip()==null 
+					|| lackOfProgress
+					|| maxScore()>WinningScore
+					|| roundNumber >= MaxRounds;
+	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	BugsMovespec m = (BugsMovespec)mm;
         if(replay.animate) { animationStack.clear(); }
@@ -795,10 +887,20 @@ class BugsBoard
         case MOVE_DONE:
         	switch(board_state)
         	{
+        	case Play:
+	        	{
+	        	PlayerBoard pb = pbs[whoseTurn];
+	 			if(pb.pickedSource.rackLocation()!=BugsId.BoardLocation)
+	 				{
+	 				progress++;
+	 				pbs[whoseTurn].progress = true;
+	 				}
+	        	}
+	        	break;
         	default: break;
         	}
-        	getPlayerBoard(m.forPlayer).doDone(replay);
          	doDone(replay);
+        	getPlayerBoard(m.forPlayer).doDone(replay);
 
             break;
             
@@ -811,18 +913,20 @@ class BugsBoard
         	{	
         	BugsCell src = getCell(m.source,m.to_col,m.to_row);
         	src.rotation++;
+        	rotated=true;
         	if(src.rotation>1) { src.rotation = -1; }
-        	G.print("r ccw ",src,src.rotation);
         	}
         	break;
         case MOVE_ROTATECW:
         	{
         	BugsCell src = getCell(m.source,m.to_col,m.to_row);
         	src.rotation--;
+        	rotated = true;
         	if(src.rotation<-1) { src.rotation = 1; }
-           	G.print("r cw ",src,src.rotation);
         	}
         	break;
+        case MOVE_TO_BOARD:
+        case MOVE_RESIGN:
         case MOVE_DROPB:
         case MOVE_DROP:
         	// come here only where there's something to pick, which must
@@ -831,6 +935,7 @@ class BugsBoard
 	 		pb.Execute(m,replay);
 	 		}
  			break;
+ 			
         case MOVE_PICK:
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
@@ -855,9 +960,6 @@ class BugsBoard
 
             break;
 
-       case MOVE_RESIGN:
-    	   	setState(unresign==null?BugsState.Resign:unresign);
-            break;
        case MOVE_EDIT:
            for(PlayerBoard pb : pbs) { pb.acceptPlacement(); }
            setState(BugsState.Puzzle);
@@ -876,19 +978,48 @@ class BugsBoard
   				{
   				default: 
   					throw G.Error("Not expecting state %s",board_state);
+  				case Bonus:
+  					if(allReady())
+  					{
+  		    			lackOfProgress = roundProgress==progress;
+						for(PlayerBoard p : pbs) { p.setUIState(UIState.Normal); }
+  		    			if(lastRound())
+  		    			{
+  		    				// ran out of bugs or goals
+  		    				setGameOver();
+  		    			}
+  		    			else
+  		    			{
+  		    			roundNumber++;
+  						setState(BugsState.Purchase);
+  		    			}
+  					}
+  					else
+  					{
+  						setNextActivePlayer(replay);
+  					}
+  					break;
   				case Purchase:
 	  				if(allReady())
 	  				{
 	  				
 	  				doPurchases(replay);
 	  				for(PlayerBoard p : pbs) { p.setUIState(UIState.Normal); }
+	      			roundProgress = progress;
 	  				setState(BugsState.Play);
+	  				}
+	  				else
+	  				{
+	  					setNextActivePlayer(replay);
 	  				}
 	  				break;
   				case Play:
-  					if(isReady(whoseTurn))
+  					if(allReady())
   					{
   						doDone(replay);
+  					}
+  					else { 
+  						setNextActivePlayer(replay);
   					}
   					break;
   				}
@@ -923,40 +1054,12 @@ class BugsBoard
         // to undo state transistions is to simple put the original state back.
         
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
+        //G.print("R "+m);
         Execute(m,replayMode.Replay);
        
     }
  
 
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(BugsMovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	BugsState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
- 
  void addPickDrop(CommonMoveStack all,BugsCell c,BugsChip pickedObject,int who)
  {	if(c.onBoard)
  	{
@@ -975,16 +1078,36 @@ class BugsBoard
 		 all.push(new BugsMovespec(c.onBoard ? MOVE_DROPB : MOVE_DROP,c,who));
 	 }
  }
- public void addSelectMoves(CommonMoveStack all,int who)
+ public boolean robotWouldPlay(BugsCell c,boolean selected)
  {
-	 for(BugsCell c : goals)
+	 if(robot!=null)
 	 {
-		 if(c.height()>0) { all.push(new BugsMovespec(MOVE_SELECT,c,who)); }
+		 if(selected) { return false; }
+		 // select if playable
 	 }
-	 for(BugsCell c : market)
-	 {
-		 if(c.height()>0) { all.push(new BugsMovespec(MOVE_SELECT,c,who)); }
+	 return true;
+ }
+ public void addSelectMoves(CommonMoveStack all,int who)
+ {	PlayerBoard pb = pbs[who];
+ 	boolean someAlreadySelected = false;
+ 	boolean some = false;
+ 	for(BugsCell c : goals)
+	 {	// robot never deselects
+ 		boolean selected = pb.isSelected(c);
+ 		if(c.height()>0 && (robot==null || !selected)) 
+		 	{ all.push(new BugsMovespec(MOVE_SELECT,c,who)); 
+		 	}
 	 }
+ 	for(BugsCell c : market)
+	 {	// robot never deselects
+ 		boolean selected = pb.isSelected(c);
+ 		someAlreadySelected |= selected;
+		if(c.height()>0 && robotWouldPlay(c,selected))
+		 	{ all.push(new BugsMovespec(MOVE_SELECT,c,who)); 
+		 	  some = true;
+		 	}
+	 }
+	 if(someAlreadySelected || !some) { all.push(new BugsMovespec(MOVE_READY,who)); }
  }
 // carnivores can eat herbivores but not parasites or other carnivores
 public boolean canPlaceOverChip(BugCard card,BugCard onCard)
@@ -1001,7 +1124,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 		boolean some = false;
 		for(BugsCell c = allCells; c!=null; c=c.next)
 		{
-			if(c.canPlaceInHabitat(chip))
+			if(c!=from && c.canPlaceInHabitat(chip))
 			{
 				if(all==null) { return true; }
 				if(canPlaceOverChip(chip,(BugCard)c.topChip())) { all.push(new BugsMovespec(op,from,chip,c,who)); }
@@ -1013,6 +1136,31 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 		return some;
 }
 
+ public void addMovesInBoard(CommonMoveStack all,PlayerBoard pb)
+ {		for(BugsCell c = allCells; c!=null; c=c.next)
+ 		{
+	 	addMovesInBoard(all,c,pb);
+	 	addMovesInBoard(all,c.above,pb);
+	 	addMovesInBoard(all,c.below,pb);
+ 		}
+ }
+ public void addMovesInBoard(CommonMoveStack all,BugsCell c,PlayerBoard pb)
+ {	BugsChip top = c.topChip();
+ 	if(top!=null 
+ 			&& c.player == pb.chip
+ 			&& c.placedInRound!=roundNumber
+ 			&& top!=null
+ 			&& top.isBugCard()
+ 			&& c.height()==1
+			)
+	 		{
+ 			BugCard bug = (BugCard)top;
+ 			addMovesOnBoard(all,robot==null 
+ 					? (pb.pickedObject==null ? MOVE_PICKB : MOVE_DROPB) 
+ 					: MOVE_TO_BOARD,
+ 					c,bug,pb.boardIndex);
+	 		}
+ }
  
  CommonMoveStack  getListOfMoves(int who)
  {	CommonMoveStack all = new CommonMoveStack();
@@ -1032,18 +1180,20 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  		addPickDrop(all,goalDeck,pb.pickedObject,who);
  		for(PlayerBoard p : pbs)
  			{
- 			p.getListOfMoves(all,who);
+ 			p.getListOfMoves(all,pb.pickedObject);
  			}
  		}
  		break;
  	case Bonus:
 	case Play:
-		pbs[whoseTurn].getListOfMoves(all,whoseTurn);
+		pbs[who].getListOfMoves(all,pbs[who].pickedObject);
  		break;
 
 	case Purchase:
- 		addSelectMoves(all, whoseTurn);
+ 		addSelectMoves(all, who);
  		break;
+	case Gameover:
+		break;
  	default:
  			G.Error("Not expecting state ",board_state);
  	}
@@ -1088,7 +1238,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  	Hashtable<BugsCell,BugsMovespec> targets = new Hashtable<BugsCell,BugsMovespec>();
  	CommonMoveStack all = getListOfMoves(who);
  	PlayerBoard pb = pbs[who];
- 	pb.getUIMoves(all,who);
+ 	pb.getUIMoves(all);
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	BugsMovespec m = (BugsMovespec)all.elementAt(lim);
  		switch(m.op)
@@ -1107,6 +1257,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  			targets.put(getCell(m.source,m.to_col,m.to_row),m);
  			break;
  		case MOVE_SWAP:
+ 		case MOVE_READY:
  		case MOVE_DONE:
  			break;
 
@@ -1141,7 +1292,83 @@ public boolean isSelected(PlayerBoard pb, BugsCell c) {
 	}
 }
 
+public int bonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
+{
+	int tot = 0;
+	if(cell.player==chip)
+	{	int h = cell.height();
+		Taxonomy wild = Taxonomy.getWildType();
+		while(h-->0)
+		{
+		// score only the top bug
+		BugsChip ch = cell.chipAtIndex(h);
+		if(ch.isBugCard()) { 
+		BugCard bug = (BugCard)ch;
+		Profile bugProf = bug.getProfile();
+		Taxonomy bugGroup = bugProf.getCategory();
+		if((bugGroup==wild) || (bugGroup==card.cat1)) { tot = tot+bug.pointValue(); }
+		if((bugGroup==wild) || (bugGroup==card.cat2)) { tot = tot+bug.pointValue(); }
+		h = -1;
+		}
+		}
+	}
+	return tot;
+}
+private int sweep_counter = 0;
 
+public int scoreBonusForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
+{	int tot = 0;
+	G.Assert(cell.onBoard,"must be a board cell");
+	if(cell!=null && cell.sweep_counter!=sweep_counter)
+	{	cell.sweep_counter = sweep_counter;
+		tot = BONUS_MULTIPLIER*bonusPointsForPlayer(card,cell,chip);
+		tot += bonusPointsForPlayer(card,cell.above,chip); 
+		tot += bonusPointsForPlayer(card,cell.below,chip);
+		{
+		BugsCell next = cell;
+		while(((next = next.exitTo(cell.rotation))!=null) 
+				&& (next.rotation==cell.rotation)
+				&& next.isOccupied())
+			{
+			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next,chip);
+			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.above,chip); 
+			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.below,chip);
+			}}
+		{
+		BugsCell next = cell;
+		while(((next = next.exitTo(cell.rotation+CELL_HALF_TURN))!=null)
+				&& next.rotation==cell.rotation
+				&& next.isOccupied())
+		{
+		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next,chip);
+		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.above,chip); 
+		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.below,chip);
+		}}
+	}
+	return tot;
+}
+public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
+{
+	GoalCard card = (GoalCard)cell.removeTop();
+	goalDiscards.addChip(card);
+	animate(replay,cell,goalDiscards);
+	/*
+	 * 
+	 */
+	BugsCell parentCell = getCell(cell.col,cell.row%100);	// get the parent cell on the board
+	if(!ADVERSARIAL_BONUS)
+	{
+	sweep_counter++;
+	pb.score += scoreBonusForPlayer(card,parentCell,pb.chip);
+	}
+	else
+	{
+	for(PlayerBoard p : pbs)
+	{	sweep_counter++;
+		int score = scoreBonusForPlayer(card,parentCell,p.chip);
+		p.score += score;
+	}}
+}
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.
  //public boolean canResign() { return(super.canResign()); }

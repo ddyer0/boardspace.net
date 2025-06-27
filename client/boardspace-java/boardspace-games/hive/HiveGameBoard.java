@@ -71,6 +71,7 @@ class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,
 	private int lastRealMoveNumber = 0;
 	public HivePiece lastDroppedObject = null;
 	public boolean robotCanOfferDraw = true;
+	public boolean piepending = false;
 	public boolean canOfferDraw()
 	{ return((moveNumber-lastRealMoveNumber)<=1)
 				&& (movingObjectIndex()<0)
@@ -696,6 +697,7 @@ public variation gamevariation = variation.hive;
         //G.Assert(sameCells(stunned,from_b.stunned),"stunned piece mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
         G.Assert(lastPlacement==from_b.lastPlacement,"lastPlacement mismatch");
+        G.Assert(piepending==from_b.piepending,"piepending mismatch");
          
     }
 
@@ -735,6 +737,7 @@ public variation gamevariation = variation.hive;
 		v ^= chip.Digest(r,pickedObject);
 		//v ^= Digest(r,stunned);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+		v ^= r.nextLong()*(piepending ? 1 : 2);
       return (v);
     }
     
@@ -777,6 +780,7 @@ public variation gamevariation = variation.hive;
         	HiveCell loc = from_b.pieceLocation.get(key);
         	pieceLocation.put(key, getCell(loc));
         }
+        piepending = from_b.piepending;
         pickedObject = from_b.pickedObject;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = getCell(from_b.droppedDest);
@@ -849,7 +853,8 @@ public variation gamevariation = variation.hive;
        Init_Standard(gametype);
 
        
-
+       piepending = gamevariation==variation.hive_pielm;
+       
        for(int pl=FIRST_PLAYER_INDEX; pl<=SECOND_PLAYER_INDEX;pl++)
        { for(int i=HivePiece.StartingPieceTypes.length-2; i>=0; i--)	// deliberately skip the blank
        		{ makepiece(pl,HivePiece.StartingPieceTypes[i],HivePiece.StartingPieceSeq[i]);
@@ -915,6 +920,7 @@ public variation gamevariation = variation.hive;
         case RESIGN_STATE:
         case DeclinePending:
         case DrawPending:
+        case CONFIRM_SWAP_STATE:
             moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer[whoseTurn]);
             return;
@@ -938,6 +944,7 @@ public variation gamevariation = variation.hive;
         case DrawPending:
         case AcceptPending:
         case DeclinePending:
+        case CONFIRM_SWAP_STATE:
             return (true);
 
         default:
@@ -1227,6 +1234,7 @@ public variation gamevariation = variation.hive;
         case DRAW_STATE:
         case FIRST_PLAY_STATE:
         case PLAY_STATE:
+        case PLAY_OR_SWAP_STATE:
         case QUEEN_PLAY_STATE:
         	setState(HiveState.CONFIRM_STATE);
         	break;
@@ -1252,10 +1260,15 @@ public variation gamevariation = variation.hive;
  			//$FALL-THROUGH$
     	case PASS_STATE:
 		case CONFIRM_STATE:
+		case CONFIRM_SWAP_STATE:
     		lastRealMoveNumber = moveNumber;
  			//$FALL-THROUGH$
 		case DeclinePending:
     		HiveState nextstate = nextPlayState(whoseTurn);
+    		if(board_state==HiveState.CONFIRM_SWAP_STATE || board_state==HiveState.PLAY_OR_SWAP_STATE)
+    		{
+    			piepending = false;
+    		}
     		setState(nextstate);
     		if((nextstate==HiveState.PLAY_STATE)
     			&& !hasLegalMoves()) 
@@ -1305,8 +1318,14 @@ public variation gamevariation = variation.hive;
     public HiveState nextPlayState(int player)
     {	
     	HiveCell loc = pieceLocation.get(playerQueen(player));
+    	boolean queenonboard = loc!=null&&loc.onBoard;
+    	if(queenonboard && piepending && gamevariation==variation.hive_pielm)
+    	{
+    		HiveCell loc2 = pieceLocation.get(playerQueen(nextPlayer[player]));	
+    		if(loc2!=null && loc2.onBoard) { return HiveState.PLAY_OR_SWAP_STATE; }
+    	}
     	int n=0;
-    	if((loc!=null)&&loc.onBoard)
+    	if(queenonboard)
     		{ // queen has been played
     		return(HiveState.PLAY_STATE); 
     		}
@@ -1523,6 +1542,10 @@ public variation gamevariation = variation.hive;
         currentMove = m;	// for debugging
         switch (m.op)
         {
+        case MOVE_SWAP:
+        	swappedRacks = !swappedRacks;
+        	setState(swappedRacks ? HiveState.CONFIRM_SWAP_STATE : HiveState.PLAY_OR_SWAP_STATE);
+        	break;
         case MOVE_PLAYWHITE:
         	swappedRacks = getColorMap()[0]==0;
         	break;
@@ -1584,7 +1607,8 @@ public variation gamevariation = variation.hive;
             	  // this shouldn't happen, but in some old archives it does.
                  	if(replay==replayMode.Live) { G.Error("Not expecting drop in state %s",board_state); }
 				//$FALL-THROUGH$
-			case PLAY_STATE: 
+              case PLAY_STATE: 
+              case PLAY_OR_SWAP_STATE:
               case FIRST_PLAY_STATE:
               case QUEEN_PLAY_STATE:
             	  if(c==src) 
@@ -1758,6 +1782,7 @@ public variation gamevariation = variation.hive;
 
 
         case PLAY_STATE:
+        case PLAY_OR_SWAP_STATE:
         case QUEEN_PLAY_STATE:
         case FIRST_PLAY_STATE:
         	return((player==whoseTurn) && ((pickedSource==null)|| !pickedSource.onBoard));
@@ -1771,6 +1796,7 @@ public variation gamevariation = variation.hive;
 		case AcceptOrDecline:
 		case DeclinePending:
 		case AcceptPending:
+		case CONFIRM_SWAP_STATE:
 			return(false);
         case PUZZLE_STATE:
         case Setup:
@@ -1786,6 +1812,7 @@ public variation gamevariation = variation.hive;
 		case PLAY_STATE:
 		case FIRST_PLAY_STATE:
 		case QUEEN_PLAY_STATE:
+		case PLAY_OR_SWAP_STATE:
 			if(ps!=null)
 			{
 			// dropping something
@@ -1849,6 +1876,7 @@ public variation gamevariation = variation.hive;
 		case AcceptOrDecline:
 		case AcceptPending:
 		case DeclinePending:
+		case CONFIRM_SWAP_STATE:
 			return(false);
 
         default:
@@ -1911,6 +1939,9 @@ public variation gamevariation = variation.hive;
    	    	HivePiece p = removeChip(c);
    	    	addChip(m.location,p);
    	    	break;
+   	    case MOVE_SWAP:
+   	    	swappedRacks = !swappedRacks;
+   	    	break;
    	    case MOVE_PASS:
         case MOVE_NULL:
         case MOVE_PASS_DONE:
@@ -1928,6 +1959,10 @@ public variation gamevariation = variation.hive;
   	   	pickedObject=null;
   	   	stunned = m.stun;
 	    setState(m.state);
+	    if(m.state==HiveState.PLAY_OR_SWAP_STATE || m.state==HiveState.CONFIRM_SWAP_STATE)
+	    {
+	    	piepending = true;
+	    }
 	    if(whoseTurn!=m.player)
 	    {	moveNumber--;
 	    	setWhoseTurn(m.player);
@@ -2063,6 +2098,7 @@ boolean GetListOfMoves1(CommonMoveStack all)
 	switch(board_state)
 	{
 	case CONFIRM_STATE:
+	case CONFIRM_SWAP_STATE:
 	case AcceptPending:
 	case DeclinePending:
 		all.addElement(new Hivemovespec(whoseTurn,MOVE_DONE));
@@ -2079,6 +2115,10 @@ boolean GetListOfMoves1(CommonMoveStack all)
 	 	HiveCell[] cells = rackForPlayer(whoseTurn);
 	 	boolean include_queen = canPlayQueen(whoseTurn);
 	 	boolean require_queen = board_state==HiveState.QUEEN_PLAY_STATE;
+	 	if(board_state==HiveState.PLAY_OR_SWAP_STATE)
+	 	{
+	 		all.push(new Hivemovespec(whoseTurn,MOVE_SWAP));
+	 	}
 	 	// onboarding pieces
 	 	for(PieceType pc : PieceType.values())
 	 		{

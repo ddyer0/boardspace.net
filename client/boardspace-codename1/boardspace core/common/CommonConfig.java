@@ -85,7 +85,7 @@ public interface CommonConfig extends UniversalConstants {
     // bs_uni5 adds ladder scoring
     static final String recordKeeper4URL = "/cgi-bin/bs_uni12.cgi";
     // bs_uni1 is a new script used for crosswordle, and probably other 1 player games
-    static final String recordKeeper1URL = "/cgi-bin/bs_uni1_score.cgi";
+    static final String recordKeeper1URL = "/cgi-bin/bs_uni1_offline_score.cgi";
     
     static final String LANGUAGECLASS = "online.language.";
 	static final String DefaultLanguageName = "english";

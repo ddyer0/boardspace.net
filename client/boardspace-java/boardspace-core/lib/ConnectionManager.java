@@ -117,7 +117,9 @@ public class ConnectionManager
     public int serverHashChecksumOffset()
     {	return serverHashChecksumOffset;
     }
-
+    public boolean paused() { return myNetConn.paused; }
+    public void setPaused(boolean v) { myNetConn.paused = v; }
+    
     public int readQueueLength() { return(myNetConn.inQueue.queueLength()); }
     private boolean silent = false;				// for debugging hacks
     private long starttime = -1;				// ping stats

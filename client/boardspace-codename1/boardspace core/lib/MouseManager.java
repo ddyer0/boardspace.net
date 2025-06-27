@@ -136,7 +136,6 @@ public class MouseManager
             		|| (G.Left(p) != G.Left(highlightPoint)) 
             		|| (G.Top(p) != G.Top(highlightPoint)))
             {	highlightPoint = p;
-            	
                 if(!drag_is_pinch && (p.dragging)&&(dragPoint==null)) 
                 	{ dragPoint=p; 
                  	}

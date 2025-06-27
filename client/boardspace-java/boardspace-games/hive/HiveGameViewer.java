@@ -45,7 +45,8 @@ import lib.Toggle;
  * Change History
  *  
  * June 2006  initial work in progress.  
-
+ TODO: add variant to swap after second queen
+ TODO: smaller pieces in the history window
 */
 public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants,PlacementProvider
 {       
@@ -728,6 +729,15 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         drawLiftRect(gc,liftRect,nonDraggingSelect,textures[LIFT_ICON_INDEX]);
         DrawTilesetRect(gc,nonDraggingSelect);
  
+        if(state==HiveState.PLAY_OR_SWAP_STATE || state==HiveState.CONFIRM_SWAP_STATE)
+        {
+        	if(GC.handleRoundButton(gc,repRect,ourTurnSelect,s.get("Swap colors"),
+        			HighlightColor, gb.colorsInverted()?HighlightColor:rackBackGroundColor
+        			))
+        	{
+        		ourTurnSelect.hitCode = HiveId.Swap;
+        	}
+         }
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         //reverseRect.draw(gc,nonDraggingSelect);
         swingCCWRect.draw(gc,nonDraggingSelect);
@@ -955,6 +965,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case Swap:
+        	PerformAndTransmit("Swap");
+        	break;
         case SeeMovable:
         	seeMobile.toggle();
         	break;
@@ -978,6 +991,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 			{
 			default: throw G.Error("Not expecting drop on filled board in state %s",state);
 			case CONFIRM_STATE:
+			case PLAY_OR_SWAP_STATE:
 			case PLAY_STATE:
 			case FIRST_PLAY_STATE:
 			case QUEEN_PLAY_STATE:

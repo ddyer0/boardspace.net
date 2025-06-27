@@ -1,13 +1,22 @@
 package bugs.data;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import bridge.Platform;
 import bugs.BugCard;
 import lib.Bitset;
 import lib.G;
 import lib.Image;
 import lib.Tokenizer;
+import lib.Utf8Reader;
 
 public class Profile extends DataHelper<Profile> implements KeyProvider {
 	
@@ -82,7 +91,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     {
         Taxonomy p = getCategory();
         double sz = Taxonomy.largestCategorySize/2+1;
-        cardPoints = (int)(sz/p.split1Count+0.5+(isCarnivore()?0.6:0) + (isFlying()?0.5 : 0));
+        cardPoints = (int)(sz/p.split1Count+0.5+(isCarnivore()?0.8:0) + (isFlying()?0.5 : 0));
     }
     
     public Profile deserialize(String fields[]) {
@@ -112,10 +121,42 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     		}
     	}
     }
+    public List<String> getImageResourceList(String path,String name)
+    {
+       	List<String>lis = new ArrayList<String>();
+       	InputStream in = Platform.class.getResourceAsStream(path+name);
+    	if(in!=null)
+    	{
+    	Utf8Reader ins = new Utf8Reader(in);
+    	String line = null;
+    	try {
+    	while( (line = ins.readLine())!=null)
+    	{
+    		lis.add(line);
+    	}
+    	ins.close();
+    	}
+    	catch (IOException e) {}
+    	}
+    	return lis;
+    }
     public static String uncomposite = "g:/share/projects/boardspace-java/boardspace-games/";
     public void loadImages(String imagePath)
-    {
+    {   
 		List<String> images = getImageResources(imagePath);
+		boolean empty = images.isEmpty();
+		FileWriter out = null;
+		try {
+		if(empty)
+			{ 
+			// when running from jars, the list isn't available
+			images = getImageResourceList(imagePath,"index.txt"); 
+			}
+		else if(!G.isCodename1())
+			{// generate the list for use in the delivered version
+			out = new FileWriter(uncomposite+imagePath+"index.txt");
+			}
+		
 		for(String s : images)
 		{	Tokenizer tok = new Tokenizer(s," ,_-.");
 			String genus = tok.nextElement();
@@ -131,6 +172,11 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     			{
     				mask = s.substring(0,s.length()-4)+"-mask.jpg";
     				im = new Image(imagePath+s,imagePath+mask);
+    				if(out!=null)
+    				{
+    					out.write(s+"\n");
+    					out.write(s+"-mask.jpg\n");
+    				}
     			}
     			else
     			{
@@ -154,7 +200,11 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
 					new BugCard(key,p,source);
 				}
 			}
-			
+		}
+		if(out!=null) { out.close(); }
+    	}
+		catch(IOException e)
+		{ G.print("error "+e); 
 		}
     }
     /*

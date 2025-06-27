@@ -80,7 +80,7 @@ public class Toggle extends ToggleButton
    		CellId id = isOn ? onId : offId;
    		int w = G.Width(this);
    		int h = G.Height(this);
-   		if(w>h*3)
+   		if(w>h*5/2)
    		{	
    		int left = G.Left(this);
    		int top = G.Top(this);

@@ -1466,6 +1466,31 @@ synchronized(allGames) {
 	}
 	
 	{
+	String pRules = "/bugs/english/Rules.pdf";
+	String pViewer = "bugs.BugsViewer";  
+	Color map[] = {Color.yellow,Color.green,Color.blue,Color.red};
+	GameInfo mm = put(new GameInfo(3700,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_pendulum.html",
+			null,false, map));
+	mm.maxPlayers = 4;
+	mm.randomizeFirstPlayer = true;
+	mm.okForTurnbased = false;		// parallel setup
+	mm.okForPassAndPlay = false;
+	mm = put(new GameInfo(3701,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel2",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_pendulum.html",
+			null,false, map));
+	mm.maxPlayers = 4;
+	mm.randomizeFirstPlayer = true;
+	mm.okForTurnbased = false;		// parallel setup
+	mm.okForPassAndPlay = false;
+
+	}
+	
+	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",
@@ -2232,6 +2257,13 @@ synchronized(allGames) {
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
+		g = put(new GameInfo(HIVE_REVISION+655,ES.game,8,"HV",Hive,"Hive","Hive-PieLM",
+				TwoBotsPlus,
+				hiveBots,
+				hiveClass,hiveRules,"about_hive.html",
+				hiveVideo,false, WhiteOverBlack));
+			g.robotTimed = true;
+
 		g = put(new GameInfo(HIVE_REVISION+654,ES.game,8,"HV",Hive,"Hive","Hive-Ultimate",
 			OneBot,new double[] {1.0},
 			hiveClass,hiveRules,"about_hive.html",

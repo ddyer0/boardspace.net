@@ -76,7 +76,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     				  large = a;
     				}
     			sum += a.split1Count;
-    			G.print(a,a.speciesCount);
+    			//G.print(a,a.speciesCount);
     			}
     		}
     	}
@@ -84,7 +84,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     	largestCategory = large;
     	animalia.split1Count = animalia.speciesCount-sum;
     	animalia.split1 = 1;
-    	G.print(animalia,animalia.split1Count);
+    	//G.print(animalia,animalia.split1Count);
     }
     
     public static Hashtable<String,Taxonomy>  taxonomies = null;
@@ -100,6 +100,12 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     public String toString() {
         return "<taxo "+name+">";  
     }
+    static private Taxonomy animals = null;
+    public static Taxonomy getWildType()
+    {	if(animals==null) { animals = Taxonomy.get("Animalia");}
+    	return animals;
+    }
+    
     public static Taxonomy get(String n) { return taxonomies.get(n); }
 
 }

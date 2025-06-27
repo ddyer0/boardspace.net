@@ -398,7 +398,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,(Text)null,1.3);
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,(String)null,1.3);
 	}
 	
 	/**

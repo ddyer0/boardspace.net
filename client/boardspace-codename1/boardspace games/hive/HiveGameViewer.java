@@ -44,7 +44,8 @@ import lib.Toggle;
  * Change History
  *
  * June 2006  initial work in progress.  
-
+ TODO: add variant to swap after second queen
+ TODO: smaller pieces in the history window
 */
 public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants,PlacementProvider
 {       

@@ -47,15 +47,23 @@ public class BugsCell
 	
 	BugsCell above = null;
 	BugsCell below = null;
+	int sweep_counter = 0;
 	boolean purchased = false;
 	BugsChip player;
+	int placedInRound = 0;
 	BugsChip xPlayer;
+	int xPlacedInRound = 0;
 	int cost = 0;
 	BugsChip background = null;
 	int rotation = 0;
 	BugsBoard owningBoard = null;
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
+	
+	public boolean isOccupied()
+	{
+		return height()>0 || above.height()>0 || below.height()>0;
+	}
 	public void initRobotValues() 
 	{
 	}
@@ -110,7 +118,9 @@ public class BugsCell
 		cost = ot.cost;
 		rotation = ot.rotation;
 		player = ot.player;
+		placedInRound = ot.placedInRound;
 		xPlayer = ot.xPlayer;
+		xPlacedInRound = ot.xPlacedInRound;
 		purchased = ot.purchased;
 		if(onBoard) { above.copyFrom(ot.above); below.copyFrom(ot.below);  }
 	}
@@ -124,6 +134,7 @@ public class BugsCell
 		purchased = false;
 		player = null;
 		xPlayer = null;
+		placedInRound = xPlacedInRound = 0;
 		rotation = 0; 
 		if(onBoard) { above.reInit(); below.reInit(); }
 	}
@@ -141,6 +152,7 @@ public class BugsCell
 	public long Digest(Random r) 
 	{
 	  long v = super.Digest(r); 
+	  v ^= r.nextLong() * placedInRound;
 	  if(onBoard)
 	  {
 		  v ^= above.Digest(r);

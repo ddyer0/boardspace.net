@@ -21,6 +21,7 @@ import lib.ChatWidget;
 import colorito.ColoritoConstants;
 import common.GameInfo;
 import breakingaway.BreakingAwayConstants;
+import bugs.BugsConstants;
 import cannon.CannonConstants;
 import container.ContainerConstants;
 import cookie.CookieConstants;
@@ -189,6 +190,9 @@ public class masterStrings extends InternationalStrings
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
+        
+        setContext("bugs");
+        BugsConstants.putStrings();
         
         setContext("pendulum");
         PendulumConstants.putStrings();

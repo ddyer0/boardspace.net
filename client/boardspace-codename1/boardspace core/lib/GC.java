@@ -1128,7 +1128,7 @@ public class GC {
 	public static void setRotatedContext(Graphics gc,HitPoint select,double rotation)
 	{	if(rotation!=0)
 		{
-		if(gc!=null && select!=null)
+		if(gc!=null)
 		{
 			gc.setRotatedContext(select, rotation);
 		}

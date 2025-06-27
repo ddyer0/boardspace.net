@@ -797,6 +797,7 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem saveCollection = null;
 	    private JMenuItem replayCollection = null;
 	    private JMenuItem replayFolder = null;
+	    private JMenuItem pauseCommunications = null;
 	    private JMenuItem gameTest = null;
 	    
 	    private JMenuItem resignAction = null;
@@ -5306,6 +5307,7 @@ public abstract class commonCanvas extends exCanvas
         	hidden.showText = myFrame.addAction(s.get("Show Raw Text"),deferredEvents);
         	hidden.replayCollection = myFrame.addAction(ReplayGameCollection,deferredEvents); 
             hidden.replayFolder = myFrame.addAction(ReplayGameFolder,deferredEvents);
+            hidden.pauseCommunications = myFrame.addAction("pause communications",deferredEvents);
             }
         	}
 
@@ -5495,6 +5497,13 @@ public abstract class commonCanvas extends exCanvas
         else if(hidden.vcrVarPopup.selectMenuTarget(target))
     	{	chooseVcrVar((commonMove)(hidden.vcrVarPopup.rawValue));
     		handled = true;
+        }
+        else if(target==hidden.pauseCommunications)
+        {
+        	ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
+        	boolean on = !myNetConn.paused();
+        	myNetConn.setPaused(on);
+        	hidden.pauseCommunications.setText(on ? "restart communications" : "pause communications");
         }
     	else if (target == autoDoneCheckbox)
     	{

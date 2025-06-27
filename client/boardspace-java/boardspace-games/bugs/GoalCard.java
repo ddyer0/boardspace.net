@@ -5,10 +5,8 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 
-import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
-import lib.AR;
 import lib.CellId;
 import lib.G;
 import lib.GC;
@@ -26,12 +24,13 @@ import lib.exCanvas;
  *  3 valued goal cards
  *  
  */
-public class GoalCard extends BugsChip
+public class GoalCard extends BugsChip implements BugsConstants
 {
 	static Random r = new Random(32637); 
 	static boolean PRECALCULATE = false;
 	static Hashtable<String,GoalCard> goalCards = new Hashtable<String,GoalCard>();
 	static Hashtable<Integer,GoalCard> indexCards = new Hashtable<Integer,GoalCard>();
+	public boolean isGoalCard() { return true; }
 	String key = null;
 	Taxonomy cat1;
 	Taxonomy cat2;
@@ -52,6 +51,10 @@ public class GoalCard extends BugsChip
 	private Image makeGoalImage(exCanvas drawOn, int i, int j) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	{
+		return drawChip(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
@@ -80,7 +83,17 @@ public class GoalCard extends BugsChip
 	 		gc=null;
 	 	}}
 	 	HitPoint action = helptext==NOHIT ? null : highlight;
- 		return actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
+ 		boolean hit = actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
+ 		int yh = (int)(squareWidth*0.22);
+ 		if(G.pointInRect(highlight,e_x-squareWidth/2,e_y+yh,squareWidth,yh))
+ 			{
+ 			highlight.spriteRect = new Rectangle(e_x-squareWidth/2,e_y+yh,squareWidth,yh);
+ 			highlight.spriteColor = Color.red;
+ 			highlight.hitCode = BugsId.HitChip;
+ 			highlight.hitData = this;
+ 			hit = true;
+ 			}
+ 		return hit;
 	 	}
 	}
 	
@@ -99,6 +112,7 @@ public class GoalCard extends BugsChip
 		int cardH = (int)(SQUARESIZE/1.45);
 		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,cardH);
 		hit = G.pointInRect(highlight,r);
+		//GC.frameRect(gc,Color.red,r);
 		if(hit)
 		{	highlight.hitData = this;
 			highlight.spriteColor = Color.red;
@@ -112,7 +126,7 @@ public class GoalCard extends BugsChip
 			im1.centerImage(gc,r1);
 			HitPoint.setHelpText(hitAny,r,cat1.getCommonName()+"\n"+cat1.getScientificName());
 			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/5));
-			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.43),cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,"2x");
+			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.43),cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,""+(2*BONUS_MULTIPLIER)+"x");
 		}
 		else
 		{	int xs = (int)(SQUARESIZE*0.4);
@@ -124,7 +138,8 @@ public class GoalCard extends BugsChip
 			HitPoint.setHelpText(hitAny,r1,cat1.getCommonName()+"\n"+cat1.getScientificName());
 			HitPoint.setHelpText(hitAny,r2,cat2.getCommonName()+"\n"+cat1.getScientificName());
 			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/8));
-			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/5,SQUARESIZE,SQUARESIZE/5,Color.black,null,"1x + 1x");
+			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/5,SQUARESIZE,SQUARESIZE/5,Color.black,null,
+					""+BONUS_MULTIPLIER+"x + "+BONUS_MULTIPLIER+"x");
 		}
 		return hit;
 	}
@@ -146,22 +161,25 @@ public class GoalCard extends BugsChip
 		}
 		return card;
 	}
-	public static void buildGoalDeck(BugsChip drawableImages[],BugsCell c)
+	public static void buildGoalDeck(BugsChip bugs[],BugsCell c)
 	{	
 		// build goal cards with random pairs of categories
-		int map[] = AR.intArray(drawableImages.length);
 		Random r = new Random(52626260);
+		int nBugs = bugs.length;
+		int deckSize = (int)(bugs.length*GOAL_MULTIPLIER);
 		Taxonomy animals = Taxonomy.get("Animalia");
-		r.shuffle(map);
 		c.reInit();
-		for(int i=0;i<drawableImages.length-1;i+=2)
-		{	BugCard chip1 = (BugCard)(drawableImages[map[i]]);
-			BugCard chip2 = (BugCard)(drawableImages[map[i+1]]);
+		while(deckSize>0)
+		{	int r1 = r.nextInt(nBugs);
+			int r2 = r.nextInt(nBugs);
+			BugCard chip1 = (BugCard)(bugs[r1]);
+			BugCard chip2 = (BugCard)(bugs[r2]);
 			Taxonomy cat1 = (Taxonomy)(chip1.getProfile().getCategory());
 			Taxonomy cat2 = (Taxonomy)(chip2.getProfile().getCategory());
 			if(!(cat1==animals || cat2==animals))
 			{
 			c.addChip(getGoalCard(cat1,cat2,true));
+			deckSize--;
 			}
 		}
 	}

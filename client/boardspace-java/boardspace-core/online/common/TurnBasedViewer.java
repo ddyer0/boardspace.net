@@ -1536,11 +1536,21 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		
 		{
 		int tleft = left0;
-		for(Filters mode : Filters.values())
+		Filters values[] = Filters.values();
+		int filterW = (w-hSpace)/values.length;
+		if(filterW<lineH*3) { filterW*=2; }
+		int filterSW = filterW-filterW/20;
+		
+		for(Filters mode : values)
 		{	if(G.debug() || mode!=Filters.SuspendedGames)
 			{
-			G.SetRect(mode.button,tleft,top,buttonW,lineH);
-			tleft += buttonW+hSpace;
+			G.SetRect(mode.button,tleft,top,filterSW,lineH);
+			tleft += filterW;
+			if(tleft>w+left0) 
+				{
+				top += lineH;
+				tleft = left0;
+				}
 			}
 		}}
 		

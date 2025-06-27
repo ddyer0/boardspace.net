@@ -137,6 +137,7 @@ public class BugsMovespec
         to.source = source;
         to.from_col = from_col;
         to.from_row = from_row;
+        to.forPlayer = forPlayer;
         to.chip = chip;
     }
 
@@ -278,6 +279,7 @@ public class BugsMovespec
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
+		BugsChip ch = chip == null ? BugsChip.blankBack : chip;
         switch (op)
         {
 		case MOVE_ROTATECW:
@@ -286,24 +288,22 @@ public class BugsMovespec
 	        return G.concat(opname , to_col , " " , to_row);
 	        
         case MOVE_PICKB:
-        	return G.concat(opname , from_col , " " , from_row," ",chip.chipNumber()," \"",chip.getName(),"\"");
+        	return G.concat(opname , from_col , " " , from_row," ",ch.chipNumber()," \"",ch.getName(),"\"");
         	
         case MOVE_SELECT:
         case MOVE_DROP:
             return G.concat(opname , source.name()," ", to_col," ",to_row);
             
         case MOVE_TO_BOARD:
-        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",chip.chipNumber()," ",to_col," ",to_row);
+        	return G.concat(opname,source.name()," ",from_col," ",from_row," ",ch.chipNumber()," ",to_col," ",to_row);
         	
         case MOVE_PICK:
-        	return G.concat(opname , source.name()," ", from_col," "+from_row," ",chip.chipNumber()," \"",chip.getName(),"\"");
-
-        case MOVE_START:
-            return G.concat(indx,"Start P" , player);
+        	return G.concat(opname , source.name()," ", from_col," "+from_row," ",ch.chipNumber()," \"",ch.getName(),"\"");
             
         case MOVE_EDIT:
         	return "Edit";
         	
+        case MOVE_START:
         case MOVE_READY:
         case MOVE_SETACTIVE:
         default:

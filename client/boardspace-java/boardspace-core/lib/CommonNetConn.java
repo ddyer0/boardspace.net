@@ -669,6 +669,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         }
     }
 
+    public boolean paused = false;
     
     // this is the real "read" loop.  It loops forever, reading 
     // a line from the net connection and stuffing it into the 
@@ -685,8 +686,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
             }
 
             InputStream s = getMyInputStream();
-
-            if(s!=null) 
+            if(!paused && s!=null) 
             	{	
             		doReadStep(s);
             		if(waiting) { G.wake(inQueue); } 
@@ -703,9 +703,10 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     private final void runWrite()
     {
     while (!getExitFlag())
-    {	if(delays>0) { G.doDelay(Random.nextInt(R,delays)); }
-    	
-        boolean some = doWriteStep();
+    {	if(paused) { G.waitAWhile(outQueue,100); }
+    	else {
+    	if(delays>0) { G.doDelay(Random.nextInt(R,delays)); }
+         boolean some = doWriteStep();
         if(!some) { 
         	long now = G.Date();
         	outQueue.setWaitStart(now);
@@ -716,7 +717,7 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         		G.waitAWhile(outQueue,0);
          		} 
         	}
-        }
+        }}
     }
 
     writer = null;

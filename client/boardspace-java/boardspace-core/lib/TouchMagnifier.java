@@ -314,7 +314,7 @@ public class TouchMagnifier {
     private boolean drawMagnifiedTileSprite(Graphics gc,HitPoint pt,double scale,int x,int y,int padx,int pady)
     {
     	Color sprite = pt.spriteColor;
-		if(pt.spriteColor!=null)
+		if(sprite!=null)
 		{	Rectangle prect = pt.spriteRect;
 			if(prect!=null)
 			{

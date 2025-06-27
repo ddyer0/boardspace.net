@@ -35,11 +35,17 @@ public interface BugsConstants
 	int N_MARKETS = COSTS.length;
 	int N_GOALS = N_MARKETS;
 	int STARTING_POINTS = 100;
+	int BONUS_MULTIPLIER = 2;
+	boolean ADVERSARIAL_BONUS = false;
 	int MAX_PLAYERS = 4;
-	int N_ACTIVE_CATEGORIES = 7;
+	int N_ACTIVE_CATEGORIES = 6;
 	double WILDPERCENT = 0.1;
-	double DECKSIZE_MULTIPLIER = 4;
+	double DECKSIZE_MULTIPLIER = 1.2;
+	double GOAL_MULTIPLIER = 1.25;	// * the number of cards
+	int WinningScore = 300;
+	int MaxRounds = 10;
 	
+	BugsChip bugChips[] = { BugsChip.Yellow,BugsChip.Green,BugsChip.Blue,BugsChip.Red};
 //	these next must be unique integers in the BugsMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
 	enum BugsId implements CellId
@@ -53,14 +59,17 @@ public interface BugsConstants
 		ActiveDeck,
 		PlayerChip,
 		Ready,
-		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals, RotateCW,RotateCCW, Select,
+		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals,
+		RotateCW,RotateCCW, Select,
+		GoalDiscards, BugDiscards, DoneButton, 
+		HitChip,HitCell,
 		;
 		BugsChip chip;
 	
 	}
 	
 enum UIState implements Digestable {
-	Normal,Ready,Confirm;
+	Normal,Ready,Confirm,Resign;
 
 	public long Digest(Random r) {
 		return r.nextLong()*(ordinal()+1);
@@ -78,7 +87,6 @@ public enum BugsState implements BoardState,BugsConstants
 {
 	Puzzle(StateRole.Puzzle,PuzzleStateDescription,false,false),
 	Purchase(StateRole.Play,PurchaseExplanation,false,false),
-	Resign(StateRole.Resign,ResignStateDescription,true,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Bonus(StateRole.Play,BonusExplanation,false,false),
 	Play(StateRole.Play,PlayState,false,false);
@@ -132,20 +140,22 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
      	
     }
 
-	static final String VictoryCondition = "connect opposite sides with a chain of markers";
-	static final String PlayState = "Place a marker on any empty cell";
+	static final String VictoryCondition = "score the most Victory Points";
+	static final String PlayState = "Play or Move a bug card";
 	static final String ScavengerMessage = "Scavenger";
 	static final String CanFlyMessage =  "Can Fly";
 	static final String PredatorMessage = "Predator";
 	static final String VegetarianMessage = "Vegetarian";
 	static final String NoEatMessage = "Doesn't eat";
 	static final String ParasiteMessage = "Parasite";
-	static final String PurchaseExplanation = "Buy bugs or goals";
-	static final String BonusExplanation = "Score bonus cards";
+	static final String PurchaseExplanation = "Select the bug and bonus cards you will buy";
+	static final String BonusExplanation = "Play a bonus card";
 	static final String ReadyButton = "Ready";
-	static final String ExplainReady = "Click when you're done buying";
+	static final String ExplainReady = "Click when you're done with this phase";
 	static final String CostMessage = "cost #1 VP";
 	static final String ConfirmDescription = "Click on Done to confirm this move";
+	static final String FinalMessage = "FINAL ROUND #1";
+	static final String RoundMessage = "Round #1";
 	static void putStrings()
 	{
 		String GameStrings[] = 
@@ -154,6 +164,8 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 			PurchaseExplanation,
 			ConfirmDescription,
 		CostMessage,
+		FinalMessage,
+		RoundMessage,
 		ReadyButton,
 		ExplainReady,
 	    ScavengerMessage,
@@ -166,8 +178,9 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 			
 		};
 		String GameStringPairs[][] = 
-		{   {"Bugspiel_family","Bugspiel"},
-			{"Bugspiel_variation","Bugspiel"},
+		{   {"BugSpiel_family","BugSpiel"},
+			{"BugSpiel_variation","BugSpiel (small board)"},
+			{"BugSpiel2_variation","BugSpiel (large board)"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

@@ -23,22 +23,26 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	UIState dropState = null;
 	BugsChip lastPicked = null;
 	BugsChip lastDroppedObject = null;
-	
+	boolean progress = false;
 	UIState uiState = UIState.Normal;
 	int score;
 	CellStack selectedCells = new CellStack();
 	int boardIndex = -1;
 	int turnOrder = -1;
-	PlayerBoard(BugsBoard b,BugsChip ch,int idx)
+	PlayerBoard(BugsBoard b,int idx)
 	{	// constants
 		parent = b;
-		chip = ch;
 		boardIndex = idx;
 		// variable
 		cell = new BugsCell(parent,BugsId.PlayerChip,(char)('A'+idx));
-		cell.addChip(ch);
 		bugs = new BugsCell(parent,BugsId.PlayerBugs,(char)('A'+idx));
 		goals = new BugsCell(parent,BugsId.PlayerGoals,(char)('A'+idx));
+	}
+	public void setChip(BugsChip ch)
+	{
+		chip = ch;
+		cell.reInit();
+		cell.addChip(ch);
 	}
 	public boolean doneState()
 	{
@@ -49,8 +53,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		uiState = UIState.Normal;
 		acceptPlacement();
 		lastPicked = null;
+		progress = false;
 		lastDroppedObject = null;
-		turnOrder = -1;
+		turnOrder = boardIndex;
 		bugs.reInit();
 		goals.reInit();
 		selectedCells.clear();
@@ -65,6 +70,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		pickedIndex = other.pickedIndex;
 		lastDroppedObject = other.lastDroppedObject;
 		lastPicked = other.lastPicked;
+		progress = other.progress;
 		dropState = other.dropState;
 		turnOrder = other.turnOrder;
 		uiState = other.uiState;
@@ -82,6 +88,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		G.Assert(turnOrder==other.turnOrder,"turnOrder mismatch");
 		goals.sameContents(other.goals);
 		G.Assert(dropState==other.dropState,"dropState mismatch");
+		G.Assert(progress==other.progress,"progress mismatch");
 		G.Assert(parent.sameCells(pickedSource,other.pickedSource),"pickedSource mismatch");
 		G.Assert(parent.sameCells(droppedDest,other.droppedDest),"droppedDest mismatch");
 		G.Assert(pickedObject==other.pickedObject,"pickedObject mismatch");
@@ -102,6 +109,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		v ^= parent.Digest(r,pickedIndex);
 		v ^= parent.Digest(r,pickedObject);
 		v ^= parent.Digest(r,droppedObject);
+		v ^= parent.Digest(r,progress);
 		v ^= parent.Digest(r,pickedSource);
 		v ^= parent.Digest(r,droppedDest);
 		v ^= parent.Digest(r,selectedCells);
@@ -119,33 +127,148 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			throw G.Error("not expecting %s",rack);
 		}
 	}
+	public void addBonusMoves(CommonMoveStack all)
+	{	if(pickedObject!=null)
+		{
+		addBonusMoves(all,(GoalCard)pickedObject);
+		}
+		else
+		{
+		for(int lim=goals.height()-1; lim>=0; lim--)
+		{
+		addBonusMoves(all,(GoalCard)goals.chipAtIndex(lim));
+		}
+		}
+	}
+	
+	public boolean hasBonusMoves(BugsCell cell,BugsChip chip)
+	{	if(chip.isGoalCard()) 
+			{
+			return addBonusMoves(null,(GoalCard)chip);
+			}
+		return false;
+	}
+	
+	public boolean addBonusMoves(CommonMoveStack all,GoalCard goal)
+	{	boolean some = false;
+		for(BugsCell cell = parent.allCells; cell!=null; cell = cell.next)
+		{
+			if(addBonusMoves(all,goal,cell))
+			{
+				if(all==null) { return true; }
+				some = true;
+			}
+			if(addBonusMoves(all,goal,cell.above))
+			{
+				if(all==null) { return true; }
+				some = true;
+			}
+			if(addBonusMoves(all,goal,cell.below))
+			{
+				if(all==null) { return true; }
+				some = true;
+			}
 
-	public void getListOfMoves(CommonMoveStack all,int who) 
+		}
+		return some;
+	}
+	public boolean addBonusMoves(CommonMoveStack all,GoalCard goal,BugsCell cell)
+	{	boolean some = false;
+		if(parent.bonusPointsForPlayer(goal,cell,chip)>0)
+		{
+			if(all==null) { return true; }
+			some = true;
+			if(pickedObject==null) 
+			{
+				all.push(new BugsMovespec(parent.robot==null ? MOVE_PICK : MOVE_TO_BOARD,goals,goal,cell,boardIndex));
+			}
+			else 
+			{
+				all.push(new BugsMovespec(MOVE_DROPB,goals,goal,cell,boardIndex));
+			}
+		}
+		return some;
+	}
+	public boolean canPlayCard(BugsCell cell, BugsChip chip)
+	{
+		switch(cell.rackLocation())
+		{
+		case PlayerGoals:
+			return hasBonusMoves(cell,chip);
+			
+		case PlayerBugs:
+			return hasBugMoves(cell,chip);
+			
+		default: return true;
+		}
+	}
+	public boolean hasBugMoves(BugsCell cell,BugsChip chip)
+	{	if(chip.isBugCard())
+		{
+		return parent.addMovesOnBoard(null,MOVE_DROPB,bugs,(BugCard)chip,boardIndex);
+		}
+		return false;
+	}
+	public void addMovesOnBoard(CommonMoveStack all)
+	{
+		for(int lim=bugs.height()-1; lim>=0; lim--)
+		{
+			parent.addMovesOnBoard(all,parent.robot==null ? MOVE_PICK : MOVE_TO_BOARD,bugs,(BugCard)bugs.chipAtIndex(lim),boardIndex);
+		}
+	}
+	public void addMovesInBoard(CommonMoveStack all)
+	{
+		parent.addMovesInBoard(all,this);
+	}
+	public void getListOfMoves(CommonMoveStack all,BugsChip po) 
 	{
 		BugsState state = parent.board_state;
 		switch(state)
 		{
 		case Puzzle:
-			parent.addPickDrop(all,bugs,pickedObject,who);
-			parent.addPickDrop(all,goals,pickedObject,who);
+			parent.addPickDrop(all,bugs,po,boardIndex);
+			parent.addPickDrop(all,goals,po,boardIndex);
 			break;
 		case Bonus:
+			switch(uiState)
+			{
+			case Normal:
+				addBonusMoves(all); 
+				if(pickedObject==null) { all.push(new BugsMovespec(MOVE_READY,boardIndex)); }
+				break;
+			case Confirm:
+				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
+				break;
+			case Ready:
+				break;
+			default:
+				throw G.Error("not expected");
+			}			
 			break;
 		case Play:
 			switch(uiState)
 			{
 			default: throw G.Error("not expecting uistate %s",uiState);
 			case Ready:
-			case Confirm: break;
+				break;
+			case Confirm: 
+				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
+				if(parent.robot!=null && !parent.rotated)
+				{
+					all.push(new BugsMovespec(MOVE_ROTATECW,droppedDest,null,droppedDest,boardIndex));
+					all.push(new BugsMovespec(MOVE_ROTATECCW,droppedDest,null,droppedDest,boardIndex));
+				}
+				break;
 			case Normal:
 				if(pickedObject!=null)
 				{
 					parent.addMovesOnBoard(all,MOVE_DROPB,bugs,(BugCard)pickedObject,boardIndex);
 				}
 				else
-				for(int lim=bugs.height()-1; lim>=0; lim--)
 				{
-					parent.addMovesOnBoard(all,MOVE_PICK,bugs,(BugCard)bugs.chipAtIndex(lim),boardIndex);
+				addMovesOnBoard(all);
+				addMovesInBoard(all);
+				all.push(new BugsMovespec(MOVE_READY,boardIndex));
 				}
 			}
 			break;
@@ -191,6 +314,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     	rv.removeChip(droppedObject);
     	droppedObject = null;
     	rv.player = rv.xPlayer;
+    	rv.placedInRound = rv.xPlacedInRound;
     	setUIState(dropState);
     	return(rv);
     }
@@ -225,9 +349,13 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
         case BoardBottomLocation:
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         	c.addChip(pickedObject);
-        	droppedObject = pickedObject;
-        	c.xPlayer = c.player;
-        	c.player = chip;
+        	droppedObject = pickedObject;     	
+        	if(droppedObject.isBugCard()) 
+        		{ c.xPlayer = c.player; 
+        		  c.player = chip; 
+        		  c.xPlacedInRound = c.placedInRound;
+        		  c.placedInRound = parent.roundNumber;
+        		}
         	pickedObject = null;
             break;
 
@@ -248,10 +376,18 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     {
     	switch(parent.board_state)
     	{
+    	case Bonus:
     	case Play:	
     		setUIState(UIState.Confirm);
     		break;
     	default: break;
+    	}
+    }
+    public void findPickedObject()
+    {
+    	if(pickedObject==null)
+    	{
+    		parent.findPickedObject(this);
     	}
     }
 	public void Execute(BugsMovespec m, replayMode replay) 
@@ -260,6 +396,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		{
 
         case MOVE_DROP: // drop on chip pool;
+        	findPickedObject();
         	if(pickedObject!=null)
         	{
             BugsCell dest = parent.getCell(m.source,m.to_col,m.to_row);
@@ -279,9 +416,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 
         case MOVE_DROPB:
     	{
+    	findPickedObject();
 		BugsChip po = pickedObject;
 		BugsCell dest =  parent.getCell(BugsId.BoardLocation,m.to_col,m.to_row);
-		
 		if(isSource(dest)) 
 			{ unPickObject(); 
 			}
@@ -303,6 +440,17 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
  			}
     	 }
          break;
+         
+        case MOVE_TO_BOARD:
+        	{  	
+        	BugsCell src = parent.getCell(m.source,m.from_col,m.from_row);
+        	BugsCell to = parent.getCell(m.to_col,m.to_row);
+        	pickObject(src,m.chip);
+        	dropObject(to);
+        	setNextStateAfterDrop();
+        	parent.animate(replay,src,to);
+        	}
+        	break;
 		case MOVE_PICK:
 		case MOVE_PICKB:
 			{BugsCell src = parent.getCell(m.source,m.from_col,m.from_row);
@@ -373,10 +521,18 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	public void doDone(replayMode replay) {
 		switch(parent.board_state)
 		{
+		case Bonus:
+			{
+			BugsCell cell = droppedDest;
+			parent.scoreBonusForPlayers(this,cell,replay);
+			setUIState(UIState.Normal);
+			acceptPlacement();
+			}
+			break;
 		case Play:
 			// finished play of a bug
 			BugCard ch = (BugCard)droppedObject;
-			if(!pickedSource.onBoard) { score += ch.pointValue(); }
+			if(!pickedSource.onBoard) { score += ch.pointValue(); parent.progress++; }
 			setUIState(UIState.Normal);
 			acceptPlacement();
 			break;
@@ -384,15 +540,15 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		}
 		
 	}
-	 public void getUIMoves(CommonMoveStack all,int player)
+	 public void getUIMoves(CommonMoveStack all)
 	 {	 	
 	 	if((pickedObject!=null) && (pickedSource!=null))
 	 		{
-	 			all.push(new  BugsMovespec(pickedSource.onBoard ? MOVE_DROPB : MOVE_DROP,pickedSource,pickedObject,pickedSource,player));
+	 			all.push(new  BugsMovespec(pickedSource.onBoard ? MOVE_DROPB : MOVE_DROP,pickedSource,pickedObject,pickedSource,boardIndex));
 	 		}
 	 	if((droppedObject!=null) && (droppedDest!=null))
 			{
-			all.push(new BugsMovespec(droppedDest.onBoard ? MOVE_PICKB : MOVE_PICK,droppedDest,droppedObject,droppedDest,player));
+			all.push(new BugsMovespec(droppedDest.onBoard ? MOVE_PICKB : MOVE_PICK,droppedDest,droppedObject,droppedDest,boardIndex));
 			}
 	 }
 }

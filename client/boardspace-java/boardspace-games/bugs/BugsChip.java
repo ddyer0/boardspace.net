@@ -53,6 +53,8 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	
 	public BugsChip() {}
 	public boolean isBugCard() { return false; }
+	public boolean isGoalCard() { return false; }
+	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack otherChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;

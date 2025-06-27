@@ -39,7 +39,8 @@ public interface HiveConstants
     static final String RotateNormalMessage = "Rotate the board back to normal";
     static final String RotateCWMessage = "Rotate the board to +60 degrees (clockwise)";
     static final String RotateCCWMessage = "Rotate the board -60 degrees (counter-clockwise)";
-    
+    static final String PlayOrSwapDescription = "Continue playing, or swap colors";
+    static final String ConfirmPlayOrSwapDescription = "Confirm swapping colors";
     enum HiveId implements CellId
     {
     	Black_Bug_Pool("B"), // positive numbers are trackable
@@ -51,6 +52,7 @@ public interface HiveConstants
     	ReverseRect(null),
     	White_Setup_Pool("WS"),
     	Black_Setup_Pool("BS"),
+    	Swap(null),
     	HitPlayWhiteAction("PlayWhite"),
     	HitPlayBlackAction("PlayBlack"), 
     	SeeMovable(null),
@@ -82,6 +84,7 @@ public interface HiveConstants
     	hive_pm("hive-pm",true,false,true,false),
     	hive_pl("hive-pl",false,true,true,false),
     	hive_plm("hive-plm",true,true,true,false),
+    	hive_pielm("hive-pielm",true,true,true,false),
     	hive_u("hive-ultimate",true,true,true,true);
     	String name = null;
     	Bitset<PieceType> included = new Bitset<PieceType>();
@@ -116,6 +119,9 @@ public interface HiveConstants
     	PASS_STATE(StateRole.Other,PassStateDescription),
     	FIRST_PLAY_STATE(StateRole.Other,FirstPlayStateDescription),
     	QUEEN_PLAY_STATE(StateRole.Other,QueenStateDescription),
+    	PLAY_OR_SWAP_STATE(StateRole.Play,PlayOrSwapDescription),
+       	CONFIRM_SWAP_STATE(StateRole.Play,ConfirmPlayOrSwapDescription),
+
     	PLAY_STATE(StateRole.Play,PlayStateDescription),
     	DRAW_STATE(StateRole.RepetitionPending,DrawStateDescription),
     	Setup(StateRole.Other,SetupDescription),
@@ -175,8 +181,10 @@ public interface HiveConstants
     	String HiveStrings[] = {
     			SetupDescription,
     			TextLogMessage,
+    			ConfirmPlayOrSwapDescription,
     			CarbonMessage,
     			StandardMessage,
+    		   	PlayOrSwapDescription,
     			"Hive",
     			SwapDescription,
     			HiveGoal,
@@ -207,6 +215,8 @@ public interface HiveConstants
     			 {"Hive-PM","Hive-PM"},
     			 {"Hive-PL","Hive-PL"},
     			 {"Hive-PLM","Hive-PLM"},
+    			 {"Hive-PieLM","Hive-PieLM"},
+    			 {"Hive-PieLM_variation","PLM + \"swap\" option"},
     			 {"Hive-P_variation","+ Pillbug"},
     			 {"Hive-PM_variation","+ Pillbug, Mosquito"},
     			 {"Hive-PL_variation","+ Pillbug, Ladybug"},
