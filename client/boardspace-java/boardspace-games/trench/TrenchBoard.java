@@ -1402,7 +1402,4 @@ public boolean canOfferDraw() {
 			&& ((board_state==TrenchState.Play) || (board_state==TrenchState.DrawPending));
 }
 
- // most multi player games can't handle individual players resigning
- // this provides an escape hatch to allow it.
- //public boolean canResign() { return(super.canResign()); }
 }

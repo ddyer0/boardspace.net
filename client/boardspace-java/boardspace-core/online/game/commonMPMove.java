@@ -16,6 +16,7 @@
  */
 package online.game;
 
+
 import lib.ExtendedHashtable;
 /**
  * this is a suitable base class for the "move" class of games which have more
@@ -117,4 +118,5 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 	{ // any number is ok
 	}
 
+	public  boolean isUctScored() { return playerScores!=null; }
 }

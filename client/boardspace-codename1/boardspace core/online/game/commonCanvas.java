@@ -50,6 +50,7 @@ import online.game.sgf.sgf_property;
 import online.game.sgf.sgf_reader;
 import online.game.sgf.export.sgf_names;
 import online.search.TreeViewer;
+import online.search.UCTThread;
 import online.search.UCTTreeViewer;
 import rpc.RpcInterface;
 import rpc.RpcRemoteServer;
@@ -874,12 +875,12 @@ public abstract class commonCanvas extends exCanvas
 	               {
 	               	SimpleRobotProtocol r = player.robotBeingMonitored();
 	               	if(r!=null)
-	               	{	Thread threads[] = r.getThreads();
+	               	{	UCTThread threads[] = r.getThreads();
 	               		if(threads!=null)
 	               		{	
 	               			threadPopup.newPopupMenu(commonCanvas.this,deferredEvents);
 	               			threadPopupRobot = r;
-	               			for(Thread t : threads) { threadPopup.addMenuItem(t.toString(),t); }
+	               			for(UCTThread t : threads) { threadPopup.addMenuItem(t.toString(),t); }
 	               			threadPopup.show(x,y);
 	               		}
 	               	}
@@ -2448,9 +2449,14 @@ public abstract class commonCanvas extends exCanvas
      * there should be at most one winner in a 2 player game.
      */
     public boolean WinForPlayer(commonPlayer p)
-    {	if(p==null) { return(false); }
-    	BoardProtocol b = getBoard();
-    	if(b==null) { return(false); }
+    {	return WinForPlayer(getBoard(),p);
+    }
+    /**
+     * return true if the player is a winner of this game.  This is used in scoring,
+     * there should be at most one winner in a 2 player game.
+     */
+   public boolean WinForPlayer(BoardProtocol b,commonPlayer p)
+    {	if(b==null || p==null) { return(false); }
     	if(p.boardIndex>=b.nPlayers()) { return(false); }
     	return(b.WinForPlayer(p.boardIndex));
     }
@@ -7690,7 +7696,7 @@ public String simpleGameOverMessage(BoardProtocol gb)
 	for(int i=0;i<gb.nPlayers();i++) 
 	{ 
 	commonPlayer pl = getPlayerOrTemp(i);
-	if((pl!=null) && WinForPlayer(pl))
+	if((pl!=null) && WinForPlayer(gb,pl))
 		{ String msg = s.get(WonOutcome,prettyName(i));
 		return(msg); 
 		}

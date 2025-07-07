@@ -113,17 +113,34 @@ public void PrepareToMove(int playerIndex)
     board.setWhoseTurn(playerIndex);
 
 }
+//
+// rescore the position for a different player.  The underlying
+// assertion here is that the player component scores are accurate
+// ie; the players don't score themselves differently if they are
+// the player to move. 
+//
+public double reScorePosition(commonMove m,int player)
+{ 	double max = 0.0;
+ 	double omax = 0.0;
+ 	commonMPMove mm = (commonMPMove)m;
+ 	double scores[] = mm.playerScores;
+  	for(int lim = scores.length-1; lim>=0; lim--)
+ 	{	double sc =  scores[lim];
+ 		if(lim==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
+ 	}
+  	return (max-omax)/150.0;
+}
 
 
  public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.rawScoreForPlayer(i);
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
+ {	
+ 	int np = board.nPlayers();
+ 	commonMPMove mm = (commonMPMove)lastMove;
+ 	mm.setNPlayers(np);
+  	for(int i=0,lim=np; i<lim; i++)
+ 	{	mm.playerScores[i] = board.rawScoreForPlayer(i);
  	}
-  	return((max-omax)/150.0);
+  	return( reScorePosition(lastMove,lastMove.player));
  }
  
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
@@ -148,7 +165,7 @@ public void PrepareToMove(int playerIndex)
          	
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

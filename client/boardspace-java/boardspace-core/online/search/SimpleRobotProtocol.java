@@ -101,7 +101,7 @@ public interface SimpleRobotProtocol {
     /**
      * getThreads()
      */
-    public Thread[]getThreads();
+    public UCTThread[]getThreads();
     /**
      * selectThread
      */

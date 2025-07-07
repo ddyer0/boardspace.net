@@ -1510,10 +1510,7 @@ class TamskBoard
  	
  	return(targets);
  }
- // most multi player games can't handle individual players resigning
- // this provides an escape hatch to allow it.
- //public boolean canResign() { return(super.canResign()); }
- 
+
  void pos(int rings,char col,int row, double px, double py)
  {
 	 TamskCell c = getCell(col,row);

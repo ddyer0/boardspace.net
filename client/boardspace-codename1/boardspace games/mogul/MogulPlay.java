@@ -168,25 +168,40 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
 	 }}
 	 return(super.Get_Random_Move(rand));
  }
+ 
+ public double reScorePosition(commonMove m,int player)
+ { 	double max = 0.0;
+  	double omax = 0.0;
+  	commonMPMove mm = (commonMPMove)m;
+  	double scores[] = mm.playerScores;
+   	for(int lim = scores.length-1; lim>=0; lim--)
+  	{	double sc =  scores[lim];
+  		if(lim==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
+  	}
+   	return (max-omax);
+ }
+
+ 
  /**
   * for UCT search, return the normalized value of the game, with a penalty
   * for longer games so we try to win in as few moves as possible.  Values
   * must be normalized to -1.0 to 1.0
   */
  public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
+ {	
  	if(lastMove==board.terminatedWithPrejudice)
  	{
  		return( -1 );
  	}
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
+	int np = board.nPlayers();
+	commonMPMove mm = (commonMPMove)lastMove;
+	mm.setNPlayers(np);
+	double score[] = mm.playerScores;
+  	for(int i=0;i<np;i++)
  	{	boolean win =  board.WinForPlayerNow(i);
- 		if(win) 
- 			{	double val = UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth);
- 				return( (i==player) ? val : -val);
+ 		score[i]= win ? UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth) : 0;
  			}
- 	}
-  	return(0.0);
+  	return(reScorePosition(lastMove,lastMove.player));
  }
 
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
@@ -214,7 +229,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
          	
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;		// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

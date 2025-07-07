@@ -48,8 +48,8 @@ import lib.*;
 class RobotProperties
 {
 	UCTNode uctNode = null;
-    double evaluation = 0.0; // the net evaluation, after search, of this move
-    double local_evaluation = 0.0; // static eval of this move
+    double evaluation = Double.NaN; 		// the net evaluation, after search, of this move
+    double local_evaluation = Double.NaN; 	// static eval of this move
     commonMove best_move = null; // the best successor move to this move, from search
     commonMove.EStatus depth_limited = commonMove.EStatus.NOT_EVALUATED;	// if this move hit the depth limit for the search
     boolean gameover;		// true if this move ended the game
@@ -169,6 +169,10 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     public double set_local_evaluation(double v) { R().local_evaluation = v; return(v); }
     public double evaluation() { return R().evaluation; }
     public double setEvaluation(double v) { R().evaluation = v; return(v); }
+	public void setEvaluations(double v)
+	{	RobotProperties R = R();
+		R.local_evaluation = R.evaluation = v;
+	}
     public commonMove best_move() { return(RProps==null ? null : R().best_move); };
     public void set_best_move(commonMove v) { if((v==null) && (RProps==null)) {} else { R().best_move = v; }}
     public UCTNode uctNode() { return(RProps==null ? null : R().uctNode); }
@@ -806,4 +810,15 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     {	// default treatment
     	return(shortMoveText(v));
     }
+
+    // this is the traditional version used for 2p games
+    public boolean isEvaluated() 
+    {
+    	return !Double.isNaN(evaluation());
+    }
+    // this is the modern version used for multiplayer games
+    public boolean isUctScored() {
+		return !Double.isNaN(evaluation());
+	}
+
 }

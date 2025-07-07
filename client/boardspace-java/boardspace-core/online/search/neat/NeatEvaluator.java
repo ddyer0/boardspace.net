@@ -294,10 +294,12 @@ public class NeatEvaluator {
 	// was exceptionally and inexplicably slow. About 70% of applicants were rejected
 	//
 	boolean qualifyNext = false;
+	@SuppressWarnings("unused")
 	public void makeNewGeneration()
 	{
 		List<Genome> nextGenGenomes = new ArrayList<Genome>(populationSize);
 		IntIntHashtable generationCounts = new IntIntHashtable();
+		@SuppressWarnings("unused")
 		int accepted = 0;
 		int rejected = 0;
 		
@@ -316,7 +318,7 @@ public class NeatEvaluator {
 				
 				//System.out.println("keep "+fittestInSpecies.genome+" "+fittestInSpecies.fitness);
 			}
-			if(false && nextGenGenomes.size()-nextSize==2)
+			if(nextGenGenomes.size()-nextSize==2)
 			{
 				// add a child of those two winning parents
 				Genome parent = nextGenGenomes.get(nextSize);

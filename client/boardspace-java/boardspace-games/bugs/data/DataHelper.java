@@ -40,7 +40,7 @@ public abstract class DataHelper<T extends KeyProvider> {
 	public abstract int getUid();
 	static String DefaultProfile = "Animalia";
     public enum Habitat {
-        FRESHWATER, MARINE, SOIL, FOREST, GRASSLAND, DESERT,
+        FRESHWATER, MARINE,AQUATIC, SOIL, FOREST, GRASSLAND, DESERT,
         URBAN,  VARIED, UNKNOWN
         
     }

@@ -8,9 +8,12 @@ import online.game.replayMode;
 
 import static bugs.BugsMovespec.*;
 
+import java.awt.Color;
+
 public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 {
 	BugsChip chip;
+	Color backgroundColor;
 	BugsCell cell;
 	BugsBoard parent;
 	BugsCell bugs;
@@ -38,15 +41,25 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		bugs = new BugsCell(parent,BugsId.PlayerBugs,(char)('A'+idx));
 		goals = new BugsCell(parent,BugsId.PlayerGoals,(char)('A'+idx));
 	}
-	public void setChip(BugsChip ch)
+	public void setChip(BugsChip ch,Color bg)
 	{
 		chip = ch;
 		cell.reInit();
 		cell.addChip(ch);
+		backgroundColor = bg;
 	}
 	public boolean doneState()
-	{
-		return uiState==UIState.Confirm;
+	{	switch(uiState)
+		{
+		case Confirm:
+		case Resign:
+		case Pass:
+			return true;
+		case Normal:
+		case Ready:
+			return false;
+		default: throw G.Error("Not expecing uistate %s",uiState);
+		}
 	}
 	public void doInit() 
 	{	score = STARTING_POINTS;
@@ -121,7 +134,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		switch(rack)
 		{
 		case PlayerChip: return cell;
+		case BugMarket:
 		case PlayerBugs: return bugs;
+		case GoalMarket:
 		case PlayerGoals: return goals;
 		default:
 			throw G.Error("not expecting %s",rack);
@@ -141,10 +156,59 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		}
 	}
 	
+	public void addPurchaseMoves(CommonMoveStack all)
+	{	if(pickedObject!=null)
+		{
+		if(pickedObject.isGoalCard())
+			{
+			addPurchaseMoves(all,MOVE_DROP,pickedSource,(GoalCard)pickedObject);
+			}
+		else if(pickedObject.isBugCard())
+			{
+			addPurchaseMoves(all,MOVE_DROP,pickedSource,(BugCard)pickedObject);
+			}
+		}
+		else
+		{
+			int op = parent.robot==null ? MOVE_PICK : MOVE_TO_PLAYER;
+			if(goals.height()<HAND_LIMIT)
+			{
+			BugsCell goals[] = parent.goals;
+			for(int i=0;i<goals.length;i++)
+				{
+				GoalCard ch = (GoalCard)goals[i].topChip();
+				if(ch!=null) { addPurchaseMoves(all,op,goals[i],ch); }
+				}
+			}
+			if(bugs.height()<HAND_LIMIT)
+			{
+			BugsCell bugs[] = parent.market;
+			for(int i=0;i<bugs.length;i++)
+				{
+				BugCard ch = (BugCard)bugs[i].topChip();
+				if(ch!=null) { addPurchaseMoves(all,op,bugs[i],ch); }
+				}
+			}
+		}
+	}
+	
+	public boolean addPurchaseMoves(CommonMoveStack all,int op,BugsCell from,BugCard bug)
+	{
+		if(all==null) { return true; }
+		all.push(new BugsMovespec(op,from,bug,bugs,boardIndex));
+		return true;
+	}
+	public boolean addPurchaseMoves(CommonMoveStack all,int op,BugsCell from,GoalCard bug)
+	{
+		if(all==null) { return true; }
+		all.push(new BugsMovespec(op,from,bug,bugs,boardIndex));
+		return true;
+	}
+
 	public boolean hasBonusMoves(BugsCell cell,BugsChip chip)
 	{	if(chip.isGoalCard()) 
 			{
-			return addBonusMoves(null,(GoalCard)chip);
+			return addBonusMoves(null,(GoalCard)chip,cell);
 			}
 		return false;
 	}
@@ -174,7 +238,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	}
 	public boolean addBonusMoves(CommonMoveStack all,GoalCard goal,BugsCell cell)
 	{	boolean some = false;
-		if(parent.bonusPointsForPlayer(goal,cell,chip)>0)
+		if(cell.rackLocation==BugsId.PlayerGoals) { return true; }
+		if(parent.nonWildBonusPointsForPlayer(goal,cell,chip)>0)
 		{
 			if(all==null) { return true; }
 			some = true;
@@ -205,7 +270,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	public boolean hasBugMoves(BugsCell cell,BugsChip chip)
 	{	if(chip.isBugCard())
 		{
-		return parent.addMovesOnBoard(null,MOVE_DROPB,bugs,(BugCard)chip,boardIndex);
+		return parent.addMovesOnBoard(null,MOVE_DROPB,bugs,(BugCard)chip,cell,this);
 		}
 		return false;
 	}
@@ -213,7 +278,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	{
 		for(int lim=bugs.height()-1; lim>=0; lim--)
 		{
-			parent.addMovesOnBoard(all,parent.robot==null ? MOVE_PICK : MOVE_TO_BOARD,bugs,(BugCard)bugs.chipAtIndex(lim),boardIndex);
+			parent.addMovesOnBoard(all,parent.robot==null ? MOVE_PICK : MOVE_TO_BOARD,bugs,(BugCard)bugs.chipAtIndex(lim),this);
 		}
 	}
 	public void addMovesInBoard(CommonMoveStack all)
@@ -240,20 +305,28 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
 				break;
 			case Ready:
+			case Resign:
 				break;
 			default:
-				throw G.Error("not expected");
+				throw G.Error("uiState %s not expected",uiState);
 			}			
 			break;
 		case Play:
+		case SequentialPlay:
 			switch(uiState)
 			{
 			default: throw G.Error("not expecting uistate %s",uiState);
 			case Ready:
 				break;
+			case Pass:
+				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
+				break;
 			case Confirm: 
 				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
-				if(parent.robot!=null && !parent.rotated)
+				if(parent.robot!=null
+						&& !parent.rotated 
+						&& droppedDest.onBoard
+						&& droppedObject.isBugCard())
 				{
 					all.push(new BugsMovespec(MOVE_ROTATECW,droppedDest,null,droppedDest,boardIndex));
 					all.push(new BugsMovespec(MOVE_ROTATECCW,droppedDest,null,droppedDest,boardIndex));
@@ -262,16 +335,60 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			case Normal:
 				if(pickedObject!=null)
 				{
-					parent.addMovesOnBoard(all,MOVE_DROPB,bugs,(BugCard)pickedObject,boardIndex);
+					switch(parent.variation)
+					{
+					default: throw G.Error("Not expecting variation %s",parent.variation);
+					case bugspiel_parallel:
+					case bugspiel_parallel_large:
+						parent.addMovesOnBoard(all,MOVE_DROPB,bugs,(BugCard)pickedObject,this);
+						break;
+					case bugspiel_sequential:
+					case bugspiel_sequential_large:
+						switch(pickedSource.rackLocation())
+						{
+						case PlayerGoals:
+							addBonusMoves(all);
+							break;
+						case BoardLocation:
+						case PlayerBugs:
+							parent.addMovesOnBoard(all,MOVE_DROPB,bugs,(BugCard)pickedObject,this);
+							break;
+						case GoalMarket:
+						case BugMarket:
+							addPurchaseMoves(all);
+							break;
+						default: throw G.Error("Not expecting from %s",pickedSource);
+						}
+					}		
 				}
 				else
 				{
-				addMovesOnBoard(all);
-				addMovesInBoard(all);
-				all.push(new BugsMovespec(MOVE_READY,boardIndex));
+				switch(parent.variation)
+				{
+				default: throw G.Error("Not expecting variation %s",parent.variation);
+				case bugspiel_parallel:
+				case bugspiel_parallel_large:
+					addMovesOnBoard(all);
+					addMovesInBoard(all);
+					all.push(new BugsMovespec(MOVE_READY,boardIndex));
+					break;
+				case bugspiel_sequential:
+				case bugspiel_sequential_large:
+					addMovesOnBoard(all);
+					addMovesInBoard(all);
+					addBonusMoves(all); 
+					if(parent.robot==null || !parent.robot.randomPhase)
+						{
+						addPurchaseMoves(all);
+						}
+					if(parent.robot==null || all.size()==0) { all.push(new BugsMovespec(MOVE_PASS,boardIndex)); }
+					
+				}
+				
 				}
 			}
 			break;
+
 		case Purchase:
 		default:
 			G.Error("Not expecting %s",state);
@@ -299,8 +416,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     private void pickObject(BugsCell c,BugsChip ch)
     {	pickedSource = c;
     	pickedIndex = c.findChip(ch);
-    	BugsChip rem = c.removeChipAtIndex(pickedIndex);
-    	G.Assert(rem!=null,"should be there");
+    	G.Assert(pickedIndex>=0,"should be there");
+    	c.removeChipAtIndex(pickedIndex);
     	lastPicked = pickedObject = ch;
     	droppedObject = null;
     	lastDroppedObject = null;
@@ -343,16 +460,17 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
         case PlayerGoals:
         case PlayerBugs:
         case ActiveDeck:
-        case Goal:
-        case Market:
+        case GoalMarket:
+        case BugMarket:
         case BoardTopLocation:
         case BoardBottomLocation:
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         	c.addChip(pickedObject);
-        	droppedObject = pickedObject;     	
-        	if(droppedObject.isBugCard()) 
-        		{ c.xPlayer = c.player; 
-        		  c.player = chip; 
+        	droppedObject = pickedObject;   
+        	c.xPlayer = c.player; 
+  		  	c.player = chip;
+        	if(droppedObject.isBugCard() && parent.board_state==BugsState.Play) 
+        		{ 
         		  c.xPlacedInRound = c.placedInRound;
         		  c.placedInRound = parent.roundNumber;
         		}
@@ -378,6 +496,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     	{
     	case Bonus:
     	case Play:	
+    	case SequentialPlay:
     		setUIState(UIState.Confirm);
     		break;
     	default: break;
@@ -408,7 +527,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	        	  //G.print("last ",lastDroppedObject); 
 	        	}      	
             	dropObject(dest); 
-            
+            	setNextStateAfterDrop();
+            	if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
             	}
         	}
             break;
@@ -437,10 +557,33 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
             	{ parent.animate(replay,pickedSource,dest);
              	}
             setNextStateAfterDrop();
+        	if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
  			}
     	 }
          break;
-         
+        case MOVE_TO_PLAYER:
+    		{
+    			BugsCell src = parent.getCell(m.source,m.from_col,m.from_row);
+    			switch(src.rackLocation()) 
+    			{
+    			case BugMarket:
+    				pickObject(src,m.chip);
+    				dropObject(bugs);
+    				setNextStateAfterDrop();
+    				parent.animate(replay,src,bugs);
+    				if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
+    				break;
+    			case GoalMarket:
+    				pickObject(src,m.chip);
+    				dropObject(goals);
+    				setNextStateAfterDrop();
+    				parent.animate(replay,src,goals);
+    				if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
+    				break;
+    			default: G.Error("Not expecting ",src);
+    			}
+    		}
+         	break;
         case MOVE_TO_BOARD:
         	{  	
         	BugsCell src = parent.getCell(m.source,m.from_col,m.from_row);
@@ -448,6 +591,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
         	pickObject(src,m.chip);
         	dropObject(to);
         	setNextStateAfterDrop();
+        	if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
         	parent.animate(replay,src,to);
         	}
         	break;
@@ -472,11 +616,20 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		case MOVE_READY:
 			setUIState(uiState==UIState.Ready ? UIState.Normal : UIState.Ready);
 			break;
+		case MOVE_PASS:
+			setUIState(uiState==UIState.Pass ? UIState.Normal : UIState.Pass);
+			break;
+		case MOVE_RESIGN:
+			setUIState(uiState==UIState.Resign?UIState.Normal:UIState.Resign);
+			break;
 		default:
 			parent.cantExecute(m);
 		}
 	}
-
+	public void setOurTurn()
+	{
+		if(uiState==UIState.Pass) { uiState=UIState.Normal; }
+	}
 	public boolean isSelected(BugsCell c) {
 		return selectedCells.contains(c);
 	}
@@ -490,7 +643,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			BugsId rack = c.rackLocation();
 			switch(rack)
 			{
-			case Goal:
+			case GoalMarket:
 				{
 				GoalCard ch = (GoalCard)c.topChip();
 				goals.addChip(ch);
@@ -499,7 +652,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 				c.purchased = true;
 				}
 				break;
-			case Market:
+			case BugMarket:
 				{
 				BugCard ch = (BugCard)c.topChip();
 				bugs.addChip(ch);
@@ -519,24 +672,76 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		return G.signum((score-o.score)*1000 + (turnOrder-o.turnOrder));
 	}
 	public void doDone(replayMode replay) {
-		switch(parent.board_state)
+		switch(uiState)
 		{
-		case Bonus:
+		case Confirm:
+			{switch(parent.board_state)
 			{
-			BugsCell cell = droppedDest;
-			parent.scoreBonusForPlayers(this,cell,replay);
-			setUIState(UIState.Normal);
-			acceptPlacement();
-			}
+			case Gameover:
+				setUIState(UIState.Normal);
+				break;
+			case Bonus:
+				{
+				BugsCell cell = droppedDest;
+				parent.scoreBonusForPlayers(this,cell,replay);
+				setUIState(UIState.Normal);
+				acceptPlacement();
+				}
+				break;
+			case Play:
+			case SequentialPlay:
+				BugsId rack = droppedDest.rackLocation();
+				switch(rack)
+				{
+				default: throw G.Error("not expecting %s",rack);
+				case PlayerGoals:
+					G.Assert(pickedSource.rackLocation()==BugsId.GoalMarket,"should be a goal");
+					{
+						int cost = COSTS[pickedSource.row];
+						score -= cost;
+					}
+					break;
+				case PlayerBugs:
+					G.Assert(pickedSource.rackLocation()==BugsId.BugMarket,"should be a bug");
+					{
+						int cost = COSTS[pickedSource.row];
+						score -= cost;
+					}
+					
+					break;
+				case BoardLocation:
+				// finished play of a bug
+					if(droppedObject.isGoalCard())
+					{
+						BugsCell cell = droppedDest;
+						parent.scoreBonusForPlayers(this,cell,replay);
+					}
+					else
+					{
+					BugCard ch = (BugCard)droppedObject;
+					if(pickedSource.rackLocation()!=BugsId.BoardLocation) { score += ch.pointValue(); parent.progress++; }
+					if(ch.profile.isCarnivore() && droppedDest.height()>1)
+					{
+						BugCard rem = (BugCard)droppedDest.removeChipAtIndex(0);
+						parent.bugDiscards.addChip(rem);
+						parent.animate(replay,droppedDest,parent.bugDiscards);
+					}
+				}}
+				setUIState(UIState.Normal);
+				acceptPlacement();
+				break;
+			default: G.Error("parent state %s Not expected",parent.board_state);
+			}}
 			break;
-		case Play:
-			// finished play of a bug
-			BugCard ch = (BugCard)droppedObject;
-			if(!pickedSource.onBoard) { score += ch.pointValue(); parent.progress++; }
-			setUIState(UIState.Normal);
-			acceptPlacement();
+		case Pass:
 			break;
-		default: G.Error("Not expected");
+		case Resign:
+			score = -9999;
+			parent.setGameOver();
+			break;
+		default:
+			G.Error("uiState %s not expected", uiState);
+			break;
 		}
 		
 	}

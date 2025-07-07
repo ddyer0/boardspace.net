@@ -47,7 +47,7 @@ public abstract class CommonDriver implements TreeProviderProtocol {
     public int current_depth; // how deep in the search we are now, number of steps back to the root
    
 	public boolean save_digest=false;
-	public Thread[] getThreads() { return(null); }
+	public UCTThread[] getThreads() { return(null); }
 	public void selectThread(Thread t) { };
 	public abstract BoardProtocol disB();
 	public abstract void Abort_Search_In_Progress(String s);

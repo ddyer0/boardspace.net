@@ -126,7 +126,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 			im1.centerImage(gc,r1);
 			HitPoint.setHelpText(hitAny,r,cat1.getCommonName()+"\n"+cat1.getScientificName());
 			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/5));
-			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.43),cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,""+(2*BONUS_MULTIPLIER)+"x");
+			GC.Text(gc,true,cx-(int)(SQUARESIZE*0.43),cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/8,Color.black,null,""+(int)(2*BONUS_MULTIPLIER)+"x");
 		}
 		else
 		{	int xs = (int)(SQUARESIZE*0.4);
@@ -139,7 +139,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 			HitPoint.setHelpText(hitAny,r2,cat2.getCommonName()+"\n"+cat1.getScientificName());
 			GC.setFont(gc,lib.Font.getFont(baseFont,lib.Font.Style.Bold,SQUARESIZE/8));
 			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/5,SQUARESIZE,SQUARESIZE/5,Color.black,null,
-					""+BONUS_MULTIPLIER+"x + "+BONUS_MULTIPLIER+"x");
+					""+(int)BONUS_MULTIPLIER+"x + "+(int)BONUS_MULTIPLIER+"x");
 		}
 		return hit;
 	}
@@ -161,10 +161,10 @@ public class GoalCard extends BugsChip implements BugsConstants
 		}
 		return card;
 	}
-	public static void buildGoalDeck(BugsChip bugs[],BugsCell c)
+	public static void buildGoalDeck(long key,BugsChip bugs[],BugsCell c)
 	{	
 		// build goal cards with random pairs of categories
-		Random r = new Random(52626260);
+		Random r = new Random(key);
 		int nBugs = bugs.length;
 		int deckSize = (int)(bugs.length*GOAL_MULTIPLIER);
 		Taxonomy animals = Taxonomy.get("Animalia");

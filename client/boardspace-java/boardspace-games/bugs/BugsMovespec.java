@@ -39,6 +39,7 @@ public class BugsMovespec
     static final int MOVE_SETACTIVE = 211;
     static final int MOVE_READY = 212;
     static final int MOVE_TO_BOARD = 213;
+    static final int MOVE_TO_PLAYER = 214;
     
     static
     {	// load the dictionary
@@ -52,6 +53,7 @@ public class BugsMovespec
         	"Select",MOVE_SELECT,
         	"Ready",MOVE_READY,
         	"Move",MOVE_TO_BOARD,
+        	"MoveP",MOVE_TO_PLAYER,
         	"Setactive",MOVE_SETACTIVE,
         	"Dropb", MOVE_DROPB);
   }
@@ -186,6 +188,7 @@ public class BugsMovespec
             from_row = to_row = G.IntToken(msg);
             break;
         case MOVE_TO_BOARD:
+        case MOVE_TO_PLAYER:
         	source = BugsId.valueOf(msg.nextToken());
         	from_col = G.CharToken(msg);
         	from_row = G.IntToken(msg);
@@ -252,6 +255,7 @@ public class BugsMovespec
             return icon(v,to_col ,to_row);
 
 		case MOVE_TO_BOARD:
+		case MOVE_TO_PLAYER:
 			return icon(v,from_col,from_row," ",to_col,to_row);
 			
 		case MOVE_SELECT:
@@ -294,6 +298,7 @@ public class BugsMovespec
         case MOVE_DROP:
             return G.concat(opname , source.name()," ", to_col," ",to_row);
             
+        case MOVE_TO_PLAYER:
         case MOVE_TO_BOARD:
         	return G.concat(opname,source.name()," ",from_col," ",from_row," ",ch.chipNumber()," ",to_col," ",to_row);
         	

@@ -2,8 +2,6 @@ package bugs.data;
 
 import java.util.Hashtable;
 
-import lib.G;
-
 public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
 {	public int uid;
 	public int getUid() { return uid+TAX_OFFSET;}

@@ -3091,7 +3091,5 @@ private boolean hasMeepleConflict(PendulumCell c,PendulumChip chip,long now)
 	c.dropWorkerTime = now; 
 	return resolve;
 }
- // most multi player games can't handle individual players resigning
- // this provides an escape hatch to allow it.
- //public boolean canResign() { return(super.canResign()); }
+
 }

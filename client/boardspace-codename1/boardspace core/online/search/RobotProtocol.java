@@ -21,6 +21,7 @@ import lib.Random;
 import online.game.CommonMoveStack;
 import online.game.Game;
 import online.game.commonMove;
+import online.game.commonMove.EStatus;
 
 
 /** SimpleRobotProtocol plus some extra methods to interface with the search driver
@@ -243,6 +244,10 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	 * @return
 	 */
 	public boolean needDoneBetween(commonMove next, commonMove current);
+	public void setEvaluations(commonMove prev, double preScore);
+	public void setGameover(commonMove currentMove, boolean b);
+	public void set_depth_limited(commonMove currentMove, EStatus depthLimitedGameover);
+	public void setEvaluation(commonMove currentMoveOriginal, double newval);
 
 	
 	// *** TEMPORARILY RESTORED ***

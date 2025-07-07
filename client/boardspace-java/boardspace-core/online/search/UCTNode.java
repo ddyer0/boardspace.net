@@ -393,7 +393,8 @@ public class UCTNode {
 	}
 	public double getWins() { return(wins); }
 	public void setWins(double vv) 
-		{ wins=vv;
+		{ 
+		wins=vv;
 		}
 	public double getWinrate() {
 		if(visits==0){
@@ -509,13 +510,13 @@ public class UCTNode {
 					
 					UCTNode newChild = new UCTNode(this);
 					newChild.uct = new_child_uct;
-					int initialVisits = (int)(thread.initialWinRateWeight);
+					int initialVisits = (int)(thread.initialWinRateWeight());
 					if(initialVisits>0)
 					{
 					robot.setInitialWinRate(newChild,initialVisits,child,myChildren);
 					
 					}
-					thread.treeSizeThisRun++;
+					thread.incrementTreeSizeThisRun();
 					child.setUctNode(newChild);
 					return(child);
 				}

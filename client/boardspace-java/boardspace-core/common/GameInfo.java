@@ -1463,10 +1463,13 @@ synchronized(allGames) {
 	}
 	
 	{
-	String pRules = "/bugs/english/Rules.pdf";
+	String pRules = "/bugs/english/parallel-rules.html";
+	String sRules = "/bugs/english/sequential-rules.html";
 	String pViewer = "bugs.BugsViewer";  
 	Color map[] = {Color.yellow,Color.green,Color.blue,Color.red};
-	GameInfo mm = put(new GameInfo(3700,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel",
+	GameInfo mm ;
+	
+	mm = put(new GameInfo(3700,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1475,7 +1478,7 @@ synchronized(allGames) {
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
-	mm = put(new GameInfo(3701,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel2",
+	mm = put(new GameInfo(3701,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel-large",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1484,6 +1487,21 @@ synchronized(allGames) {
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
+	 
+	mm = put(new GameInfo(3702,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,sRules,"about_bugspiel.html",
+			null,false, map));
+	mm.maxPlayers = 4;
+	mm.randomizeFirstPlayer = true;
+	mm = put(new GameInfo(3703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,sRules,"about_bugspiel.html",
+			null,false, map));
+	mm.maxPlayers = 4;
+	mm.randomizeFirstPlayer = true;
 
 	}
 	

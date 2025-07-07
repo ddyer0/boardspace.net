@@ -16,6 +16,8 @@
  */
 package bugs;
 
+import java.awt.Color;
+
 import lib.CellId;
 import lib.Digestable;
 import lib.InternationalStrings;
@@ -27,25 +29,33 @@ import online.game.BaseBoard.StateRole;
 /**
  * Constants for the game.  This is set for a 2 player game, change to Play6Constants for a multiplayer game
  * @author Ddyer
- *
  */
 
 public interface BugsConstants
-{	int COSTS[] = { 8, 7, 6, 5, 4, 3, 2, 1};
+{	int COSTS[] = { 15, 12, 10, 8, 6, 4, 2, 1};
 	int N_MARKETS = COSTS.length;
 	int N_GOALS = N_MARKETS;
 	int STARTING_POINTS = 100;
-	int BONUS_MULTIPLIER = 2;
-	boolean ADVERSARIAL_BONUS = false;
+	int HAND_LIMIT = 8;
+	double BONUS_MULTIPLIER = 2;
+	boolean ADVERSARIAL_BONUS = true;
 	int MAX_PLAYERS = 4;
 	int N_ACTIVE_CATEGORIES = 6;
 	double WILDPERCENT = 0.1;
 	double DECKSIZE_MULTIPLIER = 1.2;
-	double GOAL_MULTIPLIER = 1.25;	// * the number of cards
-	int WinningScore = 300;
+	double GOAL_MULTIPLIER = 1;	// * the number of cards
+	int WinningScore = 200;
 	int MaxRounds = 10;
+	double CARNIVORE_BONUS = -0.8;
+	double FLYING_BONUS = -0.5;
+	double WILDCARD_BONUS = -1;
 	
 	BugsChip bugChips[] = { BugsChip.Yellow,BugsChip.Green,BugsChip.Blue,BugsChip.Red};
+	Color bugColors[] = { new Color(0.8f,0.8f,0.7f),
+			new Color(0.7f,0.8f,0.7f),
+			new Color(0.7f,0.7f,0.8f),
+			new Color(0.8f,0.7f,0.7f),
+	};
 //	these next must be unique integers in the BugsMovespec dictionary
 //  they represent places you can click to pick up or drop a stone
 	enum BugsId implements CellId
@@ -59,17 +69,18 @@ public interface BugsConstants
 		ActiveDeck,
 		PlayerChip,
 		Ready,
-		Market, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck, Goal, PlayerBugs,PlayerGoals,
+		GoalMarket,
+		BugMarket, Description, BugCard, GoalCard, MasterGoalDeck, GoalDeck,  PlayerBugs,PlayerGoals,
 		RotateCW,RotateCCW, Select,
 		GoalDiscards, BugDiscards, DoneButton, 
-		HitChip,HitCell,
+		HitChip,HitCell, Terrain, 
 		;
 		BugsChip chip;
 	
 	}
 	
 enum UIState implements Digestable {
-	Normal,Ready,Confirm,Resign;
+	Normal,Ready,Confirm,Resign,Pass;
 
 	public long Digest(Random r) {
 		return r.nextLong()*(ordinal()+1);
@@ -89,8 +100,8 @@ public enum BugsState implements BoardState,BugsConstants
 	Purchase(StateRole.Play,PurchaseExplanation,false,false),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Bonus(StateRole.Play,BonusExplanation,false,false),
-	Play(StateRole.Play,PlayState,false,false);
-	
+	Play(StateRole.Play,PlayState,false,false),
+	SequentialPlay(StateRole.Play,SequentialPlayState,false,false);
 	BugsState(StateRole r,String des,boolean done,boolean digest)
 	{	role = r;
 		description = des;
@@ -113,15 +124,17 @@ public enum BugsState implements BoardState,BugsConstants
     calculating adjacency and connectivity. */
 //this would be a standard hex-hex board with 2-per-side
 static int[] ZfirstInCol = {  1, 0, 1,}; // these are indexes into the first ball in a column, ie B1 has index 2
-static int[] ZnInCol = { 2, 3, 2 }; // depth of columns, ie A has 4, B 5 etc.
+static int[] ZnInCol = { 3, 4, 3 }; // depth of columns.
 // 3 per side
 static int[] ZfirstInCol2 = {  2, 1, 0, 1, 2,}; // these are indexes into the first ball in a column, ie B1 has index 2
 static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5 etc.
 
  enum BugsVariation
     {
-    	bugspiel("bugspiel",ZfirstInCol,ZnInCol),
-	 	bugspiel2("bugspiel2",ZfirstInCol2,ZnInCol2);
+	   	bugspiel_sequential("bugspiel-sequential",ZfirstInCol,ZnInCol),
+	   	bugspiel_sequential_large("bugspiel-sequential-large",ZfirstInCol2,ZnInCol2),
+    	bugspiel_parallel("bugspiel-parallel",ZfirstInCol,ZnInCol),
+	 	bugspiel_parallel_large("bugspiel-parallel-large",ZfirstInCol2,ZnInCol2);
     	String name ;
     	int [] firstInCol;
     	int [] ZinCol;
@@ -142,6 +155,7 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 
 	static final String VictoryCondition = "score the most Victory Points";
 	static final String PlayState = "Play or Move a bug card";
+	static final String SequentialPlayState = "Buy a bug or a goal, or Play a bug or a goal, or Move a bug";
 	static final String ScavengerMessage = "Scavenger";
 	static final String CanFlyMessage =  "Can Fly";
 	static final String PredatorMessage = "Predator";
@@ -156,6 +170,11 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 	static final String ConfirmDescription = "Click on Done to confirm this move";
 	static final String FinalMessage = "FINAL ROUND #1";
 	static final String RoundMessage = "Round #1";
+	static final String EndPurchaseMessage = "End Purchases";
+	static final String EndBonusMessage = "End Bonuses";
+	static final String EndPlacingMessage = "End Placing";
+	static final String BonusCardMessage = "#1 bonus cards";
+	static final String BugCardMessage = "#1 bug cards";
 	static void putStrings()
 	{
 		String GameStrings[] = 
@@ -164,6 +183,12 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 			PurchaseExplanation,
 			ConfirmDescription,
 		CostMessage,
+		BonusCardMessage,
+		BugCardMessage,
+		EndPurchaseMessage,
+		SequentialPlayState,
+		EndPlacingMessage,
+		EndBonusMessage,
 		FinalMessage,
 		RoundMessage,
 		ReadyButton,
@@ -179,8 +204,13 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 		};
 		String GameStringPairs[][] = 
 		{   {"BugSpiel_family","BugSpiel"},
-			{"BugSpiel_variation","BugSpiel (small board)"},
-			{"BugSpiel2_variation","BugSpiel (large board)"},
+			{"BugSpiel-parallel_variation","BugSpiel Parallel, small board"},
+			{"BugSpiel-parallel-large_variation","BugSpiel Parallel, large board)"},
+			{"BugSpiel-sequential_variation","BugSpiel (small board)"},
+			{"BugSpiel-sequential-large_variation","BugSpiel (large board)"},
+			{"BugSpiel-sequential","BugSpiel (small board)"},
+			{"BugSpiel-sequential-large","BugSpiel (large board)"},
+
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

@@ -1309,9 +1309,4 @@ void doSwap(replayMode replay)
  	return(targets);
  }
  
-
-
- // most multi player games can't handle individual players resigning
- // this provides an escape hatch to allow it.
- //public boolean canResign() { return(super.canResign()); }
 }

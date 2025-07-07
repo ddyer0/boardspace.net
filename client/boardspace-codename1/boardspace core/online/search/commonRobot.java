@@ -155,7 +155,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     
     public boolean Tree_Depth_Limit(int current) { return(false); }
     
-    public Thread[] getThreads()
+    public UCTThread[] getThreads()
     {	return(search_driver.getThreads());
     }
     
@@ -984,6 +984,10 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		   return (previous.player!=current.player);
 	   }
 	    
+	   public void setGameover(commonMove m,boolean v) { m.setGameover(v); }
+	   public void setEvaluation(commonMove m,double v) { m.setEvaluation(v); }
+	   public void setEvaluations(commonMove m,double v) { m.setEvaluations(v); }
+	   public void set_depth_limited(commonMove m,commonMove.EStatus v) { m.set_depth_limited(v); }
 	    // ** TEMPORARILY RESTORED ***
 	   // public boolean WinForPlayer(commonMove p)
 	   // {	return(getBoard().WinForPlayer(p.player));

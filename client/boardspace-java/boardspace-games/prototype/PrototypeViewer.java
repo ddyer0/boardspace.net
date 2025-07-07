@@ -1532,6 +1532,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     //public Text colorize(String str)
     //{	return(TextChunk.create(str));
     //}
-    
+	
+	 // most multi player games can't handle individual players resigning
+	 // this provides an escape hatch to allow it.
+	 //public boolean canResign() { return(super.canResign()); }
 }
 

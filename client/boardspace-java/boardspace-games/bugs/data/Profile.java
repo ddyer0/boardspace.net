@@ -3,22 +3,20 @@ package bugs.data;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import bridge.Platform;
 import bugs.BugCard;
+import bugs.BugsConstants;
 import lib.Bitset;
 import lib.G;
 import lib.Image;
 import lib.Tokenizer;
 import lib.Utf8Reader;
 
-public class Profile extends DataHelper<Profile> implements KeyProvider {
+public class Profile extends DataHelper<Profile> implements KeyProvider,BugsConstants {
 	
     public String name;
     public int getUid() { return -1; }
@@ -91,7 +89,12 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     {
         Taxonomy p = getCategory();
         double sz = Taxonomy.largestCategorySize/2+1;
-        cardPoints = (int)(sz/p.split1Count+0.5+(isCarnivore()?0.8:0) + (isFlying()?0.5 : 0));
+        // revision - make card point values LESS for carnivore and flying, because they are
+        // more valuable in game play
+        cardPoints = Math.max(1,(int)(sz/p.split1Count+0.5
+        					+((p==Taxonomy.getWildType()) ? WILDCARD_BONUS : 0)
+        					+(isCarnivore()?CARNIVORE_BONUS:0) 
+        					+(isFlying()?FLYING_BONUS : 0)));
     }
     
     public Profile deserialize(String fields[]) {
@@ -210,7 +213,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider {
     /*
      * map the varios classification for habitat into just 4 choices.
      */
-	private static Bitset<Habitat> waterHabitat = new Bitset<Habitat>(Habitat.MARINE,Habitat.FRESHWATER);
+	private static Bitset<Habitat> waterHabitat = new Bitset<Habitat>(Habitat.MARINE,Habitat.FRESHWATER,Habitat.AQUATIC);
 	private static Bitset<Habitat> groundHabitat = new Bitset<Habitat>(Habitat.DESERT,Habitat.SOIL,Habitat.VARIED);
 	private static Bitset<Habitat> grassHabitat = new Bitset<Habitat>(Habitat.GRASSLAND,Habitat.URBAN,Habitat.VARIED);
 	private static Bitset<Habitat> forestHabitat = new Bitset<Habitat>(Habitat.FOREST,Habitat.VARIED);

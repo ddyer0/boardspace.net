@@ -139,6 +139,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
  * Not needed for blitz MonteCarlo searches
  */
     int boardSearchLevel = -1;
+    boolean randomPhase = false;
     public void Unmake_Move(commonMove m)
     {	
         G.Error("Not expected");
@@ -149,6 +150,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
  */
     public void Make_Move(commonMove m)
     {   BugsMovespec mm = (BugsMovespec)m;
+    	//G.print("E "+m);
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
@@ -156,6 +158,9 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
 	public void prepareForDescent(UCTMoveSearcher from)
 	{
 		// called at the top of the tree descent
+	    //G.print("start");
+	    boardSearchLevel = 0;
+		randomPhase = false;
 	}
     public void startRandomDescent()
     {
@@ -163,6 +168,8 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
     	// so we need to re-randomize the hidden state.
     	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
     	//terminatedWithPrejudice = -1;
+	    //G.print("random");
+	    randomPhase = true;
     }
 
 
@@ -251,6 +258,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=true;
+           	ALPHA = 0.75;
          	break;
         	
         case MONTEBOT_LEVEL:
@@ -310,6 +318,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	boardSearchLevel = 1;
+ 	UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm
@@ -326,7 +335,7 @@ public void PrepareToMove(int playerIndex)
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
         						: 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
@@ -340,10 +349,10 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = 999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
+        monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 1500 : 10000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
@@ -383,30 +392,49 @@ public void PrepareToMove(int playerIndex)
 // }
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
-		int nplay = board.nPlayers();
-		commonMPMove mm = (commonMPMove)m;
-	 	mm.setNPlayers(nplay);
-	 	for(int i=0;i<nplay; i++)
-	 	{	mm.playerScores[i] = board.robotScore(i);
+ 	int nplay = board.nPlayers();
+ 	commonMPMove mm = (commonMPMove)m;
+ 	mm.setNPlayers(nplay);
+ 	for(int i=0;i<nplay; i++)
+	 	{	mm.playerScores[i] = 0.2/boardSearchLevel + 0.8*board.robotScore(i);
 	 	}
 	return( mm.reScorePosition(playerindex,VALUE_OF_WIN));
  }
+ 
+ //
+ // rescore the position for a different player.  The underlying
+ // assertion here is that the player component scores are accurate
+ // ie; the players don't score themselves differently if they are
+ // the player to move. 
+ //
+ public double reScorePosition(commonMove m,int forplayer)
+ {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+ }
 
- public double NormalizedScore(commonMove lastMove)
+ public double NormalizedScore1(commonMove lastMove)
  {	
 	double sc =Normalized_Evaluate_Position(lastMove);
 	return(sc);
  }
 
- public double NormalizedScore1(commonMove lastMove)
+ public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	double max = 0.0;
  	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 1 : 0;
+ 	int nplay = board.nPlayers();
+ 	commonMPMove mm = (commonMPMove)lastMove;
+ 	mm.setNPlayers(nplay);
+   	for(int i=0,lim=nplay; i<lim; i++)
+ 	{	double sc =  board.winForPlayerNow(i) ? 0.5 : 0
+ 			+ Math.sqrt(0.2/(board.moveNumber+boardSearchLevel))
+ 			+ 0.3*Math.max(0,Math.min(WinningScore,board.scoreForPlayer(i)))/WinningScore;
+ 		mm.playerScores[i] = sc;
  		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
  	}
-  	return((max-omax));
+  	double v = max-omax;
+  	//G.print("final "+v);
+  	return(v);
  }
-
+ public void setEvaluation(commonMove m,double v) {}
+ public void setEvaluations(commonMove m,double v) {}
  }

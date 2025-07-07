@@ -867,7 +867,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
 
         }
-        else
+        else if(theChat!=null)
         { 
         theChat.setHideInputField(true);
         }
@@ -880,7 +880,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         if (reviewOnly)
         { 	String dir = webGameDirectory();
-        	theChat.setHideInputField(true);
+        	if(theChat!=null) { theChat.setHideInputField(true); }
             startDirectory(dir); 
         }
         if(v!=null) { v.addObserver(this); }
