@@ -19,6 +19,7 @@ package bridge;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import lib.G;
 import lib.Http;
@@ -149,7 +150,10 @@ public class URL {
 	{ 	// this needs to return a naked string, not something wrapped in a URL identifier.
 		return(urlString); 
 	}
-	public URI toURI() { throw G.Error("toURI Not implemented"); }
+	public URI toURI() throws URISyntaxException
+	{  URI uri = new URI(toString());
+	   return uri;
+	}
 	
 	public URLConnection openConnection() {
 		URLConnection c = new HttpURLConnection(this);

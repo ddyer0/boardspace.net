@@ -314,6 +314,7 @@ private static void saveGridImage(File output,RenderedImage gridImage,int dpi) t
 	   break;
 	}
  }
+/*
  public boolean saveImage(String output)
  {	int ind = output.lastIndexOf('.');
  	String type = ind>=0 ? output.substring(ind+1) : "jpg";
@@ -325,7 +326,7 @@ private static void saveGridImage(File output,RenderedImage gridImage,int dpi) t
 	}
     return result;
  }
- 
+ */
  private static void setDPI(IIOMetadata metadata,int dpi) throws IIOInvalidTreeException {
 
 // for PMG, it's dots per millimeter
@@ -348,7 +349,7 @@ metadata.mergeTree("javax_imageio_1.0", root);
  }
  
 
- public void SaveImage(String name)
+ public void saveImage(String name)
     {  	
 		try {
 			java.awt.Image im = getSystemImage();

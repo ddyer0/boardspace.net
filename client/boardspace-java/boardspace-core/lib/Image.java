@@ -17,6 +17,9 @@
 package lib;
 
 import java.awt.Rectangle;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import bridge.Icon;
 import bridge.SystemImage;
 /**
@@ -981,4 +984,55 @@ public void assureImageLoaded()
 	G.Advise(width>=0,"didn't get width %s",this);
 	setLastUsed(now); 
 	}
+
+public static String[] getImageList(File dir)
+{	StringStack imageFiles = new StringStack();
+    File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") || name.toLowerCase().endsWith(".gif"));
+    if (files != null) {
+        for (File file : files) {
+            imageFiles.push(file.getName());
+        }
+    }
+    return imageFiles.toArray();
+}
+
+public static String[] getImageList(URL resourceUrl)
+{	
+	if(resourceUrl!=null)
+	{	String proto = resourceUrl.getProtocol();
+		if("jar".equals(proto))
+		{	
+			/*StringStack imageFiles= new StringStack();
+			try (java.util.jar.JarFile jar = new java.util.jar.JarFile(resourceUrl.toString()))
+			{
+			for(Enumeration<JarEntry> f = jar.entries(); f.hasMoreElements();)
+			{	JarEntry e = f.nextElement();
+				String name = e.getName();
+				if(name.startsWith("/") && !e.isDirectory())
+				{
+					imageFiles.push(name);
+				}
+			}
+ 			
+			} catch (IOException e1) {
+				throw G.Error("getting jar stream %s");
+			}	
+			return imageFiles.toArray();*/
+			G.Error("no jar support");
+		}
+		else if("file".equals(proto))
+		{	try {
+            File dir = new File(resourceUrl.toURI());
+            return getImageList(dir);
+			}
+			catch (URISyntaxException e)
+			{
+				throw G.Error("getting file list %s",e);
+			}
+		
+		
+		}
+	}
+	return null;
+}
 }

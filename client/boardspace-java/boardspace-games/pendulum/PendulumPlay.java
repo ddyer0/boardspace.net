@@ -317,7 +317,7 @@ boolean split = false;
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
         						: 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
@@ -416,7 +416,10 @@ boolean split = false;
 	 return(sc);
  }
  
- 
+ public double reScorePosition(commonMove m,int forplayer)
+ {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+ }
+
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
 		int nplay = board.nPlayers();

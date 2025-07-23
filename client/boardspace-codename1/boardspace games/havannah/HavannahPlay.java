@@ -88,7 +88,6 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
     private HavannahChip movingForPlayer = null;
     private boolean useUCTPriors = false;			// failed experiment to bias random playout with UCT values
     private boolean randomizePreventCuts = false;	// in the random phase, prevent cuts of bridges
-    private double winRateWeight = 0;
     private boolean deadChildOptimization = true;
     /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -358,8 +357,6 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
         monte_search_state.blitz = false;			// for havannah, blitz is 2/3 the speed of normal unwinds
-        monte_search_state.sort_moves = winRateWeight>0;
-        monte_search_state.initialWinRateWeight = winRateWeight;
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = deadChildOptimization;
         monte_search_state.simulationsPerNode = 1;

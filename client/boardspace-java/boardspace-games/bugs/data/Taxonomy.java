@@ -1,8 +1,18 @@
 package bugs.data;
 
+import java.awt.Font;
 import java.util.Hashtable;
 
-public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
+import bridge.SystemFont;
+import bugs.Goal;
+import bugs.BugCard;
+import bugs.BugsConstants;
+import lib.G;
+import lib.Graphics;
+import lib.Image;
+import lib.TextContainer;
+
+public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider,Goal,BugsConstants
 {	public int uid;
 	public int getUid() { return uid+TAX_OFFSET;}
     public String name;
@@ -25,7 +35,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     public static Taxonomy largestCategory = null;
     public Profile getProfile() { return Profile.get(name); }
     public String serialize() {
-        return String.join("\t",
+        return G.concat("\t",
         	escape(""+uid),
         	escape(name),
             escape(rank.name()),
@@ -106,4 +116,45 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider
     
     public static Taxonomy get(String n) { return taxonomies.get(n); }
 
+	public void drawExtendedChip(Graphics gc,Font baseFont,int xp,int yp,int w,int h,boolean x2)
+	{
+		Profile profile = getProfile();
+		String sd = profile.getDescription();
+		int margin = h/20;
+		TextContainer textContainer = new TextContainer(BugsId.Description);
+		if(sd!=null)
+		{	
+			textContainer.setBounds(xp+margin,yp+margin,w-margin*2,h-margin*2);
+			textContainer.setText(sd);
+			textContainer.setFont(SystemFont.getFont(baseFont,w/5));
+			textContainer.selectFontSize();
+			textContainer.flagExtensionLines = false;
+			textContainer.frameAndFill=false;
+			textContainer.setVisible(true);
+			textContainer.redrawBoard(gc,null);
+		}
+	}
+	public String getHelpText()
+	{
+		return getCommonName()+"\n"+getScientificName();
+	}
+	public Image getIllustrationImage()
+	{
+		Profile prof1 = getProfile();
+		return prof1.illustrationImage;
+	}
+	public double pointValue(BugCard card) 
+	{
+		return card.pointValue()*BONUS_MULTIPLIER;
+	}
+	// below the image, code what it scores
+	public String legend(boolean twice)
+	{
+		return "" + (int)(BONUS_MULTIPLIER*(twice ? 2 : 1))+"x"	;
+	}
+	public boolean matches(BugCard bug,boolean wild)
+	{	Profile bugProf = bug.getProfile();
+		Taxonomy bugGroup = bugProf.getCategory();
+		return (this==bugGroup) || (wild && bugGroup==Taxonomy.getWildType());
+	}
 }

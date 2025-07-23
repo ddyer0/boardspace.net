@@ -83,7 +83,7 @@ class CN1Resources  implements ResourceInterface
 			stream = new FileInputStream(name);
 			res = Resources.open(stream);	
 		}
-		catch (IOException e) { G.Error("opening resource file "+name); }
+		catch (IOException e) { G.Error("opening resource file "+name+" "+e); }
 		finally {
 			if(stream!=null) 
 				{ try { stream.close(); } catch (IOException e) {} 
@@ -266,6 +266,7 @@ public class ResourceBundle
     
     public static ResourceBundle getResources(String name)
      {	G.Assert(name!=null,"GetResources with null resource name");
+     	//Plog.log.addLog("getresources ",name);
     	String xName = name.charAt(0)=='/' ? name : "/" + name;
     	if(xName.startsWith(APPDATA))
     	{
@@ -282,7 +283,7 @@ public class ResourceBundle
     	{	File f = cache.findResource(file);
     		if(G.Advise(f!=null,"Appdata resource %s not found",name))
     				{
-    				Plog.log.addLog("Load resource data ",file);
+    				//Plog.log.addLog("Load resource data ",file);
     				res = new ResourceBundle(f,file);
     				if(res.loadedOK) 
     					{ appdata = res; } 
@@ -332,8 +333,15 @@ public class ResourceBundle
 		ResourceBundle res = getResources(name);
 		String localName = fullName.substring(ind+1);
 		if(res==null) { G.Advise(false,"resource %s not found",name); }
-		else if(res.isData(localName)) { return(res.getData(localName)); }
-		else if(res.isImage(localName)) { return(null); }
+		else if(res.isData(localName))
+			{ 
+			  InputStream s = res.getData(localName);
+			  return s;
+			}
+		else if(res.isImage(localName)) 
+			{ 
+			return(null); 
+			}
 		else { G.print("Resource ",localName," in ",name," not known"); }
 	
 		return(null);

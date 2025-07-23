@@ -17,6 +17,7 @@
 package breakingaway;
 
 import java.awt.Color;
+
 import lib.Image;
 import lib.ImageLoader;
 /* below here should be the same for codename1 and standard java */

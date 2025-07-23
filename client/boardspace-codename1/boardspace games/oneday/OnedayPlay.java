@@ -105,19 +105,6 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
 
     }
  
-    /**
-     * this is it! just tell me that the position is worth.  
-     */
-    public double Static_Evaluate_Position(commonMove m)
-    {	int playerindex = m.player;
- 		int nplay = board.nPlayers();
- 		commonMPMove mm = (commonMPMove)m;
- 	 	mm.setNPlayers(nplay);
-		for(int i=0;i<nplay; i++)
-		{	mm.playerScores[i] = ScoreForPlayer(board,i,dumbPhase);
-		}
-		return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
-    }
     
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -202,12 +189,26 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
   * for longer games so we try to win in as few moves as possible.  Values
   * must be normalized to -1.0 to 1.0
   */
- public double NormalizedScore(commonMove lastMove)
- {	boolean win = board.WinForPlayerNow(lastMove.player);
-	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
-	double sc = Math.max(-100,Math.min(100,Static_Evaluate_Position(lastMove)));
-	return(sc/101.0);
+ public double NormalizedScore(commonMove m)
+ {	 OnedayMovespec mm = (OnedayMovespec)m;
+	 int playerindex = m.player;
+	 int nplay = board.nPlayers();
+	 mm.setNPlayers(nplay);
+	 double scores[] = mm.playerScores;
+	 boolean win = board.WinForPlayerNow(m.player);
+	 if(win) { scores[playerindex] = UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel;}
+	 else
+	 {
+		 for(int i=0;i<nplay; i++)
+		 {	scores[i] = ScoreForPlayer(board,i,dumbPhase)/101;
+		 }
  }
+	 return(mm.reScorePosition(playerindex,1));
+ }
+ public double reScorePosition(commonMove cm,int forplayer)
+ {	return cm.reScorePosition(forplayer,1);
+ }
+
 
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
@@ -235,7 +236,7 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
         // it's important that the robot randomize the first few moves a little bit.
         dumbPhase = (board.getState()==OnedayState.SynchronousPlace);
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

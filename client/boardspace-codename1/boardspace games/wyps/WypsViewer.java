@@ -1415,7 +1415,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
             Image boardImage = Image.createImage(bh,bw);
             Graphics g = boardImage.getGraphics();
             drawFixedBoard(g,new Rectangle(0,0,bw,bh));
-            boardImage.SaveImage(ss);
+            boardImage.saveImage(ss);
             
             }      	
         }

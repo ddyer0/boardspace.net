@@ -314,7 +314,8 @@ public interface TammanyConstants
 
  
     // file names for jpeg images and masks
-    static final String ImageDir = "/tammany/images/";
+    static final String ImageDir = G.isCodename1() 
+			? "/appdata/tammany/images/"	:"/tammany/images/";
 
 
 

@@ -138,8 +138,6 @@ public interface ViewerProtocol extends ViewGameProtocol
      * otherwise, if the game has a score for each player return the score.
      */
     public int ScoreForPlayer(commonPlayer p);
-    public int ScoreForAutoma();
-    public boolean UsingAutoma();
     
     /**
      * retrieves an auxiliary window being used to study a robot search in progress
@@ -194,13 +192,18 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * robot when it's not its turn.
 	 * @return
 	 */
-	public boolean allowRobotsToRun(commonPlayer p);
+	public boolean allowRobotsToRun(commonPlayer pl);
 	public String fixedServerRecordString(String string, boolean includePlayerNames);
 	public String fixedServerRecordMessage(String fixedHist);
-	public Object getUrlNotes();
 	public void setScored(boolean v);
 	public boolean isScored();
-	public enum RecordingStrategy { All, Single, Fixed, None};
+	public enum RecordingStrategy 
+	{ All,		// usual mode for syncronous play, where all players record their moves
+	  Single, 	// for simultaneous play games, a single player is designated as the recorder
+	  Fixed,	// for games with a temporary simultaneous play state, hold off recording
+	  None		// all the other players if someone is the single recorder
+	  };
+
 	/**
 	 * recording strategy for this client.  Normal mode is All, each client records
 	 * what it sees and what it does. This is appropriate for normal synchonous play.
@@ -214,5 +217,31 @@ public interface ViewerProtocol extends ViewGameProtocol
 	public void resetBounds();
 	public void setSeeChat(boolean b);
 	
+	   
+    /**
+     * this is meaningful only if UsingAutoma is true
+     * @return
+     */
+    public default int ScoreForAutoma() { return -1; }
+    /**
+     * true if using an automa player, currently only true for viticulture
+     * @return
+     */
+    public default boolean UsingAutoma() { return false; };
+	/**
+	 * true when the player has resigned.  This is used to bypass setting "limbo" state when
+	 * a player quits.  This is generally only important for multiplayer games that let players
+	 * resign in mid game.
+	 * @param boardIndex
+	 * @return
+	 */
+	public default boolean ignorePlayerQuit(int boardIndex) { return false; };	
+	
+	/** return any additional stuff the game needs to add to the scoring url string.
+	 * 
+	 * @return
+	 */
+	public default String getUrlNotes() { return ""; }
+
 
 }

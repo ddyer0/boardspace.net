@@ -612,9 +612,6 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		return false;
 	}
 
-	public boolean UsingAutoma() { return(false); }
-	public int ScoreForAutoma() { return(-1); }
-	public String getUrlNotes() { return ""; }
 	public boolean WinForPlayer(commonPlayer p) {
 		throw G.Error("should not be called for LeHavre");
 	}

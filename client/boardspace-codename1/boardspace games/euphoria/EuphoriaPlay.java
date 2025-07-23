@@ -234,9 +234,11 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
         return(all);
     }
     
-    // bias the win rate of a new UCT node. 
+    // bias the win rate of a new UCT node. This requires that the nodes local
+    // evaluations were set
     public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 
-    {	node.setBiasVisits(m.local_evaluation()*visits,visits);
+    {	double val = m.local_evaluation();
+    	node.setBiasVisits(val*visits,visits);
     }
     
     public double assignMonteCarloWeights(CommonMoveStack all)
@@ -280,14 +282,12 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     		m.montecarloWeight = score;
     		total += score;		// add up the weights, 
     	}}
-    	
-    	if(total>0.0)
-    	{
+    	if(total==0.0) { total = 1; }	// never zero as the total even if all the individual scores are zero
        	for(int lim = all.size()-1; lim>=0; lim--)
     	{
     		EuphoriaMovespec m = (EuphoriaMovespec)all.elementAt(lim);
     		m.set_local_evaluation( m.montecarloWeight/total);
-     	}}
+     	}
 
        	return(total);
     }
@@ -508,7 +508,7 @@ public void PrepareToMove(int playerIndex)
  // this is the monte carlo robot, which for nuphoria is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
- public commonMove DoMonteCarloFullMove()
+public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	boolean choice = (board.getState()==EuphoriaState.EphemeralChooseRecruits)||(board.getState()==EuphoriaState.ChooseRecruits);
  	try {
@@ -525,7 +525,7 @@ public void PrepareToMove(int playerIndex)
         // it's important that the robot randomize the first few moves a little bit, but the
         // selection of recruits is random enough
         double randomn = 0.0; //(RANDOMIZE && (board.moveNumber <= 6)) ? 0.01/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.blitz = BLITZ;			// no undo, just copy and descend.
         
         monte_search_state.initialWinRateWeight = evaluator.weight;
@@ -610,7 +610,9 @@ public void PrepareToMove(int playerIndex)
 	//}
 	return(sc);
  }
-
+ public double reScorePosition(commonMove cm,int forplayer)
+ {	return cm.reScorePosition(forplayer,1);
+ }
   /**
    * benchmark moves per second 7/1/2014    244458 from starting position
    *                                        247765 added "canpay" cache

@@ -16,8 +16,8 @@
  */
 package breakingaway;
 
-import java.awt.Color;
 
+import java.awt.Color;
 import java.util.*;
 
 import breakingaway.BreakingAwayConstants.BreakId;

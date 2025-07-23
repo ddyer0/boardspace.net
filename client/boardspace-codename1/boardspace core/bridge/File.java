@@ -16,14 +16,18 @@
  */
 package bridge;
 
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import com.codename1.io.FileSystemStorage;
 import com.codename1.io.Storage;
 
+import bridge.FileNameFilter.FilenameFilter;
 import lib.G;
+
 
 public class File {
 	private String path;
@@ -34,13 +38,28 @@ public class File {
 	public File(File base,String v)
 	{	path = base.path+(base.path.endsWith("/")?v:"/"+v);
 	}
+	public File(URI uri) {
+		path =uri.toString();
+	}
 	public URI toURI() throws URISyntaxException { return new URI(path); }
 	
 	public String getAbsolutePath() { return(path); }
 	public String toString() { return("<file "+path+">"); }
 	public void renameTo(File file) {
 		G.Error("renameTo not implemented");
-		
+	}
+	public String[] list()
+	{
+		return normalizedList();
+	}
+	public String[]normalizedList()
+	{
+		try {
+			String[] fileList = FileSystemStorage.getInstance().listFiles(path);
+			return fileList;
+		} catch (IOException e) {
+			throw G.Error("error getting files from %s",path);
+		}
 	}
 	public void mkdir() 
 	{	//G.print("mkdir "+path);
@@ -71,6 +90,17 @@ public class File {
 		catch (IOException e) {}
 		return(null);
 	}
+	
+    public File[] listFiles(FilenameFilter filter) {
+        String ss[] = normalizedList();
+        if (ss == null) return null;
+        ArrayList<File> files = new ArrayList<>();
+        for (String s : ss)
+            if ((filter == null) || filter.accept(this, s))
+                files.add(new File( this, s));
+        return files.toArray(new File[files.size()]);
+    }
+
 	public String getName()
 	{	
 		int last = path.lastIndexOf('/');

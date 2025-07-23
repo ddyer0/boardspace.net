@@ -1920,9 +1920,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
    		
     	}
     	// if we're the master, start robots
-    	if(iAmTheRobotMaster())
-    	{
-    	for(commonPlayer p : playerConnections)
+    	boolean master = iAmTheRobotMaster();
+     	for(commonPlayer p : playerConnections)
     	{	// if some other player quit, and we are running the robots, we
     		// need to restart the robots when the game restarts
     		if(p!=null
@@ -1930,12 +1929,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			&& (p.robotPlayer==null)
     			&& (p.robotRunner==null))
     		{	Bot bot = (robot==null) ? v.salvageRobot() : robot;
-    		    //G.print("Starting robot "+p+" for "+my);
-    			myNetConn.LogMessage("stop robot wait (restart)",p," ",Thread.currentThread());
+    			// remember the bot the guy will run. This needs to be remembered
+    			// for all players, not just the runner, so games that allow resignation
+    			// can reassign the bot to another player.
+    			p.bot = robot;
     			//G.print("Start robot "+p+" run by "+my+" "+Thread.currentThread());
-    			commonPlayer started = v.startRobot(p,my,bot);
+    			if(master)
+    			{
+    			//G.print("Starting robot "+p+" for "+my);
+        		myNetConn.LogMessage("stop robot wait (restart)",p," ",Thread.currentThread());
+        		commonPlayer started = v.startRobot(p,my,bot);
 	        	if(started!=null) { started.runRobot(true); }
-    		}}}
+    			}
+    		}}
     }
     private void restartGame()
     {	boolean spectator = my.isSpectator();
@@ -2417,13 +2423,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 : s.get(AQuitMessage, pname)));
             theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, deathstring);
         }
+        
+        v.stopRobots();
 
+        if(!v.ignorePlayerQuit(player.boardIndex))
+        {
 
         /* somebody became a spectator */
         player.qcode = player.trueName;
         player.mouseObj = NothingMoving;	// not tracking anything
         setGameState(ConnectionState.LIMBO);
-        v.stopRobots();
         //G.print("stopping bots");
         changeActionMenus();
 
@@ -2456,7 +2465,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	bePlayer(player);
             	}
             */
-        }
+        }}
     }
 
     // set public or private status in response to announcement messages or players quitting
@@ -3294,7 +3303,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		"&s1=", v.ScoreForPlayer(p),
         		"&t1=", ((int) (p.elapsedTime / 1000)),
         		urank,
-        		v.getUrlNotes()
+        		v.getUrlNotes()	// any other stuff the game needs to add to a url string
         		) ;
  
         appendNotes(urlStr);

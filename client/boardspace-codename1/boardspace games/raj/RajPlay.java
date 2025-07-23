@@ -149,7 +149,7 @@ public void PrepareToMove(int playerIndex)
  // this is the monte carlo robot, which for raj is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
- public commonMove DoMonteCarloFullMove()
+public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
  	try {
@@ -164,7 +164,7 @@ public void PrepareToMove(int playerIndex)
         else {
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
@@ -191,10 +191,18 @@ public void PrepareToMove(int playerIndex)
   * for longer games so we try to win in as few moves as possible.  Values
   * must be normalized to -1.0 to 1.0
   */
- public double NormalizedScore(commonMove lastMove)
- {	boolean win = board.winForPlayerNow(lastMove.player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
- 	return(0);
+ public double NormalizedScore(commonMove m)
+ {	int playerindex = m.player;
+	int nplay = board.nPlayers();
+	commonMPMove mm = (commonMPMove)m;
+	mm.setNPlayers(nplay);
+	double scores[] = mm.playerScores;
+	for(int i=0;i<nplay; i++)
+	{
+		boolean win = board.winForPlayerNow(i);
+	 	if(win) { scores[i] = (UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+	 	else { scores[i]=0;}
+	 	}
+	return reScorePosition(m,playerindex);
  }
-
  }

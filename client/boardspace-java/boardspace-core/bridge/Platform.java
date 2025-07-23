@@ -531,13 +531,42 @@ public static Object MakeInstance(String classname)
     	{ 
     	String name = (xname.charAt(0)=='/')?xname:("/"+xname);
     	URL u = Platform.class.getResource(name);
-    	//G.print("getResourceUrl "+name+" = "+u);
     	return u;
     	}
     	return(null);
      }
- 
-
+    
+    public static URI myJar()
+    {
+    	URI jarFile;
+		try {
+			jarFile = Platform.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+		} catch (URISyntaxException e) {
+			throw G.Error("get my jar %s",e);
+		}
+    	return jarFile;
+    }
+ /*
+    public static String[] getResources(String from)
+    {
+    	try (JarFile jar = new JarFile(from))
+    	{
+    		Enumeration<JarEntry> entries = jar.entries();
+    		StringStack ar = new StringStack();
+    		while (entries.hasMoreElements()) {
+    			JarEntry entry = entries.nextElement();
+    			String name = entry.getName();
+    			if ((name.endsWith(".png") || name.endsWith(".jpg")))
+    			{
+    				ar.push(name);
+    			}}
+    		return ar.toArray();
+    		}
+    	catch (IOException e) {
+			throw G.Error("error %s",e);
+		}
+    }
+*/
     public static int mouseMoveEvents=0;
     public static boolean isPlatformTouchInterface()
     {

@@ -102,7 +102,6 @@ July 2006 added repeatedPositions related functions
  * <li>a run loop
  * @see exCanvas
  */
-// TODO: add some visual distraction when the tick-tock sound plays and the sound is off
 // TODO: add some additional cue when "living in the past"
 // TODO: the concept of "peeking" and its interaction with "undo" needs more thought.  Need to be able to review without losing track of the fact that we peeked
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
@@ -2487,11 +2486,8 @@ public abstract class commonCanvas extends exCanvas
     {
     	return(gb.scoreForPlayer(p.boardIndex));
     }
-    
-    public boolean UsingAutoma() { return(false); }
-    public int ScoreForAutoma() { return(-1); }
-    public String getUrlNotes() { return ""; }
-    /** 
+
+     /** 
      * override this method to create an appropriate class of robot that implements RobotProtocol
      * @return a class instance of a new robot player for this game.
      */
@@ -2508,7 +2504,7 @@ public abstract class commonCanvas extends exCanvas
         if(rr!=null)
         {
         rr.InitRobot(this, sharedInfo, getBoard(), null, robo.idx);
-
+        p.bot = robo;
         p.startRobot(rr,runner);
         if(G.debug()) { p.setPlayerName(robo.name+p.boardIndex,true,this); }
         return(p);
@@ -6179,7 +6175,8 @@ public abstract class commonCanvas extends exCanvas
 	//callback from the mouse manager, which may have done something
     //that affects the display state
 	public void repaintForMouse(int n,String s) {
-		saveDisplayBoardNeeded = true;
+		// removed 7/19/25, was causing spin in bugspiel 
+		// saveDisplayBoardNeeded = true;
 		super.repaint(n,s);
 	}
 	
@@ -9431,5 +9428,37 @@ public void verifyGameRecord()
 		/** return true of the rest of the logic supports offerdraw/declinedraw */
 		public boolean drawIsPossible() { return false; }
 		public boolean canOfferDraw() { return false; }
+		
+	    public boolean canRunRobot(int n)
+	    {	return true;
+	    }
+	    /**
+	     * since this game allows players to resign, if they are running robots
+	     * we need to activate a new runner.
+	     */
+	    public void reassignRobots()
+	    {	int np = players.length;
+	    	for(int i=0;i<np;i++)
+			{
+	    		commonPlayer p = getPlayerOrTemp(i);
+	    		if(p.isRobot && p.robotRunner==null)
+	    		{
+	    			for(int other=0;other<np;other++)
+	    			{	if(!p.isRobot && canRunRobot(other))
+		    				{	
+		    				commonPlayer otherp = getPlayerOrTemp(other);
+		    				G.print("robot reassigned to "+otherp);
+		    				Bot bot = (p.bot==null) ? salvageRobot() : p.bot;
+		    				startRobot(p,otherp,bot);
+		    				if(otherp==getActivePlayer()) 
+		    					{ p.runRobot(true); 
+		    					}
+		    				break;
+		    				}
+	    			}
+	    		}
+	    		
+			}
+	    }
 
 }

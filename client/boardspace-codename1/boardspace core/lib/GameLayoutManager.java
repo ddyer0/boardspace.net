@@ -286,7 +286,7 @@ public class GameLayoutManager implements UniversalConstants
 			int l,int t,int w,int h,Rectangle player,int marginSize)
 	{
 	//G.print("Make ",seating," ",l," ",t," ",w,"x",h);
-	rects.init(0,0,w,h);
+	rects.init(l,t,w,h);
 	nPlayers = nP;		
 	left = l;
 	right = l+w;
@@ -1336,7 +1336,7 @@ public class GameLayoutManager implements UniversalConstants
 		int rem = (nPlayers%3);
 		if(rem!=0)
 			{
-			addToSpare(right+rem*playerWM-marginSize,spareY-playerHM,(3-rem)*playerWM+marginSize,playerHM);
+			addToSpare(right+rem*playerWM,spareY-playerHM,(3-rem)*playerWM,playerHM);
 			}
 		}
 		break;
@@ -1359,9 +1359,9 @@ public class GameLayoutManager implements UniversalConstants
 		{
 		positions = new int[nPlayers][2];
 		for(int i=0;i<nPlayers;i++) { positions[i][0] = xright; positions[i][1]=ytop+i*playerHM; }
-		int spareY =ytop+playerHM*nPlayers-marginSize+1;	// spare rects ok 2/26
-		addToSpare(xright,spareY,right-xright,bottom-spareY);
+		int spareY =ytop+playerHM*nPlayers;	// spare rects ok 2/26
 		right -= playerWM;
+		addToSpare(right,spareY,playerWM,bottom-spareY);
 		break;
 		}
 	}
@@ -1654,12 +1654,12 @@ public class GameLayoutManager implements UniversalConstants
 	    }
 		int halfMargin = extramargin/2;
 	    if(G.debug() ) { G.print("final ",selectedSeating," ",selectedPercent,"% ",selectedCellSize);}
-		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
+		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width-extramargin,height-extramargin,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
     	//if(G.debug())
     	//{
     	//	G.print("Cell Min ",minSize," max ",maxCellSize," actual ",selectedCellSize);
     	//}
-        doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-margin,fullheight-margin));
+        doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-extramargin,fullheight-extramargin));
         rects.specs.clear();
         fails = 0;
 	    return(selectedPercent);	    
@@ -2251,7 +2251,7 @@ public class GameLayoutManager implements UniversalConstants
     		{
     		int nrows = ((nPlayers+1)/2);
     		unitsX = playerW*2;
-    		unitsY = playerH*nrows+marginSize;
+    		unitsY = playerH*nrows;
     		fixedW = marginSize*2;
     		fixedH = nrows*marginSize+marginSize;
     		edgeUnitsX = 0;
@@ -2262,7 +2262,7 @@ public class GameLayoutManager implements UniversalConstants
     		{
     		int nrows = ((nPlayers+2)/3);
     		unitsX = playerW*3;
-    		unitsY = playerH+nrows;
+    		unitsY = playerH*nrows;
     		fixedW = 3*marginSize+marginSize;
     		fixedH = nrows*marginSize+marginSize;
     		edgeUnitsX = unitsX;
@@ -2769,11 +2769,13 @@ public class GameLayoutManager implements UniversalConstants
         {
         	deallocate(new Rectangle(mainX,mainY,extraW,mainH));
         	deallocate(new Rectangle(mainX+mainW-extraW,mainY,extraW,mainH));
+        	mainX+=extraW;
+        	mainW-=extraW*2;
         }
         if(extraH>0)
         {
-        	deallocate(new Rectangle(mainX+extraW,mainY,mainW-extraW*2,extraH));
-        	deallocate(new Rectangle(mainX+extraW,mainY+mainH-extraH,mainW-extraW*2,extraH));
+        	deallocate(new Rectangle(mainX,mainY,mainW,extraH));
+        	deallocate(new Rectangle(mainX,mainY+mainH-extraH,mainW,extraH));
         }
     }
 }

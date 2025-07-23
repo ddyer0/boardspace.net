@@ -16,8 +16,8 @@
  */
 package truchet;
 
-import java.awt.Color;
 
+import java.awt.Color;
 import java.util.Hashtable;
 
 import lib.*;

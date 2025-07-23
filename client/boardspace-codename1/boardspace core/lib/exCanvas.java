@@ -293,7 +293,7 @@ public abstract class exCanvas extends ProxyWindow
 	}
 
     public int standardFontSize() 
-    { 	int v = SystemFont.getFontSize(standardPlainFont());
+    { 	int v = lib.Font.getFontSize(standardPlainFont());
     	return v; 
     }
 
@@ -1633,6 +1633,11 @@ graphics when using a touch screen.
         	}
         
         public boolean touchZoomEnabled() { return(false); }
+        public boolean useDirectMagnification(HitPoint hp)
+        {
+        	return getCanvasRotation()==0 
+        			&& painter.repaintStrategy==RepaintStrategy.Direct_Unbuffered;
+        }
         private void drawVirtualMouse(Graphics gc,HitPoint hp)
         {	
            	if(mouse.virtualMouseMode())
@@ -1646,8 +1651,7 @@ graphics when using a touch screen.
            	{	
            		magnifier.drawMagnifiedPad(gc,hp,
            							// the math gets too complicated if there is rotation involved
-           							getCanvasRotation()==0 
-           								&& painter.repaintStrategy==RepaintStrategy.Direct_Unbuffered);
+           							useDirectMagnification(hp));
            	}
 			drawHelpText(gc,hp);	// draw the tooltip last of all
         }
@@ -1747,7 +1751,7 @@ graphics when using a touch screen.
             {  
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
-               GC.setFont(gc, SystemFont.getGlobalDefaultFont());
+               GC.setFont(gc, lib.Font.getGlobalDefaultFont());
                ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }

@@ -655,33 +655,55 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		mlCache = newLines;
 		return(newLines);
 	}
+
 	/**
 	 * for paragraph style frames, select a smaller font size that will allow the whole
 	 * frame to be displayed, within some limits.
 	 */
 	public void selectFontSize()
-	{
+	{	// new version, 7/20/25 about 6x more effecient. Motivated by slow rendering
+		// times for bugspiel descriptions
 		Font initialFont = font;		
 		int h = G.Height(this)-MARGIN*2;
 		int linew = G.Width(this)-MARGIN*2;
-		int size = lib.Font.getFontSize(font);
+		FontMetrics fm = lib.Font.getFontMetrics(font);
+		
+		// first see if the max size is acceptable
+		{
+			int available = h/fm.getHeight();
+			if(available>0)
+			{
+				mlCache = null;
+				StringStack lines = resplit(data,fm,linew);
+				if(lines.size()<=available) { return ; }
+			}		
+		}
+
 		boolean done = false;
-		// do not segment lines by length
+		int upperSize = lib.Font.getFontSize(font);
+		int lowerSize = 6;
+		int size = (upperSize+lowerSize)/2;
+		font = SystemFont.getFont(initialFont,size);
+		// binary search for a better size
 		do
 		{
-		FontMetrics fm = lib.Font.getFontMetrics(font);
-		int lineh = fm.getHeight();
 		mlCache = null;
+		fm = lib.Font.getFontMetrics(font);
 		StringStack lines = resplit(data,fm,linew);
-		int available = h/lineh;
-		done = lines.size()<=available;
+		int available = h/fm.getHeight();
+		int nlines = lines.size();
+		done = (lowerSize>=upperSize);
 		if(!done)
-		{
-			size--;
-			font = SystemFont.getFont(initialFont,size);
-			
+		{	if(nlines<=available) { lowerSize = size; }
+			 else { upperSize = size;}
+			int oldsize = size;
+			size = (lowerSize+upperSize)/2;
+			if(size==oldsize) { done = true; }
+			else
+				{	font = SystemFont.getFont(initialFont,size);
+				}
 		}}
-		while( !done && size>6);
+		while( !done);
 	}
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
 	{	

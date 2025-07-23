@@ -211,14 +211,6 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
 
 
     /**
-     * this is called from UCT setup to get the evaluation, prior to ordering the UCT move lists.
-     */
-	public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
-	{
-		throw G.Error("Not implemented");
-	}
-
-    /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
      * Not needed for MonteCarlo searches
@@ -352,7 +344,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = DEPLOY_THREADS;
+        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 1500 : 10000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
@@ -408,7 +400,7 @@ public void PrepareToMove(int playerIndex)
  // the player to move. 
  //
  public double reScorePosition(commonMove m,int forplayer)
- {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+ {	return(m.reScorePosition(forplayer,1));
  }
 
  public double NormalizedScore1(commonMove lastMove)
@@ -425,9 +417,11 @@ public void PrepareToMove(int playerIndex)
  	commonMPMove mm = (commonMPMove)lastMove;
  	mm.setNPlayers(nplay);
    	for(int i=0,lim=nplay; i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 0.5 : 0
+ 	{	// give 0.5 for a win , plus ip to 0.2 for a shorter game, plus up to 0.3 for the score
+   		// thus favoring a win in as few moves as possible
+   		double sc =  board.winForPlayerNow(i) ? 0.5 : 0
  			+ Math.sqrt(0.2/(board.moveNumber+boardSearchLevel))
- 			+ 0.3*Math.max(0,Math.min(WinningScore,board.scoreForPlayer(i)))/WinningScore;
+ 			+ 0.3*Math.max(0,Math.min(board.variation.WinningScore,board.scoreForPlayer(i)))/board.variation.WinningScore;
  		mm.playerScores[i] = sc;
  		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
  	}
@@ -435,6 +429,5 @@ public void PrepareToMove(int playerIndex)
   	//G.print("final "+v);
   	return(v);
  }
- public void setEvaluation(commonMove m,double v) {}
- public void setEvaluations(commonMove m,double v) {}
+
  }

@@ -488,7 +488,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 						if(currentMove!=null)
 						{
 							double val = child.evaluation();
-							double newval = currentMove.player==child.player ? val : -val;
+							double newval = currentMoveOriginal.player==child.player ? val : -val;
 							robot.setEvaluation(currentMoveOriginal,newval);
 							//currentNode.makeOnlyChild(robot,childNode);
 							robot.setGameover(currentMoveOriginal,true);
@@ -504,7 +504,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 										// causes the wrong child to be selected
 										master.decided = currentMoveOriginal;
 										//Log.finishLog();
-										G.print("Rootonly "+currentMoveOriginal);
+										//G.print("Rootonly "+currentMoveOriginal);
 									}
 									else {
 									newChildrenThisRun -= node.makeOnlyChild(); 
@@ -520,7 +520,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 							{ 
 							currentMove = child; 
 							master.decided = child;
-							G.print("Rootonly no node"+child);
+							//G.print("Rootonly no node"+child);
 							}}
 						}
 					terminal=true;

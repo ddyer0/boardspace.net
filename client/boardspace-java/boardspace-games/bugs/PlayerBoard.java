@@ -28,10 +28,16 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	BugsChip lastDroppedObject = null;
 	boolean progress = false;
 	UIState uiState = UIState.Normal;
-	int score;
+	private int actualScore;
+	public void changeScore(int n)
+	{
+		if(!resigned) { actualScore += n; }
+	}
 	CellStack selectedCells = new CellStack();
 	int boardIndex = -1;
 	int turnOrder = -1;
+	boolean resigned = false;
+	
 	PlayerBoard(BugsBoard b,int idx)
 	{	// constants
 		parent = b;
@@ -62,20 +68,22 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		}
 	}
 	public void doInit() 
-	{	score = STARTING_POINTS;
+	{	actualScore = STARTING_POINTS;
 		uiState = UIState.Normal;
 		acceptPlacement();
 		lastPicked = null;
 		progress = false;
+		resigned = false;
 		lastDroppedObject = null;
 		turnOrder = boardIndex;
 		bugs.reInit();
 		goals.reInit();
 		selectedCells.clear();
 	}
-	public int getScore() { return score; }
+	public int getScore() { return actualScore; }
 	public void copyFrom(PlayerBoard other) 
-	{	score = other.score;
+	{	actualScore = other.actualScore;
+		resigned = other.resigned;
 		pickedObject = other.pickedObject;
 		droppedObject = other.droppedObject;
 		droppedDest = parent.getCell(other.droppedDest);
@@ -94,7 +102,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	}
 	
 	public void sameBoard(PlayerBoard other) 
-	{	G.Assert(score==other.score,"score mismatch");
+	{	G.Assert(actualScore==other.actualScore,"score mismatch");
+		G.Assert(resigned==other.resigned,"resigned mismatch");
 		G.Assert(uiState==other.uiState,"uiState mismatch");
 		bugs.sameContents(other.bugs);
 		G.Assert(pickedIndex == other.pickedIndex,"pickedIndex mismatch");
@@ -113,7 +122,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	public long Digest(Random r) 
 	{
 		long v = 0;
-		v ^= parent.Digest(r,score);
+		v ^= parent.Digest(r,actualScore);
+		v ^= parent.Digest(r,resigned);
 		v ^= uiState.Digest(r);
 		if(dropState!=null) { v ^= dropState.Digest(r);}
 		v ^= bugs.Digest(r);
@@ -173,7 +183,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			int op = parent.robot==null ? MOVE_PICK : MOVE_TO_PLAYER;
 			if(goals.height()<HAND_LIMIT)
 			{
-			BugsCell goals[] = parent.goals;
+			BugsCell goals[] = parent.goalMarket;
 			for(int i=0;i<goals.length;i++)
 				{
 				GoalCard ch = (GoalCard)goals[i].topChip();
@@ -182,7 +192,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			}
 			if(bugs.height()<HAND_LIMIT)
 			{
-			BugsCell bugs[] = parent.market;
+			BugsCell bugs[] = parent.bugMarket;
 			for(int i=0;i<bugs.length;i++)
 				{
 				BugCard ch = (BugCard)bugs[i].topChip();
@@ -205,10 +215,10 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		return true;
 	}
 
-	public boolean hasBonusMoves(BugsCell cell,BugsChip chip)
+	public boolean hasBonusMoves(BugsChip chip)
 	{	if(chip.isGoalCard()) 
 			{
-			return addBonusMoves(null,(GoalCard)chip,cell);
+			return addBonusMoves(null,(GoalCard)chip);
 			}
 		return false;
 	}
@@ -238,7 +248,6 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	}
 	public boolean addBonusMoves(CommonMoveStack all,GoalCard goal,BugsCell cell)
 	{	boolean some = false;
-		if(cell.rackLocation==BugsId.PlayerGoals) { return true; }
 		if(parent.nonWildBonusPointsForPlayer(goal,cell,chip)>0)
 		{
 			if(all==null) { return true; }
@@ -256,21 +265,22 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	}
 	public boolean canPlayCard(BugsCell cell, BugsChip chip)
 	{
+		if(cell==pickedSource && pickedObject!=null) { return true; }
 		switch(cell.rackLocation())
 		{
 		case PlayerGoals:
-			return hasBonusMoves(cell,chip);
+			return (pickedObject!=null && pickedObject.isGoalCard()) || hasBonusMoves(chip);
 			
 		case PlayerBugs:
-			return hasBugMoves(cell,chip);
+			return (pickedObject!=null && pickedObject.isBugCard()) || hasBugMoves(chip);
 			
 		default: return true;
 		}
 	}
-	public boolean hasBugMoves(BugsCell cell,BugsChip chip)
+	public boolean hasBugMoves(BugsChip chip)
 	{	if(chip.isBugCard())
 		{
-		return parent.addMovesOnBoard(null,MOVE_DROPB,bugs,(BugCard)chip,cell,this);
+		return parent.addMovesOnBoard(null,MOVE_DROPB,bugs,(BugCard)chip,this);
 		}
 		return false;
 	}
@@ -288,6 +298,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	public void getListOfMoves(CommonMoveStack all,BugsChip po) 
 	{
 		BugsState state = parent.board_state;
+		{
 		switch(state)
 		{
 		case Puzzle:
@@ -322,6 +333,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
 				break;
 			case Confirm: 
+			case Resign:
 				all.push(new BugsMovespec(MOVE_DONE,boardIndex));
 				if(parent.robot!=null
 						&& !parent.rotated 
@@ -381,7 +393,10 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 						{
 						addPurchaseMoves(all);
 						}
-					if(parent.robot==null || all.size()==0) { all.push(new BugsMovespec(MOVE_PASS,boardIndex)); }
+					if(parent.robot==null || parent.somePassed() || all.size()==0) 
+						{ // the robot doesn't consider passing unless someone else is also
+						all.push(new BugsMovespec(MOVE_PASS,boardIndex)); 
+						}
 					
 				}
 				
@@ -392,7 +407,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		case Purchase:
 		default:
 			G.Error("Not expecting %s",state);
-		}
+		}}
 	}
 
 	
@@ -416,7 +431,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     private void pickObject(BugsCell c,BugsChip ch)
     {	pickedSource = c;
     	pickedIndex = c.findChip(ch);
-    	G.Assert(pickedIndex>=0,"should be there");
+    	//G.print("t "+c.topChip().chipNumber()," ",ch.chipNumber());
+    	parent.p1(pickedIndex>=0,"%s should be there",ch);
     	c.removeChipAtIndex(pickedIndex);
     	lastPicked = pickedObject = ch;
     	droppedObject = null;
@@ -430,6 +446,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     	pickedObject = droppedObject;
     	rv.removeChip(droppedObject);
     	droppedObject = null;
+    	droppedDest = null;
     	rv.player = rv.xPlayer;
     	rv.placedInRound = rv.xPlacedInRound;
     	setUIState(dropState);
@@ -442,6 +459,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     {	BugsCell rv = pickedSource;
     	rv.insertChipAtIndex(pickedIndex,pickedObject);
     	pickedIndex = -1;
+    	pickedSource = null;
     	pickedObject = null;
     	droppedObject = null;
     }
@@ -634,7 +652,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		return selectedCells.contains(c);
 	}
 
-	// give this player a copy of all the bugs and goals they selected
+	// give this player a copy of all the bugs and goalMarket they selected
 	// and collect the costs
 	public void doPurchases(replayMode replay) {
 		while(selectedCells.size()>0)
@@ -648,7 +666,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 				GoalCard ch = (GoalCard)c.topChip();
 				goals.addChip(ch);
 				parent.animate(replay,c,goals);
-				score -= c.cost;
+				changeScore(-c.cost);
 				c.purchased = true;
 				}
 				break;
@@ -657,7 +675,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 				BugCard ch = (BugCard)c.topChip();
 				bugs.addChip(ch);
 				parent.animate(replay,c,bugs);
-				score -= c.cost;
+				changeScore(-c.cost);
 				c.purchased = true;
 				}
 				break;
@@ -669,7 +687,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	}
 	// used setting turn order
 	public int compareTo(PlayerBoard o) {
-		return G.signum((score-o.score)*1000 + (turnOrder-o.turnOrder));
+		return G.signum((getScore()-o.getScore())*1000 + (turnOrder-o.turnOrder));
 	}
 	public void doDone(replayMode replay) {
 		switch(uiState)
@@ -698,14 +716,14 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 					G.Assert(pickedSource.rackLocation()==BugsId.GoalMarket,"should be a goal");
 					{
 						int cost = COSTS[pickedSource.row];
-						score -= cost;
+						changeScore(-cost);
 					}
 					break;
 				case PlayerBugs:
 					G.Assert(pickedSource.rackLocation()==BugsId.BugMarket,"should be a bug");
 					{
 						int cost = COSTS[pickedSource.row];
-						score -= cost;
+						changeScore(-cost);
 					}
 					
 					break;
@@ -719,8 +737,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 					else
 					{
 					BugCard ch = (BugCard)droppedObject;
-					if(pickedSource.rackLocation()!=BugsId.BoardLocation) { score += ch.pointValue(); parent.progress++; }
-					if(ch.profile.isCarnivore() && droppedDest.height()>1)
+					if(pickedSource.rackLocation()!=BugsId.BoardLocation) 
+						{ changeScore(ch.pointValue()); parent.progress++; }
+					if(ch.profile.isPredator() && droppedDest.height()>1)
 					{
 						BugCard rem = (BugCard)droppedDest.removeChipAtIndex(0);
 						parent.bugDiscards.addChip(rem);
@@ -736,8 +755,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 		case Pass:
 			break;
 		case Resign:
-			score = -9999;
-			parent.setGameOver();
+			resigned = true;
+			setUIState(UIState.Resign);
+			if(parent.playersLeft()<=1) { parent.setGameOver(); }
 			break;
 		default:
 			G.Error("uiState %s not expected", uiState);
@@ -756,4 +776,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			all.push(new BugsMovespec(droppedDest.onBoard ? MOVE_PICKB : MOVE_PICK,droppedDest,droppedObject,droppedDest,boardIndex));
 			}
 	 }
+	public boolean canPass() {
+		return (uiState==UIState.Pass) || (uiState==UIState.Normal);
+	}
 }

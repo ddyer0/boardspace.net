@@ -137,6 +137,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
 
     //stuff for robot player
     public boolean isRobot = false;			// I'm the robot
+    public Bot bot = null;					// the bot we're being
     public boolean isProxyPlayer = false;	// I'm an extra player on the same console
     private String robotWait = null; //if null, the current robot can move
     public SimpleRobotProtocol robotPlayer = null; //if not null, handle to the robot move generator

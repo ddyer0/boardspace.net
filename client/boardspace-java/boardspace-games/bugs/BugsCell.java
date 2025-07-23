@@ -17,6 +17,7 @@
 package bugs;
 
 import lib.Random;
+import lib.Sort;
 import lib.exCanvas;
 import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
@@ -59,7 +60,7 @@ public class BugsCell
 	BugsBoard owningBoard = null;
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
-	
+	public BugsCell() {}
 	public boolean isOccupied()
 	{
 		return height()>0 || above.height()>0 || below.height()>0;
@@ -182,18 +183,23 @@ public class BugsCell
 	
 	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
 
-    {
+    {	if(thislabel==BugsChip.TOP && piece==topChip()) { thislabel=null; }
     	if(piece instanceof BugsChip)
-    	{
+    	{	
     		return ((BugsChip)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     	else {
-    		return super.drawChip(gc,piece,drawOn,thislabel==BugsChip.NOHIT ? null : highlight,squareWidth,scale,e_x,e_y,thislabel);
+    		return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     }
 	public BugsId getTerrain()
 	{
 		return background.id;
+	}
+	
+	public void sort(boolean alt)
+	{
+		Sort.sort(chipStack,0,height()-1);
 	}
 
 	/**

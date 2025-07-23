@@ -47,7 +47,8 @@ import online.game.sgf.sgf_reader;
 
 
 public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Runnable, RobotProtocol,Opcodes,OnlineConstants
-{	public boolean MONTEBOT = false;
+{	
+	public boolean MONTEBOT = false;
 	public boolean WEAKBOT = false;
 	protected CommonDriver search_driver = null;
 	public boolean beingMonitored = false;
@@ -566,11 +567,9 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     }
 
     public double reScorePosition(commonMove cm,int forplayer)
-    {	
-    	return((cm.player == forplayer)
-    			? cm.evaluation()			// player doarsn't change 
-    			: -cm.evaluation());		// player changes, negate the value
+    {	return cm.reScorePosition(forplayer,Double.MAX_VALUE);
     }
+    
     private boolean checking_digest()
     {	if(search_driver!=null)
     	 {

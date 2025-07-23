@@ -1,18 +1,17 @@
 package bugs.data;
 
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.PrintStream;
 import java.util.Hashtable;
-import java.util.List;
-
-import bridge.Platform;
 import bugs.BugCard;
 import bugs.BugsConstants;
 import lib.Bitset;
 import lib.G;
 import lib.Image;
+import lib.StringStack;
 import lib.Tokenizer;
 import lib.Utf8Reader;
 
@@ -63,7 +62,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     	return getPrimary().getDescription();
     }
     public String serialize() {
-        return String.join("\t",
+        return G.concat("\t",
             escape(name),
             escape(rank.name()),
             escape(lastChanged),
@@ -73,17 +72,30 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
             diet != null ? diet.name() : ""
         );
     }
-    public boolean isHerbivore()
+    public boolean isPrey()
     {
-    	return diet.isHerbivore;
+    	return diet.isPrey();
     }
-    public boolean isCarnivore()
+    public boolean isPredator()
     {
-    	return diet.isCarnivore;
+    	return diet.isPredator();
     }
     public boolean isFlying()
     {
     	return flying==Flying.YES;
+    }
+    public boolean isScavenger()
+    {
+    	return diet.isScavenger();
+    }
+    public boolean isNegavore()
+    {
+    	return diet.isNegavore();
+    }
+    
+    public boolean isParasite()
+    {
+    	return diet.isParasite();
     }
     public void calculatePoints()
     {
@@ -93,7 +105,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
         // more valuable in game play
         cardPoints = Math.max(1,(int)(sz/p.split1Count+0.5
         					+((p==Taxonomy.getWildType()) ? WILDCARD_BONUS : 0)
-        					+(isCarnivore()?CARNIVORE_BONUS:0) 
+        					+(isPredator()?CARNIVORE_BONUS:0) 
         					+(isFlying()?FLYING_BONUS : 0)));
     }
     
@@ -120,44 +132,62 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     		profiles = np.readFromFile(file);
     		for(String path : imagePath)
     		{
-    			np.loadImages(path);
+    			if(path!=null) { np.loadImages(path); }
     		}
+    	// note that at this point all the bug cards have been loaded, but the order of the cards
+    	// is undefined.  So we sort them here to stabilize the rest
+    	BugCard.initialSort();
+
     	}
     }
-    public List<String> getImageResourceList(String path,String name)
+    public String[] getImageResourceList(String path,String name)
     {
-       	List<String>lis = new ArrayList<String>();
-       	InputStream in = Platform.class.getResourceAsStream(path+name);
+       	StringStack lis = new StringStack();
+    	try {
+    	InputStream in = G.getResourceAsStream(indexResourceName(path,name));
     	if(in!=null)
     	{
     	Utf8Reader ins = new Utf8Reader(in);
     	String line = null;
-    	try {
+
     	while( (line = ins.readLine())!=null)
     	{
-    		lis.add(line);
+    		lis.push(line);
     	}
     	ins.close();
+    	}}
+    	catch (IOException e)
+    	{
+    		throw G.Error("getimage %s",e);
     	}
-    	catch (IOException e) {}
-    	}
-    	return lis;
+ 
+    	return lis.toArray();
+    }
+    public String indexResourceName(String imagePath,String name)
+    {
+		 File p = new File(imagePath);
+		 String pathname = p.getName();
+		 String fullName = imagePath+pathname+"-"+name;
+		 return fullName;
     }
     public static String uncomposite = "g:/share/projects/boardspace-java/boardspace-games/";
+    
     public void loadImages(String imagePath)
     {   
-		List<String> images = getImageResources(imagePath);
-		boolean empty = images.isEmpty();
-		FileWriter out = null;
+		String images[] = getImageResources(imagePath);
+		boolean empty = images==null;
+		PrintStream out = null;
 		try {
 		if(empty)
 			{ 
 			// when running from jars, the list isn't available
 			images = getImageResourceList(imagePath,"index.txt"); 
 			}
-		else if(!G.isCodename1())
-			{// generate the list for use in the delivered version
-			out = new FileWriter(uncomposite+imagePath+"index.txt");
+		else if(!G.isCodename1() && G.debug() && G.getBoolean("desktop",false))
+			{
+			// generate the list for use in the delivered version
+			// because of the shortcuts in codename1 resoruces, the file names have to be unique
+			 out = new PrintStream(new FileOutputStream(uncomposite+indexResourceName(imagePath,"index.txt")));
 			}
 		
 		for(String s : images)
@@ -177,22 +207,22 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     				im = new Image(imagePath+s,imagePath+mask);
     				if(out!=null)
     				{
-    					out.write(s+"\n");
-    					out.write(s+"-mask.jpg\n");
+    					out.print(s+"\n");
+    					out.print(s+"-mask.jpg\n");
     				}
     			}
     			else
     			{
     				im = new Image(imagePath+s);
-    				if(uncomposite!=null && s.endsWith(".png"))
+    				if(G.debug() && G.getBoolean("desktop",false) && uncomposite!=null && s.endsWith(".png"))
     				{	String basename = s.substring(0,s.length()-4);
     					String maskName = uncomposite+imagePath+basename+"-mask.jpg";
     					String backName = uncomposite+imagePath+basename+".jpg";
     					Image newmask = new Image(maskName);
     					Image newback = new Image(backName);
     					im.unComposite(newback,newmask);
-    					newmask.SaveImage(maskName);
-    					newback.SaveImage(backName);
+    					newmask.saveImage(maskName);
+    					newback.saveImage(backName);
     				}
     			}
     			p.illustrationImage = im;

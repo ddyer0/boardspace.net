@@ -131,6 +131,13 @@ public class TammanyPlay extends commonRobot<TammanyBoard> implements Runnable, 
 	};
     private boolean UCT_WIN_LOSS = false;
     
+    // not needed for alpha-beta searches, which do not use threads
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	TammanyPlay cc = (TammanyPlay)c;
+    	cc.evaluator = evaluator;
+    	return(c);
+    }
     
     private boolean EXP_MONTEBOT = false;
 
@@ -192,14 +199,24 @@ public class TammanyPlay extends commonRobot<TammanyBoard> implements Runnable, 
         board.RobotExecute(mm);
     }
 
+    boolean randomPhase = false;
+	public void prepareForDescent(UCTMoveSearcher from)
+	{
+		randomPhase = false;
+	}
+    public void startRandomDescent()
+    {
+    	randomPhase = true;
+    }
+
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	int newn = board.moveNumber();
-		boolean needassign = evaluator!=Evaluator.None && (newn<=boardMoveNumber);
+    {	
+		boolean needassign = evaluator!=Evaluator.None && !randomPhase;
         CommonMoveStack all = board.GetListOfMoves();
        	if(needassign)
 		{ // assign weights to the moves.  If we're still in the UCT tree, these
@@ -209,6 +226,7 @@ public class TammanyPlay extends commonRobot<TammanyBoard> implements Runnable, 
 		  // for both.
 		assignMonteCarloWeights(all); 
 		}
+ 
        	return(all);
     }
 
@@ -300,8 +318,9 @@ public double assignMonteCarloWeights(CommonMoveStack all)
 		total += m.montecarloWeight;
 	}
 	
-	if(total>0.0)
 	{
+	// local evaluation must be set, so total can't be zero
+	if(total==0.0) { total=1; }
    	for(int lim = all.size()-1; lim>=0; lim--)
 	{
    		TammanyMovespec m = (TammanyMovespec)all.elementAt(lim);
@@ -362,7 +381,7 @@ public double assignMonteCarloWeights(CommonMoveStack all)
         	
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

@@ -16,8 +16,8 @@
  */
 package online.game.export;
 
-import java.awt.Color;
 
+import java.awt.Color;
 import java.io.PrintStream;
 import java.util.StringTokenizer;
 import java.util.Vector;

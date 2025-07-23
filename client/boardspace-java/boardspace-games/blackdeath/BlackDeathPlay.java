@@ -211,7 +211,7 @@ public void PrepareToMove(int playerIndex)
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
         						: 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
@@ -243,22 +243,26 @@ public void PrepareToMove(int playerIndex)
       if(move==null) { continuous = false; }
      return(move);
  }
+ public double reScorePosition(commonMove m,int forplayer)
+ {	return(m.reScorePosition(forplayer,1.0));
+ }
 
  /**
   * for UCT search, return the normalized value of the game, with a penalty
   * for longer games so we try to win in as few moves as possible.  Values
   * must be normalized to -1.0 to 1.0
   */
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	if(WEAKBOT) { return(0); }
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  Math.min(1, board.scoreForPlayer(i)/30.0);
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return((max-omax));
+ public double NormalizedScore(commonMove m)
+ {	int playerindex = m.player;
+	int nplay = board.nPlayers();
+	commonMPMove mm = (commonMPMove)m;
+	mm.setNPlayers(nplay);
+	double scores[] = mm.playerScores;
+	for(int i=0;i<nplay; i++)
+	{
+		scores[i] = Math.min(1, board.scoreForPlayer(i)/30.0);
+	}
+	return reScorePosition(m,playerindex);
  }
 
 

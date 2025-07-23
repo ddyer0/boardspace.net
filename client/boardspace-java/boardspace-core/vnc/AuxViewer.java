@@ -16,10 +16,10 @@
  */
 package vnc;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 
+import java.awt.Color;
 import lib.*;
 import udp.PlaytableServer;
 import udp.PlaytableStack;

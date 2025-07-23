@@ -16,6 +16,7 @@
  */
 package bridge;
 
+
 import com.codename1.io.Storage;
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
@@ -473,5 +474,20 @@ public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas)
 public static Graphics create(com.codename1.ui.Graphics g, Component canvas) {
 	return Graphics.create(g,canvas.getX(),canvas.getY(),canvas.getWidth(),canvas.getHeight());
 }
+public boolean saveImage(String output)
+{	
+   boolean result = false;
+   G.Error("Not implemented");
+   /**
+	int ind = output.lastIndexOf('.');
+	String type = ind>=0 ? output.substring(ind+1) : "jpg";
+		try {
+		result = ImageIO.write((BufferedImage)getSystemImage(),type, new File(output));
+	} catch (IOException e) {
+		e.printStackTrace();
+	}*/
+   return result;
+}
+
 
 }

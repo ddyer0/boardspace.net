@@ -217,7 +217,8 @@ import udp.PlaytableStack;
 	 private JButton okButton;				// ok from login
 	 private JButton finalRegisterButton;	// ok after confirming registration
 	 private JButton registerButton;			// ok after filling in registration form
-	 private JButton cancelButton;			// cancel and go back to login
+	 private JButton cancelButton;				// cancel and go back to login
+	 private JButton exitButton;				// cancel and exit
 	 private static Preferences prefs = Preferences.userRoot();
 	 private static InternationalStrings s ;
 	 private JPanel mainPanel = null;
@@ -467,7 +468,7 @@ import udp.PlaytableStack;
 		 	vpanel.addC(createErrorPanel());
 			changeMessage(s.get(NocontactMessage,Http.getHostName()));
 		}
-		vpanel.addC(createRegisterButtonPanel());
+		vpanel.addC(createRegisterButtonPanel(ok));
 	 	addC(vpanel);
 	 }
 	 
@@ -847,10 +848,10 @@ import udp.PlaytableStack;
 		 }
 		 {
 	     String can = s.get(cancel);
-		 cancelButton = new JButton(can);
-		 cancelButton.setActionCommand(can);
-		 cancelButton.addActionListener(this);
-		 p.addC(cancelButton);       
+		 exitButton = new JButton(can);
+		 exitButton.setActionCommand(can);
+		 exitButton.addActionListener(this);
+		 p.addC(exitButton);       
 		 }
 		 return p;
     }
@@ -874,9 +875,10 @@ import udp.PlaytableStack;
 		 return p;
     } 
 	 // create the panel with the OK and Cancel buttons
-	 protected JPanel createRegisterButtonPanel() {
+	 protected JPanel createRegisterButtonPanel(boolean includeregister) {
 		 
 		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER));
+		 if(includeregister)
 		 {
 		 String ok = s.get(REGISTER);
 		 registerButton = new JButton(ok);
@@ -938,8 +940,16 @@ import udp.PlaytableStack;
         if(cmd1!=null)
         {
         if(source==cancelButton) 
-        	{ exitValue = cancel; 
+        	{ 
+        	reconfigure(Screen.Login);
+        	return;
         	}
+        if(source==exitButton) 
+    	{ 
+    	exitWith(cancel);
+    	exit();
+    	return;
+    	}
 
         if(source==feedbackButton)
         {	G.getFeedback();

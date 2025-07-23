@@ -494,7 +494,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 						{
 						if(currentMove!=null)
 						{
-							double newval = robot.reScorePosition(currentMove,child.player);
+							double newval = robot.reScorePosition(child,currentMoveOriginal.player);
 							//robot.setEvaluation(currentMoveOriginal,newval);
 							//currentNode.makeOnlyChild(robot,childNode);
 							robot.setGameover(currentMoveOriginal,true);
@@ -510,7 +510,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 										// causes the wrong child to be selected
 										master.decided = currentMoveOriginal;
 										//Log.finishLog();
-										G.print("Rootonly "+currentMoveOriginal);
+										//G.print("Rootonly "+currentMoveOriginal);
 									}
 									else {
 									newChildrenThisRun -= node.makeOnlyChild(); 
@@ -526,7 +526,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 							{ 
 							currentMove = child; 
 							master.decided = child;
-							G.print("Rootonly no node"+child);
+							//G.print("Rootonly no node"+child);
 							}}
 						}
 					terminal=true;
@@ -558,7 +558,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 			current_depth++;
 			traverseMovesThisRun++;
 			}
-			}
+			} // end of descent
 }
 	
 		{

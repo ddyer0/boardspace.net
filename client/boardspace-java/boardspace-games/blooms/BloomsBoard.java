@@ -16,9 +16,10 @@
  */
 package blooms;
 
-import java.awt.Color;
 
 import static blooms.Bloomsmovespec.*;
+
+import java.awt.Color;
 import java.util.*;
 
 import blooms.BloomsConstants.BloomsId;

@@ -71,7 +71,6 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     private int MONTEBOT_TIME = 5;
     private double MONTE_POSITION_WEIGHT = 0.5;
     private double MONTE_WOOD_WEIGHT = 0.5;
-    private boolean BIAS_MOVES = false;
     private boolean SORT_MOVES = false;
     private double ALPHABETA_TIME = 20;
      /**
@@ -91,7 +90,6 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     	cc.movingForPlayer = movingForPlayer; 
     	cc.MONTE_WOOD_WEIGHT = MONTE_WOOD_WEIGHT;
        	cc.MONTE_POSITION_WEIGHT = MONTE_POSITION_WEIGHT;
-       	cc.BIAS_MOVES = BIAS_MOVES;
        	
        	return(c);
     }
@@ -163,13 +161,6 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
         	G.Assert(sz>0,"should be moves");
  
         	return all;
-        }
-        // bias the win rate of a new UCT node. 
-        public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 
-        {	if(BIAS_MOVES)
-        		{ 
-        		node.setBiasVisits(((Iromovespec)m).monteCarloWeight*visits,visits);        		
-        		}
         }
 
         public commonMove Get_Random_Move(Random rand)
@@ -346,7 +337,6 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
            	ALPHA = 0.5;
            	NODE_EXPANSION_RATE = 1.0;
            	CHILD_SHARE = 1.0;
-           	BIAS_MOVES = false;
            	SORT_MOVES = false;
            	MONTEBOT_TIME = 20;
            	MONTEBOT_DEPTH = 50;
@@ -417,7 +407,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.initialWinRateWeight = BIAS_MOVES ? 1.0 : 0;
+        monte_search_state.initialWinRateWeight =  0;
         monte_search_state.sort_moves = SORT_MOVES;
         monte_search_state.randomize_uct_children = !SORT_MOVES;
         

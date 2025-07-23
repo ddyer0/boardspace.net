@@ -140,8 +140,10 @@ public class ViticulturePlay extends commonRobot<ViticultureBoard> implements Ru
     		total += score;		// add up the weights, 
     	}}
     	
-    	if(total>0.0)
     	{
+    	// total never zero as the total even if all the individual scores are zero
+    	// because the local evaluation must be set
+    	if(total==0.0) { total = 1; }	
        	for(int lim = all.size()-1; lim>=0; lim--)
     	{
        		Viticulturemovespec m = (Viticulturemovespec)all.elementAt(lim);
@@ -316,6 +318,7 @@ public void PrepareToMove(int playerIndex)
  // this is the monte carlo robot, which for Kulami is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
+	 // TODO: update viticulture monte carlo for the new multi-player logic
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;

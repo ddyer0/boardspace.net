@@ -16,6 +16,8 @@
  */
 package viticulture;
 
+import java.awt.Color;
+
 /*
  * 
  * plan for a purple card market:
@@ -27,7 +29,6 @@ package viticulture;
  * 
  */
 
-import java.awt.Color;
 import java.awt.Rectangle;
 
 import lib.Graphics;

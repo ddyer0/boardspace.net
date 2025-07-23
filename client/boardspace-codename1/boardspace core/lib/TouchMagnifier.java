@@ -238,13 +238,14 @@ public class TouchMagnifier {
       		
       		boolean debug = G.debug();
       		Color frameColor = Color.black;
-      		
-	    	Rectangle cl = GC.setClip(gc, dleft,dtop,dsize,dsize);
  
+  			Rectangle cl = GC.setClip(gc,dleft,dtop,dsize,dsize);
+  			
       		if(shadow!=null)
       		{	// draw real-size image prepared by the client
       			// this may produce new details.
-      		shadow.drawImage(gc, 	dleft,dtop);	
+    	    	 
+    	    	shadow.drawImage(gc, 	dleft,dtop);	
         		if(debug) { frameColor = Color.yellow;}
       		}
       		else if(fore!=null) 
@@ -253,10 +254,10 @@ public class TouchMagnifier {
       		// won't show any new details, but it is cheap to do and
       		// may make the existing details big enough to see.
       		int sz2 = sz/2;     
-      	fore.drawImage(gc,        				
+  			fore.drawImage(gc,        				
     				dleft,dtop,dleft+dsize,dtop+dsize,
     				x-sz2,y-sz2,x+sz-sz2,y+sz-sz2);
-    		if(debug) { frameColor = Color.green; }
+  			if(debug) { frameColor = Color.green; }
      		}
       		else {
       			// notes about this.  This ought to draw directly to the current destination
@@ -273,26 +274,24 @@ public class TouchMagnifier {
           	   				: G.isAndroid() 
           	   						? (int)(G.getAbsoluteY(client.getComponent())/2)
           	   						:  G.isIOS()? sz2 : 0;;
-          	   	int ax =  x-dx+(int)(left/scale);
-         	   	int ay =  y-dy+(int)(top/scale)	+ fudge	;
-         	   	{
-         	   	gc.scale(scale, scale);	
+         	   	int ax =  x-dx+(int)(left/scale);
+             	int ay =  y-dy+(int)(top/scale)	+ fudge	;
+           	   	gc.scale(scale, scale);	
       	    	gc.translate(-ax,-ay);  
        	    	client.drawClientCanvas(gc,false,pt);
-               	gc.translate(ax, ay);
+              	gc.translate(ax, ay);
       	    	gc.scale(1/scale, 1/scale);
-  
+      	    	
        	    	if(debug) { frameColor = Color.red;}       	    	
-          		}
    	
       		}
       		
        		// add a copy of the sprite rectangle to the magnifier
      		drawMagnifiedTileSprite(gc,pt,dsize/sz,x,y,padx,pady);
-    	 StockArt.SmallO.image.drawImage(gc,padx-sz/2,pady-sz/2,sz,sz);
-	    	  		
+     		GC.setClip(gc,cl);
+    	   	StockArt.SmallO.image.drawImage(gc,padx-sz/2,pady-sz/2,sz,sz);
+    	     	  		
     		GC.frameRect(gc, frameColor, dleft,dtop,dsize,dsize);
-  			GC.setClip(gc, cl);
     		
     		}
  

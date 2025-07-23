@@ -123,11 +123,13 @@ public class RectangleManager
 			if(!fullRect.contains(r) && G.Width(r)>0 && G.Height(r)>0) 
 				{ 
 				failedPlacements++;
-		String msg = G.format("spare rectangle overlaps main\n%s\n%s",
+		String msg = G.format("spare rectangle overlaps full\n%s\n%s",
 				r,fullRect);
 				messages.addLog(msg);
 				if(G.debug())
-					{ G.Error(msg); }
+					{ G.Error(msg);
+					}
+				
 				}
 		}
 	public void checkRectangles()
@@ -732,7 +734,11 @@ public class RectangleManager
 		switch(align)
 		{
 		case Top:
+			align1 = BoxAlignment.Left;
+			break;
 		case Bottom:
+			align1 = BoxAlignment.Right;
+			break;
 		case Left:
 		case Right:
 			break;
@@ -841,7 +847,11 @@ public class RectangleManager
 		{
 		
 		case Left:
+			align1 = BoxAlignment.Top;
+			break;
 		case Right:
+			align1 = BoxAlignment.Bottom;
+			break;
 		case Top:
 		case Bottom:
 			break;
@@ -857,7 +867,7 @@ public class RectangleManager
     }
 	public void init(int i, int j, int w, int h) {
 		spareRects.clear();
-		fullRect = new Rectangle(0,0,w,h);
+		fullRect = new Rectangle(i,j,w,h);
 		allocatedRects.clear();
 		failedPlacements = 0;
 	}

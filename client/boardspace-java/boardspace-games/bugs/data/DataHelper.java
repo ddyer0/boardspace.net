@@ -1,25 +1,16 @@
 package bugs.data;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import bridge.Platform;
 import lib.Bitset;
 import lib.G;
+import lib.Image;
+import lib.Utf8Reader;
 
 interface KeyProvider
 { public String getKey(); 
@@ -35,8 +26,8 @@ public abstract class DataHelper<T extends KeyProvider> {
 	public abstract String getCommonName();
 	public abstract String getScientificName();
 	public abstract Profile getProfile();
-	static int TAX_OFFSET = 0;
-	static int SPEC_OFFSET = 100;
+	static int TAX_OFFSET = 100;
+	static int SPEC_OFFSET = 200;
 	public abstract int getUid();
 	static String DefaultProfile = "Animalia";
     public enum Habitat {
@@ -50,35 +41,43 @@ public abstract class DataHelper<T extends KeyProvider> {
     }
   
     public enum Diet {
-        HERBIVORE(false,true),
-        FUNGIVORE(false,true),
-        CARNIVORE(true,false),
-        OMNIVORE(true,false),
-        DETRITIVORE(false,true),
-        SCAVENGER(false,true),
-        NEGAVORE(false,true),	// eaten by carnivores
-        PARASITE(false,false),
-        UNKNOWN(false,false);
-    	boolean isCarnivore = false;
-    	boolean isHerbivore = false;
-        Diet(boolean car,boolean veg)
+        HERBIVORE(false,true,false),
+        FUNGIVORE(false,true,false),
+        CARNIVORE(true,false,false),
+        OMNIVORE(true,false,false),
+        DETRITIVORE(false,true,true),
+        SCAVENGER(false,true,true),
+        NEGAVORE(false,true,false),	// eaten by carnivores
+        PARASITE(false,false,false),
+        UNKNOWN(false,false,false);
+    	boolean isPredator = false;
+    	boolean isPrey = false;
+    	boolean isScavenger = false;
+         Diet(boolean car,boolean veg,boolean scav)
         {
-        	isCarnivore = car;
-        	isHerbivore = veg;
+        	isPredator = car;
+        	isPrey = veg;
+        	isScavenger = scav;
         }
+        public boolean isPredator() { return isPredator; }
+        public boolean isPrey() { return isPrey; }
+        public boolean isScavenger() { return isScavenger; }
+        public boolean isParasite() { return this==PARASITE; }
+        public boolean isNegavore() { return this==NEGAVORE; }
     }
     public enum Rank {
         DOMAIN, KINGDOM, PHYLUM, CLASS, ORDER, FAMILY, GENUS, GENUSANDSPECIES, UNKNOWN;
     	
     }
 
-	public static String readFromFile(BufferedReader reader) throws IOException
+	public static String readFromFile(Utf8Reader reader) throws IOException
 	{
 		StringBuilder combined = new StringBuilder();
         String line;
         boolean some = false;
         while ((line = reader.readLine()) != null) 
-        {	if(!line.trim().isEmpty())
+        {	
+        	if(!line.trim().isEmpty())
         	{
         	if(some) { combined.append("\n"); }
         	some = true;
@@ -91,11 +90,16 @@ public abstract class DataHelper<T extends KeyProvider> {
         return line;
 	}
     public static String escape(String s) {
-        return s == null ? "" : s.replace("\t", "\\t").replace("\n", "\\n");
+    	if(s==null) { return null; }
+    	String r1 = G.replaceAll(s,"\t", "\\t");
+    	String r2 = G.replaceAll(r1,"\n", "\\n");
+        return r2;
     }
 
     public static String unescape(String s) {
-        return s.replace("\\t", "\t").replace("\\n", "\n");
+    	String r1 = G.replaceAll(s,"\\t", "\t");
+    	String r2=  G.replaceAll(r1,"\\n", "\n");
+    	return r2;
     }
     
     public void parseHabitatSet(Bitset<Habitat>habitat,String names)
@@ -114,21 +118,23 @@ public abstract class DataHelper<T extends KeyProvider> {
     public Hashtable<String,T> readFromFile(String file) 
     {
         Hashtable <String,T> list = new Hashtable<String,T>();
-        InputStream res = Platform.class.getResourceAsStream(file);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(res)))
-        {
-            String line;
-             while ((line = readFromFile(reader)) != null) {
+        try(	InputStream res = G.getResourceAsStream(file);
+        		//BufferedReader reader = new BufferedReader(new InputStreamReader(res))) 
+        		Utf8Reader reader = new Utf8Reader(res))
+        	{
+        	String line;
+             while ((line = readFromFile(reader)) != null) 
+             {	
                 if (header==null) {
                     header = line;
-                    nFields = line.split("\t",-1).length;
+                    nFields = G.split(line,'\t').length;
                 }
                 else
                 {
-                String[] fields = line.split("\t", -1);
+                String[] fields = G.split(line,'\t');
                 if (fields.length < nFields) 
                 	{
-                    G.Error("expected %s fields, got %s",nFields,fields.length);
+                     G.Error("expected %s fields, got %s",nFields,fields.length);
                 	}
                 	T s = deserialize(fields);
                 	list.put(s.getKey(),s);
@@ -145,49 +151,47 @@ public abstract class DataHelper<T extends KeyProvider> {
     }
 
     public void writeToFile(Hashtable<String,T> list, File file, String header) throws IOException 
-    {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+    {	// this code isn't tested
+        PrintStream writer = new PrintStream(new FileOutputStream(file));
             if (header!=null) {
-                writer.write(header+"\n\n");
+                writer.print(header+"\n\n");
             }
             for (T m : list.values()) {
-                writer.write(m.serialize());
-                writer.newLine();
-                writer.newLine();
+                writer.print(m.serialize());
+                writer.println();
+                writer.println();
             }
-        }
+            writer.close();
     }
 
-    public List<String> getImageResources(String path) 
-    {
-        URL resource = Platform.class.getResource(path);
-        if (resource == null) {
-             return new ArrayList<>();
-        }
+    
+    public String[] getImageResources(String path) 
+    {	URL resource = G.getResourceUrl(path,false);
+    	return Image.getImageList(resource);
+    /*
+    	StringStack imageFiles= new StringStack();
+    	
+        if (resource != null) 
+        {
         try {
-        List<String> imageFiles = new ArrayList<>();
         if (resource.getProtocol().equals("file")) {
             File dir = new File(resource.toURI());
             File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") || name.toLowerCase().endsWith(".gif"));
             if (files != null) {
                 for (File file : files) {
-                    imageFiles.add(file.getName());
+                    imageFiles.push(file.getName());
                 }
             }
-        } else {
-            try (Stream<Path> stream = Files.walk(Paths.get(resource.toURI()))) {
-                imageFiles = stream.map(String::valueOf)
-                        .filter(name -> name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") || name.toLowerCase().endsWith(".gif"))
-                        .collect(Collectors.toList());
-            }
         }
-        return imageFiles;
-       }
-        catch (Throwable err)
+        }
+        catch(URISyntaxException e)
         {
-        	G.Error("error geting image resources for "+path,err);
+        	throw G.Error("get resoruces %s",e);
         }
-        return null;
+        }
+        return imageFiles.toArray();
+        */
      }
+
 
 }

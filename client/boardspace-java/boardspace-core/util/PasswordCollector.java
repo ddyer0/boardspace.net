@@ -87,7 +87,6 @@ import udp.PlaytableStack;
 	 public static final String AccountManagement = "Edit or Delete Account";
 	 
 	 public static final String Feedback = "Send Feedback";
-	 public static final String Appstore = "App Store";
 	 // for registration
 	 public static final String YourRealName = "Your real name";
 	 public static final String YourEmail = "Your email address";
@@ -132,7 +131,6 @@ import udp.PlaytableStack;
 		 AccountManagement,
 		 ForgotPassword,
 		 ReviewMessage,
-		 Appstore,
 		 Feedback,
 		 FINALREGISTER,
 		 REGISTER,
@@ -213,12 +211,12 @@ import udp.PlaytableStack;
 	 private JButton reviewButton;
 	 private JButton turnBasedButton;		// play turn based games
 	 private JButton visitSiteButton;	// visit the web site
-	 private JButton appstoreButton;	// visit the app store
 	 private JButton feedbackButton;
 	 private JButton okButton;				// ok from login
 	 private JButton finalRegisterButton;	// ok after confirming registration
 	 private JButton registerButton;			// ok after filling in registration form
 	 private JButton cancelButton;			// cancel and go back to login
+	 private JButton exitButton;			// cancel and exit
 	 private static Preferences prefs = Preferences.userRoot();
 	 private static InternationalStrings s ;
 	 private JPanel mainPanel = null;
@@ -436,9 +434,9 @@ import udp.PlaytableStack;
 	 private void configureForRegister()
 	 {	
 	 	disposeMainPanel();
-		 boolean ok = getPreregInfo();	// get timestamp and country list
+		boolean ok = getPreregInfo();	// get timestamp and country list
 		 
-		 JPanel vpanel = mainPanel = new JPanel();
+		JPanel vpanel = mainPanel = new JPanel();
 		if(ok)
 		{
 	 	Component passPane2 = createPasswordPanel(YourPassword2,false);
@@ -464,7 +462,7 @@ import udp.PlaytableStack;
 		 	vpanel.add(createErrorPanel());
 			changeMessage(s.get(NocontactMessage,Http.getHostName()));
 		}
-		vpanel.add(createRegisterButtonPanel());
+		vpanel.add(createRegisterButtonPanel(ok));
 	 	add(vpanel);
 	 }
 	 
@@ -603,13 +601,6 @@ import udp.PlaytableStack;
 		 panel.add(new JLabel(s.get(CountryString)));
 		 return(panel);
 	 }
-	 private Component createAppstoreButton()
-	 {	String message = s.get(Appstore);
-	 	appstoreButton = new JButton(message);
-	 	appstoreButton.addActionListener(this);
-	 	appstoreButton.setActionCommand(message);
-	 	return(appstoreButton);
-	 }
 	 
 	 private StringPair lastIndex = null;
 	 private void doLink()
@@ -706,9 +697,6 @@ import udp.PlaytableStack;
 			}
 		va += " "+G.build;
 	 	p.add(new Label(va));
-		if(G.isCodename1() && (!G.isIOS() || (appversionD<=prefVersionD)))
-			{ p.add(createAppstoreButton()); 
-	 		}
 		}
 		else 
 		{ 
@@ -799,7 +787,6 @@ import udp.PlaytableStack;
 	 	TextArea text = new TextArea();
 	 	text.setText(s.get(VersionRejectedMessage));
 		vpanel.add(text);
-		vpanel.add(createAppstoreButton()); 
 		add(vpanel);
 	 }
 
@@ -827,11 +814,11 @@ import udp.PlaytableStack;
 		 }
 		 {
 	     String can = s.get(cancel);
-		 cancelButton = new JButton(cancel);
-		 cancelButton.setActionCommand(cancel);
-		 cancelButton.setText(can);
-		 cancelButton.addActionListener(this);
-		 p.add(cancelButton);       
+		 exitButton = new JButton(cancel);
+		 exitButton.setActionCommand(cancel);
+		 exitButton.setText(can);
+		 exitButton.addActionListener(this);
+		 p.add(exitButton);       
 		 }
 		 return p;
     }
@@ -855,9 +842,10 @@ import udp.PlaytableStack;
 		 return p;
     } 
 	 // create the panel with the OK and Cancel buttons
-	 protected JPanel createRegisterButtonPanel() {
+	 protected JPanel createRegisterButtonPanel(boolean includeregister) {
 		 
 		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 if(includeregister)
 		 {
 		 String ok = s.get(REGISTER);
 		 registerButton = new JButton(ok);
@@ -913,17 +901,16 @@ import udp.PlaytableStack;
         if(cmd1!=null)
         {
         if(source==cancelButton) 
-        	{ exitValue = cancel; 
+        	{ reconfigure(Screen.Login);
+           	  return;
         	}
-        if(source==appstoreButton)
-        {	String url = G.isIOS() 
-        					? iosAppStoreUrl 
-        					: G.isAmazon() 
-        						? amazonAppStoreUrl
-        						: androidAppStoreUrl;
-         	G.showDocument(url);
-        }
-        if(source==feedbackButton)
+        if(source==exitButton) 
+    	{ 
+    	  exitWith(cancel);
+    	  exit();
+      	  return;
+    	}
+       if(source==feedbackButton)
         {	
         	G.getFeedback();
         }

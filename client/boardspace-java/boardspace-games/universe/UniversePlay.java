@@ -18,7 +18,6 @@ package universe;
 
 // universe games use MCTS
 //
-// TODO: diagonal blocks duo had a mystery crash, needs more exercise
 import java.util.Hashtable;
 
 import lib.*;
@@ -303,12 +302,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
 
     }
 
-    
-    public double normalizedRescore(UniverseMovespec move,int forplayer)
-    {	double max = move.maxPlayerScore();
-    	return(Math.min(1.0,Math.max(-1.0,move.playerScores[forplayer]-max)));
-    }
-    
+
     /**
      * for UCT search, return the normalized value of the game, with a penalty
      * for longer games so we try to win in as few moves as possible.  Values
@@ -345,7 +339,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
 	      		move.playerScores[i] = board.estScoreForPlayer(i); 
 	      	}
      	}
-    	double vv = normalizedRescore(move,player);
+    	double vv = reScorePosition(move,player);
     	return(vv);
     }
     /**
@@ -677,7 +671,6 @@ Update -1.0 0 P1[onboard B 4 1 J 10] P0[onboard A 5 6 D 7]
 		}
  	}
  }
- 
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
   	try {
@@ -699,7 +692,7 @@ Update -1.0 0 P1[onboard B 4 1 J 10] P0[onboard A 5 6 D 7]
         
         // it's important that the robot randomize the first few moves a little bit.
         double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.02/board.moveNumber : 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

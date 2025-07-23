@@ -22,6 +22,7 @@ import java.awt.Container;
 import java.awt.Font;
 
 import bridge.SystemFont;
+
 import lib.Graphics;
 import lib.CellId;
 import lib.G;

@@ -228,12 +228,21 @@ public class BugsMovespec
     }
 
     private Text icon(commonCanvas v,Object... msg)
-    {	double chipScale[] = {1,1.5,-0.2,-0.5};
-    	Text m = TextChunk.create(G.concat(msg));
+    {	
+    	Text m = TextChunk.create("    "+G.concat(msg));
     	if(chip!=null)
-    	{
-    		m = TextChunk.join(TextGlyph.create("xx", chip, v,chipScale),
+    	{	
+    		if(chip.isBugCard())
+    		{	double chipScale[] = new double[] { 2,1.5,0.2,-0.2};
+    			m = TextChunk.join(TextGlyph.create("xxxxx", chip, v,chipScale),
     					m);
+    		}
+    		else
+    		{
+    			double chipScale[] = new double[] { 2,1.25,0.1,-0.2};
+    			m = TextChunk.join(TextGlyph.create("xxxxx", chip, v,chipScale),
+    					m);
+    		}
     	}
     	return(m);
     }
@@ -249,19 +258,22 @@ public class BugsMovespec
         switch (op)
         {
         case MOVE_PICKB:
-            return icon(v,to_col , to_row);
+            return icon(v,from_col , from_row);
 
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+            return TextChunk.create(""+to_col+(to_row%100));
 
 		case MOVE_TO_BOARD:
+			return icon(v," > ",to_col,(to_row%100));
 		case MOVE_TO_PLAYER:
-			return icon(v,from_col,from_row," ",to_col,to_row);
+			return icon(v," > ");
+			
+		case MOVE_DROP:
+			return TextChunk.create("");
 			
 		case MOVE_SELECT:
-		case MOVE_DROP:
         case MOVE_PICK:
-            return icon(v,source.name());
+            return icon(v," > ");
 
         case MOVE_DONE:
             return TextChunk.create("");

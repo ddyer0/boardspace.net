@@ -21,9 +21,12 @@ import bridge.*;
 import com.codename1.ui.Component;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
+
+
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+
 
 /**
  * Class G contains "General utilities", and small static functions
@@ -512,18 +515,21 @@ public class G extends Platform implements Timestamp
      * @return an array of strings
      */
     static public String[] split(String msg,char ch)
-    {	return(split(msg,ch,0));
+    {	
+    	return(split(msg,ch,0));
     }
-    // recursive split depth first
+    // recursive split depth first. Adjusted to return the same as line.split(","), the 
+    // boundary case is trailing separators
     static private String[] split(String msg,char ch,int depth)
     {
     	int idx = msg.indexOf(ch);
-    	if((idx <= 0) || (idx==msg.length()-1))
-    		{ String res[] = new String[depth+1];
-    		  res[depth] = (idx<=0) ? msg : msg.substring(0,idx);
+    	if(idx < 0) 
+    		{ 
+    		  String res[] = new String[depth+1];
+    		  res[depth] =  msg;
     		  return(res);
     		}
-    	else
+     	else
     	{	String [] res = split(msg.substring(idx+1),ch,depth+1);
     		res[depth] = msg.substring(0,idx);
         	return(res);
@@ -652,7 +658,7 @@ public class G extends Platform implements Timestamp
  */
     static public boolean pointInRect(Point p, Rectangle r)
     {
-        return (pointInRect(p, Left(r), Top(r), Width(r), Height(r)));
+        return r!=null && (pointInRect(p, Left(r), Top(r), Width(r), Height(r)));
     }
 /**
  * @param x
@@ -1322,7 +1328,8 @@ public class G extends Platform implements Timestamp
 	    			|| lcname.startsWith("https:")
 	    			|| lcname.startsWith("file:")));
 	    }
-
+    			
+    		
 	//
 	// present a messagebox
 	//

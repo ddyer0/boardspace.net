@@ -110,13 +110,13 @@ public class Utf8Reader extends Reader
 		if(ch<0x80) { return(ch); }
 		if(!isOkUtf8()) { 
 			errs++;
-			//if(G.debug()) { Plog.log.addLog("Illegal UTF8 Singleton ",Integer.toHexString(ch)," at ",errorLoc()); }
+			if(G.debug()) { Plog.log.addLog("Illegal UTF8 Singleton #x",Integer.toHexString(ch)," at ",errorLoc()); }
 			return(ch);
 		}
 		if(ch<0xC0) { 
 			// illegal ascii value for utf0
 			errs++;
-			//if(G.debug()) { Plog.log.addLog("Illegal UTF8 singleton #x",Integer.toHexString(ch)," at ",errorLoc()); }
+			if(G.debug()) { Plog.log.addLog("Illegal UTF8 singleton #x",Integer.toHexString(ch)," at ",errorLoc()); }
 			offset++;
 			return(ch);
 		}
@@ -185,9 +185,9 @@ public class Utf8Reader extends Reader
 				for(int i=startOfLineOffset;i<=offset;i++)
 				{	b.append(G.format("  %s",(char)in[i]));
 				}
-				G.print(b.toString());
+				Plog.log.addLog(b.toString());
 			}
-			G.print("L"+linen+" ",msg,"\n"); }
+			Plog.log.addLog("L"+linen+" ",msg,"\n"); }
 		
 		linen++;
 		return(msg);

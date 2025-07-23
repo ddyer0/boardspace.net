@@ -398,6 +398,7 @@ public void PrepareToMove(int playerIndex)
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
+	 // TODO: update prototype monte carlo for the new multi-player logic
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
@@ -488,17 +489,22 @@ public void PrepareToMove(int playerIndex)
  	return(0);
  }
 /**
- * for a multiplayer game, it would be something like this
- * 
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 1 : 0;
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return((max-omax));
+  * for UCT search, return the normalized value of the game, with a penalty
+  * for longer games so we try to win in as few moves as possible.  Values
+  * must be normalized to -1.0 to 1.0
+  *
+ public double NormalizedScore(commonMove m)
+ {	int playerindex = m.player;
+	int nplay = board.nPlayers();
+	commonMPMove mm = (commonMPMove)m;
+	mm.setNPlayers(nplay);
+	double scores[] = mm.playerScores;
+	for(int i=0;i<nplay; i++)
+	{
+		scores[i] = Math.min(1, board.scoreForPlayer(i)/30.0);
+	}
+	return reScorePosition(m,playerindex);
  }
+
  */
  }

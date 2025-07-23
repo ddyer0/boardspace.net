@@ -138,9 +138,7 @@ public interface ViewerProtocol extends ViewGameProtocol
      * otherwise, if the game has a score for each player return the score.
      */
     public int ScoreForPlayer(commonPlayer p);
-    public int ScoreForAutoma();
-    public boolean UsingAutoma();
-    
+     
     /**
      * retrieves an auxiliary window being used to study a robot search in progress
      * 
@@ -192,13 +190,11 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * if its' good enough that the robot will run synchronously when
 	 * it is its turn.  Otherwise some special code has to start the
 	 * robot when it's not its turn.
-	 * @param pl TODO
 	 * @return
 	 */
 	public boolean allowRobotsToRun(commonPlayer pl);
 	public String fixedServerRecordString(String string, boolean includePlayerNames);
 	public String fixedServerRecordMessage(String fixedHist);
-	public Object getUrlNotes();
 	public void setScored(boolean v);
 	public boolean isScored();
 	public enum RecordingStrategy 
@@ -221,5 +217,31 @@ public interface ViewerProtocol extends ViewGameProtocol
 	public void resetBounds();
 	public void setSeeChat(boolean b);
 	
+	   
+    /**
+     * this is meaningful only if UsingAutoma is true
+     * @return
+     */
+    public default int ScoreForAutoma() { return -1; }
+    /**
+     * true if using an automa player, currently only true for viticulture
+     * @return
+     */
+    public default boolean UsingAutoma() { return false; };
+	/**
+	 * true when the player has resigned.  This is used to bypass setting "limbo" state when
+	 * a player quits.  This is generally only important for multiplayer games that let players
+	 * resign in mid game.
+	 * @param boardIndex
+	 * @return
+	 */
+	public default boolean ignorePlayerQuit(int boardIndex) { return false; };	
+	
+	/** return any additional stuff the game needs to add to the scoring url string.
+	 * 
+	 * @return
+	 */
+	public default String getUrlNotes() { return ""; }
+
 
 }

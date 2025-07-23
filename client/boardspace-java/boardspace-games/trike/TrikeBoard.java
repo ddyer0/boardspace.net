@@ -16,9 +16,10 @@
  */
 package trike;
 
-import java.awt.Color;
 
 import static trike.Trikemovespec.*;
+
+import java.awt.Color;
 import java.util.*;
 import lib.*;
 import lib.Random;

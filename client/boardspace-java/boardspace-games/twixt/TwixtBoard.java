@@ -16,10 +16,9 @@
  */
 package twixt;
 
-import java.awt.Color;
-
 import static twixt.Twixtmovespec.*;
 
+import java.awt.Color;
 import java.util.*;
 import lib.*;
 import lib.Random;

@@ -16,10 +16,10 @@
  */
 package tamsk;
 
-import java.awt.Color;
 
 import static tamsk.Tamskmovespec.*;
 
+import java.awt.Color;
 import java.util.*;
 
 import lib.*;

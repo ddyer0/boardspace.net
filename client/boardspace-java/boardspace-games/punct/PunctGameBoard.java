@@ -16,10 +16,12 @@
  */
 package punct;
 
-import java.awt.Color;
 import lib.Graphics;
 import lib.G;
 import lib.Random;
+
+import java.awt.Color;
+
 import lib.AR;
 import lib.CellId;
 import lib.DefaultId;

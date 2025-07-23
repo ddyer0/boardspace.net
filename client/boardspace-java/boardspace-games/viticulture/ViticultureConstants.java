@@ -24,6 +24,7 @@ import lib.Random;
 import java.awt.Color;
 
 import bridge.Config;
+
 import lib.CellId;
 import lib.Digestable;
 import online.game.BaseBoard.BoardState;

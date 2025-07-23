@@ -2,6 +2,8 @@ package bugs.data;
 
 import java.util.Hashtable;
 
+import lib.G;
+
 public class MasterSpecies extends DataHelper<MasterSpecies> implements KeyProvider
 {
     public int uid;
@@ -19,7 +21,7 @@ public class MasterSpecies extends DataHelper<MasterSpecies> implements KeyProvi
     public String lastUpdated;
     public String family;
     public String serialize() {
-        return String.join("\t",
+        return G.concat("\t",
             String.valueOf(uid),
             escape(name),
             escape(description),

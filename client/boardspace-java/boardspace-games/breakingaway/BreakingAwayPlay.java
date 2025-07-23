@@ -119,16 +119,8 @@ public void PrepareToMove(int playerIndex)
 // ie; the players don't score themselves differently if they are
 // the player to move. 
 //
-public double reScorePosition(commonMove m,int player)
-{ 	double max = 0.0;
- 	double omax = 0.0;
- 	commonMPMove mm = (commonMPMove)m;
- 	double scores[] = mm.playerScores;
-  	for(int lim = scores.length-1; lim>=0; lim--)
- 	{	double sc =  scores[lim];
- 		if(lim==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return (max-omax)/150.0;
+public double reScorePosition(commonMove m,int forplayer)
+{	return(m.reScorePosition(forplayer,1));
 }
 
 

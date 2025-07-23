@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.util.Hashtable;
 
 import bridge.SystemFont;
+import bugs.BugsChip.Terrain;
 import bugs.data.DataHelper;
 import bugs.data.DataHelper.Diet;
 import bugs.data.DataHelper.Flying;
@@ -14,6 +15,7 @@ import bugs.data.DataHelper.Habitat;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
 import lib.CellId;
+import lib.CompareTo;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -23,12 +25,43 @@ import lib.InternationalStrings;
 import lib.StockArt;
 import lib.TextContainer;
 import lib.exCanvas;
+
+class TerrainSummary {
+	Terrain type;
+	int predators;
+	int prey;
+	int other;
+	int flying;
+	int total;
+	
+	public TerrainSummary(Terrain v)
+	{	type = v;
+	}
+	public static TerrainSummary[]  makeSummary()
+	{	Terrain vs[] = Terrain.values();
+		TerrainSummary v[] = new TerrainSummary[vs.length];
+		for(Terrain x : vs)
+		{
+			v[x.ordinal()] = new TerrainSummary(x);
+		}
+		return v;
+	}
+	public void score(BugCard card)
+	{	Profile prof = card.getProfile();
+		if(prof.isPredator()) { predators++; }
+		else if(prof.isPrey()) { prey++; }
+		else { other++; }
+		if(prof.isFlying()) { flying++; }
+		total++;
+	}
+}
+
 /*
  * possible additional features of bug cards:
  *  "when played" features that allow immediate bonus scoring
  *  "when played" feature to allow a second card to be played
  */
-public class BugCard extends BugsChip implements BugsConstants 
+public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsChip>
 {
 	public boolean isBugCard() { return true; }
 	public String name() { return id.name()+" "+profile.name; }
@@ -41,7 +74,11 @@ public class BugCard extends BugsChip implements BugsConstants
 	private static Hashtable<Integer,BugCard> indexCards = new Hashtable<Integer,BugCard>();
 	public static BugCard getBugCard(String key) { return cards.get(key); }
 	public static BugCard getBugCard(int key) { return indexCards.get(key); }
+	public double aspectRatio() { return bugAspectRatio();}
+	public static double bugAspectRatio() { return (double)BugsChip.blueBack.getWidth()/BugsChip.blueBack.getHeight(); }
 	
+	public String toString() { return "<bug #"+chipNumber()+">"; }
+
 	public BugCard(String k,Profile p,DataHelper<?> m)
 	{	id = BugsId.BugCard;
 		key = k;
@@ -57,6 +94,7 @@ public class BugCard extends BugsChip implements BugsConstants
 	public static BugCard getCard(int n) { return (BugCard)bugCards.elementAt(n); }
 	public String getCommonName() { return species.getCommonName(); }
 	public String getScientificName() { return species.getScientificName(); }
+
 	Color waterColor = new Color(245,253,254);
 	Color groundColor = new Color(246,240,229);
 	Color grassColor = new Color(246,255,235);
@@ -71,19 +109,6 @@ public class BugCard extends BugsChip implements BugsConstants
 					: isGrass 
 						? (nth<=1 ? grassColor : getTerrainColor(nth-1,false,false,false,isForest)) 
 						: isForest ? forestColor : Color.white;
-		return firstColor;
-
-	}
-	
-	private BugsChip getTerrainBackground(int nth,boolean isWater,boolean isGround,boolean isGrass,boolean isForest)
-	{
-		BugsChip firstColor = isWater 
-				? (nth<=1 ? BugsChip.blueBack : getTerrainBackground(nth-1,false,isGround,isGrass,isForest))
-				: isGround 
-					? (nth<=1 ? BugsChip.brownBack : getTerrainBackground(nth-1,false,false,isGrass,isForest)) 
-					: isGrass 
-						? (nth<=1 ? BugsChip.yellowBack : getTerrainBackground(nth-1,false,false,false,isForest)) 
-						: isForest ? BugsChip.greenBack : null;
 		return firstColor;
 
 	}
@@ -153,6 +178,20 @@ public class BugCard extends BugsChip implements BugsConstants
 		GC.frameRect(gc,Color.black,xp,yp,w,h);
 
 	}
+
+	private BugsChip getTerrainBackground(int nth,boolean isWater,boolean isGround,boolean isGrass,boolean isForest)
+	{
+		BugsChip firstColor = isWater 
+				? (nth<=1 ? BugsChip.blueBack : getTerrainBackground(nth-1,false,isGround,isGrass,isForest))
+				: isGround 
+					? (nth<=1 ? BugsChip.brownBack : getTerrainBackground(nth-1,false,false,isGrass,isForest)) 
+					: isGrass 
+						? (nth<=1 ? BugsChip.yellowBack : getTerrainBackground(nth-1,false,false,false,isForest)) 
+						: isForest ? BugsChip.greenBack : null;
+		return firstColor;
+
+	}
+
 	/**
 	 * draw a background in 1-4 parts that denotes the terrains allowed for the bug
 	 * 
@@ -162,13 +201,15 @@ public class BugCard extends BugsChip implements BugsConstants
 	 * @param w
 	 * @param h
 	 */
-	private void drawTerrainBackground(Graphics gc,int xp, int yp, int w,int h)
-	{
+	private boolean simple = false;
+	private void drawTerrainBackground(Graphics gc,int xp, int yp, int w)
+	{	simple=false;
+		if(simple) { drawCardBackground(gc,xp,yp,w,w/2); return; }
 		boolean isWater = profile.hasWaterHabitat();
 		boolean isGround = profile.hasGroundHabitat();
 		boolean isGrass = profile.hasGrassHabitat();
 		boolean isForest = profile.hasForestHabitat();
-		
+		int h = (int)(w/aspectRatio());
 		int nh = (isWater ? 1 : 0) + (isGround ? 1 : 0) + (isGrass ? 1 : 0) + (isForest ? 1 : 0);
 
 		if(nh==0) 
@@ -177,8 +218,10 @@ public class BugCard extends BugsChip implements BugsConstants
 			}
 		
 		BugsChip firstColor = getTerrainBackground(1,isWater,isGround,isGrass,isForest);
-		Rectangle r = new Rectangle(xp,yp,w,h);
-		firstColor.getImage().centerImage(gc,r);
+		Image first = firstColor.getImage();
+		int firstW = first.getWidth();
+		int firstH = first.getHeight();
+		first.drawImage(gc,xp,yp,xp+w,yp+h,0,0,firstW,firstH);
 		switch(nh)
 		{
 		default:
@@ -188,53 +231,61 @@ public class BugCard extends BugsChip implements BugsConstants
 		case 2:
 			{
 			BugsChip secondColor = getTerrainBackground(2,isWater,isGround,isGrass,isForest);
-			Rectangle cl = GC.setClip(gc,xp,yp,w/2,h);
-			secondColor.getImage().centerImage(gc,r);
-			GC.setClip(gc,cl);
+			secondColor.getImage().drawImage(gc,xp,yp,xp+w/2,yp+h,0,0,firstW/2,firstH);
 			}
 			break;
 		case 3:
 			{
-				Rectangle cl = GC.setClip(gc,xp,yp,w/3,h);
-				BugsChip secondColor = getTerrainBackground(2,isWater,isGround,isGrass,isForest);
-				secondColor.getImage().centerImage(gc,r);
+				BugsChip secondColor = getTerrainBackground(2,isWater,isGround,isGrass,isForest);				
+				secondColor.getImage().drawImage(gc,xp,yp,xp+w/3,yp+h,0,0,firstW/3,firstH);
+			
 				BugsChip thirdColor = getTerrainBackground(3,isWater,isGround,isGrass,isForest);
-				GC.setClip(gc,xp+w/3,yp,w/3,h);
-				thirdColor.getImage().centerImage(gc,r);
-				GC.setClip(gc,cl);
+				thirdColor.getImage().drawImage(gc,xp+w/3,yp,xp+w*2/3,yp+h,firstW/3,0,firstW*2/3,firstH);
 			}
 			break;
 		case 4:
 			{
-				Rectangle cl = GC.setClip(gc,xp,yp,w/2,h/2);
-				BugsChip secondColor = getTerrainBackground(2,isWater,isGround,isGrass,isForest);
-				secondColor.getImage().centerImage(gc,r);
-				GC.setClip(gc,xp+w/2,yp,w/2,h/2);
+				BugsChip secondColor = getTerrainBackground(2,isWater,isGround,isGrass,isForest);				
+				secondColor.getImage().drawImage(gc,xp,yp,xp+w/4,yp+h,0,0,firstW/4,firstH);
+			
 				BugsChip thirdColor = getTerrainBackground(3,isWater,isGround,isGrass,isForest);
-				thirdColor.getImage().centerImage(gc,r);
+				thirdColor.getImage().drawImage(gc,xp+w/4,yp,xp+w*2/4,yp+h,firstW/4,0,firstW*2/4,firstH);
+
 				BugsChip fourthColor =  getTerrainBackground(4,isWater,isGround,isGrass,isForest);
-				GC.setClip(gc,xp,yp+h/2,w/2,h/2);
-				fourthColor.getImage().centerImage(gc,r);
-				GC.setClip(gc,cl);
+				fourthColor.getImage().drawImage(gc,xp+w*2/4,yp,xp+w*3/4,yp+h,firstW*2/4,0,firstW*3/4,firstH);
 			}
 			break;
 		}
 		GC.frameRect(gc,Color.black,xp,yp,w,h);
 
 	}
-	public Image makeCardImage(exCanvas canvas,int w,int h)
+	
+	public Image makeCardImage(exCanvas canvas,int w,int h,boolean extended)
 	{	// make one large image that will be downsized, so it remains consistent
 		// problems to be resolved: fonts aren't right for the giant image
 		// and the temporary pixellated images are frozen into the big image.
-		Image im = Image.createImage(w,h);
+		Image im = Image.createImage(w,extended ? h*2 : h);
 		Graphics gc = im.getGraphics();
 		gc.alwaysHighres = true;
 		actualDrawChip(gc,canvas.standardPlainFont(),null,null,w,w/2,h/2,null);
+		if(extended)
+		{
+		drawExtendedChip(gc, canvas, null, new Rectangle(0,h,w,h), null); 
+		}
 		image = im;
 		image.setUrl(profile.getScientificName());
 		return im;
 	}
-	private TextContainer textContainer = new TextContainer(BugsId.Description);
+	private TextContainer theTextContainer=null;
+	private int textContainerSize = 0;
+	private TextContainer textContainer()
+	{
+		if(theTextContainer==null)
+		{
+		theTextContainer = new TextContainer(BugsId.Description);	
+		}
+		return theTextContainer;
+	}
 
 	public void drawChip(Graphics gc, exCanvas canvas,Rectangle r,String thislabel)
 	{
@@ -258,7 +309,7 @@ public class BugCard extends BugsChip implements BugsConstants
 	{	
 	 	if(helptext==BACK)
     	{
-    	boolean hit = cardBack.drawChip(gc,drawOn,squareWidth/2,e_x,e_y,highlight,rackLocation,null,1,1);	
+    	boolean hit = cardBack.drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
     	if(hit) { 
     		highlight.hitData = this;
     		highlight.spriteColor = Color.red;
@@ -273,26 +324,31 @@ public class BugCard extends BugsChip implements BugsConstants
 	 	{
 	 	if(image==null)
 	 	{
-	 		image = makeCardImage(drawOn,256,128);
+	 		image = makeCardImage(drawOn,256,128,false);
 	 	}
 	 	if(image!=null && image.getWidth()>squareWidth)
 	 	{
 	 		image.drawChip(gc,drawOn,squareWidth,e_x-squareWidth/2,e_y-squareWidth/4,null);
 	 		gc=null;
 	 	}}
-	 	HitPoint action = helptext==NOHIT ? null : highlight;
- 		Boolean hit = squareWidth<100 
- 				? actualDrawMicroChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight)
- 				: squareWidth<200 
- 					? actualDrawCompactChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight)
- 					: actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,highlight);
+	 	
+	 	HitPoint action = helptext==DROP || helptext==PICK ? highlight : null;
+	 	HitPoint inaction = helptext==NOTHING ? null : highlight;
+	 	boolean frameOnly = helptext==BugsChip.TOP;
+		Font f = GC.getFont(gc);
+ 		Boolean hit = frameOnly || squareWidth<100 
+ 				? actualDrawMicroChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,inaction,frameOnly)
+ 				: squareWidth<300 
+ 					? actualDrawCompactChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,inaction)
+ 					: actualDrawChip(gc,  drawOn.standardPlainFont(),  action, (BugsId)rackLocation, squareWidth,e_x,e_y,inaction);
+ 		GC.setFont(gc,f);
  		if(hit 
- 			&& !drawOn.hasMovingObject(highlight)
+ 			&& (helptext==BIGCHIP || helptext==PICK)
  			&& G.pointInRect(highlight,e_x-squareWidth/2,e_y+squareWidth/8,squareWidth,squareWidth/8)
  			)
  			{
  			 highlight.spriteRect = new Rectangle(e_x-squareWidth/2,e_y+squareWidth/8,squareWidth,squareWidth/8);
- 			 highlight.spriteColor = Color.red;
+ 			 highlight.spriteColor = Color.green;
  			 highlight.hitCode = BugsId.HitChip;
   			 highlight.hitData = this;
  			 hit = true;
@@ -310,15 +366,13 @@ public class BugCard extends BugsChip implements BugsConstants
 		{
     	InternationalStrings s = G.getTranslations();
 		Image bugImage = profile.illustrationImage;
-		
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		boolean hit = registerHit(gc,hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
+		boolean hit = registerHit(hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
 		
-		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE);
 		
-		if(bugImage!=null)
+		if(bugImage!=null && SQUARESIZE>30)
 		{	
 			int headHeight = SQUARESIZE/15;
 			int scoreHeight = SQUARESIZE/10;
@@ -336,14 +390,24 @@ public class BugCard extends BugsChip implements BugsConstants
 			GC.Text(gc,true,xp+SQUARESIZE/2,yp+headHeight+subheadHeight/4,subheadWidth,subheadHeight,Color.blue,null, "("+getScientificName()+")" );
 	
 			String sd = profile.getShortDescription();
-			if(sd!=null)
-			{	
+			if(sd!=null && gc!=null)
+			{	TextContainer textContainer = textContainer();
 				textContainer.setBounds(xp+SQUARESIZE/2,yp+headHeight+subheadHeight,subheadWidth,SQUARESIZE/4);
+				if(textContainerSize!=subheadWidth)
+				{
 				textContainer.setText(sd);
-				textContainer.setFont(SystemFont.getFont(baseFont,SQUARESIZE/5));
+				// this was very inefficient and caused terrible rendering times on mobiles.
+				// 4 changes to fix it; 
+				// (1) use a smaller and better initial font size.
+				// (2) only get here if the card size is 300 rather than 200, 
+				// (3) improve the actual selectFontSize to use a binary search
+				// (4) only do this at all if we're really drawing.
+				textContainer.setFont(SystemFont.getFont(baseFont,SQUARESIZE/20));
 				textContainer.selectFontSize();
 				textContainer.flagExtensionLines = false;
 				textContainer.frameAndFill=false;
+				textContainerSize = subheadWidth;
+				}
 				textContainer.setVisible(true);
 				textContainer.redrawBoard(gc,null);
 			}
@@ -387,14 +451,17 @@ public class BugCard extends BugsChip implements BugsConstants
 		
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		boolean hit = registerHit(gc,hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
+		boolean hit = registerHit(hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
 
 		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE);
 		
+		if(SQUARESIZE>20)
+		{
 		int headHeight = SQUARESIZE/10;
 		
-		bugImage.centerImage(gc,xp,yp,SQUARESIZE/4,SQUARESIZE/4);
+		bugImage.centerImage(gc,xp,yp,SQUARESIZE/3,SQUARESIZE/3);
+		//GC.frameRect(gc,Color.green,xp,yp,SQUARESIZE/3,SQUARESIZE/3);
 		Font font = SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight);
 		GC.setFont(gc,font);
 		FontMetrics fm =  lib.Font.getFontMetrics(font);
@@ -433,6 +500,7 @@ public class BugCard extends BugsChip implements BugsConstants
 				int t = yp+SQUARESIZE/2-ims;
 				if(im!=null)
 				{
+				//GC.frameRect(gc,Color.green,l,t-ims/4,xp+SQUARESIZE-l,cats);
 				im.centerImage(gc,l,t-ims/4,xp+SQUARESIZE-l,cats);	
 				HitPoint.setHelpText(hitAny,l,t-ims/4,cats,cats,sname);
 				}
@@ -444,37 +512,26 @@ public class BugCard extends BugsChip implements BugsConstants
 				HitPoint.setHelpText(hitAny,xp+wingSize,t,wingSize,wingSize,s.get(CanFlyMessage));
 				}
 			}
-		}
+		}}
 
 		return hit;
 	}	
 	
-	public boolean registerHit(Graphics gc,HitPoint highlight,BugsId hitcode,int xp, int yp, int SQUARESIZE)
-	{
-		Rectangle r = new Rectangle(xp,yp,SQUARESIZE,SQUARESIZE/2);
-		boolean hit = G.pointInRect(highlight,r);
-		if(hit)
-		{	highlight.hitData = this;
-			highlight.spriteColor = Color.red;
-    		highlight.spriteRect = r;
-    		highlight.hitCode = hitcode;
-    		//G.print("register hit ",highlight);
-		}
-		return hit;
-	}
+
 	public boolean actualDrawMicroChip(Graphics gc, Font baseFont,
 			HitPoint highlight, BugsId hitCode,
-			int SQUARESIZE,	int cx, int cy,HitPoint hitAny) 
+			int SQUARESIZE,	int cx, int cy,HitPoint hitAny,boolean frameOnly) 
 		{
     	InternationalStrings s = G.getTranslations();
 		//Image bugImage = profile.illustrationImage;
 		int xp = cx-SQUARESIZE/2;
 		int yp = cy-SQUARESIZE/4;
-		boolean hit = registerHit(gc,hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
+		boolean hit = registerHit(hitAny,highlight==null?BugsId.HitChip:hitCode,xp,yp,SQUARESIZE);
 
 		//drawCardBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-		drawTerrainBackground(gc,xp,yp,SQUARESIZE,SQUARESIZE/2);
-		
+		drawTerrainBackground(gc,xp,yp,SQUARESIZE);
+		if(!frameOnly && SQUARESIZE>10)
+		{
 		int ims = SQUARESIZE/4;		
 	
 		//bugImage.centerImage(gc,xp+ims,yp,SQUARESIZE/4,SQUARESIZE/4);
@@ -504,7 +561,7 @@ public class BugCard extends BugsChip implements BugsConstants
 				HitPoint.setHelpText(hitAny,xp+wingSize,yp,wingSize,wingSize,s.get(CanFlyMessage));
 				}
 			}
-		}
+		}}
 
 		return hit;
 	}	
@@ -559,4 +616,36 @@ public class BugCard extends BugsChip implements BugsConstants
 		}
 		return 0;
 	}
+	//
+	// this draws the complete description into a card-sized box
+	//
+	public boolean drawExtendedChip(Graphics gc, exCanvas canvas,HitPoint highlight, Rectangle bottom, CellId hitchip) 
+	{	int w = G.Width(bottom);
+		int h = G.Height(bottom);
+		int xp = G.Left(bottom);
+		int yp = G.Top(bottom);
+		int margin = w/20;
+		drawTerrainBackground(gc,xp,yp,w);
+		
+		String sd = profile.getDescription();
+		if(sd!=null && gc!=null)
+		{	Font baseFont = canvas.standardPlainFont();
+			TextContainer textContainer = textContainer();
+			textContainer.setBounds(xp+margin,yp+margin,w-margin*2,h-margin*2);
+			if(textContainerSize!=w)
+			{
+			textContainerSize = w;
+			textContainer.setText(sd);
+			textContainer.setFont(SystemFont.getFont(baseFont,w/20));
+			textContainer.selectFontSize();
+			textContainer.flagExtensionLines = false;
+			textContainer.frameAndFill=false;
+			}
+			textContainer.setVisible(true);
+			textContainer.redrawBoard(gc,null);
+		}
+		return registerHit(highlight,hitchip,this,bottom);
+	}
+	
+
 }

@@ -22,6 +22,7 @@ import static bugs.BugsMovespec.*;
 import java.awt.Color;
 import java.util.*;
 
+import bugs.BugsChip.Terrain;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
 import lib.*;
@@ -51,10 +52,9 @@ import online.game.*;
  * 
  * @author ddyer
  * 
- * todo: make more marine predators with multiple habitats
- * add a display of categories in 5he game
- * fix pick of unplayable bugs from eye display
- * add a preview of bonus values
+ * TODO: make more marine predators with multiple habitats
+ * TODO: add a display of categories in 5he game
+ * TODO: add a preview of bonus values
  *
  */
 
@@ -96,7 +96,7 @@ class BugsBoard
 		};
 	
 	public PlayerBoard getPlayerBoard(int n) { return pbs[n]; }
-	
+	public PlayerBoard getCurrentPlayerBoard() { return pbs[whoseTurn]; }
 	public BugsState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -109,8 +109,8 @@ class BugsBoard
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	public BugsCell market[] = null;
-	public BugsCell goals[] = null;
+	public BugsCell bugMarket[] = null;
+	public BugsCell goalMarket[] = null;
 	// get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public BugsChip getPlayerChip(int p) { return(pbs[p].chip); }
@@ -142,7 +142,7 @@ class BugsBoard
 	public boolean p1(String msg)
 		{
 			if(G.debug() && G.p1(msg) && robot!=null)
-			{	String dir = "g:/share/projects/boardspace-html/htdocs/bugs/prototypegames/robot/";
+			{	String dir = "g:/share/projects/boardspace-html/htdocs/bugs/bugsgames/robot/";
 				robot.saveCurrentVariation(dir+msg+".sgf");
 				return(true);
 			}
@@ -196,17 +196,17 @@ class BugsBoard
 		terrainCache = new BugsCell(this,r,BugsId.Terrain);
 	
 		// do this once at construction
-	    market = new BugsCell[N_MARKETS];
-	    goals = new BugsCell[N_GOALS];
+	    bugMarket = new BugsCell[N_MARKETS];
+	    goalMarket = new BugsCell[N_GOALS];
 	    for(int i=0;i<N_MARKETS;i++)
 	    {
-	    	market[i] = new BugsCell(this,r,BugsId.BugMarket,i);
-	    	market[i].cost = COSTS[i];
+	    	bugMarket[i] = new BugsCell(this,r,BugsId.BugMarket,i);
+	    	bugMarket[i].cost = COSTS[i];
 	    }
 	    for(int i=0;i<N_GOALS;i++)
 	    {
-	    	goals[i] = new BugsCell(this,r,BugsId.GoalMarket,i);
-	    	goals[i].cost = COSTS[i];
+	    	goalMarket[i] = new BugsCell(this,r,BugsId.GoalMarket,i);
+	    	goalMarket[i].cost = COSTS[i];
 	    }
 
         doInit(init,key,players,rev); // do the initialization 
@@ -265,7 +265,7 @@ class BugsBoard
 					if(bugCat==cat)
 						{ activeDeck.addChip(in); 
 						  min = Math.min(in.pointValue(),min);
-						  if(in.getProfile().isCarnivore()) { carnivore++; }
+						  if(in.getProfile().isPredator()) { carnivore++; }
 						}				
 				}
 			}
@@ -279,9 +279,10 @@ class BugsBoard
 			Taxonomy cat = ch.getProfile().getCategory();
 			if(cat==animals) 
 				{ nWild--; activeDeck.addChip(ch); 
-				  if(ch.getProfile().isCarnivore()) { carnivore++; }
+				  if(ch.getProfile().isPredator()) { carnivore++; }
 				}
 		}
+		
 		activeDeck.shuffle(new Random(randomKey+2356366));
 		activeDeckCacheKey = key;
 		activeDeckCache.copyFrom(activeDeck);
@@ -307,6 +308,22 @@ class BugsBoard
     	{	goalDeck.copyFrom(goalDeckCache);
     	}
     }
+    
+	
+	public TerrainSummary[] getTerrainSummary(BugsCell deck)
+	{
+		TerrainSummary v[] = TerrainSummary.makeSummary();
+		for(int lim = deck.height()-1; lim>=0; lim--)
+		{
+			BugCard bug = (BugCard)deck.chipAtIndex(lim);
+			Profile prof = bug.getProfile();
+			if(prof.hasWaterHabitat()) { v[Terrain.Water.ordinal()].score(bug); }
+			if(prof.hasForestHabitat()) { v[Terrain.Forest.ordinal()].score(bug); }
+			if(prof.hasGroundHabitat()) { v[Terrain.Soil.ordinal()].score(bug); }
+			if(prof.hasGrassHabitat()) { v[Terrain.Grass.ordinal()].score(bug); }
+		}
+		return v;
+	}
     
     /**
      * assign habitats to the board cells, in a proportion that's appropriate
@@ -415,6 +432,7 @@ class BugsBoard
 		roundNumber = 1;
 		roundProgress = progress = 0;
 		lackOfProgress = false;
+		targetsCache = null;
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
@@ -435,26 +453,26 @@ class BugsBoard
 		// the goal deck is built based on the active deck
 		buildGoalDeck();
 		
-		reInit(market);
-		reInit(goals);
+		reInit(bugMarket);
+		reInit(goalMarket);
 		switch(variation)
 		{
 		case bugspiel_parallel:
 		case bugspiel_parallel_large:
-	 		for(int i=0;i<market.length;i++)
+	 		for(int i=0;i<bugMarket.length;i++)
 	 		{
-	 			market[i].addChip(activeDeck.removeTop());
+	 			bugMarket[i].addChip(activeDeck.removeTop());
 	 		}
 	 		break;
 		case bugspiel_sequential:
 		case bugspiel_sequential_large:
 			{	Random r = new Random(randomKey+4666646);
-				for(int i=0;i<market.length;)
+				for(int i=0;i<bugMarket.length;)
 		 		{	int idx = r.nextInt(activeDeck.height());
 		 			BugCard ch = (BugCard)activeDeck.chipAtIndex(idx);
 		 			if(ch.pointValue()-minDeckValue <= COSTS[i])
-		 			{	// no "gimmies" in the startup market
-		 				market[i].addChip(activeDeck.removeChipAtIndex(idx));
+		 			{	// no "gimmies" in the startup bugMarket
+		 				bugMarket[i].addChip(activeDeck.removeChipAtIndex(idx));
 		 				i++;
 		 			}
 		 		}
@@ -462,9 +480,9 @@ class BugsBoard
 	 		break;
 	 	default: G.Error("Not expecing variation %s",variation);
 		}
- 		for(int i=0;i<goals.length;i++)
+ 		for(int i=0;i<goalMarket.length;i++)
  		{
- 			goals[i].addChip(goalDeck.removeTop());
+ 			goalMarket[i].addChip(goalDeck.removeTop());
  		}
 	    goalDiscards.reInit();
 	    bugDiscards.reInit();
@@ -511,8 +529,8 @@ class BugsBoard
     {
         super.copyFrom(from_b);
         robotState.copyFrom(from_b.robotState);
-        copyFrom(market,from_b.market);
-        copyFrom(goals,from_b.goals);
+        copyFrom(bugMarket,from_b.bugMarket);
+        copyFrom(goalMarket,from_b.goalMarket);
         copyFrom(activeDeck,from_b.activeDeck);
         copyFrom(activeDeckCache,from_b.activeDeckCache);
         activeDeckCacheKey = from_b.activeDeckCacheKey;
@@ -533,7 +551,7 @@ class BugsBoard
         progress = from_b.progress;
         lackOfProgress = from_b.lackOfProgress;
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
- 
+        targetsCache = null;
         sameboard(from_b); 
     }
 
@@ -554,13 +572,13 @@ class BugsBoard
         G.Assert(activeDeck.sameContents(from_b.activeDeck),"active deck mismatch");
         G.Assert(goalDiscards.sameContents(from_b.goalDiscards),"goalDiscards deck mismatch");
         G.Assert(bugDiscards.sameContents(from_b.bugDiscards),"bugDiscards deck mismatch");
-        G.Assert(sameCells(market,from_b.market),"market mismatch");
+        G.Assert(sameCells(bugMarket,from_b.bugMarket),"bugMarket mismatch");
         G.Assert(rotated==from_b.rotated,"rotated mismatch");
         G.Assert(progress==from_b.progress,"progress mismatch");
         G.Assert(lackOfProgress==from_b.lackOfProgress,"lackOfProgress mismatch");
         G.Assert(roundNumber==from_b.roundNumber,"roundNumber mismatch");
         G.Assert(roundProgress==from_b.roundProgress,"roundProgress mismatch");
-        G.Assert(sameCells(goals,from_b.goals),"goals mismatch");
+        G.Assert(sameCells(goalMarket,from_b.goalMarket),"goalMarket mismatch");
         for(int i=0;i<pbs.length;i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
@@ -616,8 +634,8 @@ class BugsBoard
 		v ^= bugDiscards.Digest(r);
 		v ^= terrainCache.Digest(r);
 		v ^= Digest(r,terrainCacheKey);
-		v ^= Digest(r,market);
-		v ^= Digest(r,goals);
+		v ^= Digest(r,bugMarket);
+		v ^= Digest(r,goalMarket);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,rotated);
@@ -692,6 +710,7 @@ class BugsBoard
     	boolean win = false;
     	return(win);
     }
+
     public double robotScore(int player)
     {	PlayerBoard pb = pbs[player];
     /*
@@ -701,7 +720,7 @@ class BugsBoard
     	}
     	return Math.min(0.9,(0.9*Math.max(0,pb.score+200))/(WinningScore+200));
     	*/
-    	return (Math.min(WinningScore,Math.max(0,pb.score))/(double)WinningScore);
+    	return (Math.min(variation.WinningScore,Math.max(0,pb.getScore()))/(double)variation.WinningScore);
     }
     public void setGameOver()
     {
@@ -709,13 +728,13 @@ class BugsBoard
     	PlayerBoard winner = null;
     	for(PlayerBoard pb : pbs)
     	{	
-    		if(winner==null || pb.score>winner.score) { winner = pb; }
+    		if(winner==null || pb.getScore()>winner.getScore()) { winner = pb; }
     	}
     	win[winner.boardIndex] = true;
     }
     public int scoreForPlayer(int pl)
     {
-    	return pbs[pl].score;
+    	return pbs[pl].getScore();
     }
     // set the contents of a cell, and maintain the books
     public BugsChip SetBoard(BugsCell c,BugsChip ch)
@@ -773,7 +792,7 @@ class BugsBoard
         case GoalMarket:
         	if(col=='@')
         	{
-        	return goals[row];
+        	return goalMarket[row];
         	}
         	else
         	{
@@ -786,7 +805,7 @@ class BugsBoard
         case BugMarket:
         	if(col=='@')
         		{
-        		return market[row];
+        		return bugMarket[row];
         		}
         	else
         		{
@@ -825,8 +844,8 @@ class BugsBoard
     public int maxScore()
     {
     	PlayerBoard m = null;
-    	for(PlayerBoard pb : pbs) { if(m==null || pb.score > m.score) { m = pb; }}
-    	return m.score;
+    	for(PlayerBoard pb : pbs) { if(m==null || pb.getScore() > m.getScore()) { m = pb; }}
+    	return m.getScore();
     }
     private void setNextStateAfterDone(replayMode replay)
     {	
@@ -891,8 +910,8 @@ class BugsBoard
     	default: break;
     	}
     	rotated = false;
-    	migrate(market,activeDeck,replay);
-		migrate(goals,goalDeck,replay);	
+    	migrate(bugMarket,activeDeck,bugDiscards,replay);
+		migrate(goalMarket,goalDeck,goalDiscards,replay);	
 	   	getPlayerBoard(whoseTurn).doDone(replay);
 	   	if(allPassed() || lastRound())
     	{
@@ -912,6 +931,14 @@ class BugsBoard
 		}
 		return true;
     }
+    public boolean somePassed()
+    {
+		for(PlayerBoard pb : pbs)
+		{
+			if(pb.uiState==UIState.Pass) { return true; }
+		}
+		return false;
+    }
 	public boolean allReady()
 	{
 		for(PlayerBoard pb : pbs)
@@ -925,13 +952,13 @@ class BugsBoard
 		return pbs[p].uiState==UIState.Ready;
 	}
 	public void doPurchases(replayMode replay)
-	{	for(BugsCell c : market ) { c.purchased = false; }
-		for(BugsCell c : goals) { c.purchased = false; }
+	{	for(BugsCell c : bugMarket ) { c.purchased = false; }
+		for(BugsCell c : goalMarket) { c.purchased = false; }
 		for(PlayerBoard p : pbs)
 			{ p.doPurchases(replay);
 			}
-		migrate(market,activeDeck,replay);
-		migrate(goals,goalDeck,replay);	
+		migrate(bugMarket,activeDeck,bugDiscards,replay);
+		migrate(goalMarket,goalDeck,goalDiscards,replay);	
 		PlayerBoard newpb[] = new PlayerBoard[pbs.length];
 		AR.copy(newpb,pbs);
 		Sort.sort(newpb,false);	// order by score
@@ -940,22 +967,35 @@ class BugsBoard
 	}
 	public void setFirstPlayer()
 	{
-		whoseTurn = findPlayer(0);
+		whoseTurn = findPlayer(0).boardIndex;
 	}
-	public int findPlayer(int n)
+	public PlayerBoard findPlayer(int n)
 	{
-		for(PlayerBoard pb : pbs) { if(pb.turnOrder==n) { return pb.boardIndex; }}
+		for(PlayerBoard pb : pbs) { if(pb.turnOrder==n) { return pb; }}
 		throw G.Error("cant find player %s",n);
 	}
 	public int nextPlayer(int who)
 	{
 		int thisPlayer = pbs[who].turnOrder;
-		return findPlayer((thisPlayer+1)%players_in_game);
+		PlayerBoard pb = findPlayer((thisPlayer+1)%players_in_game);
+		if(pb.resigned) { return nextPlayer(pb.boardIndex); }
+		return pb.boardIndex;
+	}
+	public int playersLeft()
+	{
+		int n=0;
+		for(PlayerBoard pb : pbs) { if(!pb.resigned) { n++; }}
+		return n;
+	}
+	public boolean someEmpty(BugsCell cells[])
+	{
+		for(BugsCell c : cells) { if(c.topChip()==null) { return true; }}
+		return false;
 	}
 	/*
 	 * migrate a row down and fill the top with new cards from the replacement deck.
 	 */
-	public void migrate(BugsCell group[],BugsCell from,replayMode replay)
+	public void migrate(BugsCell group[],BugsCell from,BugsCell discards,replayMode replay)
 	{	
 		switch(variation)
 		{
@@ -971,9 +1011,19 @@ class BugsBoard
 		}
 
 		for(BugsCell c : group ) { if(c.purchased) { c.reInit(); }}		// clear the purchased cells
-		
+		boolean someEmpty = someEmpty(group);
+		if(someEmpty)
+		{
 		int fi = group.length-2;
 		int ti = group.length-1;
+		if(DISCARD_LOW)
+		{	BugsCell f = group[ti];
+			if(f.topChip()!=null)
+			{
+				discards.addChip(f.removeTop());
+				animate(replay,f,discards);
+			}
+		}
 		while(ti>=0)
 		{	BugsCell tcell = group[ti];
 			tcell.purchased = false;
@@ -999,7 +1049,7 @@ class BugsBoard
 			}
 			ti--;
 			fi--;
-		}
+		}}
 	}
 	public void findPickedObject(PlayerBoard pb)
 	{
@@ -1021,16 +1071,16 @@ class BugsBoard
 	
 	public boolean lastRound()
 	{
-		return goals[0].topChip()==null 
-					|| market[0].topChip()==null 
+		return goalMarket[0].topChip()==null 
+					|| bugMarket[0].topChip()==null 
 					|| lackOfProgress
-					|| maxScore()>=WinningScore
+					|| maxScore()>=variation.WinningScore
 					|| roundNumber >= MaxRounds;
 	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	BugsMovespec m = (BugsMovespec)mm;
         if(replay.animate) { animationStack.clear(); }
-
+        targetsCache = null;
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
         {
@@ -1123,7 +1173,7 @@ class BugsBoard
 						for(PlayerBoard p : pbs) { p.setUIState(UIState.Normal); }
   		    			if(lastRound())
   		    			{
-  		    				// ran out of bugs or goals
+  		    				// ran out of bugs or goalMarket
   		    				setGameOver();
   		    			}
   		    			else
@@ -1213,7 +1263,7 @@ class BugsBoard
 	 }
 	 else
 	 {
-		 all.push(new BugsMovespec(c.onBoard ? MOVE_DROPB : MOVE_DROP,c,who));
+		 all.push(new BugsMovespec(c.rackLocation()==BugsId.BoardLocation ? MOVE_DROPB : MOVE_DROP,c,who));
 	 }
  }
  public boolean robotWouldPlay(BugsCell c,boolean selected)
@@ -1229,14 +1279,14 @@ class BugsBoard
  {	PlayerBoard pb = pbs[who];
  	boolean someAlreadySelected = false;
  	boolean some = false;
- 	for(BugsCell c : goals)
+ 	for(BugsCell c : goalMarket)
 	 {	// robot never deselects
  		boolean selected = pb.isSelected(c);
  		if(c.height()>0 && (robot==null || !selected)) 
 		 	{ all.push(new BugsMovespec(MOVE_SELECT,c,who)); 
 		 	}
 	 }
- 	for(BugsCell c : market)
+ 	for(BugsCell c : bugMarket)
 	 {	// robot never deselects
  		boolean selected = pb.isSelected(c);
  		someAlreadySelected |= selected;
@@ -1259,12 +1309,12 @@ class BugsBoard
 	 return false;
  }
 // carnivores can eat herbivores but not parasites or other carnivores
-public boolean canPlaceOverChip(BugCard card,BugCard onCard)
+public boolean canPlaceOverChip(BugCard card,BugsChip onCard)
 {
-	if(onCard==null) { return !card.profile.isCarnivore(); }	// carnivores have to eat!
-	if(card.profile.isCarnivore())
+	if(onCard==null) { return !card.profile.isPredator(); }	// carnivores have to eat!
+	if(card.profile.isPredator() && onCard.isBugCard())
 	{
-		if(onCard.profile.isHerbivore()) { return true; }
+		if(((BugCard)onCard).profile.isPrey()) { return true; }
 	}
 	return false;
 }
@@ -1279,12 +1329,12 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 }
  public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCard chip,BugsCell c,PlayerBoard pb)
  {	boolean some = false;
-     if(c.rackLocation()==BugsId.PlayerBugs) { return true; }
+     //if(c.rackLocation()==BugsId.PlayerBugs) { return true; }
      int who = pb.boardIndex;
      BugsChip pchip = pb.chip;
 	 if(c!=from 
 			 && c.canPlaceInHabitat(chip))
-		{	BugCard mainChip = (BugCard)c.topChip();
+		{	BugsChip mainChip = c.topChip();
 			if(canPlaceOverChip(chip,mainChip)
 					 && !robotShuffle(from,c,mainChip)
 					 && !robotCannible(c,chip,pchip))
@@ -1293,7 +1343,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 				  all.push(new BugsMovespec(op,from,chip,c,who)); 
 				}
 			BugsCell above = c.above;
-			BugCard aboveChip = (BugCard)above.topChip();
+			BugsChip aboveChip = above.topChip();
 			if(canPlaceOverChip(chip,aboveChip) 
 					&& !robotShuffle(from,c,aboveChip)
 					&& !robotCannible(above,chip,pchip)) 
@@ -1302,7 +1352,7 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 				  some = true;
 				}
 			BugsCell below = c.below;
-			BugCard belowChip = (BugCard)below.topChip();
+			BugsChip belowChip = below.topChip();
 			if(canPlaceOverChip(chip,belowChip) 
 					&& !robotShuffle(from,c,belowChip)
 					&& !robotCannible(below,chip,pchip)) 
@@ -1352,8 +1402,8 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  			 	    c = c.next)
  			 	{	addPickDrop(all,c,pb.pickedObject,who);
  			 	}
-  		for(BugsCell c : market) { addPickDrop(all,c,pb.pickedObject,who); }
- 		for(BugsCell c : goals) { addPickDrop(all,c,pb.pickedObject,who); }
+  		for(BugsCell c : bugMarket) { addPickDrop(all,c,pb.pickedObject,who); }
+ 		for(BugsCell c : goalMarket) { addPickDrop(all,c,pb.pickedObject,who); }
  		addPickDrop(all,activeDeck,pb.pickedObject,who);
  		addPickDrop(all,goalDeck,pb.pickedObject,who);
  		for(PlayerBoard p : pbs)
@@ -1390,20 +1440,18 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
 	 	{ switch(variation)
 	 		{
 	 		case bugspiel_sequential_large:
-	 		case bugspiel_sequential:
 	 		case bugspiel_parallel_large:
-	 		case bugspiel_parallel:
-	 			xpos -= cellsize/2;
-	 			break;
+	 		case bugspiel_sequential:
+		 	case bugspiel_parallel:
+		 		xpos -= cellsize/5;
+		 		ypos -= cellsize/5;
+		 		break;
  			default: G.Error("case "+variation+" not handled");
-	 		}
-	 	}
- 		else
- 		{ 
- 		  ypos += cellsize/4;
+	 		}		  
  		}
  	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
  }
+ public Hashtable<BugsCell, BugsMovespec> targetsCache = null;
  /**
   *  get the board cells that are valid targets right now, intended to be used
   *  by the user interface to determine where it's legal to play.  The standard
@@ -1415,11 +1463,18 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
   * @return
   */
  public Hashtable<BugsCell, BugsMovespec> getTargets(int who) 
- {
+ {	if(targetsCache==null)
+ 	{
  	Hashtable<BugsCell,BugsMovespec> targets = new Hashtable<BugsCell,BugsMovespec>();
  	CommonMoveStack all = getListOfMoves(who);
  	PlayerBoard pb = pbs[who];
- 	pb.getUIMoves(all);
+ 	if(board_state==BugsState.Puzzle || simultaneousTurnsAllowed())
+ 		{
+ 		for(PlayerBoard p : pbs) { p.getUIMoves(all); }
+ 		}
+ 		else {
+ 		pb.getUIMoves(all);
+ 		}
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	BugsMovespec m = (BugsMovespec)all.elementAt(lim);
  		switch(m.op)
@@ -1448,7 +1503,16 @@ public boolean addMovesOnBoard(CommonMoveStack all,int op, BugsCell from, BugCar
  		}
  		
  	}
- 	
+ 	targetsCache = targets;
+ 	//G.print("copy "+targets.size()+" ",this);
+ 	}
+ 	Hashtable<BugsCell,BugsMovespec> targets = new Hashtable<BugsCell,BugsMovespec>();
+ 	for(Enumeration<BugsCell>e = targetsCache.keys(); e.hasMoreElements();)
+ 	{
+ 		BugsCell c = e.nextElement();
+ 		BugsMovespec m = targetsCache.get(c);
+ 		targets.put(c,(BugsMovespec)m.Copy(null));
+ 	}
  	return(targets);
  }
  
@@ -1485,57 +1549,56 @@ public int nonWildBonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip
 		BugsChip ch = cell.chipAtIndex(h);
 		if(ch.isBugCard()) { 
 		BugCard bug = (BugCard)ch;
-		Profile bugProf = bug.getProfile();
-		Taxonomy bugGroup = bugProf.getCategory();
-		if(bugGroup==card.cat1) { tot = tot+bug.pointValue(); }
-		if(bugGroup==card.cat2) { tot = tot+bug.pointValue(); }
+		if(card.cat1.matches(bug,false)) { tot += card.cat1.pointValue(bug);  }
+		if(card.cat2.matches(bug,false)) { tot += card.cat2.pointValue(bug);  }
 		h = -1;
 		}
 		}
 	}
 	return tot;
 }
-public int bonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
+public double bonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
 {
-	int tot = 0;
+	double tot = 0;
 	if(cell.player==chip)
 	{	int h = cell.height();
-		Taxonomy wild = Taxonomy.getWildType();
 		while(h-->0)
 		{
 		// score only the top bug
 		BugsChip ch = cell.chipAtIndex(h);
 		if(ch.isBugCard()) { 
-		BugCard bug = (BugCard)ch;
-		Profile bugProf = bug.getProfile();
-		Taxonomy bugGroup = bugProf.getCategory();
-		if((bugGroup==wild) || (bugGroup==card.cat1)) { tot = tot+bug.pointValue(); }
-		if((bugGroup==wild) || (bugGroup==card.cat2)) { tot = tot+bug.pointValue(); }
-		h = -1;
+			BugCard bug = (BugCard)ch;
+			if(card.cat1.matches(bug,true)) { tot += card.cat1.pointValue(bug); }
+			if(card.cat2.matches(bug,true)) { tot += card.cat2.pointValue(bug); }
+			h = -1;
 		}
-		}
+	}
 	}
 	return tot;
 }
 private int sweep_counter = 0;
 
-public double scoreBonusForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
+public double scoreBonusForPlayer(GoalCard card,BugsCell cell,PlayerBoard p)
 {	double tot = 0;
 	G.Assert(cell.onBoard,"must be a board cell");
+	if(!p.resigned)
+	{
+	BugsChip chip = p.chip;
+	sweep_counter++;
 	if(cell!=null && cell.sweep_counter!=sweep_counter)
 	{	cell.sweep_counter = sweep_counter;
-		tot =  BONUS_MULTIPLIER*bonusPointsForPlayer(card,cell,chip);
-		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,cell.above,chip); 
-		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,cell.below,chip);
+		tot =  bonusPointsForPlayer(card,cell,chip);
+		tot += bonusPointsForPlayer(card,cell.above,chip); 
+		tot += bonusPointsForPlayer(card,cell.below,chip);
 		{
 		BugsCell next = cell;
 		while(((next = next.exitTo(cell.rotation))!=null) 
 				&& (next.rotation==cell.rotation)
 				&& next.isOccupied())
 			{
-			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next,chip);
-			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.above,chip); 
-			tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.below,chip);
+			tot += bonusPointsForPlayer(card,next,chip);
+			tot += bonusPointsForPlayer(card,next.above,chip); 
+			tot += bonusPointsForPlayer(card,next.below,chip);
 			}}
 		{
 		BugsCell next = cell;
@@ -1543,11 +1606,11 @@ public double scoreBonusForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
 				&& next.rotation==cell.rotation
 				&& next.isOccupied())
 		{
-		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next,chip);
-		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.above,chip); 
-		tot += BONUS_MULTIPLIER*bonusPointsForPlayer(card,next.below,chip);
+		tot += bonusPointsForPlayer(card,next,chip);
+		tot += bonusPointsForPlayer(card,next.above,chip); 
+		tot += bonusPointsForPlayer(card,next.below,chip);
 		}}
-	}
+	}}
 	return tot;
 }
 public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
@@ -1561,16 +1624,15 @@ public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
 	BugsCell parentCell = getCell(cell.col,cell.row%100);	// get the parent cell on the board
 	if(!ADVERSARIAL_BONUS)
 	{
-	sweep_counter++;
-	int score = (int)scoreBonusForPlayer(card,parentCell,pb.chip);
-	pb.score += score;
+	int score = (int)scoreBonusForPlayer(card,parentCell,pb);
+	pb.changeScore(score); 
 	}
 	else
 	{
 	for(PlayerBoard p : pbs)
-	{	sweep_counter++;
-		int score = (int)scoreBonusForPlayer(card,parentCell,p.chip);
-		p.score += score;
+	{	
+		int score = (int)scoreBonusForPlayer(card,parentCell,p);
+		p.changeScore(score);
 	}}
 }
 

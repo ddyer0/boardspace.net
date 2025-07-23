@@ -321,13 +321,14 @@ public class UCTNode {
 			 */
 			double best = maxWins/maxVisits;
 			double deficit  = (node.visits*best-node.wins)/(1-best);
-			if(deficit>share)
+			if((deficit>share)
+					// a former error trap actually hit this condition in a game 
+					// of ordo, but it's a timing dependent condition.  Since this
+					// whole pruning procedure is optional, it seems safe to just
+					// include it as a condition
+					&& (node!=children[0].uctNode())
+					)
 				{
-				commonMove child0 = children[0];
-				if(node==child0.uctNode())	// don't allow the currently most visited node to be killed
-				{
-					throw G.Error("wrong");
-				}
 				killed += node.uncount();
 				if(HELPGC && (parent!=null)) 
 					{ synchronized(child) { child.setUctNode(voidNode()); } 
@@ -360,12 +361,13 @@ public class UCTNode {
 			UCTNode node = child.uctNode();
 			if((node!=null) && (node.visits>=0))
 			{	
-			if(node.visits+share<bestVisits)
+			if((node.visits+share<bestVisits)
+					// a former error trap actually hit this condition in a game 
+					// of ordo, but it's a timing dependent condition.  Since this
+					// whole pruning procedure is optional, it seems safe to just
+					// include it as a condition
+					&& (node!=children[0].uctNode()))
 				{
-				if(node==children[0].uctNode())	// don't allow the currently most visited node to be killed
-				{
-					throw G.Error("wrong");
-				}
 				killed += node.uncount();
 				numActiveChildren--;
 				share = remainingVisits/pow(numActiveChildren,power);
@@ -514,7 +516,6 @@ public class UCTNode {
 					if(initialVisits>0)
 					{
 					robot.setInitialWinRate(newChild,initialVisits,child,myChildren);
-					
 					}
 					thread.incrementTreeSizeThisRun();
 					child.setUctNode(newChild);
@@ -538,20 +539,24 @@ public class UCTNode {
 			// these need to be distinguished under synchronization so a node
 			// which is initially "no children" won't be treated as "no acceptable children"
 			// in another thread.
-			if(noAvailableChildren==null)
-				{noAvailableChildren = myChildren[0].Copy(null);
-				 noAvailableChildren.op = 0;
-				}
-		 bestMove = noAvailableChildren;			
+			bestMove = setNoAvailableChildren(myChildren);
 		}
 
 		return bestMove;
 	}
 	
 	// a special child that is created to indicate there are 
-	// no usable children.
+	// no usable children. The unusual setting procedure is because
+	// UCTNode doesn't know the actual type of the children.
 	public static commonMove noAvailableChildren = null;
-	
+	public synchronized commonMove setNoAvailableChildren(commonMove[]myChildren)
+	{
+		if(noAvailableChildren==null) 
+		{	
+			noAvailableChildren = myChildren[0].Copy(null);
+		}
+		return noAvailableChildren;
+	}
 	public synchronized commonMove nextUctMove(UCTThread thread,RobotProtocol robot,Random rand)
 	{	if(children!=null)
 		{

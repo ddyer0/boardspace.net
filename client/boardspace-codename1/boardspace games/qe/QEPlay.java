@@ -238,7 +238,7 @@ public void PrepareToMove(int playerIndex)
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
         						: 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close

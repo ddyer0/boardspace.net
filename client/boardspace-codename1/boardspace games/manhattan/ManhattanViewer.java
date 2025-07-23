@@ -2160,6 +2160,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		}
     	return super.currentRobotPlayer();
     }
+
     public void ViewerRun(int wait)
        {   if(simultaneousTurnsAllowed())
     	   {

@@ -16,8 +16,9 @@
  */
 package online.search;
 
-import java.awt.Color;
 import lib.Graphics;
+
+import java.awt.Color;
 import java.awt.Rectangle;
 
 import javax.swing.JCheckBoxMenuItem;
