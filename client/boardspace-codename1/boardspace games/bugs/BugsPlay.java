@@ -419,9 +419,10 @@ public void PrepareToMove(int playerIndex)
    	for(int i=0,lim=nplay; i<lim; i++)
  	{	// give 0.5 for a win , plus ip to 0.2 for a shorter game, plus up to 0.3 for the score
    		// thus favoring a win in as few moves as possible
+   		double win = board.winningScore();
    		double sc =  board.winForPlayerNow(i) ? 0.5 : 0
  			+ Math.sqrt(0.2/(board.moveNumber+boardSearchLevel))
- 			+ 0.3*Math.max(0,Math.min(board.variation.WinningScore,board.scoreForPlayer(i)))/board.variation.WinningScore;
+ 			+ 0.3*Math.max(0,Math.min(win,board.scoreForPlayer(i)))/win;
  		mm.playerScores[i] = sc;
  		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
  	}

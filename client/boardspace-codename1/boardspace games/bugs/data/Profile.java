@@ -1,12 +1,12 @@
 package bugs.data;
 
+import bridge.File;
+import bridge.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Hashtable;
-
-import bridge.File;
-import bridge.FileOutputStream;
 import bugs.BugCard;
 import bugs.BugsConstants;
 import lib.Bitset;
@@ -76,6 +76,10 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     public boolean isPrey()
     {
     	return diet.isPrey();
+    }
+    public boolean isHerbivore()
+    {
+    	return diet.isHerbivore();
     }
     public boolean isPredator()
     {

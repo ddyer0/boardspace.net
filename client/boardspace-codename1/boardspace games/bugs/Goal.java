@@ -14,10 +14,10 @@ public interface Goal extends CompareTo<Goal> {
 	public void drawExtendedChip(Graphics gc, Font font, int xp, int yp, int w, int h,boolean x2);
 	public String getHelpText();
 	public Image getIllustrationImage();
-	public double pointValue(BugCard bug);
+	public double pointValue(BugsBoard b,BugCard bug);
 	public String getCommonName();
 	public String legend(boolean b);
-	public boolean matches(BugCard bug, boolean b);
+	public boolean matches(BugsBoard board,BugCard bug, boolean b);
 	public default int compareTo(Goal other)
 	{
 		return G.signum(getUid()-other.getUid());

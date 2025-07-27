@@ -2,6 +2,7 @@ package bugs.data;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -75,6 +76,10 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     public boolean isPrey()
     {
     	return diet.isPrey();
+    }
+    public boolean isHerbivore()
+    {
+    	return diet.isHerbivore();
     }
     public boolean isPredator()
     {

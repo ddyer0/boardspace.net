@@ -32,10 +32,10 @@ import lib.Random;
 import lib.exCanvas;
 import online.game.chip;
 
+import bridge.Color;
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
-import bridge.Color;
 import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
 import common.CommonConfig;

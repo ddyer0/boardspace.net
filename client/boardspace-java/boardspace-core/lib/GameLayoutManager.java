@@ -155,13 +155,13 @@ public class GameLayoutManager implements UniversalConstants
 	// this is used only by FiveAroundEdge and SixAroundEdge
 	private void addFatLeftCentered(boolean addLeft,boolean addRight,boolean six)
 	{	int spareY0 = ytop+playerHX+1;
-		int spareY = top+ycenter-playerWM/2;
+		int spareY = ycenter-playerWM/2;
 		int spareY2 = spareY+playerWM;
 		if(addLeft)
 		{
 		addToSpare(left,spareY0,playerWM,spareY-spareY0);
 		addToSpare(left,spareY2,playerWM,ybot-spareY2);
-		int spareX = playerHM;
+		int spareX = left+playerHM;
 		addToSpare(spareX,spareY,playerWM-playerHM,spareY2-spareY);
 		}
 		// rectangles ok 2/26
@@ -215,7 +215,7 @@ public class GameLayoutManager implements UniversalConstants
 	}
 	private void addTopToBottom(int xcoord,boolean topTop)
 	{
-		int spareY = topTop?0:ytop+playerHX;
+		int spareY = topTop?top:ytop+playerHX;
 		// extra space between the top and bottom on the right side
 		addToSpare(xcoord,spareY,playerWM,ybot-spareY);
 	}
@@ -226,16 +226,16 @@ public class GameLayoutManager implements UniversalConstants
 	
 	// add as horizontal segments for corner-edge arrangements
 	private void addSpareVStrip(int spareX,int spareX2)
-	{	int stripH = (bottom-playerWM-playerHM)/2;
-		addToSpare(spareX,0,playerWM,stripH);
-		addToSpare(spareX,bottom-playerHM-stripH,playerWM,stripH);
-		if(playerWM>playerHM) { addToSpare(spareX2,stripH,playerWM-playerHM,playerWM); }
+	{	int stripH = ymid-playerWM/2;
+		addToSpare(spareX,top,playerWM,stripH-top);
+		addToSpare(spareX,stripH+playerWX,playerWM,bottom-stripH-playerWX-playerHM);
+		if(playerWM>playerHM) { addToSpare(spareX2,stripH,playerWM-playerHM,playerWX); }
 	}
 	
 	// add as horizontal segments for corner-edge arrangements
 	private void addSpareVStripFrom(int stripY,int spareX,int spareX2)
 	{	
-		addToSpare(spareX,0,playerWM,stripY);
+		addToSpare(spareX,top,playerWM,stripY-top);
 		int strip2H = (bottom-playerHM)-(stripY+playerWM);
 		if(strip2H>0)
 		{
@@ -480,7 +480,7 @@ public class GameLayoutManager implements UniversalConstants
 		if(playerWM>playerHM)
 		{
 		addToSpare(left,bottom-playerWM,right-left-playerHM,playerWM-playerHM);
-		addToSpare(left+playerWM,bottom-playerHM,right-left-playerWM-playerHM,playerHM);
+		addToSpare(left+playerWX,bottom-playerHM,right-left-playerWM-playerHM+margin,playerHM);
 		}
 		else
 		{
@@ -500,8 +500,8 @@ public class GameLayoutManager implements UniversalConstants
 								  {xsideRight,top+rotationYoffset}};
 		if(playerWM>playerHM)
 		{
-		addToSpare(xright,playerWM,playerWM,bottom-top-playerWM-playerHM);
-		addToSpare(xright,top,right-xright-playerHM,playerWM);
+		addToSpare(xright,top+playerWX,playerWM,bottom-top-playerWX-playerHM);
+		addToSpare(xright,top,right-xright-playerHM,playerWX);
 		}
 		else {
 		addToSpare(right-playerHM,ybot,playerHM-playerWM,playerHM);	
@@ -800,6 +800,13 @@ public class GameLayoutManager implements UniversalConstants
 
 	case ThreeWideLeft:	// ok 2/4/2020
 		{
+			/*
+			 * .........
+			 * x.......x
+			 * x.......x
+			 * .........
+			 * xxx......
+			 */
 		rotations = new double[]{0,Math.PI/2,-Math.PI/2};
 		positions = new int[][] {{xleft,ybot},	// bottom X...
 								{xsideLeft,ymid-playerHM/2},	
@@ -1053,7 +1060,7 @@ public class GameLayoutManager implements UniversalConstants
 				{
 				{int spareY = top+playerWM;
 				int spareX = left+playerHM;
-				int spareXW = playerWM-spareX;		
+				int spareXW = playerWM-playerHM;		
 				addToSpare(spareX,top,spareXW,spareY-top);
 				addToSpare(left,spareY,playerWM,ybot-spareY);
 				}
@@ -1652,12 +1659,12 @@ public class GameLayoutManager implements UniversalConstants
 	    }
 		int halfMargin = extramargin/2;
 	    if(G.debug() ) { G.print("final ",selectedSeating," ",selectedPercent,"% ",selectedCellSize);}
-		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width-extramargin,height-extramargin,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
+		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
     	//if(G.debug())
     	//{
     	//	G.print("Cell Min ",minSize," max ",maxCellSize," actual ",selectedCellSize);
     	//}
-        doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-extramargin,fullheight-extramargin));
+        doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,width,height));
         rects.specs.clear();
         fails = 0;
 	    return(selectedPercent);	    

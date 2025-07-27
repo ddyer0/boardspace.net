@@ -64,6 +64,7 @@ public abstract class DataHelper<T extends KeyProvider> {
         public boolean isScavenger() { return isScavenger; }
         public boolean isParasite() { return this==PARASITE; }
         public boolean isNegavore() { return this==NEGAVORE; }
+        public boolean isHerbivore() { return this==HERBIVORE||this==FUNGIVORE;}
     }
     public enum Rank {
         DOMAIN, KINGDOM, PHYLUM, CLASS, ORDER, FAMILY, GENUS, GENUSANDSPECIES, UNKNOWN;

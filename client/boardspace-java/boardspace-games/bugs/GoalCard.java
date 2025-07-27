@@ -3,10 +3,8 @@ package bugs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.util.Hashtable;
-
 import bridge.SystemFont.Style;
-
+import java.util.Hashtable;
 import bugs.data.Taxonomy;
 import lib.CellId;
 import lib.G;
@@ -225,7 +223,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 		}
 		return card;
 	}
-	private static Goal randomGoal(Random r,BugsChip bugs[])
+	private static Goal randomGoal(Random r,BugsBoard b,BugsChip bugs[])
 	{
 		if(r.nextDouble()>DIET_GOAL_PERCENTAGE)
 		{	
@@ -239,19 +237,19 @@ public class GoalCard extends BugsChip implements BugsConstants
 		}
 		else
 		{
-			return DietGoal.randomGoal(r,bugs);
+			return DietGoal.randomGoal(r,b,bugs);
 		}
 	}
 	
-	public static void buildGoalDeck(long key,BugsChip bugs[],BugsCell c)
+	public static void buildGoalDeck(long key,BugsBoard b,BugsChip bugs[],BugsCell c)
 	{	
 		// build goal cards with random pairs of categories
 		Random r = new Random(key);
 		int deckSize = (int)(bugs.length*GOAL_MULTIPLIER);
 		c.reInit();
 		while(deckSize>0)
-		{	Goal cat1 = randomGoal(r,bugs);
-			Goal cat2 = randomGoal(r,bugs);
+		{	Goal cat1 = randomGoal(r,b,bugs);
+			Goal cat2 = randomGoal(r,b,bugs);
 			c.addChip(getGoalCard(cat1,cat2,true));
 			deckSize--;
 		}

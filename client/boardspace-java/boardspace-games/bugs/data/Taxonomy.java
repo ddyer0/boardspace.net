@@ -1,12 +1,13 @@
 package bugs.data;
 
 import java.awt.Font;
-import java.util.Hashtable;
 
+import java.util.Hashtable;
 import bridge.SystemFont;
 import bugs.Goal;
 import bugs.BugCard;
 import bugs.BugsConstants;
+import bugs.BugsBoard;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
@@ -143,7 +144,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider,Goal,B
 		Profile prof1 = getProfile();
 		return prof1.illustrationImage;
 	}
-	public double pointValue(BugCard card) 
+	public double pointValue(BugsBoard b,BugCard card) 
 	{
 		return card.pointValue()*BONUS_MULTIPLIER;
 	}
@@ -152,7 +153,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider,Goal,B
 	{
 		return "" + (int)(BONUS_MULTIPLIER*(twice ? 2 : 1))+"x"	;
 	}
-	public boolean matches(BugCard bug,boolean wild)
+	public boolean matches(BugsBoard b,BugCard bug,boolean wild)
 	{	Profile bugProf = bug.getProfile();
 		Taxonomy bugGroup = bugProf.getCategory();
 		return (this==bugGroup) || (wild && bugGroup==Taxonomy.getWildType());

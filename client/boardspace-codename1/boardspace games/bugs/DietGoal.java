@@ -61,7 +61,7 @@ public class DietGoal implements Goal,BugsConstants
 		return chip.getImage();
 	}
 
-	public double pointValue(BugCard bug) {
+	public double pointValue(BugsBoard parentBoard,BugCard bug) {
 		boolean match = false;
 		Profile profile = bug.getProfile();
 		switch(test)
@@ -71,15 +71,22 @@ public class DietGoal implements Goal,BugsConstants
 		case negavore: match = profile.isNegavore(); break;
 		case parasite: match= profile.isParasite(); break;
 		case flying: match = profile.isFlying(); break;
-		case herbivore: match = profile.isPrey(); break;	// catch all
+		case herbivore: 
+			if(parentBoard.revision<101) 
+				{ match = profile.isPrey(); 
+				}
+				else 
+				{ 	match = profile.isHerbivore(); 
+				}
+			break;	// catch all
 		default: throw G.Error("Not expecting %s",test);
 		}
 		return match ? multiplier : 0;
 	}
 	
-	public boolean matches(BugCard bug,boolean wild)
+	public boolean matches(BugsBoard b,BugCard bug,boolean wild)
 	{	
-		return pointValue(bug)>0;
+		return pointValue(b,bug)>0;
 	}
 	static DietGoal FlyingGoal = new DietGoal(TestType.flying,BugsChip.Wings,2,"Flying Bugs",
 			"Each bug that can fly scores #1{ points, point, points}");
@@ -105,18 +112,18 @@ public class DietGoal implements Goal,BugsConstants
 		return ""+p+" per";
 		
 	}
-	public static Goal randomGoal(Random r,BugsChip bugs[]) {
+	public static Goal randomGoal(Random r,BugsBoard b,BugsChip bugs[]) {
 		
 		// pick a rand card to be targeted - this assures that the goalMarket
 		// are in reasonable proportion to the actual population
 		BugCard chip = (BugCard)bugs[r.nextInt(bugs.length)];
-		if(r.nextDouble()<FLYING_GOAL_PERCENTAGE && FlyingGoal.matches(chip,false))
+		if(r.nextDouble()<FLYING_GOAL_PERCENTAGE && FlyingGoal.matches(b,chip,false))
 		{
 			return FlyingGoal;
 		}
 		for(DietGoal goal : DietGoals)
 		{
-			if(goal.matches(chip,false)) { return goal; }
+			if(goal.matches(b,chip,false)) { return goal; }
 		}
 		throw G.Error("no goal matches "+chip);
 	}

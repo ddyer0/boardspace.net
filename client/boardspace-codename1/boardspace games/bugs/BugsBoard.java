@@ -19,9 +19,9 @@ package bugs;
 
 import static bugs.BugsMovespec.*;
 
-import java.util.*;
-
 import bridge.Color;
+
+import java.util.*;
 import bugs.BugsChip.Terrain;
 import bugs.data.Profile;
 import bugs.data.Taxonomy;
@@ -58,10 +58,11 @@ import online.game.*;
  *
  */
 
-class BugsBoard 
+public class BugsBoard 
 	extends hexBoard<BugsCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,BugsConstants
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// 101 fixes the scoring of herbivores to not include other prey species
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel_parallel;
@@ -298,7 +299,7 @@ class BugsBoard
     {	long key = randomKey+23525426;
     	if(goalDeckCacheKey!=key)
     	{
-		GoalCard.buildGoalDeck(key,activeDeck.toArray(),goalDeck);
+		GoalCard.buildGoalDeck(key,this,activeDeck.toArray(),goalDeck);
 		Random r = new Random(key+14125);
 		goalDeck.shuffle(r);
 		goalDeckCache.copyFrom(goalDeck);
@@ -409,9 +410,12 @@ class BugsBoard
     public BugCard random1PointBug(Random r)
     {	BugCard ch = null;
     	int index = 0;
+    	
+    	int loops= 1;
     	do {
     		index = r.nextInt(activeDeck.height());
     		ch = (BugCard)activeDeck.chipAtIndex(index);
+    		if(loops++ % 10==0) { minDeckValue++; }
     	} while (ch.pointValue()>minDeckValue);
     	activeDeck.removeChipAtIndex(index);
     	return ch;
@@ -720,7 +724,8 @@ class BugsBoard
     	}
     	return Math.min(0.9,(0.9*Math.max(0,pb.score+200))/(WinningScore+200));
     	*/
-    	return (Math.min(variation.WinningScore,Math.max(0,pb.getScore()))/(double)variation.WinningScore);
+    	double win = winningScore();
+    	return (Math.min(win,Math.max(0,pb.getScore()))/win);
     }
     public void setGameOver()
     {
@@ -798,6 +803,10 @@ class BugsBoard
         	{
        		return pbs[col-'A'].getCell(source,col,row);
         	}
+        case GoalDiscards:
+        	return goalDiscards;
+        case BugDiscards:
+        	return bugDiscards;
         case ActiveDeck:
         	return activeDeck;
         case GoalDeck:
@@ -1068,13 +1077,17 @@ class BugsBoard
 			}
 		}
 	}
-	
+	public int winningScore()
+	{
+		if(revision<101) { return variation.WinningScore; }
+		else { return SmallWinningScore; }
+	}
 	public boolean lastRound()
 	{
 		return goalMarket[0].topChip()==null 
 					|| bugMarket[0].topChip()==null 
 					|| lackOfProgress
-					|| maxScore()>=variation.WinningScore
+					|| maxScore()>=winningScore()
 					|| roundNumber >= MaxRounds;
 	}
     public boolean Execute(commonMove mm,replayMode replay)
@@ -1549,15 +1562,18 @@ public int nonWildBonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip
 		BugsChip ch = cell.chipAtIndex(h);
 		if(ch.isBugCard()) { 
 		BugCard bug = (BugCard)ch;
-		if(card.cat1.matches(bug,false)) { tot += card.cat1.pointValue(bug);  }
-		if(card.cat2.matches(bug,false)) { tot += card.cat2.pointValue(bug);  }
+		if(card.cat1.matches(this,bug,false)) { tot += card.cat1.pointValue(this,bug);  }
+		if(card.cat2.matches(this,bug,false)) { tot += card.cat2.pointValue(this,bug);  }
 		h = -1;
 		}
 		}
 	}
 	return tot;
 }
-public double bonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
+
+private int sweep_counter = 0;
+
+public double bonusPointsForPlayer(Goal cat,BugsCell cell,BugsChip chip,boolean includeWild)
 {
 	double tot = 0;
 	if(cell.player==chip)
@@ -1568,37 +1584,36 @@ public double bonusPointsForPlayer(GoalCard card,BugsCell cell,BugsChip chip)
 		BugsChip ch = cell.chipAtIndex(h);
 		if(ch.isBugCard()) { 
 			BugCard bug = (BugCard)ch;
-			if(card.cat1.matches(bug,true)) { tot += card.cat1.pointValue(bug); }
-			if(card.cat2.matches(bug,true)) { tot += card.cat2.pointValue(bug); }
+			if(cat.matches(this,bug,includeWild)) { tot += cat.pointValue(this,bug); }
 			h = -1;
 		}
 	}
 	}
 	return tot;
 }
-private int sweep_counter = 0;
 
-public double scoreBonusForPlayer(GoalCard card,BugsCell cell,PlayerBoard p)
+public double scoreBonusForPlayer(Goal cat,BugsCell cell,PlayerBoard p,boolean includeWild)
 {	double tot = 0;
 	G.Assert(cell.onBoard,"must be a board cell");
+	sweep_counter++;
 	if(!p.resigned)
 	{
 	BugsChip chip = p.chip;
 	sweep_counter++;
 	if(cell!=null && cell.sweep_counter!=sweep_counter)
 	{	cell.sweep_counter = sweep_counter;
-		tot =  bonusPointsForPlayer(card,cell,chip);
-		tot += bonusPointsForPlayer(card,cell.above,chip); 
-		tot += bonusPointsForPlayer(card,cell.below,chip);
+		tot =  bonusPointsForPlayer(cat,cell,chip,includeWild);
+		tot += bonusPointsForPlayer(cat,cell.above,chip,includeWild); 
+		tot += bonusPointsForPlayer(cat,cell.below,chip,includeWild);
 		{
 		BugsCell next = cell;
 		while(((next = next.exitTo(cell.rotation))!=null) 
 				&& (next.rotation==cell.rotation)
 				&& next.isOccupied())
 			{
-			tot += bonusPointsForPlayer(card,next,chip);
-			tot += bonusPointsForPlayer(card,next.above,chip); 
-			tot += bonusPointsForPlayer(card,next.below,chip);
+			tot += bonusPointsForPlayer(cat,next,chip,includeWild);
+			tot += bonusPointsForPlayer(cat,next.above,chip,includeWild); 
+			tot += bonusPointsForPlayer(cat,next.below,chip,includeWild);
 			}}
 		{
 		BugsCell next = cell;
@@ -1606,12 +1621,29 @@ public double scoreBonusForPlayer(GoalCard card,BugsCell cell,PlayerBoard p)
 				&& next.rotation==cell.rotation
 				&& next.isOccupied())
 		{
-		tot += bonusPointsForPlayer(card,next,chip);
-		tot += bonusPointsForPlayer(card,next.above,chip); 
-		tot += bonusPointsForPlayer(card,next.below,chip);
+		tot += bonusPointsForPlayer(cat,next,chip,includeWild);
+		tot += bonusPointsForPlayer(cat,next.above,chip,includeWild); 
+		tot += bonusPointsForPlayer(cat,next.below,chip,includeWild);
 		}}
 	}}
 	return tot;
+}
+
+public double scoreBonusForPlayer(GoalCard card,BugsCell cell,PlayerBoard p)
+{	
+	G.Assert(cell.onBoard,"must be a board cell");
+	if(!p.resigned)
+	{
+	// score without bonus, if it scores then rescore with bonus
+	double tot1 = scoreBonusForPlayer(card.cat1,cell,p,false);
+	 if(tot1>0) { tot1 = scoreBonusForPlayer(card.cat1,cell,p,true); }
+	double tot2 = scoreBonusForPlayer(card.cat2,cell,p,false);
+	 if(tot2>0) { tot2 = scoreBonusForPlayer(card.cat2,cell,p,true);}
+	 
+	return tot1+tot2;
+	}
+	return 0;
+
 }
 public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
 {

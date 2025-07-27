@@ -156,7 +156,10 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     private Rectangle marketCardRect = addRect("bugMarket");
     private Rectangle goalCardRect = addRect("goal");
     private Rectangle chipRects[] = addZoneRect("chip",MAX_PLAYERS);
- 
+    private Rectangle seeMarketRects[] = addZoneRect("seemarket",MAX_PLAYERS);
+    private Rectangle seeGoalRects[] = addZoneRect("seegoals",MAX_PLAYERS);
+    private boolean thickLine = false;	// flag to draw some extra widgets
+    
     private TextButton passButton = addButton(PASS,GameId.HitPassButton,ExplainPass,
 			HighlightColor, rackIdleColor,rackIdleColor);
     
@@ -224,7 +227,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         // not suitable for games with any optional "done" states.  If true, autodone
         // is controlled by an option menu option.  Also conditionalize showing the
         // "done" button with autoDoneActive()
-        enableAutoDone = true;
+        enableAutoDone = false;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
         
@@ -328,14 +331,69 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
 
-    double aspect[] = {1,-1};
+    double aspect[] = {2, 1,-1, -2};
     public void setLocalBounds(int x, int y, int w, int h)
     {	setLocalBoundsV(x,y,w,h,aspect);
     }
+    
+    private double calcW(double currentH)
+    {
+    	 return currentH/N_MARKETS*3;
+    }
+    
+    // Function F(x) to minimize
+    public double waste(double pw,double ph,double h) {
+        double calcW = calcW(h);
+        double boxw = Math.min(ph,(pw-calcW));
+        double size = h>ph ? 0 : calcW*h;
+        double spare = pw-calcW-boxw;
+        double v = pw*ph - size - boxw*boxw - spare*h;
+        return v;
+    }
+    // Numerical approximation of first derivative using central difference
+    public double dF(int pw,int ph, double x, double h) 
+    {	double w1 = waste(pw,ph, x + h);
+    	double w2 = waste(pw,ph,x - h);
+        return (w1 - w2) / (2 * h);
+    }
+
+    // Numerical approximation of second derivative using central difference
+    public double d2F(int pw,int ph,double x, double h) {
+        return (waste(pw,ph,x + h) - 2 * waste(pw,ph,x) + waste(pw,ph,x - h)) / (h * h);
+    }
+
+    // Newton's method to find the minimum
+    public double findMinimum(int pw,int ph, double initialGuess, double tolerance, int maxIterations) 
+    {
+        double x = initialGuess;
+        double h = 1;  	// Step size for numerical derivatives
+        int i=0;			// leave this outside the loop for debugging visibility
+        double delta=0;		// leave this outside the loop for debugging visibility
+        for (; i < maxIterations; i++) {
+            double grad = dF(pw,ph,x, h);
+            double hess = d2F(pw,ph,x, h);
+
+            if (Math.abs(hess) < 1e-10) {
+                break;
+            }
+
+            delta = grad / hess;
+            x = x - delta;
+
+            if (Math.abs(delta) < tolerance) {
+                break;
+            }
+        }
+
+        return x;
+    }
+
+
     public double setLocalBoundsA(int x,int y,int width,int height,double v)
     {
     	G.SetRect(fullRect, x, y, width, height);
     	flatPlayer = v<0;
+    	double aspect = Math.abs(v)<2 ? 1.3 : 1/1.3;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -354,10 +412,10 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
     			0.75,	// 60% of space allocated to the board
-    			1.0,	// aspect ratio for the board
-    			fh*2,	// minimum cell size
-    			fh*3,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			aspect,	// aspect ratio for the board
+    			fh*3,	// minimum cell size
+    			fh*4,	// maximum cell size
+    			0.3		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -393,14 +451,22 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
           	// layout the largest possible
            	int pw = G.Width(peek)-margin*2;
            	int ph = G.Height(peek)-margin*2;
-           	int divw = ph/N_MARKETS*3;
-           	int divh = pw/N_MARKETS*3;
-       		// place either horizontally or vertically
-        	layout.placeRectangle(marketRect,
-        			divw,ph,divw,ph,
-        			pw,divh,pw,divh,
-        			BoxAlignment.Right,true);
-        	G.copy(goalCardRect,marketRect);
+           	
+           	int useh = (int)findMinimum(pw,ph,ph,0.1,10);
+           	int usew = (int)findMinimum(ph,pw,pw,0.1,10);
+           	int divw = (int)calcW(usew);
+           	int divh = (int)calcW(useh);
+           	double wasteW = waste(ph,pw,usew);
+           	double wasteH = waste(pw,ph,useh);
+           	if(wasteW<0 || wasteH<=wasteW)
+           	{
+           		layout.placeRectangle(marketRect,divh,useh,BoxAlignment.Right);
+           	}
+           	else
+           	{
+           		layout.placeRectangle(marketRect,usew,divw,BoxAlignment.Bottom);
+           	}
+           	G.copy(goalCardRect,marketRect);
         	{
            	int l = G.Left(goalCardRect);
         	int t = G.Top(goalCardRect);
@@ -472,19 +538,21 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
      	int decksize = Math.min(CELLSIZE,buttonW/2);
      	int bugdecky = actualBoardY+actualBoardH-decksize;
      	int goaldecky = actualBoardY+actualBoardH-decksize*2;
-     	G.SetRect(deckRect,boardX,bugdecky,decksize,decksize/2);
-     	G.SetRect(goalDeckRect,boardX,goaldecky,decksize,decksize*2/3);
+     	G.SetRect(deckRect,boardX,bugdecky-decksize/5,decksize*5/4,decksize);
+     	G.SetRect(goalDeckRect,boardX,goaldecky-decksize/5,decksize*5/4,decksize);
     	G.SetRect(deckDiscardRect,boardX+decksize/5,bugdecky+decksize/4,decksize,decksize/2);
      	G.SetRect(goalDiscardRect,boardX+decksize/5,goaldecky+decksize/5,decksize,decksize*2/3);
-     	G.SetRect(seeBugDeckButton,boardX+decksize*4/3,bugdecky,decksize/2,decksize/2);
-     	G.SetRect(seeGoalDeckButton,boardX+decksize*4/3,goaldecky,decksize/2,decksize/2);
+     	G.SetRect(seeBugDeckButton,boardX+decksize*4/3,bugdecky,decksize*3/4,decksize*3/4);
+     	G.SetRect(seeGoalDeckButton,boardX+decksize*4/3,goaldecky,decksize*3/4,decksize*3/4);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
     	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        return boardW*boardH;
+        commonPlayer pl = getPlayerOrTemp(0);
+        double playersize = G.Width(pl.playerBox)*G.Height(pl.playerBox)*nPlayers;
+        return boardW*boardH+playersize;
     }
     boolean flatPlayer = false;
     /**
@@ -503,24 +571,52 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	Rectangle goals = playerGoalRects[player];
     	Rectangle score = playerScoreRects[player];
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
+    	Rectangle seeMarket = seeMarketRects[player];
+    	Rectangle seeGoal = seeGoalRects[player];
     	G.SetRect(score,x,y+unitsize,unitsize*2,unitsize);
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	Rectangle done = doneRects[player];
+    	int qsize = unitsize;
     	if(flatPlayer)
     	{	int right = G.Right(box);
     		int h = G.Height(box);
         	G.SetRect(done,x,G.Bottom(box)+unitsize/3,doneW,doneW/2);
         	h+= doneW/2;
         	G.SetRect(bugs,right,y,unitsize*5,h);
-        	G.SetRect(goals,right+unitsize*5,y,unitsize*3,h);
+        	if(doneW>0)
+        	{	thickLine = false;
+               	G.SetRect(seeMarket,G.Left(bugs)-qsize-unitsize/5,G.Bottom(box)+unitsize/3,qsize,qsize);
+               	G.SetRect(goals,right+unitsize*5+unitsize/4,y,unitsize*3,h);
+               	G.SetRect(seeGoal,G.Left(goals)-qsize-unitsize/5,G.Bottom(goals)-qsize,qsize,qsize);
+                                
+        	}
+        	else
+        	{	thickLine = true;
+                G.SetRect(seeMarket,right+unitsize*5,y+unitsize*3-qsize-unitsize/5,qsize,qsize);
+                G.SetRect(seeGoal,right+unitsize*5+unitsize/3,y+unitsize/5,qsize,qsize);
+    	    	G.SetRect(goals,right+unitsize*6+unitsize/2,y,unitsize*3,unitsize*3);
+        		
+        	}
     	}
     	else
     	{
 	    	int t = G.Bottom(box);
-	    	G.SetRect(done,x+unitsize/3,t,doneW,doneW/2);
+	    	G.SetRect(done,x+qsize+unitsize/3,t,doneW,doneW/2);
+        	if(doneW>0)
+        	{ thickLine = false;
+              G.SetRect(seeMarket,x,t+unitsize/3,qsize,qsize);
+              G.SetRect(seeGoal,x+unitsize*5,t+unitsize/3,qsize,qsize);
+  	    	  G.SetRect(goals,x+unitsize*5,t,unitsize*3,unitsize*3);    
+        	}
+        	else
+        	{	thickLine = true;
+                G.SetRect(seeMarket,x+unitsize*5-unitsize/4,t+unitsize*3-unitsize-unitsize/4,qsize,qsize);
+                G.SetRect(seeGoal,x+unitsize*5+unitsize/4,t+unitsize/4,qsize,qsize);
+    	    	G.SetRect(goals,x+unitsize*6,t,unitsize*3,unitsize*3);
+        	}
 	    	t += doneW/2;
 	    	G.SetRect(bugs,x,t,unitsize*5,unitsize*3);
-	    	G.SetRect(goals,x+unitsize*5,t,unitsize*3,unitsize*3);
+
     	}
     	G.union(box, bugs,goals,score,chip,done);
     	pl.displayRotation = rotation;
@@ -550,12 +646,27 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	Rectangle goal = playerGoalRects[player];
     	Rectangle bug = playerBugRects[player];
     	Rectangle score = playerScoreRects[player];
+    	Rectangle seeGoal = seeGoalRects[player];
+    	Rectangle seeBugs = seeMarketRects[player];
+    	
+       	if(thickLine)
+    	{	int center = G.Height(goal)/2;
+    		int top = G.Top(goal);
+    		int stroke = 2;
+    		int right = G.Right(bug);
+    		int left = G.Left(goal)-stroke*2;
+    		GC.fillRect(gc,G.Left(bug),top,G.Right(goal)-G.Left(bug),stroke);
+    		GC.fillRect(gc,Color.black,right+stroke,top,stroke,center);
+    		GC.fillRect(gc,Color.black,left,top+center,stroke,center);
+    		GC.fillRect(gc,Color.black,right+stroke,top+center-stroke/2,left-right,stroke);
+    	}
+
     	pb.cell.drawChip(gc,this,G.Width(r),G.centerX(r),G.centerY(r),null);
     	GC.setFont(gc,largeBoldFont());
     	GC.Text(gc,true,score, Color.black, null, ""+pb.getScore());
-    	drawCellInBox(gc,gb,pb,highlight,targets,pb.bugs,bug,0.5);
-    	drawCellInBox(gc,gb,pb,highlight,targets,pb.goals,goal,0.85); 
-    	if((pb.droppedDest!=null)
+    	drawCellInBox(gc,gb,pb,highlight,targets,pb.bugs,bug,seeBugs,0.5);
+    	drawCellInBox(gc,gb,pb,highlight,targets,pb.goals,goal,seeGoal,0.85); 
+     	if((pb.droppedDest!=null)
     			&& (pb.droppedDest.rackLocation()==BugsId.BoardLocation)
     			&& pb.droppedObject.isGoalCard())
     	{	bonusCell = pb.droppedDest;
@@ -564,7 +675,13 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	else if(bonusOwner==pb.chip) { bonusCell =null; }
      }
     public void drawGoalScore(Graphics gc,BugsBoard gb,int xp,int yp,BugsCell c,GoalCard card)
-    {
+    {	
+    	int ap = getActivePlayerIndex(gb);	
+    	commonPlayer cpl = getPlayerOrTemp(ap);
+    	double rot = cpl.displayRotation;
+    	
+    	GC.setRotation(gc,rot,xp,yp);
+    	
     	int nlines = gb.nPlayers()+1;
     	int w = gb.cellSize()*5/4;
     	int h = nlines*w/3;
@@ -583,6 +700,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		t += step;
     	}
     	GC.frameRect(gc,Color.black,left,top,w,h);
+      	GC.setRotation(gc,-rot,xp,yp);
+        
     	
     }
     public String hitDirective(PlayerBoard pb,BugsMovespec m)
@@ -591,7 +710,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 				? ((pb.pickedObject==null&&bigCell==null) ? BugsChip.BIGCHIP : BugsChip.NOTHING ) 
 				: (pb.pickedObject==null ? BugsChip.PICK : BugsChip.DROP ));
     }
-    public void drawCellInBox(Graphics gc,BugsBoard gb,PlayerBoard pb,HitPoint highlight,Hashtable<BugsCell,BugsMovespec> targets,BugsCell bugs,Rectangle r,double aspect)
+    public void drawCellInBox(Graphics gc,BugsBoard gb,PlayerBoard pb,HitPoint highlight,Hashtable<BugsCell,BugsMovespec> targets,
+    			BugsCell bugs,Rectangle r,Rectangle eye,double aspect)
     {	int w = G.Width(r);
     	int h = G.Height(r);
     	int bugw = w*3/4;
@@ -606,9 +726,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	{
     		//GC.frameRect(gc,Color.yellow,r);
     	}
-    	if(bugs.height()>1)
-    	{	int eyeSize = h/4;
-    		if(StockArt.Eye.drawChip(gc,this,eyeSize,G.Left(r)+eyeSize/2,G.Top(r)+eyeSize/2,highlight,BugsId.HitCell,"expand"))
+    	{	
+    		if(StockArt.Eye.drawChip(gc,this,eye,highlight,BugsId.HitCell,"expand"))
     		{
     			highlight.hitData = bugs;
     		}
@@ -882,8 +1001,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			break;
     		}
     		if(canHit
-    				&& (StockArt.SwingCW.drawChip(gc,this,cellSize/3,(int)(xpos+cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCCW,null)
-    					| StockArt.SwingCCW.drawChip(gc,this,cellSize/3,(int)(xpos-cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCW,null)))
+    				&& (StockArt.SwingCW.drawChip(gc,this,cellSize/2,(int)(xpos+cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCCW,null)
+    					| StockArt.SwingCCW.drawChip(gc,this,cellSize/2,(int)(xpos-cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCW,null)))
     		{
     			highlight.hitObject = mainCell;
     			highlight.hit_index = pb.boardIndex;
@@ -974,7 +1093,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
           { drawBoardCell(gc,gb,pb,brect,highlight,targets,cell);
           }
      	GC.setClip(gc,cl);
-     	HitPoint hp = reviewOnly?highlight:null;
+     	HitPoint hp = reviewOnly||GameOver()?highlight:null;
      	
       	drawProxyCell(gc,hp,targets.get(gb.bugDiscards),gb.bugDiscards,deckDiscardRect,0,-0.002,0.001,BugsChip.TOP); 
       	drawProxyCell(gc,hp,targets.get(gb.goalDiscards),gb.goalDiscards,goalDiscardRect,0,-0.002,0.001,BugsChip.TOP);
@@ -1123,7 +1242,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		}
     }
     public void drawMarket(Graphics gc,Rectangle mRect,BugsBoard gb,PlayerBoard pb,HitPoint highlight,Hashtable<BugsCell, BugsMovespec> targets)
-    {
+    {	
     	int w = G.Width(mRect);
     	int h = G.Height(mRect);
      	BugsCell cells[] = gb.bugMarket;
@@ -1146,7 +1265,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     public void drawBigCell(Graphics gc,BugsBoard gb,HitPoint hp,Hashtable<BugsCell,BugsMovespec>targets)
     {
     	BugsCell cell = gb.getCell(bigCell);
-    	Rectangle r = G.copy(null,marketRect);
+    	Rectangle r = prepareOverlayBox(gc,gb,hp,marketRect);
+    	
     	int w = G.Width(r);
     	int h = G.Height(r);
     	StockArt.Scrim.getImage().drawImage(gc,G.Left(r),G.Top(r),w,h);
@@ -1224,6 +1344,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		X+= bestWidth;
     		if(col>=bestCols) { col=0; Y+= bestHeight; X=spareX; }
     	}
+    	revertOverlayBox(gc,gb,hp,marketRect);
       }
     public void printRow(Graphics gc,int l,int t,int w,int h,String... messages)
     {
@@ -1235,12 +1356,12 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	}
     }
     public void drawDeckOverlay(Graphics gc,BugsBoard gb,HitPoint hp)
-    {
+    {	Rectangle r = prepareOverlayBox(gc,gb,hp,boardRect);
     	TerrainSummary[] sum = gb.getTerrainSummary(gb.activeDeck);
-    	int w =G.Width(boardRect)*2/3;
+    	int w =G.Width(r)*2/3;
     	int h = w/2;
-    	int l = G.centerX(boardRect)-w/2;
-    	int t = G.centerY(boardRect)-h/2;
+    	int l = G.centerX(r)-w/2;
+    	int t = G.centerY(r)-h/2;
     	int step = h/(sum.length+2);
     	StockArt.Scrim.getImage().drawImage(gc,l,t,w,h);
     	GC.frameRect(gc,Color.black,l,t,w,h);
@@ -1266,7 +1387,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		t += step;
     	}
     	
-    	
+    	revertOverlayBox(gc,gb,hp,boardRect);
     			
     }
     
@@ -1275,7 +1396,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	int ngoals = goals.size();
     	int cols = Math.max(1,(int)Math.sqrt(ngoals));
     	int rows = (ngoals+cols-1)/cols;
-    	
+    	Rectangle r = prepareOverlayBox(gc,gb,hp,boardRect);
     	Goal sort[] = new Goal[ngoals];
     	{
     	int i = 0;
@@ -1285,10 +1406,10 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	}}
     	Sort.sort(sort);
     	
-    	int w = G.Width(boardRect)*2/3;
+    	int w = G.Width(r)*2/3;
     	int h = w/2;
-     	int l = G.centerX(boardRect)-w/2;
-    	int t = G.centerY(boardRect)-h/2;
+     	int l = G.centerX(r)-w/2;
+    	int t = G.centerY(r)-h/2;
     	int step = h/(rows+1);
     	StockArt.Scrim.getImage().drawImage(gc,l,t,w,h);
     	GC.frameRect(gc,Color.black,l,t,w,h);
@@ -1307,12 +1428,13 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		l += hstep;
     		if(l+hstep-l0>w) { l = l0; t+= step; }
     	}
+    	revertOverlayBox(gc,gb,hp,boardRect);
     }
     
-    public void drawBigChip(Graphics gc, HitPoint hp)
+    public void drawBigChip(Graphics gc, BugsBoard gb,HitPoint hp)
     {
     	if(bigChip!=null)
-    	{	Rectangle topCard = G.copy(null,boardRect);
+    	{	Rectangle topCard = prepareOverlayBox(gc,gb,hp,boardRect);
     		int margin = G.Width(boardRect)/20;
     		double aspect = bigChip.aspectRatio();
     		int h = G.Height(topCard)/2;
@@ -1341,6 +1463,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			hp.hitData = bigChip;
     			hp.spriteColor = null;
     		}
+    		revertOverlayBox(gc,gb,hp,boardRect);
     	}
     }
     public boolean isSelected(BugsBoard gb,PlayerBoard pb,BugsCell c)
@@ -1352,6 +1475,31 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	return (gb.board_state==BugsState.Puzzle)
    		? guiPlayer
    		: reviewOnly||G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    }
+    public Rectangle prepareOverlayBox(Graphics gc,BugsBoard gb,HitPoint selectPos,Rectangle r)
+    {	int ap = getActivePlayerIndex(gb);	
+        commonPlayer cpl = getPlayerOrTemp(ap);
+        double rot = cpl.displayRotation;
+        if(rot==0.0)
+        {
+        	return G.copy(null,r);	// always return a copy
+        }
+        int cx = G.centerX(r);
+        int cy = G.centerY(r);
+        GC.setRotation(gc,cpl.displayRotation,cx,cy);
+        G.setRotation(selectPos, cpl.displayRotation,cx, cy);
+        Rectangle rc = G.copy(null,r);
+        G.setRotation(rc,rot);
+        return rc;
+    }
+    public void revertOverlayBox(Graphics gc,BugsBoard gb,HitPoint selectPos,Rectangle r)
+    {	int ap = getActivePlayerIndex(gb);	
+    	commonPlayer cpl = getPlayerOrTemp(ap);
+    	double rot = cpl.displayRotation;
+        int cx = G.centerX(r);
+        int cy = G.centerY(r);
+        GC.setRotation(gc,-rot,cx,cy);
+        G.setRotation(selectPos, -rot,cx, cy);
     }
     /**
      * draw the main window and things on it.  
@@ -1437,24 +1585,24 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 
     	   cpl.setRotatedContext(gc, selectPos,true);
        	}
-        
        if(bigCell!=null)
-       {
-    	   drawBigCell(gc,gb,selectPos,gb.getTargets(ap));
-       }
+	       {
+	    	   drawBigCell(gc,gb,selectPos,gb.getTargets(ap));
+	       }
        if(bigChip!=null)
-       {
-    	   drawBigChip(gc,selectPos);
-       }
+	       {
+	    	   drawBigChip(gc,gb,selectPos);
+	       }
        if(goalOverlay)
-       {
-    	   drawGoalOverlay(gc,gb,selectPos);
-       }
+	       {
+	    	   drawGoalOverlay(gc,gb,selectPos);
+	       }
        if(deckOverlay)
-       {
-    	   drawDeckOverlay(gc,gb,selectPos);
-       }
-       GC.setFont(gc,standardBoldFont());
+	       {
+	    	   drawDeckOverlay(gc,gb,selectPos);
+	       }
+ 
+	       GC.setFont(gc,standardBoldFont());
        if (state != BugsState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
@@ -1485,7 +1633,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
             				gb.whoseTurn,
             				stateRect);
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
-        goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition,gb.variation.WinningScore),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,Color.black,
+        		s.get(VictoryCondition,gb.winningScore()),progressRect, goalRect);
         if(pb.canPass())
         {
         	passButton.show(gc,buttonSelect);
