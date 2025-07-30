@@ -82,8 +82,14 @@ end
 # save the databases for the current month
 #
 cd ~/cron/backup
+
 foreach curdb($database $other_databases)
  set name = "$curdb-$monthname"
+ set mname = "${curdb}-schema.sql" 
+ if(-e $mirror/$mname) rm $mirror/$mname
+ mysqldump --user=$db_user --password=$db_password --no-data $curdb  > $mname
+ ln $mname $mirror/$mname
+
  mysqldump  --single_transaction -q --password=$db_password --user=$db_user $curdb | gzip > $name
 end
 

@@ -212,7 +212,7 @@ sub disconnect()
 # return an executed query, ready to be interrogated, or null
 sub query()
 { my ($dbh,$com) = @_;
-  #print "Q: $com\n";
+  #print "Q: $com<br>\n";
   my $start = Time::HiRes::time();
   my $sth = $dbh->prepare($com);
   $::lastquery{$sth} = $com;
@@ -280,7 +280,7 @@ sub finishQuery()
 
 sub last_insert_id()
 { my ($sth) = @_;
-  return $sth->{'mysql_insertid'};
+  return $sth==0 ? 0 : $sth->{'mysql_insertid'};
 }
 	
 # return true for a sucessful command
@@ -417,8 +417,8 @@ sub allow_ip_access()
    my $query = "SELECT status,uid,if((UNIX_TIMESTAMP(changed)+$bantime)>UNIX_TIMESTAMP(),1,0),min,max,UNIX_TIMESTAMP(changed),UNIX_TIMESTAMP(),short_time,long_time from ipinfo where $range";
    my $sth = &query($dbh,$query);
    my $numrows = &numRows($sth);
-   my $gooduid = 0;
-   
+   my $gooduid = $numrows>0 ? 0 : 1;	# no info is ok
+  
    if(index($ip,'.')>0) { $::single_ip_ip = $intip; }
 
    while ($numrows>0)
@@ -565,10 +565,9 @@ sub note_failed_login()
   {
   my $ii = $dbh->quote($intip);
   my $exquery = "SELECT status,uid,unix_timestamp(changed),badlogincount,unix_timestamp(),comment from ipinfo"
-			. " WHERE (min=$ii and max=$ii) AND (status='auto' or status='autobanned')";
+			. " WHERE (min=$ii and max=min) AND (status='auto' or status='autobanned')";
   my $sth = &query($dbh,$exquery);
   my $nr = &numRows($sth);
-
   my $query = "UPDATE ipinfo set badlogincount=badlogincount+1,logincount=GREATEST(0,logincount-1)"
 				. " WHERE ($ii>=min AND $ii<=max)";
   #print "Q: $nr $query<br>";
