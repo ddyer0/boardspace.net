@@ -6162,11 +6162,20 @@ public abstract class commonCanvas extends exCanvas
     	}
     
 	private boolean saveDisplayBoardNeeded = false;
+	/**
+	 * call this from the mouse manager when the mouse activitivity
+	 * may have changed something, so the display may be out of sync
+	 * with main board.   Usually after a click.
+	 */
+	public void saveDisplayBoardNeeded()
+	{
+		saveDisplayBoardNeeded = true;
+	}
 	//callback from the mouse manager, which may have done something
     //that affects the display state
 	public void repaintForMouse(int n,String s) {
 		// removed 7/19/25, was causing spin in bugspiel 
-		// saveDisplayBoardNeeded = true;
+		// saveDisplayBoardNeeded();
 		super.repaint(n,s);
 	}
 	

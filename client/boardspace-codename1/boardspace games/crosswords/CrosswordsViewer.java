@@ -1877,7 +1877,11 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary 2025/07/28
+     * 626 files visited 0 problems after pruning about 30 early games
      */
+    
+    
     public void ReplayMove(sgf_node no)
     {
         String comments = "";
@@ -1976,5 +1980,6 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 			}
     	}
     }
+
 }
 

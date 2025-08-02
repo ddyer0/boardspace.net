@@ -86,7 +86,8 @@ public class NumberMenu extends Rectangle {
 	int startingNumber = 0;
 	private boolean mouseIsOn = false;
 	public boolean includePartialMoves = true;
-	double arrowOpacity = 0.7;		// opacity for arrows
+	public boolean includeNumbers = true;	// if true, include the actual move number at the end of the arrow
+	public double arrowOpacity = 0.7;		// opacity for arrows
     public double lineWidthMultiplier = 0.05;		// cellsize multiplier for line width of the arrow
     public double arrowOffsetMultiplier = 0.2;		// cellsize multiplier for the amount the point falls short of the arrow end target
     public double arrowWidthMultiplier = 0.25;		// cellsize multiplier for the width of the arrowhead
@@ -503,10 +504,12 @@ public class NumberMenu extends Rectangle {
  * @param idx
  */
     public void drawNumber(Graphics gc,int cellSize,LocationProvider dest,Font pieceLabelFont,Color color,int idx)
+    {	if(includeNumbers)
     {
    		GC.setFont(gc,pieceLabelFont);
      	GC.drawOutlinedText(gc,true,dest.getX()-cellSize/2,dest.getY()-cellSize/2,cellSize,cellSize,color,Color.black,
      			moveNumberString(idx));
+    }
     }
    
     /**
@@ -542,9 +545,12 @@ public class NumberMenu extends Rectangle {
 		double cos2 = Math.cos(angle+Math.PI/2);
 		int xpos = (int)(x2+sin*cellSize*position+sin2*cellSize*lineWidthMultiplier);
 		int ypos = (int)(y2+cos*cellSize*position+cos2*cellSize*lineWidthMultiplier);
+		if(includeNumbers)
+		{
  		GC.setFont(gc,pieceLabelFont);
      	GC.drawOutlinedText(gc,true,xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize,color,Color.black,
      			moveNumberString(idx));
+		}
 	
 		
     }

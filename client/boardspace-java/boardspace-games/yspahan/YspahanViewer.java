@@ -1337,7 +1337,9 @@ private void playSounds(commonMove m)
         		PlayerBoard pb = b.getPlayerBoard(index);
             	if(pb!=null)
             		{if(remoteWindow>=0) { pb.showHiddenWindowCards = !pb.showHiddenWindowCards; }
-            		else { pb.showCards = !pb.showCards; }
+            		else 
+            			{ pb.showCards = !pb.showCards; 
+            			}
             		}
             	}            	
             	break;

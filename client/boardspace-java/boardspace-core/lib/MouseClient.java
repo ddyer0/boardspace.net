@@ -24,8 +24,28 @@ package lib;
  */
 public interface MouseClient extends SizeProvider
 {
+	/**
+	 * call this when the mouse has been active so repaining the screen may be needed.
+	 * @param n how soon (milliseconds)
+	 * @param s some context for debugging
+	 */
 	public void repaintForMouse(int n,String s);
+	/**
+	 * call this from the mouse manager when the mouse activitivity
+	 * may have changed something, so the display may be out of sync
+	 * with main board.   Usually after a click.
+	 */
+	public default void saveDisplayBoardNeeded() {};
+	/**
+	 * called at the end of a pinch zoom
+	 */
 	public void stopPinch();
+	/**
+	 * return true if the client is moving something.
+	 * 
+	 * @param pt
+	 * @return
+	 */
 	public boolean hasMovingObject(HitPoint pt);
 	
 	public void performStandardStartDragging(HitPoint pt);

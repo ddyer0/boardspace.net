@@ -345,6 +345,7 @@ public class MouseManager
 			if(pt.inStandard)
 				{ canvas.performStandardStopDragging(pt); }
 				else { canvas.StopDragging(pt); }
+        	canvas.saveDisplayBoardNeeded();
         	canvas.repaintForMouse(0,"stopDragging");// get the results out there
         	//G.addLog("request repaint");
 		}
@@ -354,6 +355,7 @@ public class MouseManager
 			{	if(pt.inStandard) { canvas.performStandardStartDragging(pt); }
 				else { canvas.StartDragging(pt); } 
 				pt.dragging |= canvas.hasMovingObject(pt);
+				canvas.saveDisplayBoardNeeded();
 				canvas.repaintForMouse(0,"startDragging");// get the results out there
 			}
 		}

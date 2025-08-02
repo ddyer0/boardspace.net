@@ -41,6 +41,7 @@ import java.util.*;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
 
@@ -137,7 +138,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     private Color rackBackGroundColor = new Color(225,225,225);
     private Color rackIdleColor = new Color(164,164,164);
     private Color boardBackgroundColor = new Color(200,200,200);
-    
+    private Color arrowColor = new Color(1.0f,0.7f,0.1f);	// sort of orange
     
      
     // private state
@@ -421,7 +422,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*3,	// minimum cell size
-    			fh*4,	// maximum cell size
+    			fh*3.5,	// maximum cell size
     			0.3		// preference for the designated layout, if any
     			);
     	
@@ -858,6 +859,13 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		int cellSize,int xpos,int ypos,String msg)
     {	//pb = gb.getCurrentPlayerBoard();
     	CellId startHC = highlight==null ? null : highlight.hitCode;
+    	
+	    if(gc!=null)
+    	{
+	    	Point2D p = gc.shadowTransform(xpos,ypos);
+	    	numberMenu.saveSequenceNumber(cell,(int)p.getX(),(int)p.getY());
+    	}
+
     	boolean val = cell.drawStack(gc,this,msg==BugsChip.NOTHING ? null : highlight,cellSize,xpos,ypos,0,dx,dy,msg);
     	if(!val && msg==BugsChip.DROP && G.pointInRect(highlight,fullRect))
     	{
@@ -942,6 +950,13 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			String msg)
     {
     	boolean val = cell.drawStack(gc,this,r,highlight,lift,xstep,ystep,msg);
+	    if(gc!=null)
+	    	{
+	    	int cx = G.centerX(r);
+	    	int cy = G.centerY(r);
+	    	Point2D p = gc.shadowTransform(cx,cy);
+	    	numberMenu.saveSequenceNumber(cell,(int)p.getX(),(int)p.getY());
+	    	}
     	if(!val
     			&& BugsChip.DROP==msg
     			&& G.pointInRect(highlight,r))
@@ -1022,7 +1037,6 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     {	boolean some = false;
 	    int ypos = G.Bottom(brect) - gb.cellToY(cell);
 	    int xpos = G.Left(brect) + gb.cellToX(cell);
-	    numberMenu.saveSequenceNumber(cell,xpos,ypos);
     	BugsCell top = cell.above;
     	BugsCell bottom = cell.below;
     	int cellSize;
@@ -1092,7 +1106,6 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-     	numberMenu.clearSequenceNumbers();
      	// this is a hack for codename1.  Drawing cells with rotation damages the clipping region
      	// which is apparent when using the pop-up magnifier.
      	Shape cl = GC.getClip(gc);
@@ -1167,7 +1180,6 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			drawGoalScore(gc,gb,cx,cy,bonusCell,(GoalCard)bonusChip);
     			}
     	}
-    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
     public void drawReady(Graphics gc,Rectangle mRect,BugsBoard gb,PlayerBoard pb,HitPoint highlight)
     {	
@@ -1576,6 +1588,9 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		   			? new Hashtable<BugsCell,BugsMovespec>() 
     		   			: gb.getTargets(ap);
        PlayerBoard pb = gb.getPlayerBoard(ap);
+
+       numberMenu.clearSequenceNumbers();
+
        drawBoardElements(gc, gb, pb,boardRect, selectPos,targets);
        int whoseTurn = gb.whoseTurn;
        boolean doneState = gb.DoneState(getActivePlayerIndex(gb));
@@ -1592,6 +1607,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 
     	   cpl.setRotatedContext(gc, selectPos,true);
        	}
+
        if(bigCell!=null)
        {
     	   drawBigCell(gc,gb,selectPos,gb.getTargets(ap));
@@ -1628,6 +1644,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 		// in any case, pass the mouse location so tooltips will be attached.
         drawPlayerStuff(gc,(state==BugsState.Puzzle),selectPos,HighlightColor,rackBackGroundColor);
  
+        
         // draw the avatars
         standardGameMessage(gc,
         					// note that gameOverMessage() is also put into the game record
@@ -1647,6 +1664,13 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         	passButton.show(gc,buttonSelect);
         }
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
+        
+        numberMenu.lineWidthMultiplier = 0.1;
+        numberMenu.arrowOpacity = 1.0;
+        numberMenu.includeNumbers = false;
+        
+        if(!overlay) { numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,arrowColor); }
+
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
@@ -1692,6 +1716,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
    		 if(mm.op==MOVE_RESET && simultaneousTurnsAllowed())
     	 {
     		BugsMovespec m = (BugsMovespec)mm;
+            // record where the boundaries in move numbers lie
     		PlayerBoard pb = bb.getPlayerBoard(m.forPlayer);
     		if(pb.pickedObject!=null)
     		{	BugsMovespec m2 = new BugsMovespec(MOVE_DROP,pb.pickedSource,pb.pickedObject,pb.pickedSource,m.forPlayer);
@@ -1701,6 +1726,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	 }
 
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.activeMoveNumber());
         
         // movenumber() vs activeMoveNumber().  ActiveMoveNumber causes the 
         // move arrows to disappear when the next move has started.  For games with from-to or more

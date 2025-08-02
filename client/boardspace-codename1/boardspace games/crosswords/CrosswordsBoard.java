@@ -224,7 +224,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 }
 
 class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
-{	static int REVISION = 108;			// 100 represents the initial version of the game
+{	static int REVISION = 109;			// 100 represents the initial version of the game
 										// revision 101 reduces the size of the rack to actual size and adds rack maps
 										// revision 102 does nothing
 										// revision 103 fixed "no duplicate words" bug
@@ -233,6 +233,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 										// revision 106 changes the default for "backwards"
 										// revision 107 fixes the split word direction bug
 										// revision 108 changes the replacement of tiles when the draw pile is empty
+									    // revision 109 fixes a bug which allowed breaks in words
 
 	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -858,6 +859,46 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	return(c1.row==c0.row);
     }
     
+    private boolean allHLetters()
+    {
+    	CrosswordsCell min=null;
+    	CrosswordsCell max=null;
+    	for(int lim=droppedDestStack.size()-1; lim>=0; lim--)
+    	{	CrosswordsCell c = droppedDestStack.elementAt(lim);
+    		char col = c.col;
+    		if(min==null || col<min.col) { min = c; }
+    		if(max==null || col>max.col) { max = c; }
+    	}
+    	while(min!=max)
+    	{
+    		if(min.isEmpty()) 
+    			{
+    			return false; 
+    			}
+    		min = min.exitTo(CELL_RIGHT);
+    	}
+    	return true;
+    }
+    private boolean allVLetters()
+    {
+    	CrosswordsCell min=null;
+    	CrosswordsCell max=null;
+    	for(int lim=droppedDestStack.size()-1; lim>=0; lim--)
+    	{	CrosswordsCell c = droppedDestStack.elementAt(lim);
+    		int row = c.row;
+    		if(min==null || row<min.row) { min = c; }
+    		if(max==null || row>max.row) { max = c; }
+    	}
+    	while(min!=max)
+    	{
+    		if(min.isEmpty()) 
+    			{ 
+    			  return false;
+    			}
+    		min = min.exitTo(CELL_UP);
+    	}
+    	return true;
+    }
     // true if all new words are in a line
     public boolean isDropLine()
     {	int sz = droppedDestStack.size();
@@ -870,8 +911,12 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     			fixedcol &= c.col==root.col;
     			fixedrow &= c.row==root.row;
     		}
-    	if(fixedrow||fixedcol) { return(true); }
-    	
+    	if(revision<109) { if(fixedrow|fixedcol) { return true; }}
+    	else
+    	{
+    	if(fixedrow && allHLetters()) { return true; }
+    	if(fixedcol && allVLetters()) { return true; }
+    	}
     	if(diagonals)
     	{
     		boolean fixedDiag1 = true;
@@ -1225,10 +1270,12 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	else if(duplicate!=null) { invalidReason = DuplicateWord; }
     	else invalidReason = null;
     	if(andScore) { findWordCaps(); }
-    	return( connected 
+    	boolean val = connected 
     			&& allwords 
     			&& (revision<107 || (invalidReason==null)) // can't make valid words in 2 directions
-    			&& ((revision<103) || (duplicate==null)) && hasnew);
+    			&& ((revision<103) || (duplicate==null))
+    			&& hasnew;
+    	return val;
     }
 
    	CellStack endCaps = new CellStack();	// cells at the end of words
@@ -2049,7 +2096,9 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         }
     }
     public void validateMap(int forplayer)
-    {		int used = 0;
+    {		if(revision>=103)
+    		{	
+    		int used = 0;
     		int mapped = 0;
     		int nmapped = 0;
     		CrosswordsCell prack[] = rack[forplayer];
@@ -2072,6 +2121,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     		G.Assert(nmapped==used,"map not complete");
     		
     		}
+    }
 
     
     
@@ -2303,8 +2353,22 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		 		int notInDirection,int inDirection)
  {	
  	int directionStep = diagonals ? 1 : CELL_QUARTER_TURN;
- 	int lastDir = inDirection>=0 ? inDirection+1 : backwards ? CELL_FULL_TURN : diagonals ? CELL_FULL_TURN/2 : CELL_FULL_TURN;
- 	int firstDir = inDirection>=0 ? inDirection : diagonals ? 0 : backwards ? CELL_LEFT : CELL_RIGHT;
+ 	int firstDir = inDirection>=0 
+ 						? inDirection 
+ 						: diagonals 
+ 							? backwards
+ 								? 0
+ 								:  CELL_RIGHT 
+ 							: backwards
+ 								? CELL_LEFT 
+ 								: CELL_RIGHT;
+ 	int lastDir = inDirection>=0 
+				? inDirection+1 
+				: backwards 
+					? CELL_FULL_TURN 
+					: diagonals 
+						? firstDir+CELL_HALF_TURN-1	// cell-down-left is 0 but we want > firstDir
+						: CELL_FULL_TURN;
  	int total = 0;
  	for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
  		{	Entry word = words.nextElement();
@@ -2659,8 +2723,5 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  {	robot = rob;
  	robotVocabulary = vocab;
  }
- public boolean canResign() 
- 	{ return(G.debug()); 	// not quite there yet, needs to handle closing the connection too
- 	}
 
 }

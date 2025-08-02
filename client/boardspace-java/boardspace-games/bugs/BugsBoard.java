@@ -748,7 +748,10 @@ public class BugsBoard
        	if(ch!=null) { c.addChip(ch);  }
     	return(old);
     }
-
+    public int activeMoveNumber()
+    {
+    	return super.activeMoveNumber();
+    }
  
 	//get the index in the image array corresponding to movingObjectChar 
     // or HitNoWhere if no moving object.  This is used to determine what

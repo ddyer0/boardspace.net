@@ -425,6 +425,9 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	{
 		return c==droppedDest;
 	}
+	int unpick;
+	int undrop;
+	
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
@@ -434,6 +437,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     	//G.print("t "+c.topChip().chipNumber()," ",ch.chipNumber());
     	parent.p1(pickedIndex>=0,"%s should be there",ch);
     	c.removeChipAtIndex(pickedIndex);
+    	unpick =c.lastPicked;
+    	c.lastPicked= parent.moveNumber;
     	lastPicked = pickedObject = ch;
     	droppedObject = null;
     	lastDroppedObject = null;
@@ -447,6 +452,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     	rv.removeChip(droppedObject);
     	droppedObject = null;
     	droppedDest = null;
+    	rv.lastDropped = undrop;
     	rv.player = rv.xPlayer;
     	rv.placedInRound = rv.xPlacedInRound;
     	setUIState(dropState);
@@ -459,6 +465,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
     {	BugsCell rv = pickedSource;
     	rv.insertChipAtIndex(pickedIndex,pickedObject);
     	pickedIndex = -1;
+    	rv.lastPicked = unpick;
     	pickedSource = null;
     	pickedObject = null;
     	droppedObject = null;
@@ -486,6 +493,8 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
         	c.addChip(pickedObject);
         	droppedObject = pickedObject;   
         	c.xPlayer = c.player; 
+        	undrop = c.lastDropped;
+        	c.lastDropped = parent.moveNumber;
   		  	c.player = chip;
         	if(droppedObject.isBugCard() && parent.board_state==BugsState.Play) 
         		{ 

@@ -59,7 +59,9 @@ public class BugsCell
 	int rotation = 0;
 	BugsBoard owningBoard = null;
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
-	int lastPlaced = -1;
+	int lastDropped = -1;
+	int lastPicked =-1;
+	
 	public BugsCell() {}
 	public boolean isOccupied()
 	{
@@ -114,7 +116,8 @@ public class BugsCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		lastPlaced = ot.lastPlaced;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 		background = ot.background;
 		cost = ot.cost;
 		rotation = ot.rotation;
@@ -131,7 +134,7 @@ public class BugsCell
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = -1;
+		lastPicked = lastDropped = -1;
 		purchased = false;
 		player = null;
 		xPlayer = null;
@@ -178,7 +181,7 @@ public class BugsCell
 	 * lastPlaced also has to be maintained by reInit and copyFrom
 	 */
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastPicked : lastDropped;
 	}
 	
 	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)

@@ -501,6 +501,17 @@ public class Graphics extends SystemGraphics
 	 private AffineTransform shadow = new AffineTransform();
 	 public AffineTransform getShadowTransform() { return shadow; }
 	 
+	 /**
+	  * this is accurate to the screen.  using getTransform does some Y flip around the center of rotation
+	  * 
+	  * @param x
+	  * @param y
+	  * @return
+	  */
+	 public Point2D shadowTransform(int x,int y)
+	 {
+		return shadow.transform(x,y);
+	 }
 	 private boolean isInvisibleAlt(int x,int y,int w,int h)
 	  {
 		 int aw = actualWidth();

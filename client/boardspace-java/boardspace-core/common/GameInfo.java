@@ -162,6 +162,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	// parameters expected in the root, supplied in login 
 	public static final String GAMETYPE = "GameType";
 	public static final String GAMEINFO = "gameinfo";
+	public static final String GAMEINDEX = "gameindex";
 	public ScoringMode scoringMode()
 	{
 		if(scoringMode==null)
@@ -246,7 +247,15 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		// null for not found, rather than futureGame
 		return(null);
 	}
-
+	public static GameInfo findByDirectoryIndex(int in)
+	{
+		for(int lim = allGames.size()-1; lim>=0; lim--)
+		{	GameInfo gi = allGames.elementAt(lim);
+			if(gi.dirNum==in) { return(gi); }
+			}
+		// null for not found, rather than futureGame
+		return(null);
+	}
 	public boolean allowedBySet(Bitset<ES> includedTypes)
 	{	if(this==futureGame)  { return(true); }
 		return(includedTypes.test(enabled)
