@@ -477,7 +477,7 @@ public class Session implements LobbyConstants
 	  		  return(false); 
 	  		}
 	    if( ((currentRobot!=Bot.NoRobot) && (currentRobot!=Bot.NoRobotRandom))
-	    		&& (!G.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
+	    		&& (!AR.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
 	      {
 	    	  for(Bot b : robots)
 	    	  {
@@ -550,7 +550,7 @@ public class Session implements LobbyConstants
 
     boolean containsUser(User u)
     {
-    	return(G.arrayContains(players, u));
+    	return(AR.arrayContains(players, u));
     }
 
     boolean containsName(String name)

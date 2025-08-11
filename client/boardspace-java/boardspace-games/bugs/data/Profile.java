@@ -177,9 +177,20 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     }
     public static String uncomposite = "g:/share/projects/boardspace-java/boardspace-games/";
     
+    /**
+     * something tricky here.  If were're running in the development environment,
+     * we scan the actual environment and build a list of images to load, and if
+     * we did that, we write the list of images we found into a text file.
+     * If we're NOT in that environment, we use the list rather than scanning
+     * for images.   This is important because the exact sequence of images
+     * becomes the identity of the profile items.   A second side effect is that
+     * the .png files are split into .jpg pairs, while scanning, which is not
+     * appropriate otherwise.
+     * @param imagePath
+     */
     public void loadImages(String imagePath)
-    {   
-		String images[] = getImageResources(imagePath);
+    {   boolean desktop = G.getBoolean("desktop",false);
+		String images[] = desktop ? getImageResources(imagePath) : null;
 		boolean empty = images==null;
 		PrintStream out = null;
 		try {
@@ -188,7 +199,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
 			// when running from jars, the list isn't available
 			images = getImageResourceList(imagePath,"index.txt"); 
 			}
-		else if(!G.isCodename1() && G.debug() && G.getBoolean("desktop",false))
+		else if(!G.isCodename1() && G.debug() && desktop)
 			{
 			// generate the list for use in the delivered version
 			// because of the shortcuts in codename1 resoruces, the file names have to be unique

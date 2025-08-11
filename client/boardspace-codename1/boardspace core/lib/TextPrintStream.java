@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2023 by Dave Dyer
+	Copyright 2006-2025 by Dave Dyer
 
     This file is part of the Boardspace project.
 
@@ -70,10 +70,7 @@ public class TextPrintStream extends Utf8Printer implements ShellProtocol
 			if(msg!=null)
 			{for(int i=0;i<msg.length;i++) 
 			{ Object str = msg[i];
-			  if(str==null) 
-				{ str = "null"; 
-				}
-			super.print(str.toString()); 
+			  super.print(G.toString(str));
 			}}
 		}
 		public void println(Object... msg) {

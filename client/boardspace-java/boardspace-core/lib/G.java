@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2023 by Dave Dyer
+	Copyright 2006-2025 by Dave Dyer
 
     This file is part of the Boardspace project.
     
@@ -119,6 +119,7 @@ public class G extends Platform implements Timestamp
 	public static String getPostedError() { String p = postedError; postedError = null; return(p); }
 	
 	public static Hashtable<String,String>messages = new Hashtable<String,String>();
+	/** print once. */
 	public static boolean p1(String msg)
 	{
 		if(messages.get(msg)==null)
@@ -151,19 +152,28 @@ public class G extends Platform implements Timestamp
 		else
 		{ if(msg!=null) 
 			{ 
-			Plog.messages.addLog("",msg);
-			for(int i=0;i<msg.length;i++) { Object m = msg[i]; System.out.print( m==null?"null":m.toString()); }
+			for(Object m : msg)
+				{
+				 System.out.print( toString(m)); 
+				}
 			}
 		  System.out.println();
 		}
 		return(false);
+	}
+	public static String toString(Object m)
+	{	if(m==null) { return " null"; }
+		if(m instanceof String) { return (String)m; }
+		if(m instanceof byte[]) { return toString((byte[])m); }
+		if(m instanceof Object[]) { return toString((Object[])m); }
+		return m.toString();
 	}
     public static String toString(Object ob[])
     {
     	StringBuilder p = new StringBuilder();
     	if(ob==null) { p.append(""+ob); }
     	else { p.append("#{");}
-    	for(Object c :  ob) { p.append(""+c+" "); }
+    	for(Object c :  ob) { p.append(toString(c)); }
     	p.append("}");
     	return(p.toString());
     }
@@ -428,34 +438,6 @@ public class G extends Platform implements Timestamp
     	long seconds = now/1000;
     	long minutes = seconds/60;
     	return(G.format("%02d:%02d %03d",minutes%60,seconds%60,ms));
-    }
-    // tests for format
-    //   public static void main(String args[])
-    //   {
-    //   	System.out.println(format("first and none"));
-    //   	System.out.println(format("first and %% percent"));
-    //   	System.out.println(format("first %s one","and"));
-    //   	System.out.println(format("first and %d",1));
-    //   	System.out.println(format("first and %s"));
-    //   	System.out.println(format("first %x and extra","and","so on"));
-    //   }
-    /**
-     * @param list
-     * @param c
-     * @param max
-     * @return  true if the array contains the specified object
-     */
-    public static boolean arrayContains(Object list[],Object c,int max)
-    {	for(int i=0;i<max;i++) { if(list[i]==c) { return(true); }}
-    	return(false);
-    }
-    /**
-      * @param list
-     * @param c
-     * @return true if the object contains the specified object.
-     */
-    public static boolean arrayContains(Object list[],Object c)
-    {	return((list==null)?false : arrayContains(list,c,list.length));
     }
     /** this should be used for generic error conditions.  Error will be caught by event loops
      * and logged appropriately.
@@ -1067,7 +1049,8 @@ public class G extends Platform implements Timestamp
     static public boolean BoolToken(StringTokenizer msg)
     {	return(Boolean.parseBoolean(nextToken(msg)));
     }
-    
+
+  
     /**
      * 
      * @param msg
@@ -1921,51 +1904,6 @@ public static String expandClassName(String classname)
 }
 
 
-    private static void appendCh(StringBuilder b,int ch)
-    {
-    	if(ch>=10) { appendCh(b,ch/10); };
-    	b.append((char)((char)('0'+ch%10)));
-    }
-    /**
-     * a simple http-safe encoding for strings that may contain unexpected characters
-     * decode with {@link #decodeAlphaNumeric}
-     *
-     * @param s
-     * @return the encoded string
-     */
-    public static String encodeAlphaNumeric(String s)
-    {	if(s==null) { return(null); }
-    	StringBuilder out = new StringBuilder();
-    	for(int i=0;i<s.length();i++)
-    	{	char ch = s.charAt(i);
-    		if(isLetterOrDigit((char)ch)) { out.append(ch); }
-    		else 
-    		{ out.append('%');
-    		  appendCh(out,ch);
-    		  out.append('%');
-    		}
-    	}
-    	return(out.toString());
-    }
-    /**
-     * decode a string that was encoded by {@link #encodeAlphaNumeric}
-     * @param s
-     * @return the decoded string
-     */
-    public static String decodeAlphaNumeric(String s)
-    {
-    	StringBuilder out = new StringBuilder();
-    	for(int i=0;i<s.length();i++)
-    	{	int ch = s.charAt(i);
-    		if(ch=='%') 
-    		{	char nextCh;
-    			ch = 0;
-    			while((nextCh=s.charAt(++i))!='%') { ch = ch*10+(nextCh-'0'); }
-    		}
-    		out.append((char)ch);
-    	}
-    	return(out.toString());
-    }
     static boolean LEGACY_CONSOLE = false;
     /**
      * create a simple console window that will be the target of {@link #print}
@@ -2132,20 +2070,6 @@ public static String expandClassName(String classname)
     	return(null);
     }
  	/**
-	 * rotate hitpoint H around pivot point cx,cy.  Auxiliary rectangle spriteRect is
-	 * also rotated.  This only works as intended for 90 degree rotations. 
-	 * @param h
-	 * @param ang
-	 * @param cx
-	 * @param cy
-	 */
-    public static void setRotation(HitPoint h,double ang,int cx,int cy)
-    {	
-    	if((h!=null))
-    	{	  h.setRotation(ang,cx,cy); 
-        }
-    }
-    /**
      *  translate an angle which should be near a multiple of PI/2 (1/4 turn) to the number
      * of quarter turns clockwise, range 0-3
      * @param ang
@@ -2300,17 +2224,6 @@ public static String expandClassName(String classname)
 	    			    ? val+range*2
 	    			    : val);
 	     }
-	    /** Cheap pseudo random, intended to jitter the position
-	     * of stones a little.  Returned as -m/2 to m/2
-	     * @param x
-	     * @param y
-	     * @param m
-	     * @return the value
-	     */
-	    public static int CPR(int x,int y,int m)
-	    {	//x*prime1+y*prime2 mod prime3
-	    	return(((x*9803+y*10211)%9679)%Math.max(1,m)-m/2);
-	    }
 	    public static String platformId()
 	    {
 	    	return G.concat(getPlatformName(),getPlatformSubtype()," ",getAppVersion());
@@ -2356,29 +2269,7 @@ public static String expandClassName(String classname)
 			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}
 		
-		public static int compareTo(String s1,String s2)
-		{
-			if(s1==null)
-			{
-				return s2==null ? 0 : -1;
-			}
-			if(s2==null) { return 1; }
-			int l1 = s1.length();
-			int l2 = s2.length();
-			int lim = Math.min(l1,l2);
-			for(int i=0;i<lim;i++)
-			{
-				int dif = s2.charAt(i) - s1.charAt(i);
-				if(dif!=0) { return dif; }
-			}
-			return l1==l2 ? 0 
-					: l1<l2 ? -1 : 1;
-		
-		}
-		// feature test for turnbased included
-		public static boolean TURNBASED()
-		{	return TURNBASED ;
-		}
+
 		
 	}
  	

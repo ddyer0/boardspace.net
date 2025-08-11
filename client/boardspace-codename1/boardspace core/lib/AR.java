@@ -338,4 +338,23 @@ public class AR {
 	   		b.append("]");
 	   		return b.toString();
 	   }
+	/**
+	 * @param list
+	 * @param c
+	 * @param max
+	 * @return  true if the array contains the specified object
+	 */
+	public static boolean arrayContains(Object list[],Object c,int max)
+	{	for(int i=0;i<max;i++) { if(list[i]==c) { return(true); }}
+		return(false);
+	}
+
+	/**
+	  * @param list
+	 * @param c
+	 * @return true if the object contains the specified object.
+	 */
+	public static boolean arrayContains(Object list[],Object c)
+	{	return((list==null)?false : arrayContains(list,c,list.length));
+	}
 }

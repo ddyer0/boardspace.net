@@ -1346,7 +1346,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
 		case DROP_STATE:
 		case DROPTILE_STATE:
 			ExxitCell tempDests[]=getTempDest();
-			boolean val = G.arrayContains(tempDests,cell,legalDests(pickedSource,pickedObject,tempDests));
+			boolean val = AR.arrayContains(tempDests,cell,legalDests(pickedSource,pickedObject,tempDests));
 			returnTempDest(tempDests);
 			return(val);
 

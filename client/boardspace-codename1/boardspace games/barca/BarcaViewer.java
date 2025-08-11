@@ -40,7 +40,6 @@ import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-// TODO think about "consistent" and "3 player" variants
 // TODO annotations with perspective are placed a little oddly
 // TODO barca needs the draw offer/decline logic
 public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants,PlacementProvider

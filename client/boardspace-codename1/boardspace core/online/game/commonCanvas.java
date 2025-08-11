@@ -6694,7 +6694,7 @@ public abstract class commonCanvas extends exCanvas
     			&& (name.charAt(name.length()-1)!='"')) 
     		{ name = name + " " +tokens.nextToken(); // accumulate the full quoted name  
     		}	
-		p.setPlayerName(G.trimQuotes(G.decodeAlphaNumeric(name)),false,this);
+		p.setPlayerName(G.trimQuotes(Base64.decodeAlphaNumeric(name)),false,this);
 		return(true);
     	}
     	else if(TIME.equals(first)
@@ -8134,7 +8134,7 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 
 		while(KEYWORD_PLAYER.equals(tok))
 		{	int indx = G.IntToken(his);
-			String name = G.decodeAlphaNumeric(his.nextToken());
+			String name = Base64.decodeAlphaNumeric(his.nextToken());
 			extendPlayers(indx);
 			commonPlayer p = players[indx];
 			if(p==null) { p = players[indx] = new commonPlayer(indx); }
@@ -9236,7 +9236,7 @@ public void verifyGameRecord()
 	        		if(p!=null) 
 	        		{   if(includePlayerNames)
 	        	        {	
-	        			G.append(playerinfo, KEYWORD_PLAYER , " ",i," ",G.encodeAlphaNumeric(p.trueName), " ");
+	        			G.append(playerinfo, KEYWORD_PLAYER , " ",i," ",Base64.encodeAlphaNumeric(p.trueName), " ");
 	        	        }
 	         			G.append(orderinfo, KEYWORD_PINFO2 , " ",p.uid , " ",(p.getOrder()+1000)," ") ;
 	         		}

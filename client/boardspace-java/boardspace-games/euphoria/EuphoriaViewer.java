@@ -953,7 +953,7 @@ private Color playerBackground[] = {
     	cx = G.centerX(brect);
     	cy = G.centerY(brect);
     	GC.setRotation(gc, newrotation, cx, cy);
-    	G.setRotation(tip,newrotation, cx, cy);
+    	HitPoint.setRotation(tip,newrotation, cx, cy);
     	}
      	if(gc!=null) 
      		{ Image im = EuphoriaChip.CloudBackground.getImage(loader);
@@ -1065,7 +1065,7 @@ private Color playerBackground[] = {
     	if(newrotation!=0)
     	{
     	GC.setRotation(gc, -newrotation, cx, cy);
-        G.setRotation(tip,-newrotation, cx, cy);
+        HitPoint.setRotation(tip,-newrotation, cx, cy);
     	}
     	return(somehit);
     }
@@ -1822,7 +1822,7 @@ private Color playerBackground[] = {
     	cx = G.centerX(brect);
     	cy = G.centerY(brect);
     	GC.setRotation(gc, rotation, cx, cy);
-    	G.setRotation(highlight,rotation, cx, cy);
+    	HitPoint.setRotation(highlight,rotation, cx, cy);
     	}
     	int w = G.Width(brect);
     	int h = G.Height(brect);
@@ -2069,7 +2069,7 @@ private Color playerBackground[] = {
     	if(!fromHidden && rotation!=0)
     	{
      	GC.setRotation(gc, -rotation, cx, cy);
-    	G.setRotation(highlight,-rotation, cx, cy);
+    	HitPoint.setRotation(highlight,-rotation, cx, cy);
     	}
     	
     	// draw the close box

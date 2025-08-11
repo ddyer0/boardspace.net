@@ -86,7 +86,7 @@ import online.search.SimpleRobotProtocol;
  *  3) fix the package names in the clones
  *  4) rename each of the classes in the clones, using refactor/rename
 */
-public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants
+public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants,PlacementProvider
 {
      /**
 	 * 
@@ -252,7 +252,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	//
          int stateY = boardY-stateH;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
   
         
@@ -342,6 +342,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	// something which might allow an action.  Either gc or highlight might be
     	// null, but not both.
         //
+     	numberMenu.clearSequenceNumbers();
 
         // using closestCell is preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
@@ -371,7 +372,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
              { // checking for pointable position
             	TabChip.Selection.drawChip(gc,this,BOARDCELLSIZE,xpos,ypos,null);
              }
-
+             numberMenu.saveSequenceNumber(cell,xpos,ypos);
              cell.drawChip(gc, this, BOARDCELLSIZE, xpos,ypos,null);
               if(captures.get(cell)!=null)
               {
@@ -380,6 +381,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 
             }
         }
+        numberMenu.includeNumbers = false;
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
 	// draw a box of spare chips. It's purely for visual effect.
     private void drawShipRect(Graphics gc, commonPlayer pl,TabGameBoard gb,Rectangle r, TabCell pool, HitPoint highlight)
@@ -583,6 +586,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 
     	 handleExecute(b,mm,replay);
         
+        numberMenu.recordSequenceNumber(b.moveNumber());
         startBoardAnimations(replay,b.animationStack,BOARDCELLSIZE,MovementStyle.Sequential);
 
         if(replay.animate) { playSounds(mm); }
@@ -836,4 +840,12 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
             setComment(comments);
         }
     }
+    
+    //
+    // support for the last move "numberMenu" logic
+    //
+	public int getLastPlacement(boolean empty) {
+		return (b.moveNumber);
+	}
+
 }

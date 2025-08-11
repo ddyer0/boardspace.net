@@ -8833,7 +8833,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 					 if(!canRetrieveMarket) { break; }
 				 //$FALL-THROUGH$
 			default:
-				 if(!commodityOnly || G.arrayContains(CommodityIds,rack))
+				 if(!commodityOnly || AR.arrayContains(CommodityIds,rack))
 				 {
 				 all.addElement(new EuphoriaMovespec(c,p.newWorkers,worker,p.boardIndex));
 				 }}

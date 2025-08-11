@@ -197,7 +197,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
 				if(gate!=null) { newanchor = gate; }
 				int recursivemask =  stop ? stepmask : (stepmask<<1);
 				if(stop && (recursivemask&1) != 0) 
-				  { if(!G.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
+				  { if(!AR.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
 				  }
 				destsIndex=slither_internal_v1(recursivemask,stop?newanchor:anchor,c,source,dests,destsIndex,startingCell,++steps);
 				}
@@ -241,7 +241,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
 				if(gate!=null) { newanchor = gate; }
 				int recursivemask =  stop ? stepmask : (stepmask<<1);
 				if(stop && (recursivemask&1) != 0) 
-				  { if(!G.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
+				  { if(!AR.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
 				  }
 				destsIndex=slither_internal_v2(recursivemask,stop?newanchor:anchor,c,source,dests,destsIndex,startingCell,++steps);
 				}

@@ -5827,7 +5827,7 @@ public boolean hasCommodityWorkers()
 	{	if(c!=null)
 		{
 		EuphoriaId rack = c.rackLocation();
-		if(G.arrayContains(CommodityIds, rack)) { return(true); }
+		if(AR.arrayContains(CommodityIds, rack)) { return(true); }
 		}
 	}
 	return(false);

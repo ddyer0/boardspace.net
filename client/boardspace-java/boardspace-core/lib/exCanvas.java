@@ -1940,8 +1940,8 @@ graphics when using a touch screen.
         int scalew2 = (int) (scalew_d2+0.5);
         int scalew3 = (int)(scalew*0.8);
         int scaleh = (int) (scaleh_d+0.5);
-        int jx = G.CPR(x,y,(int)(scalew_d*jitter));
-        int jy = G.CPR(x,y,(int)(scaleh_d*jitter));
+        int jx = exCanvas.CPR(x,y,(int)(scalew_d*jitter));
+        int jy = exCanvas.CPR(x,y,(int)(scaleh_d*jitter));
         int posx = (int) (scale==null ? 0.5 : scale[0] * scalew_d2) + jx;
         int posy = (int) (scale==null ? 0.5 : scale[1] * scaleh_d) + jy;
         int ax = x - posx;
@@ -2446,7 +2446,7 @@ graphics when using a touch screen.
         	double rot = getPreferredRotation();     
         	int qt = G.rotationQuarterTurns(rot);
     		GC.setRotation(offGC, rot,cx,cy);
-    		G.setRotation(hp, rot, cx, cy);
+    		HitPoint.setRotation(hp, rot, cx, cy);
     		int ax = w-size;
     		int ay = h-size;
      		switch(qt)
@@ -2467,7 +2467,7 @@ graphics when using a touch screen.
         	}
 
         GC.setRotation(offGC, -rot,cx,cy);
-        G.setRotation(hp, -rot, cx, cy);
+        HitPoint.setRotation(hp, -rot, cx, cy);
         }
         return v;
     }
@@ -2517,6 +2517,18 @@ graphics when using a touch screen.
 	
 	public void actionPerformed(ActionEvent e) {
 		deferredEvents.deferActionEvent(e);
+	}
+
+	/** Cheap pseudo random, intended to jitter the position
+	 * of stones a little.  Returned as -m/2 to m/2
+	 * @param x
+	 * @param y
+	 * @param m
+	 * @return the value
+	 */
+	public static int CPR(int x,int y,int m)
+	{	//x*prime1+y*prime2 mod prime3
+		return(((x*9803+y*10211)%9679)%Math.max(1,m)-m/2);
 	}
   
 }

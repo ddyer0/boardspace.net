@@ -517,5 +517,19 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 		spriteRect = r;
 		}    				
 	}
+	/**
+	 * rotate hitpoint H around pivot point cx,cy.  Auxiliary rectangle spriteRect is
+	 * also rotated.  This only works as intended for 90 degree rotations. 
+	 * @param h
+	 * @param ang
+	 * @param cx
+	 * @param cy
+	 */
+	public static void setRotation(HitPoint h,double ang,int cx,int cy)
+	{	
+		if((h!=null))
+		{	  h.setRotation(ang,cx,cy); 
+	    }
+	}
 
 }

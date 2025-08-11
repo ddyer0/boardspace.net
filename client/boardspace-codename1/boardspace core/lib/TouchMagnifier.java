@@ -21,19 +21,19 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 
-// TODO: magnifier shows some "flashy" behavior in some rotated modes
 public class TouchMagnifier {
 
-    Image magnifierDisplay = null;
-    Image magnifierDraw = null;
-    TouchMagnifierClient client;
+    private Image magnifierDisplay = null;
+    private Image magnifierDraw = null;
+    private long drawnTime = 0;
+    private TouchMagnifierClient client;
 	public TouchMagnifier(TouchMagnifierClient cl) { client = cl; }
-    double magnifierPadAngle;					// angle from mouse to the pad
-    int magnifierPadX;
-    int magnifierPadY;
-    double magnifierScale = 2.5;
-    int magnifierSourceSize = G.minimumFeatureSize()*2;
-    Color fillColor = Color.lightGray;
+	private double magnifierPadAngle;					// angle from mouse to the pad
+	private int magnifierPadX;
+	private int magnifierPadY;
+	private double magnifierScale = 2.5;
+	private int magnifierSourceSize = G.minimumFeatureSize()*2;
+	private Color fillColor = Color.lightGray;
     /**
      * the goal is to place the magnifier where it will be seen, preferentially
      * in the upper-left quadrant.  After initial placement, the magnifier should
@@ -129,6 +129,7 @@ public class TouchMagnifier {
 		int ps = (int)(scale*sz);				// pad size is 4x the minimum feature size
 		return(ps);
     }
+    
     //
     // draw to a new image at the desirec scale and offset, so the resulting 
     // image can be drawn 1:1   This is used if there is no backing image
@@ -140,12 +141,26 @@ public class TouchMagnifier {
     //
     private Image makePrescaledImage(HitPoint hp)
     {	
+    	Image show = magnifierDraw;
+    	long now = G.Date();
+    	if(now-drawnTime>25)	// don't view a frame until it's old enough to be complete
+    	{
     	int dsize = getMagnifierViewSize();	// size of the magnified pad
     	double scale = getMagnifierScale();	// scale from source to pad
-    	Image temp = magnifierDraw==null 
+    	// draw on the one that was previously displayed
+    	Image temp = magnifierDisplay==null 
     					? Image.createImage(dsize,dsize) 
     					: magnifierDisplay;
+       	//
+    	// ping pong two images, to avoid the redraw-not-ready condition
+    	//
+    	magnifierDisplay = magnifierDraw;
+    	magnifierDraw = temp;	
+    	G.print("draw "+temp+" show "+show);
+
     	Graphics g2 = temp.getGraphics();
+    	
+ 
     	g2.setFont(Font.getGlobalDefaultFont());
 
     	MouseManager mouse = client.getMouse();
@@ -183,17 +198,12 @@ public class TouchMagnifier {
     		int sh = (int)(scale*((ay+ds)-h));
     		g2.fillRect(0,dsize-sh,dsize,sh);
     	}
-  	
+    	drawnTime = G.Date();
+    	}
 
-    	//
-    	// ping pong two images, to avoid the redraw-not-ready condition
-    	//
-    	magnifierDraw = magnifierDisplay;
-    	magnifierDisplay = temp; 	
-    	return(magnifierDisplay);
+    	return(show);
      }
     
-    boolean disabled = false;
     /**
      * useDirect means draw directly on the gc using the actual scale and clip that's appropriate
      * otherwise, if no backing is available create a temp bitmap at the correct scale
@@ -357,7 +367,7 @@ public class TouchMagnifier {
     	return drawMagnifiedTileSprite(gc,hp,1,0,0,px,py);
     }
 
-    boolean touchZoomActive = false;
+    private boolean touchZoomActive = false;
     public boolean touchZoomInProgress()
     {	long now = G.Date();
     	MouseManager mouse = client.getMouse();

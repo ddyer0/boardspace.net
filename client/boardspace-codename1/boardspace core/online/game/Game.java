@@ -1193,7 +1193,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	String uid = myST.nextToken();
          	String quit = myST.nextToken();
          	boolean isAutoma = uid.equals(Bot.Automa.uid);
-          	String name = G.decodeAlphaNumeric(myST.nextToken());
+          	String name = Base64.decodeAlphaNumeric(myST.nextToken());
          	if(!isAutoma)
          	{
         	commonPlayer p = createPlayer(nextChan,name,order%100,uid);
@@ -3040,7 +3040,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	
 		int position = G.IntToken(myST);	// unused, but meaningful to the server so don't mess with it
 		String uid = myST.nextToken();
-		String name = G.decodeAlphaNumeric(myST.nextToken());
+		String name = Base64.decodeAlphaNumeric(myST.nextToken());
 		int order = G.IntToken(myST);
 		//
 		// from time to time, the "order" argument was overloaded to pass new information about the 

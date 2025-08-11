@@ -731,7 +731,6 @@ import udp.PlaytableStack;
 	 public Component createReviewPanel()
 	 {	
 		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER)); 
-		 if(G.TURNBASED())
 		 {
 			 String tb = (turnBasedMoves>0) 
 					 		? s.get(YourTurnMessage,turnBasedMoves)

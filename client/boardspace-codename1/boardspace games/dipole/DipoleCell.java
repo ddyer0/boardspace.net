@@ -39,7 +39,6 @@ public class DipoleCell extends stackCell<DipoleCell,DipoleChip> implements Dipo
 		lastPicked = other.lastPicked;
 	}
 	public int getLastPlacement(boolean empty) {
-		// TODO Auto-generated method stub
 		return empty ? lastPicked : lastDropped;
 	}
 	

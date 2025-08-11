@@ -4800,7 +4800,7 @@ private void drawPlayerBoard(Graphics gc,
 		}
         
         GC.setRotation(gc,pl.displayRotation,cx,cy);
-        G.setRotation(highlightAll, pl.displayRotation,cx, cy);
+        HitPoint.setRotation(highlightAll, pl.displayRotation,cx, cy);
         switch(resetState)
         {
         case TakeActionPrevious:
@@ -4840,7 +4840,7 @@ private void drawPlayerBoard(Graphics gc,
  
         zoomer.drawMagnifier(gc,highlightAll,brect,0.03,0.93,0.99,0);
         GC.setRotation(gc,-pl.displayRotation,cx,cy);
-        G.setRotation(highlightAll, -pl.displayRotation,cx, cy);
+        HitPoint.setRotation(highlightAll, -pl.displayRotation,cx, cy);
 
     }
     private void showOverlay(UI ui,Graphics gc,Rectangle brect,ViticultureBoard gb,boolean showBig,ViticultureCell bigStack,

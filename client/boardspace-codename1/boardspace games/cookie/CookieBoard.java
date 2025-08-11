@@ -223,7 +223,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
 				if(gate!=null) { newanchor = gate; }
 				int recursivemask =  stop ? stepmask : (stepmask<<1);
 				if(stop && (recursivemask&1) != 0) 
-				  { if(!G.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
+				  { if(!AR.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
 				  }
 				destsIndex=slither_internal_v1(recursivemask,stop?newanchor:anchor,c,source,dests,destsIndex,startingCell,++steps);
 				}
@@ -267,7 +267,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
 				if(gate!=null) { newanchor = gate; }
 				int recursivemask =  stop ? stepmask : (stepmask<<1);
 				if(stop && (recursivemask&1) != 0) 
-				  { if(!G.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
+				  { if(!AR.arrayContains(dests,c,destsIndex)) { dests[destsIndex++] = c;  } 
 				  }
 				destsIndex=slither_internal_v2(recursivemask,stop?newanchor:anchor,c,source,dests,destsIndex,startingCell,++steps);
 				}
@@ -1463,7 +1463,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     	else {
     		c.sweep_counter = sweep_counter;
     			// if can stop here, add to dests
-    		if((mask&1)!=0) { if(!G.arrayContains(tempDests,c,index)) { tempDests[index++] = c; }}
+    		if((mask&1)!=0) { if(!AR.arrayContains(tempDests,c,index)) { tempDests[index++] = c; }}
     		if(mask>1)
     			{
     			for(int direction = 0; direction<CELL_FULL_TURN; direction++)

@@ -270,11 +270,15 @@ public static Image createImage(com.codename1.ui.Image im,String name)
 	nim.setImage(im);
 	return(nim);
 }
-
+private static int count = 0;
 public static Image createImage(int w,int h)
-{	Image im = new Image("created");
+{	return createImage("created "+count++,w,h);
+}
+public static Image createImage(String n,int w,int h)
+{
+	Image im = new Image(n);
 	im.createBlankImage(w,h);
-	return(im);
+	return im;
 }
 @SuppressWarnings("unused")
 public Graphics getGraphics()

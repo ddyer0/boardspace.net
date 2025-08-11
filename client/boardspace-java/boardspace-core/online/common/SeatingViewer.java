@@ -827,7 +827,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		
 		int tableSize = 2*step/3;
 		GC.setFont(gc, largeBoldFont());
-		if(!G.arrayContains(charts,selectedChart)) 
+		if(!AR.arrayContains(charts,selectedChart)) 
 			{ selectedChart = charts[0];
 			}
 		if(selectedChart!=null) { sess.startingNplayers = selectedChart.getNSeats(); }

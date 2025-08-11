@@ -1366,7 +1366,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     // just once.
     private boolean addWordBonus(CrosswordsCell c)
     {
-    	boolean is = G.arrayContains(wordBonus,c);
+    	boolean is = AR.arrayContains(wordBonus,c);
     	if(is) { return(false); }
     	wordBonus[0]=wordBonus[1];
     	wordBonus[1]=wordBonus[2];

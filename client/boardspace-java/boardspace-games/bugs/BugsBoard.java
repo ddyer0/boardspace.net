@@ -53,16 +53,16 @@ import online.game.*;
  * @author ddyer
  * 
  * TODO: make more marine predators with multiple habitats
- * TODO: add a display of categories in 5he game
- * TODO: add a preview of bonus values
  *
  */
 
 public class BugsBoard 
 	extends hexBoard<BugsCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,BugsConstants
-{	static int REVISION = 101;			// 100 represents the initial version of the game
+{	static int REVISION = 103;			// 100 represents the initial version of the game
 										// 101 fixes the scoring of herbivores to not include other prey species
+										// 102 fixes the unstable initialization of the bug market
+										// 103 restricts the number of predators to predator_percentage
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel_parallel;
@@ -74,6 +74,7 @@ public class BugsBoard
 	
 	public BugsCell activeDeck = null;
 	public int minDeckValue = 6;
+	public int cachedMindeckValue = 6;
 	private BugsCell goalDeckCache = null;
 	private long goalDeckCacheKey = -1;
 	
@@ -257,20 +258,43 @@ public class BugsBoard
 			Taxonomy cat = prof.getCategory();
 			String catName = cat.getScientificName();
 			boolean include = cat!=animals && cats.get(catName)==null;
-			if(include)
-			{	cats.put(catName,cat);
+			if(revision>=103)
+			{
+				int tempCarnivore = 0;
+				int tempCard = 0;
 				for(int i=0;i<lim; i++)
 				{
 					BugCard in = BugCard.getCard(i);
-					Taxonomy bugCat = in.getProfile().getCategory();
+					Profile profile = in.getProfile();
+					Taxonomy bugCat = profile.getCategory();
 					if(bugCat==cat)
-						{ activeDeck.addChip(in); 
-						  min = Math.min(in.pointValue(),min);
-						  if(in.getProfile().isPredator()) { carnivore++; }
-						}				
+					{
+						tempCard++;
+						if(profile.isPredator()) { tempCarnivore++; }
+					}
+				}
+				if(tempCard==0 || (double)(tempCarnivore+carnivore)/(tempCard+activeDeck.height()) > PREDATOR_PERCENTAGE)
+				{	G.print("reject "+cat+" too many predators");
+					include =false;
 				}
 			}
-			minDeckValue = min;
+			if(include)
+			{	
+				for(int i=0;i<lim; i++)
+				{
+					BugCard in = BugCard.getCard(i);
+					Profile profile = in.getProfile();
+					Taxonomy bugCat = profile.getCategory();
+					if(bugCat==cat)
+						{ activeDeck.addChip(in);
+						  min = Math.min(in.pointValue(),min);
+						  if(profile.isPredator()) { carnivore++; }
+						}				
+				}
+				cats.put(catName,cat);
+
+			}
+			minDeckValue = cachedMindeckValue = min;
 		}
 		int nWild = (int)(deckSize*WILDPERCENT);
 		lim = ncards;
@@ -283,14 +307,16 @@ public class BugsBoard
 				  if(ch.getProfile().isPredator()) { carnivore++; }
 				}
 		}
-		
 		activeDeck.shuffle(new Random(randomKey+2356366));
+		//G.print("Build new "+activeDeck.Digest(new Random(1245)));
 		activeDeckCacheKey = key;
 		activeDeckCache.copyFrom(activeDeck);
     	}
     	else
     	{
     		activeDeck.copyFrom(activeDeckCache);
+    		minDeckValue = cachedMindeckValue;
+    		//G.print("Reuse new "+activeDeck.Digest(new Random(1245)));
     	}
 		//G.print(cats.size()," categories"," ",activeDeck.height()," cards ",(int)(carnivore*100)/activeDeck.height(),"% carnivore");
 		
@@ -418,8 +444,24 @@ public class BugsBoard
     		if(loops++ % 10==0) { minDeckValue++; }
     	} while (ch.pointValue()>minDeckValue);
     	activeDeck.removeChipAtIndex(index);
+    	if(revision<102) 
+    		{ // backward compatibility
+    		  cachedMindeckValue = minDeckValue; 
+    		}
     	return ch;
     	
+    }
+    public void selectInitialBugs(int[]map)
+    {
+    	Random r = new Random(randomKey+34646);
+	    for(int i=0;i<players_in_game; i++) 
+	    	{ PlayerBoard pb = pbs[i] = allPbs[i];
+	    	  pb.setChip(bugChips[map[i]],bugColors[map[i]]);
+	    	  pb.doInit(); 
+	    	  // give a random goal and a random 1 point bug
+	    	  pb.goals.addChip(goalDeck.removeTop());
+	    	  pb.bugs.addChip(random1PointBug(r));
+	    	}
     }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
@@ -456,7 +498,6 @@ public class BugsBoard
 		buildHabitat();
 		// the goal deck is built based on the active deck
 		buildGoalDeck();
-		
 		reInit(bugMarket);
 		reInit(goalMarket);
 		switch(variation)
@@ -470,6 +511,7 @@ public class BugsBoard
 	 		break;
 		case bugspiel_sequential:
 		case bugspiel_sequential_large:
+			if(revision<102)
 			{	Random r = new Random(randomKey+4666646);
 				for(int i=0;i<bugMarket.length;)
 		 		{	int idx = r.nextInt(activeDeck.height());
@@ -480,6 +522,14 @@ public class BugsBoard
 		 				i++;
 		 			}
 		 		}
+			}
+			else
+			{	Random r = new Random(randomKey+4666646);
+				for(int i=0;i<bugMarket.length;i++)
+				{	// no "gimmies" in the startup bugMarket
+					BugCard ch = random1PointBug(r);
+					bugMarket[i].addChip(ch);
+				}
 			}
 	 		break;
 	 	default: G.Error("Not expecing variation %s",variation);
@@ -496,17 +546,8 @@ public class BugsBoard
 	    int map[]=getColorMap();
 	    pbs = new PlayerBoard[players_in_game];
 	    
-	    {
-	    Random r = new Random(randomKey+34646);
-	    for(int i=0;i<players_in_game; i++) 
-	    	{ PlayerBoard pb = pbs[i] = allPbs[i];
-	    	  pb.setChip(bugChips[map[i]],bugColors[map[i]]);
-	    	  pb.doInit(); 
-	    	  // give a random goal and a random 1 point bug
-	    	  pb.goals.addChip(goalDeck.removeTop());
-	    	  pb.bugs.addChip(random1PointBug(r));
-	    	}}
-	    
+	    selectInitialBugs(map);
+	    	    
         animationStack.clear();
         moveNumber = 1;
 
@@ -539,6 +580,7 @@ public class BugsBoard
         copyFrom(activeDeckCache,from_b.activeDeckCache);
         activeDeckCacheKey = from_b.activeDeckCacheKey;
         minDeckValue = from_b.minDeckValue;
+        cachedMindeckValue = from_b.cachedMindeckValue;
         copyFrom(goalDeck,from_b.goalDeck);
         copyFrom(goalDeckCache,from_b.goalDeckCache);
         goalDeckCacheKey = from_b.goalDeckCacheKey;
@@ -627,10 +669,11 @@ public class BugsBoard
         long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
-		v ^= activeDeck.Digest(r);
 		v ^= activeDeckCache.Digest(r);
+		v ^= activeDeck.Digest(r);
 		v ^= Digest(r,activeDeckCacheKey);
 		v ^= Digest(r,minDeckValue);
+		v ^= Digest(r,cachedMindeckValue);
 		v ^= goalDeck.Digest(r);
 		v ^= goalDeckCache.Digest(r);
 		v ^= Digest(r,goalDeckCacheKey);
@@ -648,8 +691,10 @@ public class BugsBoard
 		v ^= Digest(r,roundNumber);
 		v ^= Digest(r,roundProgress);
 		v ^= Digest(r,whoseTurn);
-		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
-        return (v);
+		for(int i=0;i<pbs.length;i++)
+		{
+		v ^= pbs[i].Digest(r); }
+       return (v);
     }
 
     public void setWhoseTurn(int w)

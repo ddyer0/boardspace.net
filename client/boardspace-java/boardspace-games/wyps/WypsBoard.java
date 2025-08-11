@@ -101,7 +101,7 @@ class Template
 	{	int len = cells.length;
 		WypsCell last = cells[len-1];
 		WypsCell next = last.exitTo(direction);
-		if(next!=null && !G.arrayContains(cells,next))
+		if(next!=null && !AR.arrayContains(cells,next))
 		{
 			WypsCell newCells[] = new WypsCell[len+1];
 			for(int i=0;i<len;i++) { newCells[i]=cells[i]; }
@@ -118,7 +118,7 @@ class Template
 	{	int len = cells.length;
 		WypsCell last = cells[0];
 		WypsCell next = last.exitTo(direction);
-		if(next!=null && !G.arrayContains(cells,next))
+		if(next!=null && !AR.arrayContains(cells,next))
 		{
 			WypsCell newCells[] = new WypsCell[len+1];
 			newCells[0]=next;

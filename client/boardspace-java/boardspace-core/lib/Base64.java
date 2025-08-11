@@ -168,6 +168,7 @@ public class Base64 implements CommonConfig {
    				return new String(data);
    			}
    }
+   
    //
    // this is a simple, arbitrary, and totally uncryptograpic checksum
    // that's used to verify that the java web start string hasn't been 
@@ -184,5 +185,52 @@ public class Base64 implements CommonConfig {
  		}
  		return(cs);
    }
+   
+
+   private static void appendCh(StringBuilder b,int ch)
+   {
+   	if(ch>=10) { appendCh(b,ch/10); };
+   	b.append((char)((char)('0'+ch%10)));
+   }
+/**
+ * a simple http-safe encoding for strings that may contain unexpected characters
+ * decode with {@link G#decodeAlphaNumeric}
+ *
+ * @param s
+ * @return the encoded string
+ */
+public static String encodeAlphaNumeric(String s)
+{	if(s==null) { return(null); }
+	StringBuilder out = new StringBuilder();
+	for(int i=0;i<s.length();i++)
+	{	char ch = s.charAt(i);
+		if(G.isLetterOrDigit((char)ch)) { out.append(ch); }
+		else 
+		{ out.append('%');
+		  appendCh(out,ch);
+		  out.append('%');
+		}
+	}
+	return(out.toString());
+}
+/**
+ * decode a string that was encoded by {@link encodeAlphaNumeric}
+ * @param s
+ * @return the decoded string
+ */
+public static String decodeAlphaNumeric(String s)
+{
+	StringBuilder out = new StringBuilder();
+	for(int i=0;i<s.length();i++)
+	{	int ch = s.charAt(i);
+		if(ch=='%') 
+		{	char nextCh;
+			ch = 0;
+			while((nextCh=s.charAt(++i))!='%') { ch = ch*10+(nextCh-'0'); }
+		}
+		out.append((char)ch);
+	}
+	return(out.toString());
+}
 
 }

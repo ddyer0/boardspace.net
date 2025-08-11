@@ -48,7 +48,6 @@ public class GoalCard extends BugsChip implements BugsConstants
 	}
 	
 	private Image makeGoalImage(exCanvas drawOn, int i, int j) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

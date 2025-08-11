@@ -59,7 +59,6 @@ public class MagnetCell extends stackCell<MagnetCell,MagnetChip> implements Plac
 		prevLastPicked = other.prevLastPicked;
 	}
 	public int getLastPlacement(boolean empty) {
-		// TODO Auto-generated method stub
 		return empty ? lastPicked : lastDropped;
 	}
 	public MagnetCell() {};

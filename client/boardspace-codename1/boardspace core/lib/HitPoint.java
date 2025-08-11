@@ -17,6 +17,9 @@
 package lib;
 
 import bridge.Color;
+import bugs.BugsBoard;
+import bugs.BugsViewer;
+import online.game.commonPlayer;
 
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
@@ -519,6 +522,36 @@ normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not 
 		G.setRotation(r,-ang,cx,cy);
 		spriteRect = r;
 		}    				
+	}
+	public Rectangle prepareOverlayBox(Graphics gc, BugsBoard gb, BugsViewer bugsViewer, Rectangle r)
+	{	int ap = bugsViewer.getActivePlayerIndex(gb);	
+	    commonPlayer cpl = bugsViewer.getPlayerOrTemp(ap);
+	    double rot = cpl.displayRotation;
+	    if(rot==0.0)
+	    {
+	    	return G.copy(null,r);	// always return a copy
+	    }
+	    int cx = G.centerX(r);
+	    int cy = G.centerY(r);
+	    GC.setRotation(gc,cpl.displayRotation,cx,cy);
+	    HitPoint.setRotation(this, cpl.displayRotation,cx, cy);
+	    Rectangle rc = G.copy(null,r);
+	    G.setRotation(rc,rot);
+	    return rc;
+	}
+	/**
+	 * rotate hitpoint H around pivot point cx,cy.  Auxiliary rectangle spriteRect is
+	 * also rotated.  This only works as intended for 90 degree rotations. 
+	 * @param h
+	 * @param ang
+	 * @param cx
+	 * @param cy
+	 */
+	public static void setRotation(HitPoint h,double ang,int cx,int cy)
+	{
+		if((h!=null))
+		{	h.setRotation(ang,cx,cy);
+		}
 	}
 
 }

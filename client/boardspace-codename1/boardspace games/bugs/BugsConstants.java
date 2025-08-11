@@ -49,6 +49,7 @@ public interface BugsConstants
 	int MaxRounds = 10;
 	double DIET_GOAL_PERCENTAGE = 0.25;
 	double FLYING_GOAL_PERCENTAGE = 0.2;
+	double PREDATOR_PERCENTAGE = 0.33;
 	double CARNIVORE_BONUS = -1.8;
 	double FLYING_BONUS = -0.5;
 	double WILDCARD_BONUS = -1;
@@ -195,7 +196,7 @@ static int[] ZnInCol2 = { 3, 4, 5, 4, 3  }; // depth of columns, ie A has 4, B 5
 	static void putStrings()
 	{
 		String GameStrings[] = 
-		{  "Prototype",
+		{  
 			PlayState,
 			ExplainSeeBugDeck,
 			GoalContents,

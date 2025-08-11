@@ -519,15 +519,15 @@ public class Graphics extends SystemGraphics
 		 int al = 0;
 		 int at = 0;
 		 /* include the current clipping region in the logic
-		 Rectangle clip = graphics.getClipBounds();
+		 int clip[] = graphics.getClip();
 		 if(clip!=null)
 		 {
-			 at = G.Width(clip);
-			 ah = G.Height(clip);
-			 al = G.Left(clip);
-			 at = G.Top(clip);
-		 }
-		 */
+			 at = clip[1];
+			 al = clip[0];
+			 ah = at+clip[3];
+			 aw = al+clip[2];
+		 }*/
+		 
 		 Point2D dest = shadow.transform(x,y);
 		 double left = dest.getX();
 		 double top = dest.getY();
@@ -536,6 +536,26 @@ public class Graphics extends SystemGraphics
 		 double bottom = dest1.getY();
 		 if(right<left) { double d = left; left=right; right=d; }
 		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
+		 if(rotation!=0)
+		 {{
+			 Point2D dest2 = shadow.transform(x+w,y);
+			 double x2 = dest2.getX();
+			 double y2 = dest2.getY();
+			 if(x2<left) { left = x2; }
+			 else if(x2>right) { right=x2; }
+			 if(y2<top) { top = y2; }
+			 else if(y2>bottom) { bottom=y2; }
+		 }
+		 {
+			 Point2D dest2 = shadow.transform(x,y+h);
+			 double x2 = dest2.getX();
+			 double y2 = dest2.getY();
+			 if(x2<left) { left = x2; }
+			 else if(x2>right) { right=x2; }
+			 if(y2<top) { top = y2; }
+			 else if(y2>bottom) { bottom=y2; }
+		 }
+		 }
 		 boolean invisible = ( left>aw
 				 			|| right<al
 				 			|| bottom<at

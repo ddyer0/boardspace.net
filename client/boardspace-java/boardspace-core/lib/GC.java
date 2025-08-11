@@ -824,12 +824,12 @@ public class GC {
 	 		 setRotation(inG,rotation2, cx, cy);
 	 		 cr = G.copy(null,r);
 	 		 G.setRotation(cr,rotation2,cx,cy);
-	 		 G.setRotation(highlight, rotation2, cx, cy);
+	 		 HitPoint.setRotation(highlight, rotation2, cx, cy);
 	 		}
 	 	boolean v = handleSquareButton(inG,cr,highlight,text,textColor,frameColor,HighlightColor,BackgroundColor);
 	 	if(rotation2!=0)
 	 		{ setRotation(inG, -rotation2, cx, cy); 
-	 		  G.setRotation(highlight, -rotation2, cx, cy);
+	 		  HitPoint.setRotation(highlight, -rotation2, cx, cy);
 	 		} 
 	 	return(v);
 	 }
@@ -858,7 +858,7 @@ public class GC {
 	 	if(rotation2!=0)
 	 	{
 	 		cr = G.copy(null,r);
-	 		G.setRotation(highlight,rotation2,cx,cy);
+	 		HitPoint.setRotation(highlight,rotation2,cx,cy);
 	 		G.setRotation(cr,rotation2,cx,cy);
 	 		setRotation(inG,rotation2, cx, cy);
 	 	}
@@ -866,7 +866,7 @@ public class GC {
 	 					HighlightColor,BackgroundColor);
 	 	if(rotation2!=0) 
 	 		{ setRotation(inG, -rotation2, cx, cy);   
-	 		  G.setRotation(highlight,-rotation2,cx,cy);
+	 		  HitPoint.setRotation(highlight,-rotation2,cx,cy);
 	 		}
 	 	return(v);
 	 	}

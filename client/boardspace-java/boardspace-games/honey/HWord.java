@@ -18,7 +18,6 @@ package honey;
 
 import lib.CompareTo;
 import lib.Digestable;
-import lib.G;
 import lib.Random;
 import lib.StackIterator;
 import lib.Text;
@@ -71,8 +70,28 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return(new HWordStack().push(this).insertElementAt(item,at));		
 	}
 
+	public static int compareTo(String s1,String s2)
+	{
+		if(s1==null)
+		{
+			return s2==null ? 0 : -1;
+		}
+		if(s2==null) { return 1; }
+		int l1 = s1.length();
+		int l2 = s2.length();
+		int lim = Math.min(l1,l2);
+		for(int i=0;i<lim;i++)
+		{
+			int dif = s2.charAt(i) - s1.charAt(i);
+			if(dif!=0) { return dif; }
+		}
+		return l1==l2 ? 0 
+				: l1<l2 ? -1 : 1;
+	
+	}
+	
 	public int compareTo(HWord o) {
-		return G.compareTo(name,o.name);
+		return compareTo(name,o.name);
 	}
 	public long Digest(Random r) {
 		return seed.Digest(r);

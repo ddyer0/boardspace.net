@@ -228,7 +228,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     		int cy = G.centerY(r);
     		double rot = reverse ? -displayRotation : displayRotation;
     		GC.setRotation(gc, rot, cx, cy);
-    		G.setRotation(hp, rot, cx, cy);
+    		HitPoint.setRotation(hp, rot, cx, cy);
     	}
     }
     /**

@@ -114,7 +114,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "bugs"; // sgf game name
+    static final String Bugs_SGF = "bugs"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir =G.isCodename1() ? "/appdata/bugs/images/" : "/bugs/images/";
@@ -1499,7 +1499,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         int cx = G.centerX(r);
         int cy = G.centerY(r);
         GC.setRotation(gc,cpl.displayRotation,cx,cy);
-        G.setRotation(selectPos, cpl.displayRotation,cx, cy);
+        HitPoint.setRotation(selectPos, cpl.displayRotation,cx, cy);
         Rectangle rc = G.copy(null,r);
         G.setRotation(rc,rot);
         return rc;
@@ -1511,7 +1511,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         int cx = G.centerX(r);
         int cy = G.centerY(r);
         GC.setRotation(gc,-rot,cx,cy);
-        G.setRotation(selectPos, -rot,cx, cy);
+        HitPoint.setRotation(selectPos, -rot,cx, cy);
     }
     /**
      * draw the main window and things on it.  
@@ -2112,7 +2112,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Bugs_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -2149,7 +2149,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         	String html = bugdeck+"deck.html";
         	try {
         	PrintStream out = new PrintStream(new FileOutputStream(html));
-        	out.print("<h1><cener>Prototype BugSpiel Card Deck</center></h1>\n");
+        	out.print("<h1><cener>BugSpiel Card Deck</center></h1>\n");
         	out.print("<nl><center>send corrections and suggestions to bugspiel@boardspace.net</center><nl>\n");
         	int nBugs = BugCard.bugCount();
         	BugsChip[] ar = new BugsChip[nBugs];

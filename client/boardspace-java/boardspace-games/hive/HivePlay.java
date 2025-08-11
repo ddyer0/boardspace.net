@@ -192,10 +192,9 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	evaluator = new MonteEvaluator();
         	break;
         case TESTBOT_LEVEL_1:
-        	evaluator = new ThirdEvaluator();	// for selfplay mode
-        	MAX_DEPTH = 1;
-        	verbose = 0;
-        	MONTEBOT=false;
+        	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
+           	MAX_DEPTH = DUMBOT_DEPTH;
+        	MONTEBOT = false;
         	break;
         case TESTBOT_LEVEL_2:
         	evaluator = new ThirdEvaluator();

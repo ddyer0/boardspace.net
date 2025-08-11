@@ -344,6 +344,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         Flagship_Owns_Center = from_b.Flagship_Owns_Center;
         Flagship_Can_Capture = from_b.Flagship_Can_Capture;
         Flagship_Four_Sided_Capture = from_b.Flagship_Four_Sided_Capture;
+        lastP = from_b.lastP;
+        lastD = from_b.lastD;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         pickedSource = getCell(from_b.pickedSource);
@@ -383,6 +385,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         pools[2]=goldFlagPool;
         Init_Standard(gtype);
         allCells.setDigestChain(r);
+        lastP = lastD = -1;
         moveNumber = 1;
         droppedDest = null;
         pickedSource = null;
@@ -507,6 +510,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         droppedDest = null;
         pickedSource = null;
     	pickedObject=null;
+    	lastP = lastD = -1;
     	}
      }
     //
@@ -517,15 +521,23 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     	if(droppedDest!=null) 
     	{	pickedObject = droppedDest.topChip();
     		SetBoard(droppedDest,null); 
+    		droppedDest.lastDropped= lastD;
+    		lastD = -1;
     		droppedDest = null;
     	}
     }
+    
+    private int lastP = -1;
+    private int lastD = -1;
+
     // 
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
     {	if(pickedSource!=null) 
     		{ SetBoard(pickedSource,pickedObject); 
+    		  pickedSource.lastPicked = lastP;
+    		  lastP = -1;
     		  pickedSource = null;
     		}
     pickedObject = null;
@@ -560,6 +572,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
        	if(!wasDest)
        	{
         pickedSource = c;
+        lastP = c.lastPicked;
+        c.lastPicked = moveNumber();
        	pickedObject = c.topChip();
        	droppedDest = null;
 		lastPicked=pickedObject;
@@ -730,6 +744,8 @@ void doSwap()
           	{ 
           		SetBoard(c,pickedObject);
           		droppedDest = c;
+          		lastD = c.lastDropped;
+          		c.lastDropped = moveNumber();
           		pickedObject = null;
           		setNextStateAfterDrop();
           	}
