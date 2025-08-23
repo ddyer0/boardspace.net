@@ -23,6 +23,12 @@ import online.search.Evaluator;
 
 public class StandardEvaluator extends DefaultEvaluator implements Evaluator,GameConstants
 {
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
     double BPWeight = 0.0007;
     double InsideWeight = -0.05;
     double[] RingWeights = { -1, -0.5, -0.25, 0, 0, 0, 0 };

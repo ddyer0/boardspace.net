@@ -29,6 +29,12 @@ public class StandardEvaluator extends DefaultEvaluator implements Evaluator , E
 	double unplacedBarrierWeight = 1.0;
 	double escapeWeight = 10;
 	double linkWeight = 3;
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
 	
 	public StandardEvaluator()
 	{	
@@ -76,5 +82,7 @@ public class StandardEvaluator extends DefaultEvaluator implements Evaluator , E
     			}}
     	return(finalv);
     }
+
+
 
 }

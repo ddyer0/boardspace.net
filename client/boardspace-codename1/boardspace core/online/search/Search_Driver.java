@@ -231,6 +231,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
      * after the search, an array of all the top level moves
      */
     public commonMove[] top_level_moves = null;
+    public commonMove[] top_level_moves() { return top_level_moves; }
 
     /**
      * the source of randomness for this search.  This is <i>always</i> 
@@ -1079,12 +1080,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     }
 
     commonMove Random_Good_Move(int n,double dif)
-    {	double dbl = rand.nextDouble();
-        int choice = (int) (dbl * n);
-        commonMove best = Nth_Good_Move(choice,dif);
-        if(verbose>0) { G.print("Random " , choice , " " , best); }
-
-        return (best);
+    {	return robot.Random_Good_Move(this,n,dif);
     }
     /**
      * find the best move and return a randomized result.

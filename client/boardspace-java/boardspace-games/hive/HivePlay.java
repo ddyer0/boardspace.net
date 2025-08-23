@@ -44,6 +44,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     private double TIMEPERMOVE = 45.0;				// 45 seconds as a limit
     private boolean COLLECT_TREE = true;	// special hack to collect the move tree
     private int MONTE_DEPTH_LIMIT = 30;
+    private boolean avoidSpiderOpening = false;
     /* constructor */
     public HivePlay()
     {
@@ -106,10 +107,12 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
      * this is it! just tell me that the position is worth.  
      */
     public double Static_Evaluate_Position(commonMove m)
-    {	int playerindex = m.player;
+    {	return Static_Evaluate_Position(m.player);
+    }
+    public double Static_Evaluate_Position(int playerindex)
+    {
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-
         // score wins alone, to avoid the "lesser loss" syndrone, where
         // the robot committs suicide because it makes the overall position 
         // look "better" than letting the opponent win.
@@ -136,6 +139,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
             evboard.droppedDest = null;
             evboard.pickedObject=null;
             double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
+         //   ScoreForPlayer(GameBoard,0,false);
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     	}
@@ -193,6 +197,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	break;
         case TESTBOT_LEVEL_1:
         	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
+        	avoidSpiderOpening = true;
            	MAX_DEPTH = DUMBOT_DEPTH;
         	MONTEBOT = false;
         	break;
@@ -221,6 +226,24 @@ public void PrepareToMove(int playerIndex)
     int movesRemaining = Math.max(10, 20-board.moveNumber());
     TIMEPERMOVE = adjustTime(TIMEPERMOVE,movesRemaining);
 }
+
+// this is a hack for improved bot openings, to avoid the spider-spider openings
+public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
+{	boolean ok = true;
+	Hivemovespec selection = null;
+	do
+	{
+		selection = (Hivemovespec)super.Random_Good_Move(search,n,dif);
+		if(avoidSpiderOpening && board.moveNumber()<=4)
+		{
+				ok = selection.object.type!=PieceType.SPIDER;
+			}
+	
+	}
+	while (!ok);
+	return selection;
+}
+
 /** search for a move on behalf onf player p and report the result
  * to the game.  This is called in the robot process, so the normal
  * game UI is not encumbered by the search.
@@ -230,13 +253,13 @@ public void PrepareToMove(int playerIndex)
         Hivemovespec move = null;
         // it's important that the robot randomize the first few moves a little bit.
         int randomn = RANDOMIZE
-        			? ((board.moveNumber <= 8) ? (30 - board.moveNumber) : 0) 
+        			? evaluator.canRandomize(board,board.whoseTurn) 
         			: 0;
         boardSearchLevel = 0;
 
         int depth = MAX_DEPTH+1;
-
-        Search_Driver search_state = Setup_For_Search(depth,TIMEPERMOVE/60,depth-1);	// 
+        double startEval = Static_Evaluate_Position(board.whoseTurn);
+        Search_Driver search_state = Setup_For_Search(5,false);//Setup_For_Search(depth,TIMEPERMOVE/60,depth-1);	// 
         try
         {
  
@@ -256,6 +279,7 @@ public void PrepareToMove(int playerIndex)
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER_HEURISTIC;
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
             search_state.save_top_digest=true;	// always on background check on the robot
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
@@ -274,6 +298,8 @@ public void PrepareToMove(int playerIndex)
             		 	break;
             		 }
             	  }
+            	  // this is anti-draw logic for shutouts
+            	  move = (Hivemovespec)evaluator.gutAnalysis(search_state,startEval,move);
             	}
         }
         finally

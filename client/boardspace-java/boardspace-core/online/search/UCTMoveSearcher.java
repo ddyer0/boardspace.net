@@ -362,6 +362,8 @@ public class UCTMoveSearcher extends CommonDriver
 	    			? new UCTMPThread(this,leadRobot,name)
 	    			: new UCTSPThread(this,leadRobot,name);
 	    }
+	    CommonMoveStack top_level_moves = null;
+	    public commonMove[] top_level_moves() { return top_level_moves.toArray(); }
 		public commonMove getBestMonteMove()
 		{
 			aborted = false;
@@ -409,6 +411,7 @@ public class UCTMoveSearcher extends CommonDriver
 			{
 			leadRobot.prepareForDescent(this);
 			CommonMoveStack moves = leadRobot.List_Of_Legal_Moves();
+			top_level_moves = moves;
 			max_depth = final_depth;
 			
 			switch(moves.size())

@@ -1674,6 +1674,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  			 all.push(new OrdoMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
  		 case DeclinePending:
+ 		 case DrawPending:
  		 case AcceptPending:
 		 case Confirm:
 			 all.push(new OrdoMovespec(MOVE_DONE,who));

@@ -1483,7 +1483,7 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
-	mm.maxPlayers = 4;
+	mm.maxPlayers = 2;
 	mm.randomizeFirstPlayer = true;
 	mm = put(new GameInfo(3703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
 			OneBotPlus,
@@ -1498,7 +1498,7 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
 			null,false, map));
-	mm.maxPlayers = 4;
+	mm.maxPlayers = 2;
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;

@@ -653,7 +653,32 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
   public boolean reverseX() { return displayParameters.reverse_x; }
   public void setReverseY(boolean v) {  displayParameters.reverse_y = v; }
   public void setReverseX(boolean v) {  displayParameters.reverse_x = v; }
-
-
+  // hex cell distance
+  public int hex_cell_distance(CELLTYPE q,CELLTYPE target)
+	{			
+			int dq=q.col-target.col;
+			int dr=q.row-target.row-dq;
+			// convert to axial coordinates
+			int dis = (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr)) / 2;
+			return dis;
+	}
+  // manhattan distance
+  public int manhattan_cell_distance(CELLTYPE q,CELLTYPE target)
+	{			
+			int dq=q.col-target.col;
+			int dr=q.row-target.row;
+			// convert to axial coordinates
+			int dis = Math.abs(dq)+Math.abs(dr);
+			return dis;
+	}
+  // distance with diagonal steps
+  public int diagonal_cell_distance(CELLTYPE q,CELLTYPE target)
+ 	{			
+ 			int dq=Math.abs(q.col-target.col);
+ 			int dr=Math.abs(q.row-target.row);
+ 			// convert to axial coordinates
+ 			int dis = dr+dq-Math.min(dr,dq);
+ 			return dis;
+ 	}
   
 }

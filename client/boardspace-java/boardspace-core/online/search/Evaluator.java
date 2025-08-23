@@ -17,6 +17,7 @@
 package online.search;
 
 import online.game.BoardProtocol;
+import online.game.commonMove;
 
 /**
  * HiveGameBoard knows all about the game of Hive, which is played
@@ -49,5 +50,10 @@ public interface Evaluator
 	public void setWeights(double[]v);
 	public void setWeights(String str);
 	public double evaluate(BoardProtocol board,int forPlayer,boolean print);
+	public int canRandomize(BoardProtocol b,int who);
+	public default commonMove gutAnalysis(CommonDriver search_driver, double startEval, commonMove move)
+	{
+		return move;
+	}
 
 }

@@ -524,6 +524,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
       //gb.DrawGrid(gc, tbRect, use_grid, boardBackgroundColor, Color.blue, Color.blue,Color.black);
 
      }
+
     /* draw the board and the chips on it. */
      int stableCellSize = 1;
      private void drawBoardElements(Graphics gc, HiveGameBoard gb, Rectangle tbRect,HitPoint ourTurnSelect,HitPoint anySelect)
@@ -538,7 +539,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	//
      	// now draw the contents of the board and anything it is pointing at
      	//
-         
          Hashtable<HiveCell,HiveCell> dests = gb.movingObjectDests();
          HiveCell sourceCell = gb.pickedSource; 
          HiveCell destCell = gb.droppedDest;
@@ -631,6 +631,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
          		ourTurnSelect.spriteColor = Color.red;
          		
          		}
+              
               	/*
               	{
             	String label = numberMenu.getSequenceString(cell,true);		
@@ -712,7 +713,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation(); 		// this is correct because we currently only do face to face layout
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
-
+//G.print("gb "+gb.Digest());
        boolean setup = (gb.gamevariation==variation.hive_u) 
         		&& ((state==HiveState.Setup)||(state==HiveState.Swap)||(state==HiveState.PUZZLE_STATE));
        for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)

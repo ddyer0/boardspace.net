@@ -119,7 +119,7 @@ public abstract class CommonDriver implements TreeProviderProtocol {
      * <li>2 describe all top level variations.
      */
     public int verbose = 0; 
-   
+    public abstract commonMove[] top_level_moves();
 
     /**
      * this is used to save the current variation leading to positions of interest found by the 

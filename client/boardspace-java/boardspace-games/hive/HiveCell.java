@@ -62,8 +62,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		lastContents = other.lastContents;
 		lastFilled = other.lastFilled;
 		lastEmptied = other.lastEmptied;
-		lastMover = other.lastMover;
-		
+		lastMover = other.lastMover;		
 	}
 	public HiveId rackLocation() { return((HiveId)rackLocation); }
 	
@@ -145,7 +144,25 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
 		  if(c!=null && c.height()>0) 
-		  	{ n++; }
+		  	{ n++; 
+		  	}
+		}
+		return(n);
+	}	
+	// return the number of adjacent cells owned by a player
+	public int nOccupiedOrOwnedAdjacent(HiveId targetColor)
+	{	int n=0;
+		for(int lim=geometry.n-1;lim>=0;lim--)
+		{ HiveCell c = exitTo(lim);
+		  int h = c.height();
+		  if(c!=null && h>0) 
+		  	{ n++; 
+		  	  if(h>1)
+		  	  {
+		  		  HivePiece top = c.topChip();
+		  		  if(top.color!=targetColor) { n++; }	// something acting as a beetle
+		  	  }
+		  	}
 		}
 		return(n);
 	}	
@@ -163,6 +180,10 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		return(false);
 	}
 	
+	//
+	// this logic defends pillbugs against beetle attack
+	// specifically when adjacent to an enemy pillbug, mosquito or beetle
+	//
 	public boolean isAdjacentToDanger(HiveId pl)
 	{
 		for(int dir=0;dir<geometry.n;dir++)

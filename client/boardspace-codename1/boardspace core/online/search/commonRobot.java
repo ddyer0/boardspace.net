@@ -992,4 +992,12 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   // {	return(getBoard().WinForPlayer(p.player));
 	   // }
 
+	   public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
+	   {	double dbl = rand.nextDouble();
+	       int choice = (int) (dbl * n);
+	       commonMove best = search.Nth_Good_Move(choice,dif);
+	       if(verbose>0) { G.print("Random " , choice , " " , best); }
+
+	       return (best);
+	   }
 }

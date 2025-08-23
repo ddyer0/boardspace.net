@@ -23,14 +23,8 @@ import online.game.BoardProtocol;
 import online.search.DefaultEvaluator;
 import online.search.Evaluator;
 
-class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
+class RevisedAugust2Evaluator extends DefaultEvaluator implements Evaluator
 {	
-	public int canRandomize(BoardProtocol b, int who) 
-	{	int move = b.moveNumber();
-		return (move <=8) 
-						? (30 - move) 
-						: 0; 
-	}
 	// simple evaluation based on piece mobility and importance
 	double pillbug_fear_weight = -2.0;	// fear of beetles by pillbugs
 	
@@ -39,6 +33,13 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 	double QueenCrowdingWeight = -2.0;
 	double pillbugEmptyWeight = -0.5;	// penalty for pillbug adjacent filled
 	double beetleOnTopWeight = 0.5;		// bonus for beetle on top
+	
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
 
 	double piece_mobility_weight[] = 
 		{ 5.0,			// queen
@@ -190,8 +191,8 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 							}
 						}
 					}
-					if(loc.height()>1) 
-					{ // mobile and on top 
+					if(loc.height()==2) 
+					{ // mobile and on top, and not a stack of beetles
 					  msg += " Top="+beetleOnTopWeight;
 					  val += beetleOnTopWeight;
 					}

@@ -33,4 +33,5 @@ public abstract class DefaultEvaluator implements Evaluator
 		}
 		setWeights(d.toArray());
 	}
+
 }

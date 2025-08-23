@@ -266,21 +266,65 @@ public variation gamevariation = variation.hive;
 		if(occupiedCells.size()==0) { return(true); }
 		return(false);
     }
-    
-    private void legalDropDests(CellStack dests,HivePiece p,boolean onlyone)
+    private boolean legalDropDest(HiveCell cell,HiveId targetColor)
+    {	// dropping in a new piece
+		if(cell.height()>0) { return(false); }
+		if(cell.nOtherColorAdjacent(targetColor)>0) { return(occupiedCells.size()==1); }
+		if(cell.nOwnColorAdjacent(targetColor)>0) { return(true); }
+		if(occupiedCells.size()==0) { return(true); }
+		return(false);
+    }
+    public int countDropDests(HiveId targetColor)
     {	
      	int sweep = ++sweep_counter;
      	int sz = occupiedCells.size();
+     	int n = 0;
+     	switch(sz)
+     	{
+    	case 1:	// second move
+       	case 0:	// first move
+      		n++;
+     		break;
+      	default:
+	     		
+	   		for(int i=0,lim=occupiedCells.size();i<lim;i++)
+			{	HiveCell c = occupiedCells.elementAt(i);
+				for(int dir=0;dir<CELL_FULL_TURN;dir++)
+					{ HiveCell ca = c.exitTo(dir);
+					  if((ca.sweep_counter!=sweep) && legalDropDest(ca,targetColor)) 
+					  	{ ca.sweep_counter=sweep; 
+					  	  n++;
+					  	}
+					}
+			}
+	   		break;
+     	}
+     	return n;
+    }
+    private boolean legalDropDests(CellStack dests,HivePiece p,boolean onlyone)
+    {	
+     	int sweep = ++sweep_counter;
+     	int sz = occupiedCells.size();
+     	boolean some = false;
      	switch(sz)
      	{
      	case 0:	// first move
-     		dests.push(getCell((char)('A'+(ncols/2)),ncols/2));
+      		if(dests==null)
+      			{ return true; }
+      			else 
+      			{     		some = true;
+      			dests.push(getCell((char)('A'+(ncols/2)),ncols/2)); 
+      			}
      		break;
      	case 1:	// second move
      		{
      		HiveCell center = occupiedCells.elementAt(0);
+     		if(dests==null) { return true; }
+     		else
+     		{
+     		some = true;
      		dests.push( center.exitTo(0));	// only need to try one spot
-     		}
+     		}}
      		break;
      	default:
 	     		
@@ -290,13 +334,19 @@ public variation gamevariation = variation.hive;
 					{ HiveCell ca = c.exitTo(dir);
 					  if((ca.sweep_counter!=sweep) && legalDropDest(ca,p)) 
 					  	{ ca.sweep_counter=sweep; 
+					  	  if(dests==null) { return true; }
+					  	  else
+					  	  {
+					  	  some = true;
 					  	  dests.push(ca);
-					  	  if(onlyone) { return; }
+					  	  if(onlyone) { return true; }
+					  	  }
 					  	}
 					}
 			}
 	   		break;
      	}
+     	return some;
     }
     
     // return true if exit from source is a "gate", ie a barrier of taller pieces.
@@ -1265,10 +1315,6 @@ public variation gamevariation = variation.hive;
  			//$FALL-THROUGH$
 		case DeclinePending:
     		HiveState nextstate = nextPlayState(whoseTurn);
-    		if(board_state==HiveState.CONFIRM_SWAP_STATE || board_state==HiveState.PLAY_OR_SWAP_STATE)
-    		{
-    			piepending = false;
-    		}
     		setState(nextstate);
     		if((nextstate==HiveState.PLAY_STATE)
     			&& !hasLegalMoves()) 
@@ -1322,7 +1368,10 @@ public variation gamevariation = variation.hive;
     	if(queenonboard && piepending && gamevariation==variation.hive_pielm)
     	{
     		HiveCell loc2 = pieceLocation.get(playerQueen(nextPlayer[player]));	
-    		if(loc2!=null && loc2.onBoard) { return HiveState.PLAY_OR_SWAP_STATE; }
+    		if(loc2!=null && loc2.onBoard) 
+    			{ piepending = false;
+    			  return HiveState.PLAY_OR_SWAP_STATE; 
+    			}
     	}
     	int n=0;
     	if(queenonboard)
@@ -1423,7 +1472,8 @@ public variation gamevariation = variation.hive;
 			HiveCell prevc = firstC.exitTo(prevdir);
 			HiveCell nextc = firstC.exitTo(nextdir);
 			if( (c!=prevC)		// not backtracking
-				&& ((prevc==null)||(prevc.height()==0)||((nextc==null)||(nextc.height()==0)))	// not a gate
+				&& ((c!=firstC)
+					|| ((prevc==null)||(prevc.height()==0)||((nextc==null)||(nextc.height()==0))))// not a gate or the starting position
 				&& adjacentCell(c,firstC,null)) // still part of the hive
 				{ if(c.height()==0) 	// not occupied
 					{int nv = slitherAndCountBoard(origin,c,firstC,((dir+len/2)%len),distance+1);
@@ -1517,6 +1567,25 @@ public variation gamevariation = variation.hive;
     	}
     	return(false);
     }
+    
+    // return true if this cells mobility is only enabled
+    // by the presence of a sibling which is also mobile
+    // sibling can be either color, so a dissonant pair 
+    // both are detected as sibmo
+    public boolean sibMobileAny(HiveCell loc)
+    {	if(loc.height()==1)
+    	{
+    	for(int dir = geometry.n-1; dir>=0; dir--)
+    	{
+    		HiveCell sib = loc.exitTo(dir) ;
+    		if(sib.height()==1)
+    		{	if(validHive(sib) && !validHive2(loc,sib)) { return(true); }
+    		}
+    		}
+    	}
+    	return(false);
+    }
+    
     private void addAnimationPath(HiveCell src,HivePiece po,HiveCell dest)
     {	CellStack dests = getTempDest();
     	CellStack path = new CellStack();
@@ -1958,11 +2027,11 @@ public variation gamevariation = variation.hive;
   	    pickedSource=null;
   	   	pickedObject=null;
   	   	stunned = m.stun;
-	    setState(m.state);
-	    if(m.state==HiveState.PLAY_OR_SWAP_STATE || m.state==HiveState.CONFIRM_SWAP_STATE)
+	    if(board_state==HiveState.PLAY_OR_SWAP_STATE)
 	    {
 	    	piepending = true;
 	    }
+	    setState(m.state);
 	    if(whoseTurn!=m.player)
 	    {	moveNumber--;
 	    	setWhoseTurn(m.player);
@@ -2093,6 +2162,31 @@ CommonMoveStack  GetListOfMoves0()
 	GetListOfMoves1(all);
 	return(all);
  }
+private boolean hasLegalDropDests(int who)
+{
+	return legalDropDests(null,playerQueen(who),true);
+}
+
+private boolean hasOnboardMoves(int who)
+{
+ 	// onboarding pieces
+ 	HiveCell[] cells = rackForPlayer(who);
+ 	for(PieceType pc : PieceType.values())
+ 		{
+ 		int pcidx = pc.ordinal();
+ 		HiveCell c = cells[pcidx];
+ 		HivePiece bug = c.topChip();
+
+ 		if((bug!=null) 
+ 				&& pieceTypeIncluded.test(bug.type))
+ 		 {	
+ 			// found a piece we might drop, see if there's any place to put it
+ 			return hasLegalDropDests(who);
+ 			
+ 		 }
+ 	}
+ 	return false;
+}
 boolean GetListOfMoves1(CommonMoveStack all)
 {	// first go after the drop moves
 	switch(board_state)
@@ -2104,7 +2198,11 @@ boolean GetListOfMoves1(CommonMoveStack all)
 		all.addElement(new Hivemovespec(whoseTurn,MOVE_DONE));
 		break;
 	case AcceptOrDecline:
-		all.addElement(new Hivemovespec(whoseTurn,MOVE_ACCEPT_DRAW)); 
+		if(!hasOnboardMoves(whoseTurn))
+			{
+			// don't accept a draw when there are still bugs to play
+			all.addElement(new Hivemovespec(whoseTurn,MOVE_ACCEPT_DRAW)); 
+			}
 		all.addElement(new Hivemovespec(whoseTurn,MOVE_DECLINE_DRAW));
 		break;
 	default:
@@ -2200,7 +2298,12 @@ boolean GetListOfMoves1(CommonMoveStack all)
  		if(G.debug() && (all!=null)) 
  			{ verifyMoves(all); }
  	}
- 	if((all!=null) && !hasDropMoves && robotCanOfferDraw && (all.size()>1)) 
+ 	if((all!=null)
+ 				&& !hasDropMoves 
+ 				&& robotCanOfferDraw 
+ 				&& (all.size()>1)
+ 				&& !hasOnboardMoves(nextPlayer[whoseTurn])
+ 			) 
 		{ all.addElement(new Hivemovespec(whoseTurn,MOVE_OFFER_DRAW)); 
 		}
 

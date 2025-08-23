@@ -485,4 +485,5 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	public boolean drawIsPossible() { return false; }
 	public boolean canOfferDraw() { return false; }
 	
+
 }

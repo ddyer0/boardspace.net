@@ -29,6 +29,14 @@ class MonteEvaluator extends DefaultEvaluator implements Evaluator
 	double pillbug_pinned_weight = -0.1;
 	double QueenCrowdingWeight = -0.1;
 	double QueenDistanceWeight = -0.001;
+	
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
+
 	public double[] getWeights()
 	{	DStack v = new DStack();
 		v.push(queen_pinned_weight);

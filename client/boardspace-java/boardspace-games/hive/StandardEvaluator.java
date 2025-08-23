@@ -27,6 +27,15 @@ import online.search.Evaluator;
 class StandardEvaluator extends DefaultEvaluator implements Evaluator
 {	
 	// simple evaluation based on piece mobility and importance
+	
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
+
+	
 	double beetle_fear_weight = -2.0;
 	double queen_afinity_weight = 5.0;
 	double queen_pinned_weight = -10.0;
