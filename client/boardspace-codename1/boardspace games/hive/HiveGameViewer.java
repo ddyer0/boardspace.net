@@ -522,6 +522,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
       //gb.DrawGrid(gc, tbRect, use_grid, boardBackgroundColor, Color.blue, Color.blue,Color.black);
 
      }
+
     /* draw the board and the chips on it. */
      int stableCellSize = 1;
      private void drawBoardElements(Graphics gc, HiveGameBoard gb, Rectangle tbRect,HitPoint ourTurnSelect,HitPoint anySelect)
@@ -536,7 +537,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	//
          // now draw the contents of the board and anything it is pointing at
          //
-         
          Hashtable<HiveCell,HiveCell> dests = gb.movingObjectDests();
          HiveCell sourceCell = gb.pickedSource; 
          HiveCell destCell = gb.droppedDest;
@@ -629,6 +629,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              		ourTurnSelect.spriteColor = Color.red;
          		
              		}
+              
               	/*
               	{
             	String label = numberMenu.getSequenceString(cell,true);		
@@ -727,6 +728,15 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         drawLiftRect(gc,liftRect,nonDraggingSelect,textures[LIFT_ICON_INDEX]);
         DrawTilesetRect(gc,nonDraggingSelect);
  
+        if(state==HiveState.PLAY_OR_SWAP_STATE || state==HiveState.CONFIRM_SWAP_STATE)
+        {
+        	if(GC.handleRoundButton(gc,repRect,ourTurnSelect,s.get("Swap colors"),
+        			HighlightColor, gb.colorsInverted()?HighlightColor:rackBackGroundColor
+        			))
+        	{
+        		ourTurnSelect.hitCode = HiveId.Swap;
+        	}
+         }
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         //reverseRect.draw(gc,nonDraggingSelect);
         swingCCWRect.draw(gc,nonDraggingSelect);
@@ -954,6 +964,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case Swap:
+        	PerformAndTransmit("Swap");
+        	break;
         case SeeMovable:
         	seeMobile.toggle();
         	break;
@@ -977,6 +990,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 			{
 			default: throw G.Error("Not expecting drop on filled board in state %s",state);
 			case CONFIRM_STATE:
+			case PLAY_OR_SWAP_STATE:
 			case PLAY_STATE:
 			case FIRST_PLAY_STATE:
 			case QUEEN_PLAY_STATE:

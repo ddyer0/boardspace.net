@@ -150,8 +150,11 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		return(n);
 	}	
 	// return the number of adjacent cells owned by a player
-	public int nOccupiedOrOwnedAdjacent(HiveId targetColor)
-	{	int n=0;
+	public double nOccupiedOrOwnedAdjacent(HiveId targetColor)
+	{	double n=0;
+		HivePiece bug = topChip();
+		if(bug.color!=targetColor) { n += 0.75; }	// someone else on top
+
 		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
 		  int h = c.height();
@@ -160,7 +163,16 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		  	  if(h>1)
 		  	  {
 		  		  HivePiece top = c.topChip();
-		  		  if(top.color!=targetColor) { n++; }	// something acting as a beetle
+		  		  if(top.color!=targetColor) 
+		  		  	{ 
+		  			  // must be adjacent to an empty to count
+		  			  HiveCell l1 = exitTo(lim-1);
+		  			  HiveCell l2 = exitTo(lim+1);
+		  			  if((l1.height()==0) || (l2.height()==0))
+		  			  	{ // partial credit for a bombing position
+		  				  n+= 0.75;
+		  			  	}		  		  	
+		  		  	}	// something acting as a beetle
 		  	  }
 		  	}
 		}

@@ -26,6 +26,12 @@ import online.search.Evaluator;
 
 class SecondEvaluator extends DefaultEvaluator implements Evaluator
 {	
+	public int canRandomize(BoardProtocol b, int who) 
+	{	int move = b.moveNumber();
+		return (move <=8) 
+						? (30 - move) 
+						: 0; 
+	}
 	// constructor
 	public SecondEvaluator() {};
 	public SecondEvaluator(variation var)

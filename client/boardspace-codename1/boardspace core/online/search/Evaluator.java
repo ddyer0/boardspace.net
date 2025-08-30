@@ -17,6 +17,7 @@
 package online.search;
 
 import online.game.BoardProtocol;
+import online.game.commonMove;
 
 /**
  * HiveGameBoard knows all about the game of Hive, which is played
@@ -53,6 +54,10 @@ public interface Evaluator
 	public default commonMove gutAnalysis(CommonDriver search_driver, double startEval, commonMove move)
 	{
 		return move;
+	}
+	public default boolean pushAnalysis(BoardProtocol board, boolean depthlimit, commonMove move)
+	{
+		return false;
 	}
 
 }

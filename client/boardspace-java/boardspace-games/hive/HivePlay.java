@@ -10,9 +10,11 @@
     Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
     See the GNU General Public License for more details.
-
+    
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
+    
+    TODO: check that alpha beta checks the refutation first for losing positions - speedup!
  */
 package hive;
 
@@ -45,6 +47,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     private boolean COLLECT_TREE = true;	// special hack to collect the move tree
     private int MONTE_DEPTH_LIMIT = 30;
     private boolean avoidSpiderOpening = false;
+    private boolean pushToWin = false;
     /* constructor */
     public HivePlay()
     {
@@ -103,13 +106,32 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
      	return(val);
     }
     
+    public double Static_Evaluate_Depth_Limited_Position(commonMove m)
+    {
+    	double val =  Static_Evaluate_Position(m.player,true);
+        if(pushToWin)
+        {	// the theory behind this is that if we end up with Q surrounded by 5, a win
+        	// could be 1 move away, so we should extend the search by 1 ply to see if its
+        	// the case.  This works great if there is a win in one more ply, but if not,
+        	// this simple strategy has the effect of adding a complete ply to the search
+        	// which can take a very long time.  So until something much less general or more
+        	// clever is done, this is not useful.
+        	if(evaluator.pushAnalysis(board,true,m))
+        	{
+        		m.set_depth_limited(commonMove.EStatus.EVALUATED_CONTINUE);
+        	}
+        }
+
+    	return val;
+    }
+    
     /**
      * this is it! just tell me that the position is worth.  
      */
     public double Static_Evaluate_Position(commonMove m)
-    {	return Static_Evaluate_Position(m.player);
+    {	return Static_Evaluate_Position(m.player,false);
     }
-    public double Static_Evaluate_Position(int playerindex)
+    private double Static_Evaluate_Position(int playerindex,boolean depth_limited)
     {
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
@@ -124,8 +146,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
         	}
          else if(val1>=VALUE_OF_WIN) { return(-val1); }
        
-        
-        return(val0-val1);
+         return(val0-val1);
     }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -179,11 +200,12 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	MONTEBOT = false;
         	evaluator = new RevisedStandardEvaluator();
         	break;
-        case SMARTBOT_LEVEL: 
- 			MAX_DEPTH = DUMBOT_DEPTH;//SMARTBOT_DEPTH;
-			MONTEBOT = false;
-	       	evaluator = new ThirdStandardEvaluator();
-        	break;
+        // this is the traditional smartbot, replaced by the august 2025 bot
+        //case SMARTBOT_LEVEL: 
+ 		//	MAX_DEPTH = DUMBOT_DEPTH;//SMARTBOT_DEPTH;
+		//	MONTEBOT = false;
+	    //   	evaluator = new ThirdStandardEvaluator();
+        //	break;
         case BESTBOT_LEVEL: 
         	MONTEBOT = false;
         	MAX_DEPTH = DUMBOT_DEPTH;//SMARTBOT_DEPTH;
@@ -195,12 +217,22 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	COLLECT_TREE = false;
         	evaluator = new MonteEvaluator();
         	break;
-        case TESTBOT_LEVEL_1:
+        	
+        case SMARTBOT_LEVEL:
         	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
         	avoidSpiderOpening = true;
+        	pushToWin = false;	// see comments, can't be used in its current form.
            	MAX_DEPTH = DUMBOT_DEPTH;
         	MONTEBOT = false;
         	break;
+        case TESTBOT_LEVEL_1:
+        	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
+        	avoidSpiderOpening = true;
+        	pushToWin = false;	// see comments, can't be used in its current form.
+           	MAX_DEPTH = DUMBOT_DEPTH;
+        	MONTEBOT = false;
+        	break;
+
         case TESTBOT_LEVEL_2:
         	evaluator = new ThirdEvaluator();
         	//evaluator.setWeights("-0.0030393115373014957 0.0 0.0 -6.764150265716804E-4 0.005818957356462663 0.032516602242056644 0.0 0.0 0.0 0.0 0.0 0.006828758127886879 0.0 -0.0089800824176969 0.0 0.0 0.0 0.0 0.05673540886862403 0.007085739163627703 0.0 0.014891424225022947 -0.07852707816298556 0.012057557368815934 0.016648066107679466 -0.054052772020641265 0.0 0.0 -0.007753814908204941 0.01529130741164183 0.0 -0.006499017071934536 0.00861883741819886 0.013991669310243421 -6.762247264109535E-5 0.0 0.00448508541777407 0.0 0.04166365394198201 -0.0013262121259740348 0.0 -0.0043480306685558965 0.0 0.0 0.0 -0.003405745480912023 0.003940553826980168 0.002348696593720538 -0.03418999667679542 -0.014693603249188255 0.0 0.0 -0.006970370409373146 3.1798595109031345E-5 0.0");
@@ -258,8 +290,11 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
         boardSearchLevel = 0;
 
         int depth = MAX_DEPTH+1;
-        double startEval = Static_Evaluate_Position(board.whoseTurn);
-        Search_Driver search_state = Setup_For_Search(5,false);//Setup_For_Search(depth,TIMEPERMOVE/60,depth-1);	// 
+        double startEval = Static_Evaluate_Position(board.whoseTurn,false);
+        Search_Driver search_state = 
+        		Strategy==WEAKBOT_LEVEL 
+        		? Setup_For_Search(depth,TIMEPERMOVE/60,depth-1)
+        		: Setup_For_Search(5,false); 
         try
         {
  

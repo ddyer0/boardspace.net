@@ -66,7 +66,10 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	
 	public CommonDriver getSearcher() { return(search_driver); }
 
-
+	public double Static_Evaluate_Depth_Limited_Position(commonMove m)
+	{
+		return Static_Evaluate_Position(m);
+	}
 	public double Static_Evaluate_Position(commonMove m) {
 		throw G.Error("Not implemented, needed for Alpha-Beta searches");
 	}
@@ -887,19 +890,25 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	// note we supply the player here, because it's tricky to determine
 	    	// exactly when and if the "current player" flips.
 	    	mm.set_depth_limited (commonMove.EStatus.EVALUATED);
-	    	
+	    	boolean depthLimited = Depth_Limit(current_depth+1,master.max_depth);
 	    	// static_evaluate_position may set depth_limited to if it is using a transposition table
-	    	double val = Static_Evaluate_Position(mm);
+	    	double val = depthLimited ? Static_Evaluate_Depth_Limited_Position(mm) : Static_Evaluate_Position(mm);
 	        mm.set_local_evaluation(val);
 	        mm.setEvaluation(val);
-	        mm.setGameover(Game_Over_P());
-	        if(mm.depth_limited()==commonMove.EStatus.EVALUATED)
+	        boolean gameOverNow = Game_Over_P();
+	        mm.setGameover(gameOverNow);
+	        commonMove.EStatus limit = mm.depth_limited();
+	        if(limit==commonMove.EStatus.EVALUATED_CONTINUE)
+	        {
+	        	// this is a special flag to push the evaluation 1 more level
+	        	mm.set_depth_limited(gameOverNow 
+	        			? commonMove.EStatus.DEPTH_LIMITED_GAMEOVER 
+	        			: commonMove.EStatus.EVALUATED);
+	        }
+	        else if(limit==commonMove.EStatus.EVALUATED)
 		        {
-		        mm.set_depth_limited (mm.gameover()
-		        		? commonMove.EStatus.DEPTH_LIMITED_GAMEOVER 			// gameover so search stops
-		        		: (Depth_Limit(current_depth+1,master.max_depth)
-		        				? commonMove.EStatus.DEPTH_LIMITED_SEARCH 		// search bottoms out
-		        				: commonMove.EStatus.EVALUATED));		// search should continue
+	        	if(gameOverNow) { mm.set_depth_limited(commonMove.EStatus.DEPTH_LIMITED_GAMEOVER); }
+	        	else if(depthLimited) { mm.set_depth_limited(commonMove.EStatus.DEPTH_LIMITED_SEARCH); }
 		        }
 	        Unmake_Move(mm);
 	        

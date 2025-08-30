@@ -118,6 +118,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	{
 		NOT_EVALUATED,					// not examined yet
 		EVALUATED,						// static evaluated
+		EVALUATED_CONTINUE,				// push another level
 		EVALUATED_DRAWN,				// evaluated as a draw
 		DEPTH_LIMITED_SEARCH,			// depth limited by search
 		DEPTH_LIMITED_GAMEOVER,			// depth limited because the game is over

@@ -45,8 +45,7 @@ import lib.Toggle;
  * Change History
  *  
  * June 2006  initial work in progress.  
- TODO: add variant to swap after second queen
- TODO: smaller pieces in the history window
+
 */
 public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants,PlacementProvider
 {       
@@ -713,7 +712,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation(); 		// this is correct because we currently only do face to face layout
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
-//G.print("gb "+gb.Digest());
+       	
        boolean setup = (gb.gamevariation==variation.hive_u) 
         		&& ((state==HiveState.Setup)||(state==HiveState.Swap)||(state==HiveState.PUZZLE_STATE));
        for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)

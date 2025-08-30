@@ -38,10 +38,8 @@ public class Search_Node implements Constants,Opcodes
     int number_of_moves;			// the number of moves in cmoves
     int prepare_clock = 0;			// search clock at which this node was prepared
     // note, number_of_moves may be less than cmoves.length
-    long search_digest = 0;		// digest for this move (debugging)
-    BoardProtocol search_clone=null;
-    int search_moven = 0;		// movenumber at this node
     public commonMove current_move;	// the move being evaluated now
+    
     commonMove best_move;		// the best move so far
     double best_value;			// the value of best_move
     int best_move_index;		// the index at which the current best move was found

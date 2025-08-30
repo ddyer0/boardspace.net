@@ -55,5 +55,9 @@ public interface Evaluator
 	{
 		return move;
 	}
+	public default boolean pushAnalysis(BoardProtocol board, boolean depthlimit, commonMove move)
+	{
+		return false;
+	}
 
 }

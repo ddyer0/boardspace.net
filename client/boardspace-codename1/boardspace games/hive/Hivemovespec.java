@@ -37,6 +37,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     {
         // these int values must be unique in the dictionary
     	addStandardMoves(D,
+    		"Swap",MOVE_SWAP,
         	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
