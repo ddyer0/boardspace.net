@@ -510,7 +510,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         //if(useAlternateBoard && (gc!=null)) { gb.countBlobs(true); }
         int left = G.Left(brect);
         int top = G.Bottom(brect);
-        
+        PunctState state = gb.getState();
         while(height++<=maxheight)
         {
         // draw columns right to left so pieces at the same level won't shadow
@@ -545,13 +545,15 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
                 }
                 cell.rotateCurrentCenter(gc,xpos,ypos);
         //   b.playerChip[1].drawChip(gc, this, CELLSIZE, xpos, ypos, null);     
-                if (hitpoint && ((piece==null)||(height==thislevel)))
+                if (hitpoint 
+                		&& ((piece==null)||(height==thislevel))
+                		)
                 {	somehit=true;
             		someXpos = xpos;
             		someYpos = ypos;
             		boolean fordrop = ((piece==null)||hasMovingObject(highlight));
                     highlight.hitCode = fordrop?PunctId.EmptyBoard 
-                    		: isPunct ? PunctId.BoardLocation 
+                    		: (isPunct||(state!=PunctState.CONFIRM_STATE)) ? PunctId.BoardLocation 
                     	    : isClockwise(gb,piece,cellxpos,cellypos,G.Left(highlight)-G.Left(brect),G.Bottom(brect)-G.Top(highlight)) 
                     	    	? PunctId.RotatePieceCW 
                     	    	: PunctId.RotatePieceCCW;
@@ -848,7 +850,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         }}
     }
 
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Punct_SGF); }
 
     public void performHistoryInitialization(StringTokenizer his)
@@ -867,6 +869,9 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
      * the elements that we generated in sgf_save
      * summary: 5/27/2023
      * 5230 files visited 0 problems
+     * 
+     * summary 8/31/2025
+ 	 * 5897 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -881,7 +886,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
             {
-                b.doInit(value);
+                b.reInit(value);
              }
             else if (name.equals(comment_property))
             {

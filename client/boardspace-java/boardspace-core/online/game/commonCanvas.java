@@ -83,7 +83,7 @@ Feb 2005 switched the PAINT and MOUSE functions to synchronize through
   processes.
 
 July 2006 added repeatedPositions related functions
-
+ TODO: rate limit the "moves are coming in"
  TODO: when multiple viewers are reviewing, only the primary sees animations during playback
  
 */
@@ -4604,7 +4604,7 @@ public abstract class commonCanvas extends exCanvas
     	// boards, and not from display copies.  It also ought to be called
     	// ONLY in the real game thread.
     	G.Assert(b==getBoard(), "not my board");
-    	G.Assert(runThread==null || (Thread.currentThread()==runThread),
+    	G.Assert(ignoreRunThread || runThread==null || (Thread.currentThread()==runThread),
     			"wrong thread");
     	}
         int step = b.moveNumber();
@@ -6397,7 +6397,10 @@ public abstract class commonCanvas extends exCanvas
     		}
     	sgf_reader.sgf_save(G.getUrl(file),save_game());
     }
-    
+    public void saveGame(String file)
+    {
+    	sgf_reader.sgf_save(file,save_game());
+    }
     public void doSaveCollection(String ss)
     {
         if (ss != null)
@@ -6562,7 +6565,7 @@ public abstract class commonCanvas extends exCanvas
     	l.loadUrlName = null;
     	l.loadUrlGame = null;
     	if(name!=null)
-    {	       		
+    	{	       		
      	if (name.endsWith(".zip"))
         {
      		l.zipArchive = name;
@@ -6580,36 +6583,42 @@ public abstract class commonCanvas extends exCanvas
             return;
         }
      	
- 
-
-        {
-          	Plog.log.appendNewLog("reading ");
-          	Plog.log.appendLog(name);
-          	Plog.log.appendLog(' ');
-          	Plog.log.appendLog(gamename);
-          	Plog.log.finishEvent();
-          	PrintStream printer = Utf8Printer.getPrinter(System.out);
-            //System.out.println("Geturl "+name);
-            sgf_game gg[] = (l.zipArchive == null)
-                ? sgf_reader.parse_sgf_file(G.getUrl(name, true), printer)
-                : sgf_reader.parse_sgf_file(G.getUrl(l.zipArchive, true), unfile(name), printer);
-            if(gg!=null)
-            {
-            	hidden.Games = new sgf_gamestack();
-            	hidden.Games.pushArray(gg);
-            if((gg.length>0) && "".equals(gamename)) { selectGame(gg[0]); }
-            	else { selectGame(gamename); }
-            }
-            printer.flush();
-        }
-       	if(!startedOnce)
-       		{ //normally this is done in "startPlaying()" but that can be bypassed
-       		  //if a game is loaded before the server responds to the history request
-       		  startedOnce = started = true; 
-       		}
+     	replayGame(name,gamename);
     	}
     }
     
+    public void replayGame(String name)
+    {
+    	replayGame(name,"");
+    }
+    
+    public void replayGame(String name,String gamename)
+    {
+      	Plog.log.appendNewLog("reading ");
+      	Plog.log.appendLog(name);
+      	Plog.log.appendLog(' ');
+      	Plog.log.appendLog(gamename);
+      	Plog.log.finishEvent();
+      	PrintStream printer = Utf8Printer.getPrinter(System.out);
+        //System.out.println("Geturl "+name);
+        sgf_game gg[] = (l.zipArchive == null)
+            ? sgf_reader.parse_sgf_file(G.getUrl(name, true), printer)
+            : sgf_reader.parse_sgf_file(G.getUrl(l.zipArchive, true), unfile(name), printer);
+        if(gg!=null)
+        {
+        	hidden.Games = new sgf_gamestack();
+        	hidden.Games.pushArray(gg);
+        if((gg.length>0) && "".equals(gamename)) { selectGame(gg[0]); }
+        	else { selectGame(gamename); }
+        }
+        printer.flush();
+
+        if(!startedOnce)
+   		{ //normally this is done in "startPlaying()" but that can be bypassed
+   		  //if a game is loaded before the server responds to the history request
+   		  startedOnce = started = true; 
+   		}
+	}
 
     /** email a game record */
 	private void emailGame(String to,String subject,String body)
@@ -7233,7 +7242,7 @@ public abstract class commonCanvas extends exCanvas
 	        	{
 	        	startRobotTurn(who);
 	        	}
-	       String m = who.getRobotMove();
+	       commonMove m = who.getRobotMove();
 	       // this is where offline robot moves are made
 	       if(m!=null) 
 	       		{  

@@ -21,6 +21,7 @@ import lib.G;
 import lib.Random;
 
 import java.awt.Color;
+import java.util.StringTokenizer;
 
 import lib.AR;
 import lib.CellId;
@@ -59,7 +60,16 @@ import online.game.replayMode;
  */
 
 class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctConstants
-{
+{	public static int REVISION = 101;
+
+	// revision 101 changes the behavior to disallow moves of 0 distance, which is retroactively a bug in the original
+	// implementation.  Adding this caused significant disruptions to the GUI and to the robots and to the basic
+	// creation of games, since this code was so old it didn't include the standard concept of revisions.
+
+	int revision = REVISION;
+	public int getMaxRevisionLevel() { return(REVISION); }
+    public String gameType() { return(G.concat(gametype," ",players_in_game," ",randomKey," ",revision)); }
+
 	private PunctState unresign;
 	private PunctState board_state;
 	public PunctState getState() {return(board_state); }
@@ -114,7 +124,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         Grid_Style = PUNCTGRIDSTYLE;
         setColorMap(map, 2);
         makePieces();
-        doInit(init); // do the initialization 
+        doInit(init,0,2,revision); // do the initialization 
     }
     public PunctGameBoard cloneBoard() 
 	{ PunctGameBoard dup = new PunctGameBoard(gametype,getColorMap()); 
@@ -293,12 +303,37 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         boardChanged=true;
         sameboard(from_b);
     }
-
+    // this is the initialization use when replaying old games, which may not include the revision
+    // in the game description, so that those games get revision 100.
+    public void reInit(String val)
+    {
+    	revision = 100;
+    	doInit(val);
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {
+    	StringTokenizer tok = new StringTokenizer(gtype);
+    	String typ = tok.nextToken();
+    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	
+    	doInit(typ,ran,np,rev);
+
+    }
+    public void doInit(String gtype,long key,int players,int rev)
+    {
     	randomKey = key;
     	PunctColor vs[] = PunctColor.values();
+    	revision = rev;
+    	picked_row = -1;
+    	picked_col = (char)0;
+    	picked_rotation=0;
+		pickedSourceLevel=-1;
+		pickedObject = null;
+		
+		
     	int map[] = getColorMap();
     	playerColors[0] = vs[map[0]];
     	playerColors[1] = vs[map[1]];
@@ -311,6 +346,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 
         // note that firstPlayer is NOT initialized here
     }
+    
     public void togglePlayer()
     {
     	setWhoseTurn(nextPlayer[whoseTurn]);
@@ -1083,7 +1119,15 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 			m.from_rot = picked_rotation;
 			m.from_level = pickedSourceLevel;
 
-			dropObject(PunctId.BoardLocation, m.to_col, m.to_row,m.rotation);
+			// the !robotboard is because robots don't make illegal moves, and the state of robots unmaking moves
+			// tended to trigger unPickobject unexpectedly
+			if(!robotBoard && revision>=101 && m.to_col==picked_col && m.to_row==picked_row && m.rotation==picked_rotation)
+				{
+					unPickObject();
+				}
+				else
+				{
+					dropObject(PunctId.BoardLocation, m.to_col, m.to_row,m.rotation);
 			
 			if(replay==replayMode.Single)
 			{
@@ -1094,6 +1138,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 					|| (pickedSourceLevel!=-1) 
 					|| (pickedObject.level==0), "dropped on top");
             setNextStateAfterDrop();
+			}
 
             break;
 
@@ -1218,7 +1263,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         	return(legalSpot(col,row,false));
         }
     }
-    
+    boolean robotBoard = false;
     
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -1228,10 +1273,9 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     executing.
     */
     public void RobotExecute(Punctmovespec m)
-    {
+    {	robotBoard = true;
         m.state = board_state; //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
-        
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         if (Execute(m,replayMode.Replay))
         {
@@ -1275,7 +1319,6 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     	    setState(PunctState.CONFIRM_STATE);
         	pickObject(PunctId.BoardLocation,m.to_col,m.to_row);
         	dropObject(m.from_level>=0?PunctId.BoardLocation:PunctId.Chip_Pool,m.from_col,m.from_row,m.from_rot);
-
         	break;
         case MOVE_RESIGN:
 
@@ -1400,7 +1443,9 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
  		{  punctCell center = piece.cells[0];
  		   char thiscol = center.col;
  		   int thisrow = center.row;
+ 		   if(revision<101)
  		   {
+ 		   // this prevents rotations in place, which are not allowed in the revised game.
  		   boolean somedropped=false;
  		   for(int rr = 0; rr<piece.nRotations; rr++)
  			{

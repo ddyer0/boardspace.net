@@ -59,6 +59,8 @@ public interface CrosswordsConstants
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 	static String SeeYourTilesMessage = "See Your Tiles";
+	static String UseBigFont = "use larger letters on the tiles";
+	static String UseSmallFont = "use smaller letters on the tiles";
 
 
 	class StateStack extends OStack<CrosswordsState>
@@ -101,6 +103,8 @@ public interface CrosswordsConstants
 	{
     	BoardLocation,
     	Rack,
+    	BigfontOn,
+    	BigfontOff,
     	RackMap,
     	LocalRack,
     	RemoteRack,
@@ -165,6 +169,8 @@ public interface CrosswordsConstants
     			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,
+    			UseBigFont,
+    			UseSmallFont,
     			JustWordsMessage,
     			JustWordsHelp,
     			InvalidExplanation,

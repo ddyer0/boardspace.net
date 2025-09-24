@@ -105,7 +105,8 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
 
         return (ringscore + movescore + flipscore + chipscore);
     }
-    public double Static_Evaluate_Position(commonMove m)
+    // TODO: refactor static eval so GameOver is checked first
+   public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
     	return(EvaluatePosition(playerindex,false));
     }

@@ -108,7 +108,8 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
     /**
      * this is it! just tell me that the position is worth.  
      */
-    public double Static_Evaluate_Position(commonMove m)
+    // TODO: refactor static eval so GameOver is checked first
+  public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);

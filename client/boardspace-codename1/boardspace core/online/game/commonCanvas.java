@@ -4594,7 +4594,7 @@ public abstract class commonCanvas extends exCanvas
     	// boards, and not from display copies.  It also ought to be called
     	// ONLY in the real game thread.
     	G.Assert(b==getBoard(), "not my board");
-    	G.Assert(runThread==null || (Thread.currentThread()==runThread),
+    	G.Assert(ignoreRunThread || runThread==null || (Thread.currentThread()==runThread),
     			"wrong thread");
     	}
         int step = b.moveNumber();
@@ -6163,7 +6163,7 @@ public abstract class commonCanvas extends exCanvas
     
 	private boolean saveDisplayBoardNeeded = false;
 	/**
-	 * call this from the mouse manager when the mouse activitivity
+	 * call this from the mouse manager when the mouse activity
 	 * may have changed something, so the display may be out of sync
 	 * with main board.   Usually after a click.
 	 */
@@ -6387,7 +6387,10 @@ public abstract class commonCanvas extends exCanvas
     		}
     	sgf_reader.sgf_save(G.getUrl(file),save_game());
     }
-    
+    public void saveGame(String file)
+    {
+    	sgf_reader.sgf_save(file,save_game());
+    }
     public void doSaveCollection(String ss)
     {
         if (ss != null)
@@ -6570,8 +6573,16 @@ public abstract class commonCanvas extends exCanvas
             return;
         }
      	
+     	replayGame(name,gamename);
+    	}
+    }
  
+    public void replayGame(String name)
+    {
+    	replayGame(name,"");
+    }
 
+    public void replayGame(String name,String gamename)
         {
           	Plog.log.appendNewLog("reading ");
           	Plog.log.appendLog(name);
@@ -6591,15 +6602,13 @@ public abstract class commonCanvas extends exCanvas
             	else { selectGame(gamename); }
             }
             printer.flush();
-        }
+
        	if(!startedOnce)
        		{ //normally this is done in "startPlaying()" but that can be bypassed
        		  //if a game is loaded before the server responds to the history request
        		  startedOnce = started = true; 
        		}
     	}
-    }
-    
 
     /** email a game record */
 	private void emailGame(String to,String subject,String body)
@@ -7223,7 +7232,7 @@ public abstract class commonCanvas extends exCanvas
 	        	{
 	            startRobotTurn(who);
 	        	}
-	       String m = who.getRobotMove();
+	       commonMove m = who.getRobotMove();
 	       // this is where offline robot moves are made
 	       if(m!=null) 
 	       		{  

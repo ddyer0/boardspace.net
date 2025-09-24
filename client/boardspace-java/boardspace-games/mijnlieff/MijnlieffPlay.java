@@ -153,6 +153,7 @@ public class MijnlieffPlay extends commonRobot<MijnlieffBoard> implements Runnab
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);

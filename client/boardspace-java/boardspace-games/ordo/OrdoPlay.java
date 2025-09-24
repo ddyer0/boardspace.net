@@ -141,6 +141,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     /**
      * this is it! just tell me that the position is worth.  
      */
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);

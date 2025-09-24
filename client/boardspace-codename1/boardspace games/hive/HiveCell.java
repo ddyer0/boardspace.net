@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package hive;
 
@@ -62,7 +62,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		lastContents = other.lastContents;
 		lastFilled = other.lastFilled;
 		lastEmptied = other.lastEmptied;
-		lastMover = other.lastMover;
+		lastMover = other.lastMover;		
 	}
 	public HiveId rackLocation() { return((HiveId)rackLocation); }
 	
@@ -75,7 +75,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		return(v);
 	}
 	
-			  
+	
 	public long Digest(Random r)
 	{	long v = simpleDigest();
 		if(onBoard)
@@ -86,8 +86,8 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 			  if(ad!=null)
 			  {	long av = ad.simpleDigest();
 			    if(av!=0) { v = v*(i+4)+av; na++; }
-	}
-	
+			  }
+			  
 			}
 			if(na==0) 
 				{ v^=hiddenDigest(); }	// if it's an isolated cell, include the exact location
@@ -95,7 +95,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		else { v = v*hiddenDigest();}
 		return(v);
 	}
-
+	
 	// constructor for other cells
 	public HiveCell(HiveId rack,char c,int r,long rv)
 	{
@@ -121,7 +121,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		  {
 		  HivePiece bug = c.topChip();
 		  if((bug!=null) && (bug.color==color)) { n++; }
-		}
+		  }
 		}
 		return(n);
 	}
@@ -134,11 +134,11 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		  {
 		  HivePiece bug = c.topChip();
 		  if((bug!=null) && (bug.color!=color)) { n++; }
-		}
+		  }
 		}
 		return(n);
 	}
-	// return the number of adjacent cells owned by a player
+	// return the number of adjacent cells occupied
 	public int nOccupiedAdjacent()
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
@@ -149,48 +149,18 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		}
 		return(n);
 	}	
-	// return the number of adjacent cells owned by a player
-	public double nOccupiedOrOwnedAdjacent(HiveId targetColor)
-	{	double n=0;
-		HivePiece bug = topChip();
-		if(bug.color!=targetColor) { n += 0.75; }	// someone else on top
-
-		for(int lim=geometry.n-1;lim>=0;lim--)
-		{ HiveCell c = exitTo(lim);
-		  int h = c.height();
-		  if(c!=null && h>0) 
-		  	{ n++; 
-		  	  if(h>1)
-		  	  {
-		  		  HivePiece top = c.topChip();
-		  		  if(top.color!=targetColor) 
-		  		  	{ 
-		  			  // must be adjacent to an empty to count
-		  			  HiveCell l1 = exitTo(lim-1);
-		  			  HiveCell l2 = exitTo(lim+1);
-		  			  if((l1.height()==0) || (l2.height()==0))
-		  			  	{ // partial credit for a bombing position
-		  				  n+= 0.75;
-		  			  	}		  		  	
-		  		  	}	// something acting as a beetle
-		  	  }
-		  	}
-		}
-		return(n);
-	}	
-
-	public boolean isAdjacentToAnt()
-	{
-		for(int dir=0;dir<geometry.n;dir++)
-		{
-			HiveCell adj = exitTo(dir);
-			if(adj!=null)
-			{	HivePiece top = adj.topChip();
-				if(top!=null && (top.type==PieceType.ANT)) { return(true); }
-			}
-		}
-		return(false);
-	}
+	
+    // return true if c is adjacent to a beetle. Nominally c contains a particular type
+    public boolean actingAsType(PieceType type)
+    {
+    	for(int lim=geometry.n-1;lim>=0;lim--)
+    	{
+    		HiveCell adj = exitTo(lim);
+    		HivePiece top = adj!=null ?adj.topChip() : null;
+    		if(top!=null && top.type==type) { return true; }
+    	}
+    	return false;
+    }
 	
 	//
 	// this logic defends pillbugs against beetle attack
@@ -212,7 +182,6 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 					{
 					default: break;
 					case MOSQUITO:
-					case PILLBUG:
 					case BEETLE: return(true);
 
 					}
@@ -235,22 +204,6 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		return(msg);
 	}
 
-    public boolean isPinnedCell()
-    {	if(height()>1) { return(false); }
-    	if(onBoard)
-		{
-		int lim = geometry.n;
-		int prevh = exitTo(lim-1).height(); 
-		for(int i=0;i<lim;i++) 
-			{
-			int h = exitTo(i).height();
-			if((h==0)&&(prevh==0)) 
-				{ return(false); }
-			prevh = h;
-			}
-		}
-		return(true);
-    }
 
     public boolean adjacentCell(HiveCell s,HiveCell empty)
     {

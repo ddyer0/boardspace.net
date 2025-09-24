@@ -146,6 +146,9 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
 	public static CrosswordsChip LockRotation = new CrosswordsChip("lock-nomask",dscale,LockMessage,0);
 	public static CrosswordsChip UnlockRotation = new CrosswordsChip("unlock-nomask",dscale,UnlockMessage,0);
 
+	public static CrosswordsChip BigFontOn = new CrosswordsChip("bigfonts",dscale,null,0);
+	public static CrosswordsChip BigFontOff = new CrosswordsChip("bigfont-off",dscale,null,0);
+	
 	static {
 		Option.Backwards.onIcon = Backwards;
 		Option.Backwards.offIcon = NoBackwards;
@@ -254,7 +257,8 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     	{	// draw all letters with the same size
     		
     		Text ww = TextChunk.create("W");
-    		int ss = (int)(SQUARESIZE*0.5);
+    		boolean big = canvas.getAltChipset()!=0;
+    		int ss = (int)(SQUARESIZE*(big ? 0.85 : 0.5));
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
@@ -262,7 +266,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = lib.Font.getFontMetrics(f);
-     		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.15));
+     		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*(big ? 0.27 : 0.15)));
      		if(value!=0)
      		{
     		GC.Text(gc,true,cx+SQUARESIZE/5,cy,SQUARESIZE/4,SQUARESIZE/4,ltblue,null,""+value);

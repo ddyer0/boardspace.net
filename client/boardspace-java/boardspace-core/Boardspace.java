@@ -89,6 +89,8 @@ class CacheInfo {
 	static final int BUFFERSIZE = 100*1024;			// copy jar buffer size, 100K
 	static boolean verbose = false;
 	static boolean uncache = false;
+	boolean writing = false;
+	boolean failed = false;
 	public String toString() {
 		return "<cacheinfo "+name+" loaded "+loaded+">";
 	}
@@ -159,6 +161,7 @@ class CacheInfo {
 		// is important for java 18 and above
 		boolean doit = true;
 		boolean retry = false;
+		writing = false;
 		while(doit)
 		{
 		doit = false;
@@ -174,19 +177,32 @@ class CacheInfo {
 
 		String name = from.substring(from.lastIndexOf('/')+1);
 		File toFile = new File(to,name);
+		writing = true;
 		OutputStream output = new FileOutputStream(toFile);
+		writing = false;
 		byte buffer[] = new byte[BUFFERSIZE];
 		int nbytes = 0;
 		while( (nbytes = input.read(buffer))>0) 
 		{	// this is a hack to induce overlap in file transfers
 			// try { Thread.sleep(10); } catch (InterruptedException e) {};
+			writing = true;
 			output.write(buffer,0,nbytes);
+			writing = false;
 		}
-		if(output!=null) { output.close(); }
-		if(toFile!=null)
-			{ toFile.setLastModified(totime*1000); 
+		if(output!=null) 
+			{ writing = true;
+			  output.close(); 
+			  writing = false;  
 			}
-		if(input!=null) { input.close(); }
+		if(toFile!=null)
+			{ writing = true;
+			  toFile.setLastModified(totime*1000); 
+			  writing = false;
+			}
+		if(input!=null) 
+			{ 
+			  input.close(); 			  
+			}
 		if(verbose) { Boardspace.log("copy "+from+" finished"); }
 		loaded = true;
 		// register the new jar
@@ -258,7 +274,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	private Hashtable<String,CacheInfo> jarCache = new Hashtable<String,CacheInfo>();
 	// map from package names to cacheinfo, same cacheinfo object as in the jar cache
 	private Hashtable<String,CacheInfo> packageCache = new Hashtable<String,CacheInfo>();
-	
+	static int errors = 0;
+	static int diskFull = 0;
 	private static long startTime = 0;
 	private static Thread startThread = null;
 
@@ -350,7 +367,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		{ if(verbose) { log("No info for "+name0); } 
 		  return(false);
 		}
-		else 
+		else if(info.failed) { return false; }
+		else if(errors<2)
 		{if(!info.loaded)
 			{	
 				try {
@@ -361,13 +379,23 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 					else if(verbose) { log(""+info+" newly loaded"); }
 				}
 				catch (Exception e)
-				{
+				{	info.failed = info.loaded = true;
+					errors++;
+					if(info.writing)
+					{
+						diskFull++;
+						showError("Error caching "+name+" - Possibly storage is full - from "+webHost(),e);
+					}
+					else
+					{
 					showError("Error fetching "+name+" from "+webHost(),e);
+					}
 				}
 			}
 		if(verbose) { log("assureCached exit "+name0+" "+info.loaded); }
 		return(info.loaded);
 		}
+		return false;
 		
 	}
 	@SuppressWarnings("unused")

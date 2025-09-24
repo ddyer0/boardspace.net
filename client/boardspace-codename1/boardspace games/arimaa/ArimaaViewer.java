@@ -206,7 +206,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         G.SetRect(handi,rbox+unitsize/2,y,unitsize*2,unitsize*2);
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,rbox+unitsize*2+unitsize,y+unitsize/2,doneW,doneW/2);
-    	G.SetRect(rackRect,x,G.Bottom(box),rackw,unitsize*3);
+    	G.SetRect(rackRect,x,G.Bottom(box),rackw,unitsize*5/2);
 
     	G.union(box, handi, done, chipRect, rackRect);
     	pl.displayRotation = rotation;
@@ -263,19 +263,19 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nCols*CELLSIZE);
-    	int boardH = (int)(nRows*CELLSIZE);
+    	int boardW = (int)(nCols*cs);
+    	int boardH = (int)(nRows*cs);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH/2;
     	int boardBottom = boardY+boardH;
     	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = mainY;
         int stateX = boardX;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -287,7 +287,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect,viewsetRect);       
+    	placeRow(boardX, boardBottom-stateH/2,boardW,stateH,goalRect,reverseViewRect,viewsetRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         }
@@ -326,7 +326,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         boolean hasNonRabbits = false;
         boolean hasRabbits = false;
         int xstep = G.Width(r)/div;
-        int top = G.centerY(r);
+        int top = G.Top(r)+(int)(G.Height(r)*0.6);
         ArimaaCell srcCell = gb.getSource();
         for(int i=1,last=chips.length; i<last;i++)
         {

@@ -1,15 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-<meta data-rh="true" name="theme-color" content="#ffffff"/>
-<meta data-rh="true" property="og:title" content="Free Online Board Games | Play Board Games for Free"/>
-<meta name="title" content="Play Board Games Online for Free" />
+<meta data-rh="true" name="theme-color" content="#ffffff">
+<meta data-rh="true" property="og:title" content="Free Online Board Games | Play Board Games for Free">
+<meta name="title" content="Play Board Games Online for Free">
 
     <meta http-equiv="content-type" content="text/html;
       charset=windows-1252">
     
     <title>BoardSpace.net Home Page</title><script src="/js/site.js"></script></head>
-
-  <body style="background-image: url(../images/background-image.jpg);">
+<body style="background-image: url(../images/background-image.jpg);">
     <h1 style="text-align: center;"><img alt="boardspace.net" src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
     <h1 style="text-align: center;">A place to play Board Games</h1>
     <h3 style="text-align: center;">All these games can be played with friends - online or offline - desktop or mobile</h3>
@@ -18,17 +17,14 @@
       </caption><tbody>
         <tr>
 
-          <td style="vertical-align: top; text-align: center;"><font size="+1"> <a href="/cgi-bin/noticeme.cgi?from=homepage">
-              </a><a href="register.shtml"><span style="font-weight: bold;">Register</span></a></font><br>
-          </td>
-          <td style="vertical-align: top; text-align: center;"><font size="+2"><a style="font-weight: bold;" href="login-jws.shtml">Download the App for your platform<br>
-              </a></font></td>
+          
+          <td style="vertical-align: top; text-align: center;"><h2><a style="font-weight: bold;" href="lobby-help.html">How to Play Online Games here</a><font size="+2"><a style="font-weight: bold;" href="login-jws.shtml"><br>
+              </a></font></h2></td><td><h2><font size="+1"><a href="register.shtml"><span style="font-weight: bold;">Register</span></a></font></h2></td><td style="font-weight: bold;"><h2><a href="login-jws.shtml"><font size="+1"><a href="register.shtml"><span style="font-weight: bold;">Download the app for your platform</span></a></font></a></h2></td>
         </tr>
       </tbody>
     </table>
     <br>
-    <!--#include virtual="/cgi-bin/links.cgi?notop=1" -->
-    <!--#include virtual="/cgi-bin/top_games.cgi?embed=1" --><br>
+    <!--#include virtual="/cgi-bin/links.cgi?notop=1" -->&nbsp;<br>
     
     <center><h2>Site Stuff</h2></center>
     <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
@@ -39,7 +35,7 @@ page" alt="" style="border: 0px solid ; width: 100px; height: 50px;"></a><br>
 <a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new">Spread the word<br>
 </a></td>
   <td><a target="_new" href="lobby-help.html">Lobby Help</a>
-    <a target=_new href="offline-launcher-help.html">Offline Game Help</a>
+    <a target="_new" href="offline-launcher-help.html">Offline Game Help</a>
 </td>
 <td style="vertical-align: top;"><a target="_new" href="/cgi-bin/edit.cgi">Edit User Info</a> &amp;
 <a href="/cgi-bin/lost_password.cgi">Password Reset</a></td>
@@ -108,8 +104,16 @@ Add
       </tbody>
     </table>
     <br>
-    Translations by Babyl Fish (far from perfect, but better than
-    nothing!) <a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_es"><img alt="spanish" src="/images/flags/Spain.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_de"><img alt="german" src="/images/flags/Germany.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_it"><img alt="italian" src="/images/flags/Italy.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_fr"><img alt="french" src="/images/flags/France.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a>
+    Translations by Google Translate (far from perfect, but better than
+    nothing!) 
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
     <hr>
     <center>
       <table style="width: 100%;">

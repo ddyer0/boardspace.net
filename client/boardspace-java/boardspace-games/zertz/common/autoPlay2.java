@@ -115,6 +115,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         sequence_board = GameBoard.cloneBoard();
     }
 
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	return(evaluator.evaluate(board, m.player, false));
     }

@@ -294,9 +294,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
 
     	Rectangle main = layout.getMainRectangle();
-    	int mainX = G.Left(main)+100;
+    	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-200;
+    	int mainW = G.Width(main);
     	
     	// calculate a suitable cell size for the board
     	CELLSIZE = fh*3;;
@@ -613,6 +613,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                    	GC.setColor(gc,Color.yellow);
                  	StockArt.SmallO.drawChip(gc,this,(int)(actCellSize*0.5),xp,yp,id);
                  	}
+                //if(gb.isRing(cell))
+                //{
+                //	StockArt.SmallX.drawChip(gc,this,(int)(actCellSize*0.4),xp,yp,null);
+                //}
                  	}
                  }
                  else {

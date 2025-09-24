@@ -51,7 +51,8 @@ class RobotProperties
     double evaluation = Double.NaN; 		// the net evaluation, after search, of this move
     double local_evaluation = Double.NaN; 	// static eval of this move
     commonMove best_move = null; // the best successor move to this move, from search
-    commonMove.EStatus depth_limited = commonMove.EStatus.NOT_EVALUATED;	// if this move hit the depth limit for the search
+    static final commonMove.EStatus DEFAULT_DEPTH_LIMITED = commonMove.EStatus.NOT_EVALUATED;
+    commonMove.EStatus depth_limited = DEFAULT_DEPTH_LIMITED;	// if this move hit the depth limit for the search
     boolean gameover;		// true if this move ended the game
 
     void Copy_Slots(RobotProperties to)
@@ -164,7 +165,17 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     public boolean gameover() { return(RProps==null ? false : R().gameover); }
     public boolean isDrawn() { return(RProps==null ? false : R().depth_limited==EStatus.EVALUATED_DRAWN); }
     public void setGameover(boolean v) { if((RProps==null)&&(v==false)) {} else { R().gameover = v; }}  
-    public EStatus depth_limited() { return(R().depth_limited);}
+    public EStatus depth_limited() { return(RProps==null ? RobotProperties.DEFAULT_DEPTH_LIMITED : R().depth_limited);}
+    /**
+     * return true if this node is marked for deeper search.  Normally this is status EVALUATED
+     * but EVALUATED_CONTINUE marks nodes extended for quiescence search.
+     * @return
+     */
+    public boolean searchDeeper()
+    {
+    	EStatus lim = depth_limited();
+    	return lim==EStatus.EVALUATED || lim==EStatus.EVALUATED_CONTINUE || lim==EStatus.NOT_EVALUATED;
+    }
     public void set_depth_limited(EStatus v) { R().depth_limited = v; }
     public double local_evaluation() { return(R().local_evaluation); }
     public double set_local_evaluation(double v) { R().local_evaluation = v; return(v); }

@@ -44,6 +44,7 @@ import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -105,6 +106,10 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private Toggle bigTypeToggle = new Toggle(this,"bigfont",
+    		CrosswordsChip.BigFontOn,CrosswordsId.BigfontOff,UseSmallFont,
+    		CrosswordsChip.BigFontOff,CrosswordsId.BigfontOn,UseBigFont);
+    
     private Rectangle chipRects[] = addZoneRect("chips",4);
     private Rectangle scoreRects[] = addZoneRect("playerScore",4);
     private Rectangle eyeRects[] = addZoneRect("PlayerEye",4);
@@ -141,6 +146,10 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 		gameIcon = CrosswordsChip.Icon.image;
     }
 
+    public int getAltChipset()
+    {
+    	return bigTypeToggle.isOnNow() ? 1 : 0;
+    }
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -333,11 +342,11 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
     	if(plannedSeating())
     	{
-    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect,rotateRect,lockRect);   
+    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect,bigTypeToggle,rotateRect,lockRect);   
     	}
     	else
     	{
-    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect);   
+    		placeRow(boardX, G.Bottom(boardRect),boardW,stateH,goalRect,bigTypeToggle);   
     	}
     	int bigRackH = planned?0:CELLSIZE*2;
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, bigRackH);
@@ -857,13 +866,16 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
 	    	  CrosswordsChip.Tile.drawChip(gc,this,xsize,xpos,ypos,null);              
 	      }     
+	      int ysize = getAltChipset()==0 ? xsize : (int)(xsize*1.3);
 	      for(CrosswordsCell c = gb.allPostCells; c!=null; c=c.next)
 	      {
 	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row) - gb.cellSize()/2;
 	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row) + gb.cellSize()/2;
 	    	  CrosswordsChip tile = c.topChip();
 	    	  //tile.scale = new double[] { 0.42,0.32,0.78};
-	    	  if(tile!=null) { tile.drawChip(gc,this,xsize,xpos,ypos,null); }	               
+	    	  if(tile!=null)
+	    	  	{ tile.drawChip(gc,this,tile==CrosswordsChip.Post ? xsize : ysize,xpos,ypos,null); 
+	    	  	}	               
 	       }       	
 	      if(DRAWBACKGROUNDTILES) 
 	    	  { drawFixedTiles(gc,brect,gb);
@@ -1220,7 +1232,10 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
+       boolean big = bigTypeToggle.isOn();
+       if(big) { bigTypeToggle.setValue(false); }
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
+       if(big) { bigTypeToggle.setValue(true); }
        GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.black, logRect);
@@ -1332,6 +1347,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	GC.drawBubble(gc,bigX,bigY,bigString,fullRect,messageRotation);
         }
        }
+       bigTypeToggle.draw(gc,selectPos);
        drawHiddenWindows(gc, selectPos);
     }
     public void standardGameMessage(Graphics gc,CrosswordsBoard gb,Rectangle stateRect,CrosswordsState state)
@@ -1637,6 +1653,12 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         case LocalRack:
         case RemoteRack:
         	sendRack(hp);
+        	break;
+        case BigfontOn:
+        	bigTypeToggle.setValue(true);
+        	break;
+        case BigfontOff:
+        	bigTypeToggle.setValue(false);
         	break;
         case Vocabulary:
         	bb.setVocabulary(vocabularyRect.value);

@@ -58,6 +58,8 @@ public interface CrosswordsConstants
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 	static String SeeYourTilesMessage = "See Your Tiles";
+	static String UseBigFont = "use larger letters on the tiles";
+	static String UseSmallFont = "use smaller letters on the tiles";
 
 
 	class StateStack extends OStack<CrosswordsState>
@@ -91,7 +93,7 @@ public interface CrosswordsConstants
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+		public boolean Puzzle() { return(this==Puzzle); } 
 	};
 	
     //	these next must be unique integers in the Jumbulayamovespec dictionary
@@ -100,6 +102,8 @@ public interface CrosswordsConstants
 	{
     	BoardLocation,
     	Rack,
+    	BigfontOn,
+    	BigfontOff,
     	RackMap,
     	LocalRack,
     	RemoteRack,
@@ -164,6 +168,8 @@ public interface CrosswordsConstants
     			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,
+    			UseBigFont,
+    			UseSmallFont,
     			JustWordsMessage,
     			JustWordsHelp,
     			InvalidExplanation,

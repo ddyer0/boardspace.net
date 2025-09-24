@@ -180,7 +180,6 @@ class PrototypeBoard
     
     public String gameType() { return(G.concat(gametype," ",players_in_game," ",randomKey," ",revision)); }
     
-
     public void doInit(String gtype,long key)
     {
     	StringTokenizer tok = new StringTokenizer(gtype);

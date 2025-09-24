@@ -139,6 +139,9 @@ public interface ViewGameProtocol
      */
     public boolean PerformAndTransmit(String st);
     
+    public default boolean PerformAndTransmit(commonMove m) { return PerformAndTransmit(m.moveString()); }
+    
+    
     /** first chance to process a message. Normally just ignore.  This is a way for 
     * a game to intercept messages sent outside of the normal mechanism
     * */

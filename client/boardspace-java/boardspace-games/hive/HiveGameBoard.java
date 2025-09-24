@@ -51,7 +51,8 @@ import online.game.*;
  */
 
 class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,HiveConstants
-{ 	static final int REVISION = 101;		// 101 switches to an expandable board
+{ 	static final int REVISION = 102;		// 101 switches to an expandable board
+											// 102 switches smartbot to the revised September evaluator
 	public int getMaxRevisionLevel() { return(REVISION); }
 
     // indexes into the balls array, usually called the rack
@@ -138,7 +139,7 @@ public variation gamevariation = variation.hive;
     	{ if(tempDestIndex>=0) { CellStack s = tempDestResource[tempDestIndex--]; s.clear(); return s; }
     	  return(new CellStack());
     	}
-    public synchronized void returnTempDest(CellStack d) { tempDestResource[++tempDestIndex]=d; }
+    public synchronized void returnTempDest(CellStack d) { if(d!=null) { tempDestResource[++tempDestIndex]=d; }}
     
 
     // slither around the hive.  If nsteps>0, step n times before landing (spider)
@@ -194,12 +195,13 @@ public variation gamevariation = variation.hive;
 				{ c.sweep_counter=sweep_counter;
 				  if(path!=null) { path.push(c); }
 				  if(nsteps<=0) 
-				  { addDest(dests,c,false,path); 
+				  { 
 					if(onlyone) { return true; }
+					addDest(dests,c,false,path); 
 					some = true;
 				  }
 				  if(nsteps!=0) 
-				  { some = slither_internal(origin,false,nsteps,firstC,source,((dir+len/2)%len),c,dests,path,onlyone); 
+				  { some |= slither_internal(origin,false,nsteps,firstC,source,((dir+len/2)%len),c,dests,path,onlyone); 
 					if(onlyone && some) { return(some); }
 				  }
 				  if(path!=null) { path.pop(); }
@@ -207,13 +209,74 @@ public variation gamevariation = variation.hive;
 		}
 		return(some);
     }
-
+ 
+    /* magic numbers that indicate if removing the center can change the connectivity */
+    static byte magicNumbers[] = {
+    		0, 0, 0, 0, 0, 1, 0, 0,
+    		0, 1, 1, 1, 0, 1, 0, 0, 
+    		0, 1, 1, 1, 1, 1, 1, 1, 
+    		0, 1, 1, 1, 0, 1, 0, 0, 
+    		0, 0, 1, 0, 1, 1, 1, 0, 
+    		1, 1, 1, 1, 1, 1, 1, 0, 
+    		0, 0, 1, 0, 1, 1, 1, 0, 
+    		0, 0, 1, 0, 0, 0, 0, 0
+    };
+    		
+ 
+    private int tableIndex(HiveCell loc)
+    {
+    	int idx = 0;
+    	for(int direction=CELL_DOWN;direction<CELL_FULL_TURN;direction++)
+    	{
+    		idx = (idx<<1) | (loc.exitTo(direction).height()>0 ? 1 : 0);
+    	}
+    	return idx;
+    }
+    private boolean connectivityCanChange(HiveCell loc)
+    {
+    	int idx = tableIndex(loc);
+    	return magicNumbers[idx]!=0;
+    }
+    /*
+    // this is code to validate (or build) the map
+    private void validateChangeMap()
+    {
+    	HiveCell center = getCell('M',17);
+    	for(HiveCell c = allCells; c!=null; c=c.next) { c.reInit(); }
+    	occupiedCells.clear();
+   		center.addChip(HivePiece.WhiteQueen);
+   		occupiedCells.push(center);
+   		for(int idx = 1; idx<magicNumbers.length; idx++)
+    	{
+    		int map = idx;
+    		for(int direction=0;direction<CELL_FULL_TURN;direction++)
+    		{
+    			HiveCell adj = center.exitTo(direction);
+    			occupiedCells.remove(adj); 
+    			adj.reInit();
+    			if((map & 0x20)!=0)  { adj.addChip(HivePiece.BlackQueen); occupiedCells.push(adj);}
+    			map = map<<1;
+    		}
+    		boolean complete = validHiveSlow(null);
+    		G.Assert(complete,"should be valid");
+    		boolean valid = validHiveSlow(center);
+    		boolean mapped = magicNumbers[idx]==0;
+    		if(valid!=mapped) 
+    		{
+    			G.Error("mismatch for index "+idx+" valid "+" table "+mapped);
+      		}
+ 
+     	}
+   		//for(HiveCell c = allCells; c!=null; c=c.next) { c.reInit(); }
+    	//occupiedCells.clear();
+    }
+    */
     // 
     // any blank cell that is adjacent to any cell,
     // and also any cell
     //
-    private void slitherAnywhere(HiveCell source,CellStack dests,CellStack path,boolean onlyone)
-    {	
+    private boolean slitherAnywhere(HiveCell source,CellStack dests,CellStack path,boolean onlyone)
+    {	boolean some = false;
 		int tilesOnBoard = 0;
 		int sweep = ++sweep_counter;
 		for(int i=0,lim=occupiedCells.size();i<lim;i++)
@@ -227,8 +290,8 @@ public variation gamevariation = variation.hive;
 			  	  	{ path.push(source);
 			  	  	  path.push(ca);
 			  	  	}
+					if(onlyone) { return true; }
 			  	  	addDest(dests,ca,false,path);
-					if(onlyone) { return; }
 			  	  	if(path!=null)
 			  	  	{	path.pop();
 			  	  		path.pop();
@@ -244,15 +307,16 @@ public variation gamevariation = variation.hive;
 			path.push(source);
 			path.push(cell);
 			}
+			if(onlyone) { return true; }
 			addDest(dests,cell,false,path);
-			if(onlyone) { return; }
+			some = true;
 			if(path!=null)
 			{
 			path.pop();
 			path.pop();
 			}
 			}
-		return;
+		return some;
     }
     // true if this cell is a legal place to drop a new piece
     // for the player whose turn it is.
@@ -266,7 +330,7 @@ public variation gamevariation = variation.hive;
 		if(occupiedCells.size()==0) { return(true); }
 		return(false);
     }
-    private boolean legalDropDest(HiveCell cell,HiveId targetColor)
+    public boolean legalDropDest(HiveCell cell,HiveId targetColor)
     {	// dropping in a new piece
 		if(cell.height()>0) { return(false); }
 		if(cell.nOtherColorAdjacent(targetColor)>0) { return(occupiedCells.size()==1); }
@@ -301,6 +365,8 @@ public variation gamevariation = variation.hive;
      	}
      	return n;
     }
+    
+  
     private boolean legalDropDests(CellStack dests,HivePiece p,boolean onlyone)
     {	
      	int sweep = ++sweep_counter;
@@ -350,7 +416,7 @@ public variation gamevariation = variation.hive;
     }
     
     // return true if exit from source is a "gate", ie a barrier of taller pieces.
-    private boolean isGate(HiveCell source,boolean picked,HiveCell dest,int dir)
+    public boolean isGate(HiveCell source,boolean picked,HiveCell dest,int dir)
     {	int srcH = source.height()+(picked?1:0);
     	HiveCell prev = source.exitTo(dir-1);
     	int prevH = prev.height();
@@ -407,8 +473,8 @@ public variation gamevariation = variation.hive;
 				&& !isGate(pill,false,adj,dir)	// can't fling through a gate
 					)
 			{	
-				addDest(dests,adj,true,path);
 				if(onlyone) { return true; }
+				addDest(dests,adj,true,path);
 				some = true;
 			}
 		}
@@ -445,7 +511,7 @@ public variation gamevariation = variation.hive;
         					{ 
         					if(!isGate(source,picked,adj,dir))
         					{	// can't flip through a gate
-        					some =  addPillbugFlips(dests,source,picked,adj,path,dir,onlyone);
+        					some |=  addPillbugFlips(dests,source,picked,adj,path,dir,onlyone);
         					if(onlyone && some) { return some; }
         					
         					}
@@ -461,14 +527,14 @@ public variation gamevariation = variation.hive;
     // moves for all the acquired movement types.  For pillbugs, this adds only
     // the normal pillbug moves, not the flip moves.
     //
-    private void legalDestsForType(HiveCell source,boolean picked,PieceType type,CellStack dests,CellStack path,boolean onlyone)
-    {	
+    private boolean legalDestsForType(HiveCell source,boolean picked,PieceType type,CellStack dests,CellStack path,boolean onlyone)
+    {	boolean some = false;
     	switch(type)
     	{
      	case ORIGINAL_PILLBUG:
     		// regular pillbug moves up 1, step 0, down 1
     		{
-    		if(!validHive(source)) { return; }	// can't violate the hive rule
+    		if(!validHive(source)) { return false; }	// can't violate the hive rule
 			for(int dir1=0;dir1<CELL_FULL_TURN;dir1++)
 			{	HiveCell up1 = source.exitTo(dir1);
 				if((up1!=null)
@@ -481,18 +547,20 @@ public variation gamevariation = variation.hive;
 										&& (down.height()==0)
 										&& (!isGate(up1,picked,down,dir3))
 										&& (down!=source))
-								{	addDest(dests,down,false,path);
-									if(onlyone) { return; }
+								{	
+									if(onlyone) { return true; }
+									addDest(dests,down,false,path);
+									some = true;
 								}
 					}
 				}
 			}
-			return;
+			return some;
 			}
     	case LADYBUG:
     		// up 1, step 1, down 1
     		{
-    		if(!validHive(source)) { return; }	// can't violate the hive rule
+    		if(!validHive(source)) { return false; }	// can't violate the hive rule
 			for(int dir1=0;dir1<CELL_FULL_TURN;dir1++)
 			{	HiveCell up1 = source.exitTo(dir1);
 				if((up1!=null)
@@ -512,29 +580,30 @@ public variation gamevariation = variation.hive;
 										&& (down.height()==0)
 										&& (!isGate(up2,false,down,dir3))
 										&& (down!=source))
-								{	addDest(dests,down,false,path);
-									if(onlyone) { return; }
+								{	
+									if(onlyone) { return true; }
+									addDest(dests,down,false,path);
+									some = true;
 								}
 							}
 						}
 					}
 				}
 			}
-    		return;
+    		return some;
     		}
     	case PILLBUG:	// new model pillbug moves like a Q
 		case QUEEN:
 		{	// queen moves by sliding one cell in any direction to an empty space
-			if(!validHive(source)) { return; }
-			slither(1,source,null,0,source,dests,path,onlyone);
-			return;
+			if(!validHive(source)) { return false; }
+			return slither(1,source,null,0,source,dests,path,onlyone);
 	 	}
 		case BEETLE:
 	   	{	// beetle moves by sliding one cell in any direction to
 			// any kind of space, except it is limited by pincer blocks
 			if(!validHive(source)) 
 				{ //picking a beetle off the base level, still have to worry about the hive rule
-				return; 
+				return false; 
 				}
 			int len = source.geometry.n;
 			int myheight = source.height()-(picked?0:1);
@@ -547,63 +616,67 @@ public variation gamevariation = variation.hive;
 					HiveCell nextC = source.exitTo(i+1);
 					int nextch = nextC.height();
 	 				if((nextch<=ch)||(nextch<=myheight)) 
-	 					{ addDest(dests,c,false,path); 
-	 					  if(onlyone) { return; }
+	 					{ 
+	 					  if(onlyone) { return true; }
+	 					  addDest(dests,c,false,path);
+	 					  some = true;
 	 					}
 					else
 						{
 						HiveCell prevC = source.exitTo(i+len-1);
 						int prevch = prevC.height();
 						if((prevch<=ch)||(prevch<=myheight)) 
-							{ addDest(dests,c,false,path);
-							  if(onlyone) { return; }
+							{ 
+							  if(onlyone) { return true; }
+							  addDest(dests,c,false,path);
+							  some = true;
 							}
 						}
 				}
 			}
-			return;
+			return some;
 		}
 			
 		case GRASSHOPPER:
 		{	
-			if(!validHive(source)) { return; }	// can't violate the hive rule
+			if(!validHive(source)) { return false; }	// can't violate the hive rule
 			// grasshoppers can't be penned in, so don't check for a pinned cell
+			if(dests==null) { return true; }	// grasshoppers have to be adjacent to something
+			
 			for(int direction=0;direction<CELL_FULL_TURN;direction++)
 			{	HiveCell c = source.exitTo(direction);
 				if((c!=null)&&(c.height()>0)) // must hop over something
 				{	while((c!=null)&&(c.height()>0)) { c=c.exitTo(direction); }
 					if(c!=null) 
-					{  addDest(dests,c,false,path);
-						if(onlyone) { return; }
+					{  
+						if(onlyone) { return true; }
+						addDest(dests,c,false,path);
+						some = true;
 					}
 				}
 			}
-			return;
+			return some;
 		}
 		
 		case SPIDER:
 		{
-	    	if(!validHive(source)) { return; }	// can't violate the hive rule
-	   		slither(3,source,null,0,source,dests,path,onlyone);
-	   		return;
+	    	if(!validHive(source)) { return false; }	// can't violate the hive rule
+	   		return slither(3,source,null,0,source,dests,path,onlyone);
 		}
 	   	case BLANK:
 			/* blanks can move anywhere on or adjacent to the hive, subject to the hive rule of course */
-	    	if(!validHive(source)) { return; }	// can't violate the hive rule
-	    	slitherAnywhere(source,dests,path,onlyone);
-	    	return;
+	    	if(!validHive(source)) { return false; }	// can't violate the hive rule
+	    	return slitherAnywhere(source,dests,path,onlyone);
 		
 		case ANT:
 		{
-	    	if(!validHive(source)) { return; }	// can't violate the hive rule
-	   		slither(0,source,null,0,source,dests,path,onlyone);
-	   		return;
+	    	if(!validHive(source)) { return false; }	// can't violate the hive rule
+	   		return slither(0,source,null,0,source,dests,path,onlyone);
 	   	}
 		case MOSQUITO:
 			if((source.height()+(picked?1:0))>1)
 			{	// mostquito acting as beetle
-				legalDestsForType(source,picked,PieceType.BEETLE,dests,path,onlyone);
-				return;
+				return legalDestsForType(source,picked,PieceType.BEETLE,dests,path,onlyone);
 			}
 			{
 			// otherwise, mosquito accumulates the moves of everything it touches
@@ -624,17 +697,19 @@ public variation gamevariation = variation.hive;
 					case PILLBUG:
 					case BLANK:
 					case ORIGINAL_PILLBUG: 
-							legalDestsForType(source,picked,p.type,dests,path,onlyone); 
+							some |= legalDestsForType(source,picked,p.type,dests,path,onlyone); 
+							if(onlyone && some) { return true; }
 					break;
 					default: throw G.Error("not expecting type %s",p.type);
 				}
 				}}
 			}
-			return;
+			return some;
 	   	default: throw  G.Error("Not expecting type %s",type);
 	}
 	
  }
+
     //
     // note that this has to work correctly both when "picked" has been picked
     // up, and when it is still sitting on top of "source"
@@ -645,12 +720,14 @@ public variation gamevariation = variation.hive;
     	G.Assert(source.onBoard,"cell on board");
     	HiveId targetColor = playerColor(who);
     	// pillbug dests take precedence, so do these first
-    	legalPillbugDests(source,targetColor,picked,pickedObject,dests,path,onlyone);
-    	if((top!=null)&&(top.color==targetColor))
-    		{legalDestsForType(source,picked,top.type,dests,path,onlyone);
+    	boolean some = legalPillbugDests(source,targetColor,picked,pickedObject,dests,path,onlyone);
+    	if( (top!=null)
+    			&&(top.color==targetColor)
+    			&& (!onlyone || !some))
+    		{some |= legalDestsForType(source,picked,top.type,dests,path,onlyone);
     		}
  
-    	return(dests.size()>0);
+    	return(some);
     }
 	
 	// factory method
@@ -1003,7 +1080,7 @@ public variation gamevariation = variation.hive;
     }
     public boolean DigestState()
     {	//if(board_state==HiveState.PASS_STATE) { return(false); }
-    	return(DoneState());
+    	return(true);
     }
  /**
   * In our implementation, the letter side(a-k) is black
@@ -1419,16 +1496,21 @@ public variation gamevariation = variation.hive;
     }
     // sweep the adjavent non-empty cells from center by simple recursive descent
     int sweep_counter=0;
-    private void sweepBoard(HiveCell center,HiveCell ignored)
+
+    private int sweepAndCountBoard(HiveCell center,HiveCell ignored)
     {	if((center.sweep_counter!=sweep_counter)
     		&& (center.height()>0)
     		&& (center!=ignored))
     	{	center.sweep_counter = sweep_counter;
-    		for(int i=0,len=center.geometry.n; i<len; i++)
-    		{	sweepBoard(center.exitTo(i),ignored);
-    		}
+    		int count = 1;
+    			for(int i=0,len=center.geometry.n; i<len; i++)
+    			{	count += sweepAndCountBoard(center.exitTo(i),ignored);
+    			}
+    		return count;
     	}
+    	return 0;
     }
+    
     // sweep occupied cells ignoring two cells as empty
     private void sweepBoard(HiveCell center,HiveCell ignored,HiveCell ignored2)
     {	if((center.sweep_counter!=sweep_counter)
@@ -1494,36 +1576,45 @@ public variation gamevariation = variation.hive;
 
     // return TRUE is this cell position adjacent to one of the cells that s is adjacent to
     public boolean adjacentCell(HiveCell which,HiveCell s,HiveCell e)
-    {	if(which!=null) { return(which.adjacentCell(s,e)); }
+    {	if(which!=null) 
+    		{ boolean oldway = which.adjacentCell(s,e);
+//    		  boolean newway = s!=e && s.height()>0 && (hex_cell_distance(which,s)==1);
+ //   		  if(!newway==oldway) { G.print("mismatch"); }
+    		  return oldway;
+    		}
     	return(false);
     }
 
     // return true if this is a connected hive, ignoring "ignored"
-    public boolean validHive(HiveCell ignored)
+    public boolean validHiveSlow(HiveCell ignored)
     {	   	
     	if(pickedObject!=null) { return(true); }	// hive broken test already passed
     	if((ignored!=null) && (ignored.height()>1)) { return(true); }	// still valid if a stack
     	sweep_counter++;
-    	boolean swept=false;
-    	for(int i=0,lim=occupiedCells.size();i<lim;i++)
+    	int lim = occupiedCells.size();
+     	for(int i=0;i<lim;i++)
     	{	// make one sweep of the occupied cells.  When we first encounter
     		// a cell that's not empty and not ignored, sweep the board from there
     		// subsequently, if any cell was not swept, the hive is broken.
     		HiveCell l = occupiedCells.elementAt(i);
     		if(l!=null && l!=ignored)
-    		{	if(swept)
-    				{	if(l.sweep_counter!=sweep_counter) 
-    					{ //this piece wasn't found in the sweep
-    					return(false); 
-    					}
-    				}
-    				else
-    				{ swept=true;
-    				  sweepBoard(l,ignored); 
-    				}
-    			}
+    		{	
+    		   	int targetCount = lim - (ignored==null ? 0 : 1);
+    		   	int counted = sweepAndCountBoard(l,ignored); 
+    		   	return counted == targetCount;
+    		}
     	}
     	return(true);
+    }
+    public boolean validHive(HiveCell ignored)
+    {	
+    	if(ignored==null) { return validHiveSlow(null); }
+    	boolean canChange = connectivityCanChange(ignored);
+    	if(canChange)
+    	{
+    		return validHiveSlow(ignored);
+    	}
+    	return true;
     }
     // return true if this is a connected hive, ignoring "ignored"
     // empty cell and stacked cell has already been considered for both ignored
@@ -1568,22 +1659,81 @@ public variation gamevariation = variation.hive;
     	return(false);
     }
     
-    // return true if this cells mobility is only enabled
+    // return the partner if this cells mobility is only enabled
     // by the presence of a sibling which is also mobile
     // sibling can be either color, so a dissonant pair 
     // both are detected as sibmo
-    public boolean sibMobileAny(HiveCell loc)
+    public HiveCell sibMobileAny(HiveCell loc)
     {	if(loc.height()==1)
     	{
     	for(int dir = geometry.n-1; dir>=0; dir--)
     	{
     		HiveCell sib = loc.exitTo(dir) ;
     		if(sib.height()==1)
-    		{	if(validHive(sib) && !validHive2(loc,sib)) { return(true); }
+    		{	if(validHive(sib) && !validHive2(loc,sib)) { return(sib); }
     		}
     		}
     	}
-    	return(false);
+    	return(null);
+    }
+    public boolean connected(HiveCell c,HiveCell from,HiveCell to)
+    {
+    	sweep_counter++;
+    	return connected(c,from,to,sweep_counter);
+    }
+    private boolean connected(HiveCell ignore,HiveCell from,HiveCell to,int sweep)
+    {
+    	if(from==to) { return true; }
+    	if(from==ignore) { return false; }
+    	if(from.sweep_counter == sweep) { return false; }	// been here before
+    	from.sweep_counter = sweep;
+    	for(int dir = from.geometry.n-1; dir>=0; dir--)
+    	{
+    		HiveCell loc = from.exitTo(dir);
+    		if(loc!=null && loc.height()>0 && connected(ignore,loc,to,sweep)) 
+    			{ return true; }
+    	}
+    	return false;
+    }
+    public boolean isRing(HiveCell c)
+    {	int steps = c.geometry.n;
+    	for(int dir = 0;dir<steps;dir++)
+    	{
+    		HiveCell loc1 = c.exitTo(dir);
+    		if(loc1.height()>0)
+    		{
+    			for(int findEmptyDir = dir+1; findEmptyDir<dir+steps; findEmptyDir++)
+    			{
+    				HiveCell empty = c.exitTo(findEmptyDir);
+    				if(empty.height()==0)	// an empty cell
+    				{
+    					for(int dir3 = findEmptyDir+1; dir3<dir+steps-1; dir3++)
+    					{
+    						HiveCell loc3 = c.exitTo(dir3);
+    						if(loc3.height()>0)
+    						{
+    							// we have a potential ring, with loc1 and loc3 as the endpoints
+    							boolean exit = false;
+    							for(int empty2Dir=dir3+1;!exit && empty2Dir<dir+steps-1;empty2Dir++)
+    							{
+    								HiveCell empty2 = c.exitTo(empty2Dir);
+    								if(empty2.height()==0)
+    								{	
+    									if (connected(c,loc1,loc3)) 
+    									{ return true; 
+    									}
+    									exit = true;
+    								}
+    							}
+    							findEmptyDir = dir3;
+    						}
+    					}
+
+    				}
+    			}
+    		}
+    	}
+    	return false;
     }
     
     private void addAnimationPath(HiveCell src,HivePiece po,HiveCell dest)
@@ -1755,6 +1905,7 @@ public variation gamevariation = variation.hive;
         	break;
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
+ 
         	switch(board_state)
         	{
             default: throw G.Error("Not expecting pickb in state %s",board_state);
@@ -1915,19 +2066,14 @@ public variation gamevariation = variation.hive;
 			    	}
 			    	if(topBug.color!=targetColor)
 			    	{	// can still be flipped by a pillbug
-			    		CellStack tempDests = getTempDest();
-			    		legalPillbugDests(cell,targetColor,true,pickedObject,tempDests,null,false);
-			    		int n = tempDests.size();
-			    		returnTempDest(tempDests);
-			    		return(n>0);
+			    		boolean some = legalPillbugDests(cell,targetColor,true,pickedObject,null,null,true);
+			    		return(some);
 			    	}
 			    	else if(stunned!=cell)	// can never move a stunned piece
 			    	{
 
 			    		// spiders have a rare condition with an interior cavity of size 3
-			    		CellStack tempDests=getTempDest();
-			    		boolean val = legalDests(cell,false,topBug,tempDests,null,whoseTurn,false);
-			    		returnTempDest(tempDests);
+			    		boolean val = legalDests(cell,false,topBug,null,null,whoseTurn,true);
 			    		return(val);
 			    	}
 		    }
@@ -2156,10 +2302,10 @@ public void verifyMoves(CommonMoveStack mv)
 	if(moves.size()>0) { throw G.Error("Moves not accounted for %s",moves); }
 }
 
-CommonMoveStack  GetListOfMoves0()
+CommonMoveStack  GetListOfMoves0(boolean onlyWinning)
  {	
 	CommonMoveStack all = new CommonMoveStack();
-	GetListOfMoves1(all);
+	GetListOfMoves1(all,onlyWinning);
 	return(all);
  }
 private boolean hasLegalDropDests(int who)
@@ -2187,8 +2333,12 @@ private boolean hasOnboardMoves(int who)
  	}
  	return false;
 }
-boolean GetListOfMoves1(CommonMoveStack all)
+boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning)
 {	// first go after the drop moves
+ 	boolean some = false;
+ 	boolean debug = false; //G.debug();
+ 	if(!onlyWinning)	// you can never win by dropping new piece
+ 	{
 	switch(board_state)
 	{
 	case CONFIRM_STATE:
@@ -2207,17 +2357,21 @@ boolean GetListOfMoves1(CommonMoveStack all)
 		break;
 	default:
 		{
-	 	CellStack tempDests = getTempDest();
+	 	CellStack tempDests = all==null ? null : getTempDest();
 	 	CellStack tempBlankDests = null;
-		legalDropDests(tempDests,playerQueen(whoseTurn),all==null);	// not necessarily the q, just any piece of color
+		some |= legalDropDests(tempDests,playerQueen(whoseTurn),all==null);	// not necessarily the q, just any piece of color
+		if(some && all==null) { return true; }
 	 	HiveCell[] cells = rackForPlayer(whoseTurn);
 	 	boolean include_queen = canPlayQueen(whoseTurn);
 	 	boolean require_queen = board_state==HiveState.QUEEN_PLAY_STATE;
 	 	if(board_state==HiveState.PLAY_OR_SWAP_STATE)
-	 	{
+	 	{	
 	 		all.push(new Hivemovespec(whoseTurn,MOVE_SWAP));
 	 	}
 	 	// onboarding pieces
+	 	if(debug) { G.Assert(all==null || tempDests.size()>0 == some,"mismatched some on drop"); }
+	 	if(some)
+	 	{
 	 	for(PieceType pc : PieceType.values())
 	 		{
 	 		int pcidx = pc.ordinal();
@@ -2258,15 +2412,16 @@ boolean GetListOfMoves1(CommonMoveStack all)
 	 		
 	 		
 	 	if(tempBlankDests!=null) { returnTempDest(tempBlankDests); }
-	 	}
+	 	}}
 	 	returnTempDest(tempDests);
 	 	}
-	}
+	}}
 		
-	boolean hasDropMoves = all==null ? true : all.size()>0;
+	boolean hasDropMoves = all==null ? some : all.size()>0;
  	if(board_state==HiveState.PLAY_STATE)
  	{
  	HiveId targetColor = playerColor(whoseTurn);
+ 	HiveCell oql = pieceLocation.get(playerQueen(whoseTurn^1));
  	// now add the moves of pieces already in play
  	for(int idx=0,lim=occupiedCells.size(); idx<lim; idx++) 
  	{	
@@ -2275,11 +2430,30 @@ boolean GetListOfMoves1(CommonMoveStack all)
  		if(bug.color==targetColor)	
  		{
  			
- 			if(addPillbugEnemyFlips(all,c,bug))
- 				{ if (all==null) { return(true); };	// add enemy flip moves by pillbugs and mosquitos
+ 			if(!onlyWinning && addPillbugEnemyFlips(all,c,bug))
+ 				{ 
+ 				// we're excluding the onlyWinning case where a pillbug slams the Q into a surround.
+ 				if (all==null) { return(true); };	// add enemy flip moves by pillbugs and mosquitos
  				}
- 			CellStack tempDests = getTempDest();
- 	 		legalDests(c,false,bug,tempDests,null,whoseTurn,all==null);
+ 			CellStack tempDests = all==null ? null : getTempDest();
+ 	 		boolean thisdests = (!onlyWinning || hex_cell_distance(c,oql)!=1) 
+ 	 								? legalDests(c,false,bug,tempDests,null,whoseTurn,all==null)
+ 	 								: false;
+ 	 		
+ 		 	if(debug) { G.Assert(all==null || tempDests.size()>0 == thisdests,"mismatched some on move"); }
+ 		 	if(thisdests && all==null) { return true; }
+ 	 		if(thisdests && onlyWinning)
+ 	 		{	
+ 	 			for(int tempidx=tempDests.size()-1; tempidx>=0; tempidx--)
+ 	 			{
+ 	 				HiveCell dest = tempDests.elementAt(tempidx);
+ 	 				if(dest.height()!=0 || (hex_cell_distance(dest,oql)!=1)) { tempDests.remove(tempidx,false); }
+ 	 			}
+ 	 			thisdests = tempDests.size()>0;
+ 	 		}
+ 	 		some |= thisdests;
+ 	 		if(thisdests)
+ 	 		{
 			for(int i=0,ndests=tempDests.size();i<ndests;i++)
  			{	HiveCell dest = tempDests.elementAt(i);
  				if(all==null) { returnTempDest(tempDests); return(true); }
@@ -2291,13 +2465,13 @@ boolean GetListOfMoves1(CommonMoveStack all)
  				{
  				all.addElement(new Hivemovespec(whoseTurn,	MOVE_MOVE_DONE,bug,dest,c));
  				}
- 			}
+ 			}}
  			returnTempDest(tempDests);
  			}
  			}
- 		if(G.debug() && (all!=null)) 
+ 		if(debug && !onlyWinning && G.debug() && (all!=null)) 
  			{ verifyMoves(all); }
- 	}
+ 		}
  	if((all!=null)
  				&& !hasDropMoves 
  				&& robotCanOfferDraw 
@@ -2306,22 +2480,21 @@ boolean GetListOfMoves1(CommonMoveStack all)
  			) 
 		{ all.addElement(new Hivemovespec(whoseTurn,MOVE_OFFER_DRAW)); 
 		}
-
- 	return(false);
+ 	return(some);
  }
 
- public CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack  all = GetListOfMoves0();
+ public CommonMoveStack  GetListOfMoves(boolean onlyWinning)
+ {	CommonMoveStack  all = GetListOfMoves0(onlyWinning);
 	if(all.size()==0) { all.addElement(new Hivemovespec(whoseTurn,MOVE_PASS_DONE)); }
 	return(all);
   }
  public int nLegalMoves()
- {	CommonMoveStack  v = GetListOfMoves0();
+ {	CommonMoveStack  v = GetListOfMoves0(false);
  	return(v.size());
  }
  public boolean hasLegalMoves()
  {	
- 	boolean has = GetListOfMoves1(null);
+ 	boolean has = GetListOfMoves1(null,false);
  	//int n = nLegalMoves();
  	//G.Assert(has==(n>0),"move match");
  	return(has);

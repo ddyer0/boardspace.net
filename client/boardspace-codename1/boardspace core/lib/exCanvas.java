@@ -138,6 +138,7 @@ public abstract class exCanvas extends ProxyWindow
 		 * @see #ViewerRun
 		 */
     public Thread runThread=null;
+    public boolean ignoreRunThread = false;
 
 	public boolean doSound() { return(myFrame.doSound()); }
 	// support for global pan/zoom
@@ -1838,7 +1839,6 @@ graphics when using a touch screen.
          public void ViewerRun(int waitTime)
         {	
         	 l.runSteps++;
-             runThread=Thread.currentThread();
             if(runThread==null) { runThread = Thread.currentThread(); }
             if((theChat!=null) && theChat.doRepeat()) { repaint(20,"fling"); }
             if(initialized) 

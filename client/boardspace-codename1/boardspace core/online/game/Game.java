@@ -4708,18 +4708,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	// for the robot.
     	if(v.getReviewPosition()<0)
     	{
-    	String str = p.getRobotMove();
-    	makeRobotMove(p,str);
+    	commonMove m = p.getRobotMove();
+    	makeRobotMove(p,m);
     	}
     	}
     }
-    private void makeRobotMove(commonPlayer p,String str)
+    private void makeRobotMove(commonPlayer p,commonMove m)
     {
-    	if(str!=null) 
+    	if(m!=null) 
     		{
+    		String str = m.moveString();
     		if((p==my) || offlineGame)
     		{	// moving with robot as primary player
-    			v.PerformAndTransmit(str);
+    			v.PerformAndTransmit(m);
     		}
     		else 
     		{

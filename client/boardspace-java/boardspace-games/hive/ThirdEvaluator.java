@@ -305,8 +305,9 @@ class ThirdEvaluator extends DefaultEvaluator implements Evaluator
 						int queen_distance = (loc.overland_gradient-overland_base_gradient);
 						if(slither_distance>0) { hasSlither = true; }
 						if((bugtype==PieceType.MOSQUITO) 
-								&& loc.isAdjacentToAnt()
-								&& slither_distance>=0)
+								&& slither_distance>=0
+								&& loc.actingAsType(PieceType.ANT)
+								)
 							{
 							ebugType = PieceType.ANT;
 							}

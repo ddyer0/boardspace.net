@@ -56,7 +56,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     YinshBoard b = null; //the board from which we are displaying
     private double MASTER_SCALE = 1.0;
     private double MASTER_YSCALE = 0.9;
-    private double MASTER_NP_YSCALE = 1.1;
     private double XPERSPECTIVE = 0.2;
     private double YPERSPECTIVE = 0.2;
     private boolean use_perspective() { return(getAltChipset()==0);}
@@ -155,33 +154,34 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	// for hex, there is no well defined "my side" and the board is quite rectangular
     	// so it's appropriate to rotate so the board uses the space available better.
     	int ncols = b.ncols+2;
-        int nrows = b.nrows+2;
+        int nrows = b.nrows+(use_perspective()?0:2);
         int stateH = fh*5/2;
 	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH-stateH*2)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH+stateH;
+    	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH;
+        int stateY = boardY;
         int stateX = boardX;
         
         RINGRADIUS = CELLSIZE/2; //ball radius to work with
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH);
-    	G.SetRect(chipPool,boardX+boardW-CELLSIZE*2,boardY+boardH-CELLSIZE*2-stateH*2,CELLSIZE*2,CELLSIZE*2);
+    	int chipsize = (int)(CELLSIZE*1.75);
+    	G.SetRect(chipPool,boardX+boardW-chipsize,boardY+boardH-chipsize-stateH,chipsize,chipsize);
      	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -361,6 +361,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         DrawChipPool(gc, chipPool, highlight);
 
         int top = G.Bottom(brect);
+        int csize = use_perspective()? (int)(CELLSIZE*0.9) : CELLSIZE;
         int left = G.Left(brect);
         Yinshmovespec drawSelected = null;
         for(Enumeration<YinshCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
@@ -409,7 +410,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                         		}
 							//$FALL-THROUGH$
 						default:
-                        	drawChip(gc, YinshChip.SELECTION_INDEX, xpos, ypos, CELLSIZE,
+                        	drawChip(gc, YinshChip.SELECTION_INDEX, xpos, ypos, csize,
                                     pscale, ring_yscale);
                         	break;
                     	}
@@ -425,7 +426,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
                     if (pi >= 0)
                     {
-                        drawChip(gc, pi, xpos, ypos, CELLSIZE, pscale,
+                        drawChip(gc, pi, xpos, ypos, csize, pscale,
                             ring_yscale);
                     }
                 }
@@ -443,12 +444,12 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     		do {
     			int xpos = left+gb.cellToX(from.col,from.row);
     			int ypos = top-gb.cellToY(from.col,from.row);
-    			StockArt.SmallX.drawChip(gc,this, CELLSIZE*2/3, 	xpos,	ypos,null);
+    			StockArt.SmallX.drawChip(gc,this, csize*2/3, 	xpos,	ypos,null);
     			if(from==to) { break; }
     			else { from = from.exitTo(direction); }
     		} while(true);
         }
-        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
+        numberMenu.drawSequenceNumbers(gc,csize*2/3,labelFont,labelColor);
     }
     
     void drawChip(Graphics gc, int idx, int x, int y, int boxw, double scale,
@@ -460,11 +461,11 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     {	YinshBoard gb = disB(gc);
 	  	if (use_perspective())
 	    {
-	    gb.SetDisplayParameters(MASTER_SCALE, MASTER_YSCALE, 0,0,0,XPERSPECTIVE, YPERSPECTIVE,0);
+	    gb.SetDisplayParameters(MASTER_SCALE*1.2, MASTER_YSCALE*1.2, -0.3,-0.8,0,XPERSPECTIVE, YPERSPECTIVE,0);
 	    }
 	    else
 	    {
-	        gb.SetDisplayParameters(MASTER_NP_YSCALE, MASTER_NP_YSCALE, 0,0,0);
+	        gb.SetDisplayParameters(1.15, 1, -0.2,-0.2,0);
 	    }
 		gb.SetDisplayRectangle(boardRect);    	
        backgrounds[NORMAL_BACKGROUND_INDEX].tileImage(gc,fullRect);

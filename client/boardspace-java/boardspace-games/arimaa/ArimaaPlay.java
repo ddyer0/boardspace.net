@@ -283,6 +283,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     		}
     	}
     }
+    // TODO: refactor static eval so GameOver is checked first
     private double coreStaticEval(int playerindex)
     {
         double val0 = ScoreForPlayer(board,playerindex,false);

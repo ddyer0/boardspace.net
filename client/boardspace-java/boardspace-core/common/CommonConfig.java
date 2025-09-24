@@ -50,7 +50,8 @@ public interface CommonConfig extends UniversalConstants {
 	static final String mapDataURL = "/cgi-bin/tlib/gs_locations.cgi";
 	static final String rankingURL = "/cgi-bin/uni_rank.cgi";
 	static final String seatingHelpUrl = "/english/offline-launcher-help.html";
-	
+	static final String lobbyHelpUrl = "/english/lobby-help.html";
+	static final String videoHelpUrl = "/english/help-video.html";
 	// for deep tessting only
 	// static final String showURL = "/cgi-bin/util/show-form.pl";
 	static final String loginURL = "/cgi-bin/login.cgi";

@@ -60,6 +60,7 @@ import lib.RepaintManager.RepaintStrategy;
 import lib.ScrollArea;
 import lib.SoundManager;
 import lib.StockArt;
+import lib.TextChunk;
 import lib.TimeControl;
 import lib.exCanvas;
 
@@ -99,8 +100,18 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     private static final String PlayMessage = "Play #1";
     private static final String RejoinMessage = "Rejoin #1";
     private static final String MEMBERS = "Members";
+    private static final String GettingStarted = "Getting Started";
+    private static final String LobbyGuide = "Lobby Guide";
+    private static final String ViewLobbyHelp = "view the lobby help page";
+    private static final String HelpVideos = "Help Videos";
+    private static final String ViewHelpVideos = "view the help videos page";
     public static final String LCStrings[] = {
         	LowMemoryMessage,
+        	ViewHelpVideos,
+        	HelpVideos,
+        	LobbyGuide,
+        	ViewLobbyHelp,
+        	GettingStarted,
     		AcceptChatMessage,
     		MEMBERS,
     		IgnoreChatMessage,
@@ -207,6 +218,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private int CHECKBOXSIZE = s_CHECKBOXSIZE;
 	
 	// rectangles that are laid out dynamically
+	private Rectangle lobbyHelpRect = addRect("lobbyHelp");
+	private Rectangle mainHelpRect = addRect("mainHelp");
+	private Rectangle videoHelpRect = addRect("videoHelpRect");
+	
 	private Rectangle ownerRect = addRect("ownerRect");
 	private Rectangle gameRect = addRect("gameRect");
 	private Rectangle userRect = addRect("userRect");
@@ -289,6 +304,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  highlight_gamescroll,
 	  highlight_hometoken,
 	  highlight_setpreferred,	// set preferred game
+	  highlight_mainHelp,
+	  highlight_videoHelp,
 	  highlight_user,
 	  highlight_player1,
 	  highlight_player2,
@@ -440,7 +457,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		
 		adjustFonts(SCALE/rawscale);
 		int chatHeight = (lobby.chatFrame!=null) ? 0 : wideMode ? inHeight : (inHeight > 370*SCALE)?(inHeight)/3: 180;
-		int baseY = wideMode ? 0 : chatHeight-inY+1;
+		int baseY = wideMode ? 0 : chatHeight-inY;
 		double scale = SCALE;
 		PLAYPOLYWIDTH = (int)(s_PLAYPOLYWIDTH*scale);
 		PLAYPOLYHEIGHT = (int)(s_PLAYPOLYHEIGHT*scale);
@@ -522,15 +539,25 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 				bw,bh);
 		
 		G.SetRect(frameTimeSliders,LEFTSCROLLBARWIDTH,baseY,USERIMAGEWIDTH,10);
-
-		G.SetRect(ownerRect,LEFTSCROLLBARWIDTH,baseY,USERIMAGEWIDTH,(int)(scale*65));
-
-		G.SetRect(animRect, 0, G.Top(ownerRect),SCROLLBARWIDTH, SCROLLBARWIDTH);
-		int gheight = Math.max(1,inHeight-baseY-1);
+		int hh = (int)(scale*65);
+		boolean newb =isNewbieOrGuest();
+		int leftY = baseY;
+		int helpw = USERIMAGEWIDTH+LEFTSCROLLBARWIDTH+PLAYINGIMAGEWIDTH;
+		G.SetRect(lobbyHelpRect,0,leftY,helpw,newb ? hh : 0);
+		int margin = hh/10;
+		G.SetRect(mainHelpRect,margin,leftY+hh/3+margin,helpw/2-margin*2,hh*2/3-margin*2);
+		G.SetRect(videoHelpRect,helpw/2+margin,leftY+hh/3+margin,helpw/2-margin*2,hh*2/3-margin*2);
+		
+		if(newb) { leftY += hh; }
+		G.SetRect(ownerRect,LEFTSCROLLBARWIDTH,leftY,USERIMAGEWIDTH,hh);
+		G.SetRect(animRect, 0, leftY,SCROLLBARWIDTH, SCROLLBARWIDTH);
+		leftY += hh;
+		int gheight = Math.max(1,inHeight-baseY);
+		int uheight = Math.max(1,inHeight-leftY);
 		G.SetRect(fullRect,0, baseY,USERIMAGEWIDTH+GAMEIMAGEWIDTH+SCROLLBARWIDTH+LEFTSCROLLBARWIDTH+PLAYINGIMAGEWIDTH,gheight);
 		int ownerBot = G.Bottom(ownerRect);
-		G.SetRect(userRect, LEFTSCROLLBARWIDTH,ownerBot,USERIMAGEWIDTH,gheight-G.Height(ownerRect));
-		G.SetRect(playingRect,USERIMAGEWIDTH+LEFTSCROLLBARWIDTH,baseY,PLAYINGIMAGEWIDTH,gheight);
+		G.SetRect(userRect, LEFTSCROLLBARWIDTH,ownerBot,USERIMAGEWIDTH,uheight);
+		G.SetRect(playingRect,USERIMAGEWIDTH+LEFTSCROLLBARWIDTH,leftY,PLAYINGIMAGEWIDTH,uheight);
 		G.SetRect(gameRect,G.Right(playingRect),baseY, GAMEIMAGEWIDTH,gheight);
 
 		if(theChat!=null && (lobby.chatFrame==null))
@@ -765,14 +792,52 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		GameInfo preferred = my.preferredGame;
 		boolean selected = highlightedItem == LobbyId.highlight_setpreferred;
 		String name = preferred!=null ? preferred.familyName : SelectGameMessage;
-		Color color = preferred!=null ? Color.white : Color.lightGray;
+		Color color = selected ? AttColor : Color.lightGray;
 		int tleft =  left+h/20;
 		int tw = GC.Text(g, true,tleft, top+h/3,aw,h*2/3,color,null,s.get(name));
 		StockArt.Pulldown.drawChip(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
 
 	}
-	private void drawOwner(Graphics inG) 
-	  {
+	private void drawLobbyHelp(Graphics inG,HitPoint hp)
+	{
+		int h = G.Height(lobbyHelpRect);
+		if(h>0)
+		{	int l = G.Left(lobbyHelpRect);
+			int t = G.Top(lobbyHelpRect);
+			int w = G.Width(lobbyHelpRect);
+			GC.fillRect(inG,Color.lightGray,lobbyHelpRect);
+			GC.frameRect(inG,Color.black,lobbyHelpRect);
+			GC.setFont(inG,lib.Font.getFont(largeBoldFont(),h/4));
+			GC.Text(inG,true,l,t,w,h/3,Color.black,null,s.get(GettingStarted));
+			
+			{
+			boolean selected = highlightedItem == LobbyId.highlight_mainHelp;
+			String name = s.get(LobbyGuide);
+			Color color = selected ? AttColor : Color.black;
+			GC.setColor(inG,color);
+			HitPoint.setHelpText(hp,mainHelpRect,s.get(ViewLobbyHelp));
+			GC.handleRoundButton(inG,0,mainHelpRect,null,
+					TextChunk.create(name),color,Color.black,Color.white,
+					selected ? bsBlue : Color.lightGray);
+		
+			}
+	
+			{
+			boolean selected = highlightedItem == LobbyId.highlight_videoHelp;
+			String name = s.get(HelpVideos);
+			Color color = selected ? AttColor : Color.black;
+			HitPoint.setHelpText(hp,videoHelpRect,s.get(ViewHelpVideos));
+			GC.handleRoundButton(inG,0,videoHelpRect,null,
+					TextChunk.create(name), color,
+					Color.black,Color.white,
+					selected ? bsBlue : Color.lightGray);
+			}
+		
+	
+		}
+	}
+	private void drawOwner(Graphics inG,HitPoint hp) 
+	  {	drawLobbyHelp(inG,hp);
 	    GC.setFont(inG,basicFont);
 	    FontMetrics myFM = GC.getFontMetrics(inG);
 	    int lineH = myFM.getHeight();
@@ -1355,7 +1420,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
         {
         botRect = selectRobotRect;
       	GC.Text(inG,false,discardGameRect,
-      			(highlightedItem==LobbyId.highlight_discardgame)?Color.red:Color.black,
+      			(highlightedItem==LobbyId.highlight_discardgame)?Color.blue:Color.black,
       			null,DiscardGameMessage);
         }
       }
@@ -1863,7 +1928,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		    GC.fillRect(offGC,fullRect);
 	  		GC.translate(offGC,-xp,-yp);		    
 		    drawGames(offGC,hp);
-		    drawOwner(offGC);
+		    drawOwner(offGC,hp);
 		    drawOtherUsers(offGC,hp); 
 		    drawHelpText(offGC,hp);
 
@@ -2032,8 +2097,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  }
 	private boolean inSetPreferredGame(int inX,int inY)
 	{
-		int h = G.Height(ownerRect);
-		int top = G.Top(playingRect);
+		int top = G.Top(ownerRect);
+		int h = G.Top(playingRect)-top;
 		return( G.pointInRect(inX, inY,G.Left(playingRect),top+h/2,G.Width(playingRect),h/2));
 	}
 	private int touchedIndex(int inX,int inY)
@@ -2378,6 +2443,16 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	  	  moveToSess(null,0);
 	    	  }
 	        }
+	      else if(G.pointInRect(ex,ey,mainHelpRect))
+	      {
+	    	  URL u = G.getUrl(lobbyHelpUrl,true);
+	    	  G.showDocument(u);
+	      }
+	      else if(G.pointInRect(ex,ey,videoHelpRect))
+	      {
+	    	  URL u = G.getUrl(videoHelpUrl,true);
+	    	  G.showDocument(u);
+	      }
 	      else if(inSetPreferredGame(ex,ey))
 	      	{ Session sess = Sessions[0];
 	      	  sess.setMode(Session.Mode.Review_Mode,false,false); 
@@ -2522,6 +2597,15 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		else if(inSetPreferredGame(ex,ey))
 		{
 			highlightedItem = LobbyId.highlight_setpreferred;
+		}
+		else if(G.pointInRect(ex,ey,mainHelpRect))
+		{
+			highlightedItem = LobbyId.highlight_mainHelp;
+			HitPoint.setHelpText(p,mainHelpRect,"view the lobby help page");
+		}
+		else if(G.pointInRect(ex,ey,videoHelpRect))
+		{
+			highlightedItem = LobbyId.highlight_videoHelp;
 		}
 		else
 		{

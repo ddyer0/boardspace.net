@@ -243,7 +243,8 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
      *  for each and sorts the result to preorder the tree for further evaluation
      * Not needed for MonteCarlo searches
      */
-    public double Static_Evaluate_Position(	commonMove m)
+    // TODO: refactor static eval so GameOver is checked first.  Also probably remove alpha-beta vestiges
+   public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
     	if(board.GameOver())
     	{

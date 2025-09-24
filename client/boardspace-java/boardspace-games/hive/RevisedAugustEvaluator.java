@@ -209,6 +209,37 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		//G.Assert(G.sameArrayContents(v, rv),"check setWeights failed");
 	}
 
+    
+	// return the number of adjacent cells owned by a player
+	public double nOccupiedOrOwnedAdjacent(HiveCell queen,HiveId targetColor)
+	{	double n=0;
+		HivePiece bug = queen.topChip();
+		if(bug.color!=targetColor) { n += 0.75; }	// someone else on top
+
+		for(int lim=5;lim>=0;lim--)
+		{ HiveCell c = queen.exitTo(lim);
+		  int h = c.height();
+		  if(c!=null && h>0) 
+		  	{ n++; 
+		  	  if(h>1)
+		  	  {
+		  		  HivePiece top = c.topChip();
+		  		  if(top.color!=targetColor) 
+		  		  	{ 
+		  			  // must be adjacent to an empty to count
+		  			  HiveCell l1 = queen.exitTo(lim-1);
+		  			  HiveCell l2 = queen.exitTo(lim+1);
+		  			  if((l1.height()==0) || (l2.height()==0))
+		  			  	{ // partial credit for a bombing position
+		  				  n+= 0.75;
+		  			  	}		  		  	
+		  		  	}	// something acting as a beetle
+		  	  }
+		  	}
+		}
+		return(n);
+	}	
+
 	public double evaluate(BoardProtocol boardp,int pl,boolean print)
 	{ 	HiveGameBoard board = (HiveGameBoard)boardp;
 		HiveCell oql = board.pieceLocation.get(board.playerQueen(pl^1));
@@ -218,11 +249,6 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		double val = 0.0;
 		String msg = "";
 		int totalChoices = 0;
-		long dig = board.Digest();
-		if(dig==-4830838618191031855L)
-		{
-		System.out.println("Dig "+dig);
-		}
 		// score the pieces still in the rack
 		{
 		boolean some = false;			// some bug is on the rack
@@ -241,7 +267,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		if(some)
 			{ // a bonus or deficit if there's no place to put a bug
 			  int nd = board.countDropDests(targetColor);
-			  double nv = nd==0 ? -nodropPenalty : nodropPenalty;
+			  double nv = nd==0 ? -nodropPenalty : nodropPenalty+0.001*nd;
 			  if(print) { msg = "res "+msg+" = "+val+"  drop "+nd+"="+nv;}
 			  val += nv;
 			}
@@ -281,7 +307,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 						tempDests.clear();
 						boolean some = board.legalDests(loc,false,bug,tempDests,null,pl,false);
 
-						if(height>=2 && (loc==oql || loc.isAdjacentTo(oql)))
+						if(height>=2 && crude_queen_distance<=1)
 						{ // mobile and on top, but not on a stack of beetles, and near the q
 						  msg += " Top="+beetleOnTopWeight;
 						  val += beetleOnTopWeight;
@@ -313,7 +339,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 						int nmoves = tempDests.size();
 						totalChoices += Math.min(piece_maximum_mobility[pieceordinal],nmoves);	// avoid making ants look absurdly powerful
 						// pieces that have already reached the Q get fullmarks for mobility
-						boolean sibmo = board.sibMobileAny(loc);
+						boolean sibmo = board.sibMobileAny(loc)!=null;
 						if(sibmo)
 							{mobilemul=mobilemul/2;			// factor of 3 actively penalizes pairing ants
 							 if(print) { msg+="sibmobile "; }
@@ -322,7 +348,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 						if(print) { msg += "mob "+mobilemul; }
 						val += mobilemul;
 						
-						if(loc.isAdjacentTo(myQueenLoc))
+						if(crude_queen_distance==1)
 							{ myQueenAdjacent++; 	// count the number of our pieces adjacent to the our q which are mobile
 							  pillbugAdjacent |= bugtype==PieceType.PILLBUG;
 							}
@@ -373,7 +399,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		
 		if(myQueenLoc.onBoard)
 		{	// evaluate queen safety, considering friendlies that can move away
-			double occ = myQueenLoc.nOccupiedOrOwnedAdjacent(targetColor);
+			double occ = nOccupiedOrOwnedAdjacent(myQueenLoc,targetColor);
 			
 			if(occ>0)
 			{
@@ -423,7 +449,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		return false;
 	}
 	
-	public commonMove gutAnalysis(CommonDriver search_state,double eval,commonMove m)
+	public commonMove gutAnalysis(CommonDriver search_state,double eval,commonMove m, int repetitions)
 	{ 
       commonMove move = m;  
   	  if(eval>=trustYourGutTrigger)

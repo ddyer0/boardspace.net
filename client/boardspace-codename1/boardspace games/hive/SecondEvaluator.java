@@ -229,7 +229,7 @@ class SecondEvaluator extends DefaultEvaluator implements Evaluator
 						PieceType ebugType = bugtype;
 						int slither_distance = loc.slither_gradient-slither_base_gradient;
 						
-						if((bugtype==PieceType.MOSQUITO) && loc.isAdjacentToAnt())
+						if((bugtype==PieceType.MOSQUITO) && loc.actingAsType(PieceType.ANT))
 						{
 							ebugType = PieceType.ANT;
 							}

@@ -103,8 +103,8 @@ public interface RobotProtocol extends SimpleRobotProtocol
     
     public void Update_Last_Reply(double value,int forPlayer,commonMove prev,commonMove cur);
     
-    /** move list for next round of search */
-    public CommonMoveStack  List_Of_Legal_Moves();
+    public CommonMoveStack List_Of_Legal_Moves();
+  
     /** static evaluate the current board position from the viewpoint of "forplayer"
      * At this point the move has already been made.
      * The move spec is supplied so it can be used to store values of interest.

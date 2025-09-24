@@ -292,7 +292,8 @@ public class ContainerPlay extends commonRobot<ContainerBoard> implements Runnab
     {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
-    public double Static_Evaluate_Position(commonMove m)
+    // TODO: refactor static eval so GameOver is checked first
+   public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;
      	int nplay = board.nPlayers();

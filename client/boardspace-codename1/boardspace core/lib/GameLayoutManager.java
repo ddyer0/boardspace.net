@@ -1556,6 +1556,7 @@ public class GameLayoutManager implements UniversalConstants
 		// the option for now.
 		zoom = 1.0;
 		rects.zoom = zoom;
+		if(boardMax) { maxCellSize = minSize; }
 		boolean portraitMode = fullwidth*1.5<fullheight;
 		boolean landscapeMode = fullwidth>fullheight*1.5;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);

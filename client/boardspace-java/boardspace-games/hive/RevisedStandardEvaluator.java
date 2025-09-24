@@ -145,7 +145,7 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 						val += tempDests.size()*weight;
 						if(!sibmo
 								&& (loc.height()==1)
-								&&loc.isAdjacentTo(myQueenLoc))
+								&& loc.isAdjacentTo(myQueenLoc))
 							{ myQueenAdjacent++; 	// count the number of our pieces adjacent to the our q which are mobile
 							}
 					}
@@ -155,8 +155,9 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 						int queen_distance = (loc.overland_gradient-overland_base_gradient);
 						PieceType ebugType = bugtype;
 						if((bugtype==PieceType.MOSQUITO) 
-								&& loc.isAdjacentToAnt()
-								&& slither_distance>=0)
+								&& slither_distance>=0
+								&& loc.actingAsType(PieceType.ANT)
+								)
 							{
 							ebugType = PieceType.ANT;
 							}

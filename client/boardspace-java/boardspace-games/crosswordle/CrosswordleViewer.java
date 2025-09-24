@@ -243,10 +243,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*12;	
-    	int logow = fh*30;
     	int crossw = fh*40;
        	int minChatW = Math.min(fh*45,width-fh*2);
        	int vcrw = fh*16;
+       	int vcrh = vcrw*3/2;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
         int stateH = fh*5/2;
@@ -261,10 +261,14 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     			fh*2,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
-        // place the chat and log automatically, preferring to place
-    	// them together and not encroaching on the main rectangle.
+    	commonPlayer p1 = getPlayerOrTemp(0);
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
       	layout.placeRectangle(keytextRect,minChatW,minChatW/3+stateH*3,BoxAlignment.Bottom);
+
+      	int boxw = G.Width(p1.playerBox);
+    	int logow = Math.min(fh*30,G.Width(keytextRect)-boxw-margin*2);
+        // place the chat and log automatically, preferring to place
+    	// them together and not encroaching on the main rectangle.
       	layout.placeRectangle(logoRect,logow,logow/4,BoxAlignment.Top);
       	if(G.isCheerpj())
       	{
@@ -276,7 +280,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int lh = G.Height(logoRect);
     	G.SetRect(dateRect,ll,lt+lh-stateH*2,lw,stateH*2);
     	G.SetHeight(logoRect,lh-stateH);
-    	layout.placeRectangle(logRect,minLogW, minLogW*2, minLogW, minLogW*4,BoxAlignment.Edge,false);
+    	layout.placeRectangle(logRect,minLogW, Math.min(minLogW*2,height-vcrh-margin*4), minLogW, minLogW*4,BoxAlignment.Edge,false);
     	//int ll = G.Left(logRect);
     	//int lt = G.Top(logRect);
     	//int lw = G.Width(logRect);	
@@ -284,7 +288,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	//G.SetRect(dateRect,ll,lt,lw,stateH*2);
     	//G.SetRect(logRect,ll,lt+stateH*2,lw,lh-stateH*2);
        	
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+    	layout.placeTheVcr(this,vcrw,vcrh);
   	
     	
        	layout.alwaysPlaceDone = false;

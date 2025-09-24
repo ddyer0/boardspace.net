@@ -892,7 +892,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     {
       	boolean complete = false;
       	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-        gb.SetDisplayParameters(0.95, 1.0, 0,0,0); // shrink a little and rotate 60 degrees
+        gb.SetDisplayParameters(1, 1.0, 0,-0.3,0); 
 
       	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }

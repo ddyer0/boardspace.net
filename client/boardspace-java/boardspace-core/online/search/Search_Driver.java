@@ -579,7 +579,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
        }
        else if ((cm != null)
         	&& (sn.stop == Stop_Reason.Dont_Stop))
-        {	if(terminal_optimization && (cm.depth_limited()!=commonMove.EStatus.EVALUATED))
+        {	if(terminal_optimization && !cm.searchDeeper())
         	{
         	Accumulate_Terminal_Node(cm);
         	}
@@ -608,10 +608,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             root_node.next_move_index =root_node.number_of_moves;
         }
         commonMove rmove = current_node.root_move;
-        commonMove.EStatus rdone = rmove==null ? commonMove.EStatus.EVALUATED : rmove.depth_limited();
-        //boolean sdone = r.Depth_Limit(current_depth, max_depth)
-        //				|| r.Game_Over_P();
-        //G.Assert(sdone==rdone,"limit agrees");
         
 		if(copyTheBoard)
 		{
@@ -623,7 +619,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 		copyTheBoard = false;
 		}
 		pausedTime += robot.commonPause();
-        if (search_single || (rdone!=commonMove.EStatus.EVALUATED) || aborted)
+        boolean searchDeeper = rmove == null || rmove.searchDeeper();
+        if (search_single || !searchDeeper || aborted)
         { /* we're done, return */
             Return_From_Completed_Search();
         }
@@ -919,17 +916,33 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 		}			
 
         if(check_duplicate_digests) { allDigests = new IntObjHashtable<commonMove>(); }
-        commonMove killerBest = allow_best_killer ? sn.killer_best_move() : null;
+        
+        if(allow_best_killer)
+        {
+        commonMove killerBest = sn.killer_best_move();
+        for(int idx=extra;killerBest!=null && idx<sz;idx++)
+            {
+            	commonMove mm = mvec[idx];
+            	if(mm.Same_Move_P(killerBest))
+            	{	// make it first but otherwise do nothing
+            		mvec[idx]=mvec[extra];
+             	    mvec[extra]=mm;
+             	    extra++;
+             	    total_killers++;
+             	    killerBest = null;
+            	}
+            }	       	
+        }
+        
         for(int idx=has_nullmove?1:0;idx<sz;idx++)
         {	commonMove mm = mvec[idx];
         	{
             total_evaluations++;
-
             Static_Evaluate_Move(mm);
             
             if(cutting
-          		  && (mm.depth_limited()!=commonMove.EStatus.EVALUATED) 
-          		  && (mm.local_evaluation()>=cutoff_limit)
+            	  &&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)
+           		  && (mm.local_evaluation()>=cutoff_limit)
           		  )
             {	// we hit a value that can cause an alpha-beta cutoff. 
           	// so skip the rest
@@ -938,29 +951,17 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
            	sz = idx+1;
             non_skipped_evals += sz;
             }
-            else if((killerBest!=null) && mm.Same_Move_P(killerBest))
-        	{
-             if((mm.depth_limited()==commonMove.EStatus.EVALUATED) && !mm.gameover())
-             {
-        	 mvec[idx]=mvec[extra];
-      	     mvec[extra]=mm;
-      	     mm.setEvaluation(killerBest.evaluation());
-      	     mm.set_local_evaluation (NaN);
-      	     extra++;
-      	     total_killers++;
-             }
-     	     killerBest = null;		// only do it once
-        	}
             else if(allow_killer) 
-              { 
-                if((mm.depth_limited()==commonMove.EStatus.EVALUATED) && !mm.gameover())
+              {    
+            	boolean goDeeper = mm.searchDeeper() ;
+                if(goDeeper && !mm.gameover())
                 {
                	commonMove killer = sn.killer_evaluate_move(mm);
               
                 if((killer!=null) 
-                		&& !killer.gameover() 
-                		&& (killer.depth_limited()==commonMove.EStatus.EVALUATED)
-                		)
+            		&& !killer.gameover() 
+            		&& killer.searchDeeper()
+            		)
                 {	// don't consider endgame moves without an accurate evaluation
                 	// don't take a depth limited evaluation from a sibling
                 	//if(killer.evaluation>=cutoff_limit)
@@ -970,8 +971,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 	// it merely flags moves that were originally positioned 
                 	// by the killer heuristic
                 	mm.set_local_evaluation(NaN);
-                	mm.setGameover(false);
-                	mm.set_depth_limited(commonMove.EStatus.EVALUATED);
                 	total_killers++;
                   }}
               }
@@ -995,9 +994,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
               	G.Assert(dig==search_digest,"move %s digest doesn't match unwind, eval clock=%s",mm,eval_clock);
               }
 
-              commonMove.EStatus limit = mm.depth_limited();
               //boolean search_limit = (limit==commonMove.DEPTH_LIMITED_SEARCH);
-              boolean limit_or_over = limit!=commonMove.EStatus.EVALUATED | mm.gameover();
+              boolean limit_or_over = mm.gameover() || !mm.searchDeeper();
               some_terminals |= limit_or_over;
               all_terminals &= limit_or_over;
               //all_depth_limited &= search_limit;
@@ -1024,10 +1022,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 
         if(!all_terminals) { sz = Width_Limit_Moves(mvec,sz); }
         
-      //  if(pred!=null && pred.prepare_clock==37621)
-       // {
-       // 	G.print("Mx2 "+sz+ " "+mvec[0].evaluation);
-       // }
         return(sz);
     }
     /**

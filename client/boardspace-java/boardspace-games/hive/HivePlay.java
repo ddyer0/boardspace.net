@@ -32,11 +32,12 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
 	private boolean KILLER_HEURISTIC = false;
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
 	private int WEAKBOT_DEPTH = 3;
+	private boolean ProgressiveSearch = false;
 	private int DUMBOT_DEPTH = 5;
     //int SMARTBOT_DEPTH = 5;
 	private int MAX_DEPTH = DUMBOT_DEPTH;
 	private final double VALUE_OF_WIN = 100000.0;
-	private final double VALUE_OF_DRAW = -10000;
+	private final double VALUE_OF_DRAW = 0;
 	private Evaluator evaluator = null;
     public Evaluator getEvaluator() { return(evaluator); }
     /* strategies */
@@ -48,12 +49,37 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     private int MONTE_DEPTH_LIMIT = 30;
     private boolean avoidSpiderOpening = false;
     private boolean pushToWin = false;
+    private double sprintThreshold = 0;
+    private double sprintProgressThreshold = 0;
+    private boolean sprintEnabled = false;
+    private int sprintPlayer = 0;
+    private int pushCount = 0;
+    private int sprintCount = 0;
+    private int trustCount = 0;
+     int pushCountSummary = 0;
+     int sprintCountSummary = 0;
+     int trustCountSummary = 0;
+
     /* constructor */
     public HivePlay()
     {
     }
 
-
+    public void initStats()
+    {
+    	pushCount = 0;
+    	sprintCount = 0;
+    	trustCount = 0;
+    }
+    public String reportStats()
+    {	String msg = "";
+    	
+    	if(pushCount>0) { /* msg += "push "; */ pushCountSummary += pushCount; }
+    	if(sprintCount>0) { msg += "sprint "; sprintCountSummary += sprintCount; }
+    	if(trustCount>0) { msg += " trust "; trustCountSummary += trustCount;}
+    	if(msg!="") { return msg; }  	
+    	return null;
+    }
    public boolean Tree_Depth_Limit(int current)
    {	if(COLLECT_TREE
 		   	&& board.hasPlayedQueen(board.whoseTurn)
@@ -67,15 +93,20 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     public void Unmake_Move(commonMove m)
     {	Hivemovespec mm = (Hivemovespec)m;
         board.UnExecute(mm);
+        extendedSearch = false;
         //G.print("U "+mm +" "+ mm.local_evaluation +" "+mm.evaluation);
         boardSearchLevel--;
     }
+    
+    boolean extendedSearch = false;
 /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
     {   Hivemovespec mm = (Hivemovespec)m;
         //G.print("E "+mm);
+    	commonMove.EStatus stat = mm.depth_limited();
+    	extendedSearch = stat==commonMove.EStatus.EVALUATED_CONTINUE;
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
@@ -87,7 +118,8 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        CommonMoveStack moves = board.GetListOfMoves(extendedSearch);
+        return moves;
     }
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
@@ -98,11 +130,8 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
      */
      double ScoreForPlayer(HiveGameBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
      	// score wins as slightly better if in fewer moves
-    	double val = win ? VALUE_OF_WIN+1.0/(1+boardSearchLevel) :evaluator.evaluate(evboard, player, print);		// points for a win, less for everything else
-    	if(print && win) { System.out.println("+ win =");}
-
+    	double val = evaluator.evaluate(evboard, player, print);	
      	return(val);
     }
     
@@ -114,11 +143,14 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
         	// could be 1 move away, so we should extend the search by 1 ply to see if its
         	// the case.  This works great if there is a win in one more ply, but if not,
         	// this simple strategy has the effect of adding a complete ply to the search
-        	// which can take a very long time.  So until something much less general or more
-        	// clever is done, this is not useful.
-        	if(evaluator.pushAnalysis(board,true,m))
+        	// which can take a very long time.  There's also the real possibility that seeing
+        	// one ply deeper, but only in part of the tree, will result in a different, wrong
+        	// move being selected.   One way that might work is to search but only for winning
+        	// moves, discard anything else completely.
+         	if((boardSearchLevel < MAX_DEPTH) && evaluator.pushAnalysis(board,true,m))
         	{
         		m.set_depth_limited(commonMove.EStatus.EVALUATED_CONTINUE);
+        		pushCount++;
         	}
         }
 
@@ -133,20 +165,32 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     }
     private double Static_Evaluate_Position(int playerindex,boolean depth_limited)
     {
+        if(board.GameOver())
+        {
+        	if(board.WinForPlayerNow(playerindex))
+        	{	// a quick win is better than a slow one
+        		return VALUE_OF_WIN+1.0/(1+boardSearchLevel);
+        	}
+        	else if(board.WinForPlayerNow(nextPlayer[playerindex]))
+        	{	// a slow loss is better than a quick one
+        		return -(VALUE_OF_WIN+(1-1.0/(1+boardSearchLevel)));
+        	}
+        	// otherwise a draw. This has the curious effect of making
+        	// the bot try something else rather than doing 3 reps
+        	return VALUE_OF_DRAW;
+        }
+
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // score wins alone, to avoid the "lesser loss" syndrone, where
-        // the robot committs suicide because it makes the overall position 
-        // look "better" than letting the opponent win.
-        if(val0>=VALUE_OF_WIN) 
-        	{ if(val1>=VALUE_OF_WIN) 
-        		{ return(VALUE_OF_DRAW+val0-val1); // simultaneous win is a draw
-        		}
-        	  return(val0); 
-        	}
-         else if(val1>=VALUE_OF_WIN) { return(-val1); }
-       
-         return(val0-val1);
+        
+         if(sprintEnabled)
+         {
+        	 if(sprintPlayer==playerindex) { val1 = val1/sprintThreshold; }
+        	 else { val0 = val0/sprintThreshold; }
+         }
+         double val = val0-val1;
+   
+         return(val);
     }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -193,12 +237,25 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         case WEAKBOT_LEVEL:
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	MONTEBOT = false;
+           	KILLER_HEURISTIC = true;
+           	ProgressiveSearch = true;
         	evaluator = new RevisedStandardEvaluator();
         	break;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	MONTEBOT = false;
-        	evaluator = new RevisedStandardEvaluator();
+           	KILLER_HEURISTIC = true;
+           	evaluator = new RevisedStandardEvaluator();
+        	break;
+           	
+        case SMARTBOT_LEVEL:
+        	evaluator = new RevisedAugustEvaluator();
+        	avoidSpiderOpening = true;
+        	pushToWin = false;	// see comments, can't be used in its current form.
+           	MAX_DEPTH = DUMBOT_DEPTH;
+           	KILLER_HEURISTIC = true;
+        	ProgressiveSearch = false;
+        	MONTEBOT = false;
         	break;
         // this is the traditional smartbot, replaced by the august 2025 bot
         //case SMARTBOT_LEVEL: 
@@ -207,43 +264,63 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
 	    //   	evaluator = new ThirdStandardEvaluator();
         //	break;
         case BESTBOT_LEVEL: 
+        	evaluator = new RevisedSeptemberEvaluatorN();	// 
+        	avoidSpiderOpening = true;
+        	ProgressiveSearch = false;
+        	pushToWin = false;	// see comments, can't be used in its current form.
+           	MAX_DEPTH = DUMBOT_DEPTH;
+           	sprintThreshold = 70;
+           	KILLER_HEURISTIC = true;
+           	sprintProgressThreshold = 10;
         	MONTEBOT = false;
-        	MAX_DEPTH = DUMBOT_DEPTH;//SMARTBOT_DEPTH;
-        	COLLECT_TREE = false;
-        	evaluator = new ThirdEvaluator(GameBoard.gamevariation);
         	break;
         case MONTEBOT_LEVEL:
         	MONTEBOT = true;
         	COLLECT_TREE = false;
         	evaluator = new MonteEvaluator();
         	break;
-        	
-        case SMARTBOT_LEVEL:
-        	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
+         case TESTBOT_LEVEL_1:
+        	evaluator = new RevisedSeptemberEvaluator();	// 
         	avoidSpiderOpening = true;
+        	ProgressiveSearch = false;
         	pushToWin = false;	// see comments, can't be used in its current form.
            	MAX_DEPTH = DUMBOT_DEPTH;
-        	MONTEBOT = false;
-        	break;
-        case TESTBOT_LEVEL_1:
-        	evaluator = new RevisedAugustEvaluator();	// for selfplay mode
-        	avoidSpiderOpening = true;
-        	pushToWin = false;	// see comments, can't be used in its current form.
-           	MAX_DEPTH = DUMBOT_DEPTH;
+           	KILLER_HEURISTIC = true;
+           	sprintThreshold = 70;
+           	sprintProgressThreshold = 10;
         	MONTEBOT = false;
         	break;
 
         case TESTBOT_LEVEL_2:
-        	evaluator = new ThirdEvaluator();
-        	//evaluator.setWeights("-0.0030393115373014957 0.0 0.0 -6.764150265716804E-4 0.005818957356462663 0.032516602242056644 0.0 0.0 0.0 0.0 0.0 0.006828758127886879 0.0 -0.0089800824176969 0.0 0.0 0.0 0.0 0.05673540886862403 0.007085739163627703 0.0 0.014891424225022947 -0.07852707816298556 0.012057557368815934 0.016648066107679466 -0.054052772020641265 0.0 0.0 -0.007753814908204941 0.01529130741164183 0.0 -0.006499017071934536 0.00861883741819886 0.013991669310243421 -6.762247264109535E-5 0.0 0.00448508541777407 0.0 0.04166365394198201 -0.0013262121259740348 0.0 -0.0043480306685558965 0.0 0.0 0.0 -0.003405745480912023 0.003940553826980168 0.002348696593720538 -0.03418999667679542 -0.014693603249188255 0.0 0.0 -0.006970370409373146 3.1798595109031345E-5 0.0");
-        	MAX_DEPTH = 1;
-        	verbose = 0;
-        	MONTEBOT = false;
+        	// this is an experiment with an evaluator that does not generate moves or consider mobility
+        	// this result is that it gets - maybe - 2 ply more, but still gets crushed by slower evaluators
+           	evaluator = new RevisedSeptemberEvaluatorX();	// 
+        	avoidSpiderOpening = true;
+        	ProgressiveSearch = false;
+        	pushToWin = false;	// see comments, can't be used in its current form.
+           	MAX_DEPTH = DUMBOT_DEPTH;
+           	sprintThreshold = 70;
+           	sprintProgressThreshold = 10;
+         	break;
+ 
+
+        case ALPHABOT_LEVEL:
+        	// this is an experiment with an evaluator that does not generate moves or consider mobility
+        	// this result is that it gets - maybe - 2 ply more, but still gets crushed by slower evaluators
+           	evaluator = new NolookEvaluator();	// for selfplay mode
+        	avoidSpiderOpening = true;
+        	pushToWin = false;	// see comments, can't be used in its current form.
+           	ProgressiveSearch = true;
+           	MAX_DEPTH = DUMBOT_DEPTH+2;
+           	sprintThreshold = 80;
+           	sprintProgressThreshold = 10;
+           	MONTEBOT = false;
         	break;
-        	
+
         }
     }
-    
+
+private int forPlayer = 0;
 /** PrepareToMove is called in the thread of the main game run loop at 
  * a point where it is appropriate to start a move.  We must capture the
  * board state at this point, so that when the robot runs it will not
@@ -252,7 +329,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
  * had a chance to capture the board state.
  */
 public void PrepareToMove(int playerIndex)
-{
+{	forPlayer = playerIndex;
     board.copyFrom(GameBoard);
     board.robotCanOfferDraw = viewer.canOfferDraw(board);
     int movesRemaining = Math.max(10, 20-board.moveNumber());
@@ -281,20 +358,59 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
  * game UI is not encumbered by the search.
  */
  public commonMove DoAlphaBetaFullMove()
-    {
+ {
+	 double startEval = Static_Evaluate_Position(board.whoseTurn,false);
+	 long digest = GameBoard.Digest();
+	 int reps = ((commonCanvas)viewer).repeatedPositions.numberOfRepeatedPositions(digest);
+	 sprintEnabled = false;
+	 initStats();
+	 commonMove move = alphaBetaFullMove(startEval,reps);
+	 if(move!=null)
+	 {	
+	  	if((sprintThreshold>0) && startEval>sprintThreshold)
+	    {	double finalEval = move.evaluation();
+	    
+	    	if(finalEval>sprintThreshold 
+	    			&& Math.abs(startEval-finalEval)<sprintProgressThreshold)
+	    	{
+	    		// retry search with sprint logic
+	    		G.print("retry Using SPRINT logic");
+	    		PrepareToMove(forPlayer);
+	    		sprintEnabled = true;
+	    		sprintPlayer = forPlayer;
+	    		sprintCount++;
+	    		commonMove move2 = alphaBetaFullMove(startEval,reps);
+	    		sprintEnabled = false;
+	    		if(move2!=null && !move2.Same_Move_P(move))
+	    			{ G.print("sprint changed move from ",move," to ",move2);
+	    			move = move2;
+	    			}
+	    		else { 
+	    			G.print("Sprint chose the same move ",move);
+	    		}
+	    	}
+	    }
+	 }
+	 if(move!=null)
+	 {
+		 String comment = reportStats();
+		 if(comment!=null) { move.setComment(comment); }
+	 }
+	 return move;
+ }
+ private commonMove alphaBetaFullMove(double startEval,int repetitions)
+ {
         Hivemovespec move = null;
         // it's important that the robot randomize the first few moves a little bit.
         int randomn = RANDOMIZE
         			? evaluator.canRandomize(board,board.whoseTurn) 
         			: 0;
         boardSearchLevel = 0;
-
-        int depth = MAX_DEPTH+1;
-        double startEval = Static_Evaluate_Position(board.whoseTurn,false);
+        int depth = MAX_DEPTH;
         Search_Driver search_state = 
-        		Strategy==WEAKBOT_LEVEL 
-        		? Setup_For_Search(depth,TIMEPERMOVE/60,depth-1)
-        		: Setup_For_Search(5,false); 
+        		ProgressiveSearch 
+        		? Setup_For_Search(depth+2,TIMEPERMOVE/60,depth-1)
+        		: Setup_For_Search(depth,false); 
         try
         {
  
@@ -313,15 +429,25 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
-            search_state.allow_killer = KILLER_HEURISTIC;
+            //search_state.allow_killer = true;
+            search_state.allow_best_killer = KILLER_HEURISTIC;
             search_state.good_enough_to_quit = VALUE_OF_WIN;
             search_state.save_top_digest=true;	// always on background check on the robot
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
 
-
+ 
             if(move==null)
-            	{ move = (Hivemovespec) search_state.Find_Static_Best_Move(randomn);
+            	{ G.print("evaluator ",evaluator);
+            	  move = (Hivemovespec) search_state.Find_Static_Best_Move(randomn);
+            	  
+          	  	// this is anti-draw logic for repetitions and shutouts
+                if(move!=null) 
+                  	{ Hivemovespec newmove = (Hivemovespec)evaluator.gutAnalysis(search_state,startEval,move, repetitions); 
+                  	  if(newmove!=move) { trustCount++; }
+                  	  move = newmove;
+                  	} 
+       
             	  if(move!=null)
             	  {
             		 switch(move.op)
@@ -333,8 +459,6 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             		 	break;
             		 }
             	  }
-            	  // this is anti-draw logic for shutouts
-            	  move = (Hivemovespec)evaluator.gutAnalysis(search_state,startEval,move);
             	}
         }
         finally
@@ -416,5 +540,171 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
  	return(win-win2);
  }
  
+	public void runGame_selfplay(ViewerProtocol viewer,commonRobot<?> otherBot)
+	 {	commonRobot<?> robots[] = new commonRobot[] { this,otherBot};
+		int rep = 0;
+		while(true)
+		{
+		RepeatedPositions positions = new RepeatedPositions();
+		commonMove start = viewer.ParseNewMove("start p0", 0);
+		GameBoard.doInit();
+		GameBoard.Execute(start,replayMode.Replay);
+		Mutant m1 = Mutant.getLeastUsedMutant();
+		Mutant m2 = Mutant.getRandomMutant();
+		getEvaluator().setWeights(m1.parameters);
+		otherBot.getEvaluator().setWeights(m2.parameters);
+	 	while(!GameBoard.GameOver())
+	 	{	int who = GameBoard.whoseTurn();
+	 		robots[who].PrepareToMove(who);
+	 		commonMove m = robots[who].DoFullMove();
+	 		GameBoard.Execute(m,replayMode.Replay); 
+	 		positions.checkForRepetition(GameBoard,m);
+	 	}
+	 	if(GameBoard.WinForPlayer(0)) { m1.update(1); m2.update( 0); }
+	 	else if(GameBoard.WinForPlayer(1)) { m2.update(1); m1.update(0); }
+	 	else { m1.updateDraw();m2.updateDraw();}
+	 	rep++;
+	 	if(rep%(Mutant.Pruning_Threshold*2)==0)
+	 		{ Mutant.removeLowest(true);
+	 		  Mutant.saveState(mutantFile);
+	 		}
+		}
+	 }
 
+	public void runBotGame(commonCanvas viewer,commonRobot<?>white,commonRobot<?> black)
+	 {	// this and otherbot are running from the same board, but it's a copy of the viewer board
+		commonRobot<?> robots[] = new commonRobot[] {white,black};
+
+		BoardProtocol board = viewer.getBoard();
+		boolean exit = false;
+	 	while(!exit && !board.GameOver())
+	 	{	int who = board.whoseTurn();
+	 		robots[who].PrepareToMove(who);
+	 		commonMove m = robots[who].DoFullMove();
+	 		if(m!=null)
+	 		{
+	 		viewer.PerformAndTransmit(m); 
+	 		String comment = m.getComment();
+	 		if(comment!=null)
+	 		{
+	 			commonMove cm = viewer.getCurrentMove();
+	 			cm.setComment(comment);
+	 		}
+	 		}
+	 		else { exit = true; }	// strange to return null, 
+	 	}
+	 }
+
+	 String gamebase = "g:/share/projects/boardspace-html/htdocs/hive/hivegames/smarttest/";
+	 String testgames[] = new String[]{ 
+			 "start-01","start-02",
+			 "start-03","start-04", 
+			 "start-05","start-06",
+			 "start-07","start-08",
+			 
+			 "start-09","start-10",
+			 "start-11","start-12", 
+			 "start-13","start-14",
+			 "start-15","start-16",
+			 "start-17","start-18",
+			 "start-19","start-20",
+	 };
+	 public void runRobotTraining(ViewerProtocol vv,BoardProtocol b,SimpleRobotProtocol otherBotf)
+	 {	Mutant.Pruning_Percent = 0;
+	 	final commonCanvas v = (commonCanvas)vv;
+	 	final commonRobot<?>self = (commonRobot<?>)v.newRobotPlayer();
+	 	final SimpleRobotProtocol otherBot = otherBotf;
+	 	final String series = "w";
+	 	Bot testbot = Bot.TestBot_1;
+	 	StopRobot();
+	 	new Thread(new Runnable() {
+	 		public void run() 
+	 		{ 
+		 		//runRobotTraining(v,"-b-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,false	); 
+		 		//runRobotTraining(v,"-w-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,true); 
+
+	 		runRobotTraining(v,"-b-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Smartbot,testbot,false	); 
+	 		
+	 		runRobotTraining(v,"-b-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,false);
+	 		  
+	 		runRobotTraining(v,"-w-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Smartbot,testbot,true); 
+	 		runRobotTraining(v,"-w-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,true); 
+	
+		 		}
+		 	}).start();	 	
+	 }
+ 	public void runRobotTraining(commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{
+ 		v.ignoreRunThread = true;
+	 	for(String gamename : testgames)
+	 	{	
+	 		trainGameForSure(gamename,v,series,white,black,bwhite,bblack,reverse);
+	 	}
+ 	}
+ 	public boolean trainGameForSure(String gamename,commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{
+ 		boolean complete = trainGame(gamename,v,series,white,black,bwhite,bblack,reverse);
+ 		if(!complete)
+ 		{	
+ 			complete = trainGame(gamename,v,series,white,black,bwhite,bblack,reverse);
+ 			if(!complete)
+ 			{
+ 				G.Error("double fail for ",gamename);
+ 			}
+ 		}
+ 		return complete;
+
+ 	}
+ 	public boolean trainGame(String gamename,commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{		String fullname = "file:///" + gamebase + gamename + ".sgf";
+			BoardProtocol cloneBoard = v.getBoard();
+	 		try {
+	 		v.replayGame(fullname);
+	 		Bot whiteBot = reverse ? bblack :  bwhite;
+	 		Bot blackBot = reverse ? bwhite : bblack;
+
+	 		white.setName("white playing "+whiteBot.name);
+	 		black.setName("black playing "+blackBot.name);
+
+	 		white.InitRobot(v,v.getSharedInfo(),cloneBoard,null,whiteBot.idx);
+	 		black.InitRobot(v,v.getSharedInfo(),cloneBoard,null,blackBot.idx);
+	 		
+	 		commonPlayer p0 = v.getPlayerOrTemp(0);
+	 		commonPlayer p1 = v.getPlayerOrTemp(1);
+	 		p0.setPlayerName(whiteBot.name,false,null);
+	 		p1.setPlayerName(blackBot.name,false,null);
+	 		black.StopRobot();
+	 		white.StopRobot();
+	 		G.print("running ",fullname);
+	 		runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 		boolean gameover = cloneBoard.GameOver();
+	 		if(!gameover)
+	 		{
+	 			runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 			gameover = cloneBoard.GameOver();
+	 		}
+	 		String result = !gameover 
+	 					? "-incomplete"
+	 					: cloneBoard.WinForPlayer(0)
+	 					 ? (reverse ? "-win" : "-loss")
+	 				     : cloneBoard.WinForPlayer(1)
+	 				     	? (reverse ? "-loss" : "-win")
+	 				     	: "-tie";
+	 		String finalName = gamebase+gamename+series+result+".sgf";
+	 		G.print("finished ",finalName);
+	 		v.saveGame(finalName);
+	 		if(!gameover)
+	 		{
+	 			G.print("game ",finalName," not complete");
+	 		}
+	 		return gameover;
+	 		}
+	 		catch (Throwable err)
+	 		{  throw G.Error("error processing "+gamename+"\n"+err+"\n"+err.getStackTrace());
+	 		}
+	 		
+	 }
  }

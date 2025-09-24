@@ -115,6 +115,9 @@ class CacheInfo implements Config
 	static final int BUFFERSIZE = 100*1024;			// copy jar buffer size, 100K
 	static boolean verbose = false;
 	static boolean uncache = false;
+	boolean writing = false;
+	boolean failed = false;
+	
 	// items from the upstream cache that should not be deleted and ignored
 	// this is used to remove obsolete files created by reorganization
 	static String[] blackList = BlacklistedDataFiles;	
@@ -141,7 +144,9 @@ class CacheInfo implements Config
 	 * @throws IOException
 	 */
 	private boolean copyUrl(String host,String from,File to,long totime) throws MalformedURLException, IOException
-	{	if((from!=null) && (to!=null))
+	{	
+		writing = false;
+		if((from!=null) && (to!=null))
 	{
 		InputStream input = new URL(host+from).openConnection().getInputStream();
 		if(input!=null)
@@ -149,16 +154,25 @@ class CacheInfo implements Config
 		if(verbose) { log("Copying "+from+" > "+to); }
 
 		File toFile = localFileName(from,to);
+		writing = true;
 		OutputStream output = new FileOutputStream(toFile);
+		writing = false;
 		byte buffer[] = new byte[BUFFERSIZE];
 		int nbytes = 0;
 		while( (nbytes = input.read(buffer))>0) 
-		{
+		{	writing = true;
 			output.write(buffer,0,nbytes);
+			writing = false;
 		}
-		if(output!=null) { output.close(); }
+		if(output!=null)
+			{ writing = true;
+			  output.close(); 
+			  writing = false;  
+		}
 		if(toFile!=null)
-			{ toFile.setLastModified(totime*1000); 
+			{ writing = true;
+			  toFile.setLastModified(totime*1000); 
+			  writing = false;
 			}
 		input.close();
 		return(true);
@@ -192,8 +206,7 @@ class CacheInfo implements Config
 		}
 		else if(!loaded)	// if multiple threads get caught, only load once
 		{	
-			copyUrl(host,name,localDir,date); 
-			loaded = true;
+			loaded = copyUrl(host,name,localDir,date); 
 		}
 	}
 }
@@ -215,7 +228,8 @@ public class DataCache implements Runnable,Config
 {	
 	static String cacheRoot = "java/appdata/";
 	static final String webUrl = DataCacheUrl;	// url to fetch the list of jars
-
+	static int diskFull = 0;
+	static int errors = 0;
 	static boolean test = false;
 	static String activeProtocol = "https:";
 	static String webHost() 
@@ -253,17 +267,28 @@ public class DataCache implements Runnable,Config
 		if(info==null) 
 		{ if(verbose) { DataCache.out.println("No info for "+name0); } 
 		}
-		else {
+		if(info.failed) { info = null; }
+		else if(errors<2)
+		{
 			try {
 				if(verbose) { DataCache.out.println("cache "+name); }
 				info.cacheFile(webHost(),localCacheDir);
 			}
 			catch (Exception e)
 			{
-				info.loaded = true;		// we tried, don't try again
+				info.failed = info.loaded = true;		// we tried, don't try again
+				errors++;
+				if(info.writing)
+				{
+					diskFull++;
+					showError("Error caching "+name+" - Possibly storage is full - from "+webHost(),e);
+				}
+				else
+					{
 				showError("Error fetching "+name+" from "+webHost(),e);
 			}
-			return(info);
+				info = null;
+			}
 		}
 		return(info);
 	}

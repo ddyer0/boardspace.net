@@ -431,7 +431,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
         return (false);
     }
     private long lastAsk = 0;
-    public String getRobotMove()
+    public commonMove getRobotMove()
     {  	SimpleRobotProtocol r = robotRunning();
 		if(r!=null)
 		{ long now = lastInputTime = G.Date();
@@ -440,7 +440,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
 		    commonMove m = r.getResult();
 		    if(m!=null) 
 		    { 	//G.print("finish "+m+" for "+this);
-		    	return(m.moveString()); 
+		    	return(m); 
 		    	}
 		    lastAsk = now;
 		  }

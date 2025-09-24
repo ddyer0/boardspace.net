@@ -226,7 +226,8 @@ public class TweedPlay extends commonRobot<TweedBoard> implements Runnable, Twee
      *  for each and sorts the result to preorder the tree for further evaluation
      * Not needed for MonteCarlo searches
      */
-    public double Static_Evaluate_Position(	commonMove m)
+    // TODO: refactor static eval so GameOver is checked first
+   public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
