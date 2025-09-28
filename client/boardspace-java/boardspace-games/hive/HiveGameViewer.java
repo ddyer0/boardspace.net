@@ -640,6 +640,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
             	String label = numberMenu.getSequenceString(cell,true);		
              	if(label!=null && cell.lastContents!=null)
              		{
+             		
                  	GC.setFont(gc,pieceLabelFont);
              		cell.lastContents.drawChip(gc,this,(int)actCellSize/2, xpos, ypos,label);
              		}
@@ -648,6 +649,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              }
              //if(G.debug() && (cell.topChip()==null))
              //{	// draw a grid of other cells
+             //	 GC.setColor(gc,Color.yellow);
              //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+G.printCol(cell.col)+cell.row);
              //}
 

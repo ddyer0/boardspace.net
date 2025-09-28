@@ -23,7 +23,8 @@ import online.search.*;
 
 
 /** 
-
+ iro uses both alpha-beta and mcts
+ 
  Iro development notes.
  
  I originally assumed Iro would be a slam-dunk for MCTS, but that turned out not to be the case.  
@@ -193,7 +194,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      * Not needed for MonteCarlo searches
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move

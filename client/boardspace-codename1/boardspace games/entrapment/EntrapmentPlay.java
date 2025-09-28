@@ -104,6 +104,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
     /**
      * this is it! just tell me that the position is worth.  
      */
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);
@@ -165,9 +166,6 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         	evaluator = new StandardEvaluator();
          	MAX_DEPTH = BESTBOT_DEPTH;
         	break;
-        case MONTEBOT_LEVEL:
-           	MONTEBOT = true;
-            break;
         case TESTBOT_LEVEL_1:
         	MAX_DEPTH = 4;
         	evaluator = new StandardEvaluator();

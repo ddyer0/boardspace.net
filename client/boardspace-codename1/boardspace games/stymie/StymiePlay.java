@@ -167,12 +167,13 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
      * games it requires considering multiple player's values.
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);

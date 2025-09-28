@@ -350,24 +350,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
         return(ScoreForPlayer(board,playerindex,false));
     } 
 
-    /**
-     * this is it! just tell me that the position is worth.  
-     */
-    // TODO: refactor static eval so GameOver is checked first
-    public double Static_Evaluate_Position(commonMove m)
-    {	
-     	int playerindex = m.player;
-     	int nplay = board.nPlayers();
-     	commonMPMove mm = (commonMPMove)m;
-     	
-     	mm.setNPlayers(nplay);
-    	board.calculateEstScores();
 
-    	for(int i=0;i<nplay; i++)
-    	{	mm.playerScores[i] = board.estScoreForPlayer(i);
-    	}
-    	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
-    }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.

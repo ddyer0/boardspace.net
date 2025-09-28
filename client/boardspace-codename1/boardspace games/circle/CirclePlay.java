@@ -23,6 +23,8 @@ import online.search.*;
 
 
 /** 
+ * circle of life uses MCTS only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>
@@ -72,16 +74,10 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
 	// for the evaluator to work with.
 	
 	// common parameters
-    private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
     private CircleChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
-    private int MAX_DEPTH = 7;						// search depth.
-    private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
   
     // mcts parameters
@@ -216,34 +212,9 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
      * Not needed for MonteCarlo searches
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
-    }
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
-     * Not needed for MonteCarlo searches
-     */
-    public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for pushfight because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
-    }
-    /**
-     * this is called from UCT setup to get the evaluation, prior to ordering the UCT move lists.
-     */
-	public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
-	{
-		throw G.Error("Not implemented");
+    {	return(m.reScorePosition(forplayer));
 	}
+
 
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -257,63 +228,6 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
-
-    public commonMove DoAlphaBetaFullMove()
-    {
-           CircleMovespec move = null;
-           try
-           {
-          	
-               // it's important that the robot randomize the first few moves a little bit.
-               int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
-               boardSearchLevel = 0;
-
-               int depth = MAX_DEPTH;	// search depth
-               double dif = 0.0;		// stop randomizing if the value drops this much
-               // if the "dif" and "randomn" arguments to Find_Static_Best_Move
-               // are both > 0, then alpha-beta will be disabled to avoid randomly
-               // picking moves whose value is uncertain due to cutoffs.  This makes
-               // the search MUCH slower so depth ought to be limited
-               // if ((randomn>0)&&(dif>0.0)) { depth--; }
-               // for games such as pushfight, where there are no "fools mate" type situations
-               // the best solution is to use dif=0.0;  For games with fools mates,
-               // set dif so the really bad choices will be avoided
-               Search_Driver search_state = Setup_For_Search(depth, false);
-               search_state.save_all_variations = SAVE_TREE;
-               search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-               search_state.verbose = verbose;
-               search_state.allow_killer = KILLER;
-               search_state.allow_best_killer = false;
-               search_state.save_top_digest = true;	// always on as a background check
-               search_state.save_digest=false;	// debugging only
-               search_state.check_duplicate_digests = false; 	// debugging only
-
-              if (move == null)
-               {	// randomn takes the a random element among the first N
-               	// to provide variability.  The second parameter is how
-               	// large a drop in the expectation to accept.  For pushfight this
-               	// doesn't really matter, but some games have disasterous
-               	// opening moves that we wouldn't want to choose randomly
-                   move = (CircleMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-               }
-           }
-           finally
-           {
-               Accumulate_Search_Summary();
-               Finish_Search_In_Progress();
-           }
-
-           if (move != null)
-           {
-               if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-               // normal exit with a move
-               return (move);
-           }
-
-           continuous = false;
-           // abnormal exit
-           return (null);
-       }
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -346,7 +260,6 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=true;
-           	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;

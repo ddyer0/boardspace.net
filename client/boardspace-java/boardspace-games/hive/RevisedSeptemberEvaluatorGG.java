@@ -53,6 +53,7 @@ import online.search.Evaluator;
  * revision second E adds a small bonus for gated approaches to the Q, and restricts the "immune" bonus to
  * cells adjacent to the Q and actual pillbugs 
  * 
+ * 
  * revision H applies pin penalties to beetles and mosquitos next to Q
  * 
  * Suggestions for the next level:
@@ -106,7 +107,7 @@ import online.search.Evaluator;
  * revision W increased the anyDropBonus from 0.001 to 0.002
  * 			  increased the upBonus from 0.01 to 0.1
  */
-class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
+class RevisedSeptemberEvaluatorGG extends DefaultEvaluator implements Evaluator
 {	
 
 	public int canRandomize(BoardProtocol b,int who)
@@ -232,9 +233,8 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 	double queenAttackWeight = 1.0;
 	
 	double queenAdjacentValue = 1;	// all pieces get this when adjacent to the Q
-	// version H was 1 and 1 version J is 1.2 0.8 and unequivocally better
-	double FutureDistanceScale = 1.4;
-	double PresentDistanceScale = 0.6;
+	double FutureDistanceScale = 1;
+	double PresentDistanceScale = 1;
 	double present_queen_distance_multiplier[] =
 		{0.0,			// queen
 		 0.75,			// ant	
@@ -335,7 +335,7 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
     	//  not all completely open, but rare
     	for(int i=0;i<pocketScore.length;i++) { pocketScore[i]=open;}
     	
-    	//pocketScore[0b11111] = surround;
+    	pocketScore[0b11111] = surround;
     	
     	//pocketScore[0b11110] = gate;
     	pocketScore[0b11101] = gate;
@@ -370,7 +370,7 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
     	pocketScore[0b00001] = flat;
     	
 
-    	strongPocketScore[0b11111] = surround;
+    	//strongPocketScore[0b11111] = surround;
     	
     	strongPocketScore[0b11110] = gate;
     	strongPocketScore[0b11101] = gate;

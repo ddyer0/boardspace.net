@@ -102,7 +102,7 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
      * games it requires considering multiple player's values.
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
  
     /**
@@ -151,20 +151,15 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
         {
         case WEAKBOT_LEVEL:
         	MAX_DEPTH = WEAKBOT_DEPTH;
-        	MONTEBOT = false;
         	break;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
-         	MONTEBOT = false;
         	break;
         case SMARTBOT_LEVEL:
         	MAX_DEPTH = GOODBOT_DEPTH;
         	break;
         case BESTBOT_LEVEL:
          	MAX_DEPTH = BESTBOT_DEPTH;
-        	break;
-        case MONTEBOT_LEVEL:
-        	MONTEBOT=true;
         	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }

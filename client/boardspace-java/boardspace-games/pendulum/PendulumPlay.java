@@ -24,6 +24,8 @@ import online.search.*;
 import static pendulum.PendulumMovespec.*;
 
 /** 
+ * pendulum uses mcts only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>

@@ -1,4 +1,5 @@
 /*
+ *  Hive uses alpha-beta for delivered robots, MCTS for research
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
@@ -19,6 +20,7 @@ package hive;
 import hive.HiveConstants.HiveId;
 import hive.HiveConstants.HiveState;
 import hive.HiveConstants.PieceType;
+import lib.AR;
 import lib.DStack;
 import lib.G;
 import online.game.BoardProtocol;
@@ -149,7 +151,10 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 		-1.0,			// pillbug, combined with queen affinity gets it DOWN
 		0.2};			// blank
 	
-    double PinPenaltyWeight = 6;//15;
+	
+	// series-x pinpenalty increased this to 15, resulted in unequivicolly worse outcomes
+    double PinPenaltyWeight = 6;
+    
     // note that if these penalties are too large, you can 
     // end up in pin/unpin loops
 	double pinPenalty[] = 
@@ -227,8 +232,9 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 	double queenAttackWeight = 1.0;
 	
 	double queenAdjacentValue = 1;	// all pieces get this when adjacent to the Q
-	double FutureDistanceScale = 1;
-	double PresentDistanceScale = 1;
+	// version H was 1 and 1 version J is 1.2 0.8 and unequivocally better
+	double FutureDistanceScale = 1.4;
+	double PresentDistanceScale = 0.6;
 	double present_queen_distance_multiplier[] =
 		{0.0,			// queen
 		 0.75,			// ant	
@@ -303,20 +309,33 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
      	// a tiny bonus for more drops.
      	return ndrops==0 ? 0 : anyDropBonus + allDropBonus*ndrops;
     }
-    private double pocketScoreWeight = 0.1;		// group r is 0.12 group s is 0.08
+    /*
+     * pocketScore is a map of what an empty space adjacent to the Q looks like,
+     * with directions clockwise around the empty space starting at the Q.  The
+     * underlying idea is at gates protect the Q and pockets lead to gates.
+     * 
+     * the light/heavy distinction is the overall status of the queen, we don't want to
+     * deliberately form pockets when there is still lots of empty space
+     * 
+     */
+    private double pocketScoreWeight = 0.075;		// group r is 0.12 group s is 0.08
+    private double strongPocketScoreWeight = 0.075;		// group r is 0.12 group s is 0.08
+    // group B is 0.05 and 0.1
     private static double curve = 0.5;
     private static double pocket = 1;
     private static double gate = 2;
-    private static double surround = 0;
+    private static double surround = 2;
     private static double flat = 0.0;
     private static double open = 0.0;
     private static double pocketScore[] = new double[32];
+    private static double strongPocketScore[] = new double[32];
 
+    // revision F adds more entries to complete the table. 
     static {
     	//  not all completely open, but rare
     	for(int i=0;i<pocketScore.length;i++) { pocketScore[i]=open;}
     	
-    	pocketScore[0b11111] = surround;
+    	//pocketScore[0b11111] = surround;
     	
     	//pocketScore[0b11110] = gate;
     	pocketScore[0b11101] = gate;
@@ -332,16 +351,70 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
     	//pocketScore[0b11000] = curve;
     	pocketScore[0b01100] = curve;
     	pocketScore[0b00110] = curve;
+    	pocketScore[0b10001] = curve;
     	//pocketScore[0b00011] = curve;
+    	
+    	// revision D adds these to complete the family of curves, note that two above are
+    	// deliberately excluded to prevent early moves that create pockets rather than open spaces
+  
+    	pocketScore[0b10100] = curve;
+    	pocketScore[0b10010] = curve;
+    	pocketScore[0b01010] = curve;
+    	pocketScore[0b01001] = curve;
+    	pocketScore[0b00101] = curve;
     	
     	pocketScore[0b10000] = flat;
     	pocketScore[0b01000] = flat;
     	pocketScore[0b00100] = flat;
     	pocketScore[0b00010] = flat;
     	pocketScore[0b00001] = flat;
+    	
+
+    	strongPocketScore[0b11111] = surround;
+    	
+    	strongPocketScore[0b11110] = gate;
+    	strongPocketScore[0b11101] = gate;
+    	strongPocketScore[0b11011] = gate;
+    	strongPocketScore[0b10111] = gate;
+    	strongPocketScore[0b01111] = gate;
+    	
+    	// revision F
+    	strongPocketScore[0b01011] = gate;  // 11
+    	strongPocketScore[0b01101] = gate;  // 13 
+        strongPocketScore[0b01110] = gate;  // 14
+        strongPocketScore[0b10101] = gate;  // 21
+        strongPocketScore[0b10110] = gate;  // 22
+        strongPocketScore[0b11010] = gate;  // 26
+
+    	
+    	strongPocketScore[0b11100] = pocket;
+    	strongPocketScore[0b11001] = pocket;
+    	strongPocketScore[0b10011] = pocket;
+    	strongPocketScore[0b00111] = pocket;
+    	
+    	strongPocketScore[0b11000] = curve;
+    	strongPocketScore[0b01100] = curve;
+    	strongPocketScore[0b00110] = curve;
+    	
+    	// revision F adds these to complete the list of curves
+    	strongPocketScore[0b10001] = curve;
+    	strongPocketScore[0b00011] = curve;
+    	strongPocketScore[0b10100] = curve;
+    	strongPocketScore[0b10010] = curve;
+    	strongPocketScore[0b01010] = curve;
+    	strongPocketScore[0b01001] = curve;
+    	strongPocketScore[0b00101] = curve;
+    	
+    	strongPocketScore[0b10000] = flat;
+    	strongPocketScore[0b01000] = flat;
+    	strongPocketScore[0b00100] = flat;
+    	strongPocketScore[0b00010] = flat;
+    	strongPocketScore[0b00001] = flat;
+   	
+
    	
     }
-    public double pocketScore(HiveCell loc, int direction)
+    public int pocketScoreMask(HiveCell loc, int direction)
     {
     	int mask = 0;
     	for(int firstdir = direction-2,lastdir = direction+2; firstdir<=lastdir; firstdir++)
@@ -350,7 +423,7 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
     		mask = mask<<1;
     		if(d.height()>0) { mask = mask|1; }
     	}
-    	return pocketScore[mask];
+    	return mask;
     }
 	// return the number of adjacent cells owned by a player
 	public double nOccupiedOrOwnedAdjacent(HiveGameBoard board,HiveCell queen, int targetPlayer)
@@ -362,7 +435,8 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 		boolean enemyBeetle = bug.color!=targetColor;
 		int rawCount = 0;
 		double credits = 0;
-		
+		double weakCredits = 0;
+		double strongCredits = 0;
 		if(enemyBeetle) { credits += enemyBeetleAtQueenCount; }	// someone else on top
 		HiveCell prev = null;
 		for(int direction=5;direction>=0;direction--)
@@ -410,12 +484,17 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 					  credits +=QueenDropCount;	// drop destination directly next to Q
 				  }
 			  }
-			  double pocketScore = pocketScoreWeight*pocketScore(c,direction);
-			  credits -= pocketScore;
+			  int mask = pocketScoreMask(c,direction);
+			  weakCredits += pocketScoreWeight*pocketScore[mask];
+			  strongCredits += strongPocketScoreWeight*strongPocketScore[mask];
 			  //G.print("pocket "+pocketScore);	
 		  }
 		  prev = c;
 		}
+		
+		// use the weaker version of credits if the surround is light
+		double pocketCredits = rawCount<4 ? weakCredits : strongCredits;
+		credits -= pocketCredits; 
 
 		if(rawCount<5)
 		{

@@ -38,7 +38,7 @@ public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, Tria
     {
 	
 	private double TIME_LIMIT = 2.0;				// progressive search time limit
-	private static final double VALUE_OF_WIN = 1000000.0;
+	private static final double VALUE_OF_WIN = 1.0;
 	private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory
 	private static final int WEAKBOT_DEPTH = 6;
 	private static final int DUMBOT_DEPTH = 7;

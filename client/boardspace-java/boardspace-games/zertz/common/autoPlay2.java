@@ -91,6 +91,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         	MaxDepth = 2;
         	break;
         case SMARTBOT_LEVEL:
+        	KILLER = true;
         	ALLOW_RESTRICTED_SACRIFICE = true;
         	evaluator.setWeights(
         			//"-4.643392592962127E-4 -0.05809297242159539 -0.9314725850461272 -0.38357945681632943 -0.2348224942862074 0.13324772755870304 0.006323938415222591 0.06184940437470446 0.044775691503741236 -1.9596622511864508 -0.925303571641741 -0.4797374367386282 -0.46035481842800785 -0.3059037393330213 -0.04216218349852471 0.04092306522616482"
@@ -101,6 +102,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         	MaxDepth = StandardDepth+1;
         	break;
         case BESTBOT_LEVEL:
+        	KILLER = true;
         	timeLimit = 30;	// 30 seconds
         	ALLOW_RESTRICTED_SACRIFICE = true;
         	MaxDepth = StandardDepth+1;
@@ -108,6 +110,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
 		case DUMBOT_LEVEL:
         default:
         	MaxDepth = StandardDepth;
+        	KILLER = true;
         	break;
          }
         GameBoard = (GameBoard) gboard;
@@ -288,7 +291,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             Search_Driver search_state = Setup_For_Search(MaxDepth, timeLimit/60,StandardDepth);
             search_state.verbose = verbose;
             search_state.save_all_variations = SAVE_TREES;
-            search_state.allow_killer = KILLER;
+            search_state.allow_best_killer = KILLER;
             search_state.save_top_digest = true;
             search_state.save_digest = false;	// debugging only
             

@@ -166,9 +166,6 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
         	evaluator = new StandardEvaluator();
          	MAX_DEPTH = BESTBOT_DEPTH;
         	break;
-        case MONTEBOT_LEVEL:
-           	MONTEBOT = true;
-            break;
         case TESTBOT_LEVEL_1:
         	MAX_DEPTH = 4;
         	evaluator = new StandardEvaluator();

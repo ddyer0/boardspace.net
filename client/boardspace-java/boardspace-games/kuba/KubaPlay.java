@@ -157,9 +157,6 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
          	MAX_DEPTH = BESTBOT_DEPTH;
         	DUMBOT=false;
         	break;
-        case MONTEBOT_LEVEL:
-        	MONTEBOT = true;
-        	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
     }

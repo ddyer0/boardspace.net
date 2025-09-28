@@ -121,7 +121,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
      * games it requires considering multiple player's values.
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
  
     /**

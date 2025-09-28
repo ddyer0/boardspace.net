@@ -64,7 +64,8 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
 	// for the evaluator to work with.
     private static final double VALUE_OF_WIN =1.0;	// keep scores normalized in the 0.0-1.0 range
     private boolean BLITZ = true;					// the only way for this game, unwinding is just too difficult
-    private int terminatedWithPrejudice = -1;
+    @SuppressWarnings("unused")
+	private int terminatedWithPrejudice = -1;
     private Evaluator evaluator = Evaluator.Baseline_Dumbot_01;
     private int robotPlayer = 0;					// the player we're playing for
     private Random robotRandom = null;				// random numbers for randomizing playouts
@@ -337,21 +338,6 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     }
 
 
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
-     */
-    public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-		int nplay = board.nPlayers();
-		commonMPMove mm = (commonMPMove)m;
-	 	mm.setNPlayers(nplay);
-	 	for(int i=0;i<nplay; i++)
-	 	{	mm.playerScores[i] = (i==terminatedWithPrejudice) ? 0 : ScoreForPlayer(board,i,false);
-	 	}
-	 	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));	
-    }
-    
     // use the monte weight
     public double Preorder_Evaluate_Move(commonMove mm)
     {  	

@@ -23,6 +23,8 @@ import online.search.*;
 
 
 /** 
+ * circle of life uses MCTS only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>
@@ -210,7 +212,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
      * Not needed for MonteCarlo searches
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,1));
+    {	return(m.reScorePosition(forplayer));
     }
 
 

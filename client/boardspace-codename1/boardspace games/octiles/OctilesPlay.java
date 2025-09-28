@@ -108,6 +108,7 @@ public class OctilesPlay extends commonRobot<OctilesBoard> implements Runnable, 
     {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;

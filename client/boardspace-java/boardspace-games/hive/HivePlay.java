@@ -264,7 +264,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
 	    //   	evaluator = new ThirdStandardEvaluator();
         //	break;
         case BESTBOT_LEVEL: 
-        	evaluator = new RevisedSeptemberEvaluatorN();	// 
+        	evaluator = new RevisedSeptemberEvaluatorJJ();	// previous bestbot was EvaluatorN
         	avoidSpiderOpening = true;
         	ProgressiveSearch = false;
         	pushToWin = false;	// see comments, can't be used in its current form.
@@ -608,28 +608,35 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
 			 "start-15","start-16",
 			 "start-17","start-18",
 			 "start-19","start-20",
+			 "start-21","start-22",
+			 "start-23","start-24",
+			 "start-25",
 	 };
 	 public void runRobotTraining(ViewerProtocol vv,BoardProtocol b,SimpleRobotProtocol otherBotf)
 	 {	Mutant.Pruning_Percent = 0;
 	 	final commonCanvas v = (commonCanvas)vv;
 	 	final commonRobot<?>self = (commonRobot<?>)v.newRobotPlayer();
 	 	final SimpleRobotProtocol otherBot = otherBotf;
-	 	final String series = "w";
+	 	final String series = "K";
 	 	Bot testbot = Bot.TestBot_1;
 	 	StopRobot();
 	 	new Thread(new Runnable() {
 	 		public void run() 
 	 		{ 
-		 		//runRobotTraining(v,"-b-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,false	); 
-		 		//runRobotTraining(v,"-w-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,true); 
+		   // runRobotTraining(v,"-b-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,false	); 
+		 	//runRobotTraining(v,"-w-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,true); 
 
+	 		runRobotTraining(v,"-x-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Bestbot,testbot,false	); 
+	 		
 	 		runRobotTraining(v,"-b-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Smartbot,testbot,false	); 
 	 		
 	 		runRobotTraining(v,"-b-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,false);
+
+	 		runRobotTraining(v,"-x-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Bestbot,testbot,true); 
 	 		  
 	 		runRobotTraining(v,"-w-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Smartbot,testbot,true); 
 	 		runRobotTraining(v,"-w-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,true); 
-	
+
 		 		}
 		 	}).start();	 	
 	 }

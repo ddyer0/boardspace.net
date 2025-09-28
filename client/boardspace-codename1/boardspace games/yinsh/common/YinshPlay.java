@@ -105,6 +105,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
 
         return (ringscore + movescore + flipscore + chipscore);
     }
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
     	return(EvaluatePosition(playerindex,false));
@@ -136,6 +137,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
         	WEAKBOT = true;
         	MONTEBOT = DEPLOY_MONTEBOT;
         	break;
+        case ALPHABOT_LEVEL:
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DEFAULT_MAX_DEPTH;
         	OPENING_DEPTH = DEFAULT_OPENING_DEPTH;
@@ -294,19 +296,5 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
     	if(win2) { return(- (0.8+0.2/(boardSearchLevel+1))); }
     	return(0);
     }
-    /** search for a move on behalf of player p and report the result
-     * to the game.  This is called in the robot process, so the normal
-     * game UI is not encumbered by the search.
-     */
-     public commonMove DoFullMove()
-     {	if(MONTEBOT)
-     	{
-    	return(DoMonteCarloFullMove()); 
-     	}
-     	else
-     	{
-    	 return(DoAlphaBetaFullMove());
-     	}
-     }
 
 }

@@ -23,6 +23,8 @@ import online.search.*;
 
 
 /** 
+ * Mijnleiff uses MCTS only
+ *  
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>
@@ -69,7 +71,6 @@ public class MijnlieffPlay extends commonRobot<MijnlieffBoard> implements Runnab
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
 	// but it's exact value and scale are unimportant.  The main thing is to have a convenient range of values
 	// for the evaluator to work with.
-    static final double VALUE_OF_WIN = 10000.0;
     boolean UCT_WIN_LOSS = true;
     
     boolean EXP_MONTEBOT = false;
@@ -149,24 +150,6 @@ public class MijnlieffPlay extends commonRobot<MijnlieffBoard> implements Runnab
     }
 
 
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
-     */
-    public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for pushfight because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
-    }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.

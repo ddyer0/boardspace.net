@@ -19,11 +19,12 @@ package trike;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import common.GameInfo;
 
 import static trike.Trikemovespec.*;
 import online.common.*;
 import java.util.*;
+
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -325,8 +326,8 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-        int nrows = 15;  // b.boardRows
-        int ncols = 24;	 // b.boardColumns
+        int nrows = 14;  // b.boardRows
+        int ncols = 15;	 // b.boardColumns
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -541,13 +542,13 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
      	numberMenu.clearSequenceNumbers();
 
      	TrikeState state = gb.getState();
-     
+     	int cs = gb.cellSize()*9/10;
      	if(state==TrikeState.FirstPlay || state==TrikeState.Puzzle)
      	{
-     		if(gb.pawnHome.drawStack(gc,this,highlight,CELLSIZE,G.centerX(swapButton),G.centerY(swapButton),0,0.1,0.1,null))
+     		if(gb.pawnHome.drawStack(gc,this,highlight,cs,G.centerX(swapButton),G.centerY(swapButton),0,0.1,0.1,null))
      		{
      			highlight.spriteColor = Color.red;
-            	highlight.awidth = CELLSIZE;
+            	highlight.awidth = cs;
      		}
      	}
     	for(TrikeCell cell = gb.allCells; cell!=null; cell=cell.next)
@@ -556,17 +557,17 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
+            if(cell.drawStack(gc,this,canHit?highlight:null,cs,xpos,ypos,0,0.1,0.1,null))
             		{
             		highlight.spriteColor = Color.red;
-                	highlight.awidth = CELLSIZE;
+                	highlight.awidth = cs;
             		}
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,cs,xpos,ypos,null);
             }
         }
-    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
+    	numberMenu.drawSequenceNumbers(gc,cs*2/3,labelFont,labelColor);
     }
 
     /**
@@ -946,7 +947,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 
     private void setDisplayParameters(TrikeBoard gb,Rectangle r)
     {
-    	gb.SetDisplayParameters(0.95, 1.0, 0.3,-0.5,30); // shrink a little and rotate 60 degrees
+    	gb.SetDisplayParameters(0.95, 1.0, 0.06,-0.5,30); // shrink a little and rotate 60 degrees
       	gb.SetDisplayRectangle(r);
     }
     /** this is the place where the canvas is actually repainted.  We get here

@@ -293,5 +293,23 @@ public void PrepareToMove(int playerIndex)
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
  	return(0);
  }
+/*
+ * Tintas is an abstract strategy game involving collecting colored tokens.
+https://boardspace.net/tintas/english/tintas-rules.html
 
+If you were trying to design a game to be a perfect vehicle for MCTS, this would be it. There
+are a maximum of 49 moves in the game, and usually the branching factor is 6 or less. The
+initial MCTS version, allowed 10 seconds per move, proved to be essentially unbeatable. The
+AI problem was therefore to make a robot weak enough to be fun to play.
+
+The usual first recourse is to reduce thinking time, but for Tintas even a minimal 1 second/move
+thinking time was still very strong. The next recourse is to randomize the winning move based
+on the win rate. This had the desired effect, but tended to make the robot look careless near the end;
+Once all the variations are clearly losing, picking a random one looks like disinterest.
+
+The final tweak, slightly evil, is to randomize only in winning positions. In losing positions the
+robot makes the best move available, which means it fights to the end, and will more readily take
+advantage of human mistakes that give it a chance to recover.
+
+ */
  }

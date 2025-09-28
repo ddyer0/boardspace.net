@@ -100,6 +100,7 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
     /**
      * this is it! just tell me that the position is worth.  
      */
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);
@@ -155,9 +156,6 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
         case BESTBOT_LEVEL:
          	MAX_DEPTH = BESTBOT_DEPTH;
         	DUMBOT=false;
-        	break;
-        case MONTEBOT_LEVEL:
-        	MONTEBOT = true;
         	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }

@@ -406,7 +406,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		variationName=variation;
 		robots = bots;
 		if(speed==null && robots!=null) { speed = new double[robots.length]; AR.setValue(speed,1.0); }
-		G.Assert((bots==null) || (speed.length == bots.length),"mismatched speed");
+		G.Assert((bots==null) || (speed.length == bots.length),"mismatched speed for ",this);
 		robotSpeed = speed;
 		viewerClass = viewer;
 		// for codename1 and other incomplete interfaces, test if the class is available
@@ -2223,12 +2223,12 @@ synchronized(allGames) {
 	final int HIVE_REVISION = 100;	
 	final String hiveRules = "/hive/english/Hive_Rules.pdf";
 	final String hiveClass = "hive.HiveGameViewer";
-	final double[] hiveBots = new double[] {1.0,1.0,0.01};
+	final double[] hiveBots = new double[] {1.0,1.0,1.0,0.01};
 
 	final String hiveVideo = "/hive/english/hive-video.html";
 	{
 		GameInfo g = put(new GameInfo(HIVE_REVISION+620,ES.game,8,"HV",Hive,"Hive","Hive",
-		TwoBotsPlus,
+		ThreeBotsPlus,
 		hiveBots,
 		hiveClass,hiveRules,"about_hive.html",
 		hiveVideo,false, WhiteOverBlack));
@@ -2236,56 +2236,56 @@ synchronized(allGames) {
 		g.groupSortKey = "00097";
 		g.distinctVariations = true;
 		g = put(new GameInfo(HIVE_REVISION+630,ES.game,8,"HV",Hive,"Hive","Hive-M",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+640,ES.game,8,"HV",Hive,"Hive","Hive-L",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+650,ES.game,8,"HV",Hive,"Hive","Hive-LM",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+645,ES.game,8,"HV",Hive,"Hive","Hive-P",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+651,ES.game,8,"HV",Hive,"Hive","Hive-PM",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",			
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+652,ES.game,8,"HV",Hive,"Hive","Hive-PL",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+653,ES.game,8,"HV",Hive,"Hive","Hive-PLM",
-			TwoBotsPlus,
+			ThreeBotsPlus,
 			hiveBots,
 			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+655,ES.game,8,"HV",Hive,"Hive","Hive-PieLM",
-				TwoBotsPlus,
+				ThreeBotsPlus,
 				hiveBots,
 				hiveClass,hiveRules,"about_hive.html",
 				hiveVideo,false, WhiteOverBlack));

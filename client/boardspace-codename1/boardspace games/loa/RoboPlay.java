@@ -67,6 +67,7 @@ public class RoboPlay extends commonRobot<Loa_Board> implements Runnable, Consta
         	}
     }
 
+    // TODO: refactor static eval so GameOver is checked first
  
     public double Static_Evaluate_Position(commonMove m)
     {	int playerIndex = m.player;

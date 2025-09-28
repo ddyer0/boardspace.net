@@ -76,7 +76,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
     private BugsChip movingForPlayer = null;		// optional, some evaluators care
     private int forPlayer = -1;						// robot moving for this player
 	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 10000.0;
+    private static final double VALUE_OF_WIN = 1.0;
   
     // mcts parameters
     // also set MONTEBOT = true;
@@ -400,7 +400,7 @@ public void PrepareToMove(int playerIndex)
  // the player to move. 
  //
  public double reScorePosition(commonMove m,int forplayer)
- {	return(m.reScorePosition(forplayer,1));
+ {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
  }
 
  public double NormalizedScore1(commonMove lastMove)

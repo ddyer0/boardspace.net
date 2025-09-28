@@ -106,7 +106,7 @@ import online.search.Evaluator;
  * revision W increased the anyDropBonus from 0.001 to 0.002
  * 			  increased the upBonus from 0.01 to 0.1
  */
-class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
+class RevisedSeptemberEvaluatorJJ extends DefaultEvaluator implements Evaluator
 {	
 
 	public int canRandomize(BoardProtocol b,int who)
@@ -233,8 +233,8 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 	
 	double queenAdjacentValue = 1;	// all pieces get this when adjacent to the Q
 	// version H was 1 and 1 version J is 1.2 0.8 and unequivocally better
-	double FutureDistanceScale = 1.4;
-	double PresentDistanceScale = 0.6;
+	double FutureDistanceScale = 1.2;
+	double PresentDistanceScale = 0.8;
 	double present_queen_distance_multiplier[] =
 		{0.0,			// queen
 		 0.75,			// ant	

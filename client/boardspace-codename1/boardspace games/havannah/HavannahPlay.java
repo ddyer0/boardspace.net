@@ -72,7 +72,6 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
 	// but it's exact value and scale are unimportant.  The main thing is to have a convenient range of values
 	// for the evaluator to work with.
-    private static final double VALUE_OF_WIN = 10000.0;
     private boolean UCT_WIN_LOSS = false;
     
     private boolean EXP_MONTEBOT = false;
@@ -178,15 +177,9 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
      * games it requires considering multiple player's values.
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
-     */
-    public double Static_Evaluate_Position(	commonMove m)
-    {	throw G.Error("Not expected");
-    }
+
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.

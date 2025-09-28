@@ -192,6 +192,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
+    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);

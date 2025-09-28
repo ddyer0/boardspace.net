@@ -805,7 +805,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		{	int l = G.Left(lobbyHelpRect);
 			int t = G.Top(lobbyHelpRect);
 			int w = G.Width(lobbyHelpRect);
-			GC.fillRect(inG,Color.lightGray,lobbyHelpRect);
+			GC.fillRect(inG,Color.green,lobbyHelpRect);
 			GC.frameRect(inG,Color.black,lobbyHelpRect);
 			GC.setFont(inG,lib.Font.getFont(largeBoldFont(),h/4));
 			GC.Text(inG,true,l,t,w,h/3,Color.black,null,s.get(GettingStarted));

@@ -53,7 +53,7 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
     boolean UCT_WIN_LOSS = false;			// if true, score montebot strictly on win/loss
     boolean changed_to_synchronous = false;
     boolean dumbPhase = false;				// when true reduce the search time
-	static final double VALUE_OF_WIN = 1000000.0;
+	static final double VALUE_OF_WIN = 1.0;
      /* strategies */
     int boardSearchLevel = 0;				// the current search depth
     /* constructor */
@@ -206,7 +206,7 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
 	 return(mm.reScorePosition(playerindex,1));
  }
  public double reScorePosition(commonMove cm,int forplayer)
- {	return cm.reScorePosition(forplayer,1);
+ {	return cm.reScorePosition(forplayer,VALUE_OF_WIN);
  }
 
 

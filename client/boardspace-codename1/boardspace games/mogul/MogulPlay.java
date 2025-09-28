@@ -23,6 +23,8 @@ import online.game.export.ViewerProtocol;
 import online.search.*;
 
 /** 
+ * mogul uses MCTS only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * 
@@ -40,7 +42,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
     boolean UCT_WIN_LOSS = true;			// if true, score montebot strictly on win/loss
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     boolean RESHUFFLE = false;
-	static final double VALUE_OF_WIN = 1000000.0;
+	static final double VALUE_OF_WIN = 1.0;
 	int strategy = 0;
      
     /* constructor */
@@ -170,7 +172,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
  }
  
  public double reScorePosition(commonMove m,int player)
- { 	return m.reScorePosition(player,1);
+ { 	return m.reScorePosition(player,VALUE_OF_WIN);
  }
 
  

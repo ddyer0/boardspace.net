@@ -23,6 +23,8 @@ import online.game.export.ViewerProtocol;
 import online.search.*;
 
 /** 
+ * Proteus uses MCTS only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * 

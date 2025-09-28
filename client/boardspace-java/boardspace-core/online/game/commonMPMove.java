@@ -63,6 +63,7 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 		}
 		return(max);
 	}
+	
     public double reScorePosition(int forplayer,double VALUE_OF_WIN)
     {	
 	    int nplay = playerScores.length;

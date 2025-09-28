@@ -24,6 +24,8 @@ import online.search.*;
 
 
 /** 
+ * trench uses alpha-beta only
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>
@@ -82,19 +84,10 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     private static final double VALUE_OF_DRAW = -1;
     private int DUMBOT_DEPTH = 8;
     private int MAX_DEPTH = 8;						// search depth.
-    private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-    private int boardSearchLevel = 1;				// the current search depth
+    @SuppressWarnings("unused")
+	private int boardSearchLevel = 1;				// the current search depth
   
-    // mcts parameters
-    // also set MONTEBOT = true;
-    private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
-    private boolean EXP_MONTEBOT = false;		// test version
-    private double ALPHA = 0.5;
-    private double NODE_EXPANSION_RATE = 1.0;
-    private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
-    private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
     
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -220,8 +213,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     		break;
 
     	case DUMBOT_LEVEL:
-    	case MONTEBOT_LEVEL:
-    	case WEAKBOT_LEVEL:
+     	case WEAKBOT_LEVEL:
     		val = evboard.simpleScore(player);
     		if(val>=WIN) { return VALUE_OF_WIN; }
     		break;
@@ -248,7 +240,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      */
     public double reScorePosition(commonMove m,int forplayer)
     {	if(m.depth_limited()==EStatus.EVALUATED_DRAWN) { return VALUE_OF_DRAW; }
-    	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    	return(m.reScorePosition(forplayer));
     }
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
@@ -323,8 +315,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
                search_state.verbose = verbose;
-               search_state.allow_killer = KILLER;
-               search_state.allow_best_killer = false;
+               search_state.allow_best_killer = true;
                search_state.save_top_digest = true;	// always on as a background check
                search_state.save_digest=false;	// debugging only
                search_state.check_duplicate_digests = false; 	// debugging only
@@ -375,8 +366,6 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
         switch(strategy)
         {
         default: throw G.Error("Not expecting strategy "+strategy);
-        case -100:	// old dumbot, before shift in pruning and randomization 
-        	MONTEBOT = DEPLOY_MONTEBOT; break;
         case BESTBOT_LEVEL:
         case TESTBOT_LEVEL_2:
         case SMARTBOT_LEVEL:
@@ -392,11 +381,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
            	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         	
-        case MONTEBOT_LEVEL:
-        	ALPHA = .25;
-        	MONTEBOT=true;
-        	EXP_MONTEBOT = true; 
-        	break;
+ 
         }
     }
 
@@ -441,68 +426,7 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
- 
- // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
- // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
- // evaluator other than winning a game.
- public commonMove DoMonteCarloFullMove()
- {	commonMove move = null;
- 	UCT_WIN_LOSS = EXP_MONTEBOT;
- 	boardSearchLevel = 1;
- 	try {
-         	// this is a test for the randomness of the random move selection.
-         	// "true" tests the standard slow algorithm
-         	// "false" tests the accelerated random move selection
-         	// the target value is 5 (5% of distributions outside the 5% probability range).
-         	// this can't be left in the production applet because the actual chi-squared test
-         	// isn't part of the standard kit.
-        	// also, in order for this to work, the MoveSpec class has to implement equals and hashCode
-         	//RandomMoveQA qa = new RandomMoveQA();
-         	//qa.runTest(this, new Random(),100,false);
-         	//qa.report();
-         	
-        // it's important that the robot randomize the first few moves a little bit.
-        double randomn = (RANDOMIZE && (board.moveNumber <= 4))
-        						? 0.1/board.moveNumber
-        						: 0.0;
-        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
-        monte_search_state.save_top_digest = true;	// always on as a background check
-        monte_search_state.save_digest=false;	// debugging non-blitz only
-        monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = 15;		// seconds per move
-        monte_search_state.stored_child_limit = 100000;
-        monte_search_state.verbose = verbose;
-        monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = false;			// for pushfight, blitz is 2/3 the speed of normal unwinds
-        monte_search_state.sort_moves = false;
-        monte_search_state.only_child_optimization = true;
-        monte_search_state.dead_child_optimization = true;
-        monte_search_state.simulationsPerNode = 1;
-        monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 100;		// declare a draw at this depth
-        monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
-        monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
-        monte_search_state.max_random_moves_per_second = 5000000;		// 
-        // for some games, the child pool is exhausted very quickly, but the results
-        // still get better the longer you search.  Other games may work better
-        // the other way.
-        monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;
-        // games with hidden information and which randomize state before MCTS should make this 
-        // definitively false, others probably want it to be true.  The main effect is to improve
-        // appearances near the endgame, either resigning or playing the obvious win instead of 
-        // spinning until time expires. But there ought to be other beneficial effects because
-        // the node count decreases.
-        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
 
-        move = monte_search_state.getBestMonteMove();
-
- 		}
-      finally { ; }
-      if(move==null) { continuous = false; }
-     return(move);
- }
  /**
   * this is called as each move from a random simulation is unwound
   */
@@ -521,33 +445,6 @@ public void PrepareToMove(int playerIndex)
 //	 super.Get_Random_Move(Random rand);
 // }
  
- /**
-  * for UCT search, return the normalized value of the game, with a penalty
-  * for longer games so we try to win in as few moves as possible.  Values
-  * must be normalized to -1.0 to 1.0
-  */
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
- 	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
- 	double score0 = ScoreForPlayer(board,player,false);
- 	double score1 = ScoreForPlayer(board,nextPlayer[player],false);
- 	return (score0-score1)/WIN;
- }
-/**
- * for a multiplayer game, it would be something like this
- * 
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 1 : 0;
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return((max-omax));
- }
- */
+
+
  }

@@ -669,7 +669,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      * games it requires considering multiple player's values.
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	return(m.reScorePosition(forplayer));
     }
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
