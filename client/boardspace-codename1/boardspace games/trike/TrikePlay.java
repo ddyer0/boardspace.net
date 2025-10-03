@@ -74,16 +74,10 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
 	// for the evaluator to work with.
 	
 	// common parameters
-    private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
     private TrikeChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
-    private int MAX_DEPTH = 7;						// search depth.
-    private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
   
     // mcts parameters
@@ -269,7 +263,6 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=DEPLOY_MONTEBOT;
-           	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;

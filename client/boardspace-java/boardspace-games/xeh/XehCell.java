@@ -93,7 +93,7 @@ public class XehCell extends chipCell<XehCell,XehChip> implements XehConstants
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.
 	 * This method is called, with a random sequence, to digest the cell in unusual
-	 * roles, or when the diest of contents is complex.
+	 * roles, or when the digest of contents is complex.
 	 */
 	//public long Digest(Random r) { return(super.Digest(r)); }
 	

@@ -218,11 +218,7 @@ class PrototypeBoard
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    chips_on_board = 0;
-	    droppedDestStack.clear();
-	    pickedSourceStack.clear();
-	    stateStack.clear();
-	    
-	    pickedObject = null;
+	    acceptPlacement();
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();

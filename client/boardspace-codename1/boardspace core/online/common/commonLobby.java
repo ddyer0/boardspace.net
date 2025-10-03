@@ -161,6 +161,9 @@ Change log:
   
   // boardspace versions
    * 1.4 change lobby robots to appear next to the game instead of in the player area
+   * 
+   * TODO: the user name sort is slightly unstable.  should be stable.
+   * 
 */
   
 public class commonLobby extends commonPanel 
@@ -822,8 +825,6 @@ private void setUserName(User user,String name,String uid)
   }
   
     
-private Hashtable<String,String> PreloadedClasses=new Hashtable<String,String>();
-
 public void update(SimpleObservable ob, Object eventType, Object arg)
 {
 	if(arg instanceof LoadThread)
@@ -843,12 +844,11 @@ private void PreloadClass(String classname)
 			return;
 			}
 	if( (classname==null)
-		|| (PreloadedClasses.get(classname)!=null)) 
+		|| LoadThread.alreadyLoading(classname))
 		{ return; 
 		}
 	//long now = G.Date();
 	//G.print("prepare "+classname);
-	PreloadedClasses.put(classname,classname);
 	LoadThread loader = new LoadThread();
 	loader.setLoadParameters(classname,this);
 	loader.start();

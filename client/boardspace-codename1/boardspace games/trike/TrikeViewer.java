@@ -16,7 +16,6 @@
  */
 package trike;
 
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 
@@ -152,14 +151,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 		gameIcon = TrikeChip.Icon.image;
     }
 
-    /**
-     * this is the hook for substituting alternate tile sets.  This is called at a low level
-     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
-     * a different chip.
-     */
-    public int getAltChipset() { return(0); }
-    
- 
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -507,20 +498,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         	  //
 	               
 	       }       	
-    }
-    
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
     }
 
     /**
@@ -1208,39 +1185,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
-    // used by the UI to alter the behavior of clocks and prompts
- //   public boolean simultaneous_turns_allowed()
- //   {	return super.simultaneous_turns_allowed();
- //   }
-  //  public RecordingStrategy gameRecordingMode()
-  //   {	return(super.gameRecordingMode());
-  //  }
-    
-    // if there are simultaneous turns, robot start/stop can be tricky
-    // by default, not allowed in simultaneous phases.  Return true 
-    // to let them run "in their normal turn", but this will not allow
-    // the robots to start at the beginning of the async phase.
-  //  public boolean allowRobotsToRun() {
-  //  	return super.allowRobotsToRun();
-   // }
 
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);

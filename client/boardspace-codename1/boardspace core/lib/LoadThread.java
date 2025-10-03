@@ -29,6 +29,23 @@ public class LoadThread extends Thread  {
 	public Throwable error = null;					// if it ended badly, the error
 	public Class<?> result = null;					// the class we loaded, if successful
 
+	static private Hashtable<String,String> PreloadedClasses=new Hashtable<String,String>();
+	static private String PendingLoading = "--pending--";
+	
+	static public boolean alreadyLoading(String c)
+	{
+		return PreloadedClasses.get(c)!=null;
+	}
+	
+	static public void waitForLoading(String c)
+	{	int tries = 0;
+		while(PendingLoading.equals(PreloadedClasses.get(c)) && (tries<20))
+		{	tries++;
+			G.print("waiting for ",c);
+			G.doDelay(100);
+		}
+	}
+	
 	public LoadThread() {
 		super("LoadThread");
 	}
@@ -57,13 +74,17 @@ public class LoadThread extends Thread  {
 			String xclassname = "";
 			try {
 				StringTokenizer s = new StringTokenizer(classes);
-
 				while (s.hasMoreElements()) {
 					long now = G.Date();
 					classname = s.nextToken();
 					xclassname = G.expandClassName(classname);
-					// System.out.println("Preloading " + classname);
+						if(!alreadyLoading(xclassname))
+							{ 
+							//G.print("loading ",xclassname);
+							PreloadedClasses.put(xclassname,PendingLoading);
 						Class<?> newclass = G.classForName(xclassname,false);
+							//G.print("loaded ",xclassname);
+							PreloadedClasses.put(xclassname,xclassname);
 					if(newclass!=null)
 					{
 					long later = G.Date();
@@ -85,13 +106,17 @@ public class LoadThread extends Thread  {
 					result = newclass;
 					}
 					}
+						// System.out.println("Preloading " + classname);
+						
+						
+
+					}
 				} 
 				catch (Throwable e) 
 				{	// use throwable instead of exception so everything is included
 					error = e;
 						}
 					}
-
 		if (observer != null) {
 			observer.setChanged(this);
 		}

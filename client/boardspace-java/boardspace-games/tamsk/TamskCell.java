@@ -96,7 +96,7 @@ public class TamskCell
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.
 	 * This method is called, with a random sequence, to digest the cell in unusual
-	 * roles, or when the diest of contents is complex.
+	 * roles, or when the digest of contents is complex.
 	 */
 	public long Digest(Random r) 
 	{ 	long v = timer==null ? 0 : randomv*timer.ordinal();

@@ -29,6 +29,23 @@ public class LoadThread extends Thread  {
 	public Throwable error = null;					// if it ended badly, the error
 	public Class<?> result = null;					// the class we loaded, if successful
 
+	static private Hashtable<String,String> PreloadedClasses=new Hashtable<String,String>();
+	static private String PendingLoading = "--pending--";
+	
+	static public boolean alreadyLoading(String c)
+	{
+		return PreloadedClasses.get(c)!=null;
+	}
+	
+	static public void waitForLoading(String c)
+	{	int tries = 0;
+		while(PendingLoading.equals(PreloadedClasses.get(c)) && (tries<20))
+		{	tries++;
+			G.print("waiting for ",c);
+			G.doDelay(100);
+		}
+	}
+	
 	public LoadThread() {
 		super("LoadThread");
 	}
@@ -57,33 +74,42 @@ public class LoadThread extends Thread  {
 				String xclassname = "";
 				try {
 					StringTokenizer s = new StringTokenizer(classes);
-
 					while (s.hasMoreElements()) {
 						long now = G.Date();
 						classname = s.nextToken();
 						xclassname = G.expandClassName(classname);
+						if(!alreadyLoading(xclassname))
+							{ 
+							//G.print("loading ",xclassname);
+							PreloadedClasses.put(xclassname,PendingLoading);
+							Class<?> newclass = G.classForName(xclassname,false);
+							//G.print("loaded ",xclassname);
+							PreloadedClasses.put(xclassname,xclassname);
+							if(newclass!=null)
+							{
+								long later = G.Date();
+								G.print("Preloaded ", classname , " "
+										, newclass , " : ", (later - now));
+
+								// make a throwaway instance of the new class.  This also has the 
+								// side effect of loading the static images for the class if this
+								// is a game class.
+								int pix = Image.pixelCount;						
+								G.MakeInstance(classname);
+								long even_later = G.Date();
+								pix = (Image.pixelCount-pix)/(1024*1024/10);
+								G.print("Images " , classname , " "
+										, (even_later - later)
+										, " ",(pix/10),".",(pix%10)," mpixels");
+
+							
+								result = newclass;
+							}							
+							}
 						// System.out.println("Preloading " + classname);
-						Class<?> newclass = G.classForName(xclassname,false);
-					if(newclass!=null)
-					{
-						long later = G.Date();
-						G.print("Preloaded ", classname , " "
-								, newclass , " : ", (later - now));
+						
+						
 
-						// make a throwaway instance of the new class.  This also has the 
-						// side effect of loading the static images for the class if this
-						// is a game class.
-						int pix = Image.pixelCount;						
-						G.MakeInstance(classname);
-						long even_later = G.Date();
-						pix = (Image.pixelCount-pix)/(1024*1024/10);
-						G.print("Images " , classname , " "
-								, (even_later - later)
-								, " ",(pix/10),".",(pix%10)," mpixels");
-
-					
-						result = newclass;
-					}
 					}
 				} 
 				catch (Throwable e) 
@@ -91,7 +117,6 @@ public class LoadThread extends Thread  {
 					error = e;
 				}
 		}
-
 		if (observer != null) {
 			observer.setChanged(this);
 		}

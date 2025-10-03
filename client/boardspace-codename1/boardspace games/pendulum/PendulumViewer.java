@@ -23,7 +23,6 @@ import static pendulum.PendulumMovespec.*;
 import online.common.*;
 import java.util.*;
 
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -187,14 +186,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 		gameIcon = PendulumChip.Icon.image;
     }
 
-    /**
-     * this is the hook for substituting alternate tile sets.  This is called at a low level
-     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
-     * a different chip.
-     */
-    public int getAltChipset() { return(0); }
-    
- 
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -564,20 +555,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      	
     }
     
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
-
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.

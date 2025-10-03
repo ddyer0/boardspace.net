@@ -44,6 +44,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      */
     public enum DrawingStyle
     {	STYLE_LINES,			// yinsh style
+    	STYLE_ORTHOGONAL_LINES,	// orthoginal lines only
     	STYLE_NO_EDGE_LINES,	// gipf style
     	STYLE_CELL,				// hexagon style
     	STYLE_NOTHING			// no line drawing, use graphics

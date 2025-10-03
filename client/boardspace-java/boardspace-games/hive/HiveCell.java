@@ -205,6 +205,12 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	}
 
 
+	/** true if there is a single occupied cell that connects S with this cell, ignoring "empty"
+	 * 
+	 * @param s
+	 * @param empty
+	 * @return
+	 */
     public boolean adjacentCell(HiveCell s,HiveCell empty)
     {
     	if(onBoard)

@@ -24,7 +24,6 @@ import online.common.*;
 
 import java.util.*;
 
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -511,19 +510,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 
     }
     
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
     private int scaledCellSize(Rectangle brect,int ypos0)
     {
      	boolean perspective = !usePerspective();
@@ -1320,34 +1306,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     // -- the top level --
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
-
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
-    // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneousTurnsAllowed()
-    {	return super.simultaneousTurnsAllowed();
-    }
-  // public RecordingStrategy gameRecordingMode()
-  //  {	return(super.gameRecordingMode());
-  //  }
-    
-
 
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);

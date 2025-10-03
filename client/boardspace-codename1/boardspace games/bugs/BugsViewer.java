@@ -38,7 +38,6 @@ import online.common.*;
 import java.util.*;
 
 import com.codename1.ui.Font;
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
@@ -206,14 +205,6 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 				" Species ",MasterSpecies.species.size(),
 				" Bug Cards ",BugCard.bugCount());
     }
-
-    /**
-     * this is the hook for substituting alternate tile sets.  This is called at a low level
-     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
-     * a different chip.
-     */
-    public int getAltChipset() { return(0); }
-    
 
 	/**
 	 * 
@@ -838,19 +829,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 	       }       	
     }
     
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
+
     public boolean drawSingleCell(Graphics gc,BugsBoard gb,PlayerBoard pb,HitPoint highlight,BugsMovespec m,Rectangle fullRect,
     		double dx,double dy,
     		BugsCell cell,
@@ -2379,14 +2358,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
+
     
     /**
      * sort the ephemeral moves into their final order.  Normally is is

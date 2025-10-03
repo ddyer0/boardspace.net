@@ -560,7 +560,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     }
 
     public double reScorePosition(commonMove cm,int forplayer)
-    {	return cm.reScorePosition(forplayer,Double.MAX_VALUE);
+    {	return cm.reScorePosition(forplayer);
     }
     
     private boolean checking_digest()

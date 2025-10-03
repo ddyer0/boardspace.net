@@ -545,8 +545,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int helpw = USERIMAGEWIDTH+LEFTSCROLLBARWIDTH+PLAYINGIMAGEWIDTH;
 		G.SetRect(lobbyHelpRect,0,leftY,helpw,newb ? hh : 0);
 		int margin = hh/10;
-		G.SetRect(mainHelpRect,margin,leftY+hh/3+margin,helpw/2-margin*2,hh*2/3-margin*2);
-		G.SetRect(videoHelpRect,helpw/2+margin,leftY+hh/3+margin,helpw/2-margin*2,hh*2/3-margin*2);
+		
+		G.SetRect(mainHelpRect,margin,leftY+hh/3+margin,helpw/2-margin*2,newb ? hh*2/3-margin*2 : 0);
+		G.SetRect(videoHelpRect,helpw/2+margin,leftY+hh/3+margin,helpw/2-margin*2,newb ?hh*2/3-margin*2 : 0);
 		
 		if(newb) { leftY += hh; }
 		G.SetRect(ownerRect,LEFTSCROLLBARWIDTH,leftY,USERIMAGEWIDTH,hh);

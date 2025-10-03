@@ -617,22 +617,25 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
 	 	final commonCanvas v = (commonCanvas)vv;
 	 	final commonRobot<?>self = (commonRobot<?>)v.newRobotPlayer();
 	 	final SimpleRobotProtocol otherBot = otherBotf;
-	 	final String series = "K";
+	 	final String series = "M";
 	 	Bot testbot = Bot.TestBot_1;
 	 	StopRobot();
 	 	new Thread(new Runnable() {
 	 		public void run() 
 	 		{ 
+	 		// runRobotTraining(v,"-b-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Montebot,Bot.Bestbot,false	); 
+			// runRobotTraining(v,"-w-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Montebot,Bot.Bestbot,true); 
+	 			
 		   // runRobotTraining(v,"-b-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,false	); 
 		 	//runRobotTraining(v,"-w-"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,Bot.Smartbot,true); 
 
-	 		runRobotTraining(v,"-x-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Bestbot,testbot,false	); 
+	 		runRobotTraining(v,"-b-x"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Bestbot,testbot,false	); 
 	 		
 	 		runRobotTraining(v,"-b-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.Smartbot,testbot,false	); 
 	 		
 	 		runRobotTraining(v,"-b-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,false);
 
-	 		runRobotTraining(v,"-x-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Bestbot,testbot,true); 
+	 		runRobotTraining(v,"-w-x"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Bestbot,testbot,true);
 	 		  
 	 		runRobotTraining(v,"-w-s"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Smartbot,testbot,true); 
 	 		runRobotTraining(v,"-w-d"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.Dumbot,testbot,true); 

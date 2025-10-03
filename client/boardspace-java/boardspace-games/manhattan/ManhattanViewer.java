@@ -191,14 +191,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		gameIcon = ManhattanChip.icon.getImage();
     }
 
-    /**
-     * this is the hook for substituting alternate tile sets.  This is called at a low level
-     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
-     * a different chip.
-     */
-    public int getAltChipset() { return(0); }
-    
- 
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -553,20 +545,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	      // order the objects are drawn in.
  
     }
-    
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
+
 
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
@@ -2325,14 +2304,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
     /**
      * sort the ephemeral moves into their final order.  Normally is is
      * just ordering the moves so all of each players moves are together.

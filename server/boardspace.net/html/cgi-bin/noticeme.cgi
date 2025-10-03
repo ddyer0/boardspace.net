@@ -22,12 +22,17 @@ require "tlib/common.pl";
 #
 sub doit()
 {	my $ip = $ENV{'REMOTE_ADDR'};
-	my $from = &param('from');
+	my $from = &param('data');
+	my $also = &param('also');
+	if($from eq '')
+		{ $from = &param('from');
+		  if(($also eq '') && length($from)<15) {  $also = &md5_hex("${from}honey"); }
+		}
 	my $dbh = &connect();
 	print header;
 	if($dbh && (&allow_ip_access($dbh,$ip)>=0))
 	{
-	&banme($dbh,$ip,"robot honeypot $from");
+	&banme($dbh,$ip,$from,$also);
 	}
 	else 
 	{ sleep(10);

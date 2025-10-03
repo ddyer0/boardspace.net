@@ -335,11 +335,13 @@ sub banmenow()
 	}
 }
 sub banme()
-{	my ($dbh,$ip,$from) = @_;
+{	my ($dbh,$ip,$from,$also) = @_;
 	my $qip = $dbh->quote(&ip_to_int($ip));
+	my $valid = &md5_hex("${from}honey");
 	my $msg1 = "auto-banned ip=$ip for tripping the robot alarm from $from";
 	my $da = &datestring();
-	my $msg2 = "${da}alarm from $from";
+	my $match = ($valid eq $also) ? "robot" : "fuzzing";
+	my $msg2 = "${da} $match alarm from $from";
 	my $qmsg2 = $dbh->quote($msg2);
 	my $q = "INSERT INTO ipinfo SET status='autobanned',rejectcount=1,min=$qip,max=$qip,comment=$qmsg2 "
 		. " ON DUPLICATE KEY UPDATE badlogincount=badlogincount+1,rejectcount=rejectcount+1,status='autobanned',comment=concat(comment,'\n',$qmsg2)";
@@ -364,7 +366,8 @@ sub honeypot()
 {	my ($from,$text) = @_;
 	if(!$from) { $from=$ENV{'SCRIPT_NAME'}; }
 	$from=&encode_entities($from);
-	print("<a href='/cgi-bin/noticeme.cgi?from=$from'>$text</a>");
+	my $sum = &md5_hex("${from}honey");
+	print("<a href='/cgi-bin/noticeme.cgi?data=$from&also=$sum'>$text</a>");
 }
 
 
@@ -631,10 +634,10 @@ sub note_failed_login()
 }
 }
 
-var %'gamename_to_code;
-var %'gamecode_to_name;
-var %'gamecode_to_viewer;
-var %'gamename_to_family;
+our %gamename_to_code;
+our %gamecode_to_name;
+our %gamecode_to_viewer;
+our %gamename_to_family;
 
 sub load_game_to_code()
 {	my ($dbh) = @_;

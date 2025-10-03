@@ -56,7 +56,7 @@ public class TestEvaluateMath1 implements GenomeEvaluator
 		Genome genome = (Genome)NetIo.load(file);
 		return evaluate(genome,true);
 	}
-	public Genome createPrototypeNetwork()
+	public Genome createNetwork()
 	{
 		return Genome.createBlankNetwork(1,1);
 	}

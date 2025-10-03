@@ -249,10 +249,15 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 		  else { H().numString = str;	} 
 		}
 
-	public double reScorePosition(int forplayer,double value_of_win)
-	{  	return((player == forplayer)
+	public double reScorePosition(int forPlayer)
+	{
+		return((player == forPlayer)
     			? evaluation()			// player doarsn't change 
-    			: -evaluation());		// player changes, negate the value
+    			: -evaluation());
+	}
+	public double reScorePosition(int forplayer,double valueOfWin)
+	{
+		throw G.Error("you shouldn't get here, type should be commonMPMove");
 	}
    //
     // note that if you add variables, you probably should also add them

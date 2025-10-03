@@ -135,7 +135,7 @@ public class NeatEvaluator {
 		}
 		else
 		{
-		createCohort(populationSize,e.createPrototypeNetwork());
+		createCohort(populationSize,e.createNetwork());
 		}
 	}
 	public void sizeForPopulation(int populationSize)
@@ -191,7 +191,7 @@ public class NeatEvaluator {
 	
 	public NeatEvaluator(int populationSize,GenomeEvaluator e) 
 	{	evaluator = e;
-		createCohort(populationSize,e.createPrototypeNetwork());
+		createCohort(populationSize,e.createNetwork());
 	}
 	
 	/**

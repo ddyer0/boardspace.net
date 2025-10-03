@@ -23,6 +23,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 import lib.LFrameProtocol;
+import lib.LoadThread;
 import lib.Plog;
 import lib.commonChatApplet;
 
@@ -129,6 +130,7 @@ public static Object MakeInstance(String classname)
     expname = G.expandClassName(classname);
     //G.print("MakeInstance ",expname," from ",classname);
     if(makeObject==null) { makeObject = new Object(); }
+    LoadThread.waitForLoading(expname);
     Class<?>cl = G.classForName(expname,false);
     if(cl==null) 
     		{ 

@@ -45,6 +45,7 @@ public abstract class rectBoard<CELLTYPE extends cell<CELLTYPE>> extends square_
 		super.initBoard(ncol,nrow);
 
 	}
+
 	/**
 	 * true of direction number is diagonal, on a rectangular geometry geometry board
 	 * @param dir

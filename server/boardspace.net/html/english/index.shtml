@@ -25,7 +25,8 @@
     </table>
     <br>
     <!--#include virtual="/cgi-bin/links.cgi?notop=1" -->&nbsp;<br>
-    
+    <!--#include virtual="/cgi-bin/top_games.cgi?embed=1" --><br>
+
     <center><h2>Site Stuff</h2></center>
     <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
 <tbody>

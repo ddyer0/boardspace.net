@@ -266,7 +266,8 @@ sub doRegister()
 	my $stamp = param('timestamp');
 	&bless_parameter_length($stamp,40);	#assess for penalty
 	
-	
+	# note, this is used by the apps, which don't refresh their timestamps after
+	# every interaction, so it's not suitable to update to the stronger checks
 	if(&check_timestamp($stamp))
 	{
 	if ( $email && $pname && $password && ($password eq $password2))
@@ -306,7 +307,7 @@ sub doit()
 	if($dbh)
 	{
 		my $myaddr = $ENV{'REMOTE_ADDR'};	
-		if( &allow_ip_login($dbh,$myaddr))
+		if( &allow_ip_access($dbh,$myaddr))
 		{
 		&doRegister($dbh);	
 		}

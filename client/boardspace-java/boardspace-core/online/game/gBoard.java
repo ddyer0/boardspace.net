@@ -742,7 +742,8 @@ public int initialSize() { return ncols; }
          double GRIDSIZE = displayParameters.GRIDSIZE;
          double rotation = displayParameters.rotation;
          double CELLSIZE = displayParameters.CELLSIZE;
-         // paint left numbers
+         boolean ortho = drawing_style==DrawingStyle.STYLE_ORTHOGONAL_LINES;
+        // paint left numbers
          if (use_grid)
          {	if(left_style!=null) { drawVerticalGrid(gc,left_style,true,gridColor,div, leftColNum, lastcolNum, stepCol); }
             if(right_style!=null) { drawVerticalGrid(gc,right_style,false,gridColor,div, lastcolNum+1, lastcolNum+2, stepCol); }
@@ -836,6 +837,7 @@ public int initialSize() { return ncols; }
                      case STYLE_NOTHING: break;
                      
                      case STYLE_LINES:
+                     case STYLE_ORTHOGONAL_LINES:
                      case STYLE_NO_EDGE_LINES:
                      {
                          boolean edge = (drawing_style==DrawingStyle.STYLE_NO_EDGE_LINES) && c.isEdgeCell();
@@ -849,7 +851,9 @@ public int initialSize() { return ncols; }
                          GC.setColor(gc,lineColor);
 
                          // draw lines to the adjacent positions
-                         for (int dir = 0; dir < c.nAdjacentCells(); dir++)
+                         for (int dir = ortho ? 1 : 0,inc = ortho ? 2 : 1;
+                         		dir < c.nAdjacentCells(); 
+                         		dir += inc)
                          { // this convolution is to find the 6 adjacent board positions
                            // and draw a line to each of them if it's a valid board position
                         	 CELLTYPE nc = c.exitTo(dir);
@@ -947,6 +951,5 @@ public int initialSize() { return ncols; }
 	{
 		return(lastRowInColumn(col));
 	}
-
 
 }

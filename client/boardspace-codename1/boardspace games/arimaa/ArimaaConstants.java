@@ -21,7 +21,7 @@ import lib.G;
 import lib.OStack;
 
 import online.game.BaseBoard.BoardState;
-
+// TODO: arimaa needs to have draw offer/decline logic
 public interface ArimaaConstants 
 {	static final String Arimaa_Init = "arimaa";	//init for standard game
 	
@@ -110,7 +110,6 @@ public enum ArimaaState implements BoardState
 	public String getDescription() { return(description); }
 	public boolean GameOver() { return(this==GAMEOVER_STATE); }
 	public boolean Puzzle() { return(this==PUZZLE_STATE); }
-	public boolean simultaneousTurnsAllowed() { return false; }
 }
 public enum ArimaaId implements CellId 
 {

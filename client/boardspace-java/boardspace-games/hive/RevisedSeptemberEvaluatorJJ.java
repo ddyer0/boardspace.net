@@ -20,7 +20,6 @@ package hive;
 import hive.HiveConstants.HiveId;
 import hive.HiveConstants.HiveState;
 import hive.HiveConstants.PieceType;
-import lib.AR;
 import lib.DStack;
 import lib.G;
 import online.game.BoardProtocol;

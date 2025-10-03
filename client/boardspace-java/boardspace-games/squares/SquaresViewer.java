@@ -625,19 +625,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
 	       }       	
     }
     
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
+
 
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to

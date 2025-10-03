@@ -228,7 +228,7 @@ class XehCommonEvaluator
 	public void setBest(Genome g) {
 		best = g;
 	}
-	public Genome createPrototypeNetwork()
+	public Genome createNetwork()
 	{	int cells = board.getCellArray().length;
 		return Genome.createBlankNetwork(cells,1);
 	}

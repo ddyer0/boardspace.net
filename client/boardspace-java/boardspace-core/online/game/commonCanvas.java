@@ -3874,7 +3874,7 @@ public abstract class commonCanvas extends exCanvas
             theChat.setMessage(newMessage);
             }
             else 
-            { if(commentedMoveSeen==null) { theChat.clearMessages(true); }
+            { theChat.clearMessages(true);
               commentedMoveSeen = m;
             }
             }

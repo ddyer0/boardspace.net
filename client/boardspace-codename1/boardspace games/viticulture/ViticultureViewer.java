@@ -6677,10 +6677,7 @@ private void drawPlayerBoard(Graphics gc,
   	}
   	return v;
   }
-  public void canonicalizeHistory()
-  {
-	  super.canonicalizeHistory();
-  }
+
   public commonMove convertToSynchronous(commonMove m)
   {	  if(m.op==EPHEMERAL_COMMENCE) { m.op = MOVE_COMMENCE; return m; }
 	  return null;
