@@ -43,7 +43,8 @@ public class SlitherCell
 	
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
-
+	int lastPicked = -1;
+	
 	public SlitherCell(Random r,SlitherId rack) { super(r,rack); }		// construct a cell not on the board
 	public SlitherCell(SlitherId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
@@ -71,6 +72,7 @@ public class SlitherCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
+		lastPicked = ot.lastPicked;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -78,7 +80,7 @@ public class SlitherCell
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = -1;
+		lastPlaced = lastPicked = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public SlitherCell(SlitherChip cont)
@@ -127,33 +129,39 @@ public class SlitherCell
 		}
 		return false;
 	}
+
 	/**
-	 * true if this cell has an diagonal contact with the desired chip on top.
-	 * @param chip
-	 * @return
-	 */
-	public boolean hasDiagonalContact(SlitherChip chip)
-	{
-		return hasDiagonalContact(chip,null,null);
-	}
-	/**
-	 * true if this cell has an diagonal contact with the desired chip on top.
-	 * cell "empty" is treated as empty regardless of its contents
+	 * true if this cell has all diagonal contacts that are valid, ie
+	 * are not islated stones.
+	 * 
 	 * @param chip
 	 * @param empty  assert this cell will be emptied
 	 * @param fill   assert this cell will be filled with a chip
 	 * @return
 	 */
-	public boolean hasDiagonalContact(SlitherChip chip,SlitherCell empty,SlitherCell fill)
-	{
+	public boolean validDiagonalContacts(SlitherChip chip,SlitherCell empty,SlitherCell fill)
+	{	
 		for(int direction = SlitherBoard.CELL_UP_LEFT; 
 				direction<SlitherBoard.CELL_UP_LEFT+SlitherBoard.CELL_FULL_TURN; 
 				direction += SlitherBoard.CELL_QUARTER_TURN )
 		{
 			SlitherCell adj = exitTo(direction);
-			if(adj!=null && adj!=empty && (adj==fill || adj.topChip()==chip)) { return true; }
+			if(adj!=null && adj!=empty && (adj==fill || adj.topChip()==chip)) 
+				{ 
+				SlitherCell o1 = exitTo(direction-1);
+				if(o1==null || o1==empty || (o1!=fill && o1.topChip()!=chip))
+				{
+					SlitherCell o2 = exitTo(direction+1);
+					if(o2==null || o2==empty || (o2!=fill && o2.topChip()!=chip))
+					{
+						return false;
+					}
+							
+				}
+				}
+
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -170,7 +178,7 @@ public class SlitherCell
 	 * lastPlaced also has to be maintained by reInit and copyFrom
 	 */
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastPicked : lastPlaced;
 	}
 
 	

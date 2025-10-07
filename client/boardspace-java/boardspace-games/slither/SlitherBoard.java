@@ -21,7 +21,6 @@ import static slither.Slithermovespec.*;
 
 import java.awt.Color;
 import java.util.*;
-
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -86,7 +85,8 @@ class SlitherBoard
 	public SlitherChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 	public SlitherPlay robot = null;
 	
-	
+ 	public int lastPlacedIndex = 0;
+
 	/* this can replace "G.Assert" in the this file, so if the assertion
 	 * fails in a search, the state is recorded automatically.
 	 */
@@ -98,7 +98,54 @@ class SlitherBoard
 	 	}
 	 	return condition;
 	 }
-	 
+	private int sweep_counter =0;
+	public boolean winForPlayerNow(int who)
+	{
+		CellStack occ = occupiedCells[who];
+		if(occ.size()<ncols) { return false; }
+		SlitherChip chip = playerChip[who];
+		SlitherCell seed = getCell('A',1);
+		int direction = (chip==SlitherChip.black) ? CELL_RIGHT : CELL_UP;
+		while(seed!=null)
+		{
+			sweep_counter++;
+			int span = chip==SlitherChip.black	
+					       ? rowSpan(seed,chip) 
+					       : colSpan(seed,chip);
+			if(span==ncols) { return true; }
+					    
+			seed = seed.exitTo(direction);
+		}
+		return false;	
+	}
+	// sweep, return the highest row reached
+	private int rowSpan(SlitherCell seed,SlitherChip top)
+	{
+		if(seed.sweep_counter==sweep_counter) { return 0; }
+		seed.sweep_counter = sweep_counter;
+		if(seed.topChip()!=top) { return 0; }
+		int max = seed.row;
+		for(int direction = CELL_UP; direction<CELL_FULL_TURN+CELL_UP && max<ncols; direction += CELL_QUARTER_TURN)
+		{	SlitherCell adj = seed.exitTo(direction);
+			if(adj!=null) { max  = Math.max(max,rowSpan(adj,top)); }
+		}	
+		return max;
+	}
+	// sweep, return the highest column reached.
+	private int colSpan(SlitherCell seed,SlitherChip top)
+	{
+		if(seed.sweep_counter==sweep_counter) { return 0; }
+		seed.sweep_counter = sweep_counter;
+		if(seed.topChip()!=top) { return 0; }
+		int max = (seed.col-'A')+1;
+		for(int direction = CELL_RIGHT; direction<CELL_FULL_TURN+CELL_RIGHT && max<ncols; direction += CELL_QUARTER_TURN)
+		{	SlitherCell adj = seed.exitTo(direction);
+			if(adj!=null) { max  = Math.max(max,colSpan(adj,top)); }
+		}	
+		return max;
+	}
+	
+
 	/**
 	 * save the current state of the search as a file in the /robot/ directory.  This
 	 * requires cooperation with the way the robot teats moves, and some behaviours
@@ -160,20 +207,21 @@ class SlitherBoard
     public boolean validBoard()
     {
     	for(SlitherCell c = allCells; c!=null; c=c.next)
-    	{	if(c!=null && !validCell(c)) { return false; }
+    	{	if(c!=null && !validCell(c)) 
+    			{ return false; 
+    			}
     	}
     	return true;
     }
     public boolean validCell(SlitherCell filled)
     {
 		SlitherChip top = filled.topChip();
-		return (validCell(top,filled,null,null));
+		return (top==null || validCell(top,filled,null,null));
     }
     public boolean validCell(SlitherChip top, SlitherCell filled, SlitherCell empty,SlitherCell fill)
     {
-		return (top==null
-				|| !filled.hasDiagonalContact(top,empty,fill)
-				|| filled.hasOrthogonalContact(top,empty,fill));
+    	return filled.validDiagonalContacts(top,empty,fill);
+
     }
 
     private SlitherState resetState = SlitherState.Puzzle; 
@@ -228,6 +276,8 @@ class SlitherBoard
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case slither:
+		case slither_13:
+		case slither_19:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.size,variation.size);
@@ -247,6 +297,7 @@ class SlitherBoard
 	    
 	    resetState = null;
 	    lastDroppedObject = null;
+	    lastPlacedIndex = 0;
 	    int map[]=getColorMap();
 		playerColor[map[1]]=SlitherId.White;
 		playerColor[map[0]]=SlitherId.Black;
@@ -300,6 +351,7 @@ class SlitherBoard
         slideTo = getCell(from_b.slideTo);
         resetState = from_b.resetState;
         lastPicked = null;
+        lastPlacedIndex = from_b.lastPlacedIndex;
 
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
@@ -431,12 +483,7 @@ class SlitherBoard
 
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
-    public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
-    	boolean win = false;
-    	return(win);
-    }
-
+ 
 
     // set the contents of a cell, and maintain the books
     private int lastPlaced = -1;
@@ -447,6 +494,7 @@ class SlitherBoard
     	if(old!=null) 
     		{ chips_on_board--;
     		  emptyCells.push(c);  
+    		  c.lastPicked = lastPlacedIndex;
     		  occupiedCells[playerIndex(old)].remove(c,false);
     		}
      	if(ch!=null) 
@@ -454,7 +502,7 @@ class SlitherBoard
      		  emptyCells.remove(c,false); 
      		  occupiedCells[playerIndex(ch)].push(c);
      		  lastPlaced = c.lastPlaced; 
-     		  c.lastPlaced = moveNumber; 
+     		  c.lastPlaced = lastPlacedIndex; 
      		}
      	else { c.lastPlaced = lastPlaced; }
     	}
@@ -481,6 +529,7 @@ class SlitherBoard
     {	SlitherCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
+    	lastPlacedIndex--;
     	return(rv);
     }
     // 
@@ -500,7 +549,6 @@ class SlitherBoard
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
-       
        switch (c.rackLocation())
         {
         default:
@@ -514,7 +562,8 @@ class SlitherBoard
             pickedObject = null;
             break;
         }
-     }
+       lastPlacedIndex++;
+       }
     //
     // true if c is the place where something was dropped and not yet confirmed.
     // this is used to mark the one square where you can pick up a marker.
@@ -662,6 +711,7 @@ class SlitherBoard
     private void doDone(replayMode replay)
     {
         acceptPlacement();
+     	lastPlacedIndex++;
 
         if (board_state==SlitherState.Resign)
         {
@@ -712,7 +762,7 @@ void doSwap(replayMode replay)
     {	Slithermovespec m = (Slithermovespec)mm;
         if(replay.animate) { animationStack.clear(); }
 
-        //G.print("E "+m+" for "+whoseTurn+" "+state);
+        //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
 		case MOVE_SWAP:	// swap colors with the other player
@@ -723,7 +773,19 @@ void doSwap(replayMode replay)
          	doDone(replay);
 
             break;
-
+        case MOVE_FROM_TO:
+        	{
+        	SlitherCell from = getCell(m.from_col,m.from_row);
+        	SlitherCell to = getCell(m.to_col,m.to_row);
+        	pickObject(from);
+        	dropObject(to);
+        	if(replay.animate) {
+        		animationStack.push(from);
+        		animationStack.push(to);
+        	}
+        	setNextStateAfterDrop(replay);
+        	}
+        	break;
         case MOVE_DROPB:
         	{
 			SlitherChip po = pickedObject;
@@ -815,7 +877,9 @@ void doSwap(replayMode replay)
     	   win[whoseTurn] = true;
     	   setState(SlitherState.Gameover);
     	   break;
-
+       case MOVE_PASS:
+    	   setState(SlitherState.Confirm);
+    	   break;
         default:
         	cantExecute(m);
         }
@@ -882,12 +946,7 @@ void doSwap(replayMode replay)
     public void RobotExecute(Slithermovespec m)
     {
         robotState.push(board_state); //record the starting state. The most reliable
-        // to undo state transistions is to simple put the original state back.
-        
-        //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
         Execute(m,replayMode.Replay);
-        acceptPlacement();
        
     }
  
@@ -906,6 +965,7 @@ void doSwap(replayMode replay)
         default:
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
+        case MOVE_PASS:
             break;
             
         case MOVE_SWAP:
@@ -914,6 +974,15 @@ void doSwap(replayMode replay)
         	break;
         case MOVE_DROPB:
         	SetBoard(getCell(m.to_col,m.to_row),null);
+        	break;
+        case MOVE_FROM_TO:
+        	{
+        	SlitherCell from = getCell(m.from_col,m.from_row);
+        	SlitherCell to = getCell(m.to_col,m.to_row);
+        	SlitherChip top = to.topChip();
+        	SetBoard(to,null);
+        	SetBoard(from,top);
+        	}
         	break;
         case MOVE_RESIGN:
             break;
@@ -928,12 +997,14 @@ void doSwap(replayMode replay)
  private boolean addValidPlayMoves(CommonMoveStack all,int who)
  {
 	 boolean some = false;
+	 SlitherChip top = playerChip[who];
 	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
 	 {
 		 SlitherCell c = emptyCells.elementAt(lim);
-		 if(validCell(c)) { 
+		 if(validCell(top,c,null,c)) { 
 			 if(all==null) { return true; }
 			 all.push(new Slithermovespec(MOVE_DROPB,c,who));
+			 some = true;
 		 }
 	 }
 	 return some;
@@ -948,7 +1019,9 @@ void doSwap(replayMode replay)
 	 if(pickedObject!=null)
 	 {
 		SlitherCell from = pickedSourceStack.top();
-		if(from.onBoard) { some = addValidSlideMoves(all,from,top,who); }
+		if(from.onBoard) 
+			{ some = addValidSlideMoves(all,from,top,who);
+			}
 	 }
 	 else
 	 {for(int lim = occupied.size()-1; lim>=0; lim--)
@@ -1014,21 +1087,41 @@ void doSwap(replayMode replay)
  		}
  		break;
  	case Play:
- 		addValidPlayMoves(all,whoseTurn);
+ 		{
+ 		boolean some = addValidPlayMoves(all,whoseTurn);
+ 		if(!some) 
+ 			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }
+ 		}
  		break;
  	case PlayOrSlide:
- 		addValidPlayMoves(all,whoseTurn);
-		//$FALL-THROUGH$
+ 		{
+ 		boolean some = false;
+ 		if(pickedObject==null || !pickedSourceStack.top().onBoard)
+ 			{ some |= addValidPlayMoves(all,whoseTurn);
+ 			}
+ 		some |= addValidSlideMoves(all,whoseTurn);
+		if(!some) 
+			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }		
+ 		}
+ 		break;
+		
 	case SlideOrDone:
  		addValidSlideMoves(all,whoseTurn);
+ 		all.push(new Slithermovespec(MOVE_DONE,whoseTurn));
  		break;
  	case Slide:
- 		addValidSlideMoves(all,whoseTurn);
+ 		// we don't currently use this state, because all single moves are legal
+ 		// we don't have a mandatory slide to fix it.
+ 		{
+ 		boolean some = addValidSlideMoves(all,whoseTurn);
+ 		if(!some) 
+ 			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }
+ 		}
  		break;
  	case Confirm:
  		all.push(new Slithermovespec(MOVE_DONE,whoseTurn));
  		break;
- 		
+ 	case Gameover: break;
  	default:
  			G.Error("Not expecting state ",board_state);
  	}
@@ -1071,6 +1164,7 @@ void doSwap(replayMode replay)
  			targets.put(c,m);
  			}
  			break;
+ 		case MOVE_PASS: break;
  		default: G.Error("Not expecting "+m);
  		
  		}

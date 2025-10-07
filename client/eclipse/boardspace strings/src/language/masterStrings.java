@@ -115,6 +115,7 @@ import xiangqi.XiangqiConstants;
 import ygame.YConstants;
 import shogi.ShogiConstants;
 import sixmaking.SixmakingConstants;
+import slither.SlitherConstants;
 import sprint.SprintConstants;
 import crosswords.CrosswordsConstants;
 import stac.StacConstants;
@@ -190,6 +191,9 @@ public class masterStrings extends InternationalStrings
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
+
+        setContext("slither");
+        SlitherConstants.putStrings();
         
         setContext("bugs");
         BugsConstants.putStrings();

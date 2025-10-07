@@ -136,7 +136,6 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
  			StockArt.NoEye,SlitherId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,SlitherId.ToggleEye,EyeExplanation
  			);
-    private Rectangle reverseRect = addRect("reverse");
     private Rectangle chipRects[] = addZoneRect("chip",2);
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
@@ -364,7 +363,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseRect);       
+    	placeRow( boardX, boardBottom-stateH,boardW,stateH,goalRect);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
@@ -531,13 +530,14 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     	Hashtable<SlitherCell,Slithermovespec> targets = gb.getTargets();
      	numberMenu.clearSequenceNumbers();
      	SlitherState state = gb.getState();
+     	int sz = (int)(CELLSIZE*0.9);
     	for(SlitherCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
+            if(cell.drawStack(gc,this,canHit?highlight:null,sz,xpos,ypos,0,0.1,0.1,null))
             		{
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
@@ -546,15 +546,15 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
             {
             if(!gb.validCell(cell))
             {
-            	StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallX.drawChip(gc,this,sz,xpos,ypos,null);
             }
             }
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
             }
         }
-    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
+    	numberMenu.drawSequenceNumbers(gc,sz*2/3,labelFont,labelColor);
     }
 
     /**
@@ -675,7 +675,6 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        DrawReverseMarker(gc,reverseRect,selectPos,SlitherId.ReverseView);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -1209,7 +1208,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     // support for the last move "numberMenu" logic
     //
 	public int getLastPlacement(boolean empty) {
-		return (bb.moveNumber);
+		return bb.lastPlacedIndex;
 	}
 	 
   

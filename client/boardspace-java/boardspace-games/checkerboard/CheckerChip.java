@@ -139,7 +139,8 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 	public static CheckerChip russian = new CheckerChip("russian",null,null,null,allArt);
 	public static CheckerChip bashni = new CheckerChip("bashni",null,null,null,allArt);
 	public static CheckerChip stacks = new CheckerChip("stacks",null,null,null,allArt);
-	
+	public static CheckerChip dameo = new CheckerChip("dameo",null,null,null,allArt);
+
 	public static CheckerChip CheckerIcon = new CheckerChip("checkers-icon-nomask",null,null,null,allArt);
 	
 	// call from the viewer's preloadImages

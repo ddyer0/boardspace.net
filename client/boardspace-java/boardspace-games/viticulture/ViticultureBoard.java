@@ -98,7 +98,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 166;			// 100 represents the initial version of the game
+{	static int REVISION = 167;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -186,6 +186,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 164 allows innkeeper to tax players on the dollar space
 										// revision 165, discard selected cards in the order selected
 										// revision 166 fix extraneous "steal" when innkeeper placed on the dollar space
+										// revision 167 fixes the logic for "reaper" to not care about the numnber of grapes produced
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -4067,8 +4068,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		logGameEvent(G.concat("+ ",
     								harvest[0]>0 ? "RedGrape " : "",
     								harvest[1]>0 ? "WhiteGrape" : ""));
-    		n++;
+    		if(revision<167) { n++; }
     		}
+    		if(revision>=167) { n++; }
     		}
     	}
     	fields.clear();

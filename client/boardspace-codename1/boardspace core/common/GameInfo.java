@@ -17,6 +17,7 @@
 package common;
 import bridge.Color;
 import bridge.URL;
+import common.GameInfo.ES;
 
 import java.util.*;
 
@@ -431,7 +432,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	}
 
 	static Bot ThreeBotsPlus[] = { Bot.Dumbot,Bot.Smartbot,Bot.Bestbot,Bot.Weakbot};
-	
+	static Bot WeakbotOnly[] = { Bot.Weakbot };
 	public static GameInfo GameTimer = 
 		new GameInfo(21050,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
 				null,
@@ -661,6 +662,22 @@ synchronized(allGames) {
 				"checkerboard.CheckerGameViewer","/checkers/english/Stacks%20Checkers%20Rules.html","about_checkers.html",
 				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
+
+	 
+	 g = put(new GameInfo(1766,ES.game,127,"DM",AncientGames,"Checkers","Checkers-dameo",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/dameo/english/DameoRules.html","about_dameo.html",
+				null,false, WhiteOverBlack));
+		 g.distinctVariations = true;
+
+     g = put(new GameInfo(1766,ES.game,127,"DM",CapturingGames,"Dameo","Checkers-dameo",
+    		 	OneBotPlus,
+    		 	new double[]{1.0,0.01},
+    		 	"checkerboard.CheckerGameViewer","/dameo/english/DameoRules.html","about_dameo.html",
+    		 	null,false, WhiteOverBlack));
+     g.distinctVariations = true;
+
 
 	}
 	{
@@ -1244,34 +1261,59 @@ synchronized(allGames) {
 	String loaClass = "loa.LoaViewer"; 
 	String loaRules = "/loa/english/index.html";
 	String loaVideo = "/loa/english/loa-video.html";
+	String loaAbout = "about_loa.html";
+	double loaBotTimes[] = new double[]{0.06,1,1,0.01};
 	put(new GameInfo(120,ES.game,1,"L",ConnectionGames,"LOA","LOA",
 			ThreeBotsPlus,
-			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,"about_loa.html",
+			loaBotTimes,
+			loaClass,loaRules,loaAbout,
 			loaVideo,false, BlackOverWhite));
 	put(new GameInfo(122,ES.game,1,"L",ConnectionGames,"LOA","LOARANDOM",
 			ThreeBotsPlus,
-			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,"about_loa.html",
+			loaBotTimes,
+			loaClass,loaRules,loaAbout,
 			loaVideo,false, BlackOverWhite));
 	put(new GameInfo(123,ES.game,1,"L",ConnectionGames,"LOA","Scrambled-Eggs",
 			ThreeBotsPlus,
-			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,"about_loa.html",
+			loaBotTimes,
+			loaClass,loaRules,loaAbout,
 			loaVideo,false, BlackOverWhite));
 	
 	put(new GameInfo(130,ES.game,1,"LP",ConnectionGames,"LOA","LOAP",
 			ThreeBotsPlus,
-			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,"about_loa.html",
+			loaBotTimes,
+			loaClass,loaRules,loaAbout,
 			loaVideo,false, BlackOverWhite));
 	put(new GameInfo(121,ES.game,1,"L",ConnectionGames,"LOA","LOA-12",
 			ThreeBotsPlus,
-			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,"about_loa.html",
+			loaBotTimes,
+			loaClass,loaRules,loaAbout,
 			loaVideo,false, BlackOverWhite));
 	}
+	{
+		String slitherClass = "slither.SlitherViewer"; 
+		String slitherRules = "/slither/english/Slither_rules.pdf";
+		String slitherVideo = null;
+		String slitherAbout = "about_slither.html";
+		double slitherTimes[] = new double[]{1.0,0.01};
+		put(new GameInfo(1260,ES.game,126,"SL",ConnectionGames,"Slither","Slither-9",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
+		put(new GameInfo(1261,ES.game,126,"SL",ConnectionGames,"Slither","Slither-13",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
+		
+		put(new GameInfo(1262,ES.game,126,"SL",ConnectionGames,"Slither","Slither-19",
+				OneBotPlus,
+				slitherTimes,
+				slitherClass,slitherRules,slitherAbout,
+				slitherVideo,false, BlackOverWhite));
 
+	}
 	put(new GameInfo(125,ES.game,45,"TW",ConnectionGames,"Twixt","Twixt",
 			OneBotPlus,
 			new double[]{1,0.01},

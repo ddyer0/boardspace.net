@@ -36,6 +36,7 @@ public interface CheckerConstants
 	static String RussianCheckersRules = "russian checkers rules";
 	static String BashniCheckersRules = "bashni rules";
 	static String StacksCheckersRules = "stacks rules";
+	static String DameoCheckersRules = "dameo rules";
 	static String EndgameDescription = "The game will be a draw after #1 moves";
 	static enum Variation
 	{	Checkers_Frisian(CheckerChip.frisian,FrisianCheckersRules,"checkers-frisian",10,true),
@@ -45,6 +46,7 @@ public interface CheckerConstants
 		Checkers_Russian(CheckerChip.russian,RussianCheckersRules,"checkers-russian",8,true),
 		Checkers_Stacks(CheckerChip.stacks,StacksCheckersRules,"checkers-stacks",8,true),
 		Checkers_Bashni(CheckerChip.bashni,BashniCheckersRules,"checkers-bashni",8,true),
+		Checkers_Dameo(CheckerChip.dameo,DameoCheckersRules,"checkers-dameo",8,true),
 		AntiDraughts(CheckerChip.anti,AntiDraughtsRules,"antidraughts",10,true),
 		Checkers_10(null,null,"checkers-10",10,false),	// empty checkers board size 10
 		Checkers_8(null,null,"checkers-8",8,false),		// empty checkers board size 8
@@ -146,11 +148,13 @@ static void putStrings()
 			{"antidraughts","Anti Draughts"},
 			{"antidraughts_variation","Anti Draughts"},
 			{"Checkers_variation","Standard Checkers"},
+			{"Dameo_family","Dameo"},
 			{"Checkers-frisian","Frisian Checkers"},
 			{"Checkers-frisian_variation","Frisian Checkers"},
 			{"Checkers-russian_variation","Russian Checkers"},
 			{"Checkers-bashni_variation","Bashni"},
 			{"Checkers-stacks_variation","Stacks Checkers"},
+			{"Checkers-dameo_variation","Dameo"},
 			{"Checkers-international","International Checkers"},
 			{"Checkers-international_variation","International Checkers"},
 			{"Checkers-turkish","Turkish Checkers"},
@@ -160,6 +164,7 @@ static void putStrings()
 			{"Checkers-russian","Russian Checkers"},
 			{"Checkers-bashni","Bashni Checkers"},
 			{"Checkers-stacks","Stacks Checkers"},
+			{"Checkers-dameo","Dameo"},
 			{AmericanCheckersRules,"move forward 1 space diagonally\nmandatory capture forward diagonally\nkings move and capture forward and backward"},
 			{TurkishCheckersRules,"move forward or sideways orthogonally\nmandatory captures forward or sideways\nflying kings move and capture orthoginally\nmaximal captures are required"},
 			{InternationalCheckersRules,"move forward diagonally\nmandatory captures forward or backwards diagonally\nflying kings move and capture diagonally\nmaximal captures are required"},
@@ -167,6 +172,7 @@ static void putStrings()
 			{FrisianCheckersRules,"move forward diagonally\nmandatory captures in all 8 directions\nflying kings move and capture in all directions, captures are required"},
 			{RussianCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required"},
 			{BashniCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required\ncaptured checkers are stacked, and only the top of stacks are captured"},
+			{DameoCheckersRules,"move forward diagonally or straight ahead, jumping own pieces\nmandatory captures orthogonally sideways, forwards or backwards,\nmaximal captures required\nkings \"fly\""},
 			{StacksCheckersRules,"move forward diagonally\nmandatory captures forwards or backwards, without reversing direction\nmaximal captures not required\ncaptured checkers are stacked, and only the top of stacks are captured\nAny stack with 2 of the same chips on top is a king"},
 		};
 		InternationalStrings.put(CheckerStrings);

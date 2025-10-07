@@ -116,6 +116,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		case Checkers_International:
  		case AntiDraughts:
  		case Checkers_Turkish:
+ 		case Checkers_Dameo:
  			return super.dxs();
  		case Checkers_Frisian:
  			return FrisDX;
@@ -136,6 +137,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		case Checkers_Russian:
  		case Checkers_Bashni:
  		case Checkers_Stacks:
+ 		case Checkers_Dameo:
  		case Checkers_6:
  			return super.dys();
  		case Checkers_Frisian:
@@ -193,6 +195,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     //
     private int AllOrthogonals[][] = {{CELL_UP,CELL_RIGHT,CELL_DOWN,CELL_LEFT},{CELL_UP,CELL_RIGHT,CELL_DOWN,CELL_LEFT}};
     private int ForwardOrthogonals[][] = {{CELL_RIGHT,CELL_DOWN,CELL_LEFT},{CELL_UP,CELL_RIGHT,CELL_LEFT}};
+    private int NetForward[][] = {
+    							   {CELL_UP_LEFT,CELL_UP,CELL_UP_RIGHT},
+    							   {CELL_DOWN_LEFT,CELL_DOWN, CELL_DOWN_RIGHT},};
    
 	// factory method to create a new cell as part of the board
 	public CheckerCell newcell(char c,int r)
@@ -396,6 +401,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      	default:  throw G.Error(WrongInitError,gtype);
      	case Checkers_Turkish:
      	case AntiDraughts:
+     	case Checkers_Dameo:
      	case Checkers_International:
      	case Checkers_Frisian:
      	case Checkers_American:
@@ -406,8 +412,10 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
      	case Checkers_Stacks:
      	case Checkers_Bashni:
       		reInitBoard(variation.size,variation.size);
-     		kingRow[map[FIRST_PLAYER_INDEX]] = 1;
-     		kingRow[map[SECOND_PLAYER_INDEX]] = nrows;
+      		int first = variation== Variation.Checkers_Dameo ? nrows : 1;
+      		int last = variation== Variation.Checkers_Dameo ? 1 : nrows;
+     		kingRow[map[FIRST_PLAYER_INDEX]] = first;
+     		kingRow[map[SECOND_PLAYER_INDEX]] = last;
      		gametype = gtype;
      		break;
      	}
@@ -452,6 +460,22 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    		
 	    	}
 	    	break;
+		case Checkers_Dameo:
+			{
+				for(int row = 0; row<3; row++)
+				{
+					for (int col = row; col<ncols-row; col++)
+					{
+						CheckerCell c1 = getCell((char)('A'+col),row+1);
+						CheckerCell c2 = getCell((char)('A'+ncols-col-1),nrows-row);
+						c1.addChip(CheckerChip.white);
+						c2.addChip(CheckerChip.black);
+						occupiedCells[playerIndex(CheckerChip.black)].push(c2);
+						occupiedCells[playerIndex(CheckerChip.white)].push(c1);
+					}
+				}
+			}
+			break;
 	    case Checkers_Turkish:
 	    	// rows 2 and 3 filled
 	    	for(int row=2;row<=3;row++)
@@ -1783,8 +1807,11 @@ public boolean hasSimpleMoves()
  	switch(variation)
 	 	{
 	 	default: throw G.Error("Not expecting %s",variation);
+	 	case Checkers_Dameo:
+	 		return AllOrthogonals[who];
 	 	case Checkers_Turkish:
 	 		return(isKing ? AllOrthogonals[who] : ForwardOrthogonals[who]);
+	 		
 	 	case Checkers_Frisian:
 	 		return AllDirections;
 	 	case AntiDraughts:
@@ -1881,6 +1908,9 @@ public boolean hasSimpleMoves()
  {	int who = getColorMap()[who0];
 	 	switch(variation)
 	 	{
+	 	case Checkers_Dameo:
+	 		return isKing? AllDirections : NetForward[who];
+	 		
 	 	case Checkers_Turkish:
 	 		return(isKing?AllOrthogonals[who] : ForwardOrthogonals[who]);
 	 	case Checkers_International:
@@ -1916,6 +1946,10 @@ public boolean hasSimpleMoves()
  						all.push(new CheckerMovespec(MOVE_BOARD_BOARD,cell,next,who));
  						more = isKing && variation.hasFlyingKings;
  					}
+ 				else if((variation==Variation.Checkers_Dameo) && !isKing)
+ 				{
+ 					more = top.color==playerChip(who).color;
+ 				}
  					else 
  					{ more = false; 
  					}
@@ -1996,6 +2030,7 @@ public boolean hasSimpleMoves()
 		 {
 		 default: throw G.Error("not expecting variation %s",variation);
 		 case Checkers_Turkish:
+		 case Checkers_Dameo:
 	 	 case AntiDraughts:
 		 case Checkers_International:
 			 depth = maximalCaptureDepth(to,isKing,	who,empty);
@@ -2025,6 +2060,7 @@ public boolean hasSimpleMoves()
  	 case Checkers_Russian:
  	 case Checkers_Bashni:
  	 case Checkers_Stacks:
+ 	 case Checkers_Dameo:
  		 // captures are mandatory
  		 switch(board_state)
  		 {
@@ -2070,6 +2106,7 @@ public boolean hasSimpleMoves()
  			 {
  			 case Checkers_Turkish:
  			 case Checkers_Frisian:
+ 			 case Checkers_Dameo:
  			 case AntiDraughts:
  			 case Checkers_International:
  				 if(all.size()>1) { removeShortCaptures(all,pickedStack.isEmpty(),whoseTurn); }

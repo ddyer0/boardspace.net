@@ -4335,7 +4335,7 @@ private void drawPlayerBoard(Graphics gc,
        	case BuildStructure23Free:
        	case BuildStructureFree:
        	case Build2StructureFree:
-       		discount = 8;
+       		discount = 999;
        		break;
        	case BuildStructureDiscount3:
        		discount = 3;
@@ -4503,7 +4503,7 @@ private void drawPlayerBoard(Graphics gc,
     			}
     			int netCost = Math.max(0,ch.costToBuild()-discount);
     			loadCoins(pb.coinDisplay,netCost);
-    			if(!censor)
+    			if(!censor || discount>100)	// show "cost" for free things
     			{
     			if(netCost>0)
     			{
