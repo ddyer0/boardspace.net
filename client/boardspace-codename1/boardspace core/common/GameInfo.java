@@ -17,8 +17,6 @@
 package common;
 import bridge.Color;
 import bridge.URL;
-import common.GameInfo.ES;
-
 import java.util.*;
 
 import com.codename1.ui.geom.Rectangle;

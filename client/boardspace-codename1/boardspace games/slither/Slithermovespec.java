@@ -34,6 +34,8 @@ public class Slithermovespec
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_FROM_TO = 208;	// slither on the board
+    static final int MOVE_SLIDE_THEN_FIX = 209;
+    static final int MOVE_PLACE_THEN_FIX = 210;
  
     static
     {	// load the dictionary
@@ -43,7 +45,9 @@ public class Slithermovespec
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
         	"Move", MOVE_FROM_TO,
-        	"Dropb",MOVE_DROPB
+        	"Dropb",MOVE_DROPB,
+        	"DropFix",MOVE_PLACE_THEN_FIX,
+        	"MoveFix",MOVE_SLIDE_THEN_FIX
     			);
   }
     //
@@ -178,13 +182,14 @@ public class Slithermovespec
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         	
+        case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
         	from_col = G.CharToken(msg);
             from_row = G.IntToken(msg);
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
             break;
-            
+        case MOVE_PLACE_THEN_FIX: 
         case MOVE_DROPB:
 		case MOVE_PICKB:
             to_col = G.CharToken(msg);
@@ -233,13 +238,14 @@ public class Slithermovespec
         case MOVE_PICKB:
             return icon(v,to_col , to_row);
 
+		case MOVE_PLACE_THEN_FIX:
 		case MOVE_DROPB:
             return icon(v,to_col ,to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
             return icon(v,SlitherId.values()[to_row]);
-
+        case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
         	return icon(v,from_col,from_row,"-",to_col,to_row);
         case MOVE_DONE:
@@ -263,6 +269,7 @@ public class Slithermovespec
         switch (op)
         {
         case MOVE_PICKB:
+        case MOVE_PLACE_THEN_FIX:
 		case MOVE_DROPB:
 	        return G.concat(opname , to_col , " " , to_row);
 
@@ -270,14 +277,20 @@ public class Slithermovespec
         case MOVE_PICK:
             return G.concat(opname , SlitherId.values()[to_row]);
 
+        case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
         	return G.concat(opname, from_col," ",from_row," ",to_col," ",to_row);
         	
         case MOVE_START:
             return G.concat(indx,"Start P" , player);
+        case MOVE_EDIT:
+        case MOVE_RESET:
+        case MOVE_UNDO:
+        case MOVE_DONE:
+        	return G.concat(opname);
 
         default:
-            return G.concat(opname);
+            throw G.Error("can't handle %s",this);
         }
     }
     /**

@@ -56,14 +56,15 @@ public enum SlitherState implements BoardState,SlitherConstants
 	Invalid(StateRole.Puzzle,InvalidState,false,false),
 	Draw(StateRole.RepetitionPending,DrawStateDescription,true,true),
 	Resign(StateRole.Resign,ResignStateDescription,true,false),
+	Pass(StateRole.Play,PassState,true,true),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
 	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
 	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
 	PlayOrSlide(StateRole.Play,PlayOrSlideState,false,false),
-	Slide(StateRole.Play,SlideState,false,false),
 	SlideFix(StateRole.Play,SlideFixState,false,false),
-	SlideOrDone(StateRole.Play,SlideOrDoneState,true,true),
+	SlideBeforeDrop(StateRole.Play,SlideOrDoneState,true,true),
+	SlideAfterDrop(StateRole.Play,SlideOrDoneState,true,true),
 	PlayFix(StateRole.Play,PlayFixState,false,false),
 	Play(StateRole.Play,PlayState,false,false);
 	
@@ -107,22 +108,21 @@ public enum SlitherState implements BoardState,SlitherConstants
     }
 
 	static final String VictoryCondition = "connect opposite sides with a chain of stones";
-	static final String PlayState = "Place a stone on any empty cell";
-	static final String SlideState = "You must Slide a stone to connect";
-	static final String PlayOrSlideState = "Place a stone on any empty cell, Or slide a stone one space";
+	static final String PlayState = "Place a stone on any legal cell";
+	static final String PlayOrSlideState = "Place a stone on an empty cell, Or slide a stone one space";
 	static final String SlideOrDoneState = "You may slide a stone, or click on \"Done\"";
 	static final String InvalidState = "Not a valid board state";
 	static final String PlayFixState = "You must play a stone to form a legal position";
 	static final String SlideFixState = "You must slide a stone to form a legal position";
-	static final String PlayOrSwapState = "Place a stone on any empty cell, or Swap Colors";
-	
+	static final String PlayOrSwapState = "Place a stone on an empty cell, or Swap Colors";
+	static final String PassState = "You have no legal moves, click on \"Done\" to pass";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Slither",
 			PlayState,
+			PassState,
 			PlayOrSlideState,
-			SlideState,
 			SlideOrDoneState,
 			PlayFixState,
 			SlideFixState,

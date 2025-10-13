@@ -109,7 +109,9 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
     	PrototypePlay cc = (PrototypePlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+    	// consider this carefully, normally if the board knows about the robot,
+    	// it should be the robot that runs it, not the master robot
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

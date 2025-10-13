@@ -423,6 +423,7 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 	public Iterator<T> iterator() {
 		return new InternalStackIterator();
 	}
+	
 
 }
 

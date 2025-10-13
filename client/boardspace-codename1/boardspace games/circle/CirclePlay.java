@@ -105,7 +105,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
     	CirclePlay cc = (CirclePlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

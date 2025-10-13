@@ -101,7 +101,7 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
     	BugsPlay cc = (BugsPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

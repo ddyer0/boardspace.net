@@ -187,8 +187,15 @@ class SlitherBoard
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
-    public SlitherCell slideFrom = null;
+    
+    //
+    // these are treated differently from all the rest.  It mostly matters
+    // for the rare case where there is no legal "drop" move but there are
+    // legal "slide" moves, and the slide move creates a new legal drop move.
+    //
+    public SlitherCell moveFrom = null;
     public SlitherCell slideTo = null;
+    public SlitherCell dropAt = null;
     
     // save strings to be shown in the game log
     StringStack gameEvents = new StringStack();
@@ -213,15 +220,129 @@ class SlitherBoard
     	}
     	return true;
     }
+    
+    public SlitherCell validWithRepair(SlitherChip top,SlitherCell from,SlitherCell to)
+    {
+    	int from_row = Math.max(1,Math.min(from.row-1,to.row-1));
+    	int to_row = Math.min(nrows,Math.max(from.row+1,to.row+1));
+    	char from_col = (char)Math.max('A',Math.min(from.col-1,to.col-1));
+    	char to_col = (char)Math.min('A'+ncols-1,Math.max(from.col+1,to.col+1));
+    	for(int row = from_row; row<=to_row; row++)
+    	{
+    		for(char col = from_col; col<to_col; col++)
+    		{
+    			SlitherCell add = getCell(col,row);
+    			if(add==from || add.topChip()==top)
+    			{
+    				validRange(from_col,from_row,to_col,to_row,top,from,to,add);
+    			}
+    		}
+    	}
+    	return null;
+    }
+    /**
+     * valid to place if some specific repair move is made
+     * @param top
+     * @param dropped
+     * @param to
+     * @return
+     */
+    public boolean addValidSlideRepairMoves(CommonMoveStack all,SlitherChip top,SlitherCell picked,SlitherCell dropped)
+    {	boolean some = false;
+    	for(int direction = CELL_LEFT; direction<=CELL_LEFT+CELL_FULL_TURN; direction+=CELL_QUARTER_TURN)
+    	{
+    		SlitherCell to = dropped.exitTo(direction);
+    		if(to!=null && to.topChip()==null)
+    		{	
+	    		{	// something moves in to be orthogonal
+	    			for(int moveDirection=CELL_LEFT; moveDirection<CELL_LEFT+CELL_FULL_TURN; moveDirection++)
+	    			{
+	    				SlitherCell from = to.exitTo(moveDirection);
+	    				if(from!=null 
+	    						&& ((picked==null) ? from.topChip()==top : picked==from)
+	    						&& from!=dropped 
+	    						 )
+	    				{	
+	    					if(validRange(top,from,to,dropped))
+	    					{	if(all==null ) { return true; }
+	    						all.push(getSlideMove(picked==null ? MOVE_FROM_TO : MOVE_DROPB,from,to,playerIndex(top)));
+	    						some = true;
+	    					}
+	    				}
+	    			}
+	    		}
+    		}
+    	}
+    	// diagonal cells that could move away
+    	for(int direction = CELL_UP_LEFT; direction<=CELL_UP_LEFT+CELL_FULL_TURN; direction+=CELL_QUARTER_TURN)
+    	{
+    		SlitherCell from = dropped.exitTo(direction);
+    		if(from!=null && (from==picked || from.topChip()==top))
+    		{	for(int exitDirection = direction-2; exitDirection<=direction+2; exitDirection++)
+    			{
+    			SlitherCell exitTo = from.exitTo(exitDirection);
+    			if(exitTo!=null
+						&& (picked==null || from==picked)
+    					&& exitTo.topChip()==null
+    					&& validRange(top,from,exitTo,dropped)
+    					)
+    				{
+    				if(all==null ) { return true; }
+    				all.push(getSlideMove(picked==null ? MOVE_FROM_TO : MOVE_DROPB,from,exitTo,playerIndex(top)));
+					some = true;
+    				}
+    			}
+    		}
+    	}
+    	
+    	return some;
+    }
+    /**
+     * true of the range from from to to, with extra fill is valuid
+     * 
+     * @param top
+     * @param from
+     * @param to
+     * @param fill
+     * @return
+     */
+    public boolean validRange(SlitherChip top,SlitherCell from0,SlitherCell to0,SlitherCell fill0)
+    {	SlitherCell from = from0==null ? fill0 : from0;
+    	SlitherCell to = to0==null ? fill0 : to0;
+    	int from_row = Math.max(1,Math.min(from.row-1,fill0==null ? to.row-1 : Math.min(to.row-1,fill0.row-1)));
+    	int to_row = Math.min(nrows,Math.max(from.row+1,fill0==null ? to.row+1 : Math.max(to.row+1,fill0.row+1)));
+    	char from_col = (char)Math.max('A',Math.min(from.col-1,fill0==null ? to.col-1 : Math.min(to.col-1,fill0.col-1)));
+    	char to_col = (char)Math.min('A'+ncols-1,Math.max(from.col+1,fill0==null ? to.col+1 : Math.max(to.col+1,fill0.col+1)));
+    	return validRange(from_col,from_row,to_col,to_row,top,from0,to0,fill0);
+    }
+    
+    /** return true if all cells in the range are valid */
+    public boolean validRange(char from_col,int from_row,char to_col,int to_row,
+    					SlitherChip top,SlitherCell empty,SlitherCell fill,SlitherCell alsoFill)
+    {
+    	for(int row = from_row; row<=to_row; row++)
+    	{
+    		for(char col = from_col; col<=to_col; col++)
+    		{	SlitherCell center = getCell(col,row);
+    			if(center!=empty && (center==fill || center==alsoFill || center.topChip()==top))
+    			{
+    				if(!center.validDiagonalContacts(top,empty,fill,alsoFill))
+    					{ return false; 
+    					}
+    			}
+     		}
+    	}
+    	return true;
+    }
+    
     public boolean validCell(SlitherCell filled)
     {
 		SlitherChip top = filled.topChip();
-		return (top==null || validCell(top,filled,null,null));
+		return (top==null || validCell(top,filled,null,null,null));
     }
-    public boolean validCell(SlitherChip top, SlitherCell filled, SlitherCell empty,SlitherCell fill)
-    {
-    	return filled.validDiagonalContacts(top,empty,fill);
-
+    public boolean validCell(SlitherChip top, SlitherCell filled, SlitherCell empty,SlitherCell fill,SlitherCell alsoFill)
+    {	
+    	return filled.validDiagonalContacts(top,empty,fill,alsoFill);
     }
 
     private SlitherState resetState = SlitherState.Puzzle; 
@@ -294,7 +415,9 @@ class SlitherBoard
 	    chips_on_board = 0;
 	    
 	    acceptPlacement();
-	    
+	    dropAt = null;
+	    moveFrom = null;
+	    slideTo = null;
 	    resetState = null;
 	    lastDroppedObject = null;
 	    lastPlacedIndex = 0;
@@ -347,8 +470,9 @@ class SlitherBoard
         getCell(playerCell,from_b.playerCell);
         stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
-        slideFrom = getCell(from_b.slideFrom);
+        moveFrom = getCell(from_b.moveFrom);
         slideTo = getCell(from_b.slideTo);
+        dropAt = getCell(from_b.dropAt);
         resetState = from_b.resetState;
         lastPicked = null;
         lastPlacedIndex = from_b.lastPlacedIndex;
@@ -381,7 +505,10 @@ class SlitherBoard
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
-        // this is a good overall check that all the copy/check/digest methods
+        G.Assert(sameCells(moveFrom,from_b.moveFrom),"moveFrom mismatch");
+        G.Assert(sameCells(slideTo,from_b.slideTo),"slideTo mismatch");
+        G.Assert(sameCells(dropAt,from_b.dropAt),"dropAt mismatch");
+       // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
@@ -427,8 +554,9 @@ class SlitherBoard
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
 		v ^= chip.Digest(r,pickedObject);
-		v ^= Digest(r,slideFrom);
+		v ^= Digest(r,moveFrom);
 		v ^= Digest(r,slideTo);
+		v ^= Digest(r,dropAt);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
@@ -455,8 +583,10 @@ class SlitherBoard
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
 		case ConfirmSwap:
-		case SlideOrDone:
+		case SlideAfterDrop:
+		case SlideBeforeDrop:
         case Confirm:
+        case Pass:
         case Resign:
             moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer[whoseTurn]);
@@ -519,9 +649,7 @@ class SlitherBoard
         pickedSourceStack.clear();
         stateStack.clear();
         pickedObject = null;
-        slideFrom = null;
-        slideTo = null;
-     }
+      }
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -653,7 +781,7 @@ class SlitherBoard
     // in the actual game, picks are optional; allowed but redundant.
     //
 
-    private void setNextStateAfterDrop(replayMode replay)
+    private void setNextStateAfterDrop(commonMove m,replayMode replay)
     {
         switch (board_state)
         {
@@ -663,20 +791,50 @@ class SlitherBoard
         	setNextStateAfterDone(replay);
          	break;
         case Play:
-        case SlideOrDone:
+        case PlayFix:
+        case SlideFix:
         	setState(SlitherState.Confirm);
         	break;
+        case SlideBeforeDrop:
+        case SlideAfterDrop:
+        	if(dropAt==null) 
+        	{	// unusual case where we slid first when there were no drop moves.
+        		// these may be some now.
+        		if((m.op==MOVE_PLACE_THEN_FIX)||(m.op==MOVE_SLIDE_THEN_FIX))
+        		{
+        			setState(SlitherState.PlayFix);
+        		}
+        		else 
+        			{
+        			setState(hasPlacementMoves(board_state==SlitherState.SlideAfterDrop) 
+        						? SlitherState.Play 
+        						: SlitherState.Confirm);
+        			}
+        	}
+        	else { setState(SlitherState.Confirm);}
+        	break;
         case PlayOrSlide:
-        	SlitherCell from = pickedSourceStack.top();
+        	SlitherCell from = moveFrom;
         	if(from.onBoard)
-        	{
-        		setState(SlitherState.Play);
-        		slideFrom = from;
-        		slideTo = droppedDestStack.top();
+        	{	
+        		switch(m.op)
+         		{
+         		case MOVE_PLACE_THEN_FIX:
+         		case MOVE_SLIDE_THEN_FIX:
+        			setState(SlitherState.PlayFix);
+        			break;
+        		default:
+        			setState(SlitherState.Play);
+        			if(!hasPlacementMoves(false)) 
+        			{ p1("illegal pass state "+moveNumber+" "+m.toString());
+        		      G.Error("illegal pass");
+        			  //setState(SlitherState.Pass); 
+        			}
+        		}
         	}
         	else
-        	{
-        		setState(SlitherState.SlideOrDone);
+        	{	
+        		setState(m.op==MOVE_PLACE_THEN_FIX ? SlitherState.SlideFix : SlitherState.SlideAfterDrop);
         	}
         	break;
         	
@@ -688,6 +846,7 @@ class SlitherBoard
             break;
         }
     }
+    static int seq = 0;
     private void setNextStateAfterDone(replayMode replay)
     {	G.Assert(emptyCells.size()+occupiedCells[0].size()+occupiedCells[1].size()==fullBoard,
     			"cells miscounted");
@@ -699,8 +858,24 @@ class SlitherBoard
     		setState(SlitherState.Play); 
     		break;
     	case Confirm:	
-    	case SlideOrDone:
+    	case Pass:
+    	case SlideAfterDrop:
+    	case SlideBeforeDrop:
+    		if(hasPlacementMoves(true))
+    		{
     		setState((occupiedCells[whoseTurn].size()==0) ? SlitherState.Play : SlitherState.PlayOrSlide);
+    		}
+    		else if(hasSlideMoves())
+    		{
+    			setState(SlitherState.SlideBeforeDrop);
+    		}
+    		else
+    		{	if(moveNumber>80 || emptyCells.size()>2)
+    				{seq++;
+    				 p1("empty pass "+moveNumber+" "+seq);
+    				}
+    			setState(SlitherState.Pass);
+    		}
     		break;
     	case Puzzle:
      		setState(SlitherState.Play);		
@@ -712,7 +887,13 @@ class SlitherBoard
     {
         acceptPlacement();
      	lastPlacedIndex++;
-
+     	if((emptyCells.size()>2) && dropAt==null)
+     	{
+     		p1("nothing dropped "+moveNumber+" "+emptyCells.size());
+     	}
+     	dropAt = null;
+     	moveFrom = null;
+     	slideTo = null;
         if (board_state==SlitherState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;
@@ -773,25 +954,28 @@ void doSwap(replayMode replay)
          	doDone(replay);
 
             break;
+        case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
         	{
         	SlitherCell from = getCell(m.from_col,m.from_row);
         	SlitherCell to = getCell(m.to_col,m.to_row);
-        	pickObject(from);
-        	dropObject(to);
-        	if(replay.animate) {
+        	SetBoard(to,SetBoard(from,null));
+         	if(replay.animate) {
         		animationStack.push(from);
         		animationStack.push(to);
         	}
-        	setNextStateAfterDrop(replay);
+        	moveFrom = from;
+        	slideTo = to;
+        	setNextStateAfterDrop(m,replay);
         	}
         	break;
+        case MOVE_PLACE_THEN_FIX:
         case MOVE_DROPB:
         	{
 			SlitherChip po = pickedObject;
 			SlitherCell dest =  getCell(SlitherId.BoardLocation,m.to_col,m.to_row);
 			
-			if(isSource(dest)) 
+			if(isSource(dest) && (pickedObject!=null))
 				{ unPickObject(); 
 				}
 				else 
@@ -799,6 +983,14 @@ void doSwap(replayMode replay)
 			    if(pickedObject==null) { pickObject(playerCell[m.player]); }
 				m.chip = pickedObject;
 	            dropObject(dest);
+	            SlitherCell src = getSource();
+            	moveFrom = src;
+	            if(!src.onBoard) 
+	            	{  dropAt = dest; 
+	            	}
+	            else {
+	            	slideTo = dest;
+	            }
 	            /**
 	             * if the user clicked on a board space without picking anything up,
 	             * animate a stone moving in from the pool.  For Hex, the "picks" are
@@ -809,7 +1001,7 @@ void doSwap(replayMode replay)
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}
-	            setNextStateAfterDrop(replay);
+	            setNextStateAfterDrop(m,replay);
 				}
         	}
              break;
@@ -856,6 +1048,10 @@ void doSwap(replayMode replay)
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
+            dropAt = null;
+            slideTo = null;
+            moveFrom = null;
+            slideTo = null;
             if(validBoard())
             {	boolean opening = chips_on_board<2;
             	setState(opening ? SlitherState.Play : SlitherState.PlayOrSlide);
@@ -896,15 +1092,20 @@ void doSwap(replayMode replay)
         {
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
+        case SlideAfterDrop:
+        case SlideBeforeDrop:
+        case SlideFix:
+        	return false;
         case PlayOrSlide:
-        case SlideOrDone:
+        case PlayFix:
         case Play:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
-        	return(player==whoseTurn);
+        	return(player==whoseTurn && (pickedObject==null || !getSource().onBoard));
         case Confirm:
 		case ConfirmSwap:
 		case Resign:
+		case Pass:
 		case Gameover:
 			return(false);
         case Puzzle:
@@ -919,14 +1120,19 @@ void doSwap(replayMode replay)
         {
 		case Play:
 		case PlayOrSlide:
-		case SlideOrDone:
-			return(targets.get(c)!=null || isDest(c) || isSource(c));
+		case SlideFix:
+		case PlayFix:
+		case SlideBeforeDrop:
+		case Pass:
+		case SlideAfterDrop:
+			return(targets.get(c)!=null 
+				|| (pickedObject==null ? isDest(c) : isSource(c)));
 		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
 		case Confirm:
-			return(isDest(c) || c.isEmpty());
+			return(isDest(c));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         case Puzzle:
@@ -935,6 +1141,7 @@ void doSwap(replayMode replay)
         }
     }
     
+    CellStack robotStack = new CellStack();
     
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -944,9 +1151,22 @@ void doSwap(replayMode replay)
     executing.
     */
     public void RobotExecute(Slithermovespec m)
-    {
+    {	robotStack.push(dropAt);
+    	robotStack.push(moveFrom);
+    	robotStack.push(slideTo);
         robotState.push(board_state); //record the starting state. The most reliable
+       // G.print("E "+m+" for "+whoseTurn+" "+board_state);
         Execute(m,replayMode.Replay);
+        switch(m.op)
+        {
+        case MOVE_DROPB:
+        case MOVE_PLACE_THEN_FIX:
+        	robot.setFocus(dropAt);
+        	break;
+        default:
+        	break;
+        }
+        acceptPlacement();
        
     }
  
@@ -957,25 +1177,32 @@ void doSwap(replayMode replay)
     // that the robot might actually make.
     //
     public void UnExecute(Slithermovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
+    {	
+    	slideTo = robotStack.pop();
+    	moveFrom = robotStack.pop();
+    	dropAt = robotStack.pop();
+    	
+        //G.print("U "+m+" for "+whoseTurn);
     	SlitherState state = robotState.pop();
         switch (m.op)
         {
         default:
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
-        case MOVE_PASS:
+         case MOVE_PASS:
             break;
             
         case MOVE_SWAP:
         	setState(state);
         	doSwap(replayMode.Replay);
         	break;
+        case MOVE_PLACE_THEN_FIX:
         case MOVE_DROPB:
         	SetBoard(getCell(m.to_col,m.to_row),null);
+        	robot.popFocus();
         	break;
         case MOVE_FROM_TO:
+        case MOVE_SLIDE_THEN_FIX:
         	{
         	SlitherCell from = getCell(m.from_col,m.from_row);
         	SlitherCell to = getCell(m.to_col,m.to_row);
@@ -994,138 +1221,287 @@ void doSwap(replayMode replay)
         }
  }
  
- private boolean addValidPlayMoves(CommonMoveStack all,int who)
+ private boolean addValidPlayMoves(CommonMoveStack all,SlitherCell empty,SlitherCell filled,boolean include_invalid,int who)
  {
 	 boolean some = false;
 	 SlitherChip top = playerChip[who];
 	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
 	 {
 		 SlitherCell c = emptyCells.elementAt(lim);
-		 if(validCell(top,c,null,c)) { 
+		 if(c==filled 
+				 ? validRange(top,empty,filled,empty)	// add an extra for the one we now know is filled
+				 : validRange(top,empty,filled,c))
+		 {
+			if(all==null) { return true; }
+			all.push(getPlayMove(MOVE_DROPB,c,who));
+			some = true;
+		 }
+		 else if(include_invalid
+				 && (empty==null && filled==null && addValidSlideRepairMoves(null,top,null,c)))
+		 {
 			 if(all==null) { return true; }
-			 all.push(new Slithermovespec(MOVE_DROPB,c,who));
+			 all.push(getPlayMove(MOVE_PLACE_THEN_FIX,c,who));
 			 some = true;
 		 }
+		 else if(include_invalid)
+		 {
+			// p1("can never play "+c.row+c.col);
+		 }
 	 }
+	 if(!some && emptyCells.size()>2) 
+	 	{  p1("can never play "+include_invalid); 
+	 	}
 	 return some;
  }
+ @SuppressWarnings("unused")
+private boolean hasLegalMoves()
+ {
+	 return getListOfMoves(null,whoseTurn);
+ }
  
- private boolean addValidSlideMoves(CommonMoveStack all,int who)
+
+ private boolean hasPlacementMoves(boolean includeIllegal)
+ {
+	 return addValidPlayMoves(null,null,null,includeIllegal,whoseTurn);
+ }
+ private boolean hasSlideMoves()
+ {
+	 return addValidSlideMoves(null,false,false,whoseTurn);
+ }
+ private commonMove getValidPlayMove(int op,SlitherCell c,SlitherChip top,int who)
+ {
+	 if(validCell(top,c,null,c,null)) { 
+		 return getPlayMove(op,c,who);
+	 }
+	 return null;
+ }
+ 
+ private commonMove getPlayMove(int op,SlitherCell c,int who)
+ {	return new Slithermovespec(op,c,who);
+ }
+ private boolean addValidSlideRepairMoves(CommonMoveStack all,int who)
+ {
+	 return addValidSlideRepairMoves(all,getPlayerChip(who),pickedObject!=null ? getSource() : null,dropAt);
+ }
+
+/**
+ * 
+ * @param all
+ * @param includeInvalid
+ * @param dropped
+ * @param who
+ * @return
+ */
+ private boolean addValidSlideMoves(CommonMoveStack all,boolean includeInvalid,boolean dropped,int who)
  {
 	 boolean some = false;
 	 CellStack occupied = occupiedCells[who];
 	 SlitherChip top = playerChip[who];
-	 SlitherCell dropped = droppedDestStack.top();
 	 if(pickedObject!=null)
 	 {
 		SlitherCell from = pickedSourceStack.top();
 		if(from.onBoard) 
-			{ some = addValidSlideMoves(all,from,top,who);
+			{ some = addValidSlideMoves(MOVE_DROPB,dropped,includeInvalid ? MOVE_PLACE_THEN_FIX : 0,all,from,top,who);
 			}
 	 }
 	 else
-	 {for(int lim = occupied.size()-1; lim>=0; lim--)
+	 {
+	 for(int lim = occupied.size()-1; lim>=0; lim--)
 	 {
 		 SlitherCell from = occupied.elementAt(lim);
-		 if(from!=dropped)
+		 if(from!=dropAt)
 		 {
-			some |= addValidSlideMoves(all,from,top,who); 
+			some |= addValidSlideMoves(MOVE_FROM_TO,dropped,includeInvalid? MOVE_SLIDE_THEN_FIX : 0,all,from,top,who); 
 			if(some && all==null) { return true; }
 		 }
 	 }}
 	 return some;
  }
- private boolean addValidSlideMoves(CommonMoveStack all,SlitherCell from,SlitherChip top,int who)
+ private boolean addValidPlayRepairMoves(CommonMoveStack all,int who)
+ {	boolean some = false;
+	 SlitherCell from = moveFrom;
+	 SlitherCell to = slideTo;
+	 SlitherChip top = getPlayerChip(who);
+	 if(validRange(top,from,to,from))
+	 {	if(all==null) { return true; }
+	 	some = true;
+		all.push(getPlayMove(MOVE_DROPB,from,who));
+	 }
+	 for(int direction=CELL_LEFT; direction<CELL_LEFT+CELL_FULL_TURN; direction+=CELL_QUARTER_TURN)
+	 {
+		 SlitherCell fill = to.exitTo(direction);
+		 if(fill!=null
+				 && fill!=from
+				 && fill.topChip()==null
+				 && validRange(top,from,to,fill))
+		 {	if(all==null) { return true; }
+		 	some = true;
+			all.push(getPlayMove(MOVE_DROPB,fill,who));
+		 }
+	 }
+	 return some;
+ }
+ private boolean addValidSlideMoves(int op,boolean dropped,int invalidOp,CommonMoveStack all,SlitherCell from,SlitherChip top,int who)
  {	boolean some = false;
  	for(int direction = 0; direction<CELL_FULL_TURN; direction++)
 		 {
 			 SlitherCell to = from.exitTo(direction);
 			 if(to!=null && to.topChip()==null)
 			 {
-				 if(validCell(top,to,from,to))
-				 {
-					 boolean valid = true;
-					 // also need to check that the cells left behind are valid
-					 for(int d2 = CELL_LEFT; valid && d2<CELL_LEFT+CELL_FULL_TURN; d2+=CELL_QUARTER_TURN)
-					 {
-						 SlitherCell adj = from.exitTo(d2);
-						 if(adj!=null && adj.topChip()==top)
-						 {
-							 valid = validCell(top,adj,from,to);	// still valid without this neighbo
-						 }
-					 }
-				 if(valid)
+				 if(validRange(top,from,to,null)
+						 && (dropped || hasValidPlacementMoves(top,from,to)))
 				 {
 					 if(all==null) { return true; }
-					 all.push(new Slithermovespec(MOVE_FROM_TO,from,to,who));
+					 all.push(getSlideMove(op,from,to,who));
 					 some = true;
 				 }
+				 else if(invalidOp>0
+						 && validRange(top,from,to,from)
+						 && (dropped || hasValidPlacementMoves(top,from,to))
+						 )
+				 {	// refill the vacated space
+					 if(all==null) { return true; }
+					 all.push(getSlideMove(invalidOp,from,to,who));
+					 some = true;					 
+				 }
+				 else if(invalidOp>0)
+				 {
+					 for(int direction2=CELL_LEFT; direction2<CELL_LEFT+CELL_FULL_TURN; direction2+= CELL_QUARTER_TURN)
+					 {
+						 SlitherCell fill = to.exitTo(direction2);
+						 if(fill!=null 
+								 && fill.topChip()==null 
+								 && validRange(top,from,to,fill)
+								 && (dropped || hasValidPlacementMoves(top,from,to)))
+						 {
+							 if(all==null) { return true; }
+							 all.push(getSlideMove(invalidOp,from,to,who));
+							 some = true;					 
+						 }
+					 }
 				 }
 			 }
-	 }
+		 }
 	 return some;
+ }
+ 
+ /**
+  * return true if there are placement moves after a move from to which is not on the board yet.
+  * the placement can be anywhere, not necessarily to fix a local illegal state
+  * @param top
+  * @param from
+  * @param to
+  * @return
+  */
+ private boolean hasValidPlacementMoves(SlitherChip top, SlitherCell from, SlitherCell to) 
+ {
+	 
+	return addValidPlayMoves(null,from,to,false,playerIndex(top));
+}
+private commonMove getValidSlideMove(SlitherCell from,int firstDirection,SlitherChip top,int who)
+ {	
+ 	for(int direction = firstDirection; direction<firstDirection+CELL_FULL_TURN; direction++)
+		 {
+			 SlitherCell to = from.exitTo(direction);
+			 if(to!=null && to.topChip()==null)
+			 {	if(validRange(top,from,to,null)
+					 && hasValidPlacementMoves(top,from,to)
+					 )
+			 	{
+				 return getSlideMove(MOVE_FROM_TO,from,to,who);
+			 	}
+			 }
+		 }
+	 return null;
+ }
+ 
+ private commonMove getSlideMove(int op,SlitherCell from,SlitherCell to,int who)
+ {
+	 return new Slithermovespec(op,from,to,who);
  }
  
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
- 	if(board_state==SlitherState.PlayOrSwap)
- 	{
- 		all.addElement(new Slithermovespec(SWAP,whoseTurn));
- 	}
+	if(board_state==SlitherState.PlayOrSwap)
+	{
+		all.addElement(new Slithermovespec(SWAP,whoseTurn));
+	}
+	{
+ 	boolean some = getListOfMoves(all,whoseTurn);
+	if(!some) 
+		{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); 
+		}
+ 	return all;
+	}
+ }
+ private boolean getListOfMoves(CommonMoveStack all,int who)
+ {	
  	switch(board_state)
  	{
  	case Puzzle:
  	case Invalid:
- 		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
- 			for(SlitherCell c = allCells;
+ 		{int op = pickedObject!=null ? MOVE_DROPB : MOVE_PICKB; 	
+ 		 for(SlitherCell c = allCells;
  			 	    c!=null;
  			 	    c = c.next)
- 			 	{	if(c.topChip()==null)
- 			 		{all.addElement(new Slithermovespec(op,c.col,c.row,whoseTurn));
- 			 		}
+ 			 	{	if((pickedObject==null) != (c.topChip()==null))
+ 			 			{
+ 			 			if(all==null) { return true; }
+ 			 			all.addElement(new Slithermovespec(op,c.col,c.row,who));
+ 			 			}
  			 	}
+ 		return false;
  		}
- 		break;
+ 		
  	case Play:
- 		{
- 		boolean some = addValidPlayMoves(all,whoseTurn);
- 		if(!some) 
- 			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }
- 		}
- 		break;
+ 		return addValidPlayMoves(all,null,null,false,who);
+
  	case PlayOrSlide:
  		{
  		boolean some = false;
  		if(pickedObject==null || !pickedSourceStack.top().onBoard)
- 			{ some |= addValidPlayMoves(all,whoseTurn);
+ 			{ some = addValidPlayMoves(all,null,null,true,who);
+ 			  if(all==null && some) { return true; }
  			}
- 		some |= addValidSlideMoves(all,whoseTurn);
-		if(!some) 
-			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }		
+ 		boolean some1 = some;
+ 		some = addValidSlideMoves(all,true,false,who);
+ 		if(some && !some1)
+ 		{
+ 			p1("only slide "+moveNumber);
  		}
- 		break;
+ 		if(!some) { p1("forced pass "+moveNumber); }
+ 		return some;
+ 		}
+ 	case SlideBeforeDrop:
+ 		
+		// slide before a drop (no drops available)
+ 		addValidSlideMoves(all,true,false,who);
+ 		if(all!=null) { all.push(new Slithermovespec(MOVE_DONE,who)); }
+ 		return true;
 		
-	case SlideOrDone:
- 		addValidSlideMoves(all,whoseTurn);
- 		all.push(new Slithermovespec(MOVE_DONE,whoseTurn));
- 		break;
- 	case Slide:
+	case SlideAfterDrop:
+		// slide after a drop
+ 		addValidSlideMoves(all,false,true,who);
+ 		if(all!=null) { all.push(new Slithermovespec(MOVE_DONE,who)); }
+ 		return true;
+	case PlayFix:
+		return addValidPlayRepairMoves(all,who);
+		
+ 	case SlideFix:
  		// we don't currently use this state, because all single moves are legal
  		// we don't have a mandatory slide to fix it.
- 		{
- 		boolean some = addValidSlideMoves(all,whoseTurn);
- 		if(!some) 
- 			{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); }
- 		}
- 		break;
+ 		return  addValidSlideRepairMoves(all,who);
+ 	case Resign:
  	case Confirm:
- 		all.push(new Slithermovespec(MOVE_DONE,whoseTurn));
- 		break;
- 	case Gameover: break;
+ 	case Pass:
+ 		if(all!=null) { all.push(new Slithermovespec(MOVE_DONE,who)); }
+ 		return true;
+  	case Gameover: 
+  		return true;
  	default:
- 			G.Error("Not expecting state ",board_state);
+ 			throw G.Error("Not expecting state ",board_state);
  	}
- 	return(all);
+
  }
  
  public void initRobotValues(SlitherPlay m)
@@ -1153,11 +1529,13 @@ void doSwap(replayMode replay)
  		{
  		case MOVE_PICKB:
  		case MOVE_DROPB:
+ 		case MOVE_PLACE_THEN_FIX:
  			targets.put(getCell(m.to_col,m.to_row),m);
  			break;
  		case MOVE_SWAP:
  		case MOVE_DONE:
  			break;
+ 		case MOVE_SLIDE_THEN_FIX:
  		case MOVE_FROM_TO:
  			{
  			SlitherCell c = (pickedObject==null) ? getCell(m.from_col,m.from_row) : getCell(m.to_col,m.to_row);
@@ -1182,6 +1560,96 @@ void doSwap(replayMode replay)
  	}
  	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
  }
+ 
+public commonMove getRandomMove(Random rand,CellStack focus) 
+{	commonMove m = null;
+
+	switch(board_state)
+	 	{
+	 	case PlayOrSwap:
+	 	case Puzzle:
+	 	case Resign:
+	 	case Confirm:
+	 	case Pass:
+	 	case Invalid:
+	 		break;
+	 	case Play:
+	 		m = randomPlayMove(rand,99999,focus);
+	 		break;
+	 	case PlayOrSlide:
+	 		{
+	 		if(rand.nextInt(100)<50) 
+	 		{
+	 			m = randomSlideMove(rand,9999,focus);
+	 		}
+	 		if(m==null)
+	 		{	m = randomPlayMove(rand,9999,focus);
+	 		}
+	 		}
+	 		break;
+			
+		case SlideBeforeDrop:
+			
+			if(rand.nextInt(100)>robot.slitherPercent)
+			{
+				m = new Slithermovespec(MOVE_DONE,whoseTurn);
+			}
+			else 
+			{ m = randomSlideMove(rand,(int)(occupiedCells[whoseTurn].size()*0.25),focus);
+			}	
+	 		break;
+		case SlideAfterDrop:
+	 	case SlideFix:
+	 	case PlayFix:	// these are extremely restricted states
+	 		break;
+	 	case Gameover: break;
+	 	default:
+	 			G.Error("Not expecting state ",board_state);
+	 	}
+	 	return(m);
+	 }
+private commonMove randomSlideMove(Random rand, int tries,CellStack focus)
+{
+	CellStack occupied = occupiedCells[whoseTurn];
+	SlitherChip chip = playerChip[whoseTurn];
+	int max = Math.min(tries,occupied.size());
+	while(max>0 && tries>0)
+	{
+		int idx = rand.nextInt(max);
+		SlitherCell c = occupied.elementAt(idx);
+		tries--;
+		if(focus==null || robot.filter(focus,c))
+		{
+		commonMove m = getValidSlideMove(c,rand.nextInt(CELL_FULL_TURN),chip,whoseTurn);
+		if(m!=null) { return m; }
+		max--;
+		occupied.setElementAt(occupied.elementAt(max),idx);
+		occupied.setElementAt(c,max);
+		}
+	}
+	return (focus!=null) ? randomSlideMove(rand,tries,null) : null;
+}
+private commonMove randomPlayMove(Random rand, int tries,CellStack focus) 
+{
+	int max = Math.min(tries,emptyCells.size());
+	SlitherChip chip = playerChip[whoseTurn];
+	while(max>0 && tries>0)
+	{
+		int idx = rand.nextInt(max);
+		SlitherCell c = emptyCells.elementAt(idx);
+		tries--;
+		if(focus==null || robot.filter(focus,c))
+		{
+		commonMove m = getValidPlayMove(MOVE_DROPB,c,chip,whoseTurn);
+		if(m!=null) { return m; }
+		max--;
+		emptyCells.setElementAt(emptyCells.elementAt(max),idx);
+		emptyCells.setElementAt(c,max);
+		}
+	}
+	return (focus!=null) ? randomPlayMove(rand,tries,null) : null;
+}
+	
  
  //public boolean drawIsPossible() { return false; }
  // public boolean canOfferDraw() {

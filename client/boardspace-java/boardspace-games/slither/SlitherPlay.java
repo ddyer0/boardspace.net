@@ -92,8 +92,12 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
-    
+    private boolean fastRandomBot = false;
+    private boolean localRandomBot = false;
+    public int slitherPercent = 90;
+    private int filterSpan = 3;
+    private int baseMoveRate = 2500000;
+    public boolean canEverRandomize = true;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -109,7 +113,12 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
     	SlitherPlay cc = (SlitherPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+     	cc.fastRandomBot = fastRandomBot;
+    	cc.localRandomBot = localRandomBot;
+    	cc.filterSpan = filterSpan;
+    	cc.slitherPercent = slitherPercent;
+    	focus.clear();
+       	cc.board.initRobotValues(cc);
     	return(c);
     }
 
@@ -184,14 +193,41 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
             return(board.GetListOfMoves());
         }
 
+        CellStack focus = new CellStack();
+        public void setFocus(SlitherCell c)
+        {
+        	focus.push(c);
+        }
+        public void popFocus()
+        {
+        	focus.pop();
+        }
+        public boolean filter(CellStack stack,SlitherCell c)
+        {	int sz = stack.size();
+        	boolean close = false;
+        	if(sz>1) 
+        		{
+        		SlitherCell focus = stack.elementAt(sz-1);
+        		close |= (Math.abs(c.row-focus.row)<=filterSpan) && (Math.abs(c.col-focus.col)<=filterSpan);
+        		}
+        	if(!close && sz>2)
+        	{
+        		SlitherCell focus = stack.elementAt(sz-2);
+        		close |= (Math.abs(c.row-focus.row)<=filterSpan) && (Math.abs(c.col-focus.col)<=filterSpan);
+        	}
+        	return close;
+        }
         /**
          * this works very ineffeciently by generating all moves and picking one.
          * for many games, this can be replaced with a slightly less random but
          * much faster process.
          */
         public commonMove Get_Random_Move(Random rand)
-        {	
-        	return super.Get_Random_Move(rand);
+        {	commonMove m = fastRandomBot 
+        					? board.getRandomMove(rand,localRandomBot?focus : null)
+        					: null;
+        	if(m==null) { m = super.Get_Random_Move(rand); }
+         	return m;
         }
         
     /** return a value of the current board position for the specified player.
@@ -346,10 +382,44 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
         	WEAKBOT = true;
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
+			// the base sped-up random moves, without the search window
            	MONTEBOT=true;
+           	slitherPercent = 60;
+           	baseMoveRate = 1000000;
+           	fastRandomBot = true;
            	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
-        	
+         	
+		case SIMPLEBOT_LEVEL:
+			// the base sped-up random moves, without the search window
+           	MONTEBOT=true;
+           	slitherPercent = 60;
+           	baseMoveRate = 1000000;
+           	fastRandomBot = true;
+           	MAX_DEPTH = DUMBOT_DEPTH;
+         	break;
+
+		case TESTBOT_LEVEL_1:
+           	MONTEBOT=true;
+           	slitherPercent = 60;
+           	filterSpan = 3;
+           	baseMoveRate = 450000;
+          	fastRandomBot = true;
+           	localRandomBot = true;
+           	MAX_DEPTH = DUMBOT_DEPTH;
+         	break;
+		case TESTBOT_LEVEL_2:
+           	MONTEBOT=true;
+           	slitherPercent = 60;
+           	baseMoveRate = 450000;
+          	filterSpan = 2;
+           	fastRandomBot = true;
+           	localRandomBot = true;
+           	MAX_DEPTH = DUMBOT_DEPTH;
+         	break;
+		case RANDOMBOT_LEVEL:
+          	break;
+      	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
         }
     }
@@ -373,9 +443,13 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
 public void PrepareToMove(int playerIndex)
 {	
 	//use this for a friendly robot that shares the board class
+ 	//Plog.log.addLog("prepare ",GameBoard.getState());
+
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues(this);
+    focus.clear();
+    board.acceptPlacement();
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
@@ -395,7 +469,17 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
- 
+	  public commonMove DoFullMove()
+	  {	if(Strategy==RANDOMBOT_LEVEL)
+	  	{
+		  return Get_Random_Move(new Random());
+	  	}
+	  	else 
+	  	{
+	  		return super.DoFullMove();
+	  	}
+	  }
+
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
@@ -403,6 +487,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
+ 	//Plog.log.addLog("do full ",board.getState()," ",GameBoard.getState());
  	boardSearchLevel = 1;
  	try {
          	// this is a test for the randomness of the random move selection.
@@ -417,8 +502,10 @@ public void PrepareToMove(int playerIndex)
          	//qa.report();
          	
         // it's important that the robot randomize the first few moves a little bit.
-        double randomn = (RANDOMIZE && (board.moveNumber <= 4))
-        						? 0.1/board.moveNumber
+        double randomn = (RANDOMIZE 
+        						&& canEverRandomize 
+        						&& (board.moveNumber <= 4))
+        						? 0.05/board.moveNumber
         						: 0.0;
         UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
         monte_search_state.save_top_digest = true;	// always on as a background check
@@ -438,8 +525,11 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 250000;		// 
-        monte_search_state.max_random_moves_per_second = 5000000;		// 
+        int limit =  WEAKBOT ? baseMoveRate/10 : baseMoveRate;
+        int maxlimit = limit*4;
+        
+        monte_search_state.random_moves_per_second = limit;		// 
+        monte_search_state.max_random_moves_per_second = maxlimit;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
@@ -456,6 +546,9 @@ public void PrepareToMove(int playerIndex)
  		}
       finally { ; }
       if(move==null) { continuous = false; }
+
+      //Plog.log.addLog("finish  ",move," ",GameBoard.getState());
+      G.print("Robot ",this," ",move);
      return(move);
  }
  /**
@@ -464,17 +557,6 @@ public void PrepareToMove(int playerIndex)
  //public void Backprop_Random_Move(commonMove m,double v)
  //{
  //}
- /**
- * get a random move by selecting a random one from the full list.
-  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
-  * in the playout rate.  For games with more complex move generators, it can by much more.
-  * Diagonal-Blocks sped up by 10x 
-  * 
-  */
-// public commonMove Get_Random_Move(Random rand)
-// {	
-//	 super.Get_Random_Move(Random rand);
-// }
  
  /**
   * for UCT search, return the normalized value of the game, with a penalty
@@ -489,23 +571,124 @@ public void PrepareToMove(int playerIndex)
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
  	return(0);
  }
-/**
-  * for UCT search, return the normalized value of the game, with a penalty
-  * for longer games so we try to win in as few moves as possible.  Values
-  * must be normalized to -1.0 to 1.0
-  *
- public double NormalizedScore(commonMove m)
- {	int playerindex = m.player;
-	int nplay = board.nPlayers();
-	commonMPMove mm = (commonMPMove)m;
-	mm.setNPlayers(nplay);
-	double scores[] = mm.playerScores;
-	for(int i=0;i<nplay; i++)
-	{
-		scores[i] = Math.min(1, board.scoreForPlayer(i)/30.0);
-	}
-	return reScorePosition(m,playerindex);
+ 
+ String gamebase = "g:/share/projects/boardspace-html/htdocs/slither/slithergames/smarttest/";
+ String testgames[] = new String[]{ 
+		 "start-04","start-03","start-01","start-02",
+ };
+ public void runRobotTraining(ViewerProtocol vv,BoardProtocol b,SimpleRobotProtocol otherBotf)
+ {	Mutant.Pruning_Percent = 0;
+ 	final commonCanvas v = (commonCanvas)vv;
+ 	final commonRobot<?>self = (commonRobot<?>)v.newRobotPlayer();
+ 	final SimpleRobotProtocol otherBot = otherBotf;
+ 	final String series = "e";
+ 	Bot testbot = Bot.Dumbot;
+ 	StopRobot();
+ 	
+ 	new Thread(new Runnable() {
+ 		public void run() 
+ 		{ 
+  		runRobotTraining(v,"-b-x"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot,	Bot.SimpleBot,testbot,false	); 
+ 		runRobotTraining(v,"-w-x"+series,(commonRobot<?>)self,(commonRobot<?>)otherBot, Bot.SimpleBot,testbot,true);
+ 		}
+	 	}).start();	 	
  }
+	public void runRobotTraining(commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{
+ 		v.ignoreRunThread = true;
+	 	for(String gamename : testgames)
+	 	{	
+	 		trainGameForSure(gamename,v,series,white,black,bwhite,bblack,reverse);
+	 	}
+ 	}
+ 	public boolean trainGameForSure(String gamename,commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{
+ 		boolean complete = trainGame(gamename,v,series,white,black,bwhite,bblack,reverse);
+ 		if(!complete)
+ 		{	
+ 			complete = trainGame(gamename,v,series,white,black,bwhite,bblack,reverse);
+ 			if(!complete)
+ 			{
+ 				G.Error("double fail for ",gamename);
+ 			}
+ 		}
+ 		return complete;
 
- */
+ 	}
+ 	public boolean trainGame(String gamename,commonCanvas v,String series,commonRobot<?> white,commonRobot<?> black,
+ 			Bot bwhite,Bot bblack,boolean reverse)
+ 	{		String fullname = "file:///" + gamebase + gamename + ".sgf";
+			BoardProtocol cloneBoard = v.getBoard();
+	 		try {
+	 		v.replayGame(fullname);
+	 		Bot whiteBot = reverse ? bblack :  bwhite;
+	 		Bot blackBot = reverse ? bwhite : bblack;
+
+	 		white.setName("white playing "+whiteBot.name);
+	 		black.setName("black playing "+blackBot.name);
+
+	 		white.InitRobot(v,v.getSharedInfo(),cloneBoard,null,whiteBot.idx);
+	 		black.InitRobot(v,v.getSharedInfo(),cloneBoard,null,blackBot.idx);
+	 		((SlitherPlay)white).canEverRandomize = false;
+	 		((SlitherPlay)black).canEverRandomize = false;
+	 		commonPlayer p0 = v.getPlayerOrTemp(0);
+	 		commonPlayer p1 = v.getPlayerOrTemp(1);
+	 		p0.setPlayerName(whiteBot.name,false,null);
+	 		p1.setPlayerName(blackBot.name,false,null);
+	 		black.StopRobot();
+	 		white.StopRobot();
+	 		G.print("running ",fullname);
+	 		runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 		boolean gameover = cloneBoard.GameOver();
+	 		if(!gameover)
+	 		{
+	 			runBotGame(v,(commonRobot<?>)white,(commonRobot<?>)black); 
+	 			gameover = cloneBoard.GameOver();
+	 		}
+	 		String result = !gameover 
+	 					? "-incomplete"
+	 					: cloneBoard.WinForPlayer(0)
+	 					 ? (reverse ? "-win" : "-loss")
+	 				     : cloneBoard.WinForPlayer(1)
+	 				     	? (reverse ? "-loss" : "-win")
+	 				     	: "-tie";
+	 		String finalName = gamebase+gamename+series+result+".sgf";
+	 		G.print("finished ",finalName);
+	 		v.saveGame(finalName);
+	 		if(!gameover)
+	 		{
+	 			G.print("game ",finalName," not complete");
+	 		}
+	 		return gameover;
+	 		}
+	 		catch (Throwable err)
+	 		{  throw G.Error("error processing "+gamename+"\n"+err+"\n"+err.getStackTrace());
+	 		}
+	 		
+	 }
+	public void runBotGame(commonCanvas viewer,commonRobot<?>white,commonRobot<?> black)
+	 {	// this and otherbot are running from the same board, but it's a copy of the viewer board
+		commonRobot<?> robots[] = new commonRobot[] {white,black};
+
+		BoardProtocol board = viewer.getBoard();
+		boolean exit = false;
+	 	while(!exit && !board.GameOver())
+	 	{	int who = board.whoseTurn();
+	 		robots[who].PrepareToMove(who);
+	 		commonMove m = robots[who].DoFullMove();
+	 		if(m!=null)
+	 		{
+	 		viewer.PerformAndTransmit(m); 
+	 		String comment = m.getComment();
+	 		if(comment!=null)
+	 		{
+	 			commonMove cm = viewer.getCurrentMove();
+	 			cm.setComment(comment);
+	 		}
+	 		}
+	 		else { exit = true; }	// strange to return null, 
+	 	}
+	 }
  }

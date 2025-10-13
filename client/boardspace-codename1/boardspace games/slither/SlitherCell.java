@@ -108,7 +108,7 @@ public class SlitherCell
 	 */
 	public boolean hasOrthogonalContact(SlitherChip chip)
 	{
-		return hasOrthogonalContact(chip,null,null);
+		return hasOrthogonalContact(chip,null,null,null);
 	}
 	/**
 	 * true if this cell has an orthogonal contact with the desired chip on top.
@@ -118,17 +118,18 @@ public class SlitherCell
 	 * @param fill   assert this cell will be filled with a chip
 	 * @return
 	 */
-	public boolean hasOrthogonalContact(SlitherChip chip,SlitherCell empty,SlitherCell fill)
-	{
+	public boolean hasOrthogonalContact(SlitherChip chip,SlitherCell empty,SlitherCell fill,SlitherCell alsoFill)
+	{	if(empty==fill || empty==alsoFill) { empty = null; }
 		for(int direction = SlitherBoard.CELL_LEFT; 
 				direction<SlitherBoard.CELL_LEFT+SlitherBoard.CELL_FULL_TURN; 
 				direction += SlitherBoard.CELL_QUARTER_TURN )
 		{
 			SlitherCell adj = exitTo(direction);
-			if(adj!=null && adj!=empty && (adj==fill || adj.topChip()==chip)) { return true; }
+			if(adj!=null && adj!=empty && (adj==fill || adj==alsoFill || adj.topChip()==chip)) { return true; }
 		}
 		return false;
 	}
+
 
 	/**
 	 * true if this cell has all diagonal contacts that are valid, ie
@@ -139,20 +140,22 @@ public class SlitherCell
 	 * @param fill   assert this cell will be filled with a chip
 	 * @return
 	 */
-	public boolean validDiagonalContacts(SlitherChip chip,SlitherCell empty,SlitherCell fill)
+	public boolean validDiagonalContacts(SlitherChip chip,SlitherCell empty,SlitherCell fill,SlitherCell alsoFilled)
 	{	
+		if(empty==fill || empty==alsoFilled) { empty=null; }
+	
 		for(int direction = SlitherBoard.CELL_UP_LEFT; 
 				direction<SlitherBoard.CELL_UP_LEFT+SlitherBoard.CELL_FULL_TURN; 
 				direction += SlitherBoard.CELL_QUARTER_TURN )
 		{
 			SlitherCell adj = exitTo(direction);
-			if(adj!=null && adj!=empty && (adj==fill || adj.topChip()==chip)) 
+			if(adj!=null && adj!=empty && (adj==alsoFilled || adj==fill || adj.topChip()==chip)) 
 				{ 
 				SlitherCell o1 = exitTo(direction-1);
-				if(o1==null || o1==empty || (o1!=fill && o1.topChip()!=chip))
+				if(o1==null || o1==empty || (o1!=alsoFilled && o1!=fill && o1.topChip()!=chip))
 				{
 					SlitherCell o2 = exitTo(direction+1);
-					if(o2==null || o2==empty || (o2!=fill && o2.topChip()!=chip))
+					if(o2==null || o2==empty || (o2!=alsoFilled && o2!=fill && o2.topChip()!=chip))
 					{
 						return false;
 					}

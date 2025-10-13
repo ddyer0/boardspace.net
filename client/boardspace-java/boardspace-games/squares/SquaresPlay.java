@@ -109,7 +109,7 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
     	SquaresPlay cc = (SquaresPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

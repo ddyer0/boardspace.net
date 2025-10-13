@@ -104,7 +104,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     	TrenchPlay cc = (TrenchPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

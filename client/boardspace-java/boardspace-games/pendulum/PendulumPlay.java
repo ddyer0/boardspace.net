@@ -106,7 +106,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
     	cc.forPlayer = forPlayer;
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

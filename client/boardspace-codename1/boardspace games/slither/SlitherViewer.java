@@ -541,6 +541,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
             boolean canHit = gb.legalToHitBoard(cell,targets);
             if(cell.drawStack(gc,this,canHit?highlight:null,sz,xpos,ypos,0,0.1,0.1,null))
             		{
+            		highlight.hitData = targets.get(cell);
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
             		}
@@ -880,7 +881,6 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
         
         // if direct drawing, hp.hitObject is a cell from a copy of the board
         SlitherCell hitObject = bb.getCell(hitCell(hp));
-		SlitherState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -899,22 +899,14 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
         	eyeRect.toggle();
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
+        	Slithermovespec m = (Slithermovespec)hp.hitData;
+        	if(m!=null)
 			{
-			default: throw G.Error("Not expecting drop on filled board in state "+state);
-			case Play:
-				PerformAndTransmit("Dropb "+hitObject.col+" "+hitObject.row);
-				break;
-			case Confirm:
-			case Puzzle:
-			case Invalid:
-			case PlayOrSlide:
-			case SlideOrDone:
+			PerformAndTransmit(m);
+			}
+			else
 				{
-				boolean filled = bb.getCell(hitObject).topChip()!=null;				
-				PerformAndTransmit((filled ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
-				}
-				break;
+			PerformAndTransmit(G.concat(bb.pickedObject!=null ?"Dropb ":"Pickb ",hitObject.col," ",hitObject.row));
 			}
 			break;
         case Black:

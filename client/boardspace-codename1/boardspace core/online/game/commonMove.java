@@ -252,7 +252,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	public double reScorePosition(int forPlayer)
 	{
 		return((player == forPlayer)
-    			? evaluation()			// player doarsn't change 
+    			? evaluation()			// player doesn't change 
     			: -evaluation());
 	}
 	public double reScorePosition(int forplayer,double valueOfWin)

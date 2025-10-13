@@ -106,7 +106,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
     	cc.movingForPlayer = movingForPlayer;
     	cc.fastRandomWalk = fastRandomWalk;
     	cc.useMoveStats = useMoveStats;
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 

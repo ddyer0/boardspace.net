@@ -100,7 +100,7 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
     	cc.Strategy = Strategy;
     	cc.robotPlayer = robotPlayer;
     	cc.UCT_WIN_LOSS = UCT_WIN_LOSS;
-    	cc.board.initRobotValues(this);
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 
