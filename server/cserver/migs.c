@@ -643,6 +643,11 @@ void flushLog(fileBuffer *B)
   }
 	B->flushLock=FALSE;	// let the filler back in
 }
+void closeLog(fileBuffer* B)
+{
+	fclose(B->logStream);
+}
+
 /* @func
 convert a string to lower case
 <nl>Overview: <l server>
@@ -7159,7 +7164,7 @@ typedef struct pair
 } pair;
 
 #define MAXPARAM 2000
-#define PAIRBUFSIZE 10000
+#define PAIRBUFSIZE 20000
 char pairbuf[PAIRBUFSIZE];
 size_t pairidx=0;
 pair params[MAXPARAM];
@@ -7407,6 +7412,7 @@ void main_thread()
     if ((serversd!=0) && FD_ISSET(serversd,&efds)) {
       error("Server socket exception", ErrNo());
     }
+
 #if WEBSOCKET
 	if ((webserversd != 0) && FD_ISSET(webserversd, &efds)) {
 		error("Server web socket exception", ErrNo());

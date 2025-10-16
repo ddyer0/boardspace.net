@@ -622,6 +622,7 @@ void saveDirtyGamesNow(SaveGameInfo *G);
 
 // log buffer emptier
 void flushLog(fileBuffer *B);
+void closeLog(fileBuffer* B);
 
 typedef enum loglevel
 {	log_none = 0,					//@emem log_none = 0 | only extremely serious or fatal errors

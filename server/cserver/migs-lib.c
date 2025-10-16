@@ -36,7 +36,10 @@ void ExitWith(int v)
   static int once = 0;
   killThreads=TRUE;
   usleep(2*THREADSLEEP_US);
-  if(once++==0) { flushLog(&mainLog); flushLog(&chatLog); flushLog(&securityLog); }
+  if(once++==0) 
+	{ flushLog(&mainLog); flushLog(&chatLog); flushLog(&securityLog); 
+      closeLog(&mainLog); closeLog(&chatLog); closeLog(&securityLog);
+	}
 #if WIN32
 	if(Winsock_Started) { WSACleanup(); }
 #endif

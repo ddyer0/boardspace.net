@@ -802,7 +802,6 @@ PREAMBLE_RESULT handshake_preamble(User *u,SOCKET socket)
     int n = doselect(socket, &rlist, NULL, &elist, 10);
     if (n < 0) { u->badReadCount++; return PREAMBLE_ERROR; }
     else if (n == 0) { u->badReadCount++; return PREAMBLE_ASKAGAIN; }
-    
     if (FD_ISSET(socket, &elist))
     {
         u->badReadCount++; 
