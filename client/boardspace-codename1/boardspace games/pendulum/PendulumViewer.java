@@ -2011,42 +2011,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
-    
-    /**
-     * sort the ephemeral moves into their final order.  Normally is is
-     * just ordering the moves so all of each players moves are together.
-     * 
-     * @param ephemera
-     */
-    public void ephemeralSort(CommonMoveStack ephemera)
-    {
-    	super.ephemeralSort(ephemera);
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
-    // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneousTurnsAllowed()
-    {	return super.simultaneousTurnsAllowed();
-    }
-  // public RecordingStrategy gameRecordingMode()
-  //  {	return(super.gameRecordingMode());
-  //  }
     private String vprogressString()
     {	return super.gameProgressString()+" score score";
     }

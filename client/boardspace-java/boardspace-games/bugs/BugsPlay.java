@@ -390,7 +390,7 @@ public void PrepareToMove(int playerIndex)
  	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = 0.2/boardSearchLevel + 0.8*board.robotScore(i);
 	 	}
-	return( mm.reScorePosition(playerindex,VALUE_OF_WIN));
+	return( reScorePosition(mm,playerindex));
  }
  
  //

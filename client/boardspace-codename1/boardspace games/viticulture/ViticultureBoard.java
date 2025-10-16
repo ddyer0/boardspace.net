@@ -24,6 +24,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 
+
 /**
  * This class doesn't do any graphics or know about anything graphical, 
  * in the graphics.
@@ -98,7 +99,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 167;			// 100 represents the initial version of the game
+{	static int REVISION = 168;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -187,6 +188,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 165, discard selected cards in the order selected
 										// revision 166 fix extraneous "steal" when innkeeper placed on the dollar space
 										// revision 167 fixes the logic for "reaper" to not care about the numnber of grapes produced
+										// revision 168 changes the "with replacement" logic to distribute the replacements fairly
+
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -2460,13 +2463,34 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		reshuffleAt = moveNumber;
     }
     
+    /**
+     * draw a single card, not subject to doubling by the oracle
+     * @param from
+     * @param pb
+     * @param replay
+     * @param formove
+     */
+    private void drawSingleCard(ViticultureCell from,PlayerBoard pb,replayMode replay,Viticulturemovespec formove)
+    {
+    	if(revision<168)
+    	{	// before this revision these cards were not replaced in the deck
+    		pb.drawnCards.reInit();
+    		drawCard_internal(from,pb,replay,formove);
+     		pb.drawnCards.reInit();
+    	}
+    	else
+    	{
+    		drawCards(1,from,pb,replay,formove);
+    	}
+    }
    
     // redraw n cards, all from a single stack; or if no cards are recorded
     // draw them and record them for replay
     private ViticultureState drawCards(int n,ViticultureCell from,PlayerBoard pb,replayMode replay,Viticulturemovespec formove)
     {	boolean ok = true;	// remains true if we get all the cards requested
     	int originalHeight = from.height();
-    	for(int i=0;i<n;i++) { ok &= drawCard(from,pb,replay,formove); }
+    	pb.drawnCards.reInit();
+    	for(int i=0;i<n;i++) { ok &= drawCard_internal(from,pb,replay,formove); }
     	if(ok 
     		&& (currentWorker!=null) 
     		&& (currentWorker.type==ChipType.Oracle)
@@ -2474,7 +2498,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	{	//p1("oracle "+resetState);
     		ViticultureChip cw = currentWorker;
     	    currentWorker = null;				// prevent any other invocations
-    		ok &= drawCard(from,pb,replay,formove);	// draw an extra card for the oracle
+    		ok &= drawCard_internal(from,pb,replay,formove);	// draw an extra card for the oracle
     		if(ok)	// we got all the cards and one more for the oracle
     		{
     		int h = pb.cards.height();
@@ -2487,7 +2511,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		}
     		triggerCard = cw;
 
-    		if(testOption(Option.DrawWithReplacement)) { replaceCards(from,pb,n+1,originalHeight); }
+    		if(testOption(Option.DrawWithReplacement)) { replaceCards(from,pb,originalHeight); }
+    		
     		if(revision>=163)
     		{
     		switch(n)
@@ -2508,16 +2533,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		// this is a real thing for the green deck in 6p games
     	}
     	
-    	if(testOption(Option.DrawWithReplacement)) { replaceCards(from,pb,n,originalHeight); }
+    	if(testOption(Option.DrawWithReplacement)) { replaceCards(from,pb,originalHeight); }
      	return(null);
     }
-    void replaceCards(ViticultureCell from,PlayerBoard pb,int n,int originalHeight)
+    private void replaceCards(ViticultureCell from,PlayerBoard pb,int originalHeight)
     {
     	// we take n off the top so there will be no duplicates,
     	// then reinsert them at random points of the deck
-    	int h = pb.cards.height();
-    	for(int lim =n; lim>0; lim--)
-    		{	ViticultureChip ch = pb.cards.chipAtIndex(h-lim);
+    	for(int i=0,lim=pb.drawnCards.height(); i<lim;i++)
+    		{	// go from 0 up for compatibility
+    			ViticultureChip ch = pb.drawnCards.chipAtIndex(i);
     			replaceCard(from,ch);
     		}
     	Assert(from.height()==originalHeight,"deck size changed");
@@ -2527,21 +2552,37 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	Random r = new Random(seed);
     	to.insertChipAtIndex(r.nextInt(to.height()),card);
     }
-    void replaceCards(ViticultureCell from,ViticultureCell to)
-    {
-    	while(from.height()>0) { replaceCard(to,from.topChip()); }
-    }
+
     //
     // draw a card from a stack and record it for replay. Return true if a card was available
     //
-    boolean drawCard(ViticultureCell from,PlayerBoard pb,replayMode replay,Viticulturemovespec formove)
+    boolean drawCard_internal(ViticultureCell from,PlayerBoard pb,replayMode replay,Viticulturemovespec formove)
     {	
     	if(from.topChip()==null) 
     	{	reshuffle(from,getDiscards(from));     		
     	}
     	if(from.topChip()!=null)
-    	{	ViticultureChip chip = from.removeTop();
+    	{	ViticultureChip chip = null;
     		ViticultureCell dest = pb.cards;
+			
+    		do {
+    			if(revision>=168 && testOption(Option.DrawWithReplacement))
+    			{
+    			// remove a random card
+    			long seed = from.CardDigest() * (moveNumber+1000);
+    	    	Random r = new Random(seed);
+    	    	chip = from.removeChipAtIndex(r.nextInt(from.height()));
+    			}
+    		else {
+    			chip = from.removeTop();
+    			}
+    			if(!pb.drawnCards.containsChip(chip))
+    				{ pb.drawnCards.addChip(chip);
+    				}
+    		} while (testOption(Option.DrawWithReplacement)
+    				 && revision>=168
+    				 // this deduplicates the chips you actually draw
+    				 && dest.containsChip(chip));
     		dest.addChip(chip);
     		if(formove!=null) { formove.cards = push(formove.cards,chip); }
     		String msg = DrawSomething;
@@ -2581,31 +2622,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	}
     	return(false);
     }
-    //
-    // draw a chip "on demand", complain if it's not available.
-    // this is used to enforce replays despite changes in the
-    // random sequence
-    //
-    void drawCard(ViticultureChip chip,ViticultureCell to,replayMode replay)
-    {
-    	ViticultureCell from = cardPile(chip);
-		if(from.height()==0)
-		{
-			reshuffle(from,discardPile(chip));
-		}
-		ViticultureChip top = from.topChip();
-		if(top!=chip)
-			{ G.print("Not the natural chip "+chip);
-			}
-    	ViticultureChip ok = from.removeChip(chip);   	
-    	Assert(ok==chip,"target chip not found");
-    	to.addChip(chip);
-    	if(replay.animate)
-		{
-			animationStack.push(from);
-			animationStack.push(to);
-		}
-    }
+
     //
     // change the residual track, respecting the limits of the track
     //
@@ -3766,8 +3783,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
   		else { return(ViticultureState.SelectWakeup); }
     }
     public int season(PlayerBoard pb)
-    {
-    	return testOption(Option.ContinuousPlay) ? pb.season() : season;
+    {	// get the season for a player.  This isn't the same as the season of the game
+    	// because there is continuous play option, and because with the "planner" card
+    	// you can advance to the next season.  Under rare circumstances you can advance
+    	// more than once.  Up to revision 168 there was a potential rare bug that if you
+    	// advanced twice, the bonus you collected would be incorrect because this returned
+    	// the game season, not the player season.
+    	return pb.season();
     }
     private void drawResidualCards(PlayerBoard pb,replayMode replay,Viticulturemovespec m)
     {
@@ -4584,8 +4606,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
            		}
            		else
            		{
-    			drawCard(purpleCards,pb,replay,m);
-    			drawCard(blueCards,pb,replay,m);
+
+    			drawSingleCard(purpleCards,pb,replay,m);
+    			drawSingleCard(blueCards,pb,replay,m);
            		}
     			break;
     		default: ;
@@ -4634,13 +4657,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		}
        		else
        		{
-       		drawCard(greenCards,pb,replay,m);
-    		drawCard(purpleCards,pb,replay,m);
-    		drawCard(blueCards,pb,replay,m);
+       		drawSingleCard(greenCards,pb,replay,m);
+       		drawSingleCard(purpleCards,pb,replay,m);
+       		drawSingleCard(blueCards,pb,replay,m);
        		}
     		for(PlayerBoard p : pbs)
     		{
-    			if(pb!=p) { drawCard(yellowCards,p,replay,m); }
+    			if(pb!=p) { drawSingleCard(yellowCards,p,replay,m); }
     		}
     		break;
     		
@@ -5585,8 +5608,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
            		}
            		else
            		{
-       			drawCard(greenCards,pb,replay,m);
-    			drawCard(yellowCards,pb,replay,m);
+           		drawSingleCard(greenCards,pb,replay,m);
+           		drawSingleCard(yellowCards,pb,replay,m);
            		}
     			break;
     		case Choice_B:
@@ -5819,9 +5842,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
            		}
            		else
            		{
-       			drawCard(greenCards,pb,replay,m);
-    			drawCard(yellowCards,pb,replay,m);
-    			drawCard(purpleCards,pb,replay,m);
+           			drawSingleCard(greenCards,pb,replay,m);
+           			drawSingleCard(yellowCards,pb,replay,m);
+           			drawSingleCard(purpleCards,pb,replay,m);
            		}
     		}
     		flashChip = ViticultureChip.PoliticianCard;
@@ -6386,11 +6409,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		}
        		else
        		{
-      		drawCard(yellowCards,pb,replay,m);
-       		drawCard(greenCards,pb,replay,m);
-       		drawCard(blueCards,pb,replay,m);
-       		drawCard(purpleCards,pb,replay,m);
-       		drawCard(structureCards,pb,replay,m);
+       			drawSingleCard(yellowCards,pb,replay,m);
+       			drawSingleCard(greenCards,pb,replay,m);
+       			drawSingleCard(blueCards,pb,replay,m);
+       			drawSingleCard(purpleCards,pb,replay,m);
+       			drawSingleCard(structureCards,pb,replay,m);
        		}
        		break;
        	case Discard2CardsFor4: // auctioneer
@@ -6442,7 +6465,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{	// draw all the other cards
     			if(c!=selectedCard)
     			{
-    				drawCard(c,pb,replay,m);
+    				drawSingleCard(c,pb,replay,m);
     			}
     		}
     		// drawCards will trigger the oracle action of sampling
@@ -7403,8 +7426,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		       		}
     		       		else
     		       		{
-    		       		drawCard(greenCards,pbs[tp],replay,m);
-    		       		drawCard(yellowCards,pbs[tp],replay,m);
+    		       			drawSingleCard(greenCards,pbs[tp],replay,m);
+    		       			drawSingleCard(yellowCards,pbs[tp],replay,m);
     				}}
             	}}
     			break;

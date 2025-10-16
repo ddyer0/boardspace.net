@@ -429,7 +429,10 @@ public void PrepareToMove(int playerIndex)
         }
         else 
   */
- 
+ public double reScorePosition(commonMove mm,int forplayer)
+ {
+	 return mm.reScorePosition(forplayer,MAX_SCORE-MIN_SCORE);
+ }
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
 		int nplay = board.nPlayers();
@@ -438,7 +441,7 @@ public void PrepareToMove(int playerIndex)
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return(mm.reScorePosition(playerindex,MAX_SCORE-MIN_SCORE));	
+	return reScorePosition(mm,playerindex);	
  }
  public double NormalizedScore(commonMove lastMove)
  {	

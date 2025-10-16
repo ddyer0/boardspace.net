@@ -63,7 +63,8 @@ public class UCTNode {
 		if(cc!=null) { return(cc[0].player); }
 		return(-1);
 	}
-	public synchronized void setParent(UCTNode n) { parent = n; }
+	@SuppressWarnings("unused")
+	private synchronized void setParent(UCTNode n) { parent = n; }
 
 	public enum key { winrate, visits, uct } ;		// sort keys
 	public double getDisplayWinRate() { return(wins/max(1,abs(visits))); }
@@ -81,6 +82,7 @@ public class UCTNode {
 	public UCTNode(UCTNode par){
 		parent=par;
 		//	uct =100;//initialized high so unexplored gets explored before siblings
+		wins = 0;
 		visits = 0;
 		uct=0;//doesnt matter what this is it changed for all siblings after 1st simulation anyway
 	}
@@ -126,10 +128,14 @@ public class UCTNode {
 	{//root
 		parent=null;
 		uct =0;
+		wins = 0;
 		visits = 1;
 	}
 
 	// return true if we should expand a new UCT node below this leaf node
+	//
+	// testing shows that this synchronization doesn't affect performance,
+	// so leave it alone.
 	public synchronized boolean expandLeafNode(double node_expansion_rate)
 	{
 		UCTNode parent = getParent();
@@ -461,7 +467,7 @@ public class UCTNode {
 		{
 			if(visits>=0)
 			{	// update visits if the node hasn't been killed (marked by negative visits)
-				wins+= won*newVisits;
+				wins += won*newVisits;
 				visits += newVisits;
 				visited = true;
 			}

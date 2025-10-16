@@ -661,7 +661,6 @@ synchronized(allGames) {
 				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 
-	 
 	 g = put(new GameInfo(1766,ES.game,127,"DM",AncientGames,"Checkers","Checkers-dameo",
 				OneBotPlus,
 				new double[]{1.0,0.01},
@@ -675,7 +674,6 @@ synchronized(allGames) {
     		 	"checkerboard.CheckerGameViewer","/dameo/english/DameoRules.html","about_dameo.html",
     		 	null,false, WhiteOverBlack));
      g.distinctVariations = true;
-
 
 	}
 	{

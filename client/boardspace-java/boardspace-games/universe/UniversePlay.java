@@ -137,14 +137,11 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
     boolean UCT_WIN_LOSS = true;
     boolean SKIP_LEADING_EVALS = false;		// use for polysolver only
     
-    int STRATEGY = DUMBOT_DEPTH;
+    int STRATEGY = DUMBOT_LEVEL;
 	UniverseViewer viewer = null;
 	boolean STORED_CHILD_LIMIT_STOP = false; 
-    static final int DUMBOT_DEPTH = 3;
-    static final int GOODBOT_DEPTH = 4;
-    static final int BESTBOT_DEPTH = 6;
-	static final double VALUE_OF_WIN = 1000000.0;
-    int MAX_DEPTH = BESTBOT_DEPTH;
+	static final double VALUE_OF_WIN = 1.0;
+    int MAX_DEPTH = 999;
     double ALPHA = 0.5;
      /* strategies */
     int boardSearchLevel = 0;				// the current search depth
@@ -342,6 +339,10 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
     	double vv = reScorePosition(move,player);
     	return(vv);
     }
+    public double reScorePosition(commonMove move,int player)
+    {
+    	return move.reScorePosition(player,VALUE_OF_WIN);
+    }
     /**
      * this is it! just tell me that the position is worth.  
      */
@@ -475,102 +476,7 @@ public void initPolySolverRobot(ExtendedHashtable info,int strategy)
  }
 
 
- public commonMove DoAlphaBetaFullMove()
-    {
-	 UniverseMovespec move = null;
-	 if(board.getState()==UniverseState.PUZZLE_STATE) 
-	 	{
-		if(board.WinForPlayerNow(0)) { continuous=false; return(null); }
-	 	board.setState(UniverseState.PLAY_STATE); 
-	 	}
-        try
-        {
 
-            if (board.DoneState())
-            { // avoid problems with gameover by just supplying a done
-                move = new UniverseMovespec("Done", board.whoseTurn);
-            }
-
-            // it's important that the robot randomize the first few moves a little bit.
-            int randomn = 0;
-            int depth = MAX_DEPTH;	// search depth
-            double dif = 0.0;		// stop randomizing if the value drops this much
-            // if the "dif" and "randomn" arguments to Find_Static_Best_Move
-            // are both > 0, then alpha-beta will be disabled to avoid randomly
-            // picking moves whose value is uncertain due to cutoffs.  This makes
-            // the search MUCH slower so depth ought to be limited
-            // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games where there are no "fools mate" type situations
-            // the best solution is to use dif=0.0;  For games with fools mates,
-            // set dif so the really bad choices will be avoided
-            boardSearchLevel = 0;
-
-            Search_Driver search_state = Setup_For_Search(depth, false);
-            search_state.save_all_variations = SAVE_TREE;
-            search_state.single_choice_optimization = false;
-            search_state.allow_killer = false;
-            search_state.verbose=verbose;			// debugging
-            search_state.save_top_digest = true;	// always on as a background check
-            search_state.save_digest=false;	// debugging only
-            search_state.check_duplicate_digests = false; 	// debugging only
-
-            if (move == null)
-            {
-                move = (UniverseMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-                if(move!=null)
-                {
-                switch(board.rules)
-                {
-            	case PolySolver_6x6:
-            	case PolySolver_9x9:
-            	case Nudoku_6x6:
-            	case Nudoku_12:
-            	case Nudoku_11:
-            	case Nudoku_10:
-            	case Nudoku_9:
-            	case Nudoku_8:
-            	case Nudoku_7:
-            	case Nudoku_6:
-            	case Nudoku_5:
-            	case Nudoku_4:
-            	case Nudoku_3:
-            	case Nudoku_2:
-        		case Nudoku_1_Box:
-        		case Nudoku_2_Box:
-           		case Nudoku_3_Box:
-        		case Nudoku_4_Box:	// 3 x 2 in 2x2
-           		case Nudoku_5_Box:
-        		case Nudoku_6_Box:
-        		case Nudoku_1:
-    			case Sevens_7:
-            	case Nudoku_9x9:
-            		// if the result is not a solution, reject it.
-            		if(move.evaluation() < VALUE_OF_WIN)
-            		{	move = null;
-            			G.print("No solutions");
-             		}
-					break;
-				default: break;
-                }}
-            }
-        }
-        finally
-        {
-            Accumulate_Search_Summary();
-            Finish_Search_In_Progress();
-        }
-
-        if (move != null)
-        {
-        	if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-        continuous = false;
-        // abnormal exit
-        return (null);
-    }
- 
  /** default do nothing */
  public commonMove Get_Reply_Move(commonMove last)
  {	if(ENABLE_LASTREPLY_CACHE && (last!=null))

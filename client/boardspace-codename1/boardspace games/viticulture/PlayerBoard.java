@@ -254,6 +254,7 @@ public class PlayerBoard
 	}
 	
 	ViticultureCell oracleCards = null;			// card for selection by the oracle
+	ViticultureCell drawnCards = null;			// temporary for deduplication of cards
 	ViticultureCell oracleColors[] = null;
 	CellStack selectedCells = new CellStack();	// fields selected for the next operation
 	ViticultureCell structures[] = new ViticultureCell[2];
@@ -460,6 +461,7 @@ public class PlayerBoard
 		cards = newcell(ViticultureId.Cards,colCode,0,ChipType.Card,CardDescription);
 		fillableWineOrders = newcell(ViticultureId.Cards,colCode,1,ChipType.Card,null);
 		oracleCards = newcell(ViticultureId.SelectedCards,colCode,1,ChipType.Card,null);
+		drawnCards =  new ViticultureCell(ViticultureId.CardDisplay,'@',0);
 		oracleColors = null;
 		structures[0] = newcell(ViticultureId.PlayerStructureCard,colCode,0,ChipType.StructureCard,StructuresDescription);
 		structures[1] = newcell(ViticultureId.PlayerStructureCard,colCode,1,ChipType.StructureCard,StructuresDescription);

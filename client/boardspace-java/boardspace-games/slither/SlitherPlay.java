@@ -581,7 +581,7 @@ public void PrepareToMove(int playerIndex)
  	final commonCanvas v = (commonCanvas)vv;
  	final commonRobot<?>self = (commonRobot<?>)v.newRobotPlayer();
  	final SimpleRobotProtocol otherBot = otherBotf;
- 	final String series = "e";
+ 	final String series = "g";
  	Bot testbot = Bot.Dumbot;
  	StopRobot();
  	

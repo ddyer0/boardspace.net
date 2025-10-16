@@ -290,7 +290,11 @@ public void PrepareToMove(int playerIndex)
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));	
+	return(reScorePosition(m,playerindex));	
+ }
+ public double reScorePosition(commonMove m,int playerindex)
+ {
+	 return m.reScorePosition(playerindex,VALUE_OF_WIN);
  }
 
  /**

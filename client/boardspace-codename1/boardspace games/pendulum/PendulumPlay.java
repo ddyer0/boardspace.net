@@ -430,8 +430,7 @@ boolean split = false;
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return( mm.reScorePosition(playerindex,VALUE_OF_WIN));
-	
+	return( reScorePosition(m,playerindex));
  }
 
  

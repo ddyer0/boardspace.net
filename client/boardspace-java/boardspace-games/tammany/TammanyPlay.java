@@ -431,7 +431,11 @@ public double assignMonteCarloWeights(CommonMoveStack all)
 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 		//G.print(""+mm+" "+mm.playerScores[i]+" "+board.win[i]);
 	}
-	return(mm.reScorePosition(playerindex,1.0));	
+	return(reScorePosition(m,playerindex));	
+ }
+ public double reScorePosition(commonMove m,int playerIndex)
+ {
+	 return m.reScorePosition(playerIndex,1.0);
  }
 /*
  * This is a set of notes charting the development of a MCTS AI for Tammany Hall. The MCTS framework I use provides a few hooks to plug in the specifics for a particular game. The most important hooks are to generate a list of candidate moves, to generate a random candidate move, and to execute a chosen move. At the point this blog starts, the game engine is complete, able to generate and execute moves, and needs an AI.

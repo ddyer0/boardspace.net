@@ -19,7 +19,7 @@
 
           
           <td style="vertical-align: top; text-align: center;"><h2><a style="font-weight: bold;" href="lobby-help.html">How to Play Online Games here</a><font size="+2"><a style="font-weight: bold;" href="login-jws.shtml"><br>
-              </a></font></h2></td><td><h2><font size="+1"><a href="register.shtml"><span style="font-weight: bold;">Register</span></a></font></h2></td><td style="font-weight: bold;"><h2><a href="login-jws.shtml"><font size="+1"><a href="register.shtml"><span style="font-weight: bold;">Download the app for your platform</span></a></font></a></h2></td>
+              </a></font></h2></td><td><h2><font size="+1"><a href="register.shtml"><span style="font-weight: bold;">Register</span></a></font></h2></td><td style="font-weight: bold;"><h2><a href="login-jws.shtml"><font size="+1"></font></a><font size="+1"><a href="login.shtml"><span style="font-weight: bold;">Download the app for your platform</span></a></font></h2></td>
         </tr>
       </tbody>
     </table>

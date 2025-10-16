@@ -459,6 +459,10 @@ public void PrepareToMove(int playerIndex)
  	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = Math.min(maxs, ScoreForPlayer(board,i,false));
 	 	}
+ 	return reScorePosition(m,playerindex);
+ }
+ public double reScorePosition(commonMove mm,int playerindex)
+ {	double maxs = board.winningScore();
  	double val = mm.reScorePosition(playerindex,maxs);
  	if(!UCT_WIN_LOSS)
  	{

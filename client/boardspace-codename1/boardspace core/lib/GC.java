@@ -479,12 +479,12 @@ public class GC {
 	/**
 	     * 
 	     * @param g
-	     * @param left
-	     * @param top
-	     * @param width
-	     * @param height
-	     * @param rx
-	     * @param ry
+	     * @param left left 
+	     * @param top  top
+	     * @param width width
+	     * @param height height
+	     * @param rx round x
+	     * @param ry round y
 	     */
 	   static public void fillRoundRect(Graphics g,int left,int top,int width,int height,int rx,int ry)
 	   {

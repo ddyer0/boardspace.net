@@ -355,9 +355,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return( evaluator.scoreProportional 
-				? mm.reScoreProportional(playerindex,VALUE_OF_WIN)
-				: mm.reScorePosition(playerindex,VALUE_OF_WIN));
+	return( reScorePosition(m,playerindex));
 	
     }
     
@@ -597,7 +595,10 @@ public commonMove DoMonteCarloFullMove()
 	return(sc);
  }
  public double reScorePosition(commonMove cm,int forplayer)
- {	return cm.reScorePosition(forplayer,1);
+ {	
+	 return evaluator.scoreProportional 
+		? ((EuphoriaMovespec)cm).reScoreProportional(forplayer,VALUE_OF_WIN)
+		: cm.reScorePosition(forplayer,VALUE_OF_WIN);
  }
   /**
    * benchmark moves per second 7/1/2014    244458 from starting position
