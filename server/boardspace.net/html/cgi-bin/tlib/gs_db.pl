@@ -159,17 +159,18 @@ sub disconnect()
 	{	# bad guy feeding stuff to the queries
 	my $qc = $dbh->quote("bad input $ENV{'SCRIPT_NAME'}: $::single_ip_penalty_string" );
 	my $da = $dbh->quote(&datestring());
+	my $comm = ('' eq $::single_ip_penalty_string) ? ",comment=concat(comment,'\n',$da,$qc)" : "";
 	if($::single_ip_uid)
 		{
 		my $quid = $::single_ip_uid;
-		my $q = "update ipinfo set status='autobanned',comment=concat(comment,'\n',$da,$qc) WHERE uid=$quid";
+		my $q = "update ipinfo set status='autobanned',rejectcount=rejectcount+1$comm WHERE uid=$quid";
 		&commandQuery($dbh,$q);
 		}
 		elsif($::single_ip_ip)
 		{
 		my $qip = $dbh->quote($::single_ip_ip);
 		my $q = "Insert into ipinfo set status='autobanned',min=$qip,max=$qip,comment=$qc"
-				. " ON DUPLICATE KEY UPDATE status='autobanned',comment=concat(comment,'\n',$da,$qc)";
+				. " ON DUPLICATE KEY UPDATE status='autobanned',rejectcount=rejectcount+1$comm";
 		&commandQuery($dbh,$q);
 		}	
 	}
@@ -436,6 +437,10 @@ sub allow_ip_access()
 	#only make new database entries once per minute to avoid floods
 	my $uu = $dbh->quote($uid);
         &commandQuery($dbh,"update ipinfo SET rejectcount=rejectcount+1 where $uu=uid");
+	}
+	else
+	{
+	$::single_ip_penalty_string = '';
 	}
         $loginok = 0;
        }

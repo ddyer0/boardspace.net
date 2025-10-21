@@ -1,0 +1,28 @@
+#!/bin/csh
+echo "Content-type: text/html";
+echo ""
+
+source /home/boardspa/cgi-bin/include.csh
+
+if (`lockfile -r 1 -l 60 /tmp/boardspaceserver_startup.lock`) then
+echo "couldn't get lockfile /tmp/boardspaceserver_startup.lock"
+else
+
+echo 'starting server'
+
+cd $root/cgi-bin/tlib
+
+perl serverconf.pl > $root/bin/dynamic.conf
+
+cd $root/bin
+
+cat test.conf dynamic.conf > TestServer.conf
+limit coredumpsize u
+./TestServer TestServer.conf 
+
+echo started
+
+rm -rf /tmp/boardspaceserver_startup.lock
+
+endif
+

@@ -1,0 +1,9 @@
+
+These are copies of the ssl keys found in 
+/etc/letsencrypt/live/boardspace.net
+
+they're copied automatically by the script
+/etc/letsencrypt/renewal-hooks/post/copycert
+
+if something goes wrong with this process, when the ssl keys here
+expire, the cheerpj client won't be able to connect with wss
