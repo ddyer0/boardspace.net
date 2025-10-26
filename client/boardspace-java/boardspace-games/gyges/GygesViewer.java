@@ -17,7 +17,7 @@
 package gyges;
 
 import java.awt.*;
-import java.awt.Rectangle;
+
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -146,8 +146,10 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int doneW = plannedSeating()?unitsize*4:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+doneW+unitsize/4,y,unitsize);
+    	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(done, x, y, doneW,doneW/2);
+    	G.SetRect(chip,x+unitsize/4,y+unitsize*3/2,unitsize,unitsize);
     	pl.displayRotation = rotation;
     	G.union(box, done);
     	return(box);
@@ -221,14 +223,6 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     		G.setRotation(boardRect, -Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
-        G.SetRect(chipRects[0],
-        		boardX,boardY+SQUARESIZE/3,
-        		SQUARESIZE, SQUARESIZE);
- 
-        G.SetRect(chipRects[1],
-        		boardX,boardBottom-SQUARESIZE-SQUARESIZE/5,
-        		 SQUARESIZE, SQUARESIZE);
-
         
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -238,13 +232,33 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
  	
     }
-
+    public void drawPlayerIcon(Graphics gc,int forPlayer,int cx,int cy,int size)
+    {
+    	int dir = ((forPlayer!=0 == b.reverseY()) ? 1 : -1) * size/3;
+    	GC.setColor(gc,MouseColors[forPlayer]);
+    	//Color edgeColor = MouseDotColors[forPlayer];
+    	GC.drawArrow(gc, cx,cy-dir,cx,cy+dir,size/3,size/7);
+    }
+    double iconScale[] = new double[] {1,0.8,0,-0.2};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = iconScale;
+    	return( new DrawnIcon(100,100,p)
+    		{ public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg)
+    			{
+    			drawPlayerIcon(gc,(int)parameter,posx,posy,size);
+    			}
+    		});
+    }
 	// draw the rack of unplaced pieces.
     private void DrawCommonChipPool(Graphics gc, int forPlayer, Rectangle r, int player, HitPoint highlight)
     {	GygesCell chips[]= b.rack[forPlayer];
         boolean canHit = b.LegalToHitChips(forPlayer);
-        int thisx = G.Left(r)+SQUARESIZE;
-        int thisy = G.Top(r)+SQUARESIZE/2;
+        int x = G.Left(r);
+        int y = G.Top(r);
+        int w = G.Width(r);
+        int thisx = x+SQUARESIZE;
+        int thisy = y+SQUARESIZE/2;
+        drawPlayerIcon(gc,forPlayer,x+w/2,y+w/2,w*2/3);
         boolean picked = (b.pickedObject!=null);
         boolean show = eyeRect.isOnNow();
         for(GygesCell thisCell : chips)
@@ -347,6 +361,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 		if(steps!=null)
 		{	GygesCell terminal = (to!=null) || (bounces==null) ? to : bounces.top();
 			GygesCell prev = from;
+			int reverse = gb.reverseY() ? 2 : 0;
 			for(int idx = 0; idx<steps.size(); idx++)
 			{
 				GygesCell current = steps.elementAt(idx);
@@ -363,7 +378,8 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 			        int ypos1 = G.Bottom(brect) - gb.cellToY(current);
 			        int xpos1 = G.Left(brect) + gb.cellToX(current);
 			        int direction = b.findDirection(prev.col,prev.row,current.col,current.row);
-			        stockArt[direction].drawChip(gc,this,SQUARESIZE/3,(xpos0+xpos1)/2,(ypos1+ypos0)/2,null);
+			        
+			        stockArt[direction^reverse].drawChip(gc,this,SQUARESIZE/3,(xpos0+xpos1)/2,(ypos1+ypos0)/2,null);
 			        }
 				}
 				prev  = current;
@@ -534,6 +550,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       GygesState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardPlainFont());
     
@@ -569,7 +586,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
  		drawPlayerStuff(gc,(vstate==GygesState.Puzzle),ourSelect,HighlightColor,rackBackGroundColor);
 
         standardGameMessage(gc,messageRotation,
-            		vstate==GygesState.Gameover?gameOverMessage(gb):s.get(vstate.getDescription()),
+            		vstate==GygesState.Gameover?gameOverMessage(gb):s.get(vstate.getDescription(gb.reverseY())),
             				vstate!=GygesState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

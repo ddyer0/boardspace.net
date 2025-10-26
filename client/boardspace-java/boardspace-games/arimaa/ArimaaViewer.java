@@ -85,7 +85,10 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     private Color rackBackGroundColor = new Color(194,175,148);
     private Color boardBackgroundColor = new Color(220,165,155);
     private Color blackArrow = new Color(0.1f,0.1f,0.0f);
-   
+    private Color goldColor = new Color(87,70,34);
+    private Color silverColor = new Color(100,100,120);
+    private Color[] mouseColors = new Color[] { goldColor,silverColor};
+    private Color [] dotColors = new Color[] { Color.white,Color.white};
     // sounds
     static final String sucking_sound = "/arimaa/images/Suck Up" + Config.SoundFormat;
     // images
@@ -153,7 +156,8 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
        	// 
     	super.init(info,frame);
     	if(G.debug()) { ArimaaConstants.putStrings(); }
-    	
+    	MouseColors = mouseColors;
+    	MouseDotColors = dotColors;
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         // randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
@@ -222,7 +226,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*25;	
+    	int minLogW = fh*20;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int vcrW = fh*16;
@@ -544,6 +548,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
       HitPoint ourNonDragSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       ArimaaState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc, vcrSelect, logRect, Color.black, boardBackgroundColor,
     		  standardBoldFont(),standardPlainFont());
 

@@ -119,13 +119,8 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
      */
     double ScoreForPlayer(ChessBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.winForPlayerNow(player);
      	double ss = evboard.ScoreForPlayer(player,print);
-     	// including the raw evaluation in the win value is intended to
-     	// avoid stalemates disguised as a win, as in king-vs-rook endings
-    	if(win) { return(VALUE_OF_WIN+ss/100+(1.0/(1+board.robotDepth))); }
     	return(ss);
-
     }
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
@@ -135,23 +130,27 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
- 
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
    public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		boolean win = board.winForPlayerNow(playerindex);
+        	if(win) 
+        		{double ss = board.ScoreForPlayer(playerindex,false);
+        		 return(VALUE_OF_WIN+ss/100+(1.0/(1+board.robotDepth))); 
+        		}
+        	boolean win2 = board.winForPlayerNow(playerindex^1);
+        	if(win2) { // a slow loss is better than a quick one
+        		double ss = board.ScoreForPlayer(playerindex^1,false);
+        		return -(VALUE_OF_WIN+(1-(ss/200+1.0/(1+board.robotDepth))));
+        		}
+        	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,playerindex^1,false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // for lyngk because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -163,10 +162,8 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     	ChessBoard evboard = (ChessBoard)GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
-
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy

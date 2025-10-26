@@ -5218,6 +5218,7 @@ private void drawPlayerBoard(Graphics gc,
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,
     		   boardBackgroundColor, standardBoldFont(),standardBoldFont());
        
@@ -5306,6 +5307,12 @@ private void drawPlayerBoard(Graphics gc,
        // }
     }
 
+    double textIconScale[] = new double[] {1,1.3,-0.2,-0.2};
+    // used to draw the player icons in the game log
+    public Drawable getPlayerIcon(int n)
+    {	playerTextIconScale = textIconScale;
+    	return mainBoard.getPlayerBoard(n).getScoreMarker();
+    }
 	public ViticultureBoard getActiveBoard()
 	{
 		ViticultureBoard b = disB();

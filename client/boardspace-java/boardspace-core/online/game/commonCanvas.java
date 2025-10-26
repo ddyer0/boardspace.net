@@ -1689,7 +1689,7 @@ public abstract class commonCanvas extends exCanvas
      * @param xp
      * @param yp
      */
-    public void drawMouseSprite(Graphics g,int player,int xp,int yp)
+    public void drawMouseSprite(Graphics g,int player,int xp,int yp,int sz)
     {	Color main = SpectatorColor;
     	Color dot = SpectatorDotColor;
     	if(g!=null)
@@ -1699,7 +1699,7 @@ public abstract class commonCanvas extends exCanvas
      			main =  getMouseColor(player);
     			dot = getMouseDotColor(player);
     		}
-    	  g.drawLargeSpot(xp, yp,main, dot,(int)(16*SCALE));
+    	  g.drawLargeSpot(xp, yp,main, dot,sz);
         }
     }
     private int getPlayerColorIndex(int player)
@@ -1815,7 +1815,7 @@ public abstract class commonCanvas extends exCanvas
               p.drawnMouseY = my;
               p.drawnMouseTime = now;
 
-            drawMouseSprite(g,col,xp,yp);
+            drawMouseSprite(g,col,xp,yp,standardFontSize());
         }
     	}}
 	}
@@ -7614,7 +7614,36 @@ public String prettyName(int n)
 	if(pl!=null) { def = pl.prettyName(def); }
 	return(def); 
 }
+/**
+ * get a drawable object that serves as the icon for a player
+ * this just gets an image of the mouse tracker, which is pretty crude
+ * @param n
+ * @return
+ */
+public double[] playerTextIconScale = new double[] {1,1,0,-0.2};
+public Drawable getPlayerIcon(int n)
+{	
+	return new DrawnIcon(100,100,n)
+			{
+			public void drawChip(Graphics gc,exCanvas c,int sz,int x,int y,String msg)
+				{
+				drawMouseSprite(gc,(int)parameter,x,y,sz*3/4);
+				}
+			};
+}
 
+/**
+ * get a text icon suitable for gamelog display. This is used by redrawGameLog2 if
+ * the playerIcons is true;  The defaults generate the same image as mouse tracking,
+ * but if something fancier is needed, the defaults here probably need to be tweaked
+ * too.
+ * @param n
+ * @return
+ */
+public Text getPlayerTextIcon(int n)
+{	Drawable im = getPlayerIcon(n);
+	return TextGlyph.create("xxx",im,this,playerTextIconScale);
+}
 /**
  * draw standard player stuff as a start button, or just as a player name rectangle
  * 

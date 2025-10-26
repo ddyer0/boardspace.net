@@ -34,6 +34,7 @@ import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -613,7 +614,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 		cx += xstep;
 		}
     }
-
+    public Drawable getPlayerIcon(int p)
+    {
+    	return bb.getPlayerChip(p);
+    }
     private void DrawScore(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,JumbulayaBoard gb)
     {	int pidx = pl.boardIndex;
     	//int val = gb.score[pidx];
@@ -1079,6 +1083,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
        GC.unsetRotatedContext(gc,selectPos);
        

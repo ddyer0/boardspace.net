@@ -838,15 +838,16 @@ public void update(SimpleObservable ob, Object eventType, Object arg)
 	else { super.update(ob, eventType, arg); }
 }
 private void PreloadClass(String classname)
-{	if(!G.getBoolean(PRELOAD,PRELOAD_DEFAULT))	// preload is passed from the miniloader
-			{
-			Plog.log.addLog("Preloading classes not enabled");
-			return;
-			}
+{	
 	if( (classname==null)
 		|| LoadThread.alreadyLoading(classname))
 		{ return; 
 		}
+	if(!G.getBoolean(PRELOAD,PRELOAD_DEFAULT))	// preload is passed from the miniloader
+	{
+	Plog.log.addLog("Preloading classes not enabled: ",classname);
+	return;
+	}
 	//long now = G.Date();
 	//G.print("prepare "+classname);
 	LoadThread loader = new LoadThread();

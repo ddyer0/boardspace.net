@@ -34,6 +34,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -98,7 +99,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     //
     private Rectangle prizeRect = addZoneRect(".prizeRect");
     private Rectangle playerCardRects[] = addRect("card",6);
-    
+    private Rectangle playerChips[] = addRect("chip",6);
     public Color rajMouseColors[] = 
     {	RajColor.Red.color,
     	RajColor.Green.color,
@@ -180,8 +181,13 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 	{
 		commonPlayer pl = getPlayerOrTemp(player);
 		Rectangle cards = playerCardRects[player];
+		Rectangle chip = playerChips[player];
 		Rectangle box = pl.createSquarePictureGroup(x,y,unit);
 		G.SetRect(cards, G.Right(box), G.Top(box)+unit*1, unit*7,unit*8);
+		int l = G.Left(pl.animRect);
+		int t = G.Bottom(pl.animRect)+unit/4;
+		G.SetRect(chip,l,t,unit*3/2,unit*3/2);
+		
 		G.union(box, cards);
 		pl.displayRotation = rotation;
 		return box;
@@ -304,6 +310,13 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     private int movingObjectIndex()
     { 	return(bb.movingObjectIndex()); 
     }
+    private double[] textIconScale = new double[] {1,0.8,0,-0.2};
+    public Drawable getPlayerIcon(int p)
+    {
+    	PlayerBoard pb = bb.getPlayerBoard(p);
+    	playerTextIconScale = textIconScale;
+       	return pb.cardBack; 
+    }
     private void drawPlayerBoard(Graphics gc,int pl,HitPoint highlight,RajBoard gb,HitPoint anyHit)
     {	RajBoard.PlayerBoard pb = gb.getPlayerBoard(pl);
     	if(pb!=null)
@@ -316,6 +329,8 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	int right = left+width;
     	int unit = width/4;
     	Rectangle playerPrizeRect = new Rectangle(right-width/2,top+unit/3,width/2,height/3);
+    	Rectangle chip = playerChips[pl];
+    	getPlayerIcon(pl).drawChip(gc,this,chip,null);
     	int mid = top+height/2;
     	int step = (-width/5);
     	int cx = (left-step);
@@ -593,7 +608,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        drawHiddenWindows(gc, selectPos);		// draw before the main screen draw, so the animations will see the main
-
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
        drawBoardElements(gc, gb, boardRect, ((state==RajState.PLAY_STATE)||(state==RajState.CONFIRM_CARD_STATE))?selectPos:ourTurnSelect);
        drawPrizePool(gc, prizeRect, selectPos,gb,gb.prizes,false,CELLSIZE);

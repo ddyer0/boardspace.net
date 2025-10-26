@@ -300,8 +300,11 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         int np = Math.max(1,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
         String gameType = info.getString(GameInfo.GAMETYPE, variation.Universe.name);
         b = new UniverseBoard(gameType,randomKey,np,getStartingColorMap(),UniverseBoard.REVISION);
+        GameInfo gi = info.getGameInfo();
         adjustPlayers(b.nPlayers());	// players can be adjusted in init
-
+        if(gi!=null) 
+        	{ MouseColors = gi.colorMap; 
+        	}
         if(b.rules.isNudoku())
         {
         	findGivensItem = myFrame.addAction("find givens",deferredEvents);
@@ -1030,6 +1033,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       UniverseState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
         drawBoardElements(gc, gb, boardRect, ot);

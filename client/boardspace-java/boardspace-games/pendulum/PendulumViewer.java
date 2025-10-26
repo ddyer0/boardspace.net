@@ -29,6 +29,7 @@ import lib.Graphics;
 import lib.AR;
 import lib.Random;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -326,7 +327,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*15;	
+    	int minLogW = fh*10;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
@@ -443,6 +444,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	G.union(box, done,chip,board,below);
     	pl.displayRotation = rotation;
     	return(box);
+    }
+    private double[] textIconScale = new double[] { 1,1,-0.2,-0.2};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = textIconScale;
+    	return p>=0 ? bb.getPlayerChip(p) : StockArt.Dot;
     }
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
@@ -1072,7 +1078,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit any time nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        // this does most of the work, but other functions also use contextRotation to rotate

@@ -105,13 +105,6 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
     double ScoreForPlayer(CheBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
-     	boolean win = evboard.WinForPlayerNow(player);
-     	// make wins in fewer moves look slightly better. Nothing else matters.
-     	if(win) 
-     		{ val = VALUE_OF_WIN+(1.0/(1+board.robotDepth));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
      	// if the position is not a win, then estimate the value of the position
       	
     	switch(Strategy)
@@ -128,23 +121,23 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
      	return(val);
     }
     
-    /** this is called from the search driver to evaluate a particular position. The driver
-     * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
-     *  for each and sorts the result to preorder the tree for further evaluation
+    /**
+     * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		boolean win = board.WinForPlayerNow(playerindex);
+        	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
+        	boolean win2 = board.WinForPlayerNow(playerindex^1);
+        	if(win2) { // a slow loss is better than a quick one
+        		return -(VALUE_OF_WIN+(1-1.0/(1+board.robotDepth)));
+        		}
+        	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,playerindex^1,false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -153,7 +146,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
      * */
     public void StaticEval()
     {
-    	CheBoard evboard = GameBoard.cloneBoard();
+    	CheBoard evboard = (CheBoard)GameBoard.cloneBoard();
     	double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
     	double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
     	System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));

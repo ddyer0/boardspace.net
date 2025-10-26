@@ -1579,7 +1579,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  }
  //
  // count the cells connected to from, considering cells declared empty and full
- // this uses a simple recursive descent to find everyting that's connected
+ // this uses a simple recursive descent to find everything that's connected
  //
  private int connectedSize(OrdoCell from,OrdoChip top,OrdoCell empty,OrdoCell full)
  {	int mycount = 0;

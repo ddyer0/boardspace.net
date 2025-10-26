@@ -31,6 +31,7 @@ import lib.TextGlyph;
 import lib.TextStack;
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -312,6 +313,11 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	G.union(box, done,  cards,chipR);
     	pl.displayRotation = rotation;
     	return(box);
+    }
+    private double[] iconScale = new double[] {1,1.2,0,0};
+    public Drawable getPlayerIcon(int n)
+    {	playerTextIconScale = iconScale;
+    	return bb.getPlayerChip(n);
     }
  
     // draw a box of spare chips. For blackdeath it's purely for effect, but if you
@@ -812,7 +818,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
    		Hashtable<BlackDeathCell,BlackDeathMovespec> targets = gb.getTargets();
-
+   		gameLog.playerIcons = true;
    		gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.blue,boardBackgroundColor,standardBoldFont(),standardPlainFont());
 
        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);

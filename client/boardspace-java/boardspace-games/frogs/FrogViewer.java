@@ -31,6 +31,7 @@ import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -278,7 +279,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	Rectangle hand_r = handRect[player];
     	FrogCell hand[] = b.hand[player];
     	
-    	FrogPiece disk = FrogPiece.getChip(FrogPiece.DISC_OFFSET+b.getColorMap()[player]);
+    	Drawable disk = getPlayerIcon(player);
     	// draw a sample chip to establish the player's color
     	disk.drawChip(gc,this,G.Width(chip)*2,G.centerX(chip),G.centerY(chip),null);
     	
@@ -411,6 +412,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
        HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
        FrogState state = gb.getState();
 
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
         boolean planned = plannedSeating();
@@ -449,9 +451,8 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
             				state!=FrogState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);
-        FrogPiece disk = FrogPiece.getChip(FrogPiece.DISC_OFFSET+b.getColorMap()[gb.whoseTurn]);
     	// draw a sample chip to establish the player's color
-    	disk.drawChip(gc,this,iconRect,null);
+    	getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
     	
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(GoalMessage),progressRect, goalRect);
         
@@ -459,6 +460,13 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
  
     }
     
+    double textIconScale[] = new double[] {1,1,0.2,-0.2};
+    public Drawable getPlayerIcon(int pl)
+    {	playerTextIconScale = textIconScale;
+        FrogPiece disk = FrogPiece.getChip(FrogPiece.DISC_OFFSET+b.getColorMap()[pl]);
+        return disk;
+    }
+ 
 	public int getLastPlacement(boolean empty) {
 		return (b.dropState);
 	}

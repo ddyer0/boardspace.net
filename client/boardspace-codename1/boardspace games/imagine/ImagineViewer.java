@@ -33,6 +33,7 @@ import lib.Base64;
 import lib.CalculatorButton;
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -210,7 +211,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*22;	
+    	int minLogW = fh*17;	
        	int minChatW = fh*35;	
         int minLogH = fh*14;	
         int margin = fh/2;
@@ -1550,9 +1551,14 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		  startOfCensorship--;
     		  mn = mnum;
     		}
+    	gameLog.playerIcons = true;
     	gameLog.redrawGameLog2(gc, highlight, r, textColor, highlightColor, bold, normal);
     }
-     
+    public Drawable getPlayerIcon(int p)
+    {
+    	PlayerBoard pb = bb.getPlayerBoard(p);
+        return pb.color.chip;
+    }
     public void ViewerRun(int delay)
     {
     	super.ViewerRun(delay);

@@ -40,6 +40,7 @@ import java.util.*;
 
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -190,11 +191,11 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 		}
 		else
 		{
-		Profile.load(DataDir+"profile_export.tsv",
+		Profile.load(DataDir+"profile_export.tsv",				
 				ImageDir+"categorypix/",
 				ImageDir+"bugpix-1/",
 				ImageDir+"bugpix-2/",
-				G.getBoolean("desktop",false)?ImageDir+"bugpix/":null);
+				ImageDir+"bugpix/");
 		}
 		G.print("Profiles ",Profile.profiles.size(),
 				" Taxonomy ",Taxonomy.taxonomies.size(),
@@ -616,7 +617,11 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	return(box);
     }
     
-
+    private double[] textIconScale = new double[] {1,1,0,0};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = textIconScale;
+    	return bb.getPlayerChip(p);
+    }
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void drawPlayerBoard(Graphics gc, commonPlayer pl, HitPoint highlight,Hashtable<BugsCell,BugsMovespec> targets,BugsBoard gb)
@@ -1549,6 +1554,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
        // for a multiplayer game, this would likely be redrawGameLog2
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        // this does most of the work, but other functions also use contextRotation to rotate

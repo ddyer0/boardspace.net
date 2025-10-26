@@ -524,7 +524,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = DEPLOY_THREADS;
+        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
         int limit =  WEAKBOT ? baseMoveRate/10 : baseMoveRate;
         int maxlimit = limit*4;
         

@@ -23,6 +23,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -325,7 +326,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*15;	
+    	int minLogW = fh*10;	
        	int minChatW = fh*35;	
         int minLogH = fh*15;	
         int margin = fh/2;
@@ -1084,6 +1085,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        // hit any time nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        if(ourTurnSelect!=null)
@@ -1278,7 +1280,11 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         drawVcrGroup(nonDragSelect, gc);
         
     }
-
+    double playerTextScale[] = new double[] {1,1.5,0.1,-0.2};
+    public Drawable getPlayerIcon(int pn)
+    {	playerTextIconScale = playerTextScale;
+    	return bb.getPlayerChip(pn);
+    }
     /**
      * normally, no moves should be transmitted during in-game review.  This
      * allows an override for particular moves. Presumably moves that only

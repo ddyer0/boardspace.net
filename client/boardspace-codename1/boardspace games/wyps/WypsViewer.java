@@ -890,7 +890,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
        GC.frameRect(gc, Color.black, logRect);
        // this does most of the work, but other functions also use contextRotation to rotate

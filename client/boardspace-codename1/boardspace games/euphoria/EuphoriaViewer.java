@@ -37,6 +37,7 @@ import lib.Image;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -1133,6 +1134,13 @@ private Color playerBackground[] = {
         	if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip,(String)null)) { hp.hitObject = null;}
         	if(rotation!=0) { GC.unsetRotatedContext(gc,hp); }
     	}
+    }
+    public double[] iconTextScale = new double[] { 1,0.9,-0.1,-0.1};
+    public Drawable getPlayerIcon(int n)
+    {	EPlayer p = bb.getPlayer(n);
+		Colors color = p.color;
+		playerTextIconScale = iconTextScale;
+    	return EuphoriaChip.getKnowledge(color);
     }
     //
     // if r is not null, the whole rectangle is the target instead of just the individual cell
@@ -2553,6 +2561,7 @@ private Color playerBackground[] = {
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, selectPos, logRect,
     		   Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardBoldFont());

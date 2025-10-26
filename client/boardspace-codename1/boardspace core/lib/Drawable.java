@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,9 +12,11 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package lib;
+
+import com.codename1.ui.geom.Rectangle;
 
 /**
  * a Drawable object can be anything that implements drawChip, used for the purpose of displaying
@@ -40,6 +42,18 @@ public interface Drawable {
 	 */
 	public void drawChip(Graphics gc,exCanvas c,int size, int posx,int posy,String msg);
 	/**
+	 * 
+	 * @param gc	the graphics object for drawing
+	 * @param c		the canvas being drawn on
+	 * @param r		the rectangle to fill
+	 * @param msg	text to superimpose after drawing the object.
+	 */
+	public default void drawChip(Graphics gc,exCanvas c,Rectangle r,String msg)
+	{
+		drawChip(gc,c,Math.min(G.Height(r),G.Width(r)),G.centerX(r),G.centerY(r),msg);
+	}
+	
+	/**
 	 * rotate x,y around the current center px, py and remember it.  This is used
 	 * to set current_center_x and current_center_y for animations.
 	 * @param displayRotation
@@ -48,22 +62,22 @@ public interface Drawable {
 	 * @param px
 	 * @param py
 	 */
-	public void rotateCurrentCenter(double displayRotation,int x,int y,int px,int py);
+	public default void rotateCurrentCenter(double displayRotation,int x,int y,int px,int py) {};
 	/**
 	 * the rotation to use during active animations, which normally is arranged
 	 * to default to the orientation of the destination
 	 * @return
 	 */
-	public double activeAnimationRotation();
+	public default double activeAnimationRotation() { return 0; };
 	/**
 	 * This is a specialization used in animations; when a piece is being animated between two locations,
 	 * it is actually already sitting at the destination.  This is used by the code displaying the destination
 	 * to make the destination disappear until the animation is finished.
 	 * @return the height of the stack for the purpose of reducing the height of the destination target.
 	 */
-	public int animationHeight();
-	public String getName();
+	public default int animationHeight() { return 0; }
+	public default String getName() { return "drawable"; }
 	public int getWidth();
 	public int getHeight();
-
+	
 }

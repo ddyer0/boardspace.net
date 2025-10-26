@@ -295,7 +295,7 @@ import udp.PlaytableStack;
 		 prefs.put(langKey,language);
 		 s = InternationalStrings.initLanguage(lang);
 	 }
-	 public void disposeMainPanel()
+	 private void disposeMainPanel()
 	 {
 		 if(mainPanel!=null)
 		 { mainPanel.setVisible(false);
@@ -326,7 +326,7 @@ import udp.PlaytableStack;
 		 errorText.getParent().repaint(); 
 	 }
 	 
-	 public String getSelectedLanguage()
+	 private String getSelectedLanguage()
 	 {	if(langField!=null)
 	 	{
 		 int ind = langField.getSelectedIndex();
@@ -410,7 +410,7 @@ import udp.PlaytableStack;
 		 changeMessage(errorMessage);
 		 return(false);
 	 }
-	 public JPanel createSuccessPanel()
+	private JPanel createSuccessPanel()
 	 {
 		 JPanel panel =  new JPanel();
 		 panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
@@ -466,7 +466,7 @@ import udp.PlaytableStack;
 	 	add(vpanel);
 	 }
 	 
-	 public JPanel createPasswordPanel(String txt, boolean includeSave)
+	 private JPanel createPasswordPanel(String txt, boolean includeSave)
 	 {
 		 JPanel pane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 
@@ -528,7 +528,7 @@ import udp.PlaytableStack;
 		 return(panel);
 		 
 	 }
-	 public JPanel createConfirmedPanel()
+	 private JPanel createConfirmedPanel()
 	 {
 		 JPanel panel =  new JPanel();
 		 finalRegisterButton = new JButton(FINALREGISTER);
@@ -562,7 +562,7 @@ import udp.PlaytableStack;
 		 
 		 return(panel);
 	 }
-	 public JPanel createLanguagePanel()
+	 private JPanel createLanguagePanel()
 	 {
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 String lang = language;
@@ -582,7 +582,7 @@ import udp.PlaytableStack;
 		 return(panel);
 	 }
 	 
-	 public JPanel createCountryPanel()
+	 private JPanel createCountryPanel()
 	 {
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
@@ -641,7 +641,7 @@ import udp.PlaytableStack;
 		feedbackButton.setActionCommand(message);
 		return(feedbackButton);
 	 }
-	 public Component createRegisterPanel()
+	 private Component createRegisterPanel()
 	 {	JPanel p = new JPanel(); 
  		 String rega = s.get(RegisterAccount);
  		 registerAccountButton = new JButton(rega);
@@ -652,7 +652,7 @@ import udp.PlaytableStack;
  		p.add(createVisitButton());
 	 	return(p);
 	 }
-	 public boolean isAcceptableVersion()
+	 private boolean isAcceptableVersion()
 	 {	 if(!G.isCodename1()) { return(true); }
 		 String appversion = G.getAppVersion();
 		 String platform = G.getPlatformPrefix();
@@ -675,7 +675,7 @@ import udp.PlaytableStack;
 		 }
 		 return(true); 	// default to acceptable
 	 }
-	 public Component createVersionPanel()
+	 private Component createVersionPanel()
 	 {	String appversion = G.getAppVersion();
 	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
@@ -706,7 +706,7 @@ import udp.PlaytableStack;
 	 	return(p);
 	 }
 	 @SuppressWarnings("serial")
-	public Component createReviewPanel()
+	private Component createReviewPanel()
 	 {	
 		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
 		 {
@@ -863,11 +863,10 @@ import udp.PlaytableStack;
     }
 	 
     public String exitValue=null;
-
+    public static String language = null;
     public static boolean isGuest = false;
     public static String password=null;
     public static String name = "";
-    public static String language = null;
     private static String realName = "";
     private static String password2 = "";
     private static String country = "";
@@ -976,7 +975,7 @@ import udp.PlaytableStack;
          
        }
     }
-	public void exitWith(String val)
+	private void exitWith(String val)
 	{
 		boolean savePass = G.getState(savePasswordField);
 		if(!isGuest)
@@ -993,11 +992,11 @@ import udp.PlaytableStack;
 	   			{ System.out.println("E "+err.toString());};
 	}
 	
-	public void exit()
+	private void exit()
 	{	G.wake(observer);
 		suicide();
 	}
-	public void suicide()
+	private void suicide()
 	{	controllingFrame.setVisible(false);
 		//for unknown reasons, this sometimes locks up waiting for something.
 		controllingFrame.dispose();
@@ -1005,7 +1004,7 @@ import udp.PlaytableStack;
 
     //Must be called from the event dispatch thread.
     protected void resetFocus() {
-        nameField.requestFocusInWindow();
+        if(nameField!=null) { nameField.requestFocusInWindow(); }
     }
 
     /**

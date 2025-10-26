@@ -32,6 +32,7 @@ import lib.Random;
 /**
  * CheBoard knows all about the game of Che.
  * 
+ *  * TODO: add some kind of draw logic.  Games can extend forever in one direction
  * @author ddyer
  *
  */

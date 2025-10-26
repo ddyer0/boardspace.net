@@ -34,6 +34,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -456,7 +457,11 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
    
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
-
+    private double[] iconScale = new double[] {1,1,0,0};
+    public Drawable getPlayerIcon(int n)
+    {	playerTextIconScale = iconScale;
+    	return b.getPlayerBoard(n).playerChip();
+    }
     private void drawPile(Graphics gc,YspahanBoard gb,YspahanCell c,HitPoint highlight,HitPoint anyone,
     		int SQ,int w,int h,int xpos,int ypos,boolean showCount)
     {	Random r = new Random(c.col*(c.rackLocation().ordinal()+1));
@@ -954,7 +959,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
       boolean ds = gb.DoneState();
       int whoseTurn = gb.whoseTurn;
       boolean planned = plannedSeating();
-
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc,ourSelect, logRect, 
     		  Color.black,rackBackGroundColor,
     		  standardBoldFont(),standardBoldFont());

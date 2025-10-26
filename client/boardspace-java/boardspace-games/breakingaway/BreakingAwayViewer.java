@@ -40,6 +40,7 @@ import lib.Image;
 import lib.TextButton;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -92,7 +93,6 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
-    private Color logrectHighlightColor = new Color(0.9f,0.9f,0.3f);
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Color rackBackGroundColor = new Color(150,197,150);
     private Color boardBackgroundColor = new Color(0xb8,0xd4,0x97);
@@ -264,7 +264,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         int logH = playerH;
         int chatHeight = selectChatHeight(h);
         
-        layout.placeTheChatAndLog(chatRect,chatW,chatHeight,chatW*2,3*chatHeight/2,logRect,
+        layout.placeTheChatAndLog(chatRect,chatW,chatHeight,chatW*3/2,3*chatHeight/2,logRect,
         		logW,logH,logW*2,logH*3);
 
     	Rectangle main = layout.getMainRectangle();
@@ -641,7 +641,11 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         
    		GC.setClip(gc,oldClip);
       }
-
+    private double[] textIconScale = new double[] {1,1.5,-0.1,-0.1};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = textIconScale;
+    	return BreakingAwayPiece.getChip(b.getColorMap()[p]);
+    }
     private void drawPlayerCycle(Graphics gc,int pla,BreakingAwayBoard gb,Rectangle r,HitPoint select)
     {	BreakingAwayPiece chip = BreakingAwayPiece.getChip(gb.getColorMap()[pla]);
     	int h22 = G.Height(r)/4;
@@ -838,7 +842,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
        boolean planned = plannedSeating();
        BreakState state = gb.getState();
        HitPoint activeDone = activeDoneButton(buttonSelect,selectPos,state);
-       gameLog.redrawGameLog2(gc, vcrSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
+       gameLog.playerIcons = true;
+       gameLog.redrawGameLog2(gc, vcrSelect, logRect, Color.black,Color.lightGray,gameLogBoldFont,gameLogFont);
         
       	HitPoint adjusting = state==BreakState.ADJUST_MOVEMENT_STATE?selectPos:null;
 

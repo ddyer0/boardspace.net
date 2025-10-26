@@ -17,7 +17,6 @@
 package mogul;
 
 import online.game.*;
-
 import java.util.*;
 
 import lib.*;

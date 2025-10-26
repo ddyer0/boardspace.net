@@ -71,16 +71,23 @@ public interface GygesConstants
     	Gameover(GameOverStateDescription),
     	Confirm(ConfirmStateDescription),
     	Draw(DrawStateDescription),
-    	PlayTop(GygesMoveFromTop),
-    	PlayBottom(GygesMoveFromBottom),
-    	PlaceTop(GygesPlaceInTop),
-    	PlaceBottom(GygesMoveToBottom),
+    	
+    	PlayTop(GygesMoveFromTop,GygesMoveFromBottom),
+    	PlayBottom(GygesMoveFromBottom,GygesMoveFromTop),
+    	
+    	PlaceTop(GygesPlaceInTop,GygesMoveToBottom),
+    	PlaceBottom(GygesMoveToBottom,GygesPlaceInTop),
+    	
     	Continue(GygesContinueMoving),
-    	DropTop(GygesDropNotTop),
-    	DropBottom(GygesDropNotBottom);
-    	GygesState(String des) { description = des;	}
+    	
+    	DropTop(GygesDropNotTop,GygesDropNotBottom),
+    	DropBottom(GygesDropNotBottom,GygesDropNotTop);
+    	
+    	GygesState(String des) { altDescription = description = des;	}
+    	GygesState(String des,String alt) { altDescription = alt; description = des;	}
     	String description;
-    	public String getDescription() { return(description); }
+    	String altDescription;
+    	public String getDescription(boolean alt) { return(alt ? altDescription:description); }
     		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
     	public boolean GameOver() { return(this==Gameover); }
     };

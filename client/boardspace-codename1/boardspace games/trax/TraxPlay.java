@@ -223,7 +223,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
         	MONTEBOT = DEPLOY_MONTEBOT; 
             MONTE_ALPHA = 0.25;
             MONTE_BLITZ = false;
-            MONTE_THREADS = 0;
+            MONTE_THREADS = -1;
             MONTE_CHILD_LIMIT = 300000;
             MONTE_FINAL_DEPTH = 20;
             terminalNodeOptimize = true;
@@ -328,6 +328,11 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
         // abnormal exit
         return (null);
     }
+public double reScorePosition(commonMove m,int forplayer)
+{
+	double v = super.reScorePosition(m,forplayer);
+	return v;
+}
 
 // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
 // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
@@ -343,7 +348,7 @@ public commonMove DoMonteCarloFullMove()
        {
        // it's important that the robot randomize the first few moves a little bit.
        double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
-       UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+       UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,false);
        monte_search_state.save_top_digest = true;	// always on as a background check
        monte_search_state.save_digest=false;	// debugging only
        monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
@@ -358,6 +363,7 @@ public commonMove DoMonteCarloFullMove()
        monte_search_state.final_depth = MONTE_FINAL_DEPTH;			// tree tends to be very deep, so restrain it.
        monte_search_state.simulationsPerNode = 1;
        monte_search_state.random_moves_per_second = WEAKBOT ? 1000:180000;
+       monte_search_state.max_random_moves_per_second = 1800000;
        // trax unmove  doesn't work with threads, despite the movespec being compatible looking
        monte_search_state.maxThreads = MONTE_THREADS;	// trax not organized to support threads
        board.blitz = monte_search_state.blitz;

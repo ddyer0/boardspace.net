@@ -275,7 +275,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		// the current board position is either endgame or depth limited.  Calling 
 		// NormalizedScore assigns the current game value to it.  It doesn't matter 
 		// what the move at the bottom of the simulation was.
-    	double val = normalizedScore(lastMove);
+    	double val =normalizedScore(lastMove);
 		if(backTrack.size()>entryBacktrack)
 			{			
 			commonMove prevMove = backTrack.pop();
@@ -433,6 +433,9 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		commonMove currentMove = null;				// a child of the current node
 		boolean gameOver = false;
 		boolean terminal = false;
+		boolean gameOverWin = false;
+		@SuppressWarnings("unused")
+		String gameOverPath = null;
 		@SuppressWarnings("unused")
 		commonMove terminalCurrentMove = null;
 		@SuppressWarnings("unused")
@@ -544,8 +547,14 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			// currentMove.visit();
 			// currentMove = currentMove.Copy(null);
 			Make_Move(currentMove);		
-			gameOver=robot.Game_Over_P();
-			if(gameOver) { robot.NormalizedScore(currentMove); }
+			gameOver = robot.Game_Over_P();
+			if(gameOver)
+				{ double val = normalizedScore(currentMove); 
+				  robot.setEvaluation(currentMove,val);
+				  gameOverWin = val>0;
+				  gameOverPath = "replay move";
+				  
+				}
 			current_depth++;
 			traverseMovesThisRun++;
 			}
@@ -598,7 +607,12 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 				backTrack.push(currentMove);
 				Make_Move(currentMove);
 				gameOver = robot.Game_Over_P();
-				if(gameOver) { robot.NormalizedScore(currentMove); }
+				if(gameOver) 
+					{ double val = normalizedScore(currentMove); 
+					  robot.setEvaluations(currentMove,val);
+					  gameOverWin = val>0;
+					  gameOverPath = "expansion node";
+					}
 				current_depth++;
 				traverseMovesThisRun++;		
 			}
@@ -626,7 +640,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			else { val = 0; }
 		}
 		else if(gameOver)
-		{	val = robot.NormalizedScore(currentMove);
+		{	val = normalizedScore(currentMove);
 			if(master.terminalNodeOptimization)
 			{	// we normally get here only with expansion nodes, but under
 				// unusual circumstances with multiple threads, we can step 
@@ -651,10 +665,14 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			  double val0 =runSimulation(currentMove);
 			  if( (randomSimulationDepth==1) 
 					  && master.terminalNodeOptimization
-					  && ((val0>0)==(currentMove.player==randomSimulationFirstMove.player))
+					  && ((val0>0))
 					  )
-			  {	  // in the random simulation phase, we need a win on our turn, or a loss on the opponent's turn
+			  {	  // in the random simulation phase, we need a win on our turn
+				  // we detect an immediate win as the next thing.
 				  gameOver = true;
+				  gameOverWin = true;
+				  gameOverPath = "early detection";
+				  robot.setEvaluations(currentMove,val0);
 				  val = val0;
 				  sims = 2;
 				  earlyEndgameDetections++;
@@ -678,7 +696,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		// may have killed it off, in which case visits is negative.
 		// unwind and score does NOT depend on the current state of the board
 		// only on the gameover and value supplied.
-		unwindAndScore(scorable,gameOver,currentMove);
+		unwindAndScore(scorable,gameOver && gameOverWin,currentMove);
 
 		// root node gets the top level rescore value.  This has the effect of updating
 		// the visit count of the top level node, which is very important!
@@ -734,7 +752,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		// negates the score, which is not correct for multiplayer games.  
 		//
 		scorable &= scoreMove.isEvaluated();
-		boolean gameOver = gameOver0;
+		boolean simplify = gameOver0 && master.only_child_optimization;
 		//boolean scorable = currentNode.getVisits()>=0;
 		//commonMove last_tree_move = currentMove;
 		//double rescore = val;
@@ -749,43 +767,39 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			double rescore = robot.reScorePosition(scoreMove,currentMove.player);
 			UCTNode nn = currentMove.uctNode();
 			if(master.sort_moves && (nn.getVisits() == 0) && (current_depth<master.uct_sort_depth))
-			{	double ev = currentMove.evaluation();
-				G.Assert((ev>=-1.0) && (ev<=1.0),"evaluation out of range %s",ev);
-				nn.update(ev,1,master.alpha);
+			{	
+				nn.update(rescore,1,master.alpha);
 			}
-			if(gameOver)	// gameover and a win for the current player
+			simplify &= currentMove.player==scoreMove.player;
+			if(simplify)	// gameover and a win for the current player
 				{
 				// if there was a gameover condition at the bottom, propagate backward
 				// to previous moves.  This commonly lets "done" that ends the game be
 				// propagated back to the actual move.
-				if(master.only_child_optimization)
-				{	UCTNode node = currentMove.uctNode();
-					newChildrenThisRun -= node.makeOnlyChild();	// kill all the other children
-					onlyChildOptimizationThisRun++;
-					
-					robot.setEvaluations(currentMove,rescore);
-					robot.set_depth_limited (currentMove,commonMove.EStatus.DEPTH_LIMITED_GAMEOVER);					
-					robot.setGameover(currentMove,true);
+				UCTNode node = currentMove.uctNode();
+				newChildrenThisRun -= node.makeOnlyChild();	// kill all the other children
+				onlyChildOptimizationThisRun++;
 				
-					if(master.terminalNodeOptimization)
-					{	
-						UCTNode par = node.getParent();
-						commonMove prev = backTrack.top();
-						if((prev!=null) && (par!=null))
-						{	// this causes the gameover to propagate up
-							double preScore = robot.reScorePosition(scoreMove,prev.player);
-							if(preScore<0)
-							{	
-								newChildrenThisRun -= par.uncount();  // we never want to use this	
-							}
-							robot.setEvaluations(prev,preScore);
-							robot.setGameover(prev,true);
-							//Log.addLog("unwind parent "+prev+" "+par+" "+samePlayer+" "+preScore);
+				robot.setEvaluations(currentMove,rescore);
+				robot.set_depth_limited (currentMove,commonMove.EStatus.DEPTH_LIMITED_GAMEOVER);					
+				robot.setGameover(currentMove,true);
+			
+				if(master.terminalNodeOptimization)
+				{	
+					UCTNode par = node.getParent();
+					commonMove prev = backTrack.top();
+					if((prev!=null) && (par!=null))
+					{	// this causes the gameover to propagate up
+						double preScore = robot.reScorePosition(scoreMove,prev.player);
+						if(preScore<0)
+						{	
+							newChildrenThisRun -= par.uncount();  // we never want to use this	
 						}
+						robot.setEvaluations(prev,preScore);
+						robot.setGameover(prev,true);
+						//Log.addLog("unwind parent "+prev+" "+par+" "+samePlayer+" "+preScore);
 					}
-
-				}			
-				else {gameOver = false;}
+				}
 				}
 			nn.update(rescore,master.simulationsPerNode,master.alpha);
 			}

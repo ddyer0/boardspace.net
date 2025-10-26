@@ -28,6 +28,7 @@ import java.util.*;
 
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -833,7 +834,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             				state!=PrototypeState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
-        gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
+        getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
@@ -842,6 +843,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
+    }
+    /** this is used by redrawGameLog2 to draw player icons instead of using names
+     * 
+     */
+    double playerTextScale[] = new double[] {1,1.5,0.1,-0.2};
+    public Drawable getPlayerIcon(int pn)
+    {	playerTextIconScale = playerTextScale;
+    	return bb.getPlayerChip(pn);
     }
 
     /**

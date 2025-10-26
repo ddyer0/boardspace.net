@@ -34,6 +34,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -195,7 +196,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	// a central hole for the board.
      	int fh = standardFontSize();
      	int margin = fh/2;
-       	int logW = fh*15;		// just a default
+       	int logW = fh*10;		// just a default
     	int chatHeight = selectChatHeight(height);
         int chatW = fh*35;		// just a default
         int logH = fh*10;
@@ -301,6 +302,11 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     private MogulChip playerChip(int pl)
     {
     	return MogulChip.getPlayerChip(b.getColorMap()[pl]);
+    }
+    private double[] textScale = new double[] {1,1,0,-0.3};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = textScale;
+    	return playerChip(p);
     }
     private void drawPlayerCard(Graphics gc,HitPoint highlight,MogulBoard b,MogulBoard.MogulPlayer pl,Rectangle chip,Rectangle card)
     {	int ind = pl.myIndex;
@@ -603,6 +609,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       MogulState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
       drawBoardElements(gc, gb, boardRect, ot, highlight);

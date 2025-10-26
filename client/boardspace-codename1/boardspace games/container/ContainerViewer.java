@@ -1640,6 +1640,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       ContainerState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc,ourSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
         

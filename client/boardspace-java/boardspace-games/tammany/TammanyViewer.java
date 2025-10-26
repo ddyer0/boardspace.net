@@ -28,6 +28,7 @@ import lib.Graphics;
 import lib.AR;
 import lib.CellId;
 import lib.DefaultId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -201,7 +202,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*25;	
+    	int minLogW = fh*20;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
@@ -306,7 +307,12 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	TammanyChip myChip = p.myBoss;
     	myChip.drawChip(gc,this,icon,null);
     }
-
+    private double[] iconScale = new double[] {1,1,-0.2,-0.2};
+    public Drawable getPlayerIcon(int n)
+    {	playerTextIconScale = iconScale;
+    	TammanyPlayer p = bb.getPlayer(n);
+    	return p.myBoss;
+    }
     private void drawPlayerInfluence(Graphics gc,TammanyPlayer p,commonPlayer pl,TammanyBoard gb,
     		Rectangle influence,Hashtable<TammanyCell,TammanyMovespec>targets,HitPoint highlight)
     {
@@ -923,7 +929,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,
     		   Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardBoldFont());
