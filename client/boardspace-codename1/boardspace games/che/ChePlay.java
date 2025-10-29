@@ -28,6 +28,7 @@ import online.search.*;
  * 
  * in general, the Robot has it's own thread and operates on a copy of the board, so the
  * main UI can continue unaffected by the processing of the robot.
+ * 
  * @author ddyer
  *
  */
@@ -102,7 +103,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
      * @param player
      * @return
      */
-    double ScoreForPlayer(CheBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(CheBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
      	// if the position is not a win, then estimate the value of the position

@@ -38,10 +38,10 @@ import yspahan.YspahanConstants.ystate;
  * @author ddyer
  *
  */
-public class YspahanPlay extends commonRobot<YspahanBoard> implements Runnable, YspahanPlayStratConst,
+public class YspahanPlay extends commonMPRobot<YspahanBoard> implements Runnable, YspahanPlayStratConst,
     RobotProtocol
 {  	static final double VALUE_OF_WIN = 1000000.0;
-
+	public double valueOfWin() { return VALUE_OF_WIN; }
 	
 	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean KILLER = false;					// probably ok for all games with a 1-part move

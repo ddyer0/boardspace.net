@@ -89,7 +89,7 @@ public class TicTacNinerPlay extends commonRobot<TicTacNineBoard> implements Run
      * @param player
      * @return
      */
-    double ScoreForPlayer(TicTacNineBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TicTacNineBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

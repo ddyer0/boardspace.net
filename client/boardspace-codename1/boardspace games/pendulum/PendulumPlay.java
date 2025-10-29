@@ -65,9 +65,10 @@ import static pendulum.PendulumMovespec.*;
  * @author ddyer
  *
  */
-public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable, PendulumConstants,
+public class PendulumPlay extends commonMPRobot<PendulumBoard> implements Runnable, PendulumConstants,
     RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
@@ -75,7 +76,6 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
 	// for the evaluator to work with.
 	
 	// common parameters
-    private static final double VALUE_OF_WIN =1.0;	// keep scores normalized in the 0.0-1.0 range
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
     private PendulumChip movingForPlayer = null;	// optional, some evaluators care
     private int forPlayer = -1;
@@ -197,7 +197,7 @@ public class PendulumPlay extends commonRobot<PendulumBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(PendulumBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(PendulumBoard evboard,int player,boolean print)
     {	
     	double sc = evboard.scoreForPlayer(player)/14000.0;
     	G.Assert(Math.abs(sc)<=1,"should be normalized %s",sc);
@@ -274,11 +274,7 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return super.getCurrentVariation();
-	}
+
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.
@@ -417,11 +413,11 @@ boolean split = false;
 	 double sc =Normalized_Evaluate_Position(lastMove);
 	 return(sc);
  }
- 
+ /*
  public double reScorePosition(commonMove m,int forplayer)
- {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+ {	return(m.reScorePosition(forplayer,valueOfWin()));
  }
- 
+*/
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
 		int nplay = board.nPlayers();

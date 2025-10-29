@@ -325,10 +325,6 @@ public void PrepareToMove(int playerIndex)
     }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
 	public commonMove Get_Random_Move(Random r)
 	{	commonMove some = board.getRandomMove(r);
 		if(some!=null) { return(some); }

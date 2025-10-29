@@ -91,7 +91,7 @@ public class TumblePlay extends commonRobot<TumbleBoard> implements Runnable, Tu
      * @param player
      * @return
      */
-    double ScoreForPlayer(TumbleBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TumbleBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

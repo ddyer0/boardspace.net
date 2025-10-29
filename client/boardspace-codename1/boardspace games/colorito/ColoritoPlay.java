@@ -89,7 +89,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(ColoritoBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ColoritoBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
@@ -101,11 +101,11 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
- 
+   */ 
     /**
      * this is it! just tell me that the position is worth.  
      */

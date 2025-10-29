@@ -86,7 +86,7 @@ public class ExxitPlay extends commonRobot<ExxitGameBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(ExxitGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ExxitGameBoard evboard,int player,boolean print)
     {	boolean win = evboard.WinForPlayer(player);
      	// score wins as slightly better if in fewer moves
     	double val = win ? VALUE_OF_WIN+1.0/(1+board.robotDepth) : 0.0;		// points for a win, less for everything else

@@ -36,13 +36,15 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, MogulConstants,
+public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, MogulConstants,
     RobotProtocol
-{   boolean SAVE_TREE = false;				// debug flag for the search driver
+{   
+	public double valueOfWin() { return 1.0; }
+	
+	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean UCT_WIN_LOSS = true;			// if true, score montebot strictly on win/loss
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     boolean RESHUFFLE = false;
-	static final double VALUE_OF_WIN = 1.0;
 	int strategy = 0;
      
     /* constructor */
@@ -170,12 +172,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
 	 }}
 	 return(super.Get_Random_Move(rand));
  }
- 
- public double reScorePosition(commonMove m,int player)
- { 	return m.reScorePosition(player,VALUE_OF_WIN);
- }
 
- 
  /**
   * for UCT search, return the normalized value of the game, with a penalty
   * for longer games so we try to win in as few moves as possible.  Values

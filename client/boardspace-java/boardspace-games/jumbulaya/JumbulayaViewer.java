@@ -246,7 +246,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = boardMax ? 0 : fh*22;	
+    	int minLogW = boardMax ? 0 : fh*17;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -295,7 +295,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         int ncols =  bcols;
     	int nrows =  planned ? brows : brows+2;
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -312,7 +312,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH/8;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
     	placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -325,7 +325,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	placeRow( boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2,goalRect);   
     	}
     	G.SetRect(timeRect, boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null ? 0 : stateH/2);   
-    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect), boardW-CELLSIZE, planned?0:CELLSIZE*3/2);
+    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect)+CELLSIZE/4, boardW-CELLSIZE, planned?0:CELLSIZE*3/2);
     	G.SetRect(largerBoardRect,mainX+extraW,mainY+extraH,largeW,largeH);
 
     	// goal and bottom ornaments, depending on the rendering can share

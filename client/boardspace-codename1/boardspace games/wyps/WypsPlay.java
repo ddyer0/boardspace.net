@@ -169,12 +169,6 @@ public void PrepareToMove(int playerIndex)
 }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
- 
-
  
  long startTime = 0;
  public boolean timeExceeded()

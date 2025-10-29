@@ -32,9 +32,9 @@ import lib.*;
  * @author ddyer
  *
  */
-public class BreakingAwayPlay extends commonRobot<BreakingAwayBoard> implements Runnable,   RobotProtocol
+public class BreakingAwayPlay extends commonMPRobot<BreakingAwayBoard> implements Runnable,   RobotProtocol
 {	
-	
+	public double valueOfWin() { return 1.0; }
     /* strategies */
 	private final int DUMBOT = 1;
 	private int Strategy = DUMBOT;
@@ -112,15 +112,6 @@ public void PrepareToMove(int playerIndex)
     board.copyFrom(GameBoard);
     board.setWhoseTurn(playerIndex);
 
-}
-//
-// rescore the position for a different player.  The underlying
-// assertion here is that the player component scores are accurate
-// ie; the players don't score themselves differently if they are
-// the player to move. 
-//
-public double reScorePosition(commonMove m,int forplayer)
-{	return(m.reScorePosition(forplayer,1));
 }
 
 

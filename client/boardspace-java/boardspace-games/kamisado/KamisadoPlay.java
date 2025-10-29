@@ -92,7 +92,7 @@ public class KamisadoPlay extends commonRobot<KamisadoBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(KamisadoBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(KamisadoBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

@@ -155,7 +155,7 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
      * @param player
      * @return
      */
-    double ScoreForPlayer(StymieBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(StymieBoard evboard,int player,boolean print)
     {	
 		double val = evboard.scoreEstimateForPlayer(player);
      	return(val);
@@ -165,10 +165,11 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+ 
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
+     */
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
@@ -314,11 +315,6 @@ public void PrepareToMove(int playerIndex)
     }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
- 
 
 
  }

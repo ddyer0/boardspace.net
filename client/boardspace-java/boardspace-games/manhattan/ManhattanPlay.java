@@ -64,9 +64,11 @@ import static manhattan.ManhattanMovespec.*;
  * @author ddyer
  *
  */
-public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnable, ManhattanConstants,
+public class ManhattanPlay extends commonMPRobot<ManhattanBoard> implements Runnable, ManhattanConstants,
     RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
+	
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
@@ -215,7 +217,7 @@ public class ManhattanPlay extends commonRobot<ManhattanBoard> implements Runnab
      * @param player
      * @return
      */
-    double ScoreForPlayer(ManhattanBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ManhattanBoard evboard,int player,boolean print)
     {	
 		double val = board.scoreForPlayer(player);
      	return(val);
@@ -321,12 +323,6 @@ public void PrepareToMove(int playerIndex)
     boardSearchLevel = 0;
 
 }
-
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return super.getCurrentVariation();
-	}
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.
@@ -461,6 +457,7 @@ public void PrepareToMove(int playerIndex)
 	 	}
  	return reScorePosition(m,playerindex);
  }
+ 
  public double reScorePosition(commonMove mm,int playerindex)
  {	double maxs = board.winningScore();
  	double val = mm.reScorePosition(playerindex,maxs);

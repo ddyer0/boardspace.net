@@ -86,7 +86,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
      * @param player
      * @return
      */
-    double ScoreForPlayer(SantoriniBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(SantoriniBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerByStepping(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

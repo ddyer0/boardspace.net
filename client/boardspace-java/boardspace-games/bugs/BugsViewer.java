@@ -195,7 +195,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 				ImageDir+"categorypix/",
 				ImageDir+"bugpix-1/",
 				ImageDir+"bugpix-2/",
-				ImageDir+"bugpix/");
+				G.getBoolean("desktop",false) ? ImageDir+"bugpix/" : null);
 		}
 		G.print("Profiles ",Profile.profiles.size(),
 				" Taxonomy ",Taxonomy.taxonomies.size(),

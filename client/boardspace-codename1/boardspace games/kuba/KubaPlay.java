@@ -89,7 +89,7 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(KubaBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(KubaBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

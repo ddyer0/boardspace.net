@@ -43,15 +43,16 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, OnedayConstants,
+public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, OnedayConstants,
     RobotProtocol
-{   boolean SAVE_TREE = false;				// debug flag for the search driver
+{
+	public double valueOfWin() { return 1.0; }
+	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean RESHUFFLE = false;				// if true, reshuffle the deck to conceal information
     int FINAL_DEPTH = 30;					// stopping point for the playout
     boolean UCT_WIN_LOSS = false;			// if true, score montebot strictly on win/loss
     boolean changed_to_synchronous = false;
     boolean dumbPhase = false;				// when true reduce the search time
-	static final double VALUE_OF_WIN = 1.0;
      /* strategies */
     int boardSearchLevel = 0;				// the current search depth
     /* constructor */
@@ -98,7 +99,7 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
     double ScoreForPlayer(OnedayBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+    	if(win) { return(valueOfWin()+(1.0/(1+boardSearchLevel))); }
     	return(evboard.ScoreForPlayer(player,print,false));
 
     }
@@ -203,10 +204,6 @@ public class OnedayPlay extends commonRobot<OnedayBoard> implements Runnable, On
 	 }
 	 return(mm.reScorePosition(playerindex,1));
  }
- public double reScorePosition(commonMove cm,int forplayer)
- {	return cm.reScorePosition(forplayer,VALUE_OF_WIN);
- }
-
 
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

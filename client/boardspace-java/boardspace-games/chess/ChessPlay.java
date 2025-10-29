@@ -43,10 +43,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
 	private static final int BESTBOT_DEPTH = 10;
 	private static final double VALUE_OF_WIN = 1000000.0;
 	private int MAX_DEPTH = BESTBOT_DEPTH;
-	
-	// in games like chess, where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation() { return getCurrent2PVariation(); }
-	
+		
     /** constructor.  Must be zero argument so copying robot players will work.
      * 
      */
@@ -117,7 +114,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(ChessBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ChessBoard evboard,int player,boolean print)
     {	
      	double ss = evboard.ScoreForPlayer(player,print);
     	return(ss);
@@ -126,10 +123,12 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+    
+    
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
+  */
     /**
      * this is it! just tell me that the position is worth.  
      */

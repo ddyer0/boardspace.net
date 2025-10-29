@@ -84,7 +84,7 @@ public class KhetPlay extends commonRobot<KhetBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(KhetBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(KhetBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }

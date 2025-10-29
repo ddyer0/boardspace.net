@@ -58,10 +58,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     {
     	return (true);
     }
-    public commonMove getCurrentVariation()
-    {
-    	return(search_driver.getCurrent2PVariation());
-    }
+
     /**
      * this is called after creating a new instance of the robot, when
      * creating a clone to use in monte carlo search.
@@ -133,11 +130,11 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
- 
+    */
     /**
      * this is it! just tell me that the position is worth.  
      */

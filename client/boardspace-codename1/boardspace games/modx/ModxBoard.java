@@ -355,13 +355,6 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
     	if(board_state.GameOver()) { return(win[player]); }
     	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print)
-    {  	double finalv=simpleScore(player);
-    	
-    	return(finalv);
-    }
-
 
     //
     // finalize all the state changes for this move.

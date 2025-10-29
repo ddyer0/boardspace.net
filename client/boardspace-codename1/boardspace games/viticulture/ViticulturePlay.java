@@ -64,10 +64,10 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class ViticulturePlay extends commonRobot<ViticultureBoard> implements Runnable, ViticultureConstants,
-    RobotProtocol
+public class ViticulturePlay extends commonMPRobot<ViticultureBoard> 
+	implements Runnable, ViticultureConstants, RobotProtocol
     {
-	
+	public double valueOfWin() { return MAX_SCORE-MIN_SCORE; }
 
     enum Bias {
     	B_00,			// no pre-bias
@@ -231,7 +231,7 @@ public class ViticulturePlay extends commonRobot<ViticultureBoard> implements Ru
      * @param player
      * @return
      */
-    double ScoreForPlayer(ViticultureBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ViticultureBoard evboard,int player,boolean print)
     {	
 		PlayerBoard pb = board.pbs[player];
 		return((double)pb.progressScore()/(MAX_SCORE-MIN_SCORE));
@@ -429,10 +429,7 @@ public void PrepareToMove(int playerIndex)
         }
         else 
   */
- public double reScorePosition(commonMove mm,int forplayer)
- {
-	 return mm.reScorePosition(forplayer,MAX_SCORE-MIN_SCORE);
- }
+
  public double Normalized_Evaluate_Position(	commonMove m)
  {	int playerindex = m.player;
 		int nplay = board.nPlayers();

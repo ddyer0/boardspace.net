@@ -384,12 +384,6 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
     	if(board_state.GameOver()) { return(win[player]); }
     	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print)
-    {  	double finalv=simpleScore(player);
-    	
-    	return(finalv);
-    }
 
     private VeletasCell placedShooter()
     {	VeletasCell dest = droppedDestStack.top();

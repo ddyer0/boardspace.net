@@ -17,11 +17,9 @@
 package crossfire;
 
 import bridge.*;
-import common.GameInfo;
-
 import com.codename1.ui.geom.Rectangle;
 
-
+import common.GameInfo;
 import java.util.*;
 
 import lib.Graphics;
@@ -47,7 +45,7 @@ import online.search.SimpleRobotProtocol;
  * Crossfire viewer, Dec 2010
  * 
 */
-public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> implements CrossfireConstants
+public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> implements CrossfireConstants,PlacementProvider
 {	
 	static final String Crossfire_SGF = "crossfire"; // sgf game name
 	static final String ImageDir = "/crossfire/images/";
@@ -284,7 +282,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         int stateX = boardX;
         int ph = CELLSIZE*4;
         
-        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
   
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     		
@@ -440,7 +438,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
       {
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     tileImages[HEXTILE_PBOARD_INDEX].getImage(loader).centerImage(gc, boardRect);
+     tileImages[HEXTILE_PBOARD_INDEX].getImage().centerImage(gc, boardRect);
       
       gb.SetDisplayParameters( 0.93, 0.825,
       		  0,0.35,
@@ -451,7 +449,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
       {
     	  // if the board is one large graphic, for which the visual target points
           // are carefully matched with the abstract grid
-         tileImages[HEXTILE_NP_INDEX].getImage(loader).centerImage(gc, boardRect);
+         tileImages[HEXTILE_NP_INDEX].getImage().centerImage(gc, boardRect);
           
           gb.SetDisplayParameters( 0.97,0.97,0.1,-0.5,0); // shrink a little and rotate 30 degrees
 
@@ -488,7 +486,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
 
     	Hashtable<CrossfireCell,CrossfireCell> dests = gb.getDests();
         boolean picked = (gb.pickedObject!=null);
-
+        numberMenu.clearSequenceNumbers();
         // mark the to-from squares with a puddle of color
         if((gb.pickedSource!=null) || (gb.droppedDest!=null))
         {
@@ -517,6 +515,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
 				|| (picked && gb.isSource(cell));	// is legal for a "pick" operation+
             
         	int csize = (int)(CELLSIZE*CHIP_SIZE_SCALE*(perspective ? ysizeadj(xpos,ypos-top) : 1));
+            numberMenu.saveSequenceNumber(cell,xpos,ypos,labelColor);
 
             //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
             String msg = "";
@@ -535,6 +534,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
              }
 
         	}
+     	numberMenu.drawSequenceNumbers(gc,(int)(CELLSIZE*CHIP_SIZE_SCALE),labelFont,labelColor);
             }
 
     /**
@@ -647,6 +647,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+    	numberMenu.recordSequenceNumber(bb.activeMoveNumber());
         int sz = (int)(CELLSIZE*CHIP_SIZE_SCALE);
         startBoardAnimations(replay,bb.animationStack,sz,MovementStyle.Stack);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
@@ -957,5 +958,9 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return bb.moveNumber;
+	}
 }
 

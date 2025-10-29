@@ -18,6 +18,9 @@ package crosswords;
 
 import lib.InternationalStrings;
 import lib.OStack;
+
+import java.awt.Color;
+
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -62,7 +65,8 @@ public interface CrosswordsConstants
 	static String UseBigFont = "use larger letters on the tiles";
 	static String UseSmallFont = "use smaller letters on the tiles";
 
-
+	static Color[] mouseColors = { Color.red,Color.yellow,Color.blue,Color.green};
+	static Color[] dotColors = { Color.white,Color.black,Color.white,Color.white};
 	class StateStack extends OStack<CrosswordsState>
 	{
 		public CrosswordsState[] newComponentArray(int n) { return(new CrosswordsState[n]); }

@@ -704,6 +704,7 @@ public abstract class commonCanvas extends exCanvas
 		// this assures that the elapsed times agree for all players
 		m.setElapsedTime(l.currentMoveTime);
 		l.currentMoveTime = -1;
+		saveDisplayBoard();	// needed so animations don't glitch with target still visible
 		}	
     }
     /** default filter for incoming Viewer messages
@@ -5413,6 +5414,7 @@ public abstract class commonCanvas extends exCanvas
     	resetHistory();
     	BoardProtocol b = getBoard();
         if(b!=null) { adjustPlayers(b.nPlayers()); }
+        resetCopyBoards();
         commonPlayer.initPlayers(players,reviewOnly);
     	}
     for(int i=0;i<players.length;i++)
@@ -6253,7 +6255,13 @@ public abstract class commonCanvas extends exCanvas
     	return(getBoard());
     }
 
-
+    // when boards change number of players they may also change structure
+    // in ways that make copy boards structurally invalid
+    public void resetCopyBoards()
+    {
+    	l.displayBoard = null;
+    	l.backupBoard = null;
+    }
 
     public String gameName()
     {
@@ -6459,6 +6467,7 @@ public abstract class commonCanvas extends exCanvas
     	for(int i=0;i<minp;i++) { newp[i]=players[i]; }
     	//for(int i=minp;i<n;i++) { newp[i] = new commonPlayer(i); }
     	players = newp;
+    	resetCopyBoards();
     	resetBounds();
  
     	}

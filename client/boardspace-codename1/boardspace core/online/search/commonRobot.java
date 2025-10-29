@@ -17,6 +17,7 @@
 package online.search;
 
 import bridge.ThreadDeath;
+import common.GameInfo;
 import lib.*;
 
 import online.common.*;
@@ -65,7 +66,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	}
 	// used by the "start evaluator" option, not usually implemented for mcts searches
 	public void StaticEval() {
-		return;
+		G.Error("Not implemented, needed for the \"start evaluator\" option");
 	}
     //
     // stuff for nonrecursive alpha-beta search
@@ -238,12 +239,9 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		return(c);
 	}
     public commonMove getCurrentVariation()
-    {	return(search_driver.getCurrentVariation());
+    {	return(search_driver.getCurrent2PVariation());
     }
-    public commonMove getCurrent2PVariation()
-    {
-    	return(search_driver.getCurrent2PVariation());
-    }
+
     /**
      * Limit the move vector to a specified size.  The vector is full of moves
      * that have been static evaluated and sorted, so removing from teh end is appropriate.  
@@ -403,12 +401,23 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
         }
         return(time);
     }
-    
-
+    /**
+     * this is intended to catch class configuration errors for new games being developed.
+     */
+    public void validateClasses()
+    {
+    	GameInfo go = sharedInfo.getGameInfo();
+    	if(go!=null)
+    	{
+    		G.Assert(go.maxPlayers<=2,"should be commonMPRobot");
+    		G.Assert(!(viewer.ParseNewMove("done",0) instanceof commonMPMove),"should not be commonMPMove");
+    	}
+    }
     public void InitRobot(ViewerProtocol v, ExtendedHashtable info, int strategy)
     {	sharedInfo = info;
         game = (Game)info.get(GAME);
         viewer = v;
+    	validateClasses();
         
     	robotTime = v.timeControl().copy();
      	robotStrategy = strategy;

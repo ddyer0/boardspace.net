@@ -178,29 +178,27 @@ public class KingsColorPlay extends commonRobot<KingsColorBoard> implements Runn
      * Not needed for MonteCarlo searches
      * @param player
      * @return
-     */
-    double ScoreForPlayer(KingsColorBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(KingsColorBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
 		G.Error("Score for player not implemented");
      	return(val);
     }
+     */
 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     * Not needed for MonteCarlo searches
-     */
+ 
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
-
+    */
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
      * Not needed for MonteCarlo searches
-     * */
     public void StaticEval()
     {
             KingsColorBoard evboard = GameBoard.cloneBoard();
@@ -208,6 +206,7 @@ public class KingsColorPlay extends commonRobot<KingsColorBoard> implements Runn
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
+     * */
 
  
 
@@ -279,10 +278,6 @@ public void PrepareToMove(int playerIndex)
 }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

@@ -228,11 +228,6 @@ public void PrepareToMove(int playerIndex)
 }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return super.getCurrent2PVariation();
-	}
-
 	public commonMove getWeightedRandomMove(Random rand,boolean legal)
 	{	
 		boolean reject = false;

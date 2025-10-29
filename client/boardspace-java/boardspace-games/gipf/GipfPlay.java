@@ -70,7 +70,7 @@ public class GipfPlay extends commonRobot<GipfBoard> implements Runnable, GipfCo
         return(board.GetListOfMoves());
     }
 
-    double ScoreForPlayer(GipfBoard evboard,int player,boolean print)
+   private double ScoreForPlayer(GipfBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

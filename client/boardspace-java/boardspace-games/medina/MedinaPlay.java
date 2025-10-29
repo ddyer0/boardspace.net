@@ -33,11 +33,12 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class MedinaPlay extends commonRobot<MedinaBoard> implements Runnable, 
+public class MedinaPlay extends commonMPRobot<MedinaBoard> implements Runnable, 
     RobotProtocol
 {   
 	private static final double VALUE_OF_WIN = 1000000.0;
-
+	public double valueOfWin() { return VALUE_OF_WIN; }
+	
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
 	private boolean KILLER = false;					// probably ok for all games with a 1-part move
     
@@ -93,7 +94,7 @@ public class MedinaPlay extends commonRobot<MedinaBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(MedinaBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(MedinaBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
@@ -150,16 +151,6 @@ public class MedinaPlay extends commonRobot<MedinaBoard> implements Runnable,
     	commonMove v = cm;
     	while(leaf!=null) { v = leaf; leaf=leaf.best_move(); }
     	return(v);
-    }
-    
-    //
-    // rescore the position for a different player.  The underlying
-    // assertion here is that the player component scores are accurate
-    // ie; the players don't score themselves differently if they are
-    // the player to move. 
-    //
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
     public double Static_Evaluate_Position(commonMove m)

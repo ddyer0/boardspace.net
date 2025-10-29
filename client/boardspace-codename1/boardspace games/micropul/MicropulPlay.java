@@ -96,7 +96,7 @@ public class MicropulPlay extends commonRobot<MicropulBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(MicropulBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(MicropulBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
      	boolean win = evboard.WinForPlayerNow(player);

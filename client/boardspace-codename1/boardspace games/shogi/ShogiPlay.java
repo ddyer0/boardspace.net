@@ -108,7 +108,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
      * @param player
      * @return
      */
-    double ScoreForPlayer(ShogiBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ShogiBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

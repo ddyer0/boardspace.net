@@ -103,7 +103,7 @@ public class VolcanoPlay extends commonRobot<VolcanoBoard> implements Runnable, 
      * @param player
      * @return
      */
-    double ScoreForPlayer(VolcanoBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(VolcanoBoard evboard,int player,boolean print)
     {	double sc = evboard.ScoreForPlayer(player,print,DUMBOT);
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

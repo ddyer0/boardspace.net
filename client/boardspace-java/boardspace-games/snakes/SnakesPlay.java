@@ -121,7 +121,7 @@ public class SnakesPlay extends commonRobot<SnakesBoard> implements Runnable, Sn
      * @param player
      * @return
      */
-    double ScoreForPlayer(SnakesBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(SnakesBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win && (player==0))

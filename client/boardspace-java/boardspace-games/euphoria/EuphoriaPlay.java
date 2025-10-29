@@ -54,15 +54,15 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable, EuphoriaConstants,
-    RobotProtocol
+public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard> 
+	implements Runnable, EuphoriaConstants, RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
 	// but it's exact value and scale are unimportant.  The main thing is to have a convenient range of values
 	// for the evaluator to work with.
-    private static final double VALUE_OF_WIN =1.0;	// keep scores normalized in the 0.0-1.0 range
     private boolean BLITZ = true;					// the only way for this game, unwinding is just too difficult
     @SuppressWarnings("unused")
 	private int terminatedWithPrejudice = -1;
@@ -326,7 +326,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(EuphoriaBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(EuphoriaBoard evboard,int player,boolean print)
     {	switch(evaluator.score)
     	{
     	case S_00: return(evboard.scoreEstimate_00(player,print));
@@ -597,8 +597,8 @@ public commonMove DoMonteCarloFullMove()
  public double reScorePosition(commonMove cm,int forplayer)
  {	
 	 return evaluator.scoreProportional 
-		? ((EuphoriaMovespec)cm).reScoreProportional(forplayer,VALUE_OF_WIN)
-		: cm.reScorePosition(forplayer,VALUE_OF_WIN);
+		? ((EuphoriaMovespec)cm).reScoreProportional(forplayer,valueOfWin())
+		: cm.reScorePosition(forplayer,valueOfWin());
  }
   /**
    * benchmark moves per second 7/1/2014    244458 from starting position

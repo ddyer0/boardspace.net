@@ -23,8 +23,6 @@ import online.search.*;
 import lib.*;
 
 
-
-
 /** 
  * Frogs uses alpha-beta only
  * 
@@ -36,15 +34,17 @@ import lib.*;
  * @author ddyer
  *
  */
-public class FrogPlay extends commonRobot<FrogBoard> implements Runnable, 
+public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
     RobotProtocol
 {	
+	private final double VALUE_OF_WIN = 1000.0;
+	public double valueOfWin() { return VALUE_OF_WIN; }
+	
 	private boolean KILLER_HEURISTIC = false;
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
 	private int DUMBOT_DEPTH = 4;
 	private int WEAKBOT_DEPTH = 3;
 	private int MAX_DEPTH = DUMBOT_DEPTH;
-	private final double VALUE_OF_WIN = 1000.0;
 	private int Strategy = DUMBOT_LEVEL;
     
 	private int boardSearchLevel = 0;				// the current search depth
@@ -88,10 +88,6 @@ public class FrogPlay extends commonRobot<FrogBoard> implements Runnable,
     	while(leaf!=null) { v = leaf; leaf=leaf.best_move(); }
     	return(v);
     }
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
-    }
-
     public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;
@@ -114,7 +110,7 @@ public class FrogPlay extends commonRobot<FrogBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(FrogBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(FrogBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
      	// score wins as slightly better if in fewer moves

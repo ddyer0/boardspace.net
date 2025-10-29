@@ -824,6 +824,12 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         	int ypos = gb.getY(c);
         	//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
          	HitPoint myHit = gb.legalToHitCell(c) ? highlight : null;
+         	YspahanChip top = c.topChip();
+         	int aa = c.activeAnimationHeight();
+         	if(top!=null && top.isCube() && !spritesIdle() && aa==0)
+         	{	YspahanCell cc = b.getCell(c);
+         		G.print("c "+c+" "+aa+" "+cc.activeAnimationHeight());
+         	}
         	if(c.drawStack(gc,this,myHit,CELLSIZE,xpos,ypos,0, 1.0,null))
         	{// draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
       		highlight.arrow =hasMovingObject(anyone) 

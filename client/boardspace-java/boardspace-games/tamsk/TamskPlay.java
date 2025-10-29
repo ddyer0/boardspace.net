@@ -164,7 +164,7 @@ public class TamskPlay extends commonRobot<TamskBoard> implements Runnable, Tams
      * @param player
      * @return
      */
-    double ScoreForPlayer(TamskBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TamskBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
 		G.Error("Score for player not implemented");
@@ -254,12 +254,6 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
- 
  /**
   * this is actually the meta-search loop.  A complete search is done, for which 
   * one of the possible results is a "delay" move.  If delay is the result, we

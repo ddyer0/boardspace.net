@@ -420,13 +420,6 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     	default: throw G.Error("Not expecting goal %s",goal);
     	}   	
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)
-    {  	double finalv=0.0;
-    	G.Error("not implemented");
-    	return(finalv);
-    }
-
 
     //
     // finalize all the state changes for this move.

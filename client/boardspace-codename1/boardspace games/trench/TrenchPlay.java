@@ -202,7 +202,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * @param player
      * @return
      */
-    double ScoreForPlayer(TrenchBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TrenchBoard evboard,int player,boolean print)
     {	double val = 0;
     	switch(Strategy)
     {	
@@ -410,11 +410,7 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
+
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.

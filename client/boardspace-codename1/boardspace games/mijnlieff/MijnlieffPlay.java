@@ -142,18 +142,17 @@ public class MijnlieffPlay extends commonRobot<MijnlieffBoard> implements Runnab
      * toward winning.
      * @param player
      * @return
-     */
-    double ScoreForPlayer(MijnlieffBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(MijnlieffBoard evboard,int player,boolean print)
     {	
 		double val = board.scoreForPlayer(player);
      	return(val);
     }
+     */
 
 
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
-     * */
     public void StaticEval()
     {
             MijnlieffBoard evboard = GameBoard.cloneBoard();
@@ -161,6 +160,7 @@ public class MijnlieffPlay extends commonRobot<MijnlieffBoard> implements Runnab
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
+     * */
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -221,10 +221,6 @@ public void PrepareToMove(int playerIndex)
  }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

@@ -129,7 +129,6 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     		new JumbulayaChip("letter1",letter1Scale,null),
     		new JumbulayaChip("letter2",letter2Scale,null),
     	};
-    static public JumbulayaChip Post = new JumbulayaChip("post",postScale,null);
     // greenpost double letter
     static public JumbulayaChip Blue = new JumbulayaChip("post-blue",new double[]{ 0.62,0.44,1.38},"blue");
     static public JumbulayaChip Yellow = new JumbulayaChip("post-yellow",new double[]{ 0.62,0.44,1.22},"yellow");

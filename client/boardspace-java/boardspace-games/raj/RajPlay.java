@@ -36,9 +36,10 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class RajPlay extends commonRobot<RajBoard> implements Runnable, RajConstants,
+public class RajPlay extends commonMPRobot<RajBoard> implements Runnable, RajConstants,
     RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.

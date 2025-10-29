@@ -359,6 +359,8 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         droppedUndoInfo = 0;
     	}
      }
+    int prevPicked = -1;
+    int prevDropped = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -376,6 +378,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     			moveStack(droppedDest,pickedSource,findDistance(droppedDest,pickedSource),replayMode.Replay);
     			pickedObject = pickedSource.removeTop();
     			}
+    		droppedDest.lastDropped = prevDropped;
    			droppedUndoInfo = 0;
     		droppedDest = null;
      	}
@@ -387,6 +390,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     {	if(pickedSource!=null) 
     		{ //SetBoard(pickedSource,pickedObject);
     		  pickedSource.addChip(pickedObject);
+    		  pickedSource.lastPicked = prevPicked;
     		  pickedSource = null;
     		}
 		  pickedObject = null;
@@ -432,6 +436,8 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         m.undoInfo = droppedUndoInfo = removeExcess(dest,replay);
         }
        lastDroppedObject = pickedObject;
+       prevDropped = dest.lastDropped;
+       dest.lastDropped = moveNumber;
        droppedDest = dest;
        pickedObject = null;
        setNextStateAfterDrop();
@@ -485,6 +491,8 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     	if(!wasDest)
     	{
         pickedSource = c;
+        prevPicked = c.lastPicked;
+        c.lastPicked = moveNumber;
         lastPicked = pickedObject = c.removeTop();
      	lastDroppedObject = null;
      	droppedDest = null;

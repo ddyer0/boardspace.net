@@ -73,9 +73,6 @@ public class PalagoPlay extends commonRobot<PalagoBoard> implements Runnable, Pa
     {
     }
 
-    public commonMove getCurrentVariation()
-    {	return(search_driver.getCurrent2PVariation());
-    }
 
 /** Called from the search driver to undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence

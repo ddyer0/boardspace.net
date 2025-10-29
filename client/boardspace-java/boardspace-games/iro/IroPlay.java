@@ -179,7 +179,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      * @param player
      * @return
      */
-    double ScoreForPlayer(IroBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(IroBoard evboard,int player,boolean print)
     {	boolean win = board.winForPlayerNow(player);
     	if(win) { return VALUE_OF_WIN+1/boardSearchLevel; }
 		double val = board.simpleScore(player,0.25,0.75);
@@ -192,10 +192,11 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
      * Not needed for MonteCarlo searches
-     */
+ 
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
+     */
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
@@ -373,11 +374,7 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
+
 	public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
 	{
 		return ((Iromovespec)mm).monteCarloWeight;

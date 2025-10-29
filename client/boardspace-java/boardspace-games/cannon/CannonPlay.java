@@ -88,7 +88,7 @@ public class CannonPlay extends commonRobot<CannonBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(CannonBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(CannonBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }

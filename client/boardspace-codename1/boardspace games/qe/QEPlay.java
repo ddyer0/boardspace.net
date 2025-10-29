@@ -65,15 +65,15 @@ import static qe.QEmovespec.*;
  * @author ddyer
  *
  */
-public class QEPlay extends commonRobot<QEBoard> implements Runnable, QEConstants,
-    RobotProtocol
+public class QEPlay extends commonMPRobot<QEBoard> 
+	implements Runnable, QEConstants,  RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
 	// but it's exact value and scale are unimportant.  The main thing is to have a convenient range of values
 	// for the evaluator to work with.
-    private static final double VALUE_OF_WIN = 1.0;
     private boolean UCT_WIN_LOSS = true;
     
     private double ALPHA = 1.0;
@@ -129,7 +129,7 @@ public class QEPlay extends commonRobot<QEBoard> implements Runnable, QEConstant
      * @param player
      * @return
      */
-    double ScoreForPlayer(QEBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(QEBoard evboard,int player,boolean print)
     {	if(UCT_WIN_LOSS)
     	{ return(evboard.winForPlayerNow(player)?1.0:0);
     	}
@@ -292,10 +292,7 @@ public void PrepareToMove(int playerIndex)
 	 	}
 	return(reScorePosition(m,playerindex));	
  }
- public double reScorePosition(commonMove m,int playerindex)
- {
-	 return m.reScorePosition(playerindex,VALUE_OF_WIN);
- }
+
 
  /**
   * for UCT search, return the normalized value of the game, with a penalty

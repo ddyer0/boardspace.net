@@ -198,24 +198,23 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
      * Not needed for MonteCarlo searches
      * @param player
      * @return
-     */
-    double ScoreForPlayer(MeridiansBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(MeridiansBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
 		G.Error("Score for player not implemented");
      	return(val);
     }
+    */
 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     * Not needed for MonteCarlo searches
-     */
+   
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
-
+  */
     /**
      * this is called from UCT setup to get the evaluation, prior to ordering the UCT move lists.
      */
@@ -228,7 +227,6 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
      * Not needed for MonteCarlo searches
-     * */
     public void StaticEval()
     {
             MeridiansBoard evboard = GameBoard.cloneBoard();
@@ -236,6 +234,7 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
+     * */
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
@@ -297,11 +296,7 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
+
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.

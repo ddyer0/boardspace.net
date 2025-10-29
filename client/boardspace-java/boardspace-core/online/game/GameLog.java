@@ -571,7 +571,7 @@ public class GameLog implements Opcodes
       { SequenceElement m = history.elementAt(0);
       if(sz>0 && m!=null && (m.ignoredInLogs())) { idx++;  }
       }
-      boolean recalculating = startingIdx<0; 
+      boolean recalculating = startingIdx<0 || startingIdx>=sz; 
       HitPoint mainHighlight = scrollbar.thumbScrolling() ? null : highlight;
       if(!recalculating && !scrolled)
       		{	

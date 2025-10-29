@@ -486,67 +486,6 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	win[nextPlayer[whoseTurn]]=winNext;
     	setState(DvonnState.GAMEOVER_STATE);
     }
-
-    static final double ADJ_SELF_PENALTY = -0.1;
-    static final double ADJ_OTHER_BONUS = 0.01;
-    static final double CAPTURE_PENALTY = 0.25;
-    static final double TOP_BONUS = 0.5;
-    // look for a win for player.  This algorithm should work for Gobblet Jr too.
-    public double ScoreForPlayer(int player,boolean print,boolean dumbot)
-    {  	int sc = scoreForPlayer(player);
-    	int tops = topsForPlayer;
-    	double rv = 0.0;
-    	switch(board_state)
-    	{
-    	default: throw G.Error("Not implemented");
-    	case PLACE_RING_STATE:
-    	case CONFIRM_PLACE_STATE:	
-    	{	Random seed = new Random(randomKey);
-    		int nextPlay = nextPlayer[player];
-    		//
-    		// theory here; we want a mostly random distribution for lack of 
-    		// any better motivation, but some penalty for playing in clusters
-    		// of our own color, and some bonus for playing adjacent to opposing colors.
-    		//
-    		for(DvonnCell c = allCells;
-    			c!=null;
-    			c=c.next)
-    		{
-    		double rr = ((seed.nextInt()%1000)/1000.0);		// a small random value 
-    		DvonnChip top = c.topChip();
-    		if(top==null) { rv+=rr; }						// empty spaces score the random
-    		else if(getPlayerIndex(top)!=nextPlay)
-    		{	for(int dir=0;dir<CELL_FULL_TURN;dir++)			// for our pieces, survey the terrain
-    			{	DvonnCell adj = c.exitTo(dir);
-    				if(adj!=null)
-    				{	DvonnChip adp = adj.topChip();
-    					if(adp!=null)
-    					{
-    					if(adp.colorIndex==top.colorIndex)
-    						{ rv += ADJ_SELF_PENALTY; 
-    						}
-    					else { rv += ADJ_OTHER_BONUS; }
-    					}
-    				}
-    			}
-    		}
-    		}
-    	}
-    	break;
-    	case GAMEOVER_STATE:	// for sure only the actual score matters.
-    		break;
-    	case PASS_STATE:
-    	case PLAY_STATE:
-    	case CONFIRM_STATE:
-    		rv += captures[getColorMap()[player]].chipIndex*CAPTURE_PENALTY;
-    		rv += tops*TOP_BONUS;
-    		// add other considerations besides the score
-    		break;
-    	}
-      	return(sc+rv);
-    }
-
-
     //
     // in the actual game, picks are optional; allowed but redundant.
     //

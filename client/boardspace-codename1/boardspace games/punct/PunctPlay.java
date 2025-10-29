@@ -269,7 +269,7 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
      * @param player
      * @return
      */
-    double ScoreForPlayer(PunctGameBoard evboard,int player,boolean print)
+	private double ScoreForPlayer(PunctGameBoard evboard,int player,boolean print)
     {	double val=0.0;
     	// player with control of the center gets square of margin
     	// other player gets zero

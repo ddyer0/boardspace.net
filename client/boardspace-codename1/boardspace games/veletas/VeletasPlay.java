@@ -106,10 +106,7 @@ public class VeletasPlay extends commonRobot<VeletasBoard> implements Runnable, 
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
     }
- 	public commonMove getCurrentVariation()
- 	{	
- 		return getCurrent2PVariation();
- 	}
+ 
     /** copy the game board, in preparation for a search */
     public void InitBoardFromGame()
     {

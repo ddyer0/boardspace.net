@@ -444,12 +444,6 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
     	if(board_state==MorelliState.Gameover) { return(win[player]); }
     	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)
-    {  	
-    	return(0);
-    }
-
 
     //
     // finalize all the state changes for this move.

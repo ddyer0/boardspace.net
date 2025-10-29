@@ -108,7 +108,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(CheckerBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(CheckerBoard evboard,int player,boolean print)
     {	
 
     	return(evboard.ScoreForPlayer(player,print));
@@ -118,11 +118,11 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
- 
+     */ 
     /**
      * this is it! just tell me that the position is worth.  
      */

@@ -106,7 +106,7 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
      * @param player
      * @return
      */
-    double ScoreForPlayer(KnockaboutBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(KnockaboutBoard evboard,int player,boolean print)
     {	double sc = evboard.ScoreForPlayer(player,print,DUMBOT);
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

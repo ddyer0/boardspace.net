@@ -87,7 +87,7 @@ public class QyshinsuPlay extends commonRobot<QyshinsuBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(QyshinsuBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(QyshinsuBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

@@ -175,19 +175,19 @@ public class HavannahPlay extends commonRobot<HavannahBoard> implements Runnable
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     */
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
-
+   */
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
-     * */
     public void StaticEval()
     {
     	G.Error("Not expected");
     }
+     * */
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -308,10 +308,7 @@ public void PrepareToMove(int playerIndex)
  	return(board.Get_Random_Hex_Move(rand));
  }
  
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
+
  
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

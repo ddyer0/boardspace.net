@@ -98,7 +98,7 @@ public class TzaarPlay extends commonRobot<TzaarBoard> implements Runnable, Tzaa
      * @param player
      * @return
      */
-    double ScoreForPlayer(TzaarBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TzaarBoard evboard,int player,boolean print)
     {	double sc = evboard.ScoreForPlayer(player,print,strategy==DUMBOT);
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

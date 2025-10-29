@@ -33,12 +33,13 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, TriadConstants,
+public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, TriadConstants,
     RobotProtocol
     {
+	private static final double VALUE_OF_WIN = 1.0;
+	public double valueOfWin() { return VALUE_OF_WIN; }
 	
 	private double TIME_LIMIT = 2.0;				// progressive search time limit
-	private static final double VALUE_OF_WIN = 1.0;
 	private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory
 	private static final int WEAKBOT_DEPTH = 6;
 	private static final int DUMBOT_DEPTH = 7;
@@ -101,7 +102,7 @@ public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, Tria
      * @param player
      * @return
      */
-    double ScoreForPlayer(TriadBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TriadBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
@@ -114,9 +115,6 @@ public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, Tria
     	commonMove v = cm;
     	while(leaf!=null) { v = leaf; leaf=leaf.best_move(); }
     	return(v);
-    }
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
     // TODO: refactor static eval so GameOver is checked first
@@ -131,7 +129,7 @@ public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, Tria
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
     	}
-    	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
+    	return(reScorePosition(mm,playerindex));
     }
 
 

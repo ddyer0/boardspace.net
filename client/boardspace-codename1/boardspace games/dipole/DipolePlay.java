@@ -95,7 +95,7 @@ public class DipolePlay extends commonRobot<DipoleBoard> implements Runnable, Di
      * @param player
      * @return
      */
-    double ScoreForPlayer(DipoleBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(DipoleBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

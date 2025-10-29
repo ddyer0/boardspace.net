@@ -344,13 +344,6 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
     	return((rack[player].height()==0) 
     			|| ((nSingleChips==0) && rack[player].height()<rack[nextPlayer[player]].height()));
      }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)
-    {  	double finalv=0.0;
-    	G.Error("not implemented");
-    	return(finalv);
-    }
-
     public double simpleScore(int who)
     {
     	double dif = rack[nextPlayer[who]].height()-rack[who].height();	// claims remaining, max 3

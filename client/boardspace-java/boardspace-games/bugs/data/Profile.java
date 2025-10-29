@@ -149,7 +149,8 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     {
        	StringStack lis = new StringStack();
     	try {
-    	InputStream in = G.getResourceAsStream(indexResourceName(path,name));
+    	String irn = indexResourceName(path,name);
+    	InputStream in = G.getResourceAsStream(irn);
     	if(in!=null)
     	{
     	Utf8Reader ins = new Utf8Reader(in);

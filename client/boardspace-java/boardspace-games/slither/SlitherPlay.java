@@ -238,7 +238,7 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
      * @param player
      * @return
      */
-    double ScoreForPlayer(SlitherBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(SlitherBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
 		G.Error("Score for player not implemented");
@@ -250,10 +250,11 @@ public class SlitherPlay extends commonRobot<SlitherBoard> implements Runnable, 
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
      * Not needed for MonteCarlo searches
-     */
+ 
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
+    */
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
@@ -453,11 +454,6 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.

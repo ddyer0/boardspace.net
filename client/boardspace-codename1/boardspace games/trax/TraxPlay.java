@@ -111,7 +111,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
      * @param player
      * @return
      */
-    double ScoreForPlayer(TraxGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TraxGameBoard evboard,int player,boolean print)
     {	double val=0.0 ;
     	if(evboard.WinForPlayerNow(player))	// also calculate lines array
     	{	if(print) { System.out.println("Win for "+player); }
@@ -328,12 +328,13 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
         // abnormal exit
         return (null);
     }
+ /*
 public double reScorePosition(commonMove m,int forplayer)
 {
 	double v = super.reScorePosition(m,forplayer);
 	return v;
 }
-
+    */
 // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
 // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
 // evaluator other than winning a game.

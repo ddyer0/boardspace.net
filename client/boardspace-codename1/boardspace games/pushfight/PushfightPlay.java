@@ -236,10 +236,6 @@ public void PrepareToMove(int playerIndex)
     board.robot = this;
 }
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

@@ -105,7 +105,7 @@ public class Warp6Play extends commonRobot<Warp6Board> implements Runnable, Warp
      * @param player
      * @return
      */
-    double ScoreForPlayer(Warp6Board evboard,int player,boolean print)
+    private double ScoreForPlayer(Warp6Board evboard,int player,boolean print)
     {	double sc = evboard.ScoreForPlayer(player,print,DUMBOT);
      	boolean win = evboard.WinForPlayer(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

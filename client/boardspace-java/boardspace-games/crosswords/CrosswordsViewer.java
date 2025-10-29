@@ -30,6 +30,7 @@ import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -172,7 +173,9 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         	// will be console chatter about strings not in the list yet.
         	CrosswordsConstants.putStrings();
         }
-        
+        MouseColors = mouseColors;
+        MouseDotColors = dotColors;
+      
         String type = info.getString(GameInfo.GAMETYPE, CrosswordsVariation.Crosswords.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
@@ -268,7 +271,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = boardMax ? 0 : fh*22;	
+    	int minLogW = boardMax ? 0 : fh*16;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -289,7 +292,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
-    	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
+    	layout.placeRectangle(logRect,minLogW, plannedSeating() ? minLogW : minLogW*2/3, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,noticeRect);
        	int doneW = G.Width(editRect);
@@ -297,7 +300,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	layout.placeDoneEditRep(doneW,doneW,passButton,checkWordsButton,vocabularyRect);
       	 
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = Math.min(G.Height(pl.playerBox),fh*10);
+       	int spare = Math.min(G.Height(pl.playerBox),fh*7);
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Edge);
        	       	
     	Rectangle main = layout.getMainRectangle();
@@ -474,13 +477,16 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	GC.Text(gc, true, l,G.Bottom(r)-cs/2,w,cs/2,Color.black,null,s.get(TilesLeft,tilesLeft));
     	}
      }
+    public Drawable getPlayerIcon(int n)
+    {
+    	return CrosswordsChip.playerColors[n];
+    }
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r,Rectangle er, commonPlayer pl, HitPoint highlight,HitPoint highlightAll,CrosswordsBoard gb)
     {	int pidx = pl.boardIndex;
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
-       	 
       	 
    	if(!mutable_game_record 
    			&& !isSpectator()
@@ -664,9 +670,13 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     private void DrawScore(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,CrosswordsBoard gb)
     {	int pidx = pl.boardIndex;
     	int val = gb.score[pidx];
-    	GC.frameRect(gc,Color.black,r);
-    	GC.setFont(gc,SystemFont.getFont(largeBoldFont(),G.Height(r)*3/4));
-    	GC.Text(gc, true,r,Color.blue,null,""+val);
+    	if(G.Height(r)>0)
+    	{
+       	CrosswordsChip chip = CrosswordsChip.playerColors[pidx];
+       	chip.drawChip(gc,this,r,null);
+    	GC.setFont(gc,SystemFont.getFont(largeBoldFont(),G.Height(r)*3/5));
+    	GC.Text(gc, true,r,dotColors[pidx],null,""+val);
+    }
     }
     /**
      * return the dynamically adjusted size during an animation.  This allows
@@ -1229,6 +1239,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
        boolean big = bigTypeToggle.isOn();
        if(big) { bigTypeToggle.setValue(false); }
+       gameLog.playerIcons = true;
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
        if(big) { bigTypeToggle.setValue(true); }
        GC.unsetRotatedContext(gc,selectPos);
@@ -1318,7 +1329,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 					passButton.show(gc, messageRotation, buttonSelect);
 					}
         }
-       
+       	
 		if(G.debug()||allowed_to_edit)
 		{ 	checkWordsButton.show(gc,messageRotation,selectPos);
 			vocabularyRect.draw(gc, selectPos);

@@ -334,11 +334,6 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
     	if(board_state==GygesState.Gameover) { return(win[player]); }
     	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)
-    {  	
-    	throw G.Error("not implemented");
-     }
 
 
     //

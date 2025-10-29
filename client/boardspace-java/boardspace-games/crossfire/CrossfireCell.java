@@ -36,11 +36,14 @@ class CellStack extends OStack<CrossfireCell>
  * @author ddyer
  *
  */
-public class CrossfireCell extends stackCell<CrossfireCell,CrossfireChip> 
-{	
+public class CrossfireCell extends stackCell<CrossfireCell,CrossfireChip> implements PlacementProvider
+{	int lastPicked = -1;
+	int lastDropped = -1;
+	
 	public CrossfireChip[] newComponentArray(int n) { return(new CrossfireChip[n]); }
 	public int stackCapacity() { return(linkCount); }
 	public CrossfireCell() { super(); }		// construct a cell not on the board
+	
 	public CrossfireCell(char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);
 		rackLocation = CrossId.BoardLocation;
@@ -53,5 +56,20 @@ public class CrossfireCell extends stackCell<CrossfireCell,CrossfireChip>
 		rackLocation = rack;
 	}
 	public CrossId rackLocation() { return((CrossId)rackLocation); }
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = lastDropped = -1;
+	}
+	public void copyFrom(CrossfireCell o)
+	{	super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 
 }

@@ -558,11 +558,6 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     	if(board_state==MogulState.Gameover) { return(win[player]); }
     	throw G.Error("not implemented");
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)
-    {  
-    	throw G.Error("not implemented");
-    }
 
 
     //

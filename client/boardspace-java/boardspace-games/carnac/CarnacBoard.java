@@ -403,12 +403,6 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
     	if(board_state==CarnacState.GAMEOVER_STATE) { return(win[player]); }
      	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print)
-    {  	
-    	throw G.Error("not implemented");
-    }
-
 
     //
     // return true if balls[rack][ball] should be selectable, meaning

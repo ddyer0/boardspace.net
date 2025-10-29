@@ -90,7 +90,7 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
      * @param player
      * @return
      */
-    double ScoreForPlayer(GobGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(GobGameBoard evboard,int player,boolean print)
     {	
      	//boolean win = evboard.WinForPlayer(player);
 

@@ -120,9 +120,13 @@ class liteMove
  * @author ddyer
  *
  */
-public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable, UniverseConstants,
-    RobotProtocol,SubsetVisitor<UniverseCell>
-{ 	Hashtable<liteMove,liteMove> replies = new Hashtable<liteMove,liteMove>();
+public class UniversePlay extends commonMPRobot<UniverseBoard> 
+	implements Runnable, UniverseConstants, RobotProtocol,SubsetVisitor<UniverseCell>
+{ 	
+	static final double VALUE_OF_WIN = 1.0;
+	public double valueOfWin() { return VALUE_OF_WIN; }
+	
+	Hashtable<liteMove,liteMove> replies = new Hashtable<liteMove,liteMove>();
 	boolean SAVE_TREE = false;				// debug flag for the search driver
 	int MOVE_LIMIT = 1500;					// limit on number of moves to consider
     int TIMEPERMOVE = 10;
@@ -140,7 +144,6 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
     int STRATEGY = DUMBOT_LEVEL;
 	UniverseViewer viewer = null;
 	boolean STORED_CHILD_LIMIT_STOP = false; 
-	static final double VALUE_OF_WIN = 1.0;
     int MAX_DEPTH = 999;
     double ALPHA = 0.5;
      /* strategies */
@@ -246,7 +249,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
      * @param player
      * @return
      */
-    double ScoreForPlayer(UniverseBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(UniverseBoard evboard,int player,boolean print)
     {	
     	switch(evboard.rules)
     	{
@@ -339,14 +342,10 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
     	double vv = reScorePosition(move,player);
     	return(vv);
     }
-    public double reScorePosition(commonMove move,int player)
-    {
-    	return move.reScorePosition(player,VALUE_OF_WIN);
-    }
     /**
      * this is it! just tell me that the position is worth.  
      */
-    public double Static_Evaluate_PolySolver_Position(commonMove m)
+    private double Static_Evaluate_PolySolver_Position(commonMove m)
     {	int playerindex = m.player;
         return(ScoreForPlayer(board,playerindex,false));
     } 
@@ -355,7 +354,6 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
-     * */
     public void StaticEval()
     {
     	UniverseBoard evboard = (UniverseBoard)GameBoard.cloneBoard();
@@ -364,6 +362,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
         if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
+     * */
 
 public void initPolySolverRobot(ExtendedHashtable info,int strategy)
 {

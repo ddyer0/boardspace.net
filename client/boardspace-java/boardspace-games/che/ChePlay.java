@@ -103,7 +103,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
      * @param player
      * @return
      */
-    double ScoreForPlayer(CheBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(CheBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
      	// if the position is not a win, then estimate the value of the position

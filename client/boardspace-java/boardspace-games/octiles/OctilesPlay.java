@@ -32,10 +32,12 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class OctilesPlay extends commonRobot<OctilesBoard> implements Runnable, OctilesConstants,
+public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable, OctilesConstants,
     RobotProtocol
 {  
 	static final double VALUE_OF_WIN = 1000000.0;
+	public double valueOfWin() { return VALUE_OF_WIN; }
+	
 	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     static final int DUMBOT_DEPTH = 4;
@@ -103,9 +105,6 @@ public class OctilesPlay extends commonRobot<OctilesBoard> implements Runnable, 
     	commonMove v = cm;
     	while(leaf!=null) { v = leaf; leaf=leaf.best_move(); }
     	return(v);
-    }
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
     // TODO: refactor static eval so GameOver is checked first

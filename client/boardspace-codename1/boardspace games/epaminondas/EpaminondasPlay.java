@@ -207,7 +207,7 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
      * @param player
      * @return
      */
-    double ScoreForPlayer(EpaminondasBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(EpaminondasBoard evboard,int player,boolean print)
     {	
 		double val = 0.0; 
 		double myscore = 
@@ -226,10 +226,11 @@ public class EpaminondasPlay extends commonRobot<EpaminondasBoard> implements Ru
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
      * Not needed for MonteCarlo searches
-     */
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
+    */
     // TODO: back-door an expensive calculation (ie: total mobility) by recording it for
     // the parent before descending. We'll have an out of date metric that is free to
     // calculate.
@@ -404,10 +405,5 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
 
  }

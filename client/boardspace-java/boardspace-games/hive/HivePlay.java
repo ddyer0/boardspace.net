@@ -128,7 +128,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
      * @param player
      * @return
      */
-     double ScoreForPlayer(HiveGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(HiveGameBoard evboard,int player,boolean print)
     {	
      	// score wins as slightly better if in fewer moves
     	double val = evaluator.evaluate(evboard, player, print);	

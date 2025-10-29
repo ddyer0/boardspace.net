@@ -35,10 +35,12 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class ContainerPlay extends commonRobot<ContainerBoard> implements Runnable, ContainerConstants,
+public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runnable, ContainerConstants,
     RobotProtocol
 {   
 	static final double VALUE_OF_WIN = 1000000.0;
+	public double valueOfWin() { return VALUE_OF_WIN; }
+	
 	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     //double TIME_LIMIT = 0.5;		// 30 seconds
@@ -158,7 +160,7 @@ public class ContainerPlay extends commonRobot<ContainerBoard> implements Runnab
      * @param player
      * @return
      */
-    double ScoreForPlayer(ContainerBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(ContainerBoard evboard,int player,boolean print)
     {	// avoid a subtle form of "reality leakage" by supplying this robot's goalset
     	// so the win he predicts will be based on his possibly flawed estimate of the
     	// other player's goals.
@@ -280,16 +282,6 @@ public class ContainerPlay extends commonRobot<ContainerBoard> implements Runnab
     	commonMove v = cm;
     	while(leaf!=null) { v = leaf; leaf=leaf.best_move(); }
     	return(v);
-    }
- 
-    //
-    // rescore the position for a different player.  The underlying
-    // assertion here is that the player component scores are accurate
-    // ie; the players don't score themselves differently if they are
-    // the player to move. 
-    //
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
 
     // TODO: refactor static eval so GameOver is checked first

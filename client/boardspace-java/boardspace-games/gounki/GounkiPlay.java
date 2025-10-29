@@ -93,7 +93,7 @@ public class GounkiPlay extends commonRobot<GounkiBoard> implements Runnable,
      * @param player
      * @return
      */
-    double ScoreForPlayer(GounkiBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(GounkiBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

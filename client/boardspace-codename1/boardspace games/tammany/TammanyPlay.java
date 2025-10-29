@@ -77,9 +77,11 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class TammanyPlay extends commonRobot<TammanyBoard> implements Runnable, TammanyConstants,
-    RobotProtocol
+public class TammanyPlay extends commonMPRobot<TammanyBoard> 
+	implements Runnable, TammanyConstants,   RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
+	
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
@@ -238,7 +240,7 @@ public class TammanyPlay extends commonRobot<TammanyBoard> implements Runnable, 
      * @param player
      * @return
      */
-    double ScoreForPlayer(TammanyBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TammanyBoard evboard,int player,boolean print)
     {	boolean win = evboard.WinForPlayerNow(player);
      	if(win && UCT_WIN_LOSS) { return(1.0);}
      	if(evboard.board_state==TammanyState.Gameover) 
@@ -433,10 +435,7 @@ public double assignMonteCarloWeights(CommonMoveStack all)
 	}
 	return(reScorePosition(m,playerindex));	
  }
- public double reScorePosition(commonMove m,int playerIndex)
- {
-	 return m.reScorePosition(playerIndex,1.0);
- }
+
 /*
  * This is a set of notes charting the development of a MCTS AI for Tammany Hall. The MCTS framework I use provides a few hooks to plug in the specifics for a particular game. The most important hooks are to generate a list of candidate moves, to generate a random candidate move, and to execute a chosen move. At the point this blog starts, the game engine is complete, able to generate and execute moves, and needs an AI.
 

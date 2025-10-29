@@ -100,7 +100,7 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
      * @return the evaluation for the position for the player
      */
 
-    double ScoreForPlayer(TakojudoBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TakojudoBoard evboard,int player,boolean print)
     {	
      	boolean win = evboard.WinForPlayerNow(player);
     	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }

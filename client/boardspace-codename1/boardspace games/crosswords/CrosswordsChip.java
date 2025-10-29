@@ -128,6 +128,16 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     // redpost triple letter
     static public CrosswordsChip TripleWordRed = new CrosswordsChip("post-red",postScale,TripleWord,15);
     
+    static private double[] barScale = {0.5,0.5,1.1};
+    
+    static public CrosswordsChip Green = new CrosswordsChip("bar-green",barScale,null,0);
+    static public CrosswordsChip Yellow = new CrosswordsChip("bar-yellow",barScale,null,0);
+    static public CrosswordsChip Blue = new CrosswordsChip("bar-blue",barScale,null,0);
+    static public CrosswordsChip Red = new CrosswordsChip("bar-red",barScale,null,0);
+
+	static CrosswordsChip [] playerColors = { Red,Yellow,Blue,Green};
+
+    
     private static double dscale[] = {0.5,0.5,1};
     
 	public static CrosswordsChip Icon = new CrosswordsChip("icon-nomask",dscale,null,0);

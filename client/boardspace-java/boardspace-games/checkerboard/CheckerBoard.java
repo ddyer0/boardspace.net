@@ -641,6 +641,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     }
 
 
+
+
     //
     // finalize all the state changes for this move.
     //

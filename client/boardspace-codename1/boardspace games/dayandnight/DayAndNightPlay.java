@@ -79,7 +79,6 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
     private DayAndNightChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 100000.0;
     private int boardSearchLevel = 0;				// the current search depth
     // mcts parameters
     // also set MONTEBOT = true;
@@ -175,29 +174,27 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
      * Not needed for MonteCarlo searches
      * @param player
      * @return
-     */
-    double ScoreForPlayer(DayAndNightBoard evboard,int player,boolean print)
+        private double ScoreForPlayer(DayAndNightBoard evboard,int player,boolean print)
     {	
 		double val = evboard.staticEval(player);			
 		if(evboard.win[player]) { val += VALUE_OF_WIN; }
      	return(val);
     }
+     */
 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-     * Not needed for MonteCarlo searches
-     */
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
 
-    /**
+    */    /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
      * Not needed for MonteCarlo searches
-     * */
     public void StaticEval()
     {
             DayAndNightBoard evboard = GameBoard.cloneBoard();
@@ -205,6 +202,7 @@ public class DayAndNightPlay extends commonRobot<DayAndNightBoard> implements Ru
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
+     * */
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -282,12 +280,6 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
- 
 
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot

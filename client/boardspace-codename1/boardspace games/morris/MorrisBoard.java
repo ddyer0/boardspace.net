@@ -379,13 +379,6 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     	if(board_state==MorrisState.Gameover) { return(win[player]); }
     	return(false);
     }
-    // estimate the value of the board position.
-    public double ScoreForPlayer(int player,boolean print)
-    {  	double finalv=simpleScore(player);
-    	
-    	return(finalv);
-    }
-
 
     //
     // finalize all the state changes for this move.

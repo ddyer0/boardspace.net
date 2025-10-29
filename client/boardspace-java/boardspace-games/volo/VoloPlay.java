@@ -169,7 +169,7 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
      * @param player
      * @return
      */
-    double ScoreForPlayer(VoloBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(VoloBoard evboard,int player,boolean print)
     {	BlobStack blobs = evboard.findBlobs(player,false,false);
     	int nblobs = blobs.size();
     	boolean win = nblobs==1;

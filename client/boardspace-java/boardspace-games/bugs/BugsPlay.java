@@ -62,9 +62,13 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsConstants,
+public class BugsPlay extends commonMPRobot<BugsBoard> implements Runnable, BugsConstants,
     RobotProtocol
     {
+	public double valueOfWin() { return 1.0; }
+	
+	// BugSpiel uses MCTS
+	
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
 	// this, indicating "we won".   It should be at least 2x any non-winning value the evaluator normally produces.
@@ -76,7 +80,6 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
     private BugsChip movingForPlayer = null;		// optional, some evaluators care
     private int forPlayer = -1;						// robot moving for this player
 	// alpha beta parameters
-    private static final double VALUE_OF_WIN = 1.0;
   
     // mcts parameters
     // also set MONTEBOT = true;
@@ -201,28 +204,24 @@ public class BugsPlay extends commonRobot<BugsBoard> implements Runnable, BugsCo
      * Not needed for MonteCarlo searches
      * @param player
      * @return
-     */
-    double ScoreForPlayer(BugsBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(BugsBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
-		G.Error("Score for player not implemented");
+		
      	return(val);
     }
+     */
 
 
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
      * Not needed for MonteCarlo searches
-     * */
     public void StaticEval()
-    {
-            BugsBoard evboard = GameBoard.cloneBoard();
-            double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
-            double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-            System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
+    {       G.Error("StaticEval for player not implemented");
     }
 
+     * */
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
@@ -287,11 +286,6 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
-	public commonMove getCurrentVariation()
-	{	
-		return super.getCurrentVariation();
-	}
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.
@@ -399,10 +393,11 @@ public void PrepareToMove(int playerIndex)
  // ie; the players don't score themselves differently if they are
  // the player to move. 
  //
+ /*
  public double reScorePosition(commonMove m,int forplayer)
- {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+ {	return(m.reScorePosition(forplayer,valueOfWin()));
  }
-
+*/
  public double NormalizedScore1(commonMove lastMove)
  {	
 	double sc =Normalized_Evaluate_Position(lastMove);

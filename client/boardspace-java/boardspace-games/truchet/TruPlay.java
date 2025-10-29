@@ -90,11 +90,8 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
      * @param player
      * @return
      */
-    double ScoreForPlayer(TruGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TruGameBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
- 
     	return(evboard.ScoreForPlayer(player,print,BASE_WEIGHT,PIECE_WEIGHT,DUMBOT));
 
     }
@@ -102,19 +99,18 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+         	boolean win = board.WinForPlayerNow(playerindex);
+        	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+        	boolean win2 = board.WinForPlayerNow(playerindex^1);
+          	if(win2) {	return - (VALUE_OF_WIN+(1-1.0/(1+boardSearchLevel))); }
+         	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -126,7 +122,6 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
     	TruGameBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 

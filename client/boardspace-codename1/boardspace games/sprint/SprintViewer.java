@@ -1781,15 +1781,6 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             setComment(comments);
         }
     }
-    public void setLimbo(boolean v)
-    {
-    	boolean oldLimbo = inLimbo;
-    	super.setLimbo(v);
-    	if(oldLimbo!=inLimbo)
-    	{
-    		setGameRecorder();
-    	}
-    }
     
     /**
      * Sprint strategy for recording games is different from all others.  One player
@@ -1824,6 +1815,16 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	gameRecorder = least;	
     }
     
+    public void setLimbo(boolean v)
+    {
+    	boolean oldLimbo = inLimbo;
+    	super.setLimbo(v);
+    	if(oldLimbo!=inLimbo)
+    	{
+    		setGameRecorder();
+    	}
+    }
+   
     public RecordingStrategy gameRecordingMode()
     {
     	return getActivePlayer().boardIndex==gameRecorder ? RecordingStrategy.Single : RecordingStrategy.None;

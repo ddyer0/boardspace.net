@@ -198,10 +198,6 @@ public void PrepareToMove(int playerIndex)
 }
 
 
-	public commonMove getCurrentVariation()
-	{	
-		return getCurrent2PVariation();
-	}
 	/**
 	 * Tintas dumbot randomizes throughout the game.  This modifies the
 	 * standard behavior to not further randomize from the bad side of

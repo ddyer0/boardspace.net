@@ -136,7 +136,7 @@ public class TabPlay extends commonRobot<TabGameBoard> implements Runnable, TabC
      * @param player
      * @return
      */
-    double ScoreForPlayer(TabGameBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(TabGameBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
      	boolean win = evboard.WinForPlayerNow(player);

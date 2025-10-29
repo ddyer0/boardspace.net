@@ -161,24 +161,9 @@ public class CrossfirePlay extends commonRobot<CrossfireBoard> implements Runnab
      * @param player
      * @return
      */
-    double ScoreForPlayer(CrossfireBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(CrossfireBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
-		// is this a won position? If so that's the evaluation.
-		// note that for some games, the current position might be a win
-		// for the other player and that would have be be accounted for too.
-     	boolean win = evboard.WinForPlayerNow(player);
- 
-     	// make wins in fewer moves look slightly better. Nothing else matters.
-     	// note that without this little tweak, the robot might appear to "give up"
-     	// when a loss is inevitable a few moves down the road, and take an unnecessary
-     	// loss now rather than prolonging the game.
-     	if(win) 
-     		{ val = VALUE_OF_WIN+(1.0/(1+board.robotDepth));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
-     	
      	// if the position is not a win, then estimate the value of the position
     	switch(Strategy)
     	{	default: throw G.Error("Not expecting strategy %s",Strategy);
@@ -203,19 +188,40 @@ public class CrossfirePlay extends commonRobot<CrossfireBoard> implements Runnab
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		// is this a won position? If so that's the evaluation.
+    		// note that for some games, the current position might be a win
+    		// for the other player and that would have be be accounted for too.
+         	boolean win = board.WinForPlayerNow(playerindex);
+     
+         	// make wins in fewer moves look slightly better. Nothing else matters.
+         	// note that without this little tweak, the robot might appear to "give up"
+         	// when a loss is inevitable a few moves down the road, and take an unnecessary
+         	// loss now rather than prolonging the game.
+         	if(win) 
+         		{ return VALUE_OF_WIN+(1.0/(1+board.robotDepth));
+         		}
+         	
+    		// is this a won position? If so that's the evaluation.
+    		// note that for some games, the current position might be a win
+    		// for the other player and that would have be be accounted for too.
+         	boolean win2 = board.WinForPlayerNow(playerindex^1);
+     
+         	// make wins in fewer moves look slightly better. Nothing else matters.
+         	// note that without this little tweak, the robot might appear to "give up"
+         	// when a loss is inevitable a few moves down the road, and take an unnecessary
+         	// loss now rather than prolonging the game.
+         	if(win2) 
+         		{
+         			return - (VALUE_OF_WIN+(1-1.0/(1+board.robotDepth)));
+         		}
+         	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     /**
@@ -224,12 +230,12 @@ public class CrossfirePlay extends commonRobot<CrossfireBoard> implements Runnab
      * */
     public void StaticEval()
     {
-    	CrossfireBoard evboard = GameBoard.cloneBoard();
-    	double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
-    	double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-    	System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
+            CrossfireBoard evboard = GameBoard.cloneBoard();
+        double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
+        double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
+        System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
-
+    
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
