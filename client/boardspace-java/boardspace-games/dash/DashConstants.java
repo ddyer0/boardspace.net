@@ -25,7 +25,6 @@ public interface DashConstants
 {	// leave the door open for  jr and dash super.
 	static final int MAX_CHIP_HEIGHT = 4;		// 4 sizes of pieces
 	static final int DEFAULT_BOARDSIZE = 11;	// 11x11 board + borders
-	static final double VALUE_OF_WIN = 1000.0;
 	static final String Dash_INIT = "dash";	//init for standard game
 
     enum DashId implements CellId

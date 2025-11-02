@@ -821,7 +821,6 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
     {	//G.print("R "+m);
         robotState.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
-        //G.print("R "+m);
         Execute(m,replayMode.Replay);
         if(DoneState()) { doDone(); } 
 

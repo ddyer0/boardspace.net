@@ -1649,9 +1649,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
  // to be added to complete the crossing.
  //
 public double Static_Evaluate_Position2(int playerIndex,boolean print)
-{	if(WinForPlayer(playerIndex)) { return(TwixtPlay.VALUE_OF_WIN); }
-	if(WinForPlayer(nextPlayer[playerIndex])) { return(-TwixtPlay.VALUE_OF_WIN); }
-	
+{		
 	//long dig = Digest();
 	PieceColor myColor = getPlayerColor(playerIndex);
 	PieceColor hisColor = getPlayerColor(nextPlayer[playerIndex]);

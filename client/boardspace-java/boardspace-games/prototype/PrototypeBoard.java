@@ -816,7 +816,7 @@ void doSwap(replayMode replay)
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(Prototypemovespec m)
+    public void RobotExecute(commonMove m)
     {
         robotState.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
@@ -834,8 +834,8 @@ void doSwap(replayMode replay)
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(Prototypemovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	Prototypemovespec m = (Prototypemovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
     	PrototypeState state = robotState.pop();
         switch (m.op)

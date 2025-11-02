@@ -1044,7 +1044,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(VoloMovespec m)
+    public void RobotExecute(commonMove m)
     {
         robotStateStack.push(board_state);
         if (Execute(m,replayMode.Replay))
@@ -1066,8 +1066,8 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(VoloMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	VoloMovespec m = (VoloMovespec)m0;
         //G.print("U "+m+" for "+whoseTurn);
     	//verifyChips();
     	VoloState state = robotStateStack.pop();

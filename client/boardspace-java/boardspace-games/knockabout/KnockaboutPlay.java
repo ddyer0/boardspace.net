@@ -77,10 +77,6 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
  */
     public void Make_Move(commonMove m)
     {   KnockaboutMovespec mm = (KnockaboutMovespec)m;
-//    if((mm.from_col=='J') && (mm.to_col=='J') && (mm.to_row==5) && (mm.from_row==4))
- //   {System.out.println("maybe here");
-  //  }
-
     	boardSearchLevel++;
         board.RobotExecute(mm);
     }
@@ -108,8 +104,7 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
      */
     private double ScoreForPlayer(KnockaboutBoard evboard,int player,boolean print)
     {	double sc = evboard.ScoreForPlayer(player,print,DUMBOT);
-     	boolean win = evboard.WinForPlayer(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+     	
     	return(sc);
 
     }
@@ -117,20 +112,17 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    		if(board.GameOver())
+    		{
+        	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+        	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+        	return 0;
+    		}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-         return(val0-val1);
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
+        return(val0-val1);
     }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -214,11 +206,18 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
             search_state.save_digest=false;	// debugging only.  Even when debugging true triggers false alerts
 				// because some moves re-roll to the same configuration
            search_state.check_duplicate_digests = false; 	// debugging only
+           search_state.good_enough_to_quit = VALUE_OF_WIN;
+           search_state.allow_good_enough = true;
 
  
             if (move == null)
             {  	
                 move = (KnockaboutMovespec) search_state.Find_Static_Best_Move(randomn,10.0);
+                // avoid cheating in a subtle way, since the move encodes
+                // the roll you get, the robot would have based its move on
+                // knowing the value of the roll it gets.
+                if(move!=null) { move.rollAmount = Math.abs(GameBoard.nextRandom());}
+                search_state.showResult(move,false);
           	}
         }
         finally
@@ -227,19 +226,8 @@ public class KnockaboutPlay extends commonRobot<KnockaboutBoard> implements Runn
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // avoid cheating in a subtle way, since the move encodes
-            // the roll you get, the robot would have based its move on
-            // knowing the value of the roll it gets.
-            move.rollAmount = Math.abs(GameBoard.nextRandom());
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

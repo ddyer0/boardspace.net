@@ -28,8 +28,11 @@ class CellStack extends OStack<VolcanoCell>
 {
 	public VolcanoCell[] newComponentArray(int n) { return(new VolcanoCell[n]); }
 }
-public class VolcanoCell extends stackCell<VolcanoCell,Pyramid> implements VolcanoConstants
+public class VolcanoCell extends stackCell<VolcanoCell,Pyramid> 
+	implements VolcanoConstants,PlacementProvider
 {	public Pyramid[] newComponentArray(int n) { return(new Pyramid[n]); }
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	// constructor
 	public VolcanoCell(char c,int r,Geometry geom) 
 	{	super(geom,c,r);
@@ -116,6 +119,22 @@ public class VolcanoCell extends stackCell<VolcanoCell,Pyramid> implements Volca
             prevBase = lift;
          }	
   		return(val);
-    }	
+    }
+    public void reInit()
+    {
+    	super.reInit();
+    	lastPicked = -1;
+    	lastDropped = -1;
+    }
+    public void copyFrom(VolcanoCell ot)
+    {
+    	super.copyFrom(ot);
+    	lastPicked = ot.lastPicked;
+    	lastDropped = ot.lastDropped;
+    }
+	public int getLastPlacement(boolean empty) {
+		
+		return empty? lastPicked : lastDropped;
+	}	
 
 }

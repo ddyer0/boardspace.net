@@ -795,6 +795,7 @@ public class LoaViewer extends commonCanvas implements UIC
 
     }
     public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp) // paint the board
+    {	if(startedOnce)
     {	
         //System.out.println("Paint_board " + repaint_grid);
         //LoaGame game = c.getGame();
@@ -825,6 +826,7 @@ public class LoaViewer extends commonCanvas implements UIC
 
     	DrawArrow(offGC,hp);
      	invalid = false;
+     }
      }
 
 

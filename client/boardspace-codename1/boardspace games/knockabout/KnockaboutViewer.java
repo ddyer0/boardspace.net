@@ -263,7 +263,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
 
-      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, brect,scaled);
+      scaled = images[BOARD_INDEX].getImage().centerScaledImage(gc, brect,scaled);
       gb.SetDisplayParameters(
        		 0.965, //0.93,	// scale 
        		 0.8,	// yscale

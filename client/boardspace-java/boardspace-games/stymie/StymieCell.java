@@ -34,12 +34,26 @@ class CellStack extends OStack<StymieCell>
  * @author ddyer
  *
  */
-public class StymieCell extends stackCell<StymieCell,StymieChip> implements StymieConstants
+public class StymieCell extends stackCell<StymieCell,StymieChip> implements StymieConstants,PlacementProvider
 {	
 	public boolean primeArea=false;		
 	public boolean edgeArea = false;	
 	public int altChipIndex = 0;
-
+	int lastPicked = -1;
+	int lastDropped = -1;
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(StymieCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
 	public StymieCell(StymieId id)
 	{
 		super(Geometry.Standalone,id,'@',0);
@@ -73,5 +87,9 @@ public class StymieCell extends stackCell<StymieCell,StymieChip> implements Stym
 		if(adj!=null && adj.topChip()!=null) { return(true); }
 		}
 		return(false);
+	}
+	public int getLastPlacement(boolean empty) {
+		
+		return empty ? lastPicked : lastDropped;
 	}
 }

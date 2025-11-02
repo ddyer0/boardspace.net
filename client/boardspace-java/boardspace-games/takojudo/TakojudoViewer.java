@@ -39,7 +39,7 @@ import static takojudo.TakojudoMovespec.*;
  *
  * Oct 2012 Initial release.
 */
-public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants
+public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants,PlacementProvider
 {
      /**
 	 * 
@@ -212,7 +212,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -339,6 +339,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         // when the rotate view is in effect, top and bottom, left and right switch
         // but this iterator still draws everything in the correct order for occlusion
         // and shadows to work correctly.
+     	numberMenu.clearSequenceNumbers();
     	boolean reverse = gb.reverseXneqReverseY();
     	TakojudoChip picked = gb.pickedObject;
     	Enumeration<TakojudoCell> cells = gb.getIterator(Itype.LRTB);
@@ -354,6 +355,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
             						: cell;
             int ypos = G.Bottom(brect) - gb.cellToY(draw);
             int xpos = G.Left(brect) + gb.cellToX(draw);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             // need to set location for the animation, even if not drawing
             cell.rotateCurrentCenter(contextRotation, xpos, ypos, cx, cy);
             if( !cell.dontDraw && ch!=null)
@@ -389,6 +391,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
       			: hitCell.topChip()!=null?StockArt.UpArrow:null;
       		highlight.awidth = SQUARESIZE/2;
         }
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);
 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
@@ -512,6 +515,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     {	
  
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
         startBoardAnimations(replay,b.animationStack,b.cellSize(),MovementStyle.Simultaneous);
         if(replay.animate) { playSounds(mm); }
  
@@ -853,6 +857,10 @@ private void playSounds(commonMove m)
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement(boolean empty)
+    {
+    	return b.moveNumber;
     }
 }
 

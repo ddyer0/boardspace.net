@@ -51,7 +51,6 @@ import online.search.SimpleRobotProtocol;
  *
  * Aug 2005  initial work in progress.  
  * 
- * TODO trax needs a board and iterator upgrade to use the standard methods
 */
 public class TraxGameViewer extends commonCanvas implements TraxConstants
 {

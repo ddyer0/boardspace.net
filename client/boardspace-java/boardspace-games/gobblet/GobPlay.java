@@ -41,6 +41,9 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
     static final int GOODBOT_DEPTH = 4;
     static final int BESTBOT_DEPTH = 6;
     int MAX_DEPTH = BESTBOT_DEPTH;
+	
+    static final double VALUE_OF_WIN = 1000.0;
+
      /* strategies */
     double CUP_WEIGHT = 1.0;
     double MULTILINE_WEIGHT=1.0;
@@ -101,14 +104,18 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
    public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		boolean win = board.win[playerindex];
+    		if(win) { return VALUE_OF_WIN+1.0/(1+boardSearchLevel); }
+       		boolean win2 = board.win[playerindex^1];
+    		if(win2) { return -(VALUE_OF_WIN+1-1.0/(1+boardSearchLevel)); }
+    		return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // the rule is if you uncover a win for the other player, you have to
-        // cover it or you lose.
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         return(val0-val1);
     }
     /**
@@ -120,7 +127,6 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
     	GobGameBoard evboard = GameBoard.cloneBoard();
     	double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
     	double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-    	if(val1>=VALUE_OF_WIN) { val0=0.0; }
     	System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -179,7 +185,7 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
  
  public commonMove DoFullMove()
     {
-	 GobMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -198,6 +204,8 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
             int depth = MAX_DEPTH;
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;	// debugging
             search_state.save_digest=false;	// debugging only
@@ -205,7 +213,8 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
 
             if (move == null)
             {
-                move = (GobMovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -214,17 +223,8 @@ public class GobPlay extends commonRobot<GobGameBoard> implements Runnable, GobC
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) 
-            { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

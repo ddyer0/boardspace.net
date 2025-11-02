@@ -93,8 +93,6 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
      */
     double ScoreForPlayer(OctilesBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
     	return(evboard.ScoreForPlayer(player,print,CUP_WEIGHT,MULTILINE_WEIGHT,DUMBOT));
 
     }
@@ -107,7 +105,6 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
     	return(v);
     }
 
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;
@@ -116,9 +113,21 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
      	
      	mm.setNPlayers(nplay);
     	
+    	if(board.GameOver())
+     	{
+     		for(int i=0;i<nplay;i++)
+     		{
+     			mm.playerScores[i] = board.win[i] 
+     									? VALUE_OF_WIN+(1.0/(1+boardSearchLevel))
+     									: 0.1/(1+boardSearchLevel);
+ 
+     		}
+     	}
+    	else
+    	{
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
-    	}
+    	}}
     	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
     }
 
@@ -180,7 +189,7 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
  
  public commonMove DoFullMove()
     {
-	 OctilesMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -213,10 +222,13 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
             search_state.save_top_digest = true;
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only. Eventually not always true because of alternate routes
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (OctilesMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -225,16 +237,8 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

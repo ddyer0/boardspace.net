@@ -778,7 +778,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(ColoritoMovespec m,boolean digest)
+    public void RobotExecute(commonMove m,boolean digest)
     {
         robotState.push(board_state); //record the starting state. The most reliable
         robotDepth++;
@@ -815,8 +815,8 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(ColoritoMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	ColoritoMovespec m = (ColoritoMovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
     	robotDepth--;
         switch (m.op)

@@ -284,6 +284,8 @@ public class MedinaPlay extends commonMPRobot<MedinaBoard> implements Runnable,
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;			// debugging only, robot doesn't maintain the digest well enough
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {	move = (MedinaMovespec) search_state.Find_Static_Best_Move(randomn,dif);

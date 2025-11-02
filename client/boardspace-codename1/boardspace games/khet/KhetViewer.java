@@ -347,7 +347,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
       	  int cy = G.centerY(brect);
     	  boolean reverse = !gb.reverseY();
     	  if(reverse) { GC.setRotation(gc, Math.PI,cx,cy); }
-    	  Image board = images[BOARD_NP_INDEX].getImage(loader);
+    	  Image board = images[BOARD_NP_INDEX].getImage();
     	  if(board!=background) { scaled = null; }
     	  background = board;
     	  scaled = board.centerScaledImage(gc,brect,scaled);
@@ -362,7 +362,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
       {
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-    	Image board = images[gb.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage(loader);
+    	Image board = images[gb.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage();
     	if(board!=background) { scaled = null; }
     	background = board;
     	scaled = board.centerScaledImage(gc, brect,scaled);

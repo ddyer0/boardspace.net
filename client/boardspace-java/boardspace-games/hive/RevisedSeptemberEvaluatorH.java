@@ -116,9 +116,7 @@ class RevisedSeptemberEvaluatorH extends DefaultEvaluator implements Evaluator
 	private double shutoutPenalty = 25;			// penalty for no moves. If this is too high we'll never abandon a shutout
 	// value of a piece still in the rack.  This is to counter the "just play it" impulse
 	// and punish playing pieces that are immediately pinned.
-	// TODO: next experiment, increase the grasshopper reserve, based on start-04-k-win where the grasshoppers
 	// were deployed even though they would be pinned
-	// TODO: recognise dangerous spawn points for grasshoppers etc
 	double ReserveWeight = 4;
 	double reserve_weight[] = 
 		{ 

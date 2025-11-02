@@ -55,16 +55,16 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
  * will always be done in reverse sequence
  */
     public void Unmake_Move(commonMove m)
-    {	RithmomachyMovespec mm = (RithmomachyMovespec)m;
+    {	
     	boardSearchLevel--;
-    	board.UnExecute(mm);
+    	board.UnExecute(m);
      }
 /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
-    {   RithmomachyMovespec mm = (RithmomachyMovespec)m;
-        board.RobotExecute(mm);
+    {   
+        board.RobotExecute(m);
         boardSearchLevel++;
     }
 
@@ -91,8 +91,6 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
      */
     private double ScoreForPlayer(RithmomachyBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
     	return(evboard.ScoreForPlayer(player,print));
 
     }
@@ -108,19 +106,16 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
-  public double Static_Evaluate_Position(commonMove m)
+    public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    		if(board.GameOver())
+    		{
+        	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+        	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+        	return 0;
+    		}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     /**
@@ -132,7 +127,6 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
     	RithmomachyBoard evboard = (RithmomachyBoard)GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -175,7 +169,7 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 RithmomachyMovespec move = null;
+	 commonMove move = null;
 
      // it's important that the robot randomize the first few moves a little bit.
      int randomn = RANDOMIZE 
@@ -208,10 +202,13 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (RithmomachyMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -220,20 +217,8 @@ public class RithmomachyPlay extends commonRobot<RithmomachyBoard> implements Ru
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) 
-            { move.showPV("exp final pv: "); 
-            // normal exit with a move
-            search_state.Describe_Search(System.out);
-            System.out.flush();
-            }
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

@@ -314,7 +314,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         		G.Bottom(reverseViewRect)+CS, CS4, CS4);
 
         int gh = CELLSIZE*2;
-        placeRow( G.Right(chipSetRect),G.Bottom(boardRect)-2*CELLSIZE, CELLSIZE*35, gh,goalRect);
+        placeRow(G.Right(chipSetRect),G.Bottom(boardRect)-2*CELLSIZE, CELLSIZE*35, gh,goalRect);
         int repX = G.Right(editRect)+CS;
         G.SetRect(repRect, repX,G.Top( goalRect)-gh,  G.Right(goalRect)-repX,  gh);
 

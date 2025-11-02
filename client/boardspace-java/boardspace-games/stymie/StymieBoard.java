@@ -409,6 +409,9 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     }
 
     // set the contents of a cell, and maintain the books
+    private int prevDropped = -1;
+    private int prevPicked = -1;
+    
     public StymieChip SetBoard(StymieCell c,StymieChip ch)
     {	//checkCount();
     	StymieChip old = c.topChip();
@@ -420,7 +423,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     		  	}
     		} 
     		else 
-    		{ c.removeTop(); 
+    		{ 	
+    			c.removeTop(); 
     		}
     	if(old!=null && c.primeArea)
     	{
@@ -467,6 +471,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	pickedAltChipIndex = rv.altChipIndex;
+    	rv.lastDropped = prevDropped;
     	return(rv);
     }
     // 
@@ -480,6 +485,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     	}
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
+    	rv.lastPicked = prevPicked;
     	rv.altChipIndex = pickedAltChipIndex;
     	pickedObject = null;
     }
@@ -506,6 +512,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         case EmptyBoard:
            	SetBoard(c,pickedObject);
+           	prevDropped = c.lastDropped;
+           	c.lastDropped = moveNumber;
            	path.push(c);
            	c.altChipIndex = pickedAltChipIndex;
             pickedObject = null;
@@ -582,6 +590,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
             path.push(c);
          	lastDroppedObject = null;
 			SetBoard(c,null);
+			prevPicked = c.lastPicked;
+			c.lastPicked = moveNumber;
         	}
             break;
 
@@ -1082,10 +1092,6 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     	double value_for_reserve = -0.5;
     	double value_for_capture = 2.0;
      	
-    	if(center>=CENTER_WIN_THRESHOLD || captive>=CAPTURE_LOSS_THRESHOLD)
-    	{
-    		return(StymiePlay.VALUE_OF_WIN+captive*value_for_capture);
-    	}
     	int reserve = playerCell[player].height();
     	//
     	// chips in reserve are a small penalty, chips in center are a plus

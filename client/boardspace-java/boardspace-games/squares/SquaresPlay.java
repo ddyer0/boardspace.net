@@ -223,9 +223,14 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
      *  for each and sorts the result to preorder the tree for further evaluation
      * Not needed for MonteCarlo searches
      */
-    // TODO: refactor static eval so GameOver is checked first
    public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		if(board.win[playerindex]) { return VALUE_OF_WIN+1.0/(1+boardSearchLevel); }
+    		if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-1.0/(1+boardSearchLevel));}
+    		return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
         // don't dilute the value of wins with the opponent's positional score.
@@ -261,7 +266,7 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
 
     public commonMove DoAlphaBetaFullMove()
     {
-           SquaresMovespec move = null;
+           commonMove move = null;
            try
            {
           	
@@ -282,6 +287,7 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
                Search_Driver search_state = Setup_For_Search(depth, false);
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+               search_state.allow_good_enough = true;
                search_state.verbose = verbose;
                search_state.allow_killer = KILLER;
                search_state.allow_best_killer = false;
@@ -295,7 +301,8 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
                	// large a drop in the expectation to accept.  For pushfight this
                	// doesn't really matter, but some games have disasterous
                	// opening moves that we wouldn't want to choose randomly
-                   move = (SquaresMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                   move = search_state.Find_Static_Best_Move(randomn,dif);
+                   search_state.showResult(move,false);
                }
            }
            finally
@@ -304,16 +311,8 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
                Finish_Search_In_Progress();
            }
 
-           if (move != null)
-           {
-               if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-               // normal exit with a move
-               return (move);
-           }
-
-           continuous = false;
-           // abnormal exit
-           return (null);
+           continuous &= move!=null;
+           return (move);
        }
 
 
@@ -479,9 +478,9 @@ public void PrepareToMove(int playerIndex)
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }
 /**

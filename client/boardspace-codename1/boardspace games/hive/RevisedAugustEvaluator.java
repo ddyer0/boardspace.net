@@ -95,9 +95,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 	private double shutoutPenalty = 25;			// penalty for no moves. If this is too high we'll never abandon a shutout
 	// value of a piece still in the rack.  This is to counter the "just play it" impulse
 	// and punish playing pieces that are immediately pinned.
-	// TODO: next experiment, increase the grasshopper reserve, based on start-04-k-win where the grasshoppers
 	// were deployed even though they would be pinned
-	// TODO: recognise dangerous spawn points for grasshoppers etc
 	double reserve_weight[] = 
 		{ 
 		0.0,			// queen
@@ -140,7 +138,6 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		5};			// blank
 	
 	private double friendlyMobileAtQueen = 0.5;	// partial credit for friendlies that can be moved
-	// TODO negate the values and the uses, avoid future negative number screwups
 	double queen_safety[] = { 0.0, -5, -10.0, -15.0, -40.0, -65.0, -120,-130,-140,-150};
 	// these are penalties that apply depending on the
 	// distance from the enemy queen.  This is the main motivator

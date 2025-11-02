@@ -1272,9 +1272,9 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(Punctmovespec m)
+    public void RobotExecute(commonMove m)
     {	robotBoard = true;
-        m.state = board_state; //record the starting state. The most reliable
+        robotStack.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         if (Execute(m,replayMode.Replay))
@@ -1293,14 +1293,15 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         }
     }
  
+    StateStack robotStack = new StateStack();
 
    //
     // un-execute a move.  The move should only be unexecuted
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(Punctmovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	Punctmovespec m = (Punctmovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
     	if(whoseTurn!=m.player)
     	{	moveNumber--;
@@ -1324,7 +1325,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 
             break;
         }
-        setState(m.state);
+        setState(robotStack.pop());
  }
 
  // count the number of piece types remaining in the pool

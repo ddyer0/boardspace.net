@@ -1189,6 +1189,19 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             finished=true;
         }
     }
+	   
+    public void showResult(commonMove move,boolean detailed)
+    {
+    	if (move != null)
+    	{
+    		if(G.debug() && (move.op!=MOVE_DONE)) 
+    		{ 
+    		move.showPV("exp final pv: "); 
+    		if(detailed) { Describe_Search(System.out); } 
+    		System.out.flush();
+    		}
+    	}
+	   }
     //
     // get a display board for the currently running search
     public BoardProtocol disB()

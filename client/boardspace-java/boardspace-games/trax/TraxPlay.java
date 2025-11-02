@@ -42,14 +42,14 @@ import lib.*;
 //
 public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, TraxConstants,
     RobotProtocol
-{	static final double WIN_VALUE = 10000.0;	// value of a win, all others are less
-	static final double GOOD_ENOUGH_VALUE = WIN_VALUE-1000;	// good enough to stop looking
+{	
 	static final double MOVE_PENALTY = 5;
 	static final boolean KILLER = false;
 	static final double LOOP_WEIGHT = 10.0;
 	static final double LINE_WEIGHT = 10.0;
 	static final double CORNER_WEIGHT= 1.0;
-	
+	static final double VALUE_OF_WIN = 100000.0;
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
 	boolean EXP_MONTEBOT = false;
 	
     boolean SAVE_TREE = false;				// debug flag for the search driver
@@ -113,11 +113,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
      */
     private double ScoreForPlayer(TraxGameBoard evboard,int player,boolean print)
     {	double val=0.0 ;
-    	if(evboard.WinForPlayerNow(player))	// also calculate lines array
-    	{	if(print) { System.out.println("Win for "+player); }
-    		val = WIN_VALUE-evboard.tilesOnBoard*MOVE_PENALTY;
-    	}
-    	{	Vector<lineinfo> plines = evboard.lines[player];
+     	{	Vector<lineinfo> plines = evboard.lines[player];
     		int minloop = 0;
     		int maxline = 0;
     		int corners=0;
@@ -176,12 +172,16 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
    public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+		if(board.GameOver())
+		{
+		if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+		if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+		return 0;
+		}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        if((val0>=WIN_VALUE) && (val1>=WIN_VALUE)) { val1 = val1/2; }
         return(val0-val1);
     }
     /**
@@ -276,7 +276,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
  */
  public commonMove DoAlphaBetaFullMove()
     {
-        Traxmovespec move = null;
+        commonMove move = null;
 
         try
         {
@@ -302,14 +302,16 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.allow_good_enough = true;
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.save_digest=false;	// debugging only
  
             if (move == null)
             {
-                move = (Traxmovespec) search_state.Find_Static_Best_Move(randomn,100.0);
-                           }
+                move = search_state.Find_Static_Best_Move(randomn,100.0);
+                search_state.showResult(move,false);
+            }
         }
         finally
         {
@@ -317,16 +319,8 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
  /*
 public double reScorePosition(commonMove m,int forplayer)
@@ -384,9 +378,9 @@ public commonMove DoMonteCarloFullMove()
 public double NormalizedScore(commonMove lastMove)
 {	int player = lastMove.player;
 	boolean win = board.WinForPlayerNow(player);
-	if(win) { return(0.8+0.2/boardSearchLevel); }
+	if(win) { return(0.8+0.2/(1+boardSearchLevel)); }
 	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
-	if(win2) { return(- (0.8+0.2/boardSearchLevel)); }
+	if(win2) { return(- (0.8+0.2/(1+boardSearchLevel))); }
 	return(0);
 }
 }

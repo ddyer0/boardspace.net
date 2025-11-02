@@ -91,8 +91,6 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
      */
     private double ScoreForPlayer(KubaBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
     	return(evboard.ScoreForPlayer(player,print,DUMBOT));
 
     }
@@ -100,19 +98,18 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+         	boolean win = board.WinForPlayerNow(playerindex);
+        	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+         	boolean win2 = board.WinForPlayerNow(playerindex^1);
+        	if(win2) { return(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -124,7 +121,6 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
     	KubaBoard evboard = GameBoard.cloneBoard();
     	double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
     	double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-    	if(val1>=VALUE_OF_WIN) { val0=0.0; }
     	System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -175,7 +171,7 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
  
  public commonMove DoAlphaBetaFullMove()
     {
-	 KubaMovespec move = null;
+	 commonMove move = null;
 
         try
         {	
@@ -189,13 +185,16 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
             search_state.verbose=verbose;			// debugging
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
 
             if (move == null)
             {
-                move = (KubaMovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -204,16 +203,8 @@ public class KubaPlay extends commonRobot<KubaBoard>implements Runnable,
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

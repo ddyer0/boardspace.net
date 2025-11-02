@@ -410,7 +410,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     	if(go!=null)
     	{
     		G.Assert(go.maxPlayers<=2,"should be commonMPRobot");
-    		G.Assert(!(viewer.ParseNewMove("done",0) instanceof commonMPMove),"should not be commonMPMove");
+    		G.Assert(!(viewer.ParseNewMove("edit",0) instanceof commonMPMove),"should not be commonMPMove");
     	}
     }
     public void InitRobot(ViewerProtocol v, ExtendedHashtable info, int strategy)

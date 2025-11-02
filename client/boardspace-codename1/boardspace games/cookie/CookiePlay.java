@@ -179,9 +179,9 @@ public commonMove DoMonteCarloFullMove()
 public double NormalizedScore(commonMove lastMove)
 {	int player = lastMove.player;
 	boolean win = board.WinForPlayerNow(player);
-	if(win) { return(0.8+0.2/board.robotDepth); }
+	if(win) { return(0.8+0.2/(1+board.robotDepth)); }
 	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
-	if(win2) { return(- (0.8+0.2/board.robotDepth)); }
+	if(win2) { return(- (0.8+0.2/(1+board.robotDepth))); }
 	return(0);
 }
 

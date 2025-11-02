@@ -962,7 +962,7 @@ class TrenchBoard
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(Trenchmovespec m)
+    public void RobotExecute(commonMove m)
     {
         robotState.push(board_state); //record the starting state. The most reliable
         robotStack.push(lastDrawMove);
@@ -981,8 +981,8 @@ class TrenchBoard
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(Trenchmovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	Trenchmovespec m = (Trenchmovespec)m0;
         //G.print("U "+m);
         TrenchState state = robotState.pop();
         lastDrawMove = robotStack.pop();

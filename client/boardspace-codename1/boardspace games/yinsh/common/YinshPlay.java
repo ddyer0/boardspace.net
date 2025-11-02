@@ -17,7 +17,6 @@
 package yinsh.common;
 
 import com.codename1.ui.geom.Rectangle;
-
 import online.search.*;
 import lib.*;
 import online.game.*;
@@ -42,6 +41,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
     static int DEFAULT_OPENING_DEPTH=3;
     int OPENING_DEPTH = DEFAULT_OPENING_DEPTH;
     int MAX_DEPTH = DEFAULT_MAX_DEPTH;
+    static double VALUE_OF_WIN = 10000.0;
 
     /* evaluation parameters */
     static final double RING_SCORE = 100.0; // points for a captured ring
@@ -105,9 +105,14 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
 
         return (ringscore + movescore + flipscore + chipscore);
     }
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+		if(board.GameOver())
+		{
+		if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+		if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+		return 0;
+		}
     	return(EvaluatePosition(playerindex,false));
     }
     public double EvaluatePosition(int forplayer,boolean print)
@@ -171,7 +176,7 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
     }
     public commonMove DoAlphaBetaFullMove()
     {
-        Yinshmovespec move = null;
+        commonMove move = null;
         try
         {
 
@@ -192,10 +197,13 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging
             search_state.save_digest=false;	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (Yinshmovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -203,17 +211,9 @@ public class YinshPlay extends commonRobot<YinshBoard> implements Runnable, Yins
             Accumulate_Search_Summary();
             Finish_Search_In_Progress();
         }
-
-        if (move != null)
-        {
-            if(G.debug()) { move.showPV("exp final pv: ");}
+        continuous &= move!=null;
 
             return (move);
-        }
-
-        continuous = false;
-
-        return (null);
     }
 
     public boolean autoPlayerEvent(int eventX, int eventY, Rectangle rect)

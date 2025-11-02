@@ -579,7 +579,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         	Image r2 = rotationImage.rotate(rotateDirection*Math.PI/2*animAmount,0x0);
         	int xp = rotation_center_x-rwidth/2;
         	int yp = rotation_center_y-rwidth/2;
-        r2.drawImage(gc,xp,yp);
+        	r2.makeTransparent(0.25).drawImage(gc,xp,yp);
         	}
         	repaint(20);
        }

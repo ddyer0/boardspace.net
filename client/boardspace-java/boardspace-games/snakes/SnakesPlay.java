@@ -164,7 +164,6 @@ public class SnakesPlay extends commonRobot<SnakesBoard> implements Runnable, Sn
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
         double val0 = ScoreForPlayer(board,playerindex,false);
@@ -237,7 +236,7 @@ public class SnakesPlay extends commonRobot<SnakesBoard> implements Runnable, Sn
  
  public commonMove DoFullMove()
     {
-	 SnakesMovespec move = null;
+	 commonMove move = null;
 	 if(moveSequence!=null)
 	 {
 		 move = moveSequence;
@@ -288,10 +287,12 @@ public class SnakesPlay extends commonRobot<SnakesBoard> implements Runnable, Sn
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (SnakesMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
             }
         }
         finally

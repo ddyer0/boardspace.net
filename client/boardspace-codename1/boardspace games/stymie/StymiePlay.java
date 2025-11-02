@@ -174,19 +174,19 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
+	   	if(board.GameOver())
+		{
+	     	boolean win = board.WinForPlayer(playerindex);
+	    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+	     	boolean win2 = board.WinForPlayer(playerindex^1);
+	    	if(win2) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+	    	return 0;
+		}
+	
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for pushfight because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -259,7 +259,7 @@ public void PrepareToMove(int playerIndex)
 
  public commonMove DoAlphaBetaFullMove()
  {
-        Stymiemovespec move = null;
+        commonMove move = null;
         try
         {
        	
@@ -280,6 +280,7 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.allow_good_enough = true;
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.allow_best_killer = false;
@@ -293,7 +294,8 @@ public void PrepareToMove(int playerIndex)
             	// large a drop in the expectation to accept.  For pushfight this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
-                move = (Stymiemovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -302,17 +304,9 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
         }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
-    }
 
 
          	

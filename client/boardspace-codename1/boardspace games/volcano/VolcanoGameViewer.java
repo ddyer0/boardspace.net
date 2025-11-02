@@ -147,7 +147,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	{
         	G.SetRect(done, x, G.Bottom(box)+unitsize/3, doneW,doneW/2);
         	G.SetRect(chip, G.Right(box),y,boxW,unitsize*4);
-        	G.union(box, chip,done);
+        	G.union(box, chip,done,score);
     		
     	}
     	else
@@ -234,7 +234,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         {
         	contextRotation = -Math.PI/2;
         }
-        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,noChatRect);
+        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,numberMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -367,6 +367,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
      	Hashtable<VolcanoCell,VolcanoCell> caps = gb.getCaptures();
      	int dotsize = Math.max(2,SQUARESIZE/15);
      	boolean doLift = doLiftAnimation();
+        numberMenu.clearSequenceNumbers();
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -383,6 +384,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
             boolean offset = perspective ? false : (((b.hexBoard ? cell.row : cell.col)&1)==0);
             int ypos = G.Bottom(brect) - rb.cellToY(cell)+(offset?yoff:-yoff);
             int xpos = G.Left(brect) + rb.cellToX(cell)+(offset?off:-off);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if(cell.drawStack(gc,canHit?highlight:null,xpos,ypos,this,liftSteps,SQUARESIZE,yscale,null))
             {
             highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
@@ -402,6 +404,8 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 	            }
 	        	}
           }
+       	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
+
   	        }
 
     //
@@ -479,6 +483,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.activeMoveNumber());
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
         if(replay.animate) { playSounds((VolcanoMovespec)mm); }
@@ -677,5 +682,10 @@ private void playSounds(VolcanoMovespec m)
             setComment(comments);
         }
     }
+    
+
+	public int getLastPlacement(boolean empty) {
+			return b.placementIndex;
+	}
 }
 

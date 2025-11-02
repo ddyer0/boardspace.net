@@ -449,9 +449,9 @@ public void PrepareToMove(int playerIndex)
  	//double nscore = board.estScoreForPlayer(next);
  	//double margin = (pscore-nscore)/(Math.max(pscore, nscore)*5);	// +- 0.2  
  	if(board.winForPlayerNow(player)) 
- 		{ return(0.8+0.2/boardSearchLevel); }
+ 		{ return(0.8+0.2/(1+boardSearchLevel)); }
  	if(board.winForPlayerNow(next)) 
- 		{ return(-0.8 - 0.2/boardSearchLevel); }
+ 		{ return(-0.8 - 0.2/(1+boardSearchLevel)); }
  	return(0);
  }
 /*

@@ -382,7 +382,7 @@ public void PrepareToMove(int playerIndex)
  	commonMPMove mm = (commonMPMove)m;
  	mm.setNPlayers(nplay);
  	for(int i=0;i<nplay; i++)
-	 	{	mm.playerScores[i] = 0.2/boardSearchLevel + 0.8*board.robotScore(i);
+	 	{	mm.playerScores[i] = 0.2/(1+boardSearchLevel) + 0.8*board.robotScore(i);
 	 	}
 	return( reScorePosition(mm,playerindex));
  }

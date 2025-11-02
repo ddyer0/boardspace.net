@@ -48,15 +48,15 @@ public class CarnacPlay extends commonRobot<CarnacBoard> implements Runnable,
  * will always be done in reverse sequence
  */
     public void Unmake_Move(commonMove m)
-    {	CarnacMovespec mm = (CarnacMovespec)m;
-     	board.UnExecute(mm);
+    {	
+     	board.UnExecute(m);
      }
 /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
-    {   CarnacMovespec mm = (CarnacMovespec)m;
-        board.RobotExecute(mm);
+    {  
+        board.RobotExecute(m);
     }
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be

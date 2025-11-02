@@ -903,7 +903,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(KhetMovespec m)
+    public void RobotExecute(commonMove m)
     {	robotState.push(board_state);
         robotUndo.push(capturedCells.size()); //record the starting state. The most reliable
         robotDepth++;
@@ -934,8 +934,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(KhetMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	KhetMovespec m = (KhetMovespec)m0;
         //G.print("U "+m+" for "+whoseTurn);
     	int cap = robotUndo.pop();
     	robotDepth--;

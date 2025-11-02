@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2023 by Dave Dyer
+Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
 
@@ -102,8 +102,6 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
 
     private double ScoreForPlayer(TakojudoBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
     	return(evboard.ScoreForPlayer(player,print,QSCORE));
 
     }
@@ -112,26 +110,20 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
      * this is it! just tell me that the position is worth.  This is called
      * from the search engine
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
     	return(Static_Eval_POsitition(board,playerindex));
     }
     public double Static_Eval_POsitition(TakojudoBoard bb,int playerindex)
+    {	if(board.GameOver())
     {
-        double val0 = ScoreForPlayer(bb,playerindex,false);
-        double val1 = ScoreForPlayer(bb,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
+    	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+     	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1.0-(1.0/(1+boardSearchLevel))); }
+    	return 0;
+        }
 
-        if(bb.getState()==TakojudoState.GAMEOVER_STATE) 
-        	{ // this makes accepting a draw look like a good idea
-        	  return(0.0); 
-        	}
+        double val0 = ScoreForPlayer(bb,playerindex,false);
+        double val1 = ScoreForPlayer(bb,playerindex^1,false);
 
         return(val0-val1);
         
@@ -145,7 +137,6 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
     	TakojudoBoard evboard = (TakojudoBoard)GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -197,7 +188,7 @@ public class TakoJudoPlay extends commonRobot<TakojudoBoard> implements Runnable
 // move with an offer of a draw, (rather than including the draw offer in the
 // list of moves to be evaluated)
 //
-public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
+public commonMove handleDraws(commonMove move,double draw_threshold)
 {
 	
     if(likelyDraw 
@@ -217,7 +208,7 @@ public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 TakojudoMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -250,10 +241,12 @@ public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {	if(likelyDraw) { G.print("Likely draw, trying harder"); }
-                move = (TakojudoMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
                 if(likelyDraw) 
                 	{ move = handleDraws(move,Static_Eval_POsitition(board,board.whoseTurn)+VALUE_OF_DRAW);
                 	}
@@ -264,17 +257,8 @@ public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
             Accumulate_Search_Summary();
             Finish_Search_In_Progress();
         }
-
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

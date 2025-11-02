@@ -1328,7 +1328,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(FanoronaMovespec m)
+    public void RobotExecute(commonMove m)
     {	//G.print("R "+m+" for "+whoseTurn);
     	robotState.push(board_state);
     	robotIndex.push(stackIndex);
@@ -1378,8 +1378,8 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(FanoronaMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	FanoronaMovespec m = (FanoronaMovespec)m0;
         //G.print("U "+m+" for "+whoseTurn);
     	robotDepth--;
         switch (m.op)

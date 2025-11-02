@@ -131,9 +131,9 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.WinForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/board.robotDepth); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+board.robotDepth)); }
  	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)))); }
  	return(0);
  }
 

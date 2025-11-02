@@ -59,10 +59,15 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 	public TriadState getState() {return(board_state); }
 	public void setState(TriadState st) 
 	{ 	unresign = (st==TriadState.RESIGN_STATE)?board_state:null;
-	board_state = st;
+		board_state = st;
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
+		else {
+			int max = 0;
+			for(int i=0;i<3;i++) { max = Math.max(max,chips_on_board[i]); }
+			for(int i=0;i<3;i++) { win[i] = chips_on_board[i]==max; }
+		}
 	}
     //
     // private variables
@@ -1005,6 +1010,9 @@ int getListOfMovesFrom(TriadCell from,TriadChip top,int who,TriadCell to,int dir
 	 {
  	case PLAY_STATE:
  		getListOfMoves(all,whoseTurn,false);
+ 		if(all.size()==0) 
+ 			{ all.addElement(new TriadMovespec(MOVE_PASS,whoseTurn));
+ 			}
  		break;
  	case CONFIRM_END_STATE:
 	case DRAW_STATE:

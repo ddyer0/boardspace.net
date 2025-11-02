@@ -31,6 +31,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -482,7 +483,11 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     									: null);
     	return(((OctilesMovespec)sp).censoredMoveText(this,next));
     }
-
+    private double[] textIconScale = new double[] { 1,1.5,-0.1,-0.2};
+    public Drawable getPlayerIcon(int p)
+    {	playerTextIconScale = textIconScale;
+    	return b.playerRunner[p];
+    }
     //
     // draw the board and things on it.  If gc!=null then actually 
     // draw, otherwise just notice if the highlight should be on
@@ -497,6 +502,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       OctilesState vstate = gb.getState();
+      gameLog.playerIcons = true;
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,Color.black,standardBoldFont(),standardPlainFont());
       drawBoardElements(gc, gb, boardRect, ot);
 //        DrawTilePool(gc, FIRST_PLAYER_INDEX,firstPlayerChipRect, gb.whoseTurn,ot);
@@ -776,5 +782,6 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
 }
 

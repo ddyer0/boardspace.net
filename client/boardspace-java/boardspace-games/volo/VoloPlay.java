@@ -63,8 +63,8 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloConstants,
-    RobotProtocol
+public class VoloPlay extends commonRobot<VoloBoard> 
+	implements Runnable, VoloConstants,   RobotProtocol
     {
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
 	// should be well below this in magnitude.  Searches are normally called off if the value of a position exceeds
@@ -73,14 +73,12 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
 	// for the evaluator to work with.
     static final double VALUE_OF_WIN = 10000.0;
     
-    boolean EXP_MONTEBOT = false;
-    boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
-    int MAX_DEPTH = 4;						// search depth.
+    private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
+    private int MAX_DEPTH = 4;						// search depth.
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
 	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     
-    int boardSearchLevel = 0;				// the current search depth
-    boolean UCT_WIN_LOSS = true;
+	private int boardSearchLevel = 0;				// the current search depth
     
     enum Evaluator
     {
@@ -133,8 +131,8 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
  * 
  */
     public void Unmake_Move(commonMove m)
-    {	VoloMovespec mm = (VoloMovespec)m;
-        board.UnExecute(mm);
+    {	
+        board.UnExecute(m);
         boardSearchLevel--;
     }
 /** Called from the search driver to make a move, saving information needed to 
@@ -142,8 +140,8 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
  * 
  */
     public void Make_Move(commonMove m)
-    {   VoloMovespec mm = (VoloMovespec)m;
-        board.RobotExecute(mm);
+    {  
+        board.RobotExecute(m);
         boardSearchLevel++;
     }
 
@@ -172,17 +170,11 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
     private double ScoreForPlayer(VoloBoard evboard,int player,boolean print)
     {	BlobStack blobs = evboard.findBlobs(player,false,false);
     	int nblobs = blobs.size();
-    	boolean win = nblobs==1;
      	// make wins in fewer moves look slightly better. Nothing else matters.
      	// note that without this little tweak, the robot might appear to "give up"
      	// when a loss is inevitable a few moves down the road, and take an unnecessary
      	// loss now rather than prolonging the game.
-     	if(win) 
-     		{ double val = VALUE_OF_WIN+(1.0/(1+boardSearchLevel));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
-    	double val = -100/blobs.size();
+     	double val = -100/blobs.size();
      	
      	for(int i=0;i<nblobs;i++)
      	{	VoloBlob b0 = blobs.elementAt(i);
@@ -210,21 +202,19 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
-   public double Static_Evaluate_Position(	commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for volo because there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
-    }
+
+   public double Static_Evaluate_Position(commonMove m)
+   {	int playerindex = m.player;
+   		if(board.GameOver())
+   		{
+       	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+       	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+       	return 0;
+   		}
+       double val0 = ScoreForPlayer(board,playerindex,false);
+       double val1 = ScoreForPlayer(board,playerindex^1,false);
+       return(val0-val1);
+   }
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
@@ -255,7 +245,6 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
         evaluator = Evaluator.Select(strategy);
         MONTEBOT = (Evaluator.AlphaBeta!=evaluator);
         terminalNodeOptimize = true;
-        UCT_WIN_LOSS = evaluator.uct_win_loss;
      }
 
 
@@ -277,7 +266,7 @@ public void PrepareToMove(int playerIndex)
 
  public commonMove DoAlphaBetaFullMove()
  {	
-        VoloMovespec move = null;
+        commonMove move = null;
         try
         {
        	
@@ -302,7 +291,8 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-            search_state.verbose = verbose;
+            search_state.allow_good_enough = true;
+           search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
@@ -314,7 +304,8 @@ public void PrepareToMove(int playerIndex)
             	// large a drop in the expectation to accept.  For volo this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
-                move = (VoloMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -323,16 +314,8 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
  // this is the monte carlo robot, which for volo is much better then the alpha-beta robot
@@ -383,9 +366,9 @@ public void PrepareToMove(int playerIndex)
 	if(board.getState()==VoloState.GAMEOVER_STATE)
 		{
 		boolean win = board.WinForPlayerNow(player);
- 		if(win) { return(0.8+0.2/boardSearchLevel); }
+ 		if(win) { return(0.8+0.2/(1+boardSearchLevel)); }
  		boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
- 		if(win2) { return(- (0.8+0.2/boardSearchLevel)); }
+ 		if(win2) { return(- (0.8+0.2/(1+boardSearchLevel))); }
  		return(0);
 		}
 	else

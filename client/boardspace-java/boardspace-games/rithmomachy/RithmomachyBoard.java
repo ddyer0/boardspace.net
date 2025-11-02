@@ -1080,7 +1080,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(RithmomachyMovespec m)
+    public void RobotExecute(commonMove m)
     {
     	robotState.push(board_state); //record the starting state. The most reliable
         robotCaptures.push(captureStack.size());
@@ -1113,8 +1113,8 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(RithmomachyMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	RithmomachyMovespec m = (RithmomachyMovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
         if(whoseTurn!=m.player)
         {  	moveNumber--;

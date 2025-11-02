@@ -190,7 +190,7 @@ public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, Mo
 	double score[] = mm.playerScores;
   	for(int i=0;i<np;i++)
  	{	boolean win =  board.WinForPlayerNow(i);
- 		score[i]= win ? UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth) : 0;
+ 		score[i]= win ? UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)) : 0;
  	}
   	return(reScorePosition(lastMove,lastMove.player));
  }

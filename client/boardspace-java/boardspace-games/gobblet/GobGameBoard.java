@@ -57,7 +57,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     static final int DU_INDEX = 1;		// index into diagInfo for diagonal up
     static final String[] GOBGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	static final int DEFAULT_BOARDSIZE = 4;	// 4x4 board
-
+	
  	private GobbletState unresign;
  	private GobbletState board_state;
 	public GobbletState getState() {return(board_state); }
@@ -331,8 +331,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     {  	GobCell corner = getCell('A',1);
     	GobCell lastCell = null;
     	double score = 0.0;
-    	boolean iswin=false;
-    	boolean isloss=false;
     	String msg="";
     	
        	// if he has a big cup, our small chips don't count
@@ -342,8 +340,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	for(GobCell cell=corner; cell!=null; cell=cell.exitTo(CELL_UP))
     	{ GobLine info = cell.rowInfo;
     	  lineProfile(cell,info,player,CELL_RIGHT);
-    	  if(info.myCups==4) { iswin=true; }
-    	  if(info.hisCups==-4) { isloss=true; }
     	  int tscore = dumbot ? info.myCups : info.lineScore();
     	  score += tscore;
     	  if(print) { msg += " "+tscore; }
@@ -355,8 +351,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	for(GobCell cell=corner; cell!=null; cell=cell.exitTo(CELL_RIGHT))
     	{ GobLine info = cell.colInfo;
     	  lineProfile(cell,info,player,CELL_UP);
-       	  if(info.myCups==4) { iswin=true; }
-    	  if(info.hisCups==-4) { isloss=true; }
     	  int tscore = dumbot ? info.myCups : info.lineScore();
     	  score += tscore;
     	  if(print) { msg += " "+tscore; }
@@ -366,8 +360,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	{
 	  	  GobLine info = corner.diagonalUpInfo;
 	   	  lineProfile(corner,info,player,CELL_UP_RIGHT);
-		  if(info.myCups==4) { iswin=true; }
-		  if(info.hisCups==-4) { isloss=true; }
 		  int tscore = dumbot ? info.myCups : info.lineScore();
 		  score += tscore;
 		  if(print) { msg += " "+tscore; }
@@ -376,8 +368,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
 		{
 		GobLine info = lastCell.diagonalDownInfo;
 		lineProfile(lastCell,info,player,CELL_DOWN_RIGHT);
-		if(info.myCups==4) { iswin=true; }
-		if(info.hisCups==-4) { isloss=true; }
 		int tscore = dumbot ? info.myCups : info.lineScore();
 		score += tscore;
 		if(print) { msg += " "+tscore; }
@@ -409,11 +399,8 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
 	 	}
 		}
 		
-	 	double finalv = isloss 
-	 			? -(VALUE_OF_WIN+(1.0/(1+lvl))) 
-	 			: (iswin ? VALUE_OF_WIN+(1.0/(1+lvl)) : score);
- 	  	if(print) { System.out.println((dumbot?"dev":"ev")+player+": "+msg+ " = "+finalv); }
-  	    return(finalv);
+ 	  	if(print) { System.out.println((dumbot?"dev":"ev")+player+": "+msg+ " = "+score); }
+  	    return(score);
     }
     
 

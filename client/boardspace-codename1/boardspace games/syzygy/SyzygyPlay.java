@@ -184,10 +184,10 @@ public double NormalizedScore(commonMove lastMove)
 {	int player = lastMove.player;
 	boolean win = board.WinForPlayerNow(player);
 	if(win) 
-		{ return(0.8+0.2/boardSearchLevel); }
+		{ return(0.8+0.2/(1+boardSearchLevel)); }
 	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
 	if(win2)
-		{ return(- (0.8+0.2/boardSearchLevel)); }
+		{ return(- (0.8+0.2/(1+boardSearchLevel))); }
 	return(0);
 }
 

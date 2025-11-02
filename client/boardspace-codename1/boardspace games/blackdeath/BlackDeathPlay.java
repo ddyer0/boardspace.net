@@ -65,8 +65,8 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class BlackDeathPlay extends commonMPRobot<BlackDeathBoard> implements Runnable,
-    RobotProtocol
+public class BlackDeathPlay extends commonMPRobot<BlackDeathBoard> 
+	implements Runnable,  RobotProtocol
     {
 	public double valueOfWin() { return 1.0; }
 	

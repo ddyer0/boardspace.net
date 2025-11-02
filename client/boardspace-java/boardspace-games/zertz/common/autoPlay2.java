@@ -42,9 +42,9 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     private int WeakBotDepth = 1;
     private int StandardDepth = 2;
     private int MaxDepth = StandardDepth; // number of free moves to consider
-    private movespec planned_sequence = null;
-    private movespec start_of_sequence = null;
-    
+    private commonMove planned_sequence = null;
+    private commonMove start_of_sequence = null;
+    private double VALUE_OF_WIN = 1000000.0;
     private boolean ALLOW_RESTRICTED_SACRIFICE = false;
     private double timeLimit = 20;	// 20 seconds
     public autoPlay2() // constructor
@@ -118,9 +118,17 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         sequence_board = GameBoard.cloneBoard();
     }
 
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
-    {	return(evaluator.evaluate(board, m.player, false));
+    {	
+    	int playerindex = m.player;
+		if(board.GameOver())
+		{
+    	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+    	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+    	return 0;
+ 		}
+    	double val = evaluator.evaluate(board, m.player, false);
+     	return val;
     }
 
 
@@ -181,9 +189,9 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
 
 
 
-    public movespec ExtendSequence(movespec m)
+    public commonMove ExtendSequence(commonMove m)
     {
-        movespec pm = m;
+        commonMove pm = m;
 
         while (pm.best_move() != null)
         {
@@ -193,6 +201,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             {
                 movespec splice = new movespec(pm.player, MOVE_DONE);
                 splice.set_best_move(pm.best_move());
+                splice.setEvaluations(pm.evaluation());
                 pm.set_best_move(splice);
                 pm = splice;
             }
@@ -203,7 +212,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         return (m);
     }
 
-    public movespec FinishMove(int p, movespec m)
+    public commonMove FinishMove(int p, commonMove m)
     {
         boolean val = false;
         planned_sequence = m;
@@ -259,7 +268,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     }
     public commonMove DoAlphaBetaFullMove()
     {
-        movespec move = null;
+        commonMove move = null;
 
         try
         {
@@ -296,7 +305,9 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             search_state.save_digest = false;	// debugging only
             
             
-            move = (movespec) search_state.Find_Static_Best_Move(randomn);
+            move = search_state.Find_Static_Best_Move(randomn);
+            if(move!=null) { FinishMove(searchForPlayer, ExtendSequence(move)); }
+            search_state.showResult(move,false);
         }
         finally
         {
@@ -304,17 +315,9 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(verbose>0 && G.debug()) { move.showPV("exp final pv: "); }
-            FinishMove(searchForPlayer, ExtendSequence(move));
+        continuous &= move!=null;
 
-            return (move);
-        }
-
-        continuous = false;
-
-        return (null);
+        return (move);
     }
 
     /** get the move list from the private board */

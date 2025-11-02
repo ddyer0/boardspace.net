@@ -30,12 +30,12 @@ import lib.Image;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.CellId;
 import online.game.BoardProtocol;
-import lib.GameLayoutManager;
 import online.game.commonCanvas;
 import online.game.commonMove;
 import online.game.commonPlayer;
@@ -50,7 +50,6 @@ import online.search.SimpleRobotProtocol;
  *
  * Aug 2005  initial work in progress.  
  * 
- * TODO trax needs a board and iterator upgrade to use the standard methods
 */
 public class TraxGameViewer extends commonCanvas implements TraxConstants
 {

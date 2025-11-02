@@ -6239,6 +6239,9 @@ public abstract class commonCanvas extends exCanvas
     {	if(useCopyBoard)
     	{
      	swapCopyBoardIfNeeded(); 
+     	// if this assertion fails, most likely the game hasn't started and this redisplay
+     	// operation shouldn't be happening.  the drawCanvas method should be conditioned
+     	// on startedOnce
      	G.Assert(l.displayBoard!=null,"there must already be a display board");
      	return(l.displayBoard);
     	}

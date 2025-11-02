@@ -1307,6 +1307,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
+
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);
 	}

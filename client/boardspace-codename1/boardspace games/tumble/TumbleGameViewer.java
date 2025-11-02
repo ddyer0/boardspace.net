@@ -16,18 +16,16 @@
  */
 package tumble;
 
-
+import com.codename1.ui.geom.Rectangle;
+import bridge.Color;
+import bridge.JCheckBoxMenuItem;
+import common.GameInfo;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
-import com.codename1.ui.geom.Rectangle;
-
-import bridge.Color;
-import bridge.JCheckBoxMenuItem;
-import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;

@@ -462,7 +462,7 @@ public void PrepareToMove(int playerIndex)
   	for(int i=0,lim=board.nPlayers(); i<lim; i++)
  	{	boolean win =  board.winForPlayerNow(i);
  		if(win) 
- 			{	double val = UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth);
+ 			{	double val = UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth));
  				return( (i==player) ? val : -val);
  			}
  	}

@@ -72,8 +72,6 @@ public interface GobConstants
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_RACK_BOARD = 209;	// move from rack to board
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
-	
-    static final double VALUE_OF_WIN = 1000.0;
 
     static void putStrings()
     {

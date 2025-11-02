@@ -1040,7 +1040,7 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(CarnacMovespec m)
+    public void RobotExecute(commonMove m)
     {	robotStack.push(lastPlaced);
     	robotStack.push(lastTipped);
     	robotDepth++;
@@ -1074,8 +1074,8 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(CarnacMovespec m)
-    {	
+    public void UnExecute(commonMove m0)
+    {	CarnacMovespec m = (CarnacMovespec)m0;
        // G.print("U "+m+" for "+whoseTurn);
     	robotDepth--;
         lastPlaced = robotStack.pop();

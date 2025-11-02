@@ -60,27 +60,26 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
 	static int xtended_points = 40;			// extended points to consider a connection solid
 	static double threat_bonus = 50.0;		// bonus for making a winning threat
 	
-	boolean useExtendedSpan=true;
-    boolean SAVE_TREE = false;				// debug flag for the search driver
-    int DEFAULT_DEPTH = 3;
-    int MAX_DEPTH = DEFAULT_DEPTH;
+	private boolean useExtendedSpan=true;
+	private boolean SAVE_TREE = false;				// debug flag for the search driver
+	private int DEFAULT_DEPTH = 3;
+	private int MAX_DEPTH = DEFAULT_DEPTH;
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     /* strategies */
     final int SIMPLE_MAX = 0;
     final int BETTER_MAX = 1;
-    punctBlob defendFromBlob=null;
-    punctBlob attackingBlob=null;
-    boolean raceToCenter = false;
-    boolean attackMode = false;
-    int Strategy = 	SIMPLE_MAX;
+    private punctBlob defendFromBlob=null;
+    private punctBlob attackingBlob=null;
+    private boolean raceToCenter = false;
+    private int Strategy = 	SIMPLE_MAX;
     
-    int boardSearchLevel = 0;					// the current search depth
+    private int boardSearchLevel = 0;					// the current search depth
 
     static final double WIN_VALUE = 100000.0;
     static final double MOVE_PENALTY = 1.0;
     
-    int requireDropBloBits = 0;
-    int requireMoveBloBits = 0;
+    private int requireDropBloBits = 0;
+    private int requireMoveBloBits = 0;
     
     /* constructor */
     public PunctPlay()
@@ -109,12 +108,12 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
  * will always be done in reverse sequence
  */
     public void Unmake_Move(commonMove m)
-    {	Punctmovespec mm = (Punctmovespec)m;
-    	if((requireDropBloBits!=0) && (mm.op==MOVE_MOVE))
+    {	
+    	if((requireDropBloBits!=0) && (m.op==MOVE_MOVE))
     		{ board.setDropZoneValue=true;
     		  board.setDropZoneToValue=false;
     		}
-        board.UnExecute(mm);
+        board.UnExecute(m);
         board.setDropZoneValue=false;
         boardSearchLevel--;
     }
@@ -122,7 +121,7 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
  * 
  */
     public void Make_Move(commonMove m)
-    {   Punctmovespec mm = (Punctmovespec)m;
+    {  
     	boardSearchLevel++;
     //if((mm.op==MOVE_MOVE)
     //		&& (mm.from_col=='H')
@@ -131,10 +130,10 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
     //		&& (mm.to_row==14))
     //{ System.out.println("MM "+mm);
     //}
-	   	if((requireDropBloBits!=0) && (mm.op==MOVE_MOVE))
+	   	if((requireDropBloBits!=0) && (m.op==MOVE_MOVE))
 		{ board.clearDropZoneValue=true; 
 		}
-        board.RobotExecute(mm);
+        board.RobotExecute(m);
         board.clearDropZoneValue=false;
     }
 
@@ -285,7 +284,7 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
     		evboard.WinForPlayerNow(player);
     	}
        	else if(evboard.piecesOnBoard[player]==NUMREALPIECES)
-       	{	// a center drtaw
+       	{	// a center draw
        		val = (-WIN_VALUE/2.0)-evboard.moveNumber*MOVE_PENALTY;
        		
        	}	
@@ -320,12 +319,16 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+        	if(board.win[playerindex]) { return(WIN_VALUE+(1.0/(1+boardSearchLevel))); }
+        	if(board.win[playerindex^1]) { return -(WIN_VALUE+1-(1.0/(1+boardSearchLevel))); }
+        	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        if((val0>=WIN_VALUE) && (val1>=WIN_VALUE)) { val1 = val1/2; }
        return(val0-val1);
     }
     /**
@@ -373,11 +376,10 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
 		{	requireDropBloBits |= conn.to.bloBit;
 		}
 		requireDropBloBits |= KILLER_BLOBIT;	// this gets the place moves came from in depth search
-		attackMode = true;
 	}
  }
  void ConsiderAttacks(int attackSpan)
- {	attackMode = false;
+ {	
 	defendFromBlob=null;
 	attackingBlob=null;
 	PunctColor whichColor = board.playerColors[board.whoseTurn];
@@ -496,7 +498,7 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
  */
  public commonMove DoAlphaBetaFullMove()
     {
-        Punctmovespec move = null;
+        commonMove move = null;
         requireDropBloBits=0;
         try
         {
@@ -528,9 +530,13 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
+            search_state.good_enough_to_quit = WIN_VALUE;
+            search_state.allow_good_enough = true;
+
             search_state.verbose=1;
             search_state.save_digest=false;	// debugging only
-            move = (Punctmovespec) search_state.Find_Static_Best_Move(randomn);
+            move = search_state.Find_Static_Best_Move(randomn);
+            search_state.showResult(move,false);
             }
         }
         finally
@@ -539,16 +545,8 @@ public class PunctPlay extends commonRobot<PunctGameBoard> implements Runnable, 
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

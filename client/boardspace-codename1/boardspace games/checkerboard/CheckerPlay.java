@@ -225,7 +225,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 CheckerMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -257,10 +257,13 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = true; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (CheckerMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -269,16 +272,8 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+       continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
  /**
@@ -311,9 +306,9 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
  	// for games where we may be depth limited without a definite win or loss,
     // its important for actual draws to be scored properly at 0
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/board.robotDepth); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+board.robotDepth)); }
  	boolean win2 = board.winForPlayerNow(player^1);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)))); }
  	return(0);	// draw
  	}
  	return(simpleScore(player));

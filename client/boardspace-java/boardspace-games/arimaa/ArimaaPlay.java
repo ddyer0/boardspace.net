@@ -266,8 +266,6 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
      */
     private double ScoreForPlayer(ArimaaBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
     	switch(SEARCH_LEVEL)
     	{
     	case WEAKBOT_LEVEL:
@@ -284,18 +282,14 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	}
     }
     private double coreStaticEval(int playerindex)
-    {
+    {	if(board.GameOver())
+    	{
+    	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
+    	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+board.robotDepth))); }
+    	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // if is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     
@@ -343,7 +337,6 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	ArimaaBoard evboard = (ArimaaBoard)GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -425,8 +418,8 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 ArimaaMovespec move = null;
-	 ArimaaMovespec search_move = null;
+	 commonMove move = null;
+	 commonMove search_move = null;
 	 //
 	 // these are the start position of the current player move
 	 //
@@ -477,6 +470,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
             search_state.return_nullmove = GLOBAL_NULLMOVE;
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
             search_state.allow_killer = KILLER;
             search_state.verbose=0;					// debugging
             search_state.save_top_digest = true;	// always on as a background check
@@ -499,7 +493,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
                 for(int i=0;i<trim.length;i++) { msg += " "+trim[i]; }
                 G.print("P"+board.whoseTurn+" Advancement "+board.advancement_weight+" Depth "+depth+" Width"+msg);
             	}
-                search_move = move = (ArimaaMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                search_move = move = search_state.Find_Static_Best_Move(randomn,dif);
                 if(move!=null)
                 {
                 	if(move.op==MOVE_NULL)

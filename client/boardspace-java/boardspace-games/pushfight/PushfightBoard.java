@@ -941,7 +941,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(Pushfightmovespec m)
+    public void RobotExecute(commonMove m)
     {	robotDepth++;
         robotState.push(board_state); 	// record the starting state. The most reliable
         robotState.push(resetState);
@@ -967,8 +967,9 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(Pushfightmovespec m)
-    {	robotDepth--;
+    public void UnExecute(commonMove m0)
+    {	Pushfightmovespec m = (Pushfightmovespec)m0;
+    	robotDepth--;
 		//G.print("U "+m+" for "+whoseTurn+" "+board_state);
     	secondMoved = robotStack.pop();
     	firstMoved = robotStack.pop();

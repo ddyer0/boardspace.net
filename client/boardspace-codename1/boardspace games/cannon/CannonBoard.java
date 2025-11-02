@@ -963,6 +963,8 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
   				);
   }
  
+ StateStack robotStack = new StateStack();
+  
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -970,9 +972,9 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(CannonMovespec m)
+    public void RobotExecute(commonMove m)
     {
-        m.state = board_state; //record the starting state. The most reliable
+    	robotStack.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
         robotDepth++;
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
@@ -999,11 +1001,11 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(CannonMovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	CannonMovespec m = (CannonMovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
     	robotDepth--;
-    	setState(m.state);
+    	setState(robotStack.pop());
         switch (m.op)
         {
    	    default:
@@ -1063,7 +1065,6 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         case MOVE_RESIGN:
             break;
         }
-        setState(m.state);
         if(whoseTurn!=m.player)
         {  	moveNumber--;
         	setWhoseTurn(m.player);

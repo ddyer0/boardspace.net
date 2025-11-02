@@ -255,7 +255,7 @@ public void PrepareToMove(int playerIndex)
   */
  public double NormalizedScore(commonMove lastMove)
  {	boolean win = board.winForPlayerNow(lastMove.player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	return(0);
  }
 

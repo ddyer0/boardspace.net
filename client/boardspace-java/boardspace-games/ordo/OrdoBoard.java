@@ -1187,7 +1187,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(OrdoMovespec m)
+    public void RobotExecute(commonMove m)
     {
         //G.print("R "+m);
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
@@ -1217,9 +1217,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
    // in proper sequence, and if it was executed by the robot in the first place.
    // If you use monte carlo bots with the "blitz" option this will never be called.
    //
-    public void UnExecute(OrdoMovespec m)
+    public void UnExecute(commonMove m0)
     {	//checkOccupied();
         //G.print("U "+m+" for "+whoseTurn);
+    	OrdoMovespec m = (OrdoMovespec)m0;
     	robotDepth--;
         resetState = robotState.pop();
         setState(robotState.pop());

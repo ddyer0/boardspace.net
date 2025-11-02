@@ -396,12 +396,12 @@ public void PrepareToMove(int playerIndex)
  	int score2 = board.simpleScore(np);
  	double tot = score1+score2;
  	if(win) 
- 		{ return(UCT_WIN_LOSS? 1.0 : ((score1-score2)/tot)*0.8+0.2/boardSearchLevel); 
+ 		{ return(UCT_WIN_LOSS? 1.0 : ((score1-score2)/tot)*0.8+0.2/(1+boardSearchLevel)); 
  		}
  	boolean win2 = board.winForPlayerNow(np);
  	if(win2) 
  		{ 
- 		return(- (UCT_WIN_LOSS?1.0:(0.8*(score2/tot)+0.2/boardSearchLevel))); 
+ 		return(- (UCT_WIN_LOSS?1.0:(0.8*(score2/tot)+0.2/(1+boardSearchLevel)))); 
  		}
  	return((score1-score2)/tot);
  }

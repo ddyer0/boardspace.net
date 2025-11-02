@@ -17,6 +17,7 @@
 package punct;
 
 import lib.G;
+import lib.OStack;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
@@ -76,6 +77,13 @@ public interface PunctConstants
     static int[] ZnInCol =   {   7, 10, 11, 12, 13, 14, 15, 16, 15, 16,15,14,13,12,11,10, 7 }; // depth of columns, ie A has 4, B 5 etc.
     static int[] ZfirstCol = {   1,  0,  0,  0,  0,  0,  0,  0,  1,  1, 2, 3, 4, 5, 6, 7, 9 }; // number of the first visible column in this row, 
 
+    public class StateStack extends OStack<PunctState>
+    {
+		public PunctState[] newComponentArray(int sz) {
+			return new PunctState[sz];
+		}
+    	
+    }
     public enum PunctState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),

@@ -87,15 +87,15 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
  * will always be done in reverse sequence
  */
     public void Unmake_Move(commonMove m)
-    {	OrdoMovespec mm = (OrdoMovespec)m;
-    	board.UnExecute(mm);
+    {	
+    	board.UnExecute(m);
      }
 /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
-    {   OrdoMovespec mm = (OrdoMovespec)m;
-        board.RobotExecute(mm);
+    {   
+        board.RobotExecute(m);
     }
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
@@ -121,8 +121,6 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
      */
     double ScoreForPlayer(OrdoBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.winForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
     	return(evboard.ScoreForPlayer(player,print));
 
     }
@@ -138,19 +136,16 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+        	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
+        	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+board.robotDepth))); }
+        	return 0;
+    	}
         double val0 = ScoreForPlayer(board,playerindex,false);
         double val1 = ScoreForPlayer(board,playerindex^1,false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot committing suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the opponent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
     /**
@@ -162,7 +157,6 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     	OrdoBoard evboard = (OrdoBoard)GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -207,7 +201,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
         case ALPHABOT_LEVEL:
         	// implements a very simplistic alpha-beta robot, which is completely
         	// kicked by the montebots
-         	MAX_DEPTH = BESTBOT_DEPTH;
+         	MAX_DEPTH = SMARTBOT_DEPTH;
         	MONTEBOT = false;
         	break;
         case MONTEBOT_LEVEL:
@@ -249,7 +243,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 OrdoMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -281,10 +275,13 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = true; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (OrdoMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -293,16 +290,8 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
  /**
@@ -337,9 +326,9 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
  	// for games where we may be depth limited without a definite win or loss,
     // its important for actual draws to be scored properly at 0
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/board.robotDepth); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+board.robotDepth)); }
  	boolean win2 = board.winForPlayerNow(player^1);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)))); }
  	return(0);	// draw
  	}
  	return(simpleScore(player));

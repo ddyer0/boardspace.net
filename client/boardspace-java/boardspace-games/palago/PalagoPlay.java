@@ -182,19 +182,9 @@ public class PalagoPlay extends commonRobot<PalagoBoard> implements Runnable, Pa
      */
     double ScoreForPlayer(PalagoBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-     	// make wins in fewer moves look slightly better. Nothing else matters.
-     	if(win) 
-     		{ double val = VALUE_OF_WIN+(1.0/(1+boardSearchLevel));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
      	// if the position is not a win, then estimate the value of the position
      	double val = botEval(evboard,player,print,Strategy);
 
-    	// we're going to subtract two values, and the result must be inside the
-    	// bounds defined by +-WIN
-    	G.Assert((val<(VALUE_OF_WIN/2))&&(val>=(VALUE_OF_WIN/-2)),"value out of range");
      	return(val);
     }
     
@@ -202,22 +192,16 @@ public class PalagoPlay extends commonRobot<PalagoBoard> implements Runnable, Pa
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
-    public double Static_Evaluate_Position(	commonMove m)
+    public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    		if(board.GameOver())
+    		{
+        	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+        	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+        	return 0;
+    		}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        
-        // unusually in Palago, if both players have a win, the player moving loses.
-        // so check for the opponent win first.
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        if(val0>=VALUE_OF_WIN) { return(val0); }
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     /**
@@ -295,7 +279,7 @@ public void PrepareToMove(int playerIndex)
  */
  public commonMove DoAlphaBetaFullMove()
     {
-        Palagomovespec move = null;
+        commonMove move = null;
         try
         {
  
@@ -324,6 +308,7 @@ public void PrepareToMove(int playerIndex)
             search_state.verbose = verbose;
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.allow_good_enough = true;
             search_state.allow_killer = KILLER;
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
@@ -334,7 +319,8 @@ public void PrepareToMove(int playerIndex)
             	// large a drop in the expectation to accept.  For some games this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
-                move = (Palagomovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -342,17 +328,8 @@ public void PrepareToMove(int playerIndex)
             Accumulate_Search_Summary();
             Finish_Search_In_Progress();
         }
-
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

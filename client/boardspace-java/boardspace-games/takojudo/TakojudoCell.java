@@ -19,14 +19,18 @@ package takojudo;
 import lib.Random;
 
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.chipCell;
 class CellStack extends OStack<TakojudoCell>
 {
 	public TakojudoCell[] newComponentArray(int n) { return(new TakojudoCell[n]); }
 }
-public class TakojudoCell extends chipCell<TakojudoCell,TakojudoChip> implements TakojudoConstants
+public class TakojudoCell extends chipCell<TakojudoCell,TakojudoChip> implements TakojudoConstants,PlacementProvider
 {	public boolean dontDraw = false;
 	public int sweep_counter = 0;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	
 	public TakojudoChip[] newComponentArray(int n) { return(new TakojudoChip[n]); }
 	// constructor
 	public TakojudoCell(char c,int r) 
@@ -43,6 +47,8 @@ public class TakojudoCell extends chipCell<TakojudoCell,TakojudoChip> implements
 	{	//TakojudoCell other = (TakojudoCell)ot;
 		// copy any variables that need copying
 		dontDraw = ot.dontDraw;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 		super.copyFrom(ot);
 	}
 	/**
@@ -52,6 +58,11 @@ public class TakojudoCell extends chipCell<TakojudoCell,TakojudoChip> implements
 	public void reInit()
 	{	super.reInit();	
 		dontDraw = false;
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 
 }

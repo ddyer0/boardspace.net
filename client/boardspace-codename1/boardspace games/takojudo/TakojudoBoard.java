@@ -322,9 +322,12 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
     if(droppedDestStack.size()>0)
     	{
     	TakojudoCell dr = droppedDestStack.pop();
+    	dr.lastDropped = lastDropped;
     	pickedObject = removeChip(dr);
     	}
     }
+    private int lastPicked = -1;
+    private int lastDropped = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -334,6 +337,7 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
     	{	
     		TakojudoCell ps = pickedSourceStack.pop();
     		addChip(ps,pickedObject);
+    		ps.lastPicked = lastPicked;
     		pickedObject = null;
      	}
      }
@@ -391,6 +395,8 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
     {   G.Assert(pickedObject!=null,"pickedObject should not be null"); 	    		
     	addChip(c,pickedObject);
     	pickedObject = null;
+    	lastDropped = c.lastDropped;
+    	c.lastDropped = moveNumber;
        	droppedDestStack.push(c);
     }
     //
@@ -424,7 +430,8 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
     private void pickObject(TakojudoCell c)
     {	G.Assert(pickedObject==null,"pickedObject should be null");
     	pickedObject = removeChip(c);
-    	
+    	lastPicked = c.lastPicked;
+    	c.lastPicked = moveNumber;
     	pickedSourceStack.push(c);
    }
 

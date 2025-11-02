@@ -172,7 +172,7 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
  
  public commonMove DoFullMove()
     {
-	 TruMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -195,10 +195,13 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
             search_state.allow_killer=false;
             search_state.save_digest=false;			// debugging only
             search_state.save_top_digest = true;	// always on as a background check
- 
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
+
             if (move == null)
             {
-                move = (TruMovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -206,17 +209,8 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
             Accumulate_Search_Summary();
             Finish_Search_In_Progress();
         }
-
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

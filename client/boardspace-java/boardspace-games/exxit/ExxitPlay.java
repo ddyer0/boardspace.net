@@ -44,7 +44,6 @@ public class ExxitPlay extends commonRobot<ExxitGameBoard> implements Runnable,
 	private int WEAKBOT_DEPTH = 3;
 	private int MAX_DEPTH = DUMBOT_DEPTH;
 	private final double VALUE_OF_WIN = 1000.0;
-	private final double VALUE_OF_DRAW = -100;
 	    /* strategies */
 	private int Strategy = DUMBOT_LEVEL;
     
@@ -87,14 +86,8 @@ public class ExxitPlay extends commonRobot<ExxitGameBoard> implements Runnable,
      * @return
      */
     private double ScoreForPlayer(ExxitGameBoard evboard,int player,boolean print)
-    {	boolean win = evboard.WinForPlayer(player);
-     	// score wins as slightly better if in fewer moves
-    	double val = win ? VALUE_OF_WIN+1.0/(1+board.robotDepth) : 0.0;		// points for a win, less for everything else
-    	if(print && win) { System.out.println("+ win =");}
-
-    	// basic evaluation, mobility weighted by piece importance
-    	if(!win) 
-    	{ switch(Strategy)
+    {	double val = 0;
+     	{ switch(Strategy)
     		{
     		default: throw G.Error("Not expecting strategy %s",Strategy);
     		case WEAKBOT_LEVEL:
@@ -114,21 +107,16 @@ public class ExxitPlay extends commonRobot<ExxitGameBoard> implements Runnable,
     /**
      * this is it! just tell me that the position is worth.  
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    		{
+        	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
+        	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+board.robotDepth))); }
+        	return 0;
+    		}
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // score wins alone, to avoid the "lesser loss" syndrone, where
-        // the robot commits suicide because it makes the overall position 
-        // look "better" than letting the opponent win.
-        if(val0>=VALUE_OF_WIN) 
-        	{ if(val1>=VALUE_OF_WIN) 
-        		{ return(VALUE_OF_DRAW+val0-val1); // simultaneous win is a draw
-        		}
-        	  return(val0); 
-        	}
-         else if(val1>=VALUE_OF_WIN) { return(-val1); }
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         return(val0-val1);
     }
     /**
@@ -187,7 +175,7 @@ public void PrepareToMove(int playerIndex)
  */
  public commonMove DoFullMove()
     {
-        Exxitmovespec move = null;
+        commonMove move = null;
 
         // it's important that the robot randomize the first few moves a little bit.
         int randomn = ((RANDOMIZE&&(board.moveNumber <= 17)) ? (20 - board.moveNumber) : 0);
@@ -206,10 +194,13 @@ public void PrepareToMove(int playerIndex)
             search_state.allow_killer = KILLER_HEURISTIC && ((Strategy!=DUMBOT_LEVEL)&&(Strategy!=WEAKBOT_LEVEL));
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (Exxitmovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -218,20 +209,8 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) 
-            { move.showPV("exp final pv: ");
-            // normal exit with a move
-            search_state.Describe_Search(System.out);
-            System.out.flush();
-            }
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

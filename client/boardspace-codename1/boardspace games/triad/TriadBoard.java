@@ -61,6 +61,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
+		else {
+			int max = 0;
+			for(int i=0;i<3;i++) { max = Math.max(max,chips_on_board[i]); }
+			for(int i=0;i<3;i++) { win[i] = chips_on_board[i]==max; }
+		}
 	}
     //
     // private variables

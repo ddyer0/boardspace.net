@@ -284,7 +284,6 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
     	return(v);
     }
  
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;
@@ -292,11 +291,22 @@ public class ContainerPlay extends commonMPRobot<ContainerBoard> implements Runn
      	commonMPMove mm = (commonMPMove)m;
      	
      	mm.setNPlayers(nplay);
+    	if(board.GameOver())
+    	{
+    		for(int i=0;i<nplay;i++)
+     		{
+     			mm.playerScores[i] = board.win[i] 
+     									? VALUE_OF_WIN+(1.0/(1+boardSearchLevel))
+     									: 0.1/(1+boardSearchLevel);
     	
+     		}
+    	}
+    	else
+    	{
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
-    	}
-    	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
+    	}}
+    	return(mm.reScoreMPPosition(playerindex));
     }
  
 void showFairBids(ContainerBoard evboard)
@@ -416,7 +426,7 @@ void showFairBids(ContainerBoard evboard)
  
  public commonMove DoAlphaBetaFullMove()
     {
-	 ContainerMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -456,12 +466,12 @@ void showFairBids(ContainerBoard evboard)
             search_state.save_top_digest = true;
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
-//search_state.stop_at_eval_clock = 32576;
-//search_state.stop_at_eval_clock = 10000005;
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
+
             if (move == null)
-            {	move = (ContainerMovespec) search_state.Find_Static_Best_Move(randomn,dif);
-            
-            board.sameboard(clone);
+            {	move = search_state.Find_Static_Best_Move(randomn,dif);
+            	search_state.showResult(move,false);
             }
         }
         finally
@@ -472,15 +482,11 @@ void showFairBids(ContainerBoard evboard)
 
         if (move != null)
         {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
             if(move.op==MOVE_DONE) { G.doDelay(1000); }
-            // normal exit with a move
-            return (move);
         }
 
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

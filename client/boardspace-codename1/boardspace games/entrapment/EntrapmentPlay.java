@@ -109,7 +109,7 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
 		boolean win = board.WinForPlayerNow(playerindex);
 		if(win) { return(VALUE_OF_WIN+(1.0/(1+board.robotDepth))); }
 		boolean win2 = board.WinForPlayerNow(playerindex^1);
-		if(win2) { return -(VALUE_OF_WIN+(1-1.0/(1+board.robotDepth))); }
+		if(win2) { return -(VALUE_OF_WIN+1-1.0/(1+board.robotDepth)); }
 		return 0;
     	}
         double val0 = ScoreForPlayer(board,playerindex,false);
@@ -248,6 +248,8 @@ public class EntrapmentPlay extends commonRobot<EntrapmentBoard> implements Runn
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {

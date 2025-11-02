@@ -302,9 +302,9 @@ public commonMove Get_Random_Move(Random rand)
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }
 

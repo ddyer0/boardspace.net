@@ -260,6 +260,11 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	{
 		throw G.Error("you shouldn't get here, type should be commonMPMove");
 	}
+	public double reScoreMPPosition(int forplayer)
+	{
+		throw G.Error("you shouldn't get here, type should be commonMPMove");
+	}
+
    //
     // note that if you add variables, you probably should also add them
     // to the Copy_Slots and same_move_p methods

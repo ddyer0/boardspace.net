@@ -1987,7 +1987,7 @@ extends exCanvas
      * from the event loop, not from the normal canvas repaint request.
      */
     public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp)
-    {
+    {	
      	drawFixedElements(offGC,complete);
      	G.Error("not implemented");
     	// draw the board contents and changing elements.

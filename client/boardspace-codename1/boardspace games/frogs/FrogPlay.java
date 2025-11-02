@@ -189,7 +189,7 @@ public void PrepareToMove(int playerIndex)
  */
  public commonMove DoAlphaBetaFullMove()
     {
-        FrogMovespec move = null;
+        commonMove move = null;
         // it's important that the robot randomize the first few moves a little bit.
         int randomn = RANDOMIZE
         			? ((board.moveNumber <= 6) ? (20 - board.moveNumber) : 0) 
@@ -212,10 +212,13 @@ public void PrepareToMove(int playerIndex)
             search_state.save_top_digest = true;
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (FrogMovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -224,20 +227,8 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) 
-            { move.showPV("exp final pv: ");
-            // normal exit with a move
-            search_state.Describe_Search(System.out);
-            System.out.flush();
-            }
+        continuous &= move!=null;
             return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
     }
 
 

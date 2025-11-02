@@ -17,13 +17,13 @@
 package hex;
 
 import bridge.*;
-import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;

@@ -46,6 +46,7 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
 	private double PIECE_WEIGHT=10.0;
 	private boolean DUMBOT = false;
 	private int boardSearchLevel = 0;				// the current search depth
+	static final double VALUE_OF_WIN = 1000.0;
 
     /* constructor */
     public DashPlay()
@@ -92,31 +93,27 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
      */
      private double ScoreForPlayer(DashBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayerNow(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
  
     	return(evboard.ScoreForPlayer(player,print,BASE_WEIGHT,PIECE_WEIGHT,DUMBOT));
 
     }
     
-    /**
-     * this is it! just tell me that the position is worth.  
-     */
-    // TODO: refactor static eval so GameOver is checked first
-    public double Static_Evaluate_Position(commonMove m)
-    {	int playerindex = m.player;
-        double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
-        return(val0-val1);
-    }
+     /**
+      * this is it! just tell me that the position is worth.  
+      */
+     public double Static_Evaluate_Position(commonMove m)
+     {	int playerindex = m.player;
+     		if(board.GameOver())
+     		{
+         	if(board.win[playerindex]) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
+         	if(board.win[playerindex^1]) { return -(VALUE_OF_WIN+1-(1.0/(1+boardSearchLevel))); }
+         	return 0;
+     		}
+         double val0 = ScoreForPlayer(board,playerindex,false);
+         double val1 = ScoreForPlayer(board,playerindex^1,false);
+         return(val0-val1);
+     }
+     
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
@@ -126,7 +123,6 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
     	DashBoard evboard = GameBoard.cloneBoard();
         double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
         double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
         System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
 
@@ -177,9 +173,9 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
  
  public commonMove DoFullMove()
     {
-	 DashMovespec move = null;
+	 commonMove move = null;
 
-        try
+	 try
         {
 
             if (board.MandatoryDoneState())
@@ -197,13 +193,16 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.verbose=verbose;
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
             search_state.allow_killer=false;
             search_state.save_digest=false;			// debugging only
             search_state.save_top_digest = true;	// always on as a background check
  
             if (move == null)
             {
-                move = (DashMovespec) search_state.Find_Static_Best_Move(randomn);
+                move = search_state.Find_Static_Best_Move(randomn);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -219,9 +218,8 @@ public class DashPlay extends commonRobot<DashBoard> implements Runnable, DashCo
             return (move);
         }
 
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

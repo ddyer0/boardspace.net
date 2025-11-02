@@ -623,18 +623,6 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
 		// is this a won position? If so that's the evaluation.
 		// note that for some games, the current position might be a win
 		// for the other player and that would have be be accounted for too.
-     	boolean win = evboard.winForPlayerNow(player,blobs);
- 
-     	// make wins in fewer moves look slightly better. Nothing else matters.
-     	// note that without this little tweak, the robot might appear to "give up"
-     	// when a loss is inevitable a few moves down the road, and take an unnecessary
-     	// loss now rather than prolonging the game.
-     	if(win) 
-     		{ val = VALUE_OF_WIN+(1.0/(1+boardSearchLevel));
-     		  if(print) {System.out.println(" win = "+val); }
-     		  return(val); 
-     		}
-     	
      	// if the position is not a win, then estimate the value of the position
     	switch(strat)
     	{	default: throw G.Error("Not expecting strategy %s",strat);
@@ -675,9 +663,23 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
+    	if(board.GameOver())
+    	{
+    		   boolean win = board.win[playerindex];
+    		   if(win) 
+    		 		{ return  VALUE_OF_WIN+(1.0/(1+boardSearchLevel));
+    		 		}
+       		   boolean win2 = board.win[playerindex];
+    		   if(win2) 
+    		 		{ return -(VALUE_OF_WIN+1.0-(1.0/(1+boardSearchLevel)));
+    		 		}
+    		   return 0;
+   		    		
+    	}
+ 	
+
     	switch(Strategy)
     	{
     	case TESTBOT_LEVEL_2:
@@ -699,22 +701,12 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     		//double vals1[] = level1Net.getValues();
     		double val0 = vals[0];
     		double val1 = vals[1];
-            if(val0>=VALUE_OF_WIN) { return(val0); }
-            if(val1>=VALUE_OF_WIN) { return(-val1); }
             return(val0-val1);
     		}
     	default:
     	{
         double val0 = ScoreForPlayer(board,playerindex,false,Strategy);
         double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false,Strategy);
-        // don't dilute the value of wins with the opponent's positional score.
-        // this avoids the various problems such as the robot comitting suicide
-        // because it's going to lose anyway, and the position looks better than
-        // if the oppoenent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
-        // is included here because this is supposed to be an example.
-        if(val0>=VALUE_OF_WIN) { return(val0); }
-        if(val1>=VALUE_OF_WIN) { return(-val1); }
         if(level1Net!=null)
         {
         	teachNetwork(level1Net,m,val0,val1);
@@ -1154,13 +1146,14 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-            search_state.verbose = verbose;
+            search_state.allow_good_enough = true;
+           search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.allow_best_killer = false;
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
-
+ 
            if (move == null)
             {	// randomn takes the a random element among the first N
             	// to provide variability.  The second parameter is how
@@ -1429,9 +1422,9 @@ public void PrepareToMove(int playerIndex)
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.hasWinningPath(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	boolean win2 = board.hasWinningPath(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }
  

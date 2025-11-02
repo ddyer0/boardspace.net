@@ -48,7 +48,6 @@ public class CannonMovespec extends commonMove implements CannonConstants
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
-    CannonState state;	// the state of the move before state, for UNDO
     CannonChip capture=null;
     
     public CannonMovespec()
@@ -108,7 +107,6 @@ public class CannonMovespec extends commonMove implements CannonConstants
         to.from_col = from_col;
         to.from_row = from_row;
         to.capture = capture;
-        to.state = state;
         to.source = source;
     }
 

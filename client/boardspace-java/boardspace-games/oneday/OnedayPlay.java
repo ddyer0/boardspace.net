@@ -195,7 +195,7 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
 	 mm.setNPlayers(nplay);
 	 double scores[] = mm.playerScores;
 	 boolean win = board.WinForPlayerNow(m.player);
-	 if(win) { scores[playerindex] = UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel;}
+	 if(win) { scores[playerindex] = UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel);}
 	 else
 	 {
 		 for(int i=0;i<nplay; i++)

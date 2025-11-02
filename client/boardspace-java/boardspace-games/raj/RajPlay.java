@@ -201,7 +201,7 @@ public commonMove DoMonteCarloFullMove()
 	for(int i=0;i<nplay; i++)
 	{
 		boolean win = board.winForPlayerNow(i);
-	 	if(win) { scores[i] = (UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+	 	if(win) { scores[i] = (UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
 	 	else { scores[i]=0;}
 	 	}
 	return reScorePosition(m,playerindex);

@@ -493,7 +493,7 @@ public class MicropulChip extends chip<MicropulChip>
 	 	double pscale[]=alt.getScale();
 	    // use this to tune piece position
 	    canvas.adjustScales(pscale,alt);
-	    canvas.drawImage(gc, alt.getImage(canvas.loader), pscale,cx, cy, SQUARESIZE, 1.0,0.0,null,true);
+	    canvas.drawImage(gc, alt.getImage(), pscale,cx, cy, SQUARESIZE, 1.0,0.0,null,true);
 	    
 	    // now draw ornaments
 	    int firstx = components[0];
@@ -593,7 +593,7 @@ public class MicropulChip extends chip<MicropulChip>
 	static final int tint_index = 10;
 	static final int blank_index = 13;
     static final String[] ImageNames = 
-        {   // square is borrowed from truchet.  circles are modified gray ball from zertz
+        {   // square is borrowed from dash.  circles are modified gray ball from zertz
     		// plus is a mutilated cross from the web.
     		"square","square-r1","square-r2","square-r3",
     		"red","blue","dot","plus",

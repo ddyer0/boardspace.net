@@ -47,7 +47,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * Stymie, initial work 3/2021 
 */
-public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants
+public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants,PlacementProvider
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -220,7 +220,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     	//
         int stateX = boardX;
         int stateY = boardY-stateH;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -391,6 +391,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
     	Hashtable<StymieCell,Stymiemovespec> targets = gb.getTargets();
+    	numberMenu.clearSequenceNumbers();
     	// this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -402,6 +403,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
             						|| (gb.isASource(cell) && picked);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
   
             if (drawhighlight)
              { // checking for pointable position
@@ -419,6 +421,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
            // StockArt.SmallO.drawChip(gc, this,CELLSIZE,xpos, ypos, null);
             }
         }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
 
     /**
@@ -541,7 +544,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     {	
         
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -1008,6 +1011,12 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
             setComment(comments);
         }
     }
+    //
+    // support for the last move "numberMenu" logic
+    //
+	public int getLastPlacement(boolean empty) {
+		return (bb.moveNumber);
+	}
 
 }
 

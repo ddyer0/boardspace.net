@@ -24,6 +24,9 @@ import lib.*;
 
 /**
  *  Initial release sep 2005
+ *  
+ *  Trax is an early effort that doesn't use the later gboard and fboard related systems
+ *  for mapping board coordinates
  */
 
 class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants

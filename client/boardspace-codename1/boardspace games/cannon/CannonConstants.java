@@ -17,7 +17,7 @@
 package cannon;
 
 import lib.CellId;
-
+import lib.OStack;
 import online.game.BaseBoard.BoardState;
 
 public interface CannonConstants 
@@ -40,7 +40,12 @@ public interface CannonConstants
 	static final int SHOOT2_BOARD_BOARD = 214;	// shoot1
 	static final int SHOOT3_BOARD_BOARD = 215;	// shoot2
 
- 
+	public class StateStack extends OStack<CannonState>
+	{
+		public CannonState[] newComponentArray(int sz) {
+			return new CannonState[sz];
+		}
+	}
     public enum CannonState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),
@@ -53,7 +58,7 @@ public interface CannonConstants
     	CannonState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); } 
     }
 
 //	these next must be unique integers in the dictionary

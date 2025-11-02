@@ -336,10 +336,10 @@ public void PrepareToMove(int playerIndex)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
  	if(win) 
- 		{ return(UCT_WIN_LOSS? 1.0 : 0.95+0.05/boardSearchLevel); }
+ 		{ return(UCT_WIN_LOSS? 1.0 : 0.95+0.05/(1+boardSearchLevel)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
  	if(win2)
- 		{ return(- (UCT_WIN_LOSS?1.0:(0.95+0.05/boardSearchLevel))); }
+ 		{ return(- (UCT_WIN_LOSS?1.0:(0.95+0.05/(1+boardSearchLevel)))); }
  	if(UCT_WIN_LOSS) { return(0); }
  	return(board.scoreEstimateForPlayer(player)-board.scoreEstimateForPlayer(nextPlayer[player]));
  }

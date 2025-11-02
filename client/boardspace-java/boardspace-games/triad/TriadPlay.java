@@ -36,7 +36,7 @@ import online.search.*;
 public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, TriadConstants,
     RobotProtocol
     {
-	private static final double VALUE_OF_WIN = 1.0;
+	private static final double VALUE_OF_WIN = 100000.0;
 	public double valueOfWin() { return VALUE_OF_WIN; }
 	
 	private double TIME_LIMIT = 2.0;				// progressive search time limit
@@ -104,10 +104,7 @@ public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, Tr
      */
     private double ScoreForPlayer(TriadBoard evboard,int player,boolean print)
     {	
-     	boolean win = evboard.WinForPlayer(player);
-    	if(win) { return(VALUE_OF_WIN+(1.0/(1+boardSearchLevel))); }
     	return(evboard.dumbotEval(player,print));
-
     }
     // seek the end of the best_move chain for multiplayer games
     public commonMove targetMoveForEvaluation(commonMove cm)
@@ -117,7 +114,6 @@ public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, Tr
     	return(v);
     }
 
-    // TODO: refactor static eval so GameOver is checked first
    public double Static_Evaluate_Position(commonMove m)
     {	
      	int playerindex = m.player;
@@ -126,10 +122,22 @@ public class TriadPlay extends commonMPRobot<TriadBoard> implements Runnable, Tr
      	
      	mm.setNPlayers(nplay);
     	
+     	if(board.GameOver())
+     	{
+     		for(int i=0;i<nplay;i++)
+     		{
+     			mm.playerScores[i] = board.win[i] 
+     									? VALUE_OF_WIN+(1.0/(1+boardSearchLevel))
+     									: 0.1/(1+boardSearchLevel);
+ 
+     		}
+     	}
+     	else
+     	{
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
-    	}
-    	return(reScorePosition(mm,playerindex));
+    	}}
+    	return(reScoreMPPosition(mm,playerindex));
     }
 
 
@@ -202,7 +210,7 @@ public void PrepareToMove(int playerIndex)
  */
  public commonMove DoAlphaBetaFullMove()
     {
-        TriadMovespec move = null;
+        commonMove move = null;
         try
         {
  
@@ -228,6 +236,7 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, TIME_LIMIT);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.allow_good_enough = true;
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.save_digest=false;	// debugging only
@@ -239,7 +248,8 @@ public void PrepareToMove(int playerIndex)
             	// large a drop in the expectation to accept.  For some games this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
-                move = (TriadMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -248,16 +258,8 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
 
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
-            return (move);
-        }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

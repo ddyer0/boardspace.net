@@ -351,19 +351,6 @@ public class UniversePlay extends commonMPRobot<UniverseBoard>
     } 
 
 
-    /**
-     * called as a robot debugging hack from the viewer.  Print debugging
-     * information about the static analysis of the current position.
-    public void StaticEval()
-    {
-    	UniverseBoard evboard = (UniverseBoard)GameBoard.cloneBoard();
-        double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
-        double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
-        if(val1>=VALUE_OF_WIN) { val0=0.0; }
-        System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
-    }
-     * */
-
 public void initPolySolverRobot(ExtendedHashtable info,int strategy)
 {
     switch(strategy)

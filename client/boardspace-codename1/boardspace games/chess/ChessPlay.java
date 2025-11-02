@@ -216,7 +216,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
 
  public commonMove DoAlphaBetaFullMove()
     {
-	 ChessMovespec move = null;
+	 commonMove move = null;
 
         try
         {
@@ -248,10 +248,13 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;			// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
+            search_state.good_enough_to_quit = VALUE_OF_WIN;
+            search_state.allow_good_enough = true;
 
             if (move == null)
             {
-                move = (ChessMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -259,18 +262,9 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
             Accumulate_Search_Summary();
             Finish_Search_In_Progress();
         }
-
-        if (move != null)
-        {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
-            // normal exit with a move
+        continuous &= move!=null;
             return (move);
         }
-
-        continuous = false;
-        // abnormal exit
-        return (null);
-    }
 
  
 

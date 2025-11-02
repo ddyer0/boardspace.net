@@ -652,11 +652,13 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
         if (board_state==BarcaState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;
+            setNextPlayer(replay);
     		setState(BarcaState.Gameover);
         }
         else
         {	if(winForPlayerNow(whoseTurn)) 
         		{ win[whoseTurn]=true;
+        		  setNextPlayer(replay);
         		  setState(BarcaState.Gameover); 
         		}
         	else {setNextPlayer(replay);
@@ -808,7 +810,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(Barcamovespec m)
+    public void RobotExecute(commonMove m)
     {
         robotState.push(board_state); //record the starting state. The most reliable
         // to undo state transitions is to simple put the original state back.
@@ -837,8 +839,8 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(Barcamovespec m)
-    {
+    public void UnExecute(commonMove m0)
+    {	Barcamovespec m = (Barcamovespec)m0;
         //System.out.println("U "+m+" for "+whoseTurn);
     	BarcaState state = robotState.pop();
         switch (m.op)

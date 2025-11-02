@@ -283,7 +283,7 @@ public void PrepareToMove(int playerIndex)
  */
  public commonMove DoFullMove()
     {
-        CrossfireMovespec move = null;
+        commonMove move = null;
         try
         {
        	
@@ -309,6 +309,8 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
+            search_state.allow_good_enough = true;
+
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.save_top_digest = true;	// always on as a background check
@@ -321,7 +323,8 @@ public void PrepareToMove(int playerIndex)
             	// large a drop in the expectation to accept.  For some games this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
-                move = (CrossfireMovespec) search_state.Find_Static_Best_Move(randomn,dif);
+                move = search_state.Find_Static_Best_Move(randomn,dif);
+                search_state.showResult(move,false);
             }
         }
         finally
@@ -332,19 +335,16 @@ public void PrepareToMove(int playerIndex)
 
         if (move != null)
         {
-            if(G.debug() && (move.op!=MOVE_DONE)) { move.showPV("exp final pv: "); }
             // normal exit with a move
             commonMove bm = move.best_move();
             if((bm!=null)&&(bm.op==MOVE_ROBOT_RESIGN)) 
             {
             	move.op = MOVE_RESIGN;
             }
-            return (move);
         }
 
-        continuous = false;
-        // abnormal exit
-        return (null);
+        continuous &= move!=null;
+        return (move);
     }
 
 

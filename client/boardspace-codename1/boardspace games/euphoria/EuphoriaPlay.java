@@ -54,8 +54,8 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard> implements Runnable, EuphoriaConstants,
-    RobotProtocol
+public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard> 
+	implements Runnable, EuphoriaConstants, RobotProtocol
     {
 	public double valueOfWin() { return 1.0; }
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results

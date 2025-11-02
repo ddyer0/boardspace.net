@@ -172,9 +172,9 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
  	// for games where we may be depth limited without a definite win or loss,
     // its important for actual draws to be scored properly at 0
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/board.robotDepth); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+board.robotDepth)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/board.robotDepth))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)))); }
  	return(0);	// draw
  	}
  	return(simpleScore(player));

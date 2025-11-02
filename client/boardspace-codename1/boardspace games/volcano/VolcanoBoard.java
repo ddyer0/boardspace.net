@@ -80,6 +80,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     public VolcanoCell captures[] = new VolcanoCell[NUMPLAYERS];	// pieces captured per player
     public int capture_counts[][][] = new int[NUMPLAYERS][Pyramid.nColors][Pyramid.nSizes];
     public int nonuniform = 0;
+    public int placementIndex = 0;
     public int capture_size[] = new int[Pyramid.nSizes];
     public boolean gameOver[] = new boolean[NUMPLAYERS]; 
     public int colorSet[] = new int[NUMPLAYERS];
@@ -343,8 +344,12 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     	{
     	droppedDest[stackIndex] =  null;
     	pickedObject = removeChip(dr);
+    	dr.lastDropped = lastDropped;
+    	placementIndex--;
     	}
     }
+    int lastPicked = -1;
+    int lastDropped = -1;
     // lowest level of uncapture.  "removed" is the most distant cell removed by the capture
     // picked and dropped are the source and destination respectively.  This handles both
     // capture by approach and by withdrawal.
@@ -358,6 +363,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     	{
     	VolcanoCell ps = pickedSource[stackIndex];
        	addChip(ps,po);
+       	ps.lastPicked = lastPicked;
         pickedSource[stackIndex]=null;
     	pickedObject = null;
     	}
@@ -367,6 +373,10 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     {
     	droppedDest[stackIndex] = dcell;
     	addChip(dcell,pickedObject);
+       	lastDropped = dcell.lastDropped;
+       	dcell.lastDropped = placementIndex;
+    	placementIndex++;
+
     	pickedObject = null;
     }
     // 
@@ -385,13 +395,16 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         	addToCaptures(SECOND_PLAYER_INDEX,pickedObject);
         	break;
         case BoardLocation: // an already filled board slot.
-        	dropOnBoard(getCell(col,row));
+        	VolcanoCell c = getCell(col,row);
+        	dropOnBoard(c);
          	break;
         }
     }
     private void pickFromCell(VolcanoCell src)
     {  	pickedSource[stackIndex] = src;
     	pickedObject = removeChip(src);
+     	lastPicked = src.lastPicked;
+     	src.lastPicked = placementIndex;
     }
 
     private void pickObject(VolcanoId source, char col, int row)
@@ -409,7 +422,8 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         	break;
         case BoardLocation:
          	{
-         	pickFromCell(getCell(col,row));
+         	VolcanoCell c = getCell(col,row);
+         	pickFromCell(c);
          	break;
          	}
                 	
@@ -611,7 +625,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         	pickedSource[i]=getCell(from_b.pickedSource[i]);
         	droppedDest[i]=getCell(from_b.droppedDest[i]);
         }
-        
+        placementIndex = from_b.placementIndex;
         sameboard(from_b);
     }
 
@@ -630,7 +644,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
 		   }
        	}
        moveNumber = 1;
-
+       placementIndex = 1;
         // note that firstPlayer is NOT initialized here
     }
 

@@ -414,7 +414,6 @@ public class XehPlayNN extends commonRobot<XehBoard> implements Runnable, XehCon
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
-    // TODO: refactor static eval so GameOver is checked first
     public double Static_Evaluate_Position(	commonMove m)
     {	int playerindex = m.player;
     	switch(Strategy)
@@ -1865,7 +1864,8 @@ public void PrepareToMove(int playerIndex)
             Search_Driver search_state = Setup_For_Search(depth, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
-            search_state.verbose = verbose;
+            search_state.allow_good_enough = true;
+           search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.allow_best_killer = false;
             search_state.save_top_digest = true;	// always on as a background check
@@ -2150,9 +2150,9 @@ public void PrepareToMove(int playerIndex)
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }
  

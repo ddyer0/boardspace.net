@@ -67,8 +67,6 @@ public class RoboPlay extends commonRobot<Loa_Board> implements Runnable, Consta
         	}
     }
 
-    // TODO: refactor static eval so GameOver is checked first
- 
     public double Static_Evaluate_Position(commonMove m)
     {	int playerIndex = m.player;
     	Player_Info pl = (playerIndex==0)
@@ -137,6 +135,7 @@ public class RoboPlay extends commonRobot<Loa_Board> implements Runnable, Consta
             		: ((board.moveNumber() <= 8) ? (10 - board.moveNumber()) : 0))
             	  : 0;
             Search_Driver search_state = Setup_For_Search(search_depth, false);
+            
             move = (Move_Spec) search_state.Find_Static_Best_Move(randomn);
         }
         finally

@@ -27,11 +27,16 @@ public abstract class commonMPRobot<BOARDTYPE extends BoardProtocol> extends com
 	 // ie; the players don't score themselves differently if they are
 	 // the player to move. 
 	 //
-	 public double reScorePosition(commonMove m,int forplayer)
+	 public double reScorePosition(commonMPMove m,int forplayer)
 	 {	return(m.reScorePosition(forplayer,valueOfWin()));
+	 }
+	 public double reScoreMPPosition(commonMPMove m,int forplayer)
+	 {
+		 return m.reScoreMPPosition(forplayer);
 	 }
 	 public commonMove getCurrentVariation()
 	 {
 		 return search_driver.getCurrentVariation();
 	 }
+
 }

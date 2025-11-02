@@ -994,7 +994,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(QyshinsuMovespec m)
+    public void RobotExecute(commonMove m)
     {
     	stateStack.push(board_state);
         // to undo state transistions is to simple put the original state back.
@@ -1023,10 +1023,10 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
     // in proper sequence.  This only needs to handle the moves
     // that the robot might actually make.
     //
-    public void UnExecute(QyshinsuMovespec m)
+    public void UnExecute(commonMove m0)
     {
         //System.out.println("U "+m+" for "+whoseTurn);
-
+    	QyshinsuMovespec m = (QyshinsuMovespec)m0;
         switch (m.op)
         {
    	    default:
