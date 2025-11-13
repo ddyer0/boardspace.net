@@ -913,7 +913,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 		discardPile.copyFrom(from_b.discardPile);
 
   
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

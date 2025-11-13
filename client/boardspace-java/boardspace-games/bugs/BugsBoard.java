@@ -598,7 +598,7 @@ public class BugsBoard
         lackOfProgress = from_b.lackOfProgress;
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         targetsCache = null;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

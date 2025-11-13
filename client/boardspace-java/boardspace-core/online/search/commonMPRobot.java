@@ -27,6 +27,20 @@ public abstract class commonMPRobot<BOARDTYPE extends BoardProtocol> extends com
 	 // ie; the players don't score themselves differently if they are
 	 // the player to move. 
 	 //
+	 public double reScorePosition(commonMove m,int forplayer)
+	 {	
+		// if this is a multiplayer game, commomMPRobot should be robot class inhereted from,
+		// of alternatively if this is not a multiplayer game, commonMove should be the base class
+	    // for moves.  
+		return ((commonMPMove)m).reScorePosition(forplayer,valueOfWin());
+	 }
+
+	 //
+	 // rescore the position for a different player.  The underlying
+	 // assertion here is that the player component scores are accurate
+	 // ie; the players don't score themselves differently if they are
+	 // the player to move. 
+	 //
 	 public double reScorePosition(commonMPMove m,int forplayer)
 	 {	return(m.reScorePosition(forplayer,valueOfWin()));
 	 }

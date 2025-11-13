@@ -302,7 +302,7 @@ class MijnlieffBoard
         copyFrom(rack,from_b.rack);
         AR.copy(playerColor,from_b.playerColor);
  
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

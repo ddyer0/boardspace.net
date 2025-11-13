@@ -140,8 +140,8 @@ class GameTimerBoard
  
         resetState = from_b.resetState;
  
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     
 

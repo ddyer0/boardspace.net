@@ -340,7 +340,7 @@ class IroBoard
         AR.copy(playerChip,from_b.playerChip);
         getCell(occupiedCells,from_b.occupiedCells);
         robotBoard = from_b.robotBoard;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

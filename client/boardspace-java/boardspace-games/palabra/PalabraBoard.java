@@ -563,7 +563,7 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
         unresign = from_b.unresign;
         resetState = from_b.resetState;
  
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
 	public void doInit()

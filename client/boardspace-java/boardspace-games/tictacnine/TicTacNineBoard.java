@@ -186,7 +186,7 @@ class TicTacNineBoard extends rectBoard<TicTacNineCell> implements BoardProtocol
         getCell(droppedDestStack,from_b.droppedDestStack);
         AR.copy(chips_on_board,from_b.chips_on_board);
  
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

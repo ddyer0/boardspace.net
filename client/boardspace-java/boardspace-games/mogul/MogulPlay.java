@@ -192,7 +192,7 @@ public class MogulPlay extends commonMPRobot<MogulBoard> implements Runnable, Mo
  	{	boolean win =  board.WinForPlayerNow(i);
  		score[i]= win ? UCT_WIN_LOSS?1.0:(0.8+0.2/(1+board.robotDepth)) : 0;
  	}
-  	return(reScorePosition(lastMove,lastMove.player));
+  	return(reScorePosition(mm,lastMove.player));
  }
 
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot

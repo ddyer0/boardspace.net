@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package zertz.common;
 
@@ -33,13 +33,12 @@ public class movespec extends commonMove implements GameConstants
        		"BtoR",MOVE_BtoR,
        		"RtoB",MOVE_RtoB,
        		"RtoR",MOVE_RtoR,
+       		"Pick",MOVE_PICK,
+       		"Pickb",MOVE_PICKB,
        		"R+",MOVE_R_PLUS,   
        		"R-",MOVE_R_MINUS,
        		"SetBoard",MOVE_SETBOARD);
     }
-    int from_rack; // for from-to moves, the source rack index 
-    int color; // the color to be moved
-    int to_rack; // the destination rack
     char from_col; // for from-to moves, the source column
     int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
@@ -66,13 +65,11 @@ public class movespec extends commonMove implements GameConstants
     /* constructor */
 
     // pattern for r-to-b moves
-    public movespec(int p, int scmd, int rackidx, int coloridx,
-        char col, int row)
+    public movespec(int p, int scmd, char rackidx,  char col, int row)
     {
         op = scmd;
         player = p;
-        from_rack = rackidx;
-        color = coloridx;
+        from_col = rackidx;
         to_col = col;
         to_row = row;
     }
@@ -111,8 +108,7 @@ public class movespec extends commonMove implements GameConstants
     {
         movespec other = (movespec) oth;
 
-        return ((op == other.op) && (from_rack == other.from_rack) &&
-        (color == other.color) && (to_rack == other.to_rack) &&
+        return ((op == other.op) &&
         (from_col == other.from_col) && (from_row == other.from_row) &&
         (to_row == other.to_row) && (to_col == other.to_col) &&
         (player == other.player));
@@ -129,16 +125,13 @@ public class movespec extends commonMove implements GameConstants
     public void Copy_Slots(movespec other)
     {
         super.Copy_Slots(other);
-        other.from_rack = from_rack;
-        other.color = color;
-        other.to_rack = to_rack;
         other.from_row = from_row;
         other.from_col = from_col;
         other.to_row = to_row;
         other.to_col = to_col;
         other.restricted = restricted;
         other.movedAndCaptured = movedAndCaptured;
-    }
+     }
 
     /* parse a string into the state of this move */
     private void parse(StringTokenizer msg, int p)
@@ -169,22 +162,31 @@ public class movespec extends commonMove implements GameConstants
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
             break;
+        case MOVE_PICKB:
+            to_col = from_col = G.CharToken(msg);
+            to_row = from_row = G.IntToken(msg);
+            break;
+        case MOVE_PICK:
+            to_col = from_col = G.CharToken(msg);
+            to_row = from_row = G.IntToken(msg);
+            break;
+  
         case MOVE_BtoR:
             from_col = G.CharToken(msg);
             from_row = G.IntToken(msg);
-            to_rack = G.IntToken(msg);
+            to_col = G.CharToken(msg);
             break;
         case MOVE_RtoB:
-            from_rack = G.IntToken(msg);
-            color = G.IntToken(msg);
+            from_col = G.CharToken(msg);
+            from_row = G.IntToken(msg);
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
-            break;
+           break;
         case MOVE_RtoR:
-            from_rack = G.IntToken(msg);
-            color = G.IntToken(msg);
-            to_rack = G.IntToken(msg);
-            if(from_rack==2 && to_rack<2) { player = to_rack; } 
+            from_col = G.CharToken(msg);
+            to_row = from_row = G.IntToken(msg);
+            to_col = G.CharToken(msg);
+            if(from_col=='2' && to_col<'2') { player = to_col-'0'; } 
             break;
         case MOVE_R_PLUS:
             to_col = G.CharToken(msg);
@@ -202,7 +204,7 @@ public class movespec extends commonMove implements GameConstants
         }
     }
 
- 
+
     public Text getBallGlyph(int color,commonCanvas v)
     {	
     	if(color>=0 && color<NCOLORS)
@@ -237,24 +239,27 @@ public class movespec extends commonMove implements GameConstants
             		TextChunk.create(""+from_col + from_row + "("),
             		getBallGlyph((movedAndCaptured>>4)&0xf,v),
             		TextChunk.create(")"+to_col + to_row));
-
-	    case MOVE_RtoR:
-	    	return TextChunk.join(TextChunk.join(getBallGlyph(color,v),
+        case MOVE_PICK:
+        	return TextChunk.join(getBallGlyph(from_row,v),TextChunk.create(" "));
+        case MOVE_PICKB:
+        	return (next==null) ? TextChunk.create(""+from_col+from_row) : TextChunk.create("");
+ 	    case MOVE_RtoR:
+	    	return TextChunk.join(TextChunk.join(getBallGlyph(to_row,v),
 	    			TextChunk.create("Handicap")
 	    			));
-        case MOVE_START:
+	    case MOVE_START:
         case MOVE_R_PLUS:
         case MOVE_BtoR:
         case MOVE_DONE:
             return (TextChunk.create(""));
 
         case MOVE_RtoB:
-            return TextChunk.join(getBallGlyph(color,v),
+            return TextChunk.join(getBallGlyph(to_row,v),
             		TextChunk.create("" + to_col + to_row));
 
         case MOVE_R_MINUS:
             return TextChunk.create(" -" + from_col + from_row);
-            
+
         default:
         	return(TextChunk.create(D.findUniqueTrans(op)));
         }
@@ -266,25 +271,27 @@ public class movespec extends commonMove implements GameConstants
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
- 
-		switch (op)
+
+        switch (op)
         {
         case MOVE_SETBOARD:
         	return(opname+Zvariation.values()[to_row].shortName);
-        	
+        case MOVE_PICK:
+        	return opname + from_col+" "+from_row;
+        case MOVE_PICKB:
+         	return opname + from_col+" "+from_row;
         case MOVE_BtoB:
             return (opname + from_col + " " + from_row + " " + to_col +
             " " + to_row);
 
         case MOVE_BtoR:
-            return (opname + from_col + " " + from_row + " " + to_rack);
+            return (opname + from_col + " " + from_row + " " + to_col);
 
         case MOVE_RtoB:
-            return (opname + from_rack + " " + color + " " + to_col +
-            " " + to_row);
+            return (opname + from_col + " " + from_row + " " + to_col + " " + to_row);
 
         case MOVE_RtoR:
-            return (opname + from_rack + " " + color + " " + to_rack);
+            return (opname + from_col + " " + from_row + " " + to_col);
 
         case MOVE_R_PLUS:
             return (opname + to_col + " " + to_row);
@@ -294,7 +301,7 @@ public class movespec extends commonMove implements GameConstants
 
         case MOVE_START:
             return (indx + "Start P" + player);
-
+            
         case MOVE_SWAP: 
         case MOVE_EDIT:
         case MOVE_RESIGN:

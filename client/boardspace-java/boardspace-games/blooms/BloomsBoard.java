@@ -289,7 +289,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         AR.copy(endgameApproved,from_b.endgameApproved);
         AR.copy(captured,from_b.captured);
         lastPlacement = from_b.lastPlacement;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

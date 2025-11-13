@@ -137,6 +137,8 @@ public interface GameConstants
     static final int MOVE_R_PLUS = 106;
     static final int MOVE_R_MINUS = 107;
     static final int MOVE_SETBOARD = 108;
+    static final int MOVE_PICK = 109;
+    static final int MOVE_PICKB = 110;
     static final String Zertz_SGF = "22"; // sgf game number allocated for zertz
     static final String SGF_GAME_VERSION = "2";
     

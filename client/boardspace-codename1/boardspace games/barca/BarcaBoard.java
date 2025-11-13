@@ -319,7 +319,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
         lastPicked = null;
 
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

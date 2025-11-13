@@ -191,7 +191,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void setUpBoard(int [][]spec)
     {

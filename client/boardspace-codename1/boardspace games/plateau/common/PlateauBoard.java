@@ -615,7 +615,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         	}
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
                
     }
 

@@ -333,7 +333,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         AR.copy(rackMap,from_b.rackMap);
         copyFrom(mappedRack,from_b.mappedRack);
         
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

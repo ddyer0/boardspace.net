@@ -406,7 +406,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
         previousLastEmptied = from_b.previousLastEmptied;
         previousLastPlayer = from_b.previousLastPlayer;
 
-        sameboard(from_b);	// check
+        if(G.debug()) { sameboard(from_b); }
     }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)

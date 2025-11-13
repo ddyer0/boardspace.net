@@ -364,8 +364,8 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
         AR.copy(playerChip,from_b.playerChip);
         redChipPool.copyCurrentCenter(from_b.redChipPool);
         blackChipPool.copyCurrentCenter(from_b.blackChipPool);
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     
 

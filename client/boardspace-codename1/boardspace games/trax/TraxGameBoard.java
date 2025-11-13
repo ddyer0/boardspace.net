@@ -306,7 +306,7 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
         AR.copy(playerChar,from_b.playerChar);
         AR.copy(scorevalid,from_b.scorevalid);
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

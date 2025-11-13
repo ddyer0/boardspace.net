@@ -776,7 +776,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

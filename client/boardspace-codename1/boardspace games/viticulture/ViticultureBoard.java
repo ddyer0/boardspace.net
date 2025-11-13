@@ -1478,7 +1478,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		choiceA.selected = from_b.choiceA.selected;
 		choiceB.selected = from_b.choiceB.selected;
 		reshuffleAt = from_b.reshuffleAt;
-	    sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
     public boolean reshuffled()
     {	int rs = reshuffleAt;

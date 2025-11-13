@@ -397,7 +397,7 @@ public long positionDigest()
         stackIndex = from_b.stackIndex;
         placementIndex = from_b.placementIndex;
         
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

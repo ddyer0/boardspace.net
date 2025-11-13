@@ -237,7 +237,7 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
         getCell(cellsForPrevMove,from_b.cellsForPrevMove);
         pickedStateStack.copyFrom(from_b.pickedStateStack);
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

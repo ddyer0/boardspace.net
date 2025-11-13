@@ -2988,7 +2988,7 @@ private Color playerBackground[] = {
            EuphoriaState state = bb.getGuiState();
            boolean simultaneous = simultaneousTurnsAllowed();
            boolean isDest = bb.isDest(hitCell);
-           if(hitCell.topChip()!=null)
+           if(hitCell!=null && hitCell.topChip()!=null)
            {
            if(simultaneous)
            {	// ephemeral picks are not transmitted

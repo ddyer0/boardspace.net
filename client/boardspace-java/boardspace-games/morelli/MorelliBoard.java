@@ -210,7 +210,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         currentCaptures = from_b.currentCaptures;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     private void placeRow(int mode, int corner,int[]side)

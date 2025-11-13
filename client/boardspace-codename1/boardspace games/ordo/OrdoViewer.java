@@ -118,6 +118,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         b = new OrdoBoard(info.getString(GameInfo.GAMETYPE, Variation.Ordo.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),OrdoBoard.REVISION);
         useDirectDrawing(true);
+        if(seatingFaceToFace()) { b.setReverseY(!b.reverseY()); }
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         

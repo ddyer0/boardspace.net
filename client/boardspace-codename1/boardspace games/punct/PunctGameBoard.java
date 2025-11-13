@@ -300,7 +300,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         board_state = from_b.board_state;
         AR.copy(piecesOnBoard,from_b.piecesOnBoard);
         boardChanged=true;
-         sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     // this is the initialization use when replaying old games, which may not include the revision
     // in the game description, so that those games get revision 100.

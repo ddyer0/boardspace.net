@@ -18,6 +18,7 @@ package common;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.net.URL;
+
 import java.util.*;
 
 import lib.*;
@@ -353,7 +354,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 
 	/**
 	 * constructor
-	 * @param uid
+	 * @param uid unique ID within the group created by the directory number
 	 * @param enab either game, review, or disable
 	 * @param directory number, must agree with the database "variation" table
 	 * @param ID short ID, must agree with the database "variation" table
@@ -393,8 +394,8 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		colorMap = map;
 		// the (directory+1)*1000 encoding is known to the server, used for
 		// the status page to display the game type.
+		G.Assert(uid<1000,"uid must be < 1000 is %s",uid);
 		publicID = (directory+1)*1000+uid%1000;	
-		
 		dirNum = directory;
 		groupName=group;
 		gameName = gamen;
@@ -430,7 +431,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	static Bot ThreeBotsPlus[] = { Bot.Dumbot,Bot.Smartbot,Bot.Bestbot,Bot.Weakbot};
 	static Bot WeakbotOnly[] = { Bot.Weakbot };
 	public static GameInfo GameTimer = 
-		new GameInfo(21050,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
+		new GameInfo(998,ES.game,117,"XX",OtherGames,"Game Timer","GameTimer",
 				null,
 				new double[]{0.1,1.0,1.0,0.01},
 				"gametimer.GameTimerViewer",null,null,
@@ -606,7 +607,7 @@ synchronized(allGames) {
 	}
 	
 	{
-	 GameInfo g = put(new GameInfo(1766,ES.game,76,"CK",AncientGames,"Checkers","Checkers-frisian",
+	 GameInfo g = put(new GameInfo(766,ES.game,76,"CK",AncientGames,"Checkers","Checkers-frisian",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Frisian%20Checkers%20Rules.html","about_checkers.html",
@@ -638,35 +639,35 @@ synchronized(allGames) {
 			 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 	 
-	 g = put(new GameInfo(1763,ES.game,76,"CK",AncientGames,"Checkers","Checkers-russian",
+	 g = put(new GameInfo(763,ES.game,76,"CK",AncientGames,"Checkers","Checkers-russian",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Russian%20Checkers%20Rules.html","about_checkers.html",
 				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 	 
-	 g = put(new GameInfo(1764,ES.game,76,"CK",AncientGames,"Checkers","Checkers-bashni",
+	 g = put(new GameInfo(764,ES.game,76,"CK",AncientGames,"Checkers","Checkers-bashni",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Bashni%20Checkers%20Rules.html","about_checkers.html",
 				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 	 
-	 g = put(new GameInfo(1765,ES.game,76,"CK",AncientGames,"Checkers","Checkers-stacks",
+	 g = put(new GameInfo(765,ES.game,76,"CK",AncientGames,"Checkers","Checkers-stacks",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Stacks%20Checkers%20Rules.html","about_checkers.html",
 				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 	 
-	 g = put(new GameInfo(1766,ES.game,127,"DM",AncientGames,"Checkers","Checkers-dameo",
+	 g = put(new GameInfo(767,ES.game,127,"DM",AncientGames,"Checkers","Checkers-dameo",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/dameo/english/DameoRules.html","about_dameo.html",
 				null,false, WhiteOverBlack));
 		 g.distinctVariations = true;
 
-     g = put(new GameInfo(1766,ES.game,127,"DM",CapturingGames,"Dameo","Checkers-dameo",
+     g = put(new GameInfo(766,ES.game,127,"DM",CapturingGames,"Dameo","Checkers-dameo",
     		 	OneBotPlus,
     		 	new double[]{1.0,0.01},
     		 	"checkerboard.CheckerGameViewer","/dameo/english/DameoRules.html","about_dameo.html",
@@ -688,12 +689,12 @@ synchronized(allGames) {
 	}
 	{
 		
-		 put(new GameInfo(1763,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas",
+		 put(new GameInfo(763,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas",
 					OneBotPlus,
 					new double[]{1.0,0.01},
 					"epaminondas.EpaminondasViewer","/epaminondas/english/epaminondas-rules.html","about_epaminondas.html",
 					 null,false, WhiteOverBlack));
-		 put(new GameInfo(1764,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas_8",
+		 put(new GameInfo(764,ES.game,121,"EP",RacingGames,"Epaminondas","Epaminondas_8",
 					OneBotPlus,
 					new double[]{1.0,0.01},
 					"epaminondas.EpaminondasViewer","/epaminondas/english/epaminondas-rules.html","about_epaminondas.html",
@@ -985,7 +986,7 @@ synchronized(allGames) {
 	}
 	}	
 	
-	{ GameInfo m = put(new GameInfo(1560,ES.game,80,"MX",NInARowGames,"Modx","Modx",
+	{ GameInfo m = put(new GameInfo(560,ES.game,80,"MX",NInARowGames,"Modx","Modx",
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
 			"modx.ModxViewer",
@@ -1119,14 +1120,14 @@ synchronized(allGames) {
 	}
 
 	{
-	put(new GameInfo(7500,ES.game,75,"ST",StackingGames,"Stac","Stac",
+	put(new GameInfo(500,ES.game,75,"ST",StackingGames,"Stac","Stac",
 			TwoBotsPlus,
 			new double[]{0.15,1,0.01},
 			"stac.StacViewer","/stac/english/Stac_Rules.pdf","about_stac.html",
 			null,true, RedOverBlue));
 	}
 	{
-	put(new GameInfo(7620,ES.game,78,"SM",StackingGames,"Sixmaking","Sixmaking",
+	put(new GameInfo(620,ES.game,78,"SM",StackingGames,"Sixmaking","Sixmaking",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"sixmaking.SixmakingViewer","/sixmaking/english/Six-MaKING-rules-Eng-Ger-Fra-Ro-Hu.pdf","about_sixmaking.html",
@@ -1290,18 +1291,18 @@ synchronized(allGames) {
 		String slitherVideo = null;
 		String slitherAbout = "about_slither.html";
 		double slitherTimes[] = new double[]{1.0,0.01};
-		put(new GameInfo(1260,ES.game,126,"SL",ConnectionGames,"Slither","Slither-9",
+		put(new GameInfo(260,ES.game,126,"SL",ConnectionGames,"Slither","Slither-9",
 				OneBotPlus,
 				slitherTimes,
 				slitherClass,slitherRules,slitherAbout,
 				slitherVideo,false, BlackOverWhite));
-		put(new GameInfo(1261,ES.game,126,"SL",ConnectionGames,"Slither","Slither-13",
+		put(new GameInfo(261,ES.game,126,"SL",ConnectionGames,"Slither","Slither-13",
 				OneBotPlus,
 				slitherTimes,
 				slitherClass,slitherRules,slitherAbout,
 				slitherVideo,false, BlackOverWhite));
 		
-		put(new GameInfo(1262,ES.game,126,"SL",ConnectionGames,"Slither","Slither-19",
+		put(new GameInfo(262,ES.game,126,"SL",ConnectionGames,"Slither","Slither-19",
 				OneBotPlus,
 				slitherTimes,
 				slitherClass,slitherRules,slitherAbout,
@@ -1362,17 +1363,17 @@ synchronized(allGames) {
 	{
 	String havannahRules = "/havannah/english/Rules.html";
 	String havannahViewer = "havannah.HavannahViewer";  
-	put(new GameInfo(1590,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-6",
+	put(new GameInfo(590,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
-	put(new GameInfo(1591,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-8",
+	put(new GameInfo(591,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
-	put(new GameInfo(1592,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-10",
+	put(new GameInfo(592,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_havannah.html",
@@ -1384,34 +1385,34 @@ synchronized(allGames) {
 	String meridiansRules = "/meridians/english/Meridians_rules.pdf";
 	String meridiansViewer = "meridians.MeridiansViewer";  
 	String meridiansVideo = null;
-	put(new GameInfo(11690,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5",
+	put(new GameInfo(690,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(1695,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5p",
-			OneBotPlus,
-			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,"about_meridians.html",
-			meridiansVideo,false, WhiteOverBlack));
-	
-	put(new GameInfo(1691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
-			OneBotPlus,
-			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,"about_meridians.html",
-			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(1696,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6p",
+	put(new GameInfo(695,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	
-	put(new GameInfo(1692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
+	put(new GameInfo(691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(1697,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7p",
+	put(new GameInfo(696,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6p",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,"about_meridians.html",
+			meridiansVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,"about_meridians.html",
+			meridiansVideo,false, WhiteOverBlack));
+	put(new GameInfo(697,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,"about_meridians.html",
@@ -1424,24 +1425,24 @@ synchronized(allGames) {
 	String trikeViewer = "trike.TrikeViewer";  
 	String trikeAb = "about_trike.html";
 	String trikeVideo = null;
-	put(new GameInfo(11790,ES.game,114,"TK",OtherGames,"Trike","trike-7",
+	put(new GameInfo(790,ES.game,114,"TK",OtherGames,"Trike","trike-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
 			trikeVideo,false, WhiteOverBlack));
-	put(new GameInfo(11795,ES.game,114,"TK",OtherGames,"Trike","trike-9",
-			OneBotPlus,
-			new double[]{1.0,0.01},
-			trikeViewer,trikeRules,trikeAb,
-			trikeVideo,false, WhiteOverBlack));
-	
-	put(new GameInfo(11796,ES.game,114,"TK",OtherGames,"Trike","trike-11",
+	put(new GameInfo(795,ES.game,114,"TK",OtherGames,"Trike","trike-9",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
 			trikeVideo,false, WhiteOverBlack));
 	
-	put(new GameInfo(11797,ES.game,114,"TK",OtherGames,"Trike","trike-13",
+	put(new GameInfo(796,ES.game,114,"TK",OtherGames,"Trike","trike-11",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(797,ES.game,114,"TK",OtherGames,"Trike","trike-13",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			trikeViewer,trikeRules,trikeAb,
@@ -1452,22 +1453,22 @@ synchronized(allGames) {
 	String tumbleweedRules = "/tumbleweed/english/Rules.html";
 	String tumbleweedViewer = "tweed.TweedViewer";  
 	String tumbleVideo = "/tumbleweed/english/tumbleweed-video.html";
-	put(new GameInfo(1690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
+	put(new GameInfo(690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
-	put(new GameInfo(1691,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-8",
+	put(new GameInfo(691,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
-	put(new GameInfo(1692,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-10",
+	put(new GameInfo(692,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
-	put(new GameInfo(1693,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-11",
+	put(new GameInfo(693,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-11",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
@@ -1478,7 +1479,7 @@ synchronized(allGames) {
 	{
 	String pRules = "/circle/english/Rules.html";
 	String pViewer = "circle.CircleViewer";  
-	put(new GameInfo(2590,ES.game,122,"CR",CapturingGames,"Circle","Circle",
+	put(new GameInfo(590,ES.game,122,"CR",CapturingGames,"Circle","Circle",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_circle.html",
@@ -1489,7 +1490,7 @@ synchronized(allGames) {
 	String pRules = "/pendulum/english/Rules.pdf";
 	String pViewer = "pendulum.PendulumViewer";  
 	Color map[] = {Color.yellow,Color.white,Color.green,Color.blue,Color.red};
-	GameInfo mm = put(new GameInfo(3600,ES.game,124,"PN",EuroGames,"Pendulum","Pendulum",
+	GameInfo mm = put(new GameInfo(600,ES.game,124,"PN",EuroGames,"Pendulum","Pendulum",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1499,7 +1500,7 @@ synchronized(allGames) {
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
 	
-	mm = put(new GameInfo(3601,ES.game,124,"PN",EuroGames,"Pendulum","Pendulum-notimers",
+	mm = put(new GameInfo(601,ES.game,124,"PN",EuroGames,"Pendulum","Pendulum-notimers",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1517,14 +1518,14 @@ synchronized(allGames) {
 	Color map[] = {Color.yellow,Color.green,Color.blue,Color.red};
 	GameInfo mm ;
 	 
-	mm = put(new GameInfo(3702,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential",
+	mm = put(new GameInfo(702,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
 	mm.maxPlayers = 2;
 	mm.randomizeFirstPlayer = true;
-	mm = put(new GameInfo(3703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
+	mm = put(new GameInfo(703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,sRules,"about_bugspiel.html",
@@ -1532,7 +1533,7 @@ synchronized(allGames) {
 	mm.maxPlayers = 4;
 	mm.randomizeFirstPlayer = true;
 	
-	mm = put(new GameInfo(3704,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel",
+	mm = put(new GameInfo(704,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1541,7 +1542,7 @@ synchronized(allGames) {
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
-	mm = put(new GameInfo(3705,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel-large",
+	mm = put(new GameInfo(705,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel-large",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_pendulum.html",
@@ -1565,7 +1566,7 @@ synchronized(allGames) {
 	{
 	String pRules = "/trench/english/rules.pdf";
 	String pViewer = "trench.TrenchViewer";  
-	put(new GameInfo(1790,ES.game,115,"TX",CapturingGames,"Trench","Trench",
+	put(new GameInfo(790,ES.game,115,"TX",CapturingGames,"Trench","Trench",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			pViewer,pRules,"about_trench.html",
@@ -1575,7 +1576,7 @@ synchronized(allGames) {
 	{
 	String pRules = "/crosswords/english/rules.html";
 	String pViewer = "crosswords.CrosswordsViewer";  
-	{GameInfo mm = put(new GameInfo(1490,ES.game,95,"CW",WordGames,"Crosswords","Crosswords",
+	{GameInfo mm = put(new GameInfo(490,ES.game,95,"CW",WordGames,"Crosswords","Crosswords",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_crosswords.html",
@@ -1589,7 +1590,7 @@ synchronized(allGames) {
 
 	}
 	
-	{	GameInfo mm = put(new GameInfo(1491,ES.game,95,"CW",WordGames,"Crosswords","Crosswords-17",
+	{	GameInfo mm = put(new GameInfo(491,ES.game,95,"CW",WordGames,"Crosswords","Crosswords-17",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_crosswords.html",
@@ -1605,7 +1606,7 @@ synchronized(allGames) {
 	String pRules = "/sprint/english/rules.html";
 	String pViewer = "sprint.SprintViewer";  
 	
-	GameInfo mm = put(new GameInfo(2101,ES.game,107,"SC",WordGames,"Sprint","Sprint",
+	GameInfo mm = put(new GameInfo(101,ES.game,107,"SC",WordGames,"Sprint","Sprint",
 			NoBots,//ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_sprint.html",
@@ -1626,7 +1627,7 @@ synchronized(allGames) {
 	String pRules = "/honey/english/rules.html";
 	String pViewer = "honey.HoneyViewer";  
 	
-	GameInfo mm = put(new GameInfo(2105,ES.game,117,"HC",WordGames,"HoneyComb","HoneyComb",
+	GameInfo mm = put(new GameInfo(105,ES.game,117,"HC",WordGames,"HoneyComb","HoneyComb",
 			NoBots,//ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_honeycomb.html",
@@ -1647,7 +1648,7 @@ synchronized(allGames) {
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  
 	
-	GameInfo mm = put(new GameInfo(2201,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-55",
+	GameInfo mm = put(new GameInfo(201,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-55",
 			NoBots,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_crosswordle.html",
@@ -1673,7 +1674,7 @@ synchronized(allGames) {
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = false;
 
-		  mm = put(new GameInfo(2203,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
+		  mm = put(new GameInfo(203,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
 					NoBots,
 					new double[]{0.1,1.0,1.0,0.01},
 					pViewer,pRules,"about_crosswordle.html",
@@ -1690,7 +1691,7 @@ synchronized(allGames) {
 	{
 	String pRules = "/jumbulaya/english/rules.html";
 	String pViewer = "jumbulaya.JumbulayaViewer";  
-	GameInfo mm = put(new GameInfo(1490,ES.game,102,"JU",WordGames,"Jumbulaya","Jumbulaya",
+	GameInfo mm = put(new GameInfo(490,ES.game,102,"JU",WordGames,"Jumbulaya","Jumbulaya",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_jumbulaya.html",
@@ -1708,19 +1709,19 @@ synchronized(allGames) {
 	{
 	String pRules = "/wyps/english/WYPSrules.pdf";
 	String pViewer = "wyps.WypsViewer";  
-	{put(new GameInfo(1490,ES.game,96,"WP",WordGames,"Wyps","Wyps",
+	{put(new GameInfo(490,ES.game,96,"WP",WordGames,"Wyps","Wyps",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_wyps.html",
 			null,true, null));
 	}
-	{put(new GameInfo(1491,ES.game,96,"WP",WordGames,"Wyps","Wyps-10",
+	{put(new GameInfo(491,ES.game,96,"WP",WordGames,"Wyps","Wyps-10",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_wyps.html",
 			null,true, null));
 	}
-	{put(new GameInfo(1492,ES.game,96,"WP",WordGames,"Wyps","Wyps-7",
+	{put(new GameInfo(492,ES.game,96,"WP",WordGames,"Wyps","Wyps-7",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_wyps.html",
@@ -1933,30 +1934,31 @@ synchronized(allGames) {
 	String zclass = "zertz.common.ZertzGameViewer";
 	String zrules = "/zertz/english/rules.htm";
 	String zvid = "https://boardgamegeek.com/video/482393/zertz/how-play-zertz";
-	GameInfo m = put(new GameInfo(270,ES.game,0,"Z",GipfGames,"Zertz","Zertz",
+	boolean rev = false;
+	GameInfo m = put(new GameInfo(rev ? 970 : 270,ES.game,0,"Z",GipfGames,"Zertz","Zertz",
 			TwoBotsPlus,
 			new double[]{0.133,1,0.01},
 			zclass,zrules,"about_zertz.html",
 			zvid,true, null));
 	m.robotTimed = true;
-	m = put(new GameInfo(280,ES.game,0,"Z11",GipfGames,"Zertz","Zertz+11",
+	m = put(new GameInfo(rev ? 980 : 280,ES.game,0,"Z11",GipfGames,"Zertz","Zertz+11",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
 			zclass,zrules,"about_zertz.html",
 			zvid,true, null));
 	m.robotTimed = true;
-	put(new GameInfo(290,ES.game,0,"Z24",GipfGames,"Zertz","Zertz+24",
+	put(new GameInfo(rev ? 990 : 290,ES.game,0,"Z24",GipfGames,"Zertz","Zertz+24",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
 			zclass,zrules,"about_zertz.html",
 			zvid,true, null));
-	m = put(new GameInfo(300,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+xx",
+	m = put(new GameInfo(rev ? 991 : 300,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+xx",
 			NoBots,
 			null,
 			zclass,zrules,"about_zertz.html",
 			zvid,true, null));
 	m.robotTimed = true;
-	GameInfo hc = put(new GameInfo(301,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+H",
+	GameInfo hc = put(new GameInfo(rev ? 992 : 301,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+H",
 			TwoBotsPlus,
 			null,
 			zclass,zrules,"about_zertz.html",
@@ -2360,12 +2362,12 @@ synchronized(allGames) {
 		String cview = "kulami.KulamiViewer"; 
 		String cvideo = "https://boardgamegeek.com/video/482259/kulami/how-play-kulami";
 						//"/kulami/english/kulami-video.html";
-		put(new GameInfo(8011,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami",
+		put(new GameInfo(011,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami",
 				TwoBotsPlus,ctimes,
 				cview,crules,"about_kulami.html",
 				cvideo,true, RedOverBlack));
 
-		put(new GameInfo(8021,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami-R",
+		put(new GameInfo(021,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami-R",
 				TwoBotsPlus,ctimes,
 				cview,crules,"about_kulami.html",
 				cvideo,true, RedOverBlack));

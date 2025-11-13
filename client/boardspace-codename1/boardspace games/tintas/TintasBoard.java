@@ -228,7 +228,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
         lastPicked = null;
 
  
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

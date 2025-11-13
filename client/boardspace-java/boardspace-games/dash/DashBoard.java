@@ -246,7 +246,7 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
        	pickedObject = from_b.pickedObject;
        	pickedSource = getCell(from_b.pickedSource);
        	droppedDest= getCell(from_b.droppedDest);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

@@ -924,7 +924,7 @@ public variation gamevariation = variation.hive;
         undrawState = from_b.undrawState;
         pickedObject = from_b.pickedObject;
         lastPlacement = from_b.lastPlacement;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     HivePiece nextFreeChip(HiveId pl, PieceType p)

@@ -237,7 +237,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null; 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

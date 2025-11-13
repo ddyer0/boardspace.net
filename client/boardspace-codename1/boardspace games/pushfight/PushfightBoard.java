@@ -314,7 +314,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         AR.copy(playerChip,from_b.playerChip);
         getCell(pieces,from_b.pieces);
         cachedTargets = null;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

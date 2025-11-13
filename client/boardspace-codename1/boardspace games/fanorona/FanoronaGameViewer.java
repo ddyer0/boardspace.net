@@ -125,6 +125,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
          
         b = new FanoronaBoard(info.getString(GameInfo.GAMETYPE, "Fanorona"),getStartingColorMap());
         useDirectDrawing(true);
+        if(seatingFaceToFace()) { b.setReverseY(!b.reverseY()); }
         doInit(false);
      }
     

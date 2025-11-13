@@ -228,7 +228,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         drawTimer = from_b.drawTimer;
         lastPicked = null;
         
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
 

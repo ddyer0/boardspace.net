@@ -73,7 +73,8 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("rack",2);
-    
+    private Rectangle arrowRects[] = addRect("arrow",2);
+  
     private Rectangle repRect = addRect("repRect");
     private Rectangle reverseViewRect = addRect("reverse");
     private Toggle eyeRect = new Toggle(this,"eye",
@@ -146,10 +147,10 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int doneW = plannedSeating()?unitsize*4:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+doneW+unitsize/4,y,unitsize);
-    	Rectangle chip = chipRects[player];
+    	Rectangle chip = arrowRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(done, x, y, doneW,doneW/2);
-    	G.SetRect(chip,x+unitsize/4,y+unitsize*3/2,unitsize,unitsize);
+    	G.SetRect(chip,x+unitsize/8,y+unitsize*2,unitsize*3/2,unitsize*3/2);
     	pl.displayRotation = rotation;
     	G.union(box, done);
     	return(box);
@@ -223,7 +224,14 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     		G.setRotation(boardRect, -Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
-        
+        G.SetRect(chipRects[0],
+        		boardX,boardY+SQUARESIZE/3,
+        		SQUARESIZE, SQUARESIZE);
+ 
+        G.SetRect(chipRects[1],
+        		boardX,boardBottom-SQUARESIZE-SQUARESIZE/5,
+        		 SQUARESIZE, SQUARESIZE);
+ 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -232,33 +240,52 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
  	
     }
-    public void drawPlayerIcon(Graphics gc,int forPlayer,int cx,int cy,int size)
-    {
+    public void drawPlayerIcon(Graphics gc,int forPlayer,int cx,int cy,int size,int extraRotation)
+    {	
     	int dir = ((forPlayer!=0 == b.reverseY()) ? 1 : -1) * size/3;
+    	int dy = dir;
+    	int dx = 0;
+    	switch(extraRotation)
+    	{
+    	default:
+    	case 0: break;
+    	case 2: dy = -dy; 
+    		break;
+    	case 3:
+    		dx = -dy; dy = 0; 
+    		break;
+    	case 1: 
+    		// this is the unusual case where seating is face to face horizontal,
+    		// and we're displaying arrows in the move log
+    		dx = dy; dy = 0; 
+    		break;
+    	}
     	GC.setColor(gc,MouseColors[forPlayer]);
     	//Color edgeColor = MouseDotColors[forPlayer];
-    	GC.drawArrow(gc, cx,cy-dir,cx,cy+dir,size/3,size/7);
+    	GC.drawArrow(gc, cx-dx,cy-dy,cx+dx,cy+dy,size/3,size/7);
     }
     double iconScale[] = new double[] {1,0.8,0,-0.2};
     public Drawable getPlayerIcon(int p)
     {	playerTextIconScale = iconScale;
+    	commonPlayer pl = getPlayerOrTemp(p);
+    	int extra = G.rotationQuarterTurns(pl.displayRotation);
     	return( new DrawnIcon(100,100,p)
     		{ public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg)
-    			{
-    			drawPlayerIcon(gc,(int)parameter,posx,posy,size);
+    			{	int ex = extra;
+    			if(seatingFaceToFace()) { if(ex==3) { ex=1; }}
+    			else { ex = 0; }
+    			drawPlayerIcon(gc,(int)parameter,posx,posy,size,extra==2?0:ex);
     			}
     		});
     }
 	// draw the rack of unplaced pieces.
-    private void DrawCommonChipPool(Graphics gc, int forPlayer, Rectangle r, int player, HitPoint highlight)
+    private void DrawCommonChipPool(Graphics gc, int forPlayer,Rectangle r, int player, HitPoint highlight)
     {	GygesCell chips[]= b.rack[forPlayer];
         boolean canHit = b.LegalToHitChips(forPlayer);
         int x = G.Left(r);
         int y = G.Top(r);
-        int w = G.Width(r);
         int thisx = x+SQUARESIZE;
         int thisy = y+SQUARESIZE/2;
-        drawPlayerIcon(gc,forPlayer,x+w/2,y+w/2,w*2/3);
         boolean picked = (b.pickedObject!=null);
         boolean show = eyeRect.isOnNow();
         for(GygesCell thisCell : chips)
@@ -537,7 +564,16 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     {  	DrawReverseMarker(gc,reverseViewRect,highlight,GygesId.ReverseViewButton);
     	eyeRect.activateOnMouse = true;
     	eyeRect.draw(gc,highlight);
-    }	
+    }
+    public int arrowAngle(commonPlayer pl)
+    {
+      	int turns = G.rotationQuarterTurns(pl.displayRotation);
+      	if(seatingFaceToFace())
+      	{
+      		if((turns&1)!=0) { turns = turns^3;}
+      	}
+      	return turns;
+    }
     //
     // draw the board and things on it.  If gc!=null then actually 
     // draw, otherwise just notice if the highlight should be on
@@ -563,6 +599,10 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
           {	commonPlayer pl = getPlayerOrTemp(i);
  
           	pl.setRotatedContext(gc, highlight,false);
+          	Rectangle arrow = arrowRects[i];
+          	int turns = arrowAngle(pl);
+            drawPlayerIcon(gc,i,G.centerX(arrow),G.centerY(arrow),G.Width(arrow),turns);
+
           	if(planned && (i==gb.whoseTurn))
               {
               	handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 

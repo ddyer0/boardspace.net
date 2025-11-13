@@ -647,8 +647,8 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         movingOrigin = from_b.movingOrigin;
         placedDest = from_b.placedDest;
         placementCount = from_b.placementCount;
-        sameboard(from_b);
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)

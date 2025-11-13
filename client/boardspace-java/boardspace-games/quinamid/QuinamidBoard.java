@@ -497,7 +497,7 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit() { doInit(gametype,initialPosition); }
     public void doInit(String qtype,long key) { randomKey = key; doInit(qtype,initialPosition); }

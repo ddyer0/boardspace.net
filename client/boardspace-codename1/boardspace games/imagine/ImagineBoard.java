@@ -468,8 +468,8 @@ class ImagineBoard
         currentRound = from_b.currentRound;
         lastPicked = null;
 
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
     public PlayerBoard getOwner(ImagineChip ch)
     {
     	for(PlayerBoard pb : pbs) { if(pb.isMyCard(ch)) { return(pb); }}

@@ -286,7 +286,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         AR.copy(chips_on_board,from_b.chips_on_board);
         copyFrom(playerCell,from_board.playerCell);	// needed so screen location is propagated
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

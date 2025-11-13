@@ -237,7 +237,7 @@ class XehBoard extends hexBoard<XehCell> implements BoardProtocol,XehConstants
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

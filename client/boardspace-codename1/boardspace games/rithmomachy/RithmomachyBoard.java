@@ -262,8 +262,8 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         AR.copy(chips_on_board,from_b.chips_on_board);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b);
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
     public void doInit(String gtype,long rv)
     {
     	doInit(gtype,rv,players_in_game);

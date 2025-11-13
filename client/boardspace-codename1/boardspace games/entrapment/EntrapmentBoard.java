@@ -344,7 +344,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
 	}
     public void doInit(String game, long rv) {
      	doInit(game,randomKey,revision);

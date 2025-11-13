@@ -17,10 +17,10 @@
 package proteus;
 
 import bridge.*;
-import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -45,8 +45,6 @@ import static proteus.ProteusMovespec.*;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
- * todo: rotate board for ftf portrait mode
- * TODO: add an alternate layout with the goal buttons above or below
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants
 {	
@@ -189,13 +187,19 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
      	layout.placeTheVcr(this,vcrW,vcrW*3/2);
       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
 
+       	Rectangle pr = layout.peekMainRectangle();
+       	int prw = G.Width(pr);
+       	int prh = G.Height(pr);
+       	int prs = Math.min(prw/(ncols+1),prh/(ncols+1));
+         
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
+    	boolean horizontal = mainW>mainH;
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/(ncols+2),(double)mainH/ncols);
+    	double cs = Math.min((double)(mainW-(horizontal?prs:0))/ncols,(double)(mainH-(horizontal?0:prs))/ncols);
     	SQUARESIZE = (int)(cs*1.25);
     	int CELLSIZE = SQUARESIZE/4;
         int C2 = CELLSIZE/2;
@@ -203,8 +207,8 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     	// center the board in the remaining space
     	int boardW = (int)(ncols*cs);
     	int boardH = (int)(ncols*cs);
-    	int extraW = Math.max(0, (mainW-boardW-SQUARESIZE)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraW = Math.max(0, (mainW-boardW-(horizontal ? prs : 0))/2);
+    	int extraH = Math.max(0, (mainH-boardH-(horizontal?0:prs))/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
@@ -235,8 +239,14 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
          		boardX+(int)(SQUARESIZE*0.5),
          		boardY+(int)(SQUARESIZE*0.2),
          		whiteChipRect);
-        
-        G.SetRect(mainChipRect, boardRight-SQUARESIZE/2+CELLSIZE,boardY+SQUARESIZE/2, SQUARESIZE, SQUARESIZE*2);
+         if(horizontal)
+         {
+             G.SetRect(mainChipRect, boardRight,boardY+(boardH-prs*ncols)/2, prs, prs*ncols);                  	 
+         }
+         else
+         {
+             G.SetRect(mainChipRect, boardX+(boardW-prs*ncols)/2,boardBottom, prs*ncols,prs);	 
+         }
         
 
         placeRow(boardX+CELLSIZE, boardBottom-CELLSIZE,boardW-CELLSIZE*2, C2,goalRect);
@@ -256,8 +266,12 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
     private void drawCommonChipPool(Graphics gc, ProteusBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight,HitPoint any)
     {	ProteusCell cells[] = gb.originalTiles;
-		int yspace = G.Height(r)/5;
-		int xspace = G.Width(r)/2;
+    	int w = G.Width(r);
+    	int h = G.Height(r);
+    	boolean vertical = h>w;
+		int yspace = vertical ? h/5 : h/2;
+		int xspace = vertical ? w/2 : w/5;
+		int sz = Math.min(xspace,yspace)*2;
 		int x = xspace/2;
 		int y = yspace/2;
 		ProteusCell src = gb.getSource();
@@ -271,18 +285,27 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 	   		String msg = top==null ? null : s.get(top.getDesc());
 	   		int cx = G.Left(r)+x;
 	   		int cy = G.Top(r)+y;
-			if(c.drawStack(gc,this,canHit?highlight:null,SQUARESIZE,cx,cy,0,1.0,null))
+			if(c.drawStack(gc,this,canHit?highlight:null,sz,cx,cy,0,1.0,null))
 			{	hitCell = c;
 			}
-			if(msg!=null) { HitPoint.setHelpText(any,SQUARESIZE/2,cx,cy,msg); }
-			if(c==src) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE/4,cx,cy,null);}
+			if(msg!=null) { HitPoint.setHelpText(any,sz/2,cx,cy,msg); }
+			if(c==src) { StockArt.SmallO.drawChip(gc,this,sz/4,cx,cy,null);}
 			if(msg!=null)
-			{	TextChunk.create(msg).draw(gc, pl.displayRotation, true, 
-					new Rectangle(cx-SQUARESIZE/2,cy-SQUARESIZE/2,SQUARESIZE,SQUARESIZE),
+			{	TextChunk.split(msg).draw(gc, pl.displayRotation, true, 
+					new Rectangle(cx-sz/2,cy-sz/2,sz,sz),
 					Color.black,null);
 			}
+			if(vertical)
+			{
 			y+= yspace;
-			if(y>G.Height(r)) { x += xspace; y = G.Height(r)/5; }
+				if(y>h) { x += xspace; y = yspace; }
+			}
+			else
+			{
+				x += xspace;
+				if(x>w) { y+= yspace; x = xspace; }
+			}
+			
 			
 			
 		}

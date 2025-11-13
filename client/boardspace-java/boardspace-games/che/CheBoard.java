@@ -43,7 +43,6 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
 
     static int BOARDCOLUMNS = 19;
     static int BOARDROWS = 19;
-    static final String[] CheGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	CheState unresign;
 	CheState board_state;
 	public CheState getState() {return(board_state); }
@@ -122,7 +121,6 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     public CheBoard(String init,int map[]) // default constructor
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
-        Grid_Style = CheGRIDSTYLE;
         revision = REVISION;
         setColorMap(map, 2);
         doInit(init,0L); // do the initialization 
@@ -238,8 +236,8 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         robotDepth = from_b.robotDepth;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     public String gameType()
     { 

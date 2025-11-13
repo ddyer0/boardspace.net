@@ -204,6 +204,6 @@ public commonMove DoMonteCarloFullMove()
 	 	if(win) { scores[i] = (UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
 	 	else { scores[i]=0;}
 	 	}
-	return reScorePosition(m,playerindex);
+	return reScorePosition(mm,playerindex);
  }
  }

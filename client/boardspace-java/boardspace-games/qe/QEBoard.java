@@ -666,7 +666,7 @@ import online.game.*;
 		 winningBids.copyFrom(from_b.winningBids);
 		 for(int i=0;i<players_in_game;i++) { getPlayer(i).copy(from_b.getPlayer(i));}
   
-		 sameboard(from_b); 
+	        if(G.debug()) { sameboard(from_b); }
 	 }
  
 	 

@@ -33,7 +33,8 @@ public class zCell extends ccell<zCell> implements GameConstants,PlacementProvid
 	int lastEmptied = -1;
 	int lastCaptured = -1;
 	char lastContents= NoSpace;
-
+	int height = 0;
+	
 	public zCell(ZertzId d,int col) 
 	{ 	super(cell.Geometry.Standalone,'@',col);
 		onBoard = false;
@@ -43,16 +44,35 @@ public class zCell extends ccell<zCell> implements GameConstants,PlacementProvid
 	int count;
 	public zCell(char co,int ro) { super(cell.Geometry.Hex,co,ro); rackLocation=ZertzId.EmptyBoard; }
 	public zChip topChip()
-	{
-        int color = zChip.BallColorIndex(contents);
-        return((color>=0) ? zChip.getChip(color) : null); 
+	{	
+		if(onBoard || height>0)
+		{
+			int color = zChip.BallColorIndex(contents);
+			return zChip.getChip(color);
+		}
+		return null;
 	}
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastEmptied : lastPlaced;
 	}
 	
+	public zChip removeTop() 
+	{ 	zChip top = topChip(); 
+		if(!onBoard) 
+		{
+			height--;
+			
+		}
+		else 
+		{
+			contents = Empty;
+		}
+		return top;
+	}
+	
 	public void copyFrom(zCell ot)
 	{	super.copyFrom(ot);
+		height = ot.height;
 		lastPlaced = ot.lastPlaced;
 		lastEmptied = ot.lastEmptied;
 		lastCaptured = ot.lastCaptured;
@@ -69,6 +89,7 @@ public class zCell extends ccell<zCell> implements GameConstants,PlacementProvid
 		lastPlaced = -1;
 		lastEmptied = -1;
 		lastCaptured = -1;
+		height = 0;
 		lastContents = NoSpace;
 	}
 }

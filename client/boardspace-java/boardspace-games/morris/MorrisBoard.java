@@ -216,7 +216,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
         lastDrawMove = from_b.lastDrawMove;
         unresign = from_b.unresign;
         repeatedPositions = from_b.repeatedPositions;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

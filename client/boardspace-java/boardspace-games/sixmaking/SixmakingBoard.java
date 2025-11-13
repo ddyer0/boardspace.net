@@ -208,7 +208,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
         currentDest = getCell(from_b.currentDest);
         unresign = from_b.unresign;
         repeatedPositions = from_b.repeatedPositions;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

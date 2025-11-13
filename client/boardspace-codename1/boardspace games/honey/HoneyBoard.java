@@ -178,7 +178,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         board_state = from_b.board_state;
         lastActivePlayer = from_b.lastActivePlayer;
         drawTimer = from_b.drawTimer;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
 

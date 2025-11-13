@@ -125,32 +125,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
     	// this method returns true.
         return(current>=max);
    }*/
-/** Called from the search driver to undo the effect of a previous Make_Move.  These
- * will always be done in reverse sequence. This is usually the most troublesome 
- * method to implement - everything else in the board manipulations moves "forward".
- * Among other things, Unmake_Move will have to undo captures and restore captured
- * pieces to the board, remove newly placed pieces from the board and so on.  
- * <p>
- * Among the most useful methods; 
- * <li>use the move object and the Make_Move method
- * to store the information you will need to perform the unmove.
- * It's also standard to restore the current player, the current move number,
- * and the current board state from saved values rather than try to deduce
- * the correct inverse of these state changes.
- * <li>use stacks in the board class to keep track of changes you need to undo, and
- * record only the index into the stack in the move object.
- * 
- * Not needed for blitz MonteCarlo searches
- */
-    public void Unmake_Move(commonMove m)
-    {	CircleMovespec mm = (CircleMovespec)m;
-        board.UnExecute(mm);
-        boardSearchLevel--;
-    }
-/** Called from the search driver to make a move, saving information needed to 
- * unmake the move later.
- * 
- */
+
     public void Make_Move(commonMove m)
     {   CircleMovespec mm = (CircleMovespec)m;
         board.RobotExecute(mm);

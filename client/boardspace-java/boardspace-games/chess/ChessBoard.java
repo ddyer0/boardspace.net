@@ -297,7 +297,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         robotCapture.copyFrom(from_b.robotCapture);
         getCell(robotLast,from_b.robotLast);
         
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

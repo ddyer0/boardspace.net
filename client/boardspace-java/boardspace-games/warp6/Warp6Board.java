@@ -437,7 +437,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
         AR.copy(chipsInRack,from_b.chipsInRack);
         AR.copy(chipsInWarp,from_b.chipsInWarp);
         rollCell = getCell(from_b.rollCell);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

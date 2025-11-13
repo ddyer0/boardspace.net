@@ -469,8 +469,8 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
         getCell(droppedDestStack,from_b.droppedDestStack);
         AR.copy(pickedStackHeight,from_b.pickedStackHeight);
         AR.copy(droppedStackHeight,from_b.droppedStackHeight);
-        sameboard(from_b);
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)

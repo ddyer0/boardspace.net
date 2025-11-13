@@ -580,9 +580,15 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     }
 
     public double reScorePosition(commonMove cm,int forplayer)
-    {	return cm.reScorePosition(forplayer);
+    {	 return cm.reScorePosition(forplayer);
     }
-    
+    public double reScorePosition(commonMPMove cm,int forplayer)
+    {	// if this is a multiplayer game, commomMPRobot should be robot class inhereted from,
+    	// of alternatively if this is not a multiplayer game, commonMove should be the base class
+    	// for moves.  
+    	throw G.Error("move %s shouldn't be commonMPMove",cm);
+    }
+
     private boolean checking_digest()
     {	if(search_driver!=null)
     	 {

@@ -233,8 +233,8 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         copyFrom(playerColors,from_b.playerColors);
         copyFrom(unclaimedColors,from_b.unclaimedColors);
         copyFrom(captures,from_b.captures);
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     
 

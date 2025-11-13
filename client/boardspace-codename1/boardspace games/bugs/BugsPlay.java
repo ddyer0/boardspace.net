@@ -143,10 +143,7 @@ public class BugsPlay extends commonMPRobot<BugsBoard> implements Runnable, Bugs
  */
     int boardSearchLevel = -1;
     boolean randomPhase = false;
-    public void Unmake_Move(commonMove m)
-    {	
-        G.Error("Not expected");
-    }
+
 /** Called from the search driver to make a move, saving information needed to 
  * unmake the move later.
  * 

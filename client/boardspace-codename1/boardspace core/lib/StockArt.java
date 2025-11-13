@@ -17,7 +17,7 @@
 package lib;
 
 
-public class StockArt extends DrawableImage<StockArt> {
+public class StockArt extends DrawableImage<StockArt> implements Digestable{
 	private static StockArtStack all = new StockArtStack();
 	private StockArt(String n,double[]s)
 	{

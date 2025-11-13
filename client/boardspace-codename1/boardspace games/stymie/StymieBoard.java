@@ -266,8 +266,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         AR.copy(playerAntipode,from_b.playerAntipode);
         getCell(playerPath,from_b.playerPath);
         getCell(path,from_b.path);
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     
 

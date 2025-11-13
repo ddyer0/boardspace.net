@@ -261,26 +261,6 @@ public class G extends Platform implements Timestamp
         return (true);
     }
     /**
-     * G.Assert returns true, or throws an Error.  This provides a
-     *   convenient place to place a breakpoint for any kind of internally
-     *   detected error.  This should be the only "throw ErrorX" in the system.
-     *   @param condition a boolean that was evaluated in the caller's context
-     *   @param message a message 
-     *   @return true, false, or throws an error. 
-     */
- 
-    public static boolean Advise(boolean condition,String message)
-    {	if(!condition)
-    	{
-    	if(debug())
-    		{ throw new ErrorX(message); 
-    		}
-    	return(false);
-    	}
-    	return(true);
-    }
-    
-    /**
      * G.Advise returns true, or false.  In debug environments it throws an error.
  	 *   This provides a
      *   convenient place to place a breakpoint for any kind of internally
@@ -291,12 +271,14 @@ public class G extends Platform implements Timestamp
      */
     public static boolean Advise(boolean condition, String message,Object... args)
     {	if (!condition)
-        {	if(args!=null && args.length>0) { message = format(message,args); }
+        {	Plog.log.finishLog();
+        	if(args!=null && args.length>0) { message = format(message,args); }
         	Plog.log.appendNewLog("Advisory: ");
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
         	if(G.debug()) 
-        		{ G.print(Plog.log.finishLog()); }
+        		{//throw new ErrorX(Plog.log.finishLog()); 
+        		}
         	return(false);
         }
         return (true);

@@ -246,7 +246,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         pickedSource = getCell(from_b.pickedSource);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     public QyshinsuChip playerChip[] = new QyshinsuChip[2];

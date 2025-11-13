@@ -346,18 +346,18 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             //place a ball in each possible position
             {
                 int rack_index = RESERVE_INDEX;
-                int[] ball = board.balls[RESERVE_INDEX];
+                zCell[] ball = board.rack[RESERVE_INDEX];
                 int tot = 0;
                 boolean useUndecided = false; //(board.whoseTurn==forplayer);
                 for (int j = 0; j < ball.length; j++)
                 { //note, include negative counts on deployed undecided balls
-                    tot += ball[j];
+                    tot += ball[j].height;
                 }
 
                 if (tot == 0)
                 {
                     rack_index = p;
-                    ball = board.balls[rack_index];
+                    ball = board.rack[rack_index];
                 }
 
                 for(zCell c = board.allCells; c!=null; c=c.next)
@@ -374,10 +374,10 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
                             {
                                 for (int color = 0; color < NCOLORS; color++)
                                 {
-                                    if (ball[color] > 0)
+                                    if (ball[color].height > 0)
                                     {
                                         result.addElement(new movespec(p,
-                                                MOVE_RtoB, rack_index, color,
+                                                MOVE_RtoB,(char)(rack_index+'0'), color,
                                                 c.col, c.row));
                                     }
                                 }
@@ -387,7 +387,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
                               //of ambigous color, and let them flow through
 
                                 movespec ms = new movespec(p, MOVE_RtoB,
-                                        rack_index, zChip.UNDECIDED_INDEX, c.col,c.row);
+                                        (char)(rack_index+'0'), zChip.UNDECIDED_INDEX, c.col,c.row);
                                 ms.restricted = restricted;
                                 result.addElement(ms);
                             }

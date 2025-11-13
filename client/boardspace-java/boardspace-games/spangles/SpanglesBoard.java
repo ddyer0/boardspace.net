@@ -223,7 +223,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     public String gameType() 

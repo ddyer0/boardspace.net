@@ -558,7 +558,7 @@ class TamskBoard
         robotDelayTime = from_b.robotDelayTime;
         robotRandomPhase = from_b.robotRandomPhase;
         
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

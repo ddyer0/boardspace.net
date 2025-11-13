@@ -356,7 +356,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         previousLastContents = from_b.previousLastContents;
         currentDest = getCell(from_b.currentDest);
         currentSource = getCell(from_b.currentSource);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

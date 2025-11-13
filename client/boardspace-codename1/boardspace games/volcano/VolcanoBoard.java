@@ -626,7 +626,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         	droppedDest[i]=getCell(from_b.droppedDest[i]);
         }
         placementIndex = from_b.placementIndex;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

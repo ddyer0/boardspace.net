@@ -928,7 +928,7 @@ graphics when using a touch screen.
     * @param p
     */
    public void redrawBoard(HitPoint p)
-   {
+   {	
 	   if(menu!=null) { drawMenu(null,p); }
 	   else { nullChatHasRun = false;
 	          redrawClientBoard(null,p);

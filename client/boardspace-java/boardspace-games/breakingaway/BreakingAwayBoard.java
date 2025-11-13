@@ -676,7 +676,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			to.copyAllFrom(fr);		// not copyFrom
 			allRidersInOrder[i]=to;
 		}
-		sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
 	}
 
 	//

@@ -618,7 +618,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         resetState = from_b.resetState;
         myIndex = from_b.myIndex;
  
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
 	public void doInit()

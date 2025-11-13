@@ -239,7 +239,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         getCell(claimedShooters,from_b.claimedShooters);
         placementCount = from_b.placementCount;
         robotStack.clear();
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

@@ -277,7 +277,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         getCell(blackPegs,from_b.blackPegs);
         playerRack[0] = from_b.playerRack[0];
         playerRack[1] = from_b.playerRack[1];
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

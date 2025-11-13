@@ -159,6 +159,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 		gameIcon = CircleChip.Icon.image;
     }
 
+
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -487,8 +488,6 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 	       }       	
     }
     
-
-
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -1269,27 +1268,6 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     // public void useStoryBuffer(String tok,StringTokenizer his) {}
     // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
-
-    /**
-     * sort the ephemeral moves into their final order.  Normally is is
-     * just ordering the moves so all of each players moves are together.
-     * 
-     * @param ephemera
-     */
-    public void ephemeralSort(CommonMoveStack ephemera)
-    {
-    	super.ephemeralSort(ephemera);
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
  
   // public RecordingStrategy gameRecordingMode()
   //  {	return(super.gameRecordingMode());

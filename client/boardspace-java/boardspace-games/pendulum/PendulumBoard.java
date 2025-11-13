@@ -653,7 +653,7 @@ class PendulumBoard
         greenTimer = new Timer(from_b.greenTimer);
         blackTimer = new Timer(from_b.blackTimer);
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     	}
     	finally {
         releaseLock();

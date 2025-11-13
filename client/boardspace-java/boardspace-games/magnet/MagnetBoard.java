@@ -322,7 +322,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         lastPicked = null;
         center = getCell(center);
  
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

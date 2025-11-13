@@ -224,7 +224,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
         getCell(captureStack,from_b.captureStack);
         capturePiece.copyFrom(from_b.capturePiece);
        
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

@@ -6214,7 +6214,7 @@ public abstract class commonCanvas extends exCanvas
     		if(l.backupBoard == null) 
     			{ l.backupBoard = b.cloneBoard();    			  	
     			  l.backupBoard.setName(l.displayBoard==null ? "display 1" : "display 0");
-    	   		  G.print("Create "+l.backupBoard);
+    	   		  //G.print("Create "+l.backupBoard);
     			}
     			else 
     			{ String n = l.backupBoard.getName();
@@ -6248,16 +6248,20 @@ public abstract class commonCanvas extends exCanvas
     public BoardProtocol getSafeDisplayBoard()
     {	if(useCopyBoard)
     	{
+  
      	swapCopyBoardIfNeeded(); 
      	// if this assertion fails, most likely the game hasn't started and this redisplay
      	// operation shouldn't be happening.  the drawCanvas method should be conditioned
      	// on startedOnce
-     	G.Assert(l.displayBoard!=null,"there must already be a display board");
-     	return(l.displayBoard);
+     	BoardProtocol bb = l.displayBoard;
+     	// normally at this point, the game has started and display copies
+     	// have been made.  The official gateways are redrawBoard and drawCanvas
+     	// if there's some other path it ought to be fixed
+     	G.Advise(bb!=null,"no display board yet, started=%s",startedOnce);
+    	if(bb!=null) { return bb; }
     	}
     	return(getBoard());
     }
-
     // when boards change number of players they may also change structure
     // in ways that make copy boards structurally invalid
     public void resetCopyBoards()
@@ -6628,6 +6632,7 @@ public abstract class commonCanvas extends exCanvas
         if(!startedOnce)
    		{ //normally this is done in "startPlaying()" but that can be bypassed
    		  //if a game is loaded before the server responds to the history request
+          saveDisplayBoard();
    		  startedOnce = started = true; 
    		}
 	}
@@ -8943,6 +8948,13 @@ public void verifyGameRecord()
     	int h = G.Height(goal);
     	G.SetRect(progress, G.Left(goal)+w/3,G.Top(goal)+h/4,w/3,h/3);
     }
+    public void redrawBoard(HitPoint hp)
+    {
+    	if(startedOnce)
+    	{
+    		super.redrawBoard(hp);
+    	}
+    }
     /** this is the place where the canvas is actually repainted.  We get here
      * from the event loop, not from the normal canvas repaint request.
      */
@@ -8983,6 +8995,10 @@ public void verifyGameRecord()
        
         drawUnmagnifier(offGC,hp);
     	}
+    	else {
+    		GC.fillRect(offGC,Color.lightGray,0,0,getWidth(),getHeight());
+    	}
+
     }
  
     /** these are drawn separately, directly on the canvas.  They

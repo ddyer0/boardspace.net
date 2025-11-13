@@ -234,7 +234,7 @@ package crosswordle;
 		 guesses.copyFrom(from_b.guesses);
 		 solution = from_b.solution;
 		 solutionKey = from_b.solutionKey;
-		 sameboard(from_b); 
+		 if(G.debug()) { sameboard(from_b); }
 	 }
  
 	 

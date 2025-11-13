@@ -229,7 +229,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         copyAllFrom(rack,from_b.rack);
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

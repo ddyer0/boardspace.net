@@ -1208,7 +1208,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		YspahanCell.copyFrom(diceTower, from_b.diceTower);
 		YspahanCell.copyFrom(diceTowerExtraGold, from_b.diceTowerExtraGold);
 		YspahanCell.copyFrom(diceTowerExtraCard, from_b.diceTowerExtraCard);
-		sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
 	}
 
 	private void setGameDay(int newday) {

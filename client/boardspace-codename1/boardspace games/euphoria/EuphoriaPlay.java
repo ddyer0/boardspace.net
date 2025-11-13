@@ -355,7 +355,7 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return( reScorePosition(m,playerindex));
+	return( reScorePosition(mm,playerindex));
 	
     }
     

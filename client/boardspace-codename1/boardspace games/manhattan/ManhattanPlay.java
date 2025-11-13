@@ -455,7 +455,7 @@ public void PrepareToMove(int playerIndex)
  	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = Math.min(maxs, ScoreForPlayer(board,i,false));
 	 	}
- 	return reScorePosition(m,playerindex);
+ 	return reScorePosition(mm,playerindex);
  }
  
  public double reScorePosition(commonMove mm,int playerindex)

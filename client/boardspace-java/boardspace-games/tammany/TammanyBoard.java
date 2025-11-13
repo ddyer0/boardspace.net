@@ -590,7 +590,7 @@ import static tammany.TammanyMovespec.*;
 		 
 		 for(int i=0;i<players.length;i++) { players[i].copyFrom(from_b.players[i]); }
   
-		 sameboard(from_b); 
+		 if(G.debug()) { sameboard(from_b); }
 	 }
  
 	 

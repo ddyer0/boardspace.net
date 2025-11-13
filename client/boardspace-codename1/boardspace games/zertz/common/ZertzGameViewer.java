@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,17 +12,18 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package zertz.common;
 
-import com.codename1.ui.geom.Rectangle;
-import bridge.Color;
-import common.GameInfo;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.DefaultId;
@@ -92,34 +93,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 			HighlightColor, rackBackGroundColor);
     private Rectangle repRect = addRect("repRect");
     private static int HitNoWhere = -101;
-    // stuff for tracking ball clicking and dragging
-    private char highlightBoardCol;
-    private int highlightBoardRow;
-    private ZertzId highlightRackIndex;
-
-    // whem moving, these remember the object we're dragging around
-    private int movingObject = HitNoWhere; // >=0 iff a ball is moving
-    private ZertzId movingFromRackIndex; //>=0 iff moving from a rack
-    private char movingFromBoardCol; // x and y if moving from a board
-    private int movingFromBoardRow;
-
 
     public BoardProtocol getBoard()
     {
         return (b);
     }
-
-
-    public int getMovingObject(HitPoint highlight)
-    {
-        return (movingObject
-        		+ ((movingObject>=0)
-        		   ? (movingFromBoardCol*10
-        			  +movingFromBoardRow*1000
-        		      +(movingFromRackIndex.rackIndex())*100000)
-       		      : 0)); // this is transmitted to players
-    }
-    
+  
     public synchronized void preloadImages()
     {	zChip.preloadImages(loader,ImageDir);
     	gameIcon = zChip.Icon.image;
@@ -129,8 +108,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         super.init(info,frame);
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
-     
-        b = new GameBoard(info.getString(GameInfo.GAMETYPE, "Zertz"));
+        b = new GameBoard(info.getString(GameInfo.GAMETYPE, "zertz").toLowerCase(),GameBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
    }
@@ -192,13 +170,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        	Rectangle rack = rackRects[1];
        	G.copy(swapButton,rack);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
-    	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
+     	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
+     	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
     		}
     	else { G.SetHeight(variationRect,0); }
     	
-       	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+      	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
@@ -227,7 +205,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
-        int boardBottom = boardY+boardH;
+    	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
@@ -247,7 +225,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatColor,rackBackGroundColor);
         return((boardW+rackW)*boardH);
-        }
+    }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = rackRects[player];
@@ -263,7 +241,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	G.union(box, done,chip);
     	pl.displayRotation = rotation;
     	return(box);
-        }
+    }
  
 
     public void drawTile(Graphics g, int X, int Y, int radius, String contents,
@@ -296,13 +274,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	int at = G.Top(R);
     	int t = horizontal ?at :  G.Bottom(R) ;
     	double xscale = 0.79;
-        int[] balls = bd.balls[rackindex];
+        zCell[] balls = bd.rack[rackindex];
         
     	if(!isReserve)
     	{
     		h = size;
     		w = Math.min(size*10, w);
-    		int tot = balls[0]+balls[1]+balls[2]; 
+    		int tot = balls[0].height+balls[1].height+balls[2].height; 
     		if(tot>0)
         	{	// squeeze if necessary
         		xscale = Math.min(xscale, (double)w/((tot+0.75)*size));
@@ -310,47 +288,26 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
   
     	}
        	GC.frameRect(gc,Color.gray,l,at,w,h); 
-    	
-    	ZertzId moving = movingFromRackIndex;
-    	int mo = movingObject;
-    	if(mo<0)
-    	{
-            for(commonPlayer p : players)
-            {	if(p!=null)
-            	{
-            	int mouse = p.mouseObj;
-            	if(mouse>=0)
-            	{
-            		int rack = mouse/100000;
-            		if(rack>=0) { moving = ZertzId.find(rack); mo=mouse%10; }
-            	}}  
-            }
-    	}
-    	else if((bd.getState()==ZertzState.PUZZLE_STATE) && G.pointInRect(highlight, R))
+
+        zCell[] ballCells = bd.rack[rackindex];
+    	int mo = b.movingObjectIndex();
+    	if((bd.getState()==ZertzState.PUZZLE_STATE) && G.pointInRect(highlight, R))
     		{
     		// allow moving balls in puzzle mode
     		GC.frameRect(gc, Color.red, R);
-            highlightRackIndex = ZertzId.find(rackindex);
-            highlightBoardCol = (char)0;
-            highlightBoardRow = 0;
-            highlight.hitCode = ZertzId.find(rackindex);
+    		highlight.hitCode = ZertzId.find(rackindex);
+            highlight.hitObject = ballCells[0];
     		}
-        zCell[] ballCells = bd.rack[rackindex];
-        int row = 0;
+    	int row = 0;
         int total = 0;
-        for(int i=0;i<3;i++) { total+=balls[i]-ballCells[i].activeAnimationHeight(); }
+        for(int i=0;i<3;i++) { total+=balls[i].height-ballCells[i].activeAnimationHeight(); }
         for(int index=2;index>=0;index--)
         {	
         	zCell bCell = ballCells[index];
         	int anim = bCell.activeAnimationHeight();
-        	int subt = balls[index]-anim;
-         	if(rackindex==RESERVE_INDEX) { total=subt; }
+        	int subt = balls[index].height-anim;
+        	if(rackindex==RESERVE_INDEX) { total=subt; }
 
-        	if((mo==index) 
-        			&& (moving==ZertzId.find(rackindex))) 
-        		{ subt--;
-        		  total--; 
-        		}
         	bCell.rotateCurrentCenter(gc,G.Left(R)+size/2, 2+G.Top(R)+size/2);
         	int empty = (int)(h-subt*size*xscale-size/4)/2;
         	while(subt>0)
@@ -366,10 +323,10 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         					? yoff
         					: -(xoff+empty));
         	boolean drawhighlight = G.pointInside(highlight,xp,yp,RINGRADIUS)
-        				&& bd.AllowSelectRack(rackindex, index, movingObject);
+        				&& bd.AllowSelectRack(rackindex, index, mo);
         				
         	bCell.rotateCurrentCenter(gc,xp,yp);
-    		if(gc!=null)
+        	if(gc!=null)
             	{
             	if (drawhighlight)
 		            {
@@ -377,14 +334,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 		                drawTile(gc, xp, yp, bigradius, null ,
 		                    HighlightColor, rackBackGroundColor, BallTextColors[index]);
 		            }
-            		zChip.getChip(index).drawChip(gc,this,size,xp,yp,null);
-            	}
-            else if (drawhighlight)
+            	zChip.getChip(index).drawChip(gc,this,size,xp,yp,null);
+             	}
+            if (drawhighlight)
             {
-                highlightRackIndex = ZertzId.find(rackindex);
-                highlightBoardCol = (char)0;
-                highlightBoardRow = 0;
-                highlight.hitCode = ZertzId.find(index);
+                highlight.hitCode = bCell.rackLocation();
+                highlight.hitObject = bCell;
             }
         	}
         	if(isReserve) { row++; }
@@ -401,26 +356,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     public void DrawBoardElements(Graphics gc, GameBoard bd, Rectangle brect,  HitPoint highlight)
     {
         int bigradius = RINGRADIUS - 1;
-        int fromRow = movingFromBoardRow;
-        int fromCol = movingFromBoardCol;
-        int moving = movingObject;
+        int moving = b.movingObjectIndex();
         boolean review = reviewMode() && !allowed_to_edit;
         numberMenu.clearSequenceNumbers();
         Color background = review ? reviewModeBackground : boardBackgroundColor;
-        if(movingObject < 0)
-        {
-        for(commonPlayer p : players)
-        {	if(p!=null)
-        	{
-        	int mouse = p.mouseObj;
-        	if(mouse>=0)
-        	{
-        			int rem = mouse%100000;
-        			fromRow = (rem/1000);
-        			fromCol = (char)((rem%1000)/10);
-        			moving = rem%10;
-        	}}
-        }}
+        zCell from = bd.pickedSource;
+        zChip picked = bd.pickedObject;
         // draw rings and balls
         if(gc!=null) { bd.DrawGrid(gc, brect, use_grid, Color.black, background, Color.black,Color.black); }
       	Enumeration<zCell>cells = bd.getIterator(Itype.TBLR);
@@ -432,61 +373,47 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
            boolean hitpoint = G.pointInside(highlight, xpos, ypos,RINGRADIUS);
            char piece = cel.contents;
            int color = zChip.BallColorIndex(piece);
-           boolean movable = (color >= 0) && (movingObject < 0) && bd.BallCanMove(cel.col, cel.row);
+           boolean movable = (color >= 0) && (moving < 0) && bd.BallCanMove(cel.col, cel.row);
            boolean canChange = bd.RingCanChange(cel);
            boolean allowSelect = ((color >= 0)
                     ? movable // pointing at a ball
-                    : ((movingObject >= 0) // pointing at space
-                    		? bd.CaptureOccurs(bd.getCell(movingFromBoardCol,movingFromBoardRow), null,cel, true) //  & dragging a ball
+                    : ((moving >= 0) // pointing at space
+                    		? (from==cel) || bd.CaptureOccurs(from, picked,null,cel, true) //  & dragging a ball
                             : canChange)); // & not dragging a ball
            boolean drawhighlight = allowSelect && hitpoint;
 
            numberMenu.saveSequenceNumber(cel,xpos,ypos);
-           
            if ((piece != NoSpace))
                 {
                     if (gc != null)
                     {
                       zChip.getChip(zChip.RING_INDEX).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
                       cel.rotateCurrentCenter(gc,xpos,ypos);
-                     if(drawhighlight)
+                      if(drawhighlight)
                 	  {	
                     	 drawTile(gc, xpos, ypos, bigradius, null , HighlightColor, Color.black, Color.black);
                 	  }
                        if (color >= 0) 
-                        { // ball resting on a ring
-                           // drawTile(gc, xpos, ypos, BALLRADIUS, "",
-                           //     BallFillColors[color],
-                           //     drawhighlight ? HighlightColor : ringColor,
-                           //     BallTextColors[color]);
-                          // to fine tune the board rendering.
-                          if(!((moving>=0)
-                        	  && (movingFromRackIndex==ZertzId.EmptyBoard)
-                        	  && (fromCol==cel.col)
-                        	  && (fromRow==cel.row)))
-                            {
-                        	  if(cel.activeAnimationHeight()==0)
-                        	  {
-                        		  zChip.getChip(color).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
-                        	  }
-                        	 }
-                            if (bd.CapturedColorIndex(piece) >= 0)
+                        { 
+                    	   if(cel.activeAnimationHeight()==0)
+                    	   {
+                    		   zChip.getChip(color).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                    	   }
+                    	   if (bd.CapturedColorIndex(piece) >= 0)
                             {
                                 StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
                             }
-                            }
+                        }
                        else {
 
                     	   showCaptured(gc,cel,xpos,ypos);
                     	   
-                        }
+                       }
                     }
                     else if (drawhighlight)
                     { // checking for pointable position
-                        highlightRackIndex = ZertzId.EmptyBoard;
-                        highlightBoardCol = cel.col;
-                        highlightBoardRow = cel.row;
                         highlight.hitCode = color>=0?ZertzId.find(color):ZertzId.EmptyBoard;   
+                        highlight.hitObject = cel;
                     }
                 }
                 else /* empty space */
@@ -510,8 +437,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                     else if (drawhighlight)
                     {
                         // a ring can be restored
-                        highlightBoardCol = cel.col;
-                        highlightBoardRow = cel.row;
+                        highlight.hitObject = cel;
                         highlight.hitCode = ZertzId.RemovedRing;
                     }
                 }
@@ -532,7 +458,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     }
     public boolean DrawTileSprite(Graphics gc,HitPoint hp)
     { //draw the ball being dragged
-    	int obj = movingObject;
+    	int obj = b.movingObjectIndex();
         if ((obj >= 0)&&(hp!=null))
         { // draw a ball in transit
              zChip.getChip(obj).drawChip(gc,this,CELLSIZE,G.Left(hp),G.Top( hp),null);
@@ -545,7 +471,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     {
         return (reviewMode()&&!allowed_to_edit ? reviewModeBackground : boardBackgroundColor);
     }
-
+    
     PopupManager changeBoard = new PopupManager();
     private void changeBoardMenu(HitPoint hp)
     {
@@ -584,7 +510,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     // draw, otherwise just notice if the highlight should be on
     //
     public void redrawBoard(Graphics gc, HitPoint selectPos)
-    {
+    {	
     	GC.fillRect(gc, tableColor(),fullRect);
     	
     	GameBoard bd = disB(gc);
@@ -595,7 +521,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	bd.SetDisplayRectangle(boardRect);
     	}
         ZertzState vstate = bd.getState();
-        boolean moving = (movingObject>=0);
+        boolean moving = (b.movingObjectIndex()>=0);
         HitPoint ourTurnSelect = OurMove() ? selectPos : null;
         HitPoint buttonSelect = moving?null:ourTurnSelect;
         HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
@@ -619,14 +545,14 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 	
         	pl.setRotatedContext(gc, selectPos, true);
         }
-
+ 
         GC.setFont(gc,standardBoldFont());
-       drawPlayerStuff(gc,(vstate==ZertzState.PUZZLE_STATE),nonDragSelect,
+        drawPlayerStuff(gc,(vstate==ZertzState.PUZZLE_STATE),nonDragSelect,
  	   			HighlightColor, rackBackGroundColor);
         int whoseTurn = bd.whoseTurn;
         commonPlayer pl = getPlayerOrTemp(whoseTurn);
         double messageRotation = pl.messageRotation();
-       // draw the board control buttons 
+        // draw the board control buttons 
         if (vstate != ZertzState.PUZZLE_STATE)
         {
 			if(!planned)
@@ -636,7 +562,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos, HighlightColor, rackBackGroundColor);
 
 			if((vstate==ZertzState.MOVE_OR_SWAP_STATE)||(vstate==ZertzState.SWAP_CONFIRM_STATE))
-                    {
+            { 
 				swapButton.show(gc, messageRotation, buttonSelect);
             }
             
@@ -665,11 +591,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	}
     	
 
-   	handleExecute(b,m,replay);
+    handleExecute(b,m,replay);
     // record where the boundaries in move numbers lie
     numberMenu.recordSequenceNumber(b.activeMoveNumber());
+ 	
     
-   	if(m.op==MOVE_SETBOARD) { resetBounds(); }
+  	if(m.op==MOVE_SETBOARD) { resetBounds(); }
    	// in capture moves, SequentialFromStart shows the captured ball in its original place
    	// until the jumping ball has landed
    	startBoardAnimations(replay,b.animationStack,CELLSIZE,MovementStyle.SequentialFromStart);
@@ -706,184 +633,29 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     // and discarded.  Return null if nothing should be added to the history
     //
     public commonMove EditHistory(commonMove nmove)
-    {	movespec newmove = (movespec)nmove;
-        int size = History.size() - 1;
-        int idx = size;
-        boolean first = true;
-        if((newmove.op==MOVE_RtoR)
-        		&& (newmove.from_rack == newmove.to_rack))
-        {	//G.print("Null mov "+newmove);
-            return(null);
-        }
-        if((newmove.op==MOVE_BtoB)
-        		&& (newmove.from_col==newmove.to_col)
-        		&& (newmove.from_row==newmove.to_row))
-        {
-        	return(null);
-        }
-        while (idx >= 0)
-        {
-            movespec m = (movespec) History.elementAt(idx);
-            if(m.nVariations()>1) { idx = -1; }
-            else if(first && (m.next!=null)) { idx = -1; }
-            else
-            {
-            first=false;
-            switch (m.op)
-            {
-            case MOVE_START:
-            case MOVE_EDIT:
-            case MOVE_DONE:
-              idx = -1;
-                break;
-
-            case MOVE_R_PLUS:
-                // adding a ring - look for the same ring being removed
-                // r+ uses to_col r- uses from_col
-                if (
-                		(newmove.op == MOVE_R_MINUS) 
-                		&& (newmove.from_row == m.to_row) 
-                		&& (newmove.from_col == m.to_col))
-                { // if there are variations, back over and start a new one
-                  // if there are no variations, remove the r- entirely
-                    popHistoryElement(idx);
-
-                    return (null);
-                }
-
-                break;
-
-            case MOVE_R_MINUS:
-
-                // removing a ring, look for the same ring being added
-                // r+ uses to_col r- uses from_col
-                if ( (newmove.op == MOVE_R_PLUS) 
-                		&& (newmove.to_col == m.from_col) 
-                		&& (newmove.to_row == m.from_row))
-                {	
-                	popHistoryElement(idx);
-                	return(null);
-                }
-
-                break;
-
-            case MOVE_RtoR:
-                // transfer rack to rack, eliminate the middle man
-                if ((newmove.op == MOVE_RtoR) &&
-                        (newmove.color == m.color) &&
-                        (m.to_rack == newmove.from_rack))
-                {
-                    if (m.from_rack == newmove.to_rack)
-                    {
-                    	popHistoryElement(idx);
-
-                        return (null);
-                    }
-
-                    m.to_rack = newmove.to_rack;
-
-                    return (null);
-                }
-
-                break;
-
-            case MOVE_BtoB:
-            // moving board to board, look for the matching
-             {
-                if ((newmove.op == MOVE_BtoB) &&
-                        (m.from_col == newmove.to_col) &&
-                        (m.from_row == newmove.to_row) &&
-                        (m.to_row == newmove.from_row) &&
-                        (m.to_col == newmove.from_col) &&
-                        (m.color == newmove.color))
-                {	// straight over and back
-                    popHistoryElement();
-                    return (null);
-                }
-                idx = -1;	// only in the immediately reverse direction
-            }
-
-            break;
-
-            case MOVE_BtoR:
-            {
-                // moving board to rack, look for the corresponding
-                // rack to board transfer
-                if ((newmove.op == MOVE_RtoB)
-                     && (newmove.to_col == m.from_col)
-                     && (newmove.to_row == m.from_row)
-                     && (newmove.color == m.to_rack)
-                     && (newmove.movedAndCaptured == m.movedAndCaptured)	// can be different if was captured ball
-                     )
-                {
-                    if(idx==size) { popHistoryElement(); return(null); }
-                    else if(idx+1==size) { commonMove rem = popHistoryElement(); popHistoryElement(); return(rem); }
-                    idx = -1;
-                }
-            }
-
-            break;
-
-            case MOVE_RtoB:
-            // moving rack to to board, if there's a board to board,
-            // we're just repositioning a ball.  If there is a 
-            // previous board to board, we're adjusting a capture
-            {
-                if ((newmove.op == MOVE_BtoB) &&
-                        (m.to_col == newmove.from_col) &&
-                        (m.to_row == newmove.from_row))
-                { //if there are variations, back up and place a new ball
-                  //if there are no variations, just set a new destination
-                	popHistoryElement(idx);
-                    newmove.op = MOVE_RtoB;
-                    newmove.from_col = m.from_col;
-                    newmove.from_row = m.from_row;
-                    newmove.from_rack = m.from_rack;
-                    newmove.color = m.color;
-                    idx = -1; //break out
-
-                    //m.to_col=newmove.to_col;
-                    //m.to_row=newmove.to_row;
-                    //return(null);
-                }
-
-                if ((newmove.op == MOVE_BtoR) &&
-                        (newmove.to_rack == m.from_rack) &&
-                        (newmove.to_row == m.from_row) &&
-                        (newmove.from_col == m.to_col) &&
-                        (newmove.from_row == m.to_row))
-                { //undoing a capture step.  
-                	popHistoryElement(idx);
-                	return (null);
-                }
-            }
-
-            break;
-			default:
-				break;
-            }
-
-            idx--; //keep rolling back
-        }}
-        if(newmove!=null)
-        {
-        	newmove = (movespec)super.EditHistory(newmove,newmove.op==MOVE_SETBOARD);
-        }
+    {	movespec newmove = (movespec)super.EditHistory(nmove,nmove.op==MOVE_SETBOARD);
         return (newmove);
     }
 
     public void StartDragging(HitPoint hp)
     {	
         CellId id = hp.hitCode;
+        int movingObject = b.movingObjectIndex();
         if((movingObject<0) && (id instanceof ZertzId))
         {
         	ZertzId hitObject = (ZertzId)id;
+        	zCell hitCell = (zCell)hp.hitObject;
         	if(hitObject.isBall)
         	{
-            movingFromRackIndex = highlightRackIndex;
-            movingFromBoardRow = highlightBoardRow;
-            movingFromBoardCol = highlightBoardCol;
             movingObject = hitObject.ordinal();
+            if(hitCell.onBoard)
+            {
+            	PerformAndTransmit("pickb "+hitCell.col+" "+hitCell.row,b.revision>=101,replayMode.Live);
+            }
+            else
+            {
+            	PerformAndTransmit("Pick "+hitCell.col+" "+hitCell.row,b.revision>=101,replayMode.Live);
+            }
             hp.dragging = true;
         	}
         	else if(hitObject==ZertzId.HitChangeBoard)
@@ -893,51 +665,59 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	}
     }
 
+  
     public void StopDragging(HitPoint hp)
     {
         //System.out.println("Stop "+hp+" m "+movingObject);
 
         CellId id = hp.hitCode;
-        if(!(id instanceof ZertzId)) {  missedOneClick = performStandardActions(hp,missedOneClick);}
+        if(!(id instanceof ZertzId)) {  missedOneClick = performStandardActions(hp,missedOneClick);}	
     	else {
     	missedOneClick = false;
-        ZertzId hitObject = (ZertzId)hp.hitCode;
-
-
+        ZertzId toCode = (ZertzId)id;
+        
+        int movingObject = b.movingObjectIndex();
         if (movingObject >= 0)
         { //moving a ball
         	boolean dropped = false;
-            if (movingFromRackIndex==ZertzId.EmptyBoard)
+        	zCell from = b.pickedSource;
+        	ZertzId fromCode = from.rackLocation();
+            if (fromCode==ZertzId.EmptyBoard)
             { //from board
-
-                if (highlightRackIndex == ZertzId.EmptyBoard)
+                if (toCode == ZertzId.EmptyBoard)
                 {	dropped = true;
-                	if((movingFromBoardCol!=highlightBoardCol)
-                    		||(movingFromBoardRow!=highlightBoardRow))
-                    {PerformAndTransmit("BtoB " + movingFromBoardCol + " " +
-                        movingFromBoardRow + " " + highlightBoardCol + " " +
-                        highlightBoardRow);
+                	zCell to = (zCell)hp.hitObject;
+                	if(from.col==to.col && from.row==to.row)
+                	{
+                		PerformAndTransmit("Pickb "+from.col+" "+from.row);
+                	}
+                	else
+                    {PerformAndTransmit("BtoB " 
+                    	+ from.col + " " + from.row 
+                        + " " + to.col + " " +  to.row);
                     }
                 }
                 else 
                 {	dropped = true;
-                    PerformAndTransmit("BtoR " + movingFromBoardCol + " " +
-                        movingFromBoardRow + " " + highlightRackIndex.shortName);
+                    PerformAndTransmit("BtoR " 
+                    		+ from.col + " " + from.row + " " + toCode.shortName);
                 }
             }
             else
             { //from rack
 
-                if (highlightRackIndex == ZertzId.EmptyBoard)
+                if (toCode == ZertzId.EmptyBoard)
                 {	dropped = true;
-                    PerformAndTransmit("RtoB " + movingFromRackIndex.shortName + " " +
-                        movingObject + " " + highlightBoardCol + " " +
-                        highlightBoardRow);
+                	zCell to = (zCell)hp.hitObject;
+                    PerformAndTransmit("RtoB " 
+                    		+ from.col
+                    		+ " " + movingObject 
+                    		+ " " + to.col + " " +  to.row);
                 }
                 else 
                 {	dropped = true;
-                    PerformAndTransmit("RtoR " + movingFromRackIndex.shortName + " " +
-                        movingObject + " " + highlightRackIndex.shortName);
+                    PerformAndTransmit("RtoR " + fromCode.shortName + " " +
+                        movingObject + " " + toCode.shortName);
                 }
             }
             if(dropped) { hp.hitCode = DefaultId.HitNoWhere; movingObject = HitNoWhere; }
@@ -946,25 +726,22 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             }
 
         }
-        else if (hitObject == ZertzId.EmptyBoard)
-        {	
-            PerformAndTransmit("R- " + highlightBoardCol + " " +
-                highlightBoardRow);
+        else if (toCode == ZertzId.EmptyBoard)
+        {	zCell c = (zCell)hp.hitObject;
+            PerformAndTransmit("R- " + c.col + " " + c.row);
         }
-        else if (hitObject == ZertzId.RemovedRing)
-        {	
-            PerformAndTransmit("R+ " + highlightBoardCol + " " +
-                highlightBoardRow);
+        else if (toCode == ZertzId.RemovedRing)
+        {	zCell c = (zCell)hp.hitObject;
+            PerformAndTransmit("R+ " + c.col + " " + c.row);
         }
-        else if(hitObject instanceof ZertzId) {}
+        else if(toCode instanceof ZertzId) {}
         else {	
-        	throw G.Error("Hit Unknown: %s", hitObject);
+        	throw G.Error("Hit Unknown: %s", toCode);
         }}
-       movingObject=HitNoWhere;
        generalRefresh();
     }
-    
-    
+
+
     public void drawBlankTile(Graphics g, int X, int Y, int radius,
         Color color, Color bgcolor)
     { 
@@ -972,16 +749,24 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     }
 
 
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Zertz_SGF); }
 
 
     public void performHistoryInitialization(StringTokenizer his)
-    {  
-        //the initialization sequence
-    	String token = his.nextToken();
- 
-        b.doInit(token);
+    { 	String token = his.nextToken();
+    	boolean newstyle = token.charAt(0)=='z';
+    	
+    	int np = newstyle ? G.IntToken(his) : 2;	// players always 2
+    	long rv = newstyle ? G.IntToken(his): 0;
+    	int rev = newstyle ? G.IntToken(his): 100;	
+    	//
+    	// in games which have a randomized start, this is the point where
+    	// the randomization is inserted
+        // int rk = G.IntToken(his);
+    	// bb.doInit(token,rk);
+        b.doInit(token,rv,np,rev);
+
      }
     
 
@@ -1006,13 +791,17 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     }
 
     private int ppn = -1;
-    /* 1/31/2925 
-    summary:
-    	3975: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-ddyer-Qarl-2004-10-29-2141.sgf lib.ErrorX: Destination cell not empty!
-    	4051: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-Qarl-ddyer-2004-10-29-2155.sgf lib.ErrorX: Destination is not empty
+    /* 11/3/2025 
+summary:
+3975: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-ddyer-Qarl-2004-10-29-2141.sgf lib.ErrorX: Destination cell not empty!
+4051: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-Qarl-ddyer-2004-10-29-2155.sgf lib.ErrorX: Destination is not empty
+82769: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2025\games-Feb-20-2025.zip U!Z24-bluedog-Raccoons-2025-02-17-1301.sgf lib.ErrorX: Can't place new balls now, state=GAMEOVER_STATE
+82772: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2025\games-Feb-20-2025.zip U!Z24-Raccoons-bluedog-2025-02-17-1354.sgf lib.ErrorX: Can't place new balls now, state=GAMEOVER_STATE
+83010: play Problem in file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\games-Feb-20-2025\U!Z24-bluedog-Raccoons-2025-02-17-1301.sgf lib.ErrorX: Can't place new balls now, state=GAMEOVER_STATE
+83013: play Problem in file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\games-Feb-20-2025\U!Z24-Raccoons-bluedog-2025-02-17-1354.sgf lib.ErrorX: Can't place new balls now, state=GAMEOVER_STATE
 
-	83634 files visited 2 problems
-    	*/
+83956 files visited 6 problems
+   	*/
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

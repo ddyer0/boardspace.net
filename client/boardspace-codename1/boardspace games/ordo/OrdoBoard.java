@@ -276,8 +276,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         copyFrom(rack,from_b.rack);
         robot = from_b.robot;
         lastPlacedIndex = from_b.lastPlacedIndex;
-        sameboard(from_b);
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
     public void doInit(String gtype,long rv)
     {
     	doInit(gtype,rv,players_in_game,revision);

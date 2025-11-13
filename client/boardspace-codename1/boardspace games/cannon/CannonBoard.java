@@ -226,7 +226,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         
         AR.copy(townCaptured,from_b.townCaptured);
         getCell(townLocation,from_b.townLocation);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     int playerIndex(CannonChip ch) { return(ch.color==playerId[0] ? 0 : 1); }
     CannonChip playerChip[]=new CannonChip[] {CannonChip.BlueTown,CannonChip.WhiteTown};

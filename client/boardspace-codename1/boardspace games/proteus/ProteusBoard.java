@@ -208,7 +208,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
         goal = from_b.goal;
         trade = from_b.trade;
         move = from_b.move;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {
@@ -421,6 +421,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     	default: throw G.Error("Not expecting goal %s",goal);
     	}   	
     }
+
     //
     // finalize all the state changes for this move.
     //

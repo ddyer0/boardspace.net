@@ -181,7 +181,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
         unresign = from_b.unresign;
         getCell(playerChips,from_b.playerChips);
         copyFrom(playerCells,from_b.playerCells);
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
     public void constructBoard(boolean small)
     {

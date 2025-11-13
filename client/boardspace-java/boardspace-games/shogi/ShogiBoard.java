@@ -264,7 +264,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         getCell(occupied,from_b.occupied);
         getCell(kingLocation,from_b.kingLocation);
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

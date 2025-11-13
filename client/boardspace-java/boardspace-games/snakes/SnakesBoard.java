@@ -202,7 +202,7 @@ class SnakesBoard extends squareBoard<SnakesCell> implements BoardProtocol,Snake
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void setTarget(targetType t)
     {	default_target = target = t;

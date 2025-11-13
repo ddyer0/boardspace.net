@@ -178,7 +178,7 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(headLocation,from_b.headLocation);
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

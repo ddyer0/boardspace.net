@@ -342,7 +342,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     		{ robotRandom = new Random(robotRandom.nextLong());
     		}
     	board_state = from_b.board_state;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     // reshuffle the deck, this is used by the robot
     // to avoid using the actual deck as it's "random" deck.

@@ -16,6 +16,8 @@
  */
 package zertz.common;
 
+import java.util.StringTokenizer;
+
 import lib.*;
 import online.game.*;
 import zertz.common.GameConstants.ZertzState;
@@ -29,7 +31,14 @@ class StateStack extends OStack<ZertzState>
 }
 public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameConstants
 {	
-    static final String[] ZERTZ_GRID_STYLE = { null, "A1", "A1" };
+	static int REVISION = 101;				// revision 101 marks the transition to transmitting PICK/PICKB
+	public int getMaxRevisionLevel() { return(REVISION); }
+	public String gameType() 
+	{ 	// lower case flags new style with 4 arguments
+		return(gametype.toLowerCase()+" "+players_in_game+" "+randomKey+" "+revision); 
+	}
+	
+	static final String[] ZERTZ_GRID_STYLE = { null, "A1", "A1" };
     static final int NEXTRACOLORS = 1; //extra ball colors (ie; undecided.  This isn't in use now.)
 	private ZertzState unresign;
 	private ZertzState board_state;
@@ -61,13 +70,12 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public Zvariation boardSetup= null;
     public Zvariation handicap_setup = null;
     public Zvariation variation = Zvariation.Zertz;
-    public int movingObjectIndex() { return(NothingMoving); }
+    public int movingObjectIndex() { return(pickedObject==null ? NothingMoving : pickedObject.chipNumber); }
  
     final int winning_total = 3; //number of balls needed to win
     public void SetDrawState() 
     	{ setState(ZertzState.DRAW_STATE); }
     //dimensions for the viewer to use
-    public int[][] balls = new int[3][NCOLORS + NEXTRACOLORS]; //0 is reserve 1 is player1 2 is player2
     public zCell rack[][] = new zCell[3][NCOLORS + NEXTRACOLORS];
     
     private zCell[] Captures=null; 		// capture stack used by the robot
@@ -85,11 +93,15 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public int rings_removed = 0;	// rings removed from the board
     public movespec lastMove = null;
 
+    public zCell pickedSource = null;
+    public zCell droppedDest = null;
+    public zChip pickedObject = null;
+    
     // factory method to create the right kind of cell
     public zCell newcell(char col,int row)
     {	return(new zCell(col,row));
     }
-    public GameBoard(String init) // default constructor
+    public GameBoard(String init,int rev) // default constructor
     {	for(int row = 0;row<rack.length;row++)
     	{	// these are used as animation targets
     		zCell rowcell[] = rack[row];
@@ -97,18 +109,21 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     		for(int col=0;col<rowcell.length;col++)
     		{
     			rowcell[col] = new zCell(id,col);
+    			rowcell[col].col = (char)('0'+row);
     		}
     	}
+    	revision = rev;
         doInit(init);
     }
     public GameBoard cloneBoard() 
-	{ GameBoard dup = new GameBoard(gametype); 	 
+	{ GameBoard dup = new GameBoard(gametype,revision); 	 
 	  dup.copyFrom(this);
 	  return(dup); 
    	}
 
     public void copyFrom(BoardProtocol b)
-    { copyFrom((GameBoard)b); 
+    { 	copyFrom((GameBoard)b); 
+    	
     }
 
 
@@ -119,15 +134,18 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     */
     private void InitBallsAndBoard()
     {	int totalballs = 10 + 8 + 6;
-        balls[RESERVE_INDEX][zChip.WHITE_INDEX] = 6;
-        balls[FIRST_PLAYER_INDEX][zChip.WHITE_INDEX] = 0;
-        balls[SECOND_PLAYER_INDEX][zChip.WHITE_INDEX] = 0;
-        balls[RESERVE_INDEX][zChip.GREY_INDEX] = 8;
-        balls[FIRST_PLAYER_INDEX][zChip.GREY_INDEX] = 0;
-        balls[SECOND_PLAYER_INDEX][zChip.GREY_INDEX] = 0;
-        balls[RESERVE_INDEX][zChip.BLACK_INDEX] = 10;
-        balls[FIRST_PLAYER_INDEX][zChip.BLACK_INDEX] = 0;
-        balls[SECOND_PLAYER_INDEX][zChip.BLACK_INDEX] = 0;
+    	for(zCell r[] : rack)
+    	{
+    		r[zChip.WHITE_INDEX].contents = BallChars[zChip.WHITE_INDEX];
+    		r[zChip.BLACK_INDEX].contents = BallChars[zChip.BLACK_INDEX];
+       		r[zChip.GREY_INDEX].contents = BallChars[zChip.GREY_INDEX];
+    		r[zChip.WHITE_INDEX].height = 0;
+    		r[zChip.BLACK_INDEX].height = 0;
+       		r[zChip.GREY_INDEX].height = 0;      	    	
+    	}
+        rack[RESERVE_INDEX][zChip.WHITE_INDEX].height = 6;
+        rack[RESERVE_INDEX][zChip.GREY_INDEX].height = 8;
+        rack[RESERVE_INDEX][zChip.BLACK_INDEX].height = 10;
 
         // under unusual circumstances, the number of balls captured in a search
         // can be more than the number of balls that exist, because players are
@@ -149,6 +167,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         balls_in_play = 0;
         swapped_state=false;
         whoseTurn = 0;
+        pickedObject = null;
+        ringRemoved = null;
+        pickedSource = null;
+        droppedDest = null;
         board_state = ZertzState.PUZZLE_STATE;
     }
 
@@ -162,20 +184,30 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
                 balls_on_board--;
                 balls_in_play--;
                 ball_location[i] = ball_location[balls_on_board];
-                ball_location[i] = ball_location[balls_on_board];
-
+                ball_location[balls_on_board] = null;
                 return;
             }
         }
 
         throw G.Error("Ball not found on board");
     }
-    
+    public ZertzId movingFromRackIndex()
+    {
+    	if(pickedObject!=null && pickedSource!=null && !pickedSource.onBoard)
+    	{
+    		return ZertzId.find(pickedSource.row);
+    	}
+    	return null;
+    }
     public zCell lastDroppedDest = null;
     // Set the contents of a board location, keep ball list up to date
+    public void SetBoard(zCell c,zChip ch)
+    {
+    	SetBoard(c,BallChars[ch.chipNumber]);
+    }
     public char SetBoard(zCell c, char contents)
     {
-        char old = c.contents;
+    	char old = c.contents;
         if (zChip.BallColorIndex(old) >= 0)     {   RemoveBall(c);    }
         if (zChip.BallColorIndex(contents) >= 0) {  AddBall(c);   }
         if(old==NoSpace) { if(contents==Empty) { rings_removed--; }}
@@ -203,16 +235,12 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	}
     }
     void incBalls(int row,int col)
-    {	int p0 = balls[row][col];
-    	balls[row][col]=balls[row][col]+1;
-    	int p1 = balls[row][col];
-    	G.Assert(p1==p0+1,"inc error sb "+(p0+1)+" is "+p1);
+    {	zCell r = rack[row][col];
+    	r.height++;
     } 
     void decBalls(int row,int col)
-    {	int p0 = balls[row][col];
-		balls[row][col] = balls[row][col]-1;
-		int p1 = balls[row][col];
-		G.Assert(p1==p0-1,"dec error sb "+(p0+1)+" is "+p1);
+    {	zCell r = rack[row][col];
+		r.height--;
     }
     // remove balls isolated by removing a tile, and balls captured by moving a ball.
     // captured balls are marked with lower case letters. This isn't effectient; it
@@ -445,32 +473,27 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         G.Assert(balls_on_board == from_b.balls_on_board,"same balls on board");
         G.Assert(balls_in_play == from_b.balls_in_play,"same balls in play");
         G.Assert(rings_removed == from_b.rings_removed,"same rings removed");
+        G.Assert(sameCells(pickedSource,from_b.pickedSource),"pickedSource mismatch");
+        G.Assert(sameCells(droppedDest,from_b.droppedDest),"droppedDest mismatch");
+        G.Assert(pickedObject==from_b.pickedObject,"pickedObject mismatch");
+        G.Assert(sameCells(ringRemoved,from_b.ringRemoved),"ringRemoved mismatch");    
         G.Assert(swapped_state == from_b.swapped_state,"same swapped");
-        
-        for (int i = 0, len = balls[0].length; i < len; i++)
-        {
-            if (!((balls[RESERVE_INDEX][i] == from_b.balls[RESERVE_INDEX][i]) &&
-                    (balls[FIRST_PLAYER_INDEX][i] == from_b.balls[FIRST_PLAYER_INDEX][i]) &&
-                    (balls[SECOND_PLAYER_INDEX][i] == from_b.balls[SECOND_PLAYER_INDEX][i])))
-            {
-            	throw G.Error("Ball mismatch at %s", i);
-            }
-        }
+     
     }
 
-    private long Digest_Rack(Random r, int[] rack)
+    private long Digest_Rack(Random r, zCell[] rack)
     {
         long v = 0;
 
         for (int i = 0; i < rack.length; i++)
         {
-            int ct = rack[i];
+            zCell ct = rack[i];
 
             for (int j = 0; j < 12; j++)
             {
                 long val0 = r.nextLong();
 
-                if (j < ct)
+                if (j < ct.height)
                 {
                     v ^= val0;
                 }
@@ -512,11 +535,16 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 					break;
                 }
         }
-        v ^= Digest_Rack(r, balls[FIRST_PLAYER_INDEX]);
-        v ^= Digest_Rack(r, balls[SECOND_PLAYER_INDEX]);
+        v ^= Digest_Rack(r,rack[RESERVE_INDEX]);
+        v ^= Digest_Rack(r, rack[FIRST_PLAYER_INDEX]);
+        v ^= Digest_Rack(r, rack[SECOND_PLAYER_INDEX]);
         v ^= Digest(r,variation.ordinal());
         v ^= Digest(r,boardSetup.ordinal());
         v ^= Digest(r,handicap_setup!=null ? handicap_setup.ordinal() : -1);
+        v ^= Digest(r,pickedSource);
+        v ^= Digest(r,droppedDest);
+        v ^= Digest(r,pickedSource);
+        v ^= Digest(r,ringRemoved);
         if(swapped_state) { v = ~v; }
         v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
@@ -541,8 +569,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         rings_removed = from_b.rings_removed;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
-        AR.copy(balls,from_b.balls);
+        pickedSource = getCell(from_b.pickedSource);
+        droppedDest = getCell(from_b.droppedDest);
+        pickedObject = from_b.pickedObject;
+        
         AR.copy(CaptureColor,from_b.CaptureColor);
         AR.copy(CaptureState,from_b.CaptureState);
         getCell(Captures,from_b.Captures);       
@@ -561,8 +591,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         ringRemoved = rr;
         }
         placementIndex = from_b.placementIndex;
-        sameboard(from_b);
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
     public void setBoardType(Zvariation v)
     {
     	boardSetup = v;
@@ -571,26 +601,40 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	moveNumber = 1;
         InitBallsAndBoard();
     }
- 
+    public void doInit(String token,long rv,int np,int rev)
+    {
+    	Zvariation variation = Zvariation.find(token);
+    	doInit(token,variation,handicap_setup!=null ? handicap_setup : variation.boardSetup,rv,rev);
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
-    {   Zvariation variation = Zvariation.find(gtype);
-    	G.Assert(variation!=null,WrongInitError,gtype);
-    	// 
+    {   
+       	StringTokenizer tok = new StringTokenizer(gtype);
+    	String typ = tok.nextToken();
+    	Zvariation variation = Zvariation.find(typ);
+    	G.Assert(variation!=null,WrongInitError,gtype);   	
+    	@SuppressWarnings("unused")
+		int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;	// revision not specified, old client
+       	// 
     	// this is delicate - this version os doInit is called from copyFrom
     	// as part of copying the board, so it must use the current setup
     	// but it is also called by standard initialization, so has to use the
     	// setup of that variation.
-    	doInit(gtype,variation,handicap_setup!=null ? handicap_setup : variation.boardSetup,key);
-    }
+    	doInit(typ,variation,handicap_setup!=null ? handicap_setup : variation.boardSetup,ran,rev);
+    	}
+    
+
     public void doInit()
     {
-    	doInit(gametype,variation,boardSetup,randomKey);
+    	doInit(gametype,variation,boardSetup,randomKey,revision);
     }
-    private void doInit(String gt,Zvariation bs,Zvariation bset,long k)
+    private void doInit(String gt,Zvariation bs,Zvariation bset,long k,int rev)
     {	gametype = gt;
     	randomKey = k;
     	variation = bs;
+    	adjustRevision(rev);
     	setBoardType(bset);
     	
     	swapped_state = false;
@@ -603,7 +647,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // the basic board shape changing after init
     public void doInit(GameBoard b,long randomv)
     {	
-    	doInit(b.gametype,b.variation,b.boardSetup,b.randomKey);
+    	doInit(b.gametype,b.variation,b.boardSetup,b.randomKey,b.revision);
     }
 
     // true if two adjacent sides are free, ie if it's an edge
@@ -720,7 +764,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	}
     return(null);
     }
-    public boolean CaptureOccurs(zCell from,zCell between,zCell dest,boolean orUncapture)
+    public boolean CaptureOccurs(zCell from,zChip picked,zCell between,zCell dest,boolean orUncapture)
     {  
        if ((dest!=null) && (dest.contents == Empty))
         {
@@ -730,10 +774,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             case CONTINUE_STATE:
             case DONE_CAPTURE_STATE:
             {	if(between==null) { between=MidBetween(from,dest); }
-                char src = from.contents;
-                int color = UncapturedColorIndex(src);
-
-                if ((between!=null) && (color >= 0))
+ 
+                if ((between!=null) && picked!=null)
                 {
                     char mid = CaptureBetween(between);
 
@@ -798,7 +840,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public final void MoveBtoR(movespec m,replayMode replay)
     {	char movingBoardCol = m.from_col;
     	int movingBoardRow = m.from_row;
-    	int movingRack = m.to_rack;
+    	int movingRack = m.to_col-'0';
     	zCell c = getCell(movingBoardCol, movingBoardRow);
         char oldboard = c.contents;
         int idx = zChip.BallColorIndex(oldboard);
@@ -927,9 +969,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         m.movedAndCaptured = zChip.BallColorIndex(oldball);
         int oldcolor = zChip.BallColorIndex(oldball);
         zCell newdest = getCell(destBoardCol, destBoardRow);
-
         if (oldboard==newdest)  {  return;  }
 
+        pickedSource = oldboard;
+        droppedDest = newdest;
  
         G.Assert(newdest.contents == Empty, "Destination is not empty");
         G.Assert(oldcolor >= 0, "BtoB Board has no ball");
@@ -1020,9 +1063,9 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // move a ball from one rack to another
     public void MoveRtoR(movespec m,replayMode replay)
     {
-    	int fromRackIndex = m.from_rack;
-    	int movingRackIndex = m.color;
-    	int toRackIndex = m.to_rack;
+    	int fromRackIndex = m.from_col-'0';
+    	int movingRackIndex = m.from_row;
+    	int toRackIndex = m.to_col-'0';
         if (fromRackIndex != toRackIndex)
         {
             if (board_state != ZertzState.PUZZLE_STATE)
@@ -1030,38 +1073,43 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             	throw G.Error("Rack transfers not allowed");
             }
 
-            int oldcount = balls[fromRackIndex][movingRackIndex];
-            G.Assert(oldcount > 0, "Source bin is empty");
+            zCell from = rack[fromRackIndex][movingRackIndex];
+            G.Assert(from.height > 0, "Source bin is empty");
             decBalls(fromRackIndex,movingRackIndex);
             incBalls(toRackIndex,movingRackIndex);
+            zCell to = rack[toRackIndex][movingRackIndex];
+            pickedSource = from;
+            droppedDest = to;
             if(replay==replayMode.Single)
             {
-            	animationStack.push(rack[fromRackIndex][movingRackIndex]);
-            	animationStack.push(rack[toRackIndex][movingRackIndex]);
+            	animationStack.push(from);
+            	animationStack.push(to);
             }
         }
     }
 
     // move a ball from a rack to the board
     public void MoveRtoB(movespec m,replayMode replay)
-    {  int movingRack =  m.from_rack;
-       int movingRackIndex = m.color;
+    {  int movingRack =  m.from_col-'0';
+       int movingRackIndex = m.from_row;
        char movingBoardCol = m.to_col;
        int movingBoardRow = m.to_row;
     	ZertzState nextstate = board_state;
-        int oldcount = balls[movingRack][movingRackIndex];
-        zCell c = getCell(movingBoardCol, movingBoardRow);
-        G.Assert(c!=null,"should exist ",movingBoardCol,movingBoardRow);
+        zCell from = rack[movingRack][movingRackIndex];
+        zCell dest = getCell(movingBoardCol, movingBoardRow);
+        pickedSource = from;
+        droppedDest = dest;
+        pickedObject = null;
         {
         if(replay==replayMode.Single)
         {
-        	animationStack.push(rack[movingRack][movingRackIndex]);
-        	animationStack.push(c);
+        	animationStack.push(from);
+        	animationStack.push(dest);
         }
-        char oldboard = c.contents;
+        char oldboard = dest.contents;
         m.movedAndCaptured = zChip.BallColorIndex(oldboard);
         G.Assert(oldboard == Empty, "Destination cell not empty!");
-        G.Assert(oldcount > 0, "Source bin is empty");
+        G.Assert(from.height > 0, "Source bin is empty");
 
         switch (board_state)
         {
@@ -1069,16 +1117,18 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             nextstate = ZertzState.DONE_STATE;
 			//$FALL-THROUGH$
 		case PUZZLE_STATE:
-            balls[movingRack][movingRackIndex]--;
-            SetBoard(c, BallChars[movingRackIndex]);
-            c.lastPlaced = placementIndex;
+            from.height--;
+            SetBoard(dest, BallChars[movingRackIndex]);
+            dest.lastPlaced = placementIndex;
+            dest.height = 1;
             placementIndex++;
 
             break;
         case MOVE_OR_SWAP_STATE:
         case MOVE_STATE:
-            balls[movingRack][movingRackIndex]--;
-            SetBoard(c,BallChars[movingRackIndex]);
+        	from.height--;
+            SetBoard(dest,BallChars[movingRackIndex]);
+            dest.height = 1;
             nextstate = (AnyRingCanChange() ? ZertzState.RING_STATE : ZertzState.DONE_STATE);
 
             break;
@@ -1091,9 +1141,9 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         // for the condidition that no rings can be moved after the new
         // ball is placed.
         ballPlacedFromRack = movingRack;
-        ballPlaced=c;
+        ballPlaced=dest;
         
-        c.lastPlaced = placementIndex;
+        dest.lastPlaced = placementIndex;
         placementIndex++;
         }
 
@@ -1216,28 +1266,28 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
 
     /* return true if the player who owns the balls has won */
-    public boolean WinForPlayer(int[] ball)
+    public boolean WinForPlayer(zCell[] ball)
     {
-        return ((ball[zChip.WHITE_INDEX] > winning_total) ||
-        (ball[zChip.GREY_INDEX] > (winning_total + 1)) ||
-        (ball[zChip.BLACK_INDEX] > (winning_total + 2)) ||
-        ((ball[zChip.WHITE_INDEX] >= winning_total) &&
-        (ball[zChip.GREY_INDEX] >= winning_total) &&
-        (ball[zChip.BLACK_INDEX] >= winning_total)));
+        return ((ball[zChip.WHITE_INDEX].height > winning_total) ||
+        (ball[zChip.GREY_INDEX].height > (winning_total + 1)) ||
+        (ball[zChip.BLACK_INDEX].height > (winning_total + 2)) ||
+        ((ball[zChip.WHITE_INDEX].height >= winning_total) &&
+        (ball[zChip.GREY_INDEX].height >= winning_total) &&
+        (ball[zChip.BLACK_INDEX].height >= winning_total)));
     }
     public double balls_to_win(int index)
     {
-        int[] ball = balls[index];
+        zCell[] r = rack[index];
 
-        if (ball[zChip.UNDECIDED_INDEX] > 0)
+        if (r[zChip.UNDECIDED_INDEX].height > 0)
         {
-        	throw G.Error(ball[zChip.UNDECIDED_INDEX] + " Undecided balls remain");
+        	throw G.Error(r[zChip.UNDECIDED_INDEX] + " Undecided balls remain");
         }
 
-        double allballs = (white_value * ball[zChip.WHITE_INDEX]) +
-            (black_value * ball[zChip.BLACK_INDEX]) +
-            (grey_value * ball[zChip.GREY_INDEX]);
-        int white_needed = winning_total - ball[zChip.WHITE_INDEX];
+        double allballs = (white_value * r[zChip.WHITE_INDEX].height) +
+            (black_value * r[zChip.BLACK_INDEX].height) +
+            (grey_value * r[zChip.GREY_INDEX].height);
+        int white_needed = winning_total - r[zChip.WHITE_INDEX].height;
 
         //
         // note; evaluation of these winning conditions changed from 0 to -100
@@ -1251,14 +1301,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             return (-100.0);
         } // win with whites
 
-        int grey_needed = winning_total - ball[zChip.GREY_INDEX];
+        int grey_needed = winning_total - r[zChip.GREY_INDEX].height;
 
         if (grey_needed < -1)
         {
             return (-100.0);
         } //win with greys
 
-        int black_needed = winning_total - ball[zChip.BLACK_INDEX];
+        int black_needed = winning_total - r[zChip.BLACK_INDEX].height;
 
         if (black_needed < -2)
         {
@@ -1296,7 +1346,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     public boolean WinForPlayerNow(int ind)
     {
-        return (win[ind] || WinForPlayer(balls[ind]));
+        return (win[ind] || WinForPlayer(rack[ind]));
     }
 
     /* return the index into the ball array if this is a captured ball color */
@@ -1332,11 +1382,11 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
        to remove balls from your own rack to place on the board */
     public boolean ReserveIsEmpty()
     {
-        int[] ball = balls[RESERVE_INDEX];
+        zCell[] ball = rack[RESERVE_INDEX];
 
         for (int i = 0; i < NCOLORS; i++)
         {
-            if (ball[i] > 0)
+            if (ball[i].height > 0)
             {
                 return (false);
             }
@@ -1350,8 +1400,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // we can pick up a ball or drop a ball there.  movingBallColor is 
     // the ball we would drop, or -1 if we want to pick up
     //
-    public boolean AllowSelectRack(int rackindex, int ballindex,
-        int movingBallColor)
+    public boolean AllowSelectRack(int rackindex, int ballindex, int movingBallColor)
     {
         boolean allowSelect = false;
 
@@ -1360,7 +1409,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case PUZZLE_STATE:
             allowSelect = (movingBallColor == ballindex) 
             					? true
-                                : ((movingBallColor<0) && (balls[rackindex][ballindex] > 0));
+                                : ((movingBallColor<0) && (rack[rackindex][ballindex].height > 0));
              break;
         case MOVE_OR_SWAP_STATE:
         case MOVE_STATE:
@@ -1368,9 +1417,9 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
             // need to move a ball from the rack  
             allowSelect = (((movingBallColor >= 0)
-                ? (movingBallColor == ballindex) : (balls[rackindex][ballindex] > 0)) &&
+                ? (movingBallColor == ballindex) : (rack[rackindex][ballindex].height > 0)) &&
                 ((rackindex == RESERVE_INDEX) &&
-                (balls[rackindex][ballindex] > 0))) ||
+                (rack[rackindex][ballindex].height > 0))) ||
                 (ReserveIsEmpty() && (rackindex == whoseTurn));
 
             break;
@@ -1389,10 +1438,24 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
         return (allowSelect);
     }
+    private void unPickObject()
+    {
+    	if(pickedObject!=null)
+    	{	if(pickedSource.onBoard) 
+    			{ 
+    			  pickedSource.contents = BallChars[pickedObject.chipNumber];
+    			  AddBall(pickedSource);
+    			}
+    		else {
+    			pickedSource.height++;
+    		}
+    		pickedObject = null;
+    	}
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	movespec m = (movespec)mm;
         
-        //G.print("E "+m+" for "+whoseTurn);
+        G.print("E "+m+" for "+whoseTurn);
     	if(board_state==ZertzState.RESIGN_STATE)
     	{
     		// this is a bit of a crock that only the older move generation strategy
@@ -1400,25 +1463,75 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	switch(m.op)
     	{
     	case MOVE_RESIGN:
-    	case MOVE_DONE: break;
+    	case MOVE_DONE: 
+    		pickedSource = droppedDest = null;
+    		ringRemoved = null;
+    		pickedObject = null;
+    		break;
     	default: setState(unresign);
     	}
     	}
         switch (m.op)
         {
         case MOVE_SETBOARD:
-     		doInit(gametype,variation,Zvariation.values()[m.to_row],randomKey);
+     		doInit(gametype,variation,Zvariation.values()[m.to_row],randomKey,revision);
      		needStart = false;
+        	break;
+        case MOVE_PICK:
+        	zCell from = rack[m.from_col-'0'][m.from_row];
+        	pickedSource = from;
+        	pickedObject = from.removeTop();
+        	break;
+        case MOVE_PICKB:
+        	{
+        	zCell f = getCell(m.from_col,m.from_row);
+        	if(f==pickedSource && pickedObject!=null)
+        	{
+        		SetBoard(f,pickedObject);
+        		pickedSource = null;
+        		pickedObject = null;
+        		AddBall(f);
+        	}
+        	else if(f==droppedDest && board_state!=ZertzState.CAPTURE_STATE) 
+        		{ 
+        			droppedDest = null;
+        			pickedObject = f.removeTop();
+        			RemoveBall(f);
+        			switch(board_state)
+        			{
+        			default: break;
+        			case DONE_CAPTURE_STATE:
+        				setState(ZertzState.CONTINUE_STATE);
+						//$FALL-THROUGH$
+					case CONTINUE_STATE:
+        				pickedSource = f;
+        				break;
+        			case DONE_STATE:
+        				setState(ZertzState.BALL_STATE);
+        				break;
+        			case RING_STATE:
+        				setState(ZertzState.MOVE_STATE);
+        				break;
+        			}
+        		}
+        	else 
+        		{	pickedSource = f;
+        			pickedObject = f.removeTop(); 
+        			RemoveBall(f);
+        		}
+        	}
         	break;
         case MOVE_BtoB:
             lastMove = new movespec(m.player, MOVE_BtoB, m.from_col,
                     m.from_row, m.to_col, m.to_row);
+            unPickObject();
             MoveBtoB(m,replay);
 
             break;
 
         case MOVE_BtoR:
             lastMove = null;
+            unPickObject();
             MoveBtoR(m,replay);
 
             break;
@@ -1431,14 +1544,16 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             	else if(board_state==ZertzState.RING_STATE) { setState(ZertzState.RING_STATE); }
             }
             lastMove = new movespec(m.player, MOVE_RtoB,
-            		m.from_rack,
-                    m.color, m.to_col, m.to_row);
-           MoveRtoB(m,replay);
+            		m.from_col,m.from_row,
+            		m.to_col, m.to_row);
+            unPickObject();
+            MoveRtoB(m,replay);
 
             break;
 
         case MOVE_RtoR:
             lastMove = null;
+            unPickObject();
             MoveRtoR(m,replay);
 
             break;
@@ -1448,7 +1563,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             AddRing(m.to_col, m.to_row);
 
             break;
-
+        	
         case MOVE_R_MINUS:
         	if(replay!=replayMode.Live)
         	{	// repair some old damaged games.  Note this lets the mover remove
@@ -1465,7 +1580,9 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_DONE:
             // dont change lastmove
         	ringRemoved=null;
-        	SetNextPlayer(replay);
+    		pickedSource = droppedDest = null;
+     		pickedObject = null;
+    		SetNextPlayer(replay);
         	if(board_state==ZertzState.DRAW_STATE)
         	{ 
         		setState(ZertzState.GAMEOVER_STATE);
@@ -1578,10 +1695,11 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     }
 
     // move a ball from a rack to the board
-    public int ExpressMoveRtoB(int movingRack, int movingRackIndex,
+    public int ExpressMoveRtoB(char movingRack, int movingRackIndex,
         char movingBoardCol, int movingBoardRow)
     {	int caps = 0;
-        int oldcount = balls[movingRack][movingRackIndex];
+        zCell from = rack[movingRack-'0'][movingRackIndex];
+        int oldcount = from.height;
         zCell c = getCell(movingBoardCol, movingBoardRow);
         char oldboard = c.contents;
         G.Assert(oldboard == Empty, "Destination cell not empty!");
@@ -1592,7 +1710,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         {
         case MOVE_OR_SWAP_STATE:
         case MOVE_STATE:
-            balls[movingRack][movingRackIndex]--; //remove from rack
+            from.height--; //remove from rack
             SetBoard(c,BallChars[movingRackIndex]);
             setState(ZertzState.RING_STATE);
 
@@ -1610,10 +1728,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     public String ballSummary(int pl)
     {
-        int[] ball = balls[pl];
+        zCell[] ball = rack[pl];
 
-        return (ball[zChip.WHITE_INDEX] + "+" + ball[zChip.GREY_INDEX] + "+" +
-        ball[zChip.BLACK_INDEX]);
+        return (ball[zChip.WHITE_INDEX].height + "+" + ball[zChip.GREY_INDEX].height + "+" +
+        ball[zChip.BLACK_INDEX].height);
     }
 
     // move a ball from one board position to another.  If a temporary
@@ -1703,7 +1821,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
         case MOVE_RtoB:
         	{
-            int caps = ExpressMoveRtoB(m.from_rack, m.color, m.to_col, m.to_row);
+            int caps = ExpressMoveRtoB(m.from_col, m.from_row, m.to_col, m.to_row);
             turnStack.push(caps);
         	}
             break;
@@ -1762,19 +1880,19 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         {	int color = CaptureColor[--Capture_Index];
         	//ZertzState state = CaptureState[Capture_Index];
             zCell mid = Captures[Capture_Index];
-            balls[whoseTurn][color]--; //remove the ball
+            rack[whoseTurn][color].height--; //remove the ball
 
             //System.out.println("-r "+color+"->"+balls[whoseTurn][color]);
-            G.Assert(balls[whoseTurn][color] >= 0, "Captured too many");
+            G.Assert(rack[whoseTurn][color].height >= 0, "Captured too many");
             SetBoard(mid, BallChars[color]);
             captures--;
         }
     }
     // unmove a ball from a rack to the board
-    public void ExpressUnMoveRtoB(int movingRack, int movingRackIndex, char movingBoardCol, int movingBoardRow)
+    public void ExpressUnMoveRtoB(char movingRack, int movingRackIndex, char movingBoardCol, int movingBoardRow)
     {
     	// not usually, but if no rings were removable
-        incBalls(movingRack,movingRackIndex);
+        incBalls(movingRack-'0',movingRackIndex);
         SetBoardPos(movingBoardCol, movingBoardRow, Empty);
         setState(ZertzState.MOVE_STATE);
     }
@@ -1793,10 +1911,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         SetBoard(to, Empty);
         SetBoard(mid, BallChars[color]);
         ballPlaced = from; 	//save these for the move generator
-        balls[whoseTurn][color]--;
+        rack[whoseTurn][color].height--;
         //System.out.println("un cap "+Capture_Index);
         //System.out.println("- "+color+"->"+balls[whoseTurn][color]);
-        G.Assert(balls[whoseTurn][color] >= 0, "Captured too many");
+        G.Assert(rack[whoseTurn][color].height >= 0, "Captured too many");
         setState(newstate);
 
     }
@@ -1825,7 +1943,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	{
         	int caps = turnStack.pop();
         	restoreCaptures(caps);
-            ExpressUnMoveRtoB(m.from_rack, m.color, m.to_col, m.to_row);
+            ExpressUnMoveRtoB(m.from_col, m.from_row, m.to_col, m.to_row);
         	}
             break;
 
@@ -1861,17 +1979,17 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     public void test_eval()
     {
-        int[] rack = balls[RESERVE_INDEX];
+        zCell[] r = rack[RESERVE_INDEX];
 
-        for (int wi = 0; wi < rack[zChip.WHITE_INDEX]; wi++)
+        for (int wi = 0; wi < r[zChip.WHITE_INDEX].height; wi++)
         {
-            for (int gi = 0; gi < rack[zChip.GREY_INDEX]; gi++)
+            for (int gi = 0; gi < r[zChip.GREY_INDEX].height; gi++)
             {
-                for (int bi = 0; bi < rack[zChip.BLACK_INDEX]; bi++)
+                for (int bi = 0; bi < r[zChip.BLACK_INDEX].height; bi++)
                 {
-                    balls[SECOND_PLAYER_INDEX][zChip.WHITE_INDEX] = wi;
-                    balls[SECOND_PLAYER_INDEX][zChip.GREY_INDEX] = gi;
-                    balls[SECOND_PLAYER_INDEX][zChip.BLACK_INDEX] = bi;
+                    rack[SECOND_PLAYER_INDEX][zChip.WHITE_INDEX].height = wi;
+                    rack[SECOND_PLAYER_INDEX][zChip.GREY_INDEX].height = gi;
+                    rack[SECOND_PLAYER_INDEX][zChip.BLACK_INDEX].height = bi;
 
                     if (!WinForPlayerNow(SECOND_PLAYER_INDEX))
                     {
@@ -1897,7 +2015,7 @@ public void addCaptureMoves(CommonMoveStack  result)
             for (int dir = 0; dir < 6; dir++)
             {	zCell nc1 = c.exitTo(dir);
             	zCell nc2 = (nc1==null) ? null : nc1.exitTo(dir);
-            	if(CaptureOccurs(c,nc1,nc2,false))
+            	if(CaptureOccurs(c,c.topChip(),nc1,nc2,false))
             			{result.addElement(new movespec(whoseTurn, MOVE_BtoB,
                                 c.col, c.row, nc2.col,nc2.row));
             			}
@@ -1913,7 +2031,7 @@ public void addContinueCaptures(CommonMoveStack  result)
    {
 	zCell nx1 = placed.exitTo(dir);
    	zCell nx2 = nx1==null ? null : nx1.exitTo(dir);
-       if (CaptureOccurs(placed,nx1,nx2, false))
+       if (CaptureOccurs(placed,placed.topChip(),nx1,nx2, false))
        {
            result.addElement(new movespec(whoseTurn, MOVE_BtoB, 
            			placed.col,placed.row,nx2.col,nx2.row));

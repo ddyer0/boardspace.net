@@ -285,7 +285,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
        	pickedRiverMoves = from_b.pickedRiverMoves;
         sm_step = from_b.sm_step;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

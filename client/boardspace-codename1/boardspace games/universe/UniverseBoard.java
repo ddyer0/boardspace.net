@@ -997,7 +997,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         AR.copy(numberOfSize,from_b.numberOfSize);
 	    regionIndex = from_b.regionIndex;
 	    sweep_counter = from_b.sweep_counter;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public int[] saveSudokuValues()
     {

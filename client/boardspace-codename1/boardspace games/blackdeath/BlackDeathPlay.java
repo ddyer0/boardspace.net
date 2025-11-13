@@ -261,7 +261,7 @@ public void PrepareToMove(int playerIndex)
 	{
 		scores[i] = Math.min(1, board.scoreForPlayer(i)/30.0);
  	}
-	return reScorePosition(m,playerindex);
+	return reScorePosition(mm,playerindex);
  }
 
 

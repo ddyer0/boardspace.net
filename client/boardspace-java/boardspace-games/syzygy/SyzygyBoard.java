@@ -534,7 +534,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit() { doInit(gametype,randomKey); }
  

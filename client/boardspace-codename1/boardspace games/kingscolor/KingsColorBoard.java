@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 
 import bridge.Color;
 import lib.*;
-import lib.Random;
 import online.game.*;
 /**
  * Kings color, as a chess-like game, has a check/checkmate mechanic in the actual moves,
@@ -316,7 +315,7 @@ class KingsColorBoard
         getCell(kingLocation,from_b.kingLocation);
         AR.copy(playerColor,from_b.playerColor);
   
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

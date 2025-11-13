@@ -236,7 +236,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         robotDepth = from_b.robotDepth;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     public String gameType()

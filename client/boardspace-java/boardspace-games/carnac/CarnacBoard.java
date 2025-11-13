@@ -305,7 +305,7 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
         pickedLastTipped = getCell(from_b.pickedLastTipped);
         pickedLastChip = lastPlacedChip;
         nDolmondsValid = false;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

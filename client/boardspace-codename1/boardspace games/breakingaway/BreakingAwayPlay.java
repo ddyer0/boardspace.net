@@ -123,7 +123,7 @@ public void PrepareToMove(int playerIndex)
   	for(int i=0,lim=np; i<lim; i++)
  	{	mm.playerScores[i] = board.rawScoreForPlayer(i);
  	}
-  	return( reScorePosition(lastMove,lastMove.player));
+  	return( reScorePosition(mm,lastMove.player));
  }
  
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot

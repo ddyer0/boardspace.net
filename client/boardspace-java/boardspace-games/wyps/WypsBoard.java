@@ -770,7 +770,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         AR.copy(mapTarget,from_b.mapTarget);
         AR.copy(rackMap,from_b.rackMap);
         copyFrom(mappedRack,from_b.mappedRack);
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     

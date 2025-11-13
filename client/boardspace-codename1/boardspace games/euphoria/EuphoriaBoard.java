@@ -1853,7 +1853,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         lastPicked = null;
         recruitPlayer = from_b.recruitPlayer;
         CELLSIZE = from_b.CELLSIZE;
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
     //
     // generate a new randomizer based on the current move number and the game's random key

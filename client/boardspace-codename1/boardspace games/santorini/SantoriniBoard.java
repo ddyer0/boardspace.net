@@ -296,7 +296,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         AR.copy(movedUp,from_b.movedUp);
         AR.copy(confirmWin,from_b.confirmWin);
         getCell(lastBuild,from_b.lastBuild);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     private void initGods()
     {	gods.reInit();

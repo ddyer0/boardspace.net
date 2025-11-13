@@ -278,8 +278,8 @@ class DayAndNightBoard
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     public void sameboard(BoardProtocol b) { sameboard((DayAndNightBoard)b); }
     /**

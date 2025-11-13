@@ -285,7 +285,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         getCell(kingPosition,from_b.kingPosition);
         getCell(occupied,from_b.occupied);
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

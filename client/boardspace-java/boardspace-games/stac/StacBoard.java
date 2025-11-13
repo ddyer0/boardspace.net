@@ -219,7 +219,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         robotDepth = from_b.robotDepth;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {	

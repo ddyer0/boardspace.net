@@ -265,7 +265,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
         lastHit = getCell(from_b.lastHit);
         koLocation = getCell(from_b.koLocation);
         getCell(emptyCells,from_b.emptyCells);
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

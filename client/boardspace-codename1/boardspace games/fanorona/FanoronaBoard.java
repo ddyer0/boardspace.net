@@ -348,7 +348,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
         lastProgressMove = from_b.lastProgressMove;		// last move where a pawn was advanced
         lastDrawMove = from_b.lastDrawMove;			// last move where a draw was offered
 
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty state */

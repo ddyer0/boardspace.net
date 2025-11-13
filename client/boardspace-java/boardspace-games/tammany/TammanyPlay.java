@@ -433,7 +433,7 @@ public double assignMonteCarloWeights(CommonMoveStack all)
 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 		//G.print(""+mm+" "+mm.playerScores[i]+" "+board.win[i]);
 	}
-	return(reScorePosition(m,playerindex));	
+	return(reScorePosition(mm,playerindex));	
  }
 
 /*

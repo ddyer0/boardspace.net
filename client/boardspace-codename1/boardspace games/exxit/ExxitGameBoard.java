@@ -442,7 +442,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void reInit(String d)
     {

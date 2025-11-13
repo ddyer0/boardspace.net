@@ -252,7 +252,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
         	   alternateBridgeMoves.copyFrom(from_b.alternateBridgeMoves);
         	 }
          blobsValid = false;	// force rebuilding of blobs
-         sameboard(from_b);
+         if(G.debug()) { sameboard(from_b); }
      }
     boolean updateBlobs(PonteCell c,PonteChip chip)
     {	if(!blobsValid) { return(false); }

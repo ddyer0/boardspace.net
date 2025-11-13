@@ -1753,7 +1753,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
         getCell(droppedDestStack,from_b.droppedDestStack);
         pickedIndex.copyFrom(from_b.pickedIndex);      
         stackEmptyState = from_b.stackEmptyState;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit()
     {	// must use the live value of nextIntCompatibility

@@ -258,7 +258,7 @@ class CircleBoard
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        sameboard(from_b); 
+        if(G.debug()) { sameboard(from_b); }
     }
 
     
@@ -820,35 +820,6 @@ class CircleBoard
     }
  
 
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(CircleMovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	CircleState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-            
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
- }
-  
  private boolean addLegalMoves(CommonMoveStack all,int who)
  {
 	 CellStack empty = emptyCells;

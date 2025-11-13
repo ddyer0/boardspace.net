@@ -242,7 +242,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         getCell(droppedDestStack,from_b.droppedDestStack);   
         unresign = from_b.unresign;
         robotDepth = from_b.robotDepth;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
 
     /* initialize a board back to initial empty undoInfo */

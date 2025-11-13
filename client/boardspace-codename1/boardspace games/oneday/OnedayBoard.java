@@ -527,7 +527,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
         AR.copy(resigned,from_b.resigned);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-        sameboard(from_b);
+        if(G.debug()) { sameboard(from_b); }
     }
     public void doInit(String gtype,long rv)
     {

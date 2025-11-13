@@ -117,6 +117,13 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         b = new CheckerBoard(info.getString(GameInfo.GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),CheckerBoard.REVISION);
         useDirectDrawing(true);
+        switch(b.variation)
+        {
+        case Checkers_Dameo:
+            if(seatingFaceToFace()) { b.setReverseY(!b.reverseY()); }
+            break;
+        default: break;
+        }
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         

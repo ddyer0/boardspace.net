@@ -210,8 +210,8 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         nonWords.copyFrom(from_b.nonWords);
         commonWords.copyFrom(from_b.commonWords);
         myCommonWords.copyFrom(from_b.myCommonWords);
-        sameboard(from_b); 
-    }
+        if(G.debug()) { sameboard(from_b); }
+   }
 
     public void sameboard(BoardProtocol f) { sameboard((HBoard)f); }
 

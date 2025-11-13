@@ -315,7 +315,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	setLocalBoundsV(x,y,width,height,new double[] {0.5,1,2});
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
     	zoomer.reCenter();
     }
     public double setLocalBoundsA(int x, int y, int width, int height,double v)
@@ -331,6 +331,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         int minLogH = fh*15;	
         int margin = fh/2;
         int buttonW = fh*7;
+        vertical = v>0;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -340,7 +341,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     			2.0,	// aspect ratio for the board
     			fh*5,	// minimum cell size
     			fh*6,	// maximum cell size
-    			0.6		// preference for the designated layout, if any
+    			0.8		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
@@ -413,7 +414,8 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         return boardW*boardH+G.Width(playerBoards[0]);
  	
     }
-    
+   
+    boolean vertical = false;
     /**
      * create all per-player boxes.  Nothing is required, but the standard methods
      * create a player name, clocks, and a box for an avatar.  Standard practice
@@ -466,7 +468,14 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	}
    	
     	Rectangle pb = playerBoards[player];
+    	if(vertical)
+    	{
+    		G.SetRect(pb,x,G.Bottom(box),unitsize*6+unitsize/4,bigboxH);	
+    	}
+    	else
+    	{
        	G.SetRect(pb,G.Right(box),y,unitsize*6+unitsize/4,bigboxH);
+    	}
     	G.union(box,pb);
 
     	pl.displayRotation = rotation;
