@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package circle;
+package bug;
 
 import lib.*;
 import online.game.*;
@@ -64,7 +64,7 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, CircleConstants,
+public class BugPlay extends commonRobot<BugBoard> implements Runnable, BugConstants,
     RobotProtocol
     {
 	// this is an internal value used to affect the search in several ways.  Normal "value of position" results
@@ -75,7 +75,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
 	
 	// common parameters
     private int Strategy = DUMBOT_LEVEL;			// the init parameter for this bot
-    private CircleChip movingForPlayer = null;	// optional, some evaluators care
+    private BugChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
     private int boardSearchLevel = 1;				// the current search depth
@@ -88,21 +88,21 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
+    private boolean TESTBOT = false;
     
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
      *  */
 
-    public CirclePlay()
+    public BugPlay()
     {
     }
 
     // not needed for alpha-beta searches, which do not use threads
     public RobotProtocol copyPlayer(String from)	// from is the thread name
     {	RobotProtocol c = super.copyPlayer(from);
-    	CirclePlay cc = (CirclePlay)c;
+    	BugPlay cc = (BugPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
     	cc.board.initRobotValues(cc);
@@ -127,14 +127,24 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
    }*/
 
     public void Make_Move(commonMove m)
-    {   CircleMovespec mm = (CircleMovespec)m;
-        board.RobotExecute(mm);
+    {   BugMovespec mm = (BugMovespec)m;
+    	//G.print("R ",m," ",board.getState());
+    	board.RobotExecute(mm);
         boardSearchLevel++;
     }
-    
+    public void Unmake_Move(commonMove m)
+    {   BugMovespec mm = (BugMovespec)m;
+        board.UnExecute(mm);
+        boardSearchLevel--;
+    }
+    public boolean needDoneBetween(commonMove next,commonMove current)
+    {
+    	return (true);
+    } 
 	public void prepareForDescent(UCTMoveSearcher from)
 	{
 		// called at the top of the tree descent
+		//G.print("Start down");
 	}
     public void startRandomDescent()
     {
@@ -142,6 +152,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
     	// so we need to re-randomize the hidden state.
     	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
     	//terminatedWithPrejudice = -1;
+    	//G.print("Start random");
     }
 
 
@@ -172,24 +183,24 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
      * Not needed for MonteCarlo searches
      * @param player
      * @return
-    private double ScoreForPlayer(CircleBoard evboard,int player,boolean print)
+    private double ScoreForPlayer(BugBoard evboard,int player,boolean print)
     {	
 		double val = 0.0;
 		G.Error("Score for player not implemented");
      	return(val);
     }
     */
-
+ 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
      * Not needed for MonteCarlo searches
-
+  
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
-	}
-     */
+    }
+   */
 
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
@@ -197,7 +208,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
      * Not needed for MonteCarlo searches
     public void StaticEval()
     {
-            CircleBoard evboard = GameBoard.cloneBoard();
+            BugBoard evboard = GameBoard.cloneBoard();
             double val0 = ScoreForPlayer(evboard,FIRST_PLAYER_INDEX,true);
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
@@ -216,7 +227,7 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
         String evaluator, int strategy)
     {
         InitRobot(newParam, info, strategy);
-        GameBoard = (CircleBoard) gboard;
+        GameBoard = (BugBoard) gboard;
         board = GameBoard.cloneBoard();
         // strategy with be 0,1,2 for Dumbot, Smartbot, Bestbot
         Strategy = strategy;
@@ -235,8 +246,10 @@ public class CirclePlay extends commonRobot<CircleBoard> implements Runnable, Ci
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=true;
-         	break;
-        	
+          	break;
+		case TESTBOT_LEVEL_1:
+			TESTBOT = true;
+			break;
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
         }
     }
@@ -278,6 +291,18 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
+public commonMove DoFullMove()
+{
+	if(TESTBOT)
+	{
+		board.findBugs();
+	}
+	else
+	{
+		return DoMonteCarloFullMove();
+	}
+	return null;
+}
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
@@ -319,9 +344,9 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 3171172;		// 
-        monte_search_state.max_random_moves_per_second = 5000000;		// 
+        monte_search_state.maxThreads =  DEPLOY_THREADS;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 300000;		// 
+        monte_search_state.max_random_moves_per_second = 500000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.

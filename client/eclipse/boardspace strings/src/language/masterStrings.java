@@ -21,6 +21,7 @@ import lib.ChatWidget;
 import colorito.ColoritoConstants;
 import common.GameInfo;
 import breakingaway.BreakingAwayConstants;
+import bug.BugConstants;
 import bugs.BugsConstants;
 import cannon.CannonConstants;
 import container.ContainerConstants;
@@ -191,6 +192,9 @@ public class masterStrings extends InternationalStrings
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
+
+        setContext("bug");
+        BugConstants.putStrings();
 
         setContext("slither");
         SlitherConstants.putStrings();

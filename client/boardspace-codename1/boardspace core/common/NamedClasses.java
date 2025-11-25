@@ -61,6 +61,7 @@ public class NamedClasses {
        	classes.put("slither.SlitherViewer",slither.SlitherViewer.class);
       	classes.put("bugs.BugsViewer",bugs.BugsViewer.class);
        	classes.put("pendulum.PendulumViewer",pendulum.PendulumViewer.class);
+       	classes.put("bug.BugViewer",bug.BugViewer.class);
        	classes.put("circle.CircleViewer",circle.CircleViewer.class);
     	classes.put("epaminondas.EpaminondasViewer",epaminondas.EpaminondasViewer.class);
     	classes.put("manhattan.ManhattanViewer",manhattan.ManhattanViewer.class);

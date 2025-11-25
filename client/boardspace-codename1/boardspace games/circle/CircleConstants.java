@@ -21,7 +21,6 @@ import lib.GC;
 import lib.Graphics;
 import lib.InternationalStrings;
 import lib.OStack;
-import lib.StackIterator;
 import lib.exCanvas;
 import online.game.BaseBoard.BoardState;
 import online.game.BaseBoard.StateRole;
@@ -144,7 +143,7 @@ public class CRStack extends OStack<CR>
 /**
  * the basic critter zoo for shapes with up to 4 cells
  */
-public enum CR implements StackIterator<CR>
+public enum CR
 	{	// in order of predation
 		Single(new int[] {}),
 		Double(new int[] {0}),
@@ -276,12 +275,6 @@ public enum CR implements StackIterator<CR>
 			GC.translate(gc,-x,-y);
 			
 		}
-		}
-		public StackIterator<CR> push(CR item) {
-			return new CRStack().push(this).push(item);
-		}
-		public StackIterator<CR> insertElementAt(CR item, int at) {
-			return new CRStack().push(this).insertElementAt(item,at);
 		}
 	}
 

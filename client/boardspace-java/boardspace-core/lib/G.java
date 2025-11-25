@@ -277,7 +277,7 @@ public class G extends Platform implements Timestamp
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
         	if(G.debug()) 
-        		{//throw new ErrorX(Plog.log.finishLog()); 
+        		{ //throw new ErrorX(Plog.log.finishLog()); 
         		}
         	return(false);
         }

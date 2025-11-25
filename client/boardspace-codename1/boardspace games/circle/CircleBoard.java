@@ -698,6 +698,8 @@ class CircleBoard
         	// come here only where there's something to pick, which must
  			{
  			CircleCell src = getCell(m.source,m.to_col,m.to_row);
+			Critter cr = src.critter();
+ 			cr.forget();
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
@@ -711,7 +713,11 @@ class CircleBoard
         		setState(CircleState.Play);
         		break;
         	default: ;
-        	}}}
+        	}}
+ 	       	cr.remember();
+
+ 			}
+
             break;
 
         case MOVE_DROP: // drop on chip pool;
@@ -1019,6 +1025,5 @@ class CircleBoard
  			&& (moveNumber-lastDrawMove>4);
  			*/
  //}
-
 
 }

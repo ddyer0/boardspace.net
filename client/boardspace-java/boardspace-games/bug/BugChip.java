@@ -1,0 +1,188 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
+package bug;
+
+import lib.DrawableImageStack;
+import lib.Image;
+import lib.ImageLoader;
+import lib.ImageStack;
+import lib.OStack;
+import lib.Random;
+import online.game.chip;
+import bug.BugConstants.BugId;
+import common.CommonConfig;
+class ChipStack extends OStack<BugChip>
+{
+	public BugChip[] newComponentArray(int n) { return(new BugChip[n]); }
+}
+
+/**
+ * this is a specialization of {@link chip} to represent the stones used by pushfight;
+ * and also other tiles, borders and other images that are used to draw the board.
+ * 
+ * @author ddyer
+ *
+ */
+public class BugChip extends chip<BugChip> implements CommonConfig
+{
+
+	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
+	private static DrawableImageStack stoneChips = new DrawableImageStack();
+	private static DrawableImageStack otherChips = new DrawableImageStack();
+	private static boolean imagesLoaded = false;
+	public BugId id;
+	public String contentsString() { return(id==null ? file : id.name()); }
+
+	// constructor for the chips on the board, which are the only things that are digestable.
+	private BugChip(String na,double[]sc,BugId con)
+	{	
+		scale=sc;
+		file = na;
+		id = con;
+		if(con!=null) { con.chip = this; }
+		randomv = r.nextLong();
+		stoneChips.push(this);
+	}
+	
+	// constructor for all the other random artwork.
+	private BugChip(String na,double[]sc)
+	{	
+		scale=sc;
+		file = na;
+		otherChips.push(this);
+	}
+	
+	public int chipNumber() { return(id==null?-1:id.ordinal()); }
+	
+
+	static public BugChip Black = new BugChip("slate",new double[]{0.50,0.510,1.44},BugId.Black);
+	static public BugChip black_slate_1 = new BugChip("slate-1",new double[]{0.53,0.40,1.87},null);
+	static public BugChip black_slate_2 = new BugChip("slate-2",new double[]{0.573,0.420,1.82},null);
+	//static public GoChip white_stone_1 = new GoChip("shell-1",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
+	//static public GoChip white_stone_2 = new GoChip("shell-2",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
+	//static public GoChip white_stone_3 = new GoChip("shell-3",new double[]{0.503,0.496,1.347},GoId.White_Chip_Pool);
+	static public BugChip White = new BugChip("shell-4",new double[]{0.47,0.49,1.58},BugId.White);
+	static public BugChip white_stone_5 =  new BugChip("shell-5",new double[]{0.549,0.432,1.59},null);
+	static public BugChip white_stone_6 =  new BugChip("shell-6",new double[]{0.54,0.47,1.8},null);
+	static public BugChip white_stone_7 =  new BugChip("shell-7",new double[]{0.53,0.46,1.98},null);
+	static public BugChip white_stone_8 =  new BugChip("shell-8",new double[]{0.579,0.487,1.72},null);
+
+	static {
+		Black.alternates = new BugChip[]{ Black, black_slate_2,black_slate_1};
+		White.alternates = new BugChip[]{ White, white_stone_5,white_stone_6,white_stone_7,white_stone_8};
+	}
+
+    // indexes into the balls array, usually called the rack
+    static final BugChip getChip(int n) { return(BugId.values()[n].chip); }
+    
+    /**
+     * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
+     * method is called from drawChip, and the result is passed here to substitute a different chip.
+     * 
+     */
+	public BugChip getAltChip(int set)
+	{	
+		return this;
+	}
+
+
+    /* plain images with no mask can be noted by naming them -nomask */
+    static public BugChip backgroundTile = new BugChip("background-tile-nomask",null);
+    static public BugChip backgroundReviewTile = new BugChip("background-review-tile-nomask",null);
+   
+    static private double hexScale[] = {0.50,0.50,1.60};
+    static private double hexScaleNR[] = {0.58,0.50,1.54};
+    static public BugChip hexTile = new BugChip("hextile",hexScale,null);
+    static public BugChip hexTile_1 = new BugChip("hextile-1",hexScale,null);
+    static public BugChip hexTile_2 = new BugChip("hextile-2",hexScale,null);
+    static public BugChip hexTile_3 = new BugChip("hextile-3",hexScale,null);
+    static public BugChip hexTileNR = new BugChip("hextile-nr",hexScaleNR,null);
+    static public BugChip hexTileNR_1 = new BugChip("hextile-nr-1",hexScaleNR,null);
+    static public BugChip hexTileNR_2 = new BugChip("hextile-nr-2",hexScaleNR,null);
+    static public BugChip hexTileNR_3 = new BugChip("hextile-nr-3",hexScaleNR,null);
+
+    static {
+    	hexTile.alternates = new BugChip[] {hexTile,hexTile_1,hexTile_2,hexTile_3};
+       	hexTileNR.alternates = new BugChip[] {hexTileNR,hexTileNR_1,hexTileNR_2,hexTileNR_3};
+    }
+
+    public static BugChip Icon = new BugChip("bug-icon-nomask",null);
+
+    
+   
+    /**
+     * this is a fairly standard preloadImages method, called from the
+     * game initialization.  It loads the images into the stack of
+     * chips we've built
+     * @param forcan the canvas for which we are loading the images.
+     * @param Dir the directory to find the image files.
+     */
+	public static void preloadImages(ImageLoader forcan,String Dir)
+	{	if(!imagesLoaded)
+		{	
+		imagesLoaded = forcan.load_masked_images(StonesDir,stoneChips)
+				& forcan.load_masked_images(Dir,otherChips);
+		Image.registerImages(stoneChips);
+		Image.registerImages(otherChips);
+		}
+	}   
+	/**
+	 * this is a debugging interface to provide information about images memory consumption
+	 * in the "show images" option.
+	 * It's especially useful in applications that are very image intensive.
+	 * @param imstack
+	 * @return size of images (in megabytes)
+	 */
+	public static double imageSize(ImageStack imstack)
+	    {	double sum = otherChips.imageSize(imstack);
+	    	return(sum);
+	    }
+	   
+	/*
+	// override for drawChip can draw extra ornaments or replace drawing entirely
+	public void drawChip(Graphics gc,
+	            exCanvas canvas,
+	            int SQUARESIZE,
+	            double xscale,
+	            int cx,
+	            int cy,
+	            java.lang.String label)
+	    {	super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
+
+	    }
+	 */
+	/*
+	 * this is a standard trick to display card backs as an alternate to the normal face.
+	public static BugChip cardBack = new BugChip("cards",null,defaultScale);
+	
+	public static String BACK = NotHelp+"_back_";	// the | causes it to be passed in rather than used as a tooltip
+	
+    public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
+	{
+		boolean isBack = BACK.equals(label);
+		if(cardBack!=null && isBack)
+		{
+		 cardBack.drawChip(gc,canvas,SQUARESIZE, xscale, cx, cy,null);
+		}
+		else
+		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, label);
+		}
+	}
+
+	 */
+
+}

@@ -14,15 +14,17 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package circle;
+package bug;
 
-import javax.swing.JCheckBoxMenuItem;
 
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.JCheckBoxMenuItem;
 import common.GameInfo;
 
-import static circle.CircleMovespec.*;
+import static bug.BugMovespec.*;
 
-import java.awt.*;
 import online.common.*;
 import java.util.*;
 
@@ -95,14 +97,14 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements CircleConstants, PlacementProvider
+public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Circle = "circle"; // sgf game name
+    static final String Bug = "bug"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/circle/images/";
+    static final String ImageDir = "/bug/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -115,7 +117,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 
      
     // private state
-    private CircleBoard bb = null; //the board from which we are displaying
+    private BugBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
  
     // addRect is a service provided by commonCanvas, which supports a mode
@@ -135,8 +137,8 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
     private Toggle eyeRect = new Toggle(this,"eye",
- 			StockArt.NoEye,CircleId.ToggleEye,NoeyeExplanation,
- 			StockArt.Eye,CircleId.ToggleEye,EyeExplanation
+ 			StockArt.NoEye,BugId.ToggleEye,NoeyeExplanation,
+ 			StockArt.Eye,BugId.ToggleEye,EyeExplanation
  			);
     private Rectangle reverseRect = addRect("reverse");
     private Rectangle chipRects[] = addZoneRect("chip",2);
@@ -152,8 +154,8 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	CircleChip.preloadImages(loader,ImageDir);	// load the images used by stones
-		gameIcon = CircleChip.Icon.image;
+    {	BugChip.preloadImages(loader,ImageDir);	// load the images used by stones
+		gameIcon = BugChip.Icon.image;
     }
 
 
@@ -184,17 +186,17 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
-        	CircleConstants.putStrings();
+        	BugConstants.putStrings();
         }
-         
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
+        rotationOption = myFrame.addOption("rotate board",doRotation,deferredEvents);
+               
         
-        String type = info.getString(GameInfo.GAMETYPE, CircleVariation.CircleOfLife.name);
+        String type = info.getString(GameInfo.GAMETYPE, BugVariation.Bug_4.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
-        bb = new CircleBoard(type,players_in_game,randomKey,getStartingColorMap(),CircleBoard.REVISION);
+        bb = new BugBoard(type,players_in_game,randomKey,getStartingColorMap(),BugBoard.REVISION);
         //
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
@@ -371,7 +373,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
-    private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,CircleBoard gb)
+    private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,BugBoard gb)
     {	int player = pl.boardIndex;
         boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
         if (canhit)
@@ -385,7 +387,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
         { // draw a random pile of chips.  It's just for effect
 
             GC.frameRect(gc, Color.black, r);
-            CircleCell cell = gb.getPlayerCell(player);
+            BugCell cell = gb.getPlayerCell(player);
             int capsize = gb.captureSize[player];
             cell.drawStack(gc,this,canhit?highlight:null,CELLSIZE,G.centerX(r),G.centerY(r),0,0,""+capsize);
         }
@@ -409,7 +411,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	CircleChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	BugChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -426,7 +428,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
      * */
     public void drawFixedElements(Graphics gc)
     { 
-     CircleChip.backgroundTile.image.tileImage(gc, fullRect);   
+     BugChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
     
@@ -435,11 +437,11 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     {	// note, drawing using disB is very important for boards which have different sizes
     	// and which are using copyies of the real board for drawing.
     	// Not so important for boards which are always the same dimensions, but it's always safe.
-    	CircleBoard gb = disB(gc);
+    	BugBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
-         CircleChip.backgroundReviewTile.image.tileImage(gc,brect);   
+         BugChip.backgroundReviewTile.image.tileImage(gc,brect);   
         }
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
@@ -462,13 +464,13 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-          CircleChip tile = lastRotation?CircleChip.hexTile:CircleChip.hexTileNR;
+          BugChip tile = lastRotation?BugChip.hexTile:BugChip.hexTileNR;
           int left = G.Left(brect);
           int top = G.Bottom(brect);
           int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
-          for(Enumeration<CircleCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
+          for(Enumeration<BugCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
           { //where we draw the grid
-        	  CircleCell cell = cells.nextElement();
+        	  BugCell cell = cells.nextElement();
         	  int ypos = top - gb.cellToY(cell);
         	  int xpos = left + gb.cellToX(cell);
         	  int thiscol = cell.col;
@@ -494,62 +496,38 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
      * @param brect	the rectangle containing the board
      * @param highlight	the mouse location
      */
-    public void drawBoardElements(Graphics gc, CircleBoard gb, Rectangle brect, HitPoint highlight)
+    public void drawBoardElements(Graphics gc, BugBoard gb, Rectangle brect, HitPoint highlight)
     {
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-    	Hashtable<CircleCell,CircleMovespec> targets = gb.getTargets();
+    	Hashtable<BugCell,BugMovespec> targets = gb.getTargets();
      	numberMenu.clearSequenceNumbers();
-
-    	for(CircleCell cell = gb.allCells; cell!=null; cell=cell.next)
+     	int sz = (int)(0.8*gb.cellSize());
+    	for(BugCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             //String msg = ""+cell.critter();
-            //HitPoint.setHelpText(highlight,CELLSIZE,xpos,ypos,msg);
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,""+cell.critter()))
+            //HitPoint.setHelpText(highlight,sz,xpos,ypos,msg);
+            if(cell.drawStack(gc,this,canHit?highlight:null,sz,xpos,ypos,0,0.1,0.1,null/*""+cell.critter(gb)*/))
             		{
             		highlight.spriteColor = Color.red;
-                	highlight.awidth = CELLSIZE;
+                	highlight.awidth = sz;
             		}
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
             }
+           // BugCell c = gb.getCell('D',4);
+           //GC.Text(gc,gb.distance(c,cell),xpos,ypos);
         }
-    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
-    	drawCircleOfLife(gc,boardRect);
+    	numberMenu.drawSequenceNumbers(gc,sz*2/3,labelFont,labelColor);
     }
-    public void drawCircleOfLife(Graphics gc,Rectangle boardRect)
-    {	
-    	CR[] vals = CR.values();
-    	int rad = Math.min(G.Width(boardRect),G.Height(boardRect))/2	;
-    	int idx = 0;
-    	int nval = vals.length;
-    	int cx = G.centerX(boardRect)-CELLSIZE/2;
-    	int cy = G.centerY(boardRect);
-    	double qq = Math.PI/24;
-    	for(CR critter : vals)
-    	{	double angle = -Math.PI/12+Math.PI*2*idx/nval;
-        	//int h = critter.getIconHeight(CELLSIZE/2);
-        	//int w = critter.getIconWidth(CELLSIZE/2);
-        	int x = cx - (int)(rad*Math.sin(angle));
-        	int y = cy - (int)(rad*Math.cos(angle));
-    		critter.drawChip(gc,this,CircleChip.White,Math.PI-angle,CELLSIZE*2/3,x,y,null);
-    		double fudge = (idx==11?-qq/2 : 0);
-        	int x2 = cx - (int)(rad*Math.sin(angle+qq*3/2-fudge));
-        	int y2 = cy - (int)(rad*Math.cos(angle+qq*3/2-fudge));
-        	int x1 = cx - (int)(rad*Math.sin(angle+qq*2-fudge));
-        	int y1 = cy - (int)(rad*Math.cos(angle+qq*2-fudge));
-        	GC.setColor(gc,Color.black);
-        	GC.drawArrow(gc,x1,y1,x2,y2,CELLSIZE/4,CELLSIZE/8);
-    		idx++;
-     	}
-    }
+
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -579,8 +557,8 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
        // if direct drawing is in effect disB gets a copy of the board, which should be
        // used for everything called from here.  Also beware that the board structures
        // seen by the user interface are not the same ones as are seen by the execution engine.
-       CircleBoard gb = disB(gc);
-       CircleState state = gb.getState();
+       BugBoard gb = disB(gc);
+       BugState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
    	   if(gc!=null)
    		{
@@ -631,7 +609,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
        
        // draw the board control buttons 
 
-		if (state != CircleState.Puzzle)
+		if (state != BugState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -644,14 +622,14 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
-        drawPlayerStuff(gc,(state==CircleState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
+        drawPlayerStuff(gc,(state==BugState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
   
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==CircleState.Gameover?gameOverMessage(gb):s.get(state.description()),
-            				state!=CircleState.Puzzle,
+            				state==BugState.Gameover?gameOverMessage(gb):s.get(state.description()),
+            				state!=BugState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
@@ -659,7 +637,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        DrawReverseMarker(gc,reverseRect,selectPos,CircleId.ReverseView);
+        DrawReverseMarker(gc,reverseRect,selectPos,BugId.ReverseView);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -767,7 +745,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
  */
     public commonMove ParseNewMove(String st,int pl)
     {
-        return (new CircleMovespec(st, pl));
+        return (new BugMovespec(st, pl));
     }
 /**
  * prepare to add nmove to the history list, but also edit the history
@@ -855,9 +833,9 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
  */
     public void StartDragging(HitPoint hp)
     {
-        if (hp.hitCode instanceof CircleId)// not dragging anything yet, so maybe start
+        if (hp.hitCode instanceof BugId)// not dragging anything yet, so maybe start
         {
-        CircleId hitObject =  (CircleId)hp.hitCode;
+        BugId hitObject =  (BugId)hp.hitCode;
  	    switch(hitObject)
 	    {
 	    default: break;
@@ -867,7 +845,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 	    	PerformAndTransmit(G.concat("Pick " , hitObject.name()));
 	    	break;
 	    case BoardLocation:
-	        CircleCell hitCell = hitCell(hp);
+	        BugCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
 	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<0))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
@@ -920,14 +898,14 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-       	if(!(id instanceof CircleId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
+       	if(!(id instanceof BugId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
-        CircleId hitCode = (CircleId)id;
+        BugId hitCode = (BugId)id;
         
         // if direct drawing, hp.hitObject is a cell from a copy of the board
-        CircleCell hitObject = bb.getCell(hitCell(hp));
-		CircleState state = bb.getState();
+        BugCell hitObject = bb.getCell(hitCell(hp));
+		BugState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -939,7 +917,9 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
             }
         	break;
         case ReverseView:
-        	bb.setReverseY(bb.reverseY());
+        	boolean on = !doRotation;
+        	doRotation = on;
+        	rotationOption.setSelected(on);
         	generalRefresh();
         	break;
         case ToggleEye:
@@ -951,6 +931,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
 			case Puzzle:
+			case Grow:
 			case Play:
 				// fall through and pick up the previously dropped piece
 				PerformAndTransmit((hitObject.topChip()!=null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
@@ -972,7 +953,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 
 
 
-    private boolean setDisplayParameters(CircleBoard gb,Rectangle r)
+    private boolean setDisplayParameters(BugBoard gb,Rectangle r)
     {
       	boolean complete = false;
       	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
@@ -1049,7 +1030,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Circle); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Bug); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -1171,7 +1152,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     //}
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
-    {  return(new CirclePlay());
+    {  return(new BugPlay());
     }
 
     /** replay a move specified in SGF format.  
@@ -1291,7 +1272,7 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
 	 */
 	public double imageSize(ImageStack im)
 	  {
-		  return(super.imageSize(im) + CircleChip.imageSize(im));
+		  return(super.imageSize(im) + BugChip.imageSize(im));
 	  }
     
     /**

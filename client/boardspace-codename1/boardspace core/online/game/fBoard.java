@@ -19,34 +19,15 @@ package online.game;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import java.util.Enumeration;
+
+import lib.Bbox;
 import lib.CompareTo;
 import lib.G;
 import lib.Sort;
 import online.game.cell.Geometry;
 import online.game.commonCanvas.Itype;
 
-class Bbox
-{
-	int left=0;
-	int top=0;
-	int right=-1;
-	int bottom=-1;
-	void addPoint(int x,int y)
-	{
-		if (left>right)
-        {   left = x;
-            top = y;
-            right = left;
-            bottom = top;
-        }
-        else
-        {   if (x < left) {  left = x;  }
-            if (x > right)  { right = x;  }
-            if (y < top) {  top = y; }
-            if (y > bottom) { bottom = y; }
-        }
-	}
-}
+
 /**
  * the BoardIterator takes the cell array and sorts cells according
  * to the x,y coordinates and the desired presentation order.  The 

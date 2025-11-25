@@ -14,17 +14,17 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package circle;
+package bug;
 
 import lib.Random;
-import circle.CircleConstants.CC;
-import circle.CircleConstants.CircleId;
+import bug.BugConstants.BugId;
+import bug.BugConstants.CC;
 import lib.OStack;
 import online.game.*;
 
-class CellStack extends OStack<CircleCell>
+class CellStack extends OStack<BugCell>
 {
-	public CircleCell[] newComponentArray(int n) { return(new CircleCell[n]); }
+	public BugCell[] newComponentArray(int n) { return(new BugCell[n]); }
 }
 /**
  * specialized cell used for the game pushfight, not for all games using a pushfight board.
@@ -36,51 +36,41 @@ class CellStack extends OStack<CircleCell>
  * @author ddyer
  *
  */
-public class CircleCell
+public class BugCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<CircleCell,CircleChip>	 implements PlacementProvider
-{	
-	Critter myCritter;
+	extends stackCell<BugCell,BugChip>	 implements PlacementProvider
+{	BugBoard myBoard = null;
+	Bug myCritter;
 	int sweep_counter = 0;
-	public Critter critter()
-	{	CircleChip top = topChip();
+	boolean designatedAsEmpty = false;
+	public Bug critter(BugBoard b)
+	{	BugChip top = topChip();
 		if(top!=null && myCritter==null)
 		{
-			Critter cr = new Critter(top);
+			Bug cr = new Bug(b,top);
 			cr.findCritter(this);
-			cr.identity();	// make sure the identity of the blob is known, the board may change!
+			cr.identity(b);	// make sure the identity of the blob is known, the board may change!
+			myCritter = cr;
 		}
 		return myCritter;
 	}
 
-	
-	public CC getConnectionClass()
-	{	int cc = 0;
-		CircleChip top = topChip();
-		for(int i=0;i<6;i++) { 
-			cc = cc<<1;
-			CircleCell adj = exitTo(i);
-			if(adj!=null && adj.topChip()==top) 
-				{ cc = cc|1; }
-		}
-		return CC.connectionClass(cc);
-	}
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
 
-	public CircleCell(Random r,CircleId rack) { super(r,rack); }		// construct a cell not on the board
-	public CircleCell(CircleId rack,char c,int r) 		// construct a cell on the board
+	public BugCell(Random r,BugId rack) { super(r,rack); }		// construct a cell not on the board
+	public BugCell(BugId rack,char c,int r) 		// construct a cell on the board
 	{	// for square geometry, boards, this would be Oct or Square
 		super(cell.Geometry.Hex,rack,c,r);
 	};
 	/** upcast racklocation to our local type */
-	public CircleId rackLocation() { return((CircleId)rackLocation); }
+	public BugId rackLocation() { return((BugId)rackLocation); }
 	/** sameCell is called at various times as a consistency check
 	 * 
 	 * @param other
 	 * @return true if this cell is in the same location as other (but presumably on a different board)
 	 */
-	public boolean sameCell(CircleCell other)
+	public boolean sameCell(BugCell other)
 	{	return(super.sameCell(other)
 				// check the values of any variables that define "sameness"
 				// && (moveClaimed==other.moveClaimed)
@@ -89,7 +79,7 @@ public class CircleCell
 	/** copyFrom is called when cloning boards
 	 * 
 	 */
-	public void copyFrom(CircleCell ot)
+	public void copyFrom(BugCell ot)
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
@@ -107,7 +97,7 @@ public class CircleCell
 		lastPlaced = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
-	public CircleCell(CircleChip cont)
+	public BugCell(BugChip cont)
 	{	super();
 		addChip(cont);
 		onBoard=false;
@@ -122,8 +112,8 @@ public class CircleCell
 	//this could be used to eliminate the "tick" in stacks
 	//public int drawStackTickSize(int sz) { return(0); }
 	
-	public CircleChip[] newComponentArray(int size) {
-		return(new CircleChip[size]);
+	public BugChip[] newComponentArray(int size) {
+		return(new BugChip[size]);
 	}
 	public boolean labelAllChips() { return(false); }
 	//public int drawStackTickSize(int sz) { return(0); }
@@ -136,6 +126,17 @@ public class CircleCell
 	public int getLastPlacement(boolean empty) {
 		return empty ? -1 : lastPlaced;
 	}
-
+	
+	public CC getConnectionClass()
+	{	int cc = 0;
+		BugChip top = topChip();
+		for(int i=0;i<6;i++) { 
+			cc = cc<<1;
+			BugCell adj = exitTo(i);
+			if(adj!=null && adj.topChip()==top) 
+				{ cc = cc|1; }
+		}
+		return CC.connectionClass(cc);
+	}
 	
 }

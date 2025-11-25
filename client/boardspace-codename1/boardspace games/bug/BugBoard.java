@@ -14,12 +14,13 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package circle;
+package bug;
 
 
-import static circle.CircleMovespec.*;
+import static bug.BugMovespec.*;
 
-import java.awt.Color;
+import bridge.Color;
+
 import java.util.*;
 
 import lib.*;
@@ -27,7 +28,7 @@ import lib.Random;
 import online.game.*;
 
 /**
- * CircleBoard knows all about the game of CircleOfLife, which is played
+ * BugBoard knows all about the game of CircleOfLife, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
@@ -51,46 +52,47 @@ import online.game.*;
  *
  */
 
-class CircleBoard 
-	extends hexBoard<CircleCell>	// for a square grid board, this could be rectBoard or squareBoard 
-	implements BoardProtocol,CircleConstants
+class BugBoard 
+	extends hexBoard<BugCell>	// for a square grid board, this could be rectBoard or squareBoard 
+	implements BoardProtocol,BugConstants
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-	CircleVariation variation = CircleVariation.CircleOfLife;
-	private CircleState board_state = CircleState.Puzzle;	
-	private CircleState unresign = null;	// remembers the orignal state when "resign" is hit
+	BugVariation variation = BugVariation.Bug_4;
+	private BugState board_state = BugState.Puzzle;	
+	private BugState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
-	public CircleState getState() { return(board_state); }
-	private CritterStack captureStack =  new CritterStack();
+	private BugStack bugStack = new BugStack();
+	public BugState getState() { return(board_state); }
+	private BugStack captureStack =  new BugStack();
+	private IStack robotStack = new IStack();
 	int captureSize[] = new int[2];
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
      */
-	public void setState(CircleState st) 
-	{ 	unresign = (st==CircleState.Resign)?board_state:null;
+	public void setState(BugState st) 
+	{ 	unresign = (st==BugState.Resign)?board_state:null;
 		board_state = st;
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	private int playerIndex(CircleChip ch) { return( (ch==playerChip[0]) ? 0 : 1); }
-    private CircleId playerColor[]={CircleId.White,CircleId.Black};    
-    private CircleChip playerChip[]={CircleChip.White,CircleChip.Black};
-    private CircleCell playerCell[]=new CircleCell[2];
+    private BugId playerColor[]={BugId.Black,BugId.White};    
+    private BugChip playerChip[]={BugChip.Black,BugChip.White};
+    private BugCell playerCell[]=new BugCell[2];
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
-	public CircleChip getPlayerChip(int p) { return(playerChip[p]); }
-	public CircleId getPlayerColor(int p) { return(playerColor[p]); }
-	public CircleCell getPlayerCell(int p) { return(playerCell[p]); }
-	public CircleChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
-	public CirclePlay robot = null;
-	
-	 public boolean p1(String msg)
+	public BugChip getPlayerChip(int p) { return(playerChip[p]); }
+	public BugId getPlayerColor(int p) { return(playerColor[p]); }
+	public BugCell getPlayerCell(int p) { return(playerCell[p]); }
+	public BugChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
+	public BugPlay robot = null;
+	public int maxBugSize = 1;
+	public boolean p1(String msg)
 		{
 			if(G.p1(msg) && robot!=null)
-			{	String dir = "g:/share/projects/boardspace-html/htdocs/circle/circlegames/robot/";
+			{	String dir = "g:/share/projects/boardspace-html/htdocs/bug/buggames/robot/";
 				robot.saveCurrentVariation(dir+msg+".sgf");
 				return(true);
 			}
@@ -105,19 +107,22 @@ class CircleBoard
 // dithering by the user, or the "Digest()" method is not returning unique results
 // other parts of this mechanism: the Viewer ought to have a "repRect" and call
 // DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() { setState(CircleState.Draw); }	CellStack animationStack = new CellStack();
+	public void SetDrawState() { setState(BugState.Draw); }	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
 
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
-    public CircleChip pickedObject = null;
-    public CircleChip lastPicked = null;
-    private CircleCell blackChipPool = null;	// dummy source for the chip pools
-    private CircleCell whiteChipPool = null;
+    public BugChip pickedObject = null;
+    public BugChip lastPicked = null;
+    private BugCell blackChipPool = null;	// dummy source for the chip pools
+    private BugCell whiteChipPool = null;
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
+    private BugStack latentCaptures[] = { new BugStack(), new BugStack()};
+    private BugStack pendingCaptures = new BugStack();
+    private BugStack growers = new BugStack();
     
     // save strings to be shown in the game log
     StringStack gameEvents = new StringStack();
@@ -131,16 +136,18 @@ class CircleBoard
  	}
 
     private CellStack emptyCells=new CellStack();
-    private CircleState resetState = CircleState.Puzzle; 
+    private BugState resetState = BugState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
-	public CircleCell newcell(char c,int r)
-	{	return(new CircleCell(CircleId.BoardLocation,c,r));
+	public BugCell newcell(char c,int r)
+	{	BugCell cc  = new BugCell(BugId.BoardLocation,c,r);
+		cc.myBoard = this;
+		return cc;
 	}
 	
 	// constructor 
-    public CircleBoard(String init,int players,long key,int map[],int rev) // default constructor
+    public BugBoard(String init,int players,long key,int map[],int rev) // default constructor
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = GRIDSTYLE;
@@ -148,13 +155,17 @@ class CircleBoard
         
 		Random r = new Random(734687);
 		// do this once at construction
-	    blackChipPool = new CircleCell(r,CircleId.Black);
-	    blackChipPool.addChip(CircleChip.Black);
-	    whiteChipPool = new CircleCell(r,CircleId.White);
-	    whiteChipPool.addChip(CircleChip.White);
+	    blackChipPool = new BugCell(r,BugId.Black);
+	    blackChipPool.addChip(BugChip.Black);
+	    whiteChipPool = new BugCell(r,BugId.White);
+	    whiteChipPool.addChip(BugChip.White);
 
         doInit(init,key,players,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
+        
+        // this is for the side effect of reading the static data into the class
+        @SuppressWarnings("unused")
+		Bug ini = new Bug(this,BugChip.White);	// prime the pump
     }
     
     public String gameType() { return(G.concat(gametype," ",players_in_game," ",randomKey," ",revision)); }
@@ -175,15 +186,17 @@ class CircleBoard
     	adjustRevision(rev);
     	players_in_game = players;
     	win = new boolean[players];
- 		setState(CircleState.Puzzle);
-		variation = CircleVariation.findVariation(gtype);
+ 		setState(BugState.Puzzle);
+		variation = BugVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
 		robotState.clear();
 		gametype = gtype;
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
-		case CircleOfLife:
+		case Bug_3:
+		case Bug_4:
+		case Bug_5:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
@@ -193,8 +206,8 @@ class CircleBoard
 		}
 
  		
-	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
-	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
+	    playerCell[FIRST_PLAYER_INDEX] = blackChipPool; 
+	    playerCell[SECOND_PLAYER_INDEX] = whiteChipPool; 
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    chips_on_board = 0;
@@ -205,36 +218,43 @@ class CircleBoard
 	    AR.setValue(captureSize,0);
 	    pickedObject = null;
 	    resetState = null;
+	    maxBugSize = 1;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
-		playerColor[map[0]]=CircleId.White;
-		playerColor[map[1]]=CircleId.Black;
-		playerChip[map[0]]=CircleChip.White;
-		playerChip[map[1]]=CircleChip.Black;
+		playerColor[map[0]]=BugId.Black;
+		playerColor[map[1]]=BugId.White;
+		playerChip[map[0]]=BugChip.Black;
+		playerChip[map[1]]=BugChip.White;
 	    // set the initial contents of the board to all empty cells
 		emptyCells.clear();
-		for(CircleCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
+		for(BugCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
 		fullBoard = emptyCells.size();
-	    
+	    latentCaptures[0].clear();
+	    latentCaptures[1].clear();
+	    pendingCaptures.clear();
+	    growers.clear();
         animationStack.clear();
         moveNumber = 1;
 
+        robotState.clear(); //record the starting state. The most reliable
+        bugStack.clear();
+        robotStack.clear();
         // note that firstPlayer is NOT initialized here
     }
 
     /** create a copy of this board */
-    public CircleBoard cloneBoard() 
-	{ CircleBoard dup = new CircleBoard(gametype,players_in_game,randomKey,getColorMap(),revision); 
+    public BugBoard cloneBoard() 
+	{ BugBoard dup = new BugBoard(gametype,players_in_game,randomKey,getColorMap(),revision); 
 	  dup.copyFrom(this);
 	  return(dup); 
    	}
-    public void copyFrom(BoardProtocol b) { copyFrom((CircleBoard)b); }
+    public void copyFrom(BoardProtocol b) { copyFrom((BugBoard)b); }
 
     /* make a copy of a board.  This is used by the robot to get a copy
      * of the board for it to manipulate and analyze without affecting 
      * the board that is being displayed.
      *  */
-    public void copyFrom(CircleBoard from_b)
+    public void copyFrom(BugBoard from_b)
     {
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
@@ -254,16 +274,22 @@ class CircleBoard
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-
+        maxBugSize = from_b.maxBugSize;
         AR.copy(playerColor,from_b.playerColor);
+        latentCaptures[0].deepCopyFrom(this,from_b.latentCaptures[0]);
+        latentCaptures[1].deepCopyFrom(this,from_b.latentCaptures[1]);
         AR.copy(playerChip,from_b.playerChip);
- 
+        growers.deepCopyFrom(this,from_b.growers);
         if(G.debug()) { sameboard(from_b); }
     }
+    public Bug copy(Bug from)
+    {
+    	Bug b = new Bug(this,from.top);
+    	b.copyFrom(from);   	
+    	return b;
+    }
 
-    
-
-    public void sameboard(BoardProtocol f) { sameboard((CircleBoard)f); }
+    public void sameboard(BoardProtocol f) { sameboard((BugBoard)f); }
 
     /**
      * Robots use this to verify a copy of a board.  If the copy method is
@@ -271,7 +297,7 @@ class CircleBoard
      * a bug trap to see if BOTH the copy and sameboard methods agree.
      * @param from_b
      */
-    public void sameboard(CircleBoard from_b)
+    public void sameboard(BugBoard from_b)
     {
         super.sameboard(from_b); // // calls sameCell for each cell, also for inherited class variables.
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
@@ -285,6 +311,10 @@ class CircleBoard
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
         G.Assert(captureStack.eqContents(from_b.captureStack),"captureStack mismatch");
         G.Assert(AR.sameArrayContents(captureSize,from_b.captureSize),"captureSize mismatch");
+        G.Assert(maxBugSize==from_b.maxBugSize,"maxBugSize mismatch");
+        G.Assert(latentCaptures[0].size()==from_b.latentCaptures[0].size(),"grower[0] mismatch");
+        G.Assert(latentCaptures[1].size()==from_b.latentCaptures[1].size(),"grower[1] mismatch");
+        G.Assert(growers.size()==from_b.growers.size(),"grower mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -338,6 +368,9 @@ class CircleBoard
 		v ^= Digest(r,whoseTurn);
 		v ^= Digest(r,captureSize);
 		v ^= Digest(r,captureStack);
+		v ^= Digest(r,maxBugSize);
+		v ^= Digest(r,latentCaptures);
+		v ^= Digest(r,growers);
         return (v);
     }
 
@@ -386,16 +419,14 @@ class CircleBoard
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
     public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
-    	boolean win = false;
-    	return(win);
+    {	return win[player];
     }
 
 
     // set the contents of a cell, and maintain the books
     private int lastPlaced = -1;
-    public CircleChip SetBoard(CircleCell c,CircleChip ch)
-    {	CircleChip old = c.topChip();
+    public BugChip SetBoard(BugCell c,BugChip ch)
+    {	BugChip old = c.topChip();
     	if(c.onBoard)
     	{
     	if(old!=null) { chips_on_board--;emptyCells.push(c); c.myCritter=null; }
@@ -419,8 +450,8 @@ class CircleBoard
     //
     // undo the drop, restore the moving object to moving status.
     //
-    private CircleCell unDropObject()
-    {	CircleCell rv = droppedDestStack.pop();
+    private BugCell unDropObject()
+    {	BugCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	return(rv);
@@ -429,7 +460,7 @@ class CircleBoard
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
-    {	CircleCell rv = pickedSourceStack.pop();
+    {	BugCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
     	pickedObject = null;
@@ -438,7 +469,7 @@ class CircleBoard
     // 
     // drop the floating object.
     //
-    private void dropObject(CircleCell c)
+    private void dropObject(BugCell c)
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
@@ -461,10 +492,10 @@ class CircleBoard
     // true if c is the place where something was dropped and not yet confirmed.
     // this is used to mark the one square where you can pick up a marker.
     //
-    public boolean isDest(CircleCell c)
+    public boolean isDest(BugCell c)
     {	return(droppedDestStack.top()==c);
     }
-    public CircleCell getDest()
+    public BugCell getDest()
     {	return(droppedDestStack.top());
     }
  
@@ -473,7 +504,7 @@ class CircleBoard
     // to draw when tracking the mouse.
     // caution! this method is called in the mouse event process
     public int movingObjectIndex()
-    { CircleChip ch = pickedObject;
+    { BugChip ch = pickedObject;
       if(ch!=null)
     	{	return(ch.chipNumber()); 
     	}
@@ -486,7 +517,7 @@ class CircleBoard
      * @param row
      * @return
      */
-    private CircleCell getCell(CircleId source, char col, int row)
+    private BugCell getCell(BugId source, char col, int row)
     {
         switch (source)
         {
@@ -500,18 +531,61 @@ class CircleBoard
         	return(whiteChipPool);
         } 	
     }
+
+    //
+    // these are semi-magic numbers derived by dissecting celtoX00 and cellTOY00 for a maximimally large board
+    // and     public double yCellRatio() { return(1.1541); }
+    // these yield distances from center that are the same for radially symmertic cells.
+    //
+     int cellToXint(char colchar, int row)
+    {	
+        int col = geo_colnum(colchar);
+        int col2 = ((col+1) * 65823);
+        return col2;
+    }
+     int cellToYint(char colchar, int arow)
+    {	
+        int col = geo_colnum(colchar);
+        int thisrow = geo_rownum(colchar,arow);
+        int coffset = firstRowOffset(col);
+        int y0 = ((thisrow - firstRowInCol[(col+ncols)%ncols] ) * 75966)
+        		+ (coffset * 38003)
+        		;      
+        return (y0);
+     }
+    public int distanceSquared(BugCell from,BugCell to)
+    {
+    	int x0 = cellToXint(from.col,from.row);
+    	int y0 = cellToYint(from.col,from.row);
+    	int x1 = cellToXint(to.col,to.row);
+    	int y1 = cellToYint(to.col,to.row);
+    	long dx = (x0-x1);
+    	long dy = (y0-y1);
+    	double distance = (dx*dx+dy*dy)/10000000000.0;
+    	if((int)(distance+0.01) != (int)distance) 
+    	{
+    		G.print("close "+distance);
+    		distance += 0.01;
+    	}
+    	return (int)(distance);
+    }
+    public String distance(BugCell from,BugCell to)
+    {
+    	String v = ""+distanceSquared(from,to);
+    	return v;
+    }	
     /**
      * this is called when copying boards, to get the cell on the new (ie current) board
      * that corresponds to a cell on the old board.
      */
-    public CircleCell getCell(CircleCell c)
+    public BugCell getCell(BugCell c)
     {
     	return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
     }
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickObject(CircleCell c)
+    private void pickObject(BugCell c)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
         switch (c.rackLocation())
@@ -535,10 +609,10 @@ class CircleBoard
     //true if cell is the place where something was picked up.  This is used
     // by the board display to provide a visual marker where the floating chip came from.
     //
-    public boolean isSource(CircleCell c)
+    public boolean isSource(BugCell c)
     {	return(c==pickedSourceStack.top());
     }
-    public CircleCell getSource()
+    public BugCell getSource()
     {	return(pickedSourceStack.top());
     }
  
@@ -552,40 +626,23 @@ class CircleBoard
         {
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
-        case Confirm:
-        	setNextStateAfterDone(replay);
-         	break;
         case Play:
- 			setState(CircleState.Confirm);
+        case Grow:
+ 			setState(BugState.Confirm);
 			break;
         case Puzzle:
 			acceptPlacement();
             break;
         }
     }
-    private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
-       	switch(board_state)
-    	{
-    	default: throw G.Error("Not expecting after Done state "+board_state);
-    	case Gameover: break;
-     	case Confirm:
-    	case Puzzle:
-    	case Play:
-    		setState(CircleState.Play);
-    		
-    		break;
-    	}
-       	resetState = board_state;
-    }
-    
-    private void captureCritter(Critter dest,replayMode replay)
+
+    private void captureCritter(Bug dest,replayMode replay)
     {
     	captureStack.push(dest);
     	captureSize[whoseTurn] += dest.size();
     	for(int lim=dest.size()-1; lim>=0; lim--)
     	{
-    		CircleCell cap = dest.elementAt(lim);
+    		BugCell cap = dest.elementAt(lim);
     		SetBoard(cap,null);
     		if(replay.animate)
     		{
@@ -594,62 +651,238 @@ class CircleBoard
     		}
     	}
     }
-    private void doCaptures(CircleCell dest,CircleMovespec m,replayMode replay)
-    {	m.critter = null;
-    	Critter myGroup = dest.critter();
-    	if(myGroup!=null) //this prevents a nullpointerexception, but something is already wrong; there must be a critter
+    private void unCapture()
+    {
+    	Bug captured = captureStack.pop();
+    	captureSize[whoseTurn] -= captured.size();
+    	for(int lim=captured.size()-1; lim>=0; lim--)
     	{
-    	CR captureType = myGroup.identity().Eats;
+    		BugCell cap = captured.elementAt(lim);
+    		SetBoard(cap,captured.top);
+    		cap.myCritter = captured;
+    	}
+    }
+    private boolean doCaptures(Bug myGroup,BugStack growers, BugStack otherGrowers,BugStack captured)
+    {	boolean some = false;
+      	BugChip top = myGroup.top;
+      	String captureType = myGroup.rawIdentity;
     	for(int lim=myGroup.size()-1; lim>=0; lim--)
     	{
-    		CircleCell c = myGroup.elementAt(lim);
+     		BugCell c = myGroup.elementAt(lim);
+    		for(int dir = 0; dir<6; dir++)
+    		{	BugCell adj = c.exitTo(dir);
+				if(adj!=null)
+				{
+    			Bug adjCritter = adj.critter(this);
+				if(adjCritter!=null 
+						&& adjCritter.top != top
+						&& adjCritter.rawIdentity.equals(captureType))
+					{
+						captured.pushNew(adjCritter);
+						otherGrowers.pushNew(adjCritter);
+					some = true;
+					}
+				}
+    		}
+  	
+    	}
+    	if(some) { growers.pushNew(myGroup); }
+    	return some;
+    }
+    private boolean doCaptures(Bug myGroup,BugMovespec m,replayMode replay,BugStack noCaptures)
+    {	
+    	boolean some = false;
+    	if(myGroup!=null) //this prevents a nullpointerexception, but something is already wrong; there must be a critter
+    	{
+    	String captureType = myGroup.rawIdentity;
+    	BugChip top = myGroup.top;
+    	for(int lim=myGroup.size()-1; lim>=0; lim--)
+    	{
+    		BugCell c = myGroup.elementAt(lim);
     		for(int dir = 0; dir<6; dir++)
     		{
-    			CircleCell adj = c.exitTo(dir);
+    			BugCell adj = c.exitTo(dir);
     			if(adj!=null)
     			{
-    				Critter adjCritter = adj.critter();
-    				if(adjCritter!=null && adjCritter.identity()==captureType)
-    				{
-    					captureCritter(adjCritter,replay);
-    					adjCritter.next = m.critter;
-    					m.critter = adjCritter;
-    					//m.critter = m.critter==null ? (StackIterator)adjCritter : (m.critter).push(adjCritter);
-    				}
+    				Bug adjCritter = adj.critter(this);
+    				if(adjCritter!=null 
+    						&& adjCritter.top != top
+    						&& adjCritter.rawIdentity.equals(captureType))
+    				{	
+    				if(noCaptures!=null)
+    					{
+    					noCaptures.remove(adjCritter,false);
+    					}
+    				captureCritter(adjCritter,replay);
+					some = true;
+					adjCritter.next = m.critter;
+					m.critter = adjCritter;
+					//m.critter = m.critter==null ? (StackIterator)adjCritter : (m.critter).push(adjCritter);
+    				}}
     			}
     		}
-    	}}
+    	}
+    	if(some) { growers.push(myGroup); }
+    	return some;
     }
     
-    
-    private void doDone(CircleMovespec m,replayMode replay)
-    {	CircleCell dest = getDest();
- 
-        acceptPlacement();
+    private boolean newway = true;
+    int step = 0;
+    private void doDoneNewWay(BugCell dest,BugMovespec m,replayMode replay)
+    {	step++;
+    	// store the new latentCaptures and capturees
+    	BugStack otherPossibleCaptures = latentCaptures[whoseTurn^1];
+    	BugStack possibleCaptures= latentCaptures[whoseTurn];
+    	//G.print("g ",grow," o ",otherGrow," x ",growers);
+    	boolean cap = false;
+    	
+    	if(possibleCaptures.size()>0)
+    	{
+    		for(int lim=possibleCaptures.size()-1; lim>=0; lim--)
+    		{	// enlarged it, no longer a latent growth candidate
+    			Bug gr = possibleCaptures.elementAt(lim);
+    			if(gr.isAdjacent(dest)) { possibleCaptures.remove(lim,false); }
+    		}
+    	}
+    	
+    	if(growers.size()>0)
+    	{
+    		// must have been grow state, so dest must be adjacent to just one.
+    		for(int lim=growers.size()-1; lim>=0; lim--)
+    		{
+    			Bug grower = growers.elementAt(lim);
+    			if(grower.isAdjacent(dest))
+    			{
+    				growers.remove(lim,false);
+    				possibleCaptures.remove(grower);
+    			}
+    		}
 
-        if(dest!=null) { doCaptures(dest,m,replay); }
+    	}
+    	// collect all the potentially captured bugs
+    	pendingCaptures.clear();
+    	for(int lim=possibleCaptures.size()-1;lim>=0; lim--) 
+    		{ boolean thiscap = doCaptures(possibleCaptures.elementAt(lim),possibleCaptures,otherPossibleCaptures,pendingCaptures); 
+     		  cap |= thiscap;
+     		  if(!thiscap)
+    		  {		// no longer a capture candidate
+    			  possibleCaptures.remove(lim,false);
+    		  }
+    		}   	
+        cap |= doCaptures(dest.critter(this),possibleCaptures,otherPossibleCaptures,pendingCaptures);
         
-        if(captureSize[whoseTurn]>=20) { win[whoseTurn]=true; }
-        
-        if (board_state==CircleState.Resign)
-        {
-            win[nextPlayer[whoseTurn]] = true;
-    		setState(CircleState.Gameover);
-        }
-        else
-        {	if(winForPlayerNow(whoseTurn)) 
-        		{ win[whoseTurn]=true;
-        		  setState(CircleState.Gameover); 
-        		}
-        	else {setNextPlayer(replay);
-        	    if(!hasMoves()) { win[whoseTurn]=true; setState(CircleState.Gameover); }
-        	    else {	setNextStateAfterDone(replay); }
+        if(cap)
+        {	// if there are some, mark them all as empty and look for growth opportunities
+        	// in each of the capturing cells.
+        	cap = false;
+        	m.critter = null;
+        	for(BugCell c = allCells; c!=null; c=c.next)
+        	{
+        		c.designatedAsEmpty = false;
         	}
+        	
+        	for(int i=0;i<pendingCaptures.size(); i++)
+        	{
+        		Bug bug = pendingCaptures.elementAt(i);
+        		for(int j = 0; j<bug.size(); j++)
+        		{
+        			bug.elementAt(j).designatedAsEmpty=true;
+        		}
+        	}
+        	for(int lim = possibleCaptures.size()-1; lim>=0; lim--)
+        	{	Bug gr = possibleCaptures.elementAt(lim);
+        		gr.canGrow = addGrowMoves(null,gr,whoseTurn);
+        	}
+        	for(int lim = possibleCaptures.size()-1; lim>=0; lim--)
+        	{	Bug gr = possibleCaptures.elementAt(lim);
+       			if(gr.canGrow)
+       			{
+    			// really do it 
+    			cap |= doCaptures(gr,m,replay,otherPossibleCaptures);
+    			growers.pushNew(gr);
+    			possibleCaptures.remove(lim,false);
+       			}
+        	}
+         	for(int i=0;i<pendingCaptures.size(); i++)
+        	{
+        		Bug bug = pendingCaptures.elementAt(i);
+        		for(int j = 0; j<bug.size(); j++)
+        		{
+        			bug.elementAt(j).designatedAsEmpty=false;
+        		}
+        	}
+        	
+        }
+       
+        if(growers.size()>0 && addGrowMoves(null,whoseTurn)) { setState(BugState.Grow); }
+        else 
+        { // when no more growth is possible, remove any remaining even if they haven't grown
+          // this handles the unusual case where multiple groups had to grow, but one grew in
+          // a way that precludes another from growing.
+          growers.clear();
+          setNextPlayer(replay);
+          setState(BugState.Play);
+        }
+    	//G.print("eg ",grow," o ",otherGrow," x ",growers);
+    	
+
+        if(!hasMoves()) 
+    	{ win[whoseTurn]=true; 
+    	  setState(BugState.Gameover); 
+    	}
+    }
+    
+    
+	private void doDestOldWay(BugCell dest,BugMovespec m,replayMode replay)
+	{
+		boolean cap = doCaptures(dest.critter(this),m,replay,null); 
+	        if (board_state==BugState.Resign)
+	        {
+	            win[nextPlayer[whoseTurn]] = true;
+	    		setState(BugState.Gameover);
+	        }
+	        else
+	        {
+	        if (cap ) 
+	        { 
+	          if(addGrowMoves(null,whoseTurn))
+	          {
+	              setState(BugState.Grow);
+	          }
+	          else
+	          {
+	        	  cap = false;
+	          }
+	        }
+	        if(!cap)
+	        {	
+	        	setNextPlayer(replay);
+	        	setState(BugState.Play);
+	        }
+	        if(!hasMoves()) 
+	        	{ win[whoseTurn]=true; 
+	        	  setState(BugState.Gameover); 
+	        	}
+
+	        }
+	}
+	
+    private void doDone(BugMovespec m,replayMode replay)
+    {	BugCell dest = getDest();
+        acceptPlacement();
+        if(dest!=null)
+        {
+	        if(newway)
+	        {	doDoneNewWay(dest,m,replay);
+	        }
+	        else
+	        {	doDestOldWay(dest,m,replay);   
+	        }
         }
     }
-	
+
     public boolean Execute(commonMove mm,replayMode replay)
-    {	CircleMovespec m = (CircleMovespec)mm;
+    {	BugMovespec m = (BugMovespec)mm;
         if(replay.animate) { animationStack.clear(); }
 
         //G.print("E "+m+" for "+whoseTurn);
@@ -663,9 +896,9 @@ class CircleBoard
 
         case MOVE_DROPB:
         	{
-			CircleChip po = pickedObject;
-			CircleCell dest =  getCell(CircleId.BoardLocation,m.to_col,m.to_row);
-			CircleCell src = getSource();
+			BugChip po = pickedObject;
+			BugCell dest =  getCell(BugId.BoardLocation,m.to_col,m.to_row);
+			BugCell src = getSource();
 			if(src==null) 
 				{ src = getCell(playerColor[whoseTurn],'@',0); 
 				  pickObject(src);
@@ -677,7 +910,8 @@ class CircleBoard
 				{		
 				if(pickedObject==null) { unDropObject(); }
 	            dropObject(dest);
-            	m.critter = dest.critter();     
+            	Bug bug = m.critter = dest.critter(this);  
+            	maxBugSize = Math.max(maxBugSize,bug.size());
 	            /**
 	             * if the user clicked on a board space without picking anything up,
 	             * animate a stone moving in from the pool.  For Hex, the "picks" are
@@ -694,36 +928,40 @@ class CircleBoard
              break;
 
         case MOVE_PICK:
+        	{
+        	BugCell src = getCell(m.source,m.to_col,m.to_row);
+        	pickObject(src);
+        	}
+        	break;
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
- 			CircleCell src = getCell(m.source,m.to_col,m.to_row);
-			Critter cr = src.critter();
+ 			BugCell src = getCell(m.source,m.to_col,m.to_row);
+ 			Bug cr = src.critter(this);
  			cr.forget();
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
         	// be a temporary p
         	pickObject(src);
-         	switch(board_state)
+        	src.myCritter = null;
+        	switch(board_state)
         	{
         	case Puzzle:
          		break;
         	case Confirm:
-        		setState(CircleState.Play);
+        		setState(BugState.Play);
         		break;
         	default: ;
         	}}
- 	       	cr.remember();
-
+ 			cr.remember(this);
  			}
-
             break;
 
         case MOVE_DROP: // drop on chip pool;
         	if(pickedObject!=null)
         	{
-            CircleCell dest = getCell(m.source,m.to_col,m.to_row);
+            BugCell dest = getCell(m.source,m.to_col,m.to_row);
             if(isSource(dest)) { unPickObject(); }
             else 
             	{
@@ -742,26 +980,26 @@ class CircleBoard
             int nextp = nextPlayer[whoseTurn];
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
-            setState(CircleState.Puzzle);	// standardize the current state
+            setState(BugState.Puzzle);	// standardize the current state
             if((win[whoseTurn]=winForPlayerNow(whoseTurn))
                ||(win[nextp]=winForPlayerNow(nextp)))
-               	{ setState(CircleState.Gameover); 
+               	{ setState(BugState.Gameover); 
                	}
-            else {  setNextStateAfterDone(replay); }
+            else {  setState(BugState.Play); }
 
             break;
 
        case MOVE_RESIGN:
-    	   	setState(unresign==null?CircleState.Resign:unresign);
+    	   	setState(unresign==null?BugState.Resign:unresign);
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setState(CircleState.Puzzle);
+            setState(BugState.Puzzle);
             break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
-    	   setState(CircleState.Gameover);
+    	   setState(BugState.Gameover);
     	   break;
 
         default:
@@ -780,11 +1018,13 @@ class CircleBoard
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case Play:
+        case Grow:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
 		case Resign:
+		case Draw:
 		case Gameover:
 			return(false);
         case Puzzle:
@@ -792,14 +1032,17 @@ class CircleBoard
         }
     }
 
-    public boolean legalToHitBoard(CircleCell c,Hashtable<CircleCell,CircleMovespec> targets )
+    public boolean legalToHitBoard(BugCell c,Hashtable<BugCell,BugMovespec> targets )
     {	if(c==null) { return(false); }
         switch (board_state)
         {
         case Puzzle:
+        	return (pickedObject==null)!=(c.topChip()==null);
 		case Play:
+		case Grow:
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
 		case Gameover:
+		case Draw:
 		case Resign:
 			return(false);
 		case Confirm:
@@ -809,7 +1052,7 @@ class CircleBoard
         }
     }
     
-    
+     
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -817,69 +1060,136 @@ class CircleBoard
     the "done" confirmation for any moves that are not completely self
     executing.
     */
-    public void RobotExecute(CircleMovespec m)
-    {
+    public void RobotExecute(BugMovespec m)
+    {	//System.out.println("R "+m+" for "+whoseTurn);
         robotState.push(board_state); //record the starting state. The most reliable
-
+        robotStack.push(latentCaptures[whoseTurn].size());
+        for(int lim=latentCaptures[whoseTurn].size()-1; lim>=0; lim--) 
+        	{ bugStack.push(latentCaptures[whoseTurn].elementAt(lim)); 
+        	}
+        robotStack.push(maxBugSize);
+        robotStack.push(captureStack.size());
+       
         Execute(m,replayMode.Replay);
         doDone(m,replayMode.Replay);
     }
+    public void UnExecute(BugMovespec m)
+    {
+        //System.out.println("U "+m+" for "+whoseTurn);
+     	switch (m.op)
+        {
+        default:
+   	    	throw G.Error("Can't un execute " + m);
+        case MOVE_RESIGN:
+        case MOVE_DONE:
+            break;
+            
+        case MOVE_DROPB:
+        	SetBoard(getCell(m.to_col,m.to_row),null);
+        	break;
+        }
+        setState(robotState.pop());
+       	int caps = robotStack.pop();
+       	maxBugSize = robotStack.pop();
+       	int sz = robotStack.pop();
  
+       	if(whoseTurn!=m.player)
+        {	moveNumber--;
+        	setWhoseTurn(m.player);
+        }
 
+       	latentCaptures[whoseTurn].clear();
+       	for(int i=0;i<sz;i++) { latentCaptures[whoseTurn].push(bugStack.pop()); }
+
+        while(caps<captureStack.size())
+       	{
+       		unCapture();
+       	}
+
+    }
  private boolean addLegalMoves(CommonMoveStack all,int who)
  {
 	 CellStack empty = emptyCells;
 	 boolean some = false;
-	 CircleChip top = getPlayerChip(who);
+	 BugChip top = getPlayerChip(who);
 	 for(int lim = empty.size()-1; lim>=0; lim--)
 	 {
-		 CircleCell c = empty.elementAt(lim);
+		 BugCell c = empty.elementAt(lim);
 		 some |= addLegalMoves(all,c,top,who);
-		 if(some && all==null) { return true; }
+		 if(some && all==null) 
+		 	{ return true; }
 	 }
 	 return some;
  }
  
- private boolean addLegalMoves(CommonMoveStack all,CircleCell c,CircleChip top,int who)
+ private boolean addGrowMoves(CommonMoveStack all,int who)
+ {	boolean some = false;
+ 	for(int lim=growers.size()-1; lim>=0; lim--)
+	 {
+		 some |= addGrowMoves(all,growers.elementAt(lim),who);
+		 if(some&&all==null) { return true; }
+
+	 }
+ 	return some;
+ }
+ int sweepCounter = 1;
+ private boolean addGrowMoves(CommonMoveStack all,Bug eater,int who)
+ {	boolean some = false;
+ 	sweepCounter++;
+ 	int sweep = sweepCounter;
+	BugChip top = getPlayerChip(who);
+	int sz = eater.size();
+ 	maxBugSize = Math.max(sz+1,maxBugSize);
+	for(int lim=sz-1; lim>=0; lim--)
+	{
+		BugCell c = eater.elementAt(lim);
+		for(int direction = 0; direction<CELL_FULL_TURN; direction++)
+		{
+			BugCell adj = c.exitTo(direction);
+			if(adj!=null && adj.sweep_counter!=sweep && (adj.designatedAsEmpty || adj.topChip()==null ))
+			{
+				adj.sweep_counter=sweep;
+				some |= addLegalMoves(all,adj,top,whoseTurn);
+				if(some && all==null) { return some; }
+			}
+		}
+	}
+	 return some;
+ }
+ private boolean addLegalMoves(CommonMoveStack all,BugCell c,BugChip top,int who)
  {	
 	 if(isLegalMove(c,top))
  		{
 	 	  if(all==null) { return true; }
 	 	  //if(robot!=null) { verifyBlobSize(c); }
-	 	  all.push(new CircleMovespec(MOVE_DROPB,c.col,c.row,who));
+	 	  all.push(new BugMovespec(MOVE_DROPB,c.col,c.row,who));
 	 	  return true;
 	 	}
  	return false;
  }
- // legal if empty and makes a blob of size 4 or less
- public boolean isLegalMove(CircleCell c,CircleChip top)
+ // legal if empty and makes a blob of maxBugSize or less
+ public boolean isLegalMove(BugCell c,BugChip top)
  {
-		 Critter adj1 = null;
-		 Critter adj2 = null;
-		 Critter adj3 = null;
-		 int totalsize = 0;
-		 for(int dir = 0;dir<6 && totalsize<=3; dir++)
+		 Bug adjBug = null;
+		 for(int dir = 0;dir<CELL_FULL_TURN; dir++)
 		 {
-			 CircleCell adj = c.exitTo(dir);
+			 BugCell adj = c.exitTo(dir);
 			 if(adj!=null)
 			 {
-			 Critter cr = adj.critter();
-			 if(cr!=null && cr!=adj1 && cr!=adj2 && cr!=adj3)
-				 {	adj1 = adj2;
-				 	adj2 = adj3;
-				 	adj3 = cr;
-					 if(cr.top==top) 
-					 	{ totalsize+= cr.size(); 
-					 	
-					 	}
-				 }
+			 Bug cr = adj.designatedAsEmpty ? null : adj.critter(this);
+			 if(cr==null) {}
+			 else if(cr.top!=top) {}
+			 else if(cr==adjBug) {}								// seen it already
+			 else if(adjBug!=null) { return false; }			// saw someting else, merges bugs
+			 else if(cr.size()>=maxBugSize) { return false; }	// too big to join
+			 else { adjBug = cr; }								// keep looking
 			 }
 		 }
-		 return totalsize<=3;
+		 return true;
 }
  /*
  int sweep_counter = 1;
- private int countBlobSize(CircleCell from,CircleChip top,int sweep)
+ private int countBlobSize(BugCell from,BugChip top,int sweep)
  {	int tot = 0;
 	 if(from!=null && sweep!=from.sweep_counter && from.topChip()==top)
 	 {
@@ -897,38 +1207,14 @@ class CircleBoard
 	 return tot;
  }
  */
- /** this is an independent check of the blob structure, for debugging 
- private void verifyBlobSize(CircleCell from)
- {	int totalsize = 0;
- 	int sweep = ++sweep_counter;
- 	CircleChip top = getPlayerChip(whoseTurn);
- 	G.print("\nadj to "+from);
- 	for(int i=0;i<6;i++)
- 	{	CircleCell adj = from.exitTo(i);
- 		int size = countBlobSize(adj,top,sweep);
- 		totalsize +=size;
- 		G.Assert(size==0 || size==adj.myCritter.size(),"wrong size");
- 		G.Assert(totalsize<=3,"totalsize too many");
- 		}
- }
- */
+
  public boolean hasMoves()
  {
 	 return addLegalMoves(null,whoseTurn);
  }
  public commonMove getRandomMove(Random r)
  {
-	 int sz = emptyCells.size();
-	 int rx = r.fastUpto(sz);
-	 CircleChip top = getPlayerChip(whoseTurn);
-	 for(int i=0;i<sz;i++)
-	 {
-		 CircleCell c = emptyCells.elementAt((i+rx)%sz);
-		 if(isLegalMove(c,top))
-		 {
-			 return new CircleMovespec(MOVE_DROPB,c.col,c.row,whoseTurn);
-		 }
-	 }
+
 	 return null;
  }
  
@@ -938,22 +1224,19 @@ class CircleBoard
  	switch(board_state)
  	{
  	case Puzzle:
- 		if(pickedObject==null) { addLegalMoves(all,whoseTurn); }
- 		else { addLegalMoves(all,playerIndex(pickedObject)); }
- 		for(CircleCell c = allCells; c!=null; c=c.next){
- 			{
- 				if(c.topChip()!=null) { all.push(new CircleMovespec(MOVE_PICKB,c.col,c.row,whoseTurn));}
- 			}
- 		}
  		break;
  	case Play:
  		addLegalMoves(all,whoseTurn);
  		break;
  	case Resign:
  	case Confirm:
- 		all.push(new CircleMovespec(MOVE_DONE,whoseTurn));
+ 		all.push(new BugMovespec(MOVE_DONE,whoseTurn));
+ 		break;
+ 	case Grow:
+ 		addGrowMoves(all,whoseTurn);
  		break;
  	case Gameover:
+ 	case Draw:
  		break;
  	default:
  			G.Error("Not expecting state ",board_state);
@@ -961,7 +1244,7 @@ class CircleBoard
  	return(all);
  }
  
- public void initRobotValues(CirclePlay m)
+ public void initRobotValues(BugPlay m)
  {	robot = m;
  }
 
@@ -970,7 +1253,9 @@ class CircleBoard
  {   if(Character.isDigit(txt.charAt(0)))
 	 	{ switch(variation)
 	 		{
-	 		case CircleOfLife:
+	 		case Bug_3:
+	 		case Bug_4:
+	 		case Bug_5:
 	 			xpos -= cellsize/2;
 	 			break;
  			default: G.Error("case "+variation+" not handled");
@@ -992,12 +1277,12 @@ class CircleBoard
   *  
   * @return
   */
- public Hashtable<CircleCell, CircleMovespec> getTargets() 
+ public Hashtable<BugCell, BugMovespec> getTargets() 
  {
- 	Hashtable<CircleCell,CircleMovespec> targets = new Hashtable<CircleCell,CircleMovespec>();
+ 	Hashtable<BugCell,BugMovespec> targets = new Hashtable<BugCell,BugMovespec>();
  	CommonMoveStack all = GetListOfMoves();
  	for(int lim=all.size()-1; lim>=0; lim--)
- 	{	CircleMovespec m = (CircleMovespec)all.elementAt(lim);
+ 	{	BugMovespec m = (BugMovespec)all.elementAt(lim);
  		switch(m.op)
  		{
  		case MOVE_PICKB:
@@ -1021,9 +1306,55 @@ class CircleBoard
 	 /**
 	something like this:
  	return (movingObjectIndex()<0)
- 			&& ((board_state==CircleState.Play) || (board_state==CircleState.DrawPending))
+ 			&& ((board_state==BugState.Play) || (board_state==BugState.DrawPending))
  			&& (moveNumber-lastDrawMove>4);
  			*/
  //}
+ LStack tempI = null;
+public synchronized LStack tempLstack() {
+	LStack ii = tempI;
+	tempI = null;
+	if(ii==null) { ii=new LStack();} else { ii.clear(); }
+	return ii;
+}
+public void returnTempL(LStack i) { tempI = i;}
 
+// this is a hack to find all the bugs up to size 8
+// and incidentally to validate the algorithm
+public void findBugs(Bug from)
+{
+	for(int lim = from.size()-1; lim>=0; lim--)
+	{
+		BugCell c = from.elementAt(lim);
+		for(int dir=0; dir<CELL_FULL_TURN;dir++)
+		{
+			BugCell adj = c.exitTo(dir);
+			if(adj!=null && adj.topChip()==null)
+			{
+				BugMovespec m = new BugMovespec(MOVE_DROPB,adj.col,adj.row,0);
+				setState(BugState.Grow);
+				latentCaptures[whoseTurn].clear();
+				latentCaptures[whoseTurn].push(from);
+				setWhoseTurn(0);
+				RobotExecute(m);
+				Bug newbug = adj.critter(this);
+				if(newbug.size()<8)
+				{
+					findBugs(newbug);
+				}
+				UnExecute(m);
+			}
+		}
+	}
+}
+//this is a hack to find all the bugs up to size 8
+//and incidentally to validate the algorithm
+public void findBugs() {
+		doInit();
+		maxBugSize = 8;
+		BugCell c = getCell('D',4);
+		SetBoard(c,BugChip.White);
+		findBugs(c.critter(this));
+		Bug.printBugs();
+}
 }

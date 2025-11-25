@@ -48,6 +48,7 @@ public class CircleCell
 		{
 			Critter cr = new Critter(top);
 			cr.findCritter(this);
+			cr.identity();	// make sure the identity of the blob is known, the board may change!
 		}
 		return myCritter;
 	}
@@ -59,7 +60,8 @@ public class CircleCell
 		for(int i=0;i<6;i++) { 
 			cc = cc<<1;
 			CircleCell adj = exitTo(i);
-			if(adj!=null && adj.topChip()==top) { cc = cc|1; }
+			if(adj!=null && adj.topChip()==top) 
+				{ cc = cc|1; }
 		}
 		return CC.connectionClass(cc);
 	}

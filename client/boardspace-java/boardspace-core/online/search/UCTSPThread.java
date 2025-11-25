@@ -265,7 +265,11 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 				gameOver = robot.Game_Over_P(); 
 				randomSimulationDepth++;
 				if(!gameOver)
-					{ depthLimited = robot.Depth_Limit(randomSimulationDepth,master.final_depth);
+					{ boolean dl = robot.Depth_Limit(randomSimulationDepth,master.final_depth);
+					  if(dl)
+					  {
+						  depthLimited = robot.Depth_Limit(randomSimulationDepth,master.final_depth);
+					  }
 					}
 		}
 		eval_clock++;

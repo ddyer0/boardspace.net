@@ -135,7 +135,7 @@ public class Critter extends OStack<CircleCell> implements CircleConstants,Diges
 			}
 			break;
 		}
-		
+		G.Assert(identity!=null,"should be id'd");
 		return identity;
 	}
 	
@@ -148,6 +148,21 @@ public class Critter extends OStack<CircleCell> implements CircleConstants,Diges
 			if(next!=null && next.myCritter!=this && next.topChip()==top)
 			{	findCritter(next);
 			}
+		}
+	}
+	
+	public void forget()
+	{
+		for(int i=0;i<size();i++) { 
+			CircleCell c = elementAt(i);
+			if(c.myCritter==this) { c.myCritter = null; }
+		}
+	}
+	public void remember()
+	{
+		for(int i=0;i<size();i++) { 
+			CircleCell c = elementAt(i);
+			c.critter();
 		}
 	}
 

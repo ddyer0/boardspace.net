@@ -1485,7 +1485,28 @@ synchronized(allGames) {
 			pViewer,pRules,"about_circle.html",
 			null,false, WhiteOverBlack));
 	}
+	{
+	String pRules = "/bug/english/Rules.html";
+	String pViewer = "bug.BugViewer";  
+	put(new GameInfo(590,ES.game,128,"BG",CapturingGames,"Bug","Bug_4",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_bug.html",
+			null,false, BlackOverWhite));
 	
+	put(new GameInfo(591,ES.game,128,"BG",CapturingGames,"Bug","Bug_3",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_bug.html",
+			null,false, BlackOverWhite));
+
+	put(new GameInfo(592,ES.game,128,"BG",CapturingGames,"Bug","Bug_5",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					pViewer,pRules,"about_bug.html",
+					null,false, BlackOverWhite));
+	}
+
 	{
 	String pRules = "/pendulum/english/Rules.pdf";
 	String pViewer = "pendulum.PendulumViewer";  

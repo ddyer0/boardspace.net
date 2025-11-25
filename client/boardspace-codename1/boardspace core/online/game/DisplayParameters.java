@@ -18,6 +18,7 @@ package online.game;
 
 import com.codename1.ui.geom.Rectangle;
 
+import lib.Bbox;
 import lib.G;
 /**
  * this is a captive class for use by various board types.  Each game has one "real" board,

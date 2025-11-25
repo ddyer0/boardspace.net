@@ -453,16 +453,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
  	   	   }
  	   }
     }
-    public boolean DrawTileSprite(Graphics gc,HitPoint hp)
-    { //draw the ball being dragged
-    	int obj = b.movingObjectIndex();
-        if ((obj >= 0)&&(hp!=null))
-        { // draw a ball in transit
-             zChip.getChip(obj).drawChip(gc,this,CELLSIZE,G.Left(hp),G.Top( hp),null);
-             return(true);
-        }
-        else return super.DrawTileSprite(gc,hp);
-    }
 
     private Color tableColor()
     {
