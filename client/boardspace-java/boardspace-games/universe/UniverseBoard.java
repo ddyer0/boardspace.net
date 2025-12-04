@@ -278,7 +278,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     }
 
   
-    // this sets up the links for the boxes in sudoku board the hard way, but specifiying
+    // this sets up the links for the boxes in sudoku board the hard way, but specifying
     // the sets of cells that go into each box individually.
     public void initSudokuAny(String []boxes)
     {	sudokuBoxes = new UniverseCell[boxes.length];
@@ -286,12 +286,12 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	for(String str : boxes)
    		{	UniverseCell first = null;
    			UniverseCell prev = null;
-   			StringTokenizer tok = new StringTokenizer(str);
-   			int background = G.IntToken(tok);
+   			Tokenizer tok = new Tokenizer(str);
+   			int background = tok.intToken();
    			while(tok.hasMoreTokens())
    			{
-   				char col = G.CharToken(tok);
-   				int row = G.IntToken(tok);
+   				char col = tok.charToken();
+   				int row = tok.intToken();
    				UniverseCell c = getCell(col,row);
     			c.cellImageIndex = background;
     			if(first==null) { first = c; }

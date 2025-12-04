@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,11 +12,9 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package hive;
-
-import java.util.*;
 
 import lib.Drawable;
 import lib.G;
@@ -24,6 +22,7 @@ import lib.MultiGlyph;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Hivemovespec extends commonMove implements HiveConstants
@@ -72,13 +71,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     /* constructor */
     public Hivemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
-    }
-
-    /* constructor */
-    public Hivemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
+        parse(new Tokenizer(str), p);
     }
 
     public Hivemovespec(int who,int opcode,HivePiece bug,HiveCell dest,HiveCell src)
@@ -139,17 +132,10 @@ public class Hivemovespec extends commonMove implements HiveConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
  
         switch (op)
@@ -177,8 +163,8 @@ public class Hivemovespec extends commonMove implements HiveConstants
 	            source = HiveId.BoardLocation;
 				HivePiece bug = HivePiece.getBug(pool.shortName,msg.nextToken());
 				object = bug;
-	            to_col = G.parseCol(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.parseCol();
+	            to_row = msg.intToken();
 	            attachment = msg.nextToken();
         		}
 	            break;
@@ -191,24 +177,24 @@ public class Hivemovespec extends commonMove implements HiveConstants
             	object = player>=0
             				? HivePiece.getBug(player==0 ? "W":"B",tok) 
             				: HivePiece.getBug(tok);	// object to object number
-            	to_col = G.parseCol(msg);
-            	to_row = G.IntToken(msg);
+            	to_col = msg.parseCol();
+            	to_row = msg.intToken();
             	attachment = msg.nextToken();
             	}
             	break;
         case MOVE_PDROPB:
 	            source = HiveId.BoardLocation;
 				object = HivePiece.getBug(msg.nextToken());	// object to object number
-	            to_col = G.parseCol(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.parseCol();
+	            to_row = msg.intToken();
 	            attachment = msg.nextToken();
 	            break;
 
 		case MOVE_PICKB:
 			{
             source = HiveId.BoardLocation;
-            from_col = G.parseCol(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.parseCol();
+            from_row = msg.intToken();
             String tok = msg.nextToken();
         	// old game records are not specific as modern ones, so we
         	// have to use the player information.
@@ -221,7 +207,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_DROP:
              source = HiveId.get(msg.nextToken());
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             object = HivePiece.getBug(msg.nextToken());
             attachment = msg.nextToken();
             break;
@@ -229,7 +215,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_PICK:
             source = HiveId.get(msg.nextToken());
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             object = HivePiece.getBug(source.shortName,msg.nextToken());
             break;
 
@@ -316,11 +302,11 @@ public class Hivemovespec extends commonMove implements HiveConstants
     		}
     		}
     	  if(bestScore>=0) { return; }
-    	attachment = ".";
-    	attachObject = c.topChip();
-    	attachDirection = -1;
-    } 
-    
+    	  attachment = ".";
+    	  attachObject = c.topChip();
+    	  attachDirection = -1;
+    	}
+    	
  
     } 
     
@@ -367,7 +353,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	double lineScale = 2.0;
     	double attachScale = 2.8;
     	double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
-    	if(attachObject==null)
+        	if(attachObject==null)
     	{	if((op==MOVE_MOVE) && (mainGlyph!=null))
     		{ 
     		  return(TextGlyph.create("xxxx",mainGlyph,v,new double[]{lineScale,4,0,0}));
@@ -473,7 +459,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     		}
 		double glyphScale = 0.75;
     	double bugScale[] = { 2.0,glyphScale*5.0,0,-0.4 };
-        switch (op)
+    	switch (op)
         {
         case MOVE_PLAYBLACK:
         	return(TextChunk.create("Play Black"));

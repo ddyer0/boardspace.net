@@ -16,9 +16,8 @@
  */
 package xeh;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class XehMovespec extends commonMove implements XehConstants
@@ -63,7 +62,7 @@ public class XehMovespec extends commonMove implements XehConstants
     /* constructor */
     public XehMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -75,11 +74,6 @@ public class XehMovespec extends commonMove implements XehConstants
     	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public XehMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -122,17 +116,10 @@ public class XehMovespec extends commonMove implements XehConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -140,15 +127,15 @@ public class XehMovespec extends commonMove implements XehConstants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_DROPB:
 				source = XehId.get(msg.nextToken());	// B or W
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = XehId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

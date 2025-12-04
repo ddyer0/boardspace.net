@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import jzlib.ZipEntry;
 import jzlib.ZipInputStream;
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 import bridge.Utf8Printer;
 
@@ -60,11 +59,11 @@ public class OfflineGames {
 	    		String body = OfflineGames.readOfflineGame(nameKey);
 		
 	    		if(body!=null) 
-				{	StringTokenizer tok = new StringTokenizer(body);
+				{	Tokenizer tok = new Tokenizer(body);
 					String key = tok.nextToken();
 					if(GameKey.equalsIgnoreCase(key))
 					{
-					long adate = tok.hasMoreTokens() ? G.LongToken(tok) : 0;    				
+					long adate = tok.hasMoreTokens() ? tok.longToken() : 0;    				
 					if(adate>date) 
 	    				{ OfflineGames.removeOfflineGame(nameKey);
 						}}

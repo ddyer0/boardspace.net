@@ -18,9 +18,8 @@ package yinsh.common;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -55,7 +54,7 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     /* constructor */
     public Yinshmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Yinshmovespec(char col,int row,YinshId id,int p)
     {	op = MOVE_PLACE;
@@ -95,11 +94,6 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     	to_row = torow;
     	player = who;
     }
-    /* constructor */
-    public Yinshmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     public boolean Same_Move_P(commonMove oth)
     {
@@ -135,16 +129,10 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     }
 
     /* parse a string into the state of this move */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        {
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -165,34 +153,34 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
         case MOVE_REMOVE:
             object =YinshId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
 
         case MOVE_MOVE:
             object = YinshId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
 
         case MOVE_PLACE:
             object = YinshId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
@@ -201,8 +189,8 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
             if (object == YinshId.BoardLocation)
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
@@ -212,8 +200,8 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
             if (object == YinshId.BoardLocation)
             {
-                from_col = G.CharToken(msg);
-                from_row = G.IntToken(msg);
+                from_col = msg.charToken();
+                from_row = msg.intToken();
             }
 
             break;

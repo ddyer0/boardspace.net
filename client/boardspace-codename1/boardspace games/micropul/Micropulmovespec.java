@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,17 +12,17 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package micropul;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class Micropulmovespec extends commonMove implements MicropulConstants
@@ -60,7 +60,7 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
     /* constructor */
     public Micropulmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Micropulmovespec(int pl,MicroId from,char fc, int fr, MicroId to,char tc, int tr,int rot)
     {
@@ -73,11 +73,6 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
     	to_col = tc;
     	to_row = tr;
     	rotation = rot;
-    }
-    /* constructor */
-    public Micropulmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public boolean Same_Move_P(commonMove oth)
@@ -127,17 +122,10 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -145,36 +133,36 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_MOVE:
         	source = MicroId.get(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
         	dest = MicroId.get(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
-        	rotation = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
+        	rotation = msg.intToken();
         	break;
         case MOVE_RRACK:
         	dest = source = MicroId.Rack;
         	player = D.getInt(msg.nextToken());
-        	to_row = G.IntToken(msg);
-        	rotation = G.IntToken(msg);
+        	to_row = msg.intToken();
+        	rotation = msg.intToken();
         	break;
         case MOVE_ROTATE:
         		dest = source = MicroId.BoardLocation;
-        		to_col = G.CharToken(msg);
-        		to_row = G.IntToken(msg);
-        		rotation = G.IntToken(msg);
+        		to_col = msg.charToken();
+        		to_row = msg.intToken();
+        		rotation = msg.intToken();
         		break;
         case MOVE_DROPB:
 	            dest = MicroId.EmptyBoard;
-				to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
-	            rotation = G.IntToken(msg);
+				to_col = msg.charToken();
+	            to_row = msg.intToken();
+	            rotation = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
             source = MicroId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
 
         case MOVE_DROP:
@@ -188,7 +176,7 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
         	case Rack:
         		player = D.getInt(msg.nextToken());
         		to_col = '@';
-        		to_row = G.IntToken(msg);
+        		to_row = msg.intToken();
 				break;
 			default:
 				break;
@@ -206,12 +194,12 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
         	case Rack:
         		player = D.getInt(msg.nextToken());
         		from_col = '@';
-        		from_row = G.IntToken(msg);
+        		from_row = msg.intToken();
         		break;
 			default:
 				break;
         	}
-            tile = G.IntToken(msg);
+            tile = msg.intToken();
             break;
 
         case MOVE_START:

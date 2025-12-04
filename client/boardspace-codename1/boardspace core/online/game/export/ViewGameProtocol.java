@@ -19,11 +19,11 @@ package online.game.export;
 import bridge.Color;
 
 import java.io.PrintStream;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import lib.HitPoint;
 import lib.SimpleObserver;
+import lib.Tokenizer;
 import online.common.LaunchUser;
 import online.common.OnlineConstants;
 import online.game.commonMove;
@@ -73,7 +73,7 @@ public interface ViewGameProtocol
  * @param myST the rest of the tracking information
  * @param player  the player, or spectator.
  */
-    public void doMouseTracking(StringTokenizer myst,commonPlayer player);
+    public void doMouseTracking(Tokenizer myst,commonPlayer player);
 	/** viewers are created in a not-yet-visible state, this method tells them
 	 * to become visible.  This allows messy startup phases to be invisible.
 	 */
@@ -145,7 +145,7 @@ public interface ViewGameProtocol
     /** first chance to process a message. Normally just ignore.  This is a way for 
     * a game to intercept messages sent outside of the normal mechanism
     * */
-   public boolean processMessage(String cmd,StringTokenizer localST,String st);
+   public boolean processMessage(String cmd,Tokenizer localST,String st);
    /** declare now it is ok to edit the game record.  During normal play, editing
     * the game record is not allowed. After game end, players are free to go back
     * and play variations.  This method will be called after the game is over and
@@ -252,13 +252,13 @@ public interface ViewGameProtocol
    /** playback the ephemeral data supplied by formEphemeralString.
     * @param mySt
     */
-   public void useEphemeraBuffer(StringTokenizer mySt);
+   public void useEphemeraBuffer(Tokenizer mySt);
    
    /** interpret a history string as created by formHistoryString.  The contract is to bring
    the local game into the same state as the game that created the string.  This is used
    to give spectators the view of the game, and also to reconnect players that have
    been disconnected. */
-   public void useStoryBuffer(String tok, StringTokenizer mySt);  
+   public void useStoryBuffer(String tok, Tokenizer mySt);  
     
    /**
     * called when the game controller detects that the current player is changing

@@ -16,13 +16,12 @@
  */
 package bugs;
 
-import java.util.*;
-
 import bugs.BugsConstants.BugsId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class BugsMovespec 
@@ -78,7 +77,7 @@ public class BugsMovespec
     /* constructor */
     public BugsMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public BugsMovespec(int opc , int p)
     {
@@ -94,11 +93,6 @@ public class BugsMovespec
     	from_row = to_row = c.row;
     	forPlayer = player = who;
  
-    }
-    /* constructor */
-    public BugsMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public BugsMovespec(int moveToBoard, BugsCell from, BugsChip chip2, BugsCell to,int who) 
@@ -161,17 +155,10 @@ public class BugsMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         forPlayer = msg.hasMoreTokens() ? D.getInt(msg.nextToken()) : p;
 
@@ -184,36 +171,36 @@ public class BugsMovespec
         case MOVE_ROTATECCW:
         case MOVE_DROPB:
         	source = BugsId.BoardLocation;
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
             break;
         case MOVE_TO_BOARD:
         case MOVE_TO_PLAYER:
         	source = BugsId.valueOf(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
         	chip = BugsChip.getChip(G.IntToken(msg.nextToken()));
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
 		case MOVE_PICKB:
         	source = BugsId.BoardLocation;
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
-            chip = BugsChip.getChip(G.IntToken(msg));
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
+            chip = BugsChip.getChip(msg.intToken());
             break;
 		case MOVE_SELECT:
         case MOVE_DROP:
             source = BugsId.valueOf(msg.nextToken());
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
             break;
 
         case MOVE_PICK:
             source = BugsId.valueOf(msg.nextToken());
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
-            chip = BugsChip.getChip(G.IntToken(msg));
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
+            chip = BugsChip.getChip(msg.intToken());
             break;
             
         case MOVE_SETACTIVE:

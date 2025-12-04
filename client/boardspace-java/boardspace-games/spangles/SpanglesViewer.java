@@ -28,11 +28,11 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import online.game.*;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 import common.GameInfo;
 import online.game.sgf.sgf_node;
@@ -636,7 +636,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	if(token.equals("Spangles")) 
@@ -647,9 +647,9 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     	else
     	{	// new game, with the revision protocol, flag their presence with lower case.
     		// this is only a problem for games being restarted in the live context, or by spectators.
-    		int np = G.IntToken(his);
-    		long rv = G.LongToken(his);
-    		int rev = G.IntToken(his);
+    		int np = his.intToken();
+    		long rv = his.longToken();
+    		int rev = his.intToken();
     		bb.doInit(token,np,rv,rev);
     	}
  

@@ -337,14 +337,8 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
      * */
     private void parse(String omsg, int p)
     {	Tokenizer msg = new Tokenizer(omsg);
-        String cmd = msg.nextElement();
-        player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextElement();
-        }
+    	String cmd = firstAfterIndex(msg);
+    	player = p;
         // look for card annotations
         {
         	int i1 = omsg.indexOf('"');

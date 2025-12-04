@@ -21,8 +21,6 @@ import static imagine.Imaginemovespec.*;
 
 import java.awt.*;
 import online.common.*;
-import java.util.*;
-
 import bridge.Config;
 import common.GameInfo;
 import lib.Base64;
@@ -41,6 +39,7 @@ import lib.LFrameProtocol;
 import lib.MouseState;
 import lib.StockArt;
 import lib.TextContainer;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.BaseBoard.BoardState;
 import online.game.sgf.sgf_node;
@@ -1397,12 +1396,12 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -1461,7 +1460,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/26/2023
+     * summary: 12/1/2025
      * 	18 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)

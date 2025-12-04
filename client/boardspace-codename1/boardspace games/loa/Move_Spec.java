@@ -21,8 +21,8 @@ import com.codename1.ui.geom.Point;
 
 import online.game.commonMove;
 import java.io.*;
-import java.util.StringTokenizer;
 import lib.G;
+import lib.Tokenizer;
 
 public class Move_Spec extends Stone_Spec implements UIC, LoaMove
 {
@@ -103,9 +103,9 @@ public class Move_Spec extends Stone_Spec implements UIC, LoaMove
         String lower = specstring.toLowerCase().trim();
         if (Character.isDigit(lower.charAt(0)))
         {
-            StringTokenizer st = new StringTokenizer(lower);
-            setIndex(G.IntToken(st));
-            lower = G.restof(st);
+            Tokenizer st = new Tokenizer(lower);
+            setIndex(st.intToken());
+            lower = st.getRest();
         }
         if(lower.startsWith("edit"))
         {

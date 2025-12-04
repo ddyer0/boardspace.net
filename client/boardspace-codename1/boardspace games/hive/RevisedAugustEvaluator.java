@@ -138,6 +138,7 @@ class RevisedAugustEvaluator extends DefaultEvaluator implements Evaluator
 		5};			// blank
 	
 	private double friendlyMobileAtQueen = 0.5;	// partial credit for friendlies that can be moved
+	// TODO negate the values and the uses, avoid future negative number screwups
 	double queen_safety[] = { 0.0, -5, -10.0, -15.0, -40.0, -65.0, -120,-130,-140,-150};
 	// these are penalties that apply depending on the
 	// distance from the enemy queen.  This is the main motivator

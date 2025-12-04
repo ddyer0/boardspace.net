@@ -38,6 +38,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 
 import static colorito.ColoritoMovespec.*;
 
@@ -720,10 +721,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like colorito probably don't use it.
         b.doInit(token,rk);
@@ -786,7 +787,7 @@ private void playSounds(commonMove m)
 		280: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-barmaley-Dumbot-2016-03-27-0841.sgf lib.ErrorX: Not expecting drop in state Gameover
 		290: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-guest-Dumbot-2014-05-05-1123.sgf lib.ErrorX: Not expecting robot in state Gameover
 		
-		304 files visited 8 problems
+	361 files visited 9 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -799,9 +800,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
                 adjustPlayers(b.nPlayers());
              }

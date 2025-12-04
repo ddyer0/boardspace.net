@@ -43,6 +43,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.SimpleSprite.Movement;
 
 /**
@@ -726,11 +727,11 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
-    	int rev = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
+    	int rev = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk,np,rev);
@@ -774,11 +775,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-             	long ran = G.LongToken(st);
-             	int np = st.hasMoreTokens() ? G.IntToken(st) : 2;
-               	int rev = st.hasMoreTokens() ? G.IntToken(st) : 0; 
+             	long ran = st.longToken();
+             	int np = st.hasMoreTokens() ? st.intToken(): 2;
+               	int rev = st.hasMoreTokens() ? st.intToken() : 0; 
                 b.doInit(typ,ran,np,rev);
                 adjustPlayers(b.nPlayers());
              }

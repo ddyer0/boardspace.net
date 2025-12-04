@@ -16,12 +16,34 @@
  */
 package tammany;
 
-import java.util.Hashtable;
-import java.util.StringTokenizer;
+import static tammany.TammanyMovespec.MOVE_CUBE;
+import static tammany.TammanyMovespec.MOVE_DROP;
+import static tammany.TammanyMovespec.MOVE_DROPB;
+import static tammany.TammanyMovespec.MOVE_ELECT;
+import static tammany.TammanyMovespec.MOVE_FROM_TO;
+import static tammany.TammanyMovespec.MOVE_PICK;
+import static tammany.TammanyMovespec.MOVE_PICKB;
+import static tammany.TammanyMovespec.MOVE_PICK_CUBE;
+import static tammany.TammanyMovespec.MOVE_SLANDER;
+import static tammany.TammanyMovespec.MOVE_VOTE;
 
-import lib.*;
-import online.game.*;
-import static tammany.TammanyMovespec.*;
+import java.util.Hashtable;
+
+import lib.AR;
+import lib.G;
+import lib.IStack;
+import lib.InternationalStrings;
+import lib.Random;
+import lib.StringStack;
+import lib.Tokenizer;
+import online.game.BoardProtocol;
+import online.game.CommonMoveStack;
+import online.game.cell;
+import online.game.chip;
+import online.game.commonMove;
+import online.game.replayMode;
+import tammany.TammanyConstants.Role;
+import tammany.TammanyConstants.TammanyId;
 
 /**
  * TammanyBoard knows all about the game of Tammany Hall
@@ -442,11 +464,11 @@ import static tammany.TammanyMovespec.*;
 
 	 public void doInit(String gtype,long key)
 	 {
-		 StringTokenizer tok = new StringTokenizer(gtype);
+		 Tokenizer tok = new Tokenizer(gtype);
 		 String typ = tok.nextToken();
-		 int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-		 long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-		 int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+		 int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+		 long ran = tok.hasMoreTokens() ? tok.longToken() : key;
+		 int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
 		 doInit(typ,ran,np,rev);
 	 }
 	 public boolean playerHasPlayed(int index)

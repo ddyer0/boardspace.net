@@ -34,6 +34,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 
 /**
@@ -592,7 +593,7 @@ private void playSounds(DipoleMovespec m)
     public String gameType() { return(b.gametype); }
     public String sgfGameType() { return(Dipole_SGF); }
 
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
         b.doInit(token);
     }

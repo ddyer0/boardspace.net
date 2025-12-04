@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,20 +12,20 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package universe;
 
-import com.codename1.ui.geom.Rectangle;
-
-import java.util.*;
 import lib.G;
 import lib.IStack;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
-
+import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.geom.Rectangle;
+
 import lib.ExtendedHashtable;
 
 public class UniverseMovespec extends commonMPMove implements UniverseConstants
@@ -78,14 +78,10 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
     /* constructor */
     public UniverseMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public UniverseMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     /* constructor for onboard moves */
     public UniverseMovespec(int opc,char from_c,int from_r,int rot,boolean flipped,char to_c,int to_r,int who)
     {	op = opc;
@@ -155,17 +151,10 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
     /* parse a string into the undoInfo of this move.  Remember that we're just parsing, we can't
      * refer to the undoInfo of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
  
         switch (op)
@@ -174,36 +163,36 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
         	throw G.Error("Can't parse %s", cmd);
         
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
-            from_col = G.CharToken(msg);		// player index
-            from_row = G.IntToken(msg);			// index into the rack
-            rotation = G.IntToken(msg);			// rotation and flip
-  	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+            from_col = msg.charToken();		// player index
+            from_row = msg.intToken();			// index into the rack
+            rotation = msg.intToken();			// rotation and flip
+  	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
 	        
         case MOVE_DROPB:
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
         case MOVE_PICKGIVEN:
 		case MOVE_PICKB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
 	     case MOVE_DROP:
-	           to_col = G.CharToken(msg);
-	           to_row = G.IntToken(msg);
+	           to_col = msg.charToken();
+	           to_row = msg.intToken();
 	           break;
 	     case MOVE_ROTATE_CW:
 	     case MOVE_ROTATE_CCW:
 	     case MOVE_FLIP:
 	     case MOVE_PICK:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:
@@ -211,19 +200,19 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
 
             break;
         case MOVE_LINK:
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         case MOVE_ASSIGN:
         	{
         	IStack vals = new IStack();
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             while(msg.hasMoreTokens())
             	{
-            	vals.push(G.IntToken(msg));
+            	vals.push(msg.intToken());
             	}
             assignedValues = vals.toArray();
         	}

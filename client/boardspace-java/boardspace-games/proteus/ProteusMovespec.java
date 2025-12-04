@@ -19,12 +19,11 @@ package proteus;
 import online.game.*;
 import proteus.ProteusConstants.ProteusId;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -73,7 +72,7 @@ public class ProteusMovespec extends commonMove
     /* constructor */
     public ProteusMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /* constructor for onboard move */
     public ProteusMovespec(int o,ProteusCell from,ProteusCell to,int pl)
@@ -86,12 +85,7 @@ public class ProteusMovespec extends commonMove
     	to_row = to.row;
     	player = pl;
     }
-    /* constructor */
-    public ProteusMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-    
+   
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
@@ -136,17 +130,10 @@ public class ProteusMovespec extends commonMove
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -155,46 +142,46 @@ public class ProteusMovespec extends commonMove
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_FROM_TO:	// a robot move from the rack to the board
             source = ProteusId.get(msg.nextToken());	// white rack or black rack
-            from_col = G.CharToken(msg);		// always
-            from_row = G.IntToken(msg);			// index into the rack
+            from_col = msg.charToken();		// always
+            from_row = msg.intToken();			// index into the rack
             dest = ProteusId.get(msg.nextToken());
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
         case MOVE_TRADE:			// robot move from board to board
             source = ProteusId.BoardLocation;	
             dest = ProteusId.BoardLocation;
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = ProteusId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 	       
         case MOVE_PICKT:
 		case MOVE_PICKB:
             source = ProteusId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
         case MOVE_PICK:
             source = ProteusId.get(msg.nextToken());
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
             source =ProteusId.get(msg.nextToken());
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

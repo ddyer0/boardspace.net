@@ -22,6 +22,7 @@ import java.util.*;
 import bridge.*;
 import lib.Image;
 import lib.LFrameProtocol;
+import lib.Tokenizer;
 import lib.Utf8Reader;
 import lib.commonPanel;
 import lib.Graphics;
@@ -224,7 +225,7 @@ public synchronized boolean sendMessage(String msg)
                 while ((num = rs.readLine()) != null)
                 {
                     //System.out.println("got "+num);
-                    StringTokenizer tok = new StringTokenizer(num);
+                    Tokenizer tok = new Tokenizer(num);
 
                     {
                         String cmd = tok.nextToken();
@@ -244,7 +245,7 @@ public synchronized boolean sendMessage(String msg)
 
                                 if (l != null)
                                 {
-                                    StringTokenizer st = new StringTokenizer(l);
+                                    Tokenizer st = new Tokenizer(l);
                                     String lat = st.nextToken();
                                     String lon = st.nextToken();
                                     String who = st.nextToken();

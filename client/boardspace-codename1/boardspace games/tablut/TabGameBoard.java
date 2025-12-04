@@ -17,8 +17,6 @@
 package tablut;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.*;
 import online.game.*;
 
@@ -101,7 +99,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     	return(val+" "+ENDOPTIONS);
      }
 
-    public void parseOptions(StringTokenizer tok)
+    public void parseOptions(Tokenizer tok)
     {	Flagship_Wins_In_Corner = false;
     	Flagship_Owns_Center = false;
     	Flagship_Can_Capture = true;
@@ -110,7 +108,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     	boolean hasSome = false;
     	while(tok.hasMoreTokens())
     	{	String m = tok.nextToken();
-    		if(m.equalsIgnoreCase("rev")) { revision = G.IntToken(tok); hasRev = true; }
+    		if(m.equalsIgnoreCase("rev")) { revision = tok.intToken(); hasRev = true; }
     		else if(! (".end.".equals(m) || ENDOPTIONS.equals(m))) 
     		{
     		TabId b = TabId.get(tok.nextToken());
@@ -226,7 +224,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     // standared init for Hex.  Presumably there could be different
     // initializations for variation games.
     private void Init_Standard(String gamespec)
-    {	StringTokenizer tok = new StringTokenizer(gamespec);
+    {	Tokenizer tok = new Tokenizer(gamespec);
     	String game = tok.nextToken();
     	if(Tablut_11_INIT.equalsIgnoreCase(game)) { nCols = nRows = 11; }
     	else if(Tablut_9_INIT.equalsIgnoreCase(game)) { nCols = nRows = 9; }

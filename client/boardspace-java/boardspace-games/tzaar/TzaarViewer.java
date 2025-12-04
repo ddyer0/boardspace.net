@@ -24,7 +24,6 @@ import common.GameInfo;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 import lib.Graphics;
 import lib.Image;
@@ -714,9 +713,9 @@ private void playSounds(TzaarMovespec m)
      }
     public String gameType() { return(b.gametype+" "+b.randomKey); }
     public String sgfGameType() { return(Tzaar_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-	    long rk = G.LongToken(his);
+	    long rk = his.longToken();
 	    b.doInit(token,rk);
 	}
 
@@ -728,7 +727,7 @@ private void playSounds(TzaarMovespec m)
     {	nextIntCompatabilityKludge(b,name,value,"Oct 25 2013");
     	return(super.replayStandardProps(name,value));
     }
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {
     	if(OnlineConstants.TIME.equals(first) && b.DoneState())
     	{
@@ -740,8 +739,8 @@ private void playSounds(TzaarMovespec m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/23/2023
-     * 	19057 files visited 0 problems
+     * summary: 12/2/2025
+     * 	22242 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -754,9 +753,9 @@ private void playSounds(TzaarMovespec m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
         		String gametype = tok.nextToken();
-        		long rk = G.LongToken(tok);
+        		long rk = tok.longToken();
                 b.doInit(gametype,rk);
              }
             else if (name.equals(comment_property))

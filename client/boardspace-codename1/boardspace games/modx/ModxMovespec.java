@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,14 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package modx;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class ModxMovespec extends commonMove implements ModxConstants
@@ -57,14 +57,9 @@ public class ModxMovespec extends commonMove implements ModxConstants
     /* constructor */
     public ModxMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public ModxMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     /* constructor for robot moves */
     public ModxMovespec(int opc,ModxId from,ModxCell to,int who)
     {
@@ -119,17 +114,10 @@ public class ModxMovespec extends commonMove implements ModxConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -139,15 +127,15 @@ public class ModxMovespec extends commonMove implements ModxConstants
 
         case MOVE_RACK_BOARD:			// robot move from board to board
             source = ModxId.get(msg.nextToken());	// from rack
- 	        col = G.CharToken(msg);		//to col row
-	        row = G.IntToken(msg);
+ 	        col = msg.charToken();		//to col row
+	        row = msg.intToken();
 	        break;
 	        
 		case MOVE_DROPB:
 		case MOVE_PICKB:
             source = ModxId.BoardLocation;
-            col = G.CharToken(msg);
-            row = G.IntToken(msg);
+            col = msg.charToken();
+            row = msg.intToken();
 
             break;
 
@@ -185,7 +173,7 @@ public class ModxMovespec extends commonMove implements ModxConstants
         	return(""+source.shortName+"-"+col + row);
  
         case MOVE_DONE:
-            return ("");
+        	return ("");
 
         default:  
             return (D.findUniqueTrans(op));
@@ -199,7 +187,7 @@ public class ModxMovespec extends commonMove implements ModxConstants
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
-       // adding the move index as a prefix provides numbers
+        // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)

@@ -30,7 +30,6 @@ import java.awt.Point;
 import java.awt.event.*;
 import bridge.*;
 
-import java.util.StringTokenizer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -473,7 +472,7 @@ public class commonChatApplet extends FullscreenPanel
     	if((my!=null) && fromRealUser)
     		{
     		 String myName = my.name();
-    		 StringTokenizer tok = new StringTokenizer(theMessage);
+    		 Tokenizer tok = new Tokenizer(theMessage);
         	while (tok.hasMoreTokens())
         	{ String atok = tok.nextToken();
         	  if(myName.equalsIgnoreCase(atok)) 
@@ -791,7 +790,7 @@ public class commonChatApplet extends FullscreenPanel
 		b.append(SIMPLETEXT);
 		b.append(Base64.encodeSimple(messages.getText()));
 	}
-	public void setEncodedContents(StringTokenizer contents) {
+	public void setEncodedContents(Tokenizer contents) {
 		String kind = contents.nextToken();
 		if(SIMPLETEXT.equals(kind))
 		{

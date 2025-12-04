@@ -41,6 +41,7 @@ import lib.ImageStack;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.Image;
 import lib.LFrameProtocol;
 import online.game.*;
@@ -1762,12 +1763,12 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -2007,15 +2008,6 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
      * expect there to be one.
      */
     public boolean gameHasEphemeralMoves() { return(SIMULTANEOUS_PLAY); }
-    // these related methods can be wrapped or overridden to customize the behavior of the ephemeral part game records.
-    //
-    // public String formEphemeralHistoryString()
-    // public void useEphemeraBuffer(StringTokenizer h)
-    // public String formEphemeralMoveString() {} 
-    // public void useEphemeralMoves(StringTokenizer his) {}
-    // -- the top level --
-    // public void useStoryBuffer(String tok,StringTokenizer his) {}
-    // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
     private String vprogressString()
     {	return super.gameProgressString()+" score score";

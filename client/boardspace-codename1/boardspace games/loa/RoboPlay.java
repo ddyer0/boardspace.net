@@ -15,7 +15,10 @@
     If not, see https://www.gnu.org/licenses/.
  */
 package loa;
-
+/**
+ * loa uses alpha-beta only
+ * 
+ */
 import online.game.*;
 import online.game.export.ViewerProtocol;
 import online.search.*;

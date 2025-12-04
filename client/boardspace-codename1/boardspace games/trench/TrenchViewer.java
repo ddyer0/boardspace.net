@@ -39,6 +39,7 @@ import lib.HitPoint;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.LFrameProtocol;
 import lib.Image;
 import online.game.*;
@@ -1108,12 +1109,12 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -1226,6 +1227,13 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * 12/2/2025 
+    619: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\trench\trenchgames\trenchgames\archive-2023\games-Jul-4-2023.zip TX-kaoto-WeakBot-2023-06-29-2001.sgf lib.ErrorX: Not expecting Gameover
+	646: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\trench\trenchgames\trenchgames\archive-2023\games-Jul-4-2023.zip TX-TRENCHMAN-Dumbot-2023-06-30-1046.sgf lib.ErrorX: Not expecting Gameover
+	648: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\trench\trenchgames\trenchgames\archive-2023\games-Jul-4-2023.zip TX-TRENCHMAN-WeakBot-2023-06-29-0844.sgf lib.ErrorX: Not expecting Gameover
+
+	4580 files visited 3 problems
+
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1297,15 +1305,6 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      * 
      *  
      */
-    // these related methods can be wrapped or overridden to customize the behavior of the ephemeral part game records.
-    //
-    // public String formEphemeralHistoryString()
-    // public void useEphemeraBuffer(StringTokenizer h)
-    // public String formEphemeralMoveString() {} 
-    // public void useEphemeralMoves(StringTokenizer his) {}
-    // -- the top level --
-    // public void useStoryBuffer(String tok,StringTokenizer his) {}
-    // public void formHistoryString(PrintStream os,boolean includeTimes) {}
 
 
 	public int getLastPlacement(boolean empty) {

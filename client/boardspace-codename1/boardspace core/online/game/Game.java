@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,14 +12,11 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package online.game;
 
 import bridge.*;
-import bridge.File;
-import bridge.FileOutputStream;
-import bridge.ThreadDeath;
 import common.GameInfo;
 import common.GameInfo.ScoringMode;
 import online.common.*;
@@ -54,6 +51,7 @@ import lib.*;
  * player disconnects / robot takes over / player reconnects -- robot should be stopped.
  * players disconnect and restart in a new room.  Spectators should be severed from the remains
  */
+import lib.Base64;
 
 public class Game extends commonPanel implements PlayConstants,OnlineConstants,DeferredEventHandler,Config,ColorNames,Opcodes
 {	/**
@@ -175,7 +173,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private boolean sentReviewHint = false; //we told the user
     private JMenu toRobot = null; //let robot take over playing
     private JMenuItem testswitch = null; //for testing, disable the transmitter
-     
+    
     int numberOfConnections() { return(numberOfPlayerConnections+spectatorConnections.length);}
     //
     // debugging hack to turn off input events.  Use to create artificial coincidences
@@ -223,7 +221,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // that player by the starting order he has been assigned.
     // -- previous to 2.72, we tracked him by the seat position chosen.
     private int robotMasterOrder = -1;	// play order for the robot master
-    
+
     
     public LaunchUser[] launchUsers = null;
    
@@ -266,9 +264,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private String fileNameString()
     {	StringBuilder str = new StringBuilder();
     	if(tournamentMode)
-    {
+    	{
     		str.append("T");
-        }
+    	}
     	if(unrankedMode) { str.append("U"); }
     	if(masterMode) { str.append("M"); }
     	if(str.length()>0) { str.append("!"); }
@@ -294,13 +292,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
 
     private void doSaveStart()
-        	        {	
+    { 
     	recordedHistory = "";
     	UIDstring = //"1|||x|Dumbot|Yinsh-Blitz|4008";
     	"1||9|||Medina|30051"; //0 5381 ri 0 pi 0 1000 pi 1 1001 pi 2 1002
         sendMessage(serverRecordString(RecordingStrategy.All));
     }
-
+         
     // note when we pop up or down
     public void doFocus(boolean on)
     {	
@@ -319,7 +317,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }}
     }
     // note when our opponent pops up or down.  
-    private void doReceiveFocus(int from, StringTokenizer mySt)
+    private void doReceiveFocus(int from, Tokenizer mySt)
     {
         focusChangedCount++;
         String token = mySt.nextToken();
@@ -335,7 +333,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
         }
 
-        long time = G.LongToken(mySt);
+        long time = mySt.longToken();
 
         //System.out.println(my.trueName+" ch " + time + " " + focuschanged + " " +(time-focuschanged));
         if (Math.abs(time - focuschanged) < 1000)
@@ -357,9 +355,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void discardGame(boolean error,String message)
     {	if(!my.isSpectator())
-    {
+    	{
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
-            sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
+    	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
     	if(offlineGame)
         {	if(turnBasedGame!=null)
         		{
@@ -367,34 +365,34 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		turnBasedGame.discardGame(error,message+"\n"+s.get(SAVEDMSG,fileNameString())); 
         		}
         		else
-            {
-            	OfflineGames.removeOfflineGame(UIDstring);
+        		{
+        			OfflineGames.removeOfflineGame(UIDstring);
         		}
         }
     	}
-            }
+    }
     private void ServerRemove(boolean error,String message)
     {
         if (!my.isSpectator())
         {	discardGame(error,message);
- 
-                int cpc = focusPercent();
+            
+            int cpc = focusPercent();
 
-                //this is a little hack to help detect cheaters.  Appears as "note from" in the logs
+            //this is a little hack to help detect cheaters.  Appears as "note from" in the logs
             if(!offlineGame)
             {
-                if (!unrankedMode)
-                {
-                    String tablestuff = "";
-                    sendMessage(NetConn.SEND_NOTE + "focus " + cpc + "% of " + my.focuschanged +
-                        " " + my.localIP +
-                        (my.sameIP(playerConnections) ? " same public ip" : "") +
-                        (my.sameHost(playerConnections) ? " same local ip" : "") +
-                        (my.sameClock(playerConnections) ? " same clock" : "") +
-                        " ping " + my.clock + "+" + my.ping + tablestuff);
+            if (!unrankedMode)
+            {
+                String tablestuff = "";
+                sendMessage(NetConn.SEND_NOTE + "focus " + cpc + "% of " + my.focuschanged +
+                    " " + my.localIP +
+                    (my.sameIP(playerConnections) ? " same public ip" : "") +
+                    (my.sameHost(playerConnections) ? " same local ip" : "") +
+                    (my.sameClock(playerConnections) ? " same clock" : "") +
+                    " ping " + my.clock + "+" + my.ping + tablestuff);
             }}
-            }
         }
+    }
 
     private String modeString()
     {
@@ -429,7 +427,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	
         	
     	setLimbo(newstate == ConnectionState.LIMBO);
-
+ 
         if (gameState != newstate)
         { 	//System.out.println(my.trueName+": state is "+stateNames[newstate]);
         	
@@ -445,7 +443,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         gameState = newstate;
     }
 
-    
+
     private void logError(String m, Throwable err)
     {	ChatInterface chat=theChat;
     	ConnectionManager conn = myNetConn;
@@ -492,7 +490,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	}
             else
             {	os.flush();
-                Http.postError(this, bs.toString(), null); 
+                Http.postError(this, bs.toString(), null);  
             }
         }
     }
@@ -517,7 +515,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
            if(nc.hasSequence)
            {
         	  String seq = "x"+myNetConn.na.seq++;
-     		  StringTokenizer msg = new StringTokenizer(message);
+     		  Tokenizer msg = new Tokenizer(message);
      		  String fir = msg.nextToken();
      		  if(NetConn.SEND_MULTIPLE_COMMAND.equals(fir))
      		  {	msg.nextToken();		// skip the size
@@ -545,10 +543,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return(false);
     }
     private String robotInit()
-    {	 
+    {	
         if(playerConnections.length>2 && (robot!=null))
 			{	// place first among the orderinfo
-				return KEYWORD_ROBOTMASTER +" "+robotMasterOrder+" ";
+				return KEYWORD_ROBOTMASTER +" "+robotMasterOrder+" ";				
 			}
         return("");
     }
@@ -564,9 +562,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		{
                	 combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
         		 String ss = " "+msg+" ";
-        	combined += ss.length()+ss;
+        		 combined += ss.length()+ss;
         		}
-        	sendMessage(combined);
+      	     sendMessage(combined);
         }
         return(false);
     }
@@ -595,13 +593,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	        selectorFrame = null;
 	        ss.dispose();
 	    }
- 
-        G.doDelay(500); // this delay gives the viewer thread time to notice and exit
+	
+	    G.doDelay(500); // this delay gives the viewer thread time to notice and exit
 
-        if (myNetConn != null)
-        {
-            myNetConn.setExitFlag("game killed");
-        }
+	    if (myNetConn != null)
+	    {
+	    	myNetConn.setExitFlag("game killed");
+	    }
 
     }
 
@@ -646,7 +644,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		)
             {	skipGetStory = true;	// if there's a story on the way, ignore it.
         		myFrame.moveToFront(); 
-                v.doLoadUrl(serverFile, selectedGame);
+        		v.doLoadUrl(serverFile, selectedGame);
                 
             }
          changeActionMenus();
@@ -657,14 +655,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public void checkUrlLoaded()
     {	if(v!=null && v.isUrlLoaded())
     	{
-                recordedHistory = "";
+        recordedHistory = "";
         if(!offlineGame)
-                {
+        {
         String newstr = serverRecordString(RecordingStrategy.All);
-                sendMessage(newstr);
-                sendMessage(NetConn.SEND_GROUP+KEYWORD_CHANGE_GAME+" "+selectedGame);
+        sendMessage(newstr);
+        sendMessage(NetConn.SEND_GROUP+KEYWORD_CHANGE_GAME+" "+selectedGame);
         }}
-            }
+    }
     public void SelectGame(String file)
     {
         String msg = s.get(SelectingGameMessage, file);
@@ -736,18 +734,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         my.setOrder(lu.order); 	// move order
         }
         else {
-            String myName = prefs.get(loginNameKey,"anonymous");
+        String myName = prefs.get(loginNameKey,"anonymous");
             my.setOrder(0);
-            my.setPlayerName(myName,false,null); 	
+            my.setPlayerName(myName,false,null);
             String myUid = "D"+G.getIdentity()+"-0";
             my.uid = myUid;
-
-            LaunchUserStack ls = new LaunchUserStack();
+       
+        	LaunchUserStack ls = new LaunchUserStack();
         	User myUser = new User(myName);
-            myUser.serverIndex=-1;
-            myUser.uid=myUid;      	    
-            my.launchUser = ls.addUser(myUser,0,0);
-            launchUsers = ls.toArray();
+       	    myUser.serverIndex=-1;
+       	    myUser.uid=myUid;      	    
+        	my.launchUser = ls.addUser(myUser,0,0);
+        	launchUsers = ls.toArray();
         }
         
     	info.put(MYPLAYER,my);			// required by the viewer
@@ -755,8 +753,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  
         
         super.init(info,frame);		// viewer is created here
-
-
+        
+ 
         CanvasProtocol can = myCanvas;
         if ((can == null) && !chatOnly )
         {
@@ -783,16 +781,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	{ // viewer can inhibit the creation of the chat
     	CreateChat(info.getBoolean(CHATFRAMED,false) || G.smallFrame());
     	}
-
+       
         skipGetStory = false;
-    	recordedHistory = "";
+        recordedHistory = "";
         
 
        	if (info.get(RANDOMSEED) == null)
     	{
      	info.putInt(RANDOMSEED,(int)G.Date());
     	}
-
+ 
 
     	//
     	// if there is a canvas, it must also be the viewer.  But if there is no
@@ -843,7 +841,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	        }
 
         // G.print("init "+my);
-
+ 
         robot = (Bot)info.get(ROBOTGAME);
         if (!my.isSpectator() && robot!=null)
         {	
@@ -888,7 +886,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
-    {
+    {	
     	String key = REVIEWERDIR + sharedInfo.getInt(SAVE_GAME_INDEX,-1);
     	String dir = G.getString(key,null);
     	return(dir);
@@ -943,22 +941,22 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	    myNetConn.setInputSemaphore(v);		// wake us on new input
     	    sentMessages = 0;
     	    myNetConn.count(-myNetConn.count(0));
-    	    myNetConn.clearEchos();
-    	    setUserMessage(Color.white,null);
+     	    myNetConn.clearEchos();
+     	    setUserMessage(Color.white,null);
     	    recordedHistory = "";
-       	    // note, the natural thing to do here was to call v.doInit() but
+    	    // note, the natural thing to do here was to call v.doInit() but
     	    // that caused problems because many games init in "puzzle" state
     	    addPlayerConnection(null,null);	// initialize the players list
     	    if(v!=null)
     	    	{ // this alters the behavior of "setControlToken" so it will used this control
     	    	  // instead of the old CONTROL/NOCONTROL protocol
-    	    	  v.setControlToken(false,0);  
+     	    	  v.setControlToken(false,0);  
     	    	}
             
   
             setGameState(my.isSpectator() ? ConnectionState.SPECTATE : ConnectionState.CONNECTED);
 
-	        my.localIP = myNetConn.getLocalAddress();
+            my.localIP = myNetConn.getLocalAddress();
             connectionTimeout=0;
             if (myNetConn.reconnecting)
             {	String info = myNetConn.reconnectInfo;
@@ -974,7 +972,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
       else if( myNetConn.connFailed() || (connectionTimeout < G.Date()))
       { if(theChat!=null)
-      {
+      	{
         theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get("noresponse1"));
         theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get("noresponse2"));
       	}
@@ -1010,7 +1008,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  
     }
     private String sessionKey = "";
-    boolean process_ECHO_INTRO_SELF(String cmdStr, StringTokenizer mySTa,String fullMsg)
+    boolean process_ECHO_INTRO_SELF(String cmdStr, Tokenizer mySTa,String fullMsg)
     {
         if (NetConn.ECHO_INTRO_SELF.equals(cmdStr))
         {	// the actual processing of the string has already been done by the netconn
@@ -1039,7 +1037,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	return true;
             }
             commonPlayer.initPlayers(playerConnections,reviewOnly);
-            
+          
             sendMessage(NetConn.SEND_MYNAME + my.userName + " " + my.uid);
 
             if (my.isSpectator())
@@ -1061,7 +1059,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                 setGameState(ConnectionState.SPECTATE);
                 setUserMessage(Color.white, null);
-            }
+             }
             else if("0.0.0.0".equals(myNetConn.sessionKey) 
             		|| !myNetConn.sessionHasPassword)
             {	// this is where we thought we were joining a game, but we joined
@@ -1078,7 +1076,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 my.readyToPlayTime = G.Date();
                 my.readyToPlay = true;
                 setUserMessage(Color.red, s.get(WaitForOpponents));
-
+ 
                 //tell the other player we're here
                	if(!my.isSpectator())
               		{
@@ -1101,13 +1099,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	return(0);
     }
     // stay in state "connected": until all the players have arrived.
-    public void doCONNECTED(String cmd,StringTokenizer localST,String fullMsg)
+    public void doCONNECTED(String cmd,Tokenizer localST,String fullMsg)
     { // state 2, wait for all the players to show up
         if ((commonPlayer.numberOfPlayers(playerConnections) == numberOfPlayerConnections)
         	&& allPlayersRegistered())
         {	// this is no longer necessary when version 7.92 is extinct
             sendMessage(NetConn.SEND_GROUP+KEYWORD_SPARE+" "+KEYWORD_TIMECONTROLS);
-            if (restartableGame())
+         	if (restartableGame())
             { //robot games that might be recorded, check the server
          		String fetch = myNetConn.hasMoveTimes 
          				? NetConn.SEND_FETCH_GAME 				// raw moves, which may be in either format
@@ -1128,7 +1126,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     }
 
-    public void DoVersion(commonPlayer p, StringTokenizer myST)
+    public void DoVersion(commonPlayer p, Tokenizer myST)
     {	// currently unused, obsolete as of 5.87
         //p.majorVersion = G.IntToken(myST);
         //p.minorVersion = G.IntToken(myST);
@@ -1136,23 +1134,23 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
 
 
-    private void GetTime(commonPlayer p, StringTokenizer myST)
+    private void GetTime(commonPlayer p, Tokenizer myST)
     {
         if (myST.hasMoreTokens())
         {
-            long etime = G.LongToken(myST);
+            long etime = myST.longToken();
             p.setElapsedTime(etime); //synchronize clocks
 
             if (myST.hasMoreTokens())
             { //note that this really is optional, some sequences send only clock time
-                p.clock = G.LongToken(myST);
-                p.ping = G.IntToken(myST);
+                p.clock = myST.longToken();
+                p.ping = myST.intToken();
 
                 //System.out.println("Remote Clock is "+player.clock+"+"+player.ping);
             }
         }
     }
-    private void useStoryBuffer(StringTokenizer myST)
+    private void useStoryBuffer(Tokenizer myST)
     {	if(myST.hasMoreTokens())
     	{	String tok = myST.nextToken();
     		if(tok.startsWith(KEYWORD_SPARE))
@@ -1162,17 +1160,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			tok = myST.nextToken();
     		}
   	    	if(KEYWORD_ROBOTMASTER.equalsIgnoreCase(tok))
-    		{
-    			robotMasterOrder = G.IntToken(myST);
-    			tok = myST.nextToken();
-    		}
+			{ 
+			robotMasterOrder = myST.intToken();
+			tok = myST.nextToken();
+			}
   	    	// discard any events that may be trapped
   	    	v.getEvents();
     		v.useStoryBuffer(tok,myST);
     	}
     }
     // this is used to restart when a spectator joins and is promoted to player
-    public void ProcessGetStory(StringTokenizer myST,String fullMsg)
+    public void ProcessGetStory(Tokenizer myST,String fullMsg)
     {	// typical string
     	// 341 1  channel order uid R name -1 story Zertz 0 , 0 Start P0 , 1 RtoB 2 2 D 2 , 2 R- E 1 , 3 Done .end. 1 1 
     	mplog(fullMsg);
@@ -1180,16 +1178,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         expectingHistory = false;
         v.doInit(false);
         recordedHistory = "";
-        G.IntToken(myST);			// skip the game id, we don't care
-        int nextChan = G.IntToken(myST);
+        myST.intToken();			// skip the game id, we don't care
+        int nextChan = myST.intToken();
        // int idx=0;
         commonPlayer quitPlayer = null;		// this is set to the player we should become, but only if it's still idle
         commonPlayer robotPlayer = null;	// this is set to a robot player if there is one
         // load the player essentials, channel, order and name 
         while(nextChan>=0)
         {	@SuppressWarnings("unused")
-			int position = G.IntToken(myST);
-        	int order = G.IntToken(myST);
+			int position = myST.intToken();
+        	int order = myST.intToken();
         	String uid = myST.nextToken();
          	String quit = myST.nextToken();
          	boolean isAutoma = uid.equals(Bot.Automa.uid);
@@ -1223,12 +1221,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		//(name.equalsIgnoreCase(my.trueName())) && 
         		 ((uid.equals(my.uid)
         				 && !isPoisonedGuest)))	// only let guests take over if there is an empty slot previously held by a guest
-        												// it's bad if a new guest spectator takes over the game!
+        														// it's bad if a new guest spectator takes over the game!
         		{ quitPlayer=p; 
         		}
         	setPlayerName(p,name,false);
          	}
-        	nextChan = G.IntToken(myST);
+        	nextChan = myST.intToken();
         }
         
        	if(nextChan!=-1)	// includes codes for game status
@@ -1269,8 +1267,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(theChat!=null) { theChat.setSpectator(my.isSpectator()); }
         setGameState( my.isSpectator() ? ConnectionState.SPECTATE
         				: ((commonPlayer.numberOfVacancies(playerConnections) > 0)&&!gameo)
-        				? ConnectionState.LIMBO 
-        				: ConnectionState.NOTMYTURN);
+        					? ConnectionState.LIMBO 
+        					: ConnectionState.NOTMYTURN);
         changeActionMenus();
         v.startPlaying();   
         if(!my.isSpectator()) { restartRobots(); }
@@ -1280,7 +1278,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  
     
     // introduction of a spectator
-    public void DoIntroduction(int tempID,StringTokenizer myST)
+    public void DoIntroduction(int tempID,Tokenizer myST)
     {	// 203 <channel> <playerflag=0> <position/color> <uid> <name> <play order> 
     	// 203 1496 0 -1 2 ddyer -1
          //if (theChat.isKnownUser(tempID))
@@ -1288,11 +1286,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	String uid = "0";
         	if(myST.hasMoreTokens())
         	{
-        		G.IntToken(myST);		// position/color
+        		myST.intToken();		// position/color
         		uid = myST.nextToken();		// UID
         		name = myST.nextToken();// name
-        		G.IntToken(myST);		// play order
-         	}
+        		myST.intToken();		// play order
+          	}
             if(theChat!=null) { theChat.setUser(tempID,name); }
             sendMyName(tempID);
         for(int i=0;i<playerConnections.length;i++)
@@ -1321,7 +1319,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     }
 
-    public boolean processAddDrop(int ntokens, String cmdStr,    StringTokenizer myST,String fullMsg)
+    public boolean processAddDrop(int ntokens, String cmdStr,    Tokenizer myST,String fullMsg)
     {
         if (process_ECHO_INTRO_SELF(cmdStr, myST,fullMsg))
         {	if(v!=null) { AR.setValue(v.getPlayers(),null); }	// forget what we know about the players
@@ -1343,8 +1341,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	// x3 203 1498 2 0 2 Dumbot 1000
         	Plog.log.addLog("echo intro ",fullMsg);
  
-        	int tempID = G.IntToken(myST);
-        	int haspw = G.IntToken(myST);
+        	int tempID = myST.intToken();
+        	int haspw = myST.intToken();
         	switch(haspw)
         	{
         	default: 
@@ -1421,13 +1419,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	 // the special "nullvalue" value
              String val = (String) info.get(key);
 
-                if (val!= null)
-                {
+             if (val!= null)
+             {
                  sendMessage(prefix + key + " " + val);
 
-                }
-            }
-        }
+             }
+        	}
+         }
     }
 
 
@@ -1440,7 +1438,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return(false);
     }
     
-    private void doMouseTrack(StringTokenizer myST,commonPlayer player)
+    private void doMouseTrack(Tokenizer myST,commonPlayer player)
     {	
 
         if(v!=null && startplaying_called)
@@ -1462,11 +1460,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		}
     }
     
-    public boolean processEchoGroup(String cmdStr, StringTokenizer myST,String fullMsg)
+    public boolean processEchoGroup(String cmdStr, Tokenizer myST,String fullMsg)
     {
         if (cmdStr.equals(NetConn.ECHO_GROUP))
         {
-            int playerID = G.IntToken(myST);
+            int playerID = myST.intToken();
             String commandStr = myST.nextToken();
             boolean tchat = false;
             boolean tmchat = false;
@@ -1585,7 +1583,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
            		commonPlayer player = reviewOnly ? my : getValidPlayer(playerID, fullMsg);
            		boolean wait = player.robotWait()!=null;
                 boolean ismyrobot = wait||(player.robotPlayer != null);
-                String rest = G.restof(myST);
+                String rest = myST.getRest();
                 myNetConn.LogMessage("echo: ",wait," ",ismyrobot," ",rest," ",player);
                 // passing -1 instead of the current player boardIndex means the appropriate
                 // number will be used based on whose move it is.  In normal play this will
@@ -1684,7 +1682,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	}
             	else
             	{
-            	long now = G.LongToken(myST);
+            	long now = myST.longToken();
             	// control is officially relinquished to us
             	v.setControlToken(true,now);
             	}
@@ -1698,42 +1696,42 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	}
             	else
             	{
-            			String now = myST.nextToken();
-            			int where = v.getReviewPosition();
-            			boolean reject = false;
-            			if(myST.hasMoreTokens())
-            			{
-            				int here = G.IntToken(myST);
-            				//G.print("in "+my+" "+tempString);
-            				reject = where!=here;
-             			}
+        			String now = myST.nextToken();
+        			int where = v.getReviewPosition();
+        			boolean reject = false;
+        			if(myST.hasMoreTokens())
+        			{
+        				int here = myST.intToken();
+        				//G.print("in "+my+" "+tempString);
+        				reject = where!=here;
+         			}
 
-            			if(v.hasControlTokenOrPending()) 
-            			{ // if we thought we had control, tell everyone we know not
-            				if(reject)
-            				{
-            				// a control fight is going on
-            				sendMessage(NetConn.SEND_GROUP+KEYWORD_CONTROL+" "+now+" "+where);	
+        			if(v.hasControlTokenOrPending()) 
+        			{ // if we thought we had control, tell everyone we know not
+        				if(reject)
+        				{
+        				// a control fight is going on
+        				sendMessage(NetConn.SEND_GROUP+KEYWORD_CONTROL+" "+now+" "+where);	
 
-            				}
-            				else
-            				{
-            				sendMessage(NetConn.SEND_MESSAGE_TO+playerID+" "+KEYWORD_NOCONTROL+" "+now);
+        				}
+        				else
+        				{
+        				sendMessage(NetConn.SEND_MESSAGE_TO+playerID+" "+KEYWORD_NOCONTROL+" "+now);
 
-            				}
-            			}
-            			v.setControlToken(false,0); 
-            		}}
+        				}
+        			}
+        			v.setControlToken(false,0); 
+        		}}
             else if (KEYWORD_SCROLL.equals(commandStr))
             {	if(deferActionsSwitch)
-        	{
-        	deferredActions.push(fullMsg);	
-        	System.out.println("Defer: "+fullMsg);
-        	}
-            else
-            { 	//G.print("in "+my+" "+tempString);
-               String player = theChat.getUserName(playerID);
-               int where = G.IntToken(myST);
+	        	{
+	        	deferredActions.push(fullMsg);	
+	        	System.out.println("Defer: "+fullMsg);
+	        	}
+	            else
+	            { 	//G.print("in "+my+" "+tempString);
+	            String player = theChat.getUserName(playerID);
+	            int where = myST.intToken();
                 //System.out.println(my.trueName+" Scroll "+where);
                 if (my.isSpectator() || useJointReview || reviewOnly || GameOver())
                 {
@@ -1758,7 +1756,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                             s.get(RequestJointReview,player));
                     }
                 }}
-            }
+            }            
             else if(KEYWORD_ASK.equals(commandStr))
             {	processAsk(myST,playerID);        	
             }
@@ -1771,7 +1769,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 player.UpdateLastInputTime();
 
                 if (commandStr.equals(KEYWORD_PROGRESS))
-                {   int val = G.IntToken(myST);
+                {   int val = myST.intToken();
                     if(!iRunThisRobot(player)) { player.UpdateProgress(val / 100.0); }
                 }
                 else if (commandStr.equals(TIME))
@@ -1804,7 +1802,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 	}
                 }
                 else if(KEYWORD_ROBOT_QUIT.equals(commandStr))
-                {	int chan = G.IntToken(myST);
+                {	int chan = myST.intToken();
                 	commonPlayer p = getPlayer(chan);
                 	if((p!=null) 
                 		&& (p.trueName.equals(my.trueName))
@@ -1840,7 +1838,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         return (false);
     }
-    private void processAsk(StringTokenizer myST,int to)
+    private void processAsk(Tokenizer myST,int to)
     {
     	String question = myST.nextToken();
     	if(ChatInterface.KEYWORD_CHAT.equals(question))
@@ -1880,7 +1878,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		}
     }
     
-    private void processAnswer(StringTokenizer myST)
+    private void processAnswer(Tokenizer myST)
     {
     	String question = myST.nextToken();
     	if(ChatInterface.KEYWORD_CHAT.equals(question))
@@ -1918,7 +1916,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	// if we're the master, start robots
     	boolean master = iAmTheRobotMaster();
-    	for(commonPlayer p : playerConnections)
+     	for(commonPlayer p : playerConnections)
     	{	// if some other player quit, and we are running the robots, we
     		// need to restart the robots when the game restarts
     		if(p!=null
@@ -1933,9 +1931,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			//G.print("Start robot "+p+" run by "+my+" "+Thread.currentThread());
     			if(master)
     			{
-    		    //G.print("Starting robot "+p+" for "+my);
-    			myNetConn.LogMessage("stop robot wait (restart)",p," ",Thread.currentThread());
-    			commonPlayer started = v.startRobot(p,my,bot);
+    			//G.print("Starting robot "+p+" for "+my);
+        		myNetConn.LogMessage("stop robot wait (restart)",p," ",Thread.currentThread());
+        		commonPlayer started = v.startRobot(p,my,bot);
 	        	if(started!=null) { started.runRobot(true); }
     			}
     		}}
@@ -1951,7 +1949,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if(theChat!=null)
             	{theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
                 s.get(ResumeGameMessage));
-        }
+            	}
         }
         else
         {
@@ -2080,22 +2078,22 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
         }
   
-  
-        if ( (v!=null)
-        		&& !v.isScored()
-        		&& !GameOver() 
-        		&& (nva != 0) 
-        		&& (v.salvageRobot()!=null)
-        		&& (v.MoveStep() >= 3))
-        {
-            JMenu to = ColorChoiceMenu(s.get(RobotPlayMessage));
-
-            if (toRobot == null)
+ 
+            if (  (v!=null)
+            		&& !v.isScored()
+            		&& !GameOver() 
+            		&& (nva != 0)        		
+            		&& (v.salvageRobot()!=null)
+            		&& (v.MoveStep() >= 3))
             {
-                toRobot = to;
-                myFrame.addAction(to,deferredEvents);
+                JMenu to = ColorChoiceMenu(s.get(RobotPlayMessage));
+
+                if (toRobot == null)
+                {
+                    toRobot = to;
+                    myFrame.addAction(to,deferredEvents);
+                }
             }
-        }
         if(extraactions || G.isCheerpj()) 
         {
         	testswitch = myFrame.addAction("test switch",deferredEvents);
@@ -2131,21 +2129,21 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	if(v!=null)
     	{
     	if(to)
-    {
+    	{
     		
         	RecordingStrategy oldStrat = v.gameRecordingMode();
-        	  v.stopRobots(); 
-        	  v.setLimbo(true);
-        	  RecordingStrategy newStrat = v.gameRecordingMode();
-        	  if(newStrat!=oldStrat)
-        	  {
-        		  recordedHistory = "";
-        		  if(newStrat==RecordingStrategy.Single)
-        		  {
-        			  sendMessage(serverRecordString(newStrat));
-        		  }
-        	  }
-            }
+        	v.stopRobots(); 
+        	v.setLimbo(true);
+      	  	RecordingStrategy newStrat = v.gameRecordingMode();
+      	  	if(newStrat!=oldStrat)
+      	  	{
+      		  recordedHistory = "";
+      		  if(newStrat==RecordingStrategy.Single)
+      		  {
+      			  sendMessage(serverRecordString(newStrat));
+      		  }
+      	  	}
+    	}
     	else
     	{
     		v.setLimbo(false);
@@ -2185,7 +2183,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }}
     }
 
-
+ 
     // join a game based on menu choice
     private boolean bePlayer(Object target)
     {
@@ -2259,7 +2257,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         for (int i = 0; i < m; i++)
         {	
         	choices.getItem(i).addItemListener(deferredEvents);
-         }
+        }
 
         return (choices);
     }
@@ -2282,7 +2280,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
     	p.qcode = null;
      	//G.print(my+" beplayer "+p);
-
+ 
         // effect of changing our communication channel to the original channel
     	if(my.isSpectator()) { v.resetBounds(); }
         my.bePlayer(p);
@@ -2310,9 +2308,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         restartGame();
         return(true);
     }
-    private void DoPlayerQuit(StringTokenizer myST)
+    private void DoPlayerQuit(Tokenizer myST)
     {
-        int playerID = G.IntToken(myST);
+        int playerID = myST.intToken();
         String deathcode = myST.hasMoreTokens() ? myST.nextToken() : null;
         commonPlayer player = getPlayer(playerID);
         boolean isRobot = KEYWORD_ROBOT_PLAYING.equals(deathcode);
@@ -2321,7 +2319,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         { //spectator becoming a player, or robot taking over for a player
             String name = theChat!=null ? theChat.getUserName(playerID) : "";
             v.stopRobots();
-            int colorindex = G.IntToken(myST);
+            int colorindex = myST.intToken();
             commonPlayer newp = commonPlayer.findPlayerByPosition(playerConnections,colorindex);
 
             //spectator becoming a player, that's a different story!
@@ -2337,8 +2335,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 				if((theChat!=null) && !name.equalsIgnoreCase(newp.trueName))
 				{
 	              theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
-                    s.get(TakeOverDetail, name,
-                        playcolor, newp.trueName));
+	                    s.get(TakeOverDetail, name,
+	                        playcolor, newp.trueName));
 				}
     			//sendMessage(NetConn.SEND_NOTE + "user "+playerID+" takes over for "+newp.channel);
  
@@ -2371,7 +2369,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
     }
 
-    private void processEchoIQuit(StringTokenizer myST,String fullMsg)
+    private void processEchoIQuit(Tokenizer myST,String fullMsg)
     {
       if (myST.hasMoreTokens())
         {
@@ -2420,7 +2418,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 : s.get(AQuitMessage, pname)));
             theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, deathstring);
         }
-
+        
         v.stopRobots();
 
         if(!v.ignorePlayerQuit(player.boardIndex))
@@ -2480,8 +2478,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                     s.get(PrivateRoomMessage));
+                }
             }
-        }
         }
         else if (KEYWORD_UNRESERVE.equals(msg))
         {
@@ -2493,15 +2491,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                     s.get(PublicRoomMessage));
+                }
             }
         }
-    }
     }
     //
     // this is used to cold start a game from the lobby.  Both players are connected.
     // and they have selected color/play order in the same way as the saved game
     //
-    public void initFromHistory(StringTokenizer myST)
+    public void initFromHistory(Tokenizer myST)
     {  	int myOrd = -1;
     	// new style, typically looks like this:
     	// story Zertz 0 , 0 Start P0 , 1 RtoB 2 0 F 3 , 2 R- G 4 , 3 Done .end. 0 0     	
@@ -2519,8 +2517,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(myST.hasMoreTokens())
         {
         //String playerToMove = 
-        G.IntToken(myST);	// skip player to move
-        myOrd = G.IntToken(myST)%1000;			// my ordinal
+       	myST.intToken();	// skip player to move
+        myOrd = myST.intToken()%1000;			// my ordinal
         v.useEphemeraBuffer(myST);
         }
 
@@ -2590,9 +2588,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        started_playing=true;
     }
     
-    private void restoreGame(StringTokenizer myST,String fullMsg)
+    private void restoreGame(Tokenizer myST,String fullMsg)
     {            	
-        int id = G.IntToken(myST);
+       int id = myST.intToken();
  
         if (id == 0)
         { //not a restored game, continue with choosing tiles
@@ -2637,7 +2635,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 if(playerConnections[0]==null)
 					{ addPlayerConnection(my,null);
 					} 
-                setGameState(ConnectionState.LIMBO);
+               setGameState(ConnectionState.LIMBO);
             }
         }}
     
@@ -2657,11 +2655,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     @SuppressWarnings("unused")
 	private int recordedHistoryErrors = 0;
-    public void StandardProcessing(String from,String cmdStr,StringTokenizer myST,String fullMsg)
+    public void StandardProcessing(String from,String cmdStr,Tokenizer myST,String fullMsg)
     {	if ((fullMsg==null) && !deferActionsSwitch && deferredActions.size()>0)
     	{	// feed a deferred action
     		fullMsg =  deferredActions.remove(0,true);
-    		myST = new StringTokenizer(fullMsg);
+    		myST = new Tokenizer(fullMsg);
     		cmdStr = myST.nextToken();
     		if(cmdStr.charAt(0)=='x') { cmdStr = myST.nextToken(); }
     		System.out.println("play deferred: "+fullMsg);
@@ -2672,10 +2670,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {	// all processed
              }
         	else if(cmdStr.equals(NetConn.ECHO_REQUEST_LOCK))
-        	{	int onoff = G.IntToken(myST);
+        	{	int onoff = myST.intToken();
                	long now = G.Date();
             	// control is officially changed
-            	if(onoff==1) 
+             	if(onoff==1) 
             		{ v.setControlToken(true,now); } 
             	else { v.setControlToken(false,0); }
 
@@ -2695,7 +2693,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
             else if(cmdStr.equals(NetConn.ECHO_APPEND_GAME))
             {
-            	int code = G.IntToken(myST);
+            	int code = myST.intToken();
             	switch(code)
             	{
             	default: throw G.Error("unexpected code %s from ECHO_APPEND_GAME",code);
@@ -2707,7 +2705,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             				+  myNetConn.PrintLog());
 
             		recordedHistory = "";
-            		// new stratgegy, if we get errors we'll never use incremental values again
+             		// new stratgegy, if we get errors we'll never use incremental values again
             		// which ought to prevent any further errors, but will record info in the log
             		// to find the hidden flaw
             		recordedHistoryErrors++;
@@ -2727,7 +2725,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     		//ms = " ri 1 pi 0 1000 pi 1 1001 pi 2 1002 "
                     		// + "story medina 3 0 , 0 Start P0 , 1 pick m A 0 , 2 dropb K 7 , 3 pick p A 0 , 4 dropb P 11 , 5 pick p A 1 , 6 dropb C 3 , 7 done , 8 onboard p B 2 P 7 , 9 onboard p B 0 O 11 , 10 done , 11 pick d C 0 , 12 drop d C 0 , 13 pick p C 0 , 14 dropb O 10 , 15 pick w C 0 , 16 dropb Q 13 , 17 done , 18 pick p A 2 , 19 dropb P 6 , 20 pick p A 3 , 21 dropb C 10 , 22 done , 23 onboard p B 2 Q 7 , 24 onboard p B 2 Q 6 , 25 done , 26 pick p C 3 , 27 dropb D 10 , 28 pick s C 0 , 29 dropb E 10 , 30 done , 31 pick p A 1 , 32 dropb D 3 , 33 pick p A 1 , 34 dropb E 3 , 35 done , 36 onboard p B 2 Q 5 , 37 onboard p B 2 Q 4 , 38 done , 39 pick d C 0 , 40 drop d C 0 , 41 pick d C 0 , 42 drop d C 0 , 43 pick s C 0 , 44 dropb Q 11 , 45 pick w C 0 , 46 dropb P 13 , 47 done , 48 pick p A 2 , 49 dropb Q 3 , 50 pick d A 0 , 51 dropb Q 6 , 52 done , 53 onboard p B 2 H 6 , 54 onboard p B 1 B 3 , 55 done , 56 pick p C 1 , 57 dropb F 3 , 58 pick d C 0 , 59 dropb P 11 , 60 done , 61 pick p A 0 , 62 dropb H 9 , 63 pick p A 0 , 64 dropb H 8 , 65 done , 66 onboard p B 1 B 4 , 67 onboard p B 1 C 4 , 68 done , 69 pick p C 1 , 70 dropb G 3 , 71 pick d C 0 , 72 dropb C 3 , 73 done , 74 pick p A 1 , 75 dropb E 7 , 76 pick m A 0 , 77 dropb K 6 , 78 done , 79 onboard p B 1 D 7 , 80 onboard p B 1 C 7 , 81 done , 82 pick w C 0 , 83 dropb R 12 , 84 pick m C 0 , 85 drop m C 0 , 86 pick w C 0 , 87 dropb R 11 , 88 done , 89 pick p A 3 , 90 dropb C 9 , 91 pick p A 0 , 92 dropb G 8 , 93 done , 94 onboard p B 1 B 7 , 95 onboard p B 0 H 10 , 96 done , 97 pick m C 0 , 98 dropb J 6 , 99 pick m C 0 , 100 dropb I 6 , 101 done , 102 pick p A 2 , 103 dropb G 6 , 104 pick p A 0 , 105 dropb G 10 , 106 done , 107 onboard p B 0 H 11 , 108 onboard p B 0 H 12 , 109 done , 110 pick w C 0 , 111 dropb A 2 , 112 pick w C 0 , 113 dropb A 3 , 114 done , 115 pick d A 0 , 116 dropb H 10 , 117 pick p A 0 , 118 dropb D 12 , 119 done , 120 onboard p B 0 C 12 , 121 onboard p B 0 B 12 , 122 done , 123 pick p C 2 , 124 dropb H 5 , 125 pick d C 0 , 126 dropb H 6 , 127 done , 128 pick p A 1 , 129 dropb E 6 , 130 pick p A 2 , 131 dropb F 12 , 132 done , 133 onboard p B 3 D 9 , 134 onboard p B 3 E 9 , 135 done , 136 pick p C 3 , 137 dropb B 10 , 138 pick d C 0 , 139 dropb D 10 , 140 done , 141 pick p A 2 , 142 dropb J 9 , 143 pick p A 3 , 144 dropb M 4 , 145 done , 146 onboard p B 3 M 3 , 147 onboard p B 3 M 2 , 148 done , 149 pick w C 0 , 150 dropb A 12 , 151 pick w C 0 , 152 dropb A 11 , 153 done , 154 pick p A 3 , 155 dropb L 2 , 156 pick p A 2 , 157 dropb J 8 , 158 done , 159 onboard p B 3 K 2 , 160 onboard p B 3 K 3 , 161 done , 162 pick w C 0 , 163 dropb A 10 , 164 pick m C 0 , 165 dropb I 5 , 166 done , 167 pick p A 1 , 168 dropb B 6 , 169 pick d A 0 , 170 dropb B 7 , 171 done , 172 onboard s B 0 M 5 , 173 onboard d B 0 M 4 , 174 done , 175 pick p C 2 , 176 drop p C 2 , 177 pick m C 0 , 178 dropb I 4 , 179 pick m C 0 , 180 dropb H 4 , 181 done , 182 pick p A 3 , 183 dropb L 10 , 184 pick w A 0 , 185 dropb A 4 , 186 done , 187 onboard s B 0 J 3 , 188 onboard s B 0 L 3 , 189 done , 190 pick p C 1 , 191 drop p C 1 , 192 pick m C 0 , 193 dropb H 3 , 194 pick m C 0 , 195 dropb H 2 , 196 done , 197 pick p A 3 , 198 dropb M 10 , 199 pick w A 0 , 200 dropb A 5 , 201 done , 202 onboard d B 0 D 12 , 203 onboard w B 0 B 13 , 204 done , 205 pick m C 0 , 206 dropb G 2 , 207 pick p C 0 , 208 dropb N 8 , 209 done , 210 pick s A 0 , 211 dropb B 2 , 212 pick w A 0 , 213 dropb B 1 , 214 done , 215 onboard w B 0 C 13 , 216 onboard w B 0 D 13 , 217 done , 218 pick p C 1 , 219 dropb O 4 , 220 pick p C 1 , 221 dropb O 3 , 222 done , 223 pick w A 0 , 224 dropb A 6 , 225 pick m A 0 , 226 dropb K 8 , 227 done , 228 onboard w B 0 C 1 , 229 onboard s B 0 C 2 , 230 done , 231 pick s C 0 , 232 dropb P 12 , 233 pick s C 0 , 234 dropb D 2 , 235 done , 236 pick s A 0 , 237 dropb L 9 , 238 pick s A 0 , 239 drop s A 0 , 240 pick m A 0 , 241 dropb K 9 , 242 done , 243 onboard m B 0 K 10 , 244 onboard m B 0 J 10 , 245 done , 246 pick p C 1 , 247 dropb O 2 , 248 pick w C 0 , 249 dropb D 1 , 250 done , 251 pick w A 0 , 252 dropb R 2 , 253 pick w A 0 , 254 dropb R 3 , 255 done , 256 onboard m B 0 J 11 , 257 onboard m B 0 J 12 , 258 done , 259 pick p C 1 , 260 dropb L 7 , 261 pick p C 2 , 262 dropb J 7 , 263 done , 264 pick w A 0 , 265 dropb R 10 , 266 pick w A 0 , 267 dropb R 9 , 268 done , 269 onboard d B 0 J 9 , 270 onboard d B 0 O 4 , 271 done , 272 pick p C 0 , 273 dropb N 7 , 274 pick p C 0 , 275 dropb M 12 , 276 done , 277 pick w A 0 , 278 dropb R 8 , 279 pick w A 0 , 280 dropb R 7 , 281 done , 282 onboard m B 0 K 12 , 283 onboard m B 0 L 12 , 284 done , 285 pick p C 0 , 286 dropb Q 9 , 287 pick p C 0 , 288 dropb J 5 , 289 done , 290 pick m A 0 , 291 dropb L 11 , 292 pick m A 0 , 293 dropb M 11 .end. 1000 1000 0 0 0";
 
-                 			myST = new StringTokenizer(" 1 "+ms);
+                 			myST = new Tokenizer(" 1 "+ms);
                 		}
     	
                 	}
@@ -2750,12 +2748,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 long now = (G.Date() - pt);
                 pingtime = 0;
                 my.UpdateLastInputTime();
-                G.IntToken(myST); // skip the session id
-                G.IntToken(myST); // skip the max players in session
+                myST.intToken(); // skip the session id
+                myST.intToken(); // skip the max players in session
 
                 {
-                 int s1 = G.IntToken(myST);
-                 int s2 = G.IntToken(myST);
+                 int s1 = myST.intToken();
+                 int s2 = myST.intToken();
                  long time = (s1 * 1000L) + s2;
                  //System.out.println("Ping = "+now+" Skew = "+(time-pingtime)+ " "+s1+" "+s2);
                  if ((my.ping < 0) || (now <= my.ping))
@@ -2791,7 +2789,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 myST.nextToken();
 
                 String msg = myST.nextToken();
-
+                
                 SetPrivateRoom(msg);
                 
             }
@@ -2808,10 +2806,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {	// send_register_player is what is echoed if the name is too long
 					// which happened once due to excessive unicode encoding length
 					if(theChat!=null)
-                {
+                	{
                     theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                         s.get(NoLaunchMessage) + fullMsg);
-                }
+                	}
                 }
 
                 //this tends to induce a cascade of errors
@@ -2845,8 +2843,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	    idx++;
         	  }}
         	if(!offlineGame) { 
-            String fetch = rankingURL + args;
-            Http.postAsyncUrl(serverName,fetch,"",null);
+        			String fetch = rankingURL + args;
+        			Http.postAsyncUrl(serverName,fetch,"",null);
         			}
             //G.print("fetch "+fetch);
             startRecorded = true;
@@ -2861,7 +2859,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	boolean doit = (whoseTurn==my) || iRunThisRobot(whoseTurn) || iRunThisPlayer(whoseTurn);
     	if(doit)
     	{
-   		// record the initial state of the game
+    	// record the initial state of the game
        	// otherwise, spectators who join will be misled if they receive the first move
        	// as can easily happen if the robot is making the first move.
     	RecordingStrategy mode = v.gameRecordingMode();
@@ -2897,7 +2895,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	if(theChat!=null) { theChat.setSpectator(my.isSpectator()); }
     	if(b!=null) 
     		{ int rev2 = b.getActiveRevisionLevel(); 
-    	mplog(msg+" "+rev+" "+rev2);
+    		  mplog(msg+" "+rev+" "+rev2);
     		}
     	}
     	startplaying_called = true;
@@ -2908,11 +2906,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
      		allowSpectators();
      	}
    }
-    public void doNOTMYCHOICE(String cmd,StringTokenizer localST,String fullMsg)
+    public void doNOTMYCHOICE(String cmd,Tokenizer localST,String fullMsg)
     { // state 3
     	boolean offline = offlineGame;
         if (offline || allPlayersReady(false) || reviewOnly)
-        {    
+        {  
             if(offline && !reviewOnly)
         	{ // note 9/2021 
               // including this for review games had the conseqence of leaving
@@ -2936,7 +2934,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	
    
         }
-         //do the processing last, because the processing can change state to 
+        //do the processing last, because the processing can change state to 
         //turn/noturn.  One of the outcomes is to receive the restoration news
         //which will change the state
         StandardProcessing("doNOTMYCHOICE",cmd,localST,fullMsg);
@@ -2984,7 +2982,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       
     public void registerLocalPlayers()
     {	
-    	regPlayer(my.launchUser,my.launchUser.order,my.launchUser.order,my.channel);       
+    	regPlayer(my.launchUser,my.launchUser.order,my.launchUser.order,my.channel);    
     	if(v.UsingAutoma())
     	{
     		sendRegister(1,1,Bot.Automa.name,Bot.Automa.uid,0,0);
@@ -3036,12 +3034,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}}
     	return(null);
     }
-    commonPlayer DoNewPlayer(int chan,StringTokenizer myST)
+    commonPlayer DoNewPlayer(int chan,Tokenizer myST)
     {	
-		int position = G.IntToken(myST);	// unused, but meaningful to the server so don't mess with it
+		int position = myST.intToken();	// unused, but meaningful to the server so don't mess with it
 		String uid = myST.nextToken();
 		String name = Base64.decodeAlphaNumeric(myST.nextToken());
-		int order = G.IntToken(myST);
+		int order = myST.intToken();
 		//
 		// from time to time, the "order" argument was overloaded to pass new information about the 
 		// capabilities of the client.  As of 8/2022 all these temporary workarounds are moot, and
@@ -3086,7 +3084,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		addPlayerConnection(p,p);	// reorder
 	
 		return(p);
-    }
+    	}
     	return(null);
 
     }
@@ -3101,7 +3099,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	//G.print("Robotmaster "+v+" "+my);
     	return(v);
     }
-    commonPlayer DoNewRobot(int channel,StringTokenizer myST)
+    commonPlayer DoNewRobot(int channel,Tokenizer myST)
     {	commonPlayer player = DoNewPlayer(channel,myST);
     	if(player!=null)
     	{
@@ -3112,12 +3110,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return(player);
     }
  
-    public void doRESTORESTATE(String cmd,StringTokenizer localST,String fullMsg)
+    public void doRESTORESTATE(String cmd,Tokenizer localST,String fullMsg)
     {
         StandardProcessing("doRestoreState",cmd,localST,fullMsg);
     }
 
-    private void doMYCHOICE(String cmd,StringTokenizer localST,String fullMsg)
+    private void doMYCHOICE(String cmd,Tokenizer localST,String fullMsg)
     { 	// state 4. 
     	// this state isn't actually used any more, but the state
     	// number is the boundary between "setup" and "playing" states.
@@ -3294,7 +3292,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		"&sock=" , G.getBoolean(TESTSERVER,false)
         					? "test" 
         					: "standard",
-        		"&game=" , gameTypeId ,
+           		"&game=" , gameTypeId ,
         		"&u1=", p.uid,
         		"&p1=", p.trueName(),
         		"&s1=", v.ScoreForPlayer(p),
@@ -3313,7 +3311,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // get the scoring string for a more than 2 player game
     private String getUrlStr4()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
-         int realPCtr = 1;
+        int realPCtr = 1;
         int digest = (int)v.Digest();
         int mid = (int)midDigest;
         String gametype = gameTypeId;
@@ -3393,7 +3391,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         */
         return (str);
     }
- 
+
     //
     // this ought to be part of the netconn class, but it uses several resources from the game class too.
     //
@@ -3423,7 +3421,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     						  if(theChat!=null)
     						  {
                               theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT, line);
-    						}
+    						  }
     						}
     				} while(line!=null);
     			}
@@ -3465,9 +3463,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	{	ScoringMode sm = gameInfo.scoringMode();
     		// online and turn based games can be scored
     		boolean scorable = (playerConnections.length>1) && (turnBasedGame!=null || !offlineGame);
-        		
-        		switch(sm)
-        		{
+    		
+    		switch(sm)
+    		{
     		case SM_Multi:	// multiplayer games
     			if(scorable)
 	    		{
@@ -3485,24 +3483,24 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
     	            if(G.debug()) { G.print("result "+urlStr); }
 		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
-            
+		    		
 		    	}
 		    	break;
     		case SM_None:
     			break;
     		case SM_Normal:
     			if(scorable)
-		    	{
+    			{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
-            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());			
+		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
     	            if(G.debug()) { G.print("result "+urlStr); }
-            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
-    	}
+		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
+		    	}
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
     		}
-    	}
+     	}
     	
     }
 
@@ -3547,12 +3545,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private String gameResultMessage()
     {	StringBuilder msg = new StringBuilder();
     	if(gameInfo!=null)
-            {
-            ScoringMode sm = gameInfo.scoringMode();
+    	{
+        ScoringMode sm = gameInfo.scoringMode();
    	
-            switch(sm)
-            {
-            case SM_Multi:
+        switch(sm)
+        {
+        case SM_Multi:
             {
             G.append(msg,s.get("Final Scores:"));
             for(int i=0;i<playerConnections.length;i++)
@@ -3564,12 +3562,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 			// the extra check on playerConnect.length is so spectators
 			// don't report automa twice
             if(v.UsingAutoma() && (playerConnections.length==1))
-            {
+	            {
 	            	G.append(msg," ",Bot.Automa.name,"=",v.ScoreForAutoma());
-            }
-            }
-            	break;
-            case SM_Normal:
+	            }
+	        }
+        	break;
+        case SM_Normal:
             {
             // say who won
             boolean somewin=false;
@@ -3578,20 +3576,20 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             		p = commonPlayer.nextPlayer(playerConnections, p))
             {	boolean win = v.WinForPlayer(p);
             	if(win) 
-	            		{ 
+            		{ 
             		  G.append(msg,s.get(WonOutcome,p.userName));
             		  somewin |= win;
             		}
             }
             if(!somewin) { G.append(msg,s.get("The game is a draw")); }
             }
-	            break;
-            case SM_None:
-            case SM_Single:
-            	break;
-            default: G.Error("Not expecting scoring mode %s",sm);
-	            }
-        }
+            break;
+        case SM_None:
+        case SM_Single:
+        	break;
+        default: G.Error("Not expecting scoring mode %s",sm);
+            }
+    	}
     	return msg.toString();
     }
     
@@ -3618,10 +3616,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {
             theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,msg);
             }
-    }
+        }
     }
 
-    private void doNOTMYTURN(String cmd,StringTokenizer localST,String fullMsg)
+    private void doNOTMYTURN(String cmd,Tokenizer localST,String fullMsg)
     { // state 5
         initialized = true;
         if(robot!=null) { recordStart(); }
@@ -3635,13 +3633,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        StandardProcessing("doNOTMYTURN",cmd,localST,fullMsg);
     }
 
-    private void doLIMBO(String cmd,StringTokenizer localST,String fullMsg)
+    private void doLIMBO(String cmd,Tokenizer localST,String fullMsg)
     {
         //v.setStateMessages();
         StandardProcessing("doLIMBO",cmd,localST,fullMsg);
     }
 
-    private void doMYTURN(String cmd,StringTokenizer localST,String fullMsg)
+    private void doMYTURN(String cmd,Tokenizer localST,String fullMsg)
     {
         initialized = true;
         G.Assert(!my.isSpectator(), "never the spectator's turn!");
@@ -3671,28 +3669,28 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if (!GameOver()
         		&& (AllRobotsIdle() || (v.simultaneousTurnsAllowed()))
         		&& v.allowRobotsToRun(p))
-        {
+        {	
             v.startRobotTurn(p);
         }
     }
 
     /** process chat, state requests */
-    private boolean processCommonMessages(String cmd,StringTokenizer localST,String fullMsg)
+    private boolean processCommonMessages(String cmd,Tokenizer localST,String fullMsg)
     {	boolean consumed  = false;
         //G.print("in: "+tempString);
-    	int ntokens = localST.countTokens()+1;
+     	int ntokens = localST.countTokens()+1;
         if ((ntokens > 1) && processAddDrop(ntokens, cmd, localST,fullMsg))
         	{	consumed = true;
         	}
         return(consumed);
     }
 
-    private void doSPECTATE(String cmd,StringTokenizer localST,String fullMsg)
+    private void doSPECTATE(String cmd,Tokenizer localST,String fullMsg)
     { // state 7
         initialized = true;
         if (fullMsg != null)
         {
-            StandardProcessing("doSpectate",cmd,localST,fullMsg);
+             StandardProcessing("doSpectate",cmd,localST,fullMsg);
 
          }
     }
@@ -3830,12 +3828,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	
         	TimeControl tc = (TimeControl)sharedInfo.get(TIMECONTROL);
         	if(tc!=null)
-        	{
+            	{
             		msg.append(sgf_names.timecontrol_property);
             		msg.append(" ");
             		msg.append(tc.print());
             		msg.append(" ");
-        	}
+            	}
         	if(tournamentMode) { msg.append("t "); }
         	String maps = v.colorMapString();
         	if(maps!=null)
@@ -3858,7 +3856,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	{  disConnected("lost connection"); }
     }
 
-     private void DoTime()
+    private void DoTime()
     {
         long currentT = G.Date();
         int timeindex = (my.isSpectator() || GameOver() || (gameState == ConnectionState.LIMBO))
@@ -3893,7 +3891,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
              if(theChat!=null)
             	 {theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
-                s.get(TimedOutMessage));
+            			 s.get(TimedOutMessage));
             	 }
               if ((myNetConn != null) && (myNetConn.haveConn()))
                {
@@ -3938,7 +3936,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     //
     private void DoJointReview()
     {	if(reviewOnly || !my.isSpectator())
-    {
+    	{
         boolean oldval = useJointReview;
         useJointReview = ((jointReview != null) && jointReview.getState())
         				|| reviewOnly 
@@ -3957,7 +3955,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
             int joint = v.getJointReviewStep();
             if (((where!=-1) && (joint != where)) || (joint==GET_CURRENT_POSITION))
-            {
+            {	
                 v.setJointReviewStep(where);
                 int step = v.getJointReviewStep();
                 if(v.hasControlTokenOrPending())
@@ -3974,7 +3972,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {  	super.runStep(wait);
 
     	checkUrlLoaded();
-		if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
+    	if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
     	boolean newturn = SetWhoseTurn();
     	if(newturn && turnBasedGame!=null && !my.isSpectator()) { recordAsyncGame(false); }
 
@@ -3992,7 +3990,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         startingTime = new BSDate();
         String fullMsg = null;
         String cmd = null;
-        StringTokenizer localST = null;
+        Tokenizer localST = null;
         try
         {
             FinishSetup();
@@ -4003,7 +4001,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if(selectorFrame!=null) 
             	{ selectorFrame.moveToFront(); 
             	} 
-
+            
             if(G.isCheerpj())
             { newsStack.push(cheerpjTextFile); 
             }
@@ -4018,7 +4016,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
             long checkTime = 0;
             boolean hadMessage = true;
-  
+            
             for (;!exitFlag;)
             {	
                 try
@@ -4062,7 +4060,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                      }
 
-
+                    
                     if (GameOver())
                     {
                         if (!playedGameOverSound && !reviewOnly && doSound)
@@ -4128,7 +4126,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                      
                     if(fullMsg!=null)
                     {	//G.print("In: "+fullMsg);
-                        localST = new StringTokenizer(fullMsg);
+                        localST = new Tokenizer(fullMsg);
                         cmd = localST.nextToken();
                         if(isExpectedSequence(cmd,fullMsg))
                         {
@@ -4197,7 +4195,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 }
             	catch (ThreadDeath err) { throw err;}
                 catch (Throwable err)
-                {
+                {  
                     handleError("inside game main loop", fullMsg, err, true);
                 }
             }
@@ -4251,11 +4249,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         boolean extended)
     {	try {
         errors++;
-
+ 
         String msg = cxt 
         		+ err 
         	+ ((lastMsg != null) ? (" last message was " + lastMsg) : "")
-            ;
+             ;
         logExtendedError(msg, err, extended);
     	}
 		catch (ThreadDeath err2) { throw err2;}
@@ -4264,7 +4262,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     }
 
-    public void DoGameStep(String cmd,StringTokenizer localST,String fullMsg)
+    public void DoGameStep(String cmd,Tokenizer localST,String fullMsg)
     {	
     	if(v!=null) { sendQueue(v.getEvents());};
 
@@ -4329,7 +4327,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         boolean some = false;
         
         if (playerConnections != null)
-        {
+        {	
             for (int i = 0; i < playerConnections.length; i++)
             {
                 commonPlayer p = playerConnections[i];
@@ -4361,12 +4359,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 some = true;
                 if (started ? !p.startedToPlay : !p.readyToPlay)
                     {
-                		return (false);
-                		}
-                    }
-                else { return(false); }
+            		return (false);
+                	}
                 }
+                else { return(false); }
             }
+        }
         return (some);
     }
 
@@ -4418,7 +4416,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	    		 doTouch();
 	    	}
         sendRobotProgress();
-    }
+    	}
     }
 
    private long lastRequestTime = 0;
@@ -4434,7 +4432,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	 			String msg = (myNetConn.hasLock)	// have session lock commands?
 	 							? NetConn.SEND_REQUEST_LOCK + "1"
 	 							: NetConn.SEND_GROUP+KEYWORD_CONTROL+" "+now+" "+v.getReviewPosition();
-	 		sendMessage(msg); 
+	 			sendMessage(msg); 
 	   		}
 	   	}
    }
@@ -4479,7 +4477,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	            case All:
 	            case Single:
 	            case None:            	
-                FinishUp(true);
+	            	FinishUp(true);
 	            	break;
 	            case Fixed:
 	            default:
@@ -4508,16 +4506,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	}
     	return(false);
     }
-    
+
     private void recordOfflineGame()
     {	if(offlineGame && !reviewOnly && turnBasedGame==null)
-		{
+    	{	
     	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
     	String msg = v.fixedServerRecordMessage(fixedHist);
     	//G.print("Fixed "+msg);
 		
     	OfflineGames.recordOfflineGame(UIDstring,msg);
-		}
+ 		}
     }
     private void recordAsyncGame(boolean forced)
     {
@@ -4592,8 +4590,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	doTouch();
  
         	String combined = NetConn.SEND_MULTIPLE;	// includes a trailing space
-	            while (!event.isEmpty())
-	            {
+            while (!event.isEmpty())
+	            {	
 	                String ss = event.remove(0);
 	                // be careful about the padding.  Each subcommand should end with a space, so "combined" always ends with a space
 	                if(ss.charAt(0)=='@')
@@ -4613,11 +4611,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	                // executed it outselves.  This is the normal way of doing things
 	                // in games where the main play is synchronous.
 	                //
-	                String msg = 
+	                String msg =                 		 
 	                		" "+NetConn.SEND_GROUP
 	                		+ KEYWORD_VIEWER+" "+ss+" ";
 	                combined += msg.length()+msg;
-	            }
+	                }
 	            }
             	RecordingStrategy mode = v.gameRecordingMode();
             	if(mode!=RecordingStrategy.None)
@@ -4626,13 +4624,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	            if(!"".equals(m)) 
 	            	{
 	            	 combined += (m.length()+1)+" "+m;
-            		}
+	            	}
             	}
 	            //System.out.println(my.trueName+" " +combined);
 	            // we'll get separate echos for each of the component messages
 	            // so remember how many to keep the books straight.
         		sendMessageEtc(combined);
-        }
+         }
     }
     private Object restoringGame = "";
     public void restoreOfflineGame()
@@ -4647,7 +4645,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	String chat = turnBasedGame.getChat();
         	if(chat!=null)
         	{
-        	theChat.setEncodedContents(new StringTokenizer(chat));
+        	theChat.setEncodedContents(new Tokenizer(chat));
         	if(theChat.hasUnseenContent())
         		{
         		v.setSeeChat(true);
@@ -4667,11 +4665,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void restoreGameRecord(String rec)
     {
     	if(rec!=null)
-    	{	StringTokenizer tok = new StringTokenizer("1 "+rec);
+    	{	Tokenizer tok = new Tokenizer("1 "+rec);
     		restoreGame(tok,rec);
     		if(turnBasedGame!=null)
     		{	if(turnBasedGame.isActive())
-    		{
+    			{
     			// adjust the player time for the game
     			BSDate da = BSDate.parseDate(turnBasedGame.lastTime+ " GMT");
     			long start = da.getTime();
@@ -4681,7 +4679,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			long dif = nowTime-start;
     			commonPlayer who = whoseTurn;
     			v.updatePlayerTime(dif,who);
-    		}
+    			}
     		else {
     			v.setEditable(true);
     		}
@@ -4691,7 +4689,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	setGameState(ConnectionState.NOTMYTURN);
     	SetWhoseTurn();
     	startPlaying();
-    }
+     }
     
     // place a move for the robot companion
     public void makeRobotMove(commonPlayer p)
@@ -4742,7 +4740,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       		sendMessage(msg);
       		doTouch();
 
-       		}
+    	}   		
     	}
     }
     public void startRobotTurns()
@@ -4784,7 +4782,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		if(ms!=null)
 		{	
 		System.out.println("Using applet STORY parameter "+ms);
-		StringTokenizer myST = new StringTokenizer(" 1 "+ms);
+		Tokenizer myST = new Tokenizer(" 1 "+ms);
 		//addPlayerConnection(my,null);
  		restoreGame(myST,ms);	
 		}
@@ -4833,7 +4831,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	    	{ set(FileSelector.SERVERFILE , (String) som);
 	    	}
 	    	if(som instanceof FileSelector.FileSelectorResult)
-	    	{
+	    	{	
 	    		FileSelector.FileSelectorResult res = (FileSelector.FileSelectorResult)som;
 	    		URL zip = res.zip;
 	    		set(FileSelector.SERVERFILE,zip==null?"/":zip.toExternalForm());
@@ -4885,7 +4883,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	String localb = localGameDirectory();
          	URL fileBase = G.getUrl("file:"+docb+localb);
      		localSource = new FileSource(LocalGames,fileBase,fileBase,true,false,false,false);
-        	URL u = G.getUrl(base,dir);
+        	URL u = G.getUrl(base,dir);    
         	webSource = new FileSource(base.getHost(),u,u,true,true,false,true);
     	}
 
@@ -4893,7 +4891,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	selector = new FileSelector(webSource,localSource);
     	//selector.setCanvasRotation(sharedInfo.getInt(exHashtable.ROTATION,0));
     	myFrame.addWindowListener(selector);
-  		selector.addObserver(this);
+   		selector.addObserver(this);
     	}
         }
 
@@ -4903,7 +4901,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	{ public void run() 
         		{ CreateFileSelector(dir);
         	      dirObserver = selector.addObserver(game);
-        	      selectorFrame = selector.startDirectory(GameSelectorMessage,false);
+        selectorFrame = selector.startDirectory(GameSelectorMessage,false);
     	selectorFrame.setIconAsImage(StockArt.GameSelectorIcon.image);
         		}});
     }

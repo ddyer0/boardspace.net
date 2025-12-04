@@ -36,6 +36,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 /**
  * 
@@ -918,10 +919,10 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        long rk = G.LongToken(his);
+        long rk = his.longToken();
         bb.doInit(token,rk);
      }
 
@@ -1009,9 +1010,9 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
     			String gametype = tok.nextToken();
-    			long rk = G.LongToken(tok);
+    			long rk = tok.longToken();
                 bb.doInit(gametype,rk);
              }
             else if (name.equals(comment_property))

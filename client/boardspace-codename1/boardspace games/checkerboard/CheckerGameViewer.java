@@ -42,6 +42,7 @@ import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.SimpleSprite.Movement;
 
 import static checkerboard.CheckerMovespec.*;
@@ -990,7 +991,7 @@ private void playSounds(commonMove m)
     // the format is just what is produced by FormHistoryString
     //
     // this is completely standardized
-    //public void performHistoryTokens(StringTokenizer his)
+    //public void performHistoryTokens(Tokenizer his)
     //{	String command = "";
     //    // now the rest
     //    while (his.hasMoreTokens())
@@ -1010,7 +1011,7 @@ private void playSounds(commonMove m)
     //        }
     //    }	
     //}  
-    //public void performPlayerInitialization(StringTokenizer his)
+    //public void performPlayerInitialization(Tokenizer his)
     //{	int fp = G.IntToken(his);
     //	BoardProtocol b = getBoard();
     //    if (fp < 0)   {  fp = 0;  }
@@ -1026,11 +1027,11 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
-    	int rev = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
+    	int rev = his.intToken();
     	// make the number of players, random key, and revision part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk,np,rev);
@@ -1103,11 +1104,11 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 7/16/2024
+     * summary: 11/30/2025
      * summary:
 	 * 324: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\checkers\checkersgames\checkersgames\archive-2023\games-Jan-29-2023.zip CK-guatemara-Dumbot-2022-12-01-2003.sgf lib.ErrorX: Not expecting robot in state Gameover
 	 * 503: play Problem in file:G:\share\projects\boardspace-html\htdocs\checkers\checkersgames\checkersgames\games-Jan-29-2023\CK-guatemara-Dumbot-2022-12-01-2003.sgf lib.ErrorX: Not expecting robot in state Gameover
-	 * 714 files visited 2 problems
+	900 files visited 2 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1120,11 +1121,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-             	int np = st.hasMoreTokens() ? G.IntToken(st) : 2;
-               	int rev = st.hasMoreTokens() ? G.IntToken(st) : 0; 
+             	long ran = st.longToken();
+             	int np = st.hasMoreTokens() ? st.intToken() : 2;
+               	int rev = st.hasMoreTokens() ? st.intToken() : 0; 
                 b.doInit(typ,ran,np,rev);
                 adjustPlayers(np);
              }

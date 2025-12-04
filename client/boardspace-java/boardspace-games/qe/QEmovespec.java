@@ -16,12 +16,11 @@
  */
 package qe;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.Calculator;
 import lib.ExtendedHashtable;
@@ -96,7 +95,7 @@ public class QEmovespec extends commonMPMove implements QEConstants
     /* constructor */
     public QEmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /* constructor for bid moves */
     public QEmovespec(int o,long n,int pl)
@@ -104,11 +103,6 @@ public class QEmovespec extends commonMPMove implements QEConstants
     	op = o;
     	player = pl;
     	amount = n;
-    }
-    /* constructor */
-    public QEmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -153,42 +147,35 @@ public class QEmovespec extends commonMPMove implements QEConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd =firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse %s", cmd);
         case MOVE_ECOMMIT:
-        	player = G.IntToken(msg);
+        	player = msg.intToken();
         	break;
         case MOVE_EPEEK:
         case MOVE_PEEK:
-        	 player = G.IntToken(msg);
+        	 player = msg.intToken();
         	 break;
         case MOVE_EBID:
-        	 player = G.IntToken(msg);
+        	 player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_SECRETBID:
         case MOVE_OPENBID:
-         		amount = G.LongToken(msg);
+         		amount = msg.longToken();
         		break;
  
         case MOVE_DROP:
         case MOVE_PICK:
             source = QEId.get(msg.nextToken());
-            amount = G.LongToken(msg);
-            to_height = G.IntToken(msg);
+            amount = msg.longToken();
+            to_height = msg.intToken();
             break;
 
         case MOVE_START:

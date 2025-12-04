@@ -16,11 +16,10 @@
  */
 package crosswordle;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class CrosswordleMovespec extends commonMPMove implements CrosswordleConstants
@@ -75,7 +74,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     /* constructor */
     public CrosswordleMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
     /** constructor for simple robot moves - pass and done 
@@ -99,12 +98,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     	player = who;
  
     }
-    /* constructor */
-    public CrosswordleMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-
+ 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
@@ -158,17 +152,10 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -179,8 +166,8 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
          	word = msg.hasMoreTokens() ? msg.nextToken() : "";
         	break;
         case MOVE_RESTART:
-        	to_row = G.IntToken(msg);
-        	from_row = G.BoolToken(msg)?1:0;
+        	to_row = msg.intToken();
+        	from_row = msg.boolToken()?1:0;
         	break;
         	
         case MOVE_START:

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,16 +12,15 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package tintas;
-
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Tintasmovespec extends commonMove implements TintasConstants
@@ -82,7 +81,7 @@ public class Tintasmovespec extends commonMove implements TintasConstants
     /* constructor */
     public Tintasmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -94,11 +93,6 @@ public class Tintasmovespec extends commonMove implements TintasConstants
     	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Tintasmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -142,16 +136,10 @@ public class Tintasmovespec extends commonMove implements TintasConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
@@ -162,22 +150,22 @@ public class Tintasmovespec extends commonMove implements TintasConstants
         case MOVE_PAWN:
         		dest = TintasId.BoardLocation;
         
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
             dest = TintasId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
         case MOVE_DROP:
         case MOVE_PICK:
             dest = TintasId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:
@@ -233,24 +221,24 @@ public class Tintasmovespec extends commonMove implements TintasConstants
     }
     
 
-    
+
     /** construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
-        // adding the move index as a prefix provides numnbers
+       // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (opname + to_col + " " + to_row);
+	        return (opname  + to_col + " " + to_row);
 
 		case MOVE_DROPB:
 		case MOVE_PAWN:
-	        return (opname + to_col + " " + to_row);
+	        return (opname  + to_col + " " + to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:

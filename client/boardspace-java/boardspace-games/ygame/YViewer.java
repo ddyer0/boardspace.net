@@ -19,8 +19,6 @@ package ygame;
 
 import java.awt.*;
 import online.common.*;
-import java.util.*;
-
 import common.GameInfo;
 
 import static ygame.Ymovespec.*;
@@ -35,6 +33,7 @@ import lib.Random;
 import lib.Image;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Tokenizer;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import online.game.*;
@@ -67,6 +66,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
     private Rectangle chipRects[] =  addZoneRect("chip",2);
+    private Rectangle artBoardRect = new Rectangle();
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwitchMessage,	HighlightColor, rackBackGroundColor);
     private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,HighlightColor,rackBackGroundColor);;
     
@@ -200,13 +200,13 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
         int nrows = 15;  // b.boardRows
-  	
+        int ncols = 14;
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/nrows,(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nrows*CELLSIZE);
+    	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
@@ -222,7 +222,10 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
         int stateX = boardX;
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
-    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+        // cheat a little to enlarge the board with the existing coordinates
+        int extra = boardW/15;
+        G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.SetRect(artBoardRect,boardX-extra,boardY-extra,boardW+extra*2,boardH+extra*2);
     	G.SetRect(swapButton, boardX+CELLSIZE, boardY+CELLSIZE*2,CELLSIZE*2,CELLSIZE);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -320,11 +323,11 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
          YChip.backgroundReviewTile.image.tileImage(gc,brect);   
         }
 
-        setDisplayParameters(gb,brect);
+        setDisplayParameters(gb,artBoardRect);
 
-        scaled = YChip.board.getImage().centerScaledImage(gc,boardRect,scaled);
+        scaled = YChip.board.getImage().centerScaledImage(gc,artBoardRect,scaled);
         
-	  	gb.DrawGrid(gc, boardRect, use_grid,
+	  	gb.DrawGrid(gc, artBoardRect, use_grid,
 	  			Color.black, Color.black,
 	  			Color.black,Color.black);
 	 
@@ -424,7 +427,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,artBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -444,8 +447,8 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,artBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, artBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
@@ -747,7 +750,6 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     private boolean setDisplayParameters(YBoard gb,Rectangle r)
     {
       	boolean complete = false;
-
       	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);
@@ -815,12 +817,12 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

@@ -28,8 +28,6 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -42,6 +40,7 @@ import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 import static stac.StacMovespec.*;
 
@@ -287,7 +286,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      scaled = StacChip.board.getImage(loader).centerScaledImage(gc, boardRect,scaled);
+      scaled = StacChip.board.getImage().centerScaledImage(gc, boardRect,scaled);
       /*
 	 	    gb.SetDisplayParameters(
 	 	    		new double[]{0.20,0.33},
@@ -611,11 +610,11 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a stac init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
-    	int rev = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
+    	int rev = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like stac probably don't use it.
         b.doInit(token,rk,np,rev);
@@ -671,8 +670,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/27/2023
-     * 464 files visited 0 problems
+     * summary: 12/2/2025
+     * 523 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -685,11 +684,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-            	int np = st.hasMoreTokens() ? G.IntToken(st) : 2;
-            	int rev = st.hasMoreTokens() ? G.IntToken(st) : 0;
+            	long ran = st.longToken();
+            	int np = st.hasMoreTokens() ? st.intToken() : 2;
+            	int rev = st.hasMoreTokens() ? st.intToken() : 0;
                 b.doInit(typ,ran,np,rev);
                 adjustPlayers(b.nPlayers());
              }

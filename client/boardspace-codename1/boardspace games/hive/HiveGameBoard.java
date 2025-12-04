@@ -950,11 +950,11 @@ public variation gamevariation = variation.hive;
     public void doInit(String gtype,long key)
     {  randomKey = key;
     
-	   StringTokenizer tok = new StringTokenizer(gtype);
+	   Tokenizer tok = new Tokenizer(gtype);
 	   String typ = tok.nextToken();
-	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision ;
+	   int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+	   long ran = tok.hasMoreTokens() ? tok.longToken()  : key;
+	   int rev = tok.hasMoreTokens() ? tok.intToken()  : revision ;
 	   doInit(typ,np,ran,rev);
     }
     public void doInit(String typ,int np,long ran,int rev)
@@ -1080,7 +1080,7 @@ public variation gamevariation = variation.hive;
     }
     public boolean DigestState()
     {	//if(board_state==HiveState.PASS_STATE) { return(false); }
-    	return(true);
+    	return(DoneState());
     }
  /**
   * In our implementation, the letter side(a-k) is black
@@ -2359,8 +2359,7 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning)
 		{
 	 	CellStack tempDests = all==null ? null : getTempDest();
 	 	CellStack tempBlankDests = null;
-		some |= legalDropDests(tempDests,playerQueen(whoseTurn),all==null);	// not necessarily the q, just any piece of color
-		if(some && all==null) { return true; }
+		boolean somedest = legalDropDests(tempDests,playerQueen(whoseTurn),all==null);	// not necessarily the q, just any piece of color
 	 	HiveCell[] cells = rackForPlayer(whoseTurn);
 	 	boolean include_queen = canPlayQueen(whoseTurn);
 	 	boolean require_queen = board_state==HiveState.QUEEN_PLAY_STATE;
@@ -2369,8 +2368,8 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning)
 	 		all.push(new Hivemovespec(whoseTurn,MOVE_SWAP));
 	 	}
 	 	// onboarding pieces
-	 	if(debug) { G.Assert(all==null || tempDests.size()>0 == some,"mismatched some on drop"); }
-	 	if(some)
+	 	if(debug) { G.Assert(all==null || tempDests.size()>0 == somedest,"mismatched some on drop"); }
+	 	if(somedest)
 	 	{
 	 	for(PieceType pc : PieceType.values())
 	 		{
@@ -2382,30 +2381,25 @@ boolean GetListOfMoves1(CommonMoveStack all,boolean onlyWinning)
 	 				&& (include_queen || (bug.type!=PieceType.QUEEN))
 	 				&& (!require_queen || (bug.type==PieceType.QUEEN))
 	 				&& pieceTypeIncluded.test(bug.type))
-	 		 {	if(bug.type==PieceType.BLANK)
-	 		 		{	if(tempBlankDests==null)
+	 		 {	if(all==null && somedest)
+				{// no temp dests allocated
+ 				 return(true); 
+ 				}
+	 		 	if(bug.type==PieceType.BLANK)
+	 		 		{		 			
+	 		 		if(tempBlankDests==null)
 	 		 				{tempBlankDests = getTempDest();
 	 		 				 slitherAnywhere(null,tempBlankDests,null,all==null);
 	 		 				}
 			 			for(int moven=0,nBlanks=tempBlankDests.size();moven<nBlanks;moven++) 
 			 			{ HiveCell target = tempBlankDests.elementAt(moven);
-			 			if(all==null)
-			 				{if(tempBlankDests!=null) { returnTempDest(tempBlankDests); }
-			 				 returnTempDest(tempDests); 
-			 				 return(true); 
-			 				}
+			 			
 			 			all.addElement(new Hivemovespec(whoseTurn,MOVE_MOVE_DONE,bug,target,c));
 			 			}}
 	 		 		else {
 	 		 			for(int moven=0,nDrops=tempDests.size();moven<nDrops;moven++) 
 	 		 			{ HiveCell target = tempDests.elementAt(moven);
 	 		 			  Hivemovespec m = new Hivemovespec(whoseTurn,MOVE_MOVE_DONE,bug,target,c);
-	 		 			  if(all==null) 
-	 		 			  {
-	 		 			  if(tempBlankDests!=null) { returnTempDest(tempBlankDests); }
-	 		 			  returnTempDest(tempDests); 
-	 		 			  return(true); 
-	 		 			  }
 	 		 			  all.addElement(m);
 	 		 			}}
 	 		 }

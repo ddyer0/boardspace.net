@@ -17,7 +17,6 @@
 package rithmomachy;
 
 import online.game.*;
-import java.util.*;
 import lib.*;
 
 public class RithmomachyMovespec extends commonMove implements RithmomachyConstants
@@ -61,14 +60,9 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
     /* constructor */
     public RithmomachyMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public RithmomachyMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     public RithmomachyMovespec(int opc,char from_c,int from_r,char to_c,int to_r,int who)
     {	op = opc;
     	from_col = from_c;
@@ -141,17 +135,10 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -163,33 +150,33 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
         case MOVE_PICK:
             source =  "W".equals(msg.nextToken()) ? RithId.White_Chip_Pool : RithId.Black_Chip_Pool;
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
             source = "W".equals(msg.nextToken()) ? RithId.White_Chip_Pool : RithId.Black_Chip_Pool;
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_BOARD_BOARD:			// robot move from board to board
         	source = RithId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
-  	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+  	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = RithId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = RithId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 

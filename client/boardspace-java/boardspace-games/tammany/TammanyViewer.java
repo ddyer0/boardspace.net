@@ -19,7 +19,6 @@ package tammany;
 import java.awt.*;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 import bridge.SystemFont;
 import common.GameInfo;
@@ -43,6 +42,7 @@ import lib.TextChunk;
 import lib.Text;
 import lib.Image;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.BaseBoard.BoardState;
 import online.game.sgf.sgf_node;
@@ -836,7 +836,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	String votestring = "vote ward";
     	if(str.startsWith(votestring))
     	{
-    		StringTokenizer msg = new StringTokenizer(str.substring(votestring.length()));
+    		Tokenizer msg = new Tokenizer(str.substring(votestring.length()));
 		    return TextChunk.join(
 		    		TextChunk.create(votestring),
 		    		TextChunk.create(" "+msg.nextToken()),
@@ -1318,12 +1318,12 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

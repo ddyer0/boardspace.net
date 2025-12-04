@@ -32,6 +32,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -838,7 +839,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link #gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	//
@@ -921,8 +922,9 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-	summary: 5/23/2023
-		746 files visited 0 problems
+	summary: 11/30/2025
+	759 files visited 0 problems
+
      */
     public void ReplayMove(sgf_node no)
     {

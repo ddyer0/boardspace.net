@@ -33,7 +33,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -44,6 +43,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.MouseState;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.XImage;
 import lib.exCanvas;
 
@@ -237,7 +237,7 @@ public class Cardmaker extends exCanvas implements Runnable
 	  }
 	  String lineColorName(String name)
 	  {
-		  StringTokenizer n = new StringTokenizer(name);
+		  Tokenizer n = new Tokenizer(name);
 		  String firstName = n.nextToken().toLowerCase();
 		  return("Station."+firstName+"Index");
 	  }
@@ -256,10 +256,10 @@ public class Cardmaker extends exCanvas implements Runnable
 			int run = result.getInt(5);
 			int interval = result.getInt(6);
 			int startoffset = result.getInt(7);
-			StringTokenizer tok = new StringTokenizer(rgb);
-			int r = G.IntToken(tok);
-			int g = G.IntToken(tok);
-			int b = G.IntToken(tok);
+			Tokenizer tok = new Tokenizer(rgb);
+			int r = tok.intToken();
+			int g = tok.intToken();
+			int b = tok.intToken();
 			// if black enough we get white lettering. 
 			String lineColor = lineColorName(comm);
 			int tc = (r+g+b)/3 <100 ? 255 : 0;

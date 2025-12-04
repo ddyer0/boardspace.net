@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package truchet;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -62,14 +61,9 @@ public class TruMovespec extends commonMove implements TruConstants
     /* constructor */
     public TruMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public TruMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     /* constructor for pass and resign moves */
     public TruMovespec(int opc,int p)
     {
@@ -150,17 +144,10 @@ public class TruMovespec extends commonMove implements TruConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);        
         switch (op)
         {
@@ -168,39 +155,39 @@ public class TruMovespec extends commonMove implements TruConstants
         	throw G.Error("Can't parse %s", cmd);
         
         case MOVE_BOARD_BOARD:			// robot move from board to board
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_AND_SPLIT:
         case MOVE_AND_MERGE:
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	       	splitInfo = msg.nextToken();
 	        break;
 
         case MOVE_SPLIT:
         case MOVE_MERGE:
-        	to_col = from_col = G.CharToken(msg);
-        	to_row = from_row = G.IntToken(msg);
+        	to_col = from_col = msg.charToken();
+        	to_row = from_row = msg.intToken();
         	splitInfo = msg.nextToken();
         	break;
         case MOVE_DROPB:
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
         case MOVE_FLIP:
-             from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+             from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
 		case MOVE_PICKB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            chip = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            chip = msg.intToken();
 
             break;
 
@@ -268,7 +255,7 @@ public class TruMovespec extends commonMove implements TruConstants
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
-       // adding the move index as a prefix provides numnbers
+        // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)

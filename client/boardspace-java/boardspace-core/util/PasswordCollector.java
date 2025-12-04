@@ -27,7 +27,6 @@ import bridge.Config;
 import bridge.XTextField;
 import common.CommonConfig;
 
-import java.util.StringTokenizer;
 import java.util.Vector;
 import bridge.XPasswordField;
 import lib.Image;
@@ -36,6 +35,7 @@ import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
 import lib.SimpleObserver;
+import lib.Tokenizer;
 import lib.TopFrameProtocol;
 import lib.UrlResult;
 import lib.XFrame;
@@ -245,7 +245,7 @@ import udp.PlaytableStack;
 	    static private void parseLanguageList(String in)
 	    {
 	    	Vector<String>stack = new Vector<String>();
-	    	StringTokenizer str = new StringTokenizer(in);
+	    	Tokenizer str = new Tokenizer(in);
 	    	while(str.hasMoreTokens()) { stack.addElement(str.nextToken()); }
 	    	InternationalStrings.languages = stack.toArray(new String[stack.size()]);
 	    }
@@ -254,7 +254,7 @@ import udp.PlaytableStack;
 	    //# but they're all just stored in the appletparameters.
 	    static private void parseVersionTokens(String in)
 	    {	String next = null;
-	    	StringTokenizer tok = new StringTokenizer(in);
+	    	Tokenizer tok = new Tokenizer(in);
 	       	while (tok.hasMoreTokens() && !">".equals(next = tok.nextToken())) 
 	    		{
 	    		String val = tok.hasMoreTokens() ? tok.nextToken() : ""; 
@@ -269,7 +269,7 @@ import udp.PlaytableStack;
 	    // parse data from the applettag.cgi interaction, key/value pairs where the key is plain text and the 
 	    // value is encoded base64, not primarily for obfuscation, but so the internal contents are not restricted.
 	    //
-	    static private void parseInfoGroup(StringTokenizer tok)
+	    static private void parseInfoGroup(Tokenizer tok)
 	    {
 	    	while(tok.hasMoreTokens())
 	    	{
@@ -306,7 +306,7 @@ import udp.PlaytableStack;
 	 private String[] parseReginfo(String in)
 	 {
 		 Vector<String>stack = new Vector<String>();
-		 StringTokenizer str = new StringTokenizer(in,"\r\n");
+		 Tokenizer str = new Tokenizer(in,"\r\n");
 		 while(str.hasMoreTokens()) { stack.addElement(str.nextToken()); }
 		 return(stack.toArray(new String[stack.size()]));
 	 }
@@ -1109,7 +1109,7 @@ import udp.PlaytableStack;
 		UrlResult result = Http.postEncryptedURL(host,getEncryptedURL,params,null);
 		if((result!=null) && (result.error==null) && (result.text!=null))
 		{
-			parseInfoGroup(new StringTokenizer(result.text));
+			parseInfoGroup(new Tokenizer(result.text));
 		}
 		else {
 	    		G.infoBox("network error","Can't contact "+host

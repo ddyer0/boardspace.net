@@ -1769,10 +1769,10 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
    		Init_Standard(gtype,ranv,num);
     }
     public void doInitSpec(String gtype)
-    {	StringTokenizer tok = new StringTokenizer(gtype);
+    {	Tokenizer tok = new Tokenizer(gtype);
     	String nam = tok.nextToken();
-    	int num = tok.hasMoreTokens()?G.IntToken(tok):players_in_game;
-    	int ran = tok.hasMoreTokens()?G.IntToken(tok):0;
+    	int num = tok.hasMoreTokens()?tok.intToken():players_in_game;
+    	long ran = tok.hasMoreTokens()?tok.longToken():0;
         doInit(nam,ran,num);
         // note that firstPlayer is NOT initialized here
     }

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,16 +12,15 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package viticulture;
-
-import java.util.*;
 
 import lib.G;
 import lib.StackIterator;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import online.game.*;
 import lib.Bitset;
 import lib.ExtendedHashtable;
@@ -149,7 +148,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     /* constructor */
     public Viticulturemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     // for makewine moves
     public Viticulturemovespec(int opc,ViticultureId des,ViticultureCell sou,int grape2,int grape3,int pl)
@@ -224,11 +223,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     	to_col = d.col;
     	to_row = d.row;
     }
-    /* constructor */
-    public Viticulturemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public Viticulturemovespec(int opc,ViticultureId s,int who)
     {	op = opc;
     	dest = source = s;
@@ -367,7 +362,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         return (yto);
     }
     
-    private void parseExtraChips(StringTokenizer msg)
+    private void parseExtraChips(Tokenizer msg)
     {	
     	if(msg.hasMoreTokens())
     	{
@@ -403,16 +398,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
@@ -430,14 +419,14 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	break;
         case MOVE_READY:
         case EPHEMERAL_READY:
-        	from_col = G.CharToken(msg);
-        	from_row = G.BoolToken(msg)?1:0;
+        	from_col = msg.charToken();
+        	from_row = msg.boolToken() ?1:0;
         	break;
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
-        	from_col = G.CharToken(msg);
+        	from_col = msg.charToken();
         	from_row = Option.valueOf(msg.nextToken()).ordinal();
-        	to_row = G.BoolToken(msg) ? 1 : 0;
+        	to_row = msg.boolToken() ? 1 : 0;
         	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse %s", cmd);
@@ -447,55 +436,55 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
          	
         case MOVE_RETRIEVE:
         	source = ViticultureId.get(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	from_index = msg.intToken();
         	dest = ViticultureId.get(msg.nextToken());
-        	to_col = G.CharToken(msg);
+        	to_col = msg.charToken();
         	break;
         	       	
         case MOVE_TRAIN:
         	source = dest = ViticultureId.get(msg.nextToken());
-        	from_col = to_col = G.CharToken(msg);
+        	from_col = to_col = msg.charToken();
         	from_row = to_row = 0;
         	from_index = ChipType.find(msg.nextToken()).ordinal();
         	break;
         	
         case MOVE_MAKEWINE:
         	dest = ViticultureId.get(msg.nextToken());
-        	to_col = from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
+        	to_col = from_col = msg.charToken();
+        	from_row = msg.intToken();
         	source =  (dest==ViticultureId.WhiteWine) ? ViticultureId.WhiteGrape : ViticultureId.RedGrape;
         	// second bottle in from_index
         	// third bottle in to_row
          	switch(dest)
         	{
         	case Champaign:	
-        		from_index = G.IntToken(msg);
-        		to_row = G.IntToken(msg);
+        		from_index = msg.intToken();
+        		to_row = msg.intToken();
         		break;
 			case RoseWine: 
-				from_index = G.IntToken(msg);
+				from_index = msg.intToken();
 				break;
 			default: ;
         	}
         	break;
         	
         case MOVE_PLACE_WORKER:       	
-        	from_col = G.CharToken(msg);
+        	from_col = msg.charToken();
         	from_row = 0;
-        	from_index = G.IntToken(msg);
+        	from_index = msg.intToken();
         	source = ViticultureId.Workers;
         	dest =  ViticultureId.get(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         	
         case MOVE_TRADE:
         	source = ViticultureId.get(msg.nextToken());      	
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	from_index = msg.intToken();
 
         	dest =  ViticultureId.get(msg.nextToken());
         	to_col = from_col;
@@ -505,29 +494,29 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_DROPB:
            	dest = ViticultureId.get(msg.nextToken());
            	to_col = '@';
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
       	
         case MOVE_DROP:
         	dest = ViticultureId.get(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         	
         case MOVE_PICKB:
             source = ViticultureId.get(msg.nextToken());
             from_col = '@';
-            from_row = G.IntToken(msg);
-            from_index = msg.hasMoreTokens() ? G.IntToken(msg) : 0;
+            from_row = msg.intToken();
+            from_index = msg.hasMoreTokens() ? msg.intToken() : 0;
             break;
             
         case MOVE_UPROOT:
         case MOVE_PICK:
             source = ViticultureId.get(msg.nextToken());
             dest = ViticultureId.Field;
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
-            from_index = G.IntToken(msg);
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
+            from_index = msg.intToken();
             break;
 
         case MOVE_START:
@@ -540,16 +529,16 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_AGEONE:
         case MOVE_SELECT:
         	dest = source = ViticultureId.get(msg.nextToken());
-        	to_col = from_col = G.CharToken(msg);
-        	to_row = from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
+        	to_col = from_col = msg.charToken();
+        	to_row = from_row = msg.intToken();
+        	from_index = msg.intToken();
         	break;
         case MOVE_STAR:
         	source = dest = ViticultureId.StarTrack;
         	from_col = to_col = '@';
-        	from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_row = msg.intToken();
+        	from_index = msg.intToken();
+        	to_row = msg.intToken();
         	break;
         	
         case MOVE_TAKEACTION:
@@ -562,56 +551,56 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_BONUS:
         	source = dest = ViticultureId.get(msg.nextToken());
         	from_col = to_col = '@';
-        	from_row = to_row = G.IntToken(msg);
+        	from_row = to_row = msg.intToken();
         	break;
         	
         case MOVE_PLACE_STAR:
         	source = dest = ViticultureId.StarTrack;
         	from_col = to_col = '@';
-        	from_row = to_row = G.IntToken(msg);
+        	from_row = to_row = msg.intToken();
         	break;
         case MOVE_PLANT:
         	source = ViticultureId.Cards;
-        	from_col = G.CharToken(msg);
+        	from_col = msg.charToken();
         	from_row = 0;
-        	from_index = G.IntToken(msg);
+        	from_index = msg.intToken();
         	dest = ViticultureId.Field;
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         case MOVE_SWITCH:
         	source = ViticultureId.Vine;
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	from_index = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	from_index = msg.intToken();
         	dest = ViticultureId.Vine;
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
-        	from_index = 100*from_index+G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
+        	from_index = 100*from_index+msg.intToken();
          	break;
         case MOVE_BUILDCARD:
         	source = ViticultureId.Cards;
-        	from_index = G.IntToken(msg);
+        	from_index = msg.intToken();
            	dest = ViticultureId.get(msg.nextToken());
-        	from_col = to_col = G.CharToken(msg);
+        	from_col = to_col = msg.charToken();
         	from_row = to_row = 0;
         	break;
         case MOVE_BUILD:
         	dest = ViticultureId.get(msg.nextToken());
         	source = dest.getUnbuilt();
-        	from_col = to_col = G.CharToken(msg);
+        	from_col = to_col = msg.charToken();
         	from_row = to_row = 0;
         	break;
         case MOVE_NEWWAKEUP:
         	dest = ViticultureId.RoosterTrack;
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
 
         case MOVE_SELECTWAKEUP:
         	dest = ViticultureId.RoosterTrack;
         	to_col = 'A';
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
         default:
 
@@ -635,7 +624,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     public String shortMoveString()
     {
         switch (op)
-        {
+        {        	
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{

@@ -354,6 +354,12 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
     	}
     	return(false);
     }
+    // estimate the value of the board position.
+    public double ScoreForPlayer(int player,boolean print)
+    {  	double finalv=simpleScore(player);
+    	
+    	return(finalv);
+    }
 
 
     //

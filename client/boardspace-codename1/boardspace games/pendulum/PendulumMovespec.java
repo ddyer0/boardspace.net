@@ -16,12 +16,11 @@
  */
 package pendulum;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import pendulum.PendulumConstants.PendulumId;
 import lib.ExtendedHashtable;
@@ -49,6 +48,7 @@ public class PendulumMovespec
     static final int MOVE_REFILL = 221;
     static final int MOVE_PAUSE = 222;	// pause timers
     static final int MOVE_RESUME = 223;	// resume timers
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -90,7 +90,9 @@ public class PendulumMovespec
     // variables to identify the move
     PendulumId source; // where from/to
     PendulumId dest;
-    int forPlayer;
+    
+    int forPlayer;		// the player making this move.  This is explicit separate from the regular "player" slot.
+    					// games with simultaneous moves can't use the game state to guess the player
     char to_col;
     char from_col;
     int to_row; // for from-to moves, the destination row
@@ -111,7 +113,7 @@ public class PendulumMovespec
     /* constructor */
     public PendulumMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public PendulumMovespec(int opc , int p)
     {
@@ -131,11 +133,6 @@ public class PendulumMovespec
      	to_col = from_col = c.col;
     	forPlayer = player = who;
     	G.Assert(chip!=null,"should be a chip");
-    }
-    /* constructor */
-    public PendulumMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public PendulumMovespec(int moveFromTo, PendulumCell from, PendulumChip ch, PendulumCell to, int who) 
@@ -206,17 +203,10 @@ public class PendulumMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         forPlayer = msg.hasMoreTokens() ? D.getInt(msg.nextToken()) : p;
         
@@ -227,27 +217,27 @@ public class PendulumMovespec
         case MOVE_SWAPVOTES:	
         case MOVE_FROM_TO:
         	source = PendulumId.valueOf(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
         	chip = PendulumChip.find(msg.nextToken());
         	dest = PendulumId.valueOf(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         case MOVE_FLIP:
         case MOVE_DROP:
             source = dest = PendulumId.valueOf(msg.nextToken());
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
             break;
         case MOVE_WAIT:
-        	from_row = to_row = G.IntToken(msg);
+        	from_row = to_row = msg.intToken();
         	break;
         case MOVE_SELECT:
         case MOVE_PICK:
             source = dest = PendulumId.valueOf(msg.nextToken());
-            from_col = to_col = G.CharToken(msg);
-            from_row = to_row = G.IntToken(msg);
+            from_col = to_col = msg.charToken();
+            from_row = to_row = msg.intToken();
             if(msg.hasMoreTokens()) { chip = PendulumChip.find(msg.nextToken()); }
             break;
         case MOVE_REST:
@@ -273,10 +263,10 @@ public class PendulumMovespec
         {	String tok = msg.nextToken();
          	if("t".equals(tok))
          	{
-         		purpleTimer = G.IntToken(msg);
-         		greenTimer = G.IntToken(msg);
-         		blackTimer = G.IntToken(msg);
-         		if(msg.hasMoreElements()) { realTime = G.LongToken(msg); }
+         		purpleTimer = msg.intToken();
+         		greenTimer = msg.intToken();
+         		blackTimer = msg.intToken();
+         		if(msg.hasMoreElements()) { realTime = msg.longToken(); }
          	}
          	else { G.Error("unexpected token "+tok); }
         }
@@ -455,7 +445,7 @@ public class PendulumMovespec
         case MOVE_RESUME:
         case MOVE_STARTPLAY:
         default:
-            return G.concat(opname);
+            return opname;
         }
     }
     /**

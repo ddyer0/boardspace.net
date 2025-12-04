@@ -16,12 +16,11 @@
  */
 package prototype;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import prototype.PrototypeConstants.PrototypeId;
 import lib.ExtendedHashtable;
@@ -73,7 +72,7 @@ public class Prototypemovespec
     /* constructor */
     public Prototypemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Prototypemovespec(int opc , int p)
     {
@@ -89,11 +88,6 @@ public class Prototypemovespec
      	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Prototypemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -137,17 +131,10 @@ public class Prototypemovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -157,8 +144,8 @@ public class Prototypemovespec
         case MOVE_DROPB:
 		case MOVE_PICKB:
             source = PrototypeId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

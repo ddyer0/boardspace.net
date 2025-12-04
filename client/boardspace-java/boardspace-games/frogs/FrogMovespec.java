@@ -16,11 +16,11 @@
  */
 package frogs;
 
-import java.util.*;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class FrogMovespec extends commonMPMove implements FrogConstants
@@ -53,15 +53,9 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
     /* constructor */
     public FrogMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
-
-    /* constructor */
-    public FrogMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-    
+  
     // constructor for MOVE_ONBOARD
     public FrogMovespec(int who,int opcode,
     		FrogId froms,int fromr,
@@ -127,17 +121,10 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         
         switch (op)
@@ -147,45 +134,45 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
 
         case MOVE_ONBOARD:
         	{
-        	source = Frog_Hands[G.IntToken(msg)];
+        	source = Frog_Hands[msg.intToken()];
         	from_col = '@';
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	}
         	break;
         case MOVE_MOVE:
         	{
         	source = FrogId.BoardLocation;
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	}
         	break;
         case MOVE_DROPB:
 	            source = FrogId.BoardLocation;
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
             source = FrogId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
  
             break;
 
         case MOVE_DROP:
             source = Frog_Hands[G.IntToken(msg.nextToken())];
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
             
         case MOVE_PICK:
             source = Frog_Hands[G.IntToken(msg.nextToken())];
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:

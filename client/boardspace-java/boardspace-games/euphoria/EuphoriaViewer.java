@@ -48,6 +48,7 @@ import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_node;
@@ -3286,15 +3287,15 @@ private Color playerBackground[] = {
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        int rev = G.IntToken(his);
-        int np =  rev<100 ? rev : G.IntToken(his);
-        long rk = G.LongToken(his);
+        int rev = his.intToken();
+        int np =  rev<100 ? rev : his.intToken();
+        long rk = his.longToken();
     	bb.doInit(token,rk,np,rev);
         adjustPlayers(np);
     }
@@ -3407,12 +3408,12 @@ private Color playerBackground[] = {
             	bb.GAME_EU_Dumbot_Brius_2014_12_20_2045 = "EU-Dumbot-Brius-2014-12-20-2045".equals(value);
             }
             if (setup_property.equals(name))
-            {	StringTokenizer val = new StringTokenizer(value);
+            {	Tokenizer val = new Tokenizer(value);
             	// shoehorn the revision number in before the number of players
             	String variation = val.nextToken();
-                int rev = G.IntToken(val);
-               	int np = rev<100 ? rev : G.IntToken(val);
-            	long rk = G.LongToken(val);
+                int rev = val.intToken();
+               	int np = rev<100 ? rev : val.intToken();
+            	long rk = val.longToken();
                 adjustPlayers(np);
                 bb.doInit(variation,rk,np,rev);
               }

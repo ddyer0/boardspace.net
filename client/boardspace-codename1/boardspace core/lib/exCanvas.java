@@ -28,7 +28,6 @@ import bridge.*;
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import lib.RepaintManager.RepaintHelper;
@@ -1720,7 +1719,7 @@ graphics when using a touch screen.
 
         }         
 
-        public boolean processMessage(String cmd,StringTokenizer localST,String st)
+        public boolean processMessage(String cmd,Tokenizer localST,String st)
         {
             if(st!=null) { l.inputSteps++; }
 

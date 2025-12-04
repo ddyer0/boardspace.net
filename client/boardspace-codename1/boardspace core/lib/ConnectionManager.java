@@ -157,7 +157,7 @@ public class ConnectionManager
 
     private Plog messages = new Plog(50);
     
-    public void proxyResponse(StringTokenizer myST)
+    public void proxyResponse(Tokenizer myST)
     {	throw G.Error("proxyResponse not implemented");
     }
     public ConnectionManager(ExtendedHashtable inf)
@@ -253,15 +253,15 @@ public class ConnectionManager
         return ("Disconnect");
     }
 
-    private void processServerID(StringTokenizer myST)
-    {	mySession = G.IntToken(myST);
-    	myChannel = G.IntToken(myST);
-    	serverID = G.IntToken(myST);
+    private void processServerID(Tokenizer myST)
+    {	mySession = myST.intToken();
+    	myChannel = myST.intToken();
+    	serverID = myST.intToken();
         sessionKey = myST.nextToken();
         ip = myST.nextToken();
         String nowtime = myST.nextToken();		// server time of day - overflow 32 bits 19 January 2038
-        setBufSize(G.IntToken(myST));
-        initialSessionPop=G.IntToken(myST);
+        setBufSize(myST.intToken());
+        initialSessionPop=myST.intToken();
         
         {	
             long now = G.Date();
@@ -274,7 +274,7 @@ public class ConnectionManager
 
         sessionHasPassword = false;
         if(myST.hasMoreTokens())
-        {	int val = G.IntToken(myST);
+        {	int val = myST.intToken();
         	switch(val)
         	{
         	default: throw G.Error("Not expecting session pw %s",val);
@@ -445,7 +445,7 @@ public class ConnectionManager
 	        	{
 	        	// the very first response has to be the 201, do our part of processing it before the 
 	        	// client gets a crack, so we're fully connected and encrypted before he knows it.
-	        	StringTokenizer msg = new StringTokenizer(item);
+	        	Tokenizer msg = new Tokenizer(item);
 	        	String cmd = msg.nextToken();
 	        	if(cmd.charAt(0)=='x') { cmd = msg.nextToken(); }	// sequence number
 	        	if(!NetConn.ECHO_INTRO_SELF.equals(cmd))

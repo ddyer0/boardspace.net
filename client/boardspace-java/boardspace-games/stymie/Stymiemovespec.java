@@ -16,12 +16,11 @@
  */
 package stymie;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Stymiemovespec 
@@ -89,7 +88,7 @@ public class Stymiemovespec
     /* constructor */
     public Stymiemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Stymiemovespec(int opc,int p)
     {
@@ -120,12 +119,6 @@ public class Stymiemovespec
     	from_row = row;
     	player = who;
     }
-    /* constructor */
-    public Stymiemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
@@ -171,17 +164,10 @@ public class Stymiemovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -192,25 +178,25 @@ public class Stymiemovespec
         case MOVE_CAPTURE:
         case MOVE_JUMP:
         	source = StymieId.BoardLocation;
-        	from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_DROPB:
         case MOVE_DROPFLIP:
         case MOVE_DROPCAP:
         case MOVE_DROPJUMP:
 				source = StymieId.get(msg.nextToken());	// B or W
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = StymieId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

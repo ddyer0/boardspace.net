@@ -29,6 +29,7 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.TextStack;
+import lib.Tokenizer;
 import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
@@ -1368,12 +1369,12 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -1472,8 +1473,8 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023 
-     * 	23 files visited 0 problems
+     * summary: 11/30/2025
+		44 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -17,9 +17,8 @@
 package cannon;
 
 import online.game.*;
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class CannonMovespec extends commonMove implements CannonConstants
@@ -77,14 +76,9 @@ public class CannonMovespec extends commonMove implements CannonConstants
     /* default constructor */
     public CannonMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public CannonMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     public boolean Same_Move_P(commonMove oth)
     {
@@ -125,17 +119,10 @@ public class CannonMovespec extends commonMove implements CannonConstants
      * refer to the state of the board or the game.
      * 
      */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -144,9 +131,9 @@ public class CannonMovespec extends commonMove implements CannonConstants
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
             source = CannonId.find(msg.nextToken());	// white rack or black rack
             from_col = '@';						// always
-            from_row = G.IntToken(msg);			// index into the rack
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+            from_row = msg.intToken();			// index into the rack
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
         case CAPTURE_BOARD_BOARD:
         case RETREAT_BOARD_BOARD:
@@ -155,35 +142,35 @@ public class CannonMovespec extends commonMove implements CannonConstants
         case SHOOT3_BOARD_BOARD:
         case MOVE_BOARD_BOARD:			// robot move from board to board
             source = CannonId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = CannonId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = CannonId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
  
             break;
 
         case MOVE_PICK:
             source = CannonId.find(msg.nextToken());
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
             source = CannonId.find(msg.nextToken());
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

@@ -41,6 +41,7 @@ import lib.LFrameProtocol;
 import lib.OStack;
 import lib.PopupManager;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.Image;
 
 import static goban.GoMovespec.*;
@@ -1159,7 +1160,7 @@ private void playSounds(commonMove m)
     }
     public double parseScore(String score)
     {	if(score==null) { return(999); }
-    	StringTokenizer tok = new StringTokenizer(score," +\t:");
+    	Tokenizer tok = new Tokenizer(score," +\t:");
     	double best = 0.0;
     	boolean forWhite = false;
     	boolean forBlack = false;
@@ -1331,7 +1332,7 @@ private void playSounds(commonMove m)
 		if(start>=0 && end>=0)
 		{
 		String sub = comment.substring(start,end);
-		StringTokenizer tok = new StringTokenizer(sub);
+		Tokenizer tok = new Tokenizer(sub);
 		boolean hasValue = false;
 		double komi = 0;
 		while(tok.hasMoreTokens())
@@ -1629,10 +1630,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a go init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like go probably don't use it.
         b.doInit(token,rk);
@@ -1711,8 +1712,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/27/2023
-		657 files visited 0 problems
+     * summary: 11/30/2025
+		1751 files visited 2 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1724,9 +1725,9 @@ private void playSounds(commonMove m)
             String name = prop.getName();
             String value = (String) prop.getValue();
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
                 adjustPlayers(b.nPlayers());
              }

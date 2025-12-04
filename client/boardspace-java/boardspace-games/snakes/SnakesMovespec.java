@@ -17,9 +17,9 @@
 package snakes;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -56,14 +56,9 @@ public class SnakesMovespec extends commonMove implements SnakesConstants
     /* constructor */
     public SnakesMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public SnakesMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     // constructor for robot moves
     public SnakesMovespec(int opc,int p)
     {	op = opc;
@@ -124,17 +119,10 @@ public class SnakesMovespec extends commonMove implements SnakesConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -144,47 +132,47 @@ public class SnakesMovespec extends commonMove implements SnakesConstants
         
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
             source = SnakeId.Snake_Pool;
-            from_row = G.IntToken(msg);			// index into the rack
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
-	        to_rotation = G.IntToken(msg);
+            from_row = msg.intToken();			// index into the rack
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
+	        to_rotation = msg.intToken();
 	        break;
         case MOVE_ROTATE:
         	source = SnakeId.BoardLocation;
-	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
         case MOVE_BOARD_BOARD:			// robot move from board to board
              source = SnakeId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = SnakeId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = SnakeId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
         case MOVE_PICK:
             source = SnakeId.Snake_Pool;
             from_col = '#';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
         	to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

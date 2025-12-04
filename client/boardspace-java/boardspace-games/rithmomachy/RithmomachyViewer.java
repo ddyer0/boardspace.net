@@ -33,7 +33,6 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import static rithmomachy.RithmomachyMovespec.*;
 
 /**
@@ -1095,10 +1094,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk);
@@ -1168,9 +1167,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
                 adjustPlayers(b.nPlayers());
              }

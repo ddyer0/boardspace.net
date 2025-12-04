@@ -446,7 +446,7 @@ public class FileSelector extends FullscreenPanel
         Vector<String> match = new Vector<String>();
         { //get the list of match words
 
-            StringTokenizer t = new StringTokenizer(filterField.getText());
+            Tokenizer t = new Tokenizer(filterField.getText());
 
             while (t.hasMoreTokens())
             {

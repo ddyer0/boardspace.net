@@ -34,6 +34,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.Image;
 
 import online.game.*;
@@ -876,12 +877,12 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -952,8 +953,9 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/23/2023
-     *  325 files visited 0 problems
+     * summary:  11/30/2025
+		325 files visited 0 problems
+
      */
     public void ReplayMove(sgf_node no)
     {

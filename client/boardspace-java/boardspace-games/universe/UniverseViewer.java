@@ -25,7 +25,6 @@ import common.GameInfo;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 import online.common.*;
 import online.game.*;
@@ -1403,11 +1402,11 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a universe init spec
-    	int rk = G.IntToken(his);
-    	int np = G.IntToken(his);
-    	int rev = his.hasMoreTokens() ? G.IntToken(his) : 100;
+    	long rk = his.longToken();
+    	int np = his.intToken();
+    	int rev = his.hasMoreTokens() ? his.intToken() : 100;
     	// make the random key part of the standard initialization,
     	// even though games like universe probably don't use it.
         b.doInit(token,rk,np,rev);
@@ -1455,7 +1454,7 @@ private void playSounds(commonMove m)
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
      * universe summary:
-		37 files visited 0 problems
+		12/2/2025 37 files visited 0 problems
 	   diagonal block duo summary:
 		1441 files visited 0 problems
 	   pan kai summary: 5/27/2023
@@ -1474,11 +1473,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	int ran = G.IntToken(st);
-            	int np = G.IntToken(st);
-            	int rev = st.hasMoreTokens() ? G.IntToken(st) : 100;
+            	long ran = st.longToken();
+            	int np = st.intToken();
+            	int rev = st.hasMoreTokens() ? st.intToken() : 100;
                 b.doInit(typ,ran,np,rev);
                 adjustPlayers(np);
              }

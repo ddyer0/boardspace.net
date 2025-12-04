@@ -18,10 +18,8 @@ package palabra;
 
 import lib.ExtendedHashtable;
 
-
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 /**
  * Rajmovespec includes some "ephemeral" moves which can be played out of turn
@@ -91,7 +89,7 @@ public class Palabramovespec extends commonMPMove implements PalabraConstants
     /* constructor */
     public Palabramovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot simple moves */
     public Palabramovespec(int opc,int pl)
@@ -125,11 +123,6 @@ public class Palabramovespec extends commonMPMove implements PalabraConstants
     	to_col = tc;
     	to_row = tr;
     	player = pla;
-    }
-    /* constructor */
-    public Palabramovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public boolean Same_Move_P(commonMove oth)
@@ -177,17 +170,10 @@ public class Palabramovespec extends commonMPMove implements PalabraConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -195,58 +181,58 @@ public class Palabramovespec extends commonMPMove implements PalabraConstants
         	throw G.Error("Can't parse %s", cmd);
             
         case EPHEMERAL_DROPB:
-        		player = G.IntToken(msg);
+        		player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
         case EPHEMERAL_MOVE_FROM_TO:
-        	player = G.IntToken(msg);
+        	player = msg.intToken();
         	// fall through
 			//$FALL-THROUGH$
 		case MOVE_CMOVE:
         	source = PalabraId.PlayerCards;
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         	
         case EPHEMERAL_PICKB:
-        	player = G.IntToken(msg);
+        	player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_PICKB:
             source = PalabraId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
 		case EPHEMERAL_PICK:
-			player = G.IntToken(msg);
+			player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_PICK:
             source = PalabraId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 		case EPHEMERAL_DROP:
-			player = G.IntToken(msg);
+			player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_DROP:
             source = PalabraId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_START:
             player = D.getInt(msg.nextToken());
 
             break;
         case MOVE_SELECT:
-        	from_row = G.IntToken(msg);
+        	from_row = msg.intToken();
         	source = PalabraId.PrizePool;
         	break;
         default:

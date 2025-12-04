@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,16 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package raj;
 
 import lib.ExtendedHashtable;
 
-
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 
 
@@ -94,7 +92,7 @@ public class Rajmovespec extends commonMPMove implements RajConstants
     /* constructor */
     public Rajmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot simple moves */
     public Rajmovespec(int opc,int pl)
@@ -128,11 +126,6 @@ public class Rajmovespec extends commonMPMove implements RajConstants
     	to_col = tc;
     	to_row = tr;
     	player = pla;
-    }
-    /* constructor */
-    public Rajmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public boolean Same_Move_P(commonMove oth)
@@ -176,17 +169,10 @@ public class Rajmovespec extends commonMPMove implements RajConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -194,59 +180,59 @@ public class Rajmovespec extends commonMPMove implements RajConstants
         	throw G.Error("Can't parse %s", cmd);
             
         case EPHEMERAL_DROPB:
-        		player = G.IntToken(msg);
+        		player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
         case EPHEMERAL_MOVE_FROM_TO:
-        	player = G.IntToken(msg);
+        	player = msg.intToken();
         	// fall through
 			//$FALL-THROUGH$
 		case MOVE_CMOVE:
         	source = RajId.PlayerCards;
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         	
         case EPHEMERAL_PICKB:
         case EPHEMERAL_UNMOVE:
-        	player = G.IntToken(msg);
+        	player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_PICKB:
             source = RajId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
 		case EPHEMERAL_PICK:
-			player = G.IntToken(msg);
+			player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_PICK:
             source = RajId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 		case EPHEMERAL_DROP:
-			player = G.IntToken(msg);
+			player = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_DROP:
             source = RajId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_START:
             player = D.getInt(msg.nextToken());
 
             break;
         case MOVE_SELECT:
-        	from_row = G.IntToken(msg);
+        	from_row = msg.intToken();
         	source = RajId.PrizePool;
         	break;
         default:
@@ -338,11 +324,11 @@ public class Rajmovespec extends commonMPMove implements RajConstants
         	return (opname+player+" "+from_col+" "+from_row+" "+to_col+" "+to_row);
         case MOVE_CMOVE:
         	return (opname+from_col+" "+from_row+" "+to_col+" "+to_row);
-        case MOVE_SELECT:
+         case MOVE_SELECT:
         	return(opname+from_row);
         default:
             return (opname);
         }
     }
-
+ 
 }

@@ -16,8 +16,6 @@
  */
 package rpc;
 
-import java.util.StringTokenizer;
-
 import lib.Base64;
 import lib.G;
 import lib.Http;
@@ -27,6 +25,7 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.SocketProxy;
+import lib.Tokenizer;
 
 public class RpcTransmitter implements Runnable,RpcConstants,SimpleObserver
 {	private Plog eventLog = new Plog(100);
@@ -119,7 +118,7 @@ public class RpcTransmitter implements Runnable,RpcConstants,SimpleObserver
 	public synchronized void processMessage(MixedPacket msg)
 	{	String spec = msg.message;
 		log(0,"server in: "+spec); 
-		StringTokenizer tok = new StringTokenizer(spec);
+		Tokenizer tok = new Tokenizer(spec);
 		String command = tok.nextToken();
 		Command cmd = Command.find(command);
 		switch(cmd)

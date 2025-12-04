@@ -22,7 +22,6 @@ import javax.swing.JCheckBoxMenuItem;
 
 import common.GameInfo;
 
-import java.util.*;
 import online.common.*;
 import lib.Graphics;
 import lib.Image;
@@ -36,6 +35,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
 import lib.TextButton;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -1549,13 +1549,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
    
     
     // interact with the board to initialize a game
-	public void performHistoryInitialization(StringTokenizer his) {
+	public void performHistoryInitialization(Tokenizer his) {
 		//the initialization sequence
 		String token = his.nextToken();
 		//
 		// in games which have a randomized start, this is the point where
 		// the randomization is inserted
-		long randomKey = G.LongToken(his);
+		long randomKey = his.longToken();
 
 		myBoard.doInit(token, randomKey);
 	}
@@ -1637,13 +1637,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {   StringTokenizer tok = new StringTokenizer(value);
+            {   Tokenizer tok = new Tokenizer(value);
                 String gametype = tok.nextToken();
                 long randomKey;
                 // some damaged games are missing the space between
                 // mutton and the random key
                 if("mutton".equalsIgnoreCase(gametype)||"mutton-shotgun".equalsIgnoreCase(gametype)) 
-                { randomKey =  G.LongToken(tok); 
+                { randomKey =  tok.longToken();
                 }
                 else 
                 { int spl = gametype.lastIndexOf("n");

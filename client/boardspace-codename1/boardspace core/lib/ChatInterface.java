@@ -20,8 +20,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.Container;
 
-import java.util.StringTokenizer;
-
 import bridge.Config;
 
 public interface ChatInterface extends Config {
@@ -173,6 +171,6 @@ public interface ChatInterface extends Config {
 	public boolean doMouseWheel(int x,int y,double amount);
 	public void postHostMessages(String host);
 	public void getEncodedContents(StringBuilder b);
-	public void setEncodedContents(StringTokenizer contents);
+	public void setEncodedContents(Tokenizer contents);
 	public void setSingleUser(String name);
 }

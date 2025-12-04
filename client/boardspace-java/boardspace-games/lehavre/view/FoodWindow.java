@@ -24,6 +24,7 @@ import lehavre.model.*;
 import lehavre.util.*;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
+import lib.Tokenizer;
 
 /**
  *
@@ -64,9 +65,9 @@ extends DialogWindow
 		final SimpleObserver observer = new SimpleObserver() {
 			public void update(SimpleObservable obs, Object eventType, Object obj) {
 				if(obj instanceof String) {
-					StringTokenizer tok = new StringTokenizer((String)obj, "=");
+					Tokenizer tok = new Tokenizer((String)obj, "=");
 					if(!tok.nextToken().equals("good")) return;
-					tok = new StringTokenizer(tok.nextToken(), ",");
+					tok = new Tokenizer(tok.nextToken(), ",");
 					Good good = Good.valueOf(tok.nextToken());
 					@SuppressWarnings("unused")
 					int oldValue = Integer.parseInt(tok.nextToken());

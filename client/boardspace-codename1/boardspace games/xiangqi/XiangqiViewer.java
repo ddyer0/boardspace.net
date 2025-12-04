@@ -22,8 +22,6 @@ import bridge.*;
 import common.GameInfo;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -35,6 +33,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -688,9 +687,9 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link #gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
+    	long rk = his.longToken();
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk);
@@ -754,9 +753,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
              }
             else if (name.equals(comment_property))

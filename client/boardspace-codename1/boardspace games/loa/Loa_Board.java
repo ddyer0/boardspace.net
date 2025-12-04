@@ -21,6 +21,7 @@ import online.game.*;
 import java.util.*;
 
 import lib.G;
+import lib.Tokenizer;
 
 
 public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Constants
@@ -90,10 +91,10 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Const
     
     
     public void doInit(String typ,long key)
-	{ 	StringTokenizer tok = new StringTokenizer(typ);
+	{ 	Tokenizer tok = new Tokenizer(typ);
 		String name = tok.nextToken();
-		long key1 = tok.hasMoreElements() ? G.LongToken(tok) : key;
-		int rev = tok.hasMoreElements() ? G.IntToken(tok) : revision;
+		long key1 = tok.hasMoreElements() ?tok.longToken() : key;
+		int rev = tok.hasMoreElements() ? tok.intToken() : revision;
 		doInit(name,key1,rev); 
 	}
 

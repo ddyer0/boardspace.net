@@ -23,7 +23,7 @@ import common.GameInfo;
 import java.awt.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
+
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -34,6 +34,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -627,7 +628,7 @@ private void playSounds(commonMove m)
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
         b.doInit(token);
     }

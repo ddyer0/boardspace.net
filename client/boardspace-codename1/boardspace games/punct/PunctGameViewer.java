@@ -36,6 +36,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.RepaintManager.RepaintStrategy;
 import online.game.*;
 import online.game.sgf.*;
@@ -853,7 +854,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Punct_SGF); }
 
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
         b.doInit(token);
@@ -870,7 +871,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
      * summary: 5/27/2023
      * 5230 files visited 0 problems
      * 
-     * summary 8/31/2025
+     * summary 12/2/2025
  	 * 5897 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)

@@ -47,6 +47,7 @@ import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 
 /**
  * 
@@ -1528,10 +1529,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	int rk = G.IntToken(his);
-       	int np = G.IntToken(his);
+    	int rk = his.intToken();
+       	int np = his.intToken();
         
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
@@ -1581,10 +1582,10 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	int ran = G.IntToken(st);
-            	int np = G.IntToken(st);
+            	long ran = st.longToken();
+            	int np = st.intToken();
 	            adjustPlayers(np);
                 b.doInit(typ,ran,np);
              }

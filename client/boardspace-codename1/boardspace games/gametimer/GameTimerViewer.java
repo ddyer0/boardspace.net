@@ -26,8 +26,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 
 import online.common.*;
-import java.util.*;
-
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -36,6 +34,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -50,8 +49,6 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Gametimer_SGF = "gametimer"; // sgf game name
-
     // file names for jpeg images and masks
     static final String ImageDir = "/gametimer/images/";
 
@@ -482,19 +479,19 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Gametimer_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(""); }	// this is the official SGF number assigned to the game
 
    
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

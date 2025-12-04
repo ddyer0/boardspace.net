@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.StringTokenizer;
 
 import lib.*;
 import online.game.*;
@@ -2516,9 +2515,9 @@ public void parseInputs(TrainingData td,GenericNetwork n,String str,int permutat
 
 	boolean swapColor = false;
 	int ncols = board.ncols;
-	StringTokenizer tok = new StringTokenizer(str);
-	td.playerToMove = G.IntToken(tok);	// the player, we don't need it.
-	char color = G.CharToken(tok);
+	Tokenizer tok = new Tokenizer(str);
+	td.playerToMove = tok.intToken();	// the player, we don't need it.
+	char color = tok.charToken();
 	int hits = 0;
 	td.color = color;
 	
@@ -2533,11 +2532,11 @@ public void parseInputs(TrainingData td,GenericNetwork n,String str,int permutat
 	
 	while(tok.hasMoreTokens())
 	{
-		char col = G.CharToken(tok);
-		int row = G.IntToken(tok);
+		char col = tok.charToken();
+		int row = tok.intToken();
 		if((permutation&1)!=0) { row = ncols+1-row; }
 		if((permutation&2)!=0) { col = (char)(('A'+ncols-1)-col+'A'); }
-		char piece = G.CharToken(tok);
+		char piece = tok.charToken();
 		int ind = getMoveIndex(n,col,row);
 		hits++;
 		has[ind] = true;
@@ -2587,7 +2586,7 @@ public void parseInputs(TrainingData td,GenericNetwork n,String str,int permutat
 public void parseValues(TrainingData td,GenericNetwork n,String str,int permutation)
 {	double values[] = n.getValues("OUT");
 	double wins[] = n.getValues("WINRATE");
-	StringTokenizer tok = new StringTokenizer(str);
+	Tokenizer tok = new Tokenizer(str);
 	int ncols = board.ncols;
 	AR.setValue(values, -1);
 	int lastIndex = 0;
@@ -2610,7 +2609,7 @@ public void parseValues(TrainingData td,GenericNetwork n,String str,int permutat
 		}
 		else {
 			char col = column.charAt(0);
-			int row = G.IntToken(tok);
+			int row = tok.intToken();
 			String value = tok.nextToken();
 			String pairvalue[] = G.split(value, ',');
 			double v = Math.abs(G.DoubleToken(pairvalue[0]));

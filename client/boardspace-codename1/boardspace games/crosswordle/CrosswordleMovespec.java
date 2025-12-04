@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package crosswordle;
-
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class CrosswordleMovespec extends commonMPMove implements CrosswordleConstants
@@ -29,12 +28,12 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     static final int MOVE_PLAYWORD = 211;	// play a word from the rack
     static final int MOVE_RESTART = 213;	// restart a game
     static final int MOVE_SETWORD = 214;	// set the word being typed
-   
+       
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
-        	"Play",MOVE_PLAYWORD,
+         	"Play",MOVE_PLAYWORD,
         	"Restart",MOVE_RESTART,
         	"Setword",MOVE_SETWORD
         	);
@@ -75,7 +74,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     /* constructor */
     public CrosswordleMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
     /** constructor for simple robot moves - pass and done 
@@ -99,12 +98,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     	player = who;
  
     }
-    /* constructor */
-    public CrosswordleMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-
+ 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
@@ -158,17 +152,10 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -179,8 +166,8 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
          	word = msg.hasMoreTokens() ? msg.nextToken() : "";
         	break;
         case MOVE_RESTART:
-        	to_row = G.IntToken(msg);
-        	from_row = G.BoolToken(msg)?1:0;
+        	to_row = msg.intToken();
+        	from_row = msg.boolToken()?1:0;
         	break;
         	
         case MOVE_START:
@@ -206,7 +193,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         {
         case MOVE_PLAYWORD:
         	return TextChunk.create(word.toUpperCase()+" "+greens+"G "+yellows+"Y");
-        case MOVE_DONE:
+		case MOVE_DONE:
             return TextChunk.create("");
         default:
         case MOVE_SETWORD:
@@ -232,13 +219,13 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         	 
         case MOVE_RESTART:
         	return G.concat(opname," ",to_row,(from_row==0 ? " false":" true"));
-
+        	
         case MOVE_SETWORD:
         case MOVE_PLAYWORD:
         	return G.concat(opname,word);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
-        	
+ 
         default:
             return G.concat(opname);
         }

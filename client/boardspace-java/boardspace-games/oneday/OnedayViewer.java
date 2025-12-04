@@ -24,8 +24,6 @@ import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
-import java.util.*;
-
 import common.GameInfo;
 import lib.Image;
 import lib.Graphics;
@@ -39,6 +37,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.SimpleSprite.Movement;
 import oneday.OnedayBoard.OnedayLocation;
 import oneday.OnedayBoard.PlayerBoard;
@@ -1414,10 +1413,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a onday init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
     	// make the random key part of the standard initialization,
         b.doInit(token,rk,np);
         adjustPlayers(np);
@@ -1533,10 +1532,10 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-            	int np = G.IntToken(st);
+            	long ran = st.longToken();
+            	int np = st.intToken();
                 b.doInit(typ,ran,np);
                 adjustPlayers(b.nPlayers());
              }

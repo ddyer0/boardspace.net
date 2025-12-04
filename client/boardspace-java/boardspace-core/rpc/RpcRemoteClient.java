@@ -16,8 +16,6 @@
  */
 package rpc;
 
-import java.util.StringTokenizer;
-
 import lib.Base64;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -26,6 +24,7 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.StringStack;
+import lib.Tokenizer;
 import lib.commonPanel;
 import online.common.OnlineConstants;
 import online.game.commonCanvas;
@@ -126,7 +125,7 @@ public class RpcRemoteClient implements RpcInterface,SimpleObserver
 	}
 
 	public void execute(String msg) {
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		Keyword command = Keyword.valueOf(tok.nextToken());
 		switch(command)
 		{

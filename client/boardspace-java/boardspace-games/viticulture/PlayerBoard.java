@@ -18,14 +18,13 @@ package viticulture;
 
 import static viticulture.ViticultureConstants.*;
 
-import java.util.StringTokenizer;
-
 import lib.AR;
 import lib.Bitset;
 import lib.Digestable;
 import lib.G;
 import lib.OStack;
 import lib.Random;
+import lib.Tokenizer;
 import online.game.replayMode;
 import viticulture.ViticultureConstants.ChipType;
 import viticulture.ViticultureConstants.ScoreType;
@@ -1362,14 +1361,14 @@ public class PlayerBoard
 	// parse a wine order, return true if we can fill it.
 	public boolean fillWineOrder(ViticultureChip order,boolean bonus,boolean doit,replayMode replay)
 	{	G.Assert(order.type==ChipType.PurpleCard, "needs a wine order card");
-		StringTokenizer tok = new StringTokenizer(order.description);
+		Tokenizer tok = new Tokenizer(order.description);
 		ViticultureCell rack[] = null;
 		int off = 0;
 		ViticultureCell used = null;	// we assume no more than 3 of each type
 		ViticultureCell used2 = null;
 		while(tok.hasMoreTokens())
-		{	char cmd = G.CharToken(tok);
-			int idx = G.IntToken(tok);
+		{	char cmd = tok.charToken();
+			int idx = tok.intToken();
 			switch(cmd)
 			{
 			case 'r' : 
@@ -1378,7 +1377,7 @@ public class PlayerBoard
 			case 'b' : rack = roseWine; off = 4; break;
 			case 'c' : rack = champagne; off = 7; break;
 			case '=' : 
-				int residual = G.IntToken(tok); 
+				int residual = tok.intToken(); 
 				if(doit) 
 					{
 					 bb.changeScore(this,idx+(bonus?1:0),replay,FillWineOrder+(bonus?"+1":""),order,ScoreType.WineOrder);

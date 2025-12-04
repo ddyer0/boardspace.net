@@ -16,12 +16,11 @@
  */
 package manhattan;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import manhattan.ManhattanConstants.MColor;
 import manhattan.ManhattanConstants.ManhattanId;
 import manhattan.ManhattanConstants.Type;
@@ -106,7 +105,7 @@ public class ManhattanMovespec
     /* constructor */
     public ManhattanMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public ManhattanMovespec(int opc , int p)
     {
@@ -133,12 +132,7 @@ public class ManhattanMovespec
     	to_row = from_row = row;
     	player = who;
     }
-    /* constructor */
-    public ManhattanMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-        
-    }
+
 
     // for retrieve
     public ManhattanMovespec(int opc, MColor color, int pla)
@@ -226,22 +220,15 @@ public class ManhattanMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
     	parse1(msg,p);
     	//if(msg.hasMoreTokens()) { startingDigest = G.LongToken(msg); }
     }
-    private void parse1(StringTokenizer msg,int p)
+    private void parse1(Tokenizer msg,int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         
         switch (op)
@@ -254,34 +241,34 @@ public class ManhattanMovespec
         case MOVE_DROP:
         	dest = ManhattanId.valueOf(msg.nextToken());
         	to_color = MColor.valueOf(msg.nextToken());
-            to_row = G.IntToken(msg);
-            to_index = G.IntToken(msg);
+            to_row = msg.intToken();
+            to_index = msg.intToken();
             break;
             
 
         case MOVE_PICK:
             source = ManhattanId.valueOf(msg.nextToken());
             from_color = MColor.valueOf(msg.nextToken());
-            from_row = G.IntToken(msg);
-            from_index = G.IntToken(msg);
+            from_row = msg.intToken();
+            from_index = msg.intToken();
             break;
       	
         case MOVE_ATTACK:
         case MOVE_FROM_TO:
             source = ManhattanId.valueOf(msg.nextToken());
             from_color = MColor.valueOf(msg.nextToken());
-            from_row = G.IntToken(msg);
-            from_index = G.IntToken(msg);
+            from_row = msg.intToken();
+            from_index = msg.intToken();
             dest = ManhattanId.valueOf(msg.nextToken());
             to_color = MColor.valueOf(msg.nextToken());
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             to_index = -1;
             break;
             
         case MOVE_CONTRIBUTE:
         case EPHEMERAL_CONTRIBUTE:
         	from_color = to_color =  MColor.valueOf(msg.nextToken());
-        	from_index = to_index = G.IntToken(msg);
+        	from_index = to_index = msg.intToken();
         	break;
 
         case MOVE_START:

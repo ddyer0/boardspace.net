@@ -19,7 +19,6 @@ package lib;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
-import java.util.StringTokenizer;
 
 import bridge.Config;
 
@@ -153,10 +152,10 @@ public class TimeControl implements Config
 	}
 	public static TimeControl parse(String msg)
 	{
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		return(parse(tok));
 	}
-	public static TimeControl parse(StringTokenizer tok)
+	public static TimeControl parse(Tokenizer tok)
 	{
 		Kind k = Kind.find(tok.nextToken());
 		TimeControl val = null;
@@ -168,16 +167,16 @@ public class TimeControl implements Config
 		default: G.Error("Not expecting kind %s", k);
 		case None: break;
 		case Fixed: 
-			val.fixedTime = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
 			break;
 		case Differential:
-			val.fixedTime = G.IntToken(tok);
-			val.differentialTime = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
+			val.differentialTime = tok.intToken();
 			break;
 		case PlusTime:
 		case Incremental:
-			val.fixedTime = G.IntToken(tok);
-			val.moveIncrement = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
+			val.moveIncrement = tok.intToken();
 			break;
 		}}
 		// always return something, no matter what junk was in the parse tokens

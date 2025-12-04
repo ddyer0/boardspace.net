@@ -899,9 +899,9 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
+    	long rk = his.longToken();
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk);
@@ -939,8 +939,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/26/2023
-     *  11136 files visited 0 problems
+     * summary: 12/1/2025
+     *  11363 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -953,9 +953,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
              }
             else if (name.equals(comment_property))

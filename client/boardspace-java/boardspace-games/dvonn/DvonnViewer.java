@@ -40,6 +40,7 @@ import lib.SimpleSprite;
 import lib.Slider;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 
 
 
@@ -737,9 +738,9 @@ private void playSounds(DvonnMovespec m)
      }
     public String gameType() { return(b.gametype+" "+b.randomKey); }
     public String sgfGameType() { return(Dvonn_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-	    long rk = G.LongToken(his);
+	    long rk = his.longToken();
 	    b.doInit(token,rk);
 	}
 
@@ -765,9 +766,9 @@ private void playSounds(DvonnMovespec m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
         		String gametype = tok.nextToken();
-        		long rk = G.LongToken(tok);
+        		long rk = tok.longToken();
                 b.doInit(gametype,rk);
              }
             else if (name.equals(comment_property))

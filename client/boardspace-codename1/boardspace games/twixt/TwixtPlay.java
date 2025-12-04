@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.StringTokenizer;
 
 import lib.*;
 import online.game.*;
@@ -1339,9 +1338,9 @@ public commonMove Get_Random_Move(Random rand)
 	 	Layer in2Layer = n.getLayer("IN2");
 	 	double in2[] = (in2Layer!=null) ? new double[size] : null;
 	 	boolean swapColor = false;
-	 	StringTokenizer tok = new StringTokenizer(str);
-	 	td.playerToMove = G.IntToken(tok);	// the player, we don't need it.
-	 	char color = G.CharToken(tok);
+	 	Tokenizer tok = new Tokenizer(str);
+	 	td.playerToMove = tok.intToken();	// the player, we don't need it.
+	 	char color = tok.charToken();
 	 	td.color = color;
 	 	// normalize colors
 	 	if(canSwap)
@@ -1357,7 +1356,7 @@ public commonMove Get_Random_Move(Random rand)
 	 	default: G.Error("oops, bad color %s",color);
 	 	}}
 	 	readRest(n,tok,in2,has,permutation,swapColor);
-	 	StringTokenizer tok2 = new StringTokenizer(str2);
+	 	Tokenizer tok2 = new Tokenizer(str2);
 	 	readRest(n,tok2,in,has,permutation,swapColor);
 	 	td.hasInputs = has;
 	 	td.inputs = in;
@@ -1365,16 +1364,16 @@ public commonMove Get_Random_Move(Random rand)
 	 	
 	 	return(swapColor);
 	 }
-	 public void readRest(Network n,StringTokenizer tok,double[]in,boolean has[],int permutation,boolean swapColor)
+	 public void readRest(Network n,Tokenizer tok,double[]in,boolean has[],int permutation,boolean swapColor)
 	 {
 		 	int ncols = board.ncols;
 		 	while(tok.hasMoreTokens())
 		 	{
-		 		char col = G.CharToken(tok);
-		 		int row = G.IntToken(tok);
+		 		char col = tok.charToken();
+		 		int row = tok.intToken();
 		 		if((permutation&1)!=0) { row = ncols+1-row; }
 		 		if((permutation&2)!=0) { col = (char)(('A'+ncols-1)-col+'A'); }
-		 		char piece = G.CharToken(tok);
+		 		char piece = tok.charToken();
 		 		int ind = getMoveIndex(n,col,row,swapColor);
 		 		setInd(in,ind,piece,swapColor);
 		 		has[ind] = true;	 		
@@ -1383,7 +1382,7 @@ public commonMove Get_Random_Move(Random rand)
 	 // parse the values part of a training data entry
 	 public void parseValues(TrainingData td,GenericNetwork n,String str,boolean swap,int permutation)
 	 {	double values[] = n.getValues();
-	 	StringTokenizer tok = new StringTokenizer(str);
+	 	Tokenizer tok = new Tokenizer(str);
 	 	int ncols = board.ncols;
 	 	AR.setValue(values, -1);
 	 	int lastIndex = 0;
@@ -1393,7 +1392,7 @@ public commonMove Get_Random_Move(Random rand)
 	 		String column = tok.nextToken();
 	 		if(SWAP.equalsIgnoreCase(column))
 	 		{	
-	 			double v = Math.abs(G.DoubleToken(tok));
+	 			double v = Math.abs(tok.doubleToken());
 	 			CoordinateMap map = n.getCoordinateMap();
 	 			lastIndex = 0;
 	 			values[map.getMaxIndex()] = v;
@@ -1401,8 +1400,8 @@ public commonMove Get_Random_Move(Random rand)
 	 		}
 	 		else {
 	 			char col = column.charAt(0);
-	 			int row = G.IntToken(tok);
-	 			double v = Math.abs(G.DoubleToken(tok));
+	 			int row = tok.intToken();
+	 			double v = Math.abs(tok.doubleToken());
 
 	 			if((permutation&1)!=0) { row = ncols+1-row; }
 	 			if((permutation&2)!=0) { col = (char)(('A'+ncols-1)-col+'A'); }

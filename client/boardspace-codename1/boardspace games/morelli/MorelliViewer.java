@@ -40,6 +40,8 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
+
 import static morelli.MorelliMovespec.*;
 
 /**
@@ -676,10 +678,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be an init spec
-    	long rk = G.LongToken(his);
-    	int rev = G.IntToken(his);
+    	long rk = his.longToken();
+    	int rev = his.intToken();
     	Setup setup = null;
      	// make the random key part of the standard initialization,
     	// even though games like morelli probably don't use it.
@@ -747,10 +749,10 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-            	int rev = G.IntToken(st);
+            	long ran = st.longToken();
+            	int rev = st.intToken();
             	Setup setup = rev>=100 ? Setup.getSetup(st.nextToken()) : null;
                 b.doInit(typ,ran,rev,setup);
                 adjustPlayers(b.nPlayers());

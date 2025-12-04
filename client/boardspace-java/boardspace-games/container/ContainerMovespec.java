@@ -17,12 +17,12 @@
 package container;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class ContainerMovespec extends commonMPMove implements ContainerConstants
@@ -107,7 +107,7 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
     /* constructor */
     public ContainerMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public ContainerMovespec(int opc,int p)
     {	op = opc;
@@ -119,11 +119,7 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
     	to_row = bid;
     	player = p;
     }
-    /* constructor */
-    public ContainerMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     // for the robot
     public ContainerMovespec(ContainerId sour,char fc,int fr,ContainerId des,char tc,int tr,int pla)
     {	op = MOVE_FROM_TO;
@@ -200,17 +196,10 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -220,47 +209,47 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
         
         case MOVEC_FROM_TO:
             source = ContainerId.get(D.getInt(msg.nextToken()));
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             container = D.getInt(msg.nextToken());
             dest = ContainerId.get(D.getInt(msg.nextToken()));
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_BUY:
         case MOVE_ACCEPT:
         case MOVE_ACCEPT_LOAN:
         case MOVE_BID:
         	source = ContainerId.CashLocation;
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
         case MOVE_FROM_TO:
             source = ContainerId.get(D.getInt(msg.nextToken()));
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
   			//$FALL-THROUGH$
 		case MOVE_DROP:
             dest = ContainerId.get(D.getInt(msg.nextToken()));
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
 
         case MOVE_PICK:
             source = ContainerId.get(D.getInt(msg.nextToken()));
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
         case MOVE_PICKC:
             source = ContainerId.get(D.getInt(msg.nextToken()));
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             container = D.getInt(msg.nextToken());
             break;
            
         case MOVE_EPHEMERAL_LOAN_BID:
         case MOVE_EPHEMERAL_AUCTION_BID:
         	source = ContainerId.CashLocation;
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
 			//$FALL-THROUGH$
 		case MOVE_EPHEMERAL_FUND:
         case MOVE_EPHEMERAL_DECLINE:

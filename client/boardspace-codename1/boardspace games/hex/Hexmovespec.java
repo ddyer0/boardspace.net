@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,14 +12,13 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package hex;
 
-import java.util.*;
-
 import hex.HexConstants.HexId;
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Hexmovespec
@@ -65,7 +64,7 @@ public class Hexmovespec
     /* constructor */
     public Hexmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -77,11 +76,6 @@ public class Hexmovespec
     	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Hexmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -124,17 +118,10 @@ public class Hexmovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -142,15 +129,15 @@ public class Hexmovespec
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_DROPB:
 				source = HexId.get(msg.nextToken());	// B or W
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = HexId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
@@ -212,7 +199,7 @@ public class Hexmovespec
         switch (op)
         {
         case MOVE_PICKB:
-	        return (opname  + to_col + " " + to_row);
+	        return (opname + to_col + " " + to_row);
 
 		case MOVE_DROPB:
 	        return (opname+source.shortName+" " + to_col + " " + to_row);

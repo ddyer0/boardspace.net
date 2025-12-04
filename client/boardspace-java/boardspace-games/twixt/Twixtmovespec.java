@@ -16,13 +16,12 @@
  */
 package twixt;
 
-import java.util.*;
-
 import lib.G;
 import lib.StackIterator;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Twixtmovespec extends commonMove implements TwixtConstants
@@ -60,7 +59,7 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
     /* constructor */
     public Twixtmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -77,11 +76,6 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
     {
     	op = opc;
     	player = who;
-    }
-    /* constructor */
-    public Twixtmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public void addTarget(TwixtChip ch)
@@ -138,17 +132,10 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -156,20 +143,20 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_FROM_TO:
             source = TwixtId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);       	
+            from_col = msg.charToken();
+            from_row = msg.intToken();       	
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
 				dest = TwixtId.BoardLocation;	// B or W
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = TwixtId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             dest = msg.hasMoreTokens() ? TwixtId.get(msg.nextToken()) : null;
 
             break;
@@ -180,7 +167,7 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
         	
         case MOVE_PICK:
             source = TwixtId.get(msg.nextToken());
-            if(msg.hasMoreTokens()) { from_row = G.IntToken(msg); }
+            if(msg.hasMoreTokens()) { from_row = msg.intToken(); }
             break;
 
         case MOVE_START:

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,18 +12,17 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package trax;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -56,14 +55,10 @@ public class Traxmovespec extends commonMove implements TraxConstants
     /* constructor */
     public Traxmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public Traxmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public Traxmovespec(int opcode,int mat,char col,int row,int who)
     {	// constructor for the robot
      	op = opcode;
@@ -104,17 +99,10 @@ public class Traxmovespec extends commonMove implements TraxConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -122,22 +110,22 @@ public class Traxmovespec extends commonMove implements TraxConstants
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_MOVE:	// used by "trax" format games
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	source = TraxId.get(msg.nextToken());
         	break;
         case MOVE_ROTATEB:
         case MOVE_DROPB:
 				source =TraxId.get(msg.nextToken());	// 0-5
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = TraxId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
@@ -199,45 +187,45 @@ public class Traxmovespec extends commonMove implements TraxConstants
        
     private Text sourceGlyph(TraxGameViewer v)
     {
-			Text post = null;
-			TraxChip chips[] = v.imageGroup(2);
-        	switch(source)
-        	{
-        	// note that / and \ are troublesome characters because of the potential that
-        	// they are treated as escape characters.  The superfluous space after is a
-        	// little extra protection.
-        	default: throw G.Error("oops");
-        	case hitTile0: 
-        		post = TextGlyph.create("xxx",chips[0],v,chipScale);
-        		break;
-        	case hitTile1:
-        		post = TextGlyph.create("xxx",chips[1],v,chipScale);
-        		break;
-        	case hitTile2: 
-        		post = TextGlyph.create("xxx",chips[2],v,chipScale);
-        		break;
-        	case hitTile3:
-        		post = TextGlyph.create("xxx",chips[3],v,chipScale);
-        		break;
-        	case hitTile4: 
-        		post = TextGlyph.create("xxx",chips[4],v,chipScale);
-        		break;
-        	case hitTile5: 
-        		post = TextGlyph.create("xxx",chips[5],v,chipScale);
-        		break;
-        	case hitPlus:
-        		post = TextChunk.create( " + ");
-        		break;
-        	case hitSlash:
-        		post = TextChunk.create(" / ");
-        		break;
-        	case hitBack:
-        		post = TextChunk.create( " \\ ");
-        		break;
-        	}
-        	if(post==null) { post = TextChunk.create(""); }
+    	Text post = null;
+		TraxChip chips[] = v.imageGroup(2);
+       	switch(source)
+    	{
+    	// note that / and \ are troublesome characters because of the potential that
+    	// they are treated as escape characters.  The superfluous space after is a
+    	// little extra protection.
+    	default: throw G.Error("oops");
+    	case hitTile0: 
+    		post = TextGlyph.create("xxx",chips[0],v,chipScale);
+    		break;
+    	case hitTile1:
+    		post = TextGlyph.create("xxx",chips[1],v,chipScale);
+    		break;
+    	case hitTile2: 
+    		post = TextGlyph.create("xxx",chips[2],v,chipScale);
+    		break;
+    	case hitTile3:
+    		post = TextGlyph.create("xxx",chips[3],v,chipScale);
+    		break;
+    	case hitTile4: 
+    		post = TextGlyph.create("xxx",chips[4],v,chipScale);
+    		break;
+    	case hitTile5: 
+    		post = TextGlyph.create("xxx",chips[5],v,chipScale);
+    		break;
+    	case hitPlus:
+    		post = TextChunk.create( " + ");
+    		break;
+    	case hitSlash:
+    		post = TextChunk.create(" / ");
+    		break;
+    	case hitBack:
+    		post = TextChunk.create( " \\ ");
+    		break;
+    	}
+    	if(post==null) { post = TextChunk.create(""); }
     	return(post);
-            
+    	
     }
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
@@ -247,7 +235,7 @@ public class Traxmovespec extends commonMove implements TraxConstants
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
 
-		// adding the move index as a prefix provides numnbers
+        // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)

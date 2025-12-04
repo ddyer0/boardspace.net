@@ -19,14 +19,13 @@ package gametimer;
 
 import static gametimer.GameTimerMovespec.*;
 
-import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
 
 /**
- * StymieBoard knows all about the game of Stymie, which is played
- * on a hexagonal board. It gets a lot of logistic support from 
+ * GameTimerBoard knows all about the GameTimer.
+ * It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
  * This class doesn't do any graphics or know about anything graphical, 
@@ -95,11 +94,11 @@ class GameTimerBoard
 
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
+    	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
     }
     /* initialize a board back to initial empty state */

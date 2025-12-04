@@ -38,6 +38,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.Image;
 import lib.TextButton;
+import lib.Tokenizer;
 import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
@@ -1291,11 +1292,11 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     public String gameType() { return(b.gametype+" "+b.randomKey+" "+b.nPlayers()); }
     
     public String sgfGameType() { return(BreakingAway_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int ran = G.IntToken(his);
-    	int np = G.IntToken(his);
+    	int ran = his.intToken();
+    	int np = his.intToken();
     	reviewPlayer = 0;
         b.doInit(token,ran,np);
         adjustPlayers(np);
@@ -1312,8 +1313,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023
-     * 	920 files visited 0 problems
+     * summary: 10/31/2025
+     * 1061 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1327,10 +1328,10 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String key = tok.nextToken();
-            	int ran = G.IntToken(tok);
-            	int np = G.IntToken(tok);
+            	long ran = tok.longToken();
+            	int np = tok.intToken();
             	adjustPlayers(np);
             	reviewPlayer = 0;
                 b.doInit(key,ran,np);
@@ -1499,7 +1500,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	return(base+msg.toString());
     
     }
-    public void useRemoteStoryBuffer(String tok,StringTokenizer his)
+    public void useRemoteStoryBuffer(String tok,Tokenizer his)
     {
     	super.useRemoteStoryBuffer(tok,his);
     	while (his.hasMoreTokens())

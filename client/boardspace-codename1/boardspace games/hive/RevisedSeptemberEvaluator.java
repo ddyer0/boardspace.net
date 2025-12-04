@@ -29,81 +29,40 @@ import online.search.DefaultEvaluator;
 import online.search.Evaluator;
 
 /**
- * Split on Sep 1 2025
  * 
- * This revision makes these changes, based on observing the previous version RevisedAugustEvaluator vs some expert players.
- * (1) do not randomize if the opponents Q has been deployed
+ * Executive Summary
  * 
- * (2) add a small penalty for pinned pieces.  I observed a horizon effect with the current
- * 4-ply lookahead, that a piece woud be deployed, pinned, another piece deployed and not immediately pinned.
- * this effectively sacrifices the first piece for no benefit, and no cost except the deployment penalty.  If
- * this penalty is too strong, making rings (which free pieces) becomes too attractive.
- * Use this penalty for both pinned and buried bugs
- * (3) "revision n"
- * major reshuffle with no net change to make almost all the weights positive, instead of a rich mix
- * of positive and negative effects.  The purpose of this is to be compatible with the "sprint" logic in
- * hiveplay.java, which asserts that if you're far enough ahead, you can mostly ignore what the opponent
- * is doing.  This allows closing in on the win even if in the process you must ignore what the poor luser
- * is doing;
- * (4) revision "W" add ring awareness.  forming and destroying rings previously caused wild
- * swings in the evaluation.
+ * 1) Assign a value for each piece "in the rack" so that deploying the piece has a cost.
+ * 2) Deployed pieces have a value which increases as they approach the opponent Q
+ * 3) Deployed pieces have a second value based on their value after their best move 
+ *    toward the opponent Q.  
+ * 4) Pieces that are mobile have a value based on their total mobility options.
+ * 5) Pieces that are immobile have a penalty value, unless they are adjacent to opponent Q
+ *    (except beetles, which still can do more damage).  Having no moves at all is penalized.
+ * 6) Pieces that are buried have a penalty value
+ * 7) Having no "spawn points" is penalized unless everything has been deployed.
+ * 8) Having spawn points has a positive value, and a small increment per additional
+ * 9) Queen Safety is a major consideration, based on the number of number of surrounding
+ *    pieces, but modified by a number of special considerations.
+ *    a) enemy beetles on top or nearby are very bad.
+ *    b) friendly pieces that can move away are good.
+ *    c) the shape of surrounding empty spaces is considered, and "gate" shapes are rewarded
+ *    
+ * In addition to these general considerations
  * 
- * revision second D increases the bonus for pillbug adjacent to Q
- * revision second E adds a small bonus for gated approaches to the Q, and restricts the "immune" bonus to
- * cells adjacent to the Q and actual pillbugs 
+ * Beetles get a bonus for being on top
+ * Pillbugs get a bonus for being close to their own Q
+ * Pairs or pieces where moving one immobilizes the other are considered
+ * Rings are detected and mobility measures are moderated
+ * Beetles approaching or burying opponent pillbug is rewarded
  * 
- * revision H applies pin penalties to beetles and mosquitos next to Q
+ * The numbers and exact calculations associated with these heuristics are
+ * somewhat arbitrary, but chosen to avoid perverse outcomes. Its possible to
+ * tweak the numbers such that any particular move can be coerced, but it's a balancing
+ * act to get overall behavior that wins.  You can spend forever tuning these numbers,
+ * but mostly tweaking to fix one "problem" will create a new problem.  Real advances
+ * come from changing the algorithm to include new ideas.
  * 
- * Suggestions for the next level:
- * 
- * reduce the "pillbug danger" penalty
- * ameliorate a numerical instability when evaluating identical positions
- * 
- * Notes from the august evaluator:
- * 
- * this is a complete rethinking of the evaluator for dumbot, but mostly along
- * the same lines of thought, with more attention to the details of the incentives
- * 
- * 1) the manhattan distance to the opponent queen is a primary component.  the distance
- * is scored twice, once for the actual distance, and again, with different weights, for
- * the closest you can get with one move.  This motivates bugs to converge on the opposing
- * queen. Pieces that are immobile and not adjacent to the Q do not score at all, so effectively
- * become invisible.
- * 
- * 2) pieces that are mobile are scored based on the number of places they can move to, up
- * to a maximum.  More choices are better.  But ants don't automatically look super powerful.
- * Pieces that have reached the queen are scored as maximally mobile, so they don't lose points
- * just for being there, and so pinning against the Q doesn't improve your score.  There's also
- * a small general bonus for total mobility.
- * 
- * 3) pieces that are still in the rack score modestly, so deploying them only seems to 
- * improve the situatation where the deployment gains points.
- * 
- * 4) as the queen is increasingly surrounded, it's very bad.
- * 
- * in addition to these general considerations, several special cases are included in
- * the logic.   
- * a) queen, pillbug, and beetle are bad if buried
- * b) mobile beetle or mosquito on top is a good thing.   It's also important that the first level sort
- *    places the beetle "up" move at the top of the list, because sometimes the "up" move goes away on
- *    the next ply.  This came up in a game where the PV was "up/cover q" which evaluated exactly the
- *    same as "move to side/cover q" except that as played out, the cover q move went away.
- * c) having no spawn points (where there are still pieces in the rack) is a bad thing.
- * d) having no moves is very bad
- * e) pairs of pieces where both appear mobile, but if one is moved the other becomes immobile
- *    have to be considered - their apparent mobility is downgraded.
- * f) pillbugs are feared, and extra empty spaces adjacent to a pillbug is good.
- * 
- * given all of these considerations, its possible to tweak the numbers such that
- * any particular move can be coerced, but it's a balancing act to get overall behavior
- * that wins.  You can spend forever tuning these numbers.
- * 
- * set "L" downgrades total mobility, so breaking and forming rings is not so attractive
- * and changes the count for queen crowding to give only partial credit for beetles on top,
- * and only when they actually have a spot to drop into.
- * 
- * revision W increased the anyDropBonus from 0.001 to 0.002
- * 			  increased the upBonus from 0.01 to 0.1
  */
 class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 {	
@@ -188,7 +147,8 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 	// 
 	boolean ringCheck = true;
 	double MobilityScale = 1.0;		// too much emphasis on mobility makes rings look like a brilliant idea
-										// see the endgame of start-09
+									// see the endgame of start-09
+	double SibmoWeight = 1;			// penalty for sibmo 
 	double piece_mobility_weight[] = 
 		{2.0,			// queen
 		3.0,			// ant	
@@ -229,9 +189,11 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 	double queenAttackWeight = 1.0;
 	
 	double queenAdjacentValue = 1;	// all pieces get this when adjacent to the Q
-	// version H was 1 and 1 version J is 1.2 0.8 and unequivocally better
-	double FutureDistanceScale = 1.4;
-	double PresentDistanceScale = 0.6;
+	// version H was 1 and 1 
+	// version J is 1.2 0.8 and unequivocally better
+	// version K was 1.4 and 0.6 and much worse
+	double FutureDistanceScale = 1.2;
+	double PresentDistanceScale = 0.8;
 	double present_queen_distance_multiplier[] =
 		{0.0,			// queen
 		 0.75,			// ant	
@@ -316,7 +278,7 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
      * 
      */
     private double pocketScoreWeight = 0.075;		// group r is 0.12 group s is 0.08
-    private double strongPocketScoreWeight = 0.075;		// group r is 0.12 group s is 0.08
+    private double strongPocketScoreWeight = 0.075;		// group r is 0.12 group s is 0.08 group L is 0.085
     // group B is 0.05 and 0.1
     private static double curve = 0.5;
     private static double pocket = 1;
@@ -411,6 +373,14 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 
    	
     }
+    /** loc is an empty cell adjacent to the Q, direction is the direction from Q to E
+     * this generates a 5 bit index that describes the situation around loc, clockwise
+     * from the Q
+     * 
+     * @param loc
+     * @param direction
+     * @return
+     */
     public int pocketScoreMask(HiveCell loc, int direction)
     {
     	int mask = 0;
@@ -634,7 +604,7 @@ class RevisedSeptemberEvaluator extends DefaultEvaluator implements Evaluator
 							{
 							 HivePiece alt = sibmo.topChip();
 							 double altmul = PresentDistanceScale*piece_mobility_weight[alt.type.ordinal()];
-							 double sum = mobilemul+altmul;
+							 double sum = (mobilemul+altmul)*SibmoWeight;
 							 if(sum>0)
 							 {
 							 double factor = G.interpolateD(mobilemul/sum,0,1);

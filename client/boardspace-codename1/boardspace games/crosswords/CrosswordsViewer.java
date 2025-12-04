@@ -46,6 +46,7 @@ import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -276,7 +277,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = boardMax ? 0 : fh*17;	
+    	int minLogW = boardMax ? 0 : fh*16;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -1805,12 +1806,12 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

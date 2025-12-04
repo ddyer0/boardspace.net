@@ -20,8 +20,6 @@ package blooms;
 import static blooms.Bloomsmovespec.*;
 
 import java.awt.Color;
-import java.util.*;
-
 import blooms.BloomsConstants.BloomsId;
 import blooms.BloomsConstants.BloomsState;
 import blooms.BloomsConstants.BloomsVariation;
@@ -179,11 +177,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
+    	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
     }
     /* initialize a board back to initial empty state */

@@ -39,6 +39,7 @@ import lib.StockArt;
 import lib.Image;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 
 import static proteus.ProteusMovespec.*;
 
@@ -805,11 +806,11 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a proteus init spec
-    	int np = G.IntToken(his);
-    	long rv = G.LongToken(his);
-    	int rev = G.IntToken(his);
+    	int np = his.intToken();
+    	long rv = his.longToken();
+    	int rev = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like proteus probably don't use it.
         b.doInit(token,rv,np,rev);
@@ -875,9 +876,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
+            	long ran = st.longToken();
                 b.doInit(typ,ran);
                 adjustPlayers(b.nPlayers());
              }

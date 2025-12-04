@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,18 +12,17 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package imagine;
 
 import lib.Base64;
-import java.util.*;
-
 import imagine.ImagineConstants.ImagineId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Imaginemovespec 
@@ -114,7 +113,7 @@ public class Imaginemovespec
     /* constructor */
     public Imaginemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
@@ -127,11 +126,7 @@ public class Imaginemovespec
     	to_row = row;
     	player = who;
     }
-    /* constructor */
-    public Imaginemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -174,17 +169,10 @@ public class Imaginemovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -196,8 +184,8 @@ public class Imaginemovespec
         case SET_CANDIDATE:
 	    	{
 	    	// set a candidate and a stake
-	    	to_col = G.CharToken(msg);
-	    	to_row = G.IntToken(msg);
+	    	to_col = msg.charToken();
+	    	to_row = msg.intToken();
 	    	String deck = Base64.decodeString(msg.nextToken());
 	    	String name = Base64.decodeString(msg.nextToken());
 	    	chip = ImagineChip.getChip(deck,name);    	
@@ -205,7 +193,7 @@ public class Imaginemovespec
 	    	break;
          case SET_STORY:
         	{
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	String deck = Base64.decodeString(msg.nextToken());
         	String name = Base64.decodeString(msg.nextToken());
         	story = Base64.decodeString(msg.nextToken());
@@ -215,21 +203,21 @@ public class Imaginemovespec
         	break;
         case EPHEMERAL_SET_STAKE:
         case SET_STAKE:
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         	
         case EPHEMERAL_MOVE_SELECT:  
         case MOVE_SELECT:
 				source = ImagineId.get(msg.nextToken());	
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
         case EPHEMERAL_SET_READY:
         case SET_READY:
-        	to_col = G.CharToken(msg);
+        	to_col = msg.charToken();
         	break;
         	
         case MOVE_DROP:

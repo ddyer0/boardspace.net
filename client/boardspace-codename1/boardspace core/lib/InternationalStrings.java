@@ -18,7 +18,6 @@ package lib;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import bridge.FontMetrics;
 
 import bridge.Config;
@@ -182,7 +181,7 @@ public abstract class InternationalStrings implements Config
         String Spaces)
     {
         boolean first = true;
-        StringTokenizer myST = new StringTokenizer(inStr);
+        Tokenizer myST = new Tokenizer(inStr);
         String AddedString = "";
         String currentStr = null;
 
@@ -288,7 +287,7 @@ public abstract class InternationalStrings implements Config
      */
     // first word is the message key, the rest are single work arguments
     public String getS(String args)
-    {	StringTokenizer at = new StringTokenizer(args);
+    {	Tokenizer at = new Tokenizer(args);
     	String sub  = at.nextToken();
     	String base = get(sub);
     	for(int i=1;at.hasMoreTokens();i++)

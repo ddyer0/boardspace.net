@@ -890,16 +890,16 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     	Init_Standard(gtype,num);
     }
     public void doInit(String game,long randomv)
-    {	StringTokenizer tok = new StringTokenizer(game);
+    {	Tokenizer tok = new Tokenizer(game);
     	String nam = tok.nextToken();
     	int rev = revision;
-    	int num = tok.hasMoreTokens()?G.IntToken(tok):players_in_game;
+    	int num = tok.hasMoreTokens()?tok.intToken():players_in_game;
     	long newkey = randomv;
     	if(tok.hasMoreTokens())
     		{
     			rev = num;
-    			num = G.IntToken(tok);
-    			if(tok.hasMoreTokens()) { newkey = G.IntToken(tok); }
+    			num = tok.intToken();
+    			if(tok.hasMoreTokens()) { newkey = tok.intToken(); }
     		}
     		else
     		{ rev = 100;	// old game records do not have a revision 

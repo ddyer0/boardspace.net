@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -36,6 +35,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import lib.G;
+import lib.Tokenizer;
 
 /**
  * this is the downloader that downloads the contents of masterStrings from a database.  
@@ -417,7 +417,7 @@ public class downloadLanguages {
 	  	  { 
 	  	  trouble = false;
 	  	  prefs.put("DownloadStrings",pars);
-	  	  StringTokenizer tok = new StringTokenizer(pars);
+	  	  Tokenizer tok = new Tokenizer(pars);
 	  	  while(tok.hasMoreElements())
 	  	  {	String str = tok.nextToken();
 	  	  	String val = tok.hasMoreTokens() ? tok.nextToken() : "";

@@ -73,7 +73,7 @@ public class LoadThread extends Thread  {
 			String classname = "";
 			String xclassname = "";
 			try {
-				StringTokenizer s = new StringTokenizer(classes);
+					Tokenizer s = new Tokenizer(classes);
 				while (s.hasMoreElements()) {
 					long now = G.Date();
 					classname = s.nextToken();

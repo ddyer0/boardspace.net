@@ -20,8 +20,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.ActionListener;
 import bridge.Color;
 
-import java.util.StringTokenizer;
-
 import bridge.Config;
 
 public class TimeControl implements Config
@@ -154,10 +152,10 @@ public class TimeControl implements Config
 	}
 	public static TimeControl parse(String msg)
 	{
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		return(parse(tok));
 	}
-	public static TimeControl parse(StringTokenizer tok)
+	public static TimeControl parse(Tokenizer tok)
 	{
 		Kind k = Kind.find(tok.nextToken());
 		TimeControl val = null;
@@ -169,16 +167,16 @@ public class TimeControl implements Config
 		default: G.Error("Not expecting kind %s", k);
 		case None: break;
 		case Fixed: 
-			val.fixedTime = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
 			break;
 		case Differential:
-			val.fixedTime = G.IntToken(tok);
-			val.differentialTime = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
+			val.differentialTime = tok.intToken();
 			break;
 		case PlusTime:
 		case Incremental:
-			val.fixedTime = G.IntToken(tok);
-			val.moveIncrement = G.IntToken(tok);
+			val.fixedTime = tok.intToken();
+			val.moveIncrement = tok.intToken();
 			break;
 		}}
 		// always return something, no matter what junk was in the parse tokens
@@ -310,6 +308,8 @@ public class TimeControl implements Config
 		G.SetRect(extraRect,G.Right(mainRect), t, w*9/40, h);
 
 	}
+	
+	
 	//
 	// draw time control description and one or two associated times
 	// this is used from the lobby, and also from the revised time control overlay
@@ -536,5 +536,6 @@ public class TimeControl implements Config
 			return false;
 	  }
 	  }
+
 }
 

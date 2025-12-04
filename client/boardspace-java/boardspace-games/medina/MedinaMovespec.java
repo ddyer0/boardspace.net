@@ -17,12 +17,12 @@
 package medina;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class MedinaMovespec extends commonMPMove implements MedinaConstants
@@ -54,14 +54,9 @@ public class MedinaMovespec extends commonMPMove implements MedinaConstants
     /* constructor */
     public MedinaMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public MedinaMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     // for the robot
     public MedinaMovespec(MedinaId sour,char fc,int fr,char tc,int tr,int pla)
     {	op = MOVE_RACK_BOARD;
@@ -113,17 +108,10 @@ public class MedinaMovespec extends commonMPMove implements MedinaConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -133,36 +121,36 @@ public class MedinaMovespec extends commonMPMove implements MedinaConstants
         
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
             source = MedinaId.get(msg.nextToken());
-            from_col = G.CharToken(msg);						// always
-            from_row = G.IntToken(msg);			// index into the rack
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+            from_col = msg.charToken();						// always
+            from_row = msg.intToken();			// index into the rack
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
 	        
         case MOVE_DROPB:
 	       source = MedinaId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = MedinaId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
 	    case MOVE_DROP:
             source = MedinaId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
 
         case MOVE_PICK:
             source = MedinaId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
             
         case MOVE_START:

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,17 +12,17 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package gounki;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class GounkiMovespec extends commonMove implements GounkiConstants
@@ -89,14 +89,10 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
     /* constructor */
     public GounkiMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public GounkiMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public boolean Same_Move_P(commonMove oth)
     {
     	GounkiMovespec other = (GounkiMovespec) oth;
@@ -149,17 +145,10 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
     /* parse a string into the undoInfo of this move.  Remember that we're just parsing, we can't
      * refer to the undoInfo of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         
         switch (op)
@@ -170,41 +159,41 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
         case MOVE_DEPLOY:
             source = GounkiId.BoardLocation;	
             dest = GounkiId.BoardLocation;
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg)+2;
-  	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg)+2;
-  	        to_col2 = G.CharToken(msg);		//to col row
-	        to_row2 = G.IntToken(msg)+2;
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken()+2;
+  	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken()+2;
+  	        to_col2 = msg.charToken();		//to col row
+	        to_row2 = msg.intToken()+2;
 	        if(msg.hasMoreTokens())
 	        {
-	  	        to_col3 = G.CharToken(msg);		//to col row
-		        to_row3 = G.IntToken(msg)+2;
+	  	        to_col3 = msg.charToken();		//to col row
+		        to_row3 = msg.intToken()+2;
 	        }
 	        break;
         case MOVE_BOARD_BOARD:			// robot move from board to board
             source = GounkiId.BoardLocation;	
             dest = GounkiId.BoardLocation;
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg)+2;
-  	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg)+2;
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken()+2;
+  	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken()+2;
 	        break;
         case MOVE_DEPLOYSTEP:   
         case MOVE_DROPB:
 	       source = GounkiId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg)+2;
+	       to_col = msg.charToken();
+	       to_row = msg.intToken()+2;
 	       break;
 
 		case MOVE_PICKB:
             source = GounkiId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg)+2;
+            from_col = msg.charToken();
+            from_row = msg.intToken()+2;
  
             break;
 
-
+ 
         case MOVE_START:
             player = D.getInt(msg.nextToken());
 
@@ -276,7 +265,7 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
         	return(opname+from_col+" "+ (from_row-2)+" "+to_col +" "+ (to_row-2)+" "+to_col2+" "+(to_row2-2)+third);
 		case MOVE_BOARD_BOARD:
 			return(opname  + from_col + " " + (from_row-2)+ " " + to_col + " " + (to_row-2));
-
+ 
 		case MOVE_DEPLOYSTEP:
 		case MOVE_DROPB:
 	        return (opname  + to_col + " " + (to_row-2));

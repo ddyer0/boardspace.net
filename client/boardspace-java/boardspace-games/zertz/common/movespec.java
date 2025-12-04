@@ -16,13 +16,12 @@
  */
 package zertz.common;
 
-import java.util.*;
-
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 public class movespec extends commonMove implements GameConstants
 {
@@ -53,13 +52,7 @@ public class movespec extends commonMove implements GameConstants
     /* constructor */
     public movespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
-    }
-
-    /* constructor */
-    public movespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
+        parse(new Tokenizer(str), p);
     }
 
     /* constructor */
@@ -134,16 +127,10 @@ public class movespec extends commonMove implements GameConstants
      }
 
     /* parse a string into the state of this move */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        {
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch(op)
         {
@@ -157,44 +144,44 @@ public class movespec extends commonMove implements GameConstants
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_BtoB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_PICKB:
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
             break;
         case MOVE_PICK:
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
             break;
   
         case MOVE_BtoR:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
             break;
         case MOVE_RtoB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
            break;
         case MOVE_RtoR:
-            from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
+            from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
+            to_col = msg.charToken();
             if(from_col=='2' && to_col<'2') { player = to_col-'0'; } 
             break;
         case MOVE_R_PLUS:
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_R_MINUS:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
         case MOVE_START:
         	String tok = msg.nextToken();
@@ -240,7 +227,9 @@ public class movespec extends commonMove implements GameConstants
             		getBallGlyph((movedAndCaptured>>4)&0xf,v),
             		TextChunk.create(")"+to_col + to_row));
         case MOVE_PICK:
-        	return TextChunk.join(getBallGlyph(from_row,v),TextChunk.create(" "));
+        	return next==null 
+        			? TextChunk.join(getBallGlyph(from_row,v),TextChunk.create(" "))
+        			: TextChunk.create("");
         case MOVE_PICKB:
         	return (next==null) ? TextChunk.create(""+from_col+from_row) : TextChunk.create("");
  	    case MOVE_RtoR:
@@ -254,7 +243,7 @@ public class movespec extends commonMove implements GameConstants
             return (TextChunk.create(""));
 
         case MOVE_RtoB:
-            return TextChunk.join(getBallGlyph(to_row,v),
+            return TextChunk.join(getBallGlyph(from_row,v),
             		TextChunk.create("" + to_col + to_row));
 
         case MOVE_R_MINUS:

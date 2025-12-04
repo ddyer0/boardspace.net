@@ -54,6 +54,7 @@ import lib.TextGlyph;
 import lib.TextStack;
 import lib.Base64;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_game;
@@ -6226,13 +6227,13 @@ private void drawPlayerBoard(Graphics gc,
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	
-    	boolean turn = G.BoolToken(his);
+    	int np = his.intToken();
+    	long rv = his.longToken();
+    	int rev = his.intToken();	
+    	boolean turn = his.boolToken();
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -6376,6 +6377,8 @@ private void drawPlayerBoard(Graphics gc,
 		286: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-mfeber-Runcible-lfedel-idyer-ddyer-sven2-2020-04-11-0218.sgf lib.ErrorX: must be a blue card
 		298: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-wilson17-ddyer-sven2-2020-04-15-1937.sgf lib.ErrorX: Not expecting state Play
 		1971 files visited 5 problems
+		12/2/2025
+		2391 files visited 5 problems
      */
     public void ReplayMove(sgf_node no)
     {

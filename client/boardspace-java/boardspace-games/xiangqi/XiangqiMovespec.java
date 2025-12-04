@@ -17,12 +17,12 @@
 package xiangqi;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -66,7 +66,7 @@ public class XiangqiMovespec extends commonMove implements XiangqiConstants
     /* constructor */
     public XiangqiMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /* constructor */
     public XiangqiMovespec(int opc, int p)
@@ -74,11 +74,6 @@ public class XiangqiMovespec extends commonMove implements XiangqiConstants
     	player = p;
     }
 
-    /* constructor */
-    public XiangqiMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     public boolean Same_Move_P(commonMove oth)
     {
     	XiangqiMovespec other = (XiangqiMovespec) oth;
@@ -121,17 +116,10 @@ public class XiangqiMovespec extends commonMove implements XiangqiConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         
         switch (op)
@@ -141,35 +129,35 @@ public class XiangqiMovespec extends commonMove implements XiangqiConstants
         
         case MOVE_BOARD_BOARD:			// robot move from board to board
             source = XId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = XId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = XId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
         case MOVE_PICK:
             source = XId.get(msg.nextToken());
             from_col = '@';
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
             source = XId.get(msg.nextToken());
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

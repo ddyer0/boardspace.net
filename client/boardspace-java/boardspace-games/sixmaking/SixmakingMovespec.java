@@ -17,12 +17,12 @@
 package sixmaking;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -81,14 +81,9 @@ public class SixmakingMovespec extends commonMove implements SixmakingConstants
     /* constructor */
     public SixmakingMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public SixmakingMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     /* constructor for robot moves */
     public SixmakingMovespec(int opc,SixmakingCell from,SixmakingCell to,int who)
     {
@@ -158,17 +153,10 @@ public class SixmakingMovespec extends commonMove implements SixmakingConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -178,26 +166,26 @@ public class SixmakingMovespec extends commonMove implements SixmakingConstants
 
         case MOVE_BOARD_BOARD:			// robot move from board to board
         	source = SixmakingId.get(msg.nextToken());
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
-        	height = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+        	height = msg.intToken();
         	dest = SixmakingId.get(msg.nextToken());
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	       	G.Assert(height>0,"bad height");
 	        break;
 
 		case MOVE_DROPB:
             dest = SixmakingId.BoardLocation;
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
             break;
             
 		case MOVE_PICKB:
             source = SixmakingId.BoardLocation;
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
-            height = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
+            height = msg.intToken();
            	G.Assert(height>0,"bad height");
 
             break;
@@ -205,7 +193,7 @@ public class SixmakingMovespec extends commonMove implements SixmakingConstants
         case MOVE_PICK:
             source = SixmakingId.get(msg.nextToken());
             from_col = '@';
-            height = G.IntToken(msg);
+            height = msg.intToken();
             break;
             
         case MOVE_DROP:

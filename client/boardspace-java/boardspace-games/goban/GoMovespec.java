@@ -17,11 +17,11 @@
 package goban;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class GoMovespec extends commonMove implements GoConstants
@@ -102,15 +102,10 @@ public class GoMovespec extends commonMove implements GoConstants
     /* constructor */
     public GoMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public GoMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
-    
+
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
      * it should only compare those elements that are specified when the move is created. 
@@ -153,17 +148,10 @@ public class GoMovespec extends commonMove implements GoConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
        
         switch (op)
@@ -171,14 +159,14 @@ public class GoMovespec extends commonMove implements GoConstants
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_HANDICAP:
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
         	source = GoId.get(msg.nextToken());	// white rack or black rack
             from_col = '@';						// always
-            from_row = G.IntToken(msg);			// index into the rack
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+            from_row = msg.intToken();			// index into the rack
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
         case MOVE_ADD_BLACK:
         case MOVE_DROP_BLACK:
@@ -205,24 +193,24 @@ public class GoMovespec extends commonMove implements GoConstants
         case MOVE_UNDEAD:
 		case MOVE_PICKB:
             source = GoId.BoardLocation;
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
 
             break;
 
         case MOVE_PICK:
             source = GoId.get(msg.nextToken());
             from_col = '@';
-           		from_row = G.IntToken(msg);
+           		from_row = msg.intToken();
            		break;
         case MOVE_KOMI:
-        	double km = G.DoubleToken(msg);
+        	double km = msg.doubleToken();
         	to_row = (int)(km*2);
         	break;
         case MOVE_DROP:
             source =GoId.get(msg.nextToken());
             to_col = '@';
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

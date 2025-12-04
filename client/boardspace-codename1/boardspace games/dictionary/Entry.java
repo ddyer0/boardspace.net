@@ -96,4 +96,5 @@ public class Entry implements CompareTo<Entry>
 	public int compareTo(Entry o) {
 		return(G.signum(sortOrder() - o.sortOrder()));
 	}
+
 }

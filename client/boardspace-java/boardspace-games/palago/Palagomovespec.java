@@ -18,9 +18,8 @@ package palago;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -58,14 +57,9 @@ public class Palagomovespec extends commonMove implements PalagoConstants
     /* constructor */
     public Palagomovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public Palagomovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     public Palagomovespec(int pl,int opcode) { player=pl; op=opcode; }
     public boolean Same_Move_P(commonMove oth)
     {
@@ -106,17 +100,10 @@ public class Palagomovespec extends commonMove implements PalagoConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -125,16 +112,16 @@ public class Palagomovespec extends commonMove implements PalagoConstants
 
         case MOVE_DROPB:
 	            source = PalagoId.EmptyBoard;
-				to_col = G.parseCol(msg);
-	            to_row = G.IntToken(msg);
-	            object = G.IntToken(msg);
+				to_col = msg.parseCol();
+	            to_row = msg.intToken();
+	            object = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = PalagoId.BoardLocation;
-            to_col = G.parseCol(msg);;
-            to_row = G.IntToken(msg);
+            to_col = msg.parseCol();
+            to_row = msg.intToken();
 
             break;
 
@@ -143,7 +130,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
         	break;
         case MOVE_PICK:
             source = PalagoId.ChipPool;
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             to_col = '@';
             break;
 

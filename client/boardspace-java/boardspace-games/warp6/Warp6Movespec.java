@@ -16,12 +16,12 @@
  */
 package warp6;
 
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 
@@ -60,7 +60,7 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
     /* constructor */
     public Warp6Movespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Warp6Movespec(int opcode,int pl)
     {
@@ -94,11 +94,6 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
        to_row = tor;
        rollAmount = ran;
      }
-    /* constructor */
-    public Warp6Movespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     public boolean Same_Move_P(commonMove oth)
     {
@@ -139,17 +134,10 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         
         switch (op)
@@ -158,35 +146,35 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_ONBOARD:
         	source = WarpId.get(msg.nextToken());
-        	from_row = G.IntToken(msg);
-        	to_row = G.IntToken(msg);
-        	rollAmount = G.IntToken(msg);
+        	from_row = msg.intToken();
+        	to_row = msg.intToken();
+        	rollAmount = msg.intToken();
         	break;
         	
         case MOVE_BOARD_BOARD:			// robot move from board to board
             source = WarpId.BoardLocation;		
-            from_row = G.IntToken(msg);
-	        to_row = G.IntToken(msg);
-	        rollAmount = G.IntToken(msg);
+            from_row = msg.intToken();
+	        to_row = msg.intToken();
+	        rollAmount = msg.intToken();
 	        break;
          case MOVE_DROPB:
 	       source = WarpId.BoardLocation;
-	       to_row = G.IntToken(msg);
-	       rollAmount = G.IntToken(msg);
+	       to_row = msg.intToken();
+	       rollAmount = msg.intToken();
 	       break;
          case MOVE_PICK:
          case MOVE_DROP:
         	 source = WarpId.get(msg.nextToken());
-        	 to_row = from_row = G.IntToken(msg);
+        	 to_row = from_row = msg.intToken();
         	 break;
          case MOVE_ROLLUP:
          case MOVE_ROLLDOWN:
         	source = WarpId.get(msg.nextToken());
-        	from_row = to_row = G.IntToken(msg);
+        	from_row = to_row = msg.intToken();
         	break;
 		case MOVE_PICKB:
             source = WarpId.BoardLocation;
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
  
             break;
 

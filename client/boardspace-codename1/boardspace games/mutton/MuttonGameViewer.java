@@ -22,7 +22,6 @@ import common.GameInfo;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
-import java.util.*;
 import online.common.*;
 import lib.Graphics;
 import lib.Image;
@@ -36,64 +35,13 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
 import lib.TextButton;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-/**
- * 
- * Change History
- *
- * This is intended to be maintained as the reference example how to interface to boardspace.
- *
- * The overall structure here is a collection of classes specific to Hex, which extend
- * or use supporting online.game.* classes shared with the rest of the site.  The top level 
- * class is a Canvas which implements ViewerProtocol, which is created by the game manager.  
- * The game manager has very limited communication with this viewer class, but manages
- * all the error handling, communication, scoring, and general chatter necessary to make
- * the game part of the site.
- * 
- * The main classes are:
- *  HexGameViewer - this class, a canvas for display and mouse handling
- *  HexGameBoard - board representation and implementation of the game logic
- *  Hexmovespec - representation, parsing and printing of move specifiers
- *  HexPlay - a robot to play the game
- *  HexConstants - static constants shared by all of the above.  
- *  
- *  The primary purpose of the HexGameViewer class is to do the actual
- *  drawing and to mediate the mouse gestures.  All the actual work is 
- *  done in an event loop, rather than in direct reposonse to mouse or
- *  window events, so there is only one process involved.  With a single 
- *  process, there are no worries about synchronization among processes
- *  of lack of synchronization - both major causes of flakey user interfaces.
- *  
- *  The actual mouse handling is done by the commonCanvas class, which simply 
- *  records the recent mouse activity, and triggers "MouseMotion" to be called
- *  while the main loop is executing.
- *  
- *  Similarly, the actual "update" and "paint" methods for the canvas are handled
- *  by commonCanvas, which merely notes that a paint is needed and returns immediately.
- *  paintCanvas is called in the event loop.
- *  
- *  The drawing methods here combine mouse handling and drawing in a slightly
- *  nonstandard way.  Most of the drawing routines also accept a "HitPoint" object
- *  which contains the coordinates of the mouse.   As objects are drawn, we notice
- *  if the current object contains the mouse point, and if so deposit a code for 
- *  the current object in the HitPoint.  the Graphics object for drawing can be null,
- *  in which case no drawing is actually done, but the mouse sensitivity is checked
- *  anyway.  This method of combining drawing with mouse sensitivity helps keep the
- *  mouse sensitivity accurate, because it is always in agreement with what is being
- *  drawn.
- *  
- *  Steps to clone this hierarchy to start the next game
- *  1) copy the hierarchy to a brother directory
- *  2) open eclipse, then select the root and "refresh".  This should result
- *     in just a few complaints about package mismatches for the clones.
- *  3) fix the package names in the clones
- *  4) rename each of the classes in the clones, using refactor/rename
- *  5) revert the original "Hex" hierarchy in case eclipse got carried away.
-*/
+
 /*
 TO DO:
 * = fixed, not verified
@@ -221,14 +169,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		// Load the graphics helper module.
 		mg = MuttonGraphicsHelper.getInstance(this);
 
-		lockAndLoadImages();    // this ends up calling preloadImages
-
 		// Initialize the custom menu options
 		historyDisplayOption = myFrame.addOption("Display chart", true, deferredEvents);
 
 		// Create the board
 		myBoard = new MuttonGameBoard (info.getString(GameInfo.GAMETYPE, Mutton_INIT),
 		                               sharedInfo.getInt(OnlineConstants. RANDOMSEED , -1));
+        //useDirectDrawing(); // not tested yet
 		doInit(false);
 
 		// Initialize custom stuff
@@ -1602,13 +1549,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
     
     
     // interact with the board to initialize a game
-	public void performHistoryInitialization(StringTokenizer his) {
+	public void performHistoryInitialization(Tokenizer his) {
 		//the initialization sequence
 		String token = his.nextToken();
 		//
 		// in games which have a randomized start, this is the point where
 		// the randomization is inserted
-		long randomKey = G.LongToken(his);
+		long randomKey = his.longToken();
 
 		myBoard.doInit(token, randomKey);
 	}
@@ -1676,6 +1623,8 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 4174 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1688,13 +1637,13 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {   StringTokenizer tok = new StringTokenizer(value);
+            {   Tokenizer tok = new Tokenizer(value);
                 String gametype = tok.nextToken();
                 long randomKey;
                 // some damaged games are missing the space between
                 // mutton and the random key
                 if("mutton".equalsIgnoreCase(gametype)||"mutton-shotgun".equalsIgnoreCase(gametype)) 
-                { randomKey =  G.LongToken(tok); 
+                { randomKey =  tok.longToken();
                 }
                 else 
                 { int spl = gametype.lastIndexOf("n");

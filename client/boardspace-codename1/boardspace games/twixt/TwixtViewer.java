@@ -37,6 +37,7 @@ import lib.LFrameProtocol;
 import lib.Image;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Tokenizer;
 import online.game.*;
 /**
  * 
@@ -1356,49 +1357,17 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     // this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Twixt_SGF); }	// this is the official SGF number assigned to the game
 
-    // the format is just what is produced by FormHistoryString
-    //
-    // this is completely standardized
-    //public void performHistoryTokens(StringTokenizer his)
-    //{	String command = "";
-    //    // now the rest
-    //    while (his.hasMoreTokens())
-    //    {
-    //        String token = his.nextToken();
-    //        if (",".equals(token) || ".end.".equals(token))
-    //        {
-    //            if (!"".equals(command))
-    //            {
-    //                PerformAndTransmit(command, false,false);
-    //                command = "";
-    //            }
-    //        }
-    //       else
-    //        {
-    //            command += (" " + token);
-    //        }
-    //    }	
-    //} 
-    //public void performPlayerInitialization(StringTokenizer his)
-    //{	int fp = G.IntToken(his);
-    //	BoardProtocol b = getBoard();
-    //    if (fp < 0)   {  fp = 0;  }
-    //    b.setWhoseTurn(fp);
-    //    players[fp].ordinal = 0;
-    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
-    //	
-    //}
    
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

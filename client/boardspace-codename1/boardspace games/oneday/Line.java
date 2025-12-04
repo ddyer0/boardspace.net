@@ -20,13 +20,12 @@ import bridge.Color;
 import lib.Graphics;
 import com.codename1.ui.geom.Rectangle;
 
-import java.util.StringTokenizer;
-
 import lib.G;
 import lib.GC;
 import lib.OStack;
 import lib.Random;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.exCanvas;
 
 class LineStack extends OStack<Line>
@@ -108,7 +107,7 @@ class Line implements OnedayConstants
 		color = v;			// line's traditional color from the maps
 		textColor = tc;		// guess at a black or white text appropriate for this color
 		circular = name.equalsIgnoreCase("circle");
-		uid = new StringTokenizer(name).nextToken();
+		uid = new Tokenizer(name).nextToken();
 		randomv = lineRandom.nextLong();
 		lines.push(this);
 	}

@@ -18,12 +18,11 @@ package gipf;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class Gipfmovespec extends commonMove implements GipfConstants
@@ -107,13 +106,7 @@ public class Gipfmovespec extends commonMove implements GipfConstants
     
     public Gipfmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
-    }
-
-    /* constructor */
-    public Gipfmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
+        parse(new Tokenizer(str), p);
     }
 
     /* constructor */
@@ -152,17 +145,10 @@ public class Gipfmovespec extends commonMove implements GipfConstants
     }
 
     /* parse a string into the state of this move */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch(op)
         {
@@ -178,28 +164,28 @@ public class Gipfmovespec extends commonMove implements GipfConstants
         case MOVE_YINSH:
         case MOVE_DVONN:
         case MOVE_PUNCT:
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         case MOVE_PDROPB:
         	from_potential = Potential.valueOf(msg.nextToken());
 			//$FALL-THROUGH$
 		case MOVE_DROPB:
-        	from_col = to_col = G.CharToken(msg);
-        	from_row = to_row = G.IntToken(msg);
+        	from_col = to_col = msg.charToken();
+        	from_row = to_row = msg.intToken();
         	break;
         case MOVE_REMOVE:
         case MOVE_PICKB:
         case MOVE_PRESERVE:
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
         	break;
         case MOVE_DROP:
         case MOVE_PICK:
         	source = GipfId.get(msg.nextToken());
-        	if(msg.hasMoreTokens()) { from_row=to_row=G.IntToken(msg); }
+        	if(msg.hasMoreTokens()) { from_row=to_row=msg.intToken(); }
         	break;
         case MOVE_START:
         	player = D.getInt(msg.nextToken());

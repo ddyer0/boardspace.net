@@ -212,11 +212,11 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     }
     public void doInit(String gtype,long rv)
     {
-       	StringTokenizer tok = new StringTokenizer(gtype);
+       	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : rv;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.longToken() : rv;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
     }
     /* initialize a board back to initial empty state */

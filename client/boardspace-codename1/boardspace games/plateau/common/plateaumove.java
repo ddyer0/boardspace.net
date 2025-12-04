@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,13 +12,12 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package plateau.common;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 
@@ -63,13 +62,7 @@ public class plateaumove extends commonMove implements PlateauConstants
     /* constructor */
     public plateaumove(String str,int pl)
     { //System.out.println("Mv: "+str);
-        parse(new StringTokenizer(str),pl);
-    }
-
-    /* constructor */
-    public plateaumove(StringTokenizer ss,int pl)
-    {
-        parse(ss,pl);
+        parse(new Tokenizer(str),pl);
     }
 
     /* true of this other move is the same as this one */
@@ -109,16 +102,9 @@ public class plateaumove extends commonMove implements PlateauConstants
     }
 
     /* parse a string into the state of this move */
-    private void parse(StringTokenizer msg,int pl)
+    private void parse(Tokenizer msg,int pl)
     {
-        String cmd = msg.nextToken();
-
-        if (Character.isDigit(cmd.charAt(0)))
-        {
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
+        String cmd = firstAfterIndex(msg);
         player = pl;
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
@@ -130,7 +116,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_FROMTO:
         {
             locus = msg.nextToken();
-            level = G.IntToken(msg);
+            level = msg.intToken();
             realColors = msg.nextToken();
             tolocus = msg.nextToken();
 
@@ -148,7 +134,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_ONBOARD:
         {
             locus = msg.nextToken();
-            level = G.IntToken(msg);
+            level = msg.intToken();
             realColors = msg.nextToken();
             pubColors = realColors.substring(0, 1);
             pieces = msg.nextToken();
@@ -158,7 +144,7 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_FLIP:
         {
-            pick = G.IntToken(msg);
+            pick = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
@@ -175,12 +161,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_PICK:
         {
-            pick = G.IntToken(msg);
+            pick = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
                 locus = msg.nextToken();
-                level = msg.hasMoreTokens()?G.IntToken(msg): 0;
+                level = msg.hasMoreTokens()?msg.intToken(): 0;
             }
         }
 
@@ -188,8 +174,8 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_DROP:
         {
-            drop = G.IntToken(msg);
-            level = G.IntToken(msg);
+            drop = msg.intToken();
+            level = msg.intToken();
 
             if (drop == -1)
             {
@@ -246,7 +232,7 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         default:
         	return(opname);
-
+ 
         }
     }
 

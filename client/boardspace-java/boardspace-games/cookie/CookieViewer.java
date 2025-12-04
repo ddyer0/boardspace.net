@@ -768,11 +768,11 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     public String sgfGameType() { return(Cookie_SGF); }	// this is the official SGF number assigned to the game
 
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int rand = G.IntToken(his);
-    	int pat = G.IntToken(his);
+    	int rand = his.intToken();
+    	int pat = his.intToken();
         bb.doInit(token,rand,pat);
     }
 
@@ -833,8 +833,8 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023
-     * 	1995 files visited 0 problems
+     * summary: 11/30/2025
+	 2489 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -847,10 +847,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String init = tok.nextToken();
-            	int rv = G.IntToken(tok);
-            	int pat = G.IntToken(tok);
+            	long rv = tok.longToken();
+            	int pat = tok.intToken();
                 bb.doInit(init,rv,pat);
              }
             else if (name.equals(comment_property))

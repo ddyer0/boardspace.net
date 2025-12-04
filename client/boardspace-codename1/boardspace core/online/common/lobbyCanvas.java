@@ -28,7 +28,6 @@ import common.CommonConfig;
 import common.GameInfo;
 import common.GameInfo.ES;
 
-import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageStack;
@@ -54,6 +53,7 @@ import lib.SoundManager;
 import lib.StockArt;
 import lib.TextChunk;
 import lib.TimeControl;
+import lib.Tokenizer;
 import lib.exCanvas;
 
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
@@ -696,7 +696,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
   		 // draw a bubble with the player's favorite games
 					 String fav = user.getInfo(FAVORITES);
 		 if("".equals(fav) || (fav==null)) { fav = s.get(NoGamesMessage); }
-		 else { StringTokenizer tok = new StringTokenizer(fav);
+					 else { Tokenizer tok = new Tokenizer(fav);
 		 		fav = "";
 		 		while(tok.hasMoreTokens())
 		 		{	fav += s.get(G.Capitalize(tok.nextToken()))+" ";

@@ -16,9 +16,8 @@
  */
 package magnet;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import magnet.MagnetConstants.MagnetId;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -89,7 +88,7 @@ public class Magnetmovespec extends commonMove
     /* constructor */
     public Magnetmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -102,11 +101,7 @@ public class Magnetmovespec extends commonMove
     	to_row = row;
     	player = who;
     }
-    /* constructor */
-    public Magnetmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     /* constructor for robot placement moves */
     public Magnetmovespec(int opc,MagnetCell from,MagnetCell to,int who)
     {	op = opc;
@@ -179,17 +174,10 @@ public class Magnetmovespec extends commonMove
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -199,40 +187,40 @@ public class Magnetmovespec extends commonMove
         case MOVE_RANDOM:
         case EPHEMERAL_MOVE:
         	source = MagnetId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
         	dest = MagnetId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
             
         case MOVE_PROMOTE:
         case MOVE_DEMOTE:
         case MOVE_DROPB:
         		dest = MagnetId.BoardLocation;
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 	            break;
 
         case MOVE_SELECT:
 		case MOVE_PICKB:
 		case EPHEMERAL_PICKB:
             source = MagnetId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
         case MOVE_DROP:
         	dest = MagnetId.get(msg.nextToken());
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_PICK:
         case EPHEMERAL_PICK:
             source = MagnetId.get(msg.nextToken());
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:

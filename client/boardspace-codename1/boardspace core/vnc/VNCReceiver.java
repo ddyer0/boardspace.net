@@ -20,7 +20,6 @@ import lib.Graphics;
 import lib.Image;
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-import java.util.StringTokenizer;
 import lib.BSDate;
 import lib.G;
 import lib.GC;
@@ -29,6 +28,7 @@ import lib.Http;
 import lib.MixedPacket;
 import lib.NetPacketConn;
 import lib.PinchEvent;
+import lib.Tokenizer;
 import lib.exCanvas;
 /**
  * this implements a VNC-like client, but the actual protocols are strictly
@@ -140,7 +140,7 @@ public class VNCReceiver implements VNCConstants,Config,Runnable,MouseListener,M
         setState(State.Idle);	
 	}
 
-	public void doConnect(StringTokenizer tok)
+	public void doConnect(Tokenizer tok)
 	{
 		serverVersion = Protocol.valueOf(tok.nextToken());
 		if(serverVersion.ordinal()<protocol.ordinal()) 
@@ -164,7 +164,7 @@ public class VNCReceiver implements VNCConstants,Config,Runnable,MouseListener,M
 			String spec = msg.message;
 	 		lastMessage = spec;
 	 		if(verbose>=10) { log("receiver in#"+msg.sequence+": "+spec); }
-			StringTokenizer tok = new StringTokenizer(spec);
+			Tokenizer tok = new Tokenizer(spec);
 			boolean complete = false;
 			while(!complete && tok.hasMoreTokens())
 			{	String command = tok.nextToken();
@@ -220,10 +220,10 @@ public class VNCReceiver implements VNCConstants,Config,Runnable,MouseListener,M
 					break;
 				case ScreenConfig:
 				{
-					int w = G.IntToken(tok);
-					int h = G.IntToken(tok);
-					int tilew = G.IntToken(tok);
-					int tileh = G.IntToken(tok);
+					int w = tok.intToken();
+					int h = tok.intToken();
+					int tilew = tok.intToken();
+					int tileh = tok.intToken();
 					receivedUpdate = G.Date();
 					mouseMoved = false;
 					if( (w!=theImageWidth) || (h!=theImageHeight) || (tilew!=theTileWidth) || (tileh != theTileHeight))

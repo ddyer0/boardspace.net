@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package crosswords;
 
@@ -42,7 +42,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
     static final int MOVE_REMOTEDROP = 223;			// drop of a remote tile
     static final int MOVE_CANCELLED = 224;		// was drop, but did nothing
     static final int MOVE_DROPONRACK = 225;
-   
+  
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -186,15 +186,8 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
      * */
     private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextElement();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextElement();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -359,7 +352,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
         	 return G.concat(opname,dest.name()," ",to_col," ",to_row," ",mapped_row);
         	 
 
-        case MOVE_REMOTEDROP:
+		case MOVE_REMOTEDROP:
 		case MOVE_REPLACE:
              return G.concat(opname,dest.name()," ",to_col," ",to_row);
         case MOVE_PLAYWORD:

@@ -335,23 +335,23 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
 
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
+    	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.intToken() : key;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	options.clear();
     	parseOptions(tok);
     	
     	doInit(typ,ran,np,rev);
     }
-    public void parseOptions(StringTokenizer tok)
+    public void parseOptions(Tokenizer tok)
     {
     	while(tok.hasMoreTokens())
     	{	String nx = tok.nextToken();
     		if("end".equals(nx)) { break; }
     		Options op = Options.valueOf(nx);
-    		boolean v = G.BoolToken(tok);
+    		boolean v = tok.boolToken();
     		if(v) { options.set(op); }
     	}
     }

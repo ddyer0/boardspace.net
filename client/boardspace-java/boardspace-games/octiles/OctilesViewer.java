@@ -40,6 +40,7 @@ import lib.StockArt;
 import lib.Text;
 import lib.TextButton;
 import lib.Toggle;
+import lib.Tokenizer;
 
 import static octiles.OctilesMovespec.*;
 
@@ -719,10 +720,10 @@ private void playSounds(commonMove m)
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	int pla = G.IntToken(his);
-    	int key = G.IntToken(his);
+    	int pla = his.intToken();
+    	int key = his.intToken();
 	   	//
 		// in games which have a randomized start, this is the point where
 		// the randomization is inserted
@@ -754,10 +755,10 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	int np = G.IntToken(st);
-            	int ran = G.IntToken(st);
+            	int np = st.intToken();
+            	long ran = st.longToken();
                 b.doInit(typ,ran,np);
                 adjustPlayers(np);
              }

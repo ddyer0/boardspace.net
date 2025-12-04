@@ -29,8 +29,6 @@ import online.search.SimpleRobotProtocol;
 import lib.*;
 
 import java.util.Enumeration;
-import java.util.StringTokenizer;
-
 import common.GameInfo;
 
 /*
@@ -838,7 +836,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
     public String gameType() { return(b.gametype); }
     public String sgfGameType() { return(Yinsh_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
         b.doInit(token);
@@ -859,7 +857,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public SimpleRobotProtocol newRobotPlayer() { return(new YinshPlay()); }
     public String sgfGameVersion() { return(SGF_GAME_VERSION); }
 
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {
     	if(OnlineConstants.TIME.equals(first) && b.DoneState())
     	{
@@ -921,7 +919,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                     p = players[player] = new commonPlayer(player);
                 }
                 
-                StringTokenizer tokens = new StringTokenizer(value);
+                Tokenizer tokens = new Tokenizer(value);
                 String num="";
                 String first = tokens.nextToken().toLowerCase();
                 if(Character.isDigit(first.charAt(0))) { num=first+" "; first=tokens.nextToken().toLowerCase(); }
@@ -930,7 +928,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                     if(parsePlayerInfo(p,first,tokens)) {}
                     else
                     {
-                        String msg = first + " " + G.restof(tokens);
+                        String msg = first + " " + tokens.getRest();
                         boolean isDone = msg.equals("Done ") ;
                         if(isDone)
                         	{ hasDones=true; }

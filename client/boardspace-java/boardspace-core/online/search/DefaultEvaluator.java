@@ -16,20 +16,19 @@
  */
 package online.search;
 
-import java.util.StringTokenizer;
 
 import lib.DStack;
-import lib.G;
+import lib.Tokenizer;
 
 public abstract class DefaultEvaluator implements Evaluator
 {
 	public void setWeights(String str)
 	{
 		DStack d = new DStack();
-		StringTokenizer tok = new StringTokenizer(str);
+		Tokenizer tok = new Tokenizer(str);
 		while(tok.hasMoreTokens())
 		{
-			d.push(G.DoubleToken(tok.nextToken()));
+			d.push(tok.doubleToken());
 		}
 		setWeights(d.toArray());
 	}

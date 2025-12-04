@@ -18,12 +18,11 @@ package cookie;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class CookieMovespec extends commonMove implements CookieConstants
@@ -84,14 +83,9 @@ public class CookieMovespec extends commonMove implements CookieConstants
     /* constructor */
     public CookieMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public CookieMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     public CookieMovespec(int opcode,int pl) { player=pl; op=opcode; }
     public boolean Same_Move_P(commonMove oth)
     {
@@ -132,17 +126,10 @@ public class CookieMovespec extends commonMove implements CookieConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -151,33 +138,33 @@ public class CookieMovespec extends commonMove implements CookieConstants
 
         case MOVE_DROPB:
 	            dest = CookieId.BoardLocation;
-				to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+				to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
         case MOVE_FROM_TO:
         case CRAWL_FROM_TO:
         	source = CookieId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
         	dest = CookieId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
             
         case MOVE_RACK_BOARD:
         	source = CookieId.ChipPool;
             from_row = D.getInt(msg.nextToken());
         	dest = CookieId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
           
 		case MOVE_PICKB:
             source = CookieId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 

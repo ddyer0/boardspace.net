@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,16 +12,15 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package lyngk;
-
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lyngk.LyngkConstants.LyngkId;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -75,7 +74,7 @@ public class LyngkMovespec extends commonMove
     /* constructor for the viewer */
     public LyngkMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     // constructor for robot claim color moves
     public LyngkMovespec(LyngkId from,LyngkId to,int pl)
@@ -149,16 +148,10 @@ public class LyngkMovespec extends commonMove
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
@@ -173,23 +166,23 @@ public class LyngkMovespec extends commonMove
    
         case MOVE_BOARD_BOARD:
         	source = LyngkId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             dest = LyngkId.BoardLocation;	
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_DROPB:
         	dest = LyngkId.BoardLocation;	
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
 
 		case MOVE_PICKB:
             source = LyngkId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_row = G.IntToken(msg); 	// picked index in puzzle mode
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_row = msg.intToken(); 	// picked index in puzzle mode
             break;
 
         case MOVE_DROP:
@@ -248,7 +241,7 @@ public class LyngkMovespec extends commonMove
 
         }
     }
-
+    
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
      * @see lib.Text

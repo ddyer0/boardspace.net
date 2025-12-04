@@ -36,8 +36,6 @@ import bridge.Utf8OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.StringTokenizer;
-
 import lib.TextContainer.Op;
 
 /* plug-in replacement for commonChatWindow that will not use real windows */
@@ -1042,7 +1040,7 @@ public class ChatWidget
 		b.append(Base64.encodeSimple(activePane().getText()));
 	}
 	/** change the text as shared over the network */
-	public void setEncodedContents(StringTokenizer contents) {
+	public void setEncodedContents(Tokenizer contents) {
 		String kind = contents.nextToken();
 		if(SIMPLETEXT.equals(kind) && contents.hasMoreTokens())
 		{

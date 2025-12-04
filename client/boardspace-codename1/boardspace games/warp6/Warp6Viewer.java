@@ -22,8 +22,6 @@ import common.GameInfo;
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Image;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -36,6 +34,7 @@ import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.SoundManager;
 import lib.StockArt;
+import lib.Tokenizer;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -264,7 +263,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
       
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, boardRect,scaled);
+      scaled = images[BOARD_INDEX].getImage(loader).centerScaledImage(gc, boardRect,scaled);
 	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
 	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
 	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);
@@ -747,9 +746,9 @@ private void playSounds(Warp6Movespec m)
 
     public String gameType() { return(b.gametype+" "+b.randomKey); }
     public String sgfGameType() { return(warp6_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long ran = G.LongToken(his);
+    	long ran = his.longToken();
 	    b.doInit(token,ran);
 	}
 
@@ -774,9 +773,9 @@ private void playSounds(Warp6Movespec m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
         		String gametype = tok.nextToken();
-        		long ran = G.LongToken(tok);
+        		long ran = tok.longToken();
                 b.doInit(gametype,ran);
              }
             else if (name.equals(comment_property))

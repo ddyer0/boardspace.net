@@ -17,10 +17,10 @@
 package quinamid;
 
 import online.game.*;
-import java.util.*;
 
 import lib.ExtendedHashtable;
 import lib.G;
+import lib.Tokenizer;
 
 
 public class QuinamidMovespec extends commonMove implements QuinamidConstants
@@ -76,14 +76,9 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
     /* constructor */
     public QuinamidMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public QuinamidMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     public boolean Same_Move_P(commonMove oth)
     {
     	QuinamidMovespec other = (QuinamidMovespec) oth;
@@ -123,17 +118,10 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
     /* parse a string into the undoInfo of this move.  Remember that we're just parsing, we can't
      * refer to the undoInfo of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -143,7 +131,7 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
         
         case MOVE_ROTATE:
 	    	{
-	    	char movee = G.CharToken(msg);
+	    	char movee = msg.charToken();
 	    	shift = QIds.get(msg.nextToken());
 	    	source = QIds.BoardLocation;
 	    	to_row = movee-'A';
@@ -151,7 +139,7 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
 	    	break;
         case MOVE_SHIFT:
         	{
-        	char movee = G.CharToken(msg);
+        	char movee = msg.charToken();
         	shift = QIds.get(msg.nextToken());
          	source = QIds.BoardLocation;
          	to_row = movee-'A';
@@ -159,20 +147,20 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
         	break;
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
             source =QIds.get(msg.nextToken());	// white rack or black rack
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
         case MOVE_DROPB:
 	       source = QIds.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = QIds.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

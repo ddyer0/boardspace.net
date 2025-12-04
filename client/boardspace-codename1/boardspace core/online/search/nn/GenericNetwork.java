@@ -25,10 +25,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import lib.G;
 import lib.IStack;
 import lib.Random;
+import lib.Tokenizer;
 
 public class GenericNetwork implements Network
 {	public String mainTransferFunction = "SIGMOID";
@@ -122,27 +122,27 @@ public class GenericNetwork implements Network
 		return(finalv);
 		
 	}
-	static String nextToken(StringTokenizer s)
+	static String nextToken(Tokenizer s)
 	{
-		return(G.nextToken(s).toUpperCase());
+		return(s.nextToken().toUpperCase());
 	}
-	static StringTokenizer stringTokenizer(String s)
+	static Tokenizer tokenizer(String s)
 	{
-		return new StringTokenizer(s.trim(),"( )",true);
+		return new Tokenizer(s.trim(),"( )",true);
 	}
 	public static Network readNetwork(BufferedReader s) throws IOException
 	{	
 		String banner = s.readLine();
-		StringTokenizer bannerTok = stringTokenizer(banner);
+		Tokenizer bannerTok = tokenizer(banner);
 		@SuppressWarnings("unused")
 		String className = nextToken(bannerTok);
-		int vers = G.IntToken(bannerTok);
+		int vers = bannerTok.intToken();
 		String stats = vers>=2 ? G.trimQuotes(s.readLine()) : "";
 		String options = G.trimQuotes(s.readLine());
 		String layerSpecs = s.readLine();
-		StringTokenizer layerTok = stringTokenizer(layerSpecs);
+		Tokenizer layerTok = tokenizer(layerSpecs);
 		IStack layerStack = new IStack();
-		while(layerTok.hasMoreTokens()) { layerStack.push(G.IntToken(layerTok)); }
+		while(layerTok.hasMoreElements()) { layerStack.push(layerTok.intToken()); }
 		int layers[] = layerStack.toArray();
 		
 		GenericNetwork n = new GenericNetwork(options,layers);
@@ -155,12 +155,12 @@ public class GenericNetwork implements Network
 			newLine = newLine.trim();
 			if((newLine.length()>0) && (!(newLine.charAt(0)=='/')))
 			{	
-				StringTokenizer tok = stringTokenizer(newLine);
-				while(tok.hasMoreTokens())
+				Tokenizer tok = tokenizer(newLine);
+				while(tok.hasMoreElements())
 				{
 				String from = nextToken(tok);
 				String to = nextToken(tok);
-				double val = G.DoubleToken(tok);
+				double val = tok.doubleToken();
 				String key = from+" "+to;
 				Weight conn = connections.get(key);
 				if(conn!=null)
@@ -259,15 +259,15 @@ public class GenericNetwork implements Network
 		else if("LOG".equals(type)) { return(new Log()); }
 		else { throw G.Error("transfer function %s not defined",type); }
 	}
-	public void parseCoordinateType(String val,StringTokenizer s)
+	public void parseCoordinateType(String val,Tokenizer s)
 	{
 		if("HEX".equals(val))
-		{	int span = G.IntToken(s);
+		{	int span = s.intToken();
 			setCoordinateMap(new HexCoordinateMap(span));
 		}
 		else if("SQUARE".equals(val))
-		{	int cols = G.IntToken(s);
-			int rows = G.IntToken(s);
+		{	int cols = s.intToken();
+			int rows = s.intToken();
 			setCoordinateMap(new SquareCoordinateMap(cols,rows));
 			
 		}
@@ -276,8 +276,8 @@ public class GenericNetwork implements Network
 	
 	// the general form is "LAYER <number> ( option value option2 value2 )"
 	// this parses the <number> and everything between and including the ()
-	// the StringTokenizer is created to consider ( ) as delimiters
-	public void parseLayerOptions(String lan,StringTokenizer s,int nextLayer)
+	// the Tokenizer is created to consider ( ) as delimiters
+	public void parseLayerOptions(String lan,Tokenizer s,int nextLayer)
 	{
 		int layern = "next".equalsIgnoreCase(lan) ? nextLayer : G.IntToken(lan);
 		String tok = nextToken(s);
@@ -294,7 +294,7 @@ public class GenericNetwork implements Network
 	// parse the options for a network.  This should completely define
 	// the geometry and connectivity for the network, so it is all loadNetwork needs
 	public void parseOptions(String properties)
-	{	StringTokenizer s = stringTokenizer(properties);
+	{	Tokenizer s = tokenizer(properties);
 		int nextLayer = 0;
 		while(s.hasMoreTokens())
 		{
@@ -317,7 +317,7 @@ public class GenericNetwork implements Network
 	}
 	private void makeLayer(int idx)
 	{	String options = layerOptions[idx];
-		StringTokenizer tok = stringTokenizer(options);
+		Tokenizer tok = tokenizer(options);
 		String type = "FC";
 		String name = ""+idx;
 		int size = layerSpecs[idx];

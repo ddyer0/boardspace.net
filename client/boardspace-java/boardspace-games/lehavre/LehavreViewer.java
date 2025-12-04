@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -40,6 +39,7 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.TimeControl;
+import lib.Tokenizer;
 import lib.exCanvas;
 import online.game.BoardProtocol;
 import online.game.CommonMoveStack;
@@ -498,7 +498,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		
 	}
 
-	public void doMouseTracking(StringTokenizer mySt,commonPlayer player) {
+	public void doMouseTracking(Tokenizer mySt,commonPlayer player) {
 		
 	}
 
@@ -586,11 +586,11 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		
 	}
 
-	public void useEphemeraBuffer(StringTokenizer mySt) {
+	public void useEphemeraBuffer(Tokenizer mySt) {
 		
 	}
 
-	public void useStoryBuffer(String tok, StringTokenizer mySt) {
+	public void useStoryBuffer(String tok, Tokenizer mySt) {
 		
 	}
 

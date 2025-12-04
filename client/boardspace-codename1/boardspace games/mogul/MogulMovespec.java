@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,15 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package mogul;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.InternationalStrings;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class MogulMovespec extends commonMPMove implements MogulConstants
@@ -55,14 +55,10 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
     /* constructor */
     public MogulMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public MogulMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public boolean Same_Move_P(commonMove oth)
     {
     	MogulMovespec other = (MogulMovespec) oth;
@@ -96,18 +92,10 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
-        
         int opcode = D.getInt(cmd, MOVE_UNKNOWN);
         op = opcode;
 
@@ -125,14 +113,14 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
         
         case MOVE_PICK:
             source = MogulId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
             source = MogulId.get(msg.nextToken());
-            from_col =  G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col =  msg.charToken();
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:
@@ -180,22 +168,22 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
-        switch (op)
-        {
-        default:
-        	{
-        	String n = MogulId.opName(op);
-        	if(n!=null) { return(ind+n); }
+		switch (op)
+		{
+		default:
+		{
+			String n = MogulId.opName(op);
+			if(n!=null) { return(ind+n); }
 			return (ind+D.findUnique(op));
-        	}
-        case MOVE_DROP:
-        case MOVE_PICK:
+		}
+		case MOVE_DROP:
+		case MOVE_PICK:
 			return (ind+D.findUnique(op) + " "+source.shortName+ " "+from_col+" " +from_row);
 
-        case MOVE_START:
-            return (ind+"Start P" + player);
-
-        }
+		case MOVE_START:
+			return (ind+"Start P" + player);
+	            
+		}
     }
 
     /* standard java method, so we can read moves easily while debugging */

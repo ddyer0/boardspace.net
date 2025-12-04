@@ -25,9 +25,9 @@ import bridge.Component;
 import lib.Graphics;
 import lib.Image;
 import bridge.Config;
-import bridge.SystemFont;
 import lib.CanvasRotaterProtocol;
 import lib.DefaultId;
+import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -115,7 +115,7 @@ public abstract class OffscreenWindow implements
 	{ 
 	  Graphics g = getImage().getGraphics();
 	  GC.translate(g,-virtualX, -virtualY);
-	  GC.setFont(g,SystemFont.getGlobalDefaultFont());
+	  GC.setFont(g,Font.getGlobalDefaultFont());
 	  GC.setColor(g,Color.white);
 	  return(g);
 	}

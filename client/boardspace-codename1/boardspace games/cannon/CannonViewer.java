@@ -615,7 +615,7 @@ private void playSounds(commonMove mm)
     
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
 	   	//
 		// in games which have a randomized start, this is the point where
@@ -670,8 +670,8 @@ private void playSounds(commonMove mm)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023
-     * 	2873 files visited 0 problems
+     * summary: 11/30/2025
+     * 4078 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

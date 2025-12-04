@@ -19,7 +19,6 @@ package util;
 import vnc.VNCService;
 
 import java.net.URL;
-import java.util.StringTokenizer;
 
 import bridge.Config;
 import common.GameInfo;
@@ -32,6 +31,7 @@ import lib.InternationalStrings;
 import lib.OfflineGames;
 import lib.SoundManager;
 import lib.StringStack;
+import lib.Tokenizer;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.commonPanel;
@@ -107,10 +107,10 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
                	UrlResult result = Http.postEncryptedURL(serverName,getEncryptedURL,params,web_server_sockets);            	
         		if(result.error==null)
         		{	
-        			StringTokenizer tok = new StringTokenizer(result.text,"\n\r,");
+        			Tokenizer tok = new Tokenizer(result.text,"\n\r,");
         			while(tok.hasMoreTokens())
         			{
-        				int idx = G.IntToken(tok);
+        				int idx = tok.intToken();
         				tok.nextToken();	// skip the name
         				String dir = tok.nextToken();
         				G.putGlobal(REVIEWERDIR+idx,dir);

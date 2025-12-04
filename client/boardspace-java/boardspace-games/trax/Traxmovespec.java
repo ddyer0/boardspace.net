@@ -18,12 +18,11 @@ package trax;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -56,14 +55,10 @@ public class Traxmovespec extends commonMove implements TraxConstants
     /* constructor */
     public Traxmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public Traxmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public Traxmovespec(int opcode,int mat,char col,int row,int who)
     {	// constructor for the robot
      	op = opcode;
@@ -104,17 +99,10 @@ public class Traxmovespec extends commonMove implements TraxConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -122,22 +110,22 @@ public class Traxmovespec extends commonMove implements TraxConstants
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_MOVE:	// used by "trax" format games
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	source = TraxId.get(msg.nextToken());
         	break;
         case MOVE_ROTATEB:
         case MOVE_DROPB:
 				source =TraxId.get(msg.nextToken());	// 0-5
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
             source = TraxId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

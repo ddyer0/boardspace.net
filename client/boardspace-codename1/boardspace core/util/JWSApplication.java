@@ -16,8 +16,6 @@
  */
 package util;
 
-import java.util.StringTokenizer;
-
 import bridge.*;
 import common.GameInfo;
 import lib.CanvasProtocol;
@@ -30,6 +28,7 @@ import lib.InternationalStrings;
 import lib.OfflineGames;
 import lib.Plog;
 import lib.SoundManager;
+import lib.Tokenizer;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.commonPanel;
@@ -106,10 +105,10 @@ public class JWSApplication implements Config,OnlineConstants
                	UrlResult result = Http.postEncryptedURL(serverName,getEncryptedURL,params,web_server_sockets);            	
         		if(result.error==null)
         		{	
-        			StringTokenizer tok = new StringTokenizer(result.text,"\n\r,");
+        			Tokenizer tok = new Tokenizer(result.text,"\n\r,");
         			while(tok.hasMoreTokens())
         			{
-        				int idx = G.IntToken(tok);
+        				int idx = tok.intToken();
         				tok.nextToken();	// skip the name
         				String dir = tok.nextToken();
         				G.putGlobal(REVIEWERDIR+idx,dir);

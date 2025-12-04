@@ -16,12 +16,11 @@
  */
 package tamsk;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import tamsk.TamskConstants.TamskId;
 import lib.ExtendedHashtable;
@@ -101,7 +100,7 @@ public class Tamskmovespec
     /* constructor */
     public Tamskmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Tamskmovespec(int opc , int p)
     {
@@ -119,11 +118,6 @@ public class Tamskmovespec
     	from_col = col;
     	from_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Tamskmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     public Tamskmovespec(int moveFromTo, TamskCell c, TamskCell d2, int who) {
@@ -182,44 +176,37 @@ public class Tamskmovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         case MOVE_DELAY:
-        	from_row = to_row = G.IntToken(msg);
+        	from_row = to_row = msg.intToken();
         	break;
         case MOVE_FROM_TO:
             source = TamskId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);    
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();    
+            to_col = msg.charToken();
+            to_row = msg.intToken();
         	break;
         case MOVE_PICKRINGB:
         case MOVE_DROPRINGB:
             source = TamskId.BoardRing;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
        	
         case MOVE_DROPB:
 		case MOVE_PICKB:
             source = TamskId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
@@ -239,7 +226,7 @@ public class Tamskmovespec
 
             break;
         }
-        if(msg.hasMoreTokens()) { gameTime = G.LongToken(msg);}
+        if(msg.hasMoreTokens()) { gameTime = msg.longToken();}
     }
 
     private Text icon(commonCanvas v,Object... msg)

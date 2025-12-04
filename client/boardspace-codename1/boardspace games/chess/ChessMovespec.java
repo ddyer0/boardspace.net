@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,19 +12,18 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package chess;
 
 import online.game.*;
-import java.util.*;
-
 import lib.ExtendedHashtable;
 import lib.G;
 
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 
 
 public class ChessMovespec extends commonMove implements ChessConstants
@@ -83,14 +82,9 @@ public class ChessMovespec extends commonMove implements ChessConstants
     /* constructor */
     public ChessMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public ChessMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     /* constructor for robot moves */
     public ChessMovespec(int opc,ChessCell from,ChessCell to,int who)
     {
@@ -148,17 +142,10 @@ public class ChessMovespec extends commonMove implements ChessConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -167,26 +154,26 @@ public class ChessMovespec extends commonMove implements ChessConstants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_SUICIDE:
         	source = ChessId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        dest = ChessBoard.CaptureLocation[to_row];
 	        break;
         case MOVE_CASTLE:
         case MOVE_BOARD_BOARD:			// robot move from board to board
         	dest = source = ChessId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
 		case MOVE_DROPB:
 		case MOVE_PICKB:
             source = ChessId.BoardLocation;
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
 
             break;
 

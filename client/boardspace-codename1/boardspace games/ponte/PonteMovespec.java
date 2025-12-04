@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package ponte;
 
@@ -20,12 +20,11 @@ import online.game.*;
 import ponte.PonteConstants.Bridge;
 import ponte.PonteConstants.PonteId;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -95,14 +94,10 @@ public class PonteMovespec extends commonMove
     /* constructor */
     public PonteMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public PonteMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public boolean Same_Move_P(commonMove oth)
     {
     	PonteMovespec other = (PonteMovespec) oth;
@@ -138,17 +133,10 @@ public class PonteMovespec extends commonMove
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -158,26 +146,26 @@ public class PonteMovespec extends commonMove
       
         case MOVE_PLACE_TILE:
         	source = PonteId.find(msg.nextToken());
- 	       	col = G.CharToken(msg);
- 	       	row = G.IntToken(msg);
+ 	       	col = msg.charToken();
+ 	       	row = msg.intToken();
  	       	break;
 	        
         case MOVE_PLACE_BRIDGE:
 	       	source = PonteId.find(msg.nextToken());
-	       	col = G.CharToken(msg);
- 	       	row = G.IntToken(msg);
+	       	col = msg.charToken();
+ 	       	row = msg.intToken();
  	       	break;
         case MOVE_BRIDGE_END:
         case MOVE_DROPB:
 	       source = PonteId.BoardLocation;
-	       col = G.CharToken(msg);
-	       row = G.IntToken(msg);
+	       col = msg.charToken();
+	       row = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = PonteId.BoardLocation;
-            col = G.CharToken(msg);
-            row = G.IntToken(msg);
+            col = msg.charToken();
+            row = msg.intToken();
  
             break;
 
@@ -200,7 +188,7 @@ public class PonteMovespec extends commonMove
         }
     }
 
-   
+
     private Text getChipGlyph(PonteId src,commonCanvas viewer)
     {	double scl[] = src.chip.logScales;
     	//G.print("s "+src+" "+scl[0]+" "+scl[1]+" "+scl[2]+" "+scl[3]);

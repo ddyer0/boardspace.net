@@ -221,11 +221,11 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     }
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
-    	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+    	Tokenizer tok = new Tokenizer(gtype);
+    	String typ = tok.nextElement();
+    	int np = tok.hasMoreElements() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreElements() ? tok.intToken() : key;
+    	int rev = tok.hasMoreElements() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
     }
     private int playerIndex(BarcaChip ch) { return(playerColor[ch.colorIndex()]); }

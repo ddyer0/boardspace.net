@@ -18,12 +18,11 @@ package syzygy;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -66,14 +65,10 @@ public class SyzygyMovespec extends commonMove implements SyzygyConstants
     /* constructor */
     public SyzygyMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public SyzygyMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public SyzygyMovespec(int opcode,int pl) { player=pl; op=opcode; }
     public boolean Same_Move_P(commonMove oth)
     {
@@ -111,16 +106,10 @@ public class SyzygyMovespec extends commonMove implements SyzygyConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
@@ -129,21 +118,21 @@ public class SyzygyMovespec extends commonMove implements SyzygyConstants
         	throw G.Error("Can't parse %s", cmd);
 
         case MOVE_DROPB:
-				to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+				to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
         case MOVE_FROM_TO:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
             
  		case MOVE_PICKB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 

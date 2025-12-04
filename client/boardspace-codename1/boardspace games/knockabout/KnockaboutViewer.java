@@ -40,6 +40,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 /**
  * 
  * Change History
@@ -578,9 +579,9 @@ private void playSounds(commonMove m)
 
     public String gameType() { return(b.gametype+" "+b.randomKey); }
     public String sgfGameType() { return(Knockabout_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long ran = G.LongToken(his);
+    	long ran = his.longToken();
 	    b.doInit(token,ran);
 	}
 
@@ -606,9 +607,9 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
         		String gametype = tok.nextToken();
-        		long ran = G.LongToken(tok);
+        		long ran = tok.longToken();
                 b.doInit(gametype,ran);
              }
             else if (name.equals(comment_property))

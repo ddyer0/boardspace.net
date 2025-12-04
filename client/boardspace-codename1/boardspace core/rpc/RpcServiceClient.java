@@ -23,7 +23,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.SystemFont;
 
-import java.util.StringTokenizer;
 import lib.Base64;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -36,6 +35,7 @@ import lib.LFrameProtocol;
 import lib.OStack;
 import lib.SimpleObservable;
 import lib.StringStack;
+import lib.Tokenizer;
 import lib.commonPanel;
 import lib.exCanvas;
 /**
@@ -110,7 +110,7 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	}
 
 	public void redrawBoard(Graphics gc,HitPoint hp)
-	{	Font dfont = SystemFont.getGlobalDefaultFont();
+	{	Font dfont = lib.Font.getGlobalDefaultFont();
 		int width = getWidth();
 		int height =getHeight();
 		InternationalStrings s = G.getTranslations();
@@ -118,7 +118,7 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 		GC.fillRect(gc, 0,0,width,height);
 		GC.setColor(gc, Color.gray);
 		GC.fillRect(gc, 10,10,width-20,height-20);
-		int lineh = SystemFont.getFontSize(dfont)*3;
+		int lineh = lib.Font.getFontSize(dfont)*3;
 		GC.setFont(gc,SystemFont.getFont(dfont,lineh));
 		int nServices = choices.size();
 		int ypos = 20+lineh * 2;
@@ -199,12 +199,12 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	}
 	// load the list of possibilities
 	public void execute(String msg) {
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		choices.clear();
 		while(tok.hasMoreTokens())
 		{
 			String name = Base64.decodeString(tok.nextToken());
-			boolean act = G.BoolToken(tok);	
+			boolean act = tok.boolToken();	
 			choices.push(new RpcChoice(name,act));
 		}
 		repaint();

@@ -17,9 +17,9 @@
 package morris;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -63,14 +63,9 @@ public class MorrisMovespec extends commonMove implements MorrisConstants
     /* constructor */
     public MorrisMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public MorrisMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     /* constructor for robot moves */
     public MorrisMovespec(int opc,MorrisCell from,MorrisCell to,int who)
     {
@@ -138,17 +133,10 @@ public class MorrisMovespec extends commonMove implements MorrisConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -157,30 +145,30 @@ public class MorrisMovespec extends commonMove implements MorrisConstants
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_RACK_BOARD:
            	source =  MorrisId.get(msg.nextToken());
-	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 
         case MOVE_CAPTURE:
            	source =  MorrisId.get(msg.nextToken());
- 	        from_col = G.CharToken(msg);		//to col row
-	        from_row = G.IntToken(msg);
+ 	        from_col = msg.charToken();		//to col row
+	        from_row = msg.intToken();
 	        break;
 
         case MOVE_BOARD_BOARD:			// robot move from board to board
         	source = MorrisId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
 
 		case MOVE_DROPB:
 		case MOVE_PICKB:
             source = MorrisId.BoardLocation;
-            to_col = from_col = G.CharToken(msg);
-            to_row = from_row = G.IntToken(msg);
+            to_col = from_col = msg.charToken();
+            to_row = from_row = msg.intToken();
 
             break;
 

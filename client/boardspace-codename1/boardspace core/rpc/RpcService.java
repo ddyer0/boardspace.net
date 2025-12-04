@@ -16,8 +16,6 @@
  */
 package rpc;
 
-import java.util.StringTokenizer;
-
 import bridge.Config;
 import lib.Base64;
 import lib.G;
@@ -25,6 +23,7 @@ import lib.OStack;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.StackIterator;
+import lib.Tokenizer;
 import rpc.RpcInterface.Keyword;
 import udp.UDPService;
 
@@ -66,7 +65,7 @@ class RpcInterfaceStack extends OStack<RpcInterface> implements SimpleObserver
 		return(b.toString());
 	}
 	public void execute(String msg,RpcServiceServer caller) {
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		String op = tok.nextToken();
 		Keyword opc = Keyword.valueOf(op);
 		switch(opc)

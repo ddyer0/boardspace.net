@@ -53,6 +53,7 @@ import lib.StringStack;
 import lib.TextButton;
 import lib.TextContainer;
 import lib.Toggle;
+import lib.Tokenizer;
 import lib.UrlResult;
 import lib.XXTEA;
 import lib.Http;
@@ -713,22 +714,22 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
      	String everyoneTime = "";
     	int everyoneCount = 0;
     	int hmax = 0;
-    	StringTokenizer tok = new StringTokenizer(stats);
+    	Tokenizer tok = new Tokenizer(stats);
     	while(tok.hasMoreTokens())
     	{
     	String key = tok.nextToken();
-    	if("version".equals(key)) {	if(G.IntToken(tok)!=1) { return; }}
+    	if("version".equals(key)) {	if(tok.intToken()!=1) { return; }}
     	else if("solveddate".equals(key)) { solvedD = tok.nextToken(); extraLineCount++; }
     	else if("solvedtime".equals(key)) { solvedT = tok.nextToken(); }
     	else if("solvedscore".equals(key)) { solvedS = tok.nextToken(); }
-    	else if("everyonesolved".equals(key)) { activeStack = everyone; activeCap = everyoneCap; everyoneCount = G.IntToken(tok); extraLineCount++; }
-    	else if("personalsolved".equals(key)) { activeStack = personal; activeCap = personalCap; personalCount = G.IntToken(tok); extraLineCount++; }
+    	else if("everyonesolved".equals(key)) { activeStack = everyone; activeCap = everyoneCap; everyoneCount = tok.intToken(); extraLineCount++; }
+    	else if("personalsolved".equals(key)) { activeStack = personal; activeCap = personalCap; personalCount = tok.intToken(); extraLineCount++; }
     	else if("everyonetime".equals(key)) { everyoneTime = tok.nextToken(); }
     	else if("personaltime".equals(key)) { personalTime = tok.nextToken(); }
     	else if("end".equals(key)) { activeStack = null; activeCap = null; tok.nextToken(); }
     	else if(key.startsWith("count")) { 
     		String cap = key.substring(5);
-    		int va = G.IntToken(tok);
+    		int va = tok.intToken();
     		activeCap.push(cap);
     		activeStack.push(va);
     		hmax = Math.max(hmax,va);
@@ -1251,12 +1252,12 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.LongToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

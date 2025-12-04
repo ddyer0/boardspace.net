@@ -22,9 +22,6 @@ import common.GameInfo;
 
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
-import java.util.StringTokenizer;
-
-
 import lib.Graphics;
 import lib.Image;
 import lib.ExtendedHashtable;
@@ -34,6 +31,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.CellId;
 import online.game.BoardProtocol;
 import online.game.commonCanvas;
@@ -840,7 +838,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
 
    public String gameType() { return(b.gametype); }
    public String sgfGameType() { return(Trax_SGF); }
-   public void performHistoryInitialization(StringTokenizer his)
+   public void performHistoryInitialization(Tokenizer his)
    {   //the initialization sequence
    	String token = his.nextToken();
     b.doInit(token);
@@ -864,13 +862,13 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() { return(new TraxPlay()); }
     
-    public boolean parsePlayerExecute(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerExecute(commonPlayer p,String first,Tokenizer tokens)
     {	// handle older games that don't have "done" after every move
     	boolean isDone = "done".equals(first);
     	if(!isDone && b.DoneState() && (p.boardIndex!=b.whoseTurn))
     	{	PerformAndTransmit("Done",false,replayMode.Replay);
     	}
-    	String msg = first + " "+ G.restof(tokens);
+    	String msg = first + " "+ tokens.getRest();
         return(PerformAndTransmit(msg, false,replayMode.Replay));	
     }
     

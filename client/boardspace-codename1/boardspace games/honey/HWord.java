@@ -69,6 +69,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	public StackIterator<HWord> insertElementAt(HWord item, int at) {
 		return(new HWordStack().push(this).insertElementAt(item,at));		
 	}
+
 	public static int compareTo(String s1,String s2)
 	{
 		if(s1==null)
@@ -88,10 +89,10 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 				: l1<l2 ? -1 : 1;
 	
 	}
+	
 	public int compareTo(HWord o) {
 		return compareTo(name,o.name);
 	}
-	
 	public long Digest(Random r) {
 		return seed.Digest(r);
 	}

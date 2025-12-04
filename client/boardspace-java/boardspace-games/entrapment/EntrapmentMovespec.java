@@ -17,12 +17,12 @@
 package entrapment;
 
 import online.game.*;
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class EntrapmentMovespec extends commonMove implements EntrapmentConstants
@@ -63,14 +63,9 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
     /* constructor */
     public EntrapmentMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public EntrapmentMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     // constructor from drop from rack moves
     public EntrapmentMovespec(int opc,EntrapmentId src,EntrapmentId dst,char col,int row,int pl)
     {	op = opc;
@@ -146,17 +141,10 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -168,24 +156,24 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
        case MOVE_RACK_BOARD:	// a robot move from the unplacedBarriers to the board
         	source = EntrapmentId.get(msg.nextToken());
             dest = EntrapmentId.get(msg.nextToken());	// white unplacedBarriers or black unplacedBarriers
- 	        to_col = G.CharToken(msg);			// destination cell col
-	        to_row = G.IntToken(msg);  			// destination cell row
+ 	        to_col = msg.charToken();			// destination cell col
+	        to_row = msg.intToken();  			// destination cell row
 	        break;
 	        
        case MOVE_BOARD_BOARD:			// robot move from board to board
             source = EntrapmentId.get(msg.nextToken());	// h v or r	
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
             dest = EntrapmentId.get(msg.nextToken());
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 
         case MOVE_PICKB:
         case MOVE_REMOVE:
         	source = EntrapmentId.get(msg.nextToken());
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
             break;
             
         case MOVE_PICK:
@@ -194,8 +182,8 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
             
         case MOVE_DROPB:
            	dest = EntrapmentId.get(msg.nextToken());
-            to_col = G.CharToken(msg);	//from col,row
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();	//from col,row
+            to_row = msg.intToken();
             break;
             
         case MOVE_DROP:

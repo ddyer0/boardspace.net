@@ -37,6 +37,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SoundManager;
 import lib.StockArt;
+import lib.Tokenizer;
 
 
 /**
@@ -623,7 +624,7 @@ private void playSounds(commonMove mm)
 
     public String gameType() { return(b.gametype); }
     public String sgfGameType() { return(Gobblet_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
         b.doInit(token);

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package kuba;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class KubaMovespec extends commonMove implements KubaConstants
@@ -70,14 +69,10 @@ public class KubaMovespec extends commonMove implements KubaConstants
     /* constructor */
     public KubaMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public KubaMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     /* constructor */
     public KubaMovespec(int opcode,char from_c,int from_r,char to_c,int to_r,int who)
     {
@@ -145,16 +140,10 @@ public class KubaMovespec extends commonMove implements KubaConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
@@ -165,48 +154,48 @@ public class KubaMovespec extends commonMove implements KubaConstants
         
         case MOVE_BOARD_BOARD:			// robot move from board to board
             source = KubaId.BoardLocation;		
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
-  	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+  	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = KubaId.BoardLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
 	       break;
 	       
 		case MOVE_PICKB:
             source = KubaId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            object = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            object = msg.intToken();
 
             break;
 
         case MOVE_PICKG:
-            from_col = G.CharToken(msg);;
+            from_col = msg.charToken();
             source =   Gutters[D.getInt("G"+from_col)-Gutter];
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROPG:
-            to_col = G.CharToken(msg);;
+            to_col = msg.charToken();
             source = Gutters[D.getInt("G"+to_col)-Gutter];
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
             
         case MOVE_PICKT:
-            from_col = G.CharToken(msg);;
+            from_col = msg.charToken();
             source = Trays[D.getInt("T"+from_col)-Tray];
-            from_row = G.IntToken(msg);
+            from_row =msg.intToken();
             break;
             
         case MOVE_DROPT:
-            to_col = G.CharToken(msg);;
+            to_col = msg.charToken();
             source = Trays[D.getInt("T"+to_col)-Tray];
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

@@ -39,6 +39,7 @@ import lib.LFrameProtocol;
 import lib.SoundManager;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Tokenizer;
 
 
 /**
@@ -851,7 +852,7 @@ private void playSounds(commonMove mm)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
     	String rk = his.nextToken();
     	// make the random key part of the standard initialization,
@@ -895,7 +896,7 @@ private void playSounds(commonMove mm)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
             	String ran = st.nextToken();
                 b.doInit(typ,ran);

@@ -31,6 +31,7 @@ import lib.Random;
 /**
  * CheBoard knows all about the game of Che.
  * 
+ *  * TODO: add some kind of draw logic.  Games can extend forever in one direction
  * @author ddyer
  *
  */
@@ -41,7 +42,6 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
 
     static int BOARDCOLUMNS = 19;
     static int BOARDROWS = 19;
-    static final String[] CheGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	CheState unresign;
 	CheState board_state;
 	public CheState getState() {return(board_state); }
@@ -120,7 +120,6 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     public CheBoard(String init,int map[]) // default constructor
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
-        Grid_Style = CheGRIDSTYLE;
         revision = REVISION;
         setColorMap(map, 2);
         doInit(init,0L); // do the initialization 
@@ -263,11 +262,11 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long rv)
-    {  StringTokenizer tok = new StringTokenizer(gtype);
+    {  Tokenizer tok = new Tokenizer(gtype);
 	   String typ = tok.nextToken();
-	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : rv;
-	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+	   long ran = tok.hasMoreTokens() ? tok.longToken() : rv;
+	   int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
 	   
 	   doInit(typ,np,ran,rev);
     }

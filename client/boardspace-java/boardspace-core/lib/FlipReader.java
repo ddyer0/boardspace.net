@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 /**
  * Flipreader is an input stream reader that is able to flip
- * between text and binary.  The main interface is like StringTokenizer,
+ * between text and binary.  The main interface is like Tokenizer,
  * but you can switch to binary readBytes.  The convention for flipping
  * is to call read() until a | is read, which marks the boundary of binary
  * data.

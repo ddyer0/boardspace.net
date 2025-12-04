@@ -403,6 +403,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
         return col2;
 
     }
+
     /**
     // 
     //  This shows how to iterate over the board by rows, in all three directions.

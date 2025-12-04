@@ -2710,7 +2710,7 @@ synchronized(allGames) {
 	// menu.  It's intended only for development.
 	public static void parseInfo(String info)
 	{
-		StringTokenizer tok = new StringTokenizer(info);
+		Tokenizer tok = new Tokenizer(info);
 		while(tok.hasMoreElements()) 
 		{
 		String name = tok.nextToken();	// game name

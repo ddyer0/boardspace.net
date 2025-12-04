@@ -95,11 +95,22 @@ public class FrogPlay extends commonMPRobot<FrogBoard> implements Runnable,
      	commonMPMove mm = (commonMPMove)m;
      	
      	mm.setNPlayers(nplay);
+       	if(board.GameOver())
+     	{
+     		for(int i=0;i<nplay;i++)
+     		{
+     			mm.playerScores[i] = board.win[i] 
+     									? VALUE_OF_WIN+(1.0/(1+boardSearchLevel))
+     									: 0.1/(1+boardSearchLevel);
     	
+     		}
+     	}
+    	else
+    	{
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
-    	}
-    	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
+    	}}
+    	return(reScoreMPPosition(mm,playerindex));
     }
 
 

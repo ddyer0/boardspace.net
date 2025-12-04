@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 /**
  * BSDate (Boardspace Date) is an extension of java.util.Date
@@ -179,7 +178,7 @@ public class BSDate extends java.util.Date
 	private static String koreanDay = "\uc77c";
 	private static String delims = ",-//: "+koreanYear+koreanDay+koreanMonth;
 	private static long simpleDateParse(String time)
-	{	StringTokenizer tok = new StringTokenizer(time.trim(),delims,true);
+	{	Tokenizer tok = new Tokenizer(time.trim(),delims,true);
 		String month = null;
 		String year=null;
 		String day=null;

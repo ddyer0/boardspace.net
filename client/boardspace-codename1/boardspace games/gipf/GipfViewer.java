@@ -936,11 +936,11 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
  
     public String gameType() { return(b.gametype+" "+"0"+" "+b.revision); }
     public String sgfGameType() { return(Gipf_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int ran = G.IntToken(his);			// should be the number of players in the game
-    	int rev = G.IntToken(his);			// random key for the game
+    	int ran = his.intToken();			// should be the number of players in the game
+    	int rev = his.intToken();			// random key for the game
        b.doInit(token,ran,rev);
     }
 
@@ -949,8 +949,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public SimpleRobotProtocol newRobotPlayer() { return(new GipfPlay()); }
 
 /**
- * summary: 5/26/2023
- * 	10487 files visited 0 problems
+ * summary: 12/1/2025
+ * 	12938 files visited 0 problems
  * 
  * 
 
@@ -977,11 +977,11 @@ gipfgames\archive-2020\games-Feb-7-2020.zip G-SmartBot0-Jojajo-2020-02-01-2248.s
 
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
-            {	StringTokenizer his = new StringTokenizer(value);
+            {	Tokenizer his = new Tokenizer(value);
             	String token = his.nextToken();
-            	long rand = his.hasMoreTokens() ? G.LongToken(his) : 0;
+            	long rand = his.hasMoreTokens() ? his.longToken() : 0;
             	boolean hasExplicitRevision = his.hasMoreTokens();
-            	int rev = ( hasExplicitRevision ? G.IntToken(his.nextToken()) : b.revision);
+            	int rev = ( hasExplicitRevision ? his.intToken() : b.revision);
                 b.doInit(token,rand,rev);
                 b.hasExplicitRevision = hasExplicitRevision;
                 b.setFirstPlayer(0);

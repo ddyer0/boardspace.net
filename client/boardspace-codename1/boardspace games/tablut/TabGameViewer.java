@@ -23,8 +23,6 @@ import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Graphics;
 import lib.Image;
 import lib.BSDate;
@@ -38,6 +36,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -728,7 +727,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	{ return(b.gameType()); 
     	}	
     public String sgfGameType() { return(Tablut_SGF); }	// this is the official SGF number assigned to the game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	String initToken = token;

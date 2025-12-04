@@ -128,7 +128,7 @@ public class OctilesPlay extends commonMPRobot<OctilesBoard> implements Runnable
     	for(int i=0;i<nplay; i++)
     	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
     	}}
-    	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));
+    	return(mm.reScoreMPPosition(playerindex));
     }
 
     /**

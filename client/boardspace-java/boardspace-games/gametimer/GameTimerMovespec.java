@@ -16,12 +16,11 @@
  */
 package gametimer;
 
-import java.util.*;
-
 import gametimer.GameTimerConstants.GameTimerId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class GameTimerMovespec 
@@ -54,7 +53,7 @@ public class GameTimerMovespec
     /* constructor */
     public GameTimerMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
     /**
@@ -87,17 +86,10 @@ public class GameTimerMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {

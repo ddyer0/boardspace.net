@@ -29,7 +29,7 @@ import lib.*;
 /**
  * this class is the basis for representing individual moves in the game.  A few standard
  * actions are expected, but most of the actual moves in the game should be named and parsed
- * as required for the particular game.  Standard practice is to parse strings using stringTokenizer
+ * as required for the particular game.  Standard practice is to parse strings using Tokenizer
  * for simplicity, but that is not required.
  * 
  * commonMoves accept and parse strings, which may be either generated locally or incoming from
@@ -843,5 +843,21 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     public boolean isUctScored() {
 		return !Double.isNaN(evaluation());
 	}
-
+    /**
+     * return set the index from the first token if it is a number
+     * and return the next (ie; non index) token
+     * @param msg
+     * @return 
+     */
+    public String firstAfterIndex(Tokenizer msg)
+    {
+    	String cmd = msg.nextToken();
+ 
+        if (Character.isDigit(cmd.charAt(0)))
+        { // if the move starts with a digit, assume it is a sequence number
+            setIndex(G.IntToken(cmd));
+            cmd = msg.nextToken();
+        }
+        return cmd;
+    }
 }

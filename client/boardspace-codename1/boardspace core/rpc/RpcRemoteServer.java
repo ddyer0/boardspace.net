@@ -16,14 +16,13 @@
  */
 package rpc;
 
-import java.util.StringTokenizer;
-
 import lib.Base64;
 import lib.G;
 import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.StringStack;
+import lib.Tokenizer;
 import online.game.PlayConstants;
 import online.game.commonCanvas;
 /**
@@ -119,7 +118,7 @@ public class RpcRemoteServer implements RpcInterface,SimpleObserver,PlayConstant
 
 	// incoming requests from a remote viewer
 	public void execute(String msg) {
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		plog.addLog(msg);
 		while(tok.hasMoreTokens())
 		{
@@ -140,7 +139,7 @@ public class RpcRemoteServer implements RpcInterface,SimpleObserver,PlayConstant
 				break;
 			case Digest:
 				// declaring the current digest
-				lastClientDigest = G.LongToken(tok);
+				lastClientDigest = tok.longToken();
 				break;
 
 			}	

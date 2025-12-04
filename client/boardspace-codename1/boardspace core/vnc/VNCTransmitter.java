@@ -16,13 +16,12 @@
  */
 package vnc;
 
-import java.util.StringTokenizer;
-
 import lib.G;
 import lib.Http;
 import lib.MixedPacket;
 import lib.NetPacketConn;
 import lib.SocketProxy;
+import lib.Tokenizer;
 /**
  * this implements a vnc-like host for screen sharing, but the actual messages
  * and protocols are not related to the standard vnc definitions
@@ -169,7 +168,7 @@ public class VNCTransmitter implements Runnable,VNCConstants
 	private synchronized void processMessage(MixedPacket msg)
 	{	String spec = msg.message;
 		if(verbose>=10) { log("server in: "+spec); }
-		StringTokenizer tok = new StringTokenizer(spec);
+		Tokenizer tok = new Tokenizer(spec);
 		String command = tok.nextToken();
 		Command cmd = Command.find(command);
 		switch(cmd)

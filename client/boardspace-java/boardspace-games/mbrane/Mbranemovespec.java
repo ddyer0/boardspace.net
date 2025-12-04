@@ -16,9 +16,8 @@
  */
 package mbrane;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import mbrane.MbraneConstants.MbraneId;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -76,7 +75,7 @@ public class Mbranemovespec extends commonMove
     /* constructor */
     public Mbranemovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Mbranemovespec(int opc,int who)
     {
@@ -100,11 +99,6 @@ public class Mbranemovespec extends commonMove
     	op = opc;
     	to_row = torow;
     	player = who;
-    }
-    /* constructor */
-    public Mbranemovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -147,43 +141,36 @@ public class Mbranemovespec extends commonMove
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse %s", cmd);
         case MOVE_MOVE:
-        		from_row = G.IntToken(msg);
-        		to_col = G.CharToken(msg);
-        		to_row = G.IntToken(msg);
+        		from_row = msg.intToken();
+        		to_col = msg.charToken();
+        		to_row = msg.intToken();
         		break;
         		
         case MOVE_DROPB:
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 
 	            break;
 
 		case MOVE_PICKB:
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
         case MOVE_DROP:
         case MOVE_PICK:
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             to_col = '@';
             break;
 
@@ -192,7 +179,7 @@ public class Mbranemovespec extends commonMove
 
             break;
         case MOVE_SCORESTEP:
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
         default:
             break;

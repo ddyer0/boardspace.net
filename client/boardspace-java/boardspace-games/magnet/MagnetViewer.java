@@ -36,6 +36,7 @@ import lib.ExtendedHashtable;
 import lib.Random;
 import lib.SimpleSprite;
 import lib.StockArt;
+import lib.Tokenizer;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -1058,12 +1059,12 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.longToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted

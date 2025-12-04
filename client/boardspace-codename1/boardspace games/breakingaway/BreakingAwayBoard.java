@@ -28,8 +28,6 @@ import online.game.*;
 import lib.*;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import static breakingaway.BreakingAwayMovespec.*;
 /**
  * BreakingAwayBoard knows all about the game BreakingAway, which is played on a
@@ -997,15 +995,15 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		}
 		return(data);
 	}
-	void parseMovements(StringTokenizer msg)
+	void parseMovements(Tokenizer msg)
 	{
-		int pl = G.IntToken(msg);
+		int pl = msg.intToken();
 		for(int i=0;i<CYCLES_PER_PLAYER;i++)
 		{	BreakingAwayCell c = cycles[pl][i];
 			int movements[] = c.pendingMovements;
 			for(int j=0,lim=movements.length; j<lim; j++) 
 			{		
-				movements[j] = G.IntToken(msg);
+				movements[j] = msg.intToken();
 			}
 		}
 	}

@@ -41,6 +41,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 /**
  * 
@@ -910,15 +911,15 @@ private void playSounds(commonMove m)
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	int np = G.IntToken(his);			// should be the number of players in the game
+    	int np = his.intToken();			// should be the number of players in the game
     	int rev = 1;						// old game records have just the number of players
     	int ran = 0;						// and no random seed
     	if(np>=100) 
     		{ rev = np;				// newer game records start with a revision number whichis >=100 
-    		  np = G.IntToken(his); 
-    		  ran=G.IntToken(his); 
+    		  np = his.intToken(); 
+    		  ran= his.intToken(); 
     		}
         b.doInit(token,ran,np,rev);
         adjustPlayers(np);

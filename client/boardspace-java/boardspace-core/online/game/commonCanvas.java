@@ -34,7 +34,6 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -83,7 +82,7 @@ Feb 2005 switched the PAINT and MOUSE functions to synchronize through
   processes.
 
 July 2006 added repeatedPositions related functions
- TODO: rate limit the "moves are coming in"
+
  TODO: when multiple viewers are reviewing, only the primary sees animations during playback
  
 */
@@ -2773,12 +2772,12 @@ public abstract class commonCanvas extends exCanvas
         }
     }
     
-    public void doMouseTracking(StringTokenizer myST,commonPlayer player)
+    public void doMouseTracking(Tokenizer myST,commonPlayer player)
     {	
         String zone = myST.nextToken();
-        int inx = G.IntToken(myST);
-        int iny = G.IntToken(myST);
-        int ino = G.IntToken(myST);
+        int inx = myST.intToken();
+        int iny = myST.intToken();
+        int ino = myST.intToken();
         String typ = myST.hasMoreTokens() ? myST.nextToken() : null;
         doMouseTracking(player,zone,inx,iny,ino,typ);
      }
@@ -5603,7 +5602,7 @@ public abstract class commonCanvas extends exCanvas
     }
 
     public void doRestorePanZoom(String specs)
-    {	StringTokenizer tok = new StringTokenizer(specs);
+    {	Tokenizer tok = new Tokenizer(specs);
     	while(tok.hasMoreTokens())
     	{
     		String key = tok.nextToken();
@@ -5628,7 +5627,7 @@ public abstract class commonCanvas extends exCanvas
     }
     private String summarize(String e)
     {	String res = "";
-    	StringTokenizer tok = new StringTokenizer(e," ");
+    	Tokenizer tok = new Tokenizer(e," ");
     	while(tok.hasMoreTokens())
     	{
     		String m = tok.nextToken();
@@ -5899,7 +5898,7 @@ public abstract class commonCanvas extends exCanvas
     	String in = initialization;
     	if(in!=null)
     		{ initialization = null;
-    		  StringTokenizer tok = new StringTokenizer(in);
+    		  Tokenizer tok = new Tokenizer(in);
     		  String cmd = tok.nextToken();
     		  if(RpcInterface.Keyword.Complete.name().equals(cmd))
     		  {
@@ -6687,7 +6686,7 @@ public abstract class commonCanvas extends exCanvas
                  p = players[player] = new commonPlayer(player);
              }
               
-             StringTokenizer tokens = new StringTokenizer(value);
+             Tokenizer tokens = new Tokenizer(value);
              String first = tokens.nextToken();
 
 
@@ -6708,20 +6707,20 @@ public abstract class commonCanvas extends exCanvas
     	return(false);
     }
     
-    public boolean parsePlayerExecute(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerExecute(commonPlayer p,String first,Tokenizer tokens)
     {	
     	String next = tokens.hasMoreTokens() ? tokens.nextToken() : "";
     	// note; this breaks replays of games from the logs that include edits and errors after edits.
     	// normally the games won't include edit anyway
     	// if("edit".equals(next) && getBoard().GameOver()) { return(true); }
-       	String rest = "".equals(next) ? next : next+" "+G.restof(tokens);
+       	String rest = "".equals(next) ? next : next+" "+tokens.getRest();
        	String msg = first + " "+ rest;
        	// replay1 instead of replay includes "heavier" move bookkeeping such as
        	// reconstructing move paths in Colorito or Iro
         return(PerformAndTransmit(msg, p.boardIndex,false,replayMode.Replay1));	
     }
     
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {	if(KEYWORD_ID.equals(first))
     	{
     	String name = tokens.nextToken();
@@ -6737,7 +6736,7 @@ public abstract class commonCanvas extends exCanvas
    				|| RANKING.equals(first) 
    				|| COUNTRY.equals(first))
     	{
-    		p.setPlayerInfo(first,G.restof(tokens)); 
+    		p.setPlayerInfo(first,tokens.getRest()); 
     		return(true);
  	   	}
         return(false);
@@ -8047,11 +8046,11 @@ public Point decodeScreenZone(String zone,int x,int y)
  * 
  * @param his
  */
-public abstract void performHistoryInitialization(StringTokenizer his);
+public abstract void performHistoryInitialization(Tokenizer his);
 
 
-public void performPlayerInitialization(StringTokenizer his)
-{	int fp = G.IntToken(his);
+public void performPlayerInitialization(Tokenizer his)
+{	int fp = his.intToken();
 	BoardProtocol b = getBoard();
     if (fp < 0)   {  fp = 0;  }
     b.setWhoseTurn(fp);
@@ -8073,7 +8072,7 @@ public void performPlayerInitialization(StringTokenizer his)
 	
 }
 
-public void performHistoryTokens(StringTokenizer his)
+public void performHistoryTokens(Tokenizer his)
 {	StringBuilder command = new StringBuilder();
     // now the rest
 	boolean ended = false;
@@ -8100,7 +8099,7 @@ public void performHistoryTokens(StringTokenizer his)
        {	// reserve all first tokens starting with + for future expansion
     	   if("+T".equals(token))
     	   {
-    		   time = G.IntToken(his);   		   
+    		   time = his.intToken();   		   
     	   }
        }
        else
@@ -8190,7 +8189,7 @@ private void restorePlayerInfo(int seatposition,int ordinal)
 Used by spectators, multiple reviewers, and players recovering their connection
 this consumes the strings produced by {@link #formHistoryString }
 */
-public void useStoryBuffer(String tok,StringTokenizer his)
+public void useStoryBuffer(String tok,Tokenizer his)
 {	
 	
 	if(tok==null) { tok = his.nextToken(); }
@@ -8198,7 +8197,7 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 	{	
 
 		while(KEYWORD_PLAYER.equals(tok))
-		{	int indx = G.IntToken(his);
+		{	int indx = his.intToken();
 			String name = Base64.decodeAlphaNumeric(his.nextToken());
 			extendPlayers(indx);
 			commonPlayer p = players[indx];
@@ -8209,13 +8208,13 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 		while(KEYWORD_PINFO2.equals(tok))
 		{
 			String uid = his.nextToken();
-			int ord = G.IntToken(his);
+			int ord = his.intToken();
 			restorePlayerInfo2(uid,ord);
 			tok = his.hasMoreTokens()? his.nextToken() : KEYWORD_START_STORY;
 		}
 		while(KEYWORD_PINFO.equals(tok))
-		{	int seat = G.IntToken(his);
-			int ord = G.IntToken(his);
+		{	int seat = his.intToken();
+			int ord = his.intToken();
 			restorePlayerInfo(seat,ord);
 			tok = his.hasMoreTokens()? his.nextToken() : "";
 			if("true".equals(tok)||("false".equals(tok)))
@@ -8268,7 +8267,7 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 	}
 }
 
-public void useRemoteStoryBuffer(String tok,StringTokenizer his)
+public void useRemoteStoryBuffer(String tok,Tokenizer his)
 {	
 	if((tok!=null) && tok.startsWith(KEYWORD_SPARE))
 	{
@@ -8287,8 +8286,8 @@ public void useRemoteStoryBuffer(String tok,StringTokenizer his)
     if(his.hasMoreTokens())
     {
     //String playerToMove = 
-    G.IntToken(his);	// skip player to move
-    G.IntToken(his);			// my ordinal
+    his.intToken();	// skip player to move
+   	his.intToken();			// my ordinal
     useEphemeraBuffer(his);
     }
 }
@@ -8301,11 +8300,11 @@ public void useRemoteStoryBuffer(String tok,StringTokenizer his)
  * 
  * its possible to override or wrap both this and {@link #formEphemeralHistoryString}
  */
-public void useEphemeraBuffer(StringTokenizer his)
+public void useEphemeraBuffer(Tokenizer his)
 {	for(int i=0; i<players.length && his.hasMoreElements(); i++)
 	{	//commonPlayer pli = players[i];
 		commonPlayer plp = commonPlayer.findPlayerByPosition(players,i);
-		long tim = G.LongToken(his);
+		long tim = his.longToken();
 		if(plp!=null) 
 		{ plp.setElapsedTime(tim); 
 		//G.print("Restore "+plp+" "+tim+ ((pli==plp)?"":" not "+pli));
@@ -8316,7 +8315,7 @@ public void useEphemeraBuffer(StringTokenizer his)
 		String tok = his.nextToken();
 		if(KEYWORD_SCROLL.equals(tok))
 		{	// if a scroll position is specified, scroll there.
-			int pos = G.IntToken(his);
+			int pos = his.intToken();
 			if(pos>=0) { doScrollTo(pos); }
 		}
 	}
@@ -8413,7 +8412,7 @@ public commonMove convertToSynchronous(commonMove m)
  *  overridden, in cooperation with {@link formEphemeralMoveString } to change the behavior
  * @param his
  */
-public void useEphemeralMoves(StringTokenizer his)
+public void useEphemeralMoves(Tokenizer his)
 {
    	performHistoryTokens(his);		// extra tokens for ephemeral moves after the end of the standard ephemeral stuff
 }

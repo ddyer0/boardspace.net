@@ -171,7 +171,7 @@ public interface ContainerConstants
     	ContainerState(String des) { description = des; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
-    	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+    	public boolean Puzzle() { return(this==PUZZLE_STATE); }
     }
     
      /* states of the board/game.  Because several gestures are needed to complete a move, and

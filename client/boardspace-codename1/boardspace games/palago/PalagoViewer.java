@@ -36,6 +36,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 /**
  * 
@@ -785,7 +786,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	if("Palago".equals(token))
@@ -794,9 +795,9 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     }
     	else
     	{
-    	int np = G.IntToken(his);
-    	long rv = G.LongToken(his);
-    	int rev = G.IntToken(his);
+    	int np = his.intToken();
+    	long rv = his.longToken();
+    	int rev = his.intToken();
     	bb.doInit(token,np,rv,rev);
     	}
     	
@@ -875,7 +876,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/27/2023
+     * summary: 12/2/2025
 	 * 12888 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)

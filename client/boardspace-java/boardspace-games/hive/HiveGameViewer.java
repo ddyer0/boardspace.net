@@ -39,6 +39,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 
 /**
  * 
@@ -843,9 +844,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      }
      
      // this method is needed for hive to maintain compatibility with old game records
-     public boolean parsePlayerExecute(commonPlayer p,String first,StringTokenizer tokens)
+     public boolean parsePlayerExecute(commonPlayer p,String first,Tokenizer tokens)
      {
-     	String msg = first + " "+ G.restof(tokens);
+     	String msg = first + " "+ tokens.getRest();
      	Hivemovespec m = new Hivemovespec(msg,p.boardIndex);
          return(PerformAndTransmit(m, false,replayMode.Replay));	
      }
@@ -1045,7 +1046,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     // return what will be the init type for the game
     public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Hive_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	if(token.startsWith("Hive"))
@@ -1056,9 +1057,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{
     		// new game, with the revision protocol, flag their presence with lower case.
     		// this is only a problem for games being restarted in the live context, or by spectators.
-    		int np = G.IntToken(his);
-    		long rv = G.LongToken(his);
-    		int rev = G.IntToken(his);
+    		int np = his.intToken();
+    		long rv = his.intToken();
+    		int rev = his.intToken();
     		b.doInit(token,np,rv,rev);	
     	}
         //PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,true);
@@ -1084,6 +1085,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      * summary:5/24/2023
 		219567 files visited 0 problems
      * 
+     * summary:
+		168814: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\hive\hivegames\hivegames\archive-2016\games-Feb-19-2016.zip HV-Dumbot-vonsohn-2016-02-18-1738.sgf lib.ErrorX: Move not complete, can't change the current player
+	this game is profoundly damaged, robot made an illegal second move
+		219567 files visited 1 problems
+
      */
     public void ReplayMove(sgf_node no)
     {

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,14 +12,13 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package blackdeath;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class BlackDeathMovespec extends commonMPMove implements BlackDeathConstants
@@ -135,7 +134,7 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
     /* constructor */
     public BlackDeathMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
@@ -185,11 +184,6 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
     	from_name = from.name;
     	cost = c;
     	source = dest = BlackDeathId.BoardLocation;
-    }
-    /* constructor */
-    public BlackDeathMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -241,17 +235,10 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -260,15 +247,15 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
         case MOVE_MORTALITY:
         	{
         	color = BlackDeathColor.get(msg.nextToken());
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	}
         	break;
         case MOVE_ROLL2:
         	
     		{
     		color = BlackDeathColor.get(msg.nextToken());
-    		int r1 = G.IntToken(msg);
-	   		to_row = r1*10 + G.IntToken(msg);
+    		int r1 = msg.intToken();
+	   		to_row = r1*10 + msg.intToken();
 	   		}
     		break;
         case MOVE_PERFECTROLL:
@@ -283,14 +270,14 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
         case MOVE_TEMPORARY_SWAP_VIRULENCE:
         	{
         	color = BlackDeathColor.get(msg.nextToken());
-		   	to_row = G.IntToken(msg);
+		   	to_row = msg.intToken();
 		   	}
 		   	break;
         case MOVE_FROM_TO:
         	source = dest = BlackDeathId.BoardLocation;
          	from_name = msg.nextToken();
         	to_name = msg.nextToken();
-        	cost = G.IntToken(msg);
+        	cost = msg.intToken();
         	break;
         case MOVE_TEMPORARY_CLOSE:
         case MOVE_INFECTION_ATTEMPT:
@@ -323,14 +310,14 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
         case MOVE_PLAYCARD:
          	color = BlackDeathColor.get(msg.nextToken());
             source = BlackDeathId.find(msg.nextToken());
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             from_name = msg.nextToken();
             break;
          	
         case MOVE_PICK:
         	color = BlackDeathColor.get(msg.nextToken());
             source = BlackDeathId.find(msg.nextToken());
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_START:

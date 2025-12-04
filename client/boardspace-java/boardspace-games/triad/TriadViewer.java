@@ -19,8 +19,6 @@ package triad;
 import java.awt.*;
 
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import common.GameInfo;
 import online.common.*;
 import lib.Graphics;
@@ -34,6 +32,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -639,7 +638,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
     	//
@@ -704,7 +703,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     {  return(new TriadPlay());
      
     }
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {
     	if(OnlineConstants.TIME.equals(first) && bb.DoneState())
     	{

@@ -16,12 +16,11 @@
  */
 package honey;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Honeymovespec extends commonMPMove implements HoneyConstants
@@ -74,7 +73,7 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
     /* constructor */
     public Honeymovespec(String str)
     {
-        parse(new StringTokenizer(str));
+        parse(new Tokenizer(str));
     }
     /** constructor for simple robot moves - pass and done 
      */
@@ -84,13 +83,6 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
     	player = who;
     }
 
-    
-
-    /* constructor */
-    public Honeymovespec(StringTokenizer ss)
-    {
-        parse(ss);
-    }
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -135,15 +127,9 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg)
+    private void parse(Tokenizer msg)
     {
-        String cmd = msg.nextToken();
- 
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
+        String cmd = firstAfterIndex(msg);
         //
         // for honey, effectively all the moves are ephemeral, which means
         // they have to contain the player doing the moving.  Rather than address
@@ -151,7 +137,7 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
         //
         op = D.getInt(cmd, MOVE_UNKNOWN);
         if(op==MOVE_START) {}
-        else if(msg.hasMoreTokens())  { player = G.IntToken(msg); }
+        else if(msg.hasMoreTokens())  { player = msg.intToken(); }
         else {}
         switch (op)
         {

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,17 +12,16 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package dayandnight;
-
-import java.util.*;
 
 import dayandnight.DayAndNightConstants.DayAndNightId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class DayAndNightmovespec 
@@ -83,7 +82,7 @@ public class DayAndNightmovespec
     /* constructor */
     public DayAndNightmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /* constructor */
     public DayAndNightmovespec(int opc,int pl)
@@ -112,11 +111,6 @@ public class DayAndNightmovespec
     	player = who;
     }
    
-    /* constructor */
-    public DayAndNightmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -163,17 +157,10 @@ public class DayAndNightmovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -182,17 +169,17 @@ public class DayAndNightmovespec
 
         case MOVE_FROM_TO:
         	source = DayAndNightId.BoardLocation;
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
             
         case MOVE_DROPB:
 		case MOVE_PICKB:
             source = DayAndNightId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
 
         case MOVE_DROP:

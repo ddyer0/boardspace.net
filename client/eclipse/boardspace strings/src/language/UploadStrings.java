@@ -35,6 +35,7 @@ import com.jcraft.jsch.Session;
 
 import lib.G;
 import lib.InternationalStrings;
+import lib.Tokenizer;
 import lib.Utf8Reader;
 
 /**
@@ -399,7 +400,7 @@ public class UploadStrings
   	  if(pars!=null)
   	  {	  trouble = false;
 	  	  prefs.put("UploadStrings",pars);
-	  	  StringTokenizer tok = new StringTokenizer(pars);
+	  	  Tokenizer tok = new Tokenizer(pars);
 	  	  while(tok.hasMoreTokens())
 	  	  {
 	  		String str = tok.nextToken();

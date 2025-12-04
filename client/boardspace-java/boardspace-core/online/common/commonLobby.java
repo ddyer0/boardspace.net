@@ -27,7 +27,6 @@ import common.GameInfo;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -49,6 +48,7 @@ import lib.Random;
 import lib.SimpleObservable;
 import lib.SoundManager;
 import lib.TimeControl;
+import lib.Tokenizer;
 import lib.commonPanel;
 import lib.exCanvas;
 import online.common.Session.JoinMode;
@@ -558,7 +558,7 @@ private void setGameTime()
 	try {
 	if(myNetConn.hasSequence) 
 		{ String seq = "x"+myNetConn.na.seq++;
-		  StringTokenizer msg = new StringTokenizer(message);
+		  Tokenizer msg = new Tokenizer(message);
 		  String fir = msg.nextToken();
 		  if(NetConn.SEND_REQUEST_EXIT_COMMAND.equals(fir) || NetConn.SEND_GROUP_COMMAND.equals(fir))
 		  {	myNetConn.savePendingEcho(seq,message);
@@ -695,17 +695,17 @@ private User getUser(int id)
 	}
 	return(u);
 }
-private boolean processIntro(String messType,StringTokenizer localST)
+private boolean processIntro(String messType,Tokenizer localST)
 {	if(NetConn.ECHO_INTRO.equals(messType))
 	{
-	int channel = G.IntToken(localST);	// associated channel
-	G.IntToken(localST);		// is a player/user not used in the lobby
+	int channel = localST.intToken();	// associated channel
+	localST.intToken();		// is a player/user not used in the lobby
 	if(localST.hasMoreTokens())
 	{
-		G.IntToken(localST);	// color
+		localST.intToken();	// color
 		String uid = localST.nextToken();
 		String name = localST.nextToken();
-		G.IntToken(localST);		// order
+		localST.intToken();		// order
 		setUserName(channel,name,uid);
 	}
 	return(true);
@@ -713,7 +713,7 @@ private boolean processIntro(String messType,StringTokenizer localST)
 	return(false);
 }
 
-private boolean process_ECHO_INTRO_SELF(String messType,StringTokenizer localSTx)
+private boolean process_ECHO_INTRO_SELF(String messType,Tokenizer localSTx)
   {  if(NetConn.ECHO_INTRO_SELF.equals(messType))
     {// the actual processing of the string has already been done by the netConn
 	  User me = users.primaryUser();
@@ -746,7 +746,7 @@ private boolean process_ECHO_INTRO_SELF(String messType,StringTokenizer localSTx
     return(false);
   }
 
-private boolean processEchoExit(String messType,StringTokenizer localST,String fullmessage)
+private boolean processEchoExit(String messType,Tokenizer localST,String fullmessage)
   {  if(messType.equals(NetConn.ECHO_I_QUIT))
     { if(localST.hasMoreTokens())
       { 
@@ -775,7 +775,7 @@ private boolean processEchoExit(String messType,StringTokenizer localST,String f
   }
 
 
-  private void doCONNECTED(String messType,StringTokenizer localST,String fullMessage) {        // state 2
+  private void doCONNECTED(String messType,Tokenizer localST,String fullMessage) {        // state 2
     //System.out.println("doCONNECTED " + fullMessage);
     boolean processed = process_ECHO_INTRO_SELF(messType,localST)
     		|| processIntro(messType,localST)
@@ -945,7 +945,7 @@ private void PreloadClass(String classname)
       }
 }
 
-private boolean handleChat(int playerID,String commandStr,StringTokenizer localST)
+private boolean handleChat(int playerID,String commandStr,Tokenizer localST)
 {
 	if (ChatInterface.KEYWORD_PPCHAT.equalsIgnoreCase(commandStr) 
  		   || ChatInterface.KEYWORD_PCHAT.equalsIgnoreCase(commandStr)
@@ -978,18 +978,18 @@ private boolean handleChat(int playerID,String commandStr,StringTokenizer localS
    }
 	return(false);
 }
-private boolean processEchoGroup(String messType,StringTokenizer localST,String fullMsg)
+private boolean processEchoGroup(String messType,Tokenizer localST,String fullMsg)
 {  //place someone else in session/slot
     if(messType.equals(NetConn.ECHO_GROUP))
     {
-      int playerID = G.IntToken(localST);
+      int playerID = localST.intToken();
       boolean remain = false;
       String commandStr = localST.nextToken();
       boolean isimin = commandStr.equalsIgnoreCase(KEYWORD_IMIN);
       boolean isuimin = commandStr.equalsIgnoreCase(KEYWORD_UIMIN);
       if (isimin || isuimin) 
-      { int toSess = G.IntToken(localST);
-        int toPlay = G.IntToken(localST);
+      { int toSess = localST.intToken();
+        int toPlay = localST.intToken();
         User user = getUser(playerID);
         int gameId = -1;
         Session sess = getSession(toSess);
@@ -1016,7 +1016,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       { User user = getUser(playerID);
         if(user!=null) 
           {
-            int cl = G.IntToken(localST);
+            int cl = localST.intToken();
             user.setPlayerClass(cl);
             setUIDRankings(localST,false);
           }
@@ -1065,8 +1065,8 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
         }
       }
       else if(commandStr.equalsIgnoreCase(KEYWORD_USERMENU))
-      {  int index = G.IntToken(localST);
-        int userChannel = G.IntToken(localST);
+      {  int index = localST.intToken();
+        int userChannel = localST.intToken();
         User victim = getUser(userChannel);
         User actor = getUser(playerID);
       switch(index)
@@ -1111,7 +1111,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     break;
           
   case 2:
-  int room = G.IntToken(localST);
+  int room = localST.intToken();
   if(!actor.ignored 
    && !actor.automute && !victim.nochallenge
       && (victim==users.primaryUser())
@@ -1147,11 +1147,11 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
   return(false);  
 }
   private int parsedGameId = -1;
-  private boolean parseImin(Session sess,StringTokenizer localST)
+  private boolean parseImin(Session sess,Tokenizer localST)
   {	boolean remain = false;
     parsedGameId = -1;
       if(localST.hasMoreTokens()) 
-      { Session.JoinMode usecode=Session.JoinMode.findMode(G.IntToken(localST));
+      { Session.JoinMode usecode=Session.JoinMode.findMode(localST.intToken());
         if((usecode != null) && (sess.getSubmode()!=usecode))
         {sess.setSubmode(usecode);
          v.repaint("setOnly");
@@ -1166,7 +1166,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       while(localST.hasMoreTokens())
       {
       	String cmd = localST.nextToken();
-      	if(cmd.equalsIgnoreCase("game")) { parsedGameId = G.IntToken(localST); }
+      	if(cmd.equalsIgnoreCase("game")) { parsedGameId = localST.intToken(); }
       	if(cmd.equalsIgnoreCase("remain")) { remain = true; }
       	if(cmd.equalsIgnoreCase(sgf_names.timecontrol_property))
       	{
@@ -1176,12 +1176,12 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       }
       return remain;
   }
-  private boolean processEchoQueryGame(String messType,StringTokenizer localST)
+  private boolean processEchoQueryGame(String messType,Tokenizer localST)
   {
     if(messType.equals(NetConn.ECHO_QUERY_GAME))
     {
-      int sessNum = G.IntToken(localST);
-      int sessID = G.IntToken(localST);
+      int sessNum = localST.intToken();
+      int sessID = localST.intToken();
       Session sess = getSession(sessNum);
        if(sess!=null)
          {
@@ -1196,15 +1196,15 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
   // process information summarizing the state of the server.
   // we get one message per session that is active.  This is normally
   // sent only once at the beginning of a session
-  private boolean processEchoSummary(String messType,StringTokenizer localST,String fullMessage)
+  private boolean processEchoSummary(String messType,Tokenizer localST,String fullMessage)
   {
     if(messType.equals(NetConn.ECHO_SUMMARY))
     { //G.print("S "+fullMessage);
-      int sessNum = G.IntToken(localST);
-      int numOccupied = G.IntToken(localST);
-      int theState = G.IntToken(localST);
-      int passwordSet = G.IntToken(localST);
-      int sessionGameID = G.IntToken(localST);
+      int sessNum = localST.intToken();
+      int numOccupied = localST.intToken();
+      int theState = localST.intToken();
+      int passwordSet = localST.intToken();
+      int sessionGameID = localST.intToken();
       Session sess = getSession(sessNum);
 
        if(sessNum==0)
@@ -1298,11 +1298,11 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     }
     return(false);  
   }
-  private boolean processPlayerQuit(String messType,StringTokenizer localST)
+  private boolean processPlayerQuit(String messType,Tokenizer localST)
   {
     if(messType.equals(NetConn.ECHO_PLAYER_QUIT))
     {
-      int playerIDInt = G.IntToken(localST);
+      int playerIDInt = localST.intToken();
       String deathcode = localST.hasMoreTokens() ? localST.nextToken() : null;
       User u = users.getExistingUser(playerIDInt);
       if(u!=null)
@@ -1358,12 +1358,12 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     if(oldnum!=n+1) { v.resetBounds(); }
   }
   
-  private boolean processEchoPing(String messType,StringTokenizer localST)
+  private boolean processEchoPing(String messType,Tokenizer localST)
   {
     if(messType.equals(NetConn.ECHO_PING))
     { //progress++;
-      SetNumberOfSessions(G.IntToken(localST) - 1);
-      SetNumberOfUsers(G.IntToken(localST)); 
+      SetNumberOfSessions(localST.intToken() - 1);
+      SetNumberOfUsers(localST.intToken()); 
       {
        long pst = pingtime;
        long now = (G.Date()-pst);
@@ -1401,7 +1401,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
   private boolean processNotUnderstood(String messType,String message)
   {
     if(messType.equals(NetConn.FAILED_NOT_UNDERSTOOD))
-    {StringTokenizer localST = new StringTokenizer(message);
+    {Tokenizer localST = new Tokenizer(message);
      localST.nextToken();
      String intMessType = localST.hasMoreTokens()?localST.nextToken():"";
      if (!NetConn.FAILED_NOT_UNDERSTOOD.equals(intMessType)
@@ -1415,7 +1415,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     return(false);
   }
   
-  private boolean processNotUnderstood(String messType,StringTokenizer localST,String message)
+  private boolean processNotUnderstood(String messType,Tokenizer localST,String message)
   {  if(messType.equals(NetConn.FAILED_NOT_UNDERSTOOD))
     {String intMessType = localST.nextToken();
       if (intMessType.equals(NetConn.FAILED_RESERVE))
@@ -1425,7 +1425,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       }else
       if (intMessType.equals(NetConn.FAILED_ASK_DETAIL)) 
       {
-        int sessNum = G.IntToken(localST);
+        int sessNum = localST.intToken();
         Session sess = getSession(sessNum);
         if(sess!=null)
           {sess.refreshGamePending=false;
@@ -1443,7 +1443,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     
 
 
-  private boolean processEchoGroupSelf(String messType,StringTokenizer localST,String fullMessage)
+  private boolean processEchoGroupSelf(String messType,Tokenizer localST,String fullMessage)
   {  //place yourself in session/slot
 	boolean isSelf = messType.equals(NetConn.ECHO_GROUP_SELF);
 	User user = users.primaryUser();
@@ -1457,11 +1457,11 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 
       if (commandStr.equalsIgnoreCase(KEYWORD_IMIN)) 
       {
-          int toSess = G.IntToken(localST);
-          int toPlay = G.IntToken(localST);
+          int toSess = localST.intToken();
+          int toPlay = localST.intToken();
           Session sess = getSession(toSess);
           if(localST.hasMoreTokens()) 
-          { G.IntToken(localST);	// skip useCode, whatever that is.
+          { localST.intToken();	// skip useCode, whatever that is.
           }
           boolean put = sess==null;
       if(localST.hasMoreTokens())
@@ -1527,10 +1527,10 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
   {	  s.refreshGameInProgress = false;
   	  s.refreshGamePending = false;
   }
-  private boolean processEchoDetailEnd(String messType,StringTokenizer localST)
+  private boolean processEchoDetailEnd(String messType,Tokenizer localST)
   {  
     if(messType.equals(NetConn.ECHO_DETAIL_END))
-    { int sessNum = G.IntToken(localST);
+    { int sessNum = localST.intToken();
       if(sessNum==0) 
       	{
     	users.markResheshComplete();
@@ -1549,7 +1549,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       if(sess!=null)
         {
     	unFlush(sess);
-        int np = G.IntToken(localST);	// skip number of players plus spectators
+        int np = localST.intToken();	// skip number of players plus spectators
         if(sess.numPlayerSlots+sess.numSpectatorSlots == np)
         	{
         	sess.numActivePlayers =  sess.numPlayerSlots;
@@ -1586,13 +1586,13 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 //  in:  x786 307 1 1495 103 BestBot 104
 //  in:  x787 307 1 1496 200 spec 21
 //  x110519   307 0 1489 0 guest1489 3 1 2 0 -2 TC None 
-  private boolean processEchoDetail(String messType,StringTokenizer localST,String fullMsg)
+  private boolean processEchoDetail(String messType,Tokenizer localST,String fullMsg)
   { 
     if(messType.equals(NetConn.ECHO_DETAIL))
     {
-      int sessNum = G.IntToken(localST);
-      int playerID = G.IntToken(localST);
-      int passwordFlag = G.IntToken(localST);
+      int sessNum = localST.intToken();
+      int playerID = localST.intToken();
+      int passwordFlag = localST.intToken();
       boolean paint=false;
       boolean join = true;
       String theRealName=localST.nextToken();
@@ -1691,11 +1691,11 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
         {	// server mod 11 lets the lobby clients record their location, so it can be sent immediately
         	// when someone connects.  This is to close the "room thief" problem caused by uninformed users
         	// grabbing rooms that are already occupied
-        	Session inSess = getSession(G.IntToken(localST));
-        	int pos = G.IntToken(localST);
+        	Session inSess = getSession(localST.intToken());
+        	int pos = localST.intToken();
         	
         	Session.JoinMode mode = localST.hasMoreElements() 
-        								? Session.JoinMode.findMode(G.IntToken(localST))
+        								? Session.JoinMode.findMode(localST.intToken())
         								: null;
         	Bot bot = null;
          	
@@ -1738,11 +1738,11 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
   }
   
   //phase 0 of game launch.  we received the launch code.  Nuke'em!
-  private boolean processEchoLaunch(String messType,StringTokenizer localST)
+  private boolean processEchoLaunch(String messType,Tokenizer localST)
   {
     if(messType.equals(NetConn.ECHO_RESERVE))
     {
-      int sessNum = G.IntToken(localST);
+      int sessNum = localST.intToken();
       Session sess = getSession(sessNum);
       if(sess!=null)
         {
@@ -1758,7 +1758,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     return(false);
   }
   
-  private boolean processIgnoredMessages(String messType,StringTokenizer localST)
+  private boolean processIgnoredMessages(String messType,Tokenizer localST)
   {
     if(NetConn.ECHO_REMOVE_GAME.equals(messType)
       || NetConn.ECHO_MYNAME.equals(messType))
@@ -1768,13 +1768,13 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     return(false);
   }
 
-private boolean processEchoRoomtype(String messType,StringTokenizer localST)
+private boolean processEchoRoomtype(String messType,Tokenizer localST)
   {
     if(messType.equals(NetConn.ECHO_ROOMTYPE))
   {
-  int toSess = G.IntToken(localST);
-  int toMode = G.IntToken(localST);
-  int toGame = G.IntToken(localST);
+  int toSess = localST.intToken();
+  int toMode = localST.intToken();
+  int toGame = localST.intToken();
   Session sess = getSession(toSess);
   if(sess!=null)
      {
@@ -1790,7 +1790,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     return(false);
   }
   
-  private void doMYTURN(String messType,StringTokenizer localST,String fullMessage) 
+  private void doMYTURN(String messType,Tokenizer localST,String fullMessage) 
   {
     //System.out.println("Active process " + fullMessage);
     boolean processed = 
@@ -1852,7 +1852,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     
 
     //after robot and self are added as users, use the ranking string supplied from the login
-    setUIDRankings(new StringTokenizer(sharedInfo.getString(UIDRANKING,"")),false);
+    setUIDRankings(new Tokenizer(sharedInfo.getString(UIDRANKING,"")),false);
     PreloadClass("G:game.Game");	// load the game support stuff
     try 
     {
@@ -2054,7 +2054,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
           }
           if(message!=null)
           { lastInputTime=G.Date();
-            StringTokenizer localST = new StringTokenizer(message);
+            Tokenizer localST = new Tokenizer(message);
             String messType = localST.nextToken();
 
             if(isExpectedSequence(messType,message))
@@ -2341,7 +2341,7 @@ public void ClearOtherInviteBox(Session sess)
     return(lobbyIdleTimeout);
   }
   
-  private void setUIDRankings(StringTokenizer st,boolean tell)
+  private void setUIDRankings(Tokenizer st,boolean tell)
   {boolean change = false;
    while (st.hasMoreTokens())
     {String uid = st.nextToken();
@@ -2417,16 +2417,16 @@ public void ClearOtherInviteBox(Session sess)
 // <mode>				// ranked unranked etc.
 // <used channel*10 + user order> 	// repeat for each possible player
 //
-void LaunchGameNow(StringTokenizer localST)
+void LaunchGameNow(Tokenizer localST)
 {
-	int sessNum = G.IntToken(localST);
+	int sessNum = localST.intToken();
 	Session sess = getSession(sessNum);
 	boolean failed = false;
 	if(sess!=null)
 	{
 	LaunchUserStack players = new LaunchUserStack();
 	String thePassword = localST.nextToken();
-	Session.Mode sessMode = Session.Mode.findMode(G.IntToken(localST));
+	Session.Mode sessMode = Session.Mode.findMode(localST.intToken());
 	if(sessMode == sess.mode)
 	{
 	String sm = sess.getGameNameID();
@@ -2476,8 +2476,8 @@ void LaunchGameNow(StringTokenizer localST)
 	}}}
 	sess.startingName= peek==null ? localST.nextToken() : peek;
 	
-	seedvalue = G.IntToken(localST);				// random seed for the game
-	int starter =  G.IntToken(localST);	// boss player
+	seedvalue = localST.intToken();				// random seed for the game
+	int starter =  localST.intToken();	// boss player
 	
 	
 	// special case, if the starting player turns out to be an "other local" player,
@@ -2507,15 +2507,15 @@ void LaunchGameNow(StringTokenizer localST)
 			}
 		}}
 	}
-	sess.startingRobot = Bot.findIdx(G.IntToken(localST));		// robot index
-	sess.startingRobotOrder = G.IntToken(localST);		// robot play order
-	sess.startingRobotPosition = G.IntToken(localST);	// robot seat
+	sess.startingRobot = Bot.findIdx(localST.intToken());		// robot index
+	sess.startingRobotOrder = localST.intToken();		// robot play order
+	sess.startingRobotPosition = localST.intToken();	// robot seat
 
 	if(localST.hasMoreTokens())
 	{	// there's a lingering problem where the game is changing in the lobby
 		// as the game is being launched.  This makes sure the game is synchronized
 		// across all players
-		sess.startingGameId = G.IntToken(localST);
+		sess.startingGameId = localST.intToken();
 		if(sess.startingGameId>=0)
 		{	GameInfo found = GameInfo.findByNumber(sess.startingGameId);
 			if(found!=null) { sess.currentGame = found; }
@@ -2577,7 +2577,7 @@ private void showRanking()
 	{String res = rankingResult[1];
 	 rankingResult[1]=null;
 	  if(res!=null)
-	  { StringTokenizer ss = new StringTokenizer(res);
+	  { Tokenizer ss = new Tokenizer(res);
 	    if((ss.countTokens()>=3) && "OK".equals(ss.nextToken()))
 	      {//set the ranking after reading it from the web site
 	        setUIDRankings(ss,true);

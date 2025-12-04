@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package yinsh.common;
 
 import online.game.*;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 
@@ -55,7 +54,7 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     /* constructor */
     public Yinshmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Yinshmovespec(char col,int row,YinshId id,int p)
     {	op = MOVE_PLACE;
@@ -95,11 +94,6 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     	to_row = torow;
     	player = who;
     }
-    /* constructor */
-    public Yinshmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
 
     public boolean Same_Move_P(commonMove oth)
     {
@@ -135,16 +129,10 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     }
 
     /* parse a string into the state of this move */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        {
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
         op = D.getInt(cmd, MOVE_UNKNOWN);
 
         switch (op)
@@ -165,34 +153,34 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
         case MOVE_REMOVE:
             object =YinshId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
 
         case MOVE_MOVE:
             object = YinshId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             if (msg.hasMoreTokens())
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
 
         case MOVE_PLACE:
             object = YinshId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 
@@ -201,8 +189,8 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
             if (object == YinshId.BoardLocation)
             {
-                to_col = G.CharToken(msg);
-                to_row = G.IntToken(msg);
+                to_col = msg.charToken();
+                to_row = msg.intToken();
             }
 
             break;
@@ -212,8 +200,8 @@ public class Yinshmovespec extends commonMove implements YinshConstants
 
             if (object == YinshId.BoardLocation)
             {
-                from_col = G.CharToken(msg);
-                from_row = G.IntToken(msg);
+                from_col = msg.charToken();
+                from_row = msg.intToken();
             }
 
             break;
@@ -279,16 +267,16 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
- 
-		switch (op)
+
+        switch (op)
         {
         default:
             return (opname);
 
-        case MOVE_MOVE:
+       case MOVE_MOVE:
             return (opname+from_col + " "+ from_row + " " +  to_col + " "+ to_row);
-        case MOVE_REMOVE:
-        	{
+       case MOVE_REMOVE:
+        {
             String what = object.shortName;
             String rest = "";
 
@@ -313,18 +301,18 @@ public class Yinshmovespec extends commonMove implements YinshConstants
         }
 
         case MOVE_PICK:
-        	{
+        {
             String rest = (object == YinshId.BoardLocation)
                 ? (" " + " " + from_col + " " + from_row) : "";
             return(opname+object.shortName + rest);
-        	}
+        }
 
         case MOVE_DROP:
-        	{
+        {
             String rest = (object == YinshId.BoardLocation)
                 ? (" " + " " + to_col + " " + to_row) : "";
             return(opname+ object.shortName + rest);
-        	}
+        }
 
         case MOVE_PLACE:
             return (opname+object.shortName + " " + " " + to_col + " " + to_row);
@@ -335,6 +323,6 @@ public class Yinshmovespec extends commonMove implements YinshConstants
         case MOVE_START:
             return indx+((player == SECOND_PLAYER_INDEX) ? "Start Black" : "Start White");
         }
-   }
+    }
 
 }

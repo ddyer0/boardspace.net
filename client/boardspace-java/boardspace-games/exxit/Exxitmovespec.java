@@ -134,14 +134,8 @@ public class Exxitmovespec extends commonMove implements ExxitConstants
      * */
     private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextElement();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextElement();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
 

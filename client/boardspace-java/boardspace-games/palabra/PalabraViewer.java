@@ -22,7 +22,6 @@ package palabra;
 import java.awt.*;
 
 import online.common.*;
-import java.util.*;
 
 import javax.swing.JMenuItem;
 
@@ -41,6 +40,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -739,11 +739,11 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int key = G.IntToken(his);
-    	int np = G.IntToken(his);
+    	int key = his.intToken();
+    	int np = his.intToken();
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -797,10 +797,10 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String game = tok.nextToken();
-            	int key = G.IntToken(tok);
-            	int np = G.IntToken(tok);
+            	long key = tok.longToken();
+            	int np = tok.intToken();
                 bb.doInit(game,key,np,0);
                 adjustPlayers(np);
               }

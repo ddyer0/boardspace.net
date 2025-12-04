@@ -31,12 +31,13 @@ import java.util.Enumeration;
  *
  */
 public class Tokenizer implements Enumeration<String>
-{	String basis = "";
-	String next = null;
-	int maxIndex = 0;
-	int index = 0;
-	int restIndex = 0;
+{	private String basis = "";
+	private String next = null;
+	private int maxIndex = 0;
+	private int index = 0;
+	private int restIndex = 0;
 	boolean alphaNumeric = false;
+	boolean keepDelimiters = false;
 	public static String StandardDelimiters = " \n\t\r\"";
 	public static String StandardSingletons = "()[]{}";
 	String delimiters = StandardDelimiters;
@@ -60,6 +61,11 @@ public class Tokenizer implements Enumeration<String>
 			maxIndex = str.length();
 		}
 	}
+	public Tokenizer(String str,String del,boolean keep)
+	{
+		this(str,del);
+		keepDelimiters = keep;
+	}
 	public Tokenizer(String str)
 	{	this(str,StandardDelimiters);
 	}
@@ -78,18 +84,35 @@ public class Tokenizer implements Enumeration<String>
 		if(next==null) { next=parseNextElement(); }
 		return next!=null;
 	}
-
+	/** compatibility with StringTokenizer()
+	 * 
+	 * @return
+	 */
+	public boolean hasMoreTokens()
+	{
+		return hasMoreElements();
+	}
 	public String nextElement()
 	{	String n = (next==null) ? parseNextElement() : next;
 		next = null;
+		restIndex = index;
 		return n;
 	}
-	
+	/** compatibility with StringTokenizer()
+	 * 
+	 * @return
+	 */
+	public String nextToken()
+	{
+		return nextElement();
+	}
+	public long longToken() { return G.LongToken(nextToken());	}
 	public int intToken() { return G.IntToken(nextElement()); }
 	public char charToken() { return nextElement().charAt(0); }
 	public boolean boolToken() { return Boolean.parseBoolean(nextElement());	}
 	public double doubleToken() { return G.DoubleToken(nextElement()); }
-	public String getRest() { return(basis.substring(restIndex)); }
+	/** returns the remainder of the string, skipping leading delimiters */
+	public String getRest() { skipDelimiters(); return(basis.substring(restIndex)); }
 
 	private String parseNextAlpha()
 	{	builder.setLength(0);
@@ -102,6 +125,15 @@ public class Tokenizer implements Enumeration<String>
 		}
 		return charsin ? builder.toString() : null;
 	}
+	private void skipDelimiters()
+	{	if(!keepDelimiters)
+		{
+		while((index<maxIndex) && delimiters.indexOf(basis.charAt(index))>=0)
+		{	index++;
+			restIndex = index;	
+		}}
+	}
+	
 	private String parseNextElement() {
 		if(alphaNumeric) { return parseNextAlpha(); }
 		restIndex = index;
@@ -130,15 +162,47 @@ public class Tokenizer implements Enumeration<String>
 			}
 			else if(delimiters.indexOf(ch)>=0) 
 				{ 	if(charsin) { index--; break; }
+					else if(keepDelimiters)
+					{
+						builder.append(ch); 
+						charsin=true;
+						break;
+					}
 					if(ch=='\"') { inquote = true; }
 					
-					
+	
 				}
 			else { builder.append(ch); charsin=true; }
 		}
 		
 		return ((charsin)?builder.toString() : null); 
 	}
+    /**
+     * Calculates the number of times that this tokenizer's
+     * {@code nextToken} method can be called before it generates an
+     * exception. The current position is not advanced.
+     *
+     * @return  the number of tokens remaining in the string using the current
+     *          delimiter set.
+     * @see     java.util.StringTokenizer#nextToken()
+     */
+    public int countTokens() {
+    	
+    	String nx = next;
+    	int max = maxIndex;
+    	int ind= index;
+    	int rest = restIndex;
+
+    	int n=0;
+    	while(hasMoreTokens()) { nextToken(); n++; }
+    	
+    	maxIndex = max;
+    	index = ind;
+    	restIndex = rest;
+    	next = nx;
+    	
+    	return n;
+    }
 	/*
 	public static void main(String... args)
 	{
@@ -149,5 +213,12 @@ public class Tokenizer implements Enumeration<String>
 		}
 	}
 	 */
+    /** parseCol is needed for infinite boards such as che and hive
+     * 
+     * @return
+     */
+	public char parseCol() {
+		return G.parseCol(nextToken());
+	}
 
 }

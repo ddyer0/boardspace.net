@@ -682,10 +682,10 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
 
     
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	long rand = G.LongToken(his);
+    	long rand = his.longToken();
         bb.doInit(token,rand);
     }
 
@@ -760,9 +760,9 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
             String value = (String) prop.getValue();
             
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String init = tok.nextToken();
-            	long rv = G.LongToken(tok);
+            	long rv = tok.longToken();
                 bb.doInit(init,rv);
              }
             else if (name.equals(comment_property))

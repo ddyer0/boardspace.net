@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 
-import java.util.StringTokenizer;
 
 import bridge.SystemFont;
 import lib.Base64;
@@ -35,6 +34,7 @@ import lib.LFrameProtocol;
 import lib.OStack;
 import lib.SimpleObservable;
 import lib.StringStack;
+import lib.Tokenizer;
 import lib.commonPanel;
 import lib.exCanvas;
 /**
@@ -198,12 +198,12 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	}
 	// load the list of possibilities
 	public void execute(String msg) {
-		StringTokenizer tok = new StringTokenizer(msg);
+		Tokenizer tok = new Tokenizer(msg);
 		choices.clear();
 		while(tok.hasMoreTokens())
 		{
 			String name = Base64.decodeString(tok.nextToken());
-			boolean act = G.BoolToken(tok);	
+			boolean act = tok.boolToken();	
 			choices.push(new RpcChoice(name,act));
 		}
 		repaint();

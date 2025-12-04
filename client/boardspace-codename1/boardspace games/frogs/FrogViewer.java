@@ -29,8 +29,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
+import bridge.SystemFont;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -42,6 +41,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 
 
@@ -628,11 +628,11 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     public String gameType() { return(b.gametype+" "+b.randomKey+" "+b.nPlayers()); }
     
     public String sgfGameType() { return(Frogs_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int ran = G.IntToken(his);
-    	int np = G.IntToken(his);
+    	int ran = his.intToken();
+    	int np = his.intToken();
         b.doInit(token,ran,np);
         adjustPlayers(np);
 
@@ -670,10 +670,10 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
 
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String key = tok.nextToken();
-            	int ran = G.IntToken(tok);
-            	int np = G.IntToken(tok);
+            	long ran = tok.longToken();
+            	int np = tok.intToken();
                 b.doInit(key,ran,np);
                 adjustPlayers(np);
              }

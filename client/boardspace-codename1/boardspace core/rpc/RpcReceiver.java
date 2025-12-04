@@ -16,8 +16,6 @@
  */
 package rpc;
 
-import java.util.StringTokenizer;
-
 import bridge.Config;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -28,6 +26,7 @@ import lib.NetPacketConn;
 import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
+import lib.Tokenizer;
 import lib.XFrame;
 import lib.commonPanel;
 import lib.Base64;
@@ -104,7 +103,7 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 	{	
 	}
 
-	public void doConnect(StringTokenizer tok)
+	public void doConnect(Tokenizer tok)
 	{
 		serverVersion = Protocol.valueOf(tok.nextToken());
 		if(serverVersion.ordinal()<protocol.ordinal()) 
@@ -138,9 +137,9 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 			case SideScreen:
 			case RemoteScreen:
 				{
-				StringTokenizer ini = new StringTokenizer(initialize);
+				Tokenizer ini = new Tokenizer(initialize);
 				String cls = ini.nextToken();
-				int pla = G.IntToken(ini);
+				int pla = ini.intToken();
 				client = new RpcRemoteClient(cls,info,panel,frame,pla);
 				client.addObserver(this);
 				}
@@ -164,7 +163,7 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 			String spec = msg.message;
 	 		lastMessage = spec;
 	 		log(10,"receiver in#"+msg.sequence+": "+spec); 
-			StringTokenizer tok = new StringTokenizer(spec);
+			Tokenizer tok = new Tokenizer(spec);
 			boolean complete = false;
 			while(!complete && tok.hasMoreTokens())
 			{	String command = tok.nextToken();

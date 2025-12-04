@@ -16,13 +16,12 @@
  */
 package circle;
 
-import java.util.*;
-
 import circle.CircleConstants.CircleId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class CircleMovespec 
@@ -72,7 +71,7 @@ public class CircleMovespec
     /* constructor */
     public CircleMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public CircleMovespec(int opc , int p)
     {
@@ -88,11 +87,6 @@ public class CircleMovespec
      	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public CircleMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -136,17 +130,10 @@ public class CircleMovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -156,8 +143,8 @@ public class CircleMovespec
         case MOVE_DROPB:
 		case MOVE_PICKB:
             source = CircleId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

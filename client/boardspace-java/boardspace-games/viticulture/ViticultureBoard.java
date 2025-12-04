@@ -1169,12 +1169,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	}
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
+    	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
-    	boolean turn = tok.hasMoreTokens() ? G.BoolToken(tok) : playedAsTurnBased;
+    	int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
+    	boolean turn = tok.hasMoreTokens() ? tok.boolToken() : playedAsTurnBased;
     	doInit(typ,ran,np,rev,turn);
     }
     /* initialize a board back to initial empty state */
@@ -1719,7 +1719,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureChip card = automaCards.removeTop();
     	automaDiscards.addChip(card);
     	ViticultureChip worker = ViticultureChip.getChip(ChipType.Worker,automaColor);
-    	StringTokenizer tok = new StringTokenizer(card.description);
+    	Tokenizer tok = new Tokenizer(card.description);
     	while(tok.hasMoreTokens()) {
     		ViticultureId id = ViticultureId.find(tok.nextToken());
     		ViticultureCell c = getCell(id,'@',0);

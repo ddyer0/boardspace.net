@@ -2,8 +2,6 @@ package bug;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Bbox;
 import lib.Digestable;
 import lib.Drawable;
@@ -16,6 +14,7 @@ import lib.Random;
 import lib.SimpleLock;
 import lib.StackIterator;
 import lib.StringStack;
+import lib.Tokenizer;
 import lib.exCanvas;
 
 /** a bug is a set of connected occupied cells */
@@ -87,8 +86,8 @@ public class Bug extends OStack<BugCell> implements BugConstants,Digestable,Draw
 	{	String existing = allBugs.get(real);
 		if(existing==null)
 		{
-		StringTokenizer s = new StringTokenizer(real);
-		int mysize = G.IntToken(s);
+		Tokenizer s = new Tokenizer(real);
+		int mysize = s.intToken();
 		int sz = bugsOfSize.get(mysize)+1;
 		bugsOfSize.put(mysize,sz);
 		existing = ""+mysize+"#"+sz;

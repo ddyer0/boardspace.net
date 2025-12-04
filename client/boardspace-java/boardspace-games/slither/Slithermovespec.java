@@ -16,12 +16,11 @@
  */
 package slither;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import slither.SlitherConstants.SlitherId;
 import lib.ExtendedHashtable;
@@ -81,7 +80,7 @@ public class Slithermovespec
     /* constructor */
     public Slithermovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Slithermovespec(int opc , int p)
     {
@@ -116,11 +115,7 @@ public class Slithermovespec
     	to_row = row;
     	player = who;
     }
-    /* constructor */
-    public Slithermovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
 
     /**
      * This is used to check for equivalent moves "as specified" not "as executed", so
@@ -165,17 +160,10 @@ public class Slithermovespec
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -184,16 +172,16 @@ public class Slithermovespec
         	
         case MOVE_SLIDE_THEN_FIX:
         case MOVE_FROM_TO:
-        	from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+        	from_col = msg.charToken();
+            from_row = msg.intToken();
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
         case MOVE_PLACE_THEN_FIX: 
         case MOVE_DROPB:
 		case MOVE_PICKB:
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 

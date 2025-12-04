@@ -26,6 +26,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.IStack;
+import lib.Tokenizer;
 import online.game.*;
 
 /** the board class contains the actual representation of the board, all of the
@@ -868,13 +869,13 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     private pstack pickStack(String pstring, String colors)
     { // list of piece numbers separated by commas
 
-        StringTokenizer str = new StringTokenizer(pstring.replace(',', ' '));
+        Tokenizer str = new Tokenizer(pstring.replace(',', ' '));
         pstack res = null;
         pstack realorig=null;
         pstack orig=null;
         while (str.hasMoreTokens())
         {
-            piece p = GetPiece(G.IntToken(str));
+            piece p = GetPiece(str.intToken());
             realorig = p.mystack;
             orig = new pstack(realorig);
             //don't alter these variables, which are only for the use of the GUI.

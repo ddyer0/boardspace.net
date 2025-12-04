@@ -344,6 +344,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
     	return((rack[player].height()==0) 
     			|| ((nSingleChips==0) && rack[player].height()<rack[nextPlayer[player]].height()));
      }
+
     public double simpleScore(int who)
     {
     	double dif = rack[nextPlayer[who]].height()-rack[who].height();	// claims remaining, max 3

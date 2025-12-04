@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,21 +12,20 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package breakingaway;
 
-import bridge.Color;
-
-import java.util.*;
 
 import breakingaway.BreakingAwayConstants.BreakId;
+import bridge.Color;
 import lib.G;
 import lib.HorizontalBar;
 import lib.IStack;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 import lib.Font;
@@ -35,7 +34,7 @@ import lib.Font;
 public class BreakingAwayMovespec extends commonMPMove 
 {
     static ExtendedHashtable D = new ExtendedHashtable(true);
- 
+
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
 	static final int MOVE_MOVE = 209;  // robot move
@@ -83,14 +82,9 @@ public class BreakingAwayMovespec extends commonMPMove
     /* constructor */
     public BreakingAwayMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public BreakingAwayMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
     
     // constructor for MOVE_MOVE
     public BreakingAwayMovespec(int who,int opcode,
@@ -150,17 +144,10 @@ public class BreakingAwayMovespec extends commonMPMove
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         int opcode = D.getInt(cmd, MOVE_UNKNOWN);
         op = opcode;
         
@@ -171,52 +158,52 @@ public class BreakingAwayMovespec extends commonMPMove
         case MOVE_READY:
         	{
         	IStack o = new IStack();
-        	while(msg.hasMoreTokens()) { o.push(G.IntToken(msg)); }
+        	while(msg.hasMoreTokens()) { o.push(msg.intToken()); }
         	moveData = o.toArray();
-        	}
+         	}
         	break;
         case MOVE_DONEADJUST:
         case MOVE_MOVEMENTS:
         	{
-        	playerNumber = G.IntToken(msg);
+        	playerNumber = msg.intToken();
         	IStack o = new IStack();
-        	while(msg.hasMoreTokens()) { o.push(G.IntToken(msg)); }
+        	while(msg.hasMoreTokens()) { o.push(msg.intToken()); }
         	moveData = o.toArray();
         	}
         	break;
 
         case MOVE_PLUS1:
         case MOVE_MINUS1:
-        	playerNumber = G.IntToken(msg);
-        	cycleIndex = G.IntToken(msg);
-        	from_row = G.IntToken(msg);
+        	playerNumber = msg.intToken();
+        	cycleIndex = msg.intToken();
+        	from_row = msg.intToken();
         	break;
         case MOVE_DROP_RIDER:
-        	playerNumber = G.IntToken(msg);
-        	cycleIndex = G.IntToken(msg);
+        	playerNumber = msg.intToken();
+        	cycleIndex = msg.intToken();
         	break;
         case MOVE_MOVE:
         	{
-        	playerNumber = G.IntToken(msg);
-        	cycleIndex = G.IntToken(msg);
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	playerNumber = msg.intToken();
+        	cycleIndex = msg.intToken();
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	}
         	break;
         case MOVE_DROPB:
-	        to_col = G.CharToken(msg);
-	        to_row = G.IntToken(msg);
-	        playerNumber = G.IntToken(msg);
-	        cycleIndex = G.IntToken(msg);
+	        to_col = msg.charToken();
+	        to_row = msg.intToken();
+	        playerNumber = msg.intToken();
+	        cycleIndex = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            playerNumber = G.IntToken(msg);
-            cycleIndex = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            playerNumber = msg.intToken();
+            cycleIndex = msg.intToken();
             break;
 
 		
@@ -253,7 +240,7 @@ public class BreakingAwayMovespec extends commonMPMove
     	}
     	return(def);
     }
-
+ 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
     public String shortMoveString()
@@ -282,7 +269,7 @@ public class BreakingAwayMovespec extends commonMPMove
             return (D.findUniqueTrans(op));
        }
     }
-
+    
     private void appendInts(StringBuilder b,int movements[])
     {
        	for(int i=0;i<moveData.length;i++) { b.append(" "); b.append(moveData[i]);}
@@ -305,7 +292,7 @@ public class BreakingAwayMovespec extends commonMPMove
         	b.append(opname);
         	appendInts(b,moveData);
         	return(b.toString());
-        		}
+        	}
         case MOVE_DONEADJUST:
         case MOVE_MOVEMENTS:
         	{

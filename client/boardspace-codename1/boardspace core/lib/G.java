@@ -25,8 +25,6 @@ import com.codename1.ui.geom.Rectangle;
 
 import java.util.Calendar;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 
 /**
  * Class G contains "General utilities", and small static functions
@@ -275,7 +273,7 @@ public class G extends Platform implements Timestamp
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
         	if(G.debug()) 
-        		{ throw new ErrorX(Plog.log.finishLog()); 
+        		{ //xthrow new ErrorX(Plog.log.finishLog()); 
         		}
         	return(false);
         }
@@ -940,26 +938,6 @@ public class G extends Platform implements Timestamp
     {
     	return(str.substring(0,1).toUpperCase()+str.substring(1).toLowerCase());
     }
-    static public String nextToken(StringTokenizer s)
-    {	String str;
-    	do { str = s.nextToken(); } while(" ".equals(str));
-    	return(str);
-    }
-    
-    /**
-     * collect the rest of the tokens in a StringTokenizer into a string.  Returns "" if there
-     * are no tokens remaining.
-     * @param s
-     * @return a String
-     */
-     public static String restof(StringTokenizer s)
-    {	StringBuffer empty = null;
-        while (s.hasMoreTokens())
-        {   if(empty==null) { empty = new StringBuffer(); } else { empty.append(" "); }
-        	empty.append(nextToken(s));
-        }
-        return((empty==null)?"":empty.toString());
-    }
      /**
       * convert a string into an double.
       * @param msg
@@ -969,15 +947,7 @@ public class G extends Platform implements Timestamp
          {
              return (Double.parseDouble(msg));
          }
-     /** 
-      * convert the next token into an double
-      * @param msg
-      * @return an integer
-      */
-         static public double DoubleToken(StringTokenizer msg)
-         {
-             return (DoubleToken(nextToken(msg)));
-         }
+
 /**
  * convert a string into an integer.
  * @param msg
@@ -1001,36 +971,6 @@ public class G extends Platform implements Timestamp
     	}
     	catch (NumberFormatException e) { return def; }
     }
-/** 
- * convert the next token into an integer
- * @param msg
- * @return an integer
- */
-    static public int IntToken(StringTokenizer msg)
-    {
-        return (IntToken(nextToken(msg)));
-    }
-/**
- * convert the next token into a char
- * @param msg
- * @return a char
- */
-    static public char CharToken(StringTokenizer msg)
-    {	String m = nextToken(msg);
-    	G.Assert(m.length()==1,"%s is not a single character",m);
-        return (m.charAt(0));
-    }
-
-    /**
-     * convert the next token into a boolean
-     * @param msg
-     * @return a boolean
-     */
-    static public boolean BoolToken(StringTokenizer msg)
-    {	return(Boolean.parseBoolean(nextToken(msg)));
-    }
-    
-  
     /**
      * 
      * @param msg
@@ -1039,15 +979,6 @@ public class G extends Platform implements Timestamp
     static public boolean BoolToken(String msg)
     {
     	return(Boolean.parseBoolean(msg));
-    }
-    /**
-     * convert the next token into a long
-     * @param s
-     * @return a long int
-     */
-    public static final long LongToken(StringTokenizer s)
-    {
-        return (Long.parseLong(nextToken(s),10));
     }
 
     /** 
@@ -2229,10 +2160,7 @@ public static String expandClassName(String classname)
 			if(col<'A') { int dx = 'A'-col; return ""+dx+'A'; }
 			return (""+col);
 		}
-		public static char parseCol(StringTokenizer c)
-		{
-			return G.parseCol(c.nextToken());
-		}
+
 		public static char parseCol(String n)
 		{	if(n==null) { return(char)0;}
 			int len = n.length();

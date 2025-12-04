@@ -486,7 +486,6 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	win[nextPlayer[whoseTurn]]=winNext;
     	setState(DvonnState.GAMEOVER_STATE);
     }
-
     //
     // in the actual game, picks are optional; allowed but redundant.
     //

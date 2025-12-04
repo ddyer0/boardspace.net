@@ -16,8 +16,6 @@
  */
 package zertz.common;
 
-import java.util.StringTokenizer;
-
 import lib.*;
 import online.game.*;
 import zertz.common.GameConstants.ZertzState;
@@ -609,14 +607,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {   
-       	StringTokenizer tok = new StringTokenizer(gtype);
+       	Tokenizer tok = new Tokenizer(gtype);
     	String typ = tok.nextToken();
     	Zvariation variation = Zvariation.find(typ);
     	G.Assert(variation!=null,WrongInitError,gtype);   	
     	@SuppressWarnings("unused")
-		int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;	// revision not specified, old client
+		int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
+    	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
+    	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;	// revision not specified, old client
        	// 
     	// this is delicate - this version os doInit is called from copyFrom
     	// as part of copying the board, so it must use the current setup
@@ -1449,13 +1447,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     		else {
     			pickedSource.height++;
     		}
+    		pickedSource = null;
     		pickedObject = null;
     	}
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	movespec m = (movespec)mm;
         
-        G.print("E "+m+" for "+whoseTurn);
+        //G.print("E "+m+" for "+whoseTurn);
     	if(board_state==ZertzState.RESIGN_STATE)
     	{
     		// this is a bit of a crock that only the older move generation strategy

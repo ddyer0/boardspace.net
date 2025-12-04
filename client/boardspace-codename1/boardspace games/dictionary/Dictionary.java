@@ -124,7 +124,6 @@ public class Dictionary implements Config
 			G.print("done waiting");
 			}
 	}
-
 	public void waitForDefinitions()
 	{	int n = 0;
 		while(!definitionsAllLoaded) 

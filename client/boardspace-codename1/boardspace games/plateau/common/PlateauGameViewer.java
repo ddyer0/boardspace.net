@@ -25,8 +25,6 @@ import com.codename1.ui.geom.Rectangle;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.DefaultId;
-import java.util.*;
-
 import lib.Graphics;
 import lib.Image;
 import lib.ExtendedHashtable;
@@ -37,6 +35,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -881,7 +880,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public String sgfGameType() { return(Plateau_SGF); }
     
 
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
         b.doInit(token);
@@ -939,7 +938,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public SimpleRobotProtocol newRobotPlayer() { return(null); }
 
     commonPlayer prevPlayer = null;
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {	// games without "done" end without gameover if they stack six
        	if("time".equals(first) && b.DoneState())
 		{
@@ -948,12 +947,12 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
 
     	return super.parsePlayerInfo(p, first, tokens);
     }
-    public boolean parsePlayerExecute(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerExecute(commonPlayer p,String first,Tokenizer tokens)
     {	if(needStart)
 		{ needStart = false; 
 		PerformAndTransmit("Start P"+p.boardIndex,false,replayMode.Replay);
 		}
-    	String msg = first + " "+ G.restof(tokens);
+    	String msg = first + " "+ tokens.getRest();
 
         if((prevPlayer!=null) && (prevPlayer!=p)) 
              { PerformAndTransmit("Done",false,replayMode.Replay);

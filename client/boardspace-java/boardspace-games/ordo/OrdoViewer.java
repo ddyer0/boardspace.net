@@ -44,6 +44,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
@@ -939,50 +940,17 @@ private void playSounds(commonMove m)
    }
     public String sgfGameType() { return(Ordo_SGF); }
 
-    // the format is just what is produced by FormHistoryString
-    //
-    // this is completely standardized
-    //public void performHistoryTokens(StringTokenizer his)
-    //{	String command = "";
-    //    // now the rest
-    //    while (his.hasMoreTokens())
-    //    {
-    //        String token = his.nextToken();
-    //        if (",".equals(token) || ".end.".equals(token))
-    //        {
-    //            if (!"".equals(command))
-    //            {
-    //                PerformAndTransmit(command, false,false);
-    //                command = "";
-    //            }
-    //        }
-    //       else
-    //        {
-    //            command += (" " + token);
-    //        }
-    //    }	
-    //}  
-    //public void performPlayerInitialization(StringTokenizer his)
-    //{	int fp = G.IntToken(his);
-    //	BoardProtocol b = getBoard();
-    //    if (fp < 0)   {  fp = 0;  }
-    //    b.setWhoseTurn(fp);
-    //    players[fp].ordinal = 0;
-    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
-    //	
-    //}
-
     
     
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
-    	int rev = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
+    	int rev = his.intToken();
     	// make the number of players, random key, and revision part of the standard initialization,
     	// even though games like checkers probably don't use it.
         b.doInit(token,rk,np,rev);
@@ -1065,11 +1033,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-             	long ran = G.LongToken(st);
-             	int np = st.hasMoreTokens() ? G.IntToken(st) : 2;
-               	int rev = st.hasMoreTokens() ? G.IntToken(st) : 0; 
+             	long ran = st.longToken();
+             	int np = st.hasMoreTokens() ? st.intToken() : 2;
+               	int rev = st.hasMoreTokens() ? st.intToken() : 0; 
                 b.doInit(typ,ran,np,rev);
                 adjustPlayers(np);
              }

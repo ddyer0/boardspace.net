@@ -28,8 +28,6 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -40,6 +38,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Tokenizer;
 
 /**
  * 
@@ -714,10 +713,10 @@ private void playSounds(TruMovespec m)
     public String gameType() { return(""+b.gametype+" "+b.randomKey); }
     public String sgfGameType() { return(Truchet_SGF); }
 
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        long rk = G.LongToken(his);
+        long rk = his.longToken();
         b.doInit(token,rk);
      }
     
@@ -761,9 +760,9 @@ private void playSounds(TruMovespec m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	String gametype = tok.nextToken();
-            	long rk = G.LongToken(tok);
+            	long rk = tok.longToken();
                 b.doInit(gametype,rk);
              }
             else if (name.equals(comment_property))

@@ -41,6 +41,7 @@ import lib.LFrameProtocol;
 import lib.Random;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 
 
 /**
@@ -882,7 +883,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     // return what will be the init type for the game
     public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Exxit_SGF); }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	
     	String token = his.nextToken();
@@ -892,9 +893,9 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     }
     	else
     	{
-    	int np = G.IntToken(his);
-    	long rv = G.LongToken(his);
-    	int rev = G.IntToken(his);
+    	int np = his.intToken();
+    	long rv = his.longToken();
+    	int rev = his.intToken();
     	b.doInit(token,np,rv,rev);
     	}
     }

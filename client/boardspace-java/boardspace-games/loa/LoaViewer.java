@@ -25,8 +25,6 @@ import java.awt.Rectangle;
 import lib.Graphics;
 import lib.Image;
 import java.util.Enumeration;
-import java.util.StringTokenizer;
-
 import common.GameInfo;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -34,6 +32,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.Tokenizer;
 import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
@@ -258,10 +257,10 @@ public class LoaViewer extends commonCanvas implements UIC
         	return (newmove);
         }
     }
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	b.doInit(token,G.LongToken(his),G.IntToken(his));
+    	b.doInit(token,his.longToken(),his.intToken());
     }
 
     public synchronized void ReplayGame(sgf_game ga)
@@ -842,7 +841,7 @@ public class LoaViewer extends commonCanvas implements UIC
 
 
     /*
-     * summary: 5/27/2023
+     * summary: 12/1/2025
      *  13546 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
@@ -890,27 +889,27 @@ public class LoaViewer extends commonCanvas implements UIC
                	{  p.setPlayerName(value,true,this);
                	} 
                else
-            	  { StringTokenizer tokens = new StringTokenizer(value);
+            	  { Tokenizer tokens = new Tokenizer(value);
                     String first = tokens.nextToken();
                     parsePlayerInfo(p,first,tokens);
             	  	}
                // pb/pw also set time
             }
             else if ("P0".equals(name) || "P1".equals(name))
-            {	StringTokenizer tok = new StringTokenizer(value);
+            {	Tokenizer tok = new Tokenizer(value);
             	commonPlayer p = "P0".equals(name)? players[0] : players[1];
             	parsePlayerInfo(p,tok.nextToken(),tok);
             }
             else if ("W".equals(name) || "B".equals(name))
             {
                 commonPlayer p = "B".equals(name) ? players[0] : players[1];
-                StringTokenizer tokens = new StringTokenizer(value);
+                Tokenizer tokens = new Tokenizer(value);
                 String first = tokens.nextToken();
 
                 if(parsePlayerInfo(p,first,tokens)) {}
                 else
                 {
-                    String msg = first + " " + G.restof(tokens);
+                    String msg = first + " " + tokens.getRest();
                     b.setWhoseTurn(p.boardIndex);
                     PerformAndTransmit(msg, false,replayMode.Replay);
                 }

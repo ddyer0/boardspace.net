@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,21 +12,19 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package octiles;
 
 import online.game.*;
-
-import bridge.Color;
-
-import java.util.*;
 
 import lib.G;
 import lib.HorizontalBar;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
+import bridge.Color;
 import lib.ExtendedHashtable;
 import lib.Font;
 
@@ -72,7 +70,7 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     /* constructor */
     public OctilesMovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /* constructor */
     public OctilesMovespec(int opc,int who)
@@ -80,11 +78,7 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     	op = opc;
     	player = who;
     }
-    /* constructor */
-    public OctilesMovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     public OctilesMovespec(char drop_c,int drop_r,int drop_obj,int rot,
     		char from_c,int from_r,char to_c,int to_r,int pl)
     {	player = pl;
@@ -146,16 +140,10 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
          
@@ -167,47 +155,47 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
  	        
         case DROP_AND_MOVE:			// robot move from board to board
             source = OctilesId.TileLocation;	
-            drop_col = G.CharToken(msg);
-            drop_row = G.IntToken(msg);
-            object = G.IntToken(msg);       //dropped tile num
-            rotation = G.IntToken(msg);
-            from_col = G.CharToken(msg);	//from col,row
-            from_row = G.IntToken(msg);
- 	        to_col = G.CharToken(msg);		//to col row
-	        to_row = G.IntToken(msg);
+            drop_col = msg.charToken();
+            drop_row = msg.intToken();
+            object = msg.intToken();       //dropped tile num
+            rotation = msg.intToken();
+            from_col = msg.charToken();	//from col,row
+            from_row = msg.intToken();
+ 	        to_col = msg.charToken();		//to col row
+	        to_row = msg.intToken();
 	        break;
 	        
         case MOVE_DROPB:
 	       source = OctilesId.TileLocation;
-	       to_col = G.CharToken(msg);
-	       to_row = G.IntToken(msg);
-	       object = G.IntToken(msg);
-	       rotation = G.IntToken(msg);
+	       to_col = msg.charToken();
+	       to_row = msg.intToken();
+	       object = msg.intToken();
+	       rotation = msg.intToken();
 	       break;
 
 		case MOVE_PICKB:
             source = OctilesId.TileLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            object = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            object = msg.intToken();
 
             break;
         case MOVE_ROTATE:
         	source = OctilesId.TileLocation;
-        	to_col = G.CharToken(msg);	
-        	to_row = G.IntToken(msg);
-            object = G.IntToken(msg);
-            rotation = G.IntToken(msg);
+        	to_col = msg.charToken();	
+        	to_row = msg.intToken();
+            object = msg.intToken();
+            rotation = msg.intToken();
             break;
 
         case MOVE_PICK:
             source = OctilesId.TilePoolRect;
-            object = G.IntToken(msg);
+            object = msg.intToken();
             break;
             
         case MOVE_DROP:
             source = OctilesId.TilePoolRect;
-            object = G.IntToken(msg);
+            object = msg.intToken();
             break;
 
         case MOVE_START:

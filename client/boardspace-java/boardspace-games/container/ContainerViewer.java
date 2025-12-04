@@ -2144,10 +2144,10 @@ private void playSounds(commonMove m)
 
 
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
-    	int np = G.IntToken(his);			// should be the number of players in the game
-    	int ran = G.IntToken(his);			// random key for the game
+    	int np = his.intToken();			// should be the number of players in the game
+    	int ran = his.intToken();			// random key for the game
         b.doInit(token,ran,np);
         adjustPlayers(np%100);	// players is overloaded with a compatability flag
     }
@@ -2267,8 +2267,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/24/2023
-		330 files visited 0 problems
+     * summary: 11/30/2025
+	357 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

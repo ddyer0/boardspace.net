@@ -17,7 +17,6 @@
 package mogul;
 
 import online.game.*;
-import java.util.*;
 
 import lib.*;
 import lib.Random;
@@ -367,14 +366,14 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
     {
     	if(setup!=null)
     	{	
-    		StringTokenizer tok = new StringTokenizer(setup);
-    		startPlayer = G.IntToken(tok);
+    		Tokenizer tok = new Tokenizer(setup);
+    		startPlayer = tok.intToken();
     		for(MogulPlayer p : players)
-    		{	int next = G.IntToken(tok);
+    		{	int next = tok.intToken();
     			p.cards[0].addChip(MogulChip.getChip(next));
     		}
     		while(tok.hasMoreTokens())
-    		{	int next = G.IntToken(tok);
+    		{	int next = tok.intToken();
     			deck.addChip(MogulChip.getChip(next));
     		}
     	}

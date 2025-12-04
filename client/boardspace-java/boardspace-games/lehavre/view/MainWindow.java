@@ -39,6 +39,7 @@ import lib.HitPoint;
 import lib.MouseState;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
+import lib.Tokenizer;
 import lib.exCanvas;
 
 /**
@@ -828,7 +829,7 @@ extends exCanvas
 			actionObserver = new SimpleObserver() {
 				public void update(SimpleObservable obs, Object eventType, Object obj) {
 					if(obj instanceof String) {
-						StringTokenizer tok = new StringTokenizer((String)obj, "=");
+						Tokenizer tok = new Tokenizer((String)obj, "=");
 						if(!tok.nextToken().equals("actions")) return;
 						int actions = Integer.parseInt(tok.nextToken());
 						turnInfoLabel.setText(String.format("%s (%d)", name, actions));
@@ -1114,9 +1115,9 @@ extends exCanvas
 						if(obj instanceof String) {
 							RattletrapCar rc = RattletrapCar.getInstance();
 							if(rc.getOwner() >= 0) return;
-							StringTokenizer tok = new StringTokenizer((String)obj, "=");
+							Tokenizer tok = new Tokenizer((String)obj, "=");
 							if(!tok.nextToken().equals("good")) return;
-							tok = new StringTokenizer(tok.nextToken(), ",");
+							tok = new Tokenizer(tok.nextToken(), ",");
 							Good good = Good.valueOf(tok.nextToken());
 							if(!good.equals(Good.Iron)) return;
 							int oldValue = Integer.parseInt(tok.nextToken());

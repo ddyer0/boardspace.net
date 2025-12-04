@@ -816,7 +816,7 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link #gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a checker init spec
     	String next = his.nextToken();
     	int rev = 100;
@@ -882,7 +882,7 @@ private void playSounds(commonMove m)
             String name = prop.getName();
             String value = (String) prop.getValue();
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
             	String n = st.nextToken();
             	int rev = 100;

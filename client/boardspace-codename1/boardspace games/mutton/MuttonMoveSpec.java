@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,13 +12,12 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package mutton;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class MuttonMoveSpec extends commonMove implements MuttonConstants
@@ -80,16 +79,7 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 	 * @param p     The player making the move.
 	 */
 	public MuttonMoveSpec (String str, int p) {
-		parse(new StringTokenizer(str), p);
-	}
-
-	/**
-	 * Constructor for a move spec given a string tokenizer and player.
-	 * @param ss    The tokenizer that given the move string.
-	 * @param p     The player making the move.
-	 */
-	public MuttonMoveSpec (StringTokenizer ss, int p) {
-		parse(ss, p);
+		parse(new Tokenizer(str), p);
 	}
 
 	/**
@@ -138,15 +128,9 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 	 * Remember that we're just parsing, we can't refer to the state of the
 	 * board or the game.
 	 **/
-	private void parse (StringTokenizer msg, int p) {
-		String cmd = msg.nextToken();
+	private void parse (Tokenizer msg, int p) {
+		String cmd = firstAfterIndex(msg);
 		player = p;
-
-		if (Character.isDigit(cmd.charAt(0)))
-		{ // if the move starts with a digit, assume it is a sequence number
-			setIndex(G.IntToken(cmd));
-			cmd = msg.nextToken();
-		}
 
 		op = D.getInt(cmd, MOVE_UNKNOWN);
 
@@ -163,7 +147,7 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 				int len = msg.countTokens();
 				sheepIds = new int [len];
 				for (int i=0; i<len; i++) {
-					sheepIds[i] = G.IntToken(msg);
+					sheepIds[i] = msg.intToken();
 				}
 				break;
 
@@ -171,9 +155,9 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 				if (msg.countTokens() == 3) {
 					sheepIds = new int [1];
 					destination = new int [2];
-					sheepIds[0] = G.IntToken(msg);
-					destination[0] = G.IntToken(msg);
-					destination[1] = G.IntToken(msg);
+					sheepIds[0] = msg.intToken();
+					destination[0] = msg.intToken();
+					destination[1] = msg.intToken();
 				}
 				break;
 

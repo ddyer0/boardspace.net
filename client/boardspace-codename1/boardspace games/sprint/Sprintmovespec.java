@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,16 +12,16 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package sprint;
 
-import java.util.*;
 
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Sprintmovespec extends commonMPMove implements SprintConstants
@@ -98,7 +98,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     /* constructor */
     public Sprintmovespec(String str)
     {
-        parse(new StringTokenizer(str));
+        parse(new Tokenizer(str));
     }
     /** constructor for simple robot moves - pass and done 
      */
@@ -119,11 +119,6 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Sprintmovespec(StringTokenizer ss)
-    {
-        parse(ss);
     }
 
     /**
@@ -179,15 +174,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg)
+    private void parse(Tokenizer msg)
     {
-        String cmd = msg.nextToken();
- 
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
+        String cmd = firstAfterIndex(msg);
         //
         // for sprint, effectively all the moves are ephemeral, which means
         // they have to contain the player doing the moving.  Rather than address
@@ -195,63 +184,63 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         //
         op = D.getInt(cmd, MOVE_UNKNOWN);
         if(op==MOVE_START) {}
-        else if(msg.hasMoreTokens())  { player = G.IntToken(msg); }
+        else if(msg.hasMoreTokens())  { player = msg.intToken(); }
         else {}
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         case MOVE_PULL:	// pull new tiles from the pool
-        	to_row = G.IntToken(msg);
+        	to_row = msg.intToken();
         	break;
         case MOVE_PULLSTART:
         	break;
         case MOVE_PULLNEW:
-        	from_col = G.CharToken(msg);	// the letter drawn
-        	to_row = G.IntToken(msg);	// index to deposit to
+        	from_col = msg.charToken();	// the letter drawn
+        	to_row = msg.intToken();	// index to deposit to
         	
         	break;
         	
         case MOVE_DROPB:
         	dest = SprintId.BoardLocation;
-        	to_col = G.parseCol(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.parseCol();
+        	to_row = msg.intToken();
         	break;
         case MOVE_MOVETILE:
         	source = SprintId.valueOf(msg.nextToken());
-        	from_col = G.parseCol(msg);
-        	from_row = G.IntToken(msg);
+        	from_col = msg.parseCol();
+        	from_row = msg.intToken();
         	dest = SprintId.valueOf(msg.nextToken());
-        	to_col = G.parseCol(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.parseCol();
+        	to_row = msg.intToken();
         	break;
         
       
 		case MOVE_PICKB:
             dest = SprintId.BoardLocation;
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.parseCol();
+            to_row = msg.intToken();
 
             break;
 		case MOVE_SELECT:
 			dest = SprintId.BoardLocation;
-			to_col = G.parseCol(msg);
+			to_col = msg.parseCol();
 			break;
 			
 		case MOVE_LIFT:
         case MOVE_PICK:
             dest = SprintId.valueOf(msg.nextToken());
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);        
-            mapped_row = (msg.hasMoreTokens()) ? G.IntToken(msg) : -1;
+            to_col = msg.parseCol();
+            to_row = msg.intToken();        
+            mapped_row = (msg.hasMoreTokens()) ? msg.intToken() : -1;
 			break;
 
  		case MOVE_REPLACE:
 		case MOVE_DROP:
             dest = SprintId.valueOf(msg.nextToken());
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);
-            mapped_row = msg.hasMoreTokens() ? G.IntToken(msg) : -1;
+            to_col = msg.parseCol();
+            to_row = msg.intToken();
+            mapped_row = msg.hasMoreTokens() ? msg.intToken() : -1;
             break;
 
         case MOVE_START:
@@ -259,8 +248,8 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
             break;
          case MOVE_SEE:
         	{
-        	char pl = G.parseCol(msg);
-        	boolean v = G.BoolToken(msg);
+        	char pl = msg.parseCol();
+        	boolean v = msg.boolToken();
         	to_col = pl;
         	to_row = v ? 1 : 0;
         	}

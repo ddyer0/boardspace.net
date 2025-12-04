@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,13 +12,12 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package magnet;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import magnet.MagnetConstants.MagnetId;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -89,7 +88,7 @@ public class Magnetmovespec extends commonMove
     /* constructor */
     public Magnetmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     /** constructor for robot moves.  Having this "binary" constructor is dramatically faster
      * than the standard constructor which parses strings
@@ -102,11 +101,7 @@ public class Magnetmovespec extends commonMove
     	to_row = row;
     	player = who;
     }
-    /* constructor */
-    public Magnetmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     /* constructor for robot placement moves */
     public Magnetmovespec(int opc,MagnetCell from,MagnetCell to,int who)
     {	op = opc;
@@ -179,17 +174,10 @@ public class Magnetmovespec extends commonMove
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -199,40 +187,40 @@ public class Magnetmovespec extends commonMove
         case MOVE_RANDOM:
         case EPHEMERAL_MOVE:
         	source = MagnetId.get(msg.nextToken());
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
         	dest = MagnetId.get(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
             break;
             
         case MOVE_PROMOTE:
         case MOVE_DEMOTE:
         case MOVE_DROPB:
         		dest = MagnetId.BoardLocation;
-	            to_col = G.CharToken(msg);
-	            to_row = G.IntToken(msg);
+	            to_col = msg.charToken();
+	            to_row = msg.intToken();
 	            break;
 
         case MOVE_SELECT:
 		case MOVE_PICKB:
 		case EPHEMERAL_PICKB:
             source = MagnetId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
+            from_col = msg.charToken();
+            from_row = msg.intToken();
 
             break;
 
         case MOVE_DROP:
         	dest = MagnetId.get(msg.nextToken());
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             break;
 
         case MOVE_PICK:
         case EPHEMERAL_PICK:
             source = MagnetId.get(msg.nextToken());
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:
@@ -286,7 +274,7 @@ public class Magnetmovespec extends commonMove
 
         }
     }
-    
+
     /** construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and only secondarily human readable */
     public String moveString()
@@ -301,7 +289,7 @@ public class Magnetmovespec extends commonMove
         case MOVE_PICKB:
         case EPHEMERAL_PICKB:
         case MOVE_SELECT:
- 	        return (opname + from_col + " " + from_row);
+ 	        return (opname  + from_col + " " + from_row);
 
         case MOVE_FROM_TO:
         case MOVE_RANDOM:
@@ -328,5 +316,5 @@ public class Magnetmovespec extends commonMove
             return (opname);
         }
     }
-
+  
 }

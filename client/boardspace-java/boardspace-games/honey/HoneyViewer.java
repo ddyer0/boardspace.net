@@ -40,6 +40,7 @@ import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Tokenizer;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -1104,12 +1105,12 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-     public void performHistoryInitialization(StringTokenizer his)
+     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	int np = G.IntToken(his);	// players always 2
-    	long rv = G.IntToken(his);
-    	int rev = G.IntToken(his);	// rev does't get used either
+    	int np = his.intToken();	// players always 2
+    	long rv = his.intToken();
+    	int rev = his.intToken();	// rev does't get used either
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -1231,8 +1232,8 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/27/2023
-     * 12 files visited 0 problems
+     * summary: summary 12/1/2025
+     * 51 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1342,14 +1343,14 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
    {
 	   return " " + KEYWORD_TIMER +" "+ bb.drawTimer + " "+KEYWORD_END;
    }
-   public void useEphemeralMoves(StringTokenizer c)
+   public void useEphemeralMoves(Tokenizer c)
    {
 	   String command = "";
 	   while( !KEYWORD_END.equals(command=c.nextToken()))
 	   {
 		   if(KEYWORD_TIMER.equals(command))
 		   {
-			   long g = G.LongToken(c);
+			   long g = c.longToken();
 			   bb.drawTimer = g;
 			   
 		   }

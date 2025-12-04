@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,13 +12,12 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package spangles;
 
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 
@@ -48,14 +47,10 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
     /* constructor */
     public Spanglesmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
 
-    /* constructor */
-    public Spanglesmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
-    }
+
     /* constructor for robot moves */
     public Spanglesmovespec(int opcode,char c,int r,int pl)
     {	op = opcode;
@@ -99,17 +94,10 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = firstAfterIndex(msg);
         player = p;
-
-        if (Character.isDigit(cmd.charAt(0)))
-        { // if the move starts with a digit, assume it is a sequence number
-            setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
-        }
-
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
@@ -118,15 +106,15 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
 
         case MOVE_DROPB:
 	            source = SpanglesId.EmptyBoard;
-				to_col = G.parseCol(msg);
-	            to_row = G.IntToken(msg);
-	            object = G.IntToken(msg);
+				to_col = msg.parseCol();
+	            to_row = msg.intToken();
+	            object = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
             source = SpanglesId.BoardLocation;
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.parseCol();
+            to_row = msg.intToken();
 
             break;
 
@@ -135,7 +123,7 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
         	break;
         case MOVE_PICK:
             source = SpanglesId.ChipPool;
-            to_row = G.IntToken(msg);
+            to_row = msg.intToken();
             to_col = '@';
             break;
 

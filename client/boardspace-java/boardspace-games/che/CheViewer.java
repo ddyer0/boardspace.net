@@ -36,6 +36,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Random;
 import lib.StockArt;
+import lib.Tokenizer;
 
 /**
  * 
@@ -694,7 +695,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 
    
     // interact with the board to initialize a game
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
        	String token = his.nextToken();
     	if("Che".equals(token))
@@ -703,9 +704,9 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	}
     	else
     	{
-    	int np = G.IntToken(his);
-    	long rv = G.LongToken(his);
-    	int rev = G.IntToken(his);
+    	int np = his.intToken();
+    	long rv = his.longToken();
+    	int rev = his.intToken();
     	bb.doInit(token,np,rv,rev);
     	}
     }

@@ -31,8 +31,6 @@ import rpc.RpcService;
 import vnc.VNCService;
 
 import java.io.PrintStream;
-import java.util.*;
-
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -48,6 +46,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
+import lib.Tokenizer;
 import mogul.MogulBoard.MogulPlayer;
 
 import static mogul.MogulMovespec.*;
@@ -859,10 +858,10 @@ private void playSounds(commonMove m)
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}
      */
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     {	String token = his.nextToken();		// should be a mogul init spec
-    	long rk = G.LongToken(his);
-    	int np = G.IntToken(his);
+    	long rk = his.longToken();
+    	int np = his.intToken();
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
     	StringBuffer buf = new StringBuffer();
@@ -923,11 +922,11 @@ private void playSounds(commonMove m)
             String value = (String) prop.getValue();
 
             if (setup_property.equals(name))
-            {	StringTokenizer st = new StringTokenizer(value);
+            {	Tokenizer st = new Tokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-            	int np = G.IntToken(st);
-            	String rest = st.hasMoreTokens()?G.restof(st):null;
+            	long ran = st.longToken();
+            	int np = st.intToken();
+            	String rest = st.hasMoreTokens()?st.getRest():null;
                 b.doInit(typ,ran,np,rest);
                 adjustPlayers(np);
              }

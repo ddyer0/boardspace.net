@@ -16,13 +16,10 @@
  */
 package zertz.common;
 
+import com.codename1.ui.geom.Rectangle;
+import bridge.Color;
 
 import java.util.Enumeration;
-import java.util.StringTokenizer;
-
-import com.codename1.ui.geom.Rectangle;
-
-import bridge.Color;
 import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
@@ -36,6 +33,7 @@ import lib.LFrameProtocol;
 import lib.PopupManager;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Tokenizer;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -183,13 +181,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-    	
+    	boolean horizontal = mainW>mainH;
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticeably rectangular, such as Push Fight,
     	// use mainW<mainH
-        int nrows = b.nrows + 2;
-        int ncols = b.ncols + 5;
+        int nrows = b.nrows + 2 + (horizontal ? 0 : 3);
+        double ncols = b.ncols + 0.5 + (horizontal ? 3 : 0);
         
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -198,11 +196,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         BALLRADIUS = (int) (RINGRADIUS * 0.7);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)((ncols-3)*CELLSIZE);
-    	int rackW = 3*CELLSIZE;
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (int)((ncols-(horizontal ? 3 : 0))*CELLSIZE);
+     	int boardH = (int)((nrows-(horizontal?0:3))*CELLSIZE);
+       	int rackW = horizontal ? 3*CELLSIZE : 0;
+    	int rackH = horizontal ? 0 : (int)(CELLSIZE*2.7);
     	int extraW = Math.max(0, (mainW-boardW-rackW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-rackH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
@@ -216,7 +215,14 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+CELLSIZE/2,boardW,boardH);
     	
-    	G.SetRect(reserveRect,boardX+boardW,boardY+CELLSIZE,3*CELLSIZE,boardH-2*CELLSIZE);
+    	if(horizontal)
+    	{
+    		G.SetRect(reserveRect,boardX+boardW,boardY+CELLSIZE,rackW,boardH-CELLSIZE*2);
+    	}
+    	else
+    	{
+    		G.SetRect(reserveRect,boardX,boardY+boardH,boardW,rackH);
+    	}
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -267,13 +273,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	Rectangle R = R0;
     	int w = G.Width(R);
     	int h = G.Height(R);
-    	int size = Math.min(h, CELLSIZE);
     	boolean horizontal = w>h;
+    	int size = Math.min(w,Math.min(h, CELLSIZE));
     	boolean isReserve = rackindex==RESERVE_INDEX;
     	int l = G.Left(R);
     	int at = G.Top(R);
     	int t = horizontal ?at :  G.Bottom(R) ;
-    	double xscale = 0.79;
+    	double xscale = isReserve && horizontal ? 0.71 : 0.79;
         zCell[] balls = bd.rack[rackindex];
         
     	if(!isReserve)
@@ -310,12 +316,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
         	bCell.rotateCurrentCenter(gc,G.Left(R)+size/2, 2+G.Top(R)+size/2);
         	int empty = (int)(h-subt*size*xscale-size/4)/2;
+        	int step = horizontal ? h/3 : size;
         	while(subt>0)
         	{
         	total--;
         	subt--;
-        	int xoff = size/2+(int)(size*total*xscale);
-        	int yoff = 2+size/2+size*row;
+        	int xoff = ((horizontal && isReserve) ? size*2/3 : size/2)+(int)(size*total*xscale);
+        	int yoff = 2+size/2+step*row;
         	int xp = l+(horizontal 
         				? xoff
         				: yoff);
@@ -743,13 +750,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     public String sgfGameType() { return(Zertz_SGF); }
 
 
-    public void performHistoryInitialization(StringTokenizer his)
+    public void performHistoryInitialization(Tokenizer his)
     { 	String token = his.nextToken();
     	boolean newstyle = token.charAt(0)=='z';
     	
-    	int np = newstyle ? G.IntToken(his) : 2;	// players always 2
-    	long rv = newstyle ? G.IntToken(his): 0;
-    	int rev = newstyle ? G.IntToken(his): 100;	
+    	int np = newstyle ? his.intToken() : 2;	// players always 2
+    	long rv = newstyle ? his.longToken(): 0;
+    	int rev = newstyle ? his.intToken(): 100;	
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
@@ -771,7 +778,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
     public String sgfGameVersion() { return(SGF_GAME_VERSION); }
     
-    public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
+    public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
     {
     	if(OnlineConstants.TIME.equals(first) && b.DoneState())
     	{
@@ -834,7 +841,7 @@ summary:
                     p = players[pn] = new commonPlayer(pn);
                 }
 
-                StringTokenizer tokens = new StringTokenizer(value);
+                Tokenizer tokens = new Tokenizer(value);
                 String num = "";
                 String first = tokens.nextToken();
                 if(Character.isDigit(first.charAt(0))) 
@@ -842,7 +849,7 @@ summary:
                    	if(parsePlayerInfo(p,first,tokens)) {}
                     else
                     {
-                        String msg = first + " " + G.restof(tokens);
+                        String msg = first + " " + tokens.getRest();
                         boolean isDone = msg.equals("Done ") ;
                         if(isDone) 
                         	{ hasDones=true; }
