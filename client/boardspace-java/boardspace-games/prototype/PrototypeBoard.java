@@ -84,7 +84,7 @@ class PrototypeBoard
 	public PrototypeCell getPlayerCell(int p) { return(playerCell[p]); }
 	public PrototypeChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 	public PrototypePlay robot = null;
-	
+	public int placementIndex = -1;
 	
 	/* this can replace "G.Assert" in the this file, so if the assertion
 	 * fails in a search, the state is recorded automatically.
@@ -234,7 +234,7 @@ class PrototypeBoard
         animationStack.clear();
         swapped = false;
         moveNumber = 1;
-
+        placementIndex = 1;
         // note that firstPlayer is NOT initialized here
     }
 
@@ -268,7 +268,7 @@ class PrototypeBoard
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-
+        placementIndex = from_b.placementIndex;
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
@@ -405,14 +405,14 @@ class PrototypeBoard
 
 
     // set the contents of a cell, and maintain the books
-    private int lastPlaced = -1;
-    public PrototypeChip SetBoard(PrototypeCell c,PrototypeChip ch)
+   public PrototypeChip SetBoard(PrototypeCell c,PrototypeChip ch)
     {	PrototypeChip old = c.topChip();
     	if(c.onBoard)
     	{
     	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
-     		else { c.lastPlaced = lastPlaced; }
+     	if(ch!=null)
+     		{ chips_on_board++; emptyCells.remove(c,false);  
+     		}
     	}
        	if(old!=null) { c.removeTop();}
        	if(ch!=null) { c.addChip(ch);  }
@@ -434,6 +434,8 @@ class PrototypeBoard
     private PrototypeCell unDropObject()
     {	PrototypeCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
+    	rv.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	return(rv);
     }
@@ -444,8 +446,12 @@ class PrototypeBoard
     {	PrototypeCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
+    	rv.lastPicked = lastPickedIndex;
     	pickedObject = null;
+    	
     }
+    private int lastDroppedIndex = -1;
+    private int lastPickedIndex = -1;
     
     // 
     // drop the floating object.
@@ -465,6 +471,9 @@ class PrototypeBoard
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         	SetBoard(c,pickedObject);
+        	lastDroppedIndex = c.lastDropped;
+        	c.lastDropped = placementIndex;
+        	placementIndex++;
             pickedObject = null;
             break;
         }
@@ -534,6 +543,8 @@ class PrototypeBoard
         	{
             lastPicked = pickedObject = c.topChip();
          	lastDroppedObject = null;
+         	lastPickedIndex = c.lastPicked;
+         	c.lastPicked = placementIndex;
 			SetBoard(c,null);
         	}
             break;
@@ -600,7 +611,7 @@ class PrototypeBoard
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-
+        placementIndex++;	// this gives a clean separation between moves
         if (board_state==PrototypeState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;

@@ -22,4 +22,6 @@ public interface LocationProvider {
 	public int getX();
 	public int getY();
 	public Color getColor();
+	public LocationProvider getNext();
+	public void setNext(LocationProvider s);
 }

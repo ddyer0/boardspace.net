@@ -614,7 +614,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
         drawVcrGroup(nonDragSelect, gc);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return bb.moveNumber;
     }

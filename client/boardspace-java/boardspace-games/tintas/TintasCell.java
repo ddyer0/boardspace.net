@@ -33,10 +33,12 @@ class CellStack extends OStack<TintasCell>
  * @author ddyer
  *
  */
-public class TintasCell extends stackCell<TintasCell,TintasChip> implements TintasConstants
+public class TintasCell extends stackCell<TintasCell,TintasChip> implements TintasConstants,PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-
+	int lastPicked = -1;
+	int lastDropped = -1;
+	
 	public TintasCell(TintasId rack) { super(rack); }		// construct a cell not on the board
 	public TintasCell(TintasId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);
@@ -53,6 +55,20 @@ public class TintasCell extends stackCell<TintasCell,TintasChip> implements Tint
 	public TintasChip[] newComponentArray(int size) {
 		
 		return new TintasChip[size];
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = lastDropped = -1;
+	}
+	public void copyFrom(TintasCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty?lastPicked : lastDropped;
 	}
 
 }

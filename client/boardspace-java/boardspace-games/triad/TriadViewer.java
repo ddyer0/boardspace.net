@@ -129,7 +129,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*25;	
+    	int minLogW = fh*30;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
@@ -176,12 +176,12 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH;
        	layout.returnFromMain(extraW,extraH);
-    	placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+    	placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	placeRow( boardX, boardBottom-stateH, boardW, stateH,goalRect);
     	setProgressRect(progressRect,goalRect);
     	
-        int vcrW = C2*7;
+        int vcrW = (int)(C2*7.5);
         int vcrH = vcrW/2;
         SetupVcrRects(boardX,boardBottom-vcrH-stateH,vcrW,vcrH);
         
@@ -337,6 +337,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         Hashtable<TriadCell,TriadCell> sources = gb.getSources();
         Hashtable<TriadCell,TriadCell> captures = gb.getCaptures();
         boolean show = eyeRect.isOnNow();
+        numberMenu.clearSequenceNumbers();
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -345,6 +346,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
          	 int ypos = G.Bottom(brect) - gb.cellToY(cell);
              int xpos = G.Left(brect) + gb.cellToX(cell);
              boolean canHit = gb.LegalToHitBoard(cell);
+             numberMenu.saveSequenceNumber(cell,xpos,ypos);
                if(cell.drawChip(gc, this,canHit?highlight:null, cellSize,xpos,ypos,null))
              {
                  boolean empty = (cell.chip == null);
@@ -365,6 +367,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
              	}
 
             }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
 
     /*
@@ -475,6 +478,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         int cellSize = (int)(bb.cellSize()*xscale);
         startBoardAnimations(replay,bb.animationStack,cellSize,MovementStyle.SequentialFromStart);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
@@ -750,6 +754,10 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return bb.placementIndex;
     }
 }
 

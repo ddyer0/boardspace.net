@@ -130,6 +130,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
 	private StateStack robotState = new StateStack();
 	public KulamiState getState() { return(board_state); }
 	
+	int placementIndex = -1;
 	
 	public SubBoard[] subBoards = { 
 			new SubBoard(0,3,2,KulamiChip.board_3x2,KulamiChip.board_2x3,2),
@@ -310,6 +311,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
         animationStack.clear();
         swapped = false;
         moveNumber = 1;
+        placementIndex = 1;
         if(revision<=100)
         {
         	getNextSolution_rev1(randomKey);
@@ -523,6 +525,8 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
         stateStack.clear();
         pickedObject = null;
      }
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -530,6 +534,8 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     {	KulamiCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
+    	rv.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	return(rv);
     }
     // 
@@ -539,6 +545,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     {	KulamiCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
+    	rv.lastPicked = lastPickedIndex;
     	pickedObject = null;
     }
     
@@ -549,7 +556,9 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
-       
+       lastDroppedIndex = c.lastDropped;
+       c.lastDropped = placementIndex;
+       placementIndex++;
        switch (c.rackLocation())
         {
         default:
@@ -620,6 +629,8 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     private void pickObject(KulamiCell c)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
+    	lastPickedIndex = c.lastPicked;
+    	c.lastPicked = placementIndex;
         switch (c.rackLocation())
         {
         default:
@@ -697,7 +708,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==KulamiState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;

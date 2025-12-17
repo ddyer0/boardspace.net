@@ -90,7 +90,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     public int pickedObjectRotation = 0;
     public OctilesCell pickedSource = null;
     private OctilesCell droppedDest = null;
-    
+    public int placementIndex = -1;
     private OctilesCell droppedTileSource = null;
     private OctilesCell droppedTileDest = null;
     private OctilesChip droppedTile = null;
@@ -776,6 +776,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
 	    pickedObjectRotation = from_b.pickedObjectRotation;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        placementIndex = from_b.placementIndex;
 
         if(G.debug()) { sameboard(from_b); }
     }
@@ -788,6 +789,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
  
        Init_Standard(gtype,nplay,seed);
        moveNumber = 1;
+       placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -945,6 +947,8 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     	}
      	c.addChip(po);
     }
+    int lastDroppedIndex = -1;
+    int lastPickedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -955,6 +959,8 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     	{
     	droppedDest = null;
     	removeChip(dr);
+    	dr.lastDropped = lastDroppedIndex;
+    	placementIndex--;
      	}
      }
     // 
@@ -965,6 +971,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     	if(po!=null)
     	{
     	OctilesCell ps = pickedSource;
+    	ps.lastPicked = lastPickedIndex;
     	pickedSource=null;
     	pickedObject = null;
     	addChip(ps,po,pickedObjectRotation);
@@ -983,6 +990,10 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
        G.Assert((pickedObject!=null),"ready to drop");
        OctilesCell loc = getCell(dest,col,row);
        addChip(loc,pickedObject,rot);
+       lastDroppedIndex = loc.lastDropped;
+       loc.lastDropped = placementIndex;
+       placementIndex++;
+       
        switch (dest)
         {
         case TilePoolRect:
@@ -1060,12 +1071,15 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
          	{
         	OctilesCell c = pickedSource = getCell(col,row);
         	removeChip(c);
+        	lastPickedIndex = c.lastPicked;
+        	c.lastPicked = placementIndex;
         	if(c.topChip()==null) { c.rotation=0; }
         	droppedDest = null;
         	return(c);
          	}
         case TilePoolRect:
         	{
+        	// tile pool gets no pick recording
        		OctilesCell c = pickedSource = tilePool;
        		removeChip(c);
        		c.rotation=0;
@@ -1184,7 +1198,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     private void doDone(boolean next)
     {	
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==OctilesState.RESIGN_STATE)
         {	setGameOver(false);
         }

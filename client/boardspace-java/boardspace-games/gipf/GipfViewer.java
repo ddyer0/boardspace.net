@@ -1011,7 +1011,7 @@ gipfgames\archive-2020\games-Feb-7-2020.zip G-SmartBot0-Jojajo-2020-02-01-2248.s
             setComment(comments);
         }
     }
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.lastPlacedIndex;
 	}
 }

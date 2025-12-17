@@ -59,6 +59,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
 	MbraneVariation variation = MbraneVariation.Mbrane;
 	private MbraneState board_state = MbraneState.Puzzle;	
 	private MbraneState unresign = null;	// remembers the orignal state when "resign" is hit
+	public int placementIndex = -1;
 	private StateStack robotState = new StateStack();
 	public MbraneState getState() { return(board_state); }
 	public CellStack empty = new CellStack();
@@ -201,7 +202,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
         animationStack.clear();
         swapped = false;
         moveNumber = 1;
-
+        placementIndex = 1;
         // note that firstPlayer is NOT initialized here
     }
 
@@ -236,6 +237,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null; 
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
 
@@ -524,11 +526,15 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
         stateStack.clear();
         pickedObject = null;
      }
+    int lastDroppedIndex = -1;
+    int lastPickedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
     private void unDropObject()
     {	MbraneCell rv = droppedDestStack.pop();
+    	rv.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	setState(stateStack.pop());
     	doPick(rv);
     }
@@ -537,6 +543,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
     //
     private void unPickObject()
     {	MbraneCell rv = pickedSourceStack.pop();
+    	rv.lastPicked = lastPickedIndex;
     	setState(stateStack.pop());
     	doDrop(rv);
      }
@@ -547,6 +554,9 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
     private void dropObject(MbraneCell c)
     {
        droppedDestStack.push(c);
+       lastDroppedIndex = c.lastDropped;
+       c.lastDropped = placementIndex;
+       placementIndex++;
        stateStack.push(board_state);
        doDrop(c);
      }
@@ -566,6 +576,9 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
          case BoardLocation:	// already filled board slot, which can happen in edit mode
          case EmptyBoard:
              c.addChip(pickedObject);
+             lastDroppedIndex = c.lastDropped;
+             c.lastDropped = placementIndex;
+             placementIndex++;
              empty.remove(c, false);
              chips_on_board++;
              lastDroppedObject = pickedObject;
@@ -620,6 +633,8 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
     // to replace the original contents if the pick is cancelled.
     private void pickObject(MbraneCell c)
     {	pickedSourceStack.push(c);
+    	lastPickedIndex = c.lastPicked;
+    	c.lastPicked = placementIndex;
     	stateStack.push(board_state);
     	doPick(c);
     }
@@ -637,6 +652,8 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
         case BoardLocation:
         	{
             lastPicked = pickedObject = c.removeTop();
+            lastPickedIndex = c.lastPicked;
+            c.lastPicked = placementIndex;
             empty.push(c);
             chips_on_board--;
          	lastDroppedObject = null;
@@ -760,6 +777,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
     private void doDone(replayMode replay)
     {
         acceptPlacement();
+        placementIndex++;
         switch(board_state)
         {
         case Resign:

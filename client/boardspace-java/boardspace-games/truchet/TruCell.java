@@ -26,12 +26,15 @@ class CellStack extends OStack<TruCell>
 {
 	public TruCell[] newComponentArray(int n) { return(new TruCell[n]); }
 }
-public class TruCell extends stackCell<TruCell,TruChip> implements TruConstants
+public class TruCell extends stackCell<TruCell,TruChip> implements TruConstants,PlacementProvider
 {	public TruChip[] newComponentArray(int n) { return(new TruChip[n]); }
 	// constructor
 	public boolean isBase=false;
 	public int sweep_counter=0;
 	public int region_size = -1;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public int lastFlipped = -1;
 	// constructor
 	public TruCell(char c,int r) 
 	{	super(cell.Geometry.Oct,c,r);
@@ -48,8 +51,17 @@ public class TruCell extends stackCell<TruCell,TruChip> implements TruConstants
 	public void copyFrom(TruCell other)
 	{	super.copyFrom(other);
 		region_size = other.region_size;
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+		lastFlipped = other.lastFlipped;
 	}
-
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+		lastFlipped = -1;
+	}
 
 	// true if this board cell mathes the other.  This is used to verify
 	// that a board copy is good.
@@ -139,6 +151,9 @@ public class TruCell extends stackCell<TruCell,TruChip> implements TruConstants
 	{	String str = "";
 		for(int i=0;i<=chipIndex;i++) { str += chipStack[i]; }
 		return(str);
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 
 }

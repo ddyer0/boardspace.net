@@ -42,8 +42,8 @@ public class EpaminondasCell
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
-	int lastPlaced = -1;
-
+	int lastDropped = -1;
+	int lastPicked = -1;
 	public EpaminondasCell(Random r,EpaminondasId rack) { super(r,rack); }		// construct a cell not on the board
 	public EpaminondasCell(EpaminondasId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);
@@ -68,7 +68,8 @@ public class EpaminondasCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		lastPlaced = ot.lastPlaced;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -76,7 +77,8 @@ public class EpaminondasCell
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = -1;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public EpaminondasCell(EpaminondasChip cont)
@@ -106,7 +108,7 @@ public class EpaminondasCell
 	 * lastPlaced also has to be maintained by reInit and copyFrom
 	 */
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastPicked : lastDropped;
 	}
 
 	

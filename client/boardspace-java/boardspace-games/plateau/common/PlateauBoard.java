@@ -49,6 +49,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	final int ncols = 4;
 	private PlateauState unresign;
 	private PlateauState board_state;
+	public int placementIndex = -1;
 	public PlateauState getState() {return(board_state); }
 	public void setState(PlateauState st) 
 	{ 	unresign = (st==PlateauState.RESIGN_STATE)?board_state:null;
@@ -197,7 +198,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
     // draw an row of pstacks, note mouse hits
     private void drawPstacks(Graphics gc, pstack[] mystack, Rectangle rect,
-        HitPoint highlight, String msg)
+        HitPoint highlight, String msg,NumberMenu numberMenu)
     {
         if (gc != null)
         {
@@ -213,10 +214,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         int npieces = mystack.length;
         int pwidth = G.Width(rect) / npieces;
         int px = G.Left(rect) + ((G.Width(rect) - (pwidth * npieces)) / 2);
-
+        int py = G.Top(rect);
         for (int i = 0; i < npieces; i++)
-        {
-            drawPstack(gc, mystack[i], px, G.Top(rect), pwidth, G.Height(rect), highlight);
+        {	pstack stack = mystack[i];
+            drawPstack(gc, stack, px, py, pwidth, G.Height(rect), highlight);
+            numberMenu.saveSequenceNumber(stack,px,py);
             px += pwidth;
         }}
     }
@@ -230,16 +232,16 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
     // draw the captives
     public void DrawBar(Graphics gc, Rectangle rect, int index,
-        HitPoint highlight, String msg)
+        HitPoint highlight, String msg,NumberMenu numberMenu)
     {
-        drawPstacks(gc, bar[index], rect, highlight, msg);
+        drawPstacks(gc, bar[index], rect, highlight, msg,numberMenu);
     }
 
     // draw the trade bar
     public void DrawTrade(Graphics gc, Rectangle rect, int index,
-        HitPoint highlight, String msg)
+        HitPoint highlight, String msg,NumberMenu numberMenu)
     {
-        drawPstacks(gc, trade[index], rect, highlight, msg);
+        drawPstacks(gc, trade[index], rect, highlight, msg,numberMenu);
     }
 
     public int pointTotal(pstack[] rr)
@@ -255,7 +257,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
 
     // draw text between the bar and trade with information about the trade
-    public void DrawExchangeSummary(Graphics gc, int idx, Rectangle r)
+    public void DrawExchangeSummary(Graphics gc, int idx, Rectangle r,NumberMenu numberMenu)
     {
         pstack[] tr = trade[idx];
         int tot = pointTotal(tr);
@@ -270,9 +272,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
     // draw the main reserve rack
     public void DrawRack(Graphics gc, Rectangle rect, int index,
-        HitPoint highlight)
+        HitPoint highlight,NumberMenu numberMenu)
     {
-    	drawPstacks(gc, index>=0?rack[index]:null, rect, highlight, "");
+    	drawPstacks(gc, index>=0?rack[index]:null, rect, highlight, "",numberMenu);
  
     }
 
@@ -462,6 +464,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         setFlipped(null);
         moveNumber = 1;
         moveStep = -1;
+        placementIndex = 1;
         setState(PlateauState.ONBOARD2_STATE);
 
         // note that firstPlayer is NOT initialized here
@@ -721,7 +724,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
         return (false);
     }
-
+    int lastDroppedIndex = -1;
+    int lastFlippedIndex = -1;
+    int lastPickedIndex = -1;
     // three different types of drop gestures.  
     // moving a piece on the board and dropping on top of some stack
     // onboarding a piece and dropping inside an existing stack
@@ -736,7 +741,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         pstack mv = movingStack[moveStep];
       
         if ( (mv!=null) && mv.origin == BOARD_ORIGIN)
-        {
+        {	
             for (int i = moveStep; i >= 0; i--)
             { // check for moving backward, undoing previous movesteps
 
@@ -832,7 +837,12 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                     }
                 }
 
-               if(oldStack!=null) { which.dropStack(level, oldStack); }
+               if(oldStack!=null)
+               	{ which.dropStack(level, oldStack); 
+               	  lastDroppedIndex = which.lastDropped;
+               	  which.lastDropped = placementIndex;
+               	  placementIndex++;
+               	}
             }
 
             setNextStateAfterDrop(which,(level == -1));
@@ -985,11 +995,21 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         pstack stack = mov.mystack;
         dropPiece(mov);
         mov.flip();
+        if(stack.lastFlipped == placementIndex)
+        {
+        	stack.lastFlipped = lastFlippedIndex;
+        }
+        else
+        {
+        	lastFlippedIndex = stack.lastFlipped;
+        	stack.lastFlipped = placementIndex;
+        }
         setNextStateAfterFlip(stack);
     }
 
     pstack handlePick(piece pp,replayMode replay)
     {
+        		 
         switch (board_state)
         {
         case PUZZLE_STATE:
@@ -1132,6 +1152,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             m.pick = pickeditem.piecenumber; // remember as in the MOVE_PICK
  
             pstack picked = handlePick(pickeditem,replay); // this splits the stack into two
+            
+            lastPickedIndex = picked.lastPicked;
+            picked.lastPicked = placementIndex;
+
+            
             m.setDrop(pickedstack.stacknumber); // remember the origin stack
 
             // the color spect is for unflipped colors
@@ -1159,11 +1184,14 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             pstack ps = pp.mystack;
             m.setDrop(ps.stacknumber); // save the actual origin stack for editing
             handlePick(pp,replay);
+            lastPickedIndex = ps.lastPicked;
+            ps.lastPicked = placementIndex;
         }
 
         break;
 
         case MOVE_DONE:
+        	placementIndex++;
             setNextStateAfterDone(replay);
 
             break;
@@ -2329,7 +2357,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
     /* draw the board and the stacks on it. */
     public void DrawBoard(Graphics gc, Rectangle R, HitPoint highlight,
-        boolean grid)
+        boolean grid,NumberMenu numberMenu)
     {
         int ystep = G.Height(R) / ((nrows * 2) + 2); // 1/2 y square size
         int xstep = G.Width(R) / ((ncols * 2) + 2); // 1/2 x square size
@@ -2381,6 +2409,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 int cy = ymin + (y * ystep * 2);
                 pstack contents = GetBoardXY(x, y);
                 drawPstack(gc, contents, cx, cy, xstep * 2, ystep * 2, highlight);
+                numberMenu.saveSequenceNumber(contents,cx+xstep,cy+ystep	);
             }
         }
         //System.out.println("e "+gc+((highlight!=null)?""+highlight.hitCode:""));

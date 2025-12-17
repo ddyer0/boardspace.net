@@ -96,8 +96,8 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,
-		VncEventInterface,GameLayoutClient
+	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,
+		VncEventInterface,GameLayoutClient,NumberMenuHost
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -3626,7 +3626,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	if(G.Height(numberMenu)>0)
     	{
-    		numberMenu.draw(g,p);
+    		numberMenu.draw(g,this,p);
     	}
     }
     /**
@@ -3645,7 +3645,7 @@ public abstract class commonCanvas extends exCanvas
      */
     public void showNumberMenu()
     {
-    	numberMenu.showMenu();
+    	numberMenu.showMenu(this,this);
     }
   /**
  * call this from your {@link #redrawBoard} method to draw the
@@ -6715,6 +6715,7 @@ public abstract class commonCanvas extends exCanvas
     	{
     	String name = tokens.nextToken();
     	while(tokens.hasMoreTokens() 
+    			&& !"".equals(name)
     			&& (name.charAt(0)=='"') 
     			&& (name.charAt(name.length()-1)!='"')) 
     		{ name = name + " " +tokens.nextToken(); // accumulate the full quoted name  
@@ -9357,9 +9358,6 @@ public void verifyGameRecord()
 		public void setLocalBoundsSync(int x,int y,int w,int h)
 		{	super.setLocalBoundsSync(x,y,w,h);
 			if(autoOptimize) { selectedLayout.optimize(); }
-		}
-		public int getLastPlacement(boolean empty) {
-			throw G.Error("Must be overriden");
 		}
 		public void handleError(String msg,String context,Throwable err)
 		{	Utf8OutputStream bs = new Utf8OutputStream();

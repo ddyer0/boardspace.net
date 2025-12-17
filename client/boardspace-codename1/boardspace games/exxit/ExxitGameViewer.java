@@ -249,7 +249,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         int stateY = boardY-stateH;
         int stateX = boardX;
         int zoomW = CELLSIZE*5;
-        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 
@@ -432,7 +432,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         Rectangle oldClip = GC.combinedClip(gc,tbRect);
         boolean show = eyeRect.isOnNow();
       	boolean draggingBoard = draggingBoard();
- 
+      	numberMenu.clearSequenceNumbers();
      	//
        	// now draw the contents of the board and anything it is pointing at
         //
@@ -453,15 +453,18 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         	 ExxitCell cell = cells.nextElement();
         	 int xpos = left + gb.cellToX(cell);
         	 int ypos = top - gb.cellToY(cell);
-                 cell.setCurrentCenter(xpos,ypos);
-                 boolean isADest = dests.get(cell)!=null;
-                 boolean isASource = (cell==sourceCell)||(cell==destCell);
-                 ExxitPiece piece = cell.topPiece();
+             cell.setCurrentCenter(xpos,ypos);
+             boolean isADest = dests.get(cell)!=null;
+             boolean isASource = (cell==sourceCell)||(cell==destCell);
+             ExxitPiece piece = cell.topPiece();
+                 
              boolean canHit = gb.LegalToHitBoard(cell);
-                 boolean hitpoint = !draggingBoard
+             boolean hitpoint = !draggingBoard
                 		 && canHit
                 		 && cell.closestPointToCell(ourTurnSelect,cellSize, xpos, ypos);
-                 if(hitpoint) 
+             
+             numberMenu.saveSequenceNumber(cell,xpos,ypos);
+             if(hitpoint) 
                  { hitCell = cell;
                  }
 
@@ -521,7 +524,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
              ourTurnSelect.spriteColor = Color.red;
          }
        	doBoardDrag(tbRect,anySelect,cellSize,ExxitId.InvisibleDragBoard);
-
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE*3/2,labelFont,labelColor);
   		GC.setClip(gc,oldClip);
      }
 
@@ -617,6 +620,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     {	Exxitmovespec m = (Exxitmovespec)mm;
   
         handleExecute(b,m,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         b.labelCells();
         switch(m.op)
         {
@@ -978,5 +982,9 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return b.placementIndex;
     }
 }

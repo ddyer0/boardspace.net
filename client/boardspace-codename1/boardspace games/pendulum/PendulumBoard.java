@@ -123,6 +123,7 @@ class PendulumBoard
 	public int getMaxRevisionLevel() { return(REVISION); }
 	PendulumVariation variation = PendulumVariation.pendulum;
 	PendulumState board_state = PendulumState.Puzzle;	
+	public int placementIndex = -1;
 	private PendulumState unresign = null;	// remembers the orignal states when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public PendulumState getState() { return(board_state); }
@@ -507,6 +508,7 @@ class PendulumBoard
 	    
         animationStack.clear();
         moveNumber = 1;
+        placementIndex = 1;
         timerTrack[0].addChip(PendulumChip.grayGlass);
         greenTimers[0].addChip(PendulumChip.greenTimer);
         blackTimers[0].addChip(PendulumChip.blackTimer);
@@ -614,7 +616,7 @@ class PendulumBoard
         greenTimer = from_b.greenTimer;
         purpleTimer = from_b.purpleTimer;
         timersRunning = from_b.timersRunning;
-        
+        placementIndex = from_b.placementIndex;
         achievementCards.copyFrom(from_b.achievementCards);
         currentAchievement.copyFrom(from_b.currentAchievement);
         councilRewardsDeck.copyFrom(from_b.councilRewardsDeck);

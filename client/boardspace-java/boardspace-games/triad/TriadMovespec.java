@@ -17,6 +17,9 @@
 package triad;
 
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
@@ -41,8 +44,7 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
     int to_row; // for from-to moves, the destination row
     char from_col; // for from-to moves, the destination column
     int from_row; // for from-to moves, the destination row
-    TriadState state;	// the state of the move before state, for UNDO
-    int captureIndex = 0;
+    TriadChip chip;
     public TriadMovespec()
     {
     } // default constructor
@@ -85,7 +87,6 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
 				&& (source == other.source)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
-				&& (captureIndex == other.captureIndex)
 				&& (from_row == other.from_row) 
 				&& (from_col == other.from_col)
 				&& (player == other.player));
@@ -95,11 +96,10 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
     {	super.Copy_Slots(to);
         to.to_col = to_col;
         to.to_row = to_row;
-        to.captureIndex = captureIndex;
         to.from_col = from_col;
         to.from_row = from_row;
-        to.state = state;
         to.source = source;
+        to.chip = chip;
     }
 
     public commonMove Copy(commonMove to)
@@ -165,29 +165,40 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
         }
     }
 
+    private Text icon(commonCanvas v,Object... msg)
+    {	double chipScale[] = {1,1.0,-0,-0.5};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xx", chip, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
+
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_PICKB:
-            return (""+ to_col + to_row);
+            return icon(v,""+ to_col + to_row+"-");
 
 		case MOVE_DROPB:
-            return ("-"+to_col + to_row);
+            return icon(v,""+to_col + to_row+" ");
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return (D.findUnique(op) + " "+source.shortName);
+            return icon(v,D.findUnique(op) + " "+source.shortName);
 
         case MOVE_MOVE:
-        	return(""+from_col+from_row+" "+to_col+to_row);
+        	return icon(v,""+from_col+from_row+"-"+to_col+to_row);
         case MOVE_DONE:
-            return ("");
+            return TextChunk.create("");
 
         default:
-            return (D.findUniqueTrans(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

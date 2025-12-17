@@ -73,7 +73,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 	private int chips_on_board[] = new int[3];			// number of chips currently on the board
     private TriadChip playerChip[]= new TriadChip[3];
     private TriadId playerColorPool[] = new TriadId[3];
-    
+    int placementIndex = -1;
     private TriadCell blue = new TriadCell(TriadId.Blue_Chip_Pool,TriadChip.BlueStone);
     private TriadCell green = new TriadCell(TriadId.Green_Chip_Pool,TriadChip.GreenStone);
     private TriadCell red =	new TriadCell(TriadId.Red_Chip_Pool,TriadChip.RedStone);
@@ -278,6 +278,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         candidate_player = from_b.candidate_player;
         bunnyDrop = null;
         lastPicked = null;
+        placementIndex = from_b.placementIndex;
         pickedObject = from_b.pickedObject;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = (from_b.droppedDest);
@@ -296,6 +297,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         captureCellStack.clear();
         captureChipStack.clear();
         captureIndex = 0;
+        placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -390,6 +392,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 		}
     	captureIndex = level;
     }
+    private int lastPickedIndex = -1;
+    private int lastDroppedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -408,6 +412,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 	    		SetBoard(droppedDest,null); 
 	    		droppedDest = null;
 	    		undoCaptures(captureIndex);
+	    		droppedDest.lastDropped = lastDroppedIndex;
+	    		placementIndex--;
 
 	    	}}
     }
@@ -417,6 +423,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     private void unPickObject()
     {	if(pickedSource!=null) 
     		{ SetBoard(pickedSource,pickedObject);
+    		  pickedSource.lastPicked = lastPickedIndex;
     		  pickedSource = null;
     		}
 		  pickedObject = null;
@@ -441,6 +448,9 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     private void dropObject(TriadCell c)
     {
        	SetBoard(c,pickedObject);
+       	lastDroppedIndex = c.lastDropped;
+       	c.lastDropped = placementIndex;
+       	placementIndex++;
        	switch(board_state)
        	{
        	case DROP_STATE: bunnyDrop = c;
@@ -511,6 +521,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
          	bunnyDrop = null;
          	droppedDest = null;
 			SetBoard(src,null);
+			src.lastPicked = placementIndex;
         	}}
             break;
         case Blue_Chip_Pool:
@@ -661,6 +672,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	captureIndex = captureCellStack.size();
         	moveNumber++;
             acceptPlacement();
+            placementIndex++;
         	setNextStateAfterDone();
         }
     }
@@ -682,6 +694,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	TriadCell src = getCell(m.source, m.from_col, m.from_row);
         	TriadCell dest = getCell(m.to_col,m.to_row);
         	pickObject(src);
+        	m.chip = pickedObject;
         	dropObject(dest);
         	if(replay.animate)
         	{
@@ -694,7 +707,10 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         case MOVE_DROPB:
 			//pickObject(m.object, m.to_col, m.to_row);
  			switch(board_state)
-			{ case PUZZLE_STATE: acceptPlacement(); break;
+			{ 
+ 			case PUZZLE_STATE: acceptPlacement(); 
+ 				break;
+ 			
 			default:
 				break;
 			}
@@ -706,6 +722,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
  			TriadCell src = getCell(m.source, m.to_col, m.to_row);
  			TriadCell dest = getCell(m.to_col,m.to_row);
 			pickObject(src);
+			if(board_state==TriadState.DROP_STATE)
+			{	// record the bunny
+				m.chip = pickedObject;	
+
+			}
             dropObject(dest);
             if((replay==replayMode.Single) || (replay==replayMode.Live && !prepick))
             {
@@ -728,9 +749,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	{
         	case PUZZLE_STATE:
                	pickObject(getCell(m.source, m.to_col, m.to_row));
+               	m.chip = pickedObject;
         		break;
         	case PLAY_STATE:
                	pickObject(getCell(m.source, m.to_col, m.to_row));
+               	m.chip = pickedObject;
                	break;
         	case CONFIRM_END_STATE:
         	case DROP_STATE:
@@ -876,7 +899,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         }
     }
     
-    
+    StateStack robotState = new StateStack();
+    IStack robotInt = new IStack();
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -885,10 +909,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     executing.
     */
     public void RobotExecute(TriadMovespec m)
-    {
-        m.state = board_state; //record the starting state. The most reliable
-        // to undo state transistions is to simple put the original state back.
-        m.captureIndex = captureIndex;
+    {	robotState.push(board_state);
+    	robotInt.push(captureIndex);
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         //G.print("E "+m+" "+m.search_clock);
         if (Execute(m,replayMode.Replay))
@@ -916,6 +938,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     public void UnExecute(TriadMovespec m)
     {
     	//G.print("U "+m+" "+m.search_clock);
+    	int captureIndex = robotInt.pop();
+    	
         switch (m.op)
         {
    	    default:
@@ -926,7 +950,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	{
         	TriadChip ch = getCell(m.to_col,m.to_row).removeTop();
         	getCell(m.from_col,m.from_row).addChip(ch);
-        	undoCaptures(m.captureIndex);
+        	undoCaptures(captureIndex);
         	pickedObject = null;
         	pickedSource = droppedDest = null;
         	candidate_player = bunny_player = -1;
@@ -940,7 +964,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         	break;
          }
 
-        setState(m.state);
+        setState(robotState.pop());
         if(whoseTurn!=m.player)
         {	moveNumber--;
         	setWhoseTurn(m.player);

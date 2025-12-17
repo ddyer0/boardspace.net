@@ -1064,7 +1064,7 @@ private void playSounds(commonMove m)
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.lastPlacedIndex;
 	}
 }

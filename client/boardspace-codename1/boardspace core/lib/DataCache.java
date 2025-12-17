@@ -265,7 +265,7 @@ public class DataCache implements Runnable,Config
 		if(info==null) 
 		{ if(verbose) { DataCache.out.println("No info for "+name0); } 
 		}
-		if(info.failed) { info = null; }
+		else if(info.failed) { info = null; }
 		else if(errors<2)
 		{
 			try {

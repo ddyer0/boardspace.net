@@ -1608,18 +1608,6 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     		AR.setValue(preparedVoteSent,false); 
     		}
     }
-    public void doUndo()
-    {
-    	super.doUndo();
-    }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
 
 
     //public boolean allowBackwardStep()

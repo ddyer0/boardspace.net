@@ -263,7 +263,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         int stateY = boardY-stateH;
         int stateX = boardX;
         int zoomW = CELLSIZE*5;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -396,6 +396,9 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
        int cellSize = gb.cellSize();
        boolean draggingBoard = draggingBoard(); 
  	   boolean canHit = !draggingBoard && G.pointInRect(ourTurnSelect,tbRect);
+
+ 	   numberMenu.clearSequenceNumbers();
+
  	   //
         // now draw the contents of the board and anything it is pointing at
         //
@@ -416,6 +419,9 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
             boolean canHitThis = canHit && gb.LegalToHitBoard(ccell);
             String labl = use_grid ? ccell.cellName : "";//+G.printCol(ccell.col)+ccell.row;
             //if(G.debug() && !use_grid) { labl+=""+ccell.printCol()+ccell.row; }
+ 
+            numberMenu.saveSequenceNumber(ccell,xpos,ypos);
+
             if(ccell.drawChip(gc,this,canHitThis?ourTurnSelect:null,cellSize,xpos,ypos,labl))
             {	
                 boolean isEmpty = ccell.topChip()==null;
@@ -453,6 +459,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
             }
         }
         doBoardDrag(tbRect,anySelect,cellSize,PalagoId.InvisibleDragBoard);
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
  		GC.setClip(gc,oldClip);
     }
 
@@ -570,7 +577,8 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
+        numberMenu.recordSequenceNumber(bb.moveNumber());
+        lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
 		if(replay.animate) { playSounds(mm); }
        return (true);
     }
@@ -913,4 +921,11 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
             setComment(comments);
         }
     }
+    //
+    // support for the last move "numberMenu" logic
+    //
+	public int getLastPlacement() {
+		return (bb.moveIndex);
+	}
+
 }

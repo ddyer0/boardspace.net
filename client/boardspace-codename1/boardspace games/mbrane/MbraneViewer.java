@@ -21,14 +21,13 @@ import static mbrane.Mbranemovespec.*;
 
 import bridge.*;
 import common.GameInfo;
-
+import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
-import lib.Font;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -182,7 +181,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	FontMetrics fm = Font.getFontMetrics(standardBoldFont());
+    	FontMetrics fm = lib.Font.getFontMetrics(standardBoldFont());
     	int minLogW = fh*12;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
@@ -245,7 +244,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	//
         int stateY = boardY;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.copy(activeBoardRect,boardRect);
     	if(twistBoard) { G.setRotation(activeBoardRect,Math.PI/2,boardX+boardW/2,boardY+boardH/2); }
@@ -436,7 +435,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         { drawingBoard = true;
           GC.setRotatedContext(gc,brect,highlight,-Math.PI/2);
         }
-
+        numberMenu.clearSequenceNumbers();
         MbraneCell closestCell = gb.closestCell(highlight,brect);
         gb.markValidSudoku();
         int validMask = gb.invalidPlacementMask();
@@ -465,6 +464,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+           numberMenu.saveSequenceNumber(cell,xpos,ypos); 
            // StockArt.SmallO.drawChip(gc,this,(int)(gb.CELLSIZE/2),xpos,ypos,null);  
             if (drawhighlight)
              { // checking for pointable position
@@ -482,19 +482,34 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
             	StockArt.SmallO.drawChip(gc,this,size/2,xpos,ypos,null);
             }}
             cell.drawStack(gc,this,highlight,size,xpos,ypos,xpos, 0,0, null);
-            cell.setCurrentRotation(0);
             }
 
         }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,largePlainFont(),labelColor); 
         drawReserve(gc,gb,reserveRect,highlight,validMask);
         
         if(twistBoard)
         { drawingBoard = false;
         	GC.unsetRotatedContext(gc,highlight);
         }
+    }
+    // override for the standard numberMenu drawNumber
+    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
+    {	
+     	  GC.setFont(gc,font);
+     	  if(twistBoard)
+     	  {
+     		  GC.setRotation(gc,Math.PI/2,x+cellSize/2,y+cellSize/2);
+     		  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     		  GC.setRotation(gc,-Math.PI/2,x+cellSize/2,y+cellSize/2);
+     	  }
+     	  else
+     	  {
+     	  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     	  }
+
 
     }
-
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -657,7 +672,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        
+    	 numberMenu.recordSequenceNumber(bb.moveNumber);
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -1012,5 +1027,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
             setComment(comments);
         }
     }
+    public int getLastPlacement() { return bb.placementIndex; }
 }
 

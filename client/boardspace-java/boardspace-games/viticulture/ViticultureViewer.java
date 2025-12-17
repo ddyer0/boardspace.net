@@ -18,6 +18,7 @@ package viticulture;
 
 //TODO: side screens need to display the context sensitive cards for planting and building
 // TODO: add "blended wines" as a new option - use 2 or more cheap wines to make a better
+// TODO: preselect the font size for grapes and wines value
 import static viticulture.Viticulturemovespec.*;
 
 import java.awt.*;

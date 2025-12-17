@@ -38,7 +38,7 @@ Nov 12 2004  Iniital work in progress, support for Yinsh
 July 2005        Lightspeed progress toward a working version
 TODO: add eye control for drop destinations
 */
-public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants,PlacementProvider
+public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants
 {
      /**
 	 * 
@@ -965,7 +965,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         }
     }
 
-public int getLastPlacement(boolean empty) {
+public int getLastPlacement() {
 	return b.placementCount;
 }
 public boolean drawIsPossible() { return true; }

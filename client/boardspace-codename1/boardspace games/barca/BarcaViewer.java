@@ -44,7 +44,7 @@ import online.search.SimpleRobotProtocol;
 // TODO think about "consistent" and "3 player" variants
 // TODO annotations with perspective are placed a little oddly
 // TODO barca needs the draw offer/decline logic
-public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants,PlacementProvider
+public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants
 {	 	
     static final String Barca_SGF = "Barca"; // sgf game number allocated for barca
 
@@ -993,7 +993,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     }
 
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.moveNumber;
 	}
 }

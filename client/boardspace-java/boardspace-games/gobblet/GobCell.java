@@ -21,9 +21,10 @@ import gobblet.GobConstants.GobbletId;
 import lib.Random;
 
 import online.game.stackCell;
+import online.game.PlacementProvider;
 import online.game.cell;
 
-public class GobCell extends stackCell<GobCell,GobCup> 
+public class GobCell extends stackCell<GobCell,GobCup> implements PlacementProvider
 {	
 	public GobCup[]newComponentArray(int n) { return(new GobCup[n]); }
 	// constructor
@@ -34,7 +35,8 @@ public class GobCell extends stackCell<GobCell,GobCup>
 	public GobLine colInfo;		// summary of the current column during scoring
 	public GobLine diagonalDownInfo;	// diagonal info
 	public GobLine diagonalUpInfo;		// other diagonal info
-	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	// constructor
 	public GobCell(char c,int r) 
 	{	super(cell.Geometry.Oct,c,r);
@@ -92,5 +94,21 @@ public class GobCell extends stackCell<GobCell,GobCup>
 	}
 	
 	public static boolean sameCell(GobCell c,GobCell d) { return((c==null)?(d==null):c.sameCell(d)); }
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public void copyFrom(GobCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 
 }

@@ -35,11 +35,12 @@ class CellStack extends OStack<KulamiCell>
  * @author ddyer
  *
  */
-public class KulamiCell extends chipCell<KulamiCell,KulamiChip> 
+public class KulamiCell extends chipCell<KulamiCell,KulamiChip> implements PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	public SubBoard subBoard = null;	// the subBoard covering this cell
-	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public KulamiCell(Random r,KulamiId rack) { super(r,rack); }		// construct a cell not on the board
 	public KulamiCell(KulamiId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Square,rack,c,r);
@@ -73,6 +74,8 @@ public class KulamiCell extends chipCell<KulamiCell,KulamiChip>
 	{	//KulamiCell other = (KulamiCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -81,6 +84,8 @@ public class KulamiCell extends chipCell<KulamiCell,KulamiChip>
 	public void reInit()
 	{	super.reInit();
 		subBoard = null;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public KulamiCell(KulamiChip cont)
@@ -97,6 +102,10 @@ public class KulamiCell extends chipCell<KulamiCell,KulamiChip>
 	
 	public KulamiChip[] newComponentArray(int size) {
 		return(new KulamiChip[size]);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 	
 

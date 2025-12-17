@@ -21,13 +21,14 @@ import lib.G;
 import lib.HitPoint;
 import lib.OStack;
 import online.game.chipCell;
+import online.game.PlacementProvider;
 import online.game.chip;
 
 class CellStack extends OStack<UniverseCell>
 {
 	public UniverseCell[] newComponentArray(int n) { return(new UniverseCell[n]); }
 }
-public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements UniverseConstants
+public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements UniverseConstants,PlacementProvider
 {	
 	public int universeRegionNumber = 0;
 	public int sweep_counter = 0;
@@ -41,6 +42,8 @@ public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements
 	boolean startCell = false;
 	public UniverseChip given = null;	// if this cell has a required value, this is the chip
 	int diagonalResult =0;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public double sensitiveSizeMultiplier() { return(5.0); }
 	public void reInit()
 		{ super.reInit();
@@ -51,9 +54,13 @@ public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements
 			diagonalResult = 0;
 			startCell = false;
 			sudokuValue = 0;
+			lastPicked = -1;
+			lastDropped = -1;
 			given = null;
 			canBePlayed = false;
 		}
+
+
 	public UniverseId rackLocation() { return((UniverseId)rackLocation); }
 	public UniverseChip getGiven() { return(given); }
 	public void setGiven(UniverseChip ch) { G.Assert(ch==null || ch.isGiven(),"not a given"); given = ch; }
@@ -81,6 +88,8 @@ public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements
 		given = other.given;
 		startCell = other.startCell;
 		sudokuValue = other.sudokuValue;
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
 		super.copyFrom(other);
 	}
 	void makeStart(int idx)
@@ -139,6 +148,9 @@ public class UniverseCell extends chipCell<UniverseCell,UniverseChip> implements
 		sudokuValue = 0;
 		patternStep = 0;
 		return(ch);
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 	
 

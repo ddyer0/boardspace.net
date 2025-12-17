@@ -21,9 +21,9 @@ import common.GameInfo;
 import static pendulum.PendulumMovespec.*;
 
 import java.awt.*;
+
 import online.common.*;
 import java.util.*;
-
 import bridge.Config;
 import lib.Graphics;
 import lib.AR;
@@ -99,7 +99,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implements PendulumConstants, PlacementProvider
+public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implements PendulumConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -395,7 +395,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	G.SetRect(councilRect,(int)(boardX+0.19*boardW),(int)(boardY+0.73*boardH),(int)(0.30*boardW),(int)(0.22*boardH));
@@ -868,6 +868,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         // the benefit of this is we have a selection to use for tooltips and other logic,
         // in this case, tooltips for individual cards and a separate selection to view
         // the cards enlarged.
+    	numberMenu.saveSequenceNumber(cell,xpos,ypos);
         boolean hit = cell.drawStack(gc,this,any,siz,xpos,ypos,0,xstep,ystep,back);
         if(hit)
         		{
@@ -1025,6 +1026,23 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	PlayerBoard pb = gb.getPlayerBoard(sim ? guiPlayer : gb.whoseTurn);
     	return pb.uiState;
     }
+    public void drawPlayerStuff(Graphics gc,PendulumBoard gb,
+    		HitPoint selectPos,HitPoint ourTurnSelect,HitPoint buttonSelect,
+    		Hashtable<PendulumCell,PendulumMovespec> targets)
+    {	int whoseTurn = gb.whoseTurn;
+    	boolean planned = plannedSeating();
+        for(int player=0;player<gb.players_in_game;player++)
+       	{ commonPlayer pl = getPlayerOrTemp(player);
+       	  pl.setRotatedContext(gc, selectPos,false);
+    	   drawPlayerBoard(gc, chipRects[player],boardRects[player],pl, ourTurnSelect,gb,targets,selectPos);
+    	   if(planned && whoseTurn==player)
+    	   {
+    		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
+   					HighlightColor, rackBackGroundColor);
+    	   }
+       	   pl.setRotatedContext(gc, selectPos,true);
+       	}
+    }
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -1091,10 +1109,10 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
        
        
        int whoseTurn = gb.whoseTurn;
-       boolean planned = plannedSeating();
        commonPlayer cpl = getPlayerOrTemp(whoseTurn);
        double messageRotation = cpl.messageRotation();
- 
+       boolean planned = plannedSeating();
+
        if (state != PendulumState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
@@ -1139,21 +1157,17 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 				}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
         }
-
+       
+       numberMenu.clearSequenceNumbers();
+ 
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,targets,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
        
-       for(int player=0;player<gb.players_in_game;player++)
-       	{ commonPlayer pl = getPlayerOrTemp(player);
-       	  pl.setRotatedContext(gc, selectPos,false);
-    	   drawPlayerBoard(gc, chipRects[player],boardRects[player],pl, ourTurnSelect,gb,targets,selectPos);
-    	   if(planned && whoseTurn==player)
-    	   {
-    		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
-   					HighlightColor, rackBackGroundColor);
-    	   }
-       	   pl.setRotatedContext(gc, selectPos,true);
-       	}
+       drawPlayerStuff(gc,gb,
+    		   selectPos,ourTurnSelect,buttonSelect,
+    		   targets);
+       
+       numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
        
        GC.setFont(gc,standardBoldFont());
        
@@ -1189,16 +1203,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         zoomer.drawMagnifier(gc,selectPos,councilRect,0.1,0.94,0.94,0);
     }
 
-    /**
-     * normally, no moves should be transmitted during in-game review.  This
-     * allows an override for particular moves. Presumably moves that only
-     * affect the global state, not the particular board position.  
-     */
-    public boolean canSendAnyTime(commonMove m)
-    {
-    	return super.canSendAnyTime(m);
-    			//|| (m.op==MOVE_SHOW);
-    }
+ 
     public commonPlayer currentRobotPlayer()
     {
     	if(simultaneousTurnsAllowed())
@@ -1292,7 +1297,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	 }
     	 
     	 handleExecute(bb,mm,replay);
-    	 
+    	 numberMenu.recordSequenceNumber(bb.moveNumber);
         //G.print("after "+m+" "+m.purpleTimer+" "+replay+" "+bb.purpleTimer.timeToRun);
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -1403,53 +1408,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
       //
       //}
 
-    
-    /** 
-     * this method is called from deep inside PerformAndTransmit, at the point
-     * where the move has been executed and the history has been edited.  It's
-     * purpose is to verify that the history accurately represents the current
-     * state of the game, and that the fundamental game machinery is in a consistent
-     * and reproducible state.  Basically, it works by creating a duplicate board
-     * resetting it and feeding the duplicate the entire history, and then verifying 
-     * that the duplicate is the same as the original board.  It's perfectly ok, during
-     * debugging and development, to temporarily change this method into a no-op, but
-     * be warned if you do this because it is throwing an error, there are other problems
-     * that need to be fixed eventually.
-     */
-    public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
-    	super.verifyGameRecord();
-    }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
-    
+     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 
@@ -1471,14 +1430,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         } 
         }
     }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
+
 	  public boolean allowResetUndo()
 	  {
 		  if(simultaneousTurnsAllowed())
@@ -1492,27 +1444,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
 		  }
 		  return super.allowResetUndo();
 	  }
-	  public boolean allowUndo()
-	  {		return super.allowUndo();
-	  }
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {	
-	    	super.performReset();
-	    }
+
   private PendulumChip bigChip = null;
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
@@ -1606,6 +1538,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         case PlayerBlueBenefits:
         case PlayerYellowBenefits:
         case PlayerBrownBenefits:
+        case RewardDeck:
         case PlayerRedBenefits:
         case ProvinceCardStack:
         case GreenActionA:
@@ -2039,6 +1972,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     //public Text colorize(String str)
     //{	return(TextChunk.create(str));
     //}
-    
+	
+    public int getLastPlacement() { return bb.placementIndex; }
 }
 

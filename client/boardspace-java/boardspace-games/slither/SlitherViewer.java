@@ -95,7 +95,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements SlitherConstants, PlacementProvider
+public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements SlitherConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -1191,7 +1191,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.lastPlacedIndex;
 	}
 	 

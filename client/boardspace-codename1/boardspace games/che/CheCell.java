@@ -18,6 +18,7 @@ package che;
 import lib.Random;
 import che.CheConstants.CheId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.cell;
 import online.game.chipCell;
 
@@ -33,9 +34,11 @@ class CellStack extends OStack<CheCell>
 
 
 //
-public class CheCell extends chipCell<CheCell,CheChip>
+public class CheCell extends chipCell<CheCell,CheChip> implements PlacementProvider
 {	
 	public int sweep_counter;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public String cellName="";			// the history name for this cell
 	public CheCell() { super(); }		// construct a cell not on the board
 	public CheCell(char c,int r) 		// construct a cell on the board
@@ -43,7 +46,12 @@ public class CheCell extends chipCell<CheCell,CheChip>
 		rackLocation = CheId.BoardLocation;
 	};
 	
-	public void reInit() { super.reInit(); cellName=""; }
+	public void reInit() 
+	{ 	super.reInit(); 
+		cellName=""; 
+		lastPicked = -1;
+		lastDropped = -1;
+	}
 	
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public CheCell(Random r,CheId loc,CheChip cont)
@@ -56,6 +64,8 @@ public class CheCell extends chipCell<CheCell,CheChip>
 	public void copyFrom(CheCell other)
 	{	super.copyFrom(other);
 		cellName = other.cellName;
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
 	}
 	public boolean sameCell(CheCell other)
 	{	return(super.sameCell(other)
@@ -85,6 +95,10 @@ public class CheCell extends chipCell<CheCell,CheChip>
 		}
 		}
 		return(true);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 
 }

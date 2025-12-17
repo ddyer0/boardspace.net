@@ -654,7 +654,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.dropStep);
 	}
 

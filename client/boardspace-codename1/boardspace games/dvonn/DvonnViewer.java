@@ -792,7 +792,7 @@ private void playSounds(DvonnMovespec m)
         }
     }
     
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.moveNumber;
 	}
 }

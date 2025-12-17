@@ -16,7 +16,6 @@
  */
 package mbrane;
 
-
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;

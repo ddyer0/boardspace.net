@@ -226,7 +226,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	//
         int zoomW = CELLSIZE*5;
 
-        placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
  
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 
@@ -357,6 +357,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         //System.out.println("cs "+cs/CELLSIZE+ " "+cs+" "+CELLSIZE);
         int left = G.Left(tbRect);
         int top = G.Bottom(tbRect);
+        numberMenu.clearSequenceNumbers();
         for(Enumeration<CheCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
         {
                 CheCell cell = cells.nextElement();
@@ -366,6 +367,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
                 boolean isADest = dests.get(cell)!=null;
                 boolean isASource = gb.isSource(cell) || gb.isDest(cell);
                 CheChip piece = cell.topChip();
+                numberMenu.saveSequenceNumber(cell,xpos,ypos);
                 boolean hitpoint = !somehit 
                 	&& canhit
                 	&& G.pointInRect(xpos,ypos,tbRect)
@@ -415,7 +417,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 
           }
         doBoardDrag(tbRect,anySelect,cellSize,CheId.InvisibleDragBoard); 
-        
+        numberMenu.drawSequenceNumbers(gc,cellSize,labelFont,labelColor);
  		GC.setClip(gc,oldClip);
     }
 
@@ -533,6 +535,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber());
 		lastDropped = bb.lastDropped;	// this is for the image adjustment logic
 		if(replay.animate) { playSounds(mm); }
        return (true);
@@ -805,6 +808,9 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         }
     }
 
-
+    public int getLastPlacement()
+    {
+    	return bb.placementIndex;
+    }
 }
 

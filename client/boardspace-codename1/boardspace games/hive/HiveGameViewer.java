@@ -47,7 +47,7 @@ import lib.Tokenizer;
  * June 2006  initial work in progress.  
 
 */
-public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants,PlacementProvider
+public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants
 {       
     // file names for jpeg images and masks
     static final String ImageDir = "/hive/images/";
@@ -1149,7 +1149,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.lastPlacement;
 	}
 

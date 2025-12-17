@@ -76,6 +76,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     // private variables
     //
     private int sweep_counter=0;
+	public int placementIndex = -1;
 	
     public int chips_on_board[] = new int[2];			// number of chips currently on the board
     public TruCell bases[][] = new TruCell[2][4];
@@ -237,6 +238,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
  
         // here, check any other state of the board to see if
         G.Assert(sameCells(s_focus,from_b.s_focus), "focus not the same");
+        G.Assert(undoInfo==from_b.undoInfo,"undoInfo mismatch");
         G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
     }
 
@@ -258,6 +260,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 		//v ^= chip.Digest(r,sm_picked[sm_step]);//if(pickedObject!=null) { v^= (pickedObject.Digest()<<1); }
 		v ^= chip.Digest(r,sm_picked[sm_step]);
 		v ^= Digest(r,captures);
+		v ^= Digest(r,undoInfo);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
 		return (v);
     }
@@ -283,7 +286,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
        	pickedSplitMoves = from_b.pickedSplitMoves;
        	pickedRiverMoves = from_b.pickedRiverMoves;
         sm_step = from_b.sm_step;
-       
+        undoInfo = from_b.undoInfo;
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
 
@@ -315,7 +319,9 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
        Init_Standard(gtype,randomKey);
        allCells.setDigestChain(r);
        sm_step = 0;
+       undoInfo = 0;
        moveNumber = 1;
+       placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -469,6 +475,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     if(dr!=null)
     	{
     	sm_dest[sm_step] = null;
+    	dr.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	if(pickedObject!=null)
     	{
     	dr.removeTop(pickedObject);
@@ -491,6 +499,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     		{ 
     		chips_on_board[playerIndex(po)]++; 
     		pickedSource.addChip(po);}
+    		pickedSource.lastPicked = lastPickedIndex;
     		}
     	setState(nextState);
     	return(pickedSource);
@@ -879,6 +888,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     private void doDone(replayMode replay)
     {	
         acceptPlacement();
+        placementIndex++;
 
         if (board_state==TruchetState.RESIGN_STATE)
         {	setGameOver(false,true);
@@ -900,7 +910,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         	else {setNextPlayer(); setNextStateAfterDone(); }
         }
     }
-    private void flipCell (TruCell c)
+    private TruChip flipCell (TruCell c)
     {
    	 G.Assert(c.chipIndex==0,"Cell is empty");
    	 invalidateRegionSize(c);
@@ -908,6 +918,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 	 TruChip newchip = tTiles[chip.chipNumber^3].topChip();
 	 c.addTile(newchip);
 	 markRegionSizes(c);
+	 return newchip;
     }
     public void reallyMoveRestOfStack(TruCell pickedSource,TruCell droppedDest,replayMode replay)
     {
@@ -975,11 +986,23 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
    		break;
     	}
     }
- 
+    private int lastFlippedIndex = -2;
     public void doFlip(TruMovespec m)
     {
      TruCell c = getCell(m.from_col,m.from_row);
-   	 flipCell(c);
+   	 m.obj = flipCell(c);
+   	 if(c.lastFlipped == placementIndex)
+   	 {
+   		 c.lastFlipped = lastFlippedIndex;
+   		 placementIndex--;
+   	 }
+   	 else
+   	 {
+   		 lastFlippedIndex = c.lastFlipped;
+   	   	 c.lastFlipped = placementIndex;
+   	   	 c.lastDropped = placementIndex;
+   	   	 placementIndex++;
+  	 }
    	 switch(board_state)
    	 {	
    	 default: throw G.Error("not expecting flip in state %s",board_state);
@@ -1002,6 +1025,11 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 		TruCell source = getCell(m.from_col, m.from_row);
 		pickBoardLocation(source);
 		dropBoardLocation(dest); 
+		lastPickedIndex = source.lastPicked;
+		lastDroppedIndex = dest.lastDropped;
+		source.lastPicked = placementIndex;
+		dest.lastDropped = placementIndex;
+		placementIndex++;
 		if(replay.animate)
 		{
 			animationStack.push(source);
@@ -1041,12 +1069,14 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	TruCell from = getCell(m.from_col,m.from_row);
     	String info = m.splitInfo;
     	int len = info.length();
+    	from.lastDropped = placementIndex;
     	if(from!=center) { reallyMoveRestOfStack(from,center,replay); }
     	for(int i=0;i<len;i++)
     	{	char ch = info.charAt(i);
     	 	int dir = directionNumber(ch);
     	 	TruCell dest = center.exitTo(dir);
     	 	pickBoardLocation(dest);
+    	 	dest.lastPicked = placementIndex;
     		dropBoardLocation(center); 
     		if(replay.animate)
     		{
@@ -1063,7 +1093,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	 	G.Assert(dest.chipIndex==0,"Merge took everything");
     	}}
 
-    	m.undoInfo = doCaptures(center,replay);
+    	undoInfo = doCaptures(center,replay);
     	G.Assert(center.chipIndex==len,"merge ends with correct height");
     }
     public void undoMerge(TruMovespec m)
@@ -1080,7 +1110,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     		dropBoardLocation(dest); 
      	}
        	G.Assert(center.chipIndex==0,"unmerge ends empty");
-       	undoCaptures(center,nextPlayer[m.player],m.undoInfo);
+       	undoCaptures(center,nextPlayer[m.player],undoInfo);
    }
     
     public void doSplit(TruMovespec m,replayMode replay)
@@ -1090,7 +1120,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
        	String info = m.splitInfo;
     	int len = info.length();
     	G.Assert(center.chipIndex==len,"Right number to move");
-
+    	center.lastPicked = placementIndex;
       	for(int i=0;i<len;i++)
     	{
     		char ch = info.charAt(i);
@@ -1106,19 +1136,20 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	 	TruCell dest = center.exitTo(dir);
     	 	pickBoardLocation(center);
     	 	dropBoardLocation(dest);
+    	 	dest.lastDropped = placementIndex;
     	 	if(replay.animate)
     	 	{
     	 		animationStack.push(center);
     	 		animationStack.push(dest);
     	 	}
        	}
-       	m.undoInfo=0;
+       	undoInfo=0;
        	for(int i=0,multiplier=1;i<len;i++,multiplier*=10)
     	{	// encode the number of captures for each position of the split as 10*pos
     		char ch = info.charAt(i);
     	 	int dir = directionNumber(ch);
     	 	TruCell dest = center.exitTo(dir);
-    	 	m.undoInfo += multiplier*doCaptures(dest,replay);
+    	 	undoInfo += multiplier*doCaptures(dest,replay);
        	}
        	G.Assert(center.chipIndex==0,"split ends empty");
     }
@@ -1137,7 +1168,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	 	pickBoardLocation(dest);
     	 	dropBoardLocation(center);
        	}
-       	for(int i=0,capinfo=m.undoInfo;i<len;i++,capinfo/=10)
+       	for(int i=0,capinfo=undoInfo;i<len;i++,capinfo/=10)
     	{	// encode the number of captures for each position of the split as 10*pos
     		int thiscap = capinfo%10;
     		if(thiscap>0)
@@ -1160,6 +1191,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
    	  if(sm_picked[sm_step]!=null) { c = unPickObject(); }
    	  return(c);
     }
+    int lastDroppedIndex = -1;
+    int lastPickedIndex = -1;
     public boolean Execute(commonMove mm,replayMode replay)
     {	TruMovespec m = (TruMovespec)mm;
         TruChip pickedObject = sm_picked[sm_step];
@@ -1197,6 +1230,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         	break;
         case MOVE_DROPB:
         	G.Assert(pickedObject!=null,"something is moving");
+			TruCell droppedDest = getCell(TruId.BoardLocation,m.to_col, m.to_row);
 			switch(board_state)
 			{ default: throw G.Error("Not expecting drop in state %s",board_state);
 			  case MSM_STATE:
@@ -1207,18 +1241,22 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 			  case M_STATE:
 			  case M_DONE_STATE:
 			  case SORM_STATE:
-			  case PUZZLE_STATE:  break;
+			  case PUZZLE_STATE:  
+				  break;
 		      case DRAW_STATE:
-			  case CONFIRM_STATE: unDropObject(); unPickObject(); break;
+			  case CONFIRM_STATE: unDropObject(); unPickObject(); 
+			  	break;
 			  case PLAY_STATE:
-
 				  break;
 			}
+			lastDroppedIndex = droppedDest.lastDropped;
+			droppedDest.lastDropped = placementIndex;
+			TruCell pickedSource = sm_source[sm_step];
             dropObject(TruId.BoardLocation,m.to_col, m.to_row);
             if(replay==replayMode.Single)
             {
             	animationStack.push(sm_source[sm_step]);
-            	animationStack.push(getCell(TruId.BoardLocation,m.to_col, m.to_row));
+            	animationStack.push(droppedDest);
             }
             if(sm_source[sm_step]==sm_dest[sm_step]) 
             	{ sm_source[sm_step]=sm_dest[sm_step]=null;
@@ -1229,6 +1267,31 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
             	moveRestOfStack(replay);
            		setNextStateAfterDrop(replay);
            		}
+            if( pickedSource.intersectionColor()!= droppedDest.intersectionColor())
+            {	// if this is a pick/drop sequence that specifies a split or join,
+            	// add splitinfo that corresponds to the move.  This is choreographed
+            	// with the log's text icons to produce a nice looking graphic
+            	if(pickedSource.col!=droppedDest.col)
+            	{
+            		if(pickedSource.col<droppedDest.col) {	m.splitInfo = "E";  }
+            		else { m.splitInfo = "W"; }
+            	}
+            	else
+            	{
+             		if(pickedSource.row>droppedDest.row) {	m.splitInfo = "S"; }
+            		else { m.splitInfo = "N"; }
+            	}
+            	if((board_state==TruchetState.M_DONE_STATE)
+            			||(board_state==TruchetState.M_STATE))
+            		{ // if this is a merge, encode as lower case as a flag
+            		  // note that some moves start ambigous and could evolve
+            		  // into either a split or a merge.
+            		m.splitInfo = m.splitInfo.toLowerCase(); 
+            		}
+            	
+            	
+            }
+            	
             
             break;
 
@@ -1244,12 +1307,18 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         		  case M_STATE:
         		  case M_DONE_STATE:
         		  case CONFIRM_STATE:
+        			  // this flags a subsequent pickb in a chain of pickb/dropb moves that
+        			  // together specify a split or merge in the ui.  This flag causes
+        			  // the move to generate no game long entry, as the full graphic will
+        			  // have been generated by a previous move.
+        		  {
+        			  m.splitInfo = "";
         			  TruCell dcell = getCell(m.from_col,m.from_row);
         	        	if(isDest(dcell))
         	        		{ // picked what we dropped, undo
         	        		unDropObject(); 
         	        		break;
-        	        		}
+        	        		}}
         	        	// fall through
 					//$FALL-THROUGH$
         		  case MSM_STATE:
@@ -1258,9 +1327,27 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         		  case STARTSM_STATE:
       		  	  case PLAY_STATE:
          		  case PUZZLE_STATE:
+         		  {	
+         			  switch(board_state)
+         			  {
+         			  case STARTS_STATE:
+         			  case STARTSM_STATE:
+         			  case STARTM_STATE:
+         				  placementIndex++;
+         				  break;
+         			  default: break;
+         			  }
+         			  
          		     // stay in the same state until we drop somewhere.
+        			  TruCell dcell = getCell(m.from_col,m.from_row);
       		  		 pickObject(TruId.BoardLocation, m.from_col, m.from_row);
+        			  //if(board_state==TruchetState.PLAY_STATE)
+        			  {
+         			  lastPickedIndex = dcell.lastPicked;
+        			  dcell.lastPicked = placementIndex;
+        			  }
       		  		 break;      			  
+         		  }
         		  }
          		}
  
@@ -1499,6 +1586,10 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
   				);
   }
  
+  private StateStack robotState = new StateStack();
+  private CellStack robotCell = new CellStack();
+  private IStack robotUndo = new IStack();
+  private int undoInfo = 0;
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -1507,15 +1598,17 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     executing.
     */
     public void RobotExecute(TruMovespec m)
-    {
-        m.state = board_state; //record the starting state. The most reliable
-        m.undoFocus = s_focus;
+    {	robotState.push(board_state);
+    	robotCell.push(s_focus);
         // to undo state transistions is to simple put the original state back.
         int lvl = sm_step;
+        undoInfo = 0;
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         //System.out.println("Ex "+m+" "+getCell('H',4).region_size);
         if (Execute(m,replayMode.Replay))
-        {	switch(m.op)
+        {	robotUndo.push(undoInfo);
+        	undoInfo = 0;
+        	switch(m.op)
         	{
         	case MOVE_FLIP:
         	case MOVE_BOARD_BOARD:
@@ -1547,9 +1640,9 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     //
     public void UnExecute(TruMovespec m)
     {
-        //System.out.println("U "+m+" for "+whoseTurn);
     	int lvl = sm_step;
      	//System.out.println("un "+m+" "+getCell('H',4).region_size);
+    	undoInfo = robotUndo.pop();
         switch (m.op)
         {
    	    default:
@@ -1590,8 +1683,9 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 		sm_dest[lvl]=null;
 		sm_source[lvl]=null;
 		sm_picked[lvl]=null;
-        s_focus = m.undoFocus;
-        setState(m.state);
+		undoInfo = 0;
+        s_focus = robotCell.pop();
+        setState(robotState.pop());
         if(m.player!=whoseTurn) 
         	{ moveNumber--; 
         	setWhoseTurn(m.player);

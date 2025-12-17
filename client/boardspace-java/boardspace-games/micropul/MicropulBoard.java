@@ -86,7 +86,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     public MicropulCell droppedDest = null;
     public MicropulChip lastDroppedDest = null;	// for image adjustment logic
 	private MicropulCell occupiedCells = null;
- 
+	public int placementIndex = -1;
 	public int jewelOwner(MicropulChip chip)
 	{
 		return(chip==playerChip[0] ? 0 : 1);
@@ -311,7 +311,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         pickedObject = from_b.pickedObject;
         droppedDest = getCell(from_b.droppedDest);
         pickedSource = getCell(from_b.pickedSource);
-        
+        placementIndex = from_b.placementIndex;
         lastPicked = null;
         {
             MicropulCell oo = from_b.occupiedCells;
@@ -341,6 +341,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
        //}
        //}
         moveNumber = 1;
+        placementIndex = 1;
         extraTurns = 0;
 
         // note that firstPlayer is NOT initialized here
@@ -485,6 +486,9 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         pickedObject = null;
     	}
      }
+    
+    int lastDroppedIndex = -1;
+    int lastPickedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -492,6 +496,8 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     {
     	if(droppedDest!=null) 
     	{	pickedObject = SetBoard(droppedDest,null,0); 
+    		droppedDest.lastDropped = lastDroppedIndex;
+    		placementIndex--;
     		droppedDest = null;
      	}
     }
@@ -501,6 +507,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     private void unPickObject()
     {	if(pickedSource!=null) 
     		{ SetBoard(pickedSource,pickedObject,pickedRotation); 
+    		  pickedSource.lastPicked = lastPickedIndex;
     		  pickedObject = null;
     		  pickedSource = null;
     		}
@@ -533,6 +540,9 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
       {
       if(pickedObject!=null)
 		{ c.addChip(pickedObject,pickedRotation);
+		  lastDroppedIndex = c.lastDropped;
+		  c.lastDropped = placementIndex;
+		  placementIndex++;
 		  c.masked = pickedSource.masked;
 	      droppedDest = c;
 		  pickedObject = null;
@@ -549,6 +559,9 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
        	c.rotation[c.chipIndex] = rot;
         lastDroppedDest = pickedObject;
         droppedDest = c;
+        lastDroppedIndex = c.lastDropped;
+        c.lastDropped = placementIndex;
+        placementIndex++;
         pickedObject = null;
       	}
       	else
@@ -625,6 +638,8 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         else
         {
         acceptPlacement();
+        lastPickedIndex = src.lastPicked;
+        src.lastPicked = placementIndex;
         pickedRotation = src.topRotation();
 		lastPicked = pickedObject = src.removeTop();
 		pickedSource = src;
@@ -634,6 +649,8 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     private void pickFromBoard(char col,int row)
     {
        	MicropulCell c = getCell(col,row);
+       	lastPickedIndex = c.lastPicked;
+       	c.lastPicked = placementIndex;
        	boolean wasDest = isDest(c);
        	unDropObject(); 
        	if(!wasDest)
@@ -706,7 +723,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     private void doDone(replayMode replay)
     {	MicropulCell dest = droppedDest;
         acceptPlacement();
-        
+        placementIndex++;
         if (board_state==MicropulState.RESIGN_STATE)
         {
             win[nextPlayer[whoseTurn]] = true;
@@ -722,17 +739,22 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         int pull = top.countActivations(dest);
         while((pull-- > 0) && (core.height()>0))
         {	int rot = core.topRotation();
+        	MicropulCell sup = supply[whoseTurn];
         	MicropulChip xx = core.removeTop();
-        	supply[whoseTurn].addChip(xx,rot);
+        	sup.addChip(xx,rot);
+        	core.lastPicked = placementIndex;
+        	sup.lastDropped = placementIndex;
+        	placementIndex++;
         	if(replay.animate)
         	{
         	animationStack.push(core);
-        	animationStack.push(supply[whoseTurn]);
+        	animationStack.push(sup);
         	}
         }
         extraTurns += top.countNewturns(dest);
         }
-        
+        placementIndex++;
+ 
         {
         switch(dest.rackLocation())
         {

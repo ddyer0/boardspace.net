@@ -21,10 +21,11 @@ import lib.Graphics;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import online.game.PlacementProvider;
 
 
 // stack of plateau pieces
-public class pstack implements PlateauConstants
+public class pstack implements PlateauConstants, PlacementProvider
 {
     PlateauBoard b = null; // the associated board
     int stacknumber = -1; // index into the stacks array
@@ -32,6 +33,9 @@ public class pstack implements PlateauConstants
     int owner = -1; // the player who owns it
     int col_a_d; // the row and column for board stacks
     int row_1_4;
+    public int lastPicked = -1;
+    public int lastDropped = -1;
+    public int lastFlipped = -1;
     Vector<piece> pieces = new Vector<piece>(); // the actual pieces in the stack
     int drawnSize = -1;
     // constructor
@@ -525,7 +529,9 @@ public class pstack implements PlateauConstants
         col_a_d = from.col_a_d;
         owner = from.owner;
         origin = from.origin;
-
+        lastPicked = from.lastPicked;
+        lastDropped = from.lastDropped;
+        lastFlipped = from.lastFlipped;
         for (int i = 0; i < n; i++)
         {
             piece hispiece = from.elementAt(i);
@@ -661,4 +667,8 @@ public class pstack implements PlateauConstants
             }
         }
     }
+
+    public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 }

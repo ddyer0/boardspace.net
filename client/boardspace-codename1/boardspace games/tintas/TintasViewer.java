@@ -217,7 +217,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         int stateY = boardY-stateH/3;
         int stateX = boardX;
 
-        placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,eyeRect,noChatRect);
+        placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY-(perspective?(boardW-boardH)/2:0),
     			boardW,perspective ? boardW : boardH);
 
@@ -394,6 +394,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
     	TintasCell pawnLocation = gb.pawnStack.top();
+     	numberMenu.clearSequenceNumbers();
     	boolean perspective = usePerspective();
     	boolean showTargets = eyeRect.isOnNow();
         for(TintasCell cell = gb.allCells; cell!=null; cell=cell.next)
@@ -410,6 +411,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
              { // checking for pointable position
            	 	StockArt.SmallO.drawChip(gc,this,(int)(gb.cellSize()*((perspective ? 0 : 1)+(isSource ? 2 : 3))),xpos,ypos,null);                
              }
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
 
             //StockArt.SmallO.drawChip(gc,this,gb.cellSize(),xpos,ypos,null);     
             int sz = (int)(gb.cellSize() - yscale);
@@ -437,6 +439,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
             	}
             	}
             }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
   
     /**
@@ -564,7 +567,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     {	
       
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -940,6 +943,14 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         {
             setComment(comments);
         }
+    }
+    
+    //
+    // support for the last move "numberMenu" logic
+    //   
+    public int getLastPlacement()
+    {
+    	return bb.placementIndex;
     }
 }
 

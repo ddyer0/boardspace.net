@@ -119,7 +119,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original twixt hierarchy to get back the original code.
  *  
 */
-public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants,PlacementProvider
+public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);
@@ -1501,7 +1501,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.moveNumber;
 	}
 }

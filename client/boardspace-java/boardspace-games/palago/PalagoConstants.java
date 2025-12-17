@@ -18,6 +18,7 @@ package palago;
 
 import lib.CellId;
 import lib.InternationalStrings;
+import lib.OStack;
 import online.game.BaseBoard.BoardState;
 
 
@@ -26,6 +27,7 @@ public interface PalagoConstants
 	//  they represent places you can click to pick up or drop a stone
 	
 	static final String TileColorMessage = "select tile color";
+	
 	
 	enum PalagoId implements CellId
 	{
@@ -39,7 +41,12 @@ public interface PalagoConstants
     // init strings for variations of the game.
     static final String Palago_INIT = "palago"; //init for standard game
  
-
+    public class StateStack extends OStack<PalagoState>
+    {
+		public PalagoState[] newComponentArray(int sz) {
+			return new PalagoState[sz];
+		}
+    }
     public enum PalagoState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),

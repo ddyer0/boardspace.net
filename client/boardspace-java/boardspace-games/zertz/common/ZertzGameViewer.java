@@ -47,7 +47,7 @@ Feb 29 2004  Iniital work in progress, support for Zertz
 Oct 2004 Added simple variations branching and scrolling
   Split some sharable elements into commonCanvas
 */
-public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants,PlacementProvider
+public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants
 {
     /**
 	 * 
@@ -101,7 +101,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	gameIcon = zChip.Icon.image;
     }
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {    
+    	enableAutoDone = true;
         super.init(info,frame);
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
@@ -629,8 +630,15 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     // and discarded.  Return null if nothing should be added to the history
     //
     public commonMove EditHistory(commonMove nmove)
-    {	movespec newmove = (movespec)super.EditHistory(nmove,nmove.op==MOVE_SETBOARD);
-        return (newmove);
+    {	movespec newmove = (movespec)nmove;
+    	boolean oknone = false;
+    	if(  ((newmove.op == MOVE_RtoR)||(newmove.op==MOVE_BtoB))
+    		&& newmove.from_col==newmove.to_col
+    		&& newmove.from_row==newmove.to_row)
+    	{
+    		oknone = true;
+    	}
+    	return super.EditHistory(nmove,oknone||(nmove.op==MOVE_SETBOARD));
     }
 
     public void StartDragging(HitPoint hp)
@@ -660,7 +668,10 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         	}
     	}
     }
-
+    public void verifyGameRecord()
+    {
+    	super.verifyGameRecord();
+    }
   
     public void StopDragging(HitPoint hp)
     {
@@ -897,7 +908,7 @@ summary:
     }
 
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 			return b.placementIndex;
 	}
 

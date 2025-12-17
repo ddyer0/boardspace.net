@@ -52,7 +52,7 @@ import lib.Tokenizer;
  * TODO: make castling more intuitive by moving the rook at the "confirm" stage
  * 
 */
-public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, PlacementProvider
+public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants
 {
 	static final String Chess_SGF = "Chess"; // sgf game number allocated for lyngk
     static final String ImageDir = "/chess/images/";
@@ -999,7 +999,7 @@ private void playSounds(commonMove m)
         }
     }
 
-    public int getLastPlacement(boolean empty) {
+    public int getLastPlacement() {
     	return b.lastPlacedIndex;
 	}
 }

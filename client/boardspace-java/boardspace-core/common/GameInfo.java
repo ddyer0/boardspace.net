@@ -2171,7 +2171,7 @@ synchronized(allGames) {
 	put(new GameInfo(514,ES.game,48,"CD",TilePatternGames,"CookieDisco","Cookie-Disco-crawl",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
-				"cookie.CookieViewer","/cookie/english/COOKIE DISCO - THE CRAWL COOKIE.pdf","about_cookie-disco.html",
+				"cookie.CookieViewer","https://boardspace.net/cookie/english/COOKIE%20DISCO%20-%20THE%20CRAWL%20COOKIE.pdf","about_cookie-disco.html",
 				null,true, RedOverGreen));
 	put(new GameInfo(515,ES.game,58,"SY",TilePatternGames,"CookieDisco","Syzygy",
 			TwoBotsPlus,

@@ -693,7 +693,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         drawAuxControls(gc,nonDragSelect);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return bb.dropState;
     }

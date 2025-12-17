@@ -79,7 +79,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
     public VolcanoCell captures[] = new VolcanoCell[NUMPLAYERS];	// pieces captured per player
     public int capture_counts[][][] = new int[NUMPLAYERS][Pyramid.nColors][Pyramid.nSizes];
     public int nonuniform = 0;
-    public int placementIndex = 0;
+    public int placementIndex = -1;
     public int capture_size[] = new int[Pyramid.nSizes];
     public boolean gameOver[] = new boolean[NUMPLAYERS]; 
     public int colorSet[] = new int[NUMPLAYERS];

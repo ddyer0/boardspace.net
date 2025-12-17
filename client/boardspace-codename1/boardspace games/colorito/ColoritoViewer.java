@@ -432,7 +432,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         drawVcrGroup(ourSelect, gc);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.dropState;
     }

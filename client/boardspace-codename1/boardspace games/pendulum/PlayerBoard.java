@@ -488,7 +488,8 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
 	UIState dropState = null;
 	boolean dropPair = false;		// true if a drop is hard-paired with the pick. Ie; from a robot
 	int dropStateCount = 0;
-	
+	int lastPickedIndex = -1;
+	int lastDroppedIndex = -1;
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
@@ -512,6 +513,8 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     	if(index>=0) 
     	{
     	pickedSource = c;
+    	lastPickedIndex = c.lastPicked;
+    	c.lastPicked = parent.placementIndex;
     	pickedIndex = index;
     	pickedObject = c.removeChipAtIndex(index); 
     	PColor co = pickedObject.color;
@@ -540,6 +543,7 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     	}
     	// save this for the contingency of resolving privilege
     	pickedSource.dropper = m;
+    	pickedSource.lastPicked = lastPickedIndex;
     	alwaysUnpickObject();
     	return true;
     }
@@ -569,6 +573,10 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     	dropStateCount = uiCount;
     	c.addChip(pickedObject);
     	c.dropper = m;
+    	lastDroppedIndex = c.lastDropped;
+    	c.lastDropped = parent.placementIndex;
+    	if(pickedSource!=null) { pickedSource.lastPicked = c.lastDropped; }
+    	parent.placementIndex++;
     	pickedObject = null;
     	return true;
     }
@@ -649,6 +657,8 @@ public class PlayerBoard implements PendulumConstants,Digestable,CompareTo<Playe
     	uiState = (dropState);
     	pickedObject = droppedDest.removeChip(droppedObject);
     	uiCount = dropStateCount;
+    	droppedDest.lastDropped = lastDroppedIndex;
+    	parent.placementIndex--;
     	droppedDest = null;
     	droppedObject = null;
     	dropStateCount = 0;

@@ -89,7 +89,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     // private variables
     //	
     private int chips_on_board = 0;			// number of chips currently on the board
-    
+    public int placementIndex = -1;
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public GobCup pickedObject = null;
@@ -228,7 +228,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         droppedDest = getCell(from_b.droppedDest);
         copyAllFrom(rack,from_b.rack);
         unresign = from_b.unresign;
-
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
 
@@ -238,6 +238,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
 
        Init_Standard(gtype);
        moveNumber = 1;
+       placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -427,8 +428,12 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	{
     	droppedDest = null;
     	dr.removeTop(pickedObject);
+    	dr.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	}
     }
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -440,6 +445,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     	pickedSource=null;
     	pickedObject = null;
     	ps.addChip(po);
+    	ps.lastPicked = lastPickedIndex;
     	}
      }
     // 
@@ -450,6 +456,9 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
        G.Assert((pickedObject!=null)&&(droppedDest==null),"ready to drop");
        droppedDest = dest;
        dest.addChip(pickedObject);
+       lastDroppedIndex = dest.lastDropped;
+       dest.lastDropped = placementIndex;
+       placementIndex++;
     }
     //
     // true if col,row is the place where something was dropped and not yet confirmed.
@@ -494,6 +503,8 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     private void pickObject(GobCell source)
     {	G.Assert((pickedObject==null)&&(pickedSource==null),"ready to pick");
     	pickedSource = source;
+    	lastPickedIndex = source.lastPicked;
+    	source.lastPicked = placementIndex;
     	pickedObject = source.removeChip();
     }
 
@@ -578,7 +589,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     private void doDone()
     {	
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==GobbletState.RESIGN_STATE)
         {	setGameOver(false,true);
         }

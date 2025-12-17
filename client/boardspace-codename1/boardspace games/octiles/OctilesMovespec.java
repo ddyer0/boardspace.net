@@ -18,13 +18,13 @@ package octiles;
 
 import online.game.*;
 
+import bridge.Color;
 import lib.G;
 import lib.HorizontalBar;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
-import bridge.Color;
 import lib.ExtendedHashtable;
 import lib.Font;
 

@@ -56,20 +56,6 @@ public class zCell extends ccell<zCell> implements GameConstants,PlacementProvid
 		return empty ? lastEmptied : lastPlaced;
 	}
 	
-	public zChip removeTop() 
-	{ 	zChip top = topChip(); 
-		if(!onBoard) 
-		{
-			height--;
-			
-		}
-		else 
-		{
-			contents = Empty;
-		}
-		return top;
-	}
-	
 	public void copyFrom(zCell ot)
 	{	super.copyFrom(ot);
 		height = ot.height;

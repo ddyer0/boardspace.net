@@ -102,6 +102,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
 	private int prisonerCount = 0;					// number of prisoner groups that have been created
 	private int droppedTileCount = 0;				// number of pregame tiles
 	public int robotDepth = 0;
+	public int placementIndex = -1;
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public ExxitPiece pickedObject = null;		// the object in the air being moved
@@ -437,6 +438,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         pickedObject = from_b.pickedObject;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = getCell(from_b.droppedDest);
+        placementIndex = from_b.placementIndex;
         copyFrom(rack,from_b.rack);
 		copyFrom(tiles,from_b.tiles);
         board_state = from_b.board_state;
@@ -471,6 +473,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	setIsTorus(rev<101);
     	
     	robotDepth = 0;
+    	placementIndex = 1;
     	whiteChips.doInit(); 
     	blackChips.doInit();
        undoCell.doInit();
@@ -659,6 +662,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         pickedSource = null;
 
      }
+    private int lastPickedIndex = -1;
+    private int lastDroppedIndex = -1;
+    
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -667,6 +673,8 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         ExxitCell dr = droppedDest;
         if(dr!=null)
         	{
+        	dr.lastDropped = lastDroppedIndex;
+        	placementIndex--;
         	droppedDest = null;
         	switch(pickedObject.typecode)
         	{
@@ -689,6 +697,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	if(po!=null)
     	{
     	ExxitCell ps = pickedSource;
+    	ps.lastPicked = lastPickedIndex;
     	if((po.typecode==TILE_TYPE) && pickedSource.onBoard) { tilesOnBoard++; }
     	pickedObject = null;
     	ps.addPiece(po);
@@ -706,6 +715,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         default: throw G.Error("Not expecting dest %s",dest);
         case BoardLocation:
            	droppedDest = dest;
+           	lastDroppedIndex = dest.lastDropped;
+           	dest.lastDropped = placementIndex;
+           	placementIndex++;
         	droppedDest.addPiece(pickedObject);
            	switch(pickedObject.typecode)
         	{
@@ -784,6 +796,8 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     {  	G.Assert((pickedObject==null)&&(pickedSource==null),"not ready to pick");
     	G.Assert(getCell(c)==c,"not my cell");
     	pickedSource = c;
+    	lastPickedIndex = c.lastPicked;
+    	c.lastPicked = placementIndex;
     	pickedObject = c.removeTop();
     	return(pickedObject);
     }
@@ -917,6 +931,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     private void doDone(replayMode replay)
     {	boolean gameo = false;
         acceptPlacement();
+        placementIndex++;
         if(board_state==ExxitState.CONFIRM_EXCHANGE_STATE)
         {	if(tiles.height()==0) 
         	{ 	setWin();
@@ -978,6 +993,8 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	G.Assert(undoCell.height()==0,"undo cell is free");
     	loadCell(c,transportCell);
     	pickedSource = c;
+    	lastPickedIndex = c.lastPicked;
+    	c.lastPicked = placementIndex;
     	while(transportCell.height()>0)
     	{	ExxitPiece p = transportCell.topPiece();
     		if(replay.animate) {
@@ -990,6 +1007,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     			}
     	    else  { transportCell.removeTop(); nx.addPiece(p); undoCell.push(p); nx = nx.exitTo(dir); }
     	}
+    	lastDroppedIndex = nx.lastDropped;
+    	nx.lastDropped = placementIndex;
+    	placementIndex++;
     }
     
     // construct the label for printing the game record
@@ -1081,6 +1101,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	p.setColor(getColorMap()[whoseTurn]);
     	undoCell.push(p);
     	c.addPiece(p);
+		lastDroppedIndex = c.lastDropped;
+		c.lastDropped = placementIndex;
+
     	if(replay.animate) {
     		animationStack.push(tiles);
     		animationStack.push(c);

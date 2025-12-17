@@ -47,7 +47,7 @@ import static morelli.MorelliMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants,PlacementProvider
+public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants
 {
      /**
 	 * 
@@ -797,7 +797,7 @@ private void playSounds(commonMove m)
     	
     }
     
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.moveNumber;
 	}
 }

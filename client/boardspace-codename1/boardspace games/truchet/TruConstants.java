@@ -17,9 +17,11 @@
 package truchet;
 
 import lib.G;
+import lib.OStack;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
+
 
 public interface TruConstants 
 {	// leave the door open for  jr and truchet super.
@@ -27,7 +29,13 @@ public interface TruConstants
 	static final int DEFAULT_BOARDSIZE = 7;	// 7x7 board + borders
 	static final double VALUE_OF_WIN = 1000.0;
 	static final String Truchett_INIT = "truchet";	//init for standard game
+	public class StateStack extends OStack<TruchetState>
+	{
+		public TruchetState[] newComponentArray(int sz) {
+			return new TruchetState[sz];
+		}
 
+	}
     enum TruId implements CellId
     {
     	Black_Chip_Pool("B"), // positive numbers are trackable

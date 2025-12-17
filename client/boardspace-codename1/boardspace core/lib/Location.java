@@ -22,6 +22,9 @@ public class Location implements LocationProvider {
 	int x;
 	int y;
 	Color color = null;
+	LocationProvider next = null;
+	public LocationProvider getNext() { return next; }
+	public void setNext(LocationProvider c) { next = c; }
 	public int getX() { return x; }
 	public int getY() { return y; }
 	public Location(int xx,int yy) { x = xx; y=yy; }

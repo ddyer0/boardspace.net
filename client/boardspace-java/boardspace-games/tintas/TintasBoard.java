@@ -61,6 +61,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	private StateStack robotState = new StateStack();
 	public CellStack pawnStack = new CellStack();
 	private int sweep_counter = 0;
+	int placementIndex = -1;
 	private boolean swapped = false;
 	public TintasCell[][] captures = new TintasCell[2][TintasChip.Chips.length];
 	public TintasCell pawnHome = new TintasCell(TintasId.PawnHome);
@@ -167,7 +168,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
 	    swapped = false;
 	    pickedObject = null;
 	    lastDroppedObject = null;
-
+	    placementIndex = 1;
 		
 	    // set the initial contents of the board 
 	    int maxSize = 0;
@@ -224,7 +225,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
         board_state = from_b.board_state;
         stateStack.copyFrom(from_b.stateStack);
         lastPicked = null;
-
+        placementIndex = from_b.placementIndex;
  
         if(G.debug()) { sameboard(from_b); }
     }
@@ -400,6 +401,8 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
     {	TintasCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	TintasCell cc = capturedStack.top();
+    	rv.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	switch(rv.rackLocation())
     	{
     	default: throw G.Error("not expecting %s",rv);
@@ -429,6 +432,8 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
     	return(rv);
 
     }
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -441,6 +446,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
     	case PawnHome:
     	case BoardLocation:
     		rv.addChip(pickedObject);
+    		rv.lastPicked = lastPickedIndex;
     		pickedObject = null;
     		break;
     	}
@@ -460,6 +466,9 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
         default:
         	throw G.Error("not expecting dest %s", c.rackLocation);
         case BoardLocation:	// already filled board slot, which can happen in edit mode
+        	lastDroppedIndex = c.lastDropped;
+        	c.lastDropped = placementIndex;
+        	placementIndex++;
         	if((pickedObject==TintasChip.Pawn) && (c.topChip()!=null))
         	{
         		TintasChip cap = c.removeTop();
@@ -554,6 +563,8 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
         case PawnHome:
         case BoardLocation:
         	pickedObject = c.removeTop();
+        	lastPickedIndex = c.lastPicked;
+        	c.lastPicked = placementIndex;
         	break;
 
         }
@@ -625,7 +636,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==TintasState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;

@@ -24,8 +24,8 @@ import online.common.*;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.util.*;
 
+import java.util.*;
 import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
@@ -98,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements TrenchConstants, PlacementProvider
+public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements TrenchConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -839,35 +839,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     {	//DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
+
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
@@ -902,36 +874,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         } 
         }
     }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
-	  
-	  public boolean allowUndo()
-	  {		return super.allowUndo();
-	  }
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
+
 	 
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
@@ -1306,7 +1249,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      */
 
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 	

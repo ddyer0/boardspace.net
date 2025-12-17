@@ -45,7 +45,7 @@ import online.search.SimpleRobotProtocol;
 /**
  * Stymie, initial work 3/2021 
 */
-public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants,PlacementProvider
+public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements StymieConstants
 {	static final long serialVersionUID = 1000;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -1012,7 +1012,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 

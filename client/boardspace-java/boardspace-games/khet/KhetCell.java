@@ -19,14 +19,17 @@ package khet;
 import lib.Random;
 import khet.KhetConstants.KhetId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<KhetCell>
 {
 	public KhetCell[] newComponentArray(int n) { return(new KhetCell[n]); }
 }
-public class KhetCell extends stackCell<KhetCell,KhetChip> 
-{
+public class KhetCell extends stackCell<KhetCell,KhetChip> implements PlacementProvider 
+{	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public int rotatedDirection = 0;
 	public KhetChip[] newComponentArray(int n) { return(new KhetChip[n]); }
 	// constructor
 	public KhetCell(char c,int r) 
@@ -39,7 +42,20 @@ public class KhetCell extends stackCell<KhetCell,KhetChip>
 		super(Geometry.Standalone,c,r);
 		rackLocation = rack;
 	}
-
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+		rotatedDirection = 0;
+	}
+	public void copyFrom(KhetCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+		rotatedDirection = other.rotatedDirection;
+	}
 	// get the piece from cell in direction.  Special logic for the
 	// lasers which are off board
 	public KhetChip pieceInDirection(int dir)
@@ -57,5 +73,9 @@ public class KhetCell extends stackCell<KhetCell,KhetChip>
 	}
 	public KhetCell(Random r,KhetId rack,int idx) { super(r); rackLocation = rack; row = idx; }
 	public KhetId rackLocation() { return((KhetId)rackLocation); }
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 
 }

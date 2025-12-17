@@ -906,6 +906,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 		  search_whoseTurn = b.whoseTurn();
 		  search_digest = b.Digest(); 
 		  search_board = b.cloneBoard();
+		  //long d2 = search_board.Digest();
+		  //G.Assert(d2==search_digest,"match expected");
 		}
     	if(use_nullmove && (sz>0) && (mvec[0].op==MOVE_NULL)) 
 		{ //if there is a null move, it will be the first item in the vector

@@ -42,7 +42,6 @@ import lib.CellId;
 import online.common.OnlineConstants;
 import online.game.BoardProtocol;
 import online.game.CCanvas;
-import online.game.PlacementProvider;
 import online.game.commonMove;
 import online.game.commonPlayer;
 import online.game.replayMode;
@@ -63,7 +62,7 @@ import online.search.SimpleRobotProtocol;
  *  
 */
 @SuppressWarnings("serial")
-public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants, PlacementProvider
+public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants
 {
     static final String Arimaa_SGF = "Arimaa"; // sgf game name
 
@@ -898,7 +897,7 @@ public boolean allowResetUndo()
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.placementIndex;
 	}
 

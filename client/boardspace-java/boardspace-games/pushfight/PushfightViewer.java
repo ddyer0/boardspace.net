@@ -1010,7 +1010,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
             setComment(comments);
         }
     }
-    public int getLastPlacement(boolean em)
+    public int getLastPlacement()
     {
     	return bb.lastPlacedIndex;
     }

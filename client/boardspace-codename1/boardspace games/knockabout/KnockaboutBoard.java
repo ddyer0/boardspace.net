@@ -63,6 +63,8 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
 			}
 	}
 	Random randomSeq = null;
+	public int placementIndex = -1;
+	
 	public int nextRandom() 
 		{ int rv1 = randomSeq.nextInt();
 		  int rv2 = randomSeq.nextInt();
@@ -170,6 +172,8 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     	{
     		KnockaboutCell dr = droppedDestStack[0];
     		pickedObject = dr.removeChip();
+    		dr.lastDropped = lastDroppedIndex;
+    		placementIndex--;
     		droppedDestStack[0] = null;
     		rollCell = null;
     		int ind = 1;
@@ -187,10 +191,8 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     	setState(KnockaboutState.PLAY_STATE);
     	}
 
-    // lowest level of uncapture.  "removed" is the most distant cell removed by the capture
-    // picked and dropped are the source and destination respectively.  This handles both
-    // capture by approach and by withdrawal.
-
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -201,6 +203,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     	KnockaboutCell ps = pickedSourceStack[stackIndex];
     	KnockaboutChip oc = removeChip(ps);
     	addChip(ps,po);
+    	ps.lastPicked = lastPickedIndex;
         pickedSourceStack[stackIndex]=null;
     	pickedObject = oc;
     	}
@@ -211,6 +214,9 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     {
     	droppedDestStack[stackIndex] = dcell;
     	addChip(dcell,pickedObject);
+    	lastDroppedIndex = dcell.lastDropped;
+    	dcell.lastDropped = placementIndex;
+    	placementIndex++;
     	pickedObject=null;
      }
 
@@ -218,6 +224,8 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     {  	//G.print("st "+stackIndex);
     	pickedSourceStack[stackIndex] = src;
     	pickedObject = removeChip(src);
+    	lastPickedIndex = src.lastPicked;
+    	src.lastPicked = placementIndex;
     }
 
   
@@ -344,7 +352,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
         rollCell = getCell(from_b.rollCell);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
 
@@ -362,6 +370,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
        playerColor[map[0]] = KnockId.WhiteDie;
        playerColor[map[1]] = KnockId.BlackDie;
        moveNumber = 1;
+       placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -486,7 +495,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     }
      
     private void doDone(KnockaboutMovespec m)
-    {	
+    {	placementIndex++;
     	if(board_state==KnockaboutState.RESIGN_STATE) 
     	{ setGameOver(false,true);
     	}
@@ -573,6 +582,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     			  addChip(c,cc);
     			  pickedSourceStack[stackIndex] = next;
     			  cc = removeChip(next);
+    			  next.lastPicked = placementIndex;
     		      if(replay.animate)
     		    	{
     		    		animationStack.push(c);
@@ -590,6 +600,9 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     	}
 
     	addChip(c,cc);
+    
+    	c.lastDropped = placementIndex;
+    	placementIndex++;
     	droppedDestStack[stackIndex]=c;
     	stackIndex++;
     	if(needRoll) { rollCell = c; }
@@ -654,6 +667,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
         	if(from==target) { unPickObject(); }
         	else
         	{
+        	lastDroppedIndex = target.lastDropped;
             switch(board_state)
             {
             default:
@@ -676,6 +690,8 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
                 	}
                 else 
                 { 	int dir = findMoveDirection(from,pickedObject,target);
+                	target.lastDropped = placementIndex;
+                	placementIndex++;
                 	doBumpMove(from,pickedObject,dir,replay);
                 	rollValue = m.rollAmount;
                 }

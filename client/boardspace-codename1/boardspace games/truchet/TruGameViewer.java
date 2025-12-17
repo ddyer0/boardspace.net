@@ -18,6 +18,7 @@ package truchet;
 
 
 import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.Font;
 import bridge.*;
 import common.GameInfo;
 import online.common.*;
@@ -216,7 +217,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	//
         int stateY = boardY;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -337,7 +338,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
      	Hashtable<TruCell,TruCell> mergeSources = gb.mergeMoveSources();	// can be the source for other partners in a merge
      	TruCell flipped = gb.flippedCell;
      	boolean dolift = doLiftAnimation();
- 
+     	numberMenu.clearSequenceNumbers();
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -358,6 +359,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
             int xpos0 = left + gb.cellToX(cell);
             int topindex = cell.stackTopLevel()-1;
             cell.rotateCurrentCenter(contextRotation, xpos0, ypos0,cx,cy);
+            numberMenu.saveSequenceNumber(cell,xpos0+SQUARESIZE/2,ypos0-SQUARESIZE/2);
                 if(topindex>=0)
                 {
                 for(int cindex = 0; cindex<=topindex; cindex++)
@@ -442,7 +444,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
       		highlight.awidth = SQUARESIZE/2;
       		highlight.spriteColor = Color.red;
          }
-
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE/2,labelFont,labelColor);
     }
     
 
@@ -525,6 +527,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
      public boolean Execute(commonMove mm,replayMode replay)
     {	 
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
         if(replay.animate) { playSounds((TruMovespec)mm); }
  
@@ -746,7 +749,7 @@ private void playSounds(TruMovespec m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
-     * summary: 5/23/2023
+     * summary: 12/6/2025
 		957 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
@@ -783,6 +786,21 @@ private void playSounds(TruMovespec m)
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return b.placementIndex;
+    }
+    // override for the standard numberMenu drawNumber
+    public void drawNumber(Graphics gc,PlacementProvider src,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color,String str)
+    {	
+    	TruCell cell = (TruCell)dest;
+    	int xx = x-cellSize/2;
+    	int yy = y+cellSize*3/2;
+    	if(cell.lastFlipped>0) {
+    	StockArt.SwingCW.drawChip(gc,this,cellSize,xx,yy,null);
+    	}
+  	  super.drawNumber(gc,src,dest,cellSize,xx-cellSize/2,yy-cellSize/2,font,color,str);
     }
 }
 

@@ -19,13 +19,109 @@ package truchet;
 import online.game.*;
 
 import lib.G;
+import lib.Graphics;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
+import lib.exCanvas;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 
 
+class ArrowIcon implements Drawable
+{	static int NominalSize = 100;
+	String specs = "";
+	boolean merge = false;
+	static int offsets[] = { 0,2,-2};
+	private int offc(int n) { return offsets[Math.min(offsets.length-1,n)]; }
+	static ArrowIcon Left = new ArrowIcon(true,"W");
+	static ArrowIcon Right = new ArrowIcon(true,"E");
+	static ArrowIcon Down = new ArrowIcon(true,"S");
+	static ArrowIcon Up = new ArrowIcon(true,"N");
+	public ArrowIcon(boolean ismerge,String mergeSpecs)
+	{
+		specs = mergeSpecs;
+		merge = ismerge;
+	}
+	public void drawChip(Graphics gc, exCanvas c, int size0, int posx, int posy, String msg) 
+	{	int size = size0*9/10;
+		int ncount = 0;
+		int scount = 0;
+		int wcount = 0;
+		int ecount = 0;
+		for(int sz=specs.length(),i=0; i<sz;i++)
+		{
+			char ch = specs.charAt(i);
+			int from_x = posx;
+			int from_y = posy;
+			int to_x = posx;
+			int to_y = posy;
+			int longsize = (size/2)*(merge?-1:1);
+			int shortsize = Math.max(2,size/10)*(merge?-1:1);
+			int tick = Math.abs(shortsize);
+			switch(ch)
+			{
+			default: break;
+			case 'N': 
+			{
+				if(merge) { from_y = posy-longsize; to_y = posy-shortsize; } else
+				{ to_y = posy-longsize; from_y = posy - shortsize; };
+				int dx = offc(ncount);
+				from_x += dx;
+				to_x += dx;
+				ncount++;
+			}
+				break;
+			case 'S':
+			{
+				if(merge) { from_y = posy+longsize; to_y = posy+shortsize; } else 
+				{ to_y = posy+longsize; from_y = posy - shortsize; }
+				int dx = offc(scount);
+				from_x += dx;
+				to_x += dx;
+				scount++;
+			}
+				break;
+			case 'W':
+			{
+				if(merge) { from_x = posx-longsize; to_x = posx - shortsize; }	else 
+				{ to_x = posx-longsize; from_x = posx - shortsize; };
+				int dy = offc(wcount);
+				from_y += dy;
+				to_y += dy;
+				wcount++;
+			}
+				break;
+			case 'E':
+			{
+				if(merge) { from_x = posx+longsize; to_x = posx + shortsize;}	else 
+				{ to_x = posx+longsize; from_x = posx + shortsize; }
+				int dy = offc(ecount);
+				from_y += dy;
+				to_y += dy;
+				ecount++;
+			}
+				break;
+			}
+			gc.drawArrow(from_x,from_y,to_x,to_y,tick,1); 
+		}
+	}
+
+	public int getWidth() {
+		return NominalSize;
+	}
+
+	public int getHeight() {
+		return NominalSize;
+	}
+	
+}
 
 public class TruMovespec extends commonMove implements TruConstants
 {
+	
+	
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static
     {
@@ -46,14 +142,11 @@ public class TruMovespec extends commonMove implements TruConstants
     TruId object;	// what was picked
     int chip =0;
 	String splitInfo;	// specifier for split/join
-	int undoInfo = 0;
-	TruCell undoFocus = null;
 	char from_col; //for from-to moves, the source column
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
-    TruchetState state;	// the state of the move before state, for UNDO
-    
+    Drawable obj = null;
     public TruMovespec()
     {
     } // default constructor
@@ -104,10 +197,7 @@ public class TruMovespec extends commonMove implements TruConstants
         return ((op == other.op) 
 				&& (object == other.object)
 				&& ((splitInfo==null)?(other.splitInfo==null):splitInfo.equals(other.splitInfo))
-				&& (undoInfo == other.undoInfo)
-				&& (undoFocus==other.undoFocus)
 				&& (chip==other.chip)
-				&& (state == other.state)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
 				&& (from_row == other.from_row)
@@ -117,17 +207,15 @@ public class TruMovespec extends commonMove implements TruConstants
 
     public void Copy_Slots(TruMovespec to)
     {	super.Copy_Slots(to);
+    	to.obj = obj;
         to.player = player;
 		to.object = object;
 		to.splitInfo = splitInfo;
-		to.undoInfo = undoInfo;
-		to.undoFocus= undoFocus;
 		to.chip = chip;
         to.to_col = to_col;
         to.to_row = to_row;
         to.from_col = from_col;
         to.from_row = from_row;
-        to.state = state;
     }
 
     public commonMove Copy(commonMove to)
@@ -208,43 +296,118 @@ public class TruMovespec extends commonMove implements TruConstants
         }
     }
 
+
+    private Text icon(commonCanvas v,Object... msg)
+    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(obj!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xx", obj, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
+    private Text splitIcon(commonCanvas v,boolean merge,String spl,String pre)
+    {	double chipScale[] = {1,1.5,0.2,-0.5};
+   
+    	ArrowIcon icon = new ArrowIcon(merge,spl);
+    	Text m = TextGlyph.create("xx", icon, v,chipScale);
+    	if(pre!=null)
+    	{
+    		m = TextChunk.join(TextChunk.create(pre),m);
+    	}
+    	return m;
+    }
+    // the current move is a pickb
+    // return null for a non-split move
+    // return "" for a split move that should be specified by a previous move
+    // return a combined split spec for a split/join that starts with this move
+    private String extendedSplitInfo()
+    {	
+    	if("".equals(splitInfo)) { return ""; }
+    	TruMovespec n = this;
+    	String extended = "";
+    	while((n = (TruMovespec)n.next)!=null && n.splitInfo!=null)
+		{	
+			extended = extended + n.splitInfo;
+		}
+    	if("".equals(extended)) { return null; }	// no split, must  be a move
+    	return extended;
+    }
+
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_PICKB:
         	{
-            return(""+from_col+from_row);
+        	//
+        	// picks from the board can be a move of a stack, a split, or a merge.  
+        	// if the pick is followed by a drop on the same color, the drop will 
+        	// have no split info.  If the drop is to a different color, the drop
+        	// will have split info.
+        	String extended = extendedSplitInfo();
+        	if(next==null) { return(icon(v,""+from_col+from_row)); }
+        	else if(null == extended)
+        		{ 
+        		  return TextChunk.create(""+from_col+from_row+"-");
+        		}
+        	else if("".equals(extended)) { return TextChunk.create(""); }
+        	else
+        	{
+        	// encoded as NSEW and if any of the directions are lower case, 
+        	// this is a merge rather than a split
+        	String upper = extended.toUpperCase();
+        	boolean isMerge = !extended.equals(upper);
+        	if(isMerge)
+        		{
+        			TruMovespec m = (TruMovespec)next;
+        			return splitIcon(v,true,upper,""+m.to_col+m.to_row);
+        		}
+        		return splitIcon(v,false,upper,""+from_col+from_row);
         	}
+        	
+        	}
+        	
         case MOVE_FLIP:
         { char pcol = (char)(from_col-1);
           int prow = from_row-1;
-           return("^"+pcol+prow+from_col+from_row);
+	           return(icon(v,""+pcol+prow));
          }
 
 		case MOVE_DROPB:
-            return ("-"+to_col + to_row);
+			if(splitInfo==null)
+			{
+				return icon(v,""+to_col+to_row);
+			}
+			else
+			{
+            return TextChunk.create("");
+			}
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return (object.shortName);
+            return icon(v,object.shortName);
         case MOVE_AND_SPLIT:
+        	return splitIcon(v,false,splitInfo,""+from_col + from_row+"-"+to_col + to_row);
         case MOVE_AND_MERGE:
-        	return(""+from_col + from_row+" "+to_col + to_row+((op==MOVE_SPLIT)?">":"<")+splitInfo);
+        	return splitIcon(v,true,splitInfo,""+from_col + from_row+"-"+to_col + to_row);
         	
         case MOVE_SPLIT:
+        	return splitIcon(v,false,splitInfo,null);
+        	
         case MOVE_MERGE:
-        	return(""+to_col +  to_row+((op==MOVE_SPLIT)?">":"<")+splitInfo);
+        	return splitIcon(v,true,splitInfo,null);
         	
         case MOVE_BOARD_BOARD:
-        	return(""+from_col + from_row+"-"+to_col + to_row);
+        	return(icon(v,""+from_col + from_row+"-"+to_col + to_row));
         case MOVE_DONE:
-            return ("");
+            return (TextChunk.create(""));
 
         default:
-            return (D.findUniqueTrans(op));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
         }
     }

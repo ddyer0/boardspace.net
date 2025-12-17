@@ -1027,7 +1027,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             	}
   
         	}}
- 	public int getLastPlacement(boolean empty) {
+ 	public int getLastPlacement() {
 		return bb.lastPlacement;
 	}
     	}

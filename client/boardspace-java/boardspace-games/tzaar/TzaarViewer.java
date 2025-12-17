@@ -527,7 +527,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
 	   //
  // support for the last move "numberMenu" logic
  //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (b.dropState);
 	}
 

@@ -249,7 +249,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
         int stateX = boardX;
         int stateH = fh*5/2;
         
-        placeStateRow( stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow( stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -349,6 +349,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
      	int liftdiv = 40;
      	GobCell hitCell = null;
      	boolean dolift = doLiftAnimation();
+     	numberMenu.clearSequenceNumbers();
      	
      	//
         // now draw the contents of the board and anything it is pointing at
@@ -360,6 +361,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
      		int ypos = top - gb.cellToY(cell);
             int xpos = left + gb.cellToX(cell);
                 int topindex = cell.chipIndex;
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
                 cell.rotateCurrentCenter(gc,xpos,ypos);
                 for(int cindex = dolift?0:topindex; cindex<=topindex; cindex++)
                 {
@@ -377,7 +379,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
               	{ hitCell = cell;
               	}
              }
-
+     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE/2,labelFont,labelColor);
     	if(hitCell!=null)
     	{ 
     	highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
@@ -472,6 +474,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     {	
  
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.placementIndex);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         if(replay.animate) { playSounds(mm); }
  
@@ -699,5 +702,6 @@ private void playSounds(commonMove mm)
             setComment(comments);
         }
     }
+    public int getLastPlacement() { return b.placementIndex; }
 }
 

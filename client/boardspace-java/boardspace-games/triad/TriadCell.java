@@ -31,10 +31,13 @@ class CellStack extends OStack<TriadCell>
 
 
 //
-public class TriadCell extends chipCell<TriadCell,TriadChip> implements TriadConstants
+public class TriadCell extends chipCell<TriadCell,TriadChip> implements TriadConstants,PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	private int borders = -1;		// bitmask of possible borders
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	
 	public int borderMask() { return borders; }
 	public void setBorderMask(int n) { borders = n;}
 	
@@ -62,6 +65,20 @@ public class TriadCell extends chipCell<TriadCell,TriadChip> implements TriadCon
 			return super.activeAnimationHeight();
 		default: return(0);
 		}
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = lastDropped = -1;
+	}
+	public void copyFrom(TriadCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 
 

@@ -127,7 +127,7 @@ import vnc.VNCService;
  *  <p>
  * *  
 */
-public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants,PlacementProvider
+public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implements EuphoriaConstants
 {	
     // file names for jpeg images and masks
     static final String SoundDir = G.isCodename1() ? "/appdata/euphoria-other/data/" : "/euphoria/sounds/";
@@ -620,7 +620,7 @@ private Color playerBackground[] = {
     	int boardBottom = boardY+boardH;
         int stateY = boardY-stateH+stateH/4;
         layout.returnFromMain(extraW,extraH);
-        placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,magnifierRect,numberMenu,annotationMenu,noChatRect);
+        placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,magnifierRect,annotationMenu,numberMenu,noChatRect);
 
         // make the recruit rect square and centered on the board, so everything
         // will be easy when displayed rotated.
@@ -3583,7 +3583,7 @@ private Color playerBackground[] = {
     	}
     	return(newHist);
     }
-    public int getLastPlacement(boolean empty) {
+    public int getLastPlacement() {
 		return (bb.moveNumber+(bb.doneLast?0:1));
 	}
 }

@@ -56,7 +56,8 @@ public class PendulumCell
 	public PB pb = PB.None;		// player benefit
 	PendulumMovespec dropper;	// panic contingency for privilege resolution
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
-	int lastPlaced = -1;
+	public int lastDropped = -1;
+	public int lastPicked = -1;
 	long dropWorkerTime = 0;
 
 	public PendulumCell(PendulumId stratcard) {
@@ -95,7 +96,8 @@ public class PendulumCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		lastPlaced = ot.lastPlaced;
+		lastDropped = ot.lastDropped;
+		lastPicked = ot.lastPicked;
 		posx = ot.posx;
 		posy = ot.posy;
 		scale = ot.scale;
@@ -126,7 +128,8 @@ public class PendulumCell
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = -1;
+		lastDropped = -1;
+		lastPicked = -1;
 		lastMoved = -1;
 		dropWorkerTime = 0;
 		dropper = null;
@@ -156,10 +159,10 @@ public class PendulumCell
 	
 	/**
 	 * records when the cell was last placed.  
-	 * lastPlaced also has to be maintained by reInit and copyFrom
+	 * lastDropped also has to be maintained by reInit and copyFrom
 	 */
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastPicked : lastDropped;
 	}
 
 	public void setLocation(double boxx,double boxy,double px, double py, double sc)

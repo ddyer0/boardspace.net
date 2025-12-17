@@ -42,7 +42,9 @@ public class PrototypeCell
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
-	int lastPlaced = -1;
+	int lastDropped = -1;
+	int lastPicked = -1;
+	
 	public void initRobotValues() 
 	{
 	}
@@ -72,7 +74,8 @@ public class PrototypeCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		lastPlaced = ot.lastPlaced;
+		lastDropped = ot.lastDropped;
+		lastPicked = ot.lastPicked;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -80,7 +83,8 @@ public class PrototypeCell
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = -1;
+		lastDropped = -1;
+		lastPicked = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public PrototypeCell(PrototypeChip cont)
@@ -112,10 +116,10 @@ public class PrototypeCell
 	
 	/**
 	 * records when the cell was last placed.  
-	 * lastPlaced also has to be maintained by reInit and copyFrom
+	 * lastDropped also has to be maintained by reInit and copyFrom
 	 */
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastPicked : lastDropped;
 	}
 
 	

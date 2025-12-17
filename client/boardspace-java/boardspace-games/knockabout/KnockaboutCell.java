@@ -22,9 +22,11 @@ class CellStack extends OStack<KnockaboutCell>
 {
 	public KnockaboutCell[] newComponentArray(int n) { return(new KnockaboutCell[n]); }
 }
-public class KnockaboutCell extends chipCell<KnockaboutCell,KnockaboutChip> implements KnockaboutConstants
+public class KnockaboutCell extends chipCell<KnockaboutCell,KnockaboutChip> implements KnockaboutConstants,PlacementProvider
 {	
 	boolean inGutter = false;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	// constructor
 	public KnockaboutCell(char c,int r,Geometry geom) 
 	{	super(geom,c,r);
@@ -35,12 +37,26 @@ public class KnockaboutCell extends chipCell<KnockaboutCell,KnockaboutChip> impl
 		else { onBoard=false; }
 	}
 	public KnockId rackLocation() { return((KnockId)rackLocation); }
-	public void reInit() { chip = null; inGutter = isEdgeCell(); }
-
+	public void reInit() 
+	{ 	chip = null; 
+		inGutter = isEdgeCell(); 
+		lastPicked = -1;
+		lastDropped = -1;	
+	}
+	public void copyFrom(KnockaboutCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
 	public KnockaboutChip removeChip()
 	{	KnockaboutChip cc = topChip();
 		chip = null;
 		return(cc);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 	
 }

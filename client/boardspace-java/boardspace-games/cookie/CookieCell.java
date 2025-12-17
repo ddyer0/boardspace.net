@@ -17,6 +17,8 @@
 package cookie;
 
 import lib.Random;
+
+
 import cookie.CookieConstants.CookieId;
 import lib.G;
 import lib.OStack;
@@ -30,11 +32,13 @@ class CellStack extends OStack<CookieCell>
 //
 //specialized cell used by cookie disco
 //
-public class CookieCell extends chipCell<CookieCell,CookieChip>
+public class CookieCell extends chipCell<CookieCell,CookieChip> implements PlacementProvider
 {	
 	public CookieChip[] newComponentArray(int n) { return(new CookieChip[n]); }
 	public CookieCell nextPlaced;	// next placed chip on the board
 	public int sweep_counter=0;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public CookieCell(char c,int r,CookieId rack) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);
 		rackLocation = rack;
@@ -52,8 +56,14 @@ public class CookieCell extends chipCell<CookieCell,CookieChip>
 	{	super.reInit();
 		sweep_counter = 0;
 		nextPlaced = null;
+		lastPicked = lastDropped = -1;
 	}
-	
+	public void copyFrom(CookieCell other)
+	{
+		super.copyFrom(other);
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
+	}
 	// return the approxumate distance squared btween this and other
 	// this==other = 1
 	// this adjacent to other = 2
@@ -229,4 +239,9 @@ public CookieCell pickNewAnchor(CookieCell oldAnchor,CookieCell filled)
 		}
 		return(mask);
 	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
+	
 }

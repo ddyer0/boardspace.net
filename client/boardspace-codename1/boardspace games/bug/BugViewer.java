@@ -98,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants, PlacementProvider
+public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -644,31 +644,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
 
     }
 
-    /**
-     * normally, no moves should be transmitted during in-game review.  This
-     * allows an override for particular moves. Presumably moves that only
-     * affect the global state, not the particular board position.  
-     */
-    public boolean canSendAnyTime(commonMove m)
-    {
-    	return super.canSendAnyTime(m);
-    			//|| (m.op==MOVE_SHOW);
-    }
-    
-    /**
-     * perform and optionally transmit a move, return true if ok.  Note, it's tempting
-     * to do any "auto move" that is needed in the continuation of this method, but don't.
-     * Doing so may separate the "perform" from the "transmit" which will lead to other
-     * players seeing the events out of order.  Instead, use the continuation of ViewerRun
-     * @param m
-     * @param transmit
-	 * @param replay replay mode
-     * @return true if successful
-     */
-    public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode replay)
-    {
-    	return(super.PerformAndTransmit(m,transmit,replay));
-    }
+
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -705,25 +681,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
       * destination chip disappear until the animation is finished.
       * @param replay
       */
-//     void startBoardAnimations(replayMode replay)
-//     {
-//        if(replay.animate)
-//     	{
-//     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
-//        	while(bb.animationStack.size()>1)
-//     		{
-//     		PushfightCell dest = bb.animationStack.pop();
-//     		PushfightCell src = bb.animationStack.pop();
-//    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
-//    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
-    		//
-    		// in cases where multiple chips are flying, topChip() may not be the right thing.
-    		//
-//     		startAnimation(src,dest,dest.topChip(),bb.cellSize(),0,endTime);
-//     		}
-//     	}
-//        	bb.animationStack.clear();
-//     } 
+
 
  void playSounds(commonMove mm)
  {
@@ -793,35 +751,6 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
     {	//DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
@@ -856,37 +785,8 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
         } 
         }
     }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
-	  
-	  public boolean allowUndo()
-	  {		return super.allowUndo();
-	  }
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
-	 
+
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1253,7 +1153,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 	 

@@ -533,7 +533,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 
     }
 
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.moveNumber;
     }

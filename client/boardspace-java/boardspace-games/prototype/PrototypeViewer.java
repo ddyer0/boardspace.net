@@ -98,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, PlacementProvider
+public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -1516,8 +1516,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
-		return (bb.moveNumber);
+	public int getLastPlacement() {
+		return (bb.placementIndex);
 	}
 	 
 	/** this is a debugging interface to provide information about memory

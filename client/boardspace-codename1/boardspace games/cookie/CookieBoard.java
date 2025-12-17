@@ -49,6 +49,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
 	}
 	boolean COUNT_CRAWL_FOR_FREEZE = true;
 	public int robotDepth = 0;
+	public int placementIndex = -1;
      //
     // private variables
     //
@@ -608,6 +609,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
         copyFrom(crawlCellDestProxy,from_b.crawlCellDestProxy);
         pickedObject = from_b.pickedObject;
         board_state = from_b.board_state;
+        placementIndex = from_b.placementIndex;
         unresign = from_b.unresign;
         if(G.debug()) { sameboard(from_b); }
     }
@@ -650,6 +652,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
 		playerChip[map[0]] = chipPool[CookieChip.nChips];
 		playerChip[map[1]] = chipPool[CookieChip.nChips+1];
         moveNumber = 1;
+        placementIndex = 1;
         startingPattern = pat;
         placePattern(startPatterns[pat],getCell('J',9));
         // Everything is a constant for the duration of the game, the value of all chips in play
@@ -839,18 +842,25 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     {
     	if((stackIndex>0) && (droppedDestStack[stackIndex-1]!=null)) 
     	{	stackIndex--;
-    		pickedObject = SetBoard(droppedDestStack[stackIndex],null); 
+    		CookieCell dest = droppedDestStack[stackIndex];
+    		pickedObject = SetBoard(dest,null); 
+    		dest.lastDropped = lastDroppedIndex;
+    		placementIndex--;
     		droppedDestStack[stackIndex] = null;
      	}
     }
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
-    {	if((pickedObject!=null) && (pickedSourceStack[stackIndex]!=null))
+    {	CookieCell src = pickedSourceStack[stackIndex];
+    	if((pickedObject!=null) && (src!=null))
     	{	if(pickedObject==CookieChip.Crawl) {}
     			else { SetBoard(pickedSourceStack[stackIndex],pickedObject);}
     	    pickedSourceStack[stackIndex] = null;
+    	    src.lastPicked = lastPickedIndex;
     	}
 	  pickedObject=null;
     }
@@ -860,6 +870,10 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     private void dropBoardCell(CookieCell c,replayMode replay)
     {   CookieCell source = pickedSourceStack[stackIndex];
     	nextCherryCell = c;
+        lastDroppedIndex = c.lastDropped;
+        c.lastDropped = placementIndex;
+        placementIndex++;
+
     	if(c.isEmpty())
     	{
     	// dropping a regular cookie, possibly with crawl on board
@@ -923,6 +937,8 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     {
 
        	boolean wasDest = isDest(c);
+       	lastPickedIndex = c.lastPicked;
+       	c.lastPicked = placementIndex;
        	CookieCell src = wasDest ? pickedSourceStack[stackIndex-1] : null;
        	if( wasDest && (c==crawlCell)) 
        		{ // was a crawl move
@@ -1035,7 +1051,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     	cherryCell = nextCherryCell;
 
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==CookieState.RESIGN_STATE)
         {
             win[nextPlayer[whoseTurn]] = true;

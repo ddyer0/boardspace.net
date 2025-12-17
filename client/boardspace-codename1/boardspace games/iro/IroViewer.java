@@ -752,7 +752,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 		  return false;
 	  }
 	  
-	public int getLastPlacement(boolean empty)
+	public int getLastPlacement()
     {
     	return bb.dropState;
     }

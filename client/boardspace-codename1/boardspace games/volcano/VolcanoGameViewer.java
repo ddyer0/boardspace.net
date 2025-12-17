@@ -684,7 +684,7 @@ private void playSounds(VolcanoMovespec m)
     }
     
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 			return b.placementIndex;
 	}
 }

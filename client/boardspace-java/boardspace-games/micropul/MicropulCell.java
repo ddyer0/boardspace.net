@@ -21,6 +21,7 @@ import lib.Drawable;
 import lib.G;
 import lib.OStack;
 import online.game.stackCell;
+import online.game.PlacementProvider;
 import online.game.cell;
 
 class CellStack extends OStack<MicropulCell>
@@ -33,7 +34,7 @@ class CellStack extends OStack<MicropulCell>
 
 // games commonly add a more complex structue.   
 //
-public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
+public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implements PlacementProvider
 {	
     static final char playerColors[]={'R','B'};
 
@@ -42,6 +43,8 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
 	int rotation[] = new int[STARTING_CHIP_HEIGHT];
 	int jewelStatus[] = new int[4];
 	public int player = -1;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	MicropulCell nextOccupied = null;
 	boolean masked = false;	// true if contents painted as blank
 	static final int Jewel_None = 0;
@@ -66,6 +69,8 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
 	{	
 		nextOccupied = null;
 		super.copyFrom(ot);
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 		while(chipIndex>=0){ chipStack[chipIndex--]=null; }
 		for(int i=0;i<=ot.chipIndex;i++)
 		{	addChip(ot.chipStack[i],ot.rotation[i]);
@@ -227,6 +232,8 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
 	public void reInit() 
 		{ super.reInit(); 
 		  for(int i=0;i<4;i++) { jewelStatus[i]=Jewel_None; }
+		  lastPicked = -1;
+		  lastDropped = -1;
 		  nextOccupied = null;
 		  masked = false;
 		}
@@ -305,4 +312,8 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
 	public int getRotationAt(int idx)
 		{ return((chipIndex<idx)?-1:rotation[idx]);
 		}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 }

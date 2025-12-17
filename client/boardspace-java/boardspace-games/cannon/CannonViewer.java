@@ -426,7 +426,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
  
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (b.moveNumber);
 	}
 	/**

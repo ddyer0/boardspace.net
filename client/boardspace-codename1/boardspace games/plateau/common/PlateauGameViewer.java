@@ -328,7 +328,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -396,13 +396,13 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public void drawPlayerStuff(Graphics gc,int pl,PlateauBoard bd,HitPoint ourTurnSelect,HitPoint any)
     {	
         bd.DrawTrade(gc, tradeRects[pl], pl, ourTurnSelect,
-                s.get(PlacePrisonersMessage));
+                s.get(PlacePrisonersMessage),numberMenu);
 
         bd.DrawBar(gc, barRects[pl], pl, ourTurnSelect,
-                s.get(PoolMessage[pl]));
+                s.get(PoolMessage[pl]),numberMenu);
         bd.DrawRack(gc, rackRects[pl], concealedmode(bd,pl),
-            		ourTurnSelect);
-        bd.DrawExchangeSummary(gc, pl, exchangeRects[pl]);
+            		ourTurnSelect,numberMenu);
+        bd.DrawExchangeSummary(gc, pl, exchangeRects[pl],numberMenu);
         
         if(allPlayersLocal()) 
         	{ 
@@ -434,12 +434,15 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         HitPoint buttonSelect = moving ? null : ourTurnSelect;
         HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
         
+        numberMenu.clearSequenceNumbers();
   
-        bd.DrawBoard(gc, boardRect, ourTurnSelect, use_grid);
+        bd.DrawBoard(gc, boardRect, ourTurnSelect, use_grid,numberMenu);
 
         drawPlayerStuff(gc,(vstate==PlateauState.PUZZLE_STATE),nonDragSelect,
  	   			HighlightColor, boardBackgroundColor);
 
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
+        
         boolean planned = plannedSeating();
         int whoseTurn = bd.whoseTurn;
         for(int player=0;player<bd.players_in_game;player++)
@@ -498,6 +501,8 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public boolean Execute(commonMove m,replayMode replay)
     {	//if(my.spectator) { System.out.println("E "+m); }
         handleExecute(b,m,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
+        
         if(replay.animate) { playSounce((plateaumove)m); }
         generalRefresh();
        return (true);
@@ -1072,11 +1077,12 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
       				state);
 
 	  G.SetRect(eye,rackL+rackW-eyeSize,rackT,eyeSize,eyeSize);
-	  b.DrawRack(gc, rack, concealedmode(b,index),hp);
+	  b.DrawRack(gc, rack, concealedmode(b,index),hp,numberMenu);
 	  if(eye.draw(gc,hp))
 	  {
 		  hp.hit_index = index;
 	  }
 	  
   }
+  public int getLastPlacement() { return b.placementIndex; }
 }

@@ -493,7 +493,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
         drawViewsetMarker(gc,viewsetRect,ourSelect);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.dropState;
     }

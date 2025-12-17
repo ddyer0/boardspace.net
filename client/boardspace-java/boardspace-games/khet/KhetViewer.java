@@ -17,7 +17,7 @@
 package khet;
 
 import java.awt.*;
-import java.awt.Rectangle;
+import java.awt.Font;
 
 import online.common.*;
 import online.game.*;
@@ -237,7 +237,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     	//
     	int stateY = boardY;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)
@@ -408,7 +408,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
         int xpos = G.Left(brect) + gb.cellToX(lastDest.col, lastDest.row);
         StockArt.SmallO.drawChip(gc,this,SQUARESIZE*4,xpos,ypos-SQUARESIZE/6,null);
         }}
-
+        numberMenu.clearSequenceNumbers();
         Enumeration<KhetCell> cells = gb.getIterator(Itype.LRTB);
     	// overall drawing is always left to right, top to bottom
         while(cells.hasMoreElements())
@@ -420,6 +420,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
             KhetChip top = cell.topChip();
             int ypos = G.Bottom(brect) - ydistance;
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             int adjustedSize = adjustedSquareSize(SQUARESIZE,ydistance,G.Height(brect));
             boolean useAnyDestHere = useAnyDest && !gb.isForbiddenSpace(cell,gb.pickedObject);
             boolean pick = cell.drawStack(gc,this,((cell==theSource)||isSource||isDest||useAnyDestHere)?highlight:null,adjustedSize,xpos,ypos,0,0.1,null);
@@ -444,7 +445,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
             		  					? true
             		  					: (G.Left(highlight)>xpos);
             		  highlight.hitCode = rotateCW ? KhetId.Rotate_CW : KhetId.Rotate_CCW;
-            		  highlight.arrow = rotateCW ? StockArt.Rotate_CW : StockArt.Rotate_CCW;
+            		  highlight.arrow = rotateCW ? StockArt.SwingCW : StockArt.SwingCCW;
             		  highlight.awidth = 2*SQUARESIZE/3;
             		  highlight.spriteColor = Color.blue;
             	  }
@@ -462,9 +463,10 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
             	}
 			//mark center of all squares
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
-
     	}
-    }
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
+ 
+    	}
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  
        DrawReverseMarker(gc,reverseViewRect,highlight);
@@ -551,6 +553,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay);
         if(replay.animate) { playSounds(mm); }
  
@@ -666,7 +669,10 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
      * in commonEditHistory()
      * 
      */
-
+    public void verifyGameRecord()
+    {
+    	super.verifyGameRecord();
+    }
 //    public commonMove EditHistory(commonMove nmove)
 //    {
 //    	CarnacMovespec newmove = (CarnacMovespec) nmove;
@@ -976,6 +982,26 @@ private void playSounds(commonMove m)
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return b.placementIndex;
+    }
+    // override for the standard numberMenu drawNumber
+    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
+    {	
+  	  KhetCell cell = (KhetCell)dest;
+  	  switch(cell.rotatedDirection)
+  	  {
+  	  default: break;
+  	  case 10:
+  		  StockArt.SwingCW.drawChip(gc,this,cellSize/2,x+cellSize/2,y+cellSize*2/3,null);
+  		  break;
+  	  case -10:
+  		  StockArt.SwingCCW.drawChip(gc,this,cellSize/2,x+cellSize/2,y+cellSize*2/3,null);
+  		  break;
+  	  }
+  	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
     }
 }
 

@@ -17,6 +17,7 @@
 package triad;
 
 import lib.G;
+import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -56,6 +57,12 @@ public interface TriadConstants
     static int[] ZfirstInCol = { 4, 3, 2, 1, 0, 1, 2, 3, 4 };
     static int[] ZnInCol =     {5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
     static int[] ZInCol = {0, 0, 0, 0, 0, 1, 2, 3, 4 };
+    public class StateStack extends OStack<TriadState>
+    {
+		public TriadState[] newComponentArray(int sz) {
+			return new TriadState[sz];
+		}
+    }
     public enum TriadState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),

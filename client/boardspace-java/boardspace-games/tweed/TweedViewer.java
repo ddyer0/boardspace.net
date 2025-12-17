@@ -50,7 +50,7 @@ import online.search.SimpleRobotProtocol;
  * Tumbleweed implementation for Boardspace
  *  
 */
-public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, PlacementProvider
+public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -910,25 +910,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
 		
 		}
 	}
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
-	 
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1250,7 +1232,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.lastPlacedMove;
 	}
 	public boolean drawIsPossible() { return true; }

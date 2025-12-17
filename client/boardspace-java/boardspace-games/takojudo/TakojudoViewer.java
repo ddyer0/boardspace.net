@@ -38,7 +38,7 @@ import static takojudo.TakojudoMovespec.*;
  *
  * Oct 2012 Initial release.
 */
-public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants,PlacementProvider
+public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implements TakojudoConstants
 {
      /**
 	 * 
@@ -857,7 +857,7 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.moveNumber;
     }

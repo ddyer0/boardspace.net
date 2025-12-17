@@ -84,7 +84,7 @@ import online.search.SimpleRobotProtocol;
  *  3) fix the package names in the clones
  *  4) rename each of the classes in the clones, using refactor/rename
 */
-public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants,PlacementProvider
+public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabConstants
 {
      /**
 	 * 
@@ -842,7 +842,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (b.moveNumber);
 	}
 

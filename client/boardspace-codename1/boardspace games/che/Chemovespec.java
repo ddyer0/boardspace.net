@@ -18,6 +18,9 @@ package che;
 
 import online.game.*;
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
@@ -140,23 +143,36 @@ public class Chemovespec extends commonMove implements CheConstants
         }
     }
 
+
+    private Text icon(commonCanvas v,CheChip obj,Object... msg)
+    {	double chipScale[] = {1,1.2,0,-0.5};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(obj!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xx", obj, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
+
+
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_PICKB:
-            return (D.findUnique(op) +" " + G.printCol(to_col) + to_row);
+            return icon(v,null,D.findUnique(op) +" " + G.printCol(to_col) + to_row);
         case MOVE_ROTATE:
 		case MOVE_DROPB:
-            return (G.printCol(to_col) + to_row+ " "+object);
+            return icon(v,CheChip.getChip(object),G.printCol(to_col) + to_row);
         case MOVE_PICK:
         case MOVE_DONE:
-            return ("");
+            return TextChunk.create("");
 
         default:
-            return (D.findUniqueTrans(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

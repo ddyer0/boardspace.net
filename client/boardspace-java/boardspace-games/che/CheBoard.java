@@ -45,6 +45,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     static int BOARDROWS = 19;
 	CheState unresign;
 	CheState board_state;
+	public int placementIndex = -1;
 	public CheState getState() {return(board_state); }
 	public void setState(CheState st) 
 	{ 	unresign = (st==CheState.RESIGN_STATE)?board_state:null;
@@ -236,6 +237,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         robotDepth = from_b.robotDepth;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
    }
 
@@ -299,6 +301,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         lastDropped = null;
         robotState.clear();
         robotDepth = 0;
+        placementIndex = 1;
         Random r = new Random(3585867);
 	    for(int i=0;i<CheChip.nChips;i++)
 	       {	chipPool[i]=new CheCell(r,ChipPool[i],CheChip.getChip(i));
@@ -398,6 +401,8 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     	{	pickedObject = SetBoard(c,null);
     		setState(undoState[stackIndex]);
     		droppedDestStack[stackIndex]=null;
+    		c.lastDropped = lastPlacedIndex;
+    		placementIndex--;
      	}}
     }
     // 
@@ -408,6 +413,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     	if((c!=null) && c.onBoard) 
     		{
     		SetBoard(c,pickedObject);
+    		c.lastPicked = lastPickedIndex;
     		}
     		pickedSourceStack[stackIndex]=null;
     		pickedObject = null;
@@ -527,7 +533,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     private void doDone()
     {
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==CheState.RESIGN_STATE)
         {
             win[nextPlayer[whoseTurn]] = true;
@@ -544,6 +550,8 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         	}
         }
     }
+    int lastPlacedIndex = -1;
+    int lastPickedIndex = -1;
     public boolean Execute(commonMove mm,replayMode replay)
     {	Chemovespec m = (Chemovespec)mm;
 
@@ -564,6 +572,9 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
 				}
 			pickChip(m.object);
 			dropBoard(c);
+			lastPlacedIndex = c.lastDropped;
+			c.lastDropped = placementIndex;
+			placementIndex++;
 			createExitCells(c);
             setNextStateAfterDrop();
         	}
@@ -581,6 +592,8 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         	{
         	CheCell c = getCell(m.to_col,m.to_row);
         	pickBoard(c); 
+        	lastPickedIndex = c.lastPicked;
+        	c.lastPicked = placementIndex;
          	}
             break;
 

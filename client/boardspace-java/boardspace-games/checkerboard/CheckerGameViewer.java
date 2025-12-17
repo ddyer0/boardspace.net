@@ -51,7 +51,7 @@ import static checkerboard.CheckerMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants,PlacementProvider
+public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants
 {
 	static final String Checker_SGF = "Checker"; // sgf game name
 	static final String ImageDir = "/checkerboard/images/";
@@ -1153,7 +1153,7 @@ private void playSounds(commonMove m)
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.lastPlacedIndex;
 	}
 

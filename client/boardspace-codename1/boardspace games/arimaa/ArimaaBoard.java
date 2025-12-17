@@ -125,7 +125,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     IStack previousPlaced = new IStack();
     IStack previousEmptied = new IStack();
     IStack previousPlayer = new IStack();
-    int placementIndex = 0;
+    int placementIndex = -1;
 
     CellStack robotOStack = new CellStack();
     ChipStack robotPStack = new ChipStack();

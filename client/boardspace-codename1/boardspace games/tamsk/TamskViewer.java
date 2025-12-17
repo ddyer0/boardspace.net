@@ -771,7 +771,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	   //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 

@@ -31,6 +31,7 @@ import online.game.*;
  * 
  * @author ddyer
  *
+ *
  */
 
 class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstants
@@ -59,6 +60,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     private StateStack robotState = new StateStack();
     private IStack robotUndo = new IStack();
     public int robotDepth = 0;
+    public int placementIndex = -1;
     
     public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
     {  char ch = txt.charAt(0);
@@ -190,7 +192,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         copyFrom(rack,from_b.rack); 
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
+        placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
     public void setUpBoard(int [][]spec)
@@ -254,6 +256,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 		rotatedDirection = 0;
         allCells.setDigestChain(r);
         moveNumber = 1;
+        placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -372,6 +375,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         droppedDestStack.clear();
         pickedSourceStack.clear();
      }
+    int lastPickedIndex = -1;
+    int lastDroppedIndex = -1;
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -381,6 +386,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     if(droppedDestStack.size()>0)
     	{
     	KhetCell dr = droppedDestStack.pop();
+    	dr.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	switch(dr.rackLocation())
 	    	{
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
@@ -403,6 +410,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     	if(po!=null)
     	{
     		KhetCell ps = pickedSourceStack.pop();
+    		ps.lastPicked = lastPickedIndex;
     		switch(ps.rackLocation())
     		{
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
@@ -427,6 +435,9 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 		case Black_Chip_Pool:
 		case BoardLocation: 
 			c.addChip(pickedObject);
+			lastDroppedIndex = c.lastDropped;
+			c.lastDropped = placementIndex;
+			placementIndex++;
 			break;	// don't add back to the pool
 		}
        	droppedDestStack.push(c);
@@ -491,6 +502,9 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
 			pickedObject = c.removeTop();
+			lastPickedIndex = c.lastPicked;
+			c.lastPicked = placementIndex;
+			c.lastDropped = -1;
 			break;	
     	
     	}
@@ -674,7 +688,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     private void doDone(replayMode replay)
     {	
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==KhetState.RESIGN_STATE)
         {	setGameOver(false,true);
         }
@@ -706,7 +720,11 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         		{
         		rotatedCell = dest; 
         		rotatedDirection = m.to_row; 
+        		dest.rotatedDirection = rotatedDirection;
         		setNextStateAfterDrop();
+        		lastDroppedIndex = dest.lastDropped;
+        		dest.lastDropped = placementIndex;
+        		placementIndex++;
         		if(replay.animate)
         			{
         			animationStack.push(dest);
@@ -715,6 +733,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         		}
         		else 
         		{ G.Assert(rotatedCell==dest && rotatedDirection==-m.to_row,"unrotating");
+        		rotatedCell.rotatedDirection=0;
         		rotatedCell = null;
         		rotatedDirection = 0;
         		setState(KhetState.PLAY_STATE);
@@ -741,8 +760,19 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         			G.Assert((pickedObject==null) && (rotatedCell==null),"something is moving");
         			pickObject(from);
         			m.piece = pickedObject;
-        			if(to.topChip()!=null) { from.addChip(to.removeTop()); }
+       				from.rotatedDirection = 0;
+    				to.rotatedDirection = 0;
+        			boolean swap = false;
+        			if(to.topChip()!=null) 
+        				{ from.addChip(to.removeTop()); 
+        				  swap = true;
+        				}
         			dropObject(to); 
+        			if(swap)
+        			{	to.lastPicked = placementIndex;
+        				from.lastDropped = placementIndex;
+        				placementIndex++;
+        			}
         			if(replay.animate)
         			{
         				animationStack.push(to);
@@ -758,6 +788,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 			{
 			KhetCell c = getCell(KhetId.BoardLocation, m.to_col, m.to_row);
 			m.piece = pickedObject;
+			c.rotatedDirection = 0;
         	G.Assert(pickedObject!=null,"something is moving");
 			
             if(isSource(c)) 
@@ -773,6 +804,9 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
             			KhetCell src = getSource();
             			src.addChip(back);
             			dropObject(c);
+            			c.lastPicked = placementIndex;
+            			src.lastDropped = placementIndex++;
+            			placementIndex++;
             			if(replay.animate)
             			{
             				animationStack.push(c);
@@ -806,6 +840,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         		{ pickObject(d);
         			// if you pick up a gobblet and expose a row of 4, you lose immediately
         		  m.piece = pickedObject;
+        		  d.rotatedDirection = 0;
         		  switch(board_state)
         		  {	default: throw G.Error("Not expecting pickb in state %s",board_state);
         		  	case PLAY_STATE:

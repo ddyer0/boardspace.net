@@ -16,6 +16,8 @@
  */
 package universe;
 
+import com.codename1.ui.geom.Rectangle;
+
 import lib.G;
 import lib.IStack;
 import lib.Text;
@@ -23,9 +25,6 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
-
-import com.codename1.ui.geom.Rectangle;
-
 import lib.ExtendedHashtable;
 
 public class UniverseMovespec extends commonMPMove implements UniverseConstants

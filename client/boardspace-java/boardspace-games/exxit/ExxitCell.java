@@ -20,6 +20,7 @@ import lib.Random;
 import lib.AR;
 import lib.G;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.cell;
 import online.game.chip;
 
@@ -38,14 +39,15 @@ class CellStack extends OStack<ExxitCell>
 //
 // specialized cell used for the game exxit, strongly 
 // related to those for hive, gobblet and hex
-public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
+public class ExxitCell extends cell<ExxitCell> implements ExxitConstants,PlacementProvider
 {	
 	private ExxitPiece pieces[]=null;	// the pieces stacked on this cell
 	private int pieceIndex=-1;			// index into pieces[]
 	public int sweep_counter=0;			// used checking for valid boards
 	int blobNumber=0;					//the blob number containing this cell
 	String cellName="";					//the history name for this cell
-	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public void reInit()
 	{
 		super.reInit();
@@ -53,6 +55,8 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 		sweep_counter = 0;
 		pieceIndex = -1;
 		blobNumber = 0;
+		lastPicked = -1;
+		lastDropped = -1;
 		cellName ="";
 	}
 	// short term storage, don't set piece location
@@ -105,6 +109,8 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 	{	super.copyFrom(other);
 		pieceIndex = other.pieceIndex;
 		cellName = other.cellName;
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
 		for(int i=0;i<pieces.length;i++)
 		{	ExxitPiece o = (i<=pieceIndex)?other.pieces[i]:null;
 			if(o!=null) 
@@ -204,6 +210,10 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 		{	msg += pieces[i].prettyName;
 		}
 		return(msg);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
 	}
 
 

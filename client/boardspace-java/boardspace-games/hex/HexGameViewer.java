@@ -118,7 +118,7 @@ import static hex.Hexmovespec.*;
  *  <li> do a cvs update on the original hex hierarchy to get back the original code.
  *  
 */
-public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants,PlacementProvider
+public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants
 {	 	
     static final String Hex_SGF = "11"; // sgf game name
 
@@ -1265,7 +1265,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		//
 		// the check on DoneState() causes the numbers to advance
 		// when the temporary piece is placed.  Without it, the "last"

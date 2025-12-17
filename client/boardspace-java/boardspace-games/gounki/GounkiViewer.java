@@ -1,5 +1,5 @@
 /*
-	Copyright 2006-2023 by Dave Dyer
+a	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
     
@@ -489,7 +489,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
         drawViewsetMarker(gc,viewsetRect,ourSelect);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.dropState;
     }

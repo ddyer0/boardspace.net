@@ -420,7 +420,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
      }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.moveNumber;
     }

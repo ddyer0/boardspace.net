@@ -49,7 +49,7 @@ import static veletas.VeletasMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements VeletasConstants, PlacementProvider
+public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements VeletasConstants
 {
      /**
 	 * 
@@ -901,7 +901,7 @@ private void playSounds(commonMove m)
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.placementCount;
 	}
 }

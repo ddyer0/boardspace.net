@@ -48,7 +48,7 @@ import lib.Tokenizer;
  * June 2006  initial work in progress.  
 
 */
-public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants,PlacementProvider
+public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants
 {       
     // file names for jpeg images and masks
     static final String ImageDir = "/hive/images/";
@@ -1150,9 +1150,18 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return b.lastPlacement;
 	}
+    // override for the standard numberMenu drawNumber
+    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
+    {	
+    	if(source==null)
+    		{	StockArt.DownArrow.drawChip(gc,this,cellSize,x+cellSize,y+cellSize/2,null);
+    		
+    		}
+  	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
+    }
 
 }
 

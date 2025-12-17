@@ -146,7 +146,6 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     {
         movespec m = (movespec) mm;
 
-        //System.out.println("Un "+m);
         ZertzState ostate = board.getState();
  
         if ((ostate == ZertzState.MOVE_STATE)||(ostate==ZertzState.SETRING_STATE))
@@ -161,20 +160,14 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     {
         movespec m = (movespec) mm;
 
-        //System.out.println("Ex "+ search_state.search_clock+" "+m);
         board.ExpressExecute(m);
 
-        ZertzState newstate = board.getState();
-
-        if ((newstate == ZertzState.DONE_STATE) || (newstate == ZertzState.DONE_CAPTURE_STATE))
-        {
-            board.SetNextPlayer(replayMode.Replay);
             ZertzState nextstate = board.getState();
             if ((nextstate == ZertzState.MOVE_STATE)||(nextstate==ZertzState.SETRING_STATE))
             {
                 boardSearchLevel++;
             }
-        }
+        
     }
 
     public CommonMoveStack  List_Of_Legal_Moves()
@@ -262,6 +255,8 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
     public void PrepareToMove(int playerindex)
     {
         board.copyFrom(GameBoard); 
+        board.pickedSource = board.droppedDest = null;
+        board.robotBoard = true;
         sequence_board.copyFrom(GameBoard);
         searchForPlayer = playerindex;
         timeLimit = adjustTime(timeLimit,20-board.moveNumber());
@@ -302,7 +297,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             search_state.save_all_variations = SAVE_TREES;
             search_state.allow_best_killer = KILLER;
             search_state.save_top_digest = true;
-            search_state.save_digest = false;	// debugging only
+            search_state.save_digest = false;	// debugging only, stumbles over captures
             
             
             move = search_state.Find_Static_Best_Move(randomn);

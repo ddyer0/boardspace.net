@@ -24,19 +24,22 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import static com.codename1.util.MathUtil.atan2;
 
+import bridge.ActionListener;
 import bridge.Color;
 import lib.CellId;
 import lib.DrawableImage;
 import lib.EnumMenu;
 import lib.G;
-import lib.GC;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.IStack;
 import lib.InternationalStrings;
 import lib.Location;
 import lib.LocationProvider;
+import lib.MenuParentInterface;
+import lib.NumberMenuHost;
 import lib.PopupManager;
+import lib.exCanvas;
 /**
  * 
  * This class provides a numbering menu, intended to be placed on the stat line
@@ -48,7 +51,7 @@ import lib.PopupManager;
  * To use this, 
  * 
  * cell class should implement PlacementProvider, and the cell's reInit and copyFrom
- * method should maintain the cells bookeeping variables.  Minimally, these will maintain
+ * method should maintain the cells bookkeeping variables.  Minimally, these will maintain
  * the sequence number when the cell is filled, emptied, or captured.
  * 
  * board class should manipulate the cell's state variables, and a placementSequence.
@@ -68,6 +71,9 @@ import lib.PopupManager;
  * should remember the sequence and identity of the captured pieces, and the drawBoardElements method
  * should draw a representation of them inline.
  * 
+ * 12/7/2025 made some simple changes to allow chains of locations with the same number.  
+ * This is used by split/join moves in Truchet
+ * 
  * @author ddyer
  *
  */
@@ -78,11 +84,10 @@ public class NumberMenu extends Rectangle {
 	CellId id = null;
 	String text = "#";
 	String helpText = "Show move numbers";
-	commonCanvas drawOn=null;
 	PopupManager menu = null;
 	private NumberingMode selected = NumberingMode.None;
 	public NumberingMode selected() { return selected; }
-	PlacementProvider selectedProvider = null;
+	NumberMenuHost selectedProvider = null;
 	int startingNumber = 0;
 	private boolean mouseIsOn = false;
 	public boolean includePartialMoves = true;
@@ -109,12 +114,11 @@ public class NumberMenu extends Rectangle {
 	 * @param ic
 	 * @param i
 	 */
-	public NumberMenu(commonCanvas on,DrawableImage<?> ic,CellId i) {
-		drawOn = on;
+	public NumberMenu(NumberMenuHost provider,DrawableImage<?> ic,CellId i) {
 		base = ic;
 		id = i;
 		text = DrawableImage.NotHelpDraw + "#";
-		selectedProvider = (PlacementProvider)on;
+		selectedProvider = provider;
 	}
 	/**
 	 * draw the menu icon
@@ -122,7 +126,7 @@ public class NumberMenu extends Rectangle {
 	 * @param gc
 	 * @param highlight
 	 */
-	public void draw(Graphics gc,HitPoint highlight)
+	public void draw(Graphics gc,exCanvas drawOn,HitPoint highlight)
 	    {	int width = G.Width(this);
 	    	mouseIsOn = false;
 	    	if(base.drawChip(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,text))
@@ -137,10 +141,10 @@ public class NumberMenu extends Rectangle {
 	 *  in StopDragging when the menu icon is hit.  The menu itself will
 	 *  be serviced in the canvas handleDeferredEvent method
 	 */
-	public void showMenu()
+	public void showMenu(MenuParentInterface drawOn,ActionListener listener)
 	{
 		if(menu==null) { menu=new PopupManager(); }
-		menu.newPopupMenu(drawOn,drawOn.deferredEvents);
+		menu.newPopupMenu(drawOn,listener);
 		menu.show(G.Left(this),G.Top(this),NumberingMode.values());
 	}
 	/**
@@ -151,7 +155,7 @@ public class NumberMenu extends Rectangle {
 	 * @param p
 	 * @return
 	 */
-	public boolean selectMenu(Object target,PlacementProvider p)
+	public boolean selectMenu(Object target,NumberMenuHost p)
 		{
 		if(menu!=null)
 		{	if(menu.selectMenuTarget(target))
@@ -164,7 +168,7 @@ public class NumberMenu extends Rectangle {
 			return(false);
 		}
 		
-	private void doSelection(NumberingMode sel,PlacementProvider p)
+	private void doSelection(NumberingMode sel,NumberMenuHost p)
 		{
 		selected = sel;
 		selectedProvider = p;
@@ -177,7 +181,7 @@ public class NumberMenu extends Rectangle {
 				break;
 			case From_Here:	
 				{
-				startingNumber = p.getLastPlacement(false)-1;
+				startingNumber = p.getLastPlacement()-1;
 				}
 				break;
 			}
@@ -254,7 +258,7 @@ public class NumberMenu extends Rectangle {
 	boolean newMoveNumber = false;
 	public void recordSequenceNumber(int moveNumber)
 	{	int sz = sequenceNumbers.size();
-		int last = selectedProvider.getLastPlacement(false);
+		int last = selectedProvider.getLastPlacement();
 		while(sz>moveNumber+1) 		// the move number moved backwards, remove excess
 			{ sequenceNumbers.pop(); sz--; 
 			  newMoveNumber = true;
@@ -294,7 +298,7 @@ public class NumberMenu extends Rectangle {
 		}
 		else
 		{	// 1-1 mapping
-			return selectedProvider.getLastPlacement(false)+back;
+			return selectedProvider.getLastPlacement()+back;
 		}
 	}
 	/**
@@ -339,20 +343,13 @@ public class NumberMenu extends Rectangle {
 	public LocationProvider saveSequenceNumber(int seq,boolean empty,int x,int y,Color c)
 	{
 		Hashtable<Integer,LocationProvider> tbl = empty ? sources :dests;
+		LocationProvider prev = tbl.get(seq);
 		LocationProvider loc = makeLocation(x,y,c);
+		loc.setNext(prev);
 		tbl.put(seq,loc);
 		return loc;
 	}
-	/**
-	 * make a new location object, can be overridden.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public LocationProvider makeLocation(int x,int y)
-	{
-		return makeLocation(x,y,null);
-	}
+
 	/**
 	 * make a new location object, can be overridden.
 	 * @param x
@@ -431,26 +428,35 @@ public class NumberMenu extends Rectangle {
 
     	for(Enumeration<Integer>destindex = dests.keys(); destindex.hasMoreElements();)
     	{	int idx = destindex.nextElement();
-    		LocationProvider src = sources.get(idx);
-    		LocationProvider dest = dests.get(idx);
-       		if(dest!=null)
+    		
+       		LocationProvider dest0 = dests.get(idx);
+    		LocationProvider src0 = sources.get(idx);
+       		LocationProvider src = src0;
+    		while(src!=null)
     		{
-  
-    		if(src!=null)
-    		{
+        		LocationProvider dest = dest0;
+	    		while(dest!=null)
+	    			{
         	drawArrow(gc,src,dest,labelColor,cellSize);   		
+	    			dest = dest.getNext();
+	    			}
+        	src = src.getNext();
     		}
-           	drawNumber(gc,cellSize,src,dest,labelPosition,pieceLabelFont,labelColor,idx);    		
-    		}
+        	drawNumber(gc,cellSize,src0,dest0,labelPosition,pieceLabelFont,labelColor,idx); 
      	} 
+    	
     	for(Enumeration<Integer>srcindex = sources.keys(); srcindex.hasMoreElements();)
     	{
     		int idx = srcindex.nextElement();
-    		LocationProvider src = sources.get(idx);
     		LocationProvider dest = dests.get(idx);
     		if(dest==null)
     		{
+    	   		LocationProvider src = sources.get(idx);
+    			while(src!=null)
+    			{
     			drawNumber(gc,cellSize,src,pieceLabelFont,labelColor,idx);
+    			src = src.getNext();
+    			}
     		}
     	}
     }
@@ -506,9 +512,8 @@ public class NumberMenu extends Rectangle {
     public void drawNumber(Graphics gc,int cellSize,LocationProvider dest,Font pieceLabelFont,Color color,int idx)
     {	if(includeNumbers)
     {
-   		GC.setFont(gc,pieceLabelFont);
-     	GC.drawOutlinedText(gc,true,dest.getX()-cellSize/2,dest.getY()-cellSize/2,cellSize,cellSize,color,Color.black,
-     			moveNumberString(idx));
+    	selectedProvider.drawNumber(gc,null,reverse.get(dest),cellSize,dest.getX()-cellSize/2,
+    			dest.getY()-cellSize/2,pieceLabelFont,color, moveNumberString(idx));
     }
     }
    
@@ -547,9 +552,11 @@ public class NumberMenu extends Rectangle {
 		int ypos = (int)(y2+cos*cellSize*position+cos2*cellSize*lineWidthMultiplier);
 		if(includeNumbers)
 		{
- 		GC.setFont(gc,pieceLabelFont);
-     	GC.drawOutlinedText(gc,true,xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize,color,Color.black,
-     			moveNumberString(idx));
+		 	  /** call back to the host window for actual drawing.  This allows the 
+		  	   * the host to override or embellish the default behavior
+		  	   */
+			selectedProvider.drawNumber(gc,src==null ? null : reverse.get(src),reverse.get(dest),cellSize,xpos-cellSize/2,
+			   			ypos-cellSize/2,pieceLabelFont,color, moveNumberString(idx));
 		}
 	
 		
@@ -565,9 +572,7 @@ public class NumberMenu extends Rectangle {
      * @param cellSize
      */
     public void drawArrow(Graphics gc,LocationProvider src,LocationProvider dest,Color defaultColor,int cellSize)
-    {	Color lc = src.getColor();
-	    GC.setColor(gc,lc==null ? defaultColor : lc);
-		GC.setOpacity(gc,arrowOpacity);
+    {	
 		double linew = cellSize*lineWidthMultiplier;
 		double shorten = cellSize*arrowOffsetMultiplier;
 
@@ -593,7 +598,21 @@ public class NumberMenu extends Rectangle {
 		double cy = (cos*shorten);
 		double lx = (linew*sin2);
 		double ly = (linew*cos2);
-	 	GC.drawArrow(gc,(int)(x1-cx+lx),(int)(y1-cy+ly),(int)(x2+cx+lx),(int)(y2+cy+ly),(int)(cellSize*arrowWidthMultiplier),linew);
-	 	GC.setOpacity(gc,1);
+		
+		Color lc = src.getColor();
+		Color color = lc==null ? defaultColor : lc;
+	 	
+		PlacementProvider s = reverse.get(src);
+		PlacementProvider d = reverse.get(dest);
+		if(s!=d)
+		{
+		/** call back to the host window for actual drawing.  This allows the 
+	  	   * the host to override or embellish the default behavior
+	  	   */
+		selectedProvider.drawArrow(gc,s,d,
+				(int)(x1-cx+lx),(int)(y1-cy+ly),(int)(x2+cx+lx),(int)(y2+cy+ly),
+				color,arrowOpacity,
+				(int)(cellSize*arrowWidthMultiplier),linew);
+		}
     }
 }

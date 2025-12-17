@@ -100,7 +100,7 @@ import static manhattan.ManhattanMovespec.*;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> implements ManhattanConstants,  PlacementProvider
+public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> implements ManhattanConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	// TODO: display some indication of the university's owner for "india" selection.
@@ -1498,36 +1498,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
         } 
         }
     }
-	  public boolean allowOpponentUndoNow() 
-	  {
-		  return super.allowOpponentUndoNow();
-	  }
-	  public boolean allowOpponentUndo() 
-	  {
-		  return super.allowOpponentUndo();
-	  }
-	  
-	  public boolean allowUndo()
-	  {		return super.allowUndo();
-	  }
-	/**
-	 * this is the key to limiting "runaway undo" in situations where the player
-	 * might have made a lot of moves, and undo should limit the damage.  One
-	 * example of this is in perliminary setup such as arimaa or iro
-	 */
-	public boolean allowPartialUndo()
-	{
-		return super.allowPartialUndo();
-	}
-	 /**
-	  * this is called when the user clicks with no effect a few times, and is intended to 
-	  * put him into an un-confused state.  Normally this is equivalient to an undo, but
-	  * in games with complex setups, something else might be appropriate
-	  */
-	 public void performReset()
-	    {
-	    	super.performReset();
-	    }
+
 	 //
 	 // reduce columns by enough to cause an additional row
 	 //
@@ -2367,7 +2338,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     //
     // support for the last move "numberMenu" logic
     //
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 	

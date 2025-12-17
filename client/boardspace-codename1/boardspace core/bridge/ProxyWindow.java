@@ -132,7 +132,8 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 		theComponent.setY(y);
 	}
 	public void invalidate() { theComponent.invalidate(); }
-	
+	public void validate() { theComponent.validate(); }
+
 	/*
 	 * scroll and zoom are implemented locally, unknown to and independent
 	 * of the codename1 window system.
@@ -164,8 +165,8 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	}
 	
 	public String isValid() { return("valid=?"); }
-	public void validate() { }
-	public void update() { 	}
+	
+	public void update() { theComponent.update();	}
 	
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(theComponent))

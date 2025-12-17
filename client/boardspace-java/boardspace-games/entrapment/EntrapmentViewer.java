@@ -621,7 +621,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         drawViewsetMarker(gc,viewsetRect,highlight);
 
     }
-    public int getLastPlacement(boolean empty)
+    public int getLastPlacement()
     {
     	return b.dropState;
     }

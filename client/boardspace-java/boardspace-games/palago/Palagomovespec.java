@@ -19,6 +19,9 @@ package palago;
 import online.game.*;
 
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
@@ -41,9 +44,6 @@ public class Palagomovespec extends commonMove implements PalagoConstants
     int object;
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
-    PalagoState state;	// the state of the move before state, for UNDO
-    int undoInfo;
-    PalagoCell dstack = null;
     public Palagomovespec()
     {
     } // default constructor
@@ -68,8 +68,6 @@ public class Palagomovespec extends commonMove implements PalagoConstants
         return ((op == other.op) 
 				&& (source == other.source)
 				&& (object == other.object)
-				&& (state == other.state)
-				&& (undoInfo==other.undoInfo)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
 				&& (player == other.player));
@@ -80,9 +78,6 @@ public class Palagomovespec extends commonMove implements PalagoConstants
         to.to_col = to_col;
         to.to_row = to_row;
         to.object = object;
-        to.state = state;
-        to.undoInfo = undoInfo;
-        to.dstack = dstack;
         to.source = source;
     }
 
@@ -142,24 +137,36 @@ public class Palagomovespec extends commonMove implements PalagoConstants
             break;
         }
     }
+    
+    private Text icon(commonCanvas v,PalagoChip chip,Object... msg)
+    {	double chipScale[] = {1,0.75,0.0,-0.25};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xxx", chip, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
+
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_PICKB:
-            return (D.findUnique(op) +" " + G.printCol(to_col) + to_row);
+            return TextChunk.create(D.findUnique(op) +" " + G.printCol(to_col) + to_row);
 
 		case MOVE_DROPB:
-            return (""+G.printCol(to_col) + to_row+" "+object);
+            return icon(v,PalagoChip.getChip(object),""+G.printCol(to_col) + to_row+" ");
         case MOVE_PICK:
         case MOVE_DONE:
-            return ("");
+            return TextChunk.create("");
 
         default:
-            return (D.findUniqueTrans(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

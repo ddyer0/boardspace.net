@@ -198,7 +198,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)
@@ -297,6 +297,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       	int dotsize = Math.max(2,SQUARESIZE/15);
      	int mov = rb.movingObjectIndex();
      	long now = G.Date();
+     	numberMenu.clearSequenceNumbers();
      	if(roll_anim_cell!=null) 
      		{ 
      		if(now > roll_anim_stop) { roll_anim_cell=null; } else { repaint(20); }
@@ -314,7 +315,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
             int ypos = G.Bottom(brect) - rb.cellToY(cell);
             int xpos = G.Left(brect) + rb.cellToX(cell);
        		int scl = scaleCell(SQUARESIZE,xpos,ypos,boardRect);
-
+       		numberMenu.saveSequenceNumber(cell,xpos,ypos);
        		if(cell==roll_anim_cell)
             {	KnockaboutChip chip = cell.topChip();
             	if(chip!=null)
@@ -372,6 +373,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         		highlight.spriteColor = Color.red;
          		}
         }
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE*3/2,labelFont,labelColor);
     }
     
     //
@@ -450,6 +452,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         else { roll_anim_cell = null; }
         
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Sequential);
         
         if(replay.animate) { playSounds(mm); }
@@ -630,6 +633,10 @@ private void playSounds(commonMove m)
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return b.placementIndex;
     }
 }
 

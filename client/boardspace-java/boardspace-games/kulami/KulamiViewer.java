@@ -307,7 +307,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -482,7 +482,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	// add these two lines to adjust the background tiles   	
     	//drawFixedElements(gc);
     	//lastDropped = KulamiChip.board_3x2;
-    	
+    	numberMenu.clearSequenceNumbers();
     	Hashtable<KulamiCell,KulamiCell> targets = gb.getTargets();
     	boolean selective = targets.size()<30;
        	GC.setColor(gc, Color.black);
@@ -502,7 +502,8 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
   
-
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
+            
             if (drawhighlight && selective)
             { // checking for pointable position
            	 StockArt.SmallO.drawChip(gc,this,CELLSIZE*2/3,xpos,ypos,null);                
@@ -517,6 +518,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
             
             }
         }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
 
     /**
@@ -638,6 +640,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -1062,6 +1065,9 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
             setComment(comments);
         }
     }
-
+    public int getLastPlacement()
+    {
+    	return bb.placementIndex;
+    }
 }
 

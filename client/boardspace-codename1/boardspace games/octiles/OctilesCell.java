@@ -23,6 +23,7 @@ import lib.HitPoint;
 import lib.OStack;
 import lib.Random;
 import lib.exCanvas;
+import online.game.PlacementProvider;
 import online.game.chip;
 import online.game.stackCell;
 
@@ -31,7 +32,7 @@ class CellStack extends OStack<OctilesCell>
 	public OctilesCell[] newComponentArray(int n) { return(new OctilesCell[n]); }
 }
 
-public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements OctilesConstants
+public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements OctilesConstants,PlacementProvider
 {	public OctilesChip[] newComponentArray(int n) { return(new OctilesChip[n]); }
 	int markedStrokes = 0;
 	boolean isPostCell = false;			// is a "post" cell where the runners can stand
@@ -41,6 +42,9 @@ public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements O
 	int rotation = 0;
 	OctilesChip homeForColor = null;
 	OctilesChip goalForColor = null;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
+	public int lastFlipped = -1;
 	// a few of the tile cells have non-symmetric entry/exit relationships,
 	// which correspond to the lines drawn on the board.
 	int entryDirections[] = null;
@@ -79,6 +83,9 @@ public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements O
 	public void copyFrom(OctilesCell ot)
 	{	super.copyFrom(ot);
 		rotation = ot.rotation;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
+		lastFlipped = ot.lastFlipped;
 	}
 	public long Digest(Random r)
 	{	long val = super.Digest(r);
@@ -88,6 +95,9 @@ public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements O
 	public void reInit() 
 	{	super.reInit();
 		rotation = 0;
+		lastPicked = -1;
+		lastDropped = -1;
+		lastFlipped = -1;
 	}
 
 	public boolean pointInsideCell(HitPoint pt,int x,int y,int SQ)
@@ -108,4 +118,8 @@ public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements O
 	{	return(drawChip(gc,drawOn,topChip(),highlight,SQUARESIZE,e_x,e_y,thislabel));
 	}
 	static public boolean sameCell(OctilesCell c,OctilesCell d) { return((c==null)?(d==null):c.sameCell(d)); }
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 }

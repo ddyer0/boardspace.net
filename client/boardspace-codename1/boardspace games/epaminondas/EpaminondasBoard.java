@@ -62,6 +62,7 @@ class EpaminondasBoard
 	private EpaminondasState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	private IStack robotStack = new IStack();
+	public int placementIndex = -1;
 	public EpaminondasState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -235,6 +236,7 @@ class EpaminondasBoard
 	    
         animationStack.clear();
         moveNumber = 1;
+        placementIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -540,7 +542,8 @@ class EpaminondasBoard
     } 
     
     // set the contents of a cell, and maintain the books
-    private int lastPlaced = -1;
+    private int lastPickedIndex = -1;
+    private int lastDroppedIndex = -1;
     public EpaminondasChip SetBoard(EpaminondasCell c,EpaminondasChip ch)
     {	EpaminondasChip old = c.topChip();
     	if(old!=ch)
@@ -567,6 +570,8 @@ class EpaminondasBoard
     {	
     	EpaminondasCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
+    	rv.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	EpaminondasChip other = pickedObject==EpaminondasChip.White ? EpaminondasChip.Black : EpaminondasChip.White;
        	while(captureDestStack.size()>0)
@@ -583,6 +588,7 @@ class EpaminondasBoard
     {	EpaminondasCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
+    	rv.lastPicked = lastPickedIndex;
     	pickedObject = null;
     }
     
@@ -604,6 +610,9 @@ class EpaminondasBoard
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         	SetBoard(c,pickedObject);
+        	lastDroppedIndex = c.lastDropped;
+        	c.lastDropped = placementIndex;
+        	placementIndex++;
             pickedObject = null;
             break;
         }
@@ -673,6 +682,8 @@ class EpaminondasBoard
         	{
             lastPicked = pickedObject = c.topChip();
          	lastDroppedObject = null;
+         	lastPickedIndex = c.lastPicked;
+         	c.lastPicked = placementIndex;
 			SetBoard(c,null);
         	}
             break;
@@ -788,7 +799,7 @@ class EpaminondasBoard
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-
+        placementIndex++;
         if (board_state==EpaminondasState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;

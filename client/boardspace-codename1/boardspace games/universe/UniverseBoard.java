@@ -77,7 +77,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 	public variation rules;							// the current variation
 	public boolean robotBoard = false;
     public CellStack animationStack = new CellStack();
-
+    public int placementIndex = -1;
     
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -995,6 +995,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         AR.copy(numberOfSize,from_b.numberOfSize);
 	    regionIndex = from_b.regionIndex;
 	    sweep_counter = from_b.sweep_counter;
+	    placementIndex = from_b.placementIndex;
         if(G.debug()) { sameboard(from_b); }
     }
     public int[] saveSudokuValues()
@@ -1634,7 +1635,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	chipLocation = new UniverseCell[np][racksize];
     	allDone = new boolean[np];
     	win = new boolean[np];
-
+    	placementIndex = 1;
         for(int i=0;i<np;i++)
         { occupiedCells[i] = new CellStack();
           diagonalPointsForPlayer[i] = new CellStack();
@@ -1769,12 +1770,17 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     //
     // undo the drop, restore the moving object to moving status.
     //
+    private int lastDroppedIndex = -1;
+    private int lastPickedIndex = -1;
+    
     private void unDropObject()
     {
     G.Assert(pickedObject==null, "nothing should be moving");
     if(droppedDestStack.size()>0)
     	{
     	UniverseCell dr = droppedDestStack.pop();
+    	dr.lastDropped = lastDroppedIndex;
+    	placementIndex--;
     	switch(dr.rackLocation())
 	    	{
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
@@ -1850,6 +1856,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     	if(po!=null)
     	{
     		UniverseCell ps = pickedSourceStack.pop();
+    		ps.lastPicked = lastPickedIndex;
     		switch(ps.rackLocation())
     		{
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
@@ -2137,6 +2144,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 		case BoardLocation: 
 			UniverseChip po = pickedObject;
 			removeChip(pickedCell);
+			lastDroppedIndex = c.lastDropped;
+			c.lastDropped = placementIndex;
+			placementIndex++;
 			pickedObject = null;
 			if(po.isGiven()) 
 				{ c.setGiven(po); 
@@ -2265,6 +2275,9 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 			
 		case BoardLocation: 
   			invalidateDiagonalPointsCache();
+  			lastPickedIndex = c.lastPicked;
+  			c.lastPicked = placementIndex;
+  			
 			//$FALL-THROUGH$
 		case ChipRack:
 		case TakensRack:
@@ -2492,7 +2505,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     private void doDone()
     {
     	UniverseCell dest = acceptPlacement();
-
+    	placementIndex++;
     	if((board_state==UniverseState.PASS_STATE) &&  (revision>=101) && rules.passIsPermanent())
         {
         	allDone[whoseTurn]=true;

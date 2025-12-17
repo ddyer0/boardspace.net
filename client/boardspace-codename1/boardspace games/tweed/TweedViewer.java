@@ -51,7 +51,7 @@ import online.search.SimpleRobotProtocol;
  * Tumbleweed implementation for Boardspace
  *  
 */
-public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, PlacementProvider
+public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -1251,7 +1251,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.lastPlacedMove;
 	}
 	public boolean drawIsPossible() { return true; }

@@ -115,7 +115,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original havannah hierarchy to get back the original code.
  *  
 */
-public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants, PlacementProvider
+public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants
 {	 	
     static final String Havannah_SGF = "Havannah"; // sgf game name
 
@@ -1203,7 +1203,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (bb.moveNumber);
 	}
 }

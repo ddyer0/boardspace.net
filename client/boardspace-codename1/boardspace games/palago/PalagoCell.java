@@ -16,6 +16,7 @@
  */
 package palago;
 
+import lib.OStack;
 import lib.Random;
 
 import online.game.*;
@@ -24,15 +25,23 @@ import online.game.*;
 // specialized cell used for the this game.
 //
 
+class CellStack extends OStack<PalagoCell>
+{
+	public PalagoCell[] newComponentArray(int sz) {
+		return new PalagoCell[sz];
+	}
 
+}
 
 //
-public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements PalagoConstants
+public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements PalagoConstants,PlacementProvider
 {	
 	public PalagoCell nextPlaced;	// next placed chip on the board
 	public int loopCode;			// code for complete loops traversing this chip
 	String cellName="";					//the history name for this cell
 	public int scan_clock=0;
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	public PalagoCell(char c,int r,PalagoId rack) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);
 		rackLocation = rack;
@@ -46,9 +55,17 @@ public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements Palag
 		onBoard=false;
 	}
 	public PalagoId rackLocation() { return((PalagoId)rackLocation); }
+	
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = lastDropped = -1;
+	}
 	public void copyFrom(PalagoCell other)
 	{	super.copyFrom(other);
 		cellName = other.cellName;
+		lastPicked = other.lastPicked;
+		lastDropped = other.lastDropped;
 	}
 
 
@@ -88,4 +105,9 @@ public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements Palag
 	static public boolean sameCell(PalagoCell c,PalagoCell d)
 	{	return((c==null)?(d==null):c.sameCell(d));
 	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
+
 }

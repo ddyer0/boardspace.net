@@ -470,7 +470,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         return disk;
     }
  
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return (b.dropState);
 	}
 

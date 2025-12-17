@@ -42,7 +42,7 @@ import online.search.SimpleRobotProtocol;
  * This is intended to allow using your phone as a game clock in offline
  * tournaments.
  */
-public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements GameTimerConstants, PlacementProvider
+public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements GameTimerConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

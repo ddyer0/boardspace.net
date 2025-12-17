@@ -16,8 +16,8 @@
  */
 package palago;
 
-
 import bridge.Color;
+
 import online.game.*;
 import java.util.*;
 import lib.*;
@@ -59,6 +59,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
     calculating adjacency and connectivity. */
 	private PalagoState unresign;
 	private PalagoState board_state;
+	public int moveIndex = -1;
 	public PalagoState getState() {return(board_state); }
 	public void setState(PalagoState st) 
 	{ 	unresign = (st==PalagoState.RESIGN_STATE)?board_state:null;
@@ -277,6 +278,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
         pickedObject = from_b.pickedObject;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        moveIndex = from_b.moveIndex;
 
         if(G.debug()) { sameboard(from_b); }
     }
@@ -323,6 +325,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
        {	chipPool[i]=new PalagoCell(r,PalagoId.ChipPool,i,PalagoChip.getChip(i));
        }
         moveNumber = 1;
+        moveIndex = 0;
         lines = null;
         // note that firstPlayer is NOT initialized here
     }
@@ -444,16 +447,24 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
     {
     	if((stackIndex>0) && (droppedDestStack[stackIndex-1]!=null)) 
     	{	stackIndex--;
-    		pickedObject = SetBoard(droppedDestStack[stackIndex],null); 
+    		PalagoCell dest = droppedDestStack[stackIndex];
+    		dest.lastDropped = prevDropped;
+    		moveIndex--;
+    		pickedObject = SetBoard(dest,null); 
     		droppedDestStack[stackIndex] = null;
      	}
     }
+    
+    int prevPicked = -1;
+    int prevDropped = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
     {	if((pickedObject!=null) && (pickedSourceStack[stackIndex]!=null))
-    	{	 SetBoard(pickedSourceStack[stackIndex],pickedObject);
+    	{	PalagoCell src = pickedSourceStack[stackIndex];
+    		src.lastPicked = prevPicked;
+    		SetBoard(pickedSourceStack[stackIndex],pickedObject);
     	    pickedSourceStack[stackIndex] = null;
     	}
 	  pickedObject=null;
@@ -578,7 +589,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
     private void doDone()
     {
         acceptPlacement();
-
+        moveIndex++;
         if (board_state==PalagoState.RESIGN_STATE)
         {
             win[nextPlayer[whoseTurn]] = true;
@@ -634,6 +645,9 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
 			pickedObject = PalagoChip.getChip(m.object);		// get this object
 			pickedSourceStack[stackIndex] = chipPool[m.object];
             dropBoardCell(c);
+            prevDropped = c.lastDropped ;
+            c.lastDropped = moveIndex;
+            moveIndex++;
             createExitCells(c);
             setNextStateAfterDrop();
             lines = null;
@@ -765,6 +779,9 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
         return(false);
     }
     
+    private CellStack robotCell = new CellStack();
+    private IStack robotInt = new IStack();
+    private StateStack robotState = new StateStack();
     
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -775,13 +792,13 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
     */
     public void RobotExecute(Palagomovespec m)
     {
-        m.state = board_state;
-        m.undoInfo = stackIndex; //record the starting state. The most reliable
+        robotState.push(board_state);
+        robotInt.push(stackIndex); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
         
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         stackIndex = 0;
-        m.dstack = droppedDestStack[0];
+        robotCell.push(droppedDestStack[0]);
         if (Execute(m,replayMode.Replay))
         {
             if (m.op == MOVE_DONE)
@@ -828,9 +845,9 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
             break;
         }
 
-        setState(m.state);
-        stackIndex = m.undoInfo;
-        droppedDestStack[0]=m.dstack;
+        setState(robotState.pop());
+        stackIndex = robotInt.pop();
+        droppedDestStack[0]=robotCell.pop();
         lines = null;
         if(whoseTurn!=m.player)
         {	moveNumber--;

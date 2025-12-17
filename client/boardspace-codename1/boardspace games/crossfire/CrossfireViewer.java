@@ -46,7 +46,7 @@ import online.search.SimpleRobotProtocol;
  * Crossfire viewer, Dec 2010
  * 
 */
-public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> implements CrossfireConstants,PlacementProvider
+public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> implements CrossfireConstants
 {	
 	static final String Crossfire_SGF = "crossfire"; // sgf game name
 	static final String ImageDir = "/crossfire/images/";
@@ -961,7 +961,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         }
     }
 
-	public int getLastPlacement(boolean empty) {
+	public int getLastPlacement() {
 		return bb.moveNumber;
 	}
 }

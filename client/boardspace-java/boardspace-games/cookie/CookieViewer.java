@@ -225,7 +225,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	//
       	int zoomW = CELLSIZE*7;
 
-      	placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+      	placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	SetupVcrRects(boardX+C2/2,boardBottom-C2/2-minLogW/2,minLogW,minLogW/2);
@@ -389,12 +389,14 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
        CookieCell destCell = gb.getDest();
        int left = G.Left(tbRect);
        int top = G.Bottom(tbRect);
+       numberMenu.clearSequenceNumbers();
+       
        for(Enumeration<CookieCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
         { //where we draw the grid
            	CookieCell ccell = cells.nextElement();
            	int xpos = left + gb.cellToX(ccell);
            	int ypos = top - gb.cellToY(ccell);
-                                  
+           	numberMenu.saveSequenceNumber(ccell,xpos,ypos);
            	boolean isADest = dests.get(ccell)!=null;
            	boolean isASource = (ccell==sourceCell)||(ccell==destCell);
            	boolean canHitThis = !someHit && gb.LegalToHitBoard(ccell);
@@ -463,7 +465,8 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	}
         
         doBoardDrag(tbRect,anySelect,cellSize,CookieId.InvisibleDragBoard); 
-
+        numberMenu.drawSequenceNumbers(gc,cellSize,labelFont,labelColor);
+        
  		GC.setClip(gc,oldClip);
     }
 
@@ -585,7 +588,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         startBoardAnimations(replay);
       
 		lastDropped = bb.lastDropped;	// this is for the image adjustment logic
@@ -872,5 +875,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return bb.placementIndex;
+    	
     }
 }

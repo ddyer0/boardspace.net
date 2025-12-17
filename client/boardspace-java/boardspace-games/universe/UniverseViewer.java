@@ -456,7 +456,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	int stateY = boardY-stateH;
     	int boardRight = boardX+boardW;
     	layout.returnFromMain(extraW,extraH);
-    	placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    	placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;
@@ -761,7 +761,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     
     public Rectangle drawImage(Graphics gc, Image im, double scale[],int x, int y, 
     		double boxw,double xscale,double jitter,String text,boolean artCenterText)
-    {	boolean sudo = (text!=null) && (text.length()>=1) && (text.charAt(0)=='#');
+    {	boolean sudo = (text!=null) && (text.length()>=2) && (text.charAt(0)=='#');
     	Rectangle rr = super.drawImage(gc,im,scale,x,y,boxw,xscale,jitter,sudo ? null : text, artCenterText);
     	if(sudo)
     	{
@@ -781,6 +781,9 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         int bottom = G.Bottom(brect);
         int left = G.Left(brect);
         boolean moving = gb.pickedObject !=null; 
+        
+        numberMenu.clearSequenceNumbers();
+        
         if(moving&&(high!=null))
         {	UniverseCell close = gb.closestCell(high,brect);
         	if(close!=null)
@@ -801,8 +804,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         	if(given!=null && (c.topChip()==null))
         	{	int ypos =bottom - gb.cellToY(c);
             	int xpos = left + gb.cellToX(c);
-            	
-        		if(given.drawChip(gc,this,SQUARE,xpos,ypos, high,UniverseId.GivenOnBoard,null))
+            	if(given.drawChip(gc,this,SQUARE,xpos,ypos, high,UniverseId.GivenOnBoard,null))
         		{	hitCell = c;
         			high.hitObject = c;
         		}
@@ -824,7 +826,8 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
             HitPoint highlight = gb.LegalToHitBoard(cell) ? high : null;
             int ypos = bottom - gb.cellToY(cell);
             int xpos = left + gb.cellToX(cell);
-            if( cell.drawStack(gc,highlight,xpos,ypos,this,0,SQUARE,0.0,null)) 
+        	numberMenu.saveSequenceNumber(cell,xpos,ypos);
+        	if( cell.drawStack(gc,highlight,xpos,ypos,this,0,SQUARE,0.0,null)) 
             	{ 
             	
             	hitCell = cell; 
@@ -953,6 +956,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	//	{G.Text(gc, false,xpos,ypos,SQUARESIZE-SQUARESIZE/4,SQUARESIZE/4,Color.black,null,"a"); }
     	//}
     	//}
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
 
     }
     
@@ -1173,6 +1177,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     {	
  
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         // use the standard definition
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         if(replay.animate) { playSounds(mm); }
@@ -1499,6 +1504,10 @@ private void playSounds(commonMove m)
         {
             setComment(comments);
         }
+    }
+    public int getLastPlacement()
+    {
+    	return b.placementIndex;
     }
 }
 

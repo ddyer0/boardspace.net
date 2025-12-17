@@ -20,7 +20,7 @@ import bridge.*;
 import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
-
+import com.codename1.ui.Font;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -240,7 +240,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	int boardBottom = boardY+boardH;
     	int stateY = boardY;
        	layout.returnFromMain(extraW,extraH);
-    	placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+    	placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	placeRow( boardX, boardBottom-stateH*2, boardW, stateH,goalRect,viewsetRect);
@@ -371,6 +371,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     OctilesCell cell = gb.getCell(thiscol,row);
     int ypos = G.Bottom(brect) - gb.cellToY(thiscol, row);
     int xpos = G.Left(brect) + gb.cellToX(thiscol, row);
+    numberMenu.saveSequenceNumber(cell,xpos,ypos);
         //for debugging, draw the posts
     GC.setColor(gc,Color.yellow);
    //  StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+cell.col+cell.row);
@@ -404,6 +405,8 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         // left, so we want to draw in right-left back-front order so the
         // solid parts will fall on top of existing shadows
         gb.clearMarkedPaths();
+        numberMenu.clearSequenceNumbers();
+        
         if( ((gb.getState()==OctilesState.MOVE_RUNNER_HOME_STATE) || (gb.getState()==OctilesState.MOVE_RUNNER_STATE))
         		&&mov)
         {
@@ -421,6 +424,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         {	
         	int xpos = G.Left(brect) + gb.cellToX(c);
         	int ypos = G.Bottom(brect) - gb.cellToY(c);
+        	numberMenu.saveSequenceNumber(c,xpos,ypos);
         	double adj = 1.0-0.14*((G.Height(brect)-ypos)/(double)G.Height(brect));
         	int ss = (int)(SQUARESIZE*adj);
         	boolean canhit = gb.LegalToHitBoard(c);
@@ -476,7 +480,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
        		OctilesCell hc = drawRunnerCells(gc,gb,brect,highlight,row);
        		if(hitCell==null) { hitCell = hc; }
         	}
-        
+      	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);  
     }
     public Text censoredMoveText(SequenceElement sp,int idx)
     {	OctilesMovespec next = ((idx+1<History.size())
@@ -566,6 +570,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     {	
  
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.SequentialFromStart);
         if(replay.animate) { playSounds(mm); }
  
@@ -782,6 +787,19 @@ private void playSounds(commonMove m)
         {
             setComment(comments);
         }
+    }
+
+    public int getLastPlacement() { return b.placementIndex; }
+    
+    // override for the standard numberMenu drawNumber
+    public void drawNumber(Graphics gc,PlacementProvider src,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color,String str)
+    {	
+    	OctilesCell cell = (OctilesCell)dest;
+     	if(cell.isTileCell)
+    		{	StockArt.DownArrow.drawChip(gc,this,cellSize,x+cellSize,y+cellSize/2,null);
+    		
+    		}
+  	  super.drawNumber(gc,src,dest,cellSize,x,y,font,color,str);
     }
 
 }

@@ -262,7 +262,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         int stateX = boardX;
         int zoomW = CELLSIZE*5;
          
-        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -290,6 +290,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         	MicropulChip chip = cp.topChip();
             boolean canhit = gb.LegalToHitRack(player,cp);
             HitPoint hitp = canhit ? highlight : null;
+            numberMenu.saveSequenceNumber(cp,x,y);
         	if((chip!=null) && (cp.activeAnimationHeight()==0))
         	{
         	chip.drawChip(gc,cp.masked?-1:cp.rotation[0],this,ww,x,y,null);
@@ -349,6 +350,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         	{
         	int xp = G.centerX(r)+(int)(dxs[i]*w);
         	int yp = G.Bottom(r)-w/2+(int)(dys[i]*w);
+        	numberMenu.saveSequenceNumber(cp,xp,yp);
          	if(cp.drawChip(gc,this,top,hitp,w,
         			xp,
         			yp,
@@ -366,9 +368,12 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         boolean canhit = gb.LegalToHitCore() && G.pointInRect(highlight,r);
         HitPoint hitp = canhit ? highlight : null;
         MicropulCell cp = gb.core;
-        labelColor = Color.black;
+        labelColor = Color.yellow;
+        int xpos = G.centerX(r);
+        int ypos = G.Bottom(r)-3*CELLSIZE/2;
+        numberMenu.saveSequenceNumber(cp,xpos,ypos);
         if(cp.drawStack(gc,this,hitp,CELLSIZE*2,
-        		G.centerX(r),G.Bottom(r)-3*CELLSIZE/2,0,0.05,""+cp.height()))
+        		xpos,G.Bottom(r)-3*CELLSIZE/2,0,0.05,""+cp.height()))
         {	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
         	hitp.awidth = G.Width(r)/4;
         	hitp.spriteColor = Color.red;
@@ -382,9 +387,10 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         HitPoint hitp = canhit ? highlight : null;
         MicropulCell cp = gb.supply[player];
         int rw = 4*G.Width(r)/5;
-        labelColor = Color.black;
+        labelColor = Color.yellow;
         int xp = G.centerX(r);
         int yp = G.Bottom(r)-3*CELLSIZE/2;
+        numberMenu.saveSequenceNumber(cp,xp,yp);
         if(cp.drawStack(gc,this,hitp,rw,
         		xp,yp,0,0.05,""+cp.height()))
         {	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
@@ -455,7 +461,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     * */
 
     private void drawBoardElements(Graphics gc, MicropulBoard gb, Rectangle tbRect,
-    		HitPoint ourTurnSelect,HitPoint anySelect)
+    		HitPoint ourTurnSelect,HitPoint anySelect,HitPoint buttonSelect)
     {	
        Rectangle oldClip = GC.combinedClip(gc,tbRect);
    	   MicropulChip po = gb.pickedObject;
@@ -470,13 +476,14 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         MicropulCell sourceCell = gb.pickedSource; 
         MicropulCell destCell = gb.droppedDest;
         int cellSize4 = cellSize/4;
- 
+        numberMenu.clearSequenceNumbers();
         int left = G.Left(tbRect);
         int top = G.Bottom(tbRect);
         for(Enumeration<MicropulCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
         { 	MicropulCell cell = cells.nextElement();
             int xpos = left + gb.cellToX(cell);
             int ypos = top - gb.cellToY(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean isADest = dests.get(cell)!=null;
             boolean isASource = (cell==sourceCell)||(cell==destCell);
             MicropulChip topPiece = cell.topChip();
@@ -590,6 +597,10 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         }
         doBoardDrag(tbRect,anySelect,cellSize,MicroId.InvisibleDragBoard);
         GC.setClip(gc,oldClip);
+        DrawCore(gc, chipRect, ourTurnSelect,gb);
+        drawPlayerStuff(gc,gb,anySelect,ourTurnSelect,buttonSelect);
+        
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,largePlainFont(),Color.white); 
     }
 
     /*
@@ -641,32 +652,10 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
-       DrawCore(gc, chipRect, ourTurnSelect,gb);
+       drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect,buttonSelect);
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
        double messageRotation = pl.messageRotation();
-       boolean planned = plannedSeating();
-       
-       for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++)
-       {
-    	   commonPlayer cpl = getPlayerOrTemp(i);
-    	   cpl.setRotatedContext(gc, selectPos,false);
- 
-           DrawRack(gc, rackRects[i],i, ourTurnSelect,gb);
-           DrawSupply(gc,chipRects[i],i, ourTurnSelect,gb);
-           DrawJewels(gc, jewlRects[i],i, ourTurnSelect,gb);
-           DrawScore(gc,gb.scoreForPlayer(i),scoreRects[i]);
-           boolean myTurn = (i==gb.whoseTurn);
-           if(myTurn && (gb.extraTurns>0))
-           	{DrawExtra(gc,gb.extraTurns,extRects[i]);
-           	}
-     
-    	   if(planned && myTurn)
-    		   {handleDoneButton(gc,doneRects[i],(gb.DoneState() ? buttonSelect : null), 
-					HighlightColor, rackBackGroundColor);
-    		   }
-    	   cpl.setRotatedContext(gc, selectPos,true);
-       }
+       //drawPlayerStuff(gc,gb,selectPos,ourTurnSelect,buttonSelect);
        zoomRect.draw(gc,nonDragSelect);
        GC.setFont(gc,standardBoldFont());
 
@@ -674,6 +663,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
+		    boolean planned = plannedSeating();
 			if(!planned) 
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
@@ -698,7 +688,31 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         drawVcrGroup(nonDragSelect, gc);
 
     }
+    
+    public void drawPlayerStuff(Graphics gc,MicropulBoard gb,HitPoint selectPos,HitPoint ourTurnSelect,HitPoint buttonSelect)
+    {
+    boolean planned = plannedSeating();
+    
+    for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++)
+    {
+ 	   commonPlayer cpl = getPlayerOrTemp(i);
+ 	   cpl.setRotatedContext(gc, selectPos,false);
 
+        DrawRack(gc, rackRects[i],i, ourTurnSelect,gb);
+        DrawSupply(gc,chipRects[i],i, ourTurnSelect,gb);
+        DrawJewels(gc, jewlRects[i],i, ourTurnSelect,gb);
+        DrawScore(gc,gb.scoreForPlayer(i),scoreRects[i]);
+        boolean myTurn = (i==gb.whoseTurn);
+        if(myTurn && (gb.extraTurns>0))
+        	{DrawExtra(gc,gb.extraTurns,extRects[i]);
+        	}
+  
+ 	   if(planned && myTurn)
+ 		   {handleDoneButton(gc,doneRects[i],(gb.DoneState() ? buttonSelect : null), 
+					HighlightColor, rackBackGroundColor);
+ 		   }
+ 	   cpl.setRotatedContext(gc, selectPos,true);
+    }}
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -710,6 +724,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
      public boolean Execute(commonMove mm,replayMode replay)
     {	
     	handleExecute(bb,mm,replay);
+    	numberMenu.recordSequenceNumber(bb.moveNumber);
         startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Chained);
 
 		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
@@ -1035,6 +1050,6 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
             setComment(comments);
         }
     }
-
+    public int getLastPlacement() { return bb.placementIndex; }
 }
 

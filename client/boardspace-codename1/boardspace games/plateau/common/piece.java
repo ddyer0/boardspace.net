@@ -27,7 +27,7 @@ import lib.GC;
 import lib.HitPoint;
 
 // plateau piece
-public class piece implements PlateauConstants, Opcodes, ImageObserver
+public class piece implements PlateauConstants, ImageObserver, Opcodes
 {
     // these image arrays are initialized by the viewer class but used here.
     public static Image[][] top_images;

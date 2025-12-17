@@ -36,7 +36,7 @@ class CellStack extends OStack<MbraneCell>
  * @author ddyer
  *
  */
-public class MbraneCell extends stackCell<MbraneCell,MbraneChip> 
+public class MbraneCell extends stackCell<MbraneCell,MbraneChip> implements PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	
@@ -45,7 +45,8 @@ public class MbraneCell extends stackCell<MbraneCell,MbraneChip>
 	// middle 9 bits for 9 digits in this column
 	// high order 9 bits for 9 digits in this 3x3 region
 	int validSudokuPlacements = 0;
-	
+	public int lastPicked = -1;
+	public int lastDropped = -1;
 	// a 1 bit in the placement mask indicates that the corresponding number can't be placed.
 	public int invalidPlacementMask()
 	{
@@ -81,6 +82,8 @@ public class MbraneCell extends stackCell<MbraneCell,MbraneChip>
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		validSudokuPlacements = ot.validSudokuPlacements;
+		lastPicked = ot.lastPicked;
+		lastDropped = ot.lastDropped;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -89,6 +92,8 @@ public class MbraneCell extends stackCell<MbraneCell,MbraneChip>
 	public void reInit()
 	{	super.reInit();
 		validSudokuPlacements = 0;
+		lastPicked = -1;
+		lastDropped = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public MbraneCell(MbraneChip cont)
@@ -172,5 +177,9 @@ public class MbraneCell extends stackCell<MbraneCell,MbraneChip>
 	}
 
 	public int drawStackTickSize(int sz) { return(0); }
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastPicked : lastDropped;
+	}
 
 }
