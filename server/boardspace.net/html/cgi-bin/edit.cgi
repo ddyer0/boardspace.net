@@ -631,7 +631,8 @@ param();
         $stuff .="New Supervisor: $newsuper (was $issuper)\n";
         $issuper = $newsuper;
     }
-    	 if((param('deleterequest') eq 'on') && !(lc($pname) eq 'guest'))
+    my $deleting = (param('deleterequest') eq 'on') && !(lc($pname) eq 'guest');
+    if($deleting)
 	 {	my $quid = $dbh->quote($uid);
 	    my $cmess = $dbh->quote("deleted by user $pname at $email");
 	    $opstr .= "$comma status='deleted', player_name=$quid, comment = $cmess, e_mail = ''";
@@ -652,7 +653,7 @@ param();
          printf F_OUT "%s %s\n", &date_string(time()),"name change from $pname to $update_pname";
          close F_OUT;
       }
-    if($deleted) { $newpname = "$uid"; }
+    if($deleted) { $update_pname = "$uid"; }
     
     # if name changed, change the picture file too
     if(!($pname eq $update_pname))
@@ -665,24 +666,23 @@ param();
 	  my $qp = $dbh->quote($pname);
 	  my $qn = $dbh->quote($update_pname);
 	  my $db = $::php_database;
-	   my $q = "update ${db}.phpbb_users set username=$qn where username=$qp";
+	  my $q = "update ${db}.phpbb_users set username=$qn where username=$qp";
 	  if($deleted==0) { print "Your forum ID also changed from $pname to $update_pname<br>"; }
-	  else { $newpname = ""; }
 	  &commandQuery($dbh,$q);
 	 }
 
 	}
-
-	  if($hasNewStatus && $::php_database)
+	if($hasNewStatus && $::php_database)
 	  {	my $db = $::php_database;
 	    my $qn = $dbh->quote($update_pname);
-		my $sth = &query($dbh,"select user_id from ${db}.phpbb_users where username=$qn");
+	    my $sth = &query($dbh,"select user_id from ${db}.phpbb_users where username=$qn");
 	    # 
-		# attempt to keep banned users out of the forum too
-		#
+	    # attempt to keep banned users out of the forum too
+	    #
 	    if(&numRows($sth)>0)
 		{
 		my $phu = &nextArrayRow($sth);
+print "uid = $phu<br>";
 		if($phu)
 		{
 		my $qphu = $dbh->quote($phu);
@@ -695,12 +695,11 @@ param();
 		&commandQuery($dbh,"delete from ${db}.phpbb_banlist where ban_userid=$qphu");
 		}
 		}
-		}
-		
-		&finishQuery($sth);
+	     }
+	&finishQuery($sth);
 
 	  }
-
+    if($deleted) { return;  }
     $pname=$update_pname;
     my $bcc = (($supervisor eq "")&&(lc($master) eq 'y')) ? "bcc: $::supervisor_email\n" : "";
 
@@ -1064,7 +1063,7 @@ param();
    }
   
   print "</td></tr></table>\n";
-
+   
   } # end of name valid
   else
   { #print the entry form
