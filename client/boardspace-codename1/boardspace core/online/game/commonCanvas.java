@@ -139,7 +139,20 @@ public abstract class commonCanvas extends exCanvas
 	public static final String TimeExpiredMessage = "Time has expired for #1";
 	public static final String TimeEndGameMessage = "end the game with a loss for #1";
 	public static final String ChangeLimitsMessage = "change the time limits";
-	private String RANKING = "ranking";
+	private static String RANKING = "ranking";
+	private static String VcrUnClipMessage = "Forget this position in the game";
+	private static String VcrClipMessage = "Remember this position in the game";
+	private static String VcrMoveMessage = "Go to some remembered position in the game";
+	private static String BackVariationMessage = "go back to the beginning of this variation";
+	private static String ForwardVariationMessage = "go forward to the next variation";
+	private static String SelectVariationMessage = "select among variations";
+	private static String AnimateMessage = "animate a replay of the game";
+    static String WayBackMessage = "go to the beginning";
+    static String PlayerBackMessage = "go back to the previous player";
+    static String StepBackMessage = "go back 1 step";
+    private static String StepForwardMessage = "go forward 1 step";
+    private static String PlayerForwardMessage = "go forward to the next player";
+    private static String ToEndMessage = "go forward to the end";
 
 	/**
 	 * board cell iterator types, used to iterate over all cells of a game board.
@@ -227,37 +240,37 @@ public abstract class commonCanvas extends exCanvas
 		 * Setting its min and max values may be useful adjusting the size of artwork. 
 		 * Used by {@link #adjustScales}
 		 */
-		Slider auxXRect = addSlider(".auxXRect","X=",VcrId.sliderXButton);
+		Slider auxXRect = addSlider(".auxXRect","X=",VcrId.sliderX);
 		/**
 		 * this is a {@link lib.Slider} active when the "use aux sliders" option is selected.
 		 * Setting its min and max values may be useful adjusting the size of artwork.
 		 * Used by {@link #adjustScales}
 		 */
-		Slider auxYRect = addSlider(".auxYRect","Y=",VcrId.sliderYButton);
+		Slider auxYRect = addSlider(".auxYRect","Y=",VcrId.sliderY);
 		/**
 		 * this is a {@link lib.Slider} active when the "use aux sliders" option is selected.
 		 * Setting its min and max values may be useful adjusting the size of artwork.
 		 * Used by {@link #adjustScales}
 		 */
-		Slider auxSRect = addSlider(".auxSRect","S=",VcrId.sliderSButton);
+		Slider auxSRect = addSlider(".auxSRect","S=",VcrId.sliderS);
 		/**
 		 * this is a {@link lib.Slider} active when the "use aux sliders" option is selected.
 		 * Setting its min and max values may be useful adjusting the size of artwork.
 		 * Used by {@link #adjustScales2}
 		 */
-		Slider auxX2Rect = addSlider(".auxXRect","X2=",VcrId.sliderX2Button);
+		Slider auxX2Rect = addSlider(".auxXRect","X2=",VcrId.sliderX2);
 		/**
 		* this is a {@link lib.Slider} active when the "use aux sliders" option is selected.
 		* Setting its min and max values may be useful adjusting the size of artwork.
 		 * Used by {@link #adjustScales2}
 		*/
-		Slider auxY2Rect = addSlider(".auxYRect","Y2=",VcrId.sliderY2Button);
+		Slider auxY2Rect = addSlider(".auxYRect","Y2=",VcrId.sliderY2);
 		/**
 		 * this is a {@link lib.Slider} active when the "use aux sliders" option is selected.
 		 * Setting its min and max values may be useful adjusting the size of artwork.
 		 * Used by {@link #adjustScales2}
 		*/
-		Slider auxS2Rect = addSlider(".auxSRect","S2=",VcrId.sliderS2Button);
+		Slider auxS2Rect = addSlider(".auxSRect","S2=",VcrId.sliderS2);
 		// support for 1 hidden window per player
 		   private HiddenGameWindow[] hiddenWindows = null;
 		private RpcInterface[] sideScreens = null;
@@ -424,6 +437,7 @@ public abstract class commonCanvas extends exCanvas
 	    private String loadUrlGame = null;
 	    private boolean urlLoaded = false;
 	    private long parsedTime = -1;
+	    private String nodeName = null;
 	    private String parsedResult = null;
 	    private StackIterator<MoveAnnotation>parsedAnnotation = null;
 		private commonMove changeMove = null;
@@ -440,6 +454,7 @@ public abstract class commonCanvas extends exCanvas
 	private static final int FORWARD_PLAYER = -7;
 	public static final int BACKWARD_PLAYER = -8;
 	private static final int BACKWARD_DONE = -9;
+	private static final int NAMED_NODE = -10;
 	public static final int BACKWARD_ONE = -6;
 	public static final int FORWARD_ONE = -5;
 	private static final int FORWARD_NEXT_BRANCH = -4;
@@ -476,6 +491,19 @@ public abstract class commonCanvas extends exCanvas
 	private static final String ReplayGameFolder = "Replay games in folder";
 	private static final String RemoteFor = "Remote for #1";
 	static public String[] CanvasStrings = {
+			VcrClipMessage,
+			VcrUnClipMessage,
+			WayBackMessage,
+	    	PlayerBackMessage,
+	    	StepBackMessage,
+	    	ForwardVariationMessage,
+	    	BackVariationMessage,
+	    	SelectVariationMessage,
+	    	AnimateMessage,
+	    	StepForwardMessage,
+	    	PlayerForwardMessage,
+	    	ToEndMessage,
+			VcrMoveMessage,
 			SaveSingleGame,
 			//ReplayGameFolder, // debug only
 			//ReplayGameCollection,
@@ -673,6 +701,13 @@ public abstract class commonCanvas extends exCanvas
     			  st = st.substring(space2+1);
     			  l.currentMoveTime = G.IntToken(payload); 
     			}
+    		else if("+N".equals(op))
+    			{
+    				int space2 = st.indexOf(' ');
+    				String payload = st.substring(0,space2);
+    				st = st.substring(space2+1);
+    				l.currentMoveTime = G.IntToken(payload); 
+    			}
     		else if(performMessage(futureTimeControl,op,st)) { st = null ; }
     		else { G.print("Unexpected message ",op); }
     		
@@ -762,15 +797,15 @@ public abstract class commonCanvas extends exCanvas
 	    private Object lastLastDropped2 = null;
 	    private long timePerTurn = (2 * 60 * 1000);	// tick him after this much time
 	    private long timePerDone = 15*1000;		
-	    private CellId vcr6ButtonCodes[] = 
-	    	{ VcrId.WayBackButton, VcrId.BackPlayerButton, VcrId.BackStepButton,
-	    	VcrId.ForeStepButton, VcrId.ForePlayerButton, VcrId.ForeMostButton};
-	    
-
+	    private VcrId vcr6ButtonCodes[] = 
+	    	{ VcrId.WayBack, VcrId.BackPlayer, VcrId.BackStep,
+	    	VcrId.ForeStep, VcrId.ForePlayer, VcrId.ForeMost};
 	    private Rectangle vcrFrontRect = addRect(".vcrFrontRect");
 	    private Rectangle vcrButtonRect = addRect(".vcrButtonRect");
 	    private Rectangle vcrVarRect = addRect(".vcrVarRect");
 	    private Rectangle vcrBackRect = addRect(".vcrBackRect");
+	    private Rectangle vcrClipRect = addRect(".vcrClipRect");
+	    private Rectangle vcrMoveRect = addRect(".vcrSelectRect");
 	    private Rectangle normalVcrRect = new Rectangle();	// copy of vcrZone until expanded
 	    private Rectangle outsideVcrRect = new Rectangle();
 	    private boolean vcrExpanded = false;
@@ -822,7 +857,7 @@ public abstract class commonCanvas extends exCanvas
 	    /**
 	     * this is a {@link lib.Slider} this is a rectangle embedded in the VCR control cluster
 	     */
-	    private Slider animationSpeedRect = addSlider(".animationSpeed",s.get(AnimationSpeed),VcrId.sliderAnimSpeedButton,0.0,2.0,0.6);
+	    private Slider animationSpeedRect = addSlider(".animationSpeed",s.get(AnimationSpeed),VcrId.sliderAnimSpeed,0.0,2.0,0.6);
 	    
 	    private PopupManager vcrVarPopup = new PopupManager();
 	
@@ -964,7 +999,6 @@ public abstract class commonCanvas extends exCanvas
 	    	   TextDisplayFrame w = new TextDisplayFrame("Text of Game");        
 	    	   w.setText(gameRecordString());
 	       }
-	       
 	    private boolean handleDeferredEvent(Object target)
 	    {	if(target==l.zoomButton)
 	    	{
@@ -1116,36 +1150,31 @@ public abstract class commonCanvas extends exCanvas
 	    private CellId drawVcrButtons(HitPoint p, Graphics inG)
 	    {	
 	        CellId rval = null;
-	        CellId codes[] = vcr6ButtonCodes;
+	        VcrId codes[] = vcr6ButtonCodes;
 	        int nButtons = StockArt.vcrButtons.length;
 	        Rectangle r = vcrButtonRect;
 	        int vcrWidth = G.Width(r) / nButtons;
-	        boolean iny0 = (p != null) && (G.Top(p) >= G.Top(r)) && (G.Top(p) < G.Bottom(r));
-	        boolean iny = iny0 && !p.dragging;
-
+	        int left = G.Left(r) +vcrWidth/2;
+	        int centerY = G.centerY(r);
 	        for (int i = 0; i < nButtons; i++)
 	        {
-	            int currentX = G.Left(r) + (i * vcrWidth);
-	            boolean inbox = iny && (G.Left(p) >= currentX) &&
-	                (G.Left(p) <= (currentX + vcrWidth));
-
-	            if (inG != null)
-	            {
+	            int currentX = left + (i * vcrWidth);
+	            VcrId code = codes[i];
 	                GC.setFont(inG,standardBoldFont());
-	                StockArt.vcrButtons[i].drawChip(inG,commonCanvas.this,vcrWidth+(inbox?vcrWidth/3:0),currentX+vcrWidth/2,
-	                		G.Top(r)+G.Height(r)/2,null);
-	            }
-	            if (inbox)
+	            if(StockArt.vcrButtons[i].drawChip(inG,commonCanvas.this,
+	            			vcrWidth,currentX,centerY,
+	            			p,codes[i],s.get(code.helpText),1.33,1.33))
 	            {
-	                    p.hitCode = rval = codes[i];
+	            	rval = code;
 	            }
 	        }
 	        if((rval==null) && G.pointInRect(p,vcrZone))
 	        {	// hit the background not occupied by a button
-	        	rval = VcrId.noVcrButton;
+	        	rval = VcrId.noVcr;
 	        }
 	        return (rval);
 	    }
+
 	    private boolean enterReviewMode()
 	    { 	int size = History.size();
 	        if ((History.viewStep == -1) && (size > 0))
@@ -1203,7 +1232,7 @@ public abstract class commonCanvas extends exCanvas
 	            rem = m.addVariation(rem);
 	        }
 	  	  rem.digest = 0;		// digest will be inaccurate when undoing out of order
-	  	  rem.addToHistoryAndExtend(History);
+	  	  History.addToHistoryAndExtend(rem);
 	  	  return(val);
 	    }
 	    
@@ -2532,31 +2561,44 @@ public abstract class commonCanvas extends exCanvas
      *
      */
     private enum VcrId implements CellId {
-        WayBackButton, // also -103 -102 -101
-        BackPlayerButton,
-        BackStepButton,
-        ForeStepButton,
-        ForePlayerButton,
-        ForeMostButton,
+        WayBack(WayBackMessage), // also -103 -102 -101
+        BackPlayer(PlayerBackMessage),
+        BackStep(StepBackMessage),
+        ForeStep(StepForwardMessage),
+        ForePlayer(PlayerForwardMessage),
+        ForeMost(ToEndMessage),
         
         Slider, // the vcr slide bar
-        BackButton, //the back variation button
-        FrontButton, // the forward variation button
-        VarButton, // select variation
-        AnimateButton,	// animate button
+        BackVariation(BackVariationMessage), //the back variation button
+        Clip(VcrClipMessage),	// clip this position
+        UnClip(VcrUnClipMessage),	// clip this position
+        Move(VcrMoveMessage),	// move to this position
         
-    	sliderXButton,
-    	sliderYButton,
-    	sliderSButton,
-    	sliderAnimSpeedButton,
-    	sliderX2Button,
-    	sliderY2Button,
-    	sliderS2Button,
+         
+        ForwardBranch(ForwardVariationMessage), // forward variation button
+        SelectVariation(SelectVariationMessage), // select variation
+        Animate(AnimateMessage),	// animate button
+        
+    	sliderX,
+    	sliderY,
+    	sliderS,
+    	sliderAnimSpeed,
+    	sliderX2,
+    	sliderY2,
+    	sliderS2,
 
-    	expandButton,
-    	shrinkButton,
-    	noVcrButton,
-        ;
+    	expand,
+    	shrink,
+    	noVcr;
+    	public String helpText = null;
+    	VcrId(String ms)
+    	{
+    		helpText = ms;
+    	}
+    	VcrId()
+    	{
+    		
+    	}
     }
     public boolean use_grid = false; //maintained by this class
     public JCheckBoxMenuItem gridOption = null;
@@ -2658,7 +2700,7 @@ public abstract class commonCanvas extends exCanvas
      * This is used to display the game log, to replay the game,
      * and to produce .sgf game records.
      */
-    public CommonMoveStack  History = new CommonMoveStack();	 
+    public MoveHistory  History = new MoveHistory();	 
     
     public GameLog gameLog = new GameLog(this);
     
@@ -2933,15 +2975,24 @@ public abstract class commonCanvas extends exCanvas
         G.SetRect(l.auxS2Rect,x+w+b2,y+btop+h1*2,w-border,(int)(h1*0.8));
         int vtop =y+btop+2 + (h1 * 2);
         G.SetRect(vcrRect,x+b2, vtop,w-border,Math.min(h1,h-(y+h-vtop)));
-        G.SetRect(hidden.vcrButtonRect,G.Left(vcrRect),G.Top(vcrRect) - G.Height(vcrRect),G.Width(vcrRect),G.Height(vcrRect));
+        G.SetRect(hidden.vcrButtonRect,G.Left(vcrRect),vtop - G.Height(vcrRect),
+        		G.Width(vcrRect),G.Height(vcrRect));
+        boolean squeeze = true	;
+        int buttonH = G.Height(hidden.vcrButtonRect);
+        int buttonW = squeeze ? buttonH : G.Width(hidden.vcrButtonRect) / 5;
+        
+        int toprow = G.Top(hidden.vcrButtonRect) - G.Height(hidden.vcrButtonRect) - G.Height(hidden.vcrButtonRect)/6;
         G.SetRect(hidden.vcrBackRect,G.Left(hidden.vcrButtonRect),
-        			G.Top(hidden.vcrButtonRect) - G.Height(hidden.vcrButtonRect) - G.Height(hidden.vcrButtonRect)/6,
-        			G.Width(hidden.vcrButtonRect) / 5,
-        			G.Height(hidden.vcrButtonRect));
-        G.SetRect(hidden.vcrVarRect,G.Right(hidden.vcrBackRect),G.Top(hidden.vcrBackRect),G.Width(vcrRect) - (2 * G.Width(hidden.vcrBackRect)),h1);
+        			toprow,
+        			buttonW,
+        			buttonH);
+        G.SetRect(hidden.vcrVarRect,G.Right(hidden.vcrBackRect),toprow,
+        		G.Width(vcrRect) - 2*buttonW - (squeeze ? 2*buttonW : 0),h1);
+        G.SetRect(hidden.vcrFrontRect,G.Right(hidden.vcrVarRect),toprow,
+        		buttonW,buttonH);
+        G.SetRect(hidden.vcrMoveRect,G.Right(hidden.vcrFrontRect),toprow,squeeze ? buttonW : 0,buttonH);
+        G.SetRect(hidden.vcrClipRect,G.Right(hidden.vcrMoveRect),toprow,squeeze ? buttonW : 0,buttonH);
    
-        G.SetRect(hidden.vcrFrontRect,G.Right(hidden.vcrVarRect),G.Top(hidden.vcrBackRect),
-        		G.Width(hidden.vcrBackRect),G.Height(hidden.vcrBackRect));
         		
     }
 
@@ -3018,22 +3069,24 @@ public abstract class commonCanvas extends exCanvas
         		&& (buttonWidth<G.minimumFeatureSize())
         		&& G.pointInRect(p,vcrZone))
         {	
-        	retval = VcrId.expandButton;
+        	retval = VcrId.expand;
         }
         else if(hidden.vcrExpanded
         		&& !G.pointInRect(p,vcrZone)
         		&& G.pointInRect(p,hidden.outsideVcrRect))
         {	
-        	retval = VcrId.shrinkButton;
+        	retval = VcrId.shrink;
         }
         else {
         int w = G.Width(r)/6;
         int h = G.Height(r);
         int xp = G.Left(r)+sliderWidth+w*2/3;
         int yp = G.Top(r) + h/2;
-        boolean inrect = G.pointInRect(p,xp-w/2,yp-h/2,w,h);
-        if(inrect) { retval = VcrId.AnimateButton; }
-        (animating?StockArt.VCRStop:StockArt.VCRPlay).drawChip(inG,this,w+(inrect?w/3:0),xp,yp,null);
+        if( (animating?StockArt.VCRStop:StockArt.VCRPlay).drawChip(inG,this,w,xp,yp,
+        		p,VcrId.Animate,VcrId.Animate.helpText,1.33,1.33))
+        	{
+        	retval = VcrId.Animate;
+        	}
         }
         return (retval);
     }
@@ -3468,76 +3521,89 @@ public abstract class commonCanvas extends exCanvas
         VcrId ho = (VcrId)hitCode;
         switch(ho)
         {
-        case sliderAnimSpeedButton:
+        case sliderAnimSpeed:
         	{	double newspeed = hidden.animationSpeedRect.value;
         		masterAnimationSpeed = Math.max(0,(2.0-newspeed));
         	}
 			//$FALL-THROUGH$
-		case sliderX2Button: { l.auxX2Rect.setValue(hp); } break;
-        case sliderY2Button: { l.auxY2Rect.setValue(hp); } break;
-        case sliderS2Button: { l.auxS2Rect.setValue(hp); } break;
-        case sliderXButton:  { l.auxXRect.setValue(hp);  } break;
-        case sliderSButton:  { l.auxSRect.setValue(hp);  } break;
-        case sliderYButton:  { l.auxYRect.setValue(hp);  } break;
-        case BackButton:
+		case sliderX2: { l.auxX2Rect.setValue(hp); } break;
+        case sliderY2: { l.auxY2Rect.setValue(hp); } break;
+        case sliderS2: { l.auxS2Rect.setValue(hp); } break;
+        case sliderX:  { l.auxXRect.setValue(hp);  } break;
+        case sliderS:  { l.auxSRect.setValue(hp);  } break;
+        case sliderY:  { l.auxYRect.setValue(hp);  } break;
+        case UnClip:
+        	History.forgetThis();
+        	setJointReviewStep(NAME_CURRENT_POSITION, null);
+        	playASoundClip(Keyboard.clickSound,50); 
+        	break;
+        case Clip:
+        	History.rememberThis();
+        	setJointReviewStep(NAME_CURRENT_POSITION, null);
+        	playASoundClip(Keyboard.clickSound,50); 
+        	break;
+        case Move:
+        	History.showRememberedPositionMenu(this,G.Left(hp),G.Top(hp));
+        	break;
+        case BackVariation:
         	{
         	doScrollTo(BACKWARD_NEXT_BRANCH);
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case VarButton:
+        case SelectVariation:
         	{
             doVcrVar();
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case FrontButton:
+        case ForwardBranch:
         	{
             doScrollTo(FORWARD_NEXT_BRANCH);
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case WayBackButton:
+        case WayBack:
         	{
             doScrollTo(BACKWARD_TO_START);
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-       case BackStepButton:
+       case BackStep:
         	{
             doScrollTo(BACKWARD_ONE);
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case ForeStepButton:
+        case ForeStep:
         	{
              doScrollTo(FORWARD_ONE);
-             setJointReviewStep(GET_CURRENT_POSITION);
+             setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case ForeMostButton:
+        case ForeMost:
         	scrollFarForward();
-        	setJointReviewStep(GET_CURRENT_POSITION);
+        	setJointReviewStep(GET_CURRENT_POSITION, null);
         	break;
-        case ForePlayerButton:
+        case ForePlayer:
         	{
          	doScrollTo(FORWARD_PLAYER);
-         	setJointReviewStep(GET_CURRENT_POSITION);
+         	setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case BackPlayerButton:
+        case BackPlayer:
         	{
         	doScrollTo(BACKWARD_PLAYER);
-        	setJointReviewStep(GET_CURRENT_POSITION);
+        	setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
         case Slider:
         	{
             doVcrSlider(hp);
-            setJointReviewStep(GET_CURRENT_POSITION);
+            setJointReviewStep(GET_CURRENT_POSITION, null);
         	}
         	break;
-        case AnimateButton:
+        case Animate:
         	{
         	if(!reviewMode()) 
         		{ doWayBack(replayMode.Replay); 
@@ -3547,7 +3613,7 @@ public abstract class commonCanvas extends exCanvas
         	repaint();
         	}
         	break;
-        case expandButton:
+        case expand:
         	Rectangle old = hidden.normalVcrRect;
         	int fr = G.Right(fullRect);
         	int fb = G.Bottom(fullRect);
@@ -3560,11 +3626,11 @@ public abstract class commonCanvas extends exCanvas
         	setupVcrRects(rl,rt,rw,rh,true);   
   		  	G.SetRect(hidden.outsideVcrRect,rl-oldW/2,rt-oldH/2, rw+oldW, rh+oldH);
         	break;
-        case shrinkButton:
+        case shrink:
         	SetupVcrRects(G.Left(hidden.normalVcrRect),G.Top(hidden.normalVcrRect),
         			G.Width(hidden.normalVcrRect),G.Height(hidden.normalVcrRect));
         	break;
-        case noVcrButton:
+        case noVcr:
         	break;
         default:
         	throw G.Error("Hit unknown vcr token %s",hitCode);
@@ -3580,7 +3646,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	LogMessage("scroll far forward");
         doScrollTo(FORWARD_TO_END);
-        setJointReviewStep(GET_CURRENT_POSITION);
+        setJointReviewStep(GET_CURRENT_POSITION, null);
     }
     public void leaveLockedReviewMode()
     { if( reviewMode()			// and may not even realize it.
@@ -3710,16 +3776,37 @@ public abstract class commonCanvas extends exCanvas
         if(!animating)
         {
         if (mutable_game_record ) 
-        {	boolean isin = G.pointInRect(p, hidden.vcrBackRect);
-        	int w = G.Width(hidden.vcrBackRect);
-        	int h = G.Height(hidden.vcrBackRect);
-        	int xp = G.Left(hidden.vcrBackRect) + w/2;
-        	int yp = G.Top(hidden.vcrBackRect) + h/2;
-        	StockArt.VCRBackBranch.drawChip(inG,this,w+(isin?w/3:0),xp,yp,null);
-        	if(isin)
         		{
-        		rval = VcrId.BackButton;
+       	if(StockArt.VCRBackBranch.drawChip(inG,this,hidden.vcrBackRect,p,VcrId.BackVariation,VcrId.BackVariation.helpText,1.33,1.33))
+        	{
+        		rval = VcrId.BackVariation;
+        	}
+        	;
+        	int nRemembered = History.nRememberedPositions();
+        	if(nRemembered>0)
+        	{
+        		if(StockArt.PaperClipSideMasked.drawChip(inG,this,hidden.vcrMoveRect,p,VcrId.Move,s.get(VcrId.Move.helpText),1.33,1.33))
+        		{
+        		rval = p.hitCode;        		
         		}
+        		GC.Text(inG,true,hidden.vcrMoveRect,labelColor,null,"  "+nRemembered);
+        	}
+        	String name = History.getCurrentNodeName();
+        	if(name!=null)
+        	{
+        		if(StockArt.PaperClipSideMasked.drawChip(inG,this,hidden.vcrClipRect,p,VcrId.UnClip,s.get(VcrId.UnClip.helpText),1.33,1.33))
+        		{
+        		rval = p.hitCode;        		
+        		}
+        		GC.Text(inG,true,hidden.vcrClipRect,labelColor,null,name);
+        	}
+        	else 
+        	{ if(StockArt.PaperClipMasked.drawChip(inG,this,hidden.vcrClipRect,p,VcrId.Clip,
+        						s.get(VcrId.Clip.helpText),1.33,1.33))
+        			{ rval = p.hitCode; 
+        			}
+        	}
+        
         }
  
         if (reviewMode() && mutable_game_record)
@@ -3731,29 +3818,20 @@ public abstract class commonCanvas extends exCanvas
             int n = (m == null) ? 1 : m.nVariations();
             String txt = s.get(ChoiceString,n);
             {
-            boolean isin = G.pointInRect(p, hidden.vcrVarRect);
             int w = G.Width(hidden.vcrVarRect);
             int h = G.Height(hidden.vcrVarRect);
             int xp = G.Left(hidden.vcrVarRect) + w/2;
             int yp = G.Top(hidden.vcrVarRect) + h/2;
-            GC.setColor(inG,isin?Color.white:Color.black);
-            StockArt.VCRButton.drawChip(inG,this,w,xp,yp,null);
+            if(StockArt.VCRButton.drawChip(inG,this,hidden.vcrVarRect,p,VcrId.SelectVariation,VcrId.SelectVariation.helpText,1.33,1.2))
+            {
+            	rval = VcrId.SelectVariation;
+            }
             GC.drawOutlinedText(inG,true,xp-w/2,yp-h/2,w,h,Color.white,Color.black,txt);
-            if(isin)
+            }
+            if(StockArt.VCRForwardBranch.drawChip(inG,this,hidden.vcrFrontRect,p,VcrId.ForwardBranch,VcrId.ForwardBranch.helpText,1.33,1.33))
             {
-                rval = VcrId.VarButton;
+                rval = VcrId.ForwardBranch;
             }}
-            {
-            boolean isin = G.pointInRect(p,hidden.vcrFrontRect);
-            int w = G.Width(hidden.vcrFrontRect);
-            int h = G.Height(hidden.vcrFrontRect);
-            int xp = G.Left(hidden.vcrFrontRect) + w/2;
-            int yp = G.Top(hidden.vcrFrontRect) + h/2;
-            StockArt.VCRForwardBranch.drawChip(inG,this,w+(isin?w/3:0),xp,yp,null);
-            if (isin)
-            {
-                rval = VcrId.FrontButton;
-            }}}
 
         }
 
@@ -3971,9 +4049,22 @@ public abstract class commonCanvas extends exCanvas
 	   return doScroll(whence,"local");
    }
    // scroll by another player.  We should NOT have control here
-   public boolean doRemoteScrollTo(int whence)
+   public boolean doRemoteScrollTo(int whence,Tokenizer myST)
    {
 	   boolean v = doScroll(whence,"remote");
+	   if(myST!=null && myST.hasMoreTokens())
+	   {
+		   String op = myST.nextToken();
+		   String name =myST.nextToken();
+		   if("SET".equalsIgnoreCase(op))
+		   {
+			   History.rememberNamedPosition(whence-1,"NULL".equalsIgnoreCase(name) ? null : name); 
+		   }
+		   else if("SEEK".equalsIgnoreCase(op))
+		   {
+			   doScrollTo(History.findPath(name));
+		   }
+	   }
 	   saveDisplayBoard();
 	   repaint();
 	   return v;
@@ -3995,6 +4086,11 @@ public abstract class commonCanvas extends exCanvas
    {
 	   return(hidden.doBack(n));
    }
+    public void doScrollTo(String named)
+    {
+    	doScrollTo(History.findPath(named));
+    }
+
     /**
      * scroll to a particular move number, or to one of the
      * special positions indicated by negative codes.
@@ -4006,6 +4102,10 @@ public abstract class commonCanvas extends exCanvas
         rawHistory.addElement(new dummyMove("vcr:@"+vs+" doScrollTo "+val+" control "+hasControlToken()+" "+remote));
         switch (val)
         {
+        case NAMED_NODE:
+        	LogMessage("scroll to "+remote);
+        	doScrollTo(remote);
+        	break;
         case BACKWARD_ONE:
            	LogMessage("scroll back 1");
             rval = doBack(1);
@@ -4123,7 +4223,7 @@ public abstract class commonCanvas extends exCanvas
     /** set the desired common review position
      * 
      */
-    public void setJointReviewStep(int v)
+    public void setJointReviewStep(int v, Tokenizer myST)
     {	if(v!=jointReviewStep)
     {
         jointReviewStep = v;
@@ -4137,17 +4237,22 @@ public abstract class commonCanvas extends exCanvas
         return (jointReviewStep);
     }
        
-
-    public void RedoStep(replayMode mode)
+    public String getNodeName(int step)
     {
+    	return History.getNodeName(step);
+    }
+
+    private commonMove RedoStep(replayMode mode)
+    {	int sz = History.size();
         int vs = History.viewStep;
-        commonMove m = History.elementAt(vs++);
-        if (vs >= History.size())
+        commonMove m = (vs>=0 && vs < sz) ? History.elementAt(vs++) : null;
+        if (vs >= sz)
         {
             vs = -1;
         }
         History.viewStep = vs;
-        hidden.RedoStep(mode,m);
+        if(m!=null) { hidden.RedoStep(mode,m); }
+        return m;
     }
     
     
@@ -4862,7 +4967,7 @@ public abstract class commonCanvas extends exCanvas
                   commonMove m = History.top();
                   rem = m.addVariation(rem);
               }
-        	  rem.addToHistoryAndExtend(History);
+        	  History.addToHistoryAndExtend(rem);
         	  return(val);
         	}
     }
@@ -4991,7 +5096,7 @@ public abstract class commonCanvas extends exCanvas
     		  {	History.viewStep = sz;		// viewstep should point to the next item to be executed, which will be 
     		  						// the first item added.
     		  	mutated_game_record=true;
-    		    oldm.extendHistory(History);
+    		    History.extendHistory(oldm);
     		    // if we have removed a branch and re-extended the history,
     		    // the state of the real board may be different from what we
     		    // expect, especially if the move that caused the merge was a 
@@ -5030,7 +5135,7 @@ public abstract class commonCanvas extends exCanvas
                 //System.out.println("V "+m+" -> "+newmove+" -> " +m.next);
             }
             {
-             int hs = newmove.addToHistoryAndExtend(History);
+             int hs = History.addToHistoryAndExtend(newmove);
              if (hs > 0)
              	{
                 History.viewStep = hs;
@@ -5465,6 +5570,53 @@ public abstract class commonCanvas extends exCanvas
     {
     	timeControl.copyFrom(futureTimeControl);
     }
+    //
+    // scroll to a position specified by a sequence of moves from the root
+    // the general form is pairs <branch point> <sected branch> followed by < final position>
+    // this sequence is derived by the MoveHistory immediately before calling this.
+    //
+    public void doScrollTo(CommonMoveStack position)
+    {
+    	if(position!=null)
+    	{
+    		doWayBack(replayMode.Replay);
+    		int sz = position.size();
+    		
+    		if(position.elementAt(0)!=History.elementAt(0))
+    		{
+    		for(int i=0;i<sz;i++)
+    		{	
+    			commonMove m = null;
+    			while( i<sz && (m = RedoStep(replayMode.Replay))!=null)
+    			{	if(m==position.elementAt(i))
+    				{
+    				i++;
+    				if(i<sz)
+    					{
+    					int nv = m.nVariations();
+    					commonMove targetVariant = position.elementAt(i);
+    					i++;
+    					boolean found = false;
+    					for(int nn = 0;nn<nv && !found; nn++)
+    						{
+    						commonMove variation = m.getVariation(nn);
+    						found = (variation==targetVariant);
+    						// this is the magic that sets a particular variation to
+    						// be the selected variation
+    						if(found) 
+    							{
+    							History.switchToVariation(m,nn);
+    							}
+    						}
+    					}
+    				}
+    			}  			
+    		}}
+    		setJointReviewStep(GET_CURRENT_POSITION,null);
+    		saveDisplayBoard();
+    		generalRefresh();
+    	}
+    }
     /** this is called from the run loop to actually
      * perform actions that were deferred by a deferredEventHandler
      * <p>
@@ -5480,7 +5632,8 @@ public abstract class commonCanvas extends exCanvas
         					|| hidden.handleDeferredEvent(target);
         if(!handled)
         {
-        if(futureTimeControl.handleDeferredEvent(target,command)) 
+        if(History.handleDeferredEvent(commonCanvas.this,target)) {}
+	    else if(futureTimeControl.handleDeferredEvent(target,command)) 
         {	//update the other client
         	performClientMessage("+" + TimeId.ChangeFutureTimeControl.name()+" "+futureTimeControl.print(),false,true);
         	handled = true;
@@ -6743,9 +6896,14 @@ public abstract class commonCanvas extends exCanvas
    		{	l.parsedTime = -1;
    			l.parsedAnnotation = null;
    			l.parsedResult=null;
+   			l.nodeName = null;
   			ReplayMove(root);
   			commonMove top = History.top();
   			if(l.parsedResult!=null) { rootResult = l.parsedResult; }
+  			if(l.nodeName!=null)
+  			{
+  				History.rememberNamedPosition(top,l.nodeName);
+  			}
   			if(top!=null)
   				{
   				if(l.parsedTime>=0) { top.setElapsedTime(l.parsedTime); }
@@ -6928,6 +7086,11 @@ public abstract class commonCanvas extends exCanvas
             curr.addElement(nn, Where.atEnd);
             curr = nn;
             curr.set_property(m.playerString(), ms);
+            String nname = m.getNodeName();
+            if(nname!=null) 
+            {
+            	curr.set_property(nodename_property, nname);
+            }
             String comm = m.getComment();
             if (comm != null)
             {
@@ -7153,6 +7316,14 @@ public abstract class commonCanvas extends exCanvas
         	   ps.print(sgf_property.bracketedString(str));
         	   ps.print("]");
         	   MoveAnnotation.printAnnotations(ps,m);
+        	   /*
+        	    * until the names are shared, they shouldn't be saved
+        	   String nname = (String)m.getProperty(nodename_property);
+        	   if(nname!=null)
+        	   {
+        		   ps.print(nodename_property);
+        		   ps.print(sgf_property.bracketedString(nname));
+        	   }*/
         	   long tm = m.elapsedTime();
         	   if(tm>=0)
         	   { ps.print(time_property);
@@ -7487,55 +7658,64 @@ public abstract class commonCanvas extends exCanvas
 public boolean replayStandardProps(String name,String value)
 {	
     //System.out.println("prop " + name + " " + value);
+	boolean print = true;
+	boolean handled = true;
     if (name.equalsIgnoreCase(gamename_property))
     {   if(theChat!=null) { theChat.setShortNameField(value); }
-        return(true);
+    	print = false;
     }
     else if (name.equalsIgnoreCase(game_property))
     {	G.Assert(value.equalsIgnoreCase(sgfGameType()),WrongInitError,value);
-    	return true;
+    	print = false;
     }
     else if (name.equalsIgnoreCase(gametitle_property))
     {
     	if(theChat!=null) { theChat.setNameField(value); }
-        return(true);
+        print = false;
     }
     else if (name.equalsIgnoreCase(date_property))
     {
     	if(theChat!=null) { theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
             s.get(PlayedOnDate,value));}
         datePlayed = value;
-        return(true);
+        print = false;
     }
     else if(name.equalsIgnoreCase(colormap_property))
     {
     	
     	getBoard().setColorMap(G.parseColorMap(value), -1); 
-    	return(true);
+    	print = false;
     }
     else if(name.equalsIgnoreCase(timecontrol_property))
     {
     	timeControl = TimeControl.parse(value);
     	futureTimeControl.copyFrom(timeControl);
+    	print = false;
     }
     else if(name.equalsIgnoreCase(annotation_property))
     {
     	StackIterator<MoveAnnotation> m = MoveAnnotation.fromReadableString(value);
     	l.parsedAnnotation = m;
+    	print = false;
     }
     else if(name.equalsIgnoreCase(time_property))
     {
     	l.parsedTime = G.LongToken(value);
-    	return(true);
+    	print = false;
+    }
+    else if(name.equals(nodename_property))
+    {
+    	l.nodeName = value;
+    	print = false;
     }
     else if(result_property.equals(name))
     {
     	l.parsedResult = value;
     	// fall through to print it into the chat
     }
-    
-    if(theChat!=null) { theChat.addAMessage("prop " + name + " = " +  value); }
-    return(false);
+    else { handled = false; }
+    if(theChat!=null && print) { theChat.addAMessage("prop " + name + " = " +  value); }
+    return(handled);
 	}
 //
 // this is the default method used by all except Loa.  It's logic is very
@@ -8069,6 +8249,7 @@ public void performHistoryTokens(Tokenizer his)
 	boolean ended = false;
 	boolean first = true;
 	int time = -1;
+	String name = null;
     while (his.hasMoreTokens() && !ended)
     {
         String token = his.nextToken();
@@ -8077,11 +8258,16 @@ public void performHistoryTokens(Tokenizer his)
         {
             if (!first)
             {
-                PerformAndTransmit(command.toString(), false,replayMode.Replay1);
+                PerformAndTransmit(command.toString(), false,replayMode.Replay);
                 if(time>=0) {
-                	History.top().setElapsedTime(time);
+                	History.currentHistoryMove().setElapsedTime(time);
+                }
+                if(name!=null)
+                {
+                	History.rememberNamedPosition(name);
                 }
                 command.setLength(0);
+               	name = null;
                 first = true;
                 time = -1;
             }
@@ -8091,6 +8277,22 @@ public void performHistoryTokens(Tokenizer his)
     	   if("+T".equals(token))
     	   {
     		   time = his.intToken();   		   
+    	   }
+    	   else if("+N".equals(token))
+    	   {
+    		   // nodename
+    		   name = his.nextToken();
+    	   }
+    	   else if(token.length()>2 && token.charAt(1)=='#')
+    	   {	// temporary to maintain compatability in the bridge interval
+    		    // this should be extinct after 9.03
+    		   name = token.substring(1);
+    	   }
+    	   else 
+    	   {   // assume that any other value is a future value pair, unless the key character is
+    		   // lower case.  This allows future singletons to be lower case, pairs to be anything else.
+    		   if(token.length()>=2 && Character.isLowerCase(token.charAt(1))) {}
+    		   else { his.nextToken(); }  
     	   }
        }
        else

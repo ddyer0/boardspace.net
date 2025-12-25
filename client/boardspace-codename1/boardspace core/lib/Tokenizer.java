@@ -40,8 +40,8 @@ public class Tokenizer implements Enumeration<String>
 	boolean keepDelimiters = false;
 	public static String StandardDelimiters = " \n\t\r\"";
 	public static String StandardSingletons = "()[]{}";
-	String delimiters = StandardDelimiters;
-	String singletons = StandardSingletons;
+	public String delimiters = StandardDelimiters;
+	public String singletons = StandardSingletons;
 	StringBuilder builder = new StringBuilder();
 	
 	public void reload(String str)

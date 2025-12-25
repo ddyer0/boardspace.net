@@ -16,7 +16,7 @@
  */
 package online.search.nntest;
 // The following java code is based on a multi-layer 
-// Back Propagation Neural Network Class (BackPropagation.class)
+// BackVariation Propagation Neural Network Class (BackPropagation.class)
 //
 // Created by Anthony J. Papagelis & Dong Soo Kim
 //

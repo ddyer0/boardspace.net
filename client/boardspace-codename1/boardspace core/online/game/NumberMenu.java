@@ -555,7 +555,9 @@ public class NumberMenu extends Rectangle {
 		 	  /** call back to the host window for actual drawing.  This allows the 
 		  	   * the host to override or embellish the default behavior
 		  	   */
-			selectedProvider.drawNumber(gc,src==null ? null : reverse.get(src),reverse.get(dest),cellSize,xpos-cellSize/2,
+			PlacementProvider d = reverse.get(dest);
+			PlacementProvider s = src==null ? null : reverse.get(src);
+			selectedProvider.drawNumber(gc,s,d,cellSize,xpos-cellSize/2,
 			   			ypos-cellSize/2,pieceLabelFont,color, moveNumberString(idx));
 		}
 	

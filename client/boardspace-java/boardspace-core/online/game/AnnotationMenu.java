@@ -386,7 +386,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		
 		int player = commonMove.playerNumberToken(playerString);
 		commonMove targetMove = drawOn.ParseMove(moveStr,player);
-		commonMove activeMove = drawOn.History.find(targetMove);
+		commonMove activeMove = drawOn.History.matchesCurrentMove(targetMove);
 		StackIterator<MoveAnnotation> annotation = MoveAnnotation.fromReadableString(annStr);
 		if(activeMove!=null && annotation!=null)
 		{	MoveAnnotation an = annotation.elementAt(0);

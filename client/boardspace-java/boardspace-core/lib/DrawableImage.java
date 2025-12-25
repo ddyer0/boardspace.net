@@ -490,8 +490,29 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
       	}
       return(val && (rackLocation!=null));
 	}
-
-
+/**
+ * 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
+	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
+	 * hack, 
+	 * 	if the help text starts with NotHelpDraw the rest of the string is drawn instead of used as help text. 
+	 *    This is used by a few widgets to display text inside icons.
+	 *  if the help text starts with NotHelp, the string is passed through instead of used as help text.
+	 *    This is used in conjunction with drawChip methods to decorate or alter the images being drawn.
+	 * 
+ * @param gc
+ * @param drawOn
+ * @param r
+ * @param highlight
+ * @param rackLocation
+ * @param helptext
+ * @param sscale
+ * @param expansion
+ * @return
+ */
+	public boolean drawChip(Graphics gc,exCanvas drawOn,Rectangle r,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
+	{
+		return drawChip(gc,drawOn,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,helptext,sscale,expansion);
+	}
 	/**
 	 * get the rectangle containing this chip, as drawn with the specified width location.
 	 * This takes into account the x,y,size scale of the chip and the actual aspect ratio

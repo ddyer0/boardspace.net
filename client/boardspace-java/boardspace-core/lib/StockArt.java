@@ -84,6 +84,8 @@ public class StockArt extends DrawableImage<StockArt> implements Digestable{
 	static public StockArt UnMagnifier = new StockArt("unmagnifier",defaultAdjust);
 	static public StockArt PaperClip = new StockArt("paperclip-nomask",defaultAdjust);
 	static public StockArt PaperClipSide = new StockArt("paperclipside-nomask",defaultAdjust);
+	static public StockArt PaperClipMasked = new StockArt("paperclip",defaultAdjust);
+	static public StockArt PaperClipSideMasked = new StockArt("paperclipside",defaultAdjust);
 
 	// icons rearranged 6/2020 to conform to standard "vcr" iconology
 	static public StockArt VCRWayBack = new StockArt("back-branch",defaultAdjust);

@@ -2055,6 +2055,8 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
           if(message!=null)
           { lastInputTime=G.Date();
             Tokenizer localST = new Tokenizer(message);
+            // some tokens contain () and standard singletons mess them up
+            localST.singletons = "";
             String messType = localST.nextToken();
 
             if(isExpectedSequence(messType,message))

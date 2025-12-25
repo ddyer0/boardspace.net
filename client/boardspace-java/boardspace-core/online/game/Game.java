@@ -1743,7 +1743,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {
                     if (where != GET_CURRENT_POSITION) //-2 means just tell us
                     {	//if(my.spectator) { System.out.println("Scrollto "+where); }
-                        v.doRemoteScrollTo(where);
+                        v.doRemoteScrollTo(where,myST);
                     }
                     else if(!GameOver())
                     {
@@ -1751,7 +1751,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                             s.get(StartJointReview,player));
                     }
 
-                    v.setJointReviewStep(where);
+                    v.setJointReviewStep(where, myST);
                 }
                 else
                 {	
@@ -3952,6 +3952,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if (useJointReview && (v!=null))
         {	
             int where = v.getReviewPosition();
+            String name = v.getNodeName(where-1);
             sentReviewHint = false;
             if (oldval == false)
             {	//just coming on, send a request for scroll position
@@ -3960,15 +3961,26 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
             }
             int joint = v.getJointReviewStep();
-            if (((where!=-1) && (joint != where)) || (joint==GET_CURRENT_POSITION))
+            if(joint==NAME_CURRENT_POSITION)
+            {
+            	String scrollMessage = NetConn.SEND_GROUP+KEYWORD_SCROLL+" "+ where + " SET "+name;
+            	v.setJointReviewStep(where,null);
+            	sendStatechangeMessage(scrollMessage );
+            	
+            }
+            else if (((where!=-1) && (joint != where)) || (joint==GET_CURRENT_POSITION))
             {	
-                v.setJointReviewStep(where);
+                v.setJointReviewStep(where, null);
                 int step = v.getJointReviewStep();
                 if(v.hasControlTokenOrPending())
                 	{
                 	doTouch();
                 	String scrollMessage = NetConn.SEND_GROUP+KEYWORD_SCROLL+" "+ step;
-                	sendStatechangeMessage(scrollMessage /* + b.placedPositionString() */);
+                	if(name!=null)
+                	{	
+                		scrollMessage += " SEEK "+G.quote(name);
+                	}
+                	sendStatechangeMessage(scrollMessage);
                 	}
             }
         }}

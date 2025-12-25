@@ -16,7 +16,7 @@
  */
 package online.search.nntest;
 // The following java code is based on a multi-layer 
-// Back Propagation Neural Network Class (BackPropagation.class)
+// BackVariation Propagation Neural Network Class (BackPropagation.class)
 //
 // Created by Anthony J. Papagelis & Dong Soo Kim
 //
@@ -89,7 +89,7 @@ public class BackPropagation extends Thread {
 
 	} // FeedForward()
 
-	// Back propagated the network outputy error through 
+	// BackVariation propagated the network outputy error through 
 	// the network to update the weight values
 	public void UpdateWeights() {
 

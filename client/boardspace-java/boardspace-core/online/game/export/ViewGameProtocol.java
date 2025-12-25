@@ -200,13 +200,13 @@ public interface ViewGameProtocol
    /** scroll the game to a position, identified by getReviewPosition in another viewer 
 	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop
-   */
-   public boolean doRemoteScrollTo(int val); 
+    */
+   public boolean doRemoteScrollTo(int where,Tokenizer myST); 
    /** set the requested review position
 	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop
     */
-   public void setJointReviewStep(int v);
+   public void setJointReviewStep(int v, Tokenizer myST);
    /** get the current actual review position
  	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop
@@ -217,6 +217,10 @@ public interface ViewGameProtocol
 	 * the activity for later action by the viewerRun loop
    */
    public int getJointReviewStep();
+   /*
+    * get the node name associated with the move
+    */
+   public String getNodeName(int step);
    
    /** return the true move number of the game (ie: not the review mode move number). 
     *  This is used only for a few non-critacl things such as guessing if the game has 

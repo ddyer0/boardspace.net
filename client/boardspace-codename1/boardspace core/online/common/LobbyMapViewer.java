@@ -74,7 +74,7 @@ public class LobbyMapViewer implements LobbyConstants, Config
             int iw = map.getWidth();
             int ih = map.getHeight();
             if ((iw > 0) && (ih > 0))
-            {   drawn =map.drawImage(g, dx, dy, w, h);
+            {   drawn = map.drawImage(g,dx, dy, w, h);
                 if (dataReady && (dataSize > 0))
                 {
                     Hashtable<Integer,Integer> mapped = new Hashtable<Integer,Integer>(dataSize);

@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
+import online.game.sgf.export.sgf_names;
 import online.search.UCTNode;
 
 import java.io.PrintStream;
@@ -113,7 +114,8 @@ class FinalFilter implements online.game.commonMove.MoveFilter
 }
 
 
-public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes, StackIterator<commonMove>, SequenceElement
+public abstract class commonMove 
+	implements lib.CompareTo<commonMove> , Opcodes, StackIterator<commonMove>, SequenceElement,sgf_names
 {	
 	public enum EStatus 
 	{
@@ -135,6 +137,8 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	public MoveFilter finalFilter() { return(new FinalFilter(true)); }
 	public MoveFilter ephemeralFilter() { return(new FinalFilter(false)); }
 
+	public String getNodeName() { return (String)getProperty(nodename_property); }
+	public void setNodeName(String name) { setProperty(nodename_property,name); }
 	
 	private HistoryProperties H()
 	{
@@ -500,31 +504,6 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
         }
     }
     
-    public int addToHistoryAndExtend(CommonMoveStack  History)
-    {	
-        History.addElement(this); // add the new move (or the new variation) to the history
-        // add the principle variation of to the history
-        return(extendHistory(History));
-    }
-    public int extendHistory(CommonMoveStack  History)
-        {
-        	commonMove newmove = this;
-        	int hsize = History.size();
-            H().index = hsize - 1;
-
-            if (newmove.next != null)
-            {
-                while (newmove.next != null)
-                {
-                    History.addElement(newmove.next);
-                    newmove = newmove.next;
-                }
-
-                return (hsize);
-            }
-
-            return (-1);
-     }
     //
     // this is the normal entry point, where no extra filtering or renumbering occurs.
     //
@@ -547,13 +526,13 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     	// tend stick in extra numbers and different numbers of extra numbers.
     	// Removing the ephemerals and renumbering restores a deterministic sequence.
         commonMove rval = this;
-        commonMove root = this;
+        commonMove current = this;
         boolean renumber = filter.reNumber() && (prev_number>=0);
-        while (root != null)
-        {	if(!filter.included(root)) { root = root.next; }
+        while (current != null)
+        {	if(!filter.included(current)) { current = current.next; }
         	else
         	{
-            String ms = root.moveString();
+            String ms = current.moveString();
 
             if (ms.length() > 0)
             {
@@ -567,12 +546,21 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
             	os.print(" , ");
             	if(includeTimes)
             	{
-            	long time = root.elapsedTime();
+            	long time = current.elapsedTime();
+            	String name = current.getNodeName();
+            	if(name!=null)
+            		{ // this is the preferred form, but not compatible with old clients.
+            		  // this should be used after version 9.03 is extinct
+            		  // os.print("+N "); os.print(G.quote(name)); os.print(" "); 
+            		  os.print("+"); 
+            		  os.print(name);
+            		  os.print(' ');
+            		}
             	if(time>=0) { os.print("+T "); os.print(time); os.print(" "); }
             	}
                 os.print(ms);
             }
-            StackIterator<commonMove> variations = root.getVariations();
+            StackIterator<commonMove> variations = current.getVariations();
             if (variations!=null)
             {
                 commonMove lastmove = null;
@@ -582,7 +570,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
                     rval = variations.elementAt(i);
                     lastmove = rval.formHistoryTree(os,filter,prev_number,includeTimes);
                 }
-                commonMove nx = root.next;
+                commonMove nx = current.next;
                 if ((nx != lastmove) && (lastmove != null))
                 {	String ms2 = nx.moveString();
                 	if(renumber)
@@ -600,11 +588,11 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 
                 }
 
-                root = null;
+                current = null;
             }
             else
             {
-                root = root.next;
+                current = current.next;
             }}
         }
 

@@ -502,7 +502,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		
 	}
 
-	public boolean doRemoteScrollTo(int val) {
+	public boolean doRemoteScrollTo(int val,Tokenizer t) {
 		return false;
 	}
 
@@ -781,6 +781,12 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	}
 	public void setSeeChat(boolean b) {
 		
+	}
+	public void setJointReviewStep(int v, Tokenizer myST) {
+		
+	}
+	public String getNodeName(int step) {
+		return null;
 	}
 
 

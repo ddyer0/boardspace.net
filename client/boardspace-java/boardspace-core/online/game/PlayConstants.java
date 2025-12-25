@@ -46,6 +46,7 @@ public interface PlayConstants extends UniversalConstants {
 	
 	
 	static final int GET_CURRENT_POSITION = -2;
+	static final int NAME_CURRENT_POSITION = -3;
 
 
 
