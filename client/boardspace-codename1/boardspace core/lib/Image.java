@@ -1037,4 +1037,70 @@ public static String[] getImageList(URL resourceUrl)
 	}
 	return null;
 }
+/**
+ * draw an image with scale parameters, similar to those of exCanvas methods
+ * @param gc
+ * @param boxw
+ * @param x
+ * @param y
+ * @param scale
+ * @return
+ */
+public Rectangle drawImage(Graphics gc,int boxw,int x, int y, double scale[])
+{
+	return drawImage(gc,boxw,x,y,scale,0,null,false,null);
+}
+/**
+ * draw an image with scale and jitter parameters, similar to those of exCanvas methods
+ * @param gc
+ * @param boxw
+ * @param x
+ * @param y
+ * @param scale
+ * @param jitter
+ * @param text
+ * @param artCenterText
+ * @param labelColor
+ * @return
+ */
+public Rectangle drawImage(Graphics gc,int boxw,int x, int y, 
+		double scale[],double jitter,
+		String text,boolean artCenterText,Color labelColor)
+{
+	//note, the "scale" magic numbers are visually tuned to center and scale the
+    //somewhat arbitrary graphics (derived from real photos)
+    int imw = getWidth();
+    int imh = getHeight();
+    double scalew_d = scale==null ? boxw : scale[2] *  boxw;
+    double scalew_d2 = scalew_d;
+    double scaleh_d = (scalew_d * imh) / imw;
+    int scalew = (int) (scalew_d+0.5);
+    int scalew2 = (int) (scalew_d2+0.5);
+    int scalew3 = (int)(scalew*0.8);
+    int scaleh = (int) (scaleh_d+0.5);
+    int jx = exCanvas.CPR(x,y,(int)(scalew_d*jitter));
+    int jy = exCanvas.CPR(x,y,(int)(scaleh_d*jitter));
+    int posx = (int) ((scale==null ? 0.5 : scale[0]) * scalew_d2) + jx;
+    int posy = (int) ((scale==null ? 0.5 : scale[1]) * scaleh_d) + jy;
+    int ax = x - posx;
+    int ay = y - posy;
+    
+    boolean visible = GC.checkVisibility(gc,ax,ay,scalew2,scaleh);
+    Rectangle rr = new Rectangle(ax,ay,scalew2,scaleh);
+    if(visible)
+    {    
+    drawImage(gc, ax, ay,scalew2 , scaleh); 
+    if(text!=null)
+    { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);
+      // draw the text centered on the tile.  This is really important
+      // for punct, where the height is drawn over the dot which is
+      // the true center of the tile.
+      int tax = ax + + (scalew2-scalew3)/2;
+      int tx = artCenterText ? tax : (int)(x - (0.5*scalew_d2) + jx);
+      int ty = artCenterText ? ay : (int)(y - (0.5*scaleh_d) + jy);
+      GC.drawOutlinedText(gc,true,tx,ty,scalew3,scaleh,labelColor,Color.black,text);
+     }
+    }
+    return(rr);
+}
 }

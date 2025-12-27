@@ -328,7 +328,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
 
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, TruGameBoard gb, Rectangle brect, HitPoint highlight)
-    {
+    {	
      	int liftdiv = 40;
      	Hashtable<TruCell,TruCell> riverDests = gb.riverMoveDests();		// can be a river move cell
      	Hashtable<TruCell,TruCell> splitDests = gb.splitMoveDests();		// can be a split cell
@@ -740,7 +740,7 @@ private void playSounds(TruMovespec m)
     public SimpleRobotProtocol newRobotPlayer() { return(new TruPlay()); }
 
     public boolean replayStandardProps(String name,String value)
-    {	nextIntCompatabilityKludge(b,name,value,"Dec 6 2009");
+    {	nextIntCompatabilityKludge(b,name,value,"Aug 25 2012");
     	return(super.replayStandardProps(name,value));
     }
     
@@ -793,12 +793,15 @@ private void playSounds(TruMovespec m)
     public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
     {	
     	TruCell cell = (TruCell)dest;
-    	int xx = x-cellSize/2;
-    	int yy = y+cellSize*3/2;
+    	int xx = x-cellSize;
+    	int yy = y+cellSize;
     	if(cell.lastFlipped>0) {
     	StockArt.SwingCW.drawChip(gc,this,cellSize,xx,yy,null);
     	}
-  	  super.drawNumber(gc,source,dest,cellSize,xx-cellSize/2,yy-cellSize/2,font,color, str);
+    	else
+    	{
+    		super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
+    	}
     }
 }
 

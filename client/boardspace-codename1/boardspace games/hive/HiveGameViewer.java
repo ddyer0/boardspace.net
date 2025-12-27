@@ -532,7 +532,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
         int csize = gb.cellSize();
      	stableCellSize = csize;
-     	boolean somehit = draggingBoard();
+     	numberMenu.numberIcon = StockArt.DownArrowAbove;
+      	boolean somehit = draggingBoard();
      	boolean dolift = !somehit && doLiftAnimation();
      	boolean see = seeMobile.isOnNow();
      	//

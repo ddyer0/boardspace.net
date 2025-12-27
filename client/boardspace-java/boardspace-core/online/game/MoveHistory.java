@@ -268,7 +268,8 @@ public class MoveHistory extends CommonMoveStack  implements SequenceStack,sgf_n
 		return null;
 	}
 	public String getCurrentNodeName()
-	{	return currentHistoryMove().getNodeName();
+	{	commonMove cur = currentHistoryMove();
+		return cur==null ? null : cur.getNodeName();
 	}
 	
 }

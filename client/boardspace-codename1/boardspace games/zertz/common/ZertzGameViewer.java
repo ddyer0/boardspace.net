@@ -362,7 +362,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
     /* draw the board and the balls on it. */
     public void DrawBoardElements(Graphics gc, GameBoard bd, Rectangle brect,  HitPoint highlight)
-    {
+    {	numberMenu.numberMarker = "\u2b24";
         int bigradius = RINGRADIUS - 1;
         int moving = b.movingObjectIndex();
         boolean review = reviewMode() && !allowed_to_edit;

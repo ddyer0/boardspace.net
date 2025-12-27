@@ -533,6 +533,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
      	int csize = gb.cellSize();
      	stableCellSize = csize;
+     	numberMenu.numberIcon = StockArt.DownArrowAbove;
      	boolean somehit = draggingBoard();
      	boolean dolift = !somehit && doLiftAnimation(); 
      	boolean see = seeMobile.isOnNow();
@@ -1153,15 +1154,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	public int getLastPlacement() {
 		return b.lastPlacement;
 	}
-    // override for the standard numberMenu drawNumber
-    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
-    {	
-    	if(source==null)
-    		{	StockArt.DownArrow.drawChip(gc,this,cellSize,x+cellSize,y+cellSize/2,null);
-    		
-    		}
-  	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
-    }
-
+ 
 }
 

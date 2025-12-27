@@ -605,11 +605,6 @@ private void playSounds(DashMovespec m)
     public BoardProtocol getBoard()   {    return (b);   }
     public SimpleRobotProtocol newRobotPlayer() { return(new DashPlay()); }
 
-    public boolean replayStandardProps(String name,String value)
-    {	nextIntCompatabilityKludge(b,name,value,"Dec 6 2009");
-    	return(super.replayStandardProps(name,value));
-    }
-    
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save

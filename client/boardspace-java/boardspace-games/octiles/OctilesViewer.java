@@ -498,7 +498,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  OctilesBoard gb = disB(gc);
     setDisplayRectangle(boardRect,gb);
-
+    numberMenu.numberIcon = StockArt.DownArrowAbove;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
@@ -789,14 +789,6 @@ private void playSounds(commonMove m)
 
     public int getLastPlacement() { return b.placementIndex; }
     
-    // override for the standard numberMenu drawNumber
-    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
-    {	
-     	if(source==null)
-    		{	StockArt.DownArrow.drawChip(gc,this,cellSize,x+cellSize,y+cellSize/2,null);    		
-    		}
-  	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
-    }
 
 }
 

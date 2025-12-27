@@ -79,7 +79,10 @@ import lib.exCanvas;
  */
 @SuppressWarnings("serial")
 public class NumberMenu extends Rectangle {
-
+	public String numberMarker = "\u26aa";	// hollow circle
+		// another likely choice "\u2b24"; // filled circle
+	public Drawable numberIcon = null;
+	public boolean arrowNumberMarker = false;
 	DrawableImage<?> base = null;
 	CellId id = null;
 	String text = "#";
@@ -107,6 +110,10 @@ public class NumberMenu extends Rectangle {
 	public enum NumberingMode implements EnumMenu
 	{ None, All, Last, Last_2, Last_5, From_Here;
 	  public String menuItem() { return(name().replace('_',' ')); }
+	  public boolean useNumbers()
+	  {	  // true if this mode should use explicit numbers 
+		  return !(this==None||this==Last);
+	  }
 	}
 	/**
 	 * 
@@ -512,9 +519,20 @@ public class NumberMenu extends Rectangle {
     public void drawNumber(Graphics gc,int cellSize,LocationProvider dest,Font pieceLabelFont,Color color,int idx)
     {	if(includeNumbers)
     {
-    	selectedProvider.drawNumber(gc,null,reverse.get(dest),cellSize,dest.getX()-cellSize/2,
-    			dest.getY()-cellSize/2,pieceLabelFont,color, moveNumberString(idx));
+    	boolean numbers = selected().useNumbers();
+    	if(!numbers && numberIcon!=null)
+    	{
+        	selectedProvider.drawNumber(gc,null,reverse.get(dest),
+        			cellSize,dest.getX(),dest.getY(),
+        			pieceLabelFont,color, numberIcon);		
     }
+    	else
+    	{
+    	String m = numbers ? moveNumberString(idx) : numberMarker;
+    	selectedProvider.drawNumber(gc,null,reverse.get(dest),
+    			cellSize,dest.getX(),dest.getY(),
+    			pieceLabelFont,color, m);
+    	}}
     }
    
     /**
@@ -555,10 +573,22 @@ public class NumberMenu extends Rectangle {
 		 	  /** call back to the host window for actual drawing.  This allows the 
 		  	   * the host to override or embellish the default behavior
 		  	   */
+		   	boolean numbers = selected().useNumbers();
+	    	if(!numbers && numberIcon!=null && src==null)
+	    	{
+	        	selectedProvider.drawNumber(gc,null,reverse.get(dest),
+	        			cellSize,xpos,ypos,
+	        			pieceLabelFont,color, numberIcon);		
+	    	}
+	    	else
+	    	{
+	    	String m = numbers ? moveNumberString(idx) : src==null ? numberMarker : "";
 			PlacementProvider d = reverse.get(dest);
 			PlacementProvider s = src==null ? null : reverse.get(src);
-			selectedProvider.drawNumber(gc,s,d,cellSize,xpos-cellSize/2,
-			   			ypos-cellSize/2,pieceLabelFont,color, moveNumberString(idx));
+			selectedProvider.drawNumber(gc,s,d,
+						cellSize,xpos,ypos,
+						pieceLabelFont,color, m);
+	    	}
 		}
 	
 		

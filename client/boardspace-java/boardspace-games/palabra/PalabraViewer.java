@@ -778,10 +778,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     public SimpleRobotProtocol newRobotPlayer() 
     {  return new PalabraPlay();
     }
-    public boolean replayStandardProps(String name,String value)
-    {	nextIntCompatabilityKludge(bb,name,value,"Aug 25 2012");
-    	return(super.replayStandardProps(name,value));
-    }
+
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save

@@ -104,6 +104,11 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	{   // canvas may be null
 		return(image); 
 	}
+	
+	public Image getImage(exCanvas canvas)
+	{
+		return (canvas==null) ? getImage() : getImage(canvas.loader());
+	}
 	/** the default constructor */
 	public DrawableImage() { };
 	/** default method for animations */
@@ -134,8 +139,8 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @return get the actual aspect ratio of the image, width/height
 	 */
 	public double getAspectRatio(exCanvas can)
-	{	DrawableImage<?> alt = getAltChip(can.getAltChipset());
-		Image im = alt.getImage(can.loader());
+	{	DrawableImage<?> alt = getAltChip(can==null ? 0 : can.getAltChipset());
+		Image im = alt.getImage(can);
 		double v = ((im==null)?1.0 : Math.max(1.0,im.getWidth())/Math.max(1.0,im.getHeight()));
 		return(v);
 	}
@@ -255,7 +260,13 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 */
 	public void drawChipImage(Graphics gc,exCanvas canvas,int cx,int cy,double pscale[],
 			int SQUARESIZE,double xscale,double jitter,String label,boolean artcenter)
-	{     canvas.drawImage(gc, getImage(canvas.loader), pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
+	{    if(canvas==null) 
+		{
+		getImage().drawImage(gc,SQUARESIZE,cx,cy,pscale,0,null,false,null);
+		}
+		else 
+		{canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
+		}
 	}
 	/**
 	 * this is called to draw the intersection of two tiles which are part of a polyomino group.
@@ -292,7 +303,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	public void drawChip(Graphics gc,exCanvas canvas,Rectangle r,String label)
 	{	
 		int sz = G.Width(r);
-		Image im = getImage(canvas.loader());
+		Image im = getImage(canvas);
 		if(im!=null)
 			{
 			double aspect = (double)im.getWidth()/im.getHeight();
@@ -312,7 +323,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @return
 	 */
 	public Rectangle getSnugRectangle(exCanvas canvas,Rectangle r)
-	{	Image im = getImage(canvas.loader());
+	{	Image im = getImage(canvas);
 		if(im!=null) { return(im.getSnugRectangle(r));}
 		return(r);
 	}
@@ -326,7 +337,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @return
 	 */
 	public Rectangle getSnugRectangle(exCanvas canvas,int left,int top,int w,int h)
-	{	Image im = getImage(canvas.loader());
+	{	Image im = getImage(canvas);
 		if(im!=null) { return(im.getSnugRectangle(left,top,w,h));}
 		return(new Rectangle(left,top,w,h));
 	}

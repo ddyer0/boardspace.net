@@ -668,10 +668,12 @@ class Random implements java.io.Serializable {
 		   // this is really ugly.  When I gratuitously changed nextInt to "modernize" it
 		   // I broke all the random sequences, especially including the sequences used to
 		   // shuffle.  This happened on 8/24/2012.  A few games, including complex
-		   // euros like Container and Yspahan have game records where the setup depends
-		   // on this (a bad idea in itself).  Consequently, game records from before 8/24/2012
+		   // euros like Container and Yspahan and abstracts with randomization Truchet and Tzaar
+		   // have game records where the setup depends on the random sequence (Perhaps
+		   // a bad idea in itself).  Consequently, game records from before 8/24/2012
 		   // are incompatable with those after 8/24/2012.  Yuk.   As a known kludge, setting
 		   // the OLD_NEXTINT_COMPATABILITY flag appropriately lets these old records be read.
+		   // this needs to be reset for each game replay, usually done as part of replayStandardProps
 		   //
 		   int v = r.nextInt();
 		   if(v==Integer.MIN_VALUE) { v = 0; }

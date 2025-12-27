@@ -507,7 +507,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      	  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
      	  }
 
-
     }
     /**
      * draw the main window and things on it.  

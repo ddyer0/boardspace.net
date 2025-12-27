@@ -742,7 +742,7 @@ private void playSounds(TruMovespec m)
     public SimpleRobotProtocol newRobotPlayer() { return(new TruPlay()); }
 
     public boolean replayStandardProps(String name,String value)
-    {	nextIntCompatabilityKludge(b,name,value,"Dec 6 2009");
+    {	nextIntCompatabilityKludge(b,name,value,"Aug 25 2012");
     	return(super.replayStandardProps(name,value));
     }
 
@@ -792,15 +792,18 @@ private void playSounds(TruMovespec m)
     	return b.placementIndex;
     }
     // override for the standard numberMenu drawNumber
-    public void drawNumber(Graphics gc,PlacementProvider src,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color,String str)
+    public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
     {	
     	TruCell cell = (TruCell)dest;
-    	int xx = x-cellSize/2;
-    	int yy = y+cellSize*3/2;
+    	int xx = x-cellSize;
+    	int yy = y+cellSize;
     	if(cell.lastFlipped>0) {
     	StockArt.SwingCW.drawChip(gc,this,cellSize,xx,yy,null);
     	}
-  	  super.drawNumber(gc,src,dest,cellSize,xx-cellSize/2,yy-cellSize/2,font,color,str);
+    	else
+    	{
+    		super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
+    	}
     }
 }
 

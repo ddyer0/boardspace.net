@@ -47,6 +47,9 @@ public class StockArt extends DrawableImage<StockArt> implements Digestable{
 	
 	/** a large, semi-transparent down arrow */
 	static public StockArt DownArrow=new StockArt("downarrow",new double[]{1.1,1.1,1.0});
+	
+	static public StockArt DownArrowAbove = new StockArt("downarrow",new double[] {0.5,1,1.0});
+	
 	/** a large, semi-transparent, up arrow */
 	static public StockArt UpArrow=new StockArt("uparrow",new double[]{1.1,1.1,1.0} );
 	/** a small X */

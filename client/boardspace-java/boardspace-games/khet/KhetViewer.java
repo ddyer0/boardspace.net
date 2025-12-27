@@ -995,10 +995,10 @@ private void playSounds(commonMove m)
   	  {
   	  default: break;
   	  case 10:
-  		  StockArt.SwingCW.drawChip(gc,this,cellSize/2,x+cellSize/2,y+cellSize*2/3,null);
+  		  StockArt.SwingCW.drawChip(gc,this,cellSize/2,x,y+cellSize/6,null);
   		  break;
   	  case -10:
-  		  StockArt.SwingCCW.drawChip(gc,this,cellSize/2,x+cellSize/2,y+cellSize*2/3,null);
+  		  StockArt.SwingCCW.drawChip(gc,this,cellSize/2,x,y+cellSize/6,null);
   		  break;
   	  }
   	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
