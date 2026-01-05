@@ -111,10 +111,11 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
 	public GygesCell newcell(char c,int r)
 	{	return(new GygesCell(c,r));
 	}
-    public GygesBoard(String init,long key) // default constructor
+    public GygesBoard(String init,long key,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = GYGESGRIDSTYLE; //coordinates left and bottom
     	Random r = new Random(67246765);
+    	setColorMap(map,2);
 	    initBoard(boardColumns,boardRows); //this sets up the board and cross links
 
 	    for(int pl=FIRST_PLAYER_INDEX; pl<=SECOND_PLAYER_INDEX; pl++)
@@ -216,7 +217,7 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
         return (v);
     }
    public GygesBoard cloneBoard() 
-	{ GygesBoard copy = new GygesBoard(gametype,randomKey);
+	{ GygesBoard copy = new GygesBoard(gametype,randomKey,getColorMap());
 	  copy.copyFrom(this); 
 	  return(copy);
 	}

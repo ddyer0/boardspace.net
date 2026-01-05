@@ -103,5 +103,8 @@ public interface DashConstants
     	  "background-review-tile",
     	  "lift-icon",
     	  "dash-icon-nomask"};
+	static void putStrings() {
+		
+	}
 
 }

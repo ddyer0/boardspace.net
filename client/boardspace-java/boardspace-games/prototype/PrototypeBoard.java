@@ -882,6 +882,8 @@ void doSwap(replayMode replay)
  	}
  	switch(board_state)
  	{
+ 	case PlayOrSwap:
+ 	case Play:
  	case Puzzle:
  		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
  			for(PrototypeCell c = allCells;
@@ -893,8 +895,8 @@ void doSwap(replayMode replay)
  			 	}
  		}
  		break;
- 	case Play:
- 	case PlayOrSwap:
+
+ 	
  	case Confirm:
  		all.push(new Prototypemovespec(MOVE_DONE,whoseTurn));
  		break;

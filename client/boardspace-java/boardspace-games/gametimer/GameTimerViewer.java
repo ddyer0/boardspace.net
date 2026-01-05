@@ -296,11 +296,11 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     	   }
     	   else if(nPlayers()>2) 
     	   {
-    		  if(GC.handleRoundButton(gc, 0 ,doneRects[player],buttonSelect,s.get("Start"),
+    		  if(GC.handleRoundButton(gc, 0 ,doneRects[player],buttonSelect,s.get(StartMessage),
     				  HighlightColor, whoseTurn==player ? HighlightColor : bsBlue))
     		  {	  buttonSelect.hitCode = GameTimerId.SetPlayer;
     		  	  buttonSelect.hit_index = player;
-    			  HitPoint.setHelpText(buttonSelect,doneRects[player],s.get("ExplainStart"));
+    			  HitPoint.setHelpText(buttonSelect,doneRects[player],s.get(ExplainStartMessage));
     		  }
     	   }
     	   GameInfo info = gameInfo;

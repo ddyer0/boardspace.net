@@ -89,7 +89,7 @@ public interface PunctConstants
     	RESIGN_STATE(ResignStateDescription),
     	GAMEOVER_STATE(GameOverStateDescription),
     	CONFIRM_STATE(ConfirmStateDescription),
-    	PLAY_STATE("Place a piece on the board, or move a piece already on the board"),
+    	PLAY_STATE(PlacePieceMessage),
     	DRAW_STATE(DrawStateDescription);
     	String description;
     	PunctState(String des) { description = des; }
@@ -313,4 +313,19 @@ public interface PunctConstants
     static final int KILLER_BLOBIT = 1;		// low order bit of bloBits
     static final int CENTER_BLOBIT = 0x80000000;	// high order bit, for center drop
 
+    static final String PlacePieceMessage = "Place a piece on the board, or move a piece already on the board";
+    static final String GoalMessage = "connect opposite sides of the board, or play your last piece while controlling more of the center";
+    static final String LeftMessage = "#1 left";
+    static final String CenterMessage = "#1 center";
+    static final String PunctStrings[] = {
+    		PlacePieceMessage,
+    		GoalMessage,
+    		LeftMessage,
+    		CenterMessage,
+    };
+    static final String PunctStringPairs[][] = {
+    		{"Punct","Pünct"},
+    		{"Punct_variation","standard Pünct"},
+    		{"Punct_family","Pünct"},
+    };
 }

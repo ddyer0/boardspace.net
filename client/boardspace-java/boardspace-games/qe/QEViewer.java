@@ -38,6 +38,7 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import vnc.VNCService;
 
+// TODO: add proforma color to QE
 
 public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
 {	static final long serialVersionUID = 1000;

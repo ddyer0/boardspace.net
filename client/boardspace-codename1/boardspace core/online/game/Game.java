@@ -1002,9 +1002,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {	//G.print("request history");
         expectingHistory = true;
         skipGetStory = false;
-    	sendMessage(myNetConn.hasMoveTimes
-    					? NetConn.SEND_FETCH_ACTIVE_GAME 
-    					: NetConn.SEND_FETCH_ACTIVE_GAME_FILTERED);
+    	sendMessage(NetConn.SEND_FETCH_ACTIVE_GAME);
  
     }
     private String sessionKey = "";
@@ -1107,9 +1105,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendMessage(NetConn.SEND_GROUP+KEYWORD_SPARE+" "+KEYWORD_TIMECONTROLS);
          	if (restartableGame())
             { //robot games that might be recorded, check the server
-         		String fetch = myNetConn.hasMoveTimes 
-         				? NetConn.SEND_FETCH_GAME 				// raw moves, which may be in either format
-         				: NetConn.SEND_FETCH_GAME_FILTERED ;	// filtered moves, which do not contain times
+         		String fetch = NetConn.SEND_FETCH_GAME 	;			// raw moves, which may be in either format
                 sendMessage(fetch+ UIDstring);
                 setUserMessage(Color.white,null);
                 setGameState(ConnectionState.RESTORESTATE);
@@ -2684,8 +2680,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	if("follow".equals(id)) { follow_state_warning++; }
             	else { };
             }
-            else if(NetConn.ECHO_ACTIVE_GAME.equals(cmdStr)
-            		|| NetConn.ECHO_ACTIVE_GAME_FILTERED.equals(cmdStr))
+            else if(NetConn.ECHO_ACTIVE_GAME.equals(cmdStr))
             {	if(!skipGetStory)	// some other initialization occurred
             	{
             	ProcessGetStory(myST,fullMsg);
@@ -2712,8 +2707,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             		break;
             	}
             }
-            else if (NetConn.ECHO_FETCHED_GAME_FILTERED.equals(cmdStr)
-            		 || NetConn.ECHO_FETCHED_GAME.equals(cmdStr))
+            else if (NetConn.ECHO_FETCHED_GAME.equals(cmdStr))
             {	// response from server - is this a saved game being restored?
             	if((gameState==ConnectionState.RESTORESTATE)||(gameState==ConnectionState.LIMBO))
             	{	//G.print("Restore "+tempString);

@@ -499,7 +499,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
 			handleEditButton(gc,messageRotation,editRect,select, highlight, HighlightColor, rackBackGroundColor);
          }
 
-        String msg = s.get(vstate.getDescription());
+        String msg = s.get(vstate.menuItem());
         if(G.debug()) { msg = "("+b.sm_step+")"+msg;}
         standardGameMessage(gc,messageRotation,
         		vstate==TruchetState.GAMEOVER_STATE?gameOverMessage(gb):msg,
@@ -507,7 +507,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         				gb.whoseTurn,
         				stateRect);
         DrawCommonChipPool(gc, gb.whoseTurn,iconRect,null,false);
-        goalAndProgressMessage(gc,ourSelect,s.get("Occupy 3 enemy bases"),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         drawLiftRect(gc,liftRect,ourSelect,textures[LIFT_ICON_INDEX]); 
         drawVcrGroup(ourSelect, gc);

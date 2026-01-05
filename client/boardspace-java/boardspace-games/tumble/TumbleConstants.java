@@ -62,7 +62,7 @@ public interface TumbleConstants
     	GAMEOVER_STATE(GameOverStateDescription),
     	CONFIRM_STATE(ConfirmStateDescription),
     	DRAW_STATE(DrawStateDescription),
-    	PLAY_STATE("Pick the stack to move");
+    	PLAY_STATE(MoveMessage);
     	String description;
     	TumbleState(String des) { description = des; }
     	public String getDescription() { return(description); }
@@ -99,5 +99,18 @@ public interface TumbleConstants
     	{ "background-tile" ,
     	  "background-review-tile",
     	  "lift-icon-nomask"};
+    
+    static String GoalMessage = "Capture your opponent's tallest king stack";
+    static String MoveMessage = "Pick the stack to move";
+    static String TumbleStringPairs[][] = {
+    		{"TumblingDown_family","Tumbling Down"},
+    		{"TumblingDown","Tumbling Down"},
+    		{"TumblingDown_variation","standard 8x8 TumblingDown"},
+    };
+    
+    static String TumbleStrings[] = {
+    		GoalMessage,
+    		MoveMessage,
+    };
 
 }

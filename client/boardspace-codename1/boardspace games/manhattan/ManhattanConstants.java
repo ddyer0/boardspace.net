@@ -378,7 +378,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
      	
     }
 
-
+    static final String TotalContribution = "Total Contribution is $#1";
 	static final String VictoryCondition = "score at least #1 points by building bombs";
 	static final String PlayState = "Place a worker on the main board or your player board";
 	static final String RetrieveState = "Retrieve all of your workers";
@@ -433,6 +433,7 @@ public enum ManhattanState implements BoardState,ManhattanConstants
 		String GameStrings[] = 
 		{  "Game",
 			AvailableMessage,
+			TotalContribution,
 			HideBombsExplanation,
 			TradeGetMessage,
 			TradeAwayMessage,

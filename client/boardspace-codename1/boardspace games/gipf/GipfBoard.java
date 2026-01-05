@@ -663,7 +663,16 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		return(c.isEdgeCell() && (c.height()==0));
 		case PLACE_POTENTIAL_STATE:
 		case PLACE_OR_MOVE_POTENTIAL_STATE:
-			if(c.isEdgeCell()) { return pickedObject!=null && (c.height()==0); }
+			if(c.isEdgeCell()) 
+					{
+					// normally the picked object is a fresh piece, but in Matrx, the
+					// picked object can be a potential that is being split.  In that
+					// case, the tamsk piece can push but the others can't.
+					return (pickedObject!=null && (c.height()==0))
+						   &&(pickedObject.potential==Potential.Tamsk
+								|| !pickedSource.top().onBoard);
+
+				}
 			//$FALL-THROUGH$
 		case MOVE_POTENTIAL_STATE:		
 			if(c==droppedDest.top()) { return true; }

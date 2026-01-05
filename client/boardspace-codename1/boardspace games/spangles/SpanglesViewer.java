@@ -57,7 +57,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     private int CELLSIZE; 	//size of the layout cell
     private final double INITIAL_TILE_SCALE = 3.0;
 
-    private Rectangle chipRects[] = addRect("chjp",2);
+    private Rectangle chipRects[] = addRect("chip",2);
 
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
@@ -461,7 +461,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         SpanglesCell c = gb.rack[gb.whoseTurn][0];
         c.topChip().drawChip(gc, this, iconRect, null,0.5);
         
-        goalAndProgressMessage(gc,nonDragSelect,s.get("form a larger triangle with your color at the tips"),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
          // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);

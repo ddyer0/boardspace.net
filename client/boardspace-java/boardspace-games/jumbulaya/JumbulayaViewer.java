@@ -54,6 +54,8 @@ import vnc.VNCService;
 /**
  *  Initial work Sept 2020 
  *  
+ *  TODO: add a way to allow jumbulaya state to be undone with permission of the other players.
+ *  TODO: add a timer to automatically terminate jumbulaya state after a reasonable time.
  */
 public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> implements JumbulayaConstants
 {	static final long serialVersionUID = 1000;

@@ -18,6 +18,8 @@ package viticulture;
 
 //TODO: side screens need to display the context sensitive cards for planting and building
 // TODO: add "blended wines" as a new option - use 2 or more cheap wines to make a better
+//       add "3 special workers" (use only 2) as an option
+//		 add "no seasons" as an option
 // TODO: preselect the font size for grapes and wines value
 import static viticulture.Viticulturemovespec.*;
 

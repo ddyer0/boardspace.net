@@ -506,7 +506,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
         				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         
-        goalAndProgressMessage(gc,nonDragSelect,s.get("connect all your birds into one flock"),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get(goalMessage),progressRect, goalRect);
         //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for volo
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);

@@ -28,7 +28,7 @@ public interface HoneyConstants
 	static String NonWordsMessage = "#1 Non Words";
 	static String SharedWordsMessage = "#1 Shared";
 	static String ShowSummaryMessage = "Show all the words found";
-	
+	static String WordsForMessage = "Words for #1";
 	static String NotAdjacentExplanation = "Not a continuous word";
 	static String HoneyVictoryCondition = "score the most points";
 	static String HoneyPlayState = "Find the most value in Words";
@@ -140,6 +140,7 @@ public interface HoneyConstants
     			SwitchExplanation,
     	    	EndGameMessage,
     			HoneyPlayState,
+    			WordsForMessage,
     	        HoneyVictoryCondition,
     	        EndingGameDescription,
  

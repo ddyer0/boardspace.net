@@ -22,6 +22,7 @@ import bridge.*;
 import common.GameInfo;
 
 import java.util.Hashtable;
+
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -134,7 +135,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
-        chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
+        chipsetOption = myFrame.addOption(s.get(TraditionalPieces),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         
      }
@@ -484,7 +485,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         				gb.whoseTurn,
         				stateRect);
        	DrawPlayerMarker(gc,gb.whoseTurn,iconRect);   
-		goalAndProgressMessage(gc,ourSelect,s.get("Checkmate your opponent's general"),progressRect, goalRect);
+		goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
 		DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	
         }
         drawVcrGroup(ourSelect, gc);

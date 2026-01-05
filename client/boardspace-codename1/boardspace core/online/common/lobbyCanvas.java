@@ -1720,6 +1720,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    		StockArt.Rules.drawChip(inG,this,roomRulesRect,null,scl); 
 	    		session.drewRules = true;
 	    	}
+	    	if(game.hasRankings)
 	    	{
     		boolean rhigh = (session==highlightedSession)&&(highlightedItem==LobbyId.highlight_rankings);
     		double scl = 1.0;

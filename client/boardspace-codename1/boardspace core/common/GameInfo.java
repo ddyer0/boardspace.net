@@ -56,7 +56,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public Image icon2 = null;
 	public String iconPath = null;
 	public String website = null;
-	
+	public boolean hasRankings = true;
 	public String iconPath()
 	{
 		if(iconPath==null)
@@ -1597,11 +1597,13 @@ synchronized(allGames) {
 	{
 	String pRules = "/crosswords/english/rules.html";
 	String pViewer = "crosswords.CrosswordsViewer";  
+	String cabout = "about_crosswords.html";
+	Color crosswordsColors[]=  new Color[] {Color.red,Color.yellow,Color.blue,Color.green};
 	{GameInfo mm = put(new GameInfo(490,ES.game,95,"CW",WordGames,"Crosswords","Crosswords",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,"about_crosswords.html",
-			null,true, null));
+			pViewer,pRules,cabout,
+			null,true, crosswordsColors));
 	 mm.maxPlayers = 4;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
@@ -1614,8 +1616,8 @@ synchronized(allGames) {
 	{	GameInfo mm = put(new GameInfo(491,ES.game,95,"CW",WordGames,"Crosswords","Crosswords-17",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,"about_crosswords.html",
-			null,true, null));
+			pViewer,pRules,cabout,
+			null,true, crosswordsColors));
 	 mm.maxPlayers = 4;
 	 mm.robotTimed = true;
 	 mm.hasHiddenInformation = true;
@@ -1680,6 +1682,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.okForTurnbased = false;
+	 mm.hasRankings = false;
 	 mm.hasHiddenInformation = false;
 	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
@@ -1689,6 +1692,7 @@ synchronized(allGames) {
 				null,true, null));
 		 mm.maxPlayers = 1;
 		 mm.minPlayers = 1;
+		 mm.hasRankings = false;
 		 mm.groupSortKey = "0091";
 		 mm.robotTimed = true;
 		 mm.okForTurnbased = false;
@@ -1703,6 +1707,7 @@ synchronized(allGames) {
 			 mm.maxPlayers = 1;
 			 mm.minPlayers = 1;
 			 mm.groupSortKey = "0091";
+			 mm.hasRankings = false;
 			 mm.robotTimed = true;
 			 mm.randomizeFirstPlayer = true;
 			 mm.hasHiddenInformation = false;
@@ -2046,13 +2051,13 @@ synchronized(allGames) {
 			OneBotPlus,
 			new double[]{0.2,0.01},
 			gygesClass,gygesRules,"about_gyges.html",
-			gygesVideo,true, null));
+			gygesVideo,true, WhiteOverBlack));
 
 	put(new GameInfo(336,ES.game,60,"GY",RacingGames,"Gyges","Gyges-advanced",
 			OneBotPlus,
 			new double[]{0.2,0.01},
 			gygesClass,gygesRules,"about_gyges.html",
-			gygesVideo,true, null));
+			gygesVideo,true, WhiteOverBlack));
 
 	}
 	

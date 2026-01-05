@@ -494,7 +494,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         				stateRect);
         int w = G.Width(iconRect)/2;
         playerChip(gb.whoseTurn).drawChip(gc, this,w,G.centerX(iconRect),G.centerY(iconRect)+w/2,null);
-        goalAndProgressMessage(gc,ourSelect,s.get("Immobilize your opponent"),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
 
         drawAuxControls(gc,ourSelect);

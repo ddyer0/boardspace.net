@@ -103,6 +103,8 @@ import trax.TraxConstants;
 import trench.TrenchConstants;
 import triad.TriadConstants;
 import trike.TrikeConstants;
+import truchet.TruConstants;
+import tumble.TumbleConstants;
 import tweed.TweedConstants;
 import twixt.TwixtConstants;
 import tzaar.TzaarConstants;
@@ -111,20 +113,24 @@ import veletas.VeletasConstants;
 import viticulture.ViticultureConstants;
 import vnc.VNCConstants;
 import volcano.VolcanoConstants;
+import volo.VoloConstants;
 import wyps.WypsConstants;
 import xiangqi.XiangqiConstants;
 import ygame.YConstants;
 import shogi.ShogiConstants;
 import sixmaking.SixmakingConstants;
 import slither.SlitherConstants;
+import spangles.SpanglesConstants;
 import sprint.SprintConstants;
 import crosswords.CrosswordsConstants;
+import dash.DashConstants;
 import stac.StacConstants;
 import stymie.StymieConstants;
 import syzygy.SyzygyConstants;
 import zertz.common.GameConstants;
 import ponte.PonteConstants;
 import proteus.ProteusConstants;
+import punct.PunctConstants;
 import pushfight.PushfightConstants;
 import qe.QEConstants;
 import quinamid.QuinamidConstants;
@@ -397,41 +403,17 @@ public class masterStrings extends InternationalStrings
         put(VolcanoConstants.VolcanoStrings);
         put(VolcanoConstants.VolcanoStringPairs);
         
-        setContext("Volo");
-        put("Volo");
-        put("Volo_family","Volo");
-        put("Volo_variation","standard Volo");
-        put("Volo-84_variation","small board Volo");
-        put("Volo-84","small board Volo");
-           	
         put("LeHavre_variation","standard LeHavre");
         put("LeHavre_family","LeHavre");
         put("LeHavre","LeHavre");
         
         
-      
-        put("Punct","Pünct");
-        put("Punct_variation","standard Pünct");
         put("TBA1_variation","game to be announced");
         put("TBA2_variation","game to be announced");
         put("TBA3_variation","game to be announced");
         put("unsupported game_variation","a game not available on this platform");
         
- 
-     	put("Punct_family","Pünct");
-        put("Spangles_family","Spangles");
-        put("Truchet_family","Truchet");
-        put("TumblingDown_family","Tumbling Down");
-        put("TumblingDown","Tumbling Down");
-
-        put("Tajii","Tajii");
-        put("Tajii_family","Tajii");
-        put("Truchet_variation","standard Truchet");
-        put("TumblingDown_variation","standard 8x8 TumblingDown");
-        put("Truchet","Truchet");
-         // variation to game
-        put("Spangles_variation","standard Spangles");
-        put("Spangles","Spangles");
+         
   
         GameInfo.putStrings();
 
@@ -442,6 +424,8 @@ public class masterStrings extends InternationalStrings
         //used by chat applet       
         put(ChatWidget.ChatStrings);
         
+        setContext("Truchet");
+        TruConstants.putStrings();
  
         setContext("games");
         put(GameStrings);
@@ -488,8 +472,7 @@ public class masterStrings extends InternationalStrings
         put(PlateauConstants.PlateauStringPairs);
         
         setContext("yinsh");
-        put(YinshConstants.YinshStrings);
-        put(YinshConstants.YinshStringPairs);
+        YinshConstants.putStrings();
 
         setContext("Y");
         put(YConstants.YStrings);
@@ -511,11 +494,8 @@ public class masterStrings extends InternationalStrings
         
         // punct strings
         setContext("punct");
-        put("Click on the placed piece to rotate it, or Click Done");
-        put("Place a piece on the board, or move a piece already on the board");
-        put("punctgoal","connect opposite sides of the board, or play your last piece while controlling more of the center");
-        put("#1 left","#1 left");
-        put("#1 center","#1 center");
+        put(PunctConstants.PunctStrings);
+        put(PunctConstants.PunctStringPairs);
      
         // gobblet strings
         setContext("gobblet");
@@ -538,25 +518,12 @@ public class masterStrings extends InternationalStrings
          //tumblingdown
         
         setContext("tumblingdown");
-        put("Capture your opponent's tallest king stack","Capture your opponent's tallest king stack");
-        put("Pick the stack to move","Pick the stack to move");
-
+        put(TumbleConstants.TumbleStrings);
+        put(TumbleConstants.TumbleStringPairs);
         
         //dash
         setContext("dash");
-        put("Occupy 3 enemy bases","Occupy 3 enemy bases");
-        put("Flip a tile, or Move Split or Merge a stack",
-        		"Flip a tile, or Move Split or Merge a stack");
-        put("Move, Split or Merge a stack","Move, Split or Merge a stack");
-        put("Split or Merge this stack, or click Done",
-        		"Split or Merge this stack, or click Done");
-        put("Split this stack, or click Done",
-        		"Split this stack, or click Done");
-        put("Merge this stack, or click Done","Merge this stack, or click Done");
-        put("Complete the split","Complete the split");
-        put("Complete the merge","Complete the merge");
-        put("Complete a split or merge","Complete a split or merge");
-        put("Continue merging or click Done","Continue merging or click Done");
+        DashConstants.putStrings();
         
         setContext("fanorona");
         FanoronaConstants.putStrings();
@@ -597,8 +564,8 @@ public class masterStrings extends InternationalStrings
           
         // "spangles"
         setContext("spangles");
-        put("form a larger triangle with your color at the tips");
-
+        put(SpanglesConstants.SpanglesStrings);
+        put(SpanglesConstants.SpanglesStringPairs);
          
         setContext("micropul");
         MicropulConstants.putStrings();
@@ -615,7 +582,6 @@ public class masterStrings extends InternationalStrings
         
         // warp 6
         setContext("warp6");
-        put("Warp6_family","Warp 6");
         put(Warp6Constants.Warp6Strings);
         put(Warp6Constants.Warp6StringPairs);
 
@@ -691,25 +657,12 @@ public class masterStrings extends InternationalStrings
 		GounkiConstants.putStrings();
 		
 		setContext("Volo");
-		put("connect all your birds into one flock");
-		put("Place a bird on an empty cell");
-		put("Designate a zone to clear");
-        put("Place a bird on an empty cell, or designate a bird to fly");
-        put("Click on the end of the line to move");
-        put("Move the line of birds");
+		VoloConstants.putStrings();
 		
         setContext("Raj");
         put(RajConstants.RajStrings);
         put(RajConstants.RajStringPairs);
         
-         
-        setContext("TicTacNine");
-        
-        put("TicTacNine");
-        put("TicTacNine_variation","experimental TicTacNine board");
-        put("TicTacNine_family","TicTacNine");
-        put("TicTacNine Games");
-
         
         setContext("OnedayInLondon");
         put(OnedayConstants.OnedayStrings);

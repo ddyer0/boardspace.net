@@ -54,7 +54,7 @@ public interface SpanglesConstants
     	RESIGN_STATE(ResignStateDescription),
     	GAMEOVER_STATE(GameOverStateDescription),
     	CONFIRM_STATE(ConfirmStateDescription),
-    	PLAY_STATE("Place a marker on any empty cell");
+    	PLAY_STATE(PlayMessage);
     	String description;
     	SpanglesState(String des) { description = des; }
     	public String getDescription() { return(description); }
@@ -91,7 +91,18 @@ public interface SpanglesConstants
     //reliable to save and have the result be replaced in the running applet, but
     //this is only a one time thing in development.
     //
-    
+    public String GoalMessage = "Form a larger triangle with your color at the tips";
+    public String PlayMessage = "Place a triangle on any empty cell";
+    public String SpanglesStrings[] = {
+    	"Spangles",
+    	GoalMessage,
+    	PlayMessage,
+    };
+    public static String SpanglesStringPairs[][] = {
+    		{"Spangles_family","Spangles"},
+    		{"Spangles_variation","standard Spangles"}, 
+ 
+    };
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;
     static final int BACKGROUND_TABLE_INDEX = 2;

@@ -1662,7 +1662,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	}
 
 	GC.setFont(gc,largeBoldFont());
-	GC.Text(gc,true,left,y0-ystep/2,w,ystep/2,Color.black,null,s.get("Total Contribution is $#1",total));
+	GC.Text(gc,true,left,y0-ystep/2,w,ystep/2,Color.black,null,s.get(TotalContribution,total));
 	
 	if (allApproved)
 	{	PlayerBoard pb = bb.getPlayerBoard(excludedPlayer);

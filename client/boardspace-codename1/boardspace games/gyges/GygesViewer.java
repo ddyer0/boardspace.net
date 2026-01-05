@@ -126,7 +126,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GygesBoard(info.getString(GameInfo.GAMETYPE, Gyges_INIT_beginner),randomKey);
+        b = new GygesBoard(info.getString(GameInfo.GAMETYPE, Gyges_INIT_beginner),randomKey,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
         
@@ -218,7 +218,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = (int)(fh*2.5);
-        placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,eyeRect,noChatRect);
+        placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)
@@ -262,7 +262,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     		dx = dy; dy = 0; 
     		break;
     	}
-    	GC.setColor(gc,MouseColors[forPlayer]);
+    	GC.setColor(gc,MouseColors[b.getColorMap()[forPlayer]]);
     	//Color edgeColor = MouseDotColors[forPlayer];
     	GC.drawArrow(gc, cx-dx,cy-dy,cx+dx,cy+dy,size/3,size/7);
     }
@@ -632,6 +632,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
             				vstate!=GygesState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
+        getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
 
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca

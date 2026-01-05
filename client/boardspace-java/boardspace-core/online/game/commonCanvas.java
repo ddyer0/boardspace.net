@@ -6353,7 +6353,8 @@ public abstract class commonCanvas extends exCanvas
     {
     	if(useCopyBoard) 
     		{
-    		saveDisplayBoard(getBoard());   	// do the actual save
+    		BoardProtocol b = getBoard();
+    		if(b!=null) { saveDisplayBoard(b); } 	// do the actual save
     		}
     }
     
@@ -6362,16 +6363,17 @@ public abstract class commonCanvas extends exCanvas
     		// if the viewer enters after this point, it will not swap in the board
     		// we're about to copy to, even if it was already in need of swapping.
     		l.copyBoardSwapNeeded = false;
-    		
-    		if(l.backupBoard == null) 
-    			{ l.backupBoard = b.cloneBoard();    			  	
-    			  l.backupBoard.setName(l.displayBoard==null ? "display 1" : "display 0");
+    		BoardProtocol back = l.backupBoard;
+    		if(back == null) 
+    			{ back = b.cloneBoard();    			  	
+    			  back.setName(l.displayBoard==null ? "display 1" : "display 0");
+    			  l.backupBoard = back;
     	   		  //G.print("Create "+l.backupBoard);
     			}
     			else 
-    			{ String n = l.backupBoard.getName();
-    			  l.backupBoard.copyFrom(b); 
-    			  l.backupBoard.setName(n);
+    			{ String n = back.getName();
+    			  back.copyFrom(b); 
+    			  back.setName(n);
     			}
  			 
     		// the new board is ready to be seen

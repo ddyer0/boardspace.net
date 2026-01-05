@@ -377,7 +377,10 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	public CrosswordsCell newcell(char c,int r)
 	{	return(new CrosswordsCell(CrosswordsId.BoardLocation,c,r,Geometry.Oct));
 	}
-	
+	public CrosswordsChip getPlayerChip(int n)
+	{
+		return CrosswordsChip.playerColors[getColorMap()[n]];
+	}
 	// constructor 
     public CrosswordsBoard(String init,int players,long key,int map[],Dictionary di,int rev) // default constructor
     {

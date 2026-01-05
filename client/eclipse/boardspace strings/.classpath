@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -7,7 +8,7 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/boardspace"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/boardspace core"/>
-	<classpathentry kind="lib" path="F:/github/boardspace.net/client/eclipse/jars/jsch-0.1.55.jar"/>
 	<classpathentry kind="lib" path="F:/github/boardspace.net/client/eclipse/jars/mysql-connector-java-8.0.20.jar"/>
+	<classpathentry kind="lib" path="F:/github/boardspace.net/client/eclipse/jars/jsch-0.1.55.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

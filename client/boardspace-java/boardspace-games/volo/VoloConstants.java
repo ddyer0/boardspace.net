@@ -17,9 +17,10 @@
 package volo;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
-
+import lib.EnumMenu;
 import online.game.BaseBoard.BoardState;
 
 
@@ -74,7 +75,7 @@ public interface VoloConstants
 	{
 		public VoloState[] newComponentArray(int n) { return(new VoloState[n]); }
 	}
-    public enum VoloState implements BoardState
+    public enum VoloState implements BoardState,EnumMenu
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),
     	GAMEOVER_STATE(GameOverStateDescription),
@@ -86,6 +87,7 @@ public interface VoloConstants
     	DESIGNATE_ZONE_STATE("Designate a zone to clear") 	;
     	String description;
     	VoloState(String des) { description = des; }
+    	public String menuItem() { return description; }
     	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
@@ -118,8 +120,25 @@ public interface VoloConstants
     static final int BOARD84_INDEX = 1;
     static final String ImageNames[] = { "board","boardsmall" };
     
+    static String goalMessage = "connect all your birds into one flock";
     static final String[] extraStrings = 
-    { "connect all your birds into one flock"
+    { "Volo",
+      goalMessage,
     };
+    static final String VoloStringPairs[][] = {
+    		{"Volo_family","Volo"},
+    		{"Volo_variation","standard Volo"},
+    		{"Volo-84_variation","small board Volo"},
+    		{"Volo-84","small board Volo"},
+	
+    };
+    
+    public static void putStrings()
+    {
+    	InternationalStrings.put(VoloState.values());
+    	InternationalStrings.put(extraStrings);
+    	InternationalStrings.put(VoloStringPairs);
+    }
+
 
 }

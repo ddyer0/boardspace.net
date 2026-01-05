@@ -1446,35 +1446,6 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     {	//DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
- // for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
@@ -1689,7 +1660,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	}
 
 	GC.setFont(gc,largeBoldFont());
-	GC.Text(gc,true,left,y0-ystep/2,w,ystep/2,Color.black,null,s.get("Total Contribution is $#1",total));
+	GC.Text(gc,true,left,y0-ystep/2,w,ystep/2,Color.black,null,s.get(TotalContribution,total));
 	
 	if (allApproved)
 	{	PlayerBoard pb = bb.getPlayerBoard(excludedPlayer);

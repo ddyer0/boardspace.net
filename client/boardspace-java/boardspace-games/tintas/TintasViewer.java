@@ -44,7 +44,7 @@ import online.search.SimpleRobotProtocol;
 
 
 /**
- * 
+ * TODO add proforma colors to tintas
  *  
 */
 public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements TintasConstants

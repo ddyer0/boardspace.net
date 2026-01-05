@@ -337,7 +337,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         int stateY = boardY-stateH/2;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,altNoChatRect);
+    	placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
     	if(plannedSeating())
     	{
@@ -480,7 +480,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
      }
     public Drawable getPlayerIcon(int n)
     {
-    	return CrosswordsChip.playerColors[n];
+    	return bb.getPlayerChip(n);
     }
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
@@ -673,7 +673,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	int val = gb.score[pidx];
     	if(G.Height(r)>0)
     	{
-       	CrosswordsChip chip = CrosswordsChip.playerColors[pidx];
+       	Drawable chip = getPlayerIcon(pidx);
        	chip.drawChip(gc,this,r,null);
     	GC.setFont(gc,SystemFont.getFont(largeBoldFont(),G.Height(r)*3/5));
     	GC.Text(gc, true,r,dotColors[pidx],null,""+val);
@@ -1250,11 +1250,13 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        // animations and sprites.
        boolean planned = plannedSeating();
      
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+       int who = gb.whoseTurn;
+       commonPlayer pl = getPlayerOrTemp(who);
        double messageRotation = pl.messageRotation();
        {    
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,gb,stateRect,state);
+       getPlayerIcon(who).drawChip(gc,this,iconRect,null);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        redrawChat(gc,selectPos);
        drawOptions(gc,((state==CrosswordsState.Puzzle)
@@ -1293,14 +1295,14 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        if(!planned)
       	{  
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   int who = isPassAndPlay() ? gb.whoseTurn : getActivePlayer().boardIndex;
-    	   boolean censorRack = rackCensored(gb,who);
-    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(who),gb.getPlayerMappedRack(who),
-    			   gb.getRackMap(who),gb.getMapPick(who),
+    	   int whop = isPassAndPlay() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   boolean censorRack = rackCensored(gb,whop);
+    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(whop),gb.getPlayerMappedRack(whop),
+    			   gb.getRackMap(whop),gb.getMapPick(whop),
     			   	censorRack,
     			   	censorRack ? null : selectPos,	// always allow rearranging the primary rack
     			   	ourTurnSelect==null); 
-    	   if(isPassAndPlay() && !explicitlyVisible(gb,who) && (currentGuiPlayer().boardIndex==who))
+    	   if(isPassAndPlay() && !explicitlyVisible(gb,whop) && (currentGuiPlayer().boardIndex==whop))
     	   {   Rectangle rackEye = new Rectangle(G.Left(bigRack),G.Top(bigRack),G.Height(bigRack)/3,G.Height(bigRack)/3);
     		   StockArt.Eye.drawChip(gc,this,rackEye,selectPos,CrosswordsId.RevealRack,SeeYourTilesMessage);
     	   }

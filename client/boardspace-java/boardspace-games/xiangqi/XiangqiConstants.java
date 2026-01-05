@@ -26,13 +26,17 @@ public interface XiangqiConstants
 {	static final int DEFAULT_COLUMNS = 9;	// 10x9board
 	static final int DEFAULT_ROWS = 10;
 	static final String Xiangqi_INIT = "xiangqi";	//init for standard game
-
+	static String TraditionalPieces = "Traditional Pieces";
+	static String GoalMessage = "Checkmate your opponent's general";
+	static String IllegalMoveMessage = "Illegal move due to repetition - try something else";
+	static String MoveMessage = "Move a piece";
 	static final String[] XiangqiStrings = 
 		{
 				"Xiangqi",	
-				"Traditional Pieces",
-				"Checkmate your opponent's general",
-				"Illegal move due to repetition - try something else",
+				TraditionalPieces,
+				GoalMessage,
+				MoveMessage,
+				IllegalMoveMessage,
 		};
 	static final String[][] XiangqiStringPairs = 
 			{{"Xiangqi_family","Xiangqi"},
@@ -73,9 +77,9 @@ public interface XiangqiConstants
     	GAMEOVER_STATE(StateRole.GameOver,GameOverStateDescription),
     	CONFIRM_STATE(StateRole.Confirm,ConfirmStateDescription),
     	DRAW_STATE(StateRole.RepetitionPending,DrawStateDescription),
-    	PLAY_STATE(StateRole.Play,"Move a piece"), 	// place a marker on the board
+    	PLAY_STATE(StateRole.Play,MoveMessage), 	// place a marker on the board
     	CHECK_STATE(StateRole.Other,CheckStateExplanation),	// general can be captured.
-    	ILLEGAL_MOVE_STATE(StateRole.Other,"Illegal move due to repetition - try something else"),	// illegal move due to repetition
+    	ILLEGAL_MOVE_STATE(StateRole.Other,IllegalMoveMessage),	// illegal move due to repetition
     	OFFER_DRAW_STATE(StateRole.DrawPending,OfferDrawStateDescription),
     	QUERY_DRAW_STATE(StateRole.AcceptOrDecline,OfferedDrawStateDescription),
     	ACCEPT_DRAW_STATE(StateRole.AcceptPending,AcceptDrawStateDescription),

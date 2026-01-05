@@ -949,11 +949,12 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public SimpleRobotProtocol newRobotPlayer() { return(new GipfPlay()); }
 
 /**
+ *  * for matrx, 12/30/25
+ * 31 files visited 0 problems
+
  * summary: 12/1/2025
  * 	12938 files visited 0 problems
  * 
- * 
-
 Note: these games are unique in that they have a [1,0] color map.  They cause problems if
 one is careless about playerIndex(chip)
 

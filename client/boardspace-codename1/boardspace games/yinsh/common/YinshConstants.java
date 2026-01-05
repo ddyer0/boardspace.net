@@ -17,8 +17,9 @@
 package yinsh.common;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.CellId;
-
+import lib.EnumMenu;
 import online.game.BaseBoard.BoardState;
 
 
@@ -27,19 +28,13 @@ public interface YinshConstants
     static final int NCHIPS = 51; // chips in the game
     static final String Yinsh_SGF = "24"; // sgf game number allocated for yinsh
     static final String SGF_GAME_VERSION = "2";
-
+    static final String GoalMessage = "make 5 in a row to capture a ring, 3 rings win";
+    static final String BlitzGoalMessage = "make 5 in a row to capture a ring and win";
     static final String[] YinshStrings = {
     	"Yinsh",
     	"Yinsh-Blitz",
-    	"make 5 in a row to capture a ring, 3 rings win",
-    	"make 5 in a row to capture a ring and win",
-    	"Place a ring on the board",
-    	"Pick a ring to place a chip and move",
-    	"Drop the ring",
-    	"Select a row of 5 to remove",
-    	"Click Done to confirm removing these markers",
-    	"Select a ring to remove",
-    	"Click Done to confirm removing this ring",
+    	GoalMessage,
+    	BlitzGoalMessage,
     };
 
 	public static final String YinshStringPairs[][] = {
@@ -80,7 +75,7 @@ public interface YinshConstants
     // Ie; column A start with 1+1 B starts with 1+0 etc. 
     // also, the label for diagonal 0 is placed in row 1 diagonal 1 is placed in column 0 etc.
     // this is used to place the grid and adjust the coordinate system for diagonal row mode
-    public enum YinshState implements BoardState
+    public enum YinshState implements BoardState,EnumMenu
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),
     	GAMEOVER_STATE(GameOverStateDescription),
@@ -105,7 +100,7 @@ public interface YinshConstants
     	;
     	String description;
     	YinshState(String des) { description = des; }
-    	public String getDescription() { return(description); }
+    	public String menuItem() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
     }
@@ -148,5 +143,10 @@ public interface YinshConstants
     static final int MOVE_DROP = 203; // drop something
     static final int MOVE_MOVE = 206; // pick+drop 
     static final int MOVE_REMOVE = 207; // remove chips and rings
+	public static void putStrings() {
+		InternationalStrings.put(YinshConstants.YinshStrings);
+		InternationalStrings.put(YinshConstants.YinshStringPairs);
+		InternationalStrings.put(YinshState.values());
+	}
     
 }

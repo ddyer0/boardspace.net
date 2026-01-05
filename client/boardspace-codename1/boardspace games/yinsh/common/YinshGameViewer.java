@@ -543,16 +543,15 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
 
         standardGameMessage(gc,messageRotation,
-        		vstate==YinshState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
+        		vstate==YinshState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.menuItem()),
         				vstate!=YinshState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
         drawChip(gc,gb.whoseTurn,G.centerX(iconRect),G.centerY(iconRect),G.Width(iconRect),1,1);
         		
         goalAndProgressMessage(gc,nonDragSelect,
-        					b.blitz 
-												? s.get("make 5 in a row to capture a ring and win")
-												: s.get("make 5 in a row to capture a ring, 3 rings win"),progressRect, goalRect);
+        					b.blitz ? s.get(BlitzGoalMessage) : s.get(GoalMessage),
+        					progressRect, goalRect);
         drawVcrGroup(nonDragSelect, gc);
         drawViewsetMarker(gc,viewsetRect,nonDragSelect); 
     }

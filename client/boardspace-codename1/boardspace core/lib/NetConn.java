@@ -153,12 +153,6 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
 	public static final String SEND_REQUEST_LOCK = "342 ";
 	public static final String ECHO_REQUEST_LOCK = "342";
 	
-	// these are the legacy versions before individual moves had times
-	// they would still be used if we know we're talking to an old server
-	public static final String ECHO_FETCHED_GAME_FILTERED = "321";	// retrieved game record
-	public static final String SEND_FETCH_GAME_FILTERED = "320 ";	// ask for a game record
-	public static final String ECHO_ACTIVE_GAME_FILTERED = "341";
-	public static final String SEND_FETCH_ACTIVE_GAME_FILTERED = "340 ";
 	// these are the new versions, which don't attempt to filter out the time
 	// information (which is done to protect old client programs)
 	public static final String ECHO_ACTIVE_GAME = "347";		// retrieved current game record

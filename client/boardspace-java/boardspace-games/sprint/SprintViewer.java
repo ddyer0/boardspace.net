@@ -50,6 +50,8 @@ import online.search.SimpleRobotProtocol;
 
 /**
  *  Initial work May 2023
+ *  
+ *  TODO: add proforma color to sprint
 */
 public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements SprintConstants
 {	static final long serialVersionUID = 1000;

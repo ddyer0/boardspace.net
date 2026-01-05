@@ -17,9 +17,10 @@
 package truchet;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
-
+import lib.EnumMenu;
 import online.game.BaseBoard.BoardState;
 
 
@@ -62,7 +63,7 @@ public interface TruConstants
     	}
 
     }	
-    public enum TruchetState implements BoardState
+    public enum TruchetState implements BoardState,EnumMenu
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),
     	GAMEOVER_STATE(GameOverStateDescription),
@@ -81,9 +82,11 @@ public interface TruConstants
 
     	String description;
     	TruchetState(String des) { description = des; }
-    	public String getDescription() { return(description); }
     	public boolean GameOver() { return(this==GAMEOVER_STATE); }
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
+		public String menuItem() {
+			return description;
+		}
     }
 
     static final int DD_INDEX = 0;		// index into diagInfo for diagonal down
@@ -122,5 +125,23 @@ public interface TruConstants
     	  "background-review-tile",
     	  "lift-icon",
     	  "truchet-icon-nomask"};
+    
+    static public String GoalMessage = "Occupy 3 enemy bases";
+    static public String TruchetStrings[] = {
+    		"Truchet",
+    		GoalMessage,
+    };
+    static public String TruStringPairs[][] =
+    	{  
+
+    			{"Truchet_family","Truchet"},
+    			{"Truchet_variation","standard Truchet"},
+	
+    	};
+	static void putStrings() {
+		InternationalStrings.put(TruchetStrings);
+		InternationalStrings.put(TruStringPairs);
+		InternationalStrings.put(TruchetState.values());
+	}
 
 }

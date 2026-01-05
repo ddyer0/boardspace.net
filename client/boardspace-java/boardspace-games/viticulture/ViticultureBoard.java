@@ -7249,6 +7249,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
      			long seed = revision>=120 ? toplayer.cards.CardDigest()^randomKey : Digest();
     			Random r = new Random(seed);
     			//p1("steal card "+moveNumber);
+    			G.print("seed = ",seed);
     			ViticultureChip card = toplayer.takeRandomVisitorCard(r,mm2.from_index);
     			pb.cards.addChip(card);
     			if(replay.animate) 
