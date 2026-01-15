@@ -292,8 +292,8 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
 		int infoheight = 15;
     	int left = NUMREALPIECES-b.piecesOnBoard[player];
     	int cent = b.centerScore[player];
-    	GC.Text(gc,false,infoleft,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get("#1 left",""+left));
-    	GC.Text(gc,false,infoleft-infowidth,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get("#1 center",""+cent));
+    	GC.Text(gc,false,infoleft,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get(LeftMessage,left));
+    	GC.Text(gc,false,infoleft-infowidth,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get(CenterMessage,cent));
   		GC.frameRect(gc, Color.black, r); 
 		}
        { // draw the unused pices
@@ -696,7 +696,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,G.Width(iconRect),G.centerX(iconRect),G.Top(iconRect),null);
         
-        goalAndProgressMessage(gc,nonDragSelect,s.get("punctgoal"),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
 
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
 

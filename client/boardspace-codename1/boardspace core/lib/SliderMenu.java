@@ -19,6 +19,7 @@ package lib;
 import com.codename1.ui.geom.Dimension;
 
 import bridge.Color;
+import bridge.Component;
 import bridge.Icon;
 import bridge.JMenu;
 import bridge.MouseEvent;
@@ -31,6 +32,7 @@ public class SliderMenu extends JMenu implements MouseListener,Icon
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
+	public Icon getIcon() { return(this); }
 	private Slider slider = null;
 	private InternationalStrings s = null;
 	public SliderMenu(Slider s) 
@@ -95,7 +97,7 @@ public class SliderMenu extends JMenu implements MouseListener,Icon
 		}
         }
 */
-	public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+	public void paintIcon(Component c, Graphics g, int x, int y) {
 		if(slider!=null)
 		{
 			G.SetRect(slider,x,y,preferredW,preferredH);

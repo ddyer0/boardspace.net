@@ -47,7 +47,7 @@ abstract public class ToggleButton extends Rectangle
 	Text offToolTip = null;
 	CellId onId;
 	CellId offId;
-	exCanvas canvas;
+	DrawingObject canvas;
 	private boolean currentMouse = false;
 
 	public abstract boolean actualDraw(Graphics gc,HitPoint hp);

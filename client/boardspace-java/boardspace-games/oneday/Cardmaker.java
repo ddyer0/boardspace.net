@@ -62,8 +62,8 @@ public class Cardmaker extends exCanvas implements Runnable
 	//static int CARD_HEIGHT = 600;
 	//static int CARD_MARGIN_PERCENT=10;
 	//static int TEXTHEIGHT = 30;
-	//Font cardFont = largeBoldFont=new Font("sansserif", Font.BOLD, 17);
-	//Font smallCardFont = new Font("sansserif", Font.BOLD, 12);
+	//FontManager cardFont = largeBoldFont=new FontManager("sansserif", FontManager.BOLD, 17);
+	//FontManager smallCardFont = new FontManager("sansserif", FontManager.BOLD, 12);
 	//static int CARD_MARGIN_PERCENT=10;
 
 	// numbers appropriate for gamecrafter mini cards, (1.75x2.5 inch)

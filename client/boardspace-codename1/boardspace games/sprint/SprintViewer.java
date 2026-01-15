@@ -1000,7 +1000,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	SprintCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
     	WordStack words = gb.words;
-    	FontMetrics fm = lib.Font.getFontMetrics(standardPlainFont());
+    	FontMetrics fm = lib.FontManager.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(brect)/2;
     	if(target!=null && words!=null && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)

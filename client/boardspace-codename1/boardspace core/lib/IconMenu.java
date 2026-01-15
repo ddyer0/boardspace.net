@@ -21,6 +21,7 @@ import java.io.Serializable;
 import com.codename1.ui.geom.Dimension;
 
 import bridge.Color;
+import bridge.Component;
 import bridge.Icon;
 import bridge.JMenu;
 
@@ -69,7 +70,7 @@ public class IconMenu extends JMenu implements Serializable, Icon {
 
 
 	
-	public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+	public void paintIcon(Component c, Graphics g, int x, int y) {
 	icon.drawImage(g,x,y,prefWidth,prefHeight);
 		if(text!=null)
 		{

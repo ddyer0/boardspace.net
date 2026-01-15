@@ -1896,6 +1896,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         }
     }
 
+	 
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.

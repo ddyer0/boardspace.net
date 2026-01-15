@@ -135,7 +135,7 @@ public final class GuiBoard extends JPanel
     */
    private void drawColumnLabels(final Graphics2D g2, int distance)
    {
-      //set Font
+      //set FontManager
       final int bigFont = 12;
       final int hInit = 50;
       final int horBor = 26;

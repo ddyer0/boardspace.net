@@ -76,7 +76,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider,Aw
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 	public void pointerPressed(int x,int y)
 	{	if(contains(x,y)) { x = getX()+1; y=getY()+1; }

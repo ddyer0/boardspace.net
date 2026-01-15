@@ -24,7 +24,7 @@ public class PopupMenu extends Menu {
 		{ super(); }
 	public PopupMenu(String m)
 		{ super(m); }
-	public PopupMenu(String m,Font f) { this(m); setFont(f==null?lib.Font.menuFont():f); }
+	public PopupMenu(String m,Font f) { this(m); setFont(f==null?lib.FontManager.menuFont():f); }
 	
 	// this "light weight popup" stuff relates to using native menus
 	// rather than java widgets.
@@ -48,5 +48,10 @@ public class PopupMenu extends Menu {
 		return(showing); 
 		}
 	public boolean getTopLevel() { return(true); }
+	int ncols = 1;
+	public void setNColumns(int n) {
+		ncols = n;
+	}
+	public boolean useSimpleMenu() { return ncols>1; }
 
 }

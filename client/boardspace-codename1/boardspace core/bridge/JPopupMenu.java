@@ -21,5 +21,5 @@ import com.codename1.ui.Font;
 public class JPopupMenu extends PopupMenu 
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String m) { super(m); }
-	public JPopupMenu(String m,Font f) { this(m); setFont(f==null ? lib.Font.menuFont() : f); }
+	public JPopupMenu(String m,Font f) { this(m); setFont(f==null ? lib.FontManager.menuFont() : f); }
 }

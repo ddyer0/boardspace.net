@@ -19,6 +19,7 @@ package bridge;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 
 import lib.G;
@@ -35,7 +36,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	public JMenu(String m,Font f)
 	{
 		this(m);
-		setFont(f==null ? lib.Font.menuFont() : f);
+		setFont(f==null ? lib.FontManager.menuFont() : f);
 	}
 	public void paintIcon(Component c, Graphics g, int x, int y) { G.Error("should be overridden");}
 	public void paintIcon(Component c, java.awt.Graphics g, int x, int y)
@@ -70,7 +71,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = lib.Font.getFontMetrics(f);
+		FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		return(fm.getHeight()*5/4);
 		}
 	}
@@ -85,7 +86,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = lib.Font.getFontMetrics(f);
+		FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		return(fm.stringWidth(str));
 		}
 	}
@@ -108,5 +109,9 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 			{ Plog.log.addLog("error in java menu ",err);
 			}
         }
+	public void setNColumns(int n) {
+		setLayout(new GridLayout(0,n));		
+	}
+	public boolean useSimpleMenu() { return false;}
 	
 }

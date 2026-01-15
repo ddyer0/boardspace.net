@@ -270,7 +270,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	commonPlayer pl = getPlayerOrTemp(p);
     	int extra = G.rotationQuarterTurns(pl.displayRotation);
     	return( new DrawnIcon(100,100,p)
-    		{ public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg)
+    		{ public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
     			{	int ex = extra;
     			if(seatingFaceToFace()) { if(ex==3) { ex=1; }}
     			else { ex = 0; }

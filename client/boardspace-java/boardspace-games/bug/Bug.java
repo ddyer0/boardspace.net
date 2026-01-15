@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import lib.Bbox;
 import lib.Digestable;
 import lib.Drawable;
+import lib.DrawingObject;
 import lib.G;
 import lib.Graphics;
 import lib.IntIntHashtable;
@@ -15,7 +16,6 @@ import lib.SimpleLock;
 import lib.StackIterator;
 import lib.StringStack;
 import lib.Tokenizer;
-import lib.exCanvas;
 
 /** a bug is a set of connected occupied cells */
 
@@ -54,7 +54,8 @@ class BugStack extends OStack<Bug> implements Digestable
 }
 public class Bug extends OStack<BugCell> implements BugConstants,Digestable,Drawable
 {	// this is the master table of random numbers used to hash the bugs
-	// this should never change.
+	// this should never change.  Implements drawable so it can be made into
+	// a texticon
 	LongRandomSequence masterSequence = new LongRandomSequence(252464);
 	BugBoard myBoard = null;
 	public void copyFrom(Bug a)
@@ -2286,7 +2287,7 @@ addBug("8 7716485393248948135"); // 8#1448
 		 return box;
 	}
 	// draw a bug as a single entity.  This gets used to draw bugs in the game log.
-	public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg) 
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
 	{	BugBoard b = (BugBoard)((BugViewer)c).getBoard();
 		Bbox box = getBbox(b);
 		double xspan = (box.right-box.left);

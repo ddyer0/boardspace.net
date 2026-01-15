@@ -49,6 +49,6 @@ public class JPasswordField extends TextField implements AwtComponent
 		return(getText());
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

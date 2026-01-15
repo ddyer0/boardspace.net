@@ -15,8 +15,6 @@
     If not, see https://www.gnu.org/licenses/. 
  */
 package snakes;
-import lib.Random;
-
 import lib.*;
 import online.game.chipCell;
 
@@ -339,5 +337,14 @@ public class SnakesCell extends chipCell<SnakesCell,SnakesChip> implements Snake
 	}
 	static public boolean sameCell(SnakesCell c,SnakesCell d)
 	{	return((c==null)?(c==d):c.sameCell(d));
+	}
+
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg) {
+		// TODO Auto-generated method stub
+		super.drawChip(gc,c,size,posx,posy,msg);
 	}
 }

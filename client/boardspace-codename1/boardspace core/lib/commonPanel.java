@@ -301,6 +301,7 @@ public class commonPanel extends FullscreenPanel
     public void setCanvas(CanvasProtocol can)
     {
     	myCanvas = can;	// make the canvas appear only when it has been inited
+    	can.setParent(this);
         if (myFrame != null)
          {
             myFrame.addWindowListener(this);
@@ -315,7 +316,7 @@ public class commonPanel extends FullscreenPanel
         // in createchat
         if(chatFrame!=null) { chatFrame.setIconAsImage(StockArt.Chat.image); }
         }
-        can.addSelfTo(this);
+        addC(can.getComponent());
         wake();
     }
     public commonPanel()

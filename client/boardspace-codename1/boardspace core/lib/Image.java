@@ -20,6 +20,7 @@ package lib;
 import java.net.URISyntaxException;
 import com.codename1.ui.geom.Rectangle;
 
+import bridge.Color;
 import bridge.File;
 import bridge.Icon;
 import bridge.SystemImage;
@@ -151,11 +152,11 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public void setUnloadable(boolean v) { if(v) { flags|=Unloadable;} else { flags &= ~Unloadable; }}
 
 
-	public void drawChip(Graphics gc, exCanvas canvas, int size, int posx, int posy, String msg) 
+	public void drawChip(Graphics gc, DrawingObject canvas, int size, int posx, int posy, String msg) 
 	{
 		if(gc!=null)
 		{
-			if(canvas!=null) { canvas.drawImage(gc, this, null,posx, posy, size, 1,0,msg,false); }
+			if(canvas!=null) { canvas.getCanvas().drawImage(gc, this, null,posx, posy, size, 1,0,msg,false); }
 			else {
 				int w = getWidth();
 				int h = getHeight();

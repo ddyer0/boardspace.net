@@ -36,7 +36,6 @@ import lib.Tokenizer;
 import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
-import lib.DrawableImage;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -488,7 +487,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 
      }
 
-    public void drawLink(Graphics gc,BlackDeathBoard gb,HitPoint hp,BlackDeathLink link,DrawableImage<?> icon,BlackDeathMovespec m)
+    public void drawLink(Graphics gc,BlackDeathBoard gb,HitPoint hp,BlackDeathLink link,Drawable icon,BlackDeathMovespec m)
     {
     	int fx = gb.cellToX(link.from);
     	int fy = gb.cellToY(link.from);

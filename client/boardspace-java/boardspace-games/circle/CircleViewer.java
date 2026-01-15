@@ -17,12 +17,12 @@
 package circle;
 
 import javax.swing.JCheckBoxMenuItem;
+import java.awt.*;
 
 import common.GameInfo;
 
 import static circle.CircleMovespec.*;
 
-import java.awt.*;
 import online.common.*;
 import java.util.*;
 

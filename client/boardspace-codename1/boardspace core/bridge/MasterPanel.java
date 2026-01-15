@@ -121,7 +121,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	{	if(cc!=getTopWindow())
 		{
 		suprem((Component)cc);
-		supadd((Component)cc);
+		add((Component)cc);
 		adjustTabStyles();
 		windowActivated(cc);
 		repaint();

@@ -131,7 +131,7 @@ public class SystemFont
 			{ return(f); 
 			}
 		return(getFont(f,size));	// convert to a truetype font
-		//return(new Font(0, style ,size));
+		//return(new FontManager(0, style ,size));
 	}
 	static int fontFaceCode(String spec)
 	   {
@@ -143,8 +143,8 @@ public class SystemFont
 	public static com.codename1.ui.Font menuFont()
 	{
 		return getFont(getGlobalDefaultFont(),
-				lib.Font.MenuTextStyle,
-				lib.Font.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
+				lib.FontManager.MenuTextStyle,
+				lib.FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
 	}
 
 	static public FontMetrics getFontMetrics(ProxyWindow c) 

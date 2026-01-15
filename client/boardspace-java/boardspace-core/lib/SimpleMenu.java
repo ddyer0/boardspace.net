@@ -38,6 +38,9 @@ public class SimpleMenu {
 	private int parentY;
 	private int parentW;
 	private int parentH;
+	private int nColumns = 1;
+	private int columnWidth[] = null;
+
 	private Rectangle menuRectangle = null;
 	CanvasRotaterProtocol showOn = null;
 	private String subMenuString = " ...";
@@ -55,6 +58,7 @@ public class SimpleMenu {
 		parentY = parent.getRotatedTop();
 		parentW = parent.getRotatedWidth();
 		parentH = parent.getRotatedHeight();
+		nColumns = Math.max(1,fromMenu.getNColumns());
 		menuRectangle = prepareMenu(fromMenu.getNativeMenu(),x,y);
 	}
 	private ScrollArea scrollArea = null;
@@ -146,25 +150,30 @@ public class SimpleMenu {
 		GC.frameRect(gc,Color.black, r);
 		int nitems = menu.getItemCount();
 		int xpos = G.Left(r);
-		int ypos = G.Top(r);
-		boolean scroll = scrollArea!=null;
-		int w = G.Width(r) - (scroll ? scrollArea.getScrollbarWidth() : 0);
 		xpos += margin;
+		boolean scroll = scrollArea!=null;
+		int ypos = G.Top(r)+margin;
 		ypos += margin-maxDescent-(scroll?scrollArea.getScrollPosition() : 0);
+		int xpos0 = xpos;
 		Rectangle clip = GC.setClip(gc,menuRectangle);
 		{
+		int thisCol = 0;
+		int colHeight = 0;
+		
 		for(int i=0;i<nitems;i++)
 			{
 			NativeMenuItemInterface mi = menu.getMenuItem(i);
+			int colWidth = columnWidth[thisCol];
 			Icon ic = mi.getNativeIcon();
 			String str = mi.getText();
 			int h = mi.getNativeHeight();
+			colHeight = Math.max(h,colHeight);
 			if(ic!=null)
 			{
 				if(gc!=null) 
 				{ ic.paintIcon(null,gc,xpos,ypos); 
 				  if(selectedItem==mi)
-				  { GC.frameRect(gc,Color.blue,xpos-margin/3,ypos,w-margin*4/3,h-margin);
+				  { GC.frameRect(gc,Color.blue,xpos,ypos,colWidth,h);
 				  }
 				}
 			}
@@ -176,12 +185,13 @@ public class SimpleMenu {
 					  GC.setColor(gc,selectedItem==mi ? Color.blue :Color.black);
 					  GC.Text(gc,str,xpos,ypos+h); 
 					  if(selectedItem==mi)
-						{ GC.frameRect(gc,xpos-margin/3,ypos+maxDescent,w-margin*4/3,h+2);
+						{ GC.frameRect(gc,xpos,ypos+maxDescent,colWidth,h+2);
 						}
 					}
 			}
 			
-			if(G.pointInRect(hp, xpos,ypos,w,h))
+			if(G.pointInRect(hp, xpos,ypos,colWidth,h)
+					&& ((ic!=null) || !"".equals(str)))
 			{ selectedItem = mi;
 			  if(downSeen && hp.isUp)
 				  {	
@@ -193,7 +203,18 @@ public class SimpleMenu {
 				nextMenu = mi.getSubmenu();
 				rv = false;
 				}}
-			ypos += h;
+			thisCol++;
+			if(thisCol>=nColumns)
+			{
+				xpos = xpos0;
+				ypos += colHeight;
+				thisCol = 0;
+				colHeight = 0;
+			}
+			else {
+				xpos += colWidth+margin;
+			}
+			
 			}
 		if(nextMenu!=null)
 			{
@@ -221,17 +242,18 @@ public class SimpleMenu {
 	}
 
 	private int maxDescent = 0; //used to adjust the position of menu items within the overall menu
-	
 	public Rectangle sizeMenu(NativeMenuInterface menu)
 	{
-		int szx = 0;
 		int szy = 0;
 		maxDescent = 0;
-		
+		int nCols = Math.max(nColumns,1);
+		columnWidth = new int[nCols];
+		int columnHeight = 0;
+		int thisCol = 0;
 		Font lastFont = null;
-		int nitems = menu.getItemCount();
+		int lastItem = menu.getItemCount()-1;
 		int subwidth = 0;
-		for(int i=0;i<nitems;i++)
+		for(int i=0;i<=lastItem;i++)
 		{
 		NativeMenuItemInterface item = menu.getMenuItem(i);
 		boolean hasSubmenu = (item.getSubmenu()!=null);
@@ -239,17 +261,27 @@ public class SimpleMenu {
 		if(f!=lastFont)
 			{
 			lastFont = f;
-			FontMetrics desc = lib.Font.getFontMetrics(f);
+			FontMetrics desc = lib.FontManager.getFontMetrics(f);
 			maxDescent = Math.max(maxDescent,desc.getMaxDescent());
 			subwidth = desc.stringWidth(subMenuString);
 			}
 		
 		int w = item.getNativeWidth()+(hasSubmenu?subwidth:0);
 		int h = item.getNativeHeight();
-		szy += h;
-		szx = Math.max(szx, w);
+		columnWidth[thisCol] = Math.max(columnWidth[thisCol],w);
+		columnHeight = Math.max(columnHeight,h);
+		thisCol++;
+		if(thisCol>=nCols || i==lastItem)
+			{
+			szy += columnHeight;
+			columnHeight = 0;
+			thisCol = 0;
+			}
 		}
-		return(new Rectangle(0,0,szx+margin*2,szy+margin*2));
+		int szx = 0;
+		for(int i=0;i<nCols;i++) { szx += columnWidth[i]; }
+		
+		return(new Rectangle(0,0,szx+margin*(2+nCols-1),szy+margin*2));
 	}
 }
 	

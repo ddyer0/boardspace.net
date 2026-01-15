@@ -32,7 +32,7 @@ import lib.Graphics;
 import lib.CellId;
 import lib.DefaultId;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -157,7 +157,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
-       	FontMetrics fm = Font.getFontMetrics(standardPlainFont());
+       	FontMetrics fm = FontManager.getFontMetrics(standardPlainFont());
     	int fh = standardFontSize();
     	int margin = fh/2;
     	// this does the layout of the player boxes, and leaves

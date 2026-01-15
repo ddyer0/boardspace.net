@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,14 +12,16 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package lib;
+
 
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
+import bridge.Component;
 import bridge.FontMetrics;
 import bridge.Icon;
 import bridge.SystemFont;
@@ -35,8 +37,11 @@ public class TextChunk implements Text
 {
 	
 	TextChunk() {}	// default constructor
-	
-	public Icon getIcon(){ return(null); }
+	DrawingObject canvas=null;
+	public Icon getIcon(DrawingObject drawon)
+	{ 	canvas = drawon;
+		return(this); 
+	}
 	
 	/**
 	 * construct a text chunk, with a particular color, segmented into lines if split is true
@@ -58,7 +63,7 @@ public class TextChunk implements Text
 	// isLine = false, next is the next chunk on the current line
 	// down!=null this is a line composed of multiple chunks
 	//
-	private String data="";			// this is the string corresponding to the whole tree below this point
+	String data="";			// this is the string corresponding to the whole tree below this point
 	String replacementData = "";	// data used when copying the object
 	private Color dataColor = null;	// this is the color for the whole tree below this point
 	
@@ -180,7 +185,8 @@ public int height(FontMetrics myFM)
 	return(h);
 }
 
-public int chunkWidth(FontMetrics myFM) {
+public int chunkWidth(FontMetrics myFM)
+{
 	return(myFM.stringWidth(replacementData));
 }
 
@@ -320,7 +326,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     	FontMetrics myFM = GC.getFontMetrics(inG);
         int neww = width(myFM);
         int nlines = nLines();
-        int siz = SystemFont.getFontSize(f0);
+        int siz = lib.FontManager.getFontSize(f0);
         int linesize = ((myFM.getAscent() + myFM.getDescent())*9)/10;
         if((inHeight>8)&&nlines>1)
         	{ siz = Math.max(8,Math.min(linesize,inHeight/nlines)); 		// limit the font size vertically
@@ -329,7 +335,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
         while ((xoff < 0) && (siz > 6))
         	{	// find a smaller font, within reason
         	f = SystemFont.getFont(f0,siz--);
-            myFM = lib.Font.getFontMetrics(f);
+            myFM = lib.FontManager.getFontMetrics(f);
             neww = width(myFM);
             xoff = (inWidth - neww);
         	}
@@ -344,11 +350,11 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     {
     	if(down!=null) { return(down.drawTextLine(inG,myFM,baseColor,drawX,drawY)); }
     	else { 
-    		GC.Text(inG,data,drawX,drawY);
+    		GC.Text(inG,data,drawX,drawY); 
 			return(drawX + chunkWidth(myFM));
     	}
     }
-    
+ 
     // draw the entire text tree described by this chunk and all it's parts.
     public int drawTextLine(Graphics inG,FontMetrics myFM,Color baseColor,int drawX,int drawY)
     {	Text message = firstChunk();
@@ -400,7 +406,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     {
 		return draw(inG,center,false,inX,inY,inWidth,inHeight,fgColour,bgColor,true);
 	}
-    public int draw(Graphics inG, boolean center, boolean right,int inX, int inY,
+	public int draw(Graphics inG, boolean center, boolean right,int inX, int inY,
         int inWidth, int inHeight, Color fgColour, Color bgColor,boolean fit)
     {  	int neww = 0;
     	if(inG!=null)
@@ -412,35 +418,50 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
         {
             GC.fillRect(inG,bgColor,inX, inY, inWidth, inHeight);
         }
-
-        if (data != null)
-        {  	Font f = fit ?  selectFontSize(inG,inWidth,inHeight) : null;
-        	FontMetrics myFM = GC.getFontMetrics(inG);
-        	Text line = firstLine();
-        	int nlines = nLines();
-        	int lh = 9*(myFM.getAscent() + myFM.getDescent())/10;	// 90% of the standard size, squeeze the lines a little
-        	int lcenter = ((inHeight + lh) / 2);
-         	neww = width(myFM);
-        	int drawY = inY +
+        
+		Font f = fit ?  selectFontSize(inG,inWidth,inHeight) : null;
+		FontMetrics myFM = GC.getFontMetrics(inG);
+		Text line = firstLine();
+		int nlines = nLines();
+		int lh = 9*(myFM.getAscent() + myFM.getDescent())/10;	// 90% of the standard size, squeeze the lines a little
+       	int lcenter = ((inHeight + lh) / 2);
+       	neww = width(myFM);
+       	int drawY = inY +
            			((nlines > 1) 
             				? Math.max(0,lcenter-(nlines-1)*lh/2)
             				: lcenter-lh/8);
  
-            while(line!=null)
-            	{
-            	int width = line.chunkWidth(myFM);
-            	int drawX = center ? inX+(inWidth-width)/2 : right ? inX+inWidth-width : inX; 
-            	drawX = line.drawTextLine(inG,myFM,baseColor,drawX,drawY);
-            	drawY += lh;
-            	line = line.nextLine();
-            	}
+       	while(line!=null)
+        	{
+        	int width = line.chunkWidth(myFM);
+        	int drawX = center ? inX+(inWidth-width)/2 : right ? inX+inWidth-width : inX; 
+        	drawX = line.drawTextLine(inG,myFM,baseColor,drawX,drawY);
+        	drawY += lh;
+        	line = line.nextLine();
+        	}
 
-            GC.setColor(inG,gColor);
-            if(fit) { GC.setFont(inG, f); }
-         }
+       	GC.setColor(inG,gColor);
+       	if(fit) { GC.setFont(inG, f); }
     	}
-        return (neww);
+    return (neww);
     }
+
+	public int getIconWidth() {
+		FontMetrics fm = FontManager.getFontMetrics(canvas.getFont());
+		return width(fm);
+
+	}
+	public int getIconHeight() {
+		FontMetrics fm = FontManager.getFontMetrics(canvas.getFont());
+		return height(fm);
+	}
+
+	public void paintIcon(Component con, Graphics g, int x, int y) 
+	{
+		draw(g,false,x,y,getIconWidth(),getIconHeight(),
+				null,null);
+	}
+
 
 	
 

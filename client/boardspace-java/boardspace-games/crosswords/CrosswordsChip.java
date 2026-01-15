@@ -276,7 +276,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     		Font f = SystemFont.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.Font.getFontMetrics(f);
+    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*(big ? 0.27 : 0.15)));
      		if(value!=0)
      		{

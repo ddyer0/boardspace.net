@@ -20,6 +20,7 @@ import lib.Graphics;
 import lib.Random;
 import lib.exCanvas;
 import lib.CellId;
+import lib.DrawingObject;
 import lib.G;
 import lib.HitPoint;
 /**
@@ -196,10 +197,10 @@ public abstract class chipCell
     {	return(drawChip(gc,canvas,highlight,SQUARESIZE,xpos,ypos,label));
     }
     
-	// method for "DrawableSprite" interface
-	public void drawChip(Graphics gc,exCanvas c,int size, int posx,int posy,String msg)
+	// method for Drawable interface
+	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{
-		drawStack(gc,null,posx,posy,c,0,size,1.0,msg);
+		drawStack(gc,null,posx,posy,DrawingObject.getCanvas(c),0,size,1.0,msg);
 	}
 
 	/**

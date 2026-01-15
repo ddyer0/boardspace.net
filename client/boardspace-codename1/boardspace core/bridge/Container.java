@@ -45,7 +45,7 @@ public class Container extends com.codename1.ui.Container
 	public void setBackground(Color c) { getStyle().setBgColor(c.getRGB()); }
 	public void setForeground(Color c) { getStyle().setFgColor(c.getRGB());  }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
-	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
+	public Color getForegrund() { return(new Color(getStyle().getFgColor())); }
 	public void setSize(int size_x2, int size_y2) 
 	{ 	setWidth(size_x2);
 		setHeight(size_y2);
@@ -102,16 +102,13 @@ public class Container extends com.codename1.ui.Container
 		}
 		}
 		
-	public void supadd(com.codename1.ui.Component c) 
-	{	try { super.add(c); 
-			setShouldCalcPreferredSize(true);
-		}
-		catch (Throwable err) { Http.postError(this,"adding component "+c,err); }
+	public void addSelf(com.codename1.ui.Component c)
+	{
+		G.runInEdt(new Runnable() { public void run() { add(c); }});
 	}
-	
 	public void addC(com.codename1.ui.Component c)
 	{ 
-		G.runInEdt(new Runnable() { public void run() { supadd(c); }});
+		G.runInEdt(new Runnable() { public void run() { add(c); }});
 	}
 
 	public void suprem(com.codename1.ui.Component c) 
@@ -127,28 +124,21 @@ public class Container extends com.codename1.ui.Container
 	}
 	public void addC(int index,com.codename1.ui.Component c)
 	{
-		G.runInEdt(new Runnable() { public void run() { supadd(index,c); }}); 
+		G.runInEdt(new Runnable() { public void run() { add(index,c); }}); 
 	}
 	public void paintBackgrounds(Graphics g)
 	{
 		//System.out.println("backgrounds "+this);
 	}
-	public void supadd(int index,com.codename1.ui.Component c )
-	{
-		super.add(index,c);
-	}
+
 	public void remove(com.codename1.ui.Component c)
 	{	removeComponent(c);
 	}
 	
 	public Component getComponent(int i) { return((Component)getComponentAt(i)); }
 	
-	public void add(ProxyWindow c) { addC(c.getComponent()); }
-	public com.codename1.ui.Container add(com.codename1.ui.Component c)
-	{	G.Assert(!G.debug() || G.isEdt(),"should be edt");
-		supadd(c);
-		return this;
-	}
+	public void addc(ProxyWindow c) { add(c.getComponent()); }
+	
 	 public void paintComponentBackground(Graphics g)
 	 {	//System.out.println("container paintcomponentbackground");
 	 }

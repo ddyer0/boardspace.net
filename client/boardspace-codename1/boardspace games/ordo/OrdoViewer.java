@@ -38,7 +38,7 @@ import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -245,7 +245,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     			ideal_logwidth,logH,ideal_logwidth*2,logH*2);
  
       	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
-    	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+    	layout.placeDrawGroup(FontManager.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
       

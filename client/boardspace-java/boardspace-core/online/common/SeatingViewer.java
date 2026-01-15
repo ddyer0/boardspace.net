@@ -236,7 +236,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		double ratio = Math.abs((double)w/h);
 		square = !portrait && ratio>0.9 && ratio<1.1;
 		int stripHeight ;
-		int fh = lib.Font.getFontSize(standardPlainFont());
+		int fh = lib.FontManager.getFontSize(standardPlainFont());
 		int clockHeight = fh*3;
 		int clockWidth = fh*25;
 		if(portrait)
@@ -639,6 +639,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			Color color = Color.yellow;
 			if((nPlayers==2) 
 					&& map!=null 
+					&& selectedGame!=null
 					&& !selectedGame.variableColorMap)
 			{	// two player games where a particular color starts
 				playerNumber = 1+colorIndex[i];
@@ -660,18 +661,18 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 					bubbleSelect==null ? null : DrawableImage.NotHelpDraw+name,0.3,1.2)
 					)
 			{
-				bubbleSelect.row = i;
+				if(bubbleSelect!=null) { bubbleSelect.row = i; }
 			}
 			if(selectedGame!=null && bubbleSelect!=null)
 			{
 			int xo = xc - (int)(colorStep*1.5);
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
-			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
+			if(selectedGame!=null && selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
 				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,
 						DrawableImage.NotHelpDraw+s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
-				bubbleSelect.row = i;
+				if(bubbleSelect!=null) { bubbleSelect.row = i; }
 				}
 				}
 			if(colorIndex!=null && i<colorIndex.length)
@@ -896,7 +897,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		boolean hit = false;
 		if(gameNames!=null)
 		{
-		int fh = lib.Font.getFontSize(standardPlainFont());
+		int fh = lib.FontManager.getFontSize(standardPlainFont());
 		int vspace = (int)(fh*3.5);
 		int half = vspace*5/6;
 		int lessThanHalf = half-half/10;
@@ -963,7 +964,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int l = G.Left(r);
 		int t = G.Top(r);
 		int h = G.Height(r);
-		int fh = lib.Font.getFontSize(standardPlainFont());
+		int fh = lib.FontManager.getFontSize(standardPlainFont());
 		
 		GameInfo categoryNames[] = GameInfo.groupMenu(typeClass,nplayers);
 		int az_cols = 3;
@@ -1112,7 +1113,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		    // have to be very careful because GC may be null, and in rare
 		    // circumstances, this.getFont() may also be null.
 		    GC.setFont(gc,lb);
-		    FontMetrics fm = lib.Font.getFontMetrics(lb);
+		    FontMetrics fm = lib.FontManager.getFontMetrics(lb);
 		    int fonth = fm.getHeight();
 		    int topPart = fonth*3;
 		    int messageY = G.Bottom(helpRect)+topPart/3;
@@ -1335,7 +1336,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		newNameField.setVisible(true);
 		newNameField.setBackground(bsBlue);
 
-		FontMetrics fm = lib.Font.getFontMetrics(newNameField.getFont());
+		FontMetrics fm = lib.FontManager.getFontMetrics(newNameField.getFont());
 		
 		int w = (int)(fm.stringWidth(TypeinMessage)*1.2);
 		int h = fm.getHeight()*2;

@@ -20,6 +20,8 @@ package octiles;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
+import lib.DrawingObject;
+import lib.FontManager;
 import lib.G;
 import lib.Random;
 import lib.exCanvas;
@@ -164,8 +166,8 @@ public class OctilesChip extends chip<OctilesChip>
 	{	if(i>=RUNNER_INDEX) { return(getRunner(i-RUNNER_INDEX)); }
 		return(getTile(i-1));
 	}
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
-	{	drawChip(gc,canvas,SQUARESIZE,cx,cy,label,0,0);
+	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	{	drawChip(gc,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,label,0,0);
 	}
 	/**
 	 *  determine the exit edge when placed with rotation and entering from some direction

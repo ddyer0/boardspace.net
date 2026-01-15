@@ -43,7 +43,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
     public JCheckBoxMenuItem[] styleItems;
     public JCheckBoxMenuItem[] sizeItems;
     public JMenu editMenu = new XJMenu("Edit",true);
-    public JMenu fontMenu = new XJMenu("Font",true);
+    public JMenu fontMenu = new XJMenu("FontManager",true);
     public JMenu sizeMenu = new XJMenu("Size",true);
     public JMenu styleMenu = new XJMenu("Style",true);
     public JMenuItem selectAllItem = new JMenuItem("Select all");
@@ -67,7 +67,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
         area.setVisible(true);
         fname = "Courier";
         fstyle = SystemFont.Style.Plain;
-        fsize = Font.standardizeFontSize(Font.defaultFontSize);
+        fsize = FontManager.standardizeFontSize(FontManager.defaultFontSize);
 
         // Create edit menu
         editMenu.add(selectAllItem);

@@ -240,7 +240,7 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     		GC.setFont(gc, f);
     		GC.setColor(gc,Color.black);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.Font.getFontMetrics(f);
+    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2+(int)(SQUARESIZE*0.1),cy+(int)(SQUARESIZE*0.27));
  
     		}

@@ -18,6 +18,7 @@ package container;
 
 import bridge.Color;
 import lib.Graphics;
+import lib.DrawingObject;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -267,8 +268,8 @@ public class ContainerCell extends stackCell<ContainerCell,ContainerChip>
 		}
 		return(true);
 	}
-	// DrawableSprite interface
-	public void drawChip(Graphics gc,exCanvas c,int size, int posx,int posy,String msg)
+	// Drawable interface
+	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{	ContainerViewer can = (ContainerViewer)c;
 		ContainerChip top = topChip();
 		if(top!=null) { can.drawSprite(gc,top,posx,posy); }

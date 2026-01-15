@@ -19,6 +19,7 @@ package online.game;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import online.game.sgf.sgf_property;
 /**
  * this provides a menu of annotations such as squares, arrows, and triangles which can be added to the current move of a game.
@@ -33,8 +34,9 @@ import online.game.sgf.sgf_property;
 
 
 import lib.CellId;
-import lib.DrawableImage;
+import lib.Drawable;
 import lib.G;
+import lib.GC;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.InternationalStrings;
@@ -43,6 +45,8 @@ import lib.PopupManager;
 import lib.StackIterator;
 import lib.StockArt;
 import lib.StringStack;
+import lib.Text;
+import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.common.OnlineConstants;
@@ -70,32 +74,39 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		Down(StockArt.SolidDownArrow,StockArt.SolidUpArrow,5),
 		Clear(null,null,7);
 		int index;
-		private StockArt chip;
-		private StockArt reverseChip = null;
+		private Drawable chip;
+		private Drawable reverseChip = null;
 		Annotation(StockArt c,StockArt rev,int ind)
 			{ chip = c; reverseChip=rev; index = ind; 
 			}
 		public int index() { return index; }
-		public StockArt getChip(boolean rev) { return rev ? reverseChip : chip; }
+		public Drawable getChip(boolean rev) { return rev ? reverseChip : chip; }
 		static public Annotation find(int n)
 		{	for(Annotation a : values()) { if(a.index==n) { return a; }}
 			return null;
 		}
 	}
-	private DrawableImage<?> base = null;		// this is the image drawn as the icon on the tool bar
+	private Drawable base = null;		// this is the image drawn as the icon on the tool bar
 	private PopupManager menu = null;			// the menu used during the selection process
 	private commonCanvas drawOn=null;			// the associated game viewer
 	private CellId id = null;					// the hit code when the annotation icon is clicked
 	private Annotation selected = null;			// the annotation actively selected for placement, if any
+	private boolean selectedMulti = false;		// if true, keep selecting
+	public boolean getMulti() { return selectedMulti; }
 	public Annotation getSelected() { return selected; }
 	public void setSelected(Annotation sel) { selected = sel; }
 	private StringStack annotationActions = new StringStack();			// annotations queued for transmission to the other players
 	private StringStack annotationActionsHistory = new StringStack();	// history of all transmitted annotations
 	
 	static String helpText = "Add an Annotation";
+	static String CancelMessage = "click here to cancel annotation";
+	static String StopMessage = "Stop placing annotations";
+
 	static public void putStrings()
 	{
 		InternationalStrings.put(helpText);
+		InternationalStrings.put(CancelMessage);
+		InternationalStrings.put(StopMessage);
 	}
 	/**
 	 * create an annotation menu.  Generally, each canvas creates one so it's always there.
@@ -133,13 +144,38 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void showMenu()
 	{
+		boolean Columns2 = true;
 		if(menu==null) { menu=new PopupManager(); }
+		menu.useSimpleMenu = true;
 		menu.newPopupMenu(drawOn,drawOn.deferredEvents);
+		double ysize = 1.25;
+		double xsize = 1;
+		selected = null;
+		selectedMulti = false;
+		//Font baseFont = drawOn.getFont();
+		//Font menuFont = FontManager.getFont(baseFont,baseFont.getSize()*4/4);
+		//menu.setFont(menuFont);
 		for(Annotation a : Annotation.values())
-			{ menu.addMenuItem(
-					TextGlyph.create(a.name(),"xxxxx",a.getChip(drawOn.reverseView()),drawOn,2.0,1.0,0,-0.25),
-					a);
+			{ 
+			Drawable chip = a.getChip(drawOn.reverseView());
+			if(chip==null)
+			{	// put the "clear" item in the right column
+				menu.addMenuItem("",a.index);
+				menu.addMenuItem(TextChunk.create(a.name()),a.index);
 			}
+			else
+			{
+			Text ic = TextGlyph.create(chip,a.name(),menu,ysize,xsize);
+			menu.addMenuItem(ic,a.index);
+			menu.addMenuItem(
+				TextGlyph.join(
+						TextGlyph.create(chip,a.name(),menu,ysize,xsize),
+						TextChunk.create("++")
+					),
+				a.index+100);
+			}
+			}
+		if(Columns2) { menu.setNColumns(2); }
 		menu.show(G.Left(this),G.Top(this));
 	}
 		
@@ -155,7 +191,9 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		{
 		if(menu!=null)
 		{	if(menu.selectMenuTarget(target))
-			{	selected = (Annotation)menu.rawValue;
+			{	int selectedIndex = menu.value;
+				selected = Annotation.find(selectedIndex%100);
+				selectedMulti = selectedIndex>=100;
 				if(selected==Annotation.Clear)
 				{	// clear is special, we don't drag it around we just do it.
 					commonMove cm = drawOn.getCurrentMove();
@@ -265,11 +303,17 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		if(selected!=null)
 		{	
 		saveAnnotation(cm,selected,G.Left(hp),G.Top(hp));
-		setSelected(null);
+		if(!selectedMulti) { setSelected(null); }
 		used = true;
 		}
 		return used;
 		
+	}
+	
+	public void stopAnnotation()
+	{
+		selected = null;
+		selectedMulti = false;
 	}
 	
 	private Annotation sharedAnnotation = null;
@@ -356,8 +400,10 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 * @param mode
 	 * @param size
 	 */
-	public void drawAnimationSprite(Graphics g, int obj, int xp, int yp, String mode,int size) {
-		if(ANNOTATION_TAG.equals(mode) && (Opcodes.NothingMoving!=obj))
+	public void drawAnimationSprite(Graphics g, int obj, int xp, int yp, String mode,int size) 
+	{
+		if(ANNOTATION_TAG.equals(mode) 
+				&& (Opcodes.NothingMoving!=obj))
 		{
 			int ann = -obj - ANNOTATION_TRACKING_OFFSET;
 			Annotation a = Annotation.find(ann);
@@ -396,5 +442,12 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		return true;
 		}
 		return false;
+	}
+	
+	public void showCancellation(Graphics gc,Rectangle r,HitPoint hp,CellId id)
+	{	InternationalStrings s = G.getTranslations();
+		GC.frameRect(gc,Color.black,r);
+		GC.Text(gc,true,r,Color.black,null,s.get(CancelMessage));
+		HitPoint.setHelpText(hp,r,id,s.get(StopMessage));
 	}
 }

@@ -17,16 +17,17 @@
 package online.game;
 
 
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import static com.codename1.util.MathUtil.atan2;
-
 import bridge.ActionListener;
 import bridge.Color;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
 import lib.CellId;
+import lib.Drawable;
 import lib.DrawableImage;
 import lib.EnumMenu;
 import lib.G;
@@ -83,7 +84,7 @@ public class NumberMenu extends Rectangle {
 		// another likely choice "\u2b24"; // filled circle
 	public Drawable numberIcon = null;
 	public boolean arrowNumberMarker = false;
-	DrawableImage<?> base = null;
+	Drawable base = null;
 	CellId id = null;
 	String text = "#";
 	String helpText = "Show move numbers";
@@ -121,7 +122,7 @@ public class NumberMenu extends Rectangle {
 	 * @param ic
 	 * @param i
 	 */
-	public NumberMenu(NumberMenuHost provider,DrawableImage<?> ic,CellId i) {
+	public NumberMenu(NumberMenuHost provider,Drawable ic,CellId i) {
 		base = ic;
 		id = i;
 		text = DrawableImage.NotHelpDraw + "#";

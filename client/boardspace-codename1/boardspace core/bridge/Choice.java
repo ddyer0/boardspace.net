@@ -52,6 +52,6 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , Actio
 
 	public void select(int index) { setSelectedIndex(index);	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

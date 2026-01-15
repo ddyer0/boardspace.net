@@ -46,7 +46,7 @@ import lib.AR;
 import lib.BSDate;
 import lib.Base64;
 import lib.CellId;
-import lib.DrawableImage;
+import lib.Drawable;
 import lib.EnumMenu;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -1907,7 +1907,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 
 	private boolean drawPlayerBox(Graphics gc,HitPoint pt,CellId id,String help,
 				int left,int top,int w,int h,
-				DrawableImage<?> image,String name,int i)
+				Drawable image,String name,int i)
 	{
 		  boolean hit = false;
 		  if(image !=null)

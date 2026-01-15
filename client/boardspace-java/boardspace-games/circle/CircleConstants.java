@@ -17,11 +17,11 @@
 package circle;
 
 import lib.CellId;
+import lib.DrawingObject;
 import lib.GC;
 import lib.Graphics;
 import lib.InternationalStrings;
 import lib.OStack;
-import lib.exCanvas;
 import online.game.BaseBoard.BoardState;
 import online.game.BaseBoard.StateRole;
 
@@ -228,7 +228,7 @@ public enum CR
 		public int getIconHeight(int siz)
 		{	return getIconHeight()*siz/unitSize;
 		}
-		public void drawChip(Graphics gc,exCanvas c,CircleChip chip,double rotation,int siz,int x,int y,String msg)
+		public void drawChip(Graphics gc,DrawingObject c,CircleChip chip,double rotation,int siz,int x,int y,String msg)
 		{	if(gc!=null)
 			{
 			GC.translate(gc,x,y);

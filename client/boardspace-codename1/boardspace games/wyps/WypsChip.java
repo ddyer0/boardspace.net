@@ -251,7 +251,7 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
     		Font f = SystemFont.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.Font.getFontMetrics(f);
+    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
      		GC.Text(gc,letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.2));
     		}
      	}

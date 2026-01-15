@@ -140,10 +140,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	{
 		toolBar.setShouldCalcPreferredSize(true);
 	}
-	public com.codename1.ui.Container add(com.codename1.ui.Component c)
-	{
-		return super.add(c);
-	}
+
 	@SuppressWarnings("deprecation")
 	public void initGlobalToolbar()
 	{
@@ -282,8 +279,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	{ 
 	  com.codename1.ui.Label title = getTitleComponent();
 	  //Style style = title.getStyle();
-	  //Font font = style.getFont();
-	  //style.setFont(font.derive(12,Font.STYLE_PLAIN));
+	  //FontManager font = style.getFont();
+	  //style.setFont(font.derive(12,FontManager.STYLE_PLAIN));
 	  String name = appname;
 	  if(G.isSimulator())
 	  {

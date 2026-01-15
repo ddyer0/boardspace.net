@@ -17,7 +17,6 @@
 package lib;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
@@ -47,7 +46,8 @@ public abstract class exCanvas extends Canvas
 		CanvasProtocol,Config,ActionListener,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
 		MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,
-		TouchMagnifierClient
+		TouchMagnifierClient,
+		DrawingObject
 {	// two specials just for standard java
     static final String VirtualMouse = "Virtual Mouse";
     static final String SpeedTestMessage = "Cpu speed test";
@@ -60,6 +60,7 @@ public abstract class exCanvas extends Canvas
 		Magnifier,
 		;
     };
+    public exCanvas getCanvas() { return this; }
     public Zoomer zoomer = new Zoomer(this);
     
     // the codename1 simulator supplies mouse move events, which is not
@@ -302,7 +303,7 @@ public abstract class exCanvas extends Canvas
 	}
 	
     public int standardFontSize() 
-    { 	int v = lib.Font.getFontSize(standardPlainFont());
+    { 	int v = lib.FontManager.getFontSize(standardPlainFont());
     	return v; 
     }
 
@@ -455,10 +456,10 @@ public abstract class exCanvas extends Canvas
     {	double zoom = getGlobalZoom();
     	int FontHeight = Math.min((int)(maxFontHeight*zoom),
     					  Math.max((int)(minFontHeight*zoom),
-    							  lib.Font.standardizeFontSize(height)));
+    							  lib.FontManager.standardizeFontSize(height)));
     	//G.print("adjust font from "+height+" to "+FontHeight);
         String fontfam = (s==null) ? "fixed" : s.get("fontfamily");
-        //G.print("Font size "+FontHeight);
+        //G.print("FontManager size "+FontHeight);
         l.standardPlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight - 2);
         l.largePlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight +2);
         l.standardBoldFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Bold,FontHeight);
@@ -483,7 +484,7 @@ public abstract class exCanvas extends Canvas
         chatPercent = info.getInt(ChatInterface.BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
          
-        adjustStandardFonts(lib.Font.defaultFontSize);
+        adjustStandardFonts(lib.FontManager.defaultFontSize);
         
         globalZoomRect = addSlider(".globalZoom",s.get(ZoomMessage),OnlineId.HitZoomSlider);
         globalZoomRect.min=1.0;
@@ -513,7 +514,7 @@ public abstract class exCanvas extends Canvas
         for(int size : sizes)
         {
         	JCheckBoxMenuItem m  = new JCheckBoxMenuItem(""+size);
-        	if(size==lib.Font.defaultFontSize) { m.setSelected(true); }
+        	if(size==lib.FontManager.defaultFontSize) { m.setSelected(true); }
         	m.addItemListener(deferredEvents);
         	if(!G.isCodename1()) { m.setFont(SystemFont.getFont(ref,size)); }
         	l.fontSizeMenu.add(m);
@@ -522,7 +523,7 @@ public abstract class exCanvas extends Canvas
         if(G.debug())
         {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
         	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
-        	String current = lib.Font.defaultFontFamily();
+        	String current = lib.FontManager.defaultFontFamily();
         	for(String font : fonts)
         	{
         		JCheckBoxMenuItem m  = new JCheckBoxMenuItem(font);
@@ -569,10 +570,10 @@ public abstract class exCanvas extends Canvas
     		if(item==target)
     		{	
     			int val = G.IntToken(item.getText());
-    			if(isSel && (val>6) && (val!=lib.Font.defaultFontSize)) 
+    			if(isSel && (val>6) && (val!=lib.FontManager.defaultFontSize)) 
     				{ 
-    					lib.Font.setDefaultFontSize(val);
-    					lib.Font.setGlobalDefaultFont();
+    					lib.FontManager.setDefaultFontSize(val);
+    					lib.FontManager.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -603,8 +604,8 @@ public abstract class exCanvas extends Canvas
     			String val = item.getText();
     			if(isSel) 
     				{ 
-    					lib.Font.setDefaultFontFamily(val);
-    					lib.Font.setGlobalDefaultFont();
+    					lib.FontManager.setDefaultFontFamily(val);
+    					lib.FontManager.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -733,8 +734,8 @@ public abstract class exCanvas extends Canvas
         }
         else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
         	{	String fam = G.getTranslations().get("fontfamily");
-	 			lib.Font.setDefaultFontFamily(fam);
-	 			lib.Font.setGlobalDefaultFont();
+	 			lib.FontManager.setDefaultFontFamily(fam);
+	 			lib.FontManager.setGlobalDefaultFont();
 	 			doNullLayout();  
 	 			generalRefresh(); 
 	 			return(true); 
@@ -821,13 +822,7 @@ public abstract class exCanvas extends Canvas
     {
     	l.observer.removeObserver(o);
     }
-   //
-    // handle observers and observing
-    //
-    public void addSelfTo(Container a)
-    {
-        a.add(this);
-    }
+
     /**
      * boolean to test if this seems to be a touch interface, which is 
      * not delivering mouse moves.  This will return true for pcs with
@@ -1760,7 +1755,7 @@ graphics when using a touch screen.
             {  
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
-               GC.setFont(gc, lib.Font.getGlobalDefaultFont());
+               GC.setFont(gc, lib.FontManager.getGlobalDefaultFont());
                ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }
@@ -2181,8 +2176,8 @@ graphics when using a touch screen.
   	  	int ww = (int)(w*zoom);
   	  	int hh = (int)(h*zoom);
 
-  	  	double fac = zoom*lib.Font.adjustWindowFontSize(w,h);
-  	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
+  	  	double fac = zoom*lib.FontManager.adjustWindowFontSize(w,h);
+  	  	adjustStandardFonts(fac*lib.FontManager.defaultFontSize);
 	  
   	  	setLocalBoundsSync(0,0,ww,hh);
   	  	initialized=true; 

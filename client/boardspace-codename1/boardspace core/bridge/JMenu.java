@@ -24,7 +24,7 @@ public class JMenu extends Menu
 {
 	public JMenu() { }
 	public JMenu(String msg) { super(msg);  }
-	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? lib.Font.menuFont() : f); }
+	public JMenu(String msg,Font f) { this(msg); setFont(f==null ? lib.FontManager.menuFont() : f); }
 	public void add(Menu jsubmenu) { super.add(jsubmenu); }
 	public boolean isVisible() { return(false); }
 	public void setSelected(boolean v) {}
@@ -43,7 +43,7 @@ public class JMenu extends Menu
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = lib.Font.getFontMetrics(f);
+		FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		return(fm.getHeight());
 		}
 	}
@@ -58,9 +58,16 @@ public class JMenu extends Menu
 		String str = mi.getText();
 		if(str==null) { str="xxxx"; }
 		Font f = mi.getFont();
-		FontMetrics fm = lib.Font.getFontMetrics(f);
+		FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		return(fm.stringWidth(str));
 		}
+	}
+	int ncols = 1;
+	public void setNColumns(int n) {
+		ncols = n;
+	}
+	public boolean useSimpleMenu() {
+		return ncols>1;
 	}
 
 }

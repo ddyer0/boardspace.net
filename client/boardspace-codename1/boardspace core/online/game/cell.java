@@ -1046,10 +1046,10 @@ public abstract class cell<FINALTYPE
       boolean val = findChipHighlight(highlight,null,squareWidth,squareHeight,e_x,e_y);
       return(val);
  	}
-	// method for "DrawableSprite" interface
-	public void drawChip(Graphics gc,exCanvas c,int size, int posx,int posy,String msg)
+	// method for "Drawable" interface
+	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{
-		throw G.Error("method required to use the DrawableSprite interface");
+		throw G.Error("method required to use the Drawable interface");
 	}
 	/**
 	 * set the current_center_x and current_center_y (used for animations) rotated 

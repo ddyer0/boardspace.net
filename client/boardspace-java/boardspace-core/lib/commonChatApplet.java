@@ -142,7 +142,7 @@ public class commonChatApplet extends FullscreenPanel
     public commonChatApplet(LFrameProtocol frame,ExtendedHashtable info,boolean emb)
     {	embedded = emb;
         s = G.getTranslations();
-        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.Font.standardizeFontSize(lib.Font.defaultFontSize));
+        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.FontManager.standardizeFontSize(lib.FontManager.defaultFontSize));
         theFrame = frame;
         for(String sn : soundNames) { SoundManager.loadASoundClip(sn); }
 
@@ -243,7 +243,7 @@ public class commonChatApplet extends FullscreenPanel
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
         int textHeight = myFM.getAscent() + myFM.getDescent()+4;
         int top = 0;
         if (textHeight < MINTEXTHEIGHT)
@@ -387,7 +387,7 @@ public class commonChatApplet extends FullscreenPanel
     public void addAMessage(String inStr) { addAMessage(inStr,true); }
     public void addAMessage(String inStr,boolean see)
     {
-        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
 
         Dimension sz = getSize();
         int useWidth = G.Width(sz) - 15;

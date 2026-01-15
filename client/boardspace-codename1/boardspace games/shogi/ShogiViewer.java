@@ -180,7 +180,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
-    	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+    	layout.placeDrawGroup(FontManager.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
        	layout.placeDoneEdit(buttonW,3*buttonW/2,doneRect,editRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
     	Rectangle main = layout.getMainRectangle();

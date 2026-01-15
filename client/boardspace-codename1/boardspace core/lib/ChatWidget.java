@@ -231,7 +231,7 @@ public class ChatWidget
         if(PRESPLIT_LINES)
         {
         // old style, try to break lines before adding them
-        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
         AddMessage(s.lineSplit(G.replaceAll(inStr,"\n", " <br> "), myFM, useWidth, Spaces),see);
         }
         else
@@ -354,7 +354,7 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
-        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.Font.standardizeFontSize(lib.Font.defaultFontSize));
+        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.FontManager.standardizeFontSize(lib.FontManager.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));
         setUser(ERRORCHANNEL, s.get("Error"));
@@ -548,8 +548,8 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = lib.Font.standardizeFontSize((int)(lib.Font.defaultFontSize*(G.isCodename1()?1.2:1)));
-        basicFont = SystemFont.getFont(lib.Font.defaultFontFamily(), SystemFont.Style.Plain, fs);
+    	int fs = lib.FontManager.standardizeFontSize((int)(lib.FontManager.defaultFontSize*(G.isCodename1()?1.2:1)));
+        basicFont = SystemFont.getFont(lib.FontManager.defaultFontFamily(), SystemFont.Style.Plain, fs);
         boldFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,fs);
         
         //G.print("font "+fs+" "+G.defaultFontSize);
@@ -559,7 +559,7 @@ public class ChatWidget
         messages.setFont(basicFont);
         comments.setFont(basicFont);
         
-        FontMetrics myFM = lib.Font.getFontMetrics(basicFont);
+        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
         int messageTop = t;
         int textHeight = (int)(myFM.getHeight()*1.8);
         if (textHeight < MINTEXTHEIGHT)

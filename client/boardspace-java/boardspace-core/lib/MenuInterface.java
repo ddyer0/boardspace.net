@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 
 public interface MenuInterface {
 	public NativeMenuItemInterface add(String item,ActionListener listener);
-	public NativeMenuItemInterface add(Text item,ActionListener listener);
+	public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener);
 	public NativeMenuInterface getNativeMenu();	
 	public void add(MenuInterface item);
 	public boolean isVisible();
@@ -29,6 +29,10 @@ public interface MenuInterface {
 	public void setVisible(boolean b);
 	public MenuInterface newSubMenu(String msg);
 	public boolean useSimpleMenu();
+	public int getItemCount();
 	public void setFont(Font f);
+	public Font getFont();
+	public void setNColumns(int n);
+	public int getNColumns();
 	
 }

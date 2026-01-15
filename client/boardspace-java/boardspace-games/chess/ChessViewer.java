@@ -36,7 +36,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -210,7 +210,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
 						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
-	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+	layout.placeDrawGroup(FontManager.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
    	layout.placeDoneEditRep(buttonW,3*buttonW/2,doneRect,editRect,repRect);
 	layout.placeRectangle(Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();

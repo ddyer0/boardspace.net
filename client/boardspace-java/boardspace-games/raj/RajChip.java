@@ -22,11 +22,11 @@ import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
 import lib.CompareTo;
+import lib.DrawingObject;
 import lib.G;
 import lib.GC;
 import lib.OStack;
 import lib.Random;
-import lib.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<RajChip>
@@ -209,7 +209,7 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
 		GC.Text(gc,true,e_x-(int)(SQUARESIZE*0.45),e_y-(int)(SQUARESIZE*0.66),
 				SQUARESIZE,SQUARESIZE,color.color,null,""+cardValue());
 	}
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
 	{
 		super.drawChip(gc, canvas, SQUARESIZE, cx, cy, label);
 		if(isFront())

@@ -1,13 +1,11 @@
 package bugs;
 
-
-import java.util.Hashtable;
-
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.FontMetrics;
+import java.util.Hashtable;
 import bridge.SystemFont;
 import bugs.BugsChip.Terrain;
 import bugs.data.DataHelper;
@@ -18,6 +16,7 @@ import bugs.data.Profile;
 import bugs.data.Taxonomy;
 import lib.CellId;
 import lib.CompareTo;
+import lib.DrawingObject;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -294,7 +293,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		drawChip(gc,canvas,r,null,null,thislabel,1.0);
 	}
 	
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
 	{	drawChip(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
 	}
 
@@ -466,7 +465,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		//GC.frameRect(gc,Color.green,xp,yp,SQUARESIZE/3,SQUARESIZE/3);
 		Font font = SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight);
 		GC.setFont(gc,font);
-		FontMetrics fm =  lib.Font.getFontMetrics(font);
+		FontMetrics fm =  lib.FontManager.getFontMetrics(font);
 		int textW = SQUARESIZE-SQUARESIZE/3;
 		String name = getCommonName();
 		int nameW = fm.stringWidth(name);

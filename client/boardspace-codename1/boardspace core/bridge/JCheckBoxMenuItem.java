@@ -16,7 +16,6 @@
  */
 package bridge;
 
-import lib.AwtComponent;
 import lib.GC;
 import lib.Graphics;
 import lib.StockArt;
@@ -45,7 +44,7 @@ public class JCheckBoxMenuItem extends JMenuItem implements Icon
 		super.actionPerformed(v);
 	}
 
-	public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+	public void paintIcon(Component c, Graphics g, int x, int y) {
 		int h = getIconHeight();
 		int w = getIconWidth();
 		String txt = getText();

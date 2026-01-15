@@ -10,8 +10,10 @@ public class JMenuItem extends javax.swing.JMenuItem implements NativeMenuItemIn
 {	Icon ic = null;
 	public Icon getNativeIcon() { return(ic); }
 	public JMenuItem(Icon m) { super(m); ic = m; }
+	public void setItemFont(Font f) { setFont(f==null ? lib.FontManager.menuFont() : f);}
+	public JMenuItem(Icon m,Font f) { super(m); ic = m; setItemFont(f);}
 	public JMenuItem(String s) { super(s); value=s; }
-	public JMenuItem(String s,Font f) { super(s); setFont(f==null ? lib.Font.menuFont() : f); }
+	public JMenuItem(String s,Font f) { super(s); setItemFont(f); }
 	public NativeMenuInterface getSubmenu() { return(null);	}
 	public int getNativeWidth() { return(JMenu.Width(this)); }
 	public int getNativeHeight() { return(JMenu.Height(this)); }	

@@ -24,8 +24,8 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
-import lib.exCanvas;
 import lib.Drawable;
+import lib.DrawingObject;
 import lib.ExtendedHashtable;
 
 
@@ -44,7 +44,7 @@ class ArrowIcon implements Drawable
 		specs = mergeSpecs;
 		merge = ismerge;
 	}
-	public void drawChip(Graphics gc, exCanvas c, int size0, int posx, int posy, String msg) 
+	public void drawChip(Graphics gc, DrawingObject c, int size0, int posx, int posy, String msg) 
 	{	int size = size0*9/10;
 		int ncount = 0;
 		int scount = 0;

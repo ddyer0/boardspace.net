@@ -20,7 +20,6 @@ import bridge.*;
 import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
-import com.codename1.ui.Font;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;

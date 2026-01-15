@@ -175,7 +175,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 
     public void addKeyListener(KeyListener who)

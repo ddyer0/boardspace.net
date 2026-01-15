@@ -522,7 +522,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     		} 
     	
     	StringBuilder message = new StringBuilder();
-     	FontMetrics fm = lib.Font.getFontMetrics(standardPlainFont());
+     	FontMetrics fm = lib.FontManager.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(boardRect)/2;
     	if(target!=null && (words.size()>0) && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)
@@ -587,7 +587,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-        Font f = SystemFont.getFont("monospaced",SystemFont.Style.Bold,lib.Font.getFontSize(standardBoldFont()));
+        Font f = SystemFont.getFont("monospaced",SystemFont.Style.Bold,lib.FontManager.getFontSize(standardBoldFont()));
        gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),f);
        
        GC.frameRect(gc, Color.black, logRect);

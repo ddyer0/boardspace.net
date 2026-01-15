@@ -146,6 +146,6 @@ public class List<T> extends com.codename1.ui.List<T> implements ActionProvider,
 		down = true;
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

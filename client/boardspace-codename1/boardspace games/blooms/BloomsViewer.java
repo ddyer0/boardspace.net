@@ -29,7 +29,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -362,7 +362,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	int centerY = G.centerY(brect);
     	GC.setFont(gc,largeBoldFont());
     	EndgameCondition current = gb.endgameCondition;
-    	FontMetrics fm = Font.getFontMetrics(largeBoldFont());
+    	FontMetrics fm = FontManager.getFontMetrics(largeBoldFont());
     	int xstep = fm.stringWidth(s.get(ShortGoalMessage,20));
     	int optionY = centerY-step*2;
     	int optionX = centerX-xstep*2;

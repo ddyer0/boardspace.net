@@ -37,7 +37,7 @@ public class Zoomer
     }
     public boolean drawMagnifier(Graphics gc,HitPoint hp,Rectangle r,boolean unmagnify,double siz, double posx,double posy,int rot)
     {
-    	DrawableImage<?> icon = unmagnify ? StockArt.UnMagnifier : StockArt.Magnifier;
+    	Drawable icon = unmagnify ? StockArt.UnMagnifier : StockArt.Magnifier;
     	int size = (int)(G.Width(r)*siz);
     	int xp = G.Left(r)+(int)(posx*G.Width(r));
     	int yp = G.Top(r)+(int)(posy*G.Height(r));

@@ -247,7 +247,7 @@ public class TextArea extends com.codename1.ui.TextArea
     {	return(new TextPrintStream(new Utf8OutputStream(),this));
     }
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 	// this hard won bit of business allows a text area
 	// to activate when you type a newline on the virtual keyboard

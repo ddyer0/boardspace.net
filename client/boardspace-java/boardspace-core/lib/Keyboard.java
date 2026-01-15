@@ -178,7 +178,7 @@ public class Keyboard implements Config
 		int rx = showOn.getX();
 		int ry = showOn.getY();
 		int rcy = (ry+rh)/2;
-		FontMetrics fm = Font.getFontMetrics(showOn.largeBoldFont());
+		FontMetrics fm = FontManager.getFontMetrics(showOn.largeBoldFont());
 		int lineH = fm.getHeight();
 		int feature = G.minimumFeatureSize();
 		int newW = rw;
@@ -445,7 +445,7 @@ public class Keyboard implements Config
 		Rectangle drect = crect;
 		if(includeDisplay)
 		{				
-	    	FontMetrics fm = Font.getFontMetrics(display.font);
+	    	FontMetrics fm = FontManager.getFontMetrics(display.font);
 	    	int fontH = fm.getHeight();
 	    	int dtop = top+(int)(0.08*h);
 			int dhgt = fontH*2;

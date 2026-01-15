@@ -364,16 +364,15 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	public void adjustFonts(double scale0)
 	{
 	    String fam = s.get("fontfamily");
-	    double scale = scale0*lib.Font.defaultFontSize/standardFontHeight;
-	    basicFont = SystemFont.getFont(fam,SystemFont.Style.Plain,lib.Font.standardizeFontSize(14*scale));
-	    smallerBoldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(13*scale));
-	    boldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(14*scale));
-	    bigFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.Font.standardizeFontSize(24*scale));
+	    double scale = scale0*lib.FontManager.defaultFontSize/standardFontHeight;
+	    basicFont = SystemFont.getFont(fam,SystemFont.Style.Plain,lib.FontManager.standardizeFontSize(14*scale));
+	    smallerBoldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(13*scale));
+	    boldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(14*scale));
+	    bigFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(24*scale));
 	}
-	public void addSelfTo(Container p)
+	public void setParent(Container p)
 	{
 		lobby = (commonLobby)p;
-		super.addSelfTo(p);
 	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
 	  { super.init(info,frame);
@@ -800,7 +799,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			int w = G.Width(lobbyHelpRect);
 			GC.fillRect(inG,Color.green,lobbyHelpRect);
 			GC.frameRect(inG,Color.black,lobbyHelpRect);
-			GC.setFont(inG,lib.Font.getFont(largeBoldFont(),h/4));
+			GC.setFont(inG,lib.FontManager.getFont(largeBoldFont(),h/4));
 			GC.Text(inG,true,l,t,w,h/3,Color.black,null,s.get(GettingStarted));
 			
 			{

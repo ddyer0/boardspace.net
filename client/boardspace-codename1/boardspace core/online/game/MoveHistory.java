@@ -202,6 +202,7 @@ public class MoveHistory extends CommonMoveStack  implements SequenceStack,sgf_n
 				path.pop();
 			}
 			path.pop();
+			return null;
 		}
 		}
 		return null;

@@ -5,7 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 /**
  * note here on Tablayout, which is used for the activities and actions bars at the top
@@ -62,7 +62,7 @@ public class TabLayout implements LayoutManager
 	int getFullHeight(Container parent)
 	{	int nc = parent.getComponentCount();
 		// use font height as the basic scale metric
-		int max = (int)(Font.getFontSize(Font.getGlobalDefaultFont())*2.2);
+		int max = (int)(FontManager.getFontSize(FontManager.getGlobalDefaultFont())*2.2);
 		for(int i=0;i<nc;i++) { max = Math.max((int)parent.getComponent(i).getPreferredSize().getHeight(),max); }
 		return(max);
 	}

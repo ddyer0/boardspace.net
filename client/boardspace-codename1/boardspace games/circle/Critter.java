@@ -2,12 +2,12 @@ package circle;
 
 import lib.Digestable;
 import lib.Drawable;
+import lib.DrawingObject;
 import lib.G;
 import lib.Graphics;
 import lib.OStack;
 import lib.Random;
 import lib.StackIterator;
-import lib.exCanvas;
 
 class CritterStack extends OStack<Critter> implements Digestable
 {
@@ -172,7 +172,7 @@ public class Critter extends OStack<CircleCell> implements CircleConstants,Diges
 		return v;
 	}
 
-	public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg) 
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
 	{
 		 CR id = identity();
 		 id.drawChip(gc,c,top,0,size,posx,posy,null);		

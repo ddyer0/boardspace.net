@@ -16,25 +16,18 @@
  */
 package bridge;
 
-import lib.AwtComponent;
-
 import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 
-public class Label extends com.codename1.ui.Label implements AwtComponent
+public class Label extends com.codename1.ui.Label 
 {	
-	public Icon icon;		// java style icon
 	public Label(String string) 
 	{	super(string);
 	 	setText(string);
 	}
 
-	public Label(Icon ic)
-	{   super();
-		icon = ic;
-	}
 	public Label(Image ic)
 	{
 		super(ic.getSystemImage());
@@ -87,32 +80,17 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 	}
 	public Dimension getPreferredSize()
 	{
-		if(icon!=null)
-		{
-			return new Dimension(icon.getIconWidth(),icon.getIconHeight());
-		}
-		else
-		{
 			return super.getPreferredSize();
-		}
 	}
 	public void paint(com.codename1.ui.Graphics g)
 	{
-		if(icon!=null)
-		{	int w = getWidth();
-			int h = getHeight();
-			icon.paintIcon(this,lib.Graphics.create(g,this),w,h);
-		}
-		else
-		{
 		super.paint(g);
-		}
 	    //g.setColor(0xd0ff);
 		//g.drawRect(0,0,getWidth()-1,getHeight()-1);
 		//g.drawLine(getWidth(),0,0,getHeight());
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

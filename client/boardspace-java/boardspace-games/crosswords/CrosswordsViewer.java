@@ -676,7 +676,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	Drawable chip = getPlayerIcon(pidx);
        	chip.drawChip(gc,this,r,null);
     	GC.setFont(gc,SystemFont.getFont(largeBoldFont(),G.Height(r)*3/5));
-    	GC.Text(gc, true,r,dotColors[pidx],null,""+val);
+    	GC.Text(gc, true,r,Color.white,null,""+val);
     }
     }
     /**
@@ -1069,7 +1069,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	CrosswordsCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
     	WordStack words = gb.words;
-    	FontMetrics fm = lib.Font.getFontMetrics(standardPlainFont());
+    	FontMetrics fm = lib.FontManager.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(boardRect)/2;
     	if(target!=null && words!=null && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)

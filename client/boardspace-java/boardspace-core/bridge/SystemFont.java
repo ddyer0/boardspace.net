@@ -26,7 +26,7 @@ public static final Style MenuTextStyle = Style.Plain;
 
 	public static int defaultFontSize() 
 	{ 
-		return Math.max(minFontHeight,Math.min(maxFontHeight,lib.Font.standardizeFontSize(defaultFontSize)));
+		return Math.max(minFontHeight,Math.min(maxFontHeight,lib.FontManager.standardizeFontSize(defaultFontSize)));
 	}
 
 	public static Font getGlobalDefaultFont()
@@ -47,9 +47,9 @@ public static final Style MenuTextStyle = Style.Plain;
 
 	public static Font menuFont()
 	{
-		return getFont(lib.Font.getGlobalDefaultFont(),
-				lib.Font.MenuTextStyle,
-				lib.Font.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
+		return getFont(lib.FontManager.getGlobalDefaultFont(),
+				lib.FontManager.MenuTextStyle,
+				lib.FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
 	}
 	public static  Font getFont(String family,Style style,int size)
 	{	if(!G.Advise(size>0,"not zero size font %s %s",family,style)) { size = 1; }
@@ -100,7 +100,7 @@ public static final Style MenuTextStyle = Style.Plain;
 	 */
 	public static void setGlobalDefaultFont()
 	{	int fontHeight = defaultFontSize();
-		Font f = getFont(lib.Font.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, Style.Plain, fontHeight);
+		Font f = getFont(lib.FontManager.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, Style.Plain, fontHeight);
 		setGlobalDefaultFont (f);
 	}
 

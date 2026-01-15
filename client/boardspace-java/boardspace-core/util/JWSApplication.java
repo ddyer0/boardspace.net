@@ -24,7 +24,7 @@ import bridge.Config;
 import common.GameInfo;
 import lib.CanvasProtocol;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
@@ -286,7 +286,7 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults
-			Font.setGlobalDefaultFont();	// set a reasonable global default
+			FontManager.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
 			for(int i=0; i<args.length-1; i+=2)
 			{	String par = (args[i].toLowerCase());

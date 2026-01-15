@@ -106,6 +106,7 @@ public interface Opcodes extends UniversalConstants{
 		ShowAnnotations("Annotations",MOVE_UNKNOWN),
 		ShowNumbers("Numbers",MOVE_UNKNOWN),
 		PlaceAnnotation("PlaceAnnotation",MOVE_UNKNOWN),
+		StopAnnotation("StopAnnotation",MOVE_UNKNOWN),
 
 		;
 		public String shortName = name();

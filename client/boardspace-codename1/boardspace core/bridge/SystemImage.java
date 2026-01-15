@@ -25,7 +25,6 @@ import com.codename1.ui.RGBImage;
 import com.codename1.ui.URLImage;
 import com.codename1.ui.URLImage.ImageAdapter;
 
-import lib.AwtComponent;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
@@ -452,7 +451,7 @@ public static boolean getRGB(int[] from,int x,int y,int w,int h,int fromSpan,int
  * @param ic
  * @return a new Image
  */
-public static Image getIconImage(Icon ic,AwtComponent c)
+public static Image getIconImage(Icon ic,bridge.Component c)
 {	
 	int w = ic.getIconWidth();
 	int h = ic.getIconHeight();
@@ -468,7 +467,7 @@ public boolean isEncoded()
 {	return image instanceof EncodedImage;
 }
 
-public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+public void paintIcon(bridge.Component c, Graphics g, int x, int y) {
 	g.getGraphics().drawImage(this.getSystemImage(),x,y);
 }
 public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) 

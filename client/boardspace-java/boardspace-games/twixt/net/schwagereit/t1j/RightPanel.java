@@ -119,7 +119,7 @@ final class RightPanel extends JPanel
 
       // Label title = new Label("T1j");
       JLabel title = new JLabel(logo);
-      //title.setFont(new Font(null, Font.BOLD, BIG_FONT));
+      //title.setFont(new FontManager(null, FontManager.BOLD, BIG_FONT));
       //title.setAlignment(Label.CENTER);
       //title.setForeground(Color.blue);
       add(title, createGridBagConstraint(0, 0, 2, false));

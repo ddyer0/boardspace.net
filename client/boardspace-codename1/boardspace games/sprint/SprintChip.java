@@ -213,7 +213,7 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
     		Font f = SystemFont.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.Font.getFontMetrics(f);
+    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, (int)(cx-fm.stringWidth(letter)*0.75),cy+(int)(SQUARESIZE*0.2));
      		if(value!=0)
      		{

@@ -21,7 +21,7 @@ import common.GameInfo;
 import lib.CanvasProtocol;
 import lib.DataCache;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
@@ -288,7 +288,7 @@ public class JWSApplication implements Config,OnlineConstants
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults
-			Font.setGlobalDefaultFont();	// set a reasonable global default
+			FontManager.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
 			//G.print("local address "+G.getLocalIpAddress());
 			for(int i=0; i<args.length-1; i+=2)
@@ -316,7 +316,7 @@ public class JWSApplication implements Config,OnlineConstants
 			G.setDrawers(false);	// for lastgameboard
 
 			G.getOSInfo();
-			G.print("Ask fontsize "+Font.defaultFontSize," get ",SystemFont.getFontSize(SystemFont.getGlobalDefaultFont()));
+			G.print("Ask fontsize "+FontManager.defaultFontSize," get ",SystemFont.getFontSize(SystemFont.getGlobalDefaultFont()));
 			G.print(Component.getHierarchy(MasterForm.getMasterPanel()));
 			G.print("\n");
 			G.print(Component.getHierarchy(MasterForm.getMasterForm().getTitleBar()));

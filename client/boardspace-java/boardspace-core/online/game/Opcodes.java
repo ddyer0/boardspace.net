@@ -22,7 +22,7 @@ import lib.UniversalConstants;
 
 public interface Opcodes extends UniversalConstants 
 {
-	   static final String WrongInitError = "game type %s is not this game";	// not a translated string
+	static final String WrongInitError = "game type %s is not this game";	// not a translated string
 	static final int NothingMoving = -2;
 	static final String GAMEOVERONTIME = "WinOnTime";
 	static final String EDIT = "Edit";		// stop playing and allow rearrangement of the board
@@ -107,6 +107,7 @@ public interface Opcodes extends UniversalConstants
 		ShowAnnotations("Annotations",MOVE_UNKNOWN),
 		ShowNumbers("Numbers",MOVE_UNKNOWN),
 		PlaceAnnotation("PlaceAnnotation",MOVE_UNKNOWN),
+		StopAnnotation("StopAnnotation",MOVE_UNKNOWN),
 
 		;
 		public String shortName = name();

@@ -96,7 +96,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
             return popupDialog;
      }
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 	public void paint(com.codename1.ui.Graphics g0)
 	{	

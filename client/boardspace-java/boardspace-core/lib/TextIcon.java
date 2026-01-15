@@ -34,20 +34,19 @@ public class TextIcon implements Icon
 	int height;
 	public TextIcon(Component c,Text o) 
 		{ originalText=o;
-		  FontMetrics fm = Font.getFontMetrics(c);
+		  FontMetrics fm = FontManager.getFontMetrics(c);
 		  width = originalText.width(fm);
-		  height = originalText.height(Font.getFontMetrics(c));
+		  height = originalText.height(FontManager.getFontMetrics(c));
 		}
 	public TextIcon(Text o,int w,int h) 
 	{ originalText=o;
 	  width = w;
 	  height = h;
 	}
-
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 		int w = getIconWidth();
 		int h = getIconHeight();
-		originalText.draw(g, true, x,y,w,h,null, null);
+		originalText.draw(g, true, x, y,w,h,null,null);
 	}
 
 	public int getIconWidth() {

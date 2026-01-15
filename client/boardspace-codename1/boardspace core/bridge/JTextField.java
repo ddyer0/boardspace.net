@@ -102,6 +102,6 @@ public class JTextField extends JTextComponent implements AwtComponent
 		}
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

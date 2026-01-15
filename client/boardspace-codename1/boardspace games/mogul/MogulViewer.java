@@ -207,7 +207,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     			fh*1.25,fh*2, 0.25);
  
         Text info = TextChunk.split(s.get(DeckDescriptionStringKey));
-        FontMetrics fm = lib.Font.getFontMetrics(standardBoldFont());
+        FontMetrics fm = lib.FontManager.getFontMetrics(standardBoldFont());
         int infoH = info.height(fm);
     	int infoW = info.width(fm);
         int vcrW = fh*16;

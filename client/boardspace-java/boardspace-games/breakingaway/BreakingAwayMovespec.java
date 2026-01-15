@@ -28,7 +28,7 @@ import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 
 
 public class BreakingAwayMovespec extends commonMPMove 
@@ -217,7 +217,7 @@ public class BreakingAwayMovespec extends commonMPMove
     }
     private Text makeGraph(int from,int to,int player,commonCanvas canvas)
     {
-    	int height = Font.getFontMetrics(canvas).getHeight()*2/3;
+    	int height = FontManager.getFontMetrics(canvas).getHeight()*2/3;
     	double distance = Math.min(15, Math.max(0,to-from))/15.0;
     	Color color = ((BreakingAwayViewer)canvas).playerColor(player);
     	HorizontalBar graph = new HorizontalBar(height*10,height,distance,color);

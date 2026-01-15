@@ -33,7 +33,7 @@ import bridge.Icon;
  * @author Ddyer
  *
  */
-public interface Text {
+public interface Text extends Icon {
 	
 	/** get the first line of text */
 	public abstract Text firstLine();
@@ -224,5 +224,5 @@ public interface Text {
 		 */	
 	public abstract int draw(Graphics inG, double rotation, boolean center, Rectangle r, Color fgColour, Color bgColor);
 
-	 public abstract Icon getIcon(); 
+    public abstract Icon getIcon(DrawingObject drawon); 
 }

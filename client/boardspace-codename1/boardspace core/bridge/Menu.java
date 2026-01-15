@@ -53,8 +53,8 @@ class SimpleImage extends Component
 }
 // renderer extension that knows about our item types
 class BSrenderer<T> extends DefaultListCellRenderer<T>
-{	private AwtComponent parent = null;
-	public BSrenderer (AwtComponent pa) 
+{	private bridge.Component parent = null;
+	public BSrenderer (bridge.Component pa) 
 	{ parent = pa; 
 	}
     public Component getCellRendererComponent(Component list, Object model, T value, int index, boolean isSelected)

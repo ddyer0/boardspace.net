@@ -32,7 +32,7 @@ public class MultiGlyph implements Drawable {
 		SingleGlyph next = null;
 		SingleGlyph(Drawable d,double sc[]) { drawable = d; if(sc!=null) { scl = sc;}} 
 		
-		public void draw(Graphics gc, exCanvas c, int size, int posx, int posy,	String msg) 
+		public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy,	String msg) 
 		{
 			drawable.drawChip(gc,c,
 					(int)(size*scl[0]),
@@ -79,7 +79,7 @@ public class MultiGlyph implements Drawable {
 	 * (non-Javadoc)
 	 * @see lib.Drawable#drawChip(Graphics, exCanvas, int, int, int, java.lang.String)
 	 */
-	public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy,	String msg) 
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy,	String msg) 
 	{
 		if(drawable!=null)
 		{	

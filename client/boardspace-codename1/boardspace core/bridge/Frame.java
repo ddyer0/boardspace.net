@@ -43,7 +43,7 @@ public class Frame extends Window
 	{	super.setLayout((Layout)new NullLayout(this));
 		setOpaque(true);
 		glassPane.setSize(getWidth(),getHeight());
-		super.addC(glassPane);
+		addSelf(glassPane);
 		MasterForm.getMasterPanel().addC(this);
 	}
 	public Frame() 
@@ -72,7 +72,7 @@ public class Frame extends Window
 	}
 
 	public void addC(com.codename1.ui.Component c) 
-	{  glassPane.addC(c); 
+	{  glassPane.addSelf(c); 
 	}
 	public void remove(com.codename1.ui.Component c)
 	{	c.setVisible(false);
@@ -80,7 +80,7 @@ public class Frame extends Window
 	}
 	public void setContentPane(Container newContentPane) 
 	{	super.removeComponent(glassPane);
-		super.addC(newContentPane);
+		super.addSelf(newContentPane);
 		glassPane = newContentPane;	
 	}
 	public Container getContentPane()
@@ -209,10 +209,6 @@ public class Frame extends Window
 	public com.codename1.ui.Container add(String where,Component c)
 	{	G.Error("not expected");
 		return super.add(where,c);
-	}
-	public com.codename1.ui.Container add(Component c)
-	{
-		return glassPane.add(c);
 	}
 
 	public void setLowMemory(String string) {

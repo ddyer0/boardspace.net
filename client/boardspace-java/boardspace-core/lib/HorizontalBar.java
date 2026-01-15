@@ -33,7 +33,7 @@ public class HorizontalBar extends DrawnIcon
 			percent = pc;
 			color = c;
 		}
-		public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy, String msg) {
+		public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
 			double scale = (double)size/w;
 			int fillW = (int)(percent*size*scale);
 			//G.setColor(gc, Color.lightGray);

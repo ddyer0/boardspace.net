@@ -1609,6 +1609,8 @@ public abstract class commonCanvas extends exCanvas
      * which is usually placed on top of the board rectangle
      */
     public Rectangle stateRect = addRect("stateRect");
+    public Rectangle originalStateRect = new Rectangle();
+    
     /**
      * this is the standard rectangle to display some sort of player
      * icon next to the player name
@@ -1824,7 +1826,7 @@ public abstract class commonCanvas extends exCanvas
             String mode = p.mouseType; 
             if(mode!=null)
             {
-            	drawAnnotationSprite(g,obj,xp,yp,mode);
+            	if(!annotationsIgnore(xp,yp)) { drawAnnotationSprite(g,obj,xp,yp,mode); }
             }
             else if ((obj >= 0) && !reviewMode())
                 { // draw an object being dragged
@@ -1869,7 +1871,7 @@ public abstract class commonCanvas extends exCanvas
     {	if(chatFramed) { return(0); }
     	if(hidden.separateChat || hidden.hiddenChat) { return(0); }
     	int nominal = hidden.chatSizeAdj+(height*chatPercent)/100;
-    	int fs = lib.Font.getFontSize(standardPlainFont());
+    	int fs = lib.FontManager.getFontSize(standardPlainFont());
     	int fh = fs*14;		// minimum lines, about 7
     	int fm = fs*20;		// maximum lines, about 10
     	int maxh = height*2/3;
@@ -1915,6 +1917,11 @@ public abstract class commonCanvas extends exCanvas
      */
     public int cellSize() { return getBoard().cellSize(); }
     /**
+     * return the size for annotations on the board.  Defaults to cellSize()*3/4
+     * @return
+     */
+    public int annotationSize() { return cellSize()*3/4; }
+    /**
      * draw any object being dragged by the mouse.  In review mode, where the mouse
      * is actually moving the arrow controls, display "moving" objects at "spriteDisplayPoint"
      * 
@@ -1949,15 +1956,17 @@ public abstract class commonCanvas extends exCanvas
         
         // handle annotation menu
     	commonMove m = getCurrentMove();   	
-        if(m!=null) { annotationMenu.drawSavedAnimations(gc,m,cellSize()); }
+        if(m!=null) { annotationMenu.drawSavedAnimations(gc,m,annotationSize()); }
 
         AnnotationMenu.Annotation selected = annotationMenu.getSelected();
     	if(selected!=null)
     	{
-
+    	int l = G.Left(hp);
+    	int t = G.Top(hp);
         if(seen) { annotationMenu.setSelected(null); }
-    		else {
-    		 annotationMenu.drawAnnotation(gc,selected,cellSize(),G.Left(hp),G.Top(hp));
+    		else if(!annotationsIgnore(l,t))
+    		{
+    		 annotationMenu.drawAnnotation(gc,selected,annotationSize(),l,t);
     		 hp.hitCode = GameId.PlaceAnnotation;
     		 seen = true;
      		}
@@ -1965,7 +1974,14 @@ public abstract class commonCanvas extends exCanvas
       
     	return(seen);	// didn't draw any
     }
-
+    public boolean annotationsIgnore(int left,int top)
+    {
+    	return G.pointInRect(left,top,goalRect)
+    			|| G.pointInRect(left,top,originalStateRect)
+    			|| G.pointInRect(left,top,logRect)
+    			|| G.pointInRect(left,top,chatRect)
+    			|| G.pointInRect(left,top,vcrZone);
+    }
     /**
      * return the current real move number.  This is used by the
      * game controller to tell when to ask for the mid game digest (at 20 moves)
@@ -3440,6 +3456,9 @@ public abstract class commonCanvas extends exCanvas
     	switch(ho)
     	{
     	default: break;
+    	case StopAnnotation:
+    		annotationMenu.stopAnnotation();
+    		return true;
     	case PlaceAnnotation:
     		annotationMenu.saveCurrentAnnotation(hitPoint,getCurrentMove());
         	return true;
@@ -3826,8 +3845,9 @@ public abstract class commonCanvas extends exCanvas
             						? (commonMove) History.elementAt(vv - 1)
                                     : null;
             int n = (m == null) ? 1 : m.nVariations();
-            String txt = s.get(ChoiceString,n);
+            if(n>1)
             {
+            String txt = s.get(ChoiceString,n);
             int w = G.Width(hidden.vcrVarRect);
             int h = G.Height(hidden.vcrVarRect);
             int xp = G.Left(hidden.vcrVarRect) + w/2;
@@ -7824,7 +7844,7 @@ public Drawable getPlayerIcon(int n)
 {	
 	return new DrawnIcon(100,100,n)
 			{
-			public void drawChip(Graphics gc,exCanvas c,int sz,int x,int y,String msg)
+			public void drawChip(Graphics gc,DrawingObject c,int sz,int x,int y,String msg)
 				{
 				drawMouseSprite(gc,(int)parameter,x,y,sz*3/4);
 				}
@@ -8048,6 +8068,13 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 		Rectangle progressRect, Rectangle goalRect,String ToolTip)
 
 {	boolean someProgress = false;
+
+	if(annotationMenu.getSelected()!=null)
+	{
+		annotationMenu.showCancellation(gc,goalRect,highlight,GameId.StopAnnotation);
+	}
+	else
+	{
 	GC.setFont(gc,largePlainFont());
 	String timeMessage = timeControl.timeControlMessage();
 	if(timeMessage!=null && GoalExplanation.equals(ToolTip))
@@ -8087,7 +8114,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
     	// this is a ui hack to provide visible control over the repaint delays
         	painter.positionSliders(gc,highlight,goalRect);
     }
- 
+	}
 }
 /**
  * draws a pop up bubble with incoming chat lines
@@ -8916,15 +8943,15 @@ public void verifyGameRecord()
     	{
     		neww = r.nextInt(w-minw)+minw;
     		newh = r.nextInt(h-minh)+minh;
-    		double fac = lib.Font.adjustWindowFontSize(neww,newh);
-      	  	adjustStandardFonts(fac*lib.Font.defaultFontSize);
+    		double fac = lib.FontManager.adjustWindowFontSize(neww,newh);
+      	  	adjustStandardFonts(fac*lib.FontManager.defaultFontSize);
       	  	setLocalBoundsSync(0,0,neww,newh);
     		if(layoutErrors==0) { layoutErrors += checkLayoutBounds(); }
     	}
     	if(layoutErrors==0) 
     		{ 
-    		  double fac = lib.Font.adjustWindowFontSize(w,h);
-      	  	  adjustStandardFonts(fac*lib.Font.defaultFontSize);
+    		  double fac = lib.FontManager.adjustWindowFontSize(w,h);
+      	  	  adjustStandardFonts(fac*lib.FontManager.defaultFontSize);
 
       	  	  setLocalBoundsSync(0,0,w,h); 
     		  G.print("ok"); 
@@ -9671,8 +9698,11 @@ public void verifyGameRecord()
 		 * @param rects
 		 */
 		public void placeRow(int stateX,int stateY,int stateW,int stateH,Rectangle... rects)
-		{
-			if(rects[0]==goalRect)
+		{	if(rects[0]==stateRect)
+			{
+			G.SetRect(originalStateRect,stateX,stateY,stateW,stateH);
+			}
+			else if(rects[0]==goalRect)
 			{	int xw = stateH+stateH/4;
 				stateW -= xw;
 				G.SetRect(rulesRect,stateX+stateW,stateY,stateH,stateH);

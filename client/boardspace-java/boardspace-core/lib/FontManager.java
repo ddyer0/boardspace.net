@@ -1,9 +1,9 @@
 package lib;
 
-import bridge.SystemFont;
-import common.CommonConfig.Default;
 
-public class Font extends SystemFont {
+import bridge.SystemFont;
+
+public class FontManager extends SystemFont {
 
 	public static String defaultFontFamily = "Arial Unicode MS";
 

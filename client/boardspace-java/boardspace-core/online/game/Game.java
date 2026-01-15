@@ -899,8 +899,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     // game directory as a local file name
     public String localGameDirectory()
-    {	String fname = sharedInfo.getString(GameInfo.GAMENAME);
-    	if(fname==null) { fname = sharedInfo.getString(GameInfo.GAMETYPE);}
+    {	String fname = sharedInfo.getString(GameInfo.GAMENAME,null);
+    	if(fname==null) { fname = sharedInfo.getString(GameInfo.GAMETYPE,null); }
     	if(fname!=null)
     	{
     	GameInfo info = GameInfo.findByName(fname);

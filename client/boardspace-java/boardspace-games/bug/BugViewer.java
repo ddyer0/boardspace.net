@@ -679,25 +679,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
       * destination chip disappear until the animation is finished.
       * @param replay
       */
-//     void startBoardAnimations(replayMode replay)
-//     {
-//        if(replay.animate)
-//     	{
-//     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
-//        	while(bb.animationStack.size()>1)
-//     		{
-//     		PushfightCell dest = bb.animationStack.pop();
-//     		PushfightCell src = bb.animationStack.pop();
-//    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
-//    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
-    		//
-    		// in cases where multiple chips are flying, topChip() may not be the right thing.
-    		//
-//     		startAnimation(src,dest,dest.topChip(),bb.cellSize(),0,endTime);
-//     		}
-//     	}
-//        	bb.animationStack.clear();
-//     } 
+
 
  void playSounds(commonMove mm)
  {

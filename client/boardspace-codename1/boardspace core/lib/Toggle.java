@@ -30,8 +30,8 @@ import bridge.Color;
 @SuppressWarnings("serial")
 public class Toggle extends ToggleButton
 {
-	private DrawableImage<?> onIcon;
-	private DrawableImage<?> offIcon;
+	private Drawable onIcon;
+	private Drawable offIcon;
 	public Color foregroundColor = Color.black;
 	public Color backgroundColor = Color.white;
 	/**
@@ -42,7 +42,7 @@ public class Toggle extends ToggleButton
 	 * @param idx
 	 * @param active
 	 */
-	public Toggle(exCanvas can,String na,DrawableImage<?> ic,CellId idx,boolean active,String tip)
+	public Toggle(DrawingObject can,String na,Drawable ic,CellId idx,boolean active,String tip)
 	{	canvas = can;
 		name = na;
 		offIcon = onIcon = ic;
@@ -58,9 +58,9 @@ public class Toggle extends ToggleButton
 	 * @param offIc
 	 * @param idx
 	 */
-	public Toggle(exCanvas can,String na,
-					DrawableImage<?> ic,CellId idx,String tip,
-					DrawableImage<?> offIc,CellId idx2,String tip2)
+	public Toggle(DrawingObject can,String na,
+					Drawable ic,CellId idx,String tip,
+					Drawable offIc,CellId idx2,String tip2)
 	{	canvas = can;
 		name = na;
 		onIcon = ic;
@@ -76,7 +76,7 @@ public class Toggle extends ToggleButton
    	{	// the behavior of the hints box is choreographed so mouse-over
    		// turns on the hints while the mouse is present, click toggles
    		// it on and off
-   		DrawableImage<?> ic = isOn ? onIcon : offIcon;
+   		Drawable ic = isOn ? onIcon : offIcon;
    		Text tip = isOn ? onToolTip : offToolTip;
    		CellId id = isOn ? onId : offId;
    		int w = G.Width(this);

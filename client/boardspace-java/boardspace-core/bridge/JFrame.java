@@ -31,7 +31,7 @@ import javax.swing.JMenuBar;
 
 import lib.CanvasRotater;
 import lib.DeferredEventManager;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.Graphics;
 import lib.Http;
@@ -55,7 +55,7 @@ class JBar extends JMenuBar
 	public Dimension getPreferredSize()
 	{
 		Dimension s = super.getPreferredSize();
-		int h = (int)(2.5*Font.getFontSize(Font.getGlobalDefaultFont()));
+		int h = (int)(2.5*FontManager.getFontSize(FontManager.getGlobalDefaultFont()));
 		return new Dimension((int)s.getWidth(),(int)Math.max(h,s.getHeight()));
 		
 	}

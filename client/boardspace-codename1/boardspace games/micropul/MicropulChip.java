@@ -20,6 +20,8 @@ package micropul;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
+import lib.DrawingObject;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.Random;
@@ -468,8 +470,8 @@ public class MicropulChip extends chip<MicropulChip>
 	public String contentsString() { return("#"+index); }
 
 	// draw this chip unrotated
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
-    {	if((index<JEWEL_OFFSET)&&(label==null)) { drawChip(gc,0,canvas,SQUARESIZE,cx,cy,label); }
+	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+    {	if((index<JEWEL_OFFSET)&&(label==null)) { drawChip(gc,0,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,label); }
     	else { super.drawChip(gc,canvas,SQUARESIZE,cx,cy,label); }
     }
 	

@@ -19,6 +19,8 @@ package bridge;
 import java.util.Hashtable;
 
 import com.codename1.ui.Font;
+
+import lib.G;
 import lib.Graphics;
 import com.codename1.ui.geom.Rectangle2D;
 
@@ -71,14 +73,15 @@ public class FontMetrics {
 	LruCache widthCache = new LruCache(3);
 	public FontMetrics(Font f) 
 		{ myFont = f;
-		  fmCache.put(f,this); 
+		  // temporary until issue 4399 is fixed
+		  if(!G.isIOS()) { fmCache.put(f,this); } 
 		}
 	public static FontMetrics getFontMetrics(Font g) 
-	{	FontMetrics m = fmCache.get(g);
+	{	
+		FontMetrics m = fmCache.get(g);
 		if(m==null) 
 			{	//G.print("add font "+g+" "+fmCache.size());
 				m = new FontMetrics(g);
-				fmCache.put(g,m);
 			}
 		return m;
 	}
@@ -120,10 +123,13 @@ public class FontMetrics {
 		widthCache.storeValue(str,w);
 		return(w); 
 	}
-	public int getHeight() { return(myFont.getHeight()); }
+	public int getHeight() 
+	{	int sys = getSize();
+		int h = myFont.getHeight(); 
+		return Math.max(sys,h);
+	}
 	public int getDescent() { return(myFont.getDescent()); }
 	public int getAscent() { return(myFont.getAscent()); }
-	public static Font deriveFont(Font f,int sz) { return(SystemFont.getFont(f,sz)); }
 	public int getMaxAscent() 
 		{ // the standard spec is a little fuzzy, it says
 		  // "ascent" is the height for most alphanumeric characters,

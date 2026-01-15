@@ -154,42 +154,5 @@ public interface GameConstants
     static final String ConfirmSecondMessage = "Click on Done to confirm moving second";
     static final String BoardSetup = "Board: #1";
     static final String SwapFirst = "Play second instead of first";
-    static void putStrings()
-    { /*
-    	String [] ZertzStrings = 
-    	{
-    	BoardSetup,
-    	SwapFirst,
-    	AddOrRemoveMessage,
-        AddBallMessage,
-        RemoveRingMessage,
-        CaptureBallMessage,
-        ContinueCaptureMessage,
-        FinishCaptureMessage,
-        GoalMessage,
-        PositionRingMessage,
-        MoveOrPassMessage,
-     	ConfirmSecondMessage,
-     	};
- 
-    	String ZertzStringPairs[][]=
-    	{
-		{"Zertz","Z\u00E8rtz"},
-		{"Zertz+11","Z\u00E8rtz+11"},
-		{"Zertz+24","Z\u00E8rtz+24"},
 
-    	{"Zertz+H","Handicap Z\u00E8rtz"},
-    	{"Zertz+H_variation","Z\u00E8rtz + Handicaps"},
-		{"Handicap Zertz_variation","Z\u00E8rtz + Handicaps"},
-        {"Zertz+xx","Z\u00E8rtz Extreme"},
-        {"Zertz+xx_variation","custom layout"},
-        {"Zertz_variation","standard Z\u00E8rtz"},
-        {"Zertz+11_variation","+ 11 extra rings"},
-        {"Zertz+24_variation","+ 24 extra rings"},
-   		{"Zertz_family","Z\u00E8rtz"},
- 
-    	};
-    	InternationalStrings.put(ZertzStrings);
-    	InternationalStrings.put(ZertzStringPairs);
-    */ }
 }

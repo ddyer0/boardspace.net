@@ -2176,7 +2176,6 @@ public static String expandClassName(String classname)
 		public static boolean defaultUseKeyboard() {
 			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}
-		
 
 		
 	}

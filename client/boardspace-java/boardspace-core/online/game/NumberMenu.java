@@ -20,9 +20,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import static java.lang.Math.atan2;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import static java.lang.Math.atan2;
 import lib.CellId;
 import lib.Drawable;
 import lib.DrawableImage;
@@ -81,7 +81,7 @@ public class NumberMenu extends Rectangle {
 		// another likely choice "\u2b24"; // filled circle
 	public Drawable numberIcon = null;
 	public boolean arrowNumberMarker = false;
-	DrawableImage<?> base = null;
+	Drawable base = null;
 	CellId id = null;
 	String text = "#";
 	String helpText = "Show move numbers";
@@ -119,7 +119,7 @@ public class NumberMenu extends Rectangle {
 	 * @param ic
 	 * @param i
 	 */
-	public NumberMenu(NumberMenuHost provider,DrawableImage<?> ic,CellId i) {
+	public NumberMenu(NumberMenuHost provider,Drawable ic,CellId i) {
 		base = ic;
 		id = i;
 		text = DrawableImage.NotHelpDraw + "#";

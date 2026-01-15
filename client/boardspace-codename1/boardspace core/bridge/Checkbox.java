@@ -38,6 +38,6 @@ public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvide
 
 	public void setState(boolean b) { setSelected(b); }
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 }

@@ -1,9 +1,9 @@
 package lib;
 
-
 import bridge.SystemFont;
+import common.CommonConfig.Default;
 
-public class Font extends SystemFont {
+public class FontManager extends SystemFont {
 
 	public static String defaultFontFamily = "Arial Unicode MS";
 
@@ -27,6 +27,5 @@ public class Font extends SystemFont {
 	{	
 		return((int)(G.getDisplayScale()*sz));
 	}
-
 
 }

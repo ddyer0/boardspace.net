@@ -34,7 +34,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -6525,7 +6525,7 @@ private void drawPlayerBoard(Graphics gc,
   	int top = G.Top(bounds);
   	int width = G.Width(bounds);
   	int height = G.Height(bounds);
-  	int fh = Font.getFontSize(largeBoldFont());
+  	int fh = FontManager.getFontSize(largeBoldFont());
   	boolean censor = !pb.hiddenCardsOnTop;
   	
   	int stateH = 100;

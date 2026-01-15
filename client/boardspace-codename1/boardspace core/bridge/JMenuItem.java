@@ -52,7 +52,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 
 	public Font getFont() 
 	{ if(font==null) 
-		{ font = lib.Font.menuFont();
+		{ font = lib.FontManager.menuFont();
 		}
 	  return(font);
 	}
@@ -62,12 +62,12 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 		String text = getText();
 		if(text==null) { text="xxxx"; }
 		Font f = getFont();
-		FontMetrics fm = lib.Font.getFontMetrics(f);
+		FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		int w = fm.stringWidth(text);
 		int h = fm.getHeight();
 		return(new Dimension(w,h));
 	}
-	public Image getImage(AwtComponent parent)
+	public Image getImage(Component parent)
 	{	if(parent!=cachedParent) { cachedParent = null; cachedImage = null; }
 		if(cachedImage==null)
 		 { cachedParent = parent;
@@ -90,12 +90,12 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	Vector<ItemListener>itemListeners=null;
 	Vector<ActionListener>actionListeners = null;
 	public JMenuItem() 
-	{  setFont(lib.Font.menuFont()); 
+	{  setFont(lib.FontManager.menuFont()); 
 	};
 	public JMenuItem(String item,Font f)
 	{
 		this(item);
-		setFont(f==null ? lib.Font.menuFont() : f); 
+		setFont(f==null ? lib.FontManager.menuFont() : f); 
 	}
 	public String toString() 
 		{ 
@@ -103,6 +103,10 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 		}
 	
 	public JMenuItem(Icon m) { super(); icon = m; }
+	public JMenuItem(Icon m,Font f)
+	{	this(m);
+		setFont(f==null ? lib.FontManager.menuFont() : f);
+	}
 	public JMenuItem(String m) { super(); text = m; }
 	
 	public void setText(String t) { text = t; cachedImage = null; }
@@ -162,7 +166,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.Font.getFontMetrics(f);
+		return lib.FontManager.getFontMetrics(f);
 	}
 	/**
 	 * get an image that corresponds to the text .
@@ -174,7 +178,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	 * @return a new Image
 	 */
 	public Image getTextImage(String text,Font f,Color foreground,Color background)
-	{	FontMetrics fm = lib.Font.getFontMetrics(f);
+	{	FontMetrics fm = lib.FontManager.getFontMetrics(f);
 		int h = Math.max(1, fm.getHeight());
 		int w = Math.max(1, fm.stringWidth(text));
 		Image im = Image.createImage(w,h);

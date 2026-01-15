@@ -16,7 +16,6 @@
  */
 package circle;
 
-
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -24,7 +23,6 @@ import bridge.JCheckBoxMenuItem;
 import common.GameInfo;
 
 import static circle.CircleMovespec.*;
-
 
 import online.common.*;
 import java.util.*;
@@ -819,7 +817,6 @@ public class CircleViewer extends CCanvas<CircleCell,CircleBoard> implements Cir
     	super.verifyGameRecord();
     }
 
-    
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 

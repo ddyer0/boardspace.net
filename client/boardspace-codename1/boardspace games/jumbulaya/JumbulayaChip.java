@@ -263,7 +263,7 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     		// display the letter if the tile is not tiny
     		Font f = SystemFont.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
-    		FontMetrics fm = lib.Font.getFontMetrics(f);
+    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
     		Text ww = TextChunk.create("W");
      		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2-ss/10,cy+(int)(SQUARESIZE*0.2));

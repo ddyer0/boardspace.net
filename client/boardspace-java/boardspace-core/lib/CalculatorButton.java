@@ -229,7 +229,7 @@ public class CalculatorButton {
 			}
 		}
 		Font f = showOn.largeBoldFont();
-		Font keyFont = SystemFont.getFont(f,(int)(lib.Font.getFontSize(f)*1.5));
+		Font keyFont = SystemFont.getFont(f,(int)(lib.FontManager.getFontSize(f)*1.5));
 		GC.setFont(gc,keyFont);
 		if(rightJustify)
 			{

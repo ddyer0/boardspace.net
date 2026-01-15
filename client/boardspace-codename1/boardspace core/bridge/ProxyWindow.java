@@ -85,7 +85,7 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 		{ theComponent.pointerHover(x,y); 
 		}
 	public boolean pinch(double f,int x,int y) {  return(false);};
-	public FontMetrics getFontMetrics(Font f) { return(lib.Font.getFontMetrics(f)); }
+	public FontMetrics getFontMetrics(Font f) { return(lib.FontManager.getFontMetrics(f)); }
 
 	// constructor
 	public ProxyWindow() {  }

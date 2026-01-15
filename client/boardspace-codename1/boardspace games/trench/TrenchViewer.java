@@ -30,7 +30,7 @@ import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
-import lib.Font;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -330,7 +330,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 
-    	layout.placeDrawGroup(Font.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+    	layout.placeDrawGroup(FontManager.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
@@ -509,7 +509,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
     }
-    
+    public int annotationSize() { return CELLSIZE*3/4; }
     private int scaledCellSize(Rectangle brect,int ypos0)
     {
      	boolean perspective = !usePerspective();

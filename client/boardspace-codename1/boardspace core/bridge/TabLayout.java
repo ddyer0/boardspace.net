@@ -81,7 +81,7 @@ public class TabLayout extends com.codename1.ui.layouts.Layout
 		Font f = SystemFont.getGlobalDefaultFont();
 		int fs = SystemFont.getFontSize(f);
 		int max = (int)(fs*2.2);
-		//G.print("Font "+f+" sz ",fs," h ",max);
+		//G.print("FontManager "+f+" sz ",fs," h ",max);
 		for(int i=0;i<nc;i++) { max = Math.max(parent.getComponentAt(i).getPreferredSize().getHeight(),max); }
 		return(max);
 	}

@@ -181,7 +181,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	FontMetrics fm = lib.Font.getFontMetrics(standardBoldFont());
+    	FontMetrics fm = lib.FontManager.getFontMetrics(standardBoldFont());
     	int minLogW = fh*12;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	

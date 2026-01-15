@@ -16,6 +16,7 @@
  */
 package lib;
 
+import bridge.Component;
 import bridge.Container;
 import java.io.PrintStream;
 
@@ -43,14 +44,15 @@ public interface CanvasProtocol extends DeferredEventHandler
     */
 	public void init(ExtendedHashtable h,LFrameProtocol frame);
 
-	   /** this is a subtrafuge to allow us to know that viewers are components that can be added to AWT containers
-	    * This service is normally completely covered by the commonCanvas class, which records
-	    * the activity for later action by the viewerRun loop
-	    * */
-	public void addSelfTo(Container c);	
    /** suicide when the window is being shut down. clean up.  Close any auxiliary
     * windows, kill auxiliary processes, etc.
    */
+	public default void setParent(Container c) {}
+	/**
+	 * get the window associated with this canvas
+	 * @return
+	 */
+	public Component getComponent();
 
 	/** print debugging info for the error log.  This service is normally completely 
 	 * covered by the commonCanvas class
