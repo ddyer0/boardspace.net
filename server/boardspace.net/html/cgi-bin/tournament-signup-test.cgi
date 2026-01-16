@@ -142,7 +142,7 @@ sub fill_player_info()
 
 sub init {
 	$| = 1;				# force writes
-	__dStart( "$::debug_log", $ENV{'SCRIPT_NAME'} );
+	__dStart( "$'debug_log", $ENV{'SCRIPT_NAME'} );
 }
 
 
@@ -185,7 +185,7 @@ sub logon_admin
 	my $pw = "";
 	my $val=0;
     $adminKey = "";
-	if($passwd && $pname && ($admin eq $::tournament_password))
+	if($passwd && $pname && ($admin eq $'tournament_password))
 	{
 	my $q = "SELECT uid FROM players WHERE player_name=$slashpname AND pwhash=MD5(concat($slashpwd,uid)) AND status='ok' AND is_tournament_manager='Yes' ";
 	my $sth = &query($dbh,$q);
@@ -1441,7 +1441,7 @@ sub do_edit_tournament()
 	my $qt = $dbh->quote($tournamentid);
 	#&printForm();
 	if($delete && ($tournamentid>0))
-	{ &log_event($::tournament_log,$ENV{'SCRIPT_NAME'},"delete tournament $qt by $admin_user");
+	{ &log_event($'tournament_log,$ENV{'SCRIPT_NAME'},"delete tournament $qt by $admin_user");
 	  &commandQuery($dbh,"delete from tournament where uid=$qt");
 	  &commandQuery($dbh,"delete from participant where tid=$qt"); 
 	  &commandQuery($dbh,"delete from matchrecord where tournament=$qt");
@@ -1471,7 +1471,7 @@ sub do_edit_tournament()
 			? "insert into tournament $sets"
 			: "update tournament $sets where uid=$qt";
 	if($tournamentid<0)
-	{	&log_event($::tournament_log,$ENV{'SCRIPT_NAME'},"$admin_user created $description");
+	{	&log_event($'tournament_log,$ENV{'SCRIPT_NAME'},"$admin_user created $description");
 	}
 	#print "Q: $q<p>";
 	
@@ -1939,7 +1939,7 @@ sub sendMatchNotify()
 	#try to send the message translated to the appropriate language
  
 	if(!($lib'language eq $language)) { &readtrans_db($dbh,$language); }
- 	&send_notification($dbh,$player_name,&trans("Boardspace.net tournament activity"),$::from_email,$e_mail,$discord,$link,$tmsg);
+ 	&send_notification($dbh,$player_name,&trans("Boardspace.net tournament activity"),$'from_email,$e_mail,$discord,$link,$tmsg);
   	if(!($lib'language eq $lan)) { &readtrans_db($dbh,$lan); }
 	}
    }
@@ -2373,19 +2373,19 @@ sub do_tournamentboard()
   my $past = &param('past');
   if(lc($operation) eq 'subscribe') { $operation=''; };
 
-  my $adminok = $::tournament_password
+  my $adminok = $'tournament_password
                         && $admin
-			&& ($admin eq $::tournament_password)
+			&& ($admin eq $'tournament_password)
 			&& (&logon_admin($dbh,$admin,$admin_user,$admin_user_password)!=0);
   if($admin)
 	{
 	my $isnew = !$admininfo;
 	if($admin_user && ($isnew || !$adminok))
 	{	my $su = $adminok ? "successful " : "FAILED ";
-		&log_event($::tournament_log,$ENV{'SCRIPT_NAME'},"$su admin login by $admin_user");
+		&log_event($'tournament_log,$ENV{'SCRIPT_NAME'},"$su admin login by $admin_user");
 	}
 	if(!$adminok)
-		{ if($admin eq $::tournament_password)
+		{ if($admin eq $'tournament_password)
 			{ $operation = 'getadminpassword'; 
 			}
 			else { $admin = ""; }

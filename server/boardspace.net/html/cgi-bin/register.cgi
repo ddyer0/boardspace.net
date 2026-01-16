@@ -325,10 +325,9 @@ if( param() )
 	&readtrans_db($dbh);
 
 	my $stamp = param('timestamp');
-	&bless_parameter_length($stamp,40);	#assess for penalty
+	&bless_parameter_length($stamp,50);	#assess for penalty
 	
-	
-	if(&check_timestamp($stamp))
+	if(&check_timestamp_unique($dbh,$stamp,2))
 	{
 	if(!$jws)
 		{

@@ -287,8 +287,8 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     public Color getColor() { return(dataColor); }
     public void setColor(Color c) { dataColor = c; }
 	public String getString() { return(data); }
-	public int length() { return(data.length()); }
-	public boolean equals (String str) { return(data.equals(str)); }
+	public int length() { return(data==null ? 0 : data.length()); }
+	public boolean equals (String str) { return(data==null ? data==str : data.equals(str)); }
 	public char charAt(int idx) { return(data.charAt(idx)); }
 	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getSimpleName()+" "+((dataColor==null)?"":dataColor)+data+">"); }

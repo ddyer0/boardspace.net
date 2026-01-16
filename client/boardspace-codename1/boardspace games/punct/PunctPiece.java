@@ -22,7 +22,6 @@ import lib.Image;
 import lib.ImageLoader;
 import lib.Drawable;
 import lib.DrawingObject;
-import lib.FontManager;
 import lib.G;
 
 

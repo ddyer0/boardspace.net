@@ -27,7 +27,6 @@ import com.codename1.ui.list.ListModel;
 import com.codename1.ui.plaf.Border;
 import com.codename1.ui.plaf.Style;
 
-import lib.AwtComponent;
 import lib.G;
 import lib.Http;
 import lib.Image;

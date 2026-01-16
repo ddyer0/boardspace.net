@@ -144,7 +144,6 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void showMenu()
 	{
-		boolean DoubleIcons = false;
 		boolean Columns2 = true;
 		if(menu==null) { menu=new PopupManager(); }
 		menu.useSimpleMenu = true;
@@ -167,23 +166,13 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 			else
 			{
 			Text ic = TextGlyph.create(chip,a.name(),menu,ysize,xsize);
-			menu.addMenuItem(
-					(!DoubleIcons||chip==null)
-						? TextGlyph.create(chip,a.name(),menu,ysize,xsize) 
-						: TextGlyph.join(ic,
-								ic,
-								TextGlyph.create("++",null,menu,ysize,xsize)
-								),
-					a.index);
-			if(Columns2 && chip!=null)
-				{
+			menu.addMenuItem(ic,a.index);
 				menu.addMenuItem(
 				TextGlyph.join(
 						TextGlyph.create(chip,a.name(),menu,ysize,xsize),
-						TextGlyph.create("++",null,menu,ysize,xsize)
+						TextChunk.create("++")
 					),
 				a.index+100);
-				}
 			}
 			}
 		if(Columns2) { menu.setNColumns(2); }

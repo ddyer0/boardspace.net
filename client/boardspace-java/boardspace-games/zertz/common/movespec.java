@@ -196,7 +196,7 @@ public class movespec extends commonMove implements GameConstants
     {	
     	if(color>=0 && color<NCOLORS)
     	{
-    	return TextGlyph.create("xx",zChip.getChip(zChip.NOSHADOW_OFFSET+color), v, new double[]{1.0,1.3,-0.05,-0.25});
+    	return TextGlyph.create(zChip.getChip(zChip.NOSHADOW_OFFSET+color), v,0.75,1,0,-0.25);
     	}
     	return(TextChunk.create(""));
     }

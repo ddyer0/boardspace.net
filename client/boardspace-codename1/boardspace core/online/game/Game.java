@@ -353,11 +353,23 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return ((int) ((100.0 * focusChangedCoincidence) / Math.max(focusChangedCount,
             10)));
     }
-    private void discardGame(boolean error,String message)
-    {	if(!my.isSpectator())
+    // send the "forget" message if we've completed the actions
+    private void removeGameFromServer()
+    {	if( !offlineGame
+    		&& !my.isSpectator()
+    		&& (sendTheGame && sentTheGame)
+    		&& (sendTheResult && sentTheResult))
     	{
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
     	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
+    	}
+    }
+    
+    private void discardGame(boolean error,String message)
+    {	
+    	removeGameFromServer();
+    	if(!my.isSpectator())
+    	{
     	if(offlineGame)
         {	if(turnBasedGame!=null)
         		{
@@ -3123,7 +3135,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             String filename = fileNameString();
             String grs = gameRecordString(filename);
             String savedmsg = TSAVEDMSG + " " + filename;
-        	sendTheGame = false;		// only try once
         	if(turnBasedGame!=null)
         	{
         		turnBasedGame.recordGame(filename,grs);
@@ -3157,7 +3168,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 if (sendMessage(GameResultString))
                 {   
                 	sentTheGame = true;
-                     
+                    removeGameFromServer();
                     sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_TMCHAT+" " + savedmsg);
                     theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_TMCHAT, savedmsg);
                 }
@@ -3444,16 +3455,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         // GET /~tantrix/cgi-bin/gs_74a2d.cgi?p1=ddyer&s1=26&p2=Bdot&s2=20 HTTP/1.0
         // GET /~tantrix/cgi-bin/gs_stest.cgi?p1=ddyer&s1=26&p2=Bdot&s2=20 HTTP/1.0
         //System.out.println("Recording by " + userNames[0] + " " + recordForMe);
-    	boolean sendit = false;
-    	synchronized(this) 
-    	{
-        if(!sentTheResult)
-          {	sentTheResult = true;		// only try once
-            sendTheResult = false;
-            sendit = true;
-          }
-    	}
-    	if(sendit)
+ 
+    	if(sendTheResult && !sentTheResult)
     	{	ScoringMode sm = gameInfo.scoringMode();
     		// online and turn based games can be scored
     		boolean scorable = (playerConnections.length>1) && (turnBasedGame!=null || !offlineGame);
@@ -3494,6 +3497,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
     		}
+    		sentTheResult = true;
+    		removeGameFromServer();
      	}
     	
     }
@@ -4246,7 +4251,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if (myNetConn != null)
         {
         	  sendMessage(NetConn.SEND_NOTE+myNetConn.rawStats());
-         	  
         	  myNetConn.setExitFlag("game shudown");
         }
     }

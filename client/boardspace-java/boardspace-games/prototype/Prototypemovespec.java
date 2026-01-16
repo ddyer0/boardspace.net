@@ -166,11 +166,12 @@ public class Prototypemovespec
     }
 
     private Text icon(commonCanvas v,Object... msg)
-    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    {	
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
-    		m = TextChunk.join(TextGlyph.create("xx", chip, v,chipScale),
+    		m = TextChunk.join(
+    					TextGlyph.create(chip, v),
     					m);
     	}
     	return(m);

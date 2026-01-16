@@ -44,7 +44,7 @@ public interface Config extends CommonConfig{
    public static final String BlacklistedDataFiles[] = {""};
    
    public static int DEFAULT_SCROLL_BAR_WIDTH = 25;			// default size, should still be scaled by G.getDisplayScale()
-   public static final int MenuTextSize = 18;
+   public static final int MenuTextSize = 14;
    //
 	// version 7.78 added new logic to the resource manager, so raw files can act as a single
 	// resource.  This allows the dictionaries to be loaded without the .res files unfortunate

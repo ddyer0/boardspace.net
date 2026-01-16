@@ -73,8 +73,7 @@ param();
   my $email = param('email');
   my $stamp = param('timestamp');
   &bless_parameter_length($stamp,40);	#assess for penalty
-
-  if(&check_timestamp($stamp))
+  if(&check_timestamp($stamp,2))
   {
   $message = "from: $fromname\nfrom email: $email\ninfo: $info\n\n$message";
 

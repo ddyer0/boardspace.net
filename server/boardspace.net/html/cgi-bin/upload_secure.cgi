@@ -9,7 +9,7 @@ use File::Slurp qw(read_file);
 
 # Shared secret for HMAC-style authentication
 my $secret = "xyzzy";
-my $upload_dir = "g:/temp/uploads/";
+my $upload_dir = "/chroot/home/boardspa/boardspace.net/uploads/";
 
 # Setup CGI and headers
 my $cgi = CGI->new;

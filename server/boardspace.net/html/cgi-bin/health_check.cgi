@@ -24,15 +24,12 @@ sub init {
 }
 
 #
-# check to see if the server is accepting connections
-# and the database is accepting connections and can do
-# a minimal query.
+# check to see if the server is up, and try to launch it if not
+# log problems!
 # 
-# this is designed to be called from /uptime-probe.shtml
-# and is monitored from uptime_robot
 sub check_server()
 { my ($username,$usernum)=@_;
-  unless (socket(SOCK, PF_INET, SOCK_STREAM, $::proto))
+  unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
   {
     return 0;
   }
