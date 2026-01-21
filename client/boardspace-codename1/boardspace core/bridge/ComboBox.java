@@ -16,7 +16,6 @@
  */
 package bridge;
 
-import lib.AwtComponent;
 import lib.G;
 import lib.Image;
 import lib.SizeProvider;
@@ -65,7 +64,7 @@ class ComboDialog extends Dialog implements SizeProvider
 	}
 }
 
-public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComponent
+public class ComboBox<T> extends com.codename1.ui.ComboBox<T> 
 {	public boolean centerMenu = false;
 	public ComboBox(String s) 
 		{ super(s);

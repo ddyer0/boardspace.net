@@ -369,7 +369,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         
         while (height-- > 0)
         {
-            new piece(stackcol, color).addToStack(ps);
+            new piece(stackcol, Face.find(color)).addToStack(ps);
         }
 
         ps.Draw(g, xp-xstep, yp-2*ystep, xstep*2, ystep*2, 4, null);

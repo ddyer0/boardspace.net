@@ -1095,7 +1095,7 @@ import udp.PlaytableStack;
         //whenever the frame is initially given the focus.
         frame.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent e) {
-                newContentPane.resetFocus();
+                if(newContentPane!=null) { newContentPane.resetFocus(); }
             }
         });
 
@@ -1109,24 +1109,9 @@ import udp.PlaytableStack;
         result[0]=newContentPane;
     }
 
-	public void windowActivated(WindowEvent e) {
-	}
-	public void windowClosed(WindowEvent e) {
-	}
 	public void windowClosing(WindowEvent e) {
 		if(exitValue==null) { exitValue = cancel; }	// this is so closing the window while in the dialog will exit and recycle
 		G.wake(observer);
-	}
-	public void windowDeactivated(WindowEvent e) {
-	
-	}
-	public void windowDeiconified(WindowEvent e) {
-	}
-	public void windowIconified(WindowEvent e) {
-	
-	}
-	public void windowOpened(WindowEvent e) {
-		
 	}
 	public void adjustGuestPassword(boolean beGuest,boolean reset)
 	{

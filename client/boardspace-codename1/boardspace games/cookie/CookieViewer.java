@@ -448,10 +448,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
                 //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
                 //if(cell.topChip()!=null) { ShowDirections(gc,gb,xpos,ypos,cell); }
                 if(isASource)
-                	{GC.cacheAACircle(gc,xpos,ypos,(int)(2*scale),Color.green,Color.yellow,true);
+                	{GC.cacheAACircle(gc,xpos,ypos,(int)(3*scale),Color.green,Color.yellow,true);
                 	} else
                 if(isADest)
-                	{GC.cacheAACircle(gc,xpos,ypos,(int)(3*scale),Color.red,Color.yellow,true);
+                	{GC.cacheAACircle(gc,xpos,ypos,(int)(4*scale),Color.red,Color.yellow,true);
                 	}
                 //if(ccell.topChip()==null) { G.Text(gc,true,xpos-CELLSIZE*2,ypos-CELLSIZE*2,CELLSIZE*4,CELLSIZE*4,Color.white,null,""+ccell.col+ccell.row); }
   

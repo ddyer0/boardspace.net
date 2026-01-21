@@ -42,7 +42,8 @@ public class TextChunk implements Text
 	{ 	canvas = drawon;
 		return(this); 
 	}
-	
+	public boolean isGraphic() { return false; }
+	public boolean isEmpty() { return data==null || "".equals(data); }
 	/**
 	 * construct a text chunk, with a particular color, segmented into lines if split is true
 	 * @param str the text to use 
@@ -144,12 +145,13 @@ public class TextChunk implements Text
 			}
 		else { 
 			String message = "";
+			boolean istext = !isGraphic();
 			for(int i=0,lim=chunks.length-1;i<=lim;i++) 
 			{ Text chunk = chunks[i];
-			  message += chunk.getString(); 
+			  if(istext) { message += chunk.getString(); } 
 			  chunk.lastChunk().setNext( (i<lim) ? chunks[i+1].firstChunk() : null);
 			}
-			replacementData = data = message;
+			if(istext) { replacementData = data = message; }
 			down = chunks[0].firstChunk();
 			}
 		return(this);
@@ -289,9 +291,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     public Color getColor() { return(dataColor); }
     public void setColor(Color c) { dataColor = c; }
 	public String getString() { return(data); }
-	public int length() { return(data==null ? 0 : data.length()); }
 	public boolean equals (String str) { return(data==null ? data==str : data.equals(str)); }
-	public char charAt(int idx) { return(data.charAt(idx)); }
 	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getSimpleName()+" "+((dataColor==null)?"":dataColor)+data+">"); }
 	public void append(String str) 

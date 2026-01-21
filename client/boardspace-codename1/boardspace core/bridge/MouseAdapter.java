@@ -26,7 +26,6 @@ package bridge;
 import java.util.Stack;
 import java.util.Vector;
 
-import lib.AwtComponent;
 import lib.G;
 import lib.Log;
 import lib.PinchEvent;
@@ -82,8 +81,7 @@ public class MouseAdapter
 		}
 	}
 	
-	Component cn1Component;		// the system window that receives Codename1 events
-	AwtComponent awtComponent;		// the boardspace window that receives AWT events
+	Component component;		// the system window that receives Codename1 events
 	
 	private PressedListener pressedListener = null;
 	PressedListener getPressedListener() 
@@ -121,12 +119,9 @@ public class MouseAdapter
 	}
 	
 	public MouseAdapter(Component c) 
-	{ cn1Component = c; 
-	  awtComponent = (AwtComponent)c;
+	{ component = c; 
 
 	}
-	public void setAwtComponent(AwtComponent w) { awtComponent = w; }
-	public MouseAdapter(Component cn1,AwtComponent awt) { awtComponent = awt; cn1Component = cn1; }
 	
 	Vector<ItemListener>itemListeners = null;
 	Vector<ListSelectionListener>listSelectionListeners = null;
@@ -185,20 +180,20 @@ public class MouseAdapter
 	public void removeListeners()
 	{
 		while(!systemPressedListeners.isEmpty())
-			{ cn1Component.removePointerPressedListener(systemPressedListeners.pop()); 
+			{ component.removePointerPressedListener(systemPressedListeners.pop()); 
 			}
 	
 		while(!systemReleasedListeners.isEmpty())
-		{ cn1Component.removePointerReleasedListener(systemReleasedListeners.pop()); 
+		{ component.removePointerReleasedListener(systemReleasedListeners.pop()); 
 		}
 	
 		while(!systemDragListeners.isEmpty())
-		{ cn1Component.removePointerDraggedListener(systemDragListeners.pop()); 
+		{ component.removePointerDraggedListener(systemDragListeners.pop()); 
 		}
 		
 		while(!systemFocusListeners.isEmpty())
 		{
-			cn1Component.removeFocusListener((com.codename1.ui.events.FocusListener) systemFocusListeners.pop());
+			component.removeFocusListener((com.codename1.ui.events.FocusListener) systemFocusListeners.pop());
 		}
 		
 		removeSystemActionListeners();
@@ -208,17 +203,16 @@ public class MouseAdapter
 		mouseMotionListeners.clear();
 		actionListeners.clear();
 
-		awtComponent = null;
-		cn1Component = null;
+		component = null;
 	}
 	
 	public void addSystemListeners()
 	{
-		if(cn1Component!=null) 
-		{ cn1Component.addPointerPressedListener(getPressedListener());
-		  cn1Component.addPointerReleasedListener(getReleasedListener());
-		  cn1Component.addPointerDraggedListener(getDragListener()); 
-		  cn1Component.addFocusListener(getFocusListener());
+		if(component!=null) 
+		{ component.addPointerPressedListener(getPressedListener());
+		  component.addPointerReleasedListener(getReleasedListener());
+		  component.addPointerDraggedListener(getDragListener()); 
+		  component.addFocusListener(getFocusListener());
 		  // no specific support for mouse wheel listeners, rolled into pressed and released
 		}
 	}
@@ -233,23 +227,23 @@ public class MouseAdapter
 	{
 		// a grab bag of other classes also allow actionlistners
 		// including TextArea and 
-		if(cn1Component instanceof com.codename1.ui.TextField)
-			{ com.codename1.ui.TextField l = (com.codename1.ui.TextField)cn1Component;
+		if(component instanceof com.codename1.ui.TextField)
+			{ com.codename1.ui.TextField l = (com.codename1.ui.TextField)component;
 			  l.setDoneListener(null);
 			}
-		if(cn1Component instanceof com.codename1.ui.List)
+		if(component instanceof com.codename1.ui.List)
 		{
-			com.codename1.ui.List<?> l = (com.codename1.ui.List<?>)cn1Component;
+			com.codename1.ui.List<?> l = (com.codename1.ui.List<?>)component;
 			l.removeSelectionListener(this);
 		}
-		if(cn1Component instanceof ActionProvider)
+		if(component instanceof ActionProvider)
 		{	// this adds the actionlistener for the native codename1 window 
-			ActionProvider b = (ActionProvider)cn1Component;
+			ActionProvider b = (ActionProvider)component;
 			b.removeActionListener(this);
 		}else
 		{
-		if(cn1Component!=null) 
-			{ cn1Component.removePointerReleasedListener(this); 
+		if(component!=null) 
+			{ component.removePointerReleasedListener(this); 
 			}
 		}
 	
@@ -258,30 +252,30 @@ public class MouseAdapter
 	
 	private void addSystemFocusListener()
 	{
-		cn1Component.addFocusListener(getFocusListener());
+		component.addFocusListener(getFocusListener());
 	}
 	
 	private void addSystemActionListener()
 	{
 		// a grab bag of other classes also allow actionlistners
 		// including TextArea and 
-		if(cn1Component instanceof com.codename1.ui.TextField)
-			{ com.codename1.ui.TextField l = (com.codename1.ui.TextField)cn1Component;
+		if(component instanceof com.codename1.ui.TextField)
+			{ com.codename1.ui.TextField l = (com.codename1.ui.TextField)component;
 			  l.setDoneListener(this);
 			}
-		if(cn1Component instanceof com.codename1.ui.List)
+		if(component instanceof com.codename1.ui.List)
 		{
-			com.codename1.ui.List<?> l = (com.codename1.ui.List<?>)cn1Component;
+			com.codename1.ui.List<?> l = (com.codename1.ui.List<?>)component;
 			l.addSelectionListener(this);
 		}
-		if(cn1Component instanceof ActionProvider)
+		if(component instanceof ActionProvider)
 		{	// this adds the actionlistener for the native codename1 window 
-			ActionProvider b = (ActionProvider)cn1Component;
+			ActionProvider b = (ActionProvider)component;
 			b.addActionListener(this);
 		}else
 		{
-		if(cn1Component!=null) 
-			{ cn1Component.addPointerReleasedListener(this); }
+		if(component!=null) 
+			{ component.addPointerReleasedListener(this); }
 		}
 	}
 	public void addItemListener(ItemListener m) 
@@ -329,8 +323,8 @@ public class MouseAdapter
 	}
 	public void handleMouseEvent(com.codename1.ui.events.ActionEvent e,bType down)
 	{	
-		int thisX = cn1Component.getAbsoluteX();
-		int thisY = cn1Component.getAbsoluteY();
+		int thisX = component.getAbsoluteX();
+		int thisY = component.getAbsoluteY();
 		int x = e.getX()-thisX;
 		int y = e.getY()-thisY;
 		handleMouseEvent(x,y,down);
@@ -341,7 +335,7 @@ public class MouseAdapter
 		{
 		for(int idx = 0;idx<mouseListeners.size();idx++)
 			{	MouseListener listener = mouseListeners.elementAt(idx);
-				MouseEvent ev = new MouseEvent(awtComponent,x,y,down==bType.Up ? 0 : 1);
+				MouseEvent ev = new MouseEvent(component,x,y,down==bType.Up ? 0 : 1);
 				switch(down)
 				{
 				case Down: listener.mousePressed(ev);  break;
@@ -382,8 +376,8 @@ public class MouseAdapter
 	}
 	public void handleMouseMotionEvent(int rawX,int rawY,bType down,double amount,double angle)
 	{	
-		int thisX = cn1Component.getAbsoluteX();
-		int thisY= cn1Component.getAbsoluteY();
+		int thisX = component.getAbsoluteX();
+		int thisY= component.getAbsoluteY();
 		int x = rawX-thisX;
 		int y = rawY-thisY;
 		//Plog.log.addLog("Move ",rawX," ",rawY," ",down);
@@ -421,7 +415,7 @@ public class MouseAdapter
 					break;
 				case Down:
 					{
-						MouseEvent ev = new MouseEvent(awtComponent,x,y,1);
+						MouseEvent ev = new MouseEvent(component,x,y,1);
 						if((x!=lastMouseX) || (y!=lastMouseY))
 						{ listener.mouseDragged(ev);
 						}
@@ -429,14 +423,14 @@ public class MouseAdapter
 					break;
 				case Up:
 					{
-					MouseEvent ev = new MouseEvent(awtComponent,x,y,0);
+					MouseEvent ev = new MouseEvent(component,x,y,0);
 					listener.mouseMoved(ev);
 					}
 					break;
 				case Pinch:
 					{
 					//Log.addLog("Pinchevent "+x+","+y+" "+amount+" raw "+rawX+","+rawY);
-					PinchEvent ev = new PinchEvent(awtComponent,amount,x,y,angle);
+					PinchEvent ev = new PinchEvent(component,amount,x,y,angle);
 					listener.mousePinched(ev);
 					}
 					break;
@@ -448,16 +442,16 @@ public class MouseAdapter
 	}
 	public String getCommand(Type eventType)
 	{
-		if(cn1Component!=null) 
-		{	if(cn1Component instanceof JTextField)
+		if(component!=null) 
+		{	if(component instanceof JTextField)
 			{	// for "done" events, return the action string
 				// otherwise return "".  For example, this is the case for PointerReleased events
-				String str = (eventType==Type.Done) ? ((JTextField)cn1Component).getCommand() : "";
+				String str = (eventType==Type.Done) ? ((JTextField)component).getCommand() : "";
 				return(str);
 			}
-			if(cn1Component instanceof Button)
+			if(component instanceof Button)
 			{
-				Button com = (Button)cn1Component;
+				Button com = (Button)component;
 				Command comm = com.getCommand();
 				if(comm!=null) { return(comm.getCommandName()); }
 			}
@@ -477,7 +471,7 @@ public class MouseAdapter
 			{
 				bridge.MouseWheelListener listener = mouseWheelListeners.elementAt(idx); 
 				//Plog.log.addLog("dispatch action to ",listener);
-				MouseWheelEvent e = new MouseWheelEvent(awtComponent,x,y,0,direction);
+				MouseWheelEvent e = new MouseWheelEvent(component,x,y,0,direction);
 				listener.mouseWheelMoved(e);
 			}		
 		}
@@ -490,7 +484,7 @@ public class MouseAdapter
 			{
 				bridge.ActionListener listener = actionListeners.elementAt(idx); 
 				//G.print("dispatch action to "+listener);
-				ActionEvent ev = new ActionEvent(awtComponent,getCommand(type),x,y);
+				ActionEvent ev = new ActionEvent(component,getCommand(type),x,y);
 				listener.actionPerformed(ev);
 			}
 		}
@@ -500,27 +494,27 @@ public class MouseAdapter
 	{	//Plog.log.addLog("Item event "+e+" "+itemListeners);
 		if(itemListeners!=null)
 		{
-		int thisX = cn1Component.getAbsoluteX();
-		int thisY = cn1Component.getAbsoluteY();
+		int thisX = component.getAbsoluteX();
+		int thisY = component.getAbsoluteY();
 		int x = e==null ? 0 : e.getX()-thisX;
 		int y = e==null ? 0 : e.getY()-thisY;
 		for(int idx = 0;idx<itemListeners.size();idx++)
 			{
 				ItemListener listener = itemListeners.elementAt(idx);
-				ItemEvent ev = new ItemEvent(awtComponent,x,y);
+				ItemEvent ev = new ItemEvent(component,x,y);
 				listener.itemStateChanged(ev);
 			}
 		}
 		if(listSelectionListeners!=null)
 		{
-		int thisX = cn1Component.getAbsoluteX();
-		int thisY = cn1Component.getAbsoluteY();
+		int thisX = component.getAbsoluteX();
+		int thisY = component.getAbsoluteY();
 		int x = e==null ? 0 : e.getX()-thisX;
 		int y = e==null ? 0 : e.getY()-thisY;
 		for(int idx = 0;idx<listSelectionListeners.size();idx++)
 			{
 				ListSelectionListener listener = listSelectionListeners.elementAt(idx);
-				ListSelectionEvent ev = new ListSelectionEvent(awtComponent,x,y);
+				ListSelectionEvent ev = new ListSelectionEvent(component,x,y);
 				listener.valueChanged(ev);
 			}
 		}

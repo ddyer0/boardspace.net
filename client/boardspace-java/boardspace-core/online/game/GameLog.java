@@ -110,17 +110,22 @@ public class GameLog implements Opcodes
      */
     private Text combineLines(Text p1,Text sms)
     {
-    	if(p1.equals("")) { return(sms); }
-    	if(sms.equals("")) { return(p1); }
-    	int len = p1.length();
-        if ((len > 0)
-        		&& (p1.charAt(len-1)>='0')
-        		&& (sms.charAt(0) >= 'A')
-        		&& (p1.charAt(len-1)!=':'))
+    	if(p1.isEmpty()) { return(sms); }
+    	if(sms.isEmpty()) { return(p1); }
+    	
+        if (!p1.isGraphic()
+        	&& !sms.isGraphic())
+        {	String str = p1.getString();
+        	String str2 = sms.getString();
+        	int len = str.length();
+        	char lastChr = str.charAt(len-1);
+        	if((lastChr>='0')
+        		&& (str2.charAt(0) >= 'A')
+        		&& (lastChr!=':'))
         { //insert a comma between move parts unless there
           //is already some punctuation or spacing
             p1.append(",");
-        }
+        }}
         p1.append(sms);
         return(p1);
     }
@@ -405,7 +410,7 @@ public class GameLog implements Opcodes
                 else 
                 { 
                 p1 = newline; 
-                if(p1.length()>0) { linebreak |= sp.getLineBreak();	}
+                if(!p1.isEmpty()) { linebreak |= sp.getLineBreak();	}
                 }                 
 
             }
@@ -659,7 +664,7 @@ public class GameLog implements Opcodes
                 // output related to the accumulated line
        	int owed = 0;
            int breakYpos = ypos;
-       	if(idx>=sz || currentLine.length()>0 || (gameEvents!=null))
+       	if(idx>=sz || !currentLine.isEmpty() || (gameEvents!=null))
          	{	// output the line we have built
          		int h = currentLine.lineHeight(myFM);
               maxLineHeight = Math.max(h,maxLineHeight);
@@ -710,7 +715,7 @@ public class GameLog implements Opcodes
  				{ earlyExit=true; }	// shut off the rendering
               }
               
-              if(currentLine.length()>0) 
+              if(!currentLine.isEmpty())
               	{ ypos += h; 
               	}
               	else 

@@ -42,7 +42,7 @@ import lib.*;
  *
  * 
  */
-public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants
+public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants,NumberMenuHost
 {
      /**
 	 */
@@ -1000,7 +1000,11 @@ private void playSounds(commonMove m)
   		  StockArt.SwingCCW.drawChip(gc,this,cellSize/2,x,y+cellSize/6,null);
   		  break;
   	  }
-  	  super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
+  	 // super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);
+  	 GC.setFont(gc,font);
+  	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
+  			str);
+ 	
     }
 }
 

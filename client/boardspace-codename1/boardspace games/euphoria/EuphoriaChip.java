@@ -172,7 +172,8 @@ public class EuphoriaChip extends chip<EuphoriaChip>
     //
     public boolean pointInsideCell(HitPoint p,int x,int y,int sqx,int sqy)
     {
-    	return(super.pointInsideCell(p,x,y,sqx*2,sqy*2));
+    	//return(super.pointInsideCell(p,x,y,sqx*2,sqy*2));
+    	return(pointInsideCell(p,x,y,sqx*2,sqy*2,0.66));
     }
     static private EuphoriaChip[] colorArray(int baseidx,String basename)
     {	Colors co[] = Colors.values();

@@ -16,14 +16,12 @@
  */
 package bridge;
 
-import lib.AwtComponent;
-
 import com.codename1.ui.Command;
 import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Point;
 
-public class Button extends com.codename1.ui.Button implements ActionProvider,AwtComponent
+public class Button extends com.codename1.ui.Button implements ActionProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
 	Image theImage = null;

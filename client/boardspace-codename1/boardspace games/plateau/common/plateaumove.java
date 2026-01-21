@@ -26,13 +26,16 @@ public class plateaumove extends commonMove implements PlateauConstants
     static ExtendedHashtable D = new ExtendedHashtable(true); // dictionary 
 
     static
-    {	addStandardMoves(D);
-        D.put("move", MOVE_FROMTO);
-        D.put("onboard", MOVE_ONBOARD);
-        D.put("flip", MOVE_FLIP);
-
-        D.put("pick", MOVE_PICK);
-        D.put("drop", MOVE_DROP);
+    {	addStandardMoves(D,
+    		"exchange",MOVE_EXCHANGE,
+    		"move", MOVE_FROMTO,
+    		"onboard", MOVE_ONBOARD,
+    		"flip", MOVE_FLIP,
+    		"pick", MOVE_PICK,
+    		"robotexchange",108,
+    		"robotmove",109,
+    	    "robotonboard",MOVE_ROBOT_ONBOARD,
+    		"drop", MOVE_DROP);
 
     }
 
@@ -64,6 +67,21 @@ public class plateaumove extends commonMove implements PlateauConstants
     { //System.out.println("Mv: "+str);
         parse(new Tokenizer(str),pl);
     }
+
+    public plateaumove(int opc,String str,int p)
+    {
+    	op = opc;
+    	pieces = str;
+    	player = p;
+    }
+    
+    public plateaumove(int moveFromto, String locus2, int i, String allColors, double weight, String locus3, int who) {
+		G.Error("not yet");
+	}
+
+	public plateaumove(String loc, int i, String colors, double w, String colors2, String pnum, int who) {
+		G.Error("not yet");
+	}
 
     /* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)
@@ -131,6 +149,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         break;
 
+        case MOVE_EXCHANGE:
+	    	{	
+	    	pieces = msg.nextToken();
+	    	}
+    	break;
+    	
         case MOVE_ONBOARD:
         {
             locus = msg.nextToken();
@@ -271,7 +295,7 @@ public class plateaumove extends commonMove implements PlateauConstants
             if ("T".equals(locus) || "P".equals(locus))
             { // shuffle prisoners to and from exchange
 
-                return (pieceTypeStr[pick]);
+                return "X";//(pieceTypeStr[pick]);
             }
 
             return (locus + ((level == 0) ? "" : levelString()));

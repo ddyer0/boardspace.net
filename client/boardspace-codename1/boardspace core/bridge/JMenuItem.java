@@ -18,7 +18,6 @@ package bridge;
 
 import java.util.Vector;
 
-import lib.AwtComponent;
 import lib.GC;
 import lib.Graphics;
 import lib.NativeMenuInterface;
@@ -28,7 +27,7 @@ import lib.Image;
 import com.codename1.ui.geom.Dimension;
 
 
-public class JMenuItem extends Component implements ActionListener,AwtComponent,NativeMenuItemInterface
+public class JMenuItem extends Component implements ActionListener,NativeMenuItemInterface
 {	MouseAdapter mouse = new MouseAdapter(null);
 	String text = null;
 	Object item = null;
@@ -37,7 +36,7 @@ public class JMenuItem extends Component implements ActionListener,AwtComponent,
 	public Icon getIcon() { return(icon); }
 	public Icon getNativeIcon() { return(icon); }
 	private Image cachedImage = null; 
-	private AwtComponent cachedParent = null;
+	private Component cachedParent = null;
 	static final int MenuTextSize = 14;
 	static final SystemFont.Style MenuTextStyle = SystemFont.Style.Plain;
 	private Color fgcolor = Color.black;

@@ -17,7 +17,6 @@
 package bridge;
 
 import lib.AppendInterface;
-import lib.AwtComponent;
 import lib.G;
 import lib.Http;
 import lib.ShellProtocol;
@@ -34,7 +33,7 @@ import com.codename1.ui.geom.Dimension;
 // this is unused as long as we don't reinstate the window based chat
 
 public class TextArea extends com.codename1.ui.TextArea 
-	implements ActionProvider,AwtComponent,AppendInterface,ActionListener
+	implements ActionProvider,AppendInterface,ActionListener
 {	TextArea(int r,int c) { super(r,c); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }

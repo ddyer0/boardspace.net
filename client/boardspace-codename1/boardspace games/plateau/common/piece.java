@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,22 +12,22 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package plateau.common;
 
-import bridge.Color;
-import bridge.ImageObserver;
+
 import java.util.*;
+
+import bridge.Color;
 import lib.Graphics;
 import lib.Image;
-import online.game.Opcodes;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
 
 // plateau piece
-public class piece implements PlateauConstants, ImageObserver, Opcodes
+public class piece implements PlateauConstants
 {
     // these image arrays are initialized by the viewer class but used here.
     public static Image[][] top_images;
@@ -40,53 +40,37 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
     int pieceType; // the piece type, mainly used to place the piece positionally on a rack
     boolean hittop = false; // true if this piece is current hit on top by the mouse
     pstack mystack; // the stack which contains this piece.
-    private int vis_top_color; // the color showing on top
-    private int vis_bottom_color; // the color (not)showing on bottom
-    private int real_top_color;
-    private int real_bottom_color;
+    private Face vis_top_color; // the color showing on top
+    private Face vis_bottom_color; // the color (not)showing on bottom
+    private Face real_top_color;
+    private Face real_bottom_color;
     private boolean flipped;
     public int placedPosition;	// initial position when placed onboard
+    PieceType piece;
     int realPieceType; // remembers the real piece type of anonymized pieces
     // represent imperfect knowledge of opponent colors
     int possibleid;
 
-    // record the state of visible faces and deduced identity
-    final int faceColorCode(int n)
-    {	G.Assert((n>=FACE_COLOR_OFFSET)&&(n<=(FACE_COLOR_OFFSET+15)),"code ok");
-    	return(n-FACE_COLOR_OFFSET);
-    }
-    public int getState() 
-    	{ return((possibleid<<9) 
-    			| ((flipped?(1<<8):0)
-    			| (faceColorCode(vis_top_color)<<4)
-    			| (faceColorCode(vis_bottom_color)))); 
-    	}
-    public void setState(int state)
-    	{	possibleid = (state>>9);
-    		boolean newflipped = ((state>>8)&1)==1;
-    		if(newflipped!=flipped) { flip(); }
-    		vis_top_color = FACE_COLOR_OFFSET+((state>>4)&0xf);
-    		vis_bottom_color = FACE_COLOR_OFFSET+(state&0xf);
-    		G.Assert(getState()==state,"got the desired state");
-    	}
     // constructor for permanent pieces
-    public piece(int own, int ind, int type,long rv)
-    {
+    public piece(PieceType p,int own, int ind, int type,long rv)
+    {	piece = p;
         owner = own;
         piecenumber = ind;
         realPieceType = type;
-        real_top_color = topColor[type];
-        real_bottom_color = bottomColor[type];
+        real_top_color = p.topColor;
+        real_bottom_color = p.bottomColor;
         randomv = rv;
         revealAll();
     }
+    boolean topIsUnknown() { return(vis_top_color==Face.Unknown); }
+    boolean bottomIsUnknown() { return(vis_bottom_color==Face.Unknown); }
 
     // constructor for temporary pieces
-    public piece(int own, int color)
+    public piece(int own, Face color)
     {
         owner = own;
         real_top_color = vis_top_color = color;
-        real_bottom_color = vis_bottom_color = UNKNOWN_FACE;
+        real_bottom_color = vis_bottom_color = Face.Unknown;
     }
 
 
@@ -107,8 +91,8 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
     {
         pointvalue = 0;
         pieceType = -1;
-        vis_top_color = UNKNOWN_FACE;
-        vis_bottom_color = UNKNOWN_FACE;
+        vis_top_color = Face.Unknown;
+        vis_bottom_color = Face.Unknown;
         possibleid = MAYCONTAINMUTE | MAYCONTAINBLUE | MAYCONTAINRED |
             MAYCONTAINORANGE;
     }
@@ -120,64 +104,59 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
 
     public String topColorString()
     {
-        return (ColorChars[vis_top_color - FACE_COLOR_OFFSET]);
+        return vis_top_color.shortName;
     }
 
-    public int visTopColor()
+    public Face visTopColor()
     {
         return (vis_top_color);
     }
 
-    public int realTopColor()
+    public Face realTopColor()
     {
         return (real_top_color);
     }
 
-    public int realBottomColor()
+    public Face realBottomColor()
     {
         return (real_bottom_color);
     }
 
     public String bottomColorString()
     {
-        return (ColorChars[vis_bottom_color - FACE_COLOR_OFFSET]);
+        return (vis_bottom_color.shortName);
     }
 
     public String colorString()
-    { // top first
-
-        return (ColorChars[vis_top_color - FACE_COLOR_OFFSET] +
-        ColorChars[vis_bottom_color - FACE_COLOR_OFFSET]);
+    { 	// top first
+        return (vis_top_color.shortName +  vis_bottom_color.shortName);
     }
 
     public String realTopColorString()
     { // top first
-
-        return (ColorChars[real_top_color - FACE_COLOR_OFFSET]);
+        return (real_top_color.shortName);
     }
 
     public String realBottomColorString()
     { // top first
 
-        return (ColorChars[real_bottom_color - FACE_COLOR_OFFSET]);
+        return (real_bottom_color.shortName);
     }
 
     public String realColorString()
     { // top first
-
-        return (ColorChars[real_top_color - FACE_COLOR_OFFSET] +
-        ColorChars[real_bottom_color - FACE_COLOR_OFFSET]);
+        return (real_top_color.shortName + real_bottom_color.shortName);
     }
 
     void resetColor(String col)
     {
-        for (int i = 0; i < ColorChars.length; i++)
+        for (Face f : Face.values())
         {
-            if (ColorChars[i].equals(col))
+            if (f.shortName.equals(col))
             {
-                vis_top_color = FACE_COLOR_OFFSET + i;
-                possibleid |= ColorKnown[i];
-                possibleid &= ColorUnknown[i];
+                vis_top_color = f;
+                possibleid |= ColorKnown[f.ordinal()];
+                possibleid &= ColorUnknown[f.ordinal()];
             }
         }
     }
@@ -193,11 +172,10 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
     public void revealAll()
     {
         pieceType = realPieceType;
-        pointvalue = pointValue[realPieceType];
+        pointvalue = piece.value;
         vis_top_color = real_top_color;
         vis_bottom_color = real_bottom_color;
-        possibleid = ColorKnown[vis_top_color - FACE_COLOR_OFFSET] |
-            ColorKnown[vis_bottom_color - FACE_COLOR_OFFSET];
+        possibleid = vis_top_color.colorKnown() | vis_bottom_color.colorKnown();
     }
 
     public void revealTop()
@@ -210,8 +188,8 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
         {
             // reveal just the top
             vis_top_color = real_top_color;
-            possibleid |= ColorKnown[vis_top_color - FACE_COLOR_OFFSET];
-            possibleid &= ColorUnknown[vis_top_color - FACE_COLOR_OFFSET];
+            possibleid |= vis_top_color.colorUnknown();
+            possibleid &= vis_top_color.colorUnknown();
         }
     }
 
@@ -319,7 +297,7 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
 
     public boolean isMute()
     {
-        return (real_top_color == BLANK_FACE);
+        return (real_top_color == Face.Blank);
     }
 
     public boolean isMonoColor()
@@ -334,7 +312,7 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
 
     public boolean flip()
     {
-        int c = vis_top_color;
+        Face c = vis_top_color;
         vis_top_color = vis_bottom_color;
         vis_bottom_color = c;
         c = real_top_color;
@@ -385,12 +363,11 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
                 Image im = (prevchip != null)
                     ? (stack_images[owner][(prevchip.owner == 0)
                     ? 0 : 1]) : single_images[owner][0];
-                Image topIm = top_images[owner][vis_top_color -
-                    FACE_COLOR_OFFSET];
+                Image topIm = top_images[owner][vis_top_color.ordinal()];
 
                 if (im != null)
                 {
-                im.drawImage(g, left, top + h2, w, h - h2); // draw the bottom strip
+                   im.drawImage(g, left, top + h2, w, h - h2); // draw the bottom strip
 
                     if (hitbot && (highLight.hitObject == this))
                     {
@@ -422,7 +399,7 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
 
                     if (ontop)
                     {
-                    topIm.drawImage(g, left, top, w, h2); // draw the cap
+                       topIm.drawImage(g, left, top, w, h2); // draw the cap
 
                         if (legalhit && hittop)
                         {
@@ -439,7 +416,7 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
             if (!drawn)
             {
                 GC.Text(g, true, left, top, w, h, Color.black, null,
-                    ColorNames[vis_top_color - FACE_COLOR_OFFSET]);
+                		vis_top_color.shortName);
             }
         }
     }
@@ -447,12 +424,13 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
     // a pretty string for debugging
     public String toString()
     {
-        return ("[" + PLAYERCOLORS[owner] + "#"+piecenumber + " " +
-        ColorNames[vis_top_color - FACE_COLOR_OFFSET] + "/" +
-        ColorNames[vis_bottom_color - FACE_COLOR_OFFSET] + "]");
-    }
+        return ("[" + PLAYERCOLORS[owner] 
+        		+ "#"+piecenumber + " " 
+        		+ topColorString() + " "
+        		+ bottomColorString());
+     }
     long Piece_Digest() { return(randomv); }
-    long Face_Digest(Random r, int color)
+    long Face_Digest(Random r, Face color)
     {
     	long v1 = r.nextLong();
     	long v2 = r.nextLong();
@@ -465,19 +443,19 @@ public class piece implements PlateauConstants, ImageObserver, Opcodes
         default:
         	throw G.Error("Illegal face color %s", color);
 
-        case UNKNOWN_FACE:
+        case Unknown:
             return (v1);
 
-        case BLANK_FACE:
+        case Blank:
             return (v2);
 
-        case RED_FACE:
+        case Red:
             return (v3);
 
-        case BLUE_FACE:
+        case Blue:
             return (v4);
 
-        case ORANGE_FACE:
+        case Orange:
             return (v5);
         }
     }

@@ -43,19 +43,19 @@ public interface WindowListener extends EventListener {
     /**
      * Invoked the first time a window is made visible.
      */
-    public void windowOpened(WindowEvent e);
+    public default void windowOpened(WindowEvent e) {}
 
     /**
      * Invoked when the user attempts to close the window
      * from the window's system menu.
      */
-    public void windowClosing(WindowEvent e);
+    public default void windowClosing(WindowEvent e) {};
 
     /**
      * Invoked when a window has been closed as the result
      * of calling dispose on the window.
      */
-    public void windowClosed(WindowEvent e);
+    public default void windowClosed(WindowEvent e) {};
 
     /**
      * Invoked when a window is changed from a normal to a
@@ -64,13 +64,13 @@ public interface WindowListener extends EventListener {
      * iconImage property.
      * @see java.awt.Frame#setIconImage
      */
-    public void windowIconified(WindowEvent e);
+    public default void windowIconified(WindowEvent e) {};
 
     /**
      * Invoked when a window is changed from a minimized
      * to a normal state.
      */
-    public void windowDeiconified(WindowEvent e);
+    public default void windowDeiconified(WindowEvent e) {};
 
     /**
      * Invoked when the Window is set to be the active Window. Only a Frame or
@@ -80,7 +80,7 @@ public interface WindowListener extends EventListener {
      * focused Window, or the first Frame or Dialog that is an owner of the
      * focused Window.
      */
-    public void windowActivated(WindowEvent e);
+    public default void windowActivated(WindowEvent e) {};
 
     /**
      * Invoked when a Window is no longer the active Window. Only a Frame or a
@@ -90,5 +90,5 @@ public interface WindowListener extends EventListener {
      * Window, or the first Frame or Dialog that is an owner of the focused
      * Window.
      */
-    public void windowDeactivated(WindowEvent e);
+    public default void windowDeactivated(WindowEvent e) {};
 }

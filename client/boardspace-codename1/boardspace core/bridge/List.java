@@ -19,14 +19,13 @@ package bridge;
 import com.codename1.ui.Font;
 import com.codename1.ui.list.DefaultListCellRenderer;
 import com.codename1.ui.list.ListModel;
-import lib.AwtComponent;
 import lib.G;
 
 //
 // the overall behavior of codename1 List is altered so you can
 // always drag without selecting an item, but press-move or long press
 //
-public class List<T> extends com.codename1.ui.List<T> implements ActionProvider,AwtComponent
+public class List<T> extends com.codename1.ui.List<T> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	boolean down = false;

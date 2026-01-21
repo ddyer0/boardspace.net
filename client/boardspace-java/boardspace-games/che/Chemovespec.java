@@ -145,11 +145,11 @@ public class Chemovespec extends commonMove implements CheConstants
     
 
     private Text icon(commonCanvas v,CheChip obj,Object... msg)
-    {	double chipScale[] = {1,1.2,0,-0.5};
+    {	
     	Text m = TextChunk.create(G.concat(msg));
     	if(obj!=null)
     	{
-    		m = TextChunk.join(TextGlyph.create("xx", obj, v,chipScale),
+    		m = TextChunk.join(TextGlyph.create( obj, v,0.9,0.9,0,-0.2),
     					m);
     	}
     	return(m);

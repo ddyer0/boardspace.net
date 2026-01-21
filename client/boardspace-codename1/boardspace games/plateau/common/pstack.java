@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package plateau.common;
 
@@ -21,12 +21,20 @@ import lib.Graphics;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.OStack;
 import online.game.PlacementProvider;
 
-
+class CellStack extends OStack<pstack>
+{
+	public pstack[] newComponentArray(int sz) {
+		
+		return new pstack[sz];
+	}
+	
+}
 // stack of plateau pieces
 public class pstack implements PlateauConstants, PlacementProvider
-{
+{	pstack next = null;
     PlateauBoard b = null; // the associated board
     int stacknumber = -1; // index into the stacks array
     int origin = UNKNOWN_ORIGIN; // what kind of stack this is
@@ -55,6 +63,28 @@ public class pstack implements PlateauConstants, PlacementProvider
             setElementAt(from.elementAt(i), i);
         }
     }
+    // constructor for temporary stacks used by the mouse sprite
+    public pstack(PlateauBoard bd, int or)
+    {
+        b = bd;
+        origin = or;
+    }
+
+    public String pickSubset(int ss)
+    {	String str = "";
+    	String comma = "";
+    	
+        for (int i = 0; i < size(); i++, ss = ss >> 1)
+        {
+            if ((ss & 1) == 1)
+            {
+            	int chip = elementAt(i).piecenumber;
+            	str += comma + chip;
+             	comma = ",";
+            }
+        }
+        return (str.toString());
+    }
     public boolean containsStackOfSix(int forplayer)
     {
     	int start = size()-1;
@@ -66,12 +96,6 @@ public class pstack implements PlateauConstants, PlacementProvider
     		start--;
     	}
     	return(false);
-    }
-    // constructor for temporary stacks used by the mouse sprite
-    public pstack(PlateauBoard bd, int or)
-    {
-        b = bd;
-        origin = or;
     }
 
     // constructor for stacks used constructing the board
@@ -193,7 +217,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         {
             piece p = elementAt(i);
 
-            if (p.realTopColor() != MUTE_INDEX)
+            if (p.realTopColor() != Face.Blank)
             {
                 nc++;
             }
@@ -324,7 +348,16 @@ public class pstack implements PlateauConstants, PlacementProvider
             addElement(st.elementAt(i));
         }
     }
-
+    public Face topFace()
+    {
+        return (topPiece().visTopColor());
+    }
+    public boolean stompCapture()
+    {
+        if(size()==0) { return (false); }
+        return(!elementAt(0).unobstructed());
+    }
+   
     public piece topPiece()
     {
         int sz = size();
@@ -341,7 +374,23 @@ public class pstack implements PlateauConstants, PlacementProvider
             p.revealTop();
         }
     }
-
+    /* 
+     * true if the stack contains a colored top before from_h (the bottom) and to_h (the top)
+     */
+    public boolean containsColor(int from_h,int to_h)
+    {
+    	for(int i=from_h; i<to_h; i++)
+    	{
+    		piece p = elementAt(i);
+    		if(!p.isMute()) { return(true); }
+    	}
+    	return(false);
+    }
+    // true if the stack contains any piece showing color on top
+    // This is the test if a stack can be used to pin
+    public boolean containsColor()
+    {	return(containsColor(0,size()));
+    }
     // return the player who owns the stack
     public int topOwner()
     {
@@ -350,22 +399,6 @@ public class pstack implements PlateauConstants, PlacementProvider
         return ((p == null) ? (-1) : p.owner);
     }
 
-    // true if the stack contains any piece showing color on top
-    // This is the test if a stack can be used to pin
-    public boolean containsColor()
-    {
-        for (int i = 0; i < size(); i++)
-        {
-            piece p = elementAt(i);
-
-            if (!p.isMute())
-            {
-                return (true);
-            }
-        }
-
-        return (false);
-    }
 
     // the takeoff height moving from a board piece.  This is not
     // necessarily the same as the stack height or the number of 
@@ -403,13 +436,13 @@ public class pstack implements PlateauConstants, PlacementProvider
         return (elementAt(sz - 1));
     }
 
-    public int realTopBottomColor()
+    public Face realTopBottomColor()
     {
         int sz = size();
 
         if (sz == 0)
         {
-            return (-1);
+            return (Face.Unknown);
         }
 
         piece p = elementAt(sz - 1);
@@ -417,13 +450,13 @@ public class pstack implements PlateauConstants, PlacementProvider
         return (p.realBottomColor());
     }
 
-    public int realTopColor()
+    public Face realTopColor()
     {
         int sz = size();
 
         if (sz == 0)
         {
-            return (-1);
+            return (Face.Unknown);
         }
 
         piece p = elementAt(sz - 1);
@@ -498,6 +531,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         return (false);
     }
     
+ 
     public int hashCode()
     {	int mysize = size();
     	int v = 0;
@@ -667,7 +701,18 @@ public class pstack implements PlateauConstants, PlacementProvider
             }
         }
     }
-
+    
+    public int controlledStackHeight(int forplayer)
+    {	int h = size()-1;
+    	int n = 0;
+    	while(h>=0)
+    	{	
+    	piece pp = elementAt(h--);
+    	if(pp.owner!=forplayer) { return(n); }
+    	n++;
+    	}
+    	return(n);
+    }
     public int getLastPlacement(boolean empty) {
 		return empty ? lastPicked : lastDropped;
 	}

@@ -2624,7 +2624,15 @@ synchronized(allGames) {
 	 mm.hasHiddenInformation = true;
 	 mm.okForTurnbased = G.debug();
 	 mm.longMessage = "PlateauGameInfoMessage";
+	}{
 	 // needs a compantion app for your played pieces and pool of available pieces
+	 GameInfo mm = put(new GameInfo(681,ES.game,2,"P",OtherGames,"Plateau","Plateau5",
+				NoBots,null,
+				"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
+				"/plateau/english/plateau-video.html",false, BlackOverWhite));
+		 mm.hasHiddenInformation = true;
+		 mm.okForTurnbased = G.debug();
+		 mm.longMessage = "PlateauGameInfoMessage";
 
 	}
 	put(new GameInfo(691,ES.test,88,"MC",AncientGames,"Mancala","Mancala",

@@ -59,13 +59,6 @@ public class Canvas extends Component implements WindowListener,MouseListener,Mo
 	}
 
 	/* dummy methods to be overridden */
-	public void windowOpened(WindowEvent e) { }
-	public void windowClosing(WindowEvent e) {	}
-	public void windowClosed(WindowEvent e) { }
-	public void windowIconified(WindowEvent e) {  }
-	public void windowDeiconified(WindowEvent e) { }
-	public void windowActivated(WindowEvent e) { }
-	public void windowDeactivated(WindowEvent e) { }
 
 	public void mouseClicked(MouseEvent e) { }
 	public void mousePressed(MouseEvent e) { }

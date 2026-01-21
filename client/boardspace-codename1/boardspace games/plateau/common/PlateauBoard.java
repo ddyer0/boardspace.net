@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,21 +12,20 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package plateau.common;
 
-import bridge.Color;
-import com.codename1.ui.geom.Rectangle;
-
 import java.util.*;
 
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
 import lib.Graphics;
 import lib.AR;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.IStack;
 import lib.Tokenizer;
 import online.game.*;
 
@@ -46,8 +45,8 @@ that the mouse is pointing at it, and make notes which help drive the
 state machine.
 */
 public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauConstants
-{   final int nrows = 4;
-	final int ncols = 4;
+{   int nrows = 0;
+	int ncols = 0;
 	private PlateauState unresign;
 	private PlateauState board_state;
 	public int placementIndex = -1;
@@ -60,7 +59,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			}
 	}
     //dimensions for the viewer to use
-    private pstack[][] board = new pstack[nrows][ncols]; //the board is a 2d array of pstacks
+    private pstack[][] board; //the board is a 2d array of pstacks
+    public pstack getCell(char col,int row)
+    {
+    	return board[col-'A'][row-1];
+    }
     private int anonymized_for = -1;
     double lineStrokeWidth = 1;
     // stacks are sized NPIECETYPES so they can be sorted with each type of
@@ -68,23 +71,23 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     private pstack[][] rack = new pstack[2][NPIECETYPES]; // reserve pieces
     private pstack[][] bar = new pstack[2][NPIECETYPES]; // captured pieces
     private pstack[][] trade = new pstack[2][NPIECETYPES]; // prisoner exchange pieces
-
+    private Variation variation = Variation.Plateau;
     public pstack[] getPlayerRack(int n) { return rack[n]; }
- 
+    pstack allCells = null;
     //
     // these arrays are indexed by piece number and stack number respectively.  All
     // communication with the server and other players uses these indexes as proxies
     // for the objects themselves.  Everything depends on all the observers for a game
     // agreeing on what these piece and stack numbers mean.
     //
-    private piece[] pieces = new piece[2 * NPIECES]; // all pieces, each one has an index number
-    private pstack[] stacks = new pstack[(nrows * ncols) + (6 * NPIECETYPES)]; // all permanant stacks
+    private piece[] pieces;  // all pieces, each one has an index number
+    private pstack[] stacks; // all permanant stacks
 
     // these are not private for the convenience of the robot
     int moveStep = -1; // the pick/drop step within a move
-    pstack[] movingStackOrigin = new pstack[nrows]; // the stack that was picked/dropped
-    pstack[] copyOriginalStack = new pstack[nrows]; // copy of the stack before pick/drop
-    pstack[] movingStack = new pstack[nrows]; // the temporary stack that was split off
+    pstack[] movingStackOrigin; // the stack that was picked/dropped
+    pstack[] copyOriginalStack; // copy of the stack before pick/drop
+    pstack[] movingStack; // the temporary stack that was split off
     piece droppedPiece = null; // the bottom piece on the stack piece we just dropped
     private pstack the_flipped_stack = null; // the board stack we flipped
     private piece the_flipped_piece = null;
@@ -118,7 +121,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         if (h != null)
         {
             return ((h.topOwner() * 10000) + (h.size() * 1000) +
-            h.realTopColor());
+            h.realTopColor().ordinal());
         }
         return(NothingMoving);
     }
@@ -187,7 +190,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     
  
     public pstack movingStack() // tell the graphics engine about the piece in motion
-    {
+    {	
         return (((moveStep >= 0)&&(moveStep<movingStack.length)) ? movingStack[moveStep] : null);
     }
 
@@ -280,9 +283,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
 
     // constructors for basic board setup
-    private piece newpiece(int idx, int index, int val,long rv)
+    private piece newpiece(PieceType p,int idx, int index, int val,long rv)
     {
-        piece pp = new piece(idx, index, val,rv);
+        piece pp = new piece(p,idx, index, val,rv);
         pieces[index] = pp;
 
         return (pp);
@@ -296,15 +299,30 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         return (ps);
     }
 
-    private void Init_Standard()
+    private void Init_Standard(Variation v)
     {
         int stacknumber = 0;
         int piecenumber = 0;
+        variation = v;
+        int counts[] = variation.pieceCounts;
+        if(ncols!=v.boardSize)
+        {
+        ncols = nrows = v.boardSize;
+        board = new pstack[nrows][ncols];
+        stacks = new pstack[(nrows * ncols) + (6 * NPIECETYPES)];
+        movingStackOrigin = new pstack[nrows]; 	// the stack that was picked/dropped
+        copyOriginalStack = new pstack[nrows]; 	// copy of the stack before pick/drop
+        movingStack = new pstack[nrows]; 		// the temporary stack that was split off
 
+        int npieces = 0;
+        for(int i=0;i<counts.length;i++) { npieces += counts[i]; }
+        pieces = new piece[2*npieces];
+        }
         //
         // note that this sequence can't be changed without invalidating
         // of the saved games in the world.
         //
+        allCells = null;
         for (int col = 0; col < ncols; col++)
         {
             for (int row = 0; row < nrows; row++)
@@ -313,9 +331,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 ps.col_a_d = row;
                 ps.row_1_4 = col;
                 board[row][col] = ps;
+                ps.next = allCells;
+                allCells = ps;
             }
         }
-
+        
         Random pr = new Random(1035356);
         for (int idx = FIRST_PLAYER_INDEX; idx <= SECOND_PLAYER_INDEX; idx++)
         {
@@ -325,44 +345,56 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 trade[idx][j] = newpstack(TRADE_ORIGIN, stacknumber++, idx);
             }
 
-            pstack s = rack[idx][MUTE_INDEX] = newpstack(RACK_ORIGIN,
+            pstack s = rack[idx][PieceType.Mute.index] = newpstack(RACK_ORIGIN,
                         stacknumber++, idx);
-            for (int n = 0; n < 4; n++)
+            for (int n = 0; n < counts[PieceType.Mute.index]; n++)
             {
-                newpiece(idx, piecenumber++, MUTE_INDEX,pr.nextLong()).addToStack(s);
+                newpiece(PieceType.Mute,idx, piecenumber++, PieceType.Mute.index,pr.nextLong()).addToStack(s);
             } //4 mutes
 
-            s = rack[idx][RED_INDEX] = newpstack(RACK_ORIGIN, stacknumber++, idx);
+            s = rack[idx][PieceType.Red.index] = newpstack(RACK_ORIGIN, stacknumber++, idx);
 
-            for (int n = 0; n < 2; n++)
+            for (int n = 0; n < counts[PieceType.Red.index]; n++)
             {
-                newpiece(idx, piecenumber++, RED_INDEX,pr.nextLong()).addToStack(s); // 2 reds
+                newpiece(PieceType.Red,idx, piecenumber++, PieceType.Red.index,pr.nextLong()).addToStack(s); // 2 reds
             }
 
  
-            s = rack[idx][BLUE_INDEX] = newpstack(RACK_ORIGIN, stacknumber++,
+            s = rack[idx][PieceType.Blue.index] = newpstack(RACK_ORIGIN, stacknumber++,
                         idx);
 
-            for (int n = 0; n < 2; n++)
+            for (int n = 0; n < counts[PieceType.Blue.index]; n++)
             {
-                newpiece(idx, piecenumber++, BLUE_INDEX,pr.nextLong()).addToStack(s);// 2 blues
+                newpiece(PieceType.Blue,idx, piecenumber++, PieceType.Blue.index,pr.nextLong()).addToStack(s);// 2 blues
+            }
+            
+            s = rack[idx][PieceType.RedMask.index] = newpstack(RACK_ORIGIN,
+                    stacknumber++, idx);
+            for (int n = 0; n < counts[PieceType.BlueMask.index]; n++)
+            {
+            	newpiece(PieceType.RedMask,idx, piecenumber++, PieceType.RedMask.index,pr.nextLong()).addToStack(s);
             }
 
-
-            s = rack[idx][RED_MASK_INDEX] = newpstack(RACK_ORIGIN,
+            s = rack[idx][PieceType.BlueMask.index] = newpstack(RACK_ORIGIN,
                         stacknumber++, idx);
-            newpiece(idx, piecenumber++, RED_MASK_INDEX,pr.nextLong()).addToStack(s);
-
-            s = rack[idx][BLUE_MASK_INDEX] = newpstack(RACK_ORIGIN,
+            
+            for (int n = 0; n < counts[PieceType.BlueMask.index]; n++)
+            {
+            newpiece(PieceType.BlueMask,idx, piecenumber++, PieceType.BlueMask.index,pr.nextLong()).addToStack(s);
+            }
+            
+            s = rack[idx][PieceType.Twister.index] = newpstack(RACK_ORIGIN,
                         stacknumber++, idx);
-            newpiece(idx, piecenumber++, BLUE_MASK_INDEX,pr.nextLong()).addToStack(s);
+            for (int n = 0; n < counts[PieceType.Twister.index]; n++)
+            {
+            newpiece(PieceType.Twister,idx, piecenumber++, PieceType.Twister.index,pr.nextLong()).addToStack(s);
+            }
 
-            s = rack[idx][TWISTER_INDEX] = newpstack(RACK_ORIGIN,
-                        stacknumber++, idx);
-            newpiece(idx, piecenumber++, TWISTER_INDEX,pr.nextLong()).addToStack(s);
-
-            s = rack[idx][ACE_INDEX] = newpstack(RACK_ORIGIN, stacknumber++, idx);
-            newpiece(idx, piecenumber++, ACE_INDEX,pr.nextLong()).addToStack(s);
+            s = rack[idx][PieceType.Ace.index] = newpstack(RACK_ORIGIN, stacknumber++, idx);
+            for (int n = 0; n < counts[PieceType.Ace.index]; n++)
+            {
+            newpiece(PieceType.Ace,idx, piecenumber++, PieceType.Ace.index,pr.nextLong()).addToStack(s);
+            }
         }
 
         whoseTurn = FIRST_PLAYER_INDEX;
@@ -454,9 +486,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {	randomKey = key;
-        if (P_INIT.equalsIgnoreCase(gtype))
-        {	gametype = gtype;
-            Init_Standard();
+    	Variation v = Variation.find(gtype);
+    	if(v!=null)
+    	{
+    		gametype = gtype;
+            Init_Standard(v);
         }
         else
         {
@@ -742,7 +776,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         pstack mv = movingStack[moveStep];
       
         if ( (mv!=null) && mv.origin == BOARD_ORIGIN)
-        {
+        {	
             for (int i = moveStep; i >= 0; i--)
             { // check for moving backward, undoing previous movesteps
 
@@ -805,7 +839,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
                 if ((mv!=null) && (mv.origin == BOARD_ORIGIN) &&
                         (which != movingStackOrigin[0]))
-                {
+                {	
                     moveStep++;
                     G.Assert(moveStep<movingStackOrigin.length,"Move Step out of range");
                     movingStackOrigin[moveStep] = which;
@@ -936,10 +970,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                     {
                         colors = colors.substring(2);
                     }
-
-                    if (!bot.equals(p.realBottomColorString()))
+                    String bc = p.realBottomColorString();
+                    if (!bot.equals(bc))
                     {
-                    	throw G.Error("Piece Bottom Color doesn't match");
+                    	throw G.Error("Piece Bottom Color %s doesn't match %s",bc,bot);
                     }
                 }
             }
@@ -1074,7 +1108,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     //
     public boolean Execute(commonMove mm,replayMode replay)
     {	plateaumove m = (plateaumove)mm;
-        // System.out.println("E "+m);
+       //  System.out.println("E "+m);
     	m.undostate = getState();		// needed by edithistory
 
         switch (m.op)
@@ -1229,9 +1263,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     public void ExpressExecute(plateaumove m)
     {
     	PlateauState state = getState();
-        m.undostate = state;
-        m.undoStackIndex = undoStack.size();
-        if (m.player < 0)
+    	if (m.player < 0)
         {
             m.player = whoseTurn;
         }
@@ -1306,7 +1338,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             break;
 
         case MOVE_FROMTO:
-        {	undoTo(m.undoStackIndex);			// undo complex state changes
+        {	
             piece pickedpiece = pieces[m.pick]; // the target piece we picked
             pstack picked = handlePick(pickedpiece,replayMode.Replay); // picked is the transit stack
             pstack drop = stacks[m.drop()]; //this remembers the origin stack
@@ -1328,7 +1360,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         }
 
         setState(m.undostate);
-        G.Assert(undoStack.size()==m.undoStackIndex,"undone");
 
     }
 
@@ -1352,7 +1383,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
         pstack from = copyOriginalStack[0];
         int height = from.takeOffHeight();
-        int color = from.realTopColor();
+        Face color = from.realTopColor();
         int idx = dest.col_a_d - from.col_a_d;
         int idy = dest.row_1_4 - from.row_1_4;
         int adx = Math.abs(idx);
@@ -1366,7 +1397,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             int pdx = pfrom.col_a_d - from.col_a_d;
             int pdy = pfrom.row_1_4 - from.row_1_4;
 
-            if (color == ORANGE_FACE)
+            if (color == Face.Orange)
             {
                 int odx = Math.abs(dest.col_a_d - pfrom.col_a_d);
                 int ody = Math.abs(dest.row_1_4 - pfrom.row_1_4);
@@ -1408,17 +1439,17 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         default:
         	throw G.Error("Face color %s not handled",color);
 
-        case BLANK_FACE:
+        case Blank:
             return ((Math.max(adx, ady) <= height) &&
             ((adx == ady) || (adx == 0) || (ady == 0)));
 
-        case RED_FACE:
+        case Red:
             return (((adx == 0) || (ady == 0)) && ((adx + ady) <= height));
 
-        case BLUE_FACE:
+        case Blue:
             return ((adx == ady) && (adx <= height));
 
-        case ORANGE_FACE:
+        case Orange:
             return (((adx == 0) || (ady == 0)) ? ((adx + ady) <= 1)
                                                : ((adx == 1) ? (ady == 2)
                                                              : ((ady == 1)
@@ -1720,10 +1751,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         if (board_state==PlateauState.PLAY_CAPTURE_STATE)
         {
             pstack original = p.mystack;
-            int topcolor = original.realTopColor();
+            Face topcolor = original.realTopColor();
             int topowner = original.topOwner();
 
-            if ((topcolor != BLANK_FACE) // top of stack is a colored face
+            if ((topcolor != Face.Blank) // top of stack is a colored face
                      &&(topowner != p.owner) // top of stack is not our piece
                      &&(original.indexOf(droppedPiece) >= 0)) // we contain the final dropped piece
             {
@@ -1791,37 +1822,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             }
         }
     }
-    static final int UNDO_STATE = 0;
-    static final int UNDO_CAPTURE = 1;
-    IStack undoStack = new IStack();
-    public void saveForUndo(piece p,int op, int data)
-    {	int opco = (op<<8) | p.piecenumber;
-    	undoStack.push(data);
-    	undoStack.push(opco);
-    }
-    public void undoTo(int n)
-    {	while(undoStack.size()>n)
-    	{	int opco = undoStack.pop();
-    		int data = undoStack.pop();
-    		int op = (opco>>8);
-    		piece victim = GetPiece(opco&0xff);
-    		switch(op)
-    		{
-    		default: throw G.Error("Not expecting undo op %s",op);
-    		case UNDO_STATE:	
-    			victim.setState(data); 
-    			break;
-    		case UNDO_CAPTURE:	
-    			{
-    			int stackn = (data>>8);
-    			int level = (data&0xff);
-    			pstack p = stacks[stackn];
-    			victim.addToStack(p, level);
-    			break;
-    			}
-    		}
-    	}
-     }
     // set the next state following an execute of a "done'.
     // this has to dovetail perfectly whith the decisions
     // by setNextStateAfterDrop to enter one of the "Done"
@@ -1875,7 +1875,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             setState(exchangeIsLegal() ? PlateauState.EXCHANGE_DONE_STATE : PlateauState.EXCHANGE_STATE);
 
             break;
-
+        
         case ONBOARD2_DONE_STATE:
             setState((whoseTurn == FIRST_PLAYER_INDEX) ? PlateauState.ONBOARD2_STATE
                                                             : PlateauState.PLAY_STATE);
@@ -1890,7 +1890,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         case PLAY_UNDONE_STATE:
         case PLAY_CAPTURE_STATE:
            if (moveStep >= 0)
-            {	int prevcaps = 0;
+            {	
                 pstack p = copyOriginalStack[moveStep];
                 // to this top down so stack order is not affected
                 for (int i = 0; i <p.size(); i++)
@@ -1903,20 +1903,13 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                         { // reveal the top of the next piece down.  This is important
                           // if capturing the top half of the initial 2 stack
                             piece topp = p.elementAt(i - 1);
-                            int pstate = topp.getState();
                             topp.revealTop();
-                            int newpstate = topp.getState();
-                            if(newpstate!=pstate) { saveForUndo(topp,UNDO_STATE,pstate); }
                         }
 
                         pstack news = victim.makeNewSingleStack();
-                        {int oldstate = victim.getState(); 
+                        {
                          victim.revealAll();
                          victim.flipup();
-                         int newstate = victim.getState();
-                         if(oldstate!=newstate) { saveForUndo(victim,UNDO_STATE,oldstate); }
-                         saveForUndo(victim,UNDO_CAPTURE,(movingStackOrigin[moveStep].stacknumber<<8)|(i-prevcaps));
-                         prevcaps++;
                         }
                         bar[whoseTurn][victim.pieceType].dropStack(news);
                         onBoardTimer = 0; //reset the timer so it pops
@@ -1942,7 +1935,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 				break;
 			}
 			//$FALL-THROUGH$
-        default:
+		default:
         	throw G.Error("No preparation for done, state =%s", board_state);
         }
     }
@@ -2017,18 +2010,18 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                     if (moveStep > 0)
                     {
                         pstack dest = copyOriginalStack[moveStep];
-                        int new_color = movingStackOrigin[moveStep].realTopColor();
+                        Face new_color = movingStackOrigin[moveStep].realTopColor();
                         int old_owner = dest.topOwner();
                         int nextplayer = (whoseTurn == FIRST_PLAYER_INDEX)
                             ? SECOND_PLAYER_INDEX : FIRST_PLAYER_INDEX;
 
                         // check for player explicitly, -1 will be for an empty stack
                         if ((old_owner == nextplayer) &&
-                                (new_color == BLANK_FACE))
+                                (new_color == Face.Blank))
                         {
                             nextState = PlateauState.PLAY_UNDONE_STATE;
                         }
-                        else if (new_color == ORANGE_FACE)
+                        else if (new_color == Face.Orange)
                         {
                             pstack original = movingStackOrigin[0];
                             int dx = Math.abs(dest.col_a_d - original.col_a_d);
@@ -2234,7 +2227,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			default:
             	throw G.Error("No Pick state transition from rack in %s", board_state);
             }
-
+            
             break;
 
         case BOARD_ORIGIN:
@@ -2300,7 +2293,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             		break;
             	}
 				//$FALL-THROUGH$
-            default:
+			default:
             	throw G.Error("No Pick Transition from board in %s", board_state);
             }
 
@@ -2413,6 +2406,662 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 numberMenu.saveSequenceNumber(contents,cx+xstep,cy+ystep	);
             }
         }
-        //System.out.println("e "+gc+((highlight!=null)?""+highlight.hitCode:""));
     }
+	public void randomizeHiddenState(Random robotRandom, int playerIndex) {
+		
+	}
+	public CommonMoveStack GetListOfMoves() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	StateStack robotState = new StateStack();
+	boolean robotBoard = false;
+	public void RobotExecute(commonMove m) {
+	       robotState.push(board_state); //record the starting state. The most reliable
+	        Execute(m,replayMode.Replay); 		
+		
+	}
+	public void UnExecute(commonMove m0) {
+		plateaumove m = (plateaumove)m0;
+        //System.out.println("U "+m+" for "+whoseTurn);
+    	PlateauState state = robotState.pop();
+        switch (m.op)
+        {
+        default:
+   	    	throw G.Error("Can't un execute " + m);
+        case MOVE_DONE:
+            break;
+
+        case MOVE_RESIGN:
+            break;
+        }
+        setState(state);
+        if(whoseTurn!=m.player)
+        {	moveNumber--;
+        	setWhoseTurn(m.player);
+        }		
+	}
+	public void initRobotValues(PlateauPlay plateauPlay) 
+	{
+		robotBoard = true;
+	}
+	public boolean winForPlayerNow(int i) 
+	{
+		return win[i];
+	}
+    // add one exchange move.  If this is the first, we'll enter exchange state
+    // and add subsequent exchange moves.  
+    private void addExchangeMoves(CommonMoveStack all,Random r,int who)
+    {	
+    	pstack b[] = bar[who];
+    	int np = 0;
+    	for(int lim=b.length-1; lim>=0; lim--)
+    	{
+    		pstack src = b[lim];
+    		np += src.size();
+    	}
+    	if(np>0)
+    	{
+    	int nth = r==null?-1:r.nextInt(np);	// if no random, get them all
+    	for(int lim=b.length-1; lim>=0; lim--)
+    	{
+    		pstack src = b[lim];
+    		int ss = src.size();
+    		if(ss>0)
+    		{
+    		if(np>nth) 
+    		{	piece p = src.topPiece();
+    			String str = ""+p.piecenumber;
+    			all.push(new plateaumove(MOVE_EXCHANGE,str,who));
+    			if(nth>=0) { return; }	
+    		}}
+    	}}    	
+    }
+    private void addRackDropMoves(CommonMoveStack all,int who)
+    {
+    	pstack rs[] = rack[who];
+    	for(pstack d : rs)
+    	{	all.push(new plateaumove("Drop " + d.stacknumber+" 100 " + " " + d.locus(),who));
+    	}
+    }
+    // return a temporary stack which contains all the
+    // captives we have available.
+    private pstack allTradeGoods(int who)
+    {
+    	 pstack v = new pstack(this, UNKNOWN_ORIGIN);
+         // make v the union of bar and trade
+         for (int i = 0; i < bar[who].length; i++)
+         {
+             v.addCopyStack(bar[who][i]);
+             v.addCopyStack(trade[who][i]);
+         }	
+         return(v);
+    }
+
+    // given "ask" is the total being exchanged, determine how many points
+    // we have to offer.  We have to offer a "price is right" total which
+    // is as large as possible without exceeding the asked total.
+    public int largestSubsetBelow(int ask, int who)
+    {
+       pstack v = allTradeGoods(who);
+
+        // find the highest value subset whole value is <= ask.  This is 
+        // the smallest value we can offer in exchange
+        int max = 0;
+        for (int i = 0; i < (1 << v.size()); i++)
+        {   int ss = v.sumSubset(i);
+            if ((ss <= ask) && (ss > max))
+            {    max = ss;
+            }
+        }
+
+        return (max);
+    }
+ 
+    // respond with a complete set all at once.
+    private void addExchangeResponseMoves(CommonMoveStack all,int who)
+    {	pstack v = allTradeGoods(who);
+    	int underpay = 0;
+    	int offer = pointTotal(trade[nextPlayer[whoseTurn]]);
+    	int minacceptable = largestSubsetBelow(offer, whoseTurn);
+    	for(int i=1;i<(1<<v.size());i++)
+    	{
+    		int subtotal = v.sumSubset(i);
+    		if(subtotal>=minacceptable)
+    		{	String str = v.pickSubset(i);
+    			all.push(new plateaumove(MOVE_EXCHANGE,str,who));
+    			if(subtotal<=offer) { underpay++; }
+    		}
+    	}
+    	if(underpay==0) 
+    	{	// if all the proposed payments were more than was offered, we can refuse
+    		all.push(new plateaumove(MOVE_DONE,who));
+    	}
+    }
+    
+    private double cellOnboardWeight(pstack cell,int opponentStackHeight,Face top,int extraHeight)
+    {
+  		return(0);
+    }
+    private boolean addOrangeFinalMoves(CommonMoveStack all,int who,int movingHeight,pstack mid,int dx,int dy,int opponentHeight)
+    {
+    	char x = (char)(mid.col_a_d+dx);
+    	int y = mid.row_1_4+dy;
+    	if(validBoardPos(x,y))
+    	{	if(all!=null)
+    		{
+    		pstack fin = getCell(x,y);
+    		double weight = cellOnboardWeight(mid,opponentHeight,Face.Orange,movingHeight);
+    		plateaumove newMove = new plateaumove(MOVE_FROMTO,mid.locus(),(mid.size()-movingHeight),mid.allColors(movingHeight),weight,fin.locus(),who);
+    		all.push(newMove);
+    		}
+    		return(true);
+    	}
+    	return(false);
+    }
+    private boolean addOrangeIntermediateMoves(CommonMoveStack all,int who,pstack from,int movingHeight,int dx,int dy,int opponentHeight)
+    {	boolean some = false;
+    	char x = (char)(from.col_a_d+dx);
+    	int y = from.row_1_4+dy;
+    	if(validBoardPos(x,y))
+    	{	boolean valid = false;
+    		pstack midCell = getCell(x,y);
+    		if(dy==0)
+    		{
+    			valid |= addOrangeFinalMoves(all,who,movingHeight,from,dx*2,+1,opponentHeight);
+    			if(valid && (all==null)) { return(true); }
+    			valid |= addOrangeFinalMoves(all,who,movingHeight,from,dx*2,-1,opponentHeight);
+    			if(valid && (all==null)) { return(true); }
+    		}
+    		else
+    		{
+    			valid |= addOrangeFinalMoves(all,who,movingHeight,from,+1,dy*2,opponentHeight);
+    			if(valid && (all==null)) { return(true); }
+    			valid |= addOrangeFinalMoves(all,who,movingHeight,from,-1,dy*2,opponentHeight);
+    			if(valid && (all==null)) { return(true); }
+    		}
+    		if(valid)	// the endpoint is on the board, so we can potentially drop in the intermediate cell
+    		{	
+    			int height = from.size()-1;
+    			for(int h = movingHeight; h>0; h--)
+				{
+    				if((midCell.size()==0)||(midCell.topOwner()==who)||from.containsColor(h,height))
+    				{
+        				// must be taking a non-mute to pin
+    					if(all==null) { return(true); }
+    					double weight = cellOnboardWeight(midCell,opponentHeight,Face.Blank,movingHeight);	
+         				all.push(new plateaumove(MOVE_FROMTO,from.locus(),(from.size()-movingHeight),from.allColors(movingHeight),weight,midCell.locus(),who));
+    				}
+				}
+    			
+    		}
+    	}
+    	return(some);
+    }
+    private boolean addOrangeContinuationMoves(CommonMoveStack all,int who,pstack cell,int movingHeight,int dx,int dy,int opponentHeight)
+    {	boolean some = false; 
+    	if(dx==0)
+		{
+    	if(addOrangeFinalMoves(all,who,movingHeight,cell,1,dy,opponentHeight)) { if(all==null) { return(true); } some=true; }   
+		some |= addOrangeFinalMoves(all,who,movingHeight,cell,-1,dy,opponentHeight);
+		}
+		else {
+			if(addOrangeFinalMoves(all,who,movingHeight,cell,dx,1,opponentHeight)) { if(all==null) { return(true); } some=true; }
+			some |= addOrangeFinalMoves(all,who,movingHeight,cell,dx,-1,opponentHeight);					
+		}
+    	return(some);
+    }
+
+    private boolean addNormalMoves(CommonMoveStack all,int who,pstack from,int maxdistance,int dx,int dy,piece top,int movingHeight,int opponentHeight)
+    {	
+    	int fromHeight = from.size();
+    	int ox = from.col_a_d;
+    	int oy = from.row_1_4;
+     	boolean some = false;
+		{
+			// move a stack of "movingHeight" chipStack, maxDistance or less
+		  	boolean canMoveFurther = false;			// we can make intermediate stops only if we can move further with this stack
+
+		  	for(int distance = maxdistance; distance>0; distance--)
+			{
+    		char x = (char)(ox + distance*dx);
+    		int y = oy + distance*dy;
+    		if(validBoardPos(x,y))
+    		{	pstack target = getCell(x,y);
+    			int targetHeight = target.size();
+    			
+    			if(	(targetHeight==0) 				// destination is empty
+    				|| (target.topOwner()==who) 	// or destination is ours
+    				|| !top.isMute() 				// or our top is colored
+    				|| (canMoveFurther && from.containsColor(fromHeight-movingHeight,fromHeight-1))
+    				)
+    			{	if(all==null) { return(true); }
+    				canMoveFurther = true;
+    				int level = from.size()-movingHeight;
+    				String ll = from.locus();
+    				String tl = target.locus();
+    				String colors = from.allColors(movingHeight);
+    				double weight = cellOnboardWeight(target,opponentHeight,top.realTopColor(),movingHeight);	
+    				all.push(new plateaumove(MOVE_FROMTO,ll,level,colors,weight,tl,who));
+    				some = true;
+    			}
+    		}
+    	}
+		}
+		return(some);
+    }
+    boolean isEdgeCell(pstack c)
+    {
+    	return c.col_a_d == 'A' 
+    			|| c.col_a_d == (char)('A'+ncols-1)
+    			|| c.row_1_4 == 1
+    			|| c.row_1_4 == nrows;
+    }
+    private void addInitialDropMoves(CommonMoveStack all,int who)
+    {	boolean first = (who == FIRST_PLAYER_INDEX);
+
+		for(pstack cell = allCells; cell!=null; cell=cell.next)
+			{
+			if((cell.size()==0) && isEdgeCell(cell) && (first ? cell.row_1_4==1 : true))
+				{
+				pstack st = movingStack[moveStep];
+				String str = "Onboard "+cell.locus()+" 100 "+st.allColors()+" "+st.pieces();
+				all.push(new plateaumove(str,who));
+				}
+			}
+    	//return ((p.size() == 0) && isEdgeSquare(p.row_1_4, p.col_a_d));
+    }
+    
+    private boolean addInboardMoves(CommonMoveStack all,int who,boolean includeFlip,boolean includeRedundentFlip)
+    {	boolean some = false;
+    	int opponentHeight = maximumStackHeight(nextPlayer[who]);
+    	CellStack candidates = buildOnboardTargets(who);
+    	for(int lim=candidates.size()-1; lim>=0; lim--)
+     		{
+    		pstack cell = candidates.elementAt(lim);
+    		if(cell.topOwner()==who)
+    			{
+    			some |= addInboardMoves(all,who,includeFlip,includeRedundentFlip,cell,opponentHeight);
+    			if(some && (all==null)) { return(true); }
+    			}
+    		}
+    	
+    	return(some);
+    }
+    /**
+     * build a stack of targets for onboard moves, annotate the
+     * stacks with red_thread blue orange_threat blank_threat for the number of threats
+     * we issue, and  incoming_threats for the opponents that could be menacing
+     * @param who
+     * @return
+     */
+    private CellStack buildOnboardTargets(int who)
+    {	CellStack targets = new CellStack();
+    	G.Error("not");
+    	return(targets);
+    }
+
+    private boolean addInboardMoves(CommonMoveStack all,int who,boolean includeFlip,boolean includeReduddentFlip,pstack cell,int opponentHeight)
+    {	boolean some = false;
+    	int takeoff = cell.takeOffHeight();
+    	int height = Math.min(3,takeoff);	// max distance to move
+    	
+    	if(height>0)
+		{    	
+		piece top = cell.topElement();
+		Face topFace =  top.realTopColor();
+		if(cell.stompCapture())
+			{	if(all==null) { return(true); }
+				double weight = cellOnboardWeight(cell,opponentHeight,topFace,takeoff);
+				all.push(new plateaumove(MOVE_FROMTO,cell.locus(),(cell.size()-takeoff),cell.allColors(takeoff),weight,cell.locus(),who));
+			}
+    	some |= addInboardMoves(all,who,includeFlip,includeReduddentFlip,cell,height,top,opponentHeight);
+    	if(some && (all==null)) { return(some); }
+		}
+    	return(some);
+    }
+    
+    private boolean addInboardMoves(CommonMoveStack all,int who,boolean includeFlip,boolean includeRedudnentFlip,pstack cell,int distance,piece top,int opponentHeight)
+    {	boolean some = false;
+		if(includeFlip && (includeRedudnentFlip || ( top.bottomIsUnknown()) || !top.isMonoColor()))
+			{	// Flip 23 A2 B
+				if(all==null) { return(true); }
+				all.push(new
+				 plateaumove("Flip "+top.piecenumber+" "+cell.locus()+" "+top.topColorString(),who));
+			}
+
+		for(int movingHeight=1; movingHeight<=cell.takeOffHeight(); movingHeight++)
+			{ some|= addInboardMoves(all,who,cell,distance,top,movingHeight,opponentHeight);
+			  if(some && (all==null)) { return(some); }
+			}
+		return(some);
+
+    }
+    private void addContinuationMoves(CommonMoveStack all,int who,pstack cell,int distance,piece top,int movingHeight,int dx, int dy,int opponentHeight)
+    {	Face topcolor = top.realTopColor();
+		switch(topcolor)
+			{
+			default: throw G.Error("Not expecting "+topcolor);
+			case Orange:
+				addOrangeContinuationMoves(all,who,cell,movingHeight,dx,dy,opponentHeight);
+				break;
+			case Blue:
+			case Red:
+			case Blank:
+				addNormalMoves(all,who,cell,distance,dx,dy,top,movingHeight,opponentHeight);
+				break;
+			}
+	}
+    // dropoffs after an initial pick
+    private void addContinuationMoves(CommonMoveStack all,int who)
+    {
+    	pstack orig = copyOriginalStack[0]; // where we all started, determines distance
+    	pstack step = copyOriginalStack[moveStep];
+    	pstack moving = movingStack[moveStep];
+    	piece top = moving.topElement();
+    	int xsofar =step.col_a_d-orig.col_a_d;
+    	int ysofar = step.row_1_4-orig.row_1_4;
+    	int dissofar = Math.max(Math.abs(xsofar),Math.abs(ysofar));
+    	int dx = Integer.signum(xsofar);
+    	int dy = Integer.signum(ysofar);
+    	addContinuationMoves(all,who,movingStack[moveStep],orig.takeOffHeight()-dissofar,top,moving.size(),dx,dy,0);
+    	
+    }
+    private void addDropMoves(CommonMoveStack all,int who)
+    {	pstack ps = movingStack();
+    	piece p = ps.topElement();
+    	Face top = p.realTopColor();
+    	Face bottom = p.realBottomColor();
+    	// never deploy the orange showing.
+    	if(p.realTopColor()!=Face.Orange) 
+    		{ buildOnboardMoves(all,p,top,bottom,0,who);
+    		}
+    	if(!p.isMonoColor() && (p.realBottomColor()!=Face.Orange)) 
+    		{ buildOnboardMoves(all,p,bottom,top,0,who); 
+    		}
+    }
+    
+    private void buildOnboardMoves(CommonMoveStack all,piece p,Face top,Face bottom,int opponentStackHeight,int who)
+    {	int opponent = nextPlayer[who];
+		String colors = top.shortName+bottom.shortName;
+   		for(pstack cell = allCells; cell!=null; cell=cell.next)
+    		{
+    		if(cell.topOwner()!=opponent)
+    		{
+    		int height = cell.size();
+    		double w = cellOnboardWeight(cell,opponentStackHeight,top,1);
+
+     			{
+    			String pnum = ""+p.piecenumber;
+    			String loc = cell.locus();
+    			plateaumove topMove = new plateaumove(loc,100,colors,w,colors,pnum,who);
+    			all.push(topMove);		// on top
+    			double insideW = cellOnboardWeight(cell,opponentStackHeight,top,1);
+     			for(int lim = height-1;lim>=0;lim--)
+    				{
+     				if(cell.elementAt(lim).owner==who)
+     					{
+     					plateaumove newmove = new plateaumove(loc,lim,colors,insideW,colors,pnum,who);
+     					all.push(newmove);
+     					}
+     				else { lim=0; }	// reached an opponent piece
+    				}
+    			}
+    		}
+    	}
+    }
+
+    private void addDoneMove(CommonMoveStack all,int who)
+    {
+    	all.push(new plateaumove(MOVE_DONE,who));
+    }
+    private void addOnboardMoves(CommonMoveStack all,int who)
+    {	pstack pieces[] = rack[who];
+    	int typeMap = 0;
+    	int opponentStackHeight = maximumStackHeight(nextPlayer[who]);
+    	CellStack candidates = buildOnboardTargets(who);
+    	for(pstack stack : pieces)
+    	{	
+    		for(int lvl=0; lvl<stack.size() ; lvl++)
+    		{
+    			piece p = stack.elementAt(lvl);
+    			int pieceBit = (1<<p.realPieceType);
+    			if((pieceBit & typeMap)==0)
+    			{
+    				typeMap |= pieceBit;
+    				Face top = p.realTopColor();
+    				Face bottom = p.realBottomColor();
+    				// never deploy the orange as visible
+    				if(top!=Face.Orange) 
+    					{ buildOnboardMoves(all,candidates,p,top,bottom,opponentStackHeight,who); }
+    				if(!p.isMonoColor() && (bottom!=Face.Orange)) 
+    					{ buildOnboardMoves(all,candidates,p,bottom,top,opponentStackHeight,who); }
+    			}
+    		}
+    	}
+    }
+
+    // dropoffs after an initial pick
+    private void addInBoardDrops(CommonMoveStack all,int who)
+    {
+    	pstack orig = copyOriginalStack[0]; // where we all started, determines distance
+    	pstack moving = movingStack[moveStep];
+    	piece top = moving.topElement();
+    	addInboardMoves(all,who,orig,orig.takeOffHeight(),top,moving.size(),0);    	
+    }
+ 
+    
+    int maximumStackHeight(int player)
+    {	int maxh = 0;
+        // check for win by stacking 6
+    	for(pstack stack = allCells; stack!=null; stack=stack.next)
+    	{
+    		int s = stack.controlledStackHeight(player);
+             if(s>maxh) { maxh=s; }
+    	}
+    	return(maxh);
+    }
+    private void buildOnboardMoves(CommonMoveStack all,CellStack candidates,piece p,Face top, Face bottom,
+			int opponentStackHeight,int who)
+{	int opponent = nextPlayer[who];
+	String colors = top.shortName+bottom.shortName;
+	for(int clim = candidates.size()-1; clim>=0; clim--)
+	{	pstack cell = candidates.elementAt(clim); 
+		if(cell.topOwner()!=opponent)
+		{
+		int height = cell.size();
+		double w = cellOnboardWeight(cell,opponentStackHeight,top,1);
+		String pnum = ""+p.piecenumber;
+		String loc = cell.locus();
+		plateaumove topMove = new plateaumove(loc,100,colors,w,colors,pnum,who);
+		all.push(topMove);		// on top
+		if(height>0)
+		{
+		Face oldTop = cell.topFace();
+		double oldW = cellOnboardWeight(cell,opponentStackHeight,oldTop,1);
+			for(int lim = height-1;lim>=0;lim--)
+			{
+				if(cell.elementAt(lim).owner==who)
+					{
+					plateaumove newmove = new plateaumove(loc,lim,colors,oldW,colors,pnum,who);
+					all.push(newmove);
+					}
+				else { lim=0; }	// reached an opponent piece
+			}
+		}
+		}
+	}
+}  
+
+
+    private boolean addInboardMoves(CommonMoveStack all,int who,pstack cell,int distance,piece top,int movingHeight,int opponentHeight)
+    {	Face topcolor = top.realTopColor();
+    	boolean some = false;
+		switch(topcolor)
+			{
+			default: throw G.Error("Not expecting "+topcolor);
+			case Orange:
+				{
+					some |= addOrangeIntermediateMoves(all,who,cell,movingHeight,1,0,opponentHeight);
+					if(some && (all==null)) { return(true); }
+					some |= addOrangeIntermediateMoves(all,who,cell,movingHeight,-1,0,opponentHeight);
+					if(some && (all==null)) { return(true); }
+					some |= addOrangeIntermediateMoves(all,who,cell,movingHeight,0,1,opponentHeight);
+					if(some && (all==null)) { return(true); }
+					some |= addOrangeIntermediateMoves(all,who,cell,movingHeight,0,-1,opponentHeight);
+					if(some && (all==null)) { return(true); }
+				}
+				break;
+			case Blue:
+				some |= addNormalMoves(all,who,cell,distance,1,1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,1,-1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,-1,1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,-1,-1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				break;
+			case Blank:
+				some |= addNormalMoves(all,who,cell,distance,1,1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,1,-1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,-1,1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,-1,-1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				// and add red moves
+				//$FALL-THROUGH$
+			case Red:
+				some |= addNormalMoves(all,who,cell,distance,1,0,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,-1,0,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,0,1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+				some |= addNormalMoves(all,who,cell,distance,0,-1,top,movingHeight,opponentHeight);
+				if(some && (all==null)) { return(true); }
+			
+			}
+		return(some);
+	}
+ private void buildInitialMoves(CommonMoveStack all,int who,
+    		piece first,String firstTopColor,String firstBottomColor,
+    		piece second,String secondTopColor,String secondBottomColor)
+    {		
+    	for(pstack cell = allCells; cell!=null; cell=cell.next)
+    		{
+    		if((cell.size()==0) && isEdgeCell(cell))
+    		{	
+    			all.push(new plateaumove( cell.locus(),
+    										100, 
+    										firstTopColor+firstBottomColor+secondTopColor+secondBottomColor,
+    										1.0,
+    										firstTopColor+firstBottomColor,
+    										second.piecenumber+","+first.piecenumber,
+    										who));
+    		}
+    	    	
+    	}
+    }	
+private void addInitialMoves(CommonMoveStack all,int whoseTurn)
+{	pstack pieces[] = rack[whoseTurn];
+	int ntypes = pieces.length;
+	for(int i1=0;i1<ntypes;i1++)
+	{	pstack firstPiece = pieces[i1];
+		piece firstTop = firstPiece.topElement();
+		Face firstTopFace = firstTop.realTopColor();
+		for(int i2 = i1; i2<ntypes; i2++)
+		{
+			pstack secondPiece = pieces[i2];
+			piece secondTop = secondPiece.topElement();
+			
+			if((firstPiece!=secondPiece) || (firstPiece.size()>1))
+			{	String firstTopColor = firstTop.realTopColorString();
+				String firstBottomColor = firstTop.realBottomColorString();
+				String secondTopColor = secondTop.realTopColorString();
+				String secondBottomColor = secondTop.realBottomColorString();
+				if(firstTopFace!=Face.Orange)
+				{
+				buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+							secondTop,secondTopColor,secondBottomColor);
+				}
+				if(!firstTop.isMonoColor())
+				{
+					buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+							secondTop,secondTopColor,secondBottomColor);
+					if(!secondTop.isMonoColor())
+					{
+						buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+    							secondTop,secondBottomColor,secondTopColor);
+					}
+				}
+				if(!secondTop.isMonoColor())
+				{	buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+						secondTop,secondBottomColor,secondTopColor);
+				}
+				}
+ 			}
+		}
+}
+	public CommonMoveStack GetListOfMoves(Random robotRandom,boolean includeRedundentFlip) 
+	{	CommonMoveStack all = new CommonMoveStack();
+		switch(board_state)
+		{
+		default:throw  G.Error("Not expecting "+board_state);
+		
+		case EXCHANGE_STATE:
+			addExchangeResponseMoves(all,whoseTurn);
+			break;
+		case PLAY_DROP_STATE:
+			if(moveStep==0) { addInBoardDrops(all,whoseTurn); }
+			else { addContinuationMoves(all,whoseTurn); }
+			break;
+		case PLAY_DONE_STATE:
+		case PLAY_CAPTURE_STATE:
+		case ONBOARD2_DONE_STATE:
+		case ONBOARD_DONE_STATE:
+		case EXCHANGE_DONE_STATE:
+		case DRAW_STATE:
+			addDoneMove(all,whoseTurn);
+			break;
+		case ONBOARD2_DROP_STATE:
+			addInitialDropMoves(all,whoseTurn);
+			break;
+		case RACK_DROP_STATE:
+		case RACK2_DROP_STATE:
+			addRackDropMoves(all,whoseTurn);
+			break;
+		case ONBOARD_DROP_STATE:
+			addDropMoves(all,whoseTurn);
+			break;
+		case ONBOARD2_STATE:
+			addInitialMoves(all,whoseTurn);
+			break;
+		case FLIPPED_STATE:
+			G.Assert(the_flipped_stack.topOwner()==whoseTurn,"wrong flipper");
+			addInboardMoves(all,whoseTurn,false,false,the_flipped_stack,maximumStackHeight(nextPlayer[whoseTurn]));
+			if(all.size()==0)	// if the robot flipped something, it's possible to be completely blocked.
+				{ all.push(new plateaumove(MOVE_PASS,whoseTurn)); 
+				}
+			break;
+		case CAPTIVE_SHUFFLE_STATE:
+			addExchangeMoves(all,robotRandom,whoseTurn);
+			all.push(new plateaumove(MOVE_DONE,whoseTurn));
+			break;
+		case PLAY_STATE:
+			{
+			addOnboardMoves(all,whoseTurn);
+			addInboardMoves(all,whoseTurn,true,false);
+			addExchangeMoves(all,robotRandom,whoseTurn);
+			}
+			if(all.size()==0) 
+			{	all.push(new plateaumove(MOVE_PASS,whoseTurn)); 
+			}
+		}
+		return all;
+	}
+
 }

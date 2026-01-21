@@ -357,11 +357,32 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void removeGameFromServer()
     {	if( !offlineGame
     		&& !my.isSpectator()
-    		&& (sendTheGame && sentTheGame)
-    		&& (sendTheResult && sentTheResult))
+    		&& (!sendTheGame || sentTheGame)
+    		&& (!sendTheResult || sentTheResult))
     	{
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
     	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
+        resultForMe = false;
+        myFrame.setDontKill(false); //keep people from quitting while the score is being reported
+        
+    	if(!knownEditable)
+    		{knownEditable = true;
+    		v.setEditable(false);
+    		if(!reviewOnly) 
+    		{ v.setControlToken(false,0); 
+    		  // start with no one has control
+    	      if((myNetConn!=null) && myNetConn.hasLock && (numberOfConnections()>1))
+    	      	{ sendMessage(NetConn.SEND_REQUEST_LOCK+"0"); }
+    		}
+    		}
+
+		if(G.getBoolean(ROBOTEXIT,false))
+			{	
+			v.stopRobots();
+			myFrame.killFrame();
+			exitFlag = true;
+			}
+          
     	}
     }
     
@@ -4176,32 +4197,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                             sendTheResult();
                         }
 
-                        if (!sendTheResult && !sendTheGame)
-                        {
-                            resultForMe = false;
-                            myFrame.setDontKill(false); //keep people from quitting while the score is being reported
-                        }
-                   }
-                    if(GameOver() && !sendTheResult && !sendTheGame )
-                    {	
-                    	if(!knownEditable)
-                    		{knownEditable = true;
-                    		v.setEditable(false);
-                    		if(!reviewOnly) 
-                    		{ v.setControlToken(false,0); 
-                    		  // start with no one has control
-                    	      if((myNetConn!=null) && myNetConn.hasLock && (numberOfConnections()>1))
-                    	      	{ sendMessage(NetConn.SEND_REQUEST_LOCK+"0"); }
-                    		}
                     		}
 
-						if(G.getBoolean(ROBOTEXIT,false))
-						{	
-						v.stopRobots();
-						myFrame.killFrame();
-						exitFlag = true;
-						}
-                      }
                     } while(hadMessage);
                 }
             	catch (ThreadDeath err) { throw err;}

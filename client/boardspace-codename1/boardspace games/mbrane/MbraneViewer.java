@@ -33,6 +33,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.NumberMenuHost;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Tokenizer;
@@ -48,7 +49,7 @@ import online.search.SimpleRobotProtocol;
  * TODO: needs rotation options like crosswords
  *  
 */
-public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants
+public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements MbraneConstants,NumberMenuHost
 {		
     static final String Mbrane_SGF = "MBrane"; // sgf game number allocated for Mbrane
 
@@ -500,12 +501,19 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      	  if(twistBoard)
      	  {
      		  GC.setRotation(gc,Math.PI/2,x+cellSize/2,y+cellSize/2);
-     		  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     		//  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     		 GC.setFont(gc,font);
+         	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
+         			str);
      		  GC.setRotation(gc,-Math.PI/2,x+cellSize/2,y+cellSize/2);
      	  }
      	  else
      	  {
-     	  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     	  //super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
+     		 GC.setFont(gc,font);
+          	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
+          			str);
+         	
      	  }
 
     }

@@ -191,7 +191,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
     {	Text base = TextChunk.create(shortMoveString());
     	if(target!=null)
     	{
-    		Text pre = TextGlyph.create("xxx",target,v,new double[] {1.5,1,0,-0.2});
+    		Text pre = TextGlyph.create(target,v,new double[] {1.5,1.4,-0.2,-0.2});
     		base = TextChunk.join(pre,base);
     	}
     	return(base);

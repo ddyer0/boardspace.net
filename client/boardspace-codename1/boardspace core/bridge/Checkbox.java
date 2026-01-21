@@ -17,9 +17,8 @@
 package bridge;
 
 import com.codename1.ui.Font;
-import lib.AwtComponent;
 
-public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvider,AwtComponent
+public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
 	public void repaint() 

@@ -16,12 +16,11 @@
  */
 package bridge;
 
-import lib.AwtComponent;
 
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
 
-public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , ActionProvider
+public class Choice<TYPE> extends ComboBox<TYPE> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }

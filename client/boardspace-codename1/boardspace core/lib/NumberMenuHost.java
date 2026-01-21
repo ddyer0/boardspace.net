@@ -21,9 +21,9 @@ public interface NumberMenuHost {
      * @param str
      * @param from
      */
-      public default void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
+	   public default void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
       {	
-    	  GC.setFont(gc,font);
+       	  GC.setFont(gc,font);
        	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
        			str);
       	

@@ -16,12 +16,10 @@
  */
 package bridge;
 
-import lib.AwtComponent;
-
 import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
 
-public class JTextField extends JTextComponent implements AwtComponent
+public class JTextField extends JTextComponent 
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addMouseListener(MouseListener m) 

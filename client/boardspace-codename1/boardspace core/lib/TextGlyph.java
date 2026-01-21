@@ -103,6 +103,8 @@ public class TextGlyph extends TextChunk implements Text,Icon
 	public TextGlyph cloneSimple()
 	{	TextGlyph vis = new TextGlyph(replacementData,art,canvas,new double[]{localHScale,localScale,xoff,yoff});
 		vis.visibleText = visibleText;
+		vis.data = data;
+		vis.replacementData = replacementData;
 		return(vis);		
 	}
 	/**
@@ -160,6 +162,8 @@ public class TextGlyph extends TextChunk implements Text,Icon
 		return new TextGlyph(art,alt,can,scl);
 	}
 
+	public boolean isEmpty() { return art==null ? super.isEmpty() : false;}
+	public boolean isGraphic() { return art!=null; }
 	/**
 	 * Create a glyph with text overlaid
 	 * 

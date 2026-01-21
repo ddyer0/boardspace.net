@@ -30,9 +30,6 @@ public class ComponentProxy extends Component implements NullLayoutProtocol
 	public ComponentProxy(ProxyWindow c) 
 	{ 	
 	    client = c;
-	    //for some reason this is a really bad idea, all the codename1 buttons stop working.
-	    // setFocusable(true);
-	    mouse.setAwtComponent(c); 
 	}
 	public boolean isFocusable() { return false; }
 	public void doNullLayout()

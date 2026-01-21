@@ -16,12 +16,11 @@
  */
 package bridge;
 
-import lib.AwtComponent;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.TextField;
 
-public class XPasswordField extends TextField implements AwtComponent
+public class XPasswordField extends TextField
 {	MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener who) { mouse.addActionListener(who); }
 	public Font getFont() { return(SystemFont.getFont(getStyle())); }

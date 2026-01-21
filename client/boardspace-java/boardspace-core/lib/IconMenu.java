@@ -17,6 +17,7 @@
 package lib;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import bridge.JMenu;
@@ -83,7 +84,7 @@ public class IconMenu extends JMenu {
 		}
 
 	}
-	public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+	public void paintIcon(Component c, Graphics g, int x, int y) {
 		icon.drawImage(g,x,y,prefWidth,prefHeight);		
 		}
 

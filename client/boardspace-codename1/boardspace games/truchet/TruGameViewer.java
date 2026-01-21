@@ -38,6 +38,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.NumberMenuHost;
 import lib.StockArt;
 import lib.Tokenizer;
 
@@ -50,7 +51,7 @@ import lib.Tokenizer;
 
  
 */
-public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants
+public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants,NumberMenuHost
 {
      /**
 	 * 
@@ -791,7 +792,7 @@ private void playSounds(TruMovespec m)
     {
     	return b.placementIndex;
     }
-    // override for the standard numberMenu drawNumber
+    // override for the standard numberMenu drawNxumber
     public void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, String str)
     {	
     	TruCell cell = (TruCell)dest;
@@ -802,7 +803,10 @@ private void playSounds(TruMovespec m)
     	}
     	else
     	{
-    		super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
+    	//	super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
+    	  	  GC.setFont(gc,font);
+           	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
+           			str);
     	}
     }
 }

@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import com.codename1.ui.Font;
 
 import common.CommonConfig.Default;
-import lib.AwtComponent;
 import lib.G;
 
 public class SystemFont
@@ -162,10 +161,7 @@ public class SystemFont
 		   return(f==null ? null : FontMetrics.getFontMetrics(f));
 	   }
 
-	static public FontMetrics getFontMetrics(AwtComponent c)
-	   {
-		   return(getFontMetrics(c.getFont()));
-	   }
+
 	public static void setGlobalDefaultFont()
 	{
 		setGlobalDefaultFont(getGlobalDefaultFont());

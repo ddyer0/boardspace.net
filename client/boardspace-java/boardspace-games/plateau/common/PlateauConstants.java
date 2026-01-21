@@ -19,7 +19,7 @@ package plateau.common;
 import java.awt.Color;
 
 import lib.CellId;
-
+import lib.OStack;
 import online.game.BaseBoard.BoardState;
 
 public interface PlateauConstants 
@@ -72,26 +72,71 @@ public interface PlateauConstants
 	{
 		{"Plateau_family","Plateau"},
 		{"Plateau_variation","standard Plateau"},
+		{"Plateau5","Plateau 5x"},
+		{"Plateau5_variation","Plateau 5x5"},
+		//{"Playeau5_family","Plateau 5x5"},
 	};
-	
+	int pieceCount4[] = {4,2,2,1,1,1,1};
+	int pieceCount5[] = {5,3,3,2,2,2,2};
+	enum Variation 
+	{
+		Plateau(4,pieceCount4),
+		Plateau5(5,pieceCount5);
+		int boardSize;
+		int pieceCounts[];
+		Variation(int sz,int cs[])
+		{
+			boardSize = sz;
+			pieceCounts = cs;
+		}
+		static Variation find(String name)
+		{	
+			for(Variation v : values()) 
+			{
+				if(name.equalsIgnoreCase(v.name())) { return(v); }
+			}
+			return(null);
+		}
+	}
 	static final String P_INIT = "Plateau"; //init for standard game
     static final int floatTime = 1000; // milliseconds to float a piece
     static final String[] PLAYERCOLORS = { "black", "white" };
+    
     // face colors
-    static final int FACE_COLOR_OFFSET = 100;
-    static final int UNKNOWN_FACE = 100;
-    static final int BLANK_FACE = 101;
-    static final int BLUE_FACE = 102;
-    static final int RED_FACE = 103;
-    static final int ORANGE_FACE = 104;
+    enum Face {
+    	Unknown("?","???"),
+    	Blank("M","Blank"),
+    	Blue("B","Blue"),
+    	Red("R","Red"),
+    	Orange("O","Orange");
+    	int bitValue = 0;
+    	Face(String ch,String na)
+    	{	shortName = ch;
+    		name = na;
+    		bitValue = 1<<ordinal();
+    	}
+    	String shortName;
+    	String name;
+    	static Face find(int n) 
+    	{ for(Face f : values()) 
+    		{ if(f.ordinal()==n) { return(f); }
+    		}
+    		return(null);
+    	}
+		int colorKnown() {
+			return ColorKnown[ordinal()];
+		}
+		int colorUnknown() {
+			return ColorUnknown[ordinal()];
+		}
+   };
+  
     static final Color background_color = new Color(159, 155, 155);
     static final Color highlight_color = Color.red;
     static final Color stack_marker_color = new Color(64, 200, 64);
     static final double TOP_RATIO = 0.6; // part of chips that are the top
     static final double STACKSPACING = 0.35; // spacing between stacked chips
     static final double PASPECT = 0.625; // aspect ratio of the chip images
-    static final String[] ColorChars = { "?", "M", "B", "R", "O" };
-    static final String[] ColorNames = { "???", "Blank", "Blue", "Red", "Orange" };
     static final String[] ImageFileNames = 
         {
             "gray", "mute", "blue", "red", "orange"
@@ -107,33 +152,31 @@ public interface PlateauConstants
         {
             "top-mask", "middle-mask", "bottom-mask"
         };
-    static final int NPIECETYPES = 7; // number of types of pieces
-    static final int NPIECES = 12; // number of pieces overall
-    static final int MUTE_INDEX = 0; // 4 per player
-    static final int BLUE_INDEX = 1; // 2 per player
-    static final int RED_INDEX = 2; // 2 per player
-    static final int BLUE_MASK_INDEX = 3; // 1 per player
-    static final int RED_MASK_INDEX = 4; // 1 per player
-    static final int TWISTER_INDEX = 5; // 1 per player
-    static final int ACE_INDEX = 6; // 1 per player
-    static final int[] pointValue = { 1, 4, 5, 8, 10, 15, 21 };
-    static final String[] pieceTypeStr = 
-        // this depends on the order in which the 
-        // pieces are created in the board array structure
-        {
-            "M", "M", "M", "M", "R", "R", "B", "B", "RM", "BM", "TW", "A", "M",
-            "M", "M", "M", "R", "R", "B", "B", "RM", "BM", "TW", "A"
-        };
-    static final int[] topColor = 
-        {
-            BLANK_FACE, BLUE_FACE, RED_FACE, BLUE_FACE, RED_FACE, ORANGE_FACE,
-            RED_FACE
-        };
-    static final int[] bottomColor = 
-        {
-            BLANK_FACE, BLUE_FACE, RED_FACE, BLANK_FACE, BLANK_FACE, BLANK_FACE,
-            BLUE_FACE
-        };
+    enum PieceType
+    {
+    	Mute(0, 	 1, "M",	Face.Blank,	Face.Blank),
+    	Blue(1, 	 4, "B",	Face.Blue, Face.Blue),
+    	Red(2,   	5,  "R",	Face.Red, Face.Red),
+    	BlueMask(3,	8,	"BM",	Face.Blue, Face.Blank),
+    	RedMask(4,	10, "RM",	Face.Red,  Face.Blank),
+    	Twister(5,	15, "TW",	Face.Orange, Face.Blank),
+    	Ace(6,		21, "A",	Face.Red,Face.Blue);
+    	int index;
+    	int value;
+    	String idstr;
+    	Face topColor;
+    	Face bottomColor;
+    	PieceType(int i,int v,String m,Face top,Face bot)
+    	{
+    		index = i;
+    		value = v;
+    		idstr = m;
+    		topColor = top;
+    		bottomColor = bot;
+    	}
+    }
+    static final int NPIECETYPES = PieceType.values().length; // number of types of pieces
+
 
     // codes for hit objects > 0 are draggable objects
     // the rest are in OnlineConstants.java
@@ -142,6 +185,13 @@ public interface PlateauConstants
     	HitAChip, 		// some chip
     	HitEmptyRack, NoShow, Show,; 	// hit one of the other racks
    }
+    class StateStack extends OStack<PlateauState>
+    {
+		public PlateauState[] newComponentArray(int sz) {
+			return new PlateauState[sz];
+		}
+    	
+    }
     public enum PlateauState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),
@@ -186,7 +236,11 @@ public interface PlateauConstants
     static final int MOVE_PICK = 102;
     static final int MOVE_DROP = 103;
     static final int MOVE_FLIP = 106;
-     static final int MOVE_FROMTO = 111;
+    static final int MOVE_EXCHANGE = 107;
+    static final int MOVE_ROBOT_EXCHANGE = 108;
+    static final int MOVE_ROBOT_MOVE = 109;
+    static final int MOVE_ROBOT_ONBOARD = 110;
+    static final int MOVE_FROMTO = 111;
     static final String Plateau_SGF = "23"; // sgf game number allocated for plateau
 
     // color logic for the robot.  These are powers of two

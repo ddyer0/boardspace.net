@@ -45,8 +45,6 @@ public interface Text extends Icon {
 	public abstract Text nextChunk();
 	/** get the last chunk of text */
 	public abstract Text lastChunk();
-	/** get the last line of text */
-	public abstract Text lastLine();
 	/** count the lines of text */
 	public abstract int nLines();
 	/** draw a the current line of this text object */
@@ -99,13 +97,17 @@ public interface Text extends Icon {
 	 * @return a string representation of the text
 	 */
 	public abstract String getString();
+	/**
+	 * return true if this is a graphic and has no meaningful text
+	 * @return
+	 */
+	public boolean isGraphic();
+	/**
+	 * return true if this has no content 
+	 * @return
+	 */
+	public boolean isEmpty();
 
-	/** get the number of characters in this chunk */
-	public abstract int length();
-	/** compare to a string */
-	public abstract boolean equals(String str);
-	/** get a character from this chunk */
-	public abstract char charAt(int idx);
 	/** append a string to this chunk */
 	public abstract void append(String str);
 	/** append a Text chunk to this chunk */

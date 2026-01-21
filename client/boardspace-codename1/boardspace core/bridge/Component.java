@@ -17,7 +17,7 @@
 package bridge;
 
 import java.util.EventListener;
-import lib.AwtComponent;
+
 import lib.G;
 import lib.SizeProvider;
 
@@ -30,7 +30,7 @@ import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.plaf.Style;
 
 // our component is a codename1 container, so it can have popup menus as children
-public class Component extends com.codename1.ui.Component implements EventListener,AwtComponent,SizeProvider
+public class Component extends com.codename1.ui.Component implements EventListener,SizeProvider
 {	public com.codename1.ui.Graphics getGraphics() { throw G.Error("Not implented, not implementedable"); }
 	public Component getMediaComponent() { return this; }
 	// mouse adapter converts CN1 events to 
