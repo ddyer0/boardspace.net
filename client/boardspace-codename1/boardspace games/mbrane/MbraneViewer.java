@@ -501,19 +501,12 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      	  if(twistBoard)
      	  {
      		  GC.setRotation(gc,Math.PI/2,x+cellSize/2,y+cellSize/2);
-     		//  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
-     		 GC.setFont(gc,font);
-         	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
-         			str);
+     		  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
      		  GC.setRotation(gc,-Math.PI/2,x+cellSize/2,y+cellSize/2);
      	  }
      	  else
      	  {
-     	  //super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
-     		 GC.setFont(gc,font);
-          	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
-          			str);
-         	
+     	  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);         	
      	  }
 
     }

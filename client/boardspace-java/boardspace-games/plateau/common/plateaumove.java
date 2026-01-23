@@ -75,13 +75,28 @@ public class plateaumove extends commonMove implements PlateauConstants
     	player = p;
     }
     
-    public plateaumove(int moveFromto, String locus2, int i, String allColors, double weight, String locus3, int who) {
-		G.Error("not yet");
-	}
+    /** constructor for "onboard" moves */
+    public plateaumove(String loc,int lev,String colors,double anno,String pub,String pc,int who)
+    { 	op = MOVE_ONBOARD;
+    	locus = loc;
+    	level = lev;
+    	realColors = colors;
+    	pubColors = pub;
+    	pieces = pc;
+    	player = who;
+    }
+    /** constructor for inboard moves */
+    public plateaumove(int opc,String from,int height,String colors,double anno,String to,int who)
+    {	op = opc;
+    	locus = from;
+    	level = height;
+    	flip = false;
+    	realColors = colors;
+    	pubColors = realColors.substring(0,1);
+    	tolocus = to;
+    	player = who;
+    }
 
-	public plateaumove(String loc, int i, String colors, double w, String colors2, String pnum, int who) {
-		G.Error("not yet");
-	}
 
 	/* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)

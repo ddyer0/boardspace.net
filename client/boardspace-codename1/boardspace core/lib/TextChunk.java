@@ -223,25 +223,49 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     		{
     		  next.colorize(s,coloredChunks);
     		}
+    	String mytext = getString();
+    	if(mytext!=null && !isGraphic()) 
+    	{
 	    for(Text chunk : coloredChunks)
 		{
 	    String str0 = chunk.getString();
 		String str = (s==null) ? str0 : s.get(str0);
 		int strlen = str.length();
-		int ind = data.indexOf(str);
+		int ind = mytext.indexOf(str);
 		if((ind>=0)				// match
-				&& ((ind==0) || !G.isLetterOrDigit(data.charAt(ind-1)))	// at the beginning or preceded by a space 
-				&& (((ind+strlen)==data.length()) || !G.isLetterOrDigit(data.charAt(ind+strlen))) // at the end or followed by a space
+				&& ((ind==0) || !G.isLetterOrDigit(mytext.charAt(ind-1)))	// at the beginning or preceded by a space 
+				&& (((ind+strlen)==mytext.length()) || !G.isLetterOrDigit(mytext.charAt(ind+strlen))) // at the end or followed by a space
 				)
 			{
-			Text left = new TextChunk(data.substring(0,ind),dataColor,false);
+			Text left=null;
+			if(ind>0) 
+				{ left = new TextChunk(mytext.substring(0,ind),dataColor,false); 
+				  left.colorize(s,coloredChunks);
+				}
 			Text middle = chunk.cloneSimple();
-			Text right = new TextChunk(data.substring(ind+str.length()),dataColor,false);
-			left.colorize(s,coloredChunks);
+			Text right = null;
+			int end = ind+str.length();
+			if(end<mytext.length())
+			{
+				right = new TextChunk(mytext.substring(end),dataColor,false);
 			right.colorize(s,coloredChunks);
+				if(left!=null) 
+				{
 			beJoined(left,middle,right);
 			}
+				else {
+					beJoined(middle,right);
+				}
+			}
+			else if(left!=null) 
+			{
+				beJoined(left,middle);
+			}
+			else {
+				beJoined(middle);
+			}
 		}
+		}}
 	    if(next!=null) { next.colorize(s,coloredChunks); }
     }
     /**

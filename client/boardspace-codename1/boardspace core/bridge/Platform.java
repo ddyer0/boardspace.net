@@ -36,7 +36,6 @@ import com.codename1.ui.CN1Constants;
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
 import com.codename1.ui.EncodedImage;
-import com.codename1.ui.Font;
 
 import lib.LFrameProtocol;
 import lib.Plog;
@@ -233,37 +232,7 @@ public abstract class Platform implements Config{
 		s.println(getStackTrace(t));
 	}
 	
-	public static double GetPixelSize(Font f)
-	{	
-			return(f!=null && f.isTTFNativeFont() ? getTTFsize(f) : -1);
-	}
-	private static double getTTFsize(Font f)
-	{	double siz = f.getPixelSize();
-		if(siz<=0)
-		{
-		// try hard to identify the true size of the font.  This is necessitated
-		// by codename1 returning the initial font object whose pixel size is
-		// actually unknown.
-		int originalHeight = f.getHeight();
-		int requestedHeight = originalHeight;
-		int style = f.getStyle();
-		  // this papers over a bug where a font with size 0 is stuck in the cache
-		Font f1 = SystemFont.deriveFont(f,requestedHeight,f.getStyle());
-		if(f1==f) { requestedHeight++; f1=SystemFont.deriveFont(f,requestedHeight,style); }
-		while(f1.getHeight()>originalHeight) 
-			{ requestedHeight--; 
-			  f1 = SystemFont.deriveFont(f,requestedHeight, style);
-			}
-		while(f1.getHeight()<originalHeight)
-			{ requestedHeight--;
-			  f1 = SystemFont.deriveFont(f,requestedHeight,style);
-			}
-		siz = f1.getPixelSize();
-		SystemFont.fontSize.put(f,requestedHeight);
-		SystemFont.fontOrigin.put(f,"getTTFsize");
-		}
-		return(siz);
-	}
+
 	@SuppressWarnings("unchecked")
 	public static Object clone(Hashtable<?,?>in)
 	{

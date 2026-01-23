@@ -803,10 +803,7 @@ private void playSounds(TruMovespec m)
     	}
     	else
     	{
-    	//	super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
-    	  	  GC.setFont(gc,font);
-           	  GC.drawOutlinedText(gc,true,x-cellSize/2,y-cellSize/2,cellSize,cellSize,color,Color.black,
-           			str);
+    		super.drawNumber(gc,source,dest,cellSize,xx+cellSize,yy-cellSize,font,color, str);
     	}
     }
 }

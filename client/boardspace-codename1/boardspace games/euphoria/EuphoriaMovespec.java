@@ -343,7 +343,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         {
         	int i1 = omsg.indexOf('"');
         	int i2 = omsg.lastIndexOf('"');
-        	if(i1>0 && i2>0)
+        	if(i1>0 && i2>i1)
         		{
         		chip = EuphoriaChip.find(omsg.substring(i1+1,i2));
         		}

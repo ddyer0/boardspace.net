@@ -35,7 +35,7 @@ public class SystemFont
 	 */
 	public static Font getFont(com.codename1.ui.plaf.Style style)
 	{	Font f = style.getFont();
-		double sz = Platform.GetPixelSize(f);
+		double sz = GetPixelSize(f);
 		if(sz<=0)
 		{	boolean isttf = f.isTTFNativeFont();
 			if(isttf && sz==-1)
@@ -60,7 +60,7 @@ public class SystemFont
 		return(f);
 	}
 	public static int getFontSize(Font f)
-	{	double fs = Platform.GetPixelSize(f);
+	{	double fs = GetPixelSize(f);
 		if(fs>0) { return((int)fs); }
 		
 		int sz = fontSize.containsKey(f) ? fontSize.get(f) : -1;
@@ -83,14 +83,14 @@ public class SystemFont
 	public static  Font getFont(Font f,Style style,int size)
 	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
 		Font fd = deriveFont(f,size<=0?getFontSize(f):size,style.s);
-		if(Platform.GetPixelSize(fd)==size) { return(fd); }
+		if(GetPixelSize(fd)==size) { return(fd); }
 		fontSize.put(fd,size);
 		return(fd);
 	}
 	public static Font getFont(Font f,int size)
 	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
 		Font fd = deriveFont(f,size,f.getStyle());
-		if(Platform.GetPixelSize(fd)==size) { return(fd); }
+		if(GetPixelSize(fd)==size) { return(fd); }
 		fontSize.put(fd,size);
 		return(fd);
 	}
@@ -126,7 +126,7 @@ public class SystemFont
 	{	
 		if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
 		Font f = Font.createSystemFont(fontFaceCode(family),style.s,size);
-		if(Platform.GetPixelSize(f)==size) 
+		if(GetPixelSize(f)==size) 
 			{ return(f); 
 			}
 		return(getFont(f,size));	// convert to a truetype font
@@ -171,5 +171,35 @@ public class SystemFont
 	{	// on IOS platforms, everything starts scaled to full screen
 		return(1.0);
 	}
-
+	private static double GetPixelSize(Font f)
+	{	
+			return(f!=null && f.isTTFNativeFont() ? getTTFsize(f) : -1);
+	}
+	private static double getTTFsize(Font f)
+	{	double siz = f.getPixelSize();
+		if(siz<=0)
+		{
+		// try hard to identify the true size of the font.  This is necessitated
+		// by codename1 returning the initial font object whose pixel size is
+		// actually unknown.
+		int originalHeight = f.getHeight();
+		int requestedHeight = originalHeight;
+		int style = f.getStyle();
+		  // this papers over a bug where a font with size 0 is stuck in the cache
+		Font f1 = deriveFont(f,requestedHeight,f.getStyle());
+		if(f1==f) { requestedHeight++; f1=deriveFont(f,requestedHeight,style); }
+		while(f1.getHeight()>originalHeight) 
+			{ requestedHeight--; 
+			  f1 = deriveFont(f,requestedHeight, style);
+			}
+		while(f1.getHeight()<originalHeight)
+			{ requestedHeight--;
+			  f1 = deriveFont(f,requestedHeight,style);
+			}
+		siz = f1.getPixelSize();
+		fontSize.put(f,requestedHeight);
+		fontOrigin.put(f,"getTTFsize");
+		}
+		return(siz);
+	}
 }

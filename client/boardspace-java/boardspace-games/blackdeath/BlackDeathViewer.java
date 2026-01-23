@@ -230,7 +230,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
-    			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+    			minLogW, minLogH, minLogW*3/2, minLogH*10);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
       	 

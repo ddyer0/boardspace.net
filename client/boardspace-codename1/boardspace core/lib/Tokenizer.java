@@ -128,8 +128,12 @@ public class Tokenizer implements Enumeration<String>
 	private void skipDelimiters()
 	{	if(!keepDelimiters)
 		{
-		while((index<maxIndex) && delimiters.indexOf(basis.charAt(index))>=0)
-		{	index++;
+		char ch = (char)0;
+		while((index<maxIndex)
+				&& (delimiters.indexOf((ch=basis.charAt(index)))>=0)
+				&& (ch!='\"'))	// double quote is special because it is paired
+		{	
+			index++;
 			restIndex = index;	
 		}}
 	}

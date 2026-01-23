@@ -2409,11 +2409,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	public void randomizeHiddenState(Random robotRandom, int playerIndex) {
 		
 	}
-	public CommonMoveStack GetListOfMoves() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 	StateStack robotState = new StateStack();
 	boolean robotBoard = false;
 	public void RobotExecute(commonMove m) {
@@ -2688,6 +2684,31 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	
     	return(some);
     }
+    
+    static int CELL_LEFT = 0;
+    static int CELL_QUARTER_TURN = 2;
+    static int CELL_FULL_TURN = 0;
+    pstack getCellOrNull(int x, int y)
+    {
+    	if(x<0 || y<0 || x>=ncols || y>= nrows) { return null; }
+    	return board[x][y];
+    }
+    pstack exitTo(pstack c,int direction)
+    {	int x = c.col_a_d;
+    	int y = c.row_1_4;
+    	switch((direction+CELL_FULL_TURN)%CELL_FULL_TURN)
+    	{
+    	default: throw G.Error("Not expected");
+    	case 0:	return getCellOrNull(x-1,y);
+    	case 1: return getCellOrNull(x-1,y+1);
+    	case 2: return getCellOrNull(x,y+1);
+    	case 3: return getCellOrNull(x+1,y+1);
+    	case 4: return getCellOrNull(x+1,y);
+    	case 5: return getCellOrNull(x+1,y-1);
+    	case 6: return getCellOrNull(x,y-1);
+    	case 7: return getCellOrNull(x-1,y-1);
+    	}
+    }
     /**
      * build a stack of targets for onboard moves, annotate the
      * stacks with red_thread blue orange_threat blank_threat for the number of threats
@@ -2697,10 +2718,17 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
      */
     private CellStack buildOnboardTargets(int who)
     {	CellStack targets = new CellStack();
-    	G.Error("not");
+    	int opponent = nextPlayer[who];
+    	
+		for(pstack cell = allCells; cell!=null; cell=cell.next)
+		{
+		if(cell.topOwner()!=opponent) 	// empty or ours
+			{   				
+				targets.push(cell);				
+			}
+		}
     	return(targets);
     }
-
     private boolean addInboardMoves(CommonMoveStack all,int who,boolean includeFlip,boolean includeReduddentFlip,pstack cell,int opponentHeight)
     {	boolean some = false;
     	int takeoff = cell.takeOffHeight();
@@ -3062,5 +3090,9 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 		}
 		return all;
 	}
-
+	public CommonMoveStack GetListOfMoves() {
+		CommonMoveStack all = GetListOfMoves(new Random(),true);
+		return all;
+	}
+	
 }

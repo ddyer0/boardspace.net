@@ -938,7 +938,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     }
 
     /** factory method to create a robot */
-    public SimpleRobotProtocol newRobotPlayer() { return(null); }
+    public SimpleRobotProtocol newRobotPlayer() { return(new PlateauPlay()); }
 
     commonPlayer prevPlayer = null;
     public boolean parsePlayerInfo(commonPlayer p,String first,Tokenizer tokens)
