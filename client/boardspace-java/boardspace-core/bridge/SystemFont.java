@@ -8,25 +8,21 @@ import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
+import lib.FontManager;
 import lib.G;
 
 public class SystemFont implements Config
 {	public static int defaultFontSize = Default.getInt(Default.fontsize);
-public static final Style MenuTextStyle = Style.Plain;
+public static final FontManager.Style MenuTextStyle = FontManager.Style.Plain;
 
-	public enum Style
-	   {   Plain(Font.PLAIN),
-		   Italic(Font.ITALIC),
-		   Bold(Font.BOLD);
-		   int s;
-		   Style(int style) { s=style;}
-	   }
-	
 	public static Font defaultFont = null;
+	public static int PLAIN = Font.PLAIN;
+	public static int ITALIC = Font.ITALIC;
+	public static int BOLD = Font.BOLD;
 
 	public static int defaultFontSize() 
 	{ 
-		return Math.max(minFontHeight,Math.min(maxFontHeight,lib.FontManager.standardizeFontSize(defaultFontSize)));
+		return Math.max(minFontHeight,Math.min(maxFontHeight,FontManager.standardizeFontSize(defaultFontSize)));
 	}
 
 	public static Font getGlobalDefaultFont()
@@ -47,11 +43,11 @@ public static final Style MenuTextStyle = Style.Plain;
 
 	public static Font menuFont()
 	{
-		return getFont(lib.FontManager.getGlobalDefaultFont(),
-				lib.FontManager.MenuTextStyle,
-				lib.FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
+		return getFont(FontManager.getGlobalDefaultFont(),
+				FontManager.MenuTextStyle,
+				FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
 	}
-	public static  Font getFont(String family,Style style,int size)
+	public static  Font getFont(String family,FontManager.Style style,int size)
 	{	if(!G.Advise(size>0,"not zero size font %s %s",family,style)) { size = 1; }
 		return(new Font(family, style.s ,size));
 	}
@@ -59,7 +55,7 @@ public static final Style MenuTextStyle = Style.Plain;
 	{	if(!G.Advise(size>0,"not zero size font %s",f)) { size = 1; }
 		return(f.deriveFont(f.getStyle(),size));
 	}
-	public static  Font getFont(Font f,Style style,int size)
+	public static  Font getFont(Font f,FontManager.Style style,int size)
 	{	if(!G.Advise(size>0,"not zero size font %s",f)) { size = 1; }
 		return(f.deriveFont(style.s,size<=0?f.getSize():size));
 	}
@@ -100,7 +96,7 @@ public static final Style MenuTextStyle = Style.Plain;
 	 */
 	public static void setGlobalDefaultFont()
 	{	int fontHeight = defaultFontSize();
-		Font f = getFont(lib.FontManager.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, Style.Plain, fontHeight);
+		Font f = getFont(FontManager.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, FontManager.Style.Plain, fontHeight);
 		setGlobalDefaultFont (f);
 	}
 

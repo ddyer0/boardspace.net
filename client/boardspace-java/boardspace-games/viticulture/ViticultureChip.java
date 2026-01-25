@@ -957,7 +957,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 		  {
 		  boolean limitPoints = limitPoints();
 		  boolean limitCash = limitMoney();
-		  if((limitPoints||limitCash) && ((canvas.getAltChipset()&1)==1))
+		  if((limitPoints||limitCash) && ((exCanvas.getAltChipset(canvas)&1)==1))
 		  {
 		  int left = cx-SQUARESIZE/2;
 		  int h = SQUARESIZE/8;

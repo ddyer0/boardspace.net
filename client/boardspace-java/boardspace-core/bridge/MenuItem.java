@@ -2,6 +2,7 @@ package bridge;
 
 import java.awt.Font;
 
+import lib.FontManager;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
@@ -9,7 +10,7 @@ import lib.NativeMenuItemInterface;
 public class MenuItem extends java.awt.MenuItem implements NativeMenuItemInterface
 {
 	public MenuItem(String string) { super(string); }
-	public MenuItem(String string,Font f) { this(string); setFont(f==null ? lib.FontManager.menuFont() : f); }
+	public MenuItem(String string,Font f) { this(string); setFont(f==null ? FontManager.menuFont() : f); }
 	public Icon getNativeIcon() {	return null; }
 	public NativeMenuInterface getSubmenu() { return(null); }
 	
@@ -18,7 +19,7 @@ public class MenuItem extends java.awt.MenuItem implements NativeMenuItemInterfa
 	public int getNativeWidth() { return(JMenu.Width(this)); }
 	public Font getFont() 
 	{ Font f = super.getFont();
-	  if(f==null) { f = lib.FontManager.getGlobalDefaultFont(); }
+	  if(f==null) { f = FontManager.getGlobalDefaultFont(); }
 	  return(f);
 	}
 	public String getText() { return(getLabel()); }

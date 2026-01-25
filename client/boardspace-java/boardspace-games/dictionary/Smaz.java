@@ -297,8 +297,6 @@ public class Smaz {
 
 
 */
-    private static ByteOutputStream verb = new ByteOutputStream();
-    private static ByteOutputStream output = new ByteOutputStream();
     
     /**
      * Returns compressed byte array for the specified string
@@ -309,8 +307,8 @@ public class Smaz {
     public static byte[] compress(byte[] inString) {
         confirmOnlyAscii(inString);
 
-        verb.reset();
-        output.reset();
+        ByteOutputStream verb = new ByteOutputStream();
+        ByteOutputStream output = new ByteOutputStream();
 
         int limit = inString.length;
         int index = 0;
@@ -404,8 +402,8 @@ public class Smaz {
      */
     public static byte[] compress(ByteOutputStream inString) {
 
-    	verb.reset();
-    	output.reset();
+        ByteOutputStream verb = new ByteOutputStream();
+        ByteOutputStream output = new ByteOutputStream();
 
         int limit = inString.size();
         int index = 0;

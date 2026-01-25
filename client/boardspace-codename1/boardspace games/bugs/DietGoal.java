@@ -2,8 +2,8 @@ package bugs;
 
 import com.codename1.ui.Font;
 
-import bridge.SystemFont;
 import bugs.data.Profile;
+import lib.FontManager;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
@@ -44,7 +44,7 @@ public class DietGoal implements Goal,BugsConstants
 		{	
 				textContainer.setBounds(xp+margin,yp+margin,w-margin*2,h-margin*2);
 				textContainer.setText(sd);
-				textContainer.setFont(SystemFont.getFont(font,w/10));
+				textContainer.setFont(FontManager.getFont(font,w/10));
 				textContainer.selectFontSize();
 				textContainer.flagExtensionLines = false;
 				textContainer.frameAndFill=false;

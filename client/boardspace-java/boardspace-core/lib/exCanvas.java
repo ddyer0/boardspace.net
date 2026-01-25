@@ -303,7 +303,7 @@ public abstract class exCanvas extends Canvas
 	}
 	
     public int standardFontSize() 
-    { 	int v = lib.FontManager.getFontSize(standardPlainFont());
+    { 	int v = FontManager.getFontSize(standardPlainFont());
     	return v; 
     }
 
@@ -456,14 +456,14 @@ public abstract class exCanvas extends Canvas
     {	double zoom = getGlobalZoom();
     	int FontHeight = Math.min((int)(maxFontHeight*zoom),
     					  Math.max((int)(minFontHeight*zoom),
-    							  lib.FontManager.standardizeFontSize(height)));
+    							  FontManager.standardizeFontSize(height)));
     	//G.print("adjust font from "+height+" to "+FontHeight);
         String fontfam = (s==null) ? "fixed" : s.get("fontfamily");
         //G.print("FontManager size "+FontHeight);
-        l.standardPlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight - 2);
-        l.largePlainFont = SystemFont.getFont(fontfam, SystemFont.Style.Plain, FontHeight +2);
-        l.standardBoldFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Bold,FontHeight);
-        l.largeBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+5);
+        l.standardPlainFont = FontManager.getFont(fontfam, FontManager.Style.Plain, FontHeight - 2);
+        l.largePlainFont = FontManager.getFont(fontfam, FontManager.Style.Plain, FontHeight +2);
+        l.standardBoldFont = FontManager.getFont(standardPlainFont(),FontManager.Style.Bold,FontHeight);
+        l.largeBoldFont = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, FontHeight+5);
         labelFont = standardBoldFont();
     }
     public exCanvas()
@@ -484,7 +484,7 @@ public abstract class exCanvas extends Canvas
         chatPercent = info.getInt(ChatInterface.BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
          
-        adjustStandardFonts(lib.FontManager.defaultFontSize);
+        adjustStandardFonts(FontManager.defaultFontSize);
         
         globalZoomRect = addSlider(".globalZoom",s.get(ZoomMessage),OnlineId.HitZoomSlider);
         globalZoomRect.min=1.0;
@@ -514,16 +514,16 @@ public abstract class exCanvas extends Canvas
         for(int size : sizes)
         {
         	JCheckBoxMenuItem m  = new JCheckBoxMenuItem(""+size);
-        	if(size==lib.FontManager.defaultFontSize) { m.setSelected(true); }
+        	if(size==FontManager.defaultFontSize) { m.setSelected(true); }
         	m.addItemListener(deferredEvents);
-        	if(!G.isCodename1()) { m.setFont(SystemFont.getFont(ref,size)); }
+        	if(!G.isCodename1()) { m.setFont(FontManager.getFont(ref,size)); }
         	l.fontSizeMenu.add(m);
         }
         
         if(G.debug())
         {	l.fontStyleMenu = myFrame.addChoiceMenu("Font Style",deferredEvents);
         	String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
-        	String current = lib.FontManager.defaultFontFamily();
+        	String current = FontManager.defaultFontFamily();
         	for(String font : fonts)
         	{
         		JCheckBoxMenuItem m  = new JCheckBoxMenuItem(font);
@@ -570,10 +570,10 @@ public abstract class exCanvas extends Canvas
     		if(item==target)
     		{	
     			int val = G.IntToken(item.getText());
-    			if(isSel && (val>6) && (val!=lib.FontManager.defaultFontSize)) 
+    			if(isSel && (val>6) && (val!=FontManager.defaultFontSize)) 
     				{ 
-    					lib.FontManager.setDefaultFontSize(val);
-    					lib.FontManager.setGlobalDefaultFont();
+    					FontManager.setDefaultFontSize(val);
+    					FontManager.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -604,8 +604,8 @@ public abstract class exCanvas extends Canvas
     			String val = item.getText();
     			if(isSel) 
     				{ 
-    					lib.FontManager.setDefaultFontFamily(val);
-    					lib.FontManager.setGlobalDefaultFont();
+    					FontManager.setDefaultFontFamily(val);
+    					FontManager.setGlobalDefaultFont();
     					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
@@ -734,8 +734,8 @@ public abstract class exCanvas extends Canvas
         }
         else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
         	{	String fam = G.getTranslations().get("fontfamily");
-	 			lib.FontManager.setDefaultFontFamily(fam);
-	 			lib.FontManager.setGlobalDefaultFont();
+	 			FontManager.setDefaultFontFamily(fam);
+	 			FontManager.setGlobalDefaultFont();
 	 			doNullLayout();  
 	 			generalRefresh(); 
 	 			return(true); 
@@ -1755,7 +1755,7 @@ graphics when using a touch screen.
             {  
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
-               GC.setFont(gc, lib.FontManager.getGlobalDefaultFont());
+               GC.setFont(gc, FontManager.getGlobalDefaultFont());
                ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }
@@ -2176,8 +2176,8 @@ graphics when using a touch screen.
   	  	int ww = (int)(w*zoom);
   	  	int hh = (int)(h*zoom);
 
-  	  	double fac = zoom*lib.FontManager.adjustWindowFontSize(w,h);
-  	  	adjustStandardFonts(fac*lib.FontManager.defaultFontSize);
+  	  	double fac = zoom*FontManager.adjustWindowFontSize(w,h);
+  	  	adjustStandardFonts(fac*FontManager.defaultFontSize);
 	  
   	  	setLocalBoundsSync(0,0,ww,hh);
   	  	initialized=true; 
@@ -2508,6 +2508,7 @@ graphics when using a touch screen.
 	public int getAltChipset() {	
 		return 0;
 	}
+	public static int getAltChipset(exCanvas c) { return c==null ? 0 : c.getAltChipset(); }
 	
 	public void actionPerformed(ActionEvent e) {
 		deferredEvents.deferActionEvent(e);

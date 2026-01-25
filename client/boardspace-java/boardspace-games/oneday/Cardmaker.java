@@ -37,7 +37,7 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import bridge.SystemFont;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -76,9 +76,9 @@ public class Cardmaker extends exCanvas implements Runnable
 	
 	static int TEXTHEIGHT = 50;
 	static int CARD_MARGIN_PERCENT=12;
-	Font titleFont = SystemFont.getFont("sansserif",SystemFont.Style.Bold,40);
-	Font cardFont = SystemFont.getFont(titleFont, SystemFont.Style.Bold, 30);
-	Font smallCardFont = SystemFont.getFont(titleFont, SystemFont.Style.Bold, 25);
+	Font titleFont = FontManager.getFont("sansserif",FontManager.Style.Bold,40);
+	Font cardFont = FontManager.getFont(titleFont, FontManager.Style.Bold, 30);
+	Font smallCardFont = FontManager.getFont(titleFont, FontManager.Style.Bold, 25);
 	public Cardmaker()
 	{
 	}

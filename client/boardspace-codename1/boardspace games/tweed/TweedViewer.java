@@ -26,11 +26,11 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -510,7 +510,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     	Hashtable<TweedCell,TweedMovespec> targets = gb.getTargets();
     	boolean show = eyeRect.isOnNow();
     	boolean numbers = numberRect.isOnNow();
-    	Font labels = SystemFont.getFont(largeBoldFont(),CELLSIZE/3);
+    	Font labels = FontManager.getFont(largeBoldFont(),CELLSIZE/3);
     	double xscale = 0.1;
     	boolean showCaptures = captureRect.isOnNow();
     	double yscale = 0.08;

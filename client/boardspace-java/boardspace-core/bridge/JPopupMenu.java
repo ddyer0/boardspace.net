@@ -21,6 +21,7 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import lib.FontManager;
 import lib.G;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
@@ -30,7 +31,7 @@ import lib.Plog;
 public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInterface
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String msg) { super(msg); } 
-	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? lib.FontManager.menuFont() : f); }
+	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? FontManager.menuFont() : f); }
 	public int getItemCount() { return(getComponentCount()); }
 	public NativeMenuItemInterface getMenuItem(int n) 
 	{ Component c = getComponent(n);

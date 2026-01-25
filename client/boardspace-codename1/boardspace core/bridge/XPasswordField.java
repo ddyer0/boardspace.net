@@ -20,10 +20,12 @@ package bridge;
 import com.codename1.ui.Font;
 import com.codename1.ui.TextField;
 
+import lib.FontManager;
+
 public class XPasswordField extends TextField
 {	MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener who) { mouse.addActionListener(who); }
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }
+	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 
@@ -48,6 +50,6 @@ public class XPasswordField extends TextField
 		return(getText());
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

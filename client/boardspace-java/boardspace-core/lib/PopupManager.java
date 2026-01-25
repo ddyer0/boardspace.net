@@ -561,5 +561,9 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
     	if(observer!=null) { observer.update(this,null, rawValue); }
     	}
     }
+
+    public exCanvas getCanvas() {
+		return null;
+	}
     
 }

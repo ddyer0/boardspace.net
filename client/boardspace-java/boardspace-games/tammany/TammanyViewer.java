@@ -20,7 +20,6 @@ import java.awt.*;
 
 import java.util.Hashtable;
 
-import bridge.SystemFont;
 import common.GameInfo;
 import online.common.*;
 import lib.Graphics;
@@ -29,6 +28,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -1521,7 +1521,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	int textX = l+topSpace;
     	Rectangle infoRect = addRect("sideinfo",textX,t,textW,topPart);
     	Rectangle alertRect =addRect("sidealert",textX, t+h-topPart,textW,topPart);
-    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = FontManager.getFont(largeBoldFont(), topPart/2);
    	   	GC.setFont(gc,myfont);
    	   	if(remoteViewer<0)
     	{

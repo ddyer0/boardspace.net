@@ -39,6 +39,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.DrawableImage;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GearMenu;
@@ -236,7 +237,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		double ratio = Math.abs((double)w/h);
 		square = !portrait && ratio>0.9 && ratio<1.1;
 		int stripHeight ;
-		int fh = lib.FontManager.getFontSize(standardPlainFont());
+		int fh = FontManager.getFontSize(standardPlainFont());
 		int clockHeight = fh*3;
 		int clockWidth = fh*25;
 		if(portrait)
@@ -897,7 +898,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		boolean hit = false;
 		if(gameNames!=null)
 		{
-		int fh = lib.FontManager.getFontSize(standardPlainFont());
+		int fh = FontManager.getFontSize(standardPlainFont());
 		int vspace = (int)(fh*3.5);
 		int half = vspace*5/6;
 		int lessThanHalf = half-half/10;
@@ -964,7 +965,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int l = G.Left(r);
 		int t = G.Top(r);
 		int h = G.Height(r);
-		int fh = lib.FontManager.getFontSize(standardPlainFont());
+		int fh = FontManager.getFontSize(standardPlainFont());
 		
 		GameInfo categoryNames[] = GameInfo.groupMenu(typeClass,nplayers);
 		int az_cols = 3;
@@ -1113,7 +1114,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		    // have to be very careful because GC may be null, and in rare
 		    // circumstances, this.getFont() may also be null.
 		    GC.setFont(gc,lb);
-		    FontMetrics fm = lib.FontManager.getFontMetrics(lb);
+		    FontMetrics fm = FontManager.getFontMetrics(lb);
 		    int fonth = fm.getHeight();
 		    int topPart = fonth*3;
 		    int messageY = G.Bottom(helpRect)+topPart/3;
@@ -1336,7 +1337,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		newNameField.setVisible(true);
 		newNameField.setBackground(bsBlue);
 
-		FontMetrics fm = lib.FontManager.getFontMetrics(newNameField.getFont());
+		FontMetrics fm = FontManager.getFontMetrics(newNameField.getFont());
 		
 		int w = (int)(fm.stringWidth(TypeinMessage)*1.2);
 		int h = fm.getHeight()*2;

@@ -10,7 +10,12 @@ import java.awt.Font;
  * be valid to pass a null.
  */
 public interface DrawingObject {
-	public default exCanvas getCanvas() { return null; }
+	/** WARNING ** adding this as a default method works incorrectly for android
+	 * and CN1 says it can't be fixed.  So don't do it.    
+	 * public default exCanvas getCanvas() { return null; }                                                                             
+	 * @return
+	 */
+	public exCanvas getCanvas();
 	public static exCanvas getCanvas(DrawingObject c) { return c==null ? null : c.getCanvas(); }
 	public default Font getFont()
 	{

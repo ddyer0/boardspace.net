@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -231,7 +232,7 @@ public class GameLog implements Opcodes
       	boolean baractive = scrollbar.mouseIsActive();
       	boolean scrolled = baractive;
       	int barWidth = barvisible ? scrollbar.getScrollbarWidth() : 0;
-      	FontMetrics myFM = lib.FontManager.getFontMetrics(lineFont);
+      	FontMetrics myFM = FontManager.getFontMetrics(lineFont);
       	int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
          
       	int sz = history.size();
@@ -525,7 +526,7 @@ public class GameLog implements Opcodes
    	boolean scrolled = scrollbar.mouseIsActive();   
 	    	
        
-	   FontMetrics myFM = lib.FontManager.getFontMetrics(normal);
+	   FontMetrics myFM = FontManager.getFontMetrics(normal);
       int rowHeight = myFM.getAscent() + myFM.getDescent(); // not height, too much for some fonts
       int sz = history.size();
       int historyStep = history.viewStep();

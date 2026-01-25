@@ -3,11 +3,11 @@ package bugs.data;
 import com.codename1.ui.Font;
 
 import java.util.Hashtable;
-import bridge.SystemFont;
 import bugs.Goal;
 import bugs.BugCard;
 import bugs.BugsConstants;
 import bugs.BugsBoard;
+import lib.FontManager;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
@@ -127,7 +127,7 @@ public class Taxonomy extends DataHelper<Taxonomy> implements KeyProvider,Goal,B
 		{	
 			textContainer.setBounds(xp+margin,yp+margin,w-margin*2,h-margin*2);
 			textContainer.setText(sd);
-			textContainer.setFont(SystemFont.getFont(baseFont,w/5));
+			textContainer.setFont(FontManager.getFont(baseFont,w/5));
 			textContainer.selectFontSize();
 			textContainer.flagExtensionLines = false;
 			textContainer.frameAndFill=false;

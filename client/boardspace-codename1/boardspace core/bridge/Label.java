@@ -17,6 +17,8 @@
 package bridge;
 
 import com.codename1.ui.Font;
+
+import lib.FontManager;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
@@ -32,7 +34,7 @@ public class Label extends com.codename1.ui.Label
 	{
 		super(ic.getSystemImage());
 	}
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }
+	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public void setLabelFor(XPasswordField passwordField) {
 		
 	}
@@ -91,6 +93,6 @@ public class Label extends com.codename1.ui.Label
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

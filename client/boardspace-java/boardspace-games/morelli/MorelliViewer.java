@@ -22,7 +22,6 @@ import lib.Image;
 import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 
-import bridge.SystemFont;
 import common.GameInfo;
 import online.common.*;
 import online.game.*;
@@ -33,6 +32,7 @@ import java.util.*;
 
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -366,7 +366,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
       MorelliState vstate = gb.getState();
       int FontHeight = standardFontSize();
       gameLog.redrawGameLog(gc, ourSelect, logRect, Color.black,Color.white,standardPlainFont(),
-    		  	SystemFont.getFont("monospaced",SystemFont.Style.Bold,FontHeight+5));
+    		  	FontManager.getFont("monospaced",FontManager.Style.Bold,FontHeight+5));
     
         drawBoardElements(gc, gb, boardRect, ot,SQUARESIZE);
         if(gb.getState()==MorelliState.FirstPlay)

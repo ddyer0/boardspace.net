@@ -23,7 +23,6 @@ import javax.swing.JCheckBoxMenuItem;
 import static breakingaway.BreakingAwayMovespec.*;
 import static breakingaway.BreakingAwayBoard.*;
 import breakingaway.BreakingAwayPiece.ChipColor;
-import bridge.SystemFont;
 import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
@@ -43,6 +42,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -176,8 +176,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         
         riderCountOption = myFrame.addOption("show rider counts",false,deferredEvents);
         int FontHeight = standardFontSize();
-        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+2);
-        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight);
+        gameLogBoldFont = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, FontHeight+2);
+        gameLogFont = FontManager.getFont(standardPlainFont(),FontManager.Style.Plain,FontHeight);
         sizeRect = addSlider(TileSizeMessage,s.get(RiderSize),BreakId.ZoomSlider);
         sizeRect.min=1.5;
         sizeRect.max=4.0;
@@ -1450,7 +1450,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	HitPoint select = (adjust && !b.doneAdjustingUI[index])
     							? hp
     							: null;
-    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = FontManager.getFont(largeBoldFont(), topPart/2);
     	GC.setFont(gc, myfont);
     	if(remoteViewer<0) { GC.fillRect(gc,boardBackgroundColor,r); }
     	String msg = s.get(ServiceName,name);

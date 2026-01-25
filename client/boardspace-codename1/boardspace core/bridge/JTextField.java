@@ -19,6 +19,8 @@ package bridge;
 import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
 
+import lib.FontManager;
+
 public class JTextField extends JTextComponent 
 {
 	MouseAdapter mouse = new MouseAdapter(this);
@@ -56,7 +58,7 @@ public class JTextField extends JTextComponent
 
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
 	public void setForeground(Color color) { getStyle().setFgColor(color.getRGB()); }
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }
+	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public void setFont(Font f) { getStyle().setFont(f); getSelectedStyle().setFont(f); }
 
 	private String actionCommand = "Done";
@@ -100,6 +102,6 @@ public class JTextField extends JTextComponent
 		}
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

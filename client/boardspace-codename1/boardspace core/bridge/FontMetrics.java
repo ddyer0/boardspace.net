@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import com.codename1.ui.Font;
 
+import lib.FontManager;
 import lib.G;
 import lib.Graphics;
 import com.codename1.ui.geom.Rectangle2D;
@@ -88,7 +89,7 @@ public class FontMetrics {
 	public int getMaxDescent() { return myFont.getDescent(); }
 	
 	public static FontMetrics getFontMetrics(Component c) 
-		{ return( getFontMetrics(SystemFont.getFont(c.getStyle()))); 
+		{ return( getFontMetrics(FontManager.getFont(c.getStyle()))); 
 		}
 	public static FontMetrics getFontMetrics(SystemGraphics g) 
 		{ return(getFontMetrics(g.getFont())); 

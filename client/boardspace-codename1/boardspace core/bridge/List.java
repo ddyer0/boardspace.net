@@ -19,6 +19,8 @@ package bridge;
 import com.codename1.ui.Font;
 import com.codename1.ui.list.DefaultListCellRenderer;
 import com.codename1.ui.list.ListModel;
+
+import lib.FontManager;
 import lib.G;
 
 //
@@ -47,7 +49,7 @@ public class List<T> extends com.codename1.ui.List<T> implements ActionProvider
 	public List(ListModel<T> m) { super(m); }
 	
 	public void invalidate() {}
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }
+	public Font getFont() { return(FontManager.getFont(getStyle())); }
 
 	public void clearSelection() { }
 
@@ -145,6 +147,6 @@ public class List<T> extends com.codename1.ui.List<T> implements ActionProvider
 		down = true;
 	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

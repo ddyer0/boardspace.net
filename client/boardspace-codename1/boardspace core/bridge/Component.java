@@ -18,6 +18,7 @@ package bridge;
 
 import java.util.EventListener;
 
+import lib.FontManager;
 import lib.G;
 import lib.SizeProvider;
 
@@ -72,7 +73,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 
 	public Font getFont() 
 		{ Style s = getStyle();
-		  return SystemFont.getFont(s);
+		  return FontManager.getFont(s);
 		}
 	public Component getComponent() { return(this); }
 	
@@ -175,7 +176,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 
     public void addKeyListener(KeyListener who)

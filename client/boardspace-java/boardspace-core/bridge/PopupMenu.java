@@ -19,13 +19,14 @@ package bridge;
 import java.awt.Component;
 import java.awt.Font;
 
+import lib.FontManager;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
 @SuppressWarnings("serial")
 public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface,NativeMenuItemInterface
 {	public PopupMenu(String m) { super(m==null?"":m); }
-	public PopupMenu(String m,Font f) { super(m); setFont(f==null ? lib.FontManager.menuFont() : f); }
+	public PopupMenu(String m,Font f) { super(m); setFont(f==null ? FontManager.menuFont() : f); }
 	public NativeMenuItemInterface getMenuItem(int n) { return((NativeMenuItemInterface)getItem(n)); }
 	public NativeMenuInterface getSubmenu() { return(this); }
 	public Icon getNativeIcon() {	return null;	}
@@ -44,7 +45,7 @@ public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface
 	public Font getFont() 
 	{
 		Font f = super.getFont();
-		if(f==null) { f = lib.FontManager.getGlobalDefaultFont(); }
+		if(f==null) { f = FontManager.getGlobalDefaultFont(); }
 		return(f);
 	}
 	private int ncols = 1;

@@ -105,8 +105,10 @@ public class TextGlyph extends TextChunk implements Text,Icon
 		vis.visibleText = visibleText;
 		vis.data = data;
 		vis.replacementData = replacementData;
+		G.Assert(vis.canvas!=null,"should be a canvas");
 		return(vis);		
 	}
+
 	/**
 	 * Create a glyph object
 	 * 

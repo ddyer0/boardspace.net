@@ -94,7 +94,7 @@ public class VolcanoCell extends stackCell<VolcanoCell,Pyramid>
       	boolean val = false;
     	int prevSize = 0;
     	int prevBase = 0;
-    	boolean altChip = canvas.getAltChipset()!=0;
+    	boolean altChip = exCanvas.getAltChipset(canvas)!=0;
     	int liftdiv = 40;
     	int lastIndex = stackTopLevel()-1;
     	for(int cindex = -1; cindex<=lastIndex; cindex++)    

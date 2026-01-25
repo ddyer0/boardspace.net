@@ -27,7 +27,6 @@ import vnc.VNCService;
 
 import java.io.PrintStream;
 
-import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -35,6 +34,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -205,7 +205,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     			fh*1.25,fh*2, 0.25);
 
         Text info = TextChunk.split(s.get(DeckDescriptionStringKey));
-        FontMetrics fm = lib.FontManager.getFontMetrics(standardBoldFont());
+        FontMetrics fm = FontManager.getFontMetrics(standardBoldFont());
         int infoH = info.height(fm);
     	int infoW = info.width(fm);
         int vcrW = fh*16;
@@ -995,7 +995,7 @@ private void playSounds(commonMove m)
     	Rectangle stateRect = new Rectangle(l,t,w/2-margin,topPart);
     	Rectangle eyeRect = new Rectangle(l,t+topPart,step,step);
     	Rectangle chipRect = new Rectangle(l+step,t+topPart,step*4/3,step*4/3);
-    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = FontManager.getFont(largeBoldFont(), topPart/2);
     	MogulState vstate = b.getState();
     	GC.setFont(gc,myfont);
     	if(remoteViewer<0) { GC.fillRect(gc,rackBackGroundColor,r); }

@@ -22,7 +22,6 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import bridge.SystemFont;
 import bridge.Utf8OutputStream;
 import bridge.Utf8Printer;
 import common.GameInfo;
@@ -35,6 +34,7 @@ import lib.CellId;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -84,7 +84,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     private Color rackBackGroundColor = new Color(178,212,168);
     private Color boardBackgroundColor = new Color(178,212,168);
     
-    Font cardDeckFont = SystemFont.getFont("Dialog", SystemFont.Style.Bold, 25);
+    Font cardDeckFont = FontManager.getFont("Dialog", FontManager.Style.Bold, 25);
     // images, shared among all instances of the class so loaded only once
     private static Image[] textures = null;// background textures
     
@@ -1293,7 +1293,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	int l = G.Left(r)+margin;
     	int t = G.Top(r)+margin;
     	int topPart = h/10;
-    	Font myfont = SystemFont.getFont(largeBoldFont(), topPart/2);
+    	Font myfont = FontManager.getFont(largeBoldFont(), topPart/2);
     	Rectangle stateRect = new Rectangle(l,t,w/2,topPart);
     	PlayerBoard pl = bb.getPlayerBoard(index);
     	if (pl!=null)

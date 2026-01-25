@@ -29,7 +29,6 @@ import bridge.Color;
 import bridge.FileDialog;
 import bridge.FontMetrics;
 import bridge.JMenuItem;
-import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
@@ -37,6 +36,7 @@ import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -680,7 +680,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	{
        	Drawable chip = getPlayerIcon(pidx);
        	chip.drawChip(gc,this,r,null);
-    	GC.setFont(gc,SystemFont.getFont(largeBoldFont(),G.Height(r)*3/5));
+    	GC.setFont(gc,FontManager.getFont(largeBoldFont(),G.Height(r)*3/5));
     	GC.Text(gc, true,r,Color.white,null,""+val);
     	}
     }
@@ -1074,7 +1074,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	CrosswordsCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
     	WordStack words = gb.words;
-    	FontMetrics fm = lib.FontManager.getFontMetrics(standardPlainFont());
+    	FontMetrics fm = FontManager.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(boardRect)/2;
     	if(target!=null && words!=null && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)
@@ -1996,7 +1996,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	if (remoteViewer<0)
     		{ StockArt.Scrim.image.stretchImage(gc, bounds);
     		}
-    	Font myfont = SystemFont.getFont(largeBoldFont(), step/2);
+    	Font myfont = FontManager.getFont(largeBoldFont(), step/2);
     	GC.setFont(gc, myfont);
     	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
     	CrosswordsState state = bb.getState();

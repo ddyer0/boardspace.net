@@ -21,10 +21,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 
-import bridge.SystemFont;
-
 import lib.Graphics;
 import lib.CellId;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -80,14 +79,14 @@ public class VncDispatcher extends OffscreenWindow implements Runnable,VncServic
 		redrawBoard(gc,null);
 	}
 	public void redrawBoard(Graphics gc,HitPoint hp)
-	{	Font dfont = lib.FontManager.getGlobalDefaultFont();
+	{	Font dfont = FontManager.getGlobalDefaultFont();
 		InternationalStrings s = G.getTranslations();
 		GC.setColor(gc, Color.white);
 		GC.fillRect(gc, 0,0,width,height);
 		GC.setColor(gc, Color.gray);
 		GC.fillRect(gc, 10,10,width-20,height-20);
-		int lineh = lib.FontManager.getFontSize(dfont)*3;
-		GC.setFont(gc,SystemFont.getFont(dfont,lineh));
+		int lineh = FontManager.getFontSize(dfont)*3;
+		GC.setFont(gc,FontManager.getFont(dfont,lineh));
 		int nServices = VNCService.getNServices();
 		int ypos = 20+lineh * 2;
 		if(nServices>0)

@@ -461,7 +461,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	public void drawChip(Graphics gc,exCanvas can,int wid,double scale,int dx,int dy,String ms)
 	{	
 		super.drawChip(gc,can,wid,scale,dx,dy,ms);
-		if(can. getAltChipset()==1)
+		if(exCanvas.getAltChipset(can)==1)
 		{
 			if(allegiance!=null && allegiance!=Allegiance.Factionless) 
 				{ EuphoriaChip.allegianceMedallions[allegiance.ordinal()].drawChip(gc,can,wid/2,scale,dx-4*wid/10,dy,null); }

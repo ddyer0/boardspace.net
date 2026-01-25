@@ -18,6 +18,7 @@ package bridge;
 
 import java.util.Vector;
 
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.NativeMenuInterface;
@@ -38,7 +39,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	private Image cachedImage = null; 
 	private Component cachedParent = null;
 	static final int MenuTextSize = 14;
-	static final SystemFont.Style MenuTextStyle = SystemFont.Style.Plain;
+	static final FontManager.Style MenuTextStyle = FontManager.Style.Plain;
 	private Color fgcolor = Color.black;
 	private Color bgcolor = new Color(0xccccff);
 	public Color getBackground() { return(bgcolor); }
@@ -51,7 +52,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 
 	public Font getFont() 
 	{ if(font==null) 
-		{ font = lib.FontManager.menuFont();
+		{ font = FontManager.menuFont();
 		}
 	  return(font);
 	}
@@ -61,7 +62,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 		String text = getText();
 		if(text==null) { text="xxxx"; }
 		Font f = getFont();
-		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+		FontMetrics fm = FontManager.getFontMetrics(f);
 		int w = fm.stringWidth(text);
 		int h = fm.getHeight();
 		return(new Dimension(w,h));
@@ -89,12 +90,12 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	Vector<ItemListener>itemListeners=null;
 	Vector<ActionListener>actionListeners = null;
 	public JMenuItem() 
-	{  setFont(lib.FontManager.menuFont()); 
+	{  setFont(FontManager.menuFont()); 
 	};
 	public JMenuItem(String item,Font f)
 	{
 		this(item);
-		setFont(f==null ? lib.FontManager.menuFont() : f); 
+		setFont(f==null ? FontManager.menuFont() : f); 
 	}
 	public String toString() 
 		{ 
@@ -104,7 +105,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	public JMenuItem(Icon m) { super(); icon = m; }
 	public JMenuItem(Icon m,Font f)
 	{	this(m);
-		setFont(f==null ? lib.FontManager.menuFont() : f);
+		setFont(f==null ? FontManager.menuFont() : f);
 	}
 	public JMenuItem(String m) { super(); text = m; }
 	
@@ -165,7 +166,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 	/**
 	 * get an image that corresponds to the text .
@@ -177,7 +178,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	 * @return a new Image
 	 */
 	public Image getTextImage(String text,Font f,Color foreground,Color background)
-	{	FontMetrics fm = lib.FontManager.getFontMetrics(f);
+	{	FontMetrics fm = FontManager.getFontMetrics(f);
 		int h = Math.max(1, fm.getHeight());
 		int w = Math.max(1, fm.stringWidth(text));
 		Image im = Image.createImage(w,h);

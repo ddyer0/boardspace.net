@@ -114,7 +114,7 @@ public class XiangqiChip extends chip<XiangqiChip>
 	{	return(CANONICAL_PIECE[FIRST_CHIP_INDEX+color*NPIECETYPES+chip]);
 	}
 	public double getChipRotation(exCanvas canvas)
-	{	int chips = canvas.getAltChipset();
+	{	int chips = exCanvas.getAltChipset(canvas);
 		switch(colorIndex)
 		{
 		case 0:	if((chips&2)!=0) { return(Math.PI); }

@@ -5,6 +5,14 @@ import common.CommonConfig.Default;
 
 public class FontManager extends SystemFont {
 
+	public enum Style
+	   {   Plain(SystemFont.PLAIN),
+		   Italic(SystemFont.ITALIC),
+		   Bold(SystemFont.BOLD);
+		   public int s;
+		   Style(int style) { s=style;}
+	   }
+
 	public static String defaultFontFamily = "Arial Unicode MS";
 
 	public static String defaultFontFamily() { 	return defaultFontFamily; }
@@ -27,5 +35,7 @@ public class FontManager extends SystemFont {
 	{	
 		return((int)(G.getDisplayScale()*sz));
 	}
+
+	public static final Style MenuTextStyle = Style.Plain;
 
 }

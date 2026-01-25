@@ -33,17 +33,17 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
     public JCheckBoxMenuItem[] styleItems;
     public JCheckBoxMenuItem[] sizeItems;
     public JMenu editMenu = new XJMenu("Edit",true);
-    public JMenu fontMenu = new XJMenu("FontManager",true);
+    public JMenu fontMenu = new XJMenu("Font",true);
     public JMenu sizeMenu = new XJMenu("Size",true);
     public JMenu styleMenu = new XJMenu("Style",true);
     public JMenuItem selectAllItem = new JMenuItem("Select all");
     public JMenuItem clearItem = new JMenuItem("Clear");
     String[] fonts = FONT_FAMILIES;
     String[] styles = { "Plain", "Bold", "Italic" };
-    SystemFont.Style styleCode[] = { SystemFont.Style.Plain,SystemFont.Style.Bold,SystemFont.Style.Italic};
+    FontManager.Style styleCode[] = { FontManager.Style.Plain,FontManager.Style.Bold,FontManager.Style.Italic};
     String[] sizes = { "8", "9", "10", "12", "14", "16", "18", "24" };
     String fname;
-    SystemFont.Style fstyle;
+    FontManager.Style fstyle;
     int fsize;
     int bufferchars;
 
@@ -56,8 +56,8 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         // Initialize
         //if(!"Console".equalsIgnoreCase(title)) { area.setReport(true); }
         fname = "Monospaced";
-        fstyle = SystemFont.Style.Plain;
-        fsize = lib.FontManager.standardizeFontSize(lib.FontManager.defaultFontSize);
+        fstyle = FontManager.Style.Plain;
+        fsize = FontManager.standardizeFontSize(FontManager.defaultFontSize);
 
         // Create edit menu
         editMenu.add(selectAllItem);
@@ -108,12 +108,12 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
         // Create size menu
         sizeItems = new JCheckBoxMenuItem[sizes.length];
-        Font ref = SystemFont.getGlobalDefaultFont();
+        Font ref = FontManager.getGlobalDefaultFont();
         for (int i = 0; i < sizes.length; i++)
         {
             sizeItems[i] = new JCheckBoxMenuItem(sizes[i]);
             sizeMenu.add(sizeItems[i]);
-            if(!G.isCodename1()) { sizeItems[i].setFont(SystemFont.getFont(ref,G.IntToken(sizes[i]))); }
+            if(!G.isCodename1()) { sizeItems[i].setFont(FontManager.getFont(ref,G.IntToken(sizes[i]))); }
 
             if (sizes[i].equals(String.valueOf(fsize)))
             {
@@ -124,7 +124,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         addToMenuBar(sizeMenu);
  
         // Show window
-        area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+        area.setFont(FontManager.getFont(fname, fstyle, fsize));
 
         addC(area);
         area.setVisible(true);
@@ -191,7 +191,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
                     }
 
                 fname = fonts[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -208,7 +208,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
                     }
 
                 fsize = G.IntToken(sizes[i]);
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -225,7 +225,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
                     }
 
                 fstyle = styleCode[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }

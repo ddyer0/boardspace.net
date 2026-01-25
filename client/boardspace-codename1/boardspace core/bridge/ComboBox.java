@@ -16,6 +16,7 @@
  */
 package bridge;
 
+import lib.FontManager;
 import lib.G;
 import lib.Image;
 import lib.SizeProvider;
@@ -74,7 +75,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 		}
 
 	public Font getFont()
-	{ return(SystemFont.getFont(getStyle())); 
+	{ return(FontManager.getFont(getStyle())); 
 	}
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
@@ -95,7 +96,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
             return popupDialog;
      }
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 	public void paint(com.codename1.ui.Graphics g0)
 	{	

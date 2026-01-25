@@ -58,7 +58,7 @@ public class MorelliCell extends stackCell<MorelliCell,MorelliChip> implements M
 
 	public void drawChip(Graphics gc,exCanvas drawOn,chip<?> piece,int SQUARESIZE,double xscale,int e_x,int e_y,String thislabel)
     {	super.drawChip(gc,drawOn,piece,SQUARESIZE,xscale,e_x,e_y,thislabel);
-    	if(onBoard && (drawOn.getAltChipset()==1) && (piece!=null) && (((MorelliChip)piece)!=null) && ((MorelliChip)piece).isTile() && ((row^col)&1)!=0)
+    	if(onBoard && (exCanvas.getAltChipset(drawOn)==1) && (piece!=null) && (((MorelliChip)piece)!=null) && ((MorelliChip)piece).isTile() && ((row^col)&1)!=0)
     	{
     	MorelliChip.darkener.drawChip(gc,drawOn,SQUARESIZE,xscale,e_x,e_y,null);
     	}

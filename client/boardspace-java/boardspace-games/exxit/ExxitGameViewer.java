@@ -19,7 +19,6 @@ package exxit;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
-import bridge.SystemFont;
 import common.GameInfo;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -32,6 +31,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -140,8 +140,8 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
         setMouseColors();
         int FontHeight = standardFontSize();
-        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+2);
-        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight);
+        gameLogBoldFont = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, FontHeight+2);
+        gameLogFont = FontManager.getFont(standardPlainFont(),FontManager.Style.Plain,FontHeight);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),ExxitId.ZoomSlider);
         zoomRect.min=1.0;
         zoomRect.max=5.0;

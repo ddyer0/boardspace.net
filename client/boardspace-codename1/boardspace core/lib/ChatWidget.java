@@ -29,13 +29,13 @@ import bridge.Container;
 import bridge.FocusEvent;
 import bridge.FocusListener;
 import bridge.FontMetrics;
-import bridge.SystemFont;
 import bridge.ThreadDeath;
 import bridge.URL;
 import bridge.Utf8OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import lib.TextContainer.Op;
 
 /* plug-in replacement for commonChatWindow that will not use real windows */
@@ -231,7 +231,7 @@ public class ChatWidget
         if(PRESPLIT_LINES)
         {
         // old style, try to break lines before adding them
-        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
+        FontMetrics myFM = FontManager.getFontMetrics(basicFont);
         AddMessage(s.lineSplit(G.replaceAll(inStr,"\n", " <br> "), myFM, useWidth, Spaces),see);
         }
         else
@@ -354,7 +354,7 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
-        basicFont = SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Plain, lib.FontManager.standardizeFontSize(lib.FontManager.defaultFontSize));
+        basicFont = FontManager.getFont(s.get("fontfamily"), FontManager.Style.Plain, FontManager.standardizeFontSize(FontManager.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));
         setUser(ERRORCHANNEL, s.get("Error"));
@@ -548,9 +548,9 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = lib.FontManager.standardizeFontSize((int)(lib.FontManager.defaultFontSize*(G.isCodename1()?1.2:1)));
-        basicFont = SystemFont.getFont(lib.FontManager.defaultFontFamily(), SystemFont.Style.Plain, fs);
-        boldFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,fs);
+    	int fs = FontManager.standardizeFontSize((int)(FontManager.defaultFontSize*(G.isCodename1()?1.2:1)));
+        basicFont = FontManager.getFont(FontManager.defaultFontFamily(), FontManager.Style.Plain, fs);
+        boldFont = FontManager.getFont(basicFont,FontManager.Style.Bold,fs);
         
         //G.print("font "+fs+" "+G.defaultFontSize);
         sendButton.setFont(boldFont);
@@ -559,7 +559,7 @@ public class ChatWidget
         messages.setFont(basicFont);
         comments.setFont(basicFont);
         
-        FontMetrics myFM = lib.FontManager.getFontMetrics(basicFont);
+        FontMetrics myFM = FontManager.getFontMetrics(basicFont);
         int messageTop = t;
         int textHeight = (int)(myFM.getHeight()*1.8);
         if (textHeight < MINTEXTHEIGHT)

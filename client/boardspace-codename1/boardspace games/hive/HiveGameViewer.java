@@ -31,6 +31,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -164,9 +165,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         use_grid = false;
         gridOption.setState(false);
         int FontHeight = standardFontSize();
-        gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, FontHeight+4);
-        gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,FontHeight+2);
-        pieceLabelFont = SystemFont.getFont(largeBoldFont(),FontHeight*2);
+        gameLogBoldFont = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, FontHeight+4);
+        gameLogFont = FontManager.getFont(standardPlainFont(),FontManager.Style.Plain,FontHeight+2);
+        pieceLabelFont = FontManager.getFont(largeBoldFont(),FontHeight*2);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),HiveId.ZoomSlider);
         zoomRect.min=1.5;
         zoomRect.max=5.0;
@@ -254,8 +255,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	G.SetRect(fullRect, x, y, width, height);
 		int fh = standardFontSize();
     	double zoom = getGlobalZoom();
-    	gameLogBoldFont = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, (int)(zoom*(fh)));
-    	gameLogFont = SystemFont.getFont(standardPlainFont(),SystemFont.Style.Plain,(int)(zoom*(fh)));
+    	gameLogBoldFont = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, (int)(zoom*(fh)));
+    	gameLogFont = FontManager.getFont(standardPlainFont(),FontManager.Style.Plain,(int)(zoom*(fh)));
     	GameLayoutManager layout = selectedLayout;
     	int maxDim = (int)(Math.min(height,width)/(zoom*G.getDisplayScale()));
     	// the intended effect of this is to allow the tiles in the tile rack

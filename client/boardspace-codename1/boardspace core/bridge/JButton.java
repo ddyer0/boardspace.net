@@ -21,6 +21,7 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Dimension;
 
 import bridge.SystemImage.ScaleType;
+import lib.FontManager;
 import lib.Image;
 
 public class JButton extends Button 
@@ -31,7 +32,7 @@ public class JButton extends Button
 	public JButton(String label,int fontsize)
 	{
 		this(label);
-		setFont(SystemFont.getFont(getFont(),fontsize));
+		setFont(FontManager.getFont(getFont(),fontsize));
 	}
 	public JButton(Image label)
 		{ 
@@ -90,7 +91,7 @@ public class JButton extends Button
 		if(im!=null)
 		{	// images prefer to be the size of the font.  This is the magic spot
 			// where the toolbar gets its height
-			FontMetrics fm = lib.FontManager.getFontMetrics(f);
+			FontMetrics fm = FontManager.getFontMetrics(f);
 			int sz = fm.getHeight()*3/2;
 			int w = im.getWidth();
 			int h = im.getHeight();
@@ -98,7 +99,7 @@ public class JButton extends Button
 		}
 		else if(label!=null)
 		{	// use the actual font metrics to specify the size
-			FontMetrics fm = lib.FontManager.getFontMetrics(f);
+			FontMetrics fm = FontManager.getFontMetrics(f);
 			int w = fm.stringWidth(label);
 			int h = fm.getHeight()*3/2;
 			dim = new Dimension(w+h,h);

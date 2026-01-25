@@ -94,7 +94,7 @@ public class BarcaChip extends chip<BarcaChip>
 	static final BarcaChip Black_Elephant = new BarcaChip("black-elephant",5,new double[]{0.634,0.668,1.23},BarcaId.Black_Elephant,blackplayer,Black_Elephant_Icon,Black_Elephant_np);
 
 	public double getChipRotation(exCanvas canvas)
-	{	int chips = canvas.getAltChipset();
+	{	int chips = exCanvas.getAltChipset(canvas); // in rare circumstances, canvas is null
 		double rotation = 0;
 		// alternate chipsets for arimaa, 1= white upside down 2 = twist left and right
 		switch(chips)

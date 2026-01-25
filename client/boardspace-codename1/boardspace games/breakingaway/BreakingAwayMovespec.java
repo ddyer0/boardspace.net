@@ -217,8 +217,8 @@ public class BreakingAwayMovespec extends commonMPMove
     }
     private Text makeGraph(int from,int to,int player,commonCanvas canvas)
     {
-    	int height = FontManager.getFontMetrics(canvas).getHeight()*2/3;
-    	double distance = Math.min(15, Math.max(0,to-from))/15.0;
+    	double height = FontManager.getFontMetrics(canvas).getHeight()*2/3;
+    	double distance = Math.min(15, Math.max(0,to-from))/(0.8*height);
     	Color color = ((BreakingAwayViewer)canvas).playerColor(player);
     	HorizontalBar graph = new HorizontalBar(height*10,height,distance,color);
     	Text chunk = TextGlyph.create("XXXXXXXXXX",graph,canvas,new double[] {1,1,-0.5,0.05});

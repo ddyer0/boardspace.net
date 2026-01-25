@@ -20,8 +20,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-import bridge.SystemFont;
 import lib.DrawableImageStack;
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -236,11 +236,11 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = SystemFont.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setColor(gc,Color.black);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+    		FontMetrics fm = FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2+(int)(SQUARESIZE*0.1),cy+(int)(SQUARESIZE*0.27));
  
     		}

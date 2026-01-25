@@ -19,8 +19,8 @@ package honey;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.FontMetrics;
-import bridge.SystemFont;
 import lib.DrawableImageStack;
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -197,10 +197,10 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = SystemFont.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+    		FontMetrics fm = FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, (int)(cx-fm.stringWidth(letter)*0.6),cy+(int)(SQUARESIZE*0.15));
      		if(value!=0)
      		{

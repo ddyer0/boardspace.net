@@ -28,6 +28,7 @@ import com.codename1.ui.plaf.Style;
 import lib.CanvasRotater;
 import lib.CanvasRotaterProtocol;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.LFrameProtocol;
 import lib.MenuInterface;
@@ -84,7 +85,7 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,NullLayo
 		{ theComponent.pointerHover(x,y); 
 		}
 	public boolean pinch(double f,int x,int y) {  return(false);};
-	public FontMetrics getFontMetrics(Font f) { return(lib.FontManager.getFontMetrics(f)); }
+	public FontMetrics getFontMetrics(Font f) { return(FontManager.getFontMetrics(f)); }
 
 	// constructor
 	public ProxyWindow() {  }

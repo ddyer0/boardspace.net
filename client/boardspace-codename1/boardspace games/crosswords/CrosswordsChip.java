@@ -19,8 +19,8 @@ package crosswords;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.FontMetrics;
-import bridge.SystemFont;
 import lib.DrawableImageStack;
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -267,15 +267,15 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     	{	// draw all letters with the same size
     		
     		Text ww = TextChunk.create("W");
-    		boolean big = canvas.getAltChipset()!=0;
+    		boolean big = exCanvas.getAltChipset(canvas)!=0;
     		int ss = (int)(SQUARESIZE*(big ? 0.85 : 0.5));
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = SystemFont.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+    		FontMetrics fm = FontManager.getFontMetrics(f);
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*(big ? 0.27 : 0.15)));
      		if(value!=0)
      		{

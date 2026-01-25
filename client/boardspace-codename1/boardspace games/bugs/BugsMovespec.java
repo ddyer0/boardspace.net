@@ -241,7 +241,7 @@ public class BugsMovespec
      * 
      * */
     public Text shortMoveText(commonCanvas v)
-    {
+    {	
         switch (op)
         {
         case MOVE_PICKB:

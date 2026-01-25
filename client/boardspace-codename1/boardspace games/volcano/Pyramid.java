@@ -100,7 +100,7 @@ public class Pyramid extends chip<Pyramid>
 
     
 	public double getChipRotation(exCanvas canvas)
-	{	int chips = canvas.getAltChipset();
+	{	int chips = exCanvas.getAltChipset(canvas); // in rare circumstances, canvas is null
 		double rotation = 0;
 		switch(chips)
 		{

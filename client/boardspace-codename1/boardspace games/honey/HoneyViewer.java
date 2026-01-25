@@ -28,13 +28,13 @@ import java.util.*;
 
 import bridge.Config;
 import bridge.JMenuItem;
-import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -596,7 +596,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         }
         if(leadin)
         {	String secs = ""+ ( ((5000-time)/1000)+1);
-        	Font cf = SystemFont.getFont(largeBoldFont(),200);
+        	Font cf = FontManager.getFont(largeBoldFont(),200);
         	GC.setFont(gc,cf);
         	int ww = G.Width(brect)/5;
         	GC.Text(gc,true,G.Left(brect),G.Top(brect),ww,ww,Color.black,null,secs);
@@ -760,7 +760,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	   }
        }
        else {
-    	   GC.Text(gc,true,statsRect,null,null,s.get("Words for #1",prettyName(pboard.boardIndex)));
+    	   GC.Text(gc,true,statsRect,null,null,s.get(WordsForMessage,prettyName(pboard.boardIndex)));
            drawGameLog(gc,gameLog3,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
            drawGameLog(gc, gameLog4,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
            drawGameLog(gc,gameLog5,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);

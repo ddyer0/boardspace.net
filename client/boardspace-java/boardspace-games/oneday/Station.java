@@ -21,10 +21,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 
-import bridge.SystemFont;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.OStack;
@@ -321,9 +321,9 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 	//
 	int CARD_MARGIN_PERCENT=10;
 	Color lightGray = new Color(0.8f,0.8f,0.8f);
-	Font titleFont = SystemFont.getFont("sansserif",SystemFont.Style.Bold,20);
-	Font cardFont = SystemFont.getFont(titleFont, SystemFont.Style.Bold, 15);
-	Font smallCardFont = SystemFont.getFont(titleFont, SystemFont.Style.Bold, 15);
+	Font titleFont = FontManager.getFont("sansserif",FontManager.Style.Bold,20);
+	Font cardFont = FontManager.getFont(titleFont, FontManager.Style.Bold, 15);
+	Font smallCardFont = FontManager.getFont(titleFont, FontManager.Style.Bold, 15);
 
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{	boolean hot = isHotFrame(label);
@@ -424,7 +424,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 	  		  {// big enough for the text to show up
 	  		  GC.setFont(g,titleFont);
 	  		  GC.Text(g,true,title,Color.black,Color.white,station);
-	  		  GC.setFont(g,SystemFont.getFont(cardFont, tbot-2));
+	  		  GC.setFont(g,FontManager.getFont(cardFont, tbot-2));
 	  		  }
 		  int picBottom = image_y+h-tbot/2;
 		  boolean allConcurrent = true;
@@ -440,7 +440,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 			  picBottom += tbot;
 			  if(tbot>6)
 			  {
-			  GC.setFont(g,SystemFont.getFont(cardFont, tbot-2));
+			  GC.setFont(g,FontManager.getFont(cardFont, tbot-2));
 			  GC.Text(g,true,stopRect,l.textColor,l.color,(w>30)?name:"");
 			  }
 			  // 
@@ -459,7 +459,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 			  //
 			  // draw the station number at the right
 			  //
-			  GC.setFont(g,SystemFont.getFont(smallCardFont, tbot-4));
+			  GC.setFont(g,FontManager.getFont(smallCardFont, tbot-4));
 			  GC.Text(g,true,stopRectLeft,l.textColor,l.color,""+(st.ordinal-1));
 			  GC.Text(g,true,stopRectRight,l.textColor,l.color,""+(st.line.nStops()-st.ordinal));
 			  }

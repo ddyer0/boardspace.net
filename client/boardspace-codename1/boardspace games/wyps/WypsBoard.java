@@ -418,9 +418,11 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static DictionaryHash privateDictionaryInternal = new DictionaryHash(1); 
     private static boolean privateDictionaryInited = false;
-    private void initPrivateDictionary()
-    {
+    private synchronized void initPrivateDictionary()
+    {	G.print("init private dictionary "+privateDictionaryInited);
 		// make sure the single letters are there
+    	if(!privateDictionaryInited)
+    	{
     	for(char code = 'a'; code<='z'; code++)
     	{	String letter = ""+code;
     		if(dictionary.get(letter)==null)
@@ -428,12 +430,12 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     			e.setDefinition("Not really a word, but allowed");
     			privateDictionaryInternal.put(letter,e);
     		}
-    	}
+    	}}
     	privateDictionaryInited = true;
     }
 	private DictionaryHash privateDictionary()
 	{
-		if(!privateDictionaryInited) { privateDictionaryInited = true; initPrivateDictionary(); }
+		if(!privateDictionaryInited) {  initPrivateDictionary(); }
 		return privateDictionaryInternal;
 		
 	}

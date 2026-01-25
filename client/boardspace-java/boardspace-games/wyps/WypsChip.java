@@ -20,9 +20,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-import bridge.SystemFont;
 import common.CommonConfig;
 import lib.DrawableImageStack;
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -249,10 +249,10 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
     			StockArt.SmallO.drawChip(gc, canvas, ss*5, cx+ss/14,cy-ss/12,null);
     		}
 
-    		Font f = SystemFont.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
-    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+    		FontMetrics fm = FontManager.getFontMetrics(f);
      		GC.Text(gc,letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.2));
     		}
      	}

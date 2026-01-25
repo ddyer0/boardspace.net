@@ -178,7 +178,7 @@ public class KingsColorChip extends chip<KingsColorChip> implements CommonConfig
 	}   
 	
 	public double getChipRotation(exCanvas canvas)
-	{	int chips = canvas.getAltChipset();
+	{	int chips = exCanvas.getAltChipset(canvas); // in rare circumstances, canvas is null
 		double rotation = 0;
 		// alternate chipsets for chess, 1= white upside down 2=black upside down
 		// this coding comes from getAltChipSet()

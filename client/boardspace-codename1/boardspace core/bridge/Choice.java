@@ -20,12 +20,14 @@ package bridge;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
 
+import lib.FontManager;
+
 public class Choice<TYPE> extends ComboBox<TYPE> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }	
+	public Font getFont() { return(FontManager.getFont(getStyle())); }	
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))
 		{ 
@@ -51,6 +53,6 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements ActionProvider
 
 	public void select(int index) { setSelectedIndex(index);	}
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

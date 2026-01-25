@@ -21,10 +21,10 @@ import java.awt.Font;
 import java.awt.Rectangle;
 
 
-import bridge.SystemFont;
 import lib.Base64;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -109,7 +109,7 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	}
 
 	public void redrawBoard(Graphics gc,HitPoint hp)
-	{	Font dfont = lib.FontManager.getGlobalDefaultFont();
+	{	Font dfont = FontManager.getGlobalDefaultFont();
 		int width = getWidth();
 		int height =getHeight();
 		InternationalStrings s = G.getTranslations();
@@ -117,8 +117,8 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 		GC.fillRect(gc, 0,0,width,height);
 		GC.setColor(gc, Color.gray);
 		GC.fillRect(gc, 10,10,width-20,height-20);
-		int lineh = lib.FontManager.getFontSize(dfont)*3;
-		GC.setFont(gc,SystemFont.getFont(dfont,lineh));
+		int lineh = FontManager.getFontSize(dfont)*3;
+		GC.setFont(gc,FontManager.getFont(dfont,lineh));
 		int nServices = choices.size();
 		int ypos = 20+lineh * 2;
 		if(nServices>0)

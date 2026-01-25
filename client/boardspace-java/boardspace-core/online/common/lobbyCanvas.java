@@ -17,7 +17,6 @@
 package online.common;
 
 import bridge.Polygon;
-import bridge.SystemFont;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -44,6 +43,7 @@ import lib.CanvasProtocol;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -372,11 +372,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	public void adjustFonts(double scale0)
 	{
 	    String fam = s.get("fontfamily");
-	    double scale = scale0*lib.FontManager.defaultFontSize/standardFontHeight;
-	    basicFont = SystemFont.getFont(fam,SystemFont.Style.Plain,lib.FontManager.standardizeFontSize(14*scale));
-	    smallerBoldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(13*scale));
-	    boldBasicFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(14*scale));
-	    bigFont = SystemFont.getFont(basicFont,SystemFont.Style.Bold,lib.FontManager.standardizeFontSize(24*scale));
+	    double scale = scale0*FontManager.defaultFontSize/standardFontHeight;
+	    basicFont = FontManager.getFont(fam,FontManager.Style.Plain,FontManager.standardizeFontSize(14*scale));
+	    smallerBoldBasicFont = FontManager.getFont(basicFont,FontManager.Style.Bold,FontManager.standardizeFontSize(13*scale));
+	    boldBasicFont = FontManager.getFont(basicFont,FontManager.Style.Bold,FontManager.standardizeFontSize(14*scale));
+	    bigFont = FontManager.getFont(basicFont,FontManager.Style.Bold,FontManager.standardizeFontSize(24*scale));
 	}
 	public void setParent(Container p)
 	{
@@ -807,7 +807,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			int w = G.Width(lobbyHelpRect);
 			GC.fillRect(inG,Color.green,lobbyHelpRect);
 			GC.frameRect(inG,Color.black,lobbyHelpRect);
-			GC.setFont(inG,lib.FontManager.getFont(largeBoldFont(),h/4));
+			GC.setFont(inG,FontManager.getFont(largeBoldFont(),h/4));
 			GC.Text(inG,true,l,t,w,h/3,Color.black,null,s.get(GettingStarted));
 			
 			{

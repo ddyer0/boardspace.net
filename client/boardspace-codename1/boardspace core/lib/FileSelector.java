@@ -238,7 +238,7 @@ public class FileSelector extends FullscreenPanel
         moveField.setEditable(false);
         moveField.setText("");
         moveField.setBackground(Config.FrameBackgroundColor);
-        moveField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, FontManager.standardizeFontSize(FontManager.defaultFontSize)));
+        moveField.setFont(FontManager.getFont(s.get("fontfamily"), FontManager.Style.Bold, FontManager.standardizeFontSize(FontManager.defaultFontSize)));
 
         filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));
@@ -249,7 +249,7 @@ public class FileSelector extends FullscreenPanel
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
         filterField.setText("");
-        filterField.setFont(SystemFont.getFont(s.get("fontfamily"), SystemFont.Style.Bold, 12));
+        filterField.setFont(FontManager.getFont(s.get("fontfamily"), FontManager.Style.Bold, 12));
         //filterField.setMaximumSize(new Dimension(1000,30));
         filterPanel.setBackground(Config.FrameBackgroundColor);
         filterPanel.setOpaque(true);

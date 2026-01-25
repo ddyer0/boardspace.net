@@ -20,8 +20,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 
-import bridge.SystemFont;
-
 /** buttons on the calculator */
 public class CalculatorButton {
 	private double x;
@@ -229,7 +227,7 @@ public class CalculatorButton {
 			}
 		}
 		Font f = showOn.largeBoldFont();
-		Font keyFont = SystemFont.getFont(f,(int)(lib.FontManager.getFontSize(f)*1.5));
+		Font keyFont = FontManager.getFont(f,(int)(FontManager.getFontSize(f)*1.5));
 		GC.setFont(gc,keyFont);
 		if(rightJustify)
 			{

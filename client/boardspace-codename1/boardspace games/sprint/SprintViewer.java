@@ -31,13 +31,13 @@ import bridge.Color;
 import bridge.FileDialog;
 import bridge.FontMetrics;
 import bridge.JMenuItem;
-import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -888,7 +888,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 
         if(leadin)
         {	String secs = ""+ ( ((5000-time)/1000)+1);
-        	Font cf = SystemFont.getFont(largeBoldFont(),200);
+        	Font cf = FontManager.getFont(largeBoldFont(),200);
         	GC.setFont(gc,cf);
         	GC.Text(gc,true,boardRect,Color.black,null,secs);
         	GC.setFont(gc,largeBoldFont());
@@ -1000,7 +1000,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	SprintCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
     	WordStack words = gb.words;
-    	FontMetrics fm = lib.FontManager.getFontMetrics(standardPlainFont());
+    	FontMetrics fm = FontManager.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(brect)/2;
     	if(target!=null && words!=null && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)

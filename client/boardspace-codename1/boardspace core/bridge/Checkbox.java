@@ -18,6 +18,8 @@ package bridge;
 
 import com.codename1.ui.Font;
 
+import lib.FontManager;
+
 public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
@@ -27,7 +29,7 @@ public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvide
 		  super.repaint();
 		} 
 	}
-	public Font getFont() { return(SystemFont.getFont(getStyle())); }
+	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public Checkbox(String string, boolean b) { super(string); setSelected(b); }
 	public Checkbox(boolean b) { super();  setSelected(b); }
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
@@ -37,6 +39,6 @@ public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvide
 
 	public void setState(boolean b) { setSelected(b); }
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 }

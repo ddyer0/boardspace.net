@@ -151,7 +151,7 @@ public class MbraneChip extends chip<MbraneChip>
     	if(color!=null)
     	{	// the special string SPRITE tells us we're drawing from a tile sprite, and therefore
     		// always use the standard rotation for the text
-    		double rota = sprite ? 0 : ((canvas.getAltChipset()>>1)&3)*Math.PI/2;
+    		double rota = sprite ? 0 : ((exCanvas.getAltChipset(canvas)>>1)&3)*Math.PI/2;
     		Rectangle ar = new Rectangle(cx-SQUARESIZE/2,cy-SQUARESIZE/2,(int)(SQUARESIZE*1.15),(int)(1*SQUARESIZE));
     		//G.frameRect(gc, Color.green, ar);
     		GC.Text(gc,rota, true, ar,color.textColor,null,""+(value/9));

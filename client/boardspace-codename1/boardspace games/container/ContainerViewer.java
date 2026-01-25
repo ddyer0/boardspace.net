@@ -21,7 +21,6 @@ import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-import bridge.SystemFont;
 import common.GameInfo;
 import online.common.*;
 import online.game.*;
@@ -2338,7 +2337,7 @@ private void playSounds(commonMove m)
 			}
 
 		Rectangle nameRect = interpolateBox(hiddenViewRect,hiddenNameRect,bounds);
-		Font myfont = SystemFont.getFont(largeBoldFont(),G.Height(nameRect)/2);
+		Font myfont = FontManager.getFont(largeBoldFont(),G.Height(nameRect)/2);
 		GC.setFont(gc,myfont);
 		{	// player name
 			String name = prettyName(myIndex); 

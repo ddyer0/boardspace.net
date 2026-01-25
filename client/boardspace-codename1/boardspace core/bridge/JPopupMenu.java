@@ -18,8 +18,10 @@ package bridge;
 
 import com.codename1.ui.Font;
 
+import lib.FontManager;
+
 public class JPopupMenu extends PopupMenu 
 {	public JPopupMenu() { super(); }
 	public JPopupMenu(String m) { super(m); }
-	public JPopupMenu(String m,Font f) { this(m); setFont(f==null ? lib.FontManager.menuFont() : f); }
+	public JPopupMenu(String m,Font f) { this(m); setFont(f==null ? FontManager.menuFont() : f); }
 }

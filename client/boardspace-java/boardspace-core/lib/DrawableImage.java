@@ -139,7 +139,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @return get the actual aspect ratio of the image, width/height
 	 */
 	public double getAspectRatio(exCanvas can)
-	{	DrawableImage<?> alt = getAltChip(can==null ? 0 : can.getAltChipset());
+	{	DrawableImage<?> alt = getAltChip(exCanvas.getAltChipset(can));
 		Image im = alt.getImage(can);
 		double v = ((im==null)?1.0 : Math.max(1.0,im.getWidth())/Math.max(1.0,im.getHeight()));
 		return(v);
@@ -229,7 +229,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	public final void drawChipInternal(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{if(gc!=null)
 	  {
-	  DrawableImage<?> alt1 = getAltChip(canvas==null?0:canvas.getAltChipset());
+	  DrawableImage<?> alt1 = getAltChip(exCanvas.getAltChipset(canvas));
 	  DrawableImage<?> alt = alt1.getAltSizeChip(canvas,SQUARESIZE,xscale,cx,cy);
  	  double pscale[]=alt.getScale();
       // use this to tune piece position
@@ -262,7 +262,9 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 			int SQUARESIZE,double xscale,double jitter,String label,boolean artcenter)
 	{    if(canvas==null) 
 		{
-		getImage().drawImage(gc,SQUARESIZE,cx,cy,pscale,0,null,false,null);
+		Image im = getImage();
+		if(im!=null) {im.drawImage(gc,SQUARESIZE,cx,cy,pscale,0,null,false,null); }
+		else { G.print("no image for ",this); }
 		}
 		else 
 		{canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);

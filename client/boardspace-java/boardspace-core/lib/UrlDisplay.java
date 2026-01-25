@@ -20,7 +20,6 @@ import bridge.JMenu;
 import javax.swing.JMenuItem;
 
 import bridge.MasterForm;
-import bridge.SystemFont;
 import bridge.XJMenu;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -43,16 +42,16 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
     public JCheckBoxMenuItem[] styleItems;
     public JCheckBoxMenuItem[] sizeItems;
     public JMenu editMenu = new XJMenu("Edit",true);
-    public JMenu fontMenu = new XJMenu("FontManager",true);
+    public JMenu fontMenu = new XJMenu("Font",true);
     public JMenu sizeMenu = new XJMenu("Size",true);
     public JMenu styleMenu = new XJMenu("Style",true);
     public JMenuItem selectAllItem = new JMenuItem("Select all");
     String[] fonts = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
     String[] styles = { "Plain", "Bold", "Italic" };
-    SystemFont.Style styleCode[] = { SystemFont.Style.Plain,SystemFont.Style.Bold,SystemFont.Style.Italic};
+    FontManager.Style styleCode[] = { FontManager.Style.Plain,FontManager.Style.Bold,FontManager.Style.Italic};
     String[] sizes = { "8", "9", "10", "12", "14", "16", "18", "24" };
     String fname;
-    SystemFont.Style fstyle;
+    FontManager.Style fstyle;
     int fsize;
     int bufferchars;
 
@@ -66,7 +65,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
         area = new TextArea("", 30, 80);	// not jtextarea, keep scrolling functionality
         area.setVisible(true);
         fname = "Courier";
-        fstyle = SystemFont.Style.Plain;
+        fstyle = FontManager.Style.Plain;
         fsize = FontManager.standardizeFontSize(FontManager.defaultFontSize);
 
         // Create edit menu
@@ -132,7 +131,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
         addToMenuBar(sizeMenu);
  
         // Show window
-        area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+        area.setFont(FontManager.getFont(fname, fstyle, fsize));
 
         addC(area);
         
@@ -194,7 +193,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
                     }
 
                 fname = fonts[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -211,7 +210,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
                     }
 
                 fsize = G.IntToken(sizes[i]);
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -228,7 +227,7 @@ public class UrlDisplay extends XFrame implements ActionListener,ItemListener
                     }
 
                 fstyle = styleCode[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }

@@ -24,7 +24,6 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import bridge.SystemFont;
 import lehavre.main.*;
 import lehavre.main.Dictionary;
 import lehavre.model.*;
@@ -34,6 +33,7 @@ import lehavre.util.*;
 import lehavre.view.labels.*;
 import lehavre.view.menus.*;
 import lib.Graphics;
+import lib.FontManager;
 import lib.G;
 import lib.HitPoint;
 import lib.MouseState;
@@ -67,7 +67,7 @@ extends exCanvas
 		/* Load the 1st special font. */
 		Font font = GUIHelper.getBoldFont();
 
-		Font boldFont = (font != null ? font : SystemFont.getFont("SansSerif", SystemFont.Style.Plain, 1));
+		Font boldFont = (font != null ? font : FontManager.getFont("SansSerif", FontManager.Style.Plain, 1));
 		gui = new GUIHelper("font");
 		FONT14 = boldFont.deriveFont((float)gui.getInt("SmallButtons"));
 		FONT15 = boldFont.deriveFont((float)gui.getInt("GoodLabels"));

@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
 import java.util.Hashtable;
-import bridge.SystemFont;
 import bugs.BugsChip.Terrain;
 import bugs.data.DataHelper;
 import bugs.data.DataHelper.Diet;
@@ -17,6 +16,7 @@ import bugs.data.Taxonomy;
 import lib.CellId;
 import lib.CompareTo;
 import lib.DrawingObject;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -294,11 +294,11 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 	}
 	
 	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
-	{	drawChip(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
+	{	drawChip(gc,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
 	}
 
-	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
-	{	return drawChip(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
+	public boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	{	return drawChip(gc,DrawingObject.getCanvas(canvas),G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
 //	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
 //	{
@@ -307,7 +307,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 	static boolean PRECALCULATE = false;
 	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
-	{	
+	{	G.Assert(drawOn!=null,"missing canvas");
 	 	if(helptext==BACK)
     	{
     	boolean hit = cardBack.drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
@@ -382,12 +382,12 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 			
 			bugImage.centerImage(gc,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
 			//canvas.drawImage(gc,image,xp,yp+headHeight,SQUARESIZE/2,SQUARESIZE/2-headHeight);
-			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,scoreHeight));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,scoreHeight));
 			GC.Text(gc,true,xp,yp+SQUARESIZE/2-scoreHeight,scoreHeight,scoreHeight,Color.black,null,  ""+pointValue());	
-			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,headHeight));
 			GC.Text(gc,true,xp+headHeight+headHeight/2,yp,SQUARESIZE-headHeight*2,headHeight,Color.black,null,  getCommonName());
 
-			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Italic,subheadHeight));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Italic,subheadHeight));
 			GC.Text(gc,true,xp+SQUARESIZE/2,yp+headHeight+subheadHeight/4,subheadWidth,subheadHeight,Color.blue,null, "("+getScientificName()+")" );
 	
 			String sd = profile.getShortDescription();
@@ -403,7 +403,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 				// (2) only get here if the card size is 300 rather than 200, 
 				// (3) improve the actual selectFontSize to use a binary search
 				// (4) only do this at all if we're really drawing.
-				textContainer.setFont(SystemFont.getFont(baseFont,SQUARESIZE/20));
+				textContainer.setFont(FontManager.getFont(baseFont,SQUARESIZE/20));
 				textContainer.selectFontSize();
 				textContainer.flagExtensionLines = false;
 				textContainer.frameAndFill=false;
@@ -463,9 +463,9 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		
 		bugImage.centerImage(gc,xp,yp,SQUARESIZE/3,SQUARESIZE/3);
 		//GC.frameRect(gc,Color.green,xp,yp,SQUARESIZE/3,SQUARESIZE/3);
-		Font font = SystemFont.getFont(baseFont,SystemFont.Style.Bold,headHeight);
+		Font font = FontManager.getFont(baseFont,FontManager.Style.Bold,headHeight);
 		GC.setFont(gc,font);
-		FontMetrics fm =  lib.FontManager.getFontMetrics(font);
+		FontMetrics fm =  FontManager.getFontMetrics(font);
 		int textW = SQUARESIZE-SQUARESIZE/3;
 		String name = getCommonName();
 		int nameW = fm.stringWidth(name);
@@ -489,7 +489,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		{	
 			int ims = SQUARESIZE/4;		
 			int wingSize = ims*3/4;
-			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,ims));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,ims));
 			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+pointValue());	
 
 			Profile cat = profile.getCategory().getProfile();
@@ -539,7 +539,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 
 		{	
 			int wingSize = ims*3/4;
-			GC.setFont(gc,SystemFont.getFont(baseFont,SystemFont.Style.Bold,ims));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,ims));
 			GC.Text(gc,true,xp,yp+SQUARESIZE/2-ims,wingSize,ims,Color.black,null,  ""+pointValue());	
 
 			Profile cat = profile.getCategory().getProfile();
@@ -637,7 +637,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 			{
 			textContainerSize = w;
 			textContainer.setText(sd);
-			textContainer.setFont(SystemFont.getFont(baseFont,w/20));
+			textContainer.setFont(FontManager.getFont(baseFont,w/20));
 			textContainer.selectFontSize();
 			textContainer.flagExtensionLines = false;
 			textContainer.frameAndFill=false;

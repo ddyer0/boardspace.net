@@ -22,7 +22,6 @@ import online.common.*;
 
 import java.util.*;
 
-import bridge.SystemFont;
 import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
@@ -274,7 +273,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         	boolean canhit = gb.LegalToHitChips(c);
         	CookieChip chip = c.topChip();
         	labelColor = Color.white;
-        	labelFont = SystemFont.getFont(largeBoldFont(),sz/3);
+        	labelFont = FontManager.getFont(largeBoldFont(),sz/3);
         	if(c.drawStack(gc,canhit?highlight:null,
         			x,y,
         			this,0,tall?(int)(w*0.9):h,1.0,""+chip.value))

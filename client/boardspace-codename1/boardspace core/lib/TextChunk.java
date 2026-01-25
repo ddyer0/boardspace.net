@@ -24,7 +24,6 @@ import bridge.Color;
 import bridge.Component;
 import bridge.FontMetrics;
 import bridge.Icon;
-import bridge.SystemFont;
 
 /**
  * class TextChunk is used to prepare strings for drawing colorized colors, with size
@@ -350,7 +349,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     	FontMetrics myFM = GC.getFontMetrics(inG);
         int neww = width(myFM);
         int nlines = nLines();
-        int siz = lib.FontManager.getFontSize(f0);
+        int siz = FontManager.getFontSize(f0);
         int linesize = ((myFM.getAscent() + myFM.getDescent())*9)/10;
         if((inHeight>8)&&nlines>1)
         	{ siz = Math.max(8,Math.min(linesize,inHeight/nlines)); 		// limit the font size vertically
@@ -358,8 +357,8 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
         int xoff = -1;
         while ((xoff < 0) && (siz > 6))
         	{	// find a smaller font, within reason
-        	f = SystemFont.getFont(f0,siz--);
-            myFM = lib.FontManager.getFontMetrics(f);
+        	f = FontManager.getFont(f0,siz--);
+            myFM = FontManager.getFontMetrics(f);
             neww = width(myFM);
             xoff = (inWidth - neww);
         	}
@@ -411,7 +410,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     }
     public int draw(Graphics inG, boolean center, int inX,
         int inY, int inWidth, int inHeight, Color fgColour, Color bgColor)
-    {
+    {	
     	return(draw(inG,center,false,inX,inY,inWidth,inHeight,fgColour,bgColor,true));
     }
     public int drawRight(Graphics inG, int inX, int inY,

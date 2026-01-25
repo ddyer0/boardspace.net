@@ -18,6 +18,8 @@ package bridge;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Font;
+
+import lib.FontManager;
 import lib.Image;
 import com.codename1.ui.geom.Point;
 
@@ -40,7 +42,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider
 		// on android on 9/2017
 		setCapsTextDefault(false);
 	}
-	public Font getFont() { return(SystemFont.getFont(getStyle())); };
+	public Font getFont() { return(FontManager.getFont(getStyle())); };
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))
 		{ 
@@ -74,7 +76,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider
 	}
 
 	public FontMetrics getFontMetrics(Font f) {
-		return lib.FontManager.getFontMetrics(f);
+		return FontManager.getFontMetrics(f);
 	}
 	public void pointerPressed(int x,int y)
 	{	if(contains(x,y)) { x = getX()+1; y=getY()+1; }

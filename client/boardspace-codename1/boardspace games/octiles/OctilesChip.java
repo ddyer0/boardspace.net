@@ -215,7 +215,7 @@ public class OctilesChip extends chip<OctilesChip>
 		if(lines!=null && (gc!=null))
 		{
 		int mask = 0;
-		OctilesChip alt = getAltChip(canvas.getAltChipset());
+		OctilesChip alt = getAltChip(exCanvas.getAltChipset(canvas));
 		boolean flat = alt.isFlat;
 		double[] scale = flat ? alt.scale : this.scale;
 		for(int ind= 0; ind<lines.length;ind++)

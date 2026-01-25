@@ -29,16 +29,16 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
     public JCheckBoxMenuItem[] styleItems;
     public JCheckBoxMenuItem[] sizeItems;
     public JMenu editMenu = new XJMenu("Edit",true);
-    public JMenu fontMenu = new XJMenu("FontManager",true);
+    public JMenu fontMenu = new XJMenu("Font",true);
     public JMenu sizeMenu = new XJMenu("Size",true);
     public JMenu styleMenu = new XJMenu("Style",true);
     public JMenuItem selectAllItem = new JMenuItem("Select all");
     String[] fonts = FONT_FAMILIES;
     String[] styles = { "Plain", "Bold", "Italic" };
-    SystemFont.Style styleCode[] = { SystemFont.Style.Plain,SystemFont.Style.Bold,SystemFont.Style.Italic};
+    FontManager.Style styleCode[] = { FontManager.Style.Plain,FontManager.Style.Bold,FontManager.Style.Italic};
     String[] sizes = { "8", "9", "10", "12", "14", "16", "18", "24" };
     String fname;
-    SystemFont.Style fstyle;
+    FontManager.Style fstyle;
     int fsize;
     int bufferchars;
 
@@ -52,7 +52,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
         area = new TextArea("", 30, 80);	// not jtextarea, keep scrolling functionality
         area.setVisible(true);
         fname = "Courier";
-        fstyle = SystemFont.Style.Plain;
+        fstyle = FontManager.Style.Plain;
         fsize = FontManager.standardizeFontSize(FontManager.defaultFontSize);
 
         // Create edit menu
@@ -118,7 +118,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
         addToMenuBar(sizeMenu);
  
         // Show window
-        area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+        area.setFont(FontManager.getFont(fname, fstyle, fsize));
 
         addC(area);
         
@@ -180,7 +180,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
                     }
 
                 fname = fonts[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -197,7 +197,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
                     }
 
                 fsize = G.IntToken(sizes[i]);
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }
@@ -214,7 +214,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
                     }
 
                 fstyle = styleCode[i];
-                area.setFont(SystemFont.getFont(fname, fstyle, fsize));
+                area.setFont(FontManager.getFont(fname, fstyle, fsize));
                 handled = true;
             }
         }

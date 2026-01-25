@@ -131,7 +131,7 @@ public class Tokenizer implements Enumeration<String>
 		char ch = (char)0;
 		while((index<maxIndex)
 				&& (delimiters.indexOf((ch=basis.charAt(index)))>=0)
-				&& (ch!='\"'))	// double quote is special because it is paired
+				&& (ch!='"'))	// double quote is special because it is paired
 		{	
 			index++;
 			restIndex = index;	

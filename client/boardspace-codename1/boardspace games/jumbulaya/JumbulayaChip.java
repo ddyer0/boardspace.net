@@ -19,8 +19,8 @@ package jumbulaya;
 import com.codename1.ui.Font;
 import bridge.Color;
 import bridge.FontMetrics;
-import bridge.SystemFont;
 import lib.DrawableImageStack;
+import lib.FontManager;
 import lib.GC;
 import lib.Graphics;
 import lib.Image;
@@ -128,7 +128,6 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     		new JumbulayaChip("letter1",letter1Scale,null),
     		new JumbulayaChip("letter2",letter2Scale,null),
     	};
-    static public JumbulayaChip Post = new JumbulayaChip("post",postScale,null);
     // greenpost double letter
     static public JumbulayaChip Blue = new JumbulayaChip("post-blue",new double[]{ 0.62,0.44,1.38},"blue");
     static public JumbulayaChip Yellow = new JumbulayaChip("post-yellow",new double[]{ 0.62,0.44,1.22},"yellow");
@@ -261,9 +260,9 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = SystemFont.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);
     		GC.setFont(gc, f);
-    		FontMetrics fm = lib.FontManager.getFontMetrics(f);
+    		FontMetrics fm = FontManager.getFontMetrics(f);
     		Text ww = TextChunk.create("W");
      		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2-ss/10,cy+(int)(SQUARESIZE*0.2));

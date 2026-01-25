@@ -5,7 +5,6 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 
-import bridge.SystemFont.Style;
 import java.util.Hashtable;
 import bugs.data.Taxonomy;
 import lib.CellId;
@@ -192,11 +191,11 @@ public class GoalCard extends BugsChip implements BugsConstants
 			HitPoint.setHelpText(hitAny,r1,m1);
 			HitPoint.setHelpText(hitAny,r2,m2);
 			if(caption)
-			{	GC.setFont(gc,lib.FontManager.getFont(baseFont,Style.Bold,xs/4));
+			{	GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,xs/4));
 				GC.Text(gc,false,cx-xs,yp,xs,xs/2,Color.black,null,m1);
 				GC.Text(gc,false,cx+xs/10,yp,xs,xs/2,Color.black,null,m2);
 			}
-			GC.setFont(gc,lib.FontManager.getFont(baseFont,lib.FontManager.Style.Bold,SQUARESIZE/8));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,SQUARESIZE/8));
 			GC.Text(gc,true,cx-SQUARESIZE/2,cy+SQUARESIZE/5,SQUARESIZE/2,SQUARESIZE/10,Color.black,null,
 					cat1.legend(false));
 			GC.Text(gc,true,cx,cy+SQUARESIZE/5,SQUARESIZE/2,SQUARESIZE/10,Color.black,null,

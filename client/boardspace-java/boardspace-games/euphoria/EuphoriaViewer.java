@@ -26,7 +26,6 @@ import online.common.*;
 import java.util.*;
 
 import bridge.Config;
-import bridge.SystemFont;
 import common.GameInfo;
 import euphoria.EPlayer.PFlag;
 import euphoria.EPlayer.PlayerView;
@@ -39,6 +38,7 @@ import lib.ChatInterface;
 import lib.DefaultId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -1977,7 +1977,7 @@ private Color playerBackground[] = {
     	case ActivateOneRecruit:
 
     		{
-    		Font giant = SystemFont.getFont(standardPlainFont(), SystemFont.Style.Bold, 30);
+    		Font giant = FontManager.getFont(standardPlainFont(), FontManager.Style.Bold, 30);
     		GC.setFont(gc, giant);
        		GC.Text(gc, true,x,y,w,stepY/2 ,Color.yellow,null, s.get(RecruitsForPlayer,prettyName(pl)));
     		// draw the available recruits
@@ -3492,7 +3492,7 @@ private Color playerBackground[] = {
     	Rectangle alertRect = new Rectangle(textX, t+topPart*2,textW/2,topPart);
      	boolean moving = pl.ephemeralPickedObject!=null;
      	EuphoriaState state = bb.getGuiState();
-     	Font efont = SystemFont.getFont(largeBoldFont(),topPart*2/3);
+     	Font efont = FontManager.getFont(largeBoldFont(),topPart*2/3);
      	labelFont = efont;
    	   	GC.setFont(gc,efont);
     	if (remoteViewer<0)

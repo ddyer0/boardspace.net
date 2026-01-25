@@ -3,7 +3,6 @@ package bugs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
-import bridge.SystemFont.Style;
 import java.util.Hashtable;
 import bugs.data.Taxonomy;
 import lib.CellId;
@@ -167,7 +166,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 			String m1 = cat1.getHelpText();
 			HitPoint.setHelpText(hitAny,r,m1);
 			
-			GC.setFont(gc,lib.FontManager.getFont(baseFont,FontManager.Style.Bold,SQUARESIZE/5));
+			GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,SQUARESIZE/5));
 			if(SQUARESIZE>150)
 			{	
 				GC.Text(gc,true,xp+SQUARESIZE/20,yp+SQUARESIZE/40,SQUARESIZE-SQUARESIZE/10,cardH/5,Color.black,null,m1);
@@ -190,7 +189,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 			HitPoint.setHelpText(hitAny,r1,m1);
 			HitPoint.setHelpText(hitAny,r2,m2);
 			if(caption)
-			{	GC.setFont(gc,lib.FontManager.getFont(baseFont,Style.Bold,xs/4));
+			{	GC.setFont(gc,FontManager.getFont(baseFont,FontManager.Style.Bold,xs/4));
 				GC.Text(gc,false,cx-xs,yp,xs,xs/2,Color.black,null,m1);
 				GC.Text(gc,false,cx+xs/10,yp,xs,xs/2,Color.black,null,m2);
 			}

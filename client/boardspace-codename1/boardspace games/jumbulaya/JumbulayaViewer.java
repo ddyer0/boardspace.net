@@ -28,7 +28,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.FileDialog;
 import bridge.JMenuItem;
-import bridge.SystemFont;
 import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
@@ -36,6 +35,7 @@ import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
+import lib.FontManager;
 import lib.G;
 import lib.GC;
 import lib.GameLayoutManager;
@@ -1847,7 +1847,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     	if (remoteViewer<0)
     		{ StockArt.Scrim.image.stretchImage(gc, bounds);
     	}
-    	Font myFont = SystemFont.getFont(largeBoldFont(), step/2);
+    	Font myFont = FontManager.getFont(largeBoldFont(), step/2);
     	GC.setFont(gc, myFont);
     	JumbulayaChip chip = bb.getPlayerChip(bb.whoseTurn);
     	chip.drawChip(gc,this, icon,null);
