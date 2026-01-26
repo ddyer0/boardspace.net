@@ -827,11 +827,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     {	return(TextChunk.colorize(str,s,coloredChunks));
     }
     
-    public Text censoredMoveText(SequenceElement sp,int idx)
-    {	return censoredMoveText(((TammanyMovespec)sp),idx);
+    public Text censoredMoveText(SequenceElement sp,int idx,Font f)
+    {	return censoredMoveText(((TammanyMovespec)sp),idx,f);
    
     } 	
-    public Text censoredMoveText(TammanyMovespec sp,int idx)
+    public Text censoredMoveText(TammanyMovespec sp,int idx,Font f)
     {	String str = (sp).censoredMoveString(History,idx,bb);
     	String votestring = "vote ward";
     	if(str.startsWith(votestring))

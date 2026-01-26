@@ -22,6 +22,9 @@ import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.Tokenizer;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 
 public class GoMovespec extends commonMove implements GoConstants
@@ -270,7 +273,7 @@ public class GoMovespec extends commonMove implements GoConstants
             return (D.findUniqueTrans(op));
         }
     }
-    public Text shortMoveText(commonCanvas c)
+    public Text shortMoveText(commonCanvas c, Font font)
     {	String str = shortMoveString(c);
     	return(TextChunk.create(str));
     }

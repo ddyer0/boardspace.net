@@ -61,13 +61,7 @@ public class Button extends com.codename1.ui.Button implements ActionProvider
 		{ Command com = getCommand();
 		  return((com==null) ? null : com.toString());
 		}
-	public void paint(com.codename1.ui.Graphics g)
-	{
-		super.paint(g);
-	    //g.setColor(0xd000ff);
-		//g.drawRect(0,0,getWidth()-1,getHeight()-1);
-		//g.drawLine(getWidth(),0,0,getHeight());
-	}
+
 	public void setBounds(int l,int t,int w,int h) 
 	{ setX(l);
 	  setY(t);

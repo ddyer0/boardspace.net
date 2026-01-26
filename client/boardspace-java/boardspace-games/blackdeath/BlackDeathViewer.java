@@ -1533,9 +1533,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	}
     	return(gameMoveText);
     }
-    public Text censoredMoveText(SequenceElement m,int idx)
+    public Text censoredMoveText(SequenceElement m,int idx,Font f)
     {
-    	Text str = m.censoredMoveText(this,bb);
+    	Text str = m.censoredMoveText(this,bb,f);
     	str.colorize(null,gameMoveText());
     	return(str);
     }

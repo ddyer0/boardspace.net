@@ -1609,11 +1609,11 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     	}
     	return(false);
     }
-    public Text censoredMoveText(SequenceElement sp,int idx)
+    public Text censoredMoveText(SequenceElement sp,int idx,Font f)
     {
-    	return censoredMoveText((commonMove)sp,idx);
+    	return censoredMoveText((commonMove)sp,idx,f);
     }
-    public Text censoredMoveText(commonMove sp,int idx)
+    public Text censoredMoveText(commonMove sp,int idx,Font f)
     {    
     	if(sp.op==MOVE_BID)
     	{
@@ -1622,7 +1622,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     		return(TextChunk.create("Bid ??"));
     		}
     	}
-    	return(sp.shortMoveText(this));   	
+    	return(sp.shortMoveText(this,f));   	
     }
 
     //

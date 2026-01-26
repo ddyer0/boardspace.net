@@ -16,6 +16,8 @@
  */
 package circle;
 
+import com.codename1.ui.Font;
+
 import circle.CircleConstants.CircleId;
 import lib.G;
 import lib.Text;
@@ -185,7 +187,7 @@ public class CircleMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

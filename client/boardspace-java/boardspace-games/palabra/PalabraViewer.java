@@ -291,7 +291,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
 		ch.drawChip(gc,this,hscale,xp,yp,null);
     }
 
-    public Text censoredMoveText(SequenceElement sp,int index)
+    public Text censoredMoveText(SequenceElement sp,int index,Font f)
      {
     	commonMove last = History.top();
     	String mv = last.getSliderNumString();

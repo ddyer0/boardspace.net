@@ -16,6 +16,8 @@
  */
 package honey;
 
+import com.codename1.ui.Font;
+
 import lib.CompareTo;
 import lib.Digestable;
 import lib.Random;
@@ -113,7 +115,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return true;
 	}
 
-	public Text shortMoveText(commonCanvas canvas) {
+	public Text shortMoveText(commonCanvas canvas, Font font) {
 		return TextChunk.create(name+((points>0) ? " ("+points+")" : ""));
 	}
 
@@ -125,7 +127,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return "";
 	}
 
-	public Text censoredMoveText(commonCanvas canvas, BoardProtocol bb) {
-		return shortMoveText(canvas);
+	public Text censoredMoveText(commonCanvas canvas, BoardProtocol bb, Font font) {
+		return shortMoveText(canvas, font);
 	}
 }

@@ -22,6 +22,9 @@ import lib.G;
 import lib.TextChunk;
 import lib.Tokenizer;
 import lib.Text;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 
 public class MorelliMovespec extends commonMove implements MorelliConstants
@@ -150,9 +153,9 @@ public class MorelliMovespec extends commonMove implements MorelliConstants
         }
     }
 
-    public Text shortMoveText(commonCanvas can)
+    public Text shortMoveText(commonCanvas can, Font font)
     {	// upcast the canvas
-    	return(shortMoveText((MorelliViewer)can));
+    	return(shortMoveText((MorelliViewer)can,font));
     }
     
     private Text coloredCoordinate(MorelliViewer v,char col,int row)
@@ -162,7 +165,7 @@ public class MorelliMovespec extends commonMove implements MorelliConstants
     }
     /* construct a move Text for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(MorelliViewer v)
+    public Text shortMoveText(MorelliViewer v,Font f)
     {
         switch (op)
         {

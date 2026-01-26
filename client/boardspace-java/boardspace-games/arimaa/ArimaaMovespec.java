@@ -23,6 +23,9 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 
 public class ArimaaMovespec extends commonMove implements ArimaaConstants
@@ -222,7 +225,7 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
     	StockArt.SolidLeftArrow,
     	StockArt.SolidDownArrow};
     
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	double discScale[] = new double[]{1.5,1.5,0,-0.15};
     	boolean reverse = ((ArimaaViewer)v).reversed();
     	Text ms = (picked==null) 

@@ -16,6 +16,8 @@
  */
 package dayandnight;
 
+import java.awt.Font;
+
 import dayandnight.DayAndNightConstants.DayAndNightId;
 import lib.G;
 import lib.Text;
@@ -216,7 +218,7 @@ public class DayAndNightmovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

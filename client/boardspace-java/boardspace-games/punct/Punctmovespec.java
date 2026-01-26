@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 
 public class Punctmovespec extends commonMove implements PunctConstants
@@ -203,7 +206,7 @@ public class Punctmovespec extends commonMove implements PunctConstants
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

@@ -23,6 +23,9 @@ import lib.TextGlyph;
 import lib.Tokenizer;
 import lyngk.LyngkConstants.LyngkId;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 public class LyngkMovespec extends commonMove
 {	// this is the dictionary of move names
@@ -250,7 +253,7 @@ public class LyngkMovespec extends commonMove
      * @param v
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
     	String msg = shortMoveString();
     	int ind = msg.indexOf('-');

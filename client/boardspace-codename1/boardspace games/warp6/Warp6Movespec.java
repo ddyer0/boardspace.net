@@ -23,6 +23,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 
 public class Warp6Movespec extends commonMove implements Warp6Constants
@@ -187,7 +190,7 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
             break;
         }
     }
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	double diescale[] = new double[]{1.2,1.5,-0.2,-0.3};
     	double diescale2[] = new double[]{1.2,1.5,0.5,-0.3};
     	switch(op)

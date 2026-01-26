@@ -813,11 +813,11 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     {images[(gb.reverseY()?BOARD_OBLIQUE_INDEX:BOARD_OBLIQUE_REVERSE_INDEX)].centerImage(gc, r);
     	HitPoint.setHelpText(highlight,r,BreakId.ReverseViewButton,s.get(ReverseViewExplanation));	
      } 
-    public Text censoredMoveText(SequenceElement sp,int idx)
+    public Text censoredMoveText(SequenceElement sp,int idx,Font f)
     {	BreakingAwayMovespec next = ((idx+1<History.size())
     									? (BreakingAwayMovespec)History.elementAt(idx+1) 
     									: null);
-    	return(((BreakingAwayMovespec)sp).shortMoveText(this,next));
+    	return(((BreakingAwayMovespec)sp).shortMoveText(this,next,f));
     }
 
     private HitPoint activeDoneButton(HitPoint selectPos,HitPoint buttonSelect,BreakState state)

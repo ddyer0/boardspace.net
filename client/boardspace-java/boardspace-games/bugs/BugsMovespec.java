@@ -16,8 +16,11 @@
  */
 package bugs;
 
+import java.awt.Font;
+
 import bugs.BugsConstants.BugsId;
 import lib.G;
+import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
@@ -227,7 +230,7 @@ public class BugsMovespec
     		else
     		{
     			double chipScale[] = new double[] { 2,1.25,0.1,-0.2};
-    			m = TextChunk.join(TextGlyph.create("xxxxx", chip, v,chipScale),
+    			m = TextChunk.join(TextGlyph.create("xxxx", chip, v,chipScale),
     					m);
     		}
     	}
@@ -240,7 +243,7 @@ public class BugsMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {
@@ -266,7 +269,9 @@ public class BugsMovespec
             return TextChunk.create("");
 
 		case MOVE_ROTATECW:
+			return(TextGlyph.create("xxx",StockArt.SwingCW,v,1.3,1,0,-0.5));
 		case MOVE_ROTATECCW:
+			return(TextGlyph.create("xxx",StockArt.SwingCCW,v,1.3,1,0,-0.5));
 		default:
             return TextChunk.create(D.findUniqueTrans(op));
 

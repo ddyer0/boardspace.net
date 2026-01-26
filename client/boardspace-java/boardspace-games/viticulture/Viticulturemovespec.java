@@ -22,6 +22,9 @@ import lib.Text;
 import lib.TextChunk;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.Bitset;
 import lib.ExtendedHashtable;
 public class Viticulturemovespec extends commonMPMove implements ViticultureConstants
@@ -609,10 +612,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         parseExtraChips(msg);
     }
     
-    Text censoredMoveText(ViticultureViewer v,ViticultureBoard b)
+    Text censoredMoveText(ViticultureViewer v,ViticultureBoard b,Font f)
     {	
     	// default treatment
-    	return(shortMoveText(v));
+    	return(shortMoveText(v,f));
     }
 
     /** construct an abbreviated move string, mainly for use in the game log.  These
@@ -736,7 +739,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
      * @return a Text object
      */
     private static commonMove prev;
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	String m = shortMoveString();
     	if((prev!=null) && (prev.op==MOVE_MAKEWINE) && (op == MOVE_MAKEWINE))
     	{

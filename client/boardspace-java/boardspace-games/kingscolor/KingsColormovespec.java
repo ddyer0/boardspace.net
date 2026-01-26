@@ -16,6 +16,8 @@
  */
 package kingscolor;
 
+import java.awt.Font;
+
 import kingscolor.KingsColorConstants.ColorId;
 import lib.G;
 import lib.Text;
@@ -205,7 +207,7 @@ public class KingsColormovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

@@ -6140,12 +6140,12 @@ public abstract class commonCanvas extends exCanvas
      * @param index the current index into the move history
      * @return a Text object
      */
-    public Text censoredMoveText(SequenceElement sp,int index)
+    public Text censoredMoveText(SequenceElement sp,int index,Font f)
     {
-    	return(shortMoveText(sp));
+    	return(shortMoveText(sp,f));
     }
-    public Text shortMoveText(SequenceElement sp) {
-		return sp.shortMoveText(this);
+    public Text shortMoveText(SequenceElement sp,Font f) {
+		return sp.shortMoveText(this, f);
 	}
     /**
      * colorize a string and return a Text with the result.  This is used

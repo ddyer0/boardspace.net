@@ -18,6 +18,8 @@ package octiles;
 
 import online.game.*;
 
+import com.codename1.ui.Font;
+
 import bridge.Color;
 import lib.G;
 import lib.HorizontalBar;
@@ -209,9 +211,9 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
         }
     }
     
-    private Text makeGraph(int dis,int player,commonCanvas canvas)
+    private Text makeGraph(int dis,int player,commonCanvas canvas,Font f)
     {
-    	int height = FontManager.getFontMetrics(canvas).getHeight()*2/3;
+    	int height = FontManager.getFontMetrics(f).getHeight()*2/3;
     	double distance = Math.min(7, Math.max(0,dis))/7.0;
     	Color color = canvas.getMouseColor(player);
     	HorizontalBar graph = new HorizontalBar(height*8,height,distance,color);
@@ -223,9 +225,9 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     	OctilesChip chip = OctilesChip.getChip(chipn);
     	return(TextGlyph.create("xx",chip,canvas,new double[] {1.3,1.5,-0.5,0}));
     }
-    public Text censoredMoveText(commonCanvas canvas,OctilesMovespec next)
+    public Text censoredMoveText(commonCanvas canvas,OctilesMovespec next,Font f)
     {
-    	Text def = shortMoveText(canvas);
+    	Text def = shortMoveText(canvas, f);
     	switch(op)
     	{
     	default: break;
@@ -244,7 +246,7 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     		if(next!=null && next.op==MOVE_DROPB && (object>=100))
     		{
         		int distance = (int)G.distance(from_col, from_row, next.to_col,next.to_row);
-        		return(TextChunk.join(makeGraph(distance,player,canvas),TextChunk.create(""+from_col+from_row)));
+        		return(TextChunk.join(makeGraph(distance,player,canvas,f),TextChunk.create(""+from_col+from_row)));
     		}
     		break;
     	case DROP_AND_MOVE:
@@ -252,7 +254,7 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     		return(TextChunk.join(
     					makeIcon(object,rotation,canvas),
     					TextChunk.create(""+drop_col+drop_row+" "),
-    					makeGraph(distance,player,canvas),
+    					makeGraph(distance,player,canvas,f),
     					TextChunk.create(""+from_col+from_row+"-"+to_col+to_row)));
     	}
     	return(def);

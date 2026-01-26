@@ -24,6 +24,9 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 
 
@@ -208,7 +211,7 @@ public class TzaarMovespec extends commonMove implements TzaarConstants
     	return(message);
     }
     
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

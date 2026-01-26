@@ -23,6 +23,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 public class Sprintmovespec extends commonMPMove implements SprintConstants
 {	// this is the dictionary of move names
@@ -278,7 +281,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

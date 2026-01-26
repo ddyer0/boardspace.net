@@ -23,6 +23,9 @@ import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
 import prototype.PrototypeConstants.PrototypeId;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 public class Prototypemovespec 
 		extends commonMove	// for a multiplayer game, this will be commonMPMove
@@ -183,7 +186,7 @@ public class Prototypemovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

@@ -17,9 +17,8 @@
 package bridge;
 
 import com.codename1.ui.Font;
-import com.codename1.ui.Graphics;
-
 import lib.FontManager;
+import lib.G;
 
 public class TextField extends com.codename1.ui.TextField
 {
@@ -87,24 +86,15 @@ public class TextField extends com.codename1.ui.TextField
 		  super.repaint();
 		} 
 	}
-	private String pendingText = null;
-	public String getText() 
-	{ if(pendingText!=null) 
-		{ return(pendingText); } 
-		else { return(super.getText()); }
+	private void setTextEdt(String g)
+	{
+		super.setText(g);
 	}
 	public void setText(String s)
 	{
-		pendingText = (s==null)?"":s;
-		repaint();
+		G.runInEdt(new Runnable() { public void run(){ setTextEdt(s);  }});	
 	}
-	public void paint(Graphics g)
-	{	{ String p = pendingText; if(p!=null) { pendingText=null; super.setText(p); }} 
-		if(MasterForm.isInFront(this))
-		{	g.setFont(getFont());
-			super.paint(g);
-		}
-	}
+	
 	public FontMetrics getFontMetrics(Font f) {
 		return FontManager.getFontMetrics(f);
 	}

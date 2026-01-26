@@ -480,11 +480,11 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         	}
       	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);  
     }
-    public Text censoredMoveText(SequenceElement sp,int idx)
+    public Text censoredMoveText(SequenceElement sp,int idx,Font f)
     {	OctilesMovespec next = ((idx+1<History.size())
     									? (OctilesMovespec)History.elementAt(idx+1) 
     									: null);
-    	return(((OctilesMovespec)sp).censoredMoveText(this,next));
+    	return(((OctilesMovespec)sp).censoredMoveText(this,next,f));
     }
     private double[] textIconScale = new double[] { 1,1.5,-0.1,-0.2};
     public Drawable getPlayerIcon(int p)

@@ -16,6 +16,8 @@
  */
 package zertz.common;
 
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Text;
@@ -200,7 +202,7 @@ public class movespec extends commonMove implements GameConstants
     	}
     	return(TextChunk.create(""));
     }
-     public Text shortMoveText(commonCanvas v)
+     public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

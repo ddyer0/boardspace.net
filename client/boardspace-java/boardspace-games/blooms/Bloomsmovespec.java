@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 public class Bloomsmovespec extends commonMove implements BloomsConstants
 {	// this is the dictionary of move names
@@ -222,7 +225,7 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
      * @param v
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {  	switch (op)
     {
     	case SELECT:

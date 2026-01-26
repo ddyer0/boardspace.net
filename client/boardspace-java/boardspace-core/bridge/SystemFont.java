@@ -12,41 +12,28 @@ import lib.FontManager;
 import lib.G;
 
 public class SystemFont implements Config
-{	public static int defaultFontSize = Default.getInt(Default.fontsize);
-public static final FontManager.Style MenuTextStyle = FontManager.Style.Plain;
+{	
 
 	public static Font defaultFont = null;
 	public static int PLAIN = Font.PLAIN;
 	public static int ITALIC = Font.ITALIC;
 	public static int BOLD = Font.BOLD;
 
-	public static int defaultFontSize() 
-	{ 
-		return Math.max(minFontHeight,Math.min(maxFontHeight,FontManager.standardizeFontSize(defaultFontSize)));
-	}
 
 	public static Font getGlobalDefaultFont()
 	{
 		if(defaultFont==null)
 		{
-			setGlobalDefaultFont();
+			FontManager.setGlobalDefaultFont();
 		}
 		return(defaultFont);
 	}
-
-	public SystemFont() {}
 	
 	public static String[] getFontFamilies()
 	{	
 	    return(java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
 	}
 
-	public static Font menuFont()
-	{
-		return getFont(FontManager.getGlobalDefaultFont(),
-				FontManager.MenuTextStyle,
-				FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
-	}
 	public static  Font getFont(String family,FontManager.Style style,int size)
 	{	if(!G.Advise(size>0,"not zero size font %s %s",family,style)) { size = 1; }
 		return(new Font(family, style.s ,size));
@@ -90,16 +77,6 @@ public static final FontManager.Style MenuTextStyle = FontManager.Style.Plain;
 	        }
 	    }
 	}
-
-	/**
-	 * set a global default font scaled to the size of the and resolution of the screen
-	 */
-	public static void setGlobalDefaultFont()
-	{	int fontHeight = defaultFontSize();
-		Font f = getFont(FontManager.defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, FontManager.Style.Plain, fontHeight);
-		setGlobalDefaultFont (f);
-	}
-
 
 	public static double adjustWindowFontSize(int w,int h)
 	{	// this allows the fonts to grow when the windows get larger

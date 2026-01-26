@@ -1,7 +1,8 @@
 package lib;
 
+import com.codename1.ui.Font;
+
 import bridge.SystemFont;
-import common.CommonConfig.Default;
 
 public class FontManager extends SystemFont {
 
@@ -19,6 +20,12 @@ public class FontManager extends SystemFont {
 
 	public static void setDefaultFontFamily(String n) { defaultFontFamily = n; }
 
+	public static int defaultFontSize = Default.getInt(Default.fontsize);
+	public static int defaultFontSize() 
+	{ 
+		return Math.max(minFontHeight,Math.min(maxFontHeight,standardizeFontSize(defaultFontSize)));
+	}
+	
 	public static void setDefaultFontSize(int n)
 	{	defaultFontSize = Math.max(6, n);
 		Default.setInt(Default.fontsize,defaultFontSize);
@@ -37,5 +44,23 @@ public class FontManager extends SystemFont {
 	}
 
 	public static final Style MenuTextStyle = Style.Plain;
+	
+
+	public static Font menuFont()
+	{
+		return getFont(getGlobalDefaultFont(),
+				MenuTextStyle,
+				standardizeFontSize(standardizeFontSize(G.MenuTextSize)));
+	}
+	/**
+	 * set a global default font scaled to the size of the and resolution of the screen
+	 */
+	public static void setGlobalDefaultFont()
+	{	int fontHeight = defaultFontSize();
+		Font f = getFont(defaultFontFamily()/*"Arial Unicode MS"/*"sansserif"*/, Style.Plain, fontHeight);
+		setGlobalDefaultFont (f);
+	}
+
+
 
 }

@@ -18,6 +18,8 @@ package breakingaway;
 
 
 import java.awt.Color;
+import java.awt.Font;
+
 import breakingaway.BreakingAwayConstants.BreakId;
 import lib.G;
 import lib.HorizontalBar;
@@ -215,27 +217,27 @@ public class BreakingAwayMovespec extends commonMPMove
             break;
         }
     }
-    private Text makeGraph(int from,int to,int player,commonCanvas canvas)
+    private Text makeGraph(int from,int to,int player,commonCanvas canvas,Font f)
     {
-    	double height = FontManager.getFontMetrics(canvas).getHeight()*2/3;
-    	double distance = Math.min(15, Math.max(0,to-from))/(0.8*height);
+    	double height = FontManager.getFontMetrics(f).getHeight()*2/3;
+    	double distance = Math.max(0,Math.min(1,(to-from)/15.0));
     	Color color = ((BreakingAwayViewer)canvas).playerColor(player);
-    	HorizontalBar graph = new HorizontalBar(height*10,height,distance,color);
-    	Text chunk = TextGlyph.create("XXXXXXXXXX",graph,canvas,new double[] {1,1,-0.5,0.05});
+    	HorizontalBar graph = new HorizontalBar(height*8,height,distance,color);
+    	Text chunk = TextGlyph.create("XXXXXXXX",graph,canvas,1,1,-0.5);
     	return(chunk);
     }
-    public Text shortMoveText(commonCanvas canvas,BreakingAwayMovespec next)
-    {	Text def = shortMoveText(canvas);
+    public Text shortMoveText(commonCanvas canvas,BreakingAwayMovespec next,Font f)
+    {	Text def = shortMoveText(canvas, f);
     	switch(op)
     	{
     	default: break;
     	case MOVE_PICKB:
     		if((next!=null) && (next.op==MOVE_DROPB))
-    		{	return(TextChunk.join(makeGraph(from_row,next.to_row,player,canvas),def));
+    		{	return(TextChunk.join(makeGraph(from_row,next.to_row,player,canvas,f),def));
     		}
     		break;
     	case MOVE_MOVE:
-    		{	return(TextChunk.join(makeGraph(from_row,to_row,player,canvas),def));
+    		{	return(TextChunk.join(makeGraph(from_row,to_row,player,canvas,f),def));
      		}
     	}
     	return(def);

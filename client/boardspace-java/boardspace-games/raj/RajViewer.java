@@ -294,7 +294,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         }
         return(val);
     }
-    public Text censoredMoveText(SequenceElement sp,int index)
+    public Text censoredMoveText(SequenceElement sp,int index,Font f)
      {
     	commonMove last = History.top();
     	String mv = last.getSliderNumString();

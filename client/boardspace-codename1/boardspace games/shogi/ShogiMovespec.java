@@ -17,6 +17,9 @@
 package shogi;
 
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.*;
 
 
@@ -210,7 +213,7 @@ public class ShogiMovespec extends commonMove implements ShogiConstants
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	double scl[] = new double[]{1.5,1.5,0,-0.3};
         switch (op)
         {

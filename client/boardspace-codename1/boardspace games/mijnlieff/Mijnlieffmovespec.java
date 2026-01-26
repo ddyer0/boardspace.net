@@ -23,6 +23,9 @@ import lib.TextGlyph;
 import lib.Tokenizer;
 import mijnlieff.MijnlieffConstants.MijnlieffId;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 public class Mijnlieffmovespec 
 		extends commonMove	// for a multiplayer game, this will be commonMPMove
@@ -199,7 +202,7 @@ public class Mijnlieffmovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

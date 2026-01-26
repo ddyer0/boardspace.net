@@ -16,6 +16,8 @@
  */
 package hive;
 
+import java.awt.Font;
+
 import lib.Drawable;
 import lib.G;
 import lib.MultiGlyph;
@@ -448,10 +450,10 @@ public class Hivemovespec extends commonMove implements HiveConstants
     
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v)
-    {	return(shortMoveText((HiveGameViewer)v));
+    public Text shortMoveText(commonCanvas v,Font f)
+    {	return(shortMoveText((HiveGameViewer)v,f));
     }
-    public Text shortMoveText(HiveGameViewer v)
+    public Text shortMoveText(HiveGameViewer v,Font f)
     {	if(v.useTextNotation)
     		{ String msg = shortMoveString(v.reverse_y());
     		

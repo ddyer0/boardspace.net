@@ -23,6 +23,9 @@ import lib.TextGlyph;
 import lib.Tokenizer;
 import meridians.MeridiansConstants.MeridiansId;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 public class MeridiansMovespec 
 		extends commonMove	// for a multiplayer game, this will be commonMPMove
@@ -183,7 +186,7 @@ public class MeridiansMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

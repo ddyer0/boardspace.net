@@ -39,7 +39,6 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	private Image cachedImage = null; 
 	private Component cachedParent = null;
 	static final int MenuTextSize = 14;
-	static final FontManager.Style MenuTextStyle = FontManager.Style.Plain;
 	private Color fgcolor = Color.black;
 	private Color bgcolor = new Color(0xccccff);
 	public Color getBackground() { return(bgcolor); }

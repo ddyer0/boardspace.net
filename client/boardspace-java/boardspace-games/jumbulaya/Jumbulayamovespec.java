@@ -17,6 +17,8 @@
 package jumbulaya;
 
 
+import java.awt.Font;
+
 import jumbulaya.JumbulayaConstants.JumbulayaId;
 import jumbulaya.JumbulayaConstants.Option;
 import lib.G;
@@ -348,7 +350,7 @@ public class Jumbulayamovespec extends commonMPMove
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.Calculator;
 import lib.ExtendedHashtable;
 public class QEmovespec extends commonMPMove implements QEConstants
@@ -186,8 +189,8 @@ public class QEmovespec extends commonMPMove implements QEConstants
         }
     }
     
-    public Text shortMoveText(commonCanvas v)
-    {	return(shortMoveText((QEViewer)v));
+    public Text shortMoveText(commonCanvas v,Font f)
+    {	return(shortMoveText((QEViewer)v,f));
     }
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
@@ -197,7 +200,7 @@ public class QEmovespec extends commonMPMove implements QEConstants
      * @param v
      * @return a Text object
      */
-    public Text shortMoveText(QEViewer v)
+    public Text shortMoveText(QEViewer v,Font f)
     {	
         switch (op)
         {

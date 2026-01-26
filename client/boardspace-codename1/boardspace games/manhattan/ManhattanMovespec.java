@@ -25,6 +25,9 @@ import manhattan.ManhattanConstants.MColor;
 import manhattan.ManhattanConstants.ManhattanId;
 import manhattan.ManhattanConstants.Type;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 public class ManhattanMovespec 
 		extends commonMPMove
@@ -313,7 +316,7 @@ public class ManhattanMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	//if(gameEvents!=null) { setLineBreak(true); }
         switch (op)
         {

@@ -4,20 +4,18 @@ import java.util.Hashtable;
 
 import com.codename1.ui.Font;
 
-import common.CommonConfig.Default;
 import lib.FontManager;
 import lib.G;
 
-public class SystemFont
+public class SystemFont implements Config
 {
 	public static int defaultFontSize = Default.getInt(Default.fontsize);
-	static int fontcount = 0;
-	static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
-	static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
-	static Hashtable<Font,Integer> fontUid = new Hashtable<Font,Integer>();
-	public static Hashtable<Font,String> fontOrigin = new Hashtable<Font,String>();
-	public static Hashtable<Font,Integer> fontSize = new Hashtable<Font,Integer>();
-	public SystemFont() {};
+	private static int fontcount = 0;
+	private static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
+	private static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
+	private static Hashtable<Font,Integer> fontUid = new Hashtable<Font,Integer>();
+	private static Hashtable<Font,String> fontOrigin = new Hashtable<Font,String>();
+	private static Hashtable<Font,Integer> fontSize = new Hashtable<Font,Integer>();
 	public static int PLAIN = com.codename1.ui.Font.STYLE_PLAIN;
 	public static int ITALIC = com.codename1.ui.Font.STYLE_ITALIC;
 	public static int BOLD = com.codename1.ui.Font.STYLE_BOLD;
@@ -100,7 +98,7 @@ public class SystemFont
 		}	
 		return derived;
 	}
-	static int getUid(Font f)
+	private static int getUid(Font f)
 	{	synchronized (fontUid)
 		{
 		Integer id = fontUid.get(f);
@@ -113,7 +111,7 @@ public class SystemFont
 		return id;
 		}
 	}
-	static int derivedFontCode(Font f, int size, int style)
+	private static int derivedFontCode(Font f, int size, int style)
 	{
 		return getUid(f)+style*0x10000+size*0x100000;
 	}
@@ -127,23 +125,16 @@ public class SystemFont
 		return(getFont(f,size));	// convert to a truetype font
 		//return(new FontManager(0, style ,size));
 	}
-	static int fontFaceCode(String spec)
+	private static int fontFaceCode(String spec)
 	   {
 		   if ("monospaced".equalsIgnoreCase(spec)) { return Font.FACE_MONOSPACE; }
 		   if ("serif".equalsIgnoreCase(spec)) { return Font.FACE_PROPORTIONAL; }
 		   return Font.FACE_SYSTEM;
 	   }
-	
-	public static com.codename1.ui.Font menuFont()
-	{
-		return getFont(getGlobalDefaultFont(),
-				FontManager.MenuTextStyle,
-				FontManager.standardizeFontSize(G.MenuTextSize*G.getDisplayScale()));
-	}
 
 	static public FontMetrics getFontMetrics(ProxyWindow c) 
 	   {
-		   return(getFontMetrics(getFont(c.getStyle())));
+		   return(getFontMetrics(c.getFont()));
 	   }
 
 	static public FontMetrics getFontMetrics(bridge.Component c) 
@@ -155,12 +146,6 @@ public class SystemFont
 	   {
 		   return(f==null ? null : FontMetrics.getFontMetrics(f));
 	   }
-
-
-	public static void setGlobalDefaultFont()
-	{
-		setGlobalDefaultFont(getGlobalDefaultFont());
-	}
 
 	public static double adjustWindowFontSize(int w,int h)
 	{	// on IOS platforms, everything starts scaled to full screen

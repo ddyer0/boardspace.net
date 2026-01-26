@@ -16,6 +16,7 @@
  */
 package online.game;
 
+import java.awt.Font;
 import java.awt.event.ActionListener;
 
 import online.game.sgf.sgf_node;
@@ -688,7 +689,7 @@ public abstract class commonMove
      *  
      * @return the short move string as a colorized Text object
      */
-    public Text shortMoveText(commonCanvas v) { return(TextChunk.create(shortMoveString())); }
+    public Text shortMoveText(commonCanvas v, Font font) { return(TextChunk.create(shortMoveString())); }
  
     /**
      * produce a move string for use in a variation selection menu
@@ -817,9 +818,9 @@ public abstract class commonMove
 	public boolean ignoredInLogs()
 	{	return op==MOVE_START;
 	}
-    public Text censoredMoveText(commonCanvas v,BoardProtocol b)
+    public Text censoredMoveText(commonCanvas v,BoardProtocol b, Font font)
     {	// default treatment
-    	return(shortMoveText(v));
+    	return(shortMoveText(v,font));
     }
     
     // this is the traditional version used for 2p games

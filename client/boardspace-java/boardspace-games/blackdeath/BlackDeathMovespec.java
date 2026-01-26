@@ -20,6 +20,9 @@ import lib.G;
 import lib.Text;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 public class BlackDeathMovespec extends commonMPMove implements BlackDeathConstants
 {	// this is the dictionary of move names
@@ -511,9 +514,9 @@ public class BlackDeathMovespec extends commonMPMove implements BlackDeathConsta
     {	return(gameEvents);
     }
     
-    public Text censoredMoveText(BlackDeathViewer v,BlackDeathBoard b)
+    public Text censoredMoveText(BlackDeathViewer v,BlackDeathBoard b,Font f)
     {	// default treatment
-    	return(shortMoveText(v));
+    	return(shortMoveText(v,f));
     }
     
 }

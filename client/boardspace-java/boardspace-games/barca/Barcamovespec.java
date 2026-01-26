@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
 import lib.ExtendedHashtable;
 public class Barcamovespec extends commonMove
 {	// this is the dictionary of move names
@@ -196,7 +199,7 @@ public class Barcamovespec extends commonMove
      * @param v
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
     	Text str = TextChunk.create(shortMoveString());
     	if(target!=null)

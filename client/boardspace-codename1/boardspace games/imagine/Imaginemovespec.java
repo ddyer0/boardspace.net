@@ -17,6 +17,9 @@
 package imagine;
 
 import lib.Base64;
+
+import com.codename1.ui.Font;
+
 import imagine.ImagineConstants.ImagineId;
 import lib.G;
 import lib.Text;
@@ -254,7 +257,7 @@ public class Imaginemovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	boolean censor = index()>=((ImagineViewer)v).startOfCensorship;
         switch (op)
         {

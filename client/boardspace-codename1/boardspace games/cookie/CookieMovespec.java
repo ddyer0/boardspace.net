@@ -23,6 +23,9 @@ import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 
 public class CookieMovespec extends commonMove implements CookieConstants
@@ -187,7 +190,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
             break;
         }
     }
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {	Text base = TextChunk.create(shortMoveString());
     	if(target!=null)
     	{

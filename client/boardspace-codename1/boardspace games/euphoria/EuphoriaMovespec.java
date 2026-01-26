@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 
 public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
@@ -471,10 +474,10 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
             break;
         }
     }
-    Text censoredMoveText(EuphoriaViewer v,EuphoriaMovespec state[],EuphoriaBoard b)
+    Text censoredMoveText(EuphoriaViewer v,EuphoriaMovespec state[],EuphoriaBoard b,Font f)
     {	
     	// default treatment
-    	return(shortMoveText(v));
+    	return(shortMoveText(v,f));
     }
 
     static double diceScale[]= {1.0,1.4,0.1,-0.5};
@@ -508,7 +511,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
      * don't have to be parseable, they're intended only to help humans understand
      * the game record.
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

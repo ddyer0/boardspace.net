@@ -1,5 +1,7 @@
 package online.game;
 
+import java.awt.Font;
+
 import lib.Text;
 
 public interface SequenceElement
@@ -9,9 +11,9 @@ public interface SequenceElement
 	int player();
 	String[] gameEvents();
 	boolean getLineBreak();
-	Text shortMoveText(commonCanvas canvas);
+	Text shortMoveText(commonCanvas canvas, Font font);
 	int nVariations();
 	String getSliderNumString();
-	Text censoredMoveText(commonCanvas canvas, BoardProtocol bb);
+	Text censoredMoveText(commonCanvas canvas, BoardProtocol bb, Font font);
 	
 }

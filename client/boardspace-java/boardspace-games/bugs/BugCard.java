@@ -573,8 +573,11 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		InternationalStrings s = G.getTranslations();
 		switch(diet)
 		{
+		default: 
+			G.print("Unaccounted case ",diet);
+			break;
 		case UNKNOWN:
-		default: break;
+			break;
 		case NEGAVORE:
 			icon = BugsChip.Negavore;
 			h = s.get(NoEatMessage);
@@ -590,6 +593,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 				h = s.get(PredatorMessage);
 				break;
 		case DETRITIVORE:
+		case SCAVENGER:
 				icon = BugsChip.Scavenger;
 				h = s.get(ScavengerMessage);
 				break;

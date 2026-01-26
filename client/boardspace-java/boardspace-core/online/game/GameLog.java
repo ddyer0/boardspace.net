@@ -305,7 +305,7 @@ public class GameLog implements Opcodes
             {
                 SequenceElement sp = (idx == sz) ? null
                                             : history.elementAt(idx);
-                Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
+                Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx,lineFont); 
                 String smsString = sms.getString();
                 
                 // this is a hack to make the log look just right.  Ignore the first element if it is "start"
@@ -608,7 +608,7 @@ public class GameLog implements Opcodes
           while (idx < sz && !earlyExit)
           {	
        	SequenceElement sp = history.elementAt(idx);
-       	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
+       	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx,normal); 
           	variation |= (sp!=null) && (sp.nVariations()>1);
           	String newnum = (sp==null) ? "" : sp.getSliderNumString();
        	int nextIdx = idx;

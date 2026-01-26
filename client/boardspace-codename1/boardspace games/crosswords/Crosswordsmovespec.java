@@ -22,6 +22,9 @@ import lib.TextChunk;
 import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
 import lib.ExtendedHashtable;
 public class Crosswordsmovespec extends commonMPMove implements CrosswordsConstants
 {	// this is the dictionary of move names
@@ -288,7 +291,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v)
+    public Text shortMoveText(commonCanvas v, Font font)
     {
         switch (op)
         {

@@ -6477,9 +6477,9 @@ private void drawPlayerBoard(Graphics gc,
 		}
 
     }
-    public Text censoredMoveText(SequenceElement m,int idx)
+    public Text censoredMoveText(SequenceElement m,int idx,Font f)
     {
-    	Text str = ((Viticulturemovespec)m).censoredMoveText(this,mainBoard);
+    	Text str = ((Viticulturemovespec)m).censoredMoveText(this,mainBoard,f);
     	str.colorize(null,gameMoveText());
     	return(str);
     }
