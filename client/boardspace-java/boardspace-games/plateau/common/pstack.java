@@ -39,8 +39,8 @@ public class pstack implements PlateauConstants, PlacementProvider
     int stacknumber = -1; // index into the stacks array
     int origin = UNKNOWN_ORIGIN; // what kind of stack this is
     int owner = -1; // the player who owns it
-    int col_a_d; // the row and column for board stacks
-    int row_1_4;
+    char col;
+    int row;
     public int lastPicked = -1;
     public int lastDropped = -1;
     public int lastFlipped = -1;
@@ -53,8 +53,8 @@ public class pstack implements PlateauConstants, PlacementProvider
 
         int n = from.size();
         setSize(n);
-        row_1_4 = from.row_1_4;
-        col_a_d = from.col_a_d;
+        row = from.row;
+        col = from.col;
         owner = from.owner;
         origin = from.origin;
 
@@ -251,7 +251,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         switch (origin)
         {
         case BOARD_ORIGIN:
-            return ("" + ((char) ('A' + col_a_d)) + (b.nrows - row_1_4));
+            return ("" + col + row);
 
         case RACK_ORIGIN:
             return ("R");
@@ -559,8 +559,8 @@ public class pstack implements PlateauConstants, PlacementProvider
     {
         int n = from.size();
         setSize(0);
-        row_1_4 = from.row_1_4;
-        col_a_d = from.col_a_d;
+        row = from.row;
+        col = from.col;
         owner = from.owner;
         origin = from.origin;
         lastPicked = from.lastPicked;

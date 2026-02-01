@@ -202,7 +202,7 @@ public class movespec extends commonMove implements GameConstants
     	}
     	return(TextChunk.create(""));
     }
-     public Text shortMoveText(commonCanvas v, Font font)
+     public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

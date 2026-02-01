@@ -109,7 +109,7 @@ public abstract class SystemImage implements ImageObserver
 	}
 
 public void loadImage(URL name)
-{
+{	G.print("loading image ",name);
 	if(name.getProtocol()==null)
 		{ loadImage(name.urlString);
 		}
@@ -140,8 +140,9 @@ public void loadImage(URL name)
 	String namestr = name.urlString;
 	try {
 	ImageAdapter p=new DummyAdapter(); 
-	EncodedImage created = EncodedImage.createFromImage(placeHolder,true);
-	URLImage im = URLImage.createToStorage(created, tempname, namestr,p);
+	final EncodedImage created[] = new EncodedImage[1];
+	G.runInEdt(new Runnable () { public void run() { created[0] = EncodedImage.createFromImage(placeHolder,true);}});
+	URLImage im = URLImage.createToStorage(created[0], tempname, namestr,p);
 	setImage(im,namestr);
 	}
 	catch (Throwable err)
@@ -185,10 +186,9 @@ public static Image getURLImage(URL name)
 		return(image);
 	}
 
+	private Runnable getsz = new Runnable() { public void run() { width = image.getWidth(); height = image.getHeight(); }};
 	protected void getSystemImageSize()
-	{
-		width = image.getWidth();
-		height = image.getHeight();
+	{	G.runInEdt(getsz);
 	}
 
 	public void createBlankImage(int w,int h)
@@ -418,10 +418,14 @@ public static boolean getImageValid(Component c,Image e)
     * @param h
     * @return an Image
     */
-   static public Image createTransparentImage(int w,int h)
+    static public Image createTransparentImage(int w,int h)
    {	SystemImage.pixelCount += w*h;
-   		com.codename1.ui.Image im = com.codename1.ui.Image.createImage(w,h,0);
-   		return(createImage(im));
+   		Image dim = new Image("created");
+   		G.runInEdt(new Runnable() { public void run() { 
+   					com.codename1.ui.Image im = com.codename1.ui.Image.createImage(w,h,0);
+   					dim.setImage(im);
+   		}});
+   		return dim;
    }
 /**
  * get a rectangle of RGB from a larger rectangle with different span

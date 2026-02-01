@@ -381,8 +381,8 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	Tokenizer tok = new Tokenizer(m.path,",");
     	while(tok.hasMoreElements())
     	{
-    		char col = G.parseCol(tok.nextElement());
-    		int row = G.IntToken(tok.nextElement());
+    		char col = tok.parseCol();
+    		int row = tok.intToken();
     		seed.push(getCell(col,row));
     	}
     	HWord newword = new HWord(seed,m.word);

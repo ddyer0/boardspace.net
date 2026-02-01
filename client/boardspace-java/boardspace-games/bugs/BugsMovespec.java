@@ -182,7 +182,7 @@ public class BugsMovespec
         	source = BugsId.valueOf(msg.nextToken());
         	from_col = msg.charToken();
         	from_row = msg.intToken();
-        	chip = BugsChip.getChip(G.IntToken(msg.nextToken()));
+        	chip = BugsChip.getChip(msg.intToken());
             to_col = msg.charToken();
             to_row = msg.intToken();
             break;

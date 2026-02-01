@@ -13,8 +13,8 @@ public interface NumberMenuHost {
      * this draws the numbers just beyond the point of the arrow.
      * 
      * @param gc
-     * @param source TODO
-     * @param dest
+     * @param source source location
+     * @param dest destination location
      * @param cellSize
      * @param font
      * @param color

@@ -32,16 +32,16 @@ public class SystemFont implements Config
 		if(sz<=0)
 		{	boolean isttf = f.isTTFNativeFont();
 			if(isttf && sz==-1)
-				{ int oldh = f.getHeight();
+				{ int oldh = getHeight(f);
 				  // this papers over a bug where a font with size 0 is stuck in the cache
-				  Font f1 = deriveFont(f,oldh,f.getStyle());
-				  if(f1==f) { f1=deriveFont(f,oldh+1,f.getStyle()); }
+				  Font f1 = deriveFont(f,oldh,ASK_STYLE);
+				  if(f1==f) { f1=deriveFont(f,oldh+1,ASK_STYLE); }
 				  f = f1;
 				}
 			else {
 			String bad = "Unregistered font "+f
 				+ " ttf="+isttf
-				+ " h=" + f.getHeight()
+				+ " h=" + getHeight(f)
 				+ " s=" + f.getSize()
 				+ " px=" + f.getPixelSize()
 				;
@@ -80,9 +80,11 @@ public class SystemFont implements Config
 		fontSize.put(fd,size);
 		return(fd);
 	}
+	// this is a dodge to avoid calling f.getStyle() outside of EDT
+	static final int ASK_STYLE = -999;
 	public static Font getFont(Font f,int size)
 	{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
-		Font fd = deriveFont(f,size,f.getStyle());
+		Font fd = deriveFont(f,size,ASK_STYLE);
 		if(GetPixelSize(fd)==size) { return(fd); }
 		fontSize.put(fd,size);
 		return(fd);
@@ -93,9 +95,12 @@ public class SystemFont implements Config
 		Font derived = derivedFont.get(code);
 		if(derived==null)
 		{
-		derived = f.derive(size,style);
-		derivedFont.put(code,derived);
-		}	
+			G.runInEdt(new Runnable() { public void run() { 
+			Font derived = f.derive(size,style==-1 ? f.getStyle() : style);
+			derivedFont.put(code,derived);
+			}});
+			return derivedFont.get(code);
+		}
 		return derived;
 	}
 	private static int getUid(Font f)
@@ -118,11 +123,14 @@ public class SystemFont implements Config
 	public static Font getFont(String family,FontManager.Style style,int size)
 	{	
 		if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
-		Font f = Font.createSystemFont(fontFaceCode(family),style.s,size);
-		if(GetPixelSize(f)==size) 
-			{ return(f); 
+		int sz = size;
+		Font f[] = new Font[1];
+		G.runInEdt(new Runnable() { public void run() { f[0] =Font.createSystemFont(fontFaceCode(family),style.s,sz); }});
+		
+		if(GetPixelSize(f[0])==size) 
+			{ return(f[0]); 
 			}
-		return(getFont(f,size));	// convert to a truetype font
+		return(getFont(f[0],size));	// convert to a truetype font
 		//return(new FontManager(0, style ,size));
 	}
 	private static int fontFaceCode(String spec)
@@ -162,24 +170,37 @@ public class SystemFont implements Config
 		// try hard to identify the true size of the font.  This is necessitated
 		// by codename1 returning the initial font object whose pixel size is
 		// actually unknown.
-		int originalHeight = f.getHeight();
+		int originalHeight = getHeight(f);
 		int requestedHeight = originalHeight;
-		int style = f.getStyle();
 		  // this papers over a bug where a font with size 0 is stuck in the cache
-		Font f1 = deriveFont(f,requestedHeight,f.getStyle());
-		if(f1==f) { requestedHeight++; f1=deriveFont(f,requestedHeight,style); }
-		while(f1.getHeight()>originalHeight) 
+		Font f1 = deriveFont(f,requestedHeight,ASK_STYLE);
+		if(f1==f) { requestedHeight++; f1=deriveFont(f,requestedHeight,ASK_STYLE); }
+		while(getHeight(f1)>originalHeight) 
 			{ requestedHeight--; 
-			  f1 = deriveFont(f,requestedHeight, style);
+			  f1 = deriveFont(f,requestedHeight, ASK_STYLE);
 			}
-		while(f1.getHeight()<originalHeight)
+		while(getHeight(f1)<originalHeight)
 			{ requestedHeight--;
-			  f1 = deriveFont(f,requestedHeight,style);
+			  f1 = deriveFont(f,requestedHeight,ASK_STYLE);
 			}
 		siz = f1.getPixelSize();
 		fontSize.put(f,requestedHeight);
 		fontOrigin.put(f,"getTTFsize");
 		}
 		return(siz);
+	}
+	static private Hashtable<Font,Integer> fontHeight = new Hashtable<Font,Integer>();
+	
+	public static int getHeight(Font myFont) {
+		if(fontHeight.containsKey(myFont))
+		{
+			return fontHeight.get(myFont);
+		}
+		G.runInEdt(new Runnable() 
+			{ public void run() 
+				{ int h = myFont.getHeight(); 
+				  fontHeight.put(myFont,h); 
+				}});
+		return fontHeight.get(myFont);
 	}
 }

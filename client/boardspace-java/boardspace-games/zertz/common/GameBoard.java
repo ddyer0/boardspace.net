@@ -1360,7 +1360,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     /* return the index into the ball array if this is a captured ball color */
     public int CapturedColorIndex(char piece)
-    {
+    {	
         for (int c = 0, len = CapturedBallChars.length; c < len; c++)
         {
             if (piece == CapturedBallChars[c])
@@ -1953,7 +1953,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     		char contents = (char)((change>>16)&0xff);
     		zCell c = getCell(col,row);
     		SetBoard(c,contents);
-    		decBalls(whoseTurn,CapturedColorIndex(contents));
+    		decBalls(whoseTurn,CapturedColorIndex((char)(contents|('A'^'a'))));
     	}
     	
     }

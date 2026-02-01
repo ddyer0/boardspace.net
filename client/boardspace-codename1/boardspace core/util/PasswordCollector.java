@@ -633,7 +633,8 @@ import udp.PlaytableStack;
 		 {	String val = selected.value;
 		 	lastIndex = selected;
 			if(val!=null) 
-			 	{ G.showDocument(val); 
+			 	{ 
+				G.showDocument(val);
 			 	}
 		 }
 	 }

@@ -210,7 +210,7 @@ public class TextArea extends com.codename1.ui.TextArea
 		{
 		setPositionNeeded = false;
 		Font f = getFont();
-		int fontHeight = f.getHeight();
+		int fontHeight = SystemFont.getHeight(f);
 		int linePos = linesToPosition(getText(),setPositionRequested);
 		setScrollY(fontHeight*linePos-getHeight()/2);
 		//repaint();

@@ -110,7 +110,10 @@ public class Container extends com.codename1.ui.Container
 	{ 
 		G.runInEdt(new Runnable() { public void run() { add(c); }});
 	}
-
+	public void addC(String where,com.codename1.ui.Component c)
+	{
+		G.runInEdt(new Runnable() { public void run () { add(where,c); }});
+	}
 	public void suprem(com.codename1.ui.Component c) 
 	{ 	try { c.setVisible(false); super.removeComponent(c); revalidate(); }
 		catch (Throwable err) 

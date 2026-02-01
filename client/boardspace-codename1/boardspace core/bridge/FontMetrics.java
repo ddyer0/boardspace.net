@@ -126,7 +126,7 @@ public class FontMetrics {
 	}
 	public int getHeight() 
 	{	int sys = getSize();
-		int h = myFont.getHeight(); 
+		int h = SystemFont.getHeight(myFont); 
 		return Math.max(sys,h);
 	}
 	public int getDescent() { return(myFont.getDescent()); }

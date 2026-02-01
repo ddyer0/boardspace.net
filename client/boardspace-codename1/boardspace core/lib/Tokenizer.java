@@ -222,7 +222,18 @@ public class Tokenizer implements Enumeration<String>
      * @return
      */
 	public char parseCol() {
-		return G.parseCol(nextToken());
+		return parseCol(nextToken());
+	}
+	
+	public static char parseCol(String n)
+	{	if(n==null) { return(char)0;}
+		int len = n.length();
+		if(len==1) { return n.charAt(0); }
+		int off = G.IntToken(n.substring(0,len-1));
+		char end = n.charAt(len-1);
+		if(end=='A') { return (char)(end-off); }
+		if(end=='Z') { return (char)(end+off); }
+		throw G.Error("parse error for %s",n);
 	}
 
 }

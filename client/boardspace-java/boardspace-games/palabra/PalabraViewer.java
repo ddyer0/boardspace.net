@@ -747,7 +747,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        // int rk = G.IntToken(his);
+        // long rk = his.longToken();
     	// bb.doInit(token,rk);
         adjustPlayers(np);
         bb.doInit(token,key,np,getActivePlayer().boardIndex);

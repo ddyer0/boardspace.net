@@ -27,16 +27,17 @@ package online.game;
 public enum replayMode
 {	/** live indicates the user is manipulating the UI directly, but the robot is using accelerated move specifiers, 
  	so normally the usert's moves are not animated, but the robot's move are. */
-	Live(true),
+	Live(true,false),
 	/** Replay means a high speed replay or a robot move search is in progress, so no animations or extraneous things should be done */
-	Replay(false), 
+	Replay(false,true), 
 	/** replay, do not animate, but do record move path information */
-	Replay1(false),	
+	Replay1(false,true),	
    	/** Single means a single step replay is in progress, so both the user and robot's moves should be animated */
-	Single(true);
+	Single(true,false);
 	public boolean animate = false;
-	replayMode(boolean v)
-	{
+	public boolean isReplay = false;
+	replayMode(boolean v,boolean r)
+	{	isReplay = r;
 		animate = v;
 	}
 }

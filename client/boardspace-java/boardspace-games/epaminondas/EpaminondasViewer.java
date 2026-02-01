@@ -966,7 +966,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        // int rk = G.IntToken(his);
+        // long rk = his.longToken();
     	// bb.doInit(token,rk);
         bb.doInit(token,rv,np,rev);
         adjustPlayers(np);

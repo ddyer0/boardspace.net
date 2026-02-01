@@ -120,12 +120,14 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	public void moveToFront(TopFrameProtocol cc)
 	{	if(cc!=getTopWindow())
 		{
-		suprem((Component)cc);
-		add((Component)cc);
-		adjustTabStyles();
-		windowActivated(cc);
-		repaint();
-		}
+		G.runInEdt(new Runnable() { public void run() {
+										suprem((Component)cc);
+										add((Component)cc);
+										adjustTabStyles();
+										windowActivated(cc);
+										repaint();
+								}});
+	}
 	}
 	public void masterFrameShow()
 	{	
@@ -407,7 +409,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		tabFrames.put(f,b);
 		b.addActionListener(this);
 		adjustTabStyles();
-		masterForm.getTabs().revalidate();		
+		Container finaltab = masterForm.getTabs();
+		G.runInEdt(new Runnable() { public void run() { finaltab.revalidate(); }});
 	}
 	// 
 	// when we click on one of the tab buttons, select the corresponding frame

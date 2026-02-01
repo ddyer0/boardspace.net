@@ -295,7 +295,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     {
         pstack ps = new pstack(this, origin, idx, owner);
         stacks[idx] = ps;
-
+        
         return (ps);
     }
 
@@ -1929,7 +1929,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             }
             break;
 		case PLAY_STATE:
-			if(replay==replayMode.Replay)
+			if(replay.isReplay)
 			{	// allow damaged games to continue
 				SetNextPlayer();
 				break;
@@ -2288,7 +2288,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
             case EXCHANGE_DONE_STATE:
             	// some damaged games add pieces from the board to the exchange area
-            	if(replay==replayMode.Replay)
+            	if(replay.isReplay)
             	{
             		break;
             	}
@@ -2403,6 +2403,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 int cy = ymin + (y * ystep * 2);
                 pstack contents = GetBoardXY(x, y);
                 drawPstack(gc, contents, cx, cy, xstep * 2, ystep * 2, highlight);
+                GC.Text(gc,true,cx,cy,xstep,ystep,Color.black,null,""+contents.stacknumber);
                 numberMenu.saveSequenceNumber(contents,cx+xstep,cy+ystep	);
             }
         }

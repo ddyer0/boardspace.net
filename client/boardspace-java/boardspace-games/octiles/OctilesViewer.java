@@ -732,7 +732,7 @@ private void playSounds(commonMove m)
 	   	//
 		// in games which have a randomized start, this is the point where
 		// the randomization is inserted
-	    // int rk = G.IntToken(his);
+	    // long rk = his.longToken();
 		// bb.doInit(token,rk);
          b.doInit(token,key,pla);
          adjustPlayers(pla);

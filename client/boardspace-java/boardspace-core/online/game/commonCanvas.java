@@ -6487,6 +6487,7 @@ public abstract class commonCanvas extends exCanvas
     	    	//boolean gameOver = b.GameOver();
 				phase = "replay";
 				doWayBack(replayMode.Replay);
+				phase = "replay forward";
 				doScrollTo(FORWARD_TO_END);
 				long endingDigest = b.Digest();
 				G.Assert(startingDigest==endingDigest,"digest after replay is different");
@@ -6994,7 +6995,7 @@ public abstract class commonCanvas extends exCanvas
      * route for game reviewers get games.  
      */
     public void ReplayGame(sgf_game ga)
-        {	//G.print("Replay "+ga);
+        {	G.print("Replay "+ga);
             boolean sound = myFrame.doSound();
             Random.setNextIntCompatibility(false);
             mutated_game_record = false;

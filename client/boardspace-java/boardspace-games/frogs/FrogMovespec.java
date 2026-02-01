@@ -167,13 +167,13 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
             break;
 
         case MOVE_DROP:
-            source = Frog_Hands[G.IntToken(msg.nextToken())];
+            source = Frog_Hands[msg.intToken()];
             to_col = '@';
             to_row = msg.intToken();
             break;
             
         case MOVE_PICK:
-            source = Frog_Hands[G.IntToken(msg.nextToken())];
+            source = Frog_Hands[msg.intToken()];
             from_col = '@';
             from_row = msg.intToken();
             break;

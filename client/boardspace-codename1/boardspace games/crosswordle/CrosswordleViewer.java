@@ -1261,7 +1261,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        // int rk = G.IntToken(his);
+        // long rk = his.longToken();
     	// bb.doInit(token,rk);
     	statStr = null;
         bb.doInit(token,rv,np,rev);

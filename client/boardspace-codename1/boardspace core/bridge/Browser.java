@@ -44,7 +44,7 @@ class BC extends BrowserComponent implements ActionListener,com.codename1.ui.eve
 	public void paint(com.codename1.ui.Graphics g)
 	{	
 		try {
-			superpaint(g);
+			super.paint(g);
 			//g.setColor(0xff);
 			//g.drawLine(0,0,getWidth(),getHeight());
 		}
@@ -53,29 +53,30 @@ class BC extends BrowserComponent implements ActionListener,com.codename1.ui.eve
 			G.print("Error in browser paint ",g,"\n",e.getStackTrace());
 		}
 	}
+    public void waitForReady()
+    {
+    	//G.print("Waitfor ready ",G.isEdt());
+    }
 
-	public void superpaint(com.codename1.ui.Graphics g)
-	{
-		super.paint(g);
-	}
 	public void onError(String msg,int code)
 	{
 		G.print("error ",code,"\n",msg);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
-		G.print("Action ",evt.getEventType()," ",evt);
+		//G.print("Action ",evt.getEventType()," ",evt);
 		
 	}
 	public void scrollChanged(int scrollX, int scrollY, int oldscrollX, int oldscrollY) {
-		G.print("Scrollchanged ",scrollX," ",scrollY," from ",oldscrollX," ",oldscrollY);
+		//G.print("Scrollchanged ",scrollX," ",scrollY," from ",oldscrollX," ",oldscrollY);
 	}
 }
 @SuppressWarnings("rawtypes")
-public class Browser extends XFrame implements BrowserNavigationCallback,ActionListener
+public class Browser extends XFrame implements BrowserNavigationCallback,ActionListener,Runnable
 {
 	static final String OK = "Ok";
 	static final String BACK = "Back";
+	boolean deferSetUrl = false;
 	boolean FIX_HTTP = false;	// this depends on the build hint android.xapplication_attr=android:usesCleartextTraffic="true"
 	BrowserComponent b = new BC();
 	JPanel top = new JPanel();
@@ -111,11 +112,9 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		b.setURL(eventualUrl);
 		b.setPinchToZoomEnabled(true);
 		b.addBrowserNavigationCallback(this);
-		b.waitForReady();
 		b.setVisible(true);
-		b.repaint();
 		setVisible(true);
-		repaint();
+		new Thread(this).start();
 	}
 	public static String GoogleRewrite = "https://docs.google.com/gview?embedded=true&url=";
 
@@ -135,37 +134,66 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		}
 		return initialUrl;			
 	}
+	private String newUrlText = null;
+	private String newUrlSet = null;
 	
 	public boolean shouldNavigate(String urlS) {
 		try {
-		G.print("should navigate to "+urlS);
 		String rr = reWrite(urlS);
-		url.setText(urlS);
-		if(rr == urlS) { return true; }
-		G.print("switch "+urlS+" to "+rr);
-		b.setURL(rr);
-		return true;
+		//
+		// note here - to avoid EDT violation, setText has to be run in edt.  But in this context
+		// we are already in edt and waiting for completion, so trying to switch to edt will cause
+		// a deadlock.  We paper over this by deferring the setText to the per-frame process.
+		//
+		newUrlText = urlS;
+		if(rr == urlS) { 
+			return true; 
+			}
+		if(deferSetUrl) 
+			{ 
+			newUrlSet = urlS;
+			G.wake(this);
+			return false; 
+			}
+			else
+			{
+			b.setURL(rr);
+			return true;
+			}
 		}
 		catch(Throwable err)
 		{
 			Http.postError(this,"error in browser action",err);
 		}
+		G.wake(this);
 		return false;
 	}
+	private ActionEvent event = null;
+	
 	public void actionPerformed(ActionEvent evt) {
-		
+		event = evt;
+		G.wake(this);
+		//G.print("event "+evt);
+		//processAction(evt);
+	}
+	private void processAction(ActionEvent evt)
+	{
 		// source will be a "Command" object which prints as the original string we fed in.
 		try {
 		Object source = evt.getSource();
 		if(OK.equals(""+source)||(source==url))
-			{
-				b.setURL(reWrite(url.getText()));
+			{	String target = url.getText();
+				//G.print("Rewrite use ",target);
+				b.setURL(reWrite(target));
 				b.repaint();
 			}
 			else if(BACK.equals(""+source))
 			{
 				b.back();
-				url.setText(b.getURL());
+				String ne = b.getURL();
+				//G.print("Back to ",ne);
+				url.setText(ne);
+				
 			}
 			else 
 				{ G.print("unexpected browser action: "+source+" "+evt);
@@ -175,6 +203,31 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		{	Http.postError(this,"error in browser action",err);
 		}
 		}
-
-
+	private boolean exit = false;
+	public void killFrame()
+	{
+		exit = true;
+	}
+	public void run()
+	{
+		while(!exit)
+		{	ActionEvent e = event;
+			event = null;
+			if(e!=null) { processAction(e); }
+			
+			// change the url
+			String set = newUrlSet;
+			newUrlSet = null;
+			if(set!=null) { b.setURL(set); }
+			
+			// change the text line
+			String txt = newUrlText;
+			newUrlText = null;
+			if(txt!=null) { url.setText(txt); }
+			repaint();
+			G.timedWait(this,1000);
+		}
+		G.print("exit browser");
+	}
+  
 }

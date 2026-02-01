@@ -795,7 +795,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{
          PerformAndTransmit(PASS,true,replay); 
     	}
-       	if(m.op==MOVE_RESET && replay==replayMode.Replay) 
+       	if(m.op==MOVE_RESET && (replay.isReplay))
        		{ // this shouldn't occur, but there are a few damaged games
        		  return(true); 
        		} 

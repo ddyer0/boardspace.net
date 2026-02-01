@@ -547,7 +547,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
         {
         case Gameover:
         	// needed for a few damaged games
-        	if(replay==replayMode.Replay) { break; }
+        	if(replay.isReplay) { break; }
 			//$FALL-THROUGH$
 		default:
         	throw G.Error("Not expecting drop in state %s", board_state);
@@ -589,7 +589,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
         {
         case Gameover:
         	// paper over damaged games
-        	if(replay==replayMode.Replay) { break;}
+        	if(replay.isReplay) { break;}
 			//$FALL-THROUGH$
 		default:
         	throw G.Error("Not expecting pick in state %s", board_state);

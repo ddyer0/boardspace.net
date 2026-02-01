@@ -88,12 +88,10 @@ public class JTextField extends JTextComponent
 	// shai advises settext in paint is a bad idea because it triggers reconfiguration
 	//
 	private void setTextEdt(String g)
-	{
-		super.setText(g);
+	{		super.setText(g);
 	}
 	public void setText(String s)
-	{
-		G.runInEdt(new Runnable() { public void run(){ setTextEdt(s);  }});	
+	{	G.runInEdt(new Runnable() { public void run(){ setTextEdt(s);  }});	
 	}
 	public FontMetrics getFontMetrics(Font f) {
 		return FontManager.getFontMetrics(f);

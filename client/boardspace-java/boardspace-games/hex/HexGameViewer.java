@@ -1086,38 +1086,6 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     // this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Hex_SGF); }	// this is the official SGF number assigned to the game
 
-    // the format is just what is produced by FormHistoryString
-    //
-    // this is completely standardized
-    //public void performHistoryTokens(Tokenizer his)
-    //{	String command = "";
-    //    // now the rest
-    //    while (his.hasMoreTokens())
-    //    {
-    //        String token = his.nextToken();
-    //        if (",".equals(token) || ".end.".equals(token))
-    //        {
-    //            if (!"".equals(command))
-    //            {
-    //                PerformAndTransmit(command, false,false);
-    //                command = "";
-    //            }
-    //        }
-    //       else
-    //        {
-    //            command += (" " + token);
-    //        }
-    //    }	
-    //} 
-    //public void performPlayerInitialization(Tokenizer his)
-    //{	int fp = G.IntToken(his);
-    //	BoardProtocol b = getBoard();
-    //    if (fp < 0)   {  fp = 0;  }
-    //    b.setWhoseTurn(fp);
-    //    players[fp].ordinal = 0;
-    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
-    //	
-    //}
    
     /**
      * parse and perform the initialization sequence for the game, which
@@ -1132,7 +1100,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        // int rk = G.IntToken(his);
+        // long rk = his.longToken();
     	// bb.doInit(token,rk);
         bb.doInit(token,rv,np,rev);
         adjustPlayers(np);

@@ -832,42 +832,7 @@ private void playSounds(commonMove m)
     	return(""+b.gametype+" "+b.randomKey+" "+b.nPlayers()+" "+b.revision); 
    }
     public String sgfGameType() { return(Chess_SGF); }
-
-    // the format is just what is produced by FormHistoryString
-    //
-    // this is completely standardized
-    //public void performHistoryTokens(Tokenizer his)
-    //{	String command = "";
-    //    // now the rest
-    //    while (his.hasMoreTokens())
-    //    {
-    //        String token = his.nextToken();
-    //        if (",".equals(token) || ".end.".equals(token))
-    //        {
-    //            if (!"".equals(command))
-    //            {
-    //                PerformAndTransmit(command, false,false);
-    //                command = "";
-    //            }
-    //        }
-    //       else
-    //        {
-    //            command += (" " + token);
-    //        }
-    //    }	
-    //}  
-    //public void performPlayerInitialization(Tokenizer his)
-    //{	int fp = G.IntToken(his);
-    //	BoardProtocol b = getBoard();
-    //    if (fp < 0)   {  fp = 0;  }
-    //    b.setWhoseTurn(fp);
-    //    players[fp].ordinal = 0;
-    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
-    //	
-    //}
-
-    
-    
+  
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}

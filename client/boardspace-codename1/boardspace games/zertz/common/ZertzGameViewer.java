@@ -771,7 +771,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	//
     	// in games which have a randomized start, this is the point where
     	// the randomization is inserted
-        // int rk = G.IntToken(his);
+        // long rk = his.longToken();
     	// bb.doInit(token,rk);
         b.doInit(token,rv,np,rev);
 

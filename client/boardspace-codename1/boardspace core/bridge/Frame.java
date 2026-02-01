@@ -78,14 +78,20 @@ public class Frame extends Window
 	{	c.setVisible(false);
 		glassPane.removeComponent(c);
 	}
-	public void setContentPane(Container newContentPane) 
-	{	super.removeComponent(glassPane);
-		super.addSelf(newContentPane);
-		glassPane = newContentPane;	
-	}
 	public Container getContentPane()
 	{
 		return(glassPane);
+	}
+	private void remGlass(Component newContentPane)
+	{
+		super.removeComponent(glassPane);
+		super.addSelf(newContentPane);
+	}
+	public void setContentPane(Container newContentPane)
+	{	
+		G.runInEdt(new Runnable() { public void run() { remGlass(newContentPane); }});
+		glassPane = newContentPane;	
+
 	}
 	public void dispose() 
 	{	super.dispose();
@@ -204,7 +210,7 @@ public class Frame extends Window
 	}
 
 	public void addC(String where, Component p) {
-		glassPane.add(where,p);
+		glassPane.addC(where,p);
 	}
 	public com.codename1.ui.Container add(String where,Component c)
 	{	G.Error("not expected");

@@ -577,6 +577,43 @@ public static void emailGame(String to,String subject,String body)
 					+"&body="+Http.escape(body);
 	G.showDocument(msg);
 }
+
+/**
+ * encode strings with \ unnnn for unicode characters
+ * @param str
+ * @return
+ */
+  static String utfEncode(String str)
+  {		int nchars = str.length();
+  		StringBuffer out = new StringBuffer();
+  		int idx = 0;
+  		while(idx < nchars)
+	  		{
+	  		char ch = str.charAt(idx++);
+	  		if((ch!='\\') && (ch<128)) { out.append(ch); }
+	  		else { 
+	  			//have a look at this chart (expand "latin 1 suppliment" and 
+	  			//"latin suppliment a"
+	  			//http://inamidst.com/stuff/unidata/
+	  			//the character you're using is this one:
+	  			//http://www.fileformat.info/info/unicode/char/009E/index.htm
+	  			//but I think you intended this one:
+	  			//http://www.fileformat.info/info/unicode/char/017E/index.htm
+	  			//they look much the same.  How does inputting these
+	  			//characters work for you?  I have no idea how to type them.
+
+	  			// ad hoc adjustment, unichode \u009e is used instead of \u017e
+	  			// this resulted in blobs in czech
+	  			   if(ch==0x009e) { ch=(char)(0x017e); }
+	  			   String chstring = Integer.toHexString(ch);
+		  	  	   out.append( "\\u0000".substring(0,6-chstring.length()));	// leading zeros 
+		  	  	   out.append(chstring);
+	  		}
+
+		 }
+		 return(out.toString());
+  }  
+
 /*  */
 /**
  * escape an arbitrary string for transmission as form data. This should be used on the data
@@ -586,7 +623,7 @@ public static void emailGame(String to,String subject,String body)
  */
 static public String escape(String in)
 {
-    String d = G.utfEncode(in);		// make sure everything is standard ascii
+    String d = utfEncode(in);		// make sure everything is standard ascii
     int idx = 0;
     int len = d.length();
     ByteArrayOutputStream b = new Utf8OutputStream();

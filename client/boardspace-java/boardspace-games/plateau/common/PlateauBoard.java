@@ -63,6 +63,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     {
     	return board[col-'A'][row-1];
     }
+    
     private int anonymized_for = -1;
     double lineStrokeWidth = 1;
     // stacks are sized NPIECETYPES so they can be sorted with each type of
@@ -322,18 +323,21 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         // of the saved games in the world.
         //
         allCells = null;
-        for (int col = 0; col < ncols; col++)
+        
+        allCells = null;
+        for (int col = ncols-1; col >=0 ; col--)
         {
             for (int row = 0; row < nrows; row++)
             {
                 pstack ps = newpstack(BOARD_ORIGIN, stacknumber++, -1);
-                ps.col_a_d = row;
-                ps.row_1_4 = col;
-                board[row][col] = ps;
+                ps.col = (char)('A'+row);
+                ps.row = col+1;
+                board[row][ncols-col-1] = ps;
                 ps.next = allCells;
                 allCells = ps;
             }
         }
+ 
         
         Random pr = new Random(1035356);
         for (int idx = FIRST_PLAYER_INDEX; idx <= SECOND_PLAYER_INDEX; idx++)
@@ -1107,9 +1111,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     //
     public boolean Execute(commonMove mm,replayMode replay)
     {	plateaumove m = (plateaumove)mm;
-       //  System.out.println("E "+m);
-    	m.undostate = getState();		// needed by edithistory
-
+        System.out.println("E "+m);
+        m.startingState = board_state;
         switch (m.op)
         {
         case MOVE_FLIP:
@@ -1148,8 +1151,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
         case MOVE_DROP:
         {
-            pstack which = (m.drop() == -1) ? movingStackOrigin[0]
-                                            : stacks[m.drop()];
+            pstack which = (m.destStack() == -1) ? movingStackOrigin[0]
+                                            : stacks[m.destStack()];
             handleDrop(which, m.level);
             pstack from = movingStackOrigin[0];
             if((from.origin==RACK_ORIGIN) && (which.origin==BOARD_ORIGIN))
@@ -1181,8 +1184,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 handleFlip(top);
             }
 
-            piece pickeditem = pickedstack.elementAt(pickedstack.size() -
-                    m.level);
+            piece pickeditem = pickedstack.elementAt(pickedstack.size() - m.level -1);
             m.pick = pickeditem.piecenumber; // remember as in the MOVE_PICK
  
             pstack picked = handlePick(pickeditem,replay); // this splits the stack into two
@@ -1198,9 +1200,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             {
                 top.flip();
             }
-
-            G.Assert(m.realColors.equals(picked.allColors()),
-                "Colors should match");
+            String ac = picked.allColors();
+            G.Assert(m.realColors.equals(ac), "Colors should match");
 
             if (m.flip)
             {
@@ -1255,112 +1256,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         return (true);
     }
 
-    // express execute is used by the robot.  Two differences
-    // from execute are that PICK moves don't occur, so the state
-    // machine has to be tweaked appropriately, and also
-    // must save information to be used by ExpressUnexecute
-    public void ExpressExecute(plateaumove m)
-    {
-    	PlateauState state = getState();
-    	if (m.player < 0)
-        {
-            m.player = whoseTurn;
-        }
-
-        switch (m.op)
-        {
-        case MOVE_ONBOARD:
-
-            switch (state)
-            {
-            case PLAY_STATE:
-                setState(PlateauState.PLAY_DROP_STATE);
-                Execute(m,replayMode.Replay);
-                setNextStateAfterDone(replayMode.Replay);
-
-                break;
-
-            case ONBOARD2_STATE:
-                setState(PlateauState.ONBOARD2_DROP_STATE);
-                Execute(m,replayMode.Replay);
-                setNextStateAfterDone(replayMode.Replay);
-
-                break;
-
-            default:
-            	throw G.Error("Move not handled: %s",m);
-            }
-
-            break;
-
-        case MOVE_FROMTO:
-        case MOVE_FLIP:
-        case MOVE_RESIGN:
-            Execute(m,replayMode.Replay);
-            // and fall into done
-			//$FALL-THROUGH$
-		case MOVE_DONE:
-            setNextStateAfterDone(replayMode.Replay);
-
-            break;
-
-        default:
-        	throw G.Error("Move not handled: %s", m);
-        }
-        m.state_after_execute = board_state;
-        
-   }
-
-    public void ExpressUnExecute(plateaumove m)
-    {	//G.print("Un "+m);
-    	whoseTurn = m.player;
-    	setState(m.undostate);
-        switch (m.op)
-        {
-        case MOVE_ONBOARD:
-
-            // put them back in the rack
-            pstack p = pickStack(m.pieces, m.realColors);
-            rack[whoseTurn][0].dropStack(p);
-            moveNumber--;
-            moveStep=-1;
-
-            break;
-
-        case MOVE_RESIGN:
-
-            break;
-
-        case MOVE_DONE:
-           moveNumber--;
-
-            break;
-
-        case MOVE_FROMTO:
-        {	
-            piece pickedpiece = pieces[m.pick]; // the target piece we picked
-            pstack picked = handlePick(pickedpiece,replayMode.Replay); // picked is the transit stack
-            pstack drop = stacks[m.drop()]; //this remembers the origin stack
-
-            if (m.flip)
-            {
-                picked.topPiece().flip();
-            }
-
-            G.Assert(m.realColors.equals(picked.allColors()),
-                "Colors should match");
-            handleDrop(drop, 99); // drop on top
-            moveNumber--;
-            break;
-        }
-
-        default:
-        	throw G.Error("Unexecute move not handled %s", m);
-        }
-
-        setState(m.undostate);
-
-    }
 
     public void test_eval()
     {
@@ -1370,11 +1265,14 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     {
         return ((moveStep >= 0) ? movingStackOrigin[0] : null);
     }
-
+    public boolean isEdgeCell(pstack c)
+    {
+    	return isEdgeSquare(c.col-'A',c.row-1);
+    }
     public boolean isEdgeSquare(int x, int y)
     {
-        return ((x == 0) || (x == (ncols - 1)) || (y == 0) ||
-        (y == (nrows - 1)));
+        return ((x == 0) || (x == (ncols - 1)) 
+        		|| ((y == 0) || (y == (nrows - 1))));
     }
 
     public boolean LegalDestination(pstack dest)
@@ -1383,8 +1281,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         pstack from = copyOriginalStack[0];
         int height = from.takeOffHeight();
         Face color = from.realTopColor();
-        int idx = dest.col_a_d - from.col_a_d;
-        int idy = dest.row_1_4 - from.row_1_4;
+        int idx = dest.col - from.col;
+        int idy = dest.row - from.row;
         int adx = Math.abs(idx);
         int ady = Math.abs(idy);
 
@@ -1393,13 +1291,13 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
           // previous step.
 
             pstack pfrom = copyOriginalStack[moveStep];
-            int pdx = pfrom.col_a_d - from.col_a_d;
-            int pdy = pfrom.row_1_4 - from.row_1_4;
+            int pdx = pfrom.col - from.col;
+            int pdy = pfrom.row - from.row;
 
             if (color == Face.Orange)
             {
-                int odx = Math.abs(dest.col_a_d - pfrom.col_a_d);
-                int ody = Math.abs(dest.row_1_4 - pfrom.row_1_4);
+                int odx = Math.abs(dest.col - pfrom.col);
+                int ody = Math.abs(dest.row - pfrom.row);
 
                 if ((odx > 1) || (ody > 1))
                 {
@@ -1621,7 +1519,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 return ((p.topOwner() == whoseTurn) && chip.unobstructed()); //pick only unobstructed pieces
 
             case ONBOARD2_DROP_STATE: // drop an initial stack on the nonempty board
-                return ((p.size() == 0) && isEdgeSquare(p.row_1_4, p.col_a_d));
+                return ((p.size() == 0) && isEdgeCell(p));
 
             case EXCHANGE_STATE:
             case EXCHANGE_DONE_STATE:
@@ -1928,7 +1826,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             }
             break;
 		case PLAY_STATE:
-			if(replay==replayMode.Replay)
+			if(replay.isReplay)
 			{	// allow damaged games to continue
 				SetNextPlayer();
 				break;
@@ -2023,8 +1921,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                         else if (new_color == Face.Orange)
                         {
                             pstack original = movingStackOrigin[0];
-                            int dx = Math.abs(dest.col_a_d - original.col_a_d);
-                            int dy = Math.abs(dest.row_1_4 - original.row_1_4);
+                            int dx = Math.abs(dest.col - original.col);
+                            int dy = Math.abs(dest.row - original.row);
 
                             if ((dx + dy) != 3)
                             {
@@ -2287,7 +2185,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
             case EXCHANGE_DONE_STATE:
             	// some damaged games add pieces from the board to the exchange area
-            	if(replay==replayMode.Replay)
+            	if(replay.isReplay)
             	{
             		break;
             	}
@@ -2403,6 +2301,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                 pstack contents = GetBoardXY(x, y);
                 drawPstack(gc, contents, cx, cy, xstep * 2, ystep * 2, highlight);
                 numberMenu.saveSequenceNumber(contents,cx+xstep,cy+ystep	);
+                GC.Text(gc,true,cx,cy,xstep,ystep,Color.black,null,""+contents.stacknumber);
             }
         }
     }
@@ -2414,28 +2313,12 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	boolean robotBoard = false;
 	public void RobotExecute(commonMove m) {
 	       robotState.push(board_state); //record the starting state. The most reliable
-	        Execute(m,replayMode.Replay); 		
+	       Execute(m,replayMode.Replay); 		
 		
 	}
 	public void UnExecute(commonMove m0) {
-		plateaumove m = (plateaumove)m0;
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	PlateauState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }		
+		
+    	G.Error("Not expected");
 	}
 	public void initRobotValues(PlateauPlay plateauPlay) 
 	{
@@ -2541,8 +2424,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
     private boolean addOrangeFinalMoves(CommonMoveStack all,int who,int movingHeight,pstack mid,int dx,int dy,int opponentHeight)
     {
-    	char x = (char)(mid.col_a_d+dx);
-    	int y = mid.row_1_4+dy;
+    	char x = (char)(mid.col+dx);
+    	int y = mid.row+dy;
     	if(validBoardPos(x,y))
     	{	if(all!=null)
     		{
@@ -2557,8 +2440,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
     private boolean addOrangeIntermediateMoves(CommonMoveStack all,int who,pstack from,int movingHeight,int dx,int dy,int opponentHeight)
     {	boolean some = false;
-    	char x = (char)(from.col_a_d+dx);
-    	int y = from.row_1_4+dy;
+    	char x = (char)(from.col+dx);
+    	int y = from.row+dy;
     	if(validBoardPos(x,y))
     	{	boolean valid = false;
     		pstack midCell = getCell(x,y);
@@ -2611,8 +2494,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     private boolean addNormalMoves(CommonMoveStack all,int who,pstack from,int maxdistance,int dx,int dy,piece top,int movingHeight,int opponentHeight)
     {	
     	int fromHeight = from.size();
-    	int ox = from.col_a_d;
-    	int oy = from.row_1_4;
+    	char ox = from.col;
+    	int oy = from.row;
      	boolean some = false;
 		{
 			// move a stack of "movingHeight" chipStack, maxDistance or less
@@ -2623,7 +2506,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		char x = (char)(ox + distance*dx);
     		int y = oy + distance*dy;
     		if(validBoardPos(x,y))
-    		{	pstack target = getCell(x,y);
+    		{	pstack target = GetBoardXY(x,y);
     			int targetHeight = target.size();
     			
     			if(	(targetHeight==0) 				// destination is empty
@@ -2646,19 +2529,13 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		}
 		return(some);
     }
-    boolean isEdgeCell(pstack c)
-    {
-    	return c.col_a_d == 'A' 
-    			|| c.col_a_d == (char)('A'+ncols-1)
-    			|| c.row_1_4 == 1
-    			|| c.row_1_4 == nrows;
-    }
+
     private void addInitialDropMoves(CommonMoveStack all,int who)
     {	boolean first = (who == FIRST_PLAYER_INDEX);
 
 		for(pstack cell = allCells; cell!=null; cell=cell.next)
 			{
-			if((cell.size()==0) && isEdgeCell(cell) && (first ? cell.row_1_4==1 : true))
+			if((cell.size()==0) && isEdgeCell(cell) && (first ? cell.row==1 : true))
 				{
 				pstack st = movingStack[moveStep];
 				String str = "Onboard "+cell.locus()+" 100 "+st.allColors()+" "+st.pieces();
@@ -2694,8 +2571,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	return board[x][y];
     }
     pstack exitTo(pstack c,int direction)
-    {	int x = c.col_a_d;
-    	int y = c.row_1_4;
+    {	int x = c.col-'A';
+    	int y = c.row;
     	switch((direction+CELL_FULL_TURN)%CELL_FULL_TURN)
     	{
     	default: throw G.Error("Not expected");
@@ -2787,8 +2664,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	pstack step = copyOriginalStack[moveStep];
     	pstack moving = movingStack[moveStep];
     	piece top = moving.topElement();
-    	int xsofar =step.col_a_d-orig.col_a_d;
-    	int ysofar = step.row_1_4-orig.row_1_4;
+    	int xsofar =step.col-orig.col;
+    	int ysofar = step.row-orig.row;
     	int dissofar = Math.max(Math.abs(xsofar),Math.abs(ysofar));
     	int dx = Integer.signum(xsofar);
     	int dy = Integer.signum(ysofar);

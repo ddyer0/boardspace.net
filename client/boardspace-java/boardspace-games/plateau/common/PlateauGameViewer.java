@@ -585,7 +585,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                         break;
                      case MOVE_DROP:
                     	// move we're considering is a drop
-                        if (currentMove.drop() == -1)
+                        if (currentMove.destStack() == -1)
                         {	// drop off board, which is a reset
                             switch (lastmove.op)
                             {
@@ -595,7 +595,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
  								//$FALL-THROUGH$
 							case MOVE_PICK:
                             {
-                                pstack ps = b.GetStack(lastmove.drop());
+                                pstack ps = b.GetStack(lastmove.destStack());
 
                                 if ((ps.origin == BOARD_ORIGIN) ||
                                         (retm != null))
@@ -633,7 +633,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                         else if(lastmove.op==MOVE_PICK)
                         { // pick followed by drop on the same spot is a noop, except if 
                           // it's a "stomp capture".  The board knows.
-                         if( (currentMove.drop()==lastmove.drop())
+                         if( (currentMove.destStack()==lastmove.destStack())
                         	  && (currentMove.level>=99)		// and drop on top
                               && ((currentMove.state_after_execute==PlateauState.PLAY_STATE)
                             	  || (currentMove.state_after_execute==PlateauState.FLIPPED_STATE)
@@ -641,7 +641,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                             	  //|| (pm.state_after_execute==PlateauState.PLAY_UNDONE_STATE)
                             	  || (currentMove.state_after_execute==PlateauState.CAPTIVE_SHUFFLE_STATE)
                             	  || ((currentMove.state_after_execute==PlateauState.PLAY_CAPTURE_STATE)
-                            			  &&(lastmove.undostate==PlateauState.PLAY_CAPTURE_STATE))
+                            			  &&(lastmove.startingState==PlateauState.PLAY_CAPTURE_STATE))
                             	  || (currentMove.state_after_execute== PlateauState.PLAY_DONE_STATE)))
                         	{	
                         	 	popHistoryElement();
@@ -652,19 +652,19 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                          {	
                          plateaumove m2 = (plateaumove)History.elementAt(idx-1);
                          plateaumove m3 = (plateaumove)History.elementAt(idx-2);
-                         pstack ps = b.GetStack(lastmove.drop());
+                         pstack ps = b.GetStack(lastmove.destStack());
                          if((m3.op==MOVE_PICK)
                          		&& (m2.op==MOVE_DROP)
                          		&& (lastmove.pick==m3.pick)
                          		&& (ps.origin==BOARD_ORIGIN)
                          		)
                          	{
-                        	if( m3.drop()==currentMove.drop())
+                        	if( m3.destStack()==currentMove.destStack())
                         		{
                         		// this corresponds to the normal "stutter" of pick/drop/pick/drop back
                         		retm = null;
                         		popHistoryElement();
-                        		if(m2.drop()==m3.drop()) {}	// pick/drop on the same cell, a capture attempt?
+                        		if(m2.destStack()==m3.destStack()) {}	// pick/drop on the same cell, a capture attempt?
                         		else {
                         		popHistoryElement();	// pick/drop to different cells
                         		popHistoryElement();
@@ -698,7 +698,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                             retm = null;
                             break;
                         case MOVE_DROP:
-                        int drop = lastmove.drop();
+                        int drop = lastmove.destStack();
                         if(drop>=0)
                         {
                         pstack ps = b.GetStack(drop); // movingStack
@@ -709,7 +709,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                        			{ lc = 100; }
                         // beware of sequences where complicated indecision occur during trading.
                         if((ps.origin==BOARD_ORIGIN) 
-                        		&& (lastmove.drop()==currentMove.drop()) 
+                        		&& (lastmove.destStack()==currentMove.destStack()) 
                         		&& ((lc==lastmove.level)||(currentMove.level==lastmove.level))
                         		&& (currentMove.pick==lastmove.pick))
                          {	 // dropped then picked the same piece up again
@@ -970,6 +970,14 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     /*
      * summary: 5/27/2023
 		1338 files visited 0 problems
+		
+		summary:
+648: replay Problem in zip file:G:\share\projects\boardspace-html\htdocs\plateau\plateaugames\plateaugames\archive-2007\games-Mar-25-2007.zip U!P-Dingeling-nephila-2007-03-08-1615.sgf lib.ErrorX: No preparation for done, state =PLAY_STATE
+845: replay Problem in zip file:G:\share\projects\boardspace-html\htdocs\plateau\plateaugames\plateaugames\archive-2008\games-Jun-17-2008.zip P-bobc-ddyer-2008-02-29-0416.sgf lib.ErrorX: No preparation for done, state =PLAY_STATE
+910: replay Problem in zip file:G:\share\projects\boardspace-html\htdocs\plateau\plateaugames\plateaugames\archive-2009\games-Apr-13-2009.zip P-Kiwi-Riemann-2008-06-18-0023.sgf lib.ErrorX: No preparation for done, state =PLAY_STATE
+
+1338 files visited 3 problems
+
      */
     public void ReplayMove(sgf_node no)
     {

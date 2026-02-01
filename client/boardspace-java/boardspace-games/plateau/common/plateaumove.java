@@ -48,8 +48,7 @@ public class plateaumove extends commonMove implements PlateauConstants
     String realColors = ""; //real colors
     boolean flip = false; 	// for move record
     String tolocus = ""; 	// for move record
-    PlateauState undostate; // state for undo of express execute
-    int undoStackIndex = 0;
+    PlateauState startingState = null;
     PlateauState state_after_execute=PlateauState.PUZZLE_STATE;	// hint for editHistory
     public plateaumove()
     {
@@ -120,10 +119,9 @@ public class plateaumove extends commonMove implements PlateauConstants
         to.pubColors = pubColors;
         to.pieces = pieces;
         to.realColors = realColors;
-        to.undostate = undostate;
         to.flip = flip;
+        to.startingState = startingState;
         to.state_after_execute=state_after_execute;
-        to.undoStackIndex = undoStackIndex;
     }
 
     public commonMove Copy(commonMove to)
@@ -332,7 +330,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         }
     }
 
-    public int drop()
+    public int destStack()
     {
         return (drop);
     }

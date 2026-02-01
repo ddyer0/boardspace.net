@@ -498,17 +498,6 @@ public class G extends Platform implements Timestamp
     	}
     }
 
-/**
- * get the maximum width of an array of strings.
- * @param m
- * @param myFM
- * @return an int
- */
-    static public int maxWidth(String []m,FontMetrics myFM)
-    {	int val = 0;
-    	for(String vv : m) { val = Math.max(myFM.stringWidth(vv),val); }
-    	return(val);
-    }
 
     static final int MillisPerSecond = 1000;
     static final int MillisPerMinute = MillisPerSecond*60;
@@ -1919,41 +1908,6 @@ public static String expandClassName(String classname)
     		}
     	return(null);
     }
-    /**
-     * encode strings with \ unnnn for unicode characters
-     * @param str
-     * @return
-     */
-	  static String utfEncode(String str)
-	  {		int nchars = str.length();
-	  		StringBuffer out = new StringBuffer();
-	  		int idx = 0;
-	  		while(idx < nchars)
-		  		{
-		  		char ch = str.charAt(idx++);
-		  		if((ch!='\\') && (ch<128)) { out.append(ch); }
-		  		else { 
-		  			//have a look at this chart (expand "latin 1 suppliment" and 
-		  			//"latin suppliment a"
-		  			//http://inamidst.com/stuff/unidata/
-		  			//the character you're using is this one:
-		  			//http://www.fileformat.info/info/unicode/char/009E/index.htm
-		  			//but I think you intended this one:
-		  			//http://www.fileformat.info/info/unicode/char/017E/index.htm
-		  			//they look much the same.  How does inputting these
-		  			//characters work for you?  I have no idea how to type them.
-
-		  			// ad hoc adjustment, unichode \u009e is used instead of \u017e
-		  			// this resulted in blobs in czech
-		  			   if(ch==0x009e) { ch=(char)(0x017e); }
-		  			   String chstring = Integer.toHexString(ch);
-			  	  	   out.append( "\\u0000".substring(0,6-chstring.length()));	// leading zeros 
-			  	  	   out.append(chstring);
-		  		}
-
-			 }
-			 return(out.toString());
-	  }  
 
 
     public static String globalUserid()
@@ -2155,22 +2109,19 @@ public static String expandClassName(String classname)
         			"Feedback");
 			
 		}
+		/**
+		 * this is the inverse to Tokenizer.parseCol, used by various "infinite board" games.
+		 * 
+		 * @param col
+		 * @return
+		 */
 		public static String printCol(char col)
 		{	if(col>'Z') { int dx = col-'Z'; return ""+dx+'Z'; }
 			if(col<'A') { int dx = 'A'-col; return ""+dx+'A'; }
 			return (""+col);
 		}
 
-		public static char parseCol(String n)
-		{	if(n==null) { return(char)0;}
-			int len = n.length();
-			if(len==1) { return n.charAt(0); }
-			int off = IntToken(n.substring(0,len-1));
-			char end = n.charAt(len-1);
-			if(end=='A') { return (char)(end-off); }
-			if(end=='Z') { return (char)(end+off); }
-			throw Error("parse error for %s",n);
-		}
+
 		static boolean useKeyboardSet = false;
 		static boolean useKeyboard = false;
 		public static boolean defaultUseKeyboard() {
