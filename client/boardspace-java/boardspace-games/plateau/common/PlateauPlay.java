@@ -65,12 +65,11 @@ public class PlateauPlay
     
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
-  
+    public boolean randomize = false;
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
@@ -79,8 +78,8 @@ public class PlateauPlay
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
-    
+    private int robotPlayer = -1;
+    private long randomInit = 1252662;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -95,6 +94,8 @@ public class PlateauPlay
     {	RobotProtocol c = super.copyPlayer(from);
     	PlateauPlay cc = (PlateauPlay)c;
     	cc.Strategy = Strategy;
+    	cc.randomize = randomize;
+    	cc.robotPlayer = robotPlayer;
     	// consider this carefully, normally if the board knows about the robot,
     	// it should be the robot that runs it, not the master robot
     	cc.board.initRobotValues(cc);
@@ -152,13 +153,27 @@ public class PlateauPlay
 	public void prepareForDescent(UCTMoveSearcher from)
 	{
 		// called at the top of the tree descent
+		boardSearchLevel = 0;
 	}
+	private BoardProtocol referenceBoard = null;
     public void startRandomDescent()
     {
     	// we detect that the UCT run has restarted at the top
     	// so we need to re-randomize the hidden state.
-    	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
+    	Random robotRandom = new Random(randomInit);
+    	if(randomize) { 
+    		//if(referenceBoard!=null) { referenceBoard.copyFrom(board); }
+    		//else { referenceBoard = board.cloneBoard(); }
+    		board.randomizeHiddenState(robotRandom,robotPlayer); 
+    		}
     	//terminatedWithPrejudice = -1;
+    }
+    public void finishRandomDescent()
+    {
+    	if(randomize)
+    	{
+    		//board.copyFrom(referenceBoard);
+    	}
     }
 
 
@@ -173,13 +188,17 @@ public class PlateauPlay
         }
 
         /**
-         * this works very ineffeciently by generating all moves and picking one.
+         * this works very inefficiently by generating all moves and picking one.
          * for many games, this can be replaced with a slightly less random but
          * much faster process.
          */
         public commonMove Get_Random_Move(Random rand)
         {	
-        	return super.Get_Random_Move(rand);
+        	commonMove m = board.getRandomMove(rand);
+        	if(m!=null) { return m; }
+        	commonMove n = super.Get_Random_Move(rand);
+        	G.Assert(n!=null,"should be a move");
+        	return n;
         }
         
     /** return a value of the current board position for the specified player.
@@ -315,17 +334,14 @@ public class PlateauPlay
         default: throw G.Error("Not expecting strategy "+strategy);
         case -100:	// old dumbot, before shift in pruning and randomization 
         	MONTEBOT = DEPLOY_MONTEBOT; break;
-        case SMARTBOT_LEVEL:
-        	MONTEBOT=DEPLOY_MONTEBOT;
-        	NODE_EXPANSION_RATE = 0.25;
-        	ALPHA = 1.0;
-         	break;
         case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
+        case SMARTBOT_LEVEL:
+        	randomize = true;
+			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=true;
-           	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
@@ -353,6 +369,7 @@ public void PrepareToMove(int playerIndex)
 	//use this for a friendly robot that shares the board class
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
+    robotPlayer = playerIndex;
     board.initRobotValues(this);
 }
 
@@ -400,17 +417,17 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.stored_child_limit = 100000;
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = false;			// for pushfight, blitz is 2/3 the speed of normal unwinds
+        monte_search_state.blitz = true;
         monte_search_state.sort_moves = false;
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = 99;		// note needed for pushfight which is always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = -1;//DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
+        monte_search_state.maxThreads =   DEPLOY_THREADS;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 40000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
@@ -459,7 +476,9 @@ public void PrepareToMove(int playerIndex)
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
- 	return(0);
+ 	double ss0 = board.simpleScore(player,false);
+ 	double ss1 = board.simpleScore(player^1,true);
+ 	return(ss0-ss1);
  }
 /**
   * for UCT search, return the normalized value of the game, with a penalty

@@ -28,13 +28,10 @@ public class plateaumove extends commonMove implements PlateauConstants
     static
     {	addStandardMoves(D,
     		"exchange",MOVE_EXCHANGE,
-    		"move", MOVE_FROMTO,
     		"onboard", MOVE_ONBOARD,
+    		"pickrack",MOVE_RACKPICK,
     		"flip", MOVE_FLIP,
     		"pick", MOVE_PICK,
-    		"robotexchange",108,
-    		"robotmove",109,
-    	    "robotonboard",MOVE_ROBOT_ONBOARD,
     		"drop", MOVE_DROP);
 
     }
@@ -46,7 +43,6 @@ public class plateaumove extends commonMove implements PlateauConstants
     String pubColors = ""; 	//visible colors
     String pieces = ""; 	//pieces in the stack
     String realColors = ""; //real colors
-    boolean flip = false; 	// for move record
     String tolocus = ""; 	// for move record
     PlateauState startingState = null;
     PlateauState state_after_execute=PlateauState.PUZZLE_STATE;	// hint for editHistory
@@ -67,6 +63,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         parse(new Tokenizer(str),pl);
     }
     
+    // for exchange moves
     public plateaumove(int opc,String str,int p)
     {
     	op = opc;
@@ -75,7 +72,7 @@ public class plateaumove extends commonMove implements PlateauConstants
     }
     
     /** constructor for "onboard" moves */
-    public plateaumove(String loc,int lev,String colors,double anno,String pub,String pc,int who)
+    public plateaumove(String loc,int lev,String colors,String pub,String pc,int who)
     { 	op = MOVE_ONBOARD;
     	locus = loc;
     	level = lev;
@@ -84,18 +81,51 @@ public class plateaumove extends commonMove implements PlateauConstants
     	pieces = pc;
     	player = who;
     }
-    /** constructor for inboard moves */
-    public plateaumove(int opc,String from,int height,String colors,double anno,String to,int who)
+    /** constructor for moves after the initial pick-drop */
+    public plateaumove(int opc,piece p,pstack from,int height,String colors,pstack to,int who)
     {	op = opc;
-    	locus = from;
+    	pick = p.piecenumber;
+    	locus = from.locus();
     	level = height;
-    	flip = false;
     	realColors = colors;
     	pubColors = realColors.substring(0,1);
-    	tolocus = to;
+    	drop = to.stackNumber;
+    	tolocus = to.locus();
     	player = who;
     }
+    public plateaumove(int opc,piece p,String loc,String pub,int who)
+    {	op = opc;
+        pick = p.piecenumber;
+        locus = loc;
+        pubColors = pub;
+        player = who;
+    }
 
+	public plateaumove(int opc, pstack cell, int height, int who) {
+		op = opc;
+		drop = cell.stackNumber;
+		locus = cell.locus();
+		level = height;
+		player = who;
+	}
+
+	// for pick moves
+	public plateaumove(int movePick, piece p, int lvl,pstack cell, int who) {
+		pick = p.piecenumber;
+		op = movePick;
+		player = who;
+		level = lvl;
+		locus = cell.locus();
+	}
+
+	public plateaumove(int moveRackpick, piece p, String colors, int who) {
+		op = moveRackpick;
+		player = who;
+		realColors = colors;
+		pubColors = colors.substring(0,1);
+		pick = p.piecenumber;
+		pieces = ""+pick;
+	}
 
 	/* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)
@@ -118,8 +148,8 @@ public class plateaumove extends commonMove implements PlateauConstants
         to.tolocus = tolocus;
         to.pubColors = pubColors;
         to.pieces = pieces;
+        
         to.realColors = realColors;
-        to.flip = flip;
         to.startingState = startingState;
         to.state_after_execute=state_after_execute;
     }
@@ -144,30 +174,21 @@ public class plateaumove extends commonMove implements PlateauConstants
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
-        case MOVE_FROMTO:
-        {
-            locus = msg.nextToken();
-            level = msg.intToken();
-            realColors = msg.nextToken();
-            tolocus = msg.nextToken();
-
-            if ("F".equals(locus.substring(0, 1).toUpperCase()))
-            {
-                flip = true;
-                locus = locus.substring(1);
-            }
-
-            pubColors = realColors.substring(0, 1);
-        }
-
-        break;
-        
+        	
         case MOVE_EXCHANGE:
 	    	{	
 	    	pieces = msg.nextToken();
 	    	}
     	break;
     	
+        case MOVE_RACKPICK:
+        	{
+            realColors = msg.nextToken();
+            pubColors = realColors.substring(0, 1);
+            pieces = msg.nextToken();
+        	}
+        	break;
+   	
         case MOVE_ONBOARD:
         {
             locus = msg.nextToken();
@@ -211,12 +232,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_DROP:
         {
-            drop = msg.intToken();
+            drop = msg.intToken();		// stack number dropped on
             level = msg.intToken();
 
             if (drop == -1)
             {
-                level = 99;
+                level = DO_NOT_CAPTURE;
             }
 
             if (msg.hasMoreTokens())
@@ -247,12 +268,10 @@ public class plateaumove extends commonMove implements PlateauConstants
         switch (op)
         {
         case MOVE_ONBOARD:
-            return (opname + locus + " " + level + " " + realColors + " " +
-            pieces);
-
-        case MOVE_FROMTO:
-            return (opname + (flip ? "F" : "") + locus + " " + level + " " +
-            realColors + " " + tolocus);
+            return (opname + locus + " " + level + " " + realColors + " " + pieces);
+            
+        case MOVE_RACKPICK:
+            return (opname + realColors + " " + pieces);
 
         case MOVE_FLIP:
             return (opname + pick + " " + locus + " " + pubColors);
@@ -267,6 +286,9 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_START:
             return (indx+"Start P" + player);
 
+        case MOVE_EXCHANGE:
+        	return opname + pieces;
+        	
         default:
         	return(opname);
  
@@ -285,10 +307,12 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_ONBOARD:
             return ("+ " + pubColors + "@" + locus + levelString());
 
-        case MOVE_FROMTO:
-            return ("M " + (flip ? "F" : "") + locus + " " + level + " " +
-            pubColors + " " + tolocus);
+        case MOVE_RACKPICK:
+            return ("+ " + pubColors );
 
+        case MOVE_EXCHANGE:
+        	return ("<> "+pieces);
+        	
         case MOVE_FLIP:
 
             if ("R".equals(locus))

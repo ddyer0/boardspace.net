@@ -322,10 +322,12 @@ public class UCTMoveSearcher extends CommonDriver
 			lead.setCopyTheBoard(true);
 			do { G.doDelay(1*loops);
 			  	myCopy = lead.boardCopy();			  
-				} while((myCopy==null) && (loops++<10));		
+				} while((myCopy==null) && (loops++<10));
+			if(myCopy==null) { myCopy = lead.copyTheBoardNow(); }
 			}
 			return(myCopy);
 		}
+
 		public commonMove getCurrent2PVariation()
 		{	
 			return getLeadThread().getCurrent2PVariation();

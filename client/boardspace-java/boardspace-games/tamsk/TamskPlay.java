@@ -122,10 +122,7 @@ public class TamskPlay extends commonRobot<TamskBoard> implements Runnable, Tams
         boardSearchLevel++;
     }
     
-	public void prepareForDescent(UCTMoveSearcher from)
-	{
-		// called at the top of the tree descent
-	}
+	
     public void startRandomDescent()
     {
     	// we detect that the UCT run has restarted at the top

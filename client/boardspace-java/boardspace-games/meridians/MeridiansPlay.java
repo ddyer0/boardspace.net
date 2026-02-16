@@ -158,17 +158,6 @@ public class MeridiansPlay extends commonRobot<MeridiansBoard> implements Runnab
         boardSearchLevel++;
     }
     
-	public void prepareForDescent(UCTMoveSearcher from)
-	{
-		// called at the top of the tree descent
-	}
-    public void startRandomDescent()
-    {
-    	// we detect that the UCT run has restarted at the top
-    	// so we need to re-randomize the hidden state.
-    	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
-    	//terminatedWithPrejudice = -1;
-    }
 
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be

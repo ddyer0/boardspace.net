@@ -161,7 +161,7 @@ public interface ViticultureConstants
 	static String TradeReceive = "Trade Receive";
 	static String FromStudio = "Studio";
 	static String DiscardSomething = "Discard #1 #2";
-	static String KeepSomething = "Keep #1 #2";
+	static String KeepSomething = "Keep #1 discard #2";
 	static String PlayCardMessage = "#1 #2";
 	static String DrawSomething = "Draw #1";
 	static String PlantSomething = "Plant #1 #2";

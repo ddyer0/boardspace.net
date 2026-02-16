@@ -608,6 +608,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void setBoardType(Zvariation v)
     {
     	boardSetup = v;
+    	gametype = v.shortName;
     	handicap_setup = (variation==Zvariation.Zertz_h) ? v : null;
     	reInitBoard(v.firstInCol,v.nInCol,null);
     	moveNumber = 1;
@@ -1499,7 +1500,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         switch (m.op)
         {
         case MOVE_SETBOARD:
-     		doInit(gametype,variation,Zvariation.values()[m.to_row],randomKey,revision);
+        	Zvariation v = Zvariation.values()[m.to_row];
+     		doInit(v.shortName,v,v,randomKey,revision);
      		needStart = false;
         	break;
         case MOVE_PICK:

@@ -21,6 +21,9 @@ package viticulture;
 //       add "3 special workers" (use only 2) as an option
 //		 add "no seasons" as an option
 // TODO: preselect the font size for grapes and wines value
+// TODO: draft orange cards at the start
+// TODO: market for wine orders, extended wine orders require more valuable wines.
+
 import static viticulture.Viticulturemovespec.*;
 
 import java.awt.*;

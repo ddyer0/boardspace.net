@@ -27,6 +27,7 @@ public interface PlateauConstants
 	static String BuildInitial = "Build an initial stack of 2 to be placed";
 	static String PlaceEdge = "Place your stack on the edge of the board";
 	static String OnboardPiece = "Onboard a piece, Move a stack, or Exchange";
+	static String PlayNoexchangeDescription = "Onboard a piece or Move a stack";
 	static String ExchangePrisoners = "Exchange Prisoners";
 	static String MoveStack = "Move A Stack";
 	static String DropAny = "Drop your piece onto the board or any of your stacks";
@@ -44,11 +45,16 @@ public interface PlateauConstants
 	static String HideRackMessage = "Hide the contents of the rack";
 	static String ShowRackMessage = "Show the contents of the rack";
 	static String ServiceName = "Plateau rack for #1";
+	static String PointsMessage = "#1{ Points, Point, Points}";
+	static String MinPointsMessage = "Minimum #1{ Points, Point, Points}";
 	static String PlateauStrings[] = 
 		{	"Plateau", 
 			ServiceName,
+			PointsMessage,
+			MinPointsMessage,
 			HideRackMessage,
 			ShowRackMessage,
+			PlayNoexchangeDescription,
 			CompleteCapture,
 			BuildInitial,
 			PlaceEdge,
@@ -123,12 +129,6 @@ public interface PlateauConstants
     		}
     		return(null);
     	}
-		int colorKnown() {
-			return ColorKnown[ordinal()];
-		}
-		int colorUnknown() {
-			return ColorUnknown[ordinal()];
-		}
    };
   
     static final Color background_color = new Color(159, 155, 155);
@@ -143,15 +143,6 @@ public interface PlateauConstants
         };
     static final String[] MuteFileNames = { "mute" };
 
-    // masks for compositing the pieces
-    static final int TOP_MASK_INDEX = 0;
-    static final int MIDDLE_MASK_INDEX = 1;
-    static final int BOTTOM_MASK_INDEX = 2;
-    static final String ImageDir = "/plateau/images/";
-    static final String[] MaskFileNames = 
-        {
-            "top-mask", "middle-mask", "bottom-mask"
-        };
     enum PieceType
     {
     	Mute(0, 	 1, "M",	Face.Blank,	Face.Blank),
@@ -205,11 +196,12 @@ public interface PlateauConstants
     	ONBOARD2_STATE(BuildInitial),
     	ONBOARD2_DONE_STATE(ConfirmStateDescription),
     	ONBOARD_DONE_STATE(ConfirmStateDescription),
+    	PLAY_NOEXCHANGE_STATE(PlayNoexchangeDescription),
     	PLAY_DROP_STATE(DropBoard),
     	PLAY_DONE_STATE(ConfirmStateDescription),
     	RACK_DROP_STATE(DropMoving),
     	RACK2_DROP_STATE(DropMoving),
-    	PLAY_UNDONE_STATE(PickContinue),
+    	PLAY_UNDONE_STATE(PickContinue),		// must continue
     	CAPTIVE_SHUFFLE_STATE(ShufflePieces),
     	EXCHANGE_DONE_STATE(CompleteExchange),
     	FLIPPED_STATE(MoveFlipped),
@@ -222,14 +214,18 @@ public interface PlateauConstants
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
     }
 
-
+    static final int DO_NOT_CAPTURE = 99;
+    static final int TOP_CAPTURE = 100;
+    
     /* these strings correspoind to the move states */
     static final int UNKNOWN_ORIGIN = 0;
     static final int RACK_ORIGIN = 1;
     static final int CAPTIVE_ORIGIN = 2;
     static final int TRADE_ORIGIN = 3;
     static final int BOARD_ORIGIN = 4;
-    static final String[] origins = { "U", "R", "C", "T", "B" };
+    static final int PICKED_ORIGIN = 5;
+    
+    static final String[] origins = { "U", "R", "C", "T", "B" , "P"};
 
     // move commands, actions encoded by movespecs
     static final int MOVE_ONBOARD = 101;
@@ -237,38 +233,10 @@ public interface PlateauConstants
     static final int MOVE_DROP = 103;
     static final int MOVE_FLIP = 106;
     static final int MOVE_EXCHANGE = 107;
-    static final int MOVE_ROBOT_EXCHANGE = 108;
-    static final int MOVE_ROBOT_MOVE = 109;
-    static final int MOVE_ROBOT_ONBOARD = 110;
-    static final int MOVE_FROMTO = 111;
+    static final int MOVE_RACKPICK = 108;	// only the pick part of onboard
+    
     static final String Plateau_SGF = "23"; // sgf game number allocated for plateau
 
-    // color logic for the robot.  These are powers of two
-    // and are used to construct a set.
-    static final int CONTAINSMUTE = 1;
-    static final int CONTAINSBLUE = 2;
-    static final int CONTAINSRED = 4;
-    static final int CONTAINSORANGE = 8;
-    static final int MAYCONTAINMUTE = 16;
-    static final int MAYCONTAINBLUE = 32;
-    static final int MAYCONTAINRED = 64;
-    static final int MAYCONTAINORANGE = 128;
 
-    // deduced values
-    static final int ISMUTE = 1;
-    static final int ISBLUE = 2;
-    static final int ISBLUEMASK = 3;
-    static final int ISRED = 4;
-    static final int ISREDMASK = 5;
-    static final int ISACE = 6;
-    static final int ISTWISTER = 9;
-    static final int[] ColorKnown = 
-        {
-            0, CONTAINSMUTE, CONTAINSBLUE, CONTAINSRED, CONTAINSORANGE
-        };
-    static final int[] ColorUnknown = 
-        {
-            0xFF, 0xFF - CONTAINSMUTE, 0xFF - CONTAINSBLUE, 0xFF - CONTAINSRED,
-            0xFF - CONTAINSORANGE
-        };
+
 }

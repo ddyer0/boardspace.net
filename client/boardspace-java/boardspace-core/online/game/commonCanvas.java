@@ -6995,7 +6995,7 @@ public abstract class commonCanvas extends exCanvas
      * route for game reviewers get games.  
      */
     public void ReplayGame(sgf_game ga)
-        {	G.print("Replay "+ga);
+        {	//G.print("Replay "+ga);
             boolean sound = myFrame.doSound();
             Random.setNextIntCompatibility(false);
             mutated_game_record = false;

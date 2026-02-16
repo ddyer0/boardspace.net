@@ -30,5 +30,6 @@ public interface UCTThread
 	public StringBuffer getStackTrace(StringBuffer p);
 	public int getPriority();
 	public void setPriority(int i);
+	public BoardProtocol copyTheBoardNow();
 
 }

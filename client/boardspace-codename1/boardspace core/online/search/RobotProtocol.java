@@ -230,11 +230,19 @@ public interface RobotProtocol extends SimpleRobotProtocol
      * this is called as the robot starts a new pass down the tree of UCT nodes
      * @param from
      */
-	public void prepareForDescent(UCTMoveSearcher from);
+	public default void prepareForDescent(UCTMoveSearcher from) {};
 	/**
-	 * this is called as the robot begins the random playout phase
+     * this is called as the robot begins the random playout phase of a MCTS search
+     * this is intended to be used to do bookkeeping and rearrangement related to 
+     * any hidden state in the game, which has to be concealed or re-randomized
 	 */
-	public void startRandomDescent();
+	public default void startRandomDescent() {}
+    /**
+     * this is called as the robot has ended the random playout phas of a MCTS search,
+     * including unwinding the random moves (if not a blitz playout).  It can be used
+     * to repair or unwind mutations as a result of startRandomDescent
+     */	
+	public default void finishRandomDescent() {}
 	/**
 	 * return true if there should be a "done" between the "current" move and the "next".
 	 * This is used by the default version of getCurrentVariation as an additional test.
@@ -250,6 +258,7 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	public void set_depth_limited(commonMove currentMove, EStatus depthLimitedGameover);
 	public void setEvaluation(commonMove currentMoveOriginal, double newval);
 	public commonMove Random_Good_Move(Search_Driver search_Driver, int n, double dif);
+	
 
 	
 	// *** TEMPORARILY RESTORED ***

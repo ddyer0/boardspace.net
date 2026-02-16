@@ -928,7 +928,7 @@ private void PreloadClass(String classname)
            ClearOtherInviteBox(toSess);
            toSess.inviteBox=true;
            user.inviteSession = toSess.gameIndex;
-           if(toSess.numberOfPlayers()==1) 
+           if((toSess.numberOfPlayers()==1) && (toSess.mode!=Session.Mode.Tournament_Mode))
            		{ boolean wasmine = toSess.iOwnTheRoom;
            		  toSess.iOwnTheRoom = true; 
            		  if(!wasmine)

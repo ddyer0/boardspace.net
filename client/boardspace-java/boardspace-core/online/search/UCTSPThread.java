@@ -294,6 +294,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 				prevMove = move;
 				
 			}}
+		robot.finishRandomDescent();
 		return val;
 	}
 	
@@ -423,7 +424,18 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 			}
 		return(null);
 	}
-	
+	public BoardProtocol copyTheBoardNow()
+	{
+		if(copyTheBoard)
+		{
+		// this services a request by the GUI to get a clean copy of the running board
+		// for entertainment purposes.
+		boardCopy = robot.getBoard().cloneBoard();
+		copyTheBoard = false;
+		
+		}
+		return boardCopy;
+	}
 	// 
 	// traverse the tree from the root, selecting the next node to use
 	// at each level.  At the bottom, possibly extend the tree downward,
@@ -566,14 +578,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 }
 	
 		{
-		if(copyTheBoard)
-			{
-			// this services a request by the GUI to get a clean copy of the running board
-			// for entertainment purposes.
-			boardCopy = robot.getBoard().cloneBoard();
-			copyTheBoard = false;
-			
-			}	
+		copyTheBoardNow();	
 		// if pausing, account for the time lost
 		pausedTime += robot.commonPause();
 

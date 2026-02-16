@@ -662,7 +662,21 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 
     public double NormalizedScore(commonMove m) { throw G.Error("NormalizedScore not implemented"); }
 
-    
+    /**
+     * Get a random move from among the available moves.  This is used during the random descent phase of MCTS
+     * searches.  By default it just gets the full list and selects a random element.  Optimizing can have major
+     * impact on the number of playouts and the quality of play.   
+     * 
+     * Simply picking a random move can be easy - as for Hex where any empty space is a legal move.
+     * For games with more complex move generators, it can be useful to alter the move generator to
+     * start at a random point (more or less) and stop at a random point after the start (more or less).
+     * 
+     * Aside from avoiding work, and antithetical to it, it can be useful to make "random" moves less random
+     * but more representative of actual play. This can be done by some kind of complex scoring to weight
+     * the "random" selection, as is done for Euphoria, or something as simple as detecting and preferring
+     * game winning moves when they are available, as is done for Plateau
+     * 
+     */
     public commonMove Get_Random_Move(Random rand)
     {
     	CommonMoveStack moves = List_Of_Legal_Moves();
@@ -985,15 +999,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	// this method returns true.
 	        return(current>=max);
 	   }
-	    /**
-	     * this is called as the robot begins the random playout phase of a MCTS search
-	     * this is intended to be used to do bookkeeping and rearrangement related to 
-	     * any hidden state in the game, which has to be concealed or re-randomized
-	     */
-	   public void startRandomDescent()
-	   {
 		   
-	   }
 	   /** for use by getCurrentVariation, return true of the current move
 	    * should have a "done" inserted between previous and current
 	    */

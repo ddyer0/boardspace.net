@@ -182,7 +182,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
-        int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
+        long randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         //
         // not suitable for games with any optional "done" states.  If true, autodone
         // is controlled by an option menu option.  Also conditionalize showing the

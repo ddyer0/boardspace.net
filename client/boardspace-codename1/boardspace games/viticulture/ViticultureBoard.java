@@ -99,7 +99,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 168;			// 100 represents the initial version of the game
+{	static int REVISION = 169;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -2653,9 +2653,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	Assert(pb.cash+amount>=0,"cash can't be negative");
     	pb.cash += amount;
     	int aa = Math.abs(amount);
+    	if(aa!=0)
+    	{
        	String ev = pb.getRooster().colorPlusName()+" "+(amount<0 ? "-" : "+")+aa+" $1";
     	logRawGameEvent(ev);
-        
+    	}
     	if(replay.animate)
     	{
     	ViticultureCell dest = amount>0 ? pb.cashDisplay : sink;
@@ -4026,7 +4028,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureChip ch = from.removeChipAtIndex(index);
     	ViticultureCell dest = discardPile(ch);
     	dest.addChip(ch);
-    	logGameEvent(msg,ch.type.toString(),ch.description);
+    	logGameEvent(msg,ch.type.toString(),ch.type.toString());
     	if(replay.animate)
     	{ 	animationStack.push(from);
     		animationStack.push(dest);
@@ -6459,8 +6461,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		}
     		break;
     	case SelectCardColor:
+    		{
     		CardPointer selectedChip = pb.removeSelectedCard(false);
     		ViticultureCell selectedCard = cardPile(selectedChip.card);
+    		ViticultureChip worker = currentWorker;	
+    		if(revision>=169) { currentWorker = null;		}			// hide the oracle
     		for(ViticultureCell c : pb.oracleColors)
     		{	// draw all the other cards
     			if(c!=selectedCard)
@@ -6468,8 +6473,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     				drawSingleCard(c,pb,replay,m);
     			}
     		}
+    		if(revision>=169) { currentWorker = worker; }
     		// drawCards will trigger the oracle action of sampling
     		nextState = drawCards(1,selectedCard,pb,replay,m);
+    		}
     		break;
     	case BuildStructureBonus:
     	case BuildTourBonus:

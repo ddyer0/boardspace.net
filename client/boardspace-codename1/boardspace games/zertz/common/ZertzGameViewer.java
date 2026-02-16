@@ -297,7 +297,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        	GC.frameRect(gc,Color.gray,l,at,w,h); 
 
         zCell[] ballCells = bd.rack[rackindex];
-    	int mo = b.movingObjectIndex();
+    	int mo = bd.movingObjectIndex();
     	if((bd.getState()==ZertzState.PUZZLE_STATE) && G.pointInRect(highlight, R))
     		{
     		// allow moving balls in puzzle mode
@@ -364,7 +364,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     public void DrawBoardElements(Graphics gc, GameBoard bd, Rectangle brect,  HitPoint highlight)
     {	numberMenu.numberMarker = "\u2b24";
         int bigradius = RINGRADIUS - 1;
-        int moving = b.movingObjectIndex();
+        int moving = bd.movingObjectIndex();
         boolean review = reviewMode() && !allowed_to_edit;
         numberMenu.clearSequenceNumbers();
         Color background = review ? reviewModeBackground : boardBackgroundColor;
@@ -493,11 +493,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	else return(super.handleDeferredEvent(target,command));
     }
     
-    private void drawVariation(Graphics gc,HitPoint highlight)
-    {	if((b.getState()==ZertzState.PUZZLE_STATE) && G.Height(variationRect)>0)
+    private void drawVariation(Graphics gc,GameBoard gb,HitPoint highlight)
+    {	if((gb.getState()==ZertzState.PUZZLE_STATE) && G.Height(variationRect)>0)
     	{
     		if(GC.handleSquareButton(gc, variationRect, highlight, 
-    				s.get(BoardSetup,b.boardSetup.shortName),HighlightColor,rackBackGroundColor))
+    				s.get(BoardSetup,gb.boardSetup.shortName),HighlightColor,rackBackGroundColor))
     		{
     			highlight.hitCode = ZertzId.HitChangeBoard;
     		}
@@ -519,7 +519,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	bd.SetDisplayRectangle(boardRect);
     	}
         ZertzState vstate = bd.getState();
-        boolean moving = (b.movingObjectIndex()>=0);
+        boolean moving = (bd.movingObjectIndex()>=0);
         HitPoint ourTurnSelect = OurMove() ? selectPos : null;
         HitPoint buttonSelect = moving?null:ourTurnSelect;
         HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
@@ -575,7 +575,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
         DrawRepRect(gc,messageRotation,Color.black, bd.Digest(),repRect);	// Not needed for barca
         drawVcrGroup(nonDragSelect, gc);
-        drawVariation(gc,ourTurnSelect);
+        drawVariation(gc,bd,ourTurnSelect);
     }
 
 

@@ -141,19 +141,6 @@ public class BugPlay extends commonRobot<BugBoard> implements Runnable, BugConst
     {
     	return (true);
     } 
-	public void prepareForDescent(UCTMoveSearcher from)
-	{
-		// called at the top of the tree descent
-		//G.print("Start down");
-	}
-    public void startRandomDescent()
-    {
-    	// we detect that the UCT run has restarted at the top
-    	// so we need to re-randomize the hidden state.
-    	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
-    	//terminatedWithPrejudice = -1;
-    	//G.print("Start random");
-    }
 
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be

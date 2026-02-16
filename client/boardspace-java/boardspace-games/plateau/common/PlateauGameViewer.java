@@ -34,6 +34,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
 import lib.Tokenizer;
+import online.common.OnlineConstants;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -108,6 +109,15 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     static final Color ButtonColor = new Color(0.5f, 0.5f, 1.0f);
     static final Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     static final Color boardBackgroundColor = new Color(153, 217, 228);
+    // masks for compositing the pieces
+    static final int TOP_MASK_INDEX = 0;
+    static final int MIDDLE_MASK_INDEX = 1;
+    static final int BOTTOM_MASK_INDEX = 2;
+    static final String ImageDir = "/plateau/images/";
+    static final String[] MaskFileNames = 
+        {
+            "top-mask", "middle-mask", "bottom-mask"
+        };
 
     // vcr stuff
     static final Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
@@ -193,8 +203,9 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         }
         MouseColors = new Color[] {Color.black,Color.white};
         MouseDotColors = new Color[] { Color.white,Color.black};
-        
-        b = new PlateauBoard(info.getString(GameInfo.GAMETYPE, "Plateau"));
+        long randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
+       
+        b = new PlateauBoard(info.getString(GameInfo.GAMETYPE, "Plateau"),randomKey,getStartingColorMap(),PlateauBoard.REVISION);
         // believed to be difficult 5/2022
         // useDirectDrawing(true); // not tested yet
         doInit(false);
@@ -369,7 +380,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         
         while (height-- > 0)
         {
-            new piece(stackcol, Face.find(color)).addToStack(ps);
+            new piece(b,stackcol, Face.find(color)).addToStack(ps);
         }
 
         ps.Draw(g, xp-xstep, yp-2*ystep, xstep*2, ystep*2, 4, null);
@@ -595,7 +606,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
  								//$FALL-THROUGH$
 							case MOVE_PICK:
                             {
-                                pstack ps = b.GetStack(lastmove.destStack());
+                                pstack ps = b.getStack(lastmove.destStack());
 
                                 if ((ps.origin == BOARD_ORIGIN) ||
                                         (retm != null))
@@ -636,6 +647,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                          if( (currentMove.destStack()==lastmove.destStack())
                         	  && (currentMove.level>=99)		// and drop on top
                               && ((currentMove.state_after_execute==PlateauState.PLAY_STATE)
+                            	  || (currentMove.state_after_execute==PlateauState.PLAY_NOEXCHANGE_STATE)
                             	  || (currentMove.state_after_execute==PlateauState.FLIPPED_STATE)
                             	  || (currentMove.state_after_execute==PlateauState.ONBOARD2_STATE)
                             	  //|| (pm.state_after_execute==PlateauState.PLAY_UNDONE_STATE)
@@ -652,7 +664,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                          {	
                          plateaumove m2 = (plateaumove)History.elementAt(idx-1);
                          plateaumove m3 = (plateaumove)History.elementAt(idx-2);
-                         pstack ps = b.GetStack(lastmove.destStack());
+                         pstack ps = b.getStack(lastmove.destStack());
                          if((m3.op==MOVE_PICK)
                          		&& (m2.op==MOVE_DROP)
                          		&& (lastmove.pick==m3.pick)
@@ -701,7 +713,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                         int drop = lastmove.destStack();
                         if(drop>=0)
                         {
-                        pstack ps = b.GetStack(drop); // movingStack
+                        pstack ps = b.getStack(drop); // movingStack
                         {
                        	int lc = currentMove.level;
                        	plateaumove m2 = (plateaumove)History.elementAt(idx-1);
@@ -809,10 +821,10 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                         (bstate == PlateauState.ONBOARD2_DROP_STATE)))
                 {
                     PerformAndTransmit("Onboard " + which.locus() +
-                        " 100 " + st.allColors() + " " + st.pieces());
+                        " 100 " + st.allRealColors() + " " + st.pieces());
                 }
                 else
-                {	PerformAndTransmit("Drop " + " " + which.stacknumber +
+                {	PerformAndTransmit("Drop " + " " + which.stackNumber +
                         " 100" + " " + which.locus());
                 }
             }
@@ -833,7 +845,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
                 }
                 else
                 {
-                    PerformAndTransmit("Drop " + stack.stacknumber + " " +
+                    PerformAndTransmit("Drop " + stack.stackNumber + " " +
                         (which.hittop ? nostomp ? 99 : 100 : which.height()) + " " +
                         stack.locus());
                     nostomp = !nostomp;
@@ -879,7 +891,8 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         generalRefresh();
     }
 
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameType()); }
+    
     public String sgfGameType() { return(Plateau_SGF); }
     
 

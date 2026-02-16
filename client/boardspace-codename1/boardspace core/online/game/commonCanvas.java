@@ -6477,6 +6477,7 @@ public abstract class commonCanvas extends exCanvas
     	    	//boolean gameOver = b.GameOver();
 				phase = "replay";
 				doWayBack(replayMode.Replay);
+				phase = "replay forward";
 				doScrollTo(FORWARD_TO_END);
 				long endingDigest = b.Digest();
 				G.Assert(startingDigest==endingDigest,"digest after replay is different");

@@ -20,6 +20,7 @@ import java.util.*;
 import lib.Graphics;
 import lib.G;
 import lib.GC;
+import lib.Random;
 import lib.HitPoint;
 import lib.OStack;
 import online.game.PlacementProvider;
@@ -35,19 +36,26 @@ class CellStack extends OStack<pstack>
 // stack of plateau pieces
 public class pstack implements PlateauConstants, PlacementProvider
 {	pstack next = null;
+	static final int PARTIAL_COPY = 1001;
+	static final int MOUSE_COPY = 1002;
+	static final int FULL_COPY = 1000;
     PlateauBoard b = null; // the associated board
-    int stacknumber = -1; // index into the stacks array
+    int stackNumber = -1; // index into the stacks array
     int origin = UNKNOWN_ORIGIN; // what kind of stack this is
     int owner = -1; // the player who owns it
-    char col;
-    int row;
+    private char col;
+    private int row;
+    public char col() { return col;}
+    public int row() { return row; }
+    public int colNum() { return col-'A'; }
+    public int rowNum() { return row-1; }
     public int lastPicked = -1;
     public int lastDropped = -1;
-    public int lastFlipped = -1;
+    public boolean isCopy = false; 
     Vector<piece> pieces = new Vector<piece>(); // the actual pieces in the stack
     int drawnSize = -1;
     // constructor
-    public pstack(pstack from)
+    public pstack(pstack from,piece pieces[])
     { // construct an unlinked, spare copy.  This is used to keep track of
       // temporary moves in the user interface.
 
@@ -57,10 +65,11 @@ public class pstack implements PlateauConstants, PlacementProvider
         col = from.col;
         owner = from.owner;
         origin = from.origin;
-
+        stackNumber = from.stackNumber;
+        isCopy = true;
         for (int i = 0; i < n; i++)
         {
-            setElementAt(from.elementAt(i), i);
+            setElementAt(pieces[from.elementAt(i).piecenumber], i);
         }
     }
     // constructor for temporary stacks used by the mouse sprite
@@ -68,10 +77,12 @@ public class pstack implements PlateauConstants, PlacementProvider
     {
         b = bd;
         origin = or;
+        stackNumber = MOUSE_COPY;
+        isCopy = true;
     }
 
     public String pickSubset(int ss)
-    {	String str = "";
+    {	StringBuilder str = new StringBuilder();
     	String comma = "";
     	
         for (int i = 0; i < size(); i++, ss = ss >> 1)
@@ -79,7 +90,8 @@ public class pstack implements PlateauConstants, PlacementProvider
             if ((ss & 1) == 1)
             {
             	int chip = elementAt(i).piecenumber;
-            	str += comma + chip;
+            	str.append(comma);
+            	str.append(chip);
              	comma = ",";
             }
         }
@@ -99,12 +111,14 @@ public class pstack implements PlateauConstants, PlacementProvider
     }
 
     // constructor for stacks used constructing the board
-    public pstack(PlateauBoard bd, int or, int nn, int own)
+    public pstack(PlateauBoard bd, int or, int nn, int own,char colum,int rown)
     {
         b = bd;
         origin = or;
-        stacknumber = nn;
+        stackNumber = nn;
         owner = own;
+        col = colum;
+        row = rown;
     }
 
     // constructor used for pieces plucked out of larger stacks,
@@ -114,6 +128,9 @@ public class pstack implements PlateauConstants, PlacementProvider
         b = bd;
         origin = or;
         owner = own;
+        stackNumber = PARTIAL_COPY;
+        isCopy = true;
+        
     }
 
     // methods to encapsulate vector behavior.  We encapsulate
@@ -151,7 +168,8 @@ public class pstack implements PlateauConstants, PlacementProvider
     }
 
     public void addElement(piece p)
-    {
+    {	//G.Assert(!contains(p),"should be a new piece");
+    	//G.Assert(p.myBoard==b,"should be same board");
         pieces.addElement(p);
     }
 
@@ -159,7 +177,10 @@ public class pstack implements PlateauConstants, PlacementProvider
     {
         pieces.insertElementAt(p, i);
     }
-
+    public piece remove(int i)
+    {
+    	return pieces.remove(i);
+    }
     public boolean removeElement(piece p)
     {
         return (pieces.removeElement(p));
@@ -170,26 +191,12 @@ public class pstack implements PlateauConstants, PlacementProvider
         return (topElement().topColorString());
     }
 
-    public piece findPiece(int type)
-    {
-        for (int i = 0; i < size(); i++)
-        {
-            piece pp = elementAt(i);
-
-            if (pp.realPieceType == type)
-            {
-                return (pp);
-            }
-        }
-
-        return (null);
-    }
 
     /** 
      * @param depth
      * @return a top to bottom string of all the face colors in a stack
      */
-    public String allColors(int depth)
+    public String allRealColors(int depth)
     {
         String res = "";
         int sz = size();
@@ -197,7 +204,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         for (int i = sz - depth; i < sz; i++)
         {
             piece p = elementAt(i);
-            res = p.colorString() + res;
+            res = p.realColorString() + res;
         }
 
         return (res);
@@ -227,9 +234,9 @@ public class pstack implements PlateauConstants, PlacementProvider
     }
 
     // all the colors in a stack, top to bottom
-    public String allColors()
+    public String allRealColors()
     {
-        return (allColors(size()));
+        return (allRealColors(size()));
     }
 
     public String pieces()
@@ -269,11 +276,25 @@ public class pstack implements PlateauConstants, PlacementProvider
             return ("U");
         }
     }
+    
+    public String stackNumberString()
+    {	String msg = isCopy ? "copy of " : "";
+    	switch(stackNumber)
+    	{
+    	default: msg += "#"+stackNumber; break;
+    	case MOUSE_COPY: msg = "Mouse"; break;
+    	case FULL_COPY: msg += "All of #"+stackNumber; break;
+    	case PARTIAL_COPY: msg += "Part of #"+stackNumber; break;
+    	}
+
+    	return msg;
+
+    }
 
     // a pretty string for debugging purposes
     public String toString()
-    {
-        String x = "[" + origins[origin] + "#" + stacknumber;
+    {	
+        String x = "[" + origins[origin] + stackNumberString();
 
         if (origin == BOARD_ORIGIN)
         {
@@ -298,7 +319,7 @@ public class pstack implements PlateauConstants, PlacementProvider
 
         for (int i = 0; i < size(); i++)
         {
-            sum += elementAt(i).pointvalue;
+            sum += elementAt(i).pieceType.value;
         }
 
         return (sum);
@@ -307,18 +328,9 @@ public class pstack implements PlateauConstants, PlacementProvider
     // drop a stack on top of this stack, capture the pieces from it
     public void dropStack(pstack stack)
     {
-        piece prev = null;
-
-        while (stack.size() > 0)
+         while (stack.size() > 0)
         {
-            piece m = stack.elementAt(0);
-
-            if (m == prev)
-            {
-            	throw G.Error("Stack not shrinking: " + stack);
-            }
-
-            prev = m;
+            piece m = stack.remove(0);
             m.addToStack(this);
         }
     }
@@ -333,7 +345,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         {
             if ((ss & 1) == 1)
             {
-                sum += elementAt(i).pointvalue;
+                sum += elementAt(i).pieceType.value;
             }
         }
 
@@ -341,12 +353,13 @@ public class pstack implements PlateauConstants, PlacementProvider
     }
 
     // make a copy on a temproary stack
-    public void addCopyStack(pstack st)
+    public pstack addCopyStack(pstack st)
     {
         for (int i = 0; i < st.size(); i++)
         {
             addElement(st.elementAt(i));
         }
+        return this;
     }
     public Face topFace()
     {
@@ -373,6 +386,11 @@ public class pstack implements PlateauConstants, PlacementProvider
         {
             p.revealTop();
         }
+    }
+    public boolean contains(piece p)
+    {
+    	for(int i=size()-1; i>=0; i--) { if(elementAt(i)==p) { return true; }}
+    	return false;
     }
     /* 
      * true if the stack contains a colored top before from_h (the bottom) and to_h (the top)
@@ -475,7 +493,7 @@ public class pstack implements PlateauConstants, PlacementProvider
     {
         while (stack.size() > 0)
         {
-            piece m = stack.elementAt(0);
+            piece m = stack.remove(0);         
             m.addToStack(this, target);
         }
     }
@@ -493,7 +511,15 @@ public class pstack implements PlateauConstants, PlacementProvider
 
         return (depth);
     }
-
+    public int captureDepth(int owner,int max)
+    {	int caps= 0;
+    	for(int idx=size()-1,step=max; step>0 && idx>=0;idx--,step--)
+    	{
+    		piece p = elementAt(idx);
+    		if(p.owner!=owner) { caps++; }
+    	}
+    	return caps;
+    }
     // drop a stack on top of this stack
     public void dropStack(int level, pstack stack)
     {
@@ -565,17 +591,10 @@ public class pstack implements PlateauConstants, PlacementProvider
         origin = from.origin;
         lastPicked = from.lastPicked;
         lastDropped = from.lastDropped;
-        lastFlipped = from.lastFlipped;
         for (int i = 0; i < n; i++)
         {
             piece hispiece = from.elementAt(i);
-            piece mypiece = b.GetPiece(hispiece.piecenumber);
-
-            if (hispiece.isFlipped() != mypiece.isFlipped())
-            {
-                mypiece.flip();
-            }
-
+            piece mypiece = b.getPiece(hispiece.piecenumber);
             mypiece.addToStack(this);
         }
     }
@@ -716,4 +735,13 @@ public class pstack implements PlateauConstants, PlacementProvider
     public int getLastPlacement(boolean empty) {
 		return empty ? lastPicked : lastDropped;
 	}
+    public void swap(piece out,piece in)
+    {	int idx = indexOf(out);
+    	pstack ostack = in.mystack;
+    	int oindex = ostack.indexOf(in); 
+    	setElementAt(in,idx);
+    	in.mystack = this;
+    	ostack.setElementAt(out,oindex);
+    	out.mystack = ostack;
+     }
 }
