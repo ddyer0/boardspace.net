@@ -473,12 +473,14 @@ public class Session implements LobbyConstants
 	  { 
 	  	Bot[] robots = getRobots();
 	  	if(!realOnly && (currentRobot!=null) && (currentRobot.idx<0)) { return(false); }
+	  	boolean canchange = !((currentRobot==Bot.NoRobot) || (currentRobot==Bot.NoRobotRandom));
+	  	if(canchange)
+	  	{
 	  	if(robots==null) 
 	  		{ setCurrentRobot(defaultNoRobot());
 	  		  return(false); 
 	  		}
-	    if( ((currentRobot!=Bot.NoRobot) && (currentRobot!=Bot.NoRobotRandom))
-	    		&& (!AR.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
+	    if((!AR.arrayContains(robots,currentRobot) || !canIUseThisRobot(currentRobot)))
 	      {
 	    	  for(Bot b : robots)
 	    	  {
@@ -489,7 +491,7 @@ public class Session implements LobbyConstants
 	    		}
 	    	  }
 	    	  setCurrentRobot(robots[0]);
-	      }
+	      }}
 	    return(true);
 	  }
 	

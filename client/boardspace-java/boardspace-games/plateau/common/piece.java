@@ -56,21 +56,23 @@ public class piece extends ImageUpdateProxy implements PlateauConstants
     private Face real_top_color;
     private Face real_bottom_color;
     private int knownMask = 0;
-    private int knownMask(boolean top,int player)
+    private static int knownMask(boolean top,int player)
     {
     	return (1<<(player+(top?2:0)));
     }
+    int allKnown = knownMask(true,0)|knownMask(true,1)|knownMask(false,0)|knownMask(true,1);
     public void setTopKnown(int p) { knownMask |= knownMask(true,p); }
     public void setBottomKnown(int p) { knownMask |= knownMask(false,p); }
-    
+    public boolean allKnown() { return knownMask==allKnown; }
     public boolean topKnown(int pl)
     {
     	return (knownMask & knownMask(true,pl))!=0;
     }
     
     public boolean bottomKnown(int pl)
-    {
-    	return (knownMask & knownMask(false,pl))!=0;
+    {	int mask =  knownMask(false,pl);
+    	int v = knownMask & mask;
+    	return (v)!=0;
     }
     private void flipKnowns()
     {	// this can be optimized later
@@ -93,7 +95,14 @@ public class piece extends ImageUpdateProxy implements PlateauConstants
 		real_top_color = other.real_top_color;
 		real_bottom_color = other.real_bottom_color;
 		flipped = other.flipped;
+		owner = other.owner;
 		knownMask = other.knownMask;
+	}
+	// create a copy not used on the board, used for game log
+	public piece(piece other)
+	{
+		copyFrom(other);
+		mystack = other.mystack;
 	}
 	
     // constructor for permanent pieces
@@ -258,6 +267,7 @@ public class piece extends ImageUpdateProxy implements PlateauConstants
 
         return (true);
     }
+  
     // we are unsandwiched if we're at the bottom, or on top of our own, 
     // or not sandwiched between two opposing pieces
     public boolean unsandwiched(boolean ontop,int forPlayer)
@@ -397,7 +407,7 @@ public class piece extends ImageUpdateProxy implements PlateauConstants
                     }
 
                     // mark pieces that will be captured
-                    if ((g != null) && (mystack.b.isCaptured(this)))
+                    if ((g != null) && (mystack.b!=null) && (mystack.b.isCaptured(this)))
                     {
                         GC.setColor(g,Color.red);
                         lib.GC.drawLine(g,left, top + ((2 * h) / 3), left + w, top +

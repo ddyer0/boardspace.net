@@ -58,6 +58,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	private PlateauState unresign;
 	private PlateauState board_state;
 	public int placementIndex = -1;
+	public boolean useDelays = false;
+	public int delay_count = 0;
 	public PlateauState getState() {return(board_state); }
 	public void setState(PlateauState st) 
 	{ 	unresign = (st==PlateauState.RESIGN_STATE)?board_state:null;
@@ -108,8 +110,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     public int[] captivePoints = new int[2];
     public int[] captiveCount = new int[2];
     public int[] boardCount = new int[2];
-    public int sequence = 1000;
-
+    private int turnsSinceCapture = 0;
     public PlateauBoard(String init,long k,int map[],int rev) // default constructor
     {  
     	setColorMap(map, 2);
@@ -304,11 +305,14 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             GC.Text(gc,false,left,top,width,height, Color.black, null,
                 msg);
         }
+        if((idx==whoseTurn) && (board_state==PlateauState.EXCHANGE_STATE || board_state==PlateauState.EXCHANGE_DONE_STATE))
+        {
         int offer = minimumTradeOffer[idx];
-        if(offer>0)
+        if(offer>=0)
         {
         	GC.TextRight(gc,left,top,width,height, Color.black, null,s.get(MinPointsMessage,offer));
-        }
+        }}
+
     }
 
     // draw the main reserve rack
@@ -453,6 +457,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	}
     	return v;
     }
+    private double captureScale()
+    {	// downgrade value of height if we're not capturing
+    	return turnsSinceCapture/4.0;
+    }
     public double simpleScore(int who,boolean second)
     {	ncap = 0;
     	double v = sumValues(bar[who]) + sumValues(trade[who]);
@@ -464,7 +472,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     			tallest = c.size();
     		}
     	}
-    	double tallmax = second ? 4 : 5;
+    	double tallmax = (second ? 4 : 5)+captureScale();
     	double cappoints = Math.sqrt(Math.min(ncap,6)/6.0);
     	double tallpoints = Math.sqrt(Math.min(tallmax,tallest)/tallmax);
     	return Math.max(cappoints,Math.max(v/totalPoints,tallpoints));
@@ -547,6 +555,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         setFlipped(null);
         moveNumber = 1;
         moveStep = -1;
+        turnsSinceCapture = 0;
         placementIndex = 1;
         AR.setValue(minimumTradeOffer,0);
         setState(PlateauState.ONBOARD2_STATE);
@@ -723,7 +732,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         the_flipped_piece = getPiece(from_b.the_flipped_piece);
         moveStep = from_b.moveStep;
         board_state = from_b.board_state;
+        turnsSinceCapture = from_b.turnsSinceCapture;
         unresign = from_b.unresign;
+        useDelays = from_b.useDelays;
+        delay_count = from_b.delay_count;
         if(G.debug()) { sameboard(from_b); }
         checkStacks();     
     }
@@ -974,12 +986,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         throw G.Error("Undefined locus: %s", str);
     }
 
-    public String encodeColors(String colors)
-    {
-        String res = "" + sequence++ + "-" + colors;
 
-        return (res);
-    }
 
     // pick a stack designated by a number string, and optionally flip and validate
     // the stack according to the specified colors.  This is used only for onboard moves.
@@ -1216,12 +1223,33 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         m.startingState = board_state;
         switch (m.op)
         {
+        case ROBOT_DELAY:
+        	delay_count = m.level;
+        	break;
         case MOVE_FLIP:
         {
            piece mov = pieces[m.pick];
            handleFlip(mov);
+           if(!robotBoard)
+           { 	pstack myoldstack = mov.mystack;
+        	   	pstack p = new pstack(myoldstack.b, myoldstack.origin, myoldstack.owner);
+        	   	p.addElement(mov);
+        	   	m.display = new pstack(p,null);
+           }
         }
 
+        break;
+        case ROBOT_FLIP:
+        	{	
+        	pstack stack = locusStack(m.locus);
+        	piece mov = stack.topElement();
+        	handleFlip(mov);
+	           if(!robotBoard)
+	           { 	pstack p = new pstack(stack.b, stack.origin, stack.owner);
+	        	   	p.addElement(mov);
+	        	   	m.display = new pstack(p,null);
+	           }
+        	}
         break;
 
         case MOVE_RACKPICK:
@@ -1230,18 +1258,20 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	        	// now suck up the pieces required by the onboard.
 	        	//
 	            pickStack(m.pieces, m.realColors); // pick the stack and set up the movingStack stuff
+	            if(!robotBoard) { m.display = new pstack(pickedStack[0],null); }
 	            setState(PlateauState.ONBOARD_DROP_STATE);
 	        }
         	break;
         case MOVE_ONBOARD:
         {	// new strategy 10/2007, start an onboard by "drop off" to cancel any 
         	// pick in progress.
+        	turnsSinceCapture++;
         	if(moveStep==0) { handleDrop(movingStackOrigin[0],DO_NOT_CAPTURE); }
         	//
         	// now suck up the pieces required by the onboard.
         	//
             pickStack(m.pieces, m.realColors); // pick the stack and set up the movingStack stuff
-            
+            if(!robotBoard) { m.display = new pstack(pickedStack[0],null); }
             pstack destination = locusStack(m.locus);
             m.setDrop(destination.stackNumber);
             pstack moving = movingStack[0];
@@ -1250,7 +1280,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             handleDrop(destination, m.level);
             // 11/2016 remember the piece we're dropping
             m.pick = droppedPiece.piecenumber;
-
             break;
         }
         case MOVE_EXCHANGE:
@@ -1269,18 +1298,38 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         		break;
         	default: G.Error("Not expected");
         	}
-        	
+        	if(!robotBoard) { m.display = new RackIcon(trade[whoseTurn]); }
         	break;
         case MOVE_DROP:
         {
-            pstack which = (m.destStack() == -1) ? movingStackOrigin[0]
+        	turnsSinceCapture++;
+        	pstack which = (m.destStack() == -1) ? movingStackOrigin[0]
                                             : stacks[m.destStack()];
             handleDrop(which, m.level);
             // 11/2016 remember the piece we're dropping
             m.pick = droppedPiece.piecenumber;
+            if(!robotBoard)
+            {
+            	if("T".equals(which.locus())) { m.display = new RackIcon(trade[whoseTurn]); }
+            	else { m.display = new pstack(which,null); }
+            }
             break;
         }
-
+        case ROBOT_PICK:
+        	{
+        	pstack ps = locusStack(m.locus);
+        	piece pp =  ps.elementAt(m.level);
+            //G.Assert(ps.contains(pp),"should be contained");
+            m.setDrop(ps.stackNumber); // save the actual origin stack for editing
+            handlePick(pp,replay);
+            if(!robotBoard)
+            {
+            m.display = new pstack(pickedStack[moveStep],null);
+            }
+            lastPickedIndex = ps.lastPicked;
+            ps.lastPicked = placementIndex;
+        	}
+        	break;
         case MOVE_PICK:
         {
             piece pp = pieces[m.pick];
@@ -1288,6 +1337,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             //G.Assert(ps.contains(pp),"should be contained");
             m.setDrop(ps.stackNumber); // save the actual origin stack for editing
             handlePick(pp,replay);
+            if(!robotBoard)
+            {
+            m.display = new pstack(pickedStack[moveStep],null);
+            }
             lastPickedIndex = ps.lastPicked;
             ps.lastPicked = placementIndex;
         }
@@ -1870,6 +1923,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
         case CAPTIVE_SHUFFLE_STATE:
             SetNextPlayer();
+            minimumTradeOffer[whoseTurn] = largestSubsetBelow(pointTotal(trade[whoseTurn^1]),whoseTurn);
             setState(exchangeIsLegal() ? PlateauState.EXCHANGE_DONE_STATE : PlateauState.EXCHANGE_STATE);
 
             break;
@@ -1896,7 +1950,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
                     piece victim = p.elementAt(i);
 
                     if (isCaptured(victim))
-                    {
+                    {	turnsSinceCapture = 0;
                         if (i > 0)
                         { // reveal the top of the next piece down.  This is important
                           // if capturing the top half of the initial 2 stack
@@ -1940,36 +1994,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         }
     }
 
-    public int subsetTotal(int ask, int who)
-    {
-        pstack v = new pstack(this, UNKNOWN_ORIGIN);
-        int max = 0;
-
-        for (int i = 0; i < bar[who].length; i++)
-        {
-            v.addCopyStack(bar[who][i]);
-            v.addCopyStack(trade[who][i]);
-        }
-
-        for (int i = 0; i < (1 << v.size()); i++)
-        {
-            int ss = v.sumSubset(i);
-
-            if ((ss <= ask) && (ss > max))
-            {
-                max = ss;
-            }
-        }
-
-        return (max);
-    }
-
     private boolean exchangeIsLegal()
     {
         int offer = pointTotal(trade[whoseTurn]);
-        int ask = pointTotal(trade[(whoseTurn == FIRST_PLAYER_INDEX)
-                ? SECOND_PLAYER_INDEX : FIRST_PLAYER_INDEX]);
-        int tot = subsetTotal(ask, whoseTurn);
+        int ask = pointTotal(trade[whoseTurn^1]);
+        int tot = largestSubsetBelow(ask, whoseTurn);
 
         return (offer >= tot);
     }
@@ -2422,8 +2451,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	       if(whoseTurn==m.player){
 	       switch(board_state)
 	       {
-			case PLAY_DONE_STATE:
-			case PLAY_CAPTURE_STATE:
 			case ONBOARD2_DONE_STATE:
 			case ONBOARD_DONE_STATE:
 			case EXCHANGE_DONE_STATE:
@@ -2442,6 +2469,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	public void initRobotValues(PlateauPlay plateauPlay) 
 	{
 		robotBoard = true;
+		useDelays = plateauPlay.useDelays;
 	}
 	public boolean winForPlayerNow(int i) 
 	{
@@ -2449,8 +2477,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	}
     // add one exchange moves for all the chips on the bar
     private void addExchangeMoves(CommonMoveStack all,int who)
-    {	
+    {	boolean canBeDone = (board_state==PlateauState.CAPTIVE_SHUFFLE_STATE);
     	pstack b[] = bar[who];
+    	int offer = pointTotal(trade[who]);
+    	int minacceptable = largestSubsetBelow(offer, who^1);
     	for(int lim=b.length-1; lim>=0; lim--)
     	{
     		pstack src = b[lim];
@@ -2458,9 +2488,21 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		if(ss>0)
     		{
     		piece p = src.topPiece();
+    		int newvalue = p.pieceType.value;
+    		int newmin = largestSubsetBelow(offer+newvalue,who^1);
+    		
+    		if(newmin>minacceptable)	// don't add pieces which do nothing
+    		{
+    		if((newmin-minacceptable)>=newvalue-1) { canBeDone = false; }	// if there's a good trade available, don't be done
     		String str = ""+p.piecenumber;
     		all.push(new plateaumove(MOVE_EXCHANGE,str,who));
     		}
+    		
+    		}
+    	}
+    	if(canBeDone)
+    	{
+ 			addOptionalDone(all);
     	}
     }
     
@@ -2470,6 +2512,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	pstack b[] = bar[who];
     	int size = b.length;
     	int offset = r.nextInt(size);
+    	int offer = pointTotal(trade[who]);
+    	int minacceptable = largestSubsetBelow(offer, who^1);
     	for(int i = 0;i<size;i++)
     	{	
     		pstack src = b[(i+offset)%size];
@@ -2477,10 +2521,17 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		if(ss>0)
     		{
     		piece p = src.topPiece();
+       		int newvalue = p.pieceType.value;
+    		int newmin = largestSubsetBelow(offer+newvalue,who^1);
+    		
+    		if(newmin>minacceptable)	// don't add pieces which do nothing
+    		{
     		String str = ""+p.piecenumber;
     		return new plateaumove(MOVE_EXCHANGE,str,who);
-    		}
+    		}}
     	}
+    	boolean canBeDone = (board_state==PlateauState.CAPTIVE_SHUFFLE_STATE);
+    	if(canBeDone) { return getOptionalDone(); }
     	return null;
     }
     //
@@ -2493,21 +2544,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	{	all.push(new plateaumove("Drop " + d.stackNumber+" 100 " + " " + d.locus(),who));
     	}
     }
-    
-    /*
-    private plateaumove randomBoardDropMove(Random r,int who)
-    {	pstack loc = winningDropLocation(who);
-     	pstack cells[] = rack[who];
-       	int sz = cells.length;
-       	int offset = r.nextInt(sz);
-    	for(int i=0;i<sz;i++)
-    	{
-    		pstack cell = cells[(i+offset)%sz];
-    		if(cell.topOwner()==who) { return randomBoardDropMove(r,cell,who); }
-    	}
-    }
-    */
-    
+  
     // onboarding a piece
     private void addBoardDropMoves(CommonMoveStack all,pstack cell,int who)
     {	
@@ -2567,7 +2604,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         // find the highest value subset whole value is <= ask.  This is 
         // the smallest value we can offer in exchange
         int max = 0;
-        for (int i = 0; i < (1 << v.size()); i++)
+        for (int i = 0,permutations=(1 << v.size()); i < permutations; i++)
         {   int ss = v.sumSubset(i);
             if ((ss <= ask) && (ss > max))
             {    max = ss;
@@ -2581,24 +2618,45 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     private void addExchangeResponseMoves(CommonMoveStack all,int who)
     {	pstack v = allTradeGoods(who);
     	int underpay = 0;
+    	int minimumPieces = 999;
     	int offer = pointTotal(trade[nextPlayer[whoseTurn]]);
     	int minacceptable = largestSubsetBelow(offer, whoseTurn);
+    	int minvalue = 9999;
+    	
+    	// manage the overpayment options by using the fewest pieces with the lowest value   	
     	for(int i=1;i<(1<<v.size());i++)
     	{
     		int subtotal = v.sumSubset(i);
-    		if(subtotal>=minacceptable)
-    		{	String str = v.pickSubset(i);
+    		if(subtotal>minacceptable)
+    		{	
+        		int nones = G.bitCount(i);
+        		if(nones<minimumPieces)
+        		{	// never give more pieces than necessary, even if possible
+        			minimumPieces = nones;
+        			minvalue = subtotal;
+        		}
+        		else {
+        			minvalue = Math.min(subtotal,minvalue);
+        		}
+    		}}
+    	
+    	for(int i=1;i<(1<<v.size());i++)
+    	{
+    		int subtotal = v.sumSubset(i);
+      		if((subtotal==minacceptable) || (subtotal>minacceptable && (G.bitCount(i)==minimumPieces) && (subtotal<=minvalue)))
+        		{
+    			String str = v.pickSubset(i);
     			all.push(new plateaumove(MOVE_EXCHANGE,str,who));
     			if(subtotal<=offer) { underpay++; }
+        		}
     		}
-    	}
+    	
     	if(underpay==0) 
     	{	// if all the proposed payments were more than was offered, we can refuse
     		all.push(new plateaumove(MOVE_DONE,who));
     	}
     }
     
-
     private boolean addOrangeFinalMoves(CommonMoveStack all,int who,pstack mid,int dx,int dy)
     {
     	int x = mid.colNum()+dx;
@@ -2618,6 +2676,34 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		return(true);
     	}
     	return(false);
+    }
+  
+    private commonMove randomOrangeFinalMoves(int who,pstack mid,int dx,int dy)
+    {
+    	int x = mid.colNum()+dx;
+    	int y = nrows-mid.rowNum()-1+dy;
+    	if(validBoardPos(x,y))
+    	{	
+    		pstack fin = getBoardXY(x,y);
+     		return new plateaumove(MOVE_DROP,fin,TOP_CAPTURE,who);
+    	}
+    	return(null);
+    }
+    
+    private commonMove randomOrangeFinalMoves(boolean onlyCaptures,int who,pstack mid,int dx,int dy)
+    {
+    	int x = mid.colNum()+dx;
+    	int y = nrows-mid.rowNum()-1+dy;
+    	if(validBoardPos(x,y))
+    	{	
+    		pstack fin = getBoardXY(x,y);
+    		if(!onlyCaptures || fin.containsOwner(who^1))
+    		{
+    			plateaumove newMove = new plateaumove(MOVE_DROP,fin,TOP_CAPTURE,who);
+    			return newMove;
+    		}
+    	}
+    	return null;
     }
     private boolean addOrangeIntermediateMoves(CommonMoveStack all,int who,pstack from,pstack moving,int dx,int dy)
     {	boolean some = false;
@@ -2662,7 +2748,53 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	}
     	return(some);
     }
-    private boolean addOrangeContinuationMoves(CommonMoveStack all,int who,pstack cell,int dx,int dy,int opponentHeight)
+    
+    private commonMove randomOrangeIntermediateMove(Random r,boolean onlyCaptures,int who,pstack from,pstack moving,int dx,int dy)
+    {	
+    	int x = from.colNum()+dx;
+    	int y = nrows-from.rowNum()-1+dy;
+    	int movingHeight = moving.size();
+    	int direction = r.nextBoolean() ? 1 : -1;
+    	if(validBoardPos(x,y))
+    	{	
+    		pstack midCell = getBoardXY(x,y);
+    		// add jump to the final, without an intermediate stop
+    		if(onlyCaptures || r.nextDouble()<0.5)
+    		{
+     		if(dy==0)
+    		{
+    			commonMove m = randomOrangeFinalMoves(onlyCaptures,who,from,dx*2,direction);
+    			if(m==null) { m = randomOrangeFinalMoves(onlyCaptures,who,from,dx*2,-direction); }
+    			if(m!=null) { return m; }
+    		}
+    		else
+    		{	commonMove m = randomOrangeFinalMoves(onlyCaptures,who,from,direction,dy*2);
+    			if(m==null) { m = randomOrangeFinalMoves(onlyCaptures,who,from,-direction,dy*2); }
+    			if(m!=null) { return m; }
+    		}}
+     		
+    		if(!onlyCaptures)	// the end point is on the board, so we can potentially drop in the intermediate cell
+    		{	boolean valid = dx==0
+    						? validBoardPos(x+1,y+dy*2)||validBoardPos(x-1,y+dy*2)
+    						: validBoardPos(x+dx*2,y+1) || validBoardPos(x+dx*2,y-1);
+    				if( valid
+    					&& ((midCell.size()==0)
+    						||(midCell.topOwner()==who)
+    						||from.containsColor(from.size()-movingHeight,from.size()-1)))
+    				{	if(midCell.size()>0 || movingHeight>1)
+    					{	
+     	   				// must be taking a non-mute to pin
+     					plateaumove newMove = new plateaumove(MOVE_DROP,midCell,TOP_CAPTURE,who);
+         				return newMove;
+    					}
+    				}
+    			
+    		}
+    	}
+    	return(null);
+    }
+    
+    private boolean addOrangeContinuationMoves(CommonMoveStack all,int who,pstack cell,int dx,int dy)
     {	boolean some = false; 
     	if(winningMove!=null) { return true;}
     	if(dx==0)
@@ -2676,8 +2808,23 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		}
     	return(some);
     }
+    private commonMove randomOrangeContinuationMoves(Random r,int who,pstack cell,int dx,int dy)
+    {	 
+    	int direction = r.nextBoolean() ? 1 : -1;
+    	if(dx==0)
+		{
+    	commonMove m = randomOrangeFinalMoves(who,cell,direction,dy);
+    	if(m!=null) { return m; }
+    	return randomOrangeFinalMoves(who,cell,-direction,dy);
+		}
+		else {
+			commonMove m = randomOrangeFinalMoves(who,cell,dx,direction);
+			if(m!=null) { return m; }
+			return randomOrangeFinalMoves(who,cell,dx,-direction);	
+		}
+    }
 
-    private boolean addNormalMoves(CommonMoveStack all,int who,pstack from,int mindistance,int maxdistance,int dx,int dy,piece top,pstack moving,int opponentHeight)
+    private boolean addNormalMoves(CommonMoveStack all,int who,pstack from,int mindistance,int maxdistance,int dx,int dy,piece top,pstack moving)
     {	int movingHeight = moving.size();
     	int ox = from.colNum();
     	int oy = nrows-from.rowNum()-1;
@@ -2726,6 +2873,65 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		}
 		return(some);
     }
+    // when picking a random intermediate stop which requires a move-on, determine that the move-on
+    // is actually legal.  We are moving a mute-topped stack which needs a friendly or empty landing
+    private boolean canMoveFurther(int who,pstack from,int mindistance,int maxdistance, int dx, int dy)
+    {
+    	int ox = from.colNum();
+    	int oy = nrows-from.rowNum()-1;
+    	for(int i=mindistance; i<maxdistance;i++)
+    	{
+    		int x = ox+dx*i;
+    		int y = oy+dy*i;
+    		if(validBoardPos(x,y))
+    		{
+    			pstack target = getBoardXY(x,y);
+    			if((target.size()==0) || (target.topOwner()==who)) { return true; }
+    		}
+    	}
+    	return false;
+    }
+    private commonMove randomNormalMove(Random r,boolean onlyCaptures,int who,pstack from,int mindistance,int maxdistance,int dx,int dy,piece top,pstack moving)
+    {	int movingHeight = moving.size();
+    	int ox = from.colNum();
+    	int oy = nrows-from.rowNum()-1;
+   
+    	if(onlyCaptures && top.isMute()) { return null; }
+   
+    	{
+			// move a stack of "movingHeight" chipStack, maxDistance or less
+		  	int span = maxdistance - mindistance;
+		  	int offset = span>0?r.nextInt(span) : 0;
+		  	for(int d = 0;d<span;d++)
+			{
+		  	int distance = mindistance+(d+offset)%span;
+    		int x = ox + distance*dx;
+    		int y = oy + distance*dy;
+    		if(validBoardPos(x,y))
+    		{	pstack target = getBoardXY(x,y);
+    			int targetHeight = target.size();
+    			int targetOwner = target.topOwner();
+    			boolean cando = onlyCaptures 
+    								? target.containsOwner(who^1)
+    								: (targetHeight==0) 				// destination is empty
+    			    				|| (targetOwner==who) 			// or destination is ours
+    			    				|| !top.isMute() 				// or our top is colored
+    			    				|| (moving.containsColor(0,movingHeight)
+    			    						&& canMoveFurther(who,target,1,maxdistance-distance, dx, dy)
+    			    						);
+    			if(cando)
+    			{	if(distance>0 || (!top.isMute() && stompCapture(target)))	// this stompcapture may not be completely right
+    				{
+    				return new plateaumove(MOVE_DROP,target,TOP_CAPTURE,who);
+    				}
+    			}
+    			
+    		}
+    	}
+		}
+		return(null);
+    }
+
 
     // add drop moves for the first move of the game
     private void addInitialDropMoves(CommonMoveStack all,int who)
@@ -2747,7 +2953,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		if( top!=null && top.owner==who && !top.isMonoColor())
 		{	
 			if(all==null) { return(true); }
-			all.push(new plateaumove(MOVE_FLIP,top,cell.locus(),top.topColorString(),who));
+			all.push(new plateaumove(ROBOT_FLIP,top,cell.locus(),top.topColorString(),who));
 			return true;
 		}
 		return false;
@@ -2760,22 +2966,26 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	{
     		pstack cell = cellArray[(i+offset)%size];
         	piece top = cell.topElement();
-        	if(top!=null && top.owner==who && !top.isMonoColor())
-        	{   return new plateaumove(MOVE_FLIP,top,cell.locus(),top.topColorString(),who);
+        	if(top!=null && top.owner==who && (!top.allKnown()  || !top.isMonoColor()))
+        	{   return new plateaumove(ROBOT_FLIP,top,cell.locus(),top.topColorString(),who);
         	}
     	}
     	return null;
     }
   
-    private commonMove randomInitialPickMove(Random r,int who)
+    private commonMove randomInitialBoardPickMove(Random r,boolean mute,int who)
     {	int size = cellArray.length;
     	int offset = r.nextInt(size);
     	for(int i=0;i<size;i++)
     	{
     		pstack cell = cellArray[(i+offset)%size];
-    		if(cell.topOwner()==who)
+    		piece top = cell.topElement();
+    		if(top!=null 
+    				&& (top.owner==who) 
+    				// this is only mutes or only nonmutes
+    				&& (mute == (top.realTopColor()==Face.Blank)))
     		{
-    			return randomInitialPickMove(r,cell,who);
+    			return randomInitialBoardPickMove(r,cell,who);
     		}
     	}
     	return null;
@@ -2812,9 +3022,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
     
     // special logic to predict if a mute will be able to move if picked
-    private boolean canMove(pstack from,pstack to)
+    private boolean canMove(pstack from,pstack to,Face top)
     {	
-    	Face top = from.realTopColor();
     	int toCol = to.colNum();
     	int toRow = to.rowNum();
     	
@@ -2848,7 +3057,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     
     private boolean addIntermediatePickMoves(CommonMoveStack all,pstack cell,int who)
     {  	boolean some = false;
-    	boolean mobile = canMove(copyOriginalStack[0],cell);
+    	Face top = cell.realTopColor();
+    	boolean mobile = canMove(copyOriginalStack[0],cell,top);
     	if(mobile)
     	{
     	int takeoff = cell.takeOffHeight();
@@ -2857,15 +3067,15 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     							&& (cell.elementAt(sz-takeoff-1).owner!=who);
     	// we do this from bottom to top, so prev is the exposed piece after the pick
     	piece prev = null;
-    	for(int h = sz-takeoff; h<sz; h++)
+   		pstack mov = pickedStack[moveStep-1];
+   		for(int h = sz-takeoff; h<sz; h++)
     	{	piece p = cell.elementAt(h);
-    		pstack mov = pickedStack[moveStep-1];
-    		if(mov.size()!=(sz-h))	// don't include moving exactly what we dropped
+     		if(mov.size()!=(sz-h))	// don't include moving exactly what we dropped
     		{
     		if(!colorNeeded || prev==null || (prev.realTopColor()!=Face.Blank))
     		{	// intermediate moves have to leave color
     	    	if(all==null) { return true; }
-    			all.push(new plateaumove(MOVE_PICK,p,h,cell,who));
+    			all.push(new plateaumove(ROBOT_PICK,p,h,cell,who));
     			some = true;
     		}}
     		prev = p;
@@ -2874,7 +3084,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	return some;
     }
     
-    private boolean addInitialPickMoves(CommonMoveStack all,pstack cell,int who)
+    private boolean addInitialBoardPickMoves(CommonMoveStack all,pstack cell,int who)
     {
     	int takeoff = cell.takeOffHeight();
     	int sz=cell.size();
@@ -2885,35 +3095,42 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	for(int h = sz-takeoff; h<sz; h++)
     	{	piece p = cell.elementAt(h);
     		if(all==null) { return true; }
-    		all.push(new plateaumove(MOVE_PICK,p,h,cell,who));
+    		all.push(new plateaumove(ROBOT_PICK,p,h,cell,who));
     		some = true;
     	}}
     	return some;
     }
   
     private commonMove randomIntermediatePickMove(Random r,pstack cell,int who)
-    {
-    	boolean mobile = canMove(copyOriginalStack[0],cell);
+    {	Face top = cell.realTopColor();
+    	boolean mobile = canMove(copyOriginalStack[0],cell,top);
     	if(mobile)
     	{
     	int takeoff = cell.takeOffHeight();
     	int sz=cell.size();
     	boolean colorNeeded = takeoff<sz
     							&& ((takeoff==0) || ((cell.elementAt(sz-takeoff-1).owner!=who)));
-    	int offset = r.nextInt(takeoff);
+    	boolean canStay = top!=Face.Blank && top!=Face.Orange;
+    	int offset = r.nextInt(takeoff+(canStay ? 1 : 0));
+    	if(offset==takeoff)  { 
+    		return getOptionalDone();
+    	}
     	int first = sz-takeoff;
-
+    	pstack mov = pickedStack[moveStep-1];
     	for(int idx = 0;idx<takeoff;idx++)
     	{	int h = first+(idx+offset)%takeoff;
+    		if(mov.size()!=(sz-h))	// don't include moving exactly what we dropped
+    		{
     		piece p = cell.elementAt(h);
      		if(!colorNeeded || (h==0) || (cell.elementAt(h-1).realTopColor()!=Face.Blank))
     		{	// intermediate moves have to leave color
-    			return (new plateaumove(MOVE_PICK,p,h,cell,who));
-     		}
+    			return (new plateaumove(ROBOT_PICK,p,h,cell,who));
+     		}}
     	}}
-    	return null;
+    	// can't move
+    	return new plateaumove(MOVE_DONE,who);
     }
-    private commonMove randomInitialPickMove(Random r,pstack cell,int who)
+    private commonMove randomInitialBoardPickMove(Random r,pstack cell,int who)
     {
     	int takeoff = cell.takeOffHeight();
     	int sz=cell.size();
@@ -2924,19 +3141,19 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	{
     		int h = first+offset;
     		piece p = cell.elementAt(h);
-    		return (new plateaumove(MOVE_PICK,p,h,cell,who));
+    		return (new plateaumove(ROBOT_PICK,p,h,cell,who));
      	}
     	return null;
     }
     
-    private boolean addInitialPickMoves(CommonMoveStack all,int who)
+    private boolean addInitialBoardPickMoves(CommonMoveStack all,int who)
     {	boolean some = false;
     	for(int lim=cellArray.length-1; lim>=0; lim--)
      		{
     		pstack cell = cellArray[lim];
     		if(cell.topOwner()==who)
     			{
-    			some |= addInitialPickMoves(all,cell,who);
+    			some |= addInitialBoardPickMoves(all,cell,who);
     			if(some && (all==null)) { return(true); }
     			}
     		}
@@ -2956,13 +3173,17 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		{	piece p = cell.topElement();
     			Face top = p.realTopColor();
     			Face bottom =p.realBottomColor();
-    			if(top==bottom || r.nextDouble()<0.5)
+       			if(top==Face.Orange) { top = bottom; bottom = Face.Orange; }
+       			if(top==bottom || r.nextDouble()<0.5)
     			{
     				String colors = top.shortName+bottom.shortName;
     				return new plateaumove(MOVE_RACKPICK,p,colors,who);
     			}
-    			String colors = bottom.shortName+top.shortName;
-    			return new plateaumove(MOVE_PICK,p,colors,who);
+       			if(bottom!=Face.Orange)
+       			{
+       			String colors = bottom.shortName+top.shortName;
+    			return new plateaumove(MOVE_RACKPICK,p,colors,who);
+       			}
     		}
     	}
     	return null;
@@ -2994,20 +3215,35 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
    
 
-
-    private void addContinuationDropMoves(CommonMoveStack all,int who,pstack cell,int distance,piece top,pstack moving,int dx, int dy,int opponentHeight)
+    private void addContinuationDropMoves(CommonMoveStack all,int who,pstack cell,int distance,piece top,pstack moving,int dx, int dy)
     {	Face topcolor = top.realTopColor();
 		switch(topcolor)
 			{
 			default: throw G.Error("Not expecting "+topcolor);
 			case Orange:
-				addOrangeContinuationMoves(all,who,cell,dx,dy,opponentHeight);
+				addOrangeContinuationMoves(all,who,cell,dx,dy);
 				break;
 			case Blue:
 			case Red:
 			case Blank:
-				addNormalMoves(all,who,cell,1,distance,dx,dy,top,moving,opponentHeight);
+				addNormalMoves(all,who,cell,1,distance,dx,dy,top,moving);
 				break;
+			}
+	}
+
+    private commonMove randomContinuationDropMove(Random r,int who,pstack cell,int distance,piece top,pstack moving,int dx, int dy)
+    {	Face topcolor = top.realTopColor();
+		switch(topcolor)
+			{
+			default: throw G.Error("Not expecting "+topcolor);
+			case Orange:
+				return randomOrangeContinuationMoves(r,who,cell,dx,dy);
+				
+			case Blue:
+			case Red:
+			case Blank:
+				return randomNormalMove(r,false,who,cell,1,distance,dx,dy,top,moving);
+
 			}
 	}
     // drop after an intermediate drop in play_drop_state
@@ -3024,10 +3260,27 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	int dy = -Integer.signum(ysofar);	// calculate y directi
     	int takeoff = orig.takeOffHeight();
     	
-    	addContinuationDropMoves(all,who,step,takeoff-dissofar,top,moving,dx,dy,0);
+    	addContinuationDropMoves(all,who,step,takeoff-dissofar,top,moving,dx,dy);
       	
     }
-    
+    // drop after an intermediate drop in play_drop_state
+    private commonMove randomContinuationDropMove(Random r,int who)
+    {
+    	pstack orig = copyOriginalStack[0]; // where we all started, determines distance
+    	pstack step = copyOriginalStack[moveStep];
+    	pstack moving = movingStack[moveStep];
+    	piece top = moving.topElement();
+		int xsofar =step.col()-orig.col();
+    	int ysofar = step.row()-orig.row();
+    	int dissofar = Math.max(Math.abs(xsofar),Math.abs(ysofar));
+    	int dx = Integer.signum(xsofar);
+    	int dy = -Integer.signum(ysofar);	// calculate y directi
+    	int takeoff = orig.takeOffHeight();
+    	
+    	return randomContinuationDropMove(r,who,step,takeoff-dissofar,top,moving,dx,dy);
+      	
+    }
+   
     // find a stack were can add 1 more to and win, if it exists
     private pstack winningDropLocation(int who)
     {
@@ -3039,7 +3292,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		if((sz>=5)
     			&& (cell.topOwner()==who)
     			&& (cell.elementAt(sz-5).unobstructed()))
-    		{	return cell;
+    		{	
+    			for(pstack r :rack[who])
+    			{	// and verify they have something to drop
+    				if(r.size()>0) { return cell; }
+    			}
     		}
     	}
     	return null;
@@ -3075,7 +3332,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			String loc = cell.locus();
 			
 			if(height==0 || r.nextDouble()<0.5) 
-				{ return new plateaumove(loc,DO_NOT_CAPTURE,colors,colors,pnum,who);
+				{ return new plateaumove(loc,0,colors,colors,pnum,who);
 				}
 			return new plateaumove(loc,height-1,colors,colors,pnum,who);
     		}
@@ -3090,6 +3347,19 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
      	return randomDropMove(r,p,top,bottom,who);
      }
 
+    private commonMove getOptionalDone()
+    {	if(useDelays)
+    	{
+    	if(delay_count==0) { return new plateaumove(ROBOT_DELAY,1,whoseTurn); }
+    	delay_count--;
+    	if(delay_count<=0) { return new plateaumove(MOVE_DONE,whoseTurn); }
+    	}
+    	return new plateaumove(MOVE_DONE,whoseTurn);
+    }
+    private void addOptionalDone(CommonMoveStack all)
+    {
+    	all.push(getOptionalDone());
+    }
     private void addDoneMove(CommonMoveStack all,int who)
     {
     	all.push(new plateaumove(MOVE_DONE,who));
@@ -3102,7 +3372,29 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		all.push(topMove);		// on top
 	
 	}  
+	private plateaumove winningOnboardMove(pstack win,int who)
+	{
+		for(pstack p : rack[who])
+		{
+			if(p.size()>0)
+			{	piece st = p.topElement();
+				String str = "Onboard "+win.locus()+" "+DO_NOT_CAPTURE +" "+st.realColorString()+" "+st.piecenumber;
+				winningMove = new plateaumove(str,who);
+				return winningMove;
+			}
+		}
+		return null;
 
+	}
+	private plateaumove winningOnboardDropMove(int who)
+	{
+    	pstack win = winningDropLocation(who);
+    	if(win!=null)
+    	{
+    		return winningOnboardMove(win,who);
+     	}
+    	return null;
+	}
 	// pick from rack to deploy to the board
     private void addOnboardPickMoves(CommonMoveStack all,int who)
     {	pstack pieces[] = rack[who];
@@ -3140,7 +3432,69 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	piece top = moving.topElement();
     	addInitialDrops(all,who,orig,orig.takeOffHeight(),top,moving,0);    	
     }
- 
+    // dropoffs after an initial pick, in play_drop_state
+    private commonMove randomDropFromBoardMove(Random r,boolean onlyCaptures,int who)
+    {  	
+
+    	pstack orig = copyOriginalStack[0]; // where we all started, determines distance
+    	pstack moving = movingStack[moveStep];
+    	piece top = moving.topElement();
+    	return randomInitialDrop(r,onlyCaptures,who,orig,orig.takeOffHeight(),top,moving,0);    	
+    }
+    // dropoffs after an initial pick, in play_drop_state
+    static int orthogonalDirections[][] = {{1,0},{-1,0},{0,1},{0,-1}};
+    static int diagonalDirections[][] = {{1,1},{1,-1},{-1,1},{-1,-1}};
+    static int allDirections[][] = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+    
+    private commonMove randomInitialDrop(Random r,boolean onlyCaptures,int who,pstack cell,int distance,piece top,pstack moving,int opponentHeight)
+    {	Face topcolor = top.realTopColor();
+    	switch(topcolor)
+			{
+			default: throw G.Error("Not expecting "+topcolor);
+			case Orange:
+				{	int offset = r.nextInt(4);
+					for(int i=0;i<4;i++)
+					{	int pair[] = orthogonalDirections[(i+offset)%4];
+						commonMove some = randomOrangeIntermediateMove(r,onlyCaptures,who,cell,moving,pair[0],pair[1]);
+						if(some!=null) { return some; }
+					}
+				}
+				break;
+			case Blue:
+				{
+				int offset = r.nextInt(4);
+				for(int i=0;i<4;i++)
+				{	int pair[] = diagonalDirections[(i+offset)%4];
+					commonMove some = randomNormalMove(r,onlyCaptures,who,cell,0,distance,pair[0],pair[1],top,moving);
+					if(some!=null) { return some; }
+				}}
+				break;
+			case Blank:
+				if(onlyCaptures) { return null; }
+				{
+				int offset = r.nextInt(8);
+				for(int i=0;i<8;i++)
+				{
+				int pair[] = allDirections[(i+offset)%8];
+				commonMove some = randomNormalMove(r,false,who,cell,0,distance,pair[0],pair[1],top,moving);	
+				if(some!=null) { return some; }
+				}
+				}
+				break;
+				
+			case Red:
+				{
+				int offset = r.nextInt(4);
+				for(int i=0;i<4;i++)
+				{	int pair[] = orthogonalDirections[(i+offset)%4];
+					commonMove some = randomNormalMove(r,onlyCaptures,who,cell,0,distance,pair[0],pair[1],top,moving);
+					if(some!=null) { return some; }
+				}}
+				break;
+			}
+		return(null);
+    }
+
     // dropoffs after an initial pick, in play_drop_state 
     private boolean addInitialDrops(CommonMoveStack all,int who,pstack cell,int distance,piece top,pstack moving,int opponentHeight)
     {	Face topcolor = top.realTopColor();
@@ -3162,34 +3516,34 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 				}
 				break;
 			case Blue:
-				some |= addNormalMoves(all,who,cell,0,distance,1,1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,1,1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,1,-1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,1,-1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,-1,1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,-1,1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,-1,-1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,-1,-1,top,moving);
 				if(some && (all==null)) { return(true); }
 				break;
 			case Blank:
-				some |= addNormalMoves(all,who,cell,0,distance,1,1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,1,1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,1,-1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,1,-1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,-1,1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,-1,1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,-1,-1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,-1,-1,top,moving);
 				if(some && (all==null)) { return(true); }
 				// and add red moves
 				//$FALL-THROUGH$
 			case Red:
-				some |= addNormalMoves(all,who,cell,0,distance,1,0,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,1,0,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,-1,0,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,-1,0,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,0,1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,0,1,top,moving);
 				if(some && (all==null)) { return(true); }
-				some |= addNormalMoves(all,who,cell,0,distance,0,-1,top,moving,opponentHeight);
+				some |= addNormalMoves(all,who,cell,0,distance,0,-1,top,moving);
 				if(some && (all==null)) { return(true); }
 			
 			}
@@ -3221,13 +3575,17 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 	{	pstack firstPiece = pieces[i1];
 		piece firstTop = firstPiece.topElement();
 		Face firstTopFace = firstTop.realTopColor();
+		Face firstBottomFace =firstTop.realBottomColor();
 		for(int i2 = i1; i2<ntypes; i2++)
 		{
 			pstack secondPiece = pieces[i2];
-			piece secondTop = secondPiece.topElement();
-			
-			if((firstPiece!=secondPiece) || (firstPiece.size()>1))
-			{	String firstTopColor = firstTop.realTopColorString();
+				piece secondTop = firstPiece!=secondPiece
+						? secondPiece.topElement()
+						: (secondPiece.size()>1) ? secondPiece.elementAt(0) : null;
+
+				if(secondTop!=null)
+				{		
+				String firstTopColor = firstTop.realTopColorString();
 				String firstBottomColor = firstTop.realBottomColorString();
 				String secondTopColor = secondTop.realTopColorString();
 				String secondBottomColor = secondTop.realBottomColorString();
@@ -3235,8 +3593,12 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 				{
 				buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
 							secondTop,secondTopColor,secondBottomColor);
+				if(!secondTop.isMonoColor())
+				{	buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+						secondTop,secondBottomColor,secondTopColor);
 				}
-				if(!firstTop.isMonoColor())
+				}
+				if(!firstTop.isMonoColor() && (firstBottomFace!=Face.Orange))
 				{
 					buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
 							secondTop,secondTopColor,secondBottomColor);
@@ -3245,10 +3607,6 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 						buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
     							secondTop,secondBottomColor,secondTopColor);
 					}
-				}
-				if(!secondTop.isMonoColor())
-				{	buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
-						secondTop,secondBottomColor,secondTopColor);
 				}
 				}
  			}
@@ -3269,21 +3627,18 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 	public CommonMoveStack GetListOfMoves(Random robotRandom,boolean includeRedundentFlip) 
 	{	CommonMoveStack all = new CommonMoveStack();
 		winningMove = null;
-		//commonMove maybe = getRandomMove(robotRandom);
 		switch(board_state)
 		{
 		default:throw  G.Error("Not expecting "+board_state);
-
+		case RESIGN_STATE:
+			addDoneMove(all,whoseTurn);
+			break;
 		case ONBOARD2_STATE:
 			addInitialMoves(all,whoseTurn);
 			break;
 		
 		case CAPTIVE_SHUFFLE_STATE:
 			addExchangeMoves(all,whoseTurn);
-			if(pointTotal(trade[whoseTurn])>=minimumTradeOffer[whoseTurn])
-				 { 
-				addDoneMove(all,whoseTurn);
-				 }
 			break;
 			
 		case EXCHANGE_STATE:		
@@ -3313,14 +3668,21 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			break;
 		case PLAY_DONE_STATE:
 		case PLAY_CAPTURE_STATE:
-			addDoneMove(all,whoseTurn);
+			addOptionalDone(all);
 			//$FALL-THROUGH$
 		case PLAY_UNDONE_STATE:
 			addIntermediatePickMoves(all,movingStackOrigin[moveStep],whoseTurn);
 			break;
 		case PLAY_STATE:	
 		case PLAY_NOEXCHANGE_STATE:
-			if(board_state!=PlateauState.PLAY_CAPTURE_STATE) { addFlipMoves(all,whoseTurn); }
+			winningMove = winningOnboardDropMove(whoseTurn);
+			if(winningMove==null)
+			{
+			pstack losing = winningDropLocation(whoseTurn^1);
+			addFlipMoves(all,whoseTurn); 
+			
+			if(losing==null)
+			{
 			addOnboardPickMoves(all,whoseTurn);
 			if(winningMove==null 
 					&& (board_state!=PlateauState.PLAY_NOEXCHANGE_STATE)
@@ -3329,15 +3691,16 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 				{ 	// start an exchange if its vaguely sensible
 					addExchangeMoves(all,whoseTurn); 
 				}
-			addInitialPickMoves(all,whoseTurn);
-			if(all.size()==0)
-			{
-				addDoneMove(all,whoseTurn);
 			}
+			addInitialBoardPickMoves(all,whoseTurn);
+			if(all.size()==0)
+			{	if(losing!=null) { all.push(new plateaumove(MOVE_RESIGN,whoseTurn)); }
+				else { 	addOptionalDone(all); }
+			}}
 			break;
 
 		case FLIPPED_STATE:
-			if(winningMove==null) { addInitialPickMoves(all,the_flipped_stack,whoseTurn); }
+			if(winningMove==null) { addInitialBoardPickMoves(all,the_flipped_stack,whoseTurn); }
 			if(all.size()==0) 
 			{	addDoneMove(all,whoseTurn);
 			}
@@ -3346,6 +3709,30 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			{ all.clear(); 
 			  all.push(winningMove); 
 			}
+		
+		// this is a check for debugging getRandomMove, which is complicated
+		// and largely duplicates the whole algorithm.  verify that the random
+		// move is one of the non-random moves
+		/*
+		Random r = new Random(112);
+		for(int i=0;i<all.size();i++)
+		{
+			plateaumove m = (plateaumove)getRandomMove(r);
+			if(m!=null)
+			{	boolean some = false;
+				for(int lim = all.size()-1; !some && lim>=0; lim--)
+				{
+					plateaumove a = (plateaumove)all.elementAt(lim);
+					some |= m.Same_Move_P(a);
+				}
+				if(!some)
+				{
+					G.print("Mismatch ",m);
+				}
+			
+			}
+		}
+	*/
 		return all;
 	}
 	public CommonMoveStack GetListOfMoves() {
@@ -3360,38 +3747,73 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 		default: return null;
 		case ONBOARD_DROP_STATE:
 			return randomDropMove(r,whoseTurn);
+			
+		case PLAY_DROP_STATE:
+			// drop after pick on the board
+			if(moveStep==0)
+			{
+			if(r.nextInt()<0.9)	// greatly prefer capture moves
+				{
+				commonMove m = randomDropFromBoardMove(r,true,whoseTurn);
+				if(m!=null) { return m; }
+				}
+			return randomDropFromBoardMove(r,false,whoseTurn);
+			}
+			
+			return randomContinuationDropMove(r,whoseTurn);
+			
 		case FLIPPED_STATE:
 			{
-			commonMove m = randomInitialPickMove(r,the_flipped_stack,whoseTurn);
+			commonMove m = randomInitialBoardPickMove(r,the_flipped_stack,whoseTurn);
 			if(m==null) { return new plateaumove(MOVE_DONE,whoseTurn); }
 			return m;
 			}
-		case PLAY_UNDONE_STATE:
 		case PLAY_CAPTURE_STATE:
-		case PLAY_DONE_STATE:
+			if(r.nextDouble()<0.75) { return getOptionalDone(); }	
+			return randomIntermediatePickMove(r,movingStackOrigin[moveStep],whoseTurn);
+			
+		case PLAY_DONE_STATE:	
+			if(r.nextDouble()<0.2) { return getOptionalDone(); }	
+			return randomIntermediatePickMove(r,movingStackOrigin[moveStep],whoseTurn);
+			
+		case PLAY_UNDONE_STATE:
+			// we have to continue moving
 			return randomIntermediatePickMove(r,movingStackOrigin[moveStep],whoseTurn);
 					
 		case PLAY_STATE:
 		case PLAY_NOEXCHANGE_STATE:
-			
+			{
+			plateaumove m = winningOnboardDropMove(whoseTurn);
+			if(m!=null) { return m; }
+			}
+			pstack losing = winningDropLocation(whoseTurn^1);
+
+			if(r.nextDouble()<(losing==null ? 0.5 : 0.8))
+				{ commonMove m = randomInitialBoardPickMove(r,false,whoseTurn);	// potential captures
+				  if(m!=null) { return m; }
+				}
 			if(r.nextDouble()<0.3)
-				{ commonMove m = randomFlipMove(r,whoseTurn);
-				  if(m!=null) { return m; }
-				}
-			if(r.nextDouble()<0.5)
-				{ commonMove m = randomInitialPickMove(r,whoseTurn);
-				  if(m!=null) { return m; }
-				}
+			{ commonMove m = randomFlipMove(r,whoseTurn);
+			  if(m!=null) { return m; }
+			}
+			if(losing!=null || r.nextDouble()<0.5)
+			{ commonMove m = randomInitialBoardPickMove(r,true,whoseTurn);	// potential non captures
+			  if(m!=null) { return m; }
+			}
 			
 			if((board_state!=PlateauState.PLAY_NOEXCHANGE_STATE) 
+					&& (losing==null)
 					&& shouldStartExchange()
-					&& r.nextDouble()<0.3)
+					&& r.nextDouble()<0.1)
 			{
 				commonMove m = randomExchangeMove(r,whoseTurn);
 				if(m!=null) { return m; }
 			}
-			
+			if(losing==null)
+			{
 			return randomRackPickMove(r,whoseTurn);
+			}
+			return null;
 			
 		}
 	}
@@ -3451,7 +3873,11 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			}
 			if(compatible.size()>0)
 			{
-			piece replacement = compatible.elementAt(r.nextInt(compatible.size()));
+			int sz = compatible.size();
+			int rindex = r.nextInt(sz+1);
+			if(rindex<sz)	// allow for not swapping!
+			{
+			piece replacement = compatible.elementAt(rindex);
 			//G.print("swap ",unknownPiece,"@",unknownPiece.mystack," for ",replacement);
 			// now adjust the visibility of the swapped piece
 			boolean ktop = unknownPiece.topKnown(forPlayer);			
@@ -3487,6 +3913,7 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			unknownPiece.mystack.swap(unknownPiece,replacement);
 			available.remove(replacement);
 			available.push(unknownPiece);
+			}
 			}
 			
 		}

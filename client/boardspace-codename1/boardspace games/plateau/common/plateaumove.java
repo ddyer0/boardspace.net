@@ -17,8 +17,15 @@
 package plateau.common;
 
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import com.codename1.ui.Font;
+
+import lib.Drawable;
 import lib.ExtendedHashtable;
 
 public class plateaumove extends commonMove implements PlateauConstants
@@ -28,14 +35,14 @@ public class plateaumove extends commonMove implements PlateauConstants
     static
     {	addStandardMoves(D,
     		"exchange",MOVE_EXCHANGE,
-    		"move", MOVE_FROMTO,
     		"onboard", MOVE_ONBOARD,
+    		"pickrack",MOVE_RACKPICK,
     		"flip", MOVE_FLIP,
     		"pick", MOVE_PICK,
-    		"robotexchange",108,
-    		"robotmove",109,
-    	    "robotonboard",MOVE_ROBOT_ONBOARD,
-    		"drop", MOVE_DROP);
+    		"drop", MOVE_DROP,
+    		"rflip",ROBOT_FLIP,
+    		"rpick",ROBOT_PICK
+    		);
 
     }
 
@@ -46,11 +53,10 @@ public class plateaumove extends commonMove implements PlateauConstants
     String pubColors = ""; 	//visible colors
     String pieces = ""; 	//pieces in the stack
     String realColors = ""; //real colors
-    boolean flip = false; 	// for move record
     String tolocus = ""; 	// for move record
-    PlateauState undostate; // state for undo of express execute
-    int undoStackIndex = 0;
+    PlateauState startingState = null;
     PlateauState state_after_execute=PlateauState.PUZZLE_STATE;	// hint for editHistory
+    Drawable display = null;
     public plateaumove()
     {
     }
@@ -67,7 +73,8 @@ public class plateaumove extends commonMove implements PlateauConstants
     { //System.out.println("Mv: "+str);
         parse(new Tokenizer(str),pl);
     }
-
+    
+    // for exchange moves
     public plateaumove(int opc,String str,int p)
     {
     	op = opc;
@@ -75,19 +82,70 @@ public class plateaumove extends commonMove implements PlateauConstants
     	player = p;
     }
     
-    public plateaumove(int moveFromto, String locus2, int i, String allColors, double weight, String locus3, int who) {
-		G.Error("not yet");
+    /** constructor for "onboard" moves */
+    public plateaumove(String loc,int lev,String colors,String pub,String pc,int who)
+    { 	op = MOVE_ONBOARD;
+    	locus = loc;
+    	level = lev;
+    	realColors = colors;
+    	pubColors = pub;
+    	pieces = pc;
+    	player = who;
+    }
+    /** constructor for moves after the initial pick-drop */
+    public plateaumove(int opc,piece p,pstack from,int height,String colors,pstack to,int who)
+    {	op = opc;
+    	pick = p.piecenumber;
+    	locus = from.locus();
+    	level = height;
+    	realColors = colors;
+    	pubColors = realColors.substring(0,1);
+    	drop = to.stackNumber;
+    	tolocus = to.locus();
+    	player = who;
+    }
+    public plateaumove(int opc,piece p,String loc,String pub,int who)
+    {	op = opc;
+        pick = p.piecenumber;
+        locus = loc;
+        pubColors = pub;
+        player = who;
+    }
+
+	public plateaumove(int opc, pstack cell, int height, int who) {
+		op = opc;
+		drop = cell.stackNumber;
+		locus = cell.locus();
+		level = height;
+		player = who;
 	}
 
-	public plateaumove(String loc, int i, String colors, double w, String colors2, String pnum, int who) {
-		G.Error("not yet");
+	// for pick moves
+	public plateaumove(int movePick, piece p, int lvl,pstack cell, int who) {
+		pick = p.piecenumber;
+		op = movePick;
+		player = who;
+		level = lvl;
+		locus = cell.locus();
 	}
 
-    /* true of this other move is the same as this one */
+	public plateaumove(int moveRackpick, piece p, String colors, int who) {
+		op = moveRackpick;
+		player = who;
+		realColors = colors;
+		pubColors = colors.substring(0,1);
+		pick = p.piecenumber;
+		pieces = ""+pick;
+	}
+
+	/* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)
     {
         plateaumove other = (plateaumove) o;
-
+        if(op==MOVE_RACKPICK)
+        {
+        	return (other.op==op) && (realColors.equals(other.realColors));
+        }
         return ((op == other.op)
         		&& (level == other.level) 
         		&& (pick == other.pick)
@@ -104,11 +162,10 @@ public class plateaumove extends commonMove implements PlateauConstants
         to.tolocus = tolocus;
         to.pubColors = pubColors;
         to.pieces = pieces;
+        to.display = display;
         to.realColors = realColors;
-        to.undostate = undostate;
-        to.flip = flip;
+        to.startingState = startingState;
         to.state_after_execute=state_after_execute;
-        to.undoStackIndex = undoStackIndex;
     }
 
     public commonMove Copy(commonMove to)
@@ -131,30 +188,21 @@ public class plateaumove extends commonMove implements PlateauConstants
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
-        case MOVE_FROMTO:
-        {
-            locus = msg.nextToken();
-            level = msg.intToken();
-            realColors = msg.nextToken();
-            tolocus = msg.nextToken();
-
-            if ("F".equals(locus.substring(0, 1).toUpperCase()))
-            {
-                flip = true;
-                locus = locus.substring(1);
-            }
-
-            pubColors = realColors.substring(0, 1);
-        }
-
-        break;
-
+        	
         case MOVE_EXCHANGE:
 	    	{	
 	    	pieces = msg.nextToken();
 	    	}
     	break;
     	
+        case MOVE_RACKPICK:
+        	{
+            realColors = msg.nextToken();
+            pubColors = realColors.substring(0, 1);
+            pieces = msg.nextToken();
+        	}
+        	break;
+   	
         case MOVE_ONBOARD:
         {
             locus = msg.nextToken();
@@ -165,7 +213,12 @@ public class plateaumove extends commonMove implements PlateauConstants
         }
 
         break;
-
+        case ROBOT_FLIP:
+            // doesn't depend on the piece, which can be swapped in the monte carlo
+        	locus = msg.nextToken();
+        	pubColors = msg.nextToken();
+        	break;
+        	
         case MOVE_FLIP:
         {
             pick = msg.intToken();
@@ -183,6 +236,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         break;
 
+        case ROBOT_PICK:
+        	// doesn't depend on the piece, which can be swapped in the monte carlo
+        	locus = msg.nextToken();
+        	level = msg.hasMoreTokens()?msg.intToken(): 0;
+        	break;
+        	
         case MOVE_PICK:
         {
             pick = msg.intToken();
@@ -198,12 +257,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_DROP:
         {
-            drop = msg.intToken();
+            drop = msg.intToken();		// stack number dropped on
             level = msg.intToken();
 
             if (drop == -1)
             {
-                level = 99;
+                level = DO_NOT_CAPTURE;
             }
 
             if (msg.hasMoreTokens())
@@ -234,16 +293,23 @@ public class plateaumove extends commonMove implements PlateauConstants
         switch (op)
         {
         case MOVE_ONBOARD:
-            return (opname + locus + " " + level + " " + realColors + " " +
-            pieces);
+            return (opname + locus + " " + level + " " + realColors + " " + pieces);
+            
+        case MOVE_RACKPICK:
+            return (opname + realColors + " " + pieces);
 
-        case MOVE_FROMTO:
-            return (opname + (flip ? "F" : "") + locus + " " + level + " " +
-            realColors + " " + tolocus);
+        case ROBOT_FLIP:
+            return (opname +  locus + " " + pubColors);
 
         case MOVE_FLIP:
             return (opname + pick + " " + locus + " " + pubColors);
 
+        case ROBOT_PICK:
+        	
+           	if("".equals(locus)) { return(opname+pick); }
+            return (opname + locus + " " + level);
+     	
+        	
         case MOVE_PICK:
         	if("".equals(locus)) { return(opname+pick); }
             return (opname + pick + " " + locus + " " + level);
@@ -254,6 +320,9 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_START:
             return (indx+"Start P" + player);
 
+        case MOVE_EXCHANGE:
+        	return opname + pieces;
+        	
         default:
         	return(opname);
  
@@ -264,7 +333,59 @@ public class plateaumove extends commonMove implements PlateauConstants
     {
         return ((level == 100) ? "" : ("(" + level + ")"));
     }
+    
 
+    private Text icon(commonCanvas v,Object... msg)
+    {	
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(display!=null)
+    	{	double xs = (double)display.getWidth()/display.getHeight();
+    		m = TextChunk.join(
+    					TextGlyph.create(display, v,2,2*xs),
+    					m);
+    	}
+    	return(m);
+    }
+    public Text shortMoveText(commonCanvas v,Font f)
+    {
+    	switch(op)
+    	{
+    	case MOVE_EXCHANGE:
+    		if(display!=null) { return icon(v,"");}
+    		break;
+    	case ROBOT_FLIP:
+    	case MOVE_FLIP:
+            if ("R".equals(locus)) { break; }
+    		return icon(v,"flip");
+    	case MOVE_ONBOARD:
+    		return icon(v, "@" + locus + levelString());
+    	case ROBOT_PICK:
+    	case MOVE_PICK:
+    		if ("R".equals(locus)) { break; }
+    		if ("P".equals(locus)) { return TextChunk.create(""); }
+    		if(display!=null)
+    		{
+    			return icon(v, locus + ((level == 0) ? "" : levelString())+" > "  );
+    		}
+    		break;
+    	case MOVE_DROP:
+    		if ("R".equals(locus)) { break; }
+    		if(display!=null)
+    		{	String msg = ("T".equals(locus)) ? "": locus + ((level == 0) ? "" : levelString());
+    			return icon(v,msg );
+    		}
+    		break;
+    	case MOVE_RACKPICK:
+    		if(display!=null)
+    		{
+    		if(next!=null && next.op==MOVE_ONBOARD) { return TextChunk.create(""); }
+    		return icon(v,"");
+    		}
+			break;
+		default: break;
+    	}
+    	return TextChunk.create(shortMoveString());
+    }
     public String shortMoveString()
     {
         switch (op)
@@ -272,10 +393,12 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_ONBOARD:
             return ("+ " + pubColors + "@" + locus + levelString());
 
-        case MOVE_FROMTO:
-            return ("M " + (flip ? "F" : "") + locus + " " + level + " " +
-            pubColors + " " + tolocus);
+        case MOVE_RACKPICK:
+            return ("+ " + pubColors );
 
+        case MOVE_EXCHANGE:
+        	return ("<> "+pieces);
+        case ROBOT_FLIP:
         case MOVE_FLIP:
 
             if ("R".equals(locus))
@@ -284,7 +407,7 @@ public class plateaumove extends commonMove implements PlateauConstants
             }
 
             return ("F" + locus + "=" + pubColors);
-
+        case ROBOT_PICK:
         case MOVE_PICK:
 
             if ("R".equals(locus))
@@ -317,7 +440,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         }
     }
 
-    public int drop()
+    public int destStack()
     {
         return (drop);
     }

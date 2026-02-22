@@ -70,11 +70,13 @@ public class PlateauPlay
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
     public boolean randomize = false;
+    public boolean sort = false;
+    public boolean useDelays = false;
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
     private boolean EXP_MONTEBOT = false;		// test version
-    private double ALPHA = 0.5;
+    private double ALPHA = 0.75;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
@@ -95,7 +97,9 @@ public class PlateauPlay
     	PlateauPlay cc = (PlateauPlay)c;
     	cc.Strategy = Strategy;
     	cc.randomize = randomize;
+    	cc.sort = sort;
     	cc.robotPlayer = robotPlayer;
+    	cc.useDelays = useDelays;
     	// consider this carefully, normally if the board knows about the robot,
     	// it should be the robot that runs it, not the master robot
     	cc.board.initRobotValues(cc);
@@ -154,26 +158,22 @@ public class PlateauPlay
 	{
 		// called at the top of the tree descent
 		boardSearchLevel = 0;
+		if(randomize) 
+		{ Random robotRandom = new Random(randomInit);
+		  board.randomizeHiddenState(robotRandom,robotPlayer); 
+		}
 	}
-	private BoardProtocol referenceBoard = null;
+	
     public void startRandomDescent()
     {
     	// we detect that the UCT run has restarted at the top
     	// so we need to re-randomize the hidden state.
-    	Random robotRandom = new Random(randomInit);
+    	
     	if(randomize) { 
-    		//if(referenceBoard!=null) { referenceBoard.copyFrom(board); }
-    		//else { referenceBoard = board.cloneBoard(); }
+    		Random robotRandom = new Random(randomInit);
     		board.randomizeHiddenState(robotRandom,robotPlayer); 
     		}
     	//terminatedWithPrejudice = -1;
-    }
-    public void finishRandomDescent()
-    {
-    	if(randomize)
-    	{
-    		//board.copyFrom(referenceBoard);
-    	}
     }
 
 
@@ -184,9 +184,34 @@ public class PlateauPlay
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves());
+            CommonMoveStack all = board.GetListOfMoves();
+            if(sort) { assignMonteCarloWeights(all); }
+            return all;
         }
-
+        public double assignMonteCarloWeights(CommonMoveStack all)
+        {	
+        	double total = 0.0;	
+        	for(int lim = all.size()-1; lim>=0; lim--)
+        	{
+        		plateaumove m = (plateaumove)all.elementAt(lim);
+        		double score = scoreAsMonteCarloMove(m);
+        		m.set_local_evaluation(score);
+        		total += score;		// add up the weights, 
+        	}
+        	if(total==0.0) { total = 1; }	// never zero as the total even if all the individual scores are zero
+        	
+        	for(int lim = all.size()-1; lim>=0; lim--)
+        	{
+        	plateaumove m = (plateaumove)all.elementAt(lim);
+    		m.set_local_evaluation( m.local_evaluation()/total);
+        	}
+        
+       	return(total);
+        }
+        private double scoreAsMonteCarloMove(plateaumove m)
+        {
+        	return 0;
+        }
         /**
          * this works very inefficiently by generating all moves and picking one.
          * for many games, this can be replaced with a slightly less random but
@@ -334,16 +359,24 @@ public class PlateauPlay
         default: throw G.Error("Not expecting strategy "+strategy);
         case -100:	// old dumbot, before shift in pruning and randomization 
         	MONTEBOT = DEPLOY_MONTEBOT; break;
+        case SMARTBOT_LEVEL:
+        	sequence = false;
+        	useDelays = true;
+        	MONTEBOT = true;
+        	break;
+
         case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
-        case SMARTBOT_LEVEL:
-        	randomize = true;
-			//$FALL-THROUGH$
-		case DUMBOT_LEVEL:
+        case DUMBOT_LEVEL:
            	MONTEBOT=true;
+           	randomize = true;
          	break;
-        	
+         	
+		case BESTBOT_LEVEL:
+			randomize = true;
+			sort = true;
+        	break;
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
         }
     }
@@ -385,7 +418,29 @@ public void PrepareToMove(int playerIndex)
 	 */
 	//public boolean needDoneBetween(commonMove next, commonMove current);
 
- 
+ boolean sequence = true;
+ commonMove pendingMove = null;
+ long pendingDigest = 0;
+ public commonMove DoFullMove()
+ {	
+	 if(pendingMove!=null)
+	 {	commonMove m = pendingMove;
+	 	pendingMove = null;
+	 	if(GameBoard.Digest()==pendingDigest)
+	 	{
+		 return m;
+	 	}
+	 }
+	 commonMove firstMove = DoMonteCarloFullMove();
+	 if(sequence && ((firstMove.op==ROBOT_PICK)||(firstMove.op==MOVE_RACKPICK)))
+	 {
+		 PrepareToMove(robotPlayer);
+		 board.Execute(firstMove,replayMode.Replay);
+		 pendingDigest = board.Digest();
+		 pendingMove = DoMonteCarloFullMove();
+	 }
+	 return firstMove;
+ }
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
@@ -418,15 +473,15 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
         monte_search_state.blitz = true;
-        monte_search_state.sort_moves = false;
+        monte_search_state.sort_moves = sort;
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 99;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = 99;		
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads =   DEPLOY_THREADS;
+        monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 40000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results

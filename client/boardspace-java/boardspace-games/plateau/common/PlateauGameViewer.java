@@ -277,7 +277,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int vcrW = fh*15;
-    	int minLogW = fh*30;	
+    	int minLogW = fh*20;	
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
@@ -403,7 +403,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     }
 
     public void drawPlayerStuff(Graphics gc,int pl,PlateauBoard bd,HitPoint ourTurnSelect,HitPoint any)
-    {	
+    {	GC.setFont(gc,standardBoldFont());
         bd.DrawTrade(gc, tradeRects[pl], pl, ourTurnSelect,
                 s.get(PlacePrisonersMessage),numberMenu);
 
@@ -899,7 +899,16 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        b.doInit(token);
+    	if(Character.isUpperCase(token.charAt(0)))
+    	{
+    		int np = his.intToken();
+    		long r = his.longToken();
+    		int v = his.intToken();
+    		b.doInit(token,r,np,v);
+    	}
+    	else {
+    		b.doInit(token,10,2,100);
+    	}
     }
 
 

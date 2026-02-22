@@ -232,8 +232,12 @@ public interface PlateauConstants
     static final int MOVE_PICK = 102;
     static final int MOVE_DROP = 103;
     static final int MOVE_FLIP = 106;
+    
     static final int MOVE_EXCHANGE = 107;
     static final int MOVE_RACKPICK = 108;	// only the pick part of onboard
+    static final int ROBOT_FLIP = 109;
+    static final int ROBOT_PICK = 110;
+    static final int ROBOT_DELAY = 111;
     
     static final String Plateau_SGF = "23"; // sgf game number allocated for plateau
 

@@ -17,8 +17,15 @@
 package plateau.common;
 
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import lib.Tokenizer;
 import online.game.*;
+
+import java.awt.Font;
+
+import lib.Drawable;
 import lib.ExtendedHashtable;
 
 public class plateaumove extends commonMove implements PlateauConstants
@@ -32,7 +39,11 @@ public class plateaumove extends commonMove implements PlateauConstants
     		"pickrack",MOVE_RACKPICK,
     		"flip", MOVE_FLIP,
     		"pick", MOVE_PICK,
-    		"drop", MOVE_DROP);
+    		"drop", MOVE_DROP,
+    		"rflip",ROBOT_FLIP,
+    		"rpick",ROBOT_PICK,
+    		"rdelay",ROBOT_DELAY
+    		);
 
     }
 
@@ -46,6 +57,7 @@ public class plateaumove extends commonMove implements PlateauConstants
     String tolocus = ""; 	// for move record
     PlateauState startingState = null;
     PlateauState state_after_execute=PlateauState.PUZZLE_STATE;	// hint for editHistory
+    Drawable display = null;
     public plateaumove()
     {
     }
@@ -127,11 +139,20 @@ public class plateaumove extends commonMove implements PlateauConstants
 		pieces = ""+pick;
 	}
 
+	public plateaumove(int opc, int i, int whoseTurn) {
+		op = opc;
+		player = whoseTurn;
+		level = i;
+	}
+
 	/* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)
     {
         plateaumove other = (plateaumove) o;
-
+        if(op==MOVE_RACKPICK)
+        {
+        	return (other.op==op) && (realColors.equals(other.realColors));
+        }
         return ((op == other.op)
         		&& (level == other.level) 
         		&& (pick == other.pick)
@@ -148,7 +169,7 @@ public class plateaumove extends commonMove implements PlateauConstants
         to.tolocus = tolocus;
         to.pubColors = pubColors;
         to.pieces = pieces;
-        
+        to.display = display;
         to.realColors = realColors;
         to.startingState = startingState;
         to.state_after_execute=state_after_execute;
@@ -172,6 +193,9 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         switch (op)
         {
+        case ROBOT_DELAY:
+        	level = msg.intToken();
+        	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         	
@@ -199,7 +223,12 @@ public class plateaumove extends commonMove implements PlateauConstants
         }
 
         break;
-
+        case ROBOT_FLIP:
+            // doesn't depend on the piece, which can be swapped in the monte carlo
+        	locus = msg.nextToken();
+        	pubColors = msg.nextToken();
+        	break;
+        	
         case MOVE_FLIP:
         {
             pick = msg.intToken();
@@ -217,6 +246,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         break;
 
+        case ROBOT_PICK:
+        	// doesn't depend on the piece, which can be swapped in the monte carlo
+        	locus = msg.nextToken();
+        	level = msg.hasMoreTokens()?msg.intToken(): 0;
+        	break;
+        	
         case MOVE_PICK:
         {
             pick = msg.intToken();
@@ -273,21 +308,33 @@ public class plateaumove extends commonMove implements PlateauConstants
         case MOVE_RACKPICK:
             return (opname + realColors + " " + pieces);
 
+        case ROBOT_FLIP:
+            return (opname +  locus + " " + pubColors);
+
         case MOVE_FLIP:
             return (opname + pick + " " + locus + " " + pubColors);
 
+        case ROBOT_PICK:
+        	
+           	if("".equals(locus)) { return(opname+pick); }
+            return (opname + locus + " " + level);
+     	
+        	
         case MOVE_PICK:
         	if("".equals(locus)) { return(opname+pick); }
             return (opname + pick + " " + locus + " " + level);
 
         case MOVE_DROP:
             return (opname + drop + " " + level + " " + locus);
-
+          
         case MOVE_START:
             return (indx+"Start P" + player);
 
         case MOVE_EXCHANGE:
         	return opname + pieces;
+        
+        case ROBOT_DELAY:
+        	return opname+level;
         	
         default:
         	return(opname);
@@ -299,7 +346,59 @@ public class plateaumove extends commonMove implements PlateauConstants
     {
         return ((level == 100) ? "" : ("(" + level + ")"));
     }
+    
 
+    private Text icon(commonCanvas v,Object... msg)
+    {	
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(display!=null)
+    	{	double xs = (double)display.getWidth()/display.getHeight();
+    		m = TextChunk.join(
+    					TextGlyph.create(display, v,2,2*xs),
+    					m);
+    	}
+    	return(m);
+    }
+    public Text shortMoveText(commonCanvas v,Font f)
+    {
+    	switch(op)
+    	{
+    	case MOVE_EXCHANGE:
+    		if(display!=null) { return icon(v,"");}
+    		break;
+    	case ROBOT_FLIP:
+    	case MOVE_FLIP:
+            if ("R".equals(locus)) { break; }
+    		return icon(v,"flip");
+    	case MOVE_ONBOARD:
+    		return icon(v, "@" + locus + levelString());
+    	case ROBOT_PICK:
+    	case MOVE_PICK:
+    		if ("R".equals(locus)) { break; }
+    		if ("P".equals(locus)) { return TextChunk.create(""); }
+    		if(display!=null)
+    		{
+    			return icon(v, locus + ((level == 0) ? "" : levelString())+" > "  );
+    		}
+    		break;
+    	case MOVE_DROP:
+    		if ("R".equals(locus)) { break; }
+    		if(display!=null)
+    		{	String msg = ("T".equals(locus)) ? "": locus + ((level == 0) ? "" : levelString());
+    			return icon(v,msg );
+    		}
+    		break;
+    	case MOVE_RACKPICK:
+    		if(display!=null)
+    		{
+    		if(next!=null && next.op==MOVE_ONBOARD) { return TextChunk.create(""); }
+    		return icon(v,"");
+    		}
+			break;
+		default: break;
+    	}
+    	return TextChunk.create(shortMoveString());
+    }
     public String shortMoveString()
     {
         switch (op)
@@ -312,7 +411,7 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_EXCHANGE:
         	return ("<> "+pieces);
-        	
+        case ROBOT_FLIP:
         case MOVE_FLIP:
 
             if ("R".equals(locus))
@@ -321,7 +420,7 @@ public class plateaumove extends commonMove implements PlateauConstants
             }
 
             return ("F" + locus + "=" + pubColors);
-
+        case ROBOT_PICK:
         case MOVE_PICK:
 
             if ("R".equals(locus))

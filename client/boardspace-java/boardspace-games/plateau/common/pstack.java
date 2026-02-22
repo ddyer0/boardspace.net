@@ -16,8 +16,11 @@
  */
 package plateau.common;
 
+import java.awt.Color;
 import java.util.*;
 import lib.Graphics;
+import lib.Drawable;
+import lib.DrawingObject;
 import lib.G;
 import lib.GC;
 import lib.Random;
@@ -33,8 +36,42 @@ class CellStack extends OStack<pstack>
 	}
 	
 }
+
+class RackIcon implements Drawable
+{
+	pstack []rack = null;
+	public RackIcon(pstack[]from)
+	{
+		rack = new pstack[from.length];
+		for(int i=0;i<from.length;i++)
+		{
+			rack[i] = new pstack(from[i],null);
+		}
+	}
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
+		int len = rack.length;
+		int step = size/len;
+		int x = (int)(posx-step*(len/2.0));
+		int y = posy;
+		GC.frameRect(gc,Color.black,x-step/2,y-step/2,step*len,step);
+		for(pstack p : rack)
+		{
+			p.drawChip(gc,c,step,x,y,null);
+			x += step;
+		}
+	}
+
+	public int getWidth() {
+		return (rack.length-1)*100;
+	}
+
+	public int getHeight() {
+		return 100;
+	}
+	
+}
 // stack of plateau pieces
-public class pstack implements PlateauConstants, PlacementProvider
+public class pstack implements PlateauConstants, PlacementProvider, Drawable
 {	pstack next = null;
 	static final int PARTIAL_COPY = 1001;
 	static final int MOUSE_COPY = 1002;
@@ -61,17 +98,19 @@ public class pstack implements PlateauConstants, PlacementProvider
 
         int n = from.size();
         setSize(n);
+       	b = from.b;
         row = from.row;
         col = from.col;
         owner = from.owner;
         origin = from.origin;
         stackNumber = from.stackNumber;
         isCopy = true;
-        for (int i = 0; i < n; i++)
-        {
-            setElementAt(pieces[from.elementAt(i).piecenumber], i);
+         for (int i = 0; i < n; i++)
+        {	piece fp = from.elementAt(i);
+            setElementAt(pieces==null ? new piece(fp) : pieces[fp.piecenumber], i);
         }
     }
+
     // constructor for temporary stacks used by the mouse sprite
     public pstack(PlateauBoard bd, int or)
     {
@@ -232,7 +271,14 @@ public class pstack implements PlateauConstants, PlacementProvider
 
         return (nc);
     }
-
+    public boolean containsOwner(int who)
+    {
+    	for(int sz = size()-1; sz>=0; sz--)
+    	{
+    		if(elementAt(sz).owner == who) { return true; }
+    	}
+    	return false;
+    }
     // all the colors in a stack, top to bottom
     public String allRealColors()
     {
@@ -335,7 +381,7 @@ public class pstack implements PlateauConstants, PlacementProvider
         }
     }
 
-    // sum the pointvalues of a subset of pieces in the stack.  This is used
+    // sum the point values of a subset of pieces in the stack.  This is used
     // to figure out what totals are achievable for a prisoner exhange.
     public int sumSubset(int ss)
     {
@@ -586,6 +632,9 @@ public class pstack implements PlateauConstants, PlacementProvider
         int n = from.size();
         setSize(0);
         row = from.row;
+        // note that this copy should NOT include the b link, it causes
+        // bad matches in copyFrom
+        //b = from.b;
         col = from.col;
         owner = from.owner;
         origin = from.origin;
@@ -683,7 +732,7 @@ public class pstack implements PlateauConstants, PlacementProvider
             }
             else if (gc != null)
             {
-                if (this == b.takeOffStack())
+                if (b!=null && this == b.takeOffStack())
                 {
                     GC.setColor(gc,stack_marker_color);
                     GC.drawArrow(gc, left + (w / 2), bottom + (realh / 4),
@@ -698,8 +747,8 @@ public class pstack implements PlateauConstants, PlacementProvider
             {
                 piece chip = elementAt(idx);
                 piece nextElement = (idx < stackh) ? elementAt(idx + 1) : null;
-                boolean gap = b.isFloatingPiece(nextElement, false) ||
-                    b.isFloatingPiece(chip, true);
+                boolean gap = b!=null 
+                		&& (b.isFloatingPiece(nextElement, false) || b.isFloatingPiece(chip, true));
                 chip.DrawTop(gc, realx, bottom, realw, pheight, prevchip,
                     gap || (idx == stackh), highlight, pspacing);
                 prevchip = chip;
@@ -712,7 +761,7 @@ public class pstack implements PlateauConstants, PlacementProvider
                 }
             }
 
-            if ((gc != null) && (this == b.takeOffStack()))
+            if ((gc != null) && (b!=null) && (this == b.takeOffStack()))
             {
                 GC.setColor(gc,stack_marker_color);
                 GC.drawArrow(gc, left + (w / 2), bottom + (realh / 4),
@@ -744,4 +793,14 @@ public class pstack implements PlateauConstants, PlacementProvider
     	ostack.setElementAt(out,oindex);
     	out.mystack = ostack;
      }
+	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
+	{
+		Draw(gc,posx-size/2,posy-size/2,size,size,size(),null);		
+	}
+	public int getWidth() {
+		return 100;
+	}
+	public int getHeight() {
+		return 100;
+	}
 }

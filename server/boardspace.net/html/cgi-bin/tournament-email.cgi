@@ -38,7 +38,7 @@ Head_end
 sub active_tournaments()
 {	my ($dbh) = @_;
 	my @val;
-	my $q = "SELECT uid,description,teams from tournament where (status='signup' or status='active')";
+	my $q = "SELECT uid,description,teams from tournament where (status='signup' or status='active' or status='completed')";
 	my $sth = &query($dbh,$q);
 	my $numrows = &numRows($sth);
 	while($numrows-- > 0)

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Frisian Checkers Rules</title></head>
+<body>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><h1 style="text-align: left;">How to Identify "bugs"&nbsp;</h1>
+</td>
+<td>
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+</td>
+</tr>
+</tbody>
+</table><br>Bug identifies bugs as the same shape, regardless of orientation or mirroring. &nbsp;According to the internet, the<br>number of such bugs for each size is as follows:<br><table style="text-align: left; width: 197px; height: 172px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td align="undefined" valign="undefined">1</td><td align="undefined" valign="undefined">1</td></tr><tr><td align="undefined" valign="undefined">2</td><td align="undefined" valign="undefined">1</td></tr><tr><td align="undefined" valign="undefined">3</td><td align="undefined" valign="undefined">3</td></tr><tr><td align="undefined" valign="undefined">4</td><td align="undefined" valign="undefined">7</td></tr><tr><td align="undefined" valign="undefined">5</td><td align="undefined" valign="undefined">22</td></tr><tr><td align="undefined" valign="undefined">6</td><td align="undefined" valign="undefined">82</td></tr><tr><td align="undefined" valign="undefined">7</td><td align="undefined" valign="undefined">333</td></tr><tr><td align="undefined" valign="undefined">8</td><td align="undefined" valign="undefined">1448</td></tr></tbody></table><br>And sizes even larger than 8 are theoretically possible. &nbsp;Generating (or recognising equivalent shapes is a tricky problem.<br><br>Here's how Boarspace does it. &nbsp; <br><br>represent a "bug" as a set of cells.<br><br>for each cell in the set, calculate the distance to each of the other cells in the set, using a modified version<br>of the board drawing algorithm. &nbsp;It's vital that connections for A to B give exactly the same distance whenever<br>A and B are in the same relation to one another counting hexes between them.<br><br>for each cell, characterize the pattern of the 6 adjacent cells. &nbsp;There are 10 such patterns.<br><br>for each distance/from/to triplet, construct an integer. &nbsp;Sort them to give a canonical order.<br><br>construct a zorbrist hash with a table of random numbers and the sorted connection numbers.<br><br>the intent is that the hash uniquely identifies the bug, whatever its orientation, mirror image,&nbsp; or position.<br><br>verify these proceedures by counting that the correct number of &nbsp;bugs are eventually encountered, no less<br>and certainly no more.<br><br><span style="font-weight: bold;"></span></body></html>

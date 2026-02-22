@@ -16,16 +16,23 @@
  */
 package plateau.common;
 
-
-import java.util.*;
-
-import bridge.Color;
 import lib.Graphics;
 import lib.Image;
+import lib.OStack;
+import bridge.Color;
 import lib.G;
+import lib.Random;
 import lib.GC;
 import lib.HitPoint;
 
+class PieceStack extends OStack<piece>
+{
+
+	public piece[] newComponentArray(int sz) {
+		return new piece[sz];
+	}
+	
+}
 // plateau piece
 public class piece implements PlateauConstants
 {
@@ -36,38 +43,78 @@ public class piece implements PlateauConstants
     int owner; // the player who own the piece
     int piecenumber; // index into the board's piece array
     long randomv ;
-    int pointvalue; // point value for this piece in exchanges
-    int pieceType; // the piece type, mainly used to place the piece positionally on a rack
     boolean hittop = false; // true if this piece is current hit on top by the mouse
     pstack mystack; // the stack which contains this piece.
+    PlateauBoard myBoard = null;
     private Face vis_top_color; // the color showing on top
     private Face vis_bottom_color; // the color (not)showing on bottom
     private Face real_top_color;
     private Face real_bottom_color;
+    private int knownMask = 0;
+    private static int knownMask(boolean top,int player)
+    {
+    	return (1<<(player+(top?2:0)));
+    }
+    int allKnown = knownMask(true,0)|knownMask(true,1)|knownMask(false,0)|knownMask(true,1);
+    public void setTopKnown(int p) { knownMask |= knownMask(true,p); }
+    public void setBottomKnown(int p) { knownMask |= knownMask(false,p); }
+    public boolean allKnown() { return knownMask==allKnown; }
+    public boolean topKnown(int pl)
+    {
+    	return (knownMask & knownMask(true,pl))!=0;
+    }
+    
+    public boolean bottomKnown(int pl)
+    {	int mask =  knownMask(false,pl);
+    	int v = knownMask & mask;
+    	return (v)!=0;
+    }
+    private void flipKnowns()
+    {	// this can be optimized later
+    	boolean top0 = topKnown(0);
+    	boolean top1 = topKnown(1);
+    	boolean bottom0 = bottomKnown(0);
+    	boolean bottom1 = bottomKnown(1);
+    	knownMask = 0;
+    	if(bottom0) { setTopKnown(0); }
+    	if(bottom1) { setTopKnown(1); }
+    	if(top0) { setBottomKnown(0); }
+    	if(top1) { setBottomKnown(1); }
+    }
     private boolean flipped;
-    public int placedPosition;	// initial position when placed onboard
-    PieceType piece;
-    int realPieceType; // remembers the real piece type of anonymized pieces
-    // represent imperfect knowledge of opponent colors
-    int possibleid;
+    PieceType pieceType; // remembers the real piece type of anonymized pieces
 
+	public void copyFrom(piece other) {
+		vis_top_color = other.vis_top_color;
+		vis_bottom_color = other.vis_bottom_color;
+		real_top_color = other.real_top_color;
+		real_bottom_color = other.real_bottom_color;
+		flipped = other.flipped;
+		owner = other.owner;
+		knownMask = other.knownMask;
+	}
+	// create a copy not used on the board, used for game log
+	public piece(piece other)
+	{
+		copyFrom(other);
+		mystack = other.mystack;
+	}
+	
     // constructor for permanent pieces
-    public piece(PieceType p,int own, int ind, int type,long rv)
-    {	piece = p;
+    public piece(PlateauBoard b,PieceType p,int own, int ind,long rv)
+    {	myBoard= b;
         owner = own;
         piecenumber = ind;
-        realPieceType = type;
+        pieceType = p;
         real_top_color = p.topColor;
         real_bottom_color = p.bottomColor;
         randomv = rv;
         revealAll();
     }
-    boolean topIsUnknown() { return(vis_top_color==Face.Unknown); }
-    boolean bottomIsUnknown() { return(vis_bottom_color==Face.Unknown); }
 
     // constructor for temporary pieces
-    public piece(int own, Face color)
-    {
+    public piece(PlateauBoard b,int own, Face color)
+    {	myBoard = b;
         owner = own;
         real_top_color = vis_top_color = color;
         real_bottom_color = vis_bottom_color = Face.Unknown;
@@ -76,8 +123,7 @@ public class piece implements PlateauConstants
 
     boolean equals(piece other)
     {
-        boolean va = ((piecenumber == other.piecenumber) &&
-            (flipped == other.flipped));
+        boolean va = ((piecenumber == other.piecenumber) &&  (flipped == other.flipped));
 
         if (!va)
         {
@@ -89,12 +135,9 @@ public class piece implements PlateauConstants
 
     void anonymize()
     {
-        pointvalue = 0;
-        pieceType = -1;
         vis_top_color = Face.Unknown;
         vis_bottom_color = Face.Unknown;
-        possibleid = MAYCONTAINMUTE | MAYCONTAINBLUE | MAYCONTAINRED |
-            MAYCONTAINORANGE;
+        knownMask = 0;
     }
 
     public String locus()
@@ -121,7 +164,10 @@ public class piece implements PlateauConstants
     {
         return (real_bottom_color);
     }
-
+    public Face visBottomColor() 
+    {
+    	return vis_bottom_color;
+    }
     public String bottomColorString()
     {
         return (vis_bottom_color.shortName);
@@ -155,9 +201,7 @@ public class piece implements PlateauConstants
             if (f.shortName.equals(col))
             {
                 vis_top_color = f;
-                possibleid |= ColorKnown[f.ordinal()];
-                possibleid &= ColorUnknown[f.ordinal()];
-            }
+             }
         }
     }
 
@@ -171,26 +215,20 @@ public class piece implements PlateauConstants
 
     public void revealAll()
     {
-        pieceType = realPieceType;
-        pointvalue = piece.value;
         vis_top_color = real_top_color;
         vis_bottom_color = real_bottom_color;
-        possibleid = vis_top_color.colorKnown() | vis_bottom_color.colorKnown();
+        setTopKnown(0);
+        setTopKnown(1);
+        setBottomKnown(0);
+        setBottomKnown(1);
     }
 
     public void revealTop()
     {
-        if (vis_bottom_color == real_bottom_color)
-        { // the bottom is already know, so no secrets left
-            revealAll();
-        }
-        else
-        {
-            // reveal just the top
-            vis_top_color = real_top_color;
-            possibleid |= vis_top_color.colorUnknown();
-            possibleid &= vis_top_color.colorUnknown();
-        }
+    	// reveal just the top
+    	vis_top_color = real_top_color;
+    	setTopKnown(0);
+    	setTopKnown(1);
     }
 
     // our height in the stack counting from the bottom as 0
@@ -224,6 +262,7 @@ public class piece implements PlateauConstants
 
         return (true);
     }
+  
     // we are unsandwiched if we're at the bottom, or on top of our own, 
     // or not sandwiched between two opposing pieces
     public boolean unsandwiched(boolean ontop,int forPlayer)
@@ -242,6 +281,7 @@ public class piece implements PlateauConstants
     public pstack makeNewSingleStack()
     {
         pstack newstack = new pstack(mystack.b, mystack.origin, mystack.owner);
+        mystack.removeElement(this);
         addToStack(newstack);
 
         return (newstack);
@@ -258,31 +298,17 @@ public class piece implements PlateauConstants
 
         while (index < stacksize--)
         {
-            piece p = myoldstack.elementAt(index);
+            piece p = myoldstack.remove(index);
             p.addToStack(newstack);
         }
 
         return (newstack);
     }
 
-    // remove this piece from it's stack.
-    public boolean removeFromStack()
-    {
-        pstack ms = mystack;
-        mystack = null;
-
-        if (ms != null)
-        {
-            return (ms.removeElement(this));
-        }
-
-        return (false);
-    }
 
     // put this piece in a stack.  each piece can be in only one stack
     public void addToStack(pstack st)
     {
-        removeFromStack();
         st.addElement(this);
         mystack = st;
     }
@@ -290,7 +316,6 @@ public class piece implements PlateauConstants
     // put this piece in a stack.  each piece can be in only one stack
     public void addToStack(pstack st, int index)
     {
-        removeFromStack();
         st.insertElementAt(this, index);
         mystack = st;
     }
@@ -318,9 +343,8 @@ public class piece implements PlateauConstants
         c = real_top_color;
         real_top_color = real_bottom_color;
         real_bottom_color = c;
-
         flipped = !flipped;
-
+        flipKnowns();
         return (real_top_color != real_bottom_color);
     }
 
@@ -378,7 +402,7 @@ public class piece implements PlateauConstants
                     }
 
                     // mark pieces that will be captured
-                    if ((g != null) && (mystack.b.isCaptured(this)))
+                    if ((g != null) && (mystack.b!=null) && (mystack.b.isCaptured(this)))
                     {
                         GC.setColor(g,Color.red);
                         lib.GC.drawLine(g,left, top + ((2 * h) / 3), left + w, top +
@@ -427,7 +451,8 @@ public class piece implements PlateauConstants
         return ("[" + PLAYERCOLORS[owner] 
         		+ "#"+piecenumber + " " 
         		+ topColorString() + " "
-        		+ bottomColorString());
+        		+ bottomColorString()
+        		+ "]");
      }
     long Piece_Digest() { return(randomv); }
     long Face_Digest(Random r, Face color)
@@ -461,7 +486,7 @@ public class piece implements PlateauConstants
     }
     long Digest(Random r)
     {
-    	long v = placedPosition*123;
+    	long v = 0;
         long v1 = r.nextLong();
 
         switch (owner)
@@ -481,4 +506,23 @@ public class piece implements PlateauConstants
         v ^= Face_Digest(r, real_bottom_color);
         return (v);
     }
+
+    // true if this particular piece can substitute for another
+    // which is partially hidden.
+	public boolean compatibleWith(piece unknownPiece,int player)
+	{	boolean ktop = unknownPiece.topKnown(player);
+		Face top = unknownPiece.realTopColor();
+		boolean kbot =	unknownPiece.bottomKnown(player);
+		Face bot = unknownPiece.realBottomColor();
+		
+		boolean match = (!ktop || real_top_color == top)
+							&& (!kbot || real_bottom_color==bot);
+		if(!match)
+		{
+			return (!ktop || real_bottom_color == top)
+					 && (!kbot || real_top_color == bot);
+		}
+		return match;
+	}
+
 }

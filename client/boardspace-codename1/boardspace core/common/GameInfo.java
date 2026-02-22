@@ -2618,7 +2618,7 @@ synchronized(allGames) {
 	
 	
 	{ GameInfo mm = put(new GameInfo(680,ES.game,2,"P",OtherGames,"Plateau","Plateau",
-			NoBots,null,
+			OneBotPlus,new double[]{0.9,0.01},
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
@@ -2627,7 +2627,7 @@ synchronized(allGames) {
 	}{
 	 // needs a compantion app for your played pieces and pool of available pieces
 	 GameInfo mm = put(new GameInfo(681,ES.game,2,"P",OtherGames,"Plateau","Plateau5",
-				NoBots,null,
+			 	OneBotPlus,new double[]{0.9,0.01},
 				"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 				"/plateau/english/plateau-video.html",false, BlackOverWhite));
 		 mm.hasHiddenInformation = true;

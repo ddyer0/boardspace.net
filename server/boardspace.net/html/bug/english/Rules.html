@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Bug Rules</title>
+
+</head>
+<body style="background-image: url(../../images/background-image.jpg);">
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td>
+<h1 style="text-align: center;">"Bug" rules</h1>
+</td>
+
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<p>A <em>bug</em> is an entire group of connected,
+same-color stones on the board. A single stone is also a bug.</p>
+<p>The <em>size</em> of a bug is the number of
+stones it contains.</p>
+<p>The board starts empty. Black begins the game by placing one
+black stone on any empty space. Then, starting with White, the players
+take turns. Each turn has 3 steps, taken in order: 1) Grow, 2) Eat, 3)
+Bonus Grow</p>
+<p>1) Grow: Place a stone on an empty space to either start a new
+bug or grow one of your preexisting bugs by one stone. You may not
+merge bugs, and you may not grow a bug to be larger than the largest
+bug on the board (regardless of color) prior to placement.</p>
+<p>2) Eat: All your bugs which are adjacent to one or more enemy
+bugs of the same shape (possibly rotated and reflected) must eat
+(capture) those enemy bugs.</p>
+<div style="margin-left: 40px;">2a) If eating would
+unavoidably force a bug to grow by more than 1 through a merger with
+another bug of the same color, no eating occurs.</div>
+<p>3) Bonus Grow: Increase the size of each of your bugs that
+ate, by exactly 1, by placing a stone of your color on any empty space
+adjacent to each such bug.</p>
+<p>If, after growing, a bug is adjacent to an identically-shaped
+enemy bug, it must eat the enemy bug (and grow again) if possible, and
+so on.</p>
+<p>The first player who CANNOT place a stone in the placement
+step WINS.</p>
+<p>--</p>
+<br>
+Rule 2a is &nbsp;somewhat &nbsp;counter intuitive.
+&nbsp;Without &nbsp;rule &nbsp;2a, if &nbsp;eating
+would occur &nbsp;when no growth was possible,<br>
+an infinite loop of 1 &nbsp;stone &nbsp;captures would be
+possible. &nbsp;Many rules to remove this undesirable
+&nbsp;behavior are possible. &nbsp;<br>Under rule 2a, &nbsp;a symmetric set of black and white bugs remain on the board even though one would normally capture<br>the other.<br><img style="width: 427px; height: 396px;" alt="no capture" src="nocapture.jpg"><br><br>White plays B6 , but no capture occurs<br><img style="width: 400px; height: 406px;" alt="suprise capture" src="nocapture2.jpg"><br>Black's next move: &nbsp;E3, &nbsp;B5 is captured and both A4 and C7 are elgible to grow. &nbsp;Growth phase<br>continues until no more growth is possible.<br><br>
+<br>
+<span style="font-weight: bold;"></span>
+</body></html>

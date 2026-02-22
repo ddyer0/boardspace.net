@@ -186,7 +186,11 @@ public class UCTTreeViewer extends TreeViewer
 						UCTNode n = child.uctNode();
 						String bs = (n==null ) ? "0" : n.nodesBelowString();
 						GC.fillRect(gc,((row&1)==0)?bk1:bk2,x,y,w,step);
-						dispNode(gc,pt,UCTID.hitChild,x,y,child,(child.gameover()?"T":"")+"("+bs+")");
+						dispNode(gc,pt,UCTID.hitChild,x,y,child,(child.gameover()?"T":"")
+								+"("+bs
+								//+G.format(" w %6f",n.getWinrate())
+								//+G.format(" u %6f",n.getUct())
+								+")");
 						
 						UCTNode node = child.uctNode(); 
 						if(node!=null)
