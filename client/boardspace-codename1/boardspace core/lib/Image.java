@@ -152,7 +152,7 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 	public void setUnloadable(boolean v) { if(v) { flags|=Unloadable;} else { flags &= ~Unloadable; }}
 
 
-	public void drawChip(Graphics gc, DrawingObject canvas, int size, int posx, int posy, String msg) 
+	public void draw(Graphics gc, DrawingObject canvas, int size, int posx, int posy, String msg) 
 	{
 		if(gc!=null)
 		{

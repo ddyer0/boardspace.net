@@ -246,8 +246,12 @@ public class TwixtChip extends chip<TwixtChip> implements TwixtConstants
     static public TwixtChip backgroundReviewTile = new TwixtChip("background-review-tile-nomask",new double[]{0.5,0.5,1.0});
  
     static public TwixtChip board = new TwixtChip("board-p",new double[]{0.5,0.5,1.0});
-    static public TwixtChip board_np = new TwixtChip("board-np",new double[]{0.5,0.5,1.0});
-    // these are coverups for the board to change the color of the border bars when it is rotated.
+    static public TwixtChip board_18 = new TwixtChip("board-18",new double[]{0.5,0.5,1.0});
+    static public TwixtChip board_13 = new TwixtChip("board-13",new double[]{0.5,0.5,1.0});
+   static public TwixtChip board_np = new TwixtChip("board-np",new double[]{0.5,0.5,1.0});
+    static public TwixtChip board_18_np = new TwixtChip("board-18-np",new double[]{0.5,0.5,1.0});
+    static public TwixtChip board_13_np = new TwixtChip("board-13-np",new double[]{0.5,0.5,1.0});
+   // these are coverups for the board to change the color of the border bars when it is rotated.
     static public TwixtChip left = new TwixtChip("left",new double[]{0.5,0.5,1.0});
     static public TwixtChip top = new TwixtChip("top",new double[]{0.5,0.5,1.0});
     static public TwixtChip right = new TwixtChip("right",new double[]{0.5,0.5,1.0});

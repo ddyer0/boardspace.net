@@ -192,7 +192,7 @@ public class UCTTreeViewer extends TreeViewer
 				}
 				}
 			
-			StockArt.SmallX.drawChip(gc,this,30,G.Left(pt),G.Top(pt),null);
+			StockArt.SmallX.draw(gc,this,30,G.Left(pt),G.Top(pt),null);
 	}
 
 	public void StopDragging(HitPoint hp) 

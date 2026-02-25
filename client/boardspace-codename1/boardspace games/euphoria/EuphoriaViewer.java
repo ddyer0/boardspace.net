@@ -664,7 +664,7 @@ private Color playerBackground[] = {
     	EuphoriaChip chip = EuphoriaChip.getChip(obj);
     	if(chip!=null) 
     		{ if(gb.getGuiState()!=EuphoriaState.Puzzle) { chip = chip.getSpriteProxy();}
-    		  chip.drawChip(g,this,remoteViewer>=0 ? scale*2 : scale, xp, yp, null); 
+    		  chip.draw(g,this,remoteViewer>=0 ? scale*2 : scale, xp, yp, null); 
     		}
     }
     // also related to sprites,
@@ -744,7 +744,7 @@ private Color playerBackground[] = {
      		EuphoriaCell end = gb.tunnelEnds[ord];
      		int xp = gb.positionToX(end.center_x/100);
      		int yp = gb.positionToY(end.center_y/100);
-     		EuphoriaChip.Hubcap.drawChip(gc,this,CELLSIZE*2,xp,yp,null);
+     		EuphoriaChip.Hubcap.draw(gc,this,CELLSIZE*2,xp,yp,null);
      		}
      	}
      	if(val>=ALLEGIANCE_TIER_1)
@@ -752,7 +752,7 @@ private Color playerBackground[] = {
      		double bounds[] = gb.commodityBounds[ord];
      		int xp = gb.positionToX(bounds[0]/100);
      		int yp = gb.positionToY(bounds[1]/100);
-     		EuphoriaChip.Level1Markers[ord].drawChip(gc,this,CELLSIZE,xp,yp,null);
+     		EuphoriaChip.Level1Markers[ord].draw(gc,this,CELLSIZE,xp,yp,null);
      		}
      	if(val>=ALLEGIANCE_TIER_2)
      		{
@@ -760,7 +760,7 @@ private Color playerBackground[] = {
      		EuphoriaCell end = gb.tunnelBenefitMarker[ord];
      		int xp = gb.positionToX(end.center_x/100);
      		int yp = gb.positionToY(end.center_y/100);
-     		EuphoriaChip.Level2Markers[ord].drawChip(gc,this,CELLSIZE,xp-CELLSIZE/2,yp+CELLSIZE,null);
+     		EuphoriaChip.Level2Markers[ord].draw(gc,this,CELLSIZE,xp-CELLSIZE/2,yp+CELLSIZE,null);
      		}
      		// special case for icarites
      		if(allegiance==Allegiance.Icarite)
@@ -768,7 +768,7 @@ private Color playerBackground[] = {
          		EuphoriaCell end = gb.icariteWindSalon;
          		int xp = gb.positionToX(end.center_x/100);
          		int yp = gb.positionToY(end.center_y/100);
-         		EuphoriaChip.Level2Markers[ord].drawChip(gc,this,CELLSIZE,xp-CELLSIZE/2,yp+CELLSIZE,null);
+         		EuphoriaChip.Level2Markers[ord].draw(gc,this,CELLSIZE,xp-CELLSIZE/2,yp+CELLSIZE,null);
       			}
      		}
        	}
@@ -881,7 +881,7 @@ private Color playerBackground[] = {
        				EuphoriaChip ch = cell.chipAtIndex(Math.max(0,Math.min(cell.height()-1,highlight.hit_index)));
        				if(ch!=null)
        				{
-       					ch.drawChip(gc,this,CELLSIZE*2,xpos,ypos-CELLSIZE,null);
+       					ch.draw(gc,this,CELLSIZE*2,xpos,ypos-CELLSIZE,null);
        				}}
        				else {
        					highlight.hitCode = EuphoriaId.ShowPlayerPeek;
@@ -985,10 +985,10 @@ private Color playerBackground[] = {
     	{
     	EuphoriaChip recruit = c.chipAtIndex(idx);
     	EuphoriaId rack = c.rackLocation();
-    	boolean hit = recruit.drawChip(gc,this,sz,xp,yp,null,rack,test);
+    	boolean hit = recruit.draw(gc,this,sz,xp,yp,null,rack,test);
     	somehit |= hit;
     	// draw the eye box
-		  if(StockArt.Eye.drawChip(gc,this,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),tip,EuphoriaId.ShowChip,null,1,1.33))
+		  if(StockArt.Eye.draw(gc,this,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),tip,EuphoriaId.ShowChip,null,1,1.33))
 		  {
 			  tip.hitObject = recruit;
 			  tip.hit_index = pl.boardIndex;
@@ -1133,7 +1133,7 @@ private Color playerBackground[] = {
     	if(ch!=null)
     	{
         	if(rotation!=0) { GC.setRotatedContext(gc,r,hp,rotation); }
-        	if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip,(String)null)) { hp.hitObject = null;}
+        	if(ch.draw(gc,this,r,hp,EuphoriaId.ShowChip,(String)null)) { hp.hitObject = null;}
         	if(rotation!=0) { GC.unsetRotatedContext(gc,hp); }
     	}
     }
@@ -1177,8 +1177,8 @@ private Color playerBackground[] = {
     			{ view = p.hiddenView = p.view = EPlayer.PlayerView.Normal; }
     	}
     	GC.setFont(gc,labelFont);
-    	EuphoriaChip.getKnowledge(color).drawChip(gc,this,unitSize, xp,G.Top(r)+unitSize+unitSize/2,""+p.knowledge);
-    	EuphoriaChip.getMorale(color).drawChip(gc, this,unitSize, xp, G.Top(r)+(int)(unitSize*2.4),""+p.morale);
+    	EuphoriaChip.getKnowledge(color).draw(gc,this,unitSize, xp,G.Top(r)+unitSize+unitSize/2,""+p.knowledge);
+    	EuphoriaChip.getMorale(color).draw(gc, this,unitSize, xp, G.Top(r)+(int)(unitSize*2.4),""+p.morale);
     	
     	commonPlayer pl = getPlayerOrTemp(player);
     	drawStackOnPlayer(gc,pl,gb,
@@ -1261,7 +1261,7 @@ private Color playerBackground[] = {
 
         	xp+= unitSize*4;
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.workers,sources,dests)?highlight:null,pr,p.workers,xp,yp,tip,fromHiddenWindow);
-        	StockArt.SmallO.drawChip(gc,this,unitSize*5/2,xp+unitSize/2,yp,""+p.totalWorkers);
+        	StockArt.SmallO.draw(gc,this,unitSize*5/2,xp+unitSize/2,yp,""+p.totalWorkers);
         	
         	{
         	int hx = xp+unitSize*3;
@@ -1417,7 +1417,7 @@ private Color playerBackground[] = {
     	if((top!=null) && (highlight!=null) && top.isWorker() && (gb.pickedObject==null) )
     	{	animPhase = G.Date();
     		int mp = (animPhase%2000>1000)?12:11;
-     		StockArt.SmallO.drawChip(gc,this,(CELLSIZE*mp)/2,xpos,ypos,null);   
+     		StockArt.SmallO.draw(gc,this,(CELLSIZE*mp)/2,xpos,ypos,null);   
     		repaint(1000);
     	}
     	switch(rack)
@@ -1529,7 +1529,7 @@ private Color playerBackground[] = {
     			}
     			if(cell.ignoredForPlayer!=null) {
     				// lionel the cook
-    				if(EuphoriaChip.Food.drawChip(gc,this,CELLSIZE,xpos,ypos,lionel ? highlight : null,cell.rackLocation(),null))
+    				if(EuphoriaChip.Food.draw(gc,this,CELLSIZE,xpos,ypos,lionel ? highlight : null,cell.rackLocation(),null))
     				{
     					highlight.spriteColor = Color.red;
     					highlight.hitObject =cell;
@@ -1582,7 +1582,7 @@ private Color playerBackground[] = {
     	{	String desc = rack.defaultDescription;
         	if(cell.marketPenalty!=null)
         	{ 
-        		StockArt.SmallX.drawChip(gc,this,cell.lastSize(),cell.centerX(),cell.centerY(),null);
+        		StockArt.SmallX.draw(gc,this,cell.lastSize(),cell.centerX(),cell.centerY(),null);
         		desc = cell.marketPenalty.getExplanation();
         	}
         	desc = s.get0or1(desc,cell.height());
@@ -1655,14 +1655,14 @@ private Color playerBackground[] = {
         		int xp = tip.hit_x;
         		int yp = tip.hit_y;
         		EuphoriaChip ch = c.chipAtIndex(ind);
-        		if(ch!=null) { ch.drawChip(gc,this,c.defaultScale*8,xp+gb.cellSize()*5,yp,null); }
+        		if(ch!=null) { ch.draw(gc,this,c.defaultScale*8,xp+gb.cellSize()*5,yp,null); }
         		}
         		break;
         	default: break;
         	}
         }
         if(popupDisplay!=null)
-        {	popupDisplay.drawChip(gc,this,popupDisplay_s,popupDisplay_x,popupDisplay_y,null);
+        {	popupDisplay.draw(gc,this,popupDisplay_s,popupDisplay_x,popupDisplay_y,null);
         }
     }
  
@@ -1756,7 +1756,7 @@ private Color playerBackground[] = {
     	}
      	if(cell.height()==1)
      	{
-			  if(StockArt.Eye.drawChip(gc,this,size/8,xpos+(int)(size*0.43),ypos-(int)(size*0.26),highlight,EuphoriaId.ShowChip,null,1,1.33))
+			  if(StockArt.Eye.draw(gc,this,size/8,xpos+(int)(size*0.43),ypos-(int)(size*0.26),highlight,EuphoriaId.ShowChip,null,1,1.33))
 			  {
 				  highlight.hitObject = cell.topChip();
 				  highlight.awidth = size/10;
@@ -1772,7 +1772,7 @@ private Color playerBackground[] = {
     	{	int xpos = (int)(cx+i*sz*xo);
     		int ypos = (int)(cy+i*sz*yo);
     		EuphoriaChip ch = c.chipAtIndex(i);
-    		if(ch.drawChip(gc,this,sz,xpos,ypos,hitEye?null:hp,c.rackLocation,null,1,1))
+    		if(ch.draw(gc,this,sz,xpos,ypos,hitEye?null:hp,c.rackLocation,null,1,1))
     		{	
     		hp.hit_index = PlayerView.Normal.ordinal(); 
 			hp.hitCode = EuphoriaId.ShowPlayerView;
@@ -1780,7 +1780,7 @@ private Color playerBackground[] = {
 			hp.spriteRect = null;
 			hp.spriteColor = null;
     		}
-    		if(StockArt.Eye.drawChip(gc,this,sz/10,xpos+(int)(sz*0.42),ypos-(int)(sz*0.25),hp,EuphoriaId.ShowChip,null,1,1.33))
+    		if(StockArt.Eye.draw(gc,this,sz/10,xpos+(int)(sz*0.42),ypos-(int)(sz*0.25),hp,EuphoriaId.ShowChip,null,1,1.33))
     		{	hitEye = true;
     			hp.hitObject = ch;
     			hp.hit_index = p.boardIndex;
@@ -1808,7 +1808,7 @@ private Color playerBackground[] = {
     	Rectangle r = new Rectangle(G.Left(br),G.Top(br),w/20,h/20);
     	GC.fillRect(gc,rackBackGroundColor,r); 
     	GC.frameRect(gc, Color.black, r);
-    	StockArt.Checkmark.drawChip(gc, this, w/20,G.centerX(r),G.centerY(r),highlight,EuphoriaId.CloseBox,null);
+    	StockArt.Checkmark.draw(gc, this, w/20,G.centerX(r),G.centerY(r),highlight,EuphoriaId.CloseBox,null);
     }
     
     boolean useEphemeralPick = false;
@@ -1865,8 +1865,8 @@ private Color playerBackground[] = {
     			{ int xx = xp+xstep/2;
     			  int yy = yp+ystep/2;
     			  int sz = xstep+xstep/2;
-    			  recruit.drawChip(gc,this,sz,xx,yy,null); 
-				  if(StockArt.Eye.drawChip(gc,this,sz/12,xx+(int)(sz*0.45),yy-(int)(sz*0.28),anySelect,EuphoriaId.ShowChip,null,1,1.33))
+    			  recruit.draw(gc,this,sz,xx,yy,null); 
+				  if(StockArt.Eye.draw(gc,this,sz/12,xx+(int)(sz*0.45),yy-(int)(sz*0.28),anySelect,EuphoriaId.ShowChip,null,1,1.33))
 				  {
 					  anySelect.hitObject = recruit;
 					  anySelect.hit_index = pl;
@@ -1885,9 +1885,9 @@ private Color playerBackground[] = {
     				  WorkerChip ch = WorkerChip.getWorker(p.color,i);
     				  if(ch==gb.selectedDieRoll)
     				  {
-    					  StockArt.SmallO.drawChip(gc,this,CELLSIZE*14,rx,ry,null);
+    					  StockArt.SmallO.draw(gc,this,CELLSIZE*14,rx,ry,null);
     				  }
-    				  ch.drawChip(gc,this,CELLSIZE*3,rx,ry,highlight,DieRolls[i-1],null);
+    				  ch.draw(gc,this,CELLSIZE*3,rx,ry,highlight,DieRolls[i-1],null);
     				  rx += CELLSIZE*3;
     			  }
     		  }
@@ -2028,7 +2028,7 @@ private Color playerBackground[] = {
     				RecruitChip recruit = (RecruitChip)ep;
     				if(recruit.allegiance == Allegiance.Factionless)
     				{
-    					StockArt.SmallX.drawChip(gc,this,siz,x+stepX*6,actY,null);
+    					StockArt.SmallX.draw(gc,this,siz,x+stepX*6,actY,null);
     					anySelect.setHelpText(FactionlessWarning);
     				}
     			}
@@ -2069,7 +2069,7 @@ private Color playerBackground[] = {
     			EuphoriaChip top = c.topChip();
     			if(top!=null)
     			{
-    			top.drawChip(gc,this,2*w/3,x+w/2,y+h/2,null);
+    			top.draw(gc,this,2*w/3,x+w/2,y+h/2,null);
     			}
     			break;
 			default:
@@ -2086,7 +2086,7 @@ private Color playerBackground[] = {
 		{
 		 Rectangle br = new Rectangle(x+w-smallBox-margin,y+margin,smallBox,smallBox);
 		 GC.fillRect(gc,rackBackGroundColor,br);
-		 StockArt.FancyCloseBox.drawChip(gc,this,br,anySelect,EuphoriaId.CloseBox);
+		 StockArt.FancyCloseBox.draw(gc,this,br,anySelect,EuphoriaId.CloseBox);
 		}
 		
 
@@ -2590,7 +2590,7 @@ private Color playerBackground[] = {
        if(currentZoom!=null)
        {	EuphoriaChip ch = magnifier ? EuphoriaChip.UnMagnifier : EuphoriaChip.Magnifier;
        		EuphoriaId rack = magnifier ? EuphoriaId.UnMagnifier : EuphoriaId.Magnifier;
-       		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack,(String)null);
+       		ch.draw(gc,this,magnifierRect,ourTurnSelect,rack,(String)null);
        }
 	   int who = selectedRecruitPlayer(gb);
       if(recruitGui)

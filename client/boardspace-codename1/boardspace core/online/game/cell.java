@@ -1047,7 +1047,7 @@ public abstract class cell<FINALTYPE
       return(val);
  	}
 	// method for "Drawable" interface
-	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
+	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{
 		throw G.Error("method required to use the Drawable interface");
 	}

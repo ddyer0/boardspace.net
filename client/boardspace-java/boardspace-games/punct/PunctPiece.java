@@ -236,7 +236,7 @@ public class PunctPiece implements PunctConstants,Drawable
       return("<Piece "+playerChar[color.ordinal()]+pieceID[id]+" #"+id+" "+" "+ImageFileNames[typecode]+"-"+punct_index+" "+level+points+">");
     }
 
-public void drawChip(Graphics gc, DrawingObject cc, int size, int posx, int posy, String msg) 
+public void draw(Graphics gc, DrawingObject cc, int size, int posx, int posy, String msg) 
 {	exCanvas c = DrawingObject.getCanvas(cc);
 	c.drawImage(gc, getImage(), scaleSet(),posx,posy,size,1.0,0.0,null,true);
 	c.drawImage(gc, dotImage(),dotScaleSet(), posx, posy, size,1.0,0.0,msg,true);

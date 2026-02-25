@@ -33,7 +33,7 @@ public class GearMenu extends Rectangle {
 	
 	public void draw(Graphics gc,HitPoint hp)
 	{
-		StockArt.Gear.drawChip(gc, parent, this, hp,GearId.GearMenu,GearId.GearMenu.message); 
+		StockArt.Gear.draw(gc, parent, this, hp,GearId.GearMenu,GearId.GearMenu.message); 
 	}
 	
 	public void doGearMenu(int x,int y)

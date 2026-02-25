@@ -286,7 +286,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	int w = (int)(width*0.8);
     	GC.setColor(gc,back);
     	GC.fillOval(gc,cx-w/2,cy-w/2,w,w);
-    	PalagoChip.logo.drawChip(gc,this,w,cx,cy,null);
+    	PalagoChip.logo.draw(gc,this,w,cx,cy,null);
     	}
     }
 
@@ -326,7 +326,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
    		int cellS = inboard? bb.cellSize() : Math.min(G.Height(chipRect),G.Width(chipRect));
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	PalagoChip.getChip(obj).drawChip(g,this,cellS, xp, yp, null);
+    	PalagoChip.getChip(obj).draw(g,this,cellS, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -448,7 +448,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
             {
             if(ccell==destCell) 
             {
-            PalagoChip.blank.drawChip(gc,this,cellSize,xpos,ypos,null);
+            PalagoChip.blank.draw(gc,this,cellSize,xpos,ypos,null);
             }
             if(isASource)
             	{GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);

@@ -270,7 +270,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 
 
    public void drawSprite(Graphics g,int obj,int xp,int yp)
-   {	TabChip.getChip(obj).drawChip(g,this,BOARDCELLSIZE,xp,yp,null);
+   {	TabChip.getChip(obj).draw(g,this,BOARDCELLSIZE,xp,yp,null);
   
    }
    // also related to sprites,
@@ -320,7 +320,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
               TabChip tile = TabChip.HexTile;
               if(cell.flagArea) { tile = TabChip.HexTile_Gold2; }
               else if(cell.centerArea) { tile = TabChip.HexTile_Gold; }
-              tile.drawChip(gc,this,(int)(BOARDCELLSIZE*0.74),xpos,ypos,null);
+              tile.draw(gc,this,(int)(BOARDCELLSIZE*0.74),xpos,ypos,null);
            }
        }
  
@@ -369,13 +369,13 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
   
              if (drawhighlight)
              { // checking for pointable position
-            	TabChip.Selection.drawChip(gc,this,BOARDCELLSIZE,xpos,ypos,null);
+            	TabChip.Selection.draw(gc,this,BOARDCELLSIZE,xpos,ypos,null);
              }
              numberMenu.saveSequenceNumber(cell,xpos,ypos);
-             cell.drawChip(gc, this, BOARDCELLSIZE, xpos,ypos,null);
+             cell.draw(gc, this, BOARDCELLSIZE, xpos,ypos,null);
               if(captures.get(cell)!=null)
               {
-              StockArt.SmallX.drawChip(gc,this,BOARDCELLSIZE*2,xpos,ypos,null);
+              StockArt.SmallX.draw(gc,this,BOARDCELLSIZE*2,xpos,ypos,null);
               }
 
             }
@@ -400,9 +400,9 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         	int w = G.Width(r)/2;
            if(canhit)
            {
-            TabChip.Selection.drawChip(gc,this,w,cx,cy,null);
+            TabChip.Selection.draw(gc,this,w,cx,cy,null);
            }
-           pool.drawChip(gc,this,w,cx,cy,null);
+           pool.draw(gc,this,w,cx,cy,null);
         }
         pl.rotateCurrentCenter(pool,cx,cy);
            }

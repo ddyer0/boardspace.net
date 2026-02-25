@@ -157,7 +157,7 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 	 * @param label the text label or null
 	 * @see exCanvas#drawImage drawImage
 	 */
-	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void draw(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
 	{	drawChip(gc,DrawingObject.getCanvas(canvas),SQUARESIZE,1.0,cx,cy,label);
 	}
 
@@ -430,7 +430,7 @@ try {
 			dsize=2*dsize/3;
 			GC.frameRect(gc, Color.blue,xpos-dsize/2-2,ypos-dsize/2-2,dsize+4,dsize+4);
 		}
-		im.drawChip(gc, can, dsize, xpos, ypos, null);
+		im.draw(gc, can, dsize, xpos, ypos, null);
 		HitPoint.setHelpText(hp, dsize,xpos,ypos,im.getName()+" "+im.getWidth()+"x"+im.getHeight());
 		xpos += cell;
 		if((xpos+cell/2)>(xpos0+w)) { xpos = xpos0; ypos+=cell; }

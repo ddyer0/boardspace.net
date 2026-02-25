@@ -314,8 +314,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	MagnetChip king = !bb.reverseY() ? bb.getPlayerChip(0) : bb.getPlayerChip(1);
     	MagnetChip reverse = bb.reverseY() ? bb.getPlayerChip(0) : bb.getPlayerChip(1);
-    	reverse.drawChip(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)/4,null);
-    	king.drawChip(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)-G.Height(r)/4,null);
+    	reverse.draw(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)/4,null);
+    	king.draw(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)-G.Height(r)/4,null);
     	HitPoint.setHelpText(highlight,r,MagnetId.ReverseViewButton,s.get(ReverseViewExplanation));
      }
 
@@ -395,7 +395,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	// use the board cell size rather than the window cell size
     	MagnetChip chip = MagnetChip.getChip(obj);
     	if(shouldBeConcealed(chip,getActivePlayer())) { chip = chip.getFaceProxy(); }
-    	chip.drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	chip.draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -579,7 +579,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
             	int sz = (cell==gb.selectedCell)
             				?gb.cellSize()*4 
             				: gb.cellSize()*5;
-            	 StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);                
              }
             drawStack(gc,gb,cell,drawhighlight?highlight:null,gb.cellSize(),xpos,ypos);
 

@@ -507,7 +507,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	// use the board cell size rather than the window cell size
     	ManhattanChip ch = bb.pickedObject;
     	ManhattanCell top = bb.pickedSourceStack.top();
-    	if(ch!=null) { ch.drawChip(g,this,top.lastSize(), xp, yp, null); }
+    	if(ch!=null) { ch.draw(g,this,top.lastSize(), xp, yp, null); }
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -638,7 +638,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     public void drawGrayOverlay(Graphics gc, PlayerBoard pb,ManhattanCell c,int cellSize)
     {	int xpos =pb.cellToX(c);
     		 int ypos =pb.cellToY(c);
-    		 ManhattanChip.BlankCard.drawChip(gc,this,cellSize,xpos,ypos, null);
+    		 ManhattanChip.BlankCard.draw(gc,this,cellSize,xpos,ypos, null);
     		}
     public void drawPlayerArray(Graphics gc,HitPoint hp,ManhattanBoard gb,PlayerBoard pb,Hashtable<ManhattanCell, ManhattanMovespec> targets,ManhattanCell cells[], int cellSize, double xstep, double ystep, 
     		String hint,HitPoint hitAny)
@@ -664,10 +664,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			{ 
 			if(bb.getState()==ManhattanState.ConfirmNichols)
 			{
-			StockArt.Exmark.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+			StockArt.Exmark.draw(gc,this,cellSize/2,xpos,ypos,null);
 			}
 			else 
-			{ StockArt.Checkmark.drawChip(gc,this,cellSize/2,xpos,ypos,null); 
+			{ StockArt.Checkmark.draw(gc,this,cellSize/2,xpos,ypos,null); 
 			}
 			}
 		//StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
@@ -763,7 +763,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		default: size = cellSize*2/3;
     			break;
     		}
-    		if(ch.drawChip(gc,this,size,offset,ypos,hp,c.rackLocation(),null))
+    		if(ch.draw(gc,this,size,offset,ypos,hp,c.rackLocation(),null))
     		{	if(move!=null && move.op==MOVE_SELECT)
     			{
     			move.to_index = move.from_index = ind;
@@ -775,7 +775,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	}}
     	
 		if(selected)
-			{ StockArt.Checkmark.drawChip(gc,this,cellSize/2,xpos,ypos,null); 
+			{ StockArt.Checkmark.draw(gc,this,cellSize/2,xpos,ypos,null); 
 			}
 		// damage the temp cell in case it got incorporated into any useful cells
 		temp.reInit();
@@ -826,10 +826,10 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 				&& !gb.getState().Puzzle()
 				&& targets.get(c)!=null)
 		{	
-			StockArt.SmallO.drawChip(gc,this,cellSize*3,xpos,ypos,null);
+			StockArt.SmallO.draw(gc,this,cellSize*3,xpos,ypos,null);
 			if(bombing)
 			{
-				StockArt.RedLight.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+				StockArt.RedLight.draw(gc,this,cellSize/2,xpos,ypos,null);
 			}
 		}
 		//StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
@@ -888,14 +888,14 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 				&& !gb.getState().Puzzle()
 				&& targets.get(c)!=null)
 			{	
-				StockArt.SmallO.drawChip(gc,this,cellSize*3,xpos,ypos,null);
+				StockArt.SmallO.draw(gc,this,cellSize*3,xpos,ypos,null);
 			}
     		return hit;
     }
     
     public boolean drawBoardChip(Graphics gc,HitPoint hp,ManhattanChip c,ManhattanId code,int cellSize,int xpos,int ypos,String hint)
     {
-    		if(c.drawChip(gc,this,cellSize,xpos,ypos, hp, code, hint,1,1))
+    		if(c.draw(gc,this,cellSize,xpos,ypos, hp, code, hint,1,1))
     		{	
     			hp.spriteColor = Color.red;
     			hp.awidth = cellSize/2;
@@ -934,13 +934,13 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	if(pb.hasPersonality(ManhattanChip.Lemay))
     	{	
     		if(!pb.testOption(TurnOption.LemayFighter))
-    		{	pb.fighter.drawChip(gc,this,step,left,top+ystep*2,null);
+    		{	pb.fighter.draw(gc,this,step,left,top+ystep*2,null);
     		}
     		if(!pb.testOption(TurnOption.LemayBomber))
-    		{   pb.bomber.drawChip(gc,this,step,left,top+step,null);
+    		{   pb.bomber.draw(gc,this,step,left,top+step,null);
     		}
     		if(!pb.testOption(TurnOption.LemayAirstrike))
-    		{   ManhattanChip.Damage.drawChip(gc,this,step,left,top,null);
+    		{   ManhattanChip.Damage.draw(gc,this,step,left,top,null);
     		}
  		
     	 }
@@ -952,22 +952,22 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		if(building.height()>0)
     		{
     		ManhattanChip ch = building.chipAtIndex(0);
-    		ch.drawChip(gc,this,step,left,top,null);
-    		StockArt.SmallX.drawChip(gc,this,step,left,top,null);
+    		ch.draw(gc,this,step,left,top,null);
+    		StockArt.SmallX.draw(gc,this,step,left,top,null);
     		}
     	}
     	else if(pb.hasPersonality(ManhattanChip.Fuchs))
     	{   if(!pb.testOption(TurnOption.FuchsEspionage))
     		{
     		
-			ManhattanChip.Spy.drawChip(gc,this,step,left,top,hp,null,FuchsExplanation);
+			ManhattanChip.Spy.draw(gc,this,step,left,top,hp,null,FuchsExplanation);
     		}
     	}
     	else if(pb.hasPersonality(ManhattanChip.Groves))
     	{   if(!pb.testOption(TurnOption.GrovesWorker))
     		{
     		
-			pb.engineer.drawChip(gc,this,step,left,top,hp,null,GrovesWorkerExplanation);
+			pb.engineer.draw(gc,this,step,left,top,hp,null,GrovesWorkerExplanation);
     		}
     	}
     	else if(pb.hasPersonality(ManhattanChip.Oppenheimer))
@@ -975,7 +975,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     		if(!pb.testOption(TurnOption.OppenheimerWorker))
 			{
 			
-			pb.scientist.drawChip(gc,this,step,left,top,hp,null,OppenheimerWorkerExplanation);
+			pb.scientist.draw(gc,this,step,left,top,hp,null,OppenheimerWorkerExplanation);
 			}
     	}
     	if(G.debug() || G.offline())
@@ -1619,13 +1619,13 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			PlayerBoard pb = gb.getPlayerBoard(player);
 			int available = Math.min(3,pb.cashDisplay.cash);
 			int x0 = x00;
-			if(pb.chip.drawChip(gc,this,cellSize,x0,y0,hitUs,ManhattanId.Select,null))
+			if(pb.chip.draw(gc,this,cellSize,x0,y0,hitUs,ManhattanId.Select,null))
 				{
 				hp.hitData = new ManhattanMovespec(approveOp,pb.color,pb.boardIndex);
 				}
 			if(pb.approvedNorthKorea)
 			{
-				StockArt.Checkmark.drawChip(gc,this,cellSize/2,x0,y0,null);
+				StockArt.Checkmark.draw(gc,this,cellSize/2,x0,y0,null);
 			}
 			for(int i=0;i<=available;i++)
 			{	int xpos = x0+(i+1)*cellSize;
@@ -1643,17 +1643,17 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 						break;
 				default: break;
 				}
-				if(c1.drawChip(gc,this,cellSize,xpos,y0,i==pb.koreanContribution?null:hitUs,ManhattanId.Select,null))
+				if(c1.draw(gc,this,cellSize,xpos,y0,i==pb.koreanContribution?null:hitUs,ManhattanId.Select,null))
 					{
 					hp.hitData = new ManhattanMovespec(contributeOp,pb.color,i,pb.boardIndex);
 					}
 				if(c2!=null)
 				{
-					c2.drawChip(gc,this,cellSize,xpos+cellSize/5,y0-cellSize/6,null);
+					c2.draw(gc,this,cellSize,xpos+cellSize/5,y0-cellSize/6,null);
 				}
 				if(i==pb.koreanContribution)
 				{	total += i;
-					StockArt.Checkmark.drawChip(gc,this,cellSize/2,xpos,y0,null);
+					StockArt.Checkmark.draw(gc,this,cellSize/2,xpos,y0,null);
 				}
 			}
 			y0 += ystep;
@@ -1669,18 +1669,18 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 		// when everyone else has approved, the korean's chip appears and they can click on it.
 		y0 -= ystep/3;
 		int x0 = x00+cellSize/2;
-		if(pb.chip.drawChip(gc,this,cellSize,x0,y0,mutable_game_record || iAmExcluded ? hp0 : null,ManhattanId.Select,null))
+		if(pb.chip.draw(gc,this,cellSize,x0,y0,mutable_game_record || iAmExcluded ? hp0 : null,ManhattanId.Select,null))
 		{
 		hp0.hitData = new ManhattanMovespec(approveOp,pb.color,pb.boardIndex);
 		}
 	   if(pb.approvedNorthKorea)
 	   {
-		StockArt.Checkmark.drawChip(gc,this,cellSize/2,x0,y0,null);
+		StockArt.Checkmark.draw(gc,this,cellSize/2,x0,y0,null);
 	   }
 	}
 	 int dotSize = w/30;
 	 GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);
-	 StockArt.FancyCloseBox.drawChip(gc, this, dotSize*3/4, scrimLeft+scrimW-dotSize/2, scrimTop+dotSize/2, hp,ManhattanId.CloseOverlay,null);
+	 StockArt.FancyCloseBox.draw(gc, this, dotSize*3/4, scrimLeft+scrimW-dotSize/2, scrimTop+dotSize/2, hp,ManhattanId.CloseOverlay,null);
 }
 
 	 private ChipStack helpOff = new ChipStack();
@@ -1705,7 +1705,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 	int scrimTop = cy-scrimH/2;
 	 	GC.fillRect(gc,Color.gray,scrimLeft,scrimTop,scrimW,scrimH);
 	 	GC.frameRect(gc,Color.black,scrimLeft,scrimTop,scrimW,scrimH);
-	 	if(ch.drawChip(gc,this,sz,cx,cy,hp,ManhattanId.ShowChip,null,1,1))
+	 	if(ch.draw(gc,this,sz,cx,cy,hp,ManhattanId.ShowChip,null,1,1))
 	 	{
 	 		hp.hitData = ch;
 	 	}
@@ -1772,7 +1772,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 			 }
 			 if(gb.isSelected(chip))
 			 {
-				 StockArt.Exmark.drawChip(gc,this,cellSize/2,x0,y0,null);
+				 StockArt.Exmark.draw(gc,this,cellSize/2,x0,y0,null);
 			 }
 			 if(personalities && (chip.type==Type.Personalities))
 			 {	boolean has = false;
@@ -1829,12 +1829,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 	 	if(plannedSeating())
 		 {	
 			 
-			 ManhattanChip.RotateCCW.drawChip(gc,this,new Rectangle(scrimLeft,scrimTop,sz,sz),
+			 ManhattanChip.RotateCCW.draw(gc,this,new Rectangle(scrimLeft,scrimTop,sz,sz),
 					 hitAny,ManhattanId.RotateCW,RotateCCWMessage,1.2);
-			 ManhattanChip.RotateCW.drawChip(gc,this,new Rectangle(scrimLeft+sz,scrimTop,sz,sz),
+			 ManhattanChip.RotateCW.draw(gc,this,new Rectangle(scrimLeft+sz,scrimTop,sz,sz),
 					 hitAny,ManhattanId.RotateCW,RotateCWMessage,1.2);
 		 }
-		 StockArt.FancyCloseBox.drawChip(gc, this, sz, scrimLeft+scrimW-sz/2, scrimTop+sz/2, hitAny,ManhattanId.CloseOverlay,null);
+		 StockArt.FancyCloseBox.draw(gc, this, sz, scrimLeft+scrimW-sz/2, scrimTop+sz/2, hitAny,ManhattanId.CloseOverlay,null);
 	 }
 	 }
 

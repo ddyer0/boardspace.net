@@ -247,7 +247,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	MorelliChip ch = MorelliChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -336,7 +336,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
             	}
 
             if(isDest || (cell==lastDest) || (cell==lastSrc))
-            	{	StockArt.SmallO.drawChip(gc, this, squareSize, xpos,ypos,null);
+            	{	StockArt.SmallO.draw(gc, this, squareSize, xpos,ypos,null);
             	}
     	}
     	if(hitCell!=null)

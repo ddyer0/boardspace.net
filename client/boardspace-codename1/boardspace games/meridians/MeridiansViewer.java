@@ -390,7 +390,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	MeridiansChip.getChip(obj).drawChip(g,this,STONESIZE, xp, yp, null);
+    	MeridiansChip.getChip(obj).draw(g,this,STONESIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -455,7 +455,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).draw(gc,this,xsize,xpos,ypos,null);
 	               
 	       }       	
     }
@@ -495,9 +495,9 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             	&& (cell.topChip()!=null)
             	&& group.isolated
             	)
-            	{ StockArt.SmallX.drawChip(gc,this,STONESIZE,xpos,ypos,null); 
+            	{ StockArt.SmallX.draw(gc,this,STONESIZE,xpos,ypos,null); 
             	}
-            if(show && targets.get(cell)!=null) { StockArt.SmallO.drawChip(gc,this,STONESIZE,xpos,ypos,null); }
+            if(show && targets.get(cell)!=null) { StockArt.SmallO.draw(gc,this,STONESIZE,xpos,ypos,null); }
         }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }

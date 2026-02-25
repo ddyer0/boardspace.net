@@ -245,8 +245,8 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/4,null);
-    	king.drawChip(gc,this,w,cx,cy+w/4,null);
+    	reverse.draw(gc,this,w,cx,cy-w/4,null);
+    	king.draw(gc,this,w,cx,cy+w/4,null);
     	HitPoint.setHelpText(highlight,r, TzaarId.ReverseViewButton, s.get(ReverseViewExplanation));
  
      } 
@@ -254,7 +254,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	TzaarChip ic = TzaarChip.getChip(idx);
     	int scl = scaleCellSize(CELLSIZE,xp,yp,boardRect);
-    	ic.drawChip(g,this,scl,xp,yp,null);
+    	ic.draw(g,this,scl,xp,yp,null);
     }
 
 
@@ -364,7 +364,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
    		int yp = G.Top(r)+G.Height(r)-SQUARESIZE/2;
    		pl.rotateCurrentCenter(c,xp,yp);
    		if(canhitthis && (moving>=0) && (c.height()==0))
-   		{	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xp,yp,null);
+   		{	StockArt.SmallO.draw(gc,this,SQUARESIZE,xp,yp,null);
    		}
     
     	if(c.drawStack(gc,this,canhitthis?highlight:null,SQUARESIZE,

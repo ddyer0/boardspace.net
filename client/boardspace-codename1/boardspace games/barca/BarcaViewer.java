@@ -270,7 +270,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	BarcaChip.getChip(obj).drawChip(g,this,(int)(SQUARESIZE*sizeScale(xp,yp,boardRect)), xp, yp, null);
+    	BarcaChip.getChip(obj).draw(g,this,(int)(SQUARESIZE*sizeScale(xp,yp,boardRect)), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -388,11 +388,11 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             	highlight.spriteColor = Color.red;
             }
             if(frightened)
-            { StockArt.Dot.drawChip(gc,this,sz+2,xpos+sz/15,ypos,null); 
+            { StockArt.Dot.draw(gc,this,sz+2,xpos+sz/15,ypos,null); 
             }
             if (drawhighlight)
             { // checking for pointable position
-           	 StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);                
+           	 StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);                
             }
             //if(cell.isOdd()){ StockArt.SmallO.drawChip(gc,this,(int)(gb.cellSize()*1),xpos,ypos,null); }                
             }
@@ -803,8 +803,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	int ww = usePerspective() ? (int)(w*0.8) : (int)(w*1.2);
     	int t = G.centerY(r);
     	int l = G.centerX(r);
-    	reverse.drawChip(gc,this,ww,l,t-w/4,null);
-    	king.drawChip(gc,this,ww,l,t+w/3,null);
+    	reverse.draw(gc,this,ww,l,t-w/4,null);
+    	king.draw(gc,this,ww,l,t+w/3,null);
     	HitPoint.setHelpText(highlight,r, BarcaId.Reverse,s.get(ReverseViewExplanation));
     	
      }

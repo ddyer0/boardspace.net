@@ -533,7 +533,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     					: Station.getCard(obj);	// Tiles have zero offset
     	boolean hot = b.getState()==OnedayState.Discard;
     	if(hot) { xp-=CARDSIZE/6; yp-=CARDSIZE/6; }
-    	ch.drawChip(g,this,CARDSIZE,xp,yp,hot?Station.HOTFRAME:null);
+    	ch.draw(g,this,CARDSIZE,xp,yp,hot?Station.HOTFRAME:null);
      }
 
 
@@ -589,7 +589,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 
 	      if(cell.hasPrize)
 	      {	// safari prizes
-	    	  Station.back.drawChip(gc, this, (int)(CELLSIZE*scl), xpos,ypos,null);
+	    	  Station.back.draw(gc, this, (int)(CELLSIZE*scl), xpos,ypos,null);
 	      }
 	  }
 
@@ -604,7 +604,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     		int yp = G.Top(brect)+t.positionOnMap_y(brect);
     		StockArt dot = l.getLineDot();
     		int scaledW = G.Width(brect)/10;
-    		dot.drawChip(gc,this,scaledW,xp,yp,null);
+    		dot.draw(gc,this,scaledW,xp,yp,null);
     	
     		for(int forPlayer=0,np=nPlayers(); forPlayer<np; forPlayer++)
     		{
@@ -720,7 +720,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	 int rh = (int)(h*0.3);
     	 int ex = (int)(cx + sina*h*0.25);
     	 int ey = (int)(cy + cosa*h*0.25);
-    	 dot.drawChip(gc, this, h*2,cx,cy,null);
+    	 dot.draw(gc, this, h*2,cx,cy,null);
     	 int l = (cx+ex)/2;
     	 int top =(cy+ey)/2;
     	 drawArrow(gc,l,top,angle,3*rh/2);
@@ -735,7 +735,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 			int h = G.Height(r);
 			int cx = left ? G.Left(r)+w/8 : G.Right(r)-w/8;
 			int cy = G.Top(r)+h/2;
-			Station.back.drawChip(gc,this,w/4,cx,cy,null);
+			Station.back.draw(gc,this,w/4,cx,cy,null);
 		}
 
     	if(G.pointInRect(p, r) && bd.canTransitionToWalking())

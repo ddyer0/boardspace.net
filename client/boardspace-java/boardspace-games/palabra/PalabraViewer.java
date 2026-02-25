@@ -288,7 +288,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     {	int xp = G.centerX(r);
 		int yp = G.centerY(r);
 		int hscale = G.Width(r);
-		ch.drawChip(gc,this,hscale,xp,yp,null);
+		ch.draw(gc,this,hscale,xp,yp,null);
     }
 
     public Text censoredMoveText(SequenceElement sp,int index,Font f)
@@ -375,7 +375,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	PalabraChip ch = PalabraChip.getChip(obj);
-    	ch.drawChip(g,this,CELLSIZE*2, xp, yp, null); 
+    	ch.draw(g,this,CELLSIZE*2, xp, yp, null); 
     }
 
 

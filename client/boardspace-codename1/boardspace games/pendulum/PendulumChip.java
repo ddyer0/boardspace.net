@@ -561,9 +561,6 @@ public class PendulumChip extends chip<PendulumChip> implements CommonConfig,Pen
 	public String idString() {
 		return idString;
 	}
-	public boolean findChipHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight,double sscale)
-    {
-    	return super.findChipHighlight(rackLocation,highlight,e_x,e_y,squareWidth,squareHeight,sscale);
-    }
+
 
 }

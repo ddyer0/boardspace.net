@@ -449,7 +449,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	SlitherChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	SlitherChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -548,12 +548,12 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
             {
             if(!gb.validCell(cell))
             {
-            	StockArt.SmallX.drawChip(gc,this,sz,xpos,ypos,null);
+            	StockArt.SmallX.draw(gc,this,sz,xpos,ypos,null);
             }
             }
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);
             }
         }
     	numberMenu.drawSequenceNumbers(gc,sz*2/3,labelFont,labelColor);

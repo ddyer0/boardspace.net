@@ -411,7 +411,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, cs, dx,dy,canHit?highlight:null,JumbulayaId.DrawPile,
+    		if(gb.drawPile.chipAtIndex(i).draw(gc, this, cs, dx,dy,canHit?highlight:null,JumbulayaId.DrawPile,
     				hide ? JumbulayaChip.BACK : null))
     		{
     			highlight.hitObject = gb.drawPile;
@@ -452,7 +452,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     {
    		StockArt chip = showing ? StockArt.NoEye : StockArt.Eye;
    		String help = s.get(chip==StockArt.Eye ? ShowTilesMessage : HideTilesMessage);
-		if(chip.drawChip(gc, this, er, highlightAll, JumbulayaId.EyeOption,help))
+		if(chip.draw(gc, this, er, highlightAll, JumbulayaId.EyeOption,help))
 		{	
 	   		boolean newv = !showing;
 			highlightAll.hitObject = (char)('A'+who)+(newv ?" true":" false");
@@ -550,7 +550,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 
     	if(canDrop && top==null)
     	{
-    		StockArt.SmallO.drawChip(gc,this,tileSize,cx,cy,null);
+    		StockArt.SmallO.draw(gc,this,tileSize,cx,cy,null);
     		
     	}  
      	if((canPick||canDrop) && G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,tileSize))
@@ -735,7 +735,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
-       		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
+       		ch.draw(g,this,CELLSIZE, xp, yp, null);  
        		}
    }
 
@@ -942,7 +942,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
             }
             if(cell.row==gb.activeRow)
             {	JumbulayaChip chip = gb.getPlayerChip(gb.whoseTurn);
-            	chip.drawChip(gc,this,CELLSIZE*4/5,xpos-CELLSIZE/3,ypos,null);
+            	chip.draw(gc,this,CELLSIZE*4/5,xpos-CELLSIZE/3,ypos,null);
             }
             //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         }
@@ -976,7 +976,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
             
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             if(!cell.fromRack || !DRAWBACKGROUNDTILES)
             {
@@ -1112,9 +1112,9 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
        { GC.Text(gc,true,timeRect,Color.black,null,timeControlMessage);
        }
        if(planned) 
-       	{ StockArt.Rotate180.drawChip(gc, this,rotateRect, selectPos, JumbulayaId.Rotate,s.get(RotateMessage)); 
+       	{ StockArt.Rotate180.draw(gc, this,rotateRect, selectPos, JumbulayaId.Rotate,s.get(RotateMessage)); 
        	  JumbulayaChip chip = lockOption ? JumbulayaChip.UnlockRotation : JumbulayaChip.LockRotation;
-       	  chip.drawChip(gc, this,lockRect, selectPos, JumbulayaId.Lock,s.get(chip.tip)); 
+       	  chip.draw(gc, this,lockRect, selectPos, JumbulayaId.Lock,s.get(chip.tip)); 
        	}
        drawNoChat(gc,altNoChatRect,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
@@ -1156,7 +1156,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     			   	ourTurnSelect==null); 
     	   if(isPassAndPlay() && !explicitlyVisible(gb,who) && (currentGuiPlayer().boardIndex==who))
     	   {   Rectangle rackEye = new Rectangle(G.Left(bigRack),G.Top(bigRack),G.Height(bigRack)/3,G.Height(bigRack)/3);
-    		   StockArt.Eye.drawChip(gc,this,rackEye,selectPos,JumbulayaId.RevealRack,SeeYourTilesMessage);
+    		   StockArt.Eye.draw(gc,this,rackEye,selectPos,JumbulayaId.RevealRack,SeeYourTilesMessage);
     	   }
       	}
      

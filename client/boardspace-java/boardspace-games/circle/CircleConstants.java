@@ -238,7 +238,7 @@ public enum CR
 			int ch = getIconHeight(siz);
 			int xp= x-cw/2+siz/2;
 			int yp= y-ch/2+siz/2;
-			chip.drawChip(gc,c,siz*5/6,xp,yp,null);
+			chip.draw(gc,c,siz*5/6,xp,yp,null);
 			for(int direction : directions)
 			{	boolean draw = true;
 				switch(direction)
@@ -267,7 +267,7 @@ public enum CR
 					yp += siz*3/4;
 					break;
 				}
-				if(draw) { chip.drawChip(gc,c,siz*5/6,xp,yp,null); }
+				if(draw) { chip.draw(gc,c,siz*5/6,xp,yp,null); }
 			}
 			
 			GC.translate(gc,x,y);

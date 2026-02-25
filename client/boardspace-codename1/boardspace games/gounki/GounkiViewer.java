@@ -285,7 +285,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     private void DrawSampleChipPool(Graphics gc, int forPlayer, Rectangle r)
     {	
         GounkiChip thisChip = GounkiChip.getChip(b.getColorMap()[forPlayer],0);
-        thisChip.drawChip(gc,this,G.Width(r),G.centerX(r),G.centerY(r),null);
+        thisChip.draw(gc,this,G.Width(r),G.centerX(r),G.centerY(r),null);
     }
 
     //
@@ -303,7 +303,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
 							? 1.1*yScale( G.Bottom(boardRect) - yp,G.Height(boardRect)) 
 							: 0.8;
     	int sz = (int)(SQUARESIZE*startScale);
-    	ch.drawChip(g,this,sz,xp,yp,null);
+    	ch.draw(g,this,sz,xp,yp,null);
      }
 
 
@@ -411,11 +411,11 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
             if(prev_cells.contains(cell))
             {	double siz = SQUARESIZE*((cell==prev_source)?0.5:0.75)*yscl;
-            	StockArt.LandingPad.drawChip(gc,this,(int)siz,xpos,ypos,null);
+            	StockArt.LandingPad.draw(gc,this,(int)siz,xpos,ypos,null);
             }
             if(current_cells.contains(cell))
             {	double siz = SQUARESIZE*((cell==current_source)?0.5:0.75)*yscl;
-            	StockArt.LandingPad.drawChip(gc,this,(int)siz,xpos,ypos,null);
+            	StockArt.LandingPad.draw(gc,this,(int)siz,xpos,ypos,null);
             }
             if( cell.drawStack(gc,this,legal?highlight:null,(int)(SQUARESIZE*yscl),xpos,ypos,0,xstep,ystep,null)) 
             	{ 
@@ -425,7 +425,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
             	}
             if(dests.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
         	}
         	}
     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);

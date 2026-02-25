@@ -19,6 +19,7 @@ package bugs;
 import lib.Random;
 import lib.Sort;
 import lib.exCanvas;
+
 import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
 import lib.G;
@@ -189,7 +190,7 @@ public class BugsCell
     {	if(thislabel==BugsChip.TOP && piece==topChip()) { thislabel=null; }
     	if(piece instanceof BugsChip)
     	{
-    		return ((BugsChip)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    		return ((BugsChip)piece).drawBug(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     	else {
     		return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);

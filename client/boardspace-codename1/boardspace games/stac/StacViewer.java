@@ -228,8 +228,8 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
     	int w = G.Width(r);
     	int t = G.Top(r);
     	int cx = G.centerX(r);
-    	reverse.drawChip(gc,this,w,cx,t+w/4,null);
-    	king.drawChip(gc,this,w,cx,t+w/4*3,null);
+    	reverse.draw(gc,this,w,cx,t+w/4,null);
+    	king.draw(gc,this,w,cx,t+w/4*3,null);
     	HitPoint.setHelpText(highlight,r,StacId.ReverseViewButton, s.get(ReverseViewExplanation));
      }  
 
@@ -262,8 +262,8 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
     {  	// draw an object being dragged
     	int carry = obj/100;
     	int main = obj%100;
-    	if(carry>0) { StacChip.getChipNumber(carry).drawChip(g,this,(int)(SQUARESIZE*CHIPSCALE),xp,yp,null); }
-    	StacChip.getChipNumber(main).drawChip(g,this,(int)(SQUARESIZE*CHIPSCALE),xp,yp,null);
+    	if(carry>0) { StacChip.getChipNumber(carry).draw(g,this,(int)(SQUARESIZE*CHIPSCALE),xp,yp,null); }
+    	StacChip.getChipNumber(main).draw(g,this,(int)(SQUARESIZE*CHIPSCALE),xp,yp,null);
      }
 
  

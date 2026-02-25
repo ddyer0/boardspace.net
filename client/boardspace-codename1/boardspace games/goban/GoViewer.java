@@ -365,7 +365,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
     
     private void DrawNumberMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	int width = G.Width(r);
-    	if(GoChip.white.drawChip(gc,this,width,G.centerX(r),G.centerY(r),highlight,GoId.NumberViewButton,DrawableImage.NotHelpDraw + "#"))
+    	if(GoChip.white.draw(gc,this,width,G.centerX(r),G.centerY(r),highlight,GoId.NumberViewButton,DrawableImage.NotHelpDraw + "#"))
     	{	highlight.spriteRect = r;
     		highlight.spriteColor = Color.red;
 			highlight.setHelpText(s.get(NumberViewExplanation));
@@ -419,7 +419,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	GoChip ch = GoChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,CELLSIZE,xp,yp,null);
+    	ch.draw(g,this,CELLSIZE,xp,yp,null);
      }
 
 
@@ -474,7 +474,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
     	GoCell c = gb.getCell((char)('A'+x-1),y);
     	int xp = gb.cellToX(c);
     	int yp = gb.cellToY(c);
-    	GoChip.hoshi.drawChip(gc,this,Math.max(5, CELLSIZE/5),G.Left(r)+xp,G.Bottom(r)-yp,null);
+    	GoChip.hoshi.draw(gc,this,Math.max(5, CELLSIZE/5),G.Left(r)+xp,G.Bottom(r)-yp,null);
     	
     }
     String scoringErrata = null;
@@ -501,7 +501,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
     	            int ypos = G.Bottom(brect) - gb.cellToY(cell.col, cell.row);
     	            int xpos = G.Left(brect) + gb.cellToX(cell.col, cell.row);
     	            
-    	            StockArt.LandingPad.drawChip(gc,this,CELLSIZE*2,xpos,ypos,null);
+    	            StockArt.LandingPad.draw(gc,this,CELLSIZE*2,xpos,ypos,null);
     	            }
     			}
     		}
@@ -608,25 +608,25 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
             	{	GoChip ghost = ghostChips.get(cell);
             		if(ghost!=null)
             		{
-            			ghost.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            			ghost.draw(gc,this,CELLSIZE,xpos,ypos,null);
             		}
             		Kind kind = cell.getKind();
 
             		switch(kind)
             		{
             		case SafeWhite:
-            			StockArt.SmallO.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null);
+            			StockArt.SmallO.draw(gc,this,CELLSIZE/2,xpos,ypos,null);
             			break;
             		case SafeBlack:
-            			StockArt.Dot.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null);
+            			StockArt.Dot.draw(gc,this,CELLSIZE/2,xpos,ypos,null);
             			break;
             		case BlackTerritory:
             		case BlackSnapbackTerritory:
-               			GoChip.black.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null);
+               			GoChip.black.draw(gc,this,CELLSIZE/2,xpos,ypos,null);
                			break;
             		case WhiteTerritory:
             		case WhiteSnapbackTerritory:
-            			GoChip.white.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null);
+            			GoChip.white.draw(gc,this,CELLSIZE/2,xpos,ypos,null);
             			break;
             		case FalseEye:
              		case FillBlack:
@@ -636,7 +636,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
 
              			if(G.debug())
              			{
-             			StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+             			StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
              			}
 						//$FALL-THROUGH$
 					case DeadWhite:
@@ -646,7 +646,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
              		case OutsideDame:
              		case BlackDame:
              		case WhiteDame:
-             			StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+             			StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
             			break;
             		case Dame:
    

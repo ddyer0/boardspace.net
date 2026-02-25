@@ -270,8 +270,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/4,null);
-     	king.drawChip(gc,this,w,cx,cy+w/4,null);
+    	reverse.draw(gc,this,w,cx,cy-w/4,null);
+     	king.draw(gc,this,w,cx,cy+w/4,null);
     	HitPoint.setHelpText(highlight,r, RithId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  
 
@@ -289,7 +289,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
         chip.drawStack(gc,this,pt,G.Height(r)*2/3,ax,ay,0,0.4-chip.height()*0.01,0.0,msg);
         if(canDrop && pt!=null)
         {
-        	StockArt.SmallO.drawChip(gc, this, h, ax,ay,null);
+        	StockArt.SmallO.draw(gc, this, h, ax,ay,null);
         }
         if((highlight!=null) && (highlight.hitObject==chip))
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
@@ -562,7 +562,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	}
     }
     private void DrawPlayerIcon(Graphics gc,int forPlayer,Rectangle r)
-    {	RithmomachyChip.getChip(b.getColorMap()[forPlayer],0).drawChip(gc, this, 
+    {	RithmomachyChip.getChip(b.getColorMap()[forPlayer],0).draw(gc, this, 
     		(int)(G.Width(r)*0.8),G.centerX(r),G.centerY(r),null);
     }
 
@@ -623,7 +623,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     {	
         int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
         int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
-        StockArt.SmallO.drawChip(gc, this,SQUARESIZE, xpos-SQUARESIZE/5,ypos+SQUARESIZE/5,""+ch);
+        StockArt.SmallO.draw(gc, this,SQUARESIZE, xpos-SQUARESIZE/5,ypos+SQUARESIZE/5,""+ch);
    }
     private void showGloriousVictory(Graphics gc,RithmomachyBoard gb,Rectangle brect,int pl)
     {
@@ -707,7 +707,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
             int ypos = top - gb.cellToY(cell);
             int xpos = left + gb.cellToX(cell);
             if(dests.get(cell)!=null)
-            {	StockArt.SmallO.drawChip(gc, this, SQUARESIZE, xpos, ypos,null);
+            {	StockArt.SmallO.draw(gc, this, SQUARESIZE, xpos, ypos,null);
             }
             if( cell.drawStack(gc,this,canHit?highlight:null,(int)(SQUARESIZE*0.75),xpos,ypos,
             			liftSteps,0.1,null)) 

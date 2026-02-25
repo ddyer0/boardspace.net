@@ -85,13 +85,13 @@ public class Toggle extends ToggleButton
    		{	
    		int left = G.Left(this);
    		int top = G.Top(this);
-   		boolean hit = ic.drawChip(gc,canvas,new Rectangle(left,top,h,h),hp,id,tip);
+   		boolean hit = ic.draw(gc,canvas,new Rectangle(left,top,h,h),hp,id,tip);
    		GC.Text(gc,false,left+h,top,w-h,h,foregroundColor,backgroundColor,name);
    		return hit;
    		}
    		else
    		{
-   		return ic.drawChip(gc,canvas,this,hp,id,tip);
+   		return ic.draw(gc,canvas,this,hp,id,tip);
    		}
    		
    	}

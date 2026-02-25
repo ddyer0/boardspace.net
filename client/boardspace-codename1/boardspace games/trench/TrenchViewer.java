@@ -399,7 +399,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     private void DrawChipPool(Graphics gc, Rectangle r, Rectangle cr, commonPlayer pl, HitPoint highlight,TrenchBoard gb)
     {	int player = pl.boardIndex;
     	int other = nextPlayer[player];
-        gb.getPlayerChip(player).drawChip(gc,this,G.Width(r)/2,G.centerX(r),G.centerY(r),null);
+        gb.getPlayerChip(player).draw(gc,this,G.Width(r)/2,G.centerX(r),G.centerY(r),null);
         TrenchCell cap = gb.captured(other);
         double cells = (double)G.Width(cr)/(CELLSIZE*3/4);
         boolean canHit = gb.legalToHitChips(other);
@@ -454,7 +454,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	int size = G.pointInRect(xp,yp,boardRect)
     				? scaledCellSize(boardRect,G.Bottom(boardRect)-yp)
     				: CELLSIZE;
-     	TrenchChip.getChip(obj).drawChip(g,this,size, xp, yp, null);
+     	TrenchChip.getChip(obj).draw(g,this,size, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -577,7 +577,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	        				int dy = perspective ? size/2 : white ? -(int)(size*0.2) : 0;
 	        				GC.translate(gc,xpos,ypos);
 	        				GC.setRotation(gc,Math.PI);
-	        				arrow.drawChip(gc,this,size,dx,dy,null);
+	        				arrow.draw(gc,this,size,dx,dy,null);
 	        				GC.setRotation(gc,-Math.PI);
 	        				GC.translate(gc,-xpos,-ypos);
 	        				}
@@ -590,29 +590,29 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
             				int dy = (int)(perspective ? (0.6*size) : -0.1*size);
             				GC.translate(gc,xpos,ypos);
             				GC.setRotation(gc,Math.PI);
-            				arrow.drawChip(gc,this,size,dx,dy,null);
+            				arrow.draw(gc,this,size,dx,dy,null);
             				GC.setRotation(gc,-Math.PI);
             				GC.translate(gc,-xpos,-ypos);
             				}
             				break;
             			default:
-            				arrow.drawChip(gc,this,size,xpos,ypos,null);
+            				arrow.draw(gc,this,size,xpos,ypos,null);
             			}
             		}
             		else
             		{
-                		arrow.drawChip(gc,this,size,xpos,ypos,null);
+                		arrow.draw(gc,this,size,xpos,ypos,null);
             		}
             	}
             }
-            if(canHit && show) { StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null); }
+            if(canHit && show) { StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null); }
             if((cell.topChip()==null)
         			&& cell.lastContents!=null 
         			&& cell.lastCaptured>0
         			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
                 	{
-                		cell.lastContents.drawChip(gc,this,size*2/3,xpos,ypos,null);
-                		StockArt.SmallX.drawChip(gc,this,size,xpos,ypos,null);
+                		cell.lastContents.draw(gc,this,size*2/3,xpos,ypos,null);
+                		StockArt.SmallX.draw(gc,this,size,xpos,ypos,null);
                 	}
            // if(cell.visibleFromTrench>0)
            // {
@@ -1270,7 +1270,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	int py = hp.hit_y;
     	if(G.pointInRect(px,py,boardRect))
     	{	int w = hp.awidth;
-    		TrenchChip.Marker.drawChip(gc,this,w,px-w/4,py+w/4,null);
+    		TrenchChip.Marker.draw(gc,this,w,px-w/4,py+w/4,null);
     		return true;
     	}
     	

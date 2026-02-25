@@ -198,7 +198,7 @@ public abstract class chipCell
     }
     
 	// method for Drawable interface
-	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
+	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{
 		drawStack(gc,null,posx,posy,DrawingObject.getCanvas(c),0,size,1.0,msg);
 	}

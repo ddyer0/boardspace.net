@@ -478,7 +478,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
      				drawChip(gc, idx, x, y, CHIPSIZE, 1.0,-1);
      				if(bisdest) 
      					{ drawChip(gc,idx,x,y,CHIPSIZE,1.0,b.whoseTurn);
-     					  StockArt.Dot.drawChip(gc,this,CHIPSIZE,x,y,null);
+     					  StockArt.Dot.draw(gc,this,CHIPSIZE,x,y,null);
      					}
      				if(showwins && b.onWinningLine(col,row))
      				{//drawGif(gc,GIF_DESAT_INDEX,x,y,CHIPSIZE,1.0);
@@ -487,7 +487,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants
        			}
 				else if(showdots)
 				{ if(gb.nColorMatch(col,row)==1)
-					{ StockArt.Dot.drawChip(gc,this,CHIPSIZE,x,y,null);
+					{ StockArt.Dot.draw(gc,this,CHIPSIZE,x,y,null);
 					}
 				}
  				}

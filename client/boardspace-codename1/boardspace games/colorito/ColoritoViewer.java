@@ -263,8 +263,8 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy+h/4,null);
-    	king.drawChip(gc,this,w,cx,cy-h/4,null);
+    	reverse.draw(gc,this,w,cx,cy+h/4,null);
+    	king.draw(gc,this,w,cx,cy-h/4,null);
     	HitPoint.setHelpText(highlight,r,ColoritoId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  
 
@@ -285,7 +285,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	ColoritoChip ch = b.pickedObject;// Tiles have zero offset
-    	if(ch!=null) { ch.drawChip(g,this,SQUARESIZE,xp,yp,null); }
+    	if(ch!=null) { ch.draw(g,this,SQUARESIZE,xp,yp,null); }
      }
 
 
@@ -351,11 +351,11 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
              	}
             if((canHit && show) || (cell==src))
             {
-           		StockArt.Dot.drawChip(gc, this, SQUARESIZE, xpos,ypos,null);
+           		StockArt.Dot.draw(gc, this, SQUARESIZE, xpos,ypos,null);
             }
            	if(dests.get(cell)!=null) 
     		{
-    		StockArt.SmallO.drawChip(gc, this, SQUARESIZE, xpos,ypos,null);
+    		StockArt.SmallO.draw(gc, this, SQUARESIZE, xpos,ypos,null);
     		}
     	}
     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor,0.5);   

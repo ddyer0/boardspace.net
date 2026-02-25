@@ -241,7 +241,7 @@ public class SimpleSprite implements SpriteProtocol
 		GC.setRotation(gc,er, posx,posy);
 		int sz = c.activeAnimationSize(chip,thissize);
 		if(G.Advise(sz>2,"animation too small %s",this))
-			{ chip.drawChip(gc,c,sz, posx,posy,null); 
+			{ chip.draw(gc,c,sz, posx,posy,null); 
 			}
 		GC.setRotation(gc,-er, posx,posy);
 		}

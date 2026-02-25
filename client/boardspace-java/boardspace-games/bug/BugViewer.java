@@ -410,7 +410,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	BugChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	BugChip.getChip(obj).draw(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -478,7 +478,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).draw(gc,this,xsize,xpos,ypos,null);
         	  //equivalent lower level draw image
         	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
         	  //
@@ -519,7 +519,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
             		}
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);
             }
            // BugCell c = gb.getCell('D',4);
            //GC.Text(gc,gb.distance(c,cell),xpos,ypos);

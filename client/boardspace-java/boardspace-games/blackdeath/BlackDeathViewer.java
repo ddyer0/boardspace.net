@@ -346,7 +346,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             pl.rotateCurrentCenter(pb.chipCell,left+hgt/2, top+hgt/2);
             chip.drawChip(gc,this,chipp,null); 
             BlackDeathChip.Track.drawChip(gc,this,track,null);
-            modChip.drawChip(gc, this, mod,highlightAll, BlackDeathId.Eye, (String)null);
+            modChip.draw(gc, this, mod,highlightAll, BlackDeathId.Eye, (String)null);
             
             // draw various ornaments on the player board
             int chipw = (int)(0.06*wid);
@@ -423,11 +423,11 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             }
             if(targets.get(pb.temporaryCards)!=null)
             {
-            	StockArt.SmallO.drawChip(gc, this, cw, cardL-cw/3, cy, null);
+            	StockArt.SmallO.draw(gc, this, cw, cardL-cw/3, cy, null);
             }
             if(active)
             	{
-            	StockArt.SolidRightArrow.drawChip(gc, this,cw/4,l,cy,null);
+            	StockArt.SolidRightArrow.draw(gc, this,cw/4,l,cy,null);
             	}
             // draw a magnifier for the player stuff
             zoomer.drawMagnifier(gc,highlightAll,pl.playerBox,0.04,0.99,0.6,G.rotationQuarterTurns(pl.displayRotation));
@@ -445,7 +445,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	BlackDeathChip.getChip(obj).drawChip(g,this,(int)(CELLSIZE*getGlobalZoom()), xp, yp, null);
+    	BlackDeathChip.getChip(obj).draw(g,this,(int)(CELLSIZE*getGlobalZoom()), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -492,11 +492,11 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	int ty = gb.cellToY(link.to);
     	GC.setColor(gc, Color.red);
     	GC.drawLine(gc,fx+2,fy+2,tx-2,ty-2);
-    	StockArt.LandingPad.drawChip(gc,this,CELLSIZE/2,(fx+tx)/2,(fy+ty)/2,""+link.cost);
+    	StockArt.LandingPad.draw(gc,this,CELLSIZE/2,(fx+tx)/2,(fy+ty)/2,""+link.cost);
     	
     	if(icon!=null)
     	{
-    		if(icon.drawChip(gc, this,CELLSIZE*3/4,(fx+tx)/2, (fy+ty)/2,hp,BlackDeathId.Link,null))
+    		if(icon.draw(gc, this,CELLSIZE*3/4,(fx+tx)/2, (fy+ty)/2,hp,BlackDeathId.Link,null))
     		{
     			hp.hitObject = m;
     		}
@@ -549,13 +549,13 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
           	{
             	int xpos = gb.cellToX(cell);
               	int ypos = gb.cellToY(cell);
-          		BlackDeathChip.Quaranteen.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+          		BlackDeathChip.Quaranteen.draw(gc,this,CELLSIZE,xpos,ypos,null);
           	}
          	if(gb.regionIsPogrom(cell, BlackDeathState.Puzzle))
          	{
             	int xpos = gb.cellToX(cell);
               	int ypos = gb.cellToY(cell);
-          		BlackDeathChip.Pogrom.drawChip(gc,this,CELLSIZE*3/4,xpos,ypos,null);        		
+          		BlackDeathChip.Pogrom.draw(gc,this,CELLSIZE*3/4,xpos,ypos,null);        		
          	}
     	}
 
@@ -611,7 +611,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
           	}
           	if(!linkMode && (cell.parentCity.links.size()>0) && targets.get(cell)!=null)
           	{
-          		StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+          		StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
           	}
           	if((cell.topChip()!=null) && ((cell==gb.initialDice1)||(cell==gb.initialDice2)))
           	{	String label = cell.label;
@@ -691,7 +691,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	int row = count>10 ? ((count-1)%10+1) : count;
         	int dx =(int)(0.1*(pb.index/3)*boxi);
         	int dy = (int)(0.1*(pb.index%3)*boxi);
-        	pb.chip.drawChip(gc, this, boxi,(int)(left+col*boxw+dx),(int)( top-row*boxw+dy),null);       	
+        	pb.chip.draw(gc, this, boxi,(int)(left+col*boxw+dx),(int)( top-row*boxw+dy),null);       	
         }
 
         }
@@ -705,7 +705,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	for(int i=0;i<turnOrder.length;i++)
         	{	int thisPlayer = turnOrder[i];
         		PlayerBoard pb = gb.getPlayer(thisPlayer);
-        		pb.chip.drawChip(gc,this,thisPlayer==who?boxi*3/2:boxi,left+(int)(i*boxw),top,null);
+        		pb.chip.draw(gc,this,thisPlayer==who?boxi*3/2:boxi,left+(int)(i*boxw),top,null);
         	}
         }
  
@@ -716,12 +716,12 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         	int scrimW = wid-margin*2;
         	Rectangle marginRect = new Rectangle(bleft+margin,btop+margin,scrimW,height-margin*2);
         StockArt.Scrim.image.stretchImage(gc, marginRect);
-        	if(bc.drawChip(gc, this, (int)(wid*0.7), G.centerX(brect), G.centerY(brect),highlightAll, BlackDeathId.Eye,null,1,1))
+        	if(bc.draw(gc, this, (int)(wid*0.7), G.centerX(brect), G.centerY(brect),highlightAll, BlackDeathId.Eye,null,1,1))
         	{
         		highlightAll.hitObject = null;
         	}
 
-        	if(StockArt.FancyCloseBox.drawChip(gc, this, margin/2, bleft+scrimW+margin-margin/2,
+        	if(StockArt.FancyCloseBox.draw(gc, this, margin/2, bleft+scrimW+margin-margin/2,
         			btop+margin*3/2,highlightAll,BlackDeathId.Eye,null))
         	{
         		highlightAll.hitObject = null;
@@ -751,7 +751,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
   			rollDie = BlackDeathChip.getDie(v);
   			}
 			repaintSprites((int)(rollDieTime-now),"DieRoll");
-  		if(rollDie!=null) { rollDie.drawChip(gc, this, CELLSIZE/2,rollDieX,rollDieY,null); }
+  		if(rollDie!=null) { rollDie.draw(gc, this, CELLSIZE/2,rollDieX,rollDieY,null); }
     } 
     public void doDieRoll2(Graphics gc,int xpos,int ypos)
     {
@@ -768,7 +768,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
   			rollDie2 = BlackDeathChip.getDie(v);
  			}
 			repaintSprites((int)(rollDieTime-now),"DieRoll2");
- 		if(rollDie2!=null) { 		rollDie2.drawChip(gc, this, CELLSIZE/2,rollDieX2,rollDieY2,null); }
+ 		if(rollDie2!=null) { 		rollDie2.draw(gc, this, CELLSIZE/2,rollDieX2,rollDieY2,null); }
   }
      /**
      * draw the main window and things on it.  

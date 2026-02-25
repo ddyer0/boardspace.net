@@ -418,7 +418,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TweedChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	TweedChip.getChip(obj).draw(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -483,7 +483,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).draw(gc,this,xsize,xpos,ypos,null);
         	  //equivalent lower level draw image
         	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
         	  //
@@ -543,16 +543,16 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
 
             if(gb.isDest(cell) || cell==gb.lastPlaced)
             {	
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE*3/2,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
+            	StockArt.SmallO.draw(gc,this,CELLSIZE*3/2,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
             	
             }
         	if(showCaptures && gb.productiveCapture(cell))
         	{
-        		StockArt.SmallX.drawChip(gc,this,CELLSIZE,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
+        		StockArt.SmallX.draw(gc,this,CELLSIZE,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
         	}
             if(show && targets.get(cell)!=null)
             {	int sz = gb.productivePlacement(cell) ? CELLSIZE : CELLSIZE/2;
-            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);
             }
         }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);

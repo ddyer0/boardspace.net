@@ -351,7 +351,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     	int obj1 = obj%100;
     	OrdoChip ch = OrdoChip.getChipNumber(obj1);// Tiles have zero offset
     	Drawable chd = obj2!=0 ? ch.getKing() : ch;
-    	chd.drawChip(g,this,CHIPSIZE,xp,yp,null);
+    	chd.draw(g,this,CHIPSIZE,xp,yp,null);
 
      }
 
@@ -414,27 +414,27 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
             if((cell==dest)||(cell==selectedStart)||(hitNow!=null))
             
             {
-            	StockArt.SmallO.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,CHIPSIZE,xpos,ypos,null);
             }}
             if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,CHIPSIZE,xpos,ypos,null);
             }
             if(cell==selectedStart)
             {
-            	StockArt.Dot.drawChip(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
             }
             if(cell==selectedEnd)
             {
-            	StockArt.Dot.drawChip(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
             }
             if((cell.topChip()==null)
         			&& cell.lastContents!=null 
         			&& cell.lastCaptured>0
         			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
                 	{	
-                		cell.lastContents.drawChip(gc,this,CHIPSIZE*2/3,xpos,ypos,null);
-                		StockArt.SmallX.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
+                		cell.lastContents.draw(gc,this,CHIPSIZE*2/3,xpos,ypos,null);
+                		StockArt.SmallX.draw(gc,this,CHIPSIZE,xpos,ypos,null);
                 	}
     	}
      	numberMenu.drawSequenceNumbers(gc,CHIPSIZE*2/3,labelFont,labelColor);

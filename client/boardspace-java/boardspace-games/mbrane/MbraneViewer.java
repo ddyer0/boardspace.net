@@ -286,7 +286,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         MbraneId id = color.id;
         GC.setFont(gc,labelFont);
         boolean canHit = (gb.getState()==MbraneState.Puzzle) && (gb.reserveColor!=color);
-        gb.getPlayerChip(player).drawChip(gc,this,r,canHit ? hit : null,id,(String)null);
+        gb.getPlayerChip(player).draw(gc,this,r,canHit ? hit : null,id,(String)null);
     }
     
     private void drawScore(Graphics gc,Rectangle r)
@@ -312,7 +312,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     		int xpos = left+((coln+1)/3)*step;
     		int ypos = top+(2-rown/3)*step;
     		if(bb.resolved[lim]) 
-    		{	StockArt.FilledCheckbox.drawChip(gc, this, step/3,xpos+step/8,ypos+step/4,null);
+    		{	StockArt.FilledCheckbox.draw(gc, this, step/3,xpos+step/8,ypos+step/4,null);
     		}
     		GC.Text(gc, true, xpos,ypos+small,step,step,co,null,
     				(v==0) ? "" 
@@ -343,7 +343,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
               
     		  if( !canhit )
     		  {
-    			  StockArt.SmallX.drawChip(gc, this, (int)step,xpos,cy,null);
+    			  StockArt.SmallX.draw(gc, this, (int)step,xpos,cy,null);
     		  }
     		}
     	altChipset =null;
@@ -361,7 +361,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
         GC.setFont(g,labelFont);
-        MbraneChip.getChip(obj).drawChip(g,this,(int)(bb.cellSize()*CELLSCALE), xp, yp, MbraneChip.SPRITE);
+        MbraneChip.getChip(obj).draw(g,this,(int)(bb.cellSize()*CELLSCALE), xp, yp, MbraneChip.SPRITE);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -467,18 +467,18 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
            // StockArt.SmallO.drawChip(gc,this,(int)(gb.CELLSIZE/2),xpos,ypos,null);  
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize(),xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize(),xpos,ypos,null);                
              }
             int cellMask = cell.invalidPlacementMask(); 
             if(cellMask == 0x1ff) 
             {	// no placement is possible
-            	StockArt.SmallX.drawChip(gc, this, size/2,xpos,ypos,null);
+            	StockArt.SmallX.draw(gc, this, size/2,xpos,ypos,null);
             }
             if(pickedBit!=0)
             {
             if((pickedBit & cellMask)==0)
             {
-            	StockArt.SmallO.drawChip(gc,this,size/2,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,size/2,xpos,ypos,null);
             }}
             cell.drawStack(gc,this,highlight,size,xpos,ypos,xpos, 0,0, null);
             }

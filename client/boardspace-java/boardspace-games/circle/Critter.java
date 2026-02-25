@@ -172,7 +172,7 @@ public class Critter extends OStack<CircleCell> implements CircleConstants,Diges
 		return v;
 	}
 
-	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
+	public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
 	{
 		 CR id = identity();
 		 id.drawChip(gc,c,top,0,size,posx,posy,null);		

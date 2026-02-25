@@ -237,7 +237,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
    		int cellS = inboard? bb.cellSize() : CELLSIZE*2 ;
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	SpanglesChip.getChip(obj).drawChip(g,this,cellS, xp, yp, null);
+    	SpanglesChip.getChip(obj).draw(g,this,cellS, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -332,7 +332,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         	// ""+cell.col+cell.row+ets
           	String gridmsg = use_grid ? G.printCol(cell.col)+cell.row : null;
         	GC.setColor(gc,Color.black);
-        	piece.drawChip(gc,this,cellSize,xpos,ypos,gridmsg); 
+        	piece.draw(gc,this,cellSize,xpos,ypos,gridmsg); 
             if (drawhighlight)
             { // checking for pointable position
               //  drawChip(gc, SELECTION_INDEX, xpos, ypos, cellSize, 1.0,0.0);
@@ -459,7 +459,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         				gb.whoseTurn,
         				stateRect);
         SpanglesCell c = gb.rack[gb.whoseTurn][0];
-        c.topChip().drawChip(gc, this, iconRect, null,0.5);
+        c.topChip().draw(gc, this, iconRect, null,0.5);
         
         goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition

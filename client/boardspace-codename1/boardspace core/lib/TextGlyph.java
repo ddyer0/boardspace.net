@@ -213,7 +213,7 @@ public class TextGlyph extends TextChunk implements Text,Icon
     		{
     		int h = myFM.getHeight();
     		int iconw = (int)(h*localScale);
-    		art.drawChip(inG,canvas,
+    		art.draw(inG,canvas,
     				iconw,
 	    			drawX+(int)(iconw*(0.5+xoff)),
 	    			drawY-(int)(h*(0.5+yoff)),
@@ -224,7 +224,7 @@ public class TextGlyph extends TextChunk implements Text,Icon
     		{	
     		int width = myFM.stringWidth(replacementData);
     		int height = myFM.getHeight();
-    		art.drawChip(inG,canvas,
+    		art.draw(inG,canvas,
     	    			(int)(width*localScale),
     	    			(int)(drawX+width*(0.5+xoff)),
     	    			(int)(drawY+height*yoff),visibleText); 

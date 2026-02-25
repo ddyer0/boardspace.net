@@ -434,7 +434,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	HavannahChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	HavannahChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -498,7 +498,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     	  int y = top-gb.cellToY(c);
     	  int color = gb.triColor(c.col,c.row);
     	  HavannahChip to = tile.getAltDisplayChip(color);
-    	  to.drawChip(gc,this,xsize,x,y,null);
+    	  to.draw(gc,this,xsize,x,y,null);
           // test 3-coloring algorithm
     	  //Color colors[] = new Color[] { Color.red,Color.green,Color.blue};
           //GC.setColor(gc, colors[color]);
@@ -513,7 +513,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         	  //lastDropped = HavannahChip.borders[5];
         	 // adjustScales(borders[bindex+5].getScale(),lastDropped);
         	  if((borders&(1<<dir))!=0)
-        	  {	HavannahChip.borders[dir].drawChip(gc,this,(int)(xsize*0.55),x,y,null);
+        	  {	HavannahChip.borders[dir].draw(gc,this,(int)(xsize*0.55),x,y,null);
         	  }
           }
           }
@@ -585,7 +585,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,sz,xpos,ypos,null);
             }

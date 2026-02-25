@@ -298,7 +298,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	PonteChip ch = PonteChip.getPiece(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
     Image scaled = null;
@@ -369,7 +369,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
             {
             	if(alternateDests.get(cell)!=null)
             	{
-            	if(StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,highlight,PonteId.BridgeEnd,null))
+            	if(StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,highlight,PonteId.BridgeEnd,null))
             	{
             		hitCell = cell;
             	highlight.hitObject = cell;
@@ -379,13 +379,13 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
             	else 
             	{	if( showDots && dests.get(cell)!=null)
             		{
-            		StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            		StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             		}
             		if(chip!=null && ((cell==gb.prev_tile_1)
             						|| (cell==gb.prev_tile_2)
             						|| (cell==gb.getDest())
             						|| (cell==gb.getPrevDest())))
-            				{ StockArt.SmallX.drawChip(gc,this,2*SQUARESIZE/3,xpos,ypos,null); 
+            				{ StockArt.SmallX.draw(gc,this,2*SQUARESIZE/3,xpos,ypos,null); 
             				}
             	}
             }}

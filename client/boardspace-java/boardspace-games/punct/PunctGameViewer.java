@@ -282,7 +282,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
 		if(gc!=null) 
 		{
 		PunctPiece pc = b.playerChip[player];
-		pc.drawChip(gc, this, G.Width(pr)*2/3,G.centerX(pr),G.centerY(pr),null);
+		pc.draw(gc, this, G.Width(pr)*2/3,G.centerX(pr),G.centerY(pr),null);
 		b.WinForPlayerNow(player);	// make sure the bookeeping is up to date
 		int infowidth = 50;
 		int infoleft = G.Right(r)-infowidth;
@@ -354,7 +354,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
        	 if(gc!=null) 
        	 { if(p.level==POOL_LEVEL) 
        	 	{ 
-       		 p.drawChip(gc, this, (int)(cellw*0.9),left+xadj,top-yadj,null);
+       		 p.draw(gc, this, (int)(cellw*0.9),left+xadj,top-yadj,null);
        	 	}
        	 }
        	 ry += cellhinc;
@@ -366,7 +366,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
    public void drawSprite(Graphics g,int obj,int xp,int yp)
    {
       	PunctPiece pp = b.allPieces[obj];
-        pp.drawChip(g,this, CELLSIZE,xp, yp,null);  
+        pp.draw(g,this, CELLSIZE,xp, yp,null);  
    }
 
    public Point spriteDisplayPoint()
@@ -585,7 +585,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
                     int ah = cell.activeAnimationHeight();
                     if(height<=cell.level()-ah)
                     {
-                    piece.drawChip(gc,this, pieceSize,xpos+liftXval, ypos-liftYval,(height>showLevels)?""+(height+1):null);
+                    piece.draw(gc,this, pieceSize,xpos+liftXval, ypos-liftYval,(height>showLevels)?""+(height+1):null);
                     }}
  
                     if(gb.isDest(thiscol,thisrow))
@@ -607,7 +607,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         	  int row = punctcell.row;
         	  int xx = G.Left(brect) + gb.cellToX(col, row);
         	  int yy = G.Bottom(brect) - gb.cellToY(col, row);
-        	  p.drawChip(gc, this,CELLSIZE,xx,yy,null);
+        	  p.draw(gc, this,CELLSIZE,xx,yy,null);
         	}
 
         if (somehit && (highlight.hitCode instanceof PunctId))
@@ -691,7 +691,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         				gb.whoseTurn,
         				stateRect);
         
-        gb.playerChip[gb.whoseTurn].drawChip(gc,this,G.Width(iconRect),G.centerX(iconRect),G.Top(iconRect),null);
+        gb.playerChip[gb.whoseTurn].draw(gc,this,G.Width(iconRect),G.centerX(iconRect),G.Top(iconRect),null);
         
         goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
 

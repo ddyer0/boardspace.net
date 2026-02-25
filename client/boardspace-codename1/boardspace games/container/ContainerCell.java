@@ -269,7 +269,7 @@ public class ContainerCell extends stackCell<ContainerCell,ContainerChip>
 		return(true);
 	}
 	// Drawable interface
-	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
+	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{	ContainerViewer can = (ContainerViewer)c;
 		ContainerChip top = topChip();
 		if(top!=null) { can.drawSprite(gc,top,posx,posy); }

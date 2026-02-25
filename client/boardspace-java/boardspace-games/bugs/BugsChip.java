@@ -207,20 +207,23 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 		}
 	}
 	*/
+	
+	
 	public int compareTo(BugsChip o) {
 		return 0;
 	}
 	public Profile getProfile() { return null; }
 	
-	public boolean drawChip(Graphics gc,exCanvas canvas,BugsCell c,HitPoint highlight,int squareWidth,double scale,int cx,int cy,String label)
+	public boolean drawBug(Graphics gc,exCanvas canvas,BugsCell c,HitPoint highlight,int squareWidth,double scale,int cx,int cy,String label)
 	{
-		boolean hit = drawChip(gc,canvas,squareWidth,cx,cy,highlight,c.rackLocation(),label,1.0,1.0);
+		boolean hit = draw(gc,canvas,squareWidth,cx,cy,highlight,c.rackLocation(),label,1.0,1.0);
 		if(hit) { highlight.hitObject = c;}
 		return hit;
 	}
 
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
-	{	if(image!=null)
+	{	
+		if(image!=null)
 		{	super.drawChip(gc,canvas,SQUARESIZE,xscale,cx,cy,label);
 		}
 		else

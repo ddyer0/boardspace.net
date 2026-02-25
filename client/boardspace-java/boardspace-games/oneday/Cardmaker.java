@@ -126,14 +126,14 @@ public class Cardmaker extends exCanvas implements Runnable
 	  	  {	Rectangle rect = new Rectangle(image_x,image_y,w,h);
 		  	  drawImage(g,card.image,image_x,image_y,w,h);
 	  		  card.drawLines(g,rect,1.0);
-	  		  dot.drawChip(g,this,TEXTHEIGHT/2,
+	  		  dot.draw(g,this,TEXTHEIGHT/2,
 	  				  (int)(image_x+card.xpos*w/100),
 	  				  (int)(image_y+h*card.ypos/100),
 	  				  null);
  		  
 	  	  }else
 	  	  {
-	  		card.drawChip(g,this,w,image_x+w/2+smargin,image_y+h/2,null);
+	  		card.draw(g,this,w,image_x+w/2+smargin,image_y+h/2,null);
 	  	  }
 	  	  GC.setFont(g,titleFont);
 	  	  GC.Text(g,true,title,Color.black,null,card.station);

@@ -349,7 +349,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     
     private void drawReverseView(Graphics gc,HitPoint highlight,Rectangle brect)
     {	
-    	StockArt.Rotate.drawChip(gc,this,brect,highlight, MedinaId.ReverseButton);
+    	StockArt.Rotate.draw(gc,this,brect,highlight, MedinaId.ReverseButton);
     }
     
 	// draw a box of spare gobblets. Notice if any are being pointed at.  Highlight those that are.
@@ -370,7 +370,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	MedinaChip ch = MedinaChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,CELLSIZE,xp,yp,null);
+    	ch.draw(g,this,CELLSIZE,xp,yp,null);
      }
 
 
@@ -474,7 +474,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         if(dests.get(cell)!=null)
         	{int ndests = dests.size();
         	 int sz = ndests>8?unitSize:(ndests<=4)?unitSize*3:unitSize*2;
-        	 StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
+        	 StockArt.SmallO.draw(gc,this,sz,xpos,ypos,null);
         	}
         }
     }
@@ -516,13 +516,13 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
             	{
             	int xx = (gb.cellToX(thiscol, 0)+gb.cellToX(thiscol, 1))/2;
                 int yy = (gb.cellToY(thiscol, 0)+gb.cellToY(thiscol, 1))/2;
-                StockArt.SmallO.drawChip(gc,this,unitSize*2,xbase+xx,ybase-yy,null);
+                StockArt.SmallO.draw(gc,this,unitSize*2,xbase+xx,ybase-yy,null);
                 //StockArt.SmallX.drawChip(gc,this,unitSize,xbase+xx,ybase-yy,null);
             	}
             	{
             	int xx = (gb.cellToX('@', row)+gb.cellToX('A', row))/2;
                 int yy = (gb.cellToY('@', row)+gb.cellToY('A', row))/2;
-                StockArt.SmallO.drawChip(gc,this,unitSize*2,xbase+xx,ybase-yy,null);
+                StockArt.SmallO.draw(gc,this,unitSize*2,xbase+xx,ybase-yy,null);
                // StockArt.SmallX.drawChip(gc,this,unitSize,xbase+xx,ybase-yy,null);
             	}
  
@@ -553,7 +553,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         StockArt icon = visibleChips[player] ? StockArt.NoEye : StockArt.Eye;
         if(allPlayersLocal())
         {
-        if(icon.drawChip(gc, this, eyeRect[player],any, MedinaId.VisibleChip))
+        if(icon.draw(gc, this, eyeRect[player],any, MedinaId.VisibleChip))
         	{
         	any.hit_index = player;
         	}
@@ -598,7 +598,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 
        {	int tx = G.Left(boardRect)+CELLSIZE;
        		int ty = G.Bottom(boardRect);
-       		MedinaChip.WASTE.drawChip(gb.trash.height()>0?gc:null,this,CELLSIZE*2,tx+CELLSIZE/2,ty,null);
+       		MedinaChip.WASTE.draw(gb.trash.height()>0?gc:null,this,CELLSIZE*2,tx+CELLSIZE/2,ty,null);
        		gb.trash.drawStack(gc,this,null,CELLSIZE,tx,ty,0,0.1,0.3,null);
        }
        for(int i=0;i<nPlayers;i++)
@@ -1042,7 +1042,7 @@ private void playSounds(commonMove m)
     	
     	GC.Text(gc,true,infoRect,Color.black,null,s.get(ServiceName,name));
     	StockArt icon = visibleHiddenChips[index] ? StockArt.NoEye : StockArt.Eye;
-        if(icon.drawChip(gc, this, eyeRect,hp, MedinaId.VisibleHiddenChip))
+        if(icon.draw(gc, this, eyeRect,hp, MedinaId.VisibleHiddenChip))
         	{
         	hp.hit_index = index;
         	}

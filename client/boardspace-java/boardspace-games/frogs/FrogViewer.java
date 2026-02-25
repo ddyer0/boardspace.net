@@ -281,7 +281,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	
     	Drawable disk = getPlayerIcon(player);
     	// draw a sample chip to establish the player's color
-    	disk.drawChip(gc,this,G.Width(chip)*2,G.centerX(chip),G.centerY(chip),null);
+    	disk.draw(gc,this,G.Width(chip)*2,G.centerX(chip),G.centerY(chip),null);
     	
     	int wid = G.Width(hand_r)/2;
     	int xp = G.Left(hand_r)+wid/2;
@@ -306,7 +306,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	int cellS =  b.cellSize()*2;
        	FrogPiece p = FrogPiece.getChip(idx);
-       	p.drawChip(g,this,cellS,xp,yp,null);
+       	p.draw(g,this,cellS,xp,yp,null);
     }
     
 
@@ -366,12 +366,12 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
               {
                   if((sourceCell==ccell)||(destCell==ccell))
                   {
-                	  StockArt.Dot.drawChip(gc,this,cellSize/2+1,xpos,ypos,null);  
+                	  StockArt.Dot.draw(gc,this,cellSize/2+1,xpos,ypos,null);  
                   }
 
              if(isADest)
               	{
-              	StockArt.SmallO.drawChip(gc,this,CELLSIZE*3,xpos,ypos,labl);
+              	StockArt.SmallO.draw(gc,this,CELLSIZE*3,xpos,ypos,labl);
 
               	}
                }
@@ -452,7 +452,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
             				gb.whoseTurn,
             				stateRect);
     	// draw a sample chip to establish the player's color
-    	getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
+    	getPlayerIcon(gb.whoseTurn).draw(gc,this,iconRect,null);
     	
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(GoalMessage),progressRect, goalRect);
         

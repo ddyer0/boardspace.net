@@ -657,7 +657,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			yc += tableSize/8; 
 			}
 
-			if(StockArt.SmallO.drawChip(gc,this,(int)(tableSize*0.8),xc,
+			if(StockArt.SmallO.draw(gc,this,(int)(tableSize*0.8),xc,
 					yc,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
 					bubbleSelect==null ? null : DrawableImage.NotHelpDraw+name,0.3,1.2)
 					)
@@ -670,7 +670,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
 			if(selectedGame!=null && selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				if(StockArt.SmallO.drawChip(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,
+				if(StockArt.SmallO.draw(gc,this,tableSize/4,xo,yo,bubbleSelect,SeatId.SelectFirst,
 						DrawableImage.NotHelpDraw+s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				if(bubbleSelect!=null) { bubbleSelect.row = i; }

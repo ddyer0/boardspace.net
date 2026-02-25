@@ -288,29 +288,29 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 		return theTextContainer;
 	}
 
-	public void drawChip(Graphics gc, exCanvas canvas,Rectangle r,String thislabel)
+	public void draw(Graphics gc, DrawingObject canvas,Rectangle r,String thislabel)
 	{
-		drawChip(gc,canvas,r,null,null,thislabel,1.0);
+		draw(gc,canvas,r,null,null,thislabel,1.0);
 	}
 	
-	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
-	{	drawChip(gc,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
+	public void draw(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	{	draw(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
 	}
 
-	public boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
-	{	return drawChip(gc,DrawingObject.getCanvas(canvas),G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
+	public boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	{	return draw(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
-//	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
-//	{
-//		return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,sscale);
-//	}
+
 	static boolean PRECALCULATE = false;
-	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
+	
+	
+	public boolean draw(Graphics gc,DrawingObject drawOn0,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
-	{	G.Assert(drawOn!=null,"missing canvas");
+	{	
+		exCanvas drawOn = drawOn0.getCanvas();
 	 	if(helptext==BACK)
     	{
-    	boolean hit = cardBack.drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
+    	boolean hit = cardBack.draw(gc,drawOn0,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
     	if(hit) { 
     		highlight.hitData = this;
     		highlight.spriteColor = Color.red;
@@ -329,7 +329,7 @@ public class BugCard extends BugsChip implements BugsConstants , CompareTo<BugsC
 	 	}
 	 	if(image!=null && image.getWidth()>squareWidth)
 	 	{
-	 		image.drawChip(gc,drawOn,squareWidth,e_x-squareWidth/2,e_y-squareWidth/4,null);
+	 		image.draw(gc,drawOn0,squareWidth,e_x-squareWidth/2,e_y-squareWidth/4,null);
 	 		gc=null;
 	 	}}
 	 	

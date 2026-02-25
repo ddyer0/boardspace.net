@@ -65,7 +65,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 		Rectangle r = new Rectangle(e_x-squareWidth/2,e_y-squareH/2,squareWidth,squareH);
 	 	if(helptext==BACK)
     	{
-    	boolean hit = goalCardBack.drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
+    	boolean hit = goalCardBack.draw(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,null,1,1);	
     	if(hit) { 
     		highlight.hitData = this;
     		highlight.spriteColor = Color.red;
@@ -83,7 +83,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 	 	}
 	 	if(image!=null && image.getWidth()>squareWidth)
 	 	{
-	 		image.drawChip(gc,drawOn,squareWidth,e_x-squareWidth/2,e_y-squareH/2,null);
+	 		image.draw(gc,drawOn,squareWidth,e_x-squareWidth/2,e_y-squareH/2,null);
 	 		gc=null;
 	 	}}
 	 	HitPoint action = (helptext==DROP || helptext==PICK) ? highlight : null;

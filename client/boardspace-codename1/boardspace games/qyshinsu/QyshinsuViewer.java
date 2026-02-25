@@ -258,9 +258,9 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
                   if((thisChip!=null) && (gc!=null))
                 	{boolean more = (thisCell.chipIndex>0); 
                 	 boolean active = (thisCell.activeAnimationHeight()>0);
-               		 if(more || !active) { thisChip.drawChip(gc,this,cellH,cx,cy,null);}
+               		 if(more || !active) { thisChip.draw(gc,this,cellH,cx,cy,null);}
                 	 if(more && !active)
-                	 {	thisChip.drawChip(gc, this, cellH,cx+cellW/7,  cy-cellH/5,null);
+                	 {	thisChip.draw(gc, this, cellH,cx+cellW/7,  cy-cellH/5,null);
                 	 }
                 	}
 	       		}
@@ -277,7 +277,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     //
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
-    	QyshinsuChip.getChip(obj).drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	QyshinsuChip.getChip(obj).draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
     // also related to sprites,
@@ -352,20 +352,20 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
              QyshinsuChip cup = cell.topChip();
              cell.rotateCurrentCenter(gc,xpos,ypos);
              if(cup!=null)
-                {	cell.drawChip(gc,this,SQUARESIZE,e_x,e_y,null);
+                {	cell.draw(gc,this,SQUARESIZE,e_x,e_y,null);
                 }
              else if((cell==myLastMove) && isDest && !isSource)
              {	int sz = 3*SQUARESIZE/4;
         	 	QyshinsuChip ghost = QyshinsuChip.getChip(QyshinsuChip.GHOST_CHIP_INDEX);
-             	myLastChip.drawChip(gc,this,sz,xpos1,ypos1,null);
-             	ghost.drawChip(gc,this,sz,xpos1,ypos1,null);
+             	myLastChip.draw(gc,this,sz,xpos1,ypos1,null);
+             	ghost.draw(gc,this,sz,xpos1,ypos1,null);
              }
              
              if((gc!=null) && (hisLastMove==cell) )
              {   
             	 if((cup==null) && (hisLastChip!=null))
             	 {
-            	 hisLastChip.drawChip(gc,this,SQUARESIZE,xpos1,ypos1,null);
+            	 hisLastChip.draw(gc,this,SQUARESIZE,xpos1,ypos1,null);
              	 }
             	 else
             	 {	int mx0 = (xpos+xpos1)/2;

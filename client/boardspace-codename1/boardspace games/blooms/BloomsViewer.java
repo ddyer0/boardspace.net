@@ -288,7 +288,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	BloomsChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	BloomsChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -343,7 +343,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	  BloomsCell cell = cells.nextElement();
     	  int ypos = top - gb.cellToY(cell);
     	  int xpos = left + gb.cellToX(cell);
-    	  tile.getAltDisplayChip(cell.col*cell.row^cell.row).drawChip(gc,this,xsize,xpos,ypos,null);              
+    	  tile.getAltDisplayChip(cell.col*cell.row^cell.row).draw(gc,this,xsize,xpos,ypos,null);              
        }
 
      }
@@ -422,7 +422,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     		}
     		if(approved)
     		{
-    			StockArt.Checkmark.drawChip(gc,this,step,approveX+step/2,approveY+step/2,null);
+    			StockArt.Checkmark.draw(gc,this,step,approveX+step/2,approveY+step/2,null);
     		} 	
     	approveX += xstep*2;
     	}
@@ -479,7 +479,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
   
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,(gb.cellSize()*5),xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,(gb.cellSize()*5),xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
             
@@ -583,7 +583,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             				stateRect);
         BloomsChip colors[] = gb.playerColors[gb.whoseTurn];
         colors[0].drawChip(gc,this,iconRect,null);
-        colors[1].drawChip(gc, this, G.Width(iconRect),G.centerX(iconRect),G.Bottom(iconRect),null);
+        colors[1].draw(gc, this, G.Width(iconRect),G.centerX(iconRect),G.Bottom(iconRect),null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,goalMessage(gb.endgameCondition),progressRect, goalRect);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);

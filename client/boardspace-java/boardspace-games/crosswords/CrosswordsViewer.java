@@ -426,7 +426,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {	
      	boolean value = bb.getOptionValue(op);
     	CrosswordsChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption,(String)null))
+    	if(chip.draw(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption,(String)null))
     		{
     		highlight.hitObject = "SetOption "+op.name()+" "+!value;
     		}
@@ -467,7 +467,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, cs, dx,dy,canHit?highlight:null,CrosswordsId.DrawPile,
+    		if(gb.drawPile.chipAtIndex(i).draw(gc, this, cs, dx,dy,canHit?highlight:null,CrosswordsId.DrawPile,
     				hide ? CrosswordsChip.BACK : null))
     		{
     			highlight.hitObject = gb.drawPile;
@@ -514,7 +514,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {
    		StockArt chip = showing ? StockArt.NoEye : StockArt.Eye;
    		String help = s.get(chip==StockArt.Eye ? ShowTilesMessage : HideTilesMessage);
-		if(chip.drawChip(gc, this, er, highlightAll, CrosswordsId.EyeOption,help))
+		if(chip.draw(gc, this, er, highlightAll, CrosswordsId.EyeOption,help))
 		{	
 	   		boolean newv = !showing;
 			highlightAll.hitObject = (char)('A'+who)+(newv ?" true":" false");
@@ -610,7 +610,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 
     	if(canDrop && top==null)
     	{
-    		StockArt.SmallO.drawChip(gc,this,CELLSIZE,cx,cy,null);
+    		StockArt.SmallO.draw(gc,this,CELLSIZE,cx,cy,null);
     		
     	}  
      	if((canPick||canDrop) && G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,tileSize))
@@ -674,7 +674,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	if(G.Height(r)>0)
     	{
        	Drawable chip = getPlayerIcon(pidx);
-       	chip.drawChip(gc,this,r,null);
+       	chip.draw(gc,this,r,null);
     	GC.setFont(gc,FontManager.getFont(largeBoldFont(),G.Height(r)*3/5));
     	GC.Text(gc, true,r,Color.white,null,""+val);
     }
@@ -784,7 +784,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
-       		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
+       		ch.draw(g,this,CELLSIZE, xp, yp, null);  
        		}
    }
     /**
@@ -870,7 +870,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 	      {
 	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
 	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
-	    	  CrosswordsChip.Tile.drawChip(gc,this,xsize,xpos,ypos,null);              
+	    	  CrosswordsChip.Tile.draw(gc,this,xsize,xpos,ypos,null);              
 	      }     
 	      int ysize = getAltChipset()==0 ? xsize : (int)(xsize*1.3);
 	      for(CrosswordsCell c = gb.allPostCells; c!=null; c=c.next)
@@ -880,7 +880,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 	    	  CrosswordsChip tile = c.topChip();
 	    	  //tile.scale = new double[] { 0.42,0.32,0.78};
 	    	  if(tile!=null)
-	    	  	{ tile.drawChip(gc,this,tile==CrosswordsChip.Post ? xsize : ysize,xpos,ypos,null); 
+	    	  	{ tile.draw(gc,this,tile==CrosswordsChip.Post ? xsize : ysize,xpos,ypos,null); 
 	    	  	}	               
 	       }       	
 	      if(DRAWBACKGROUNDTILES) 
@@ -1032,7 +1032,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
             int xpos = G.Left(brect) + gb.cellToX(cell);
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             if(!cell.isFixed || !DRAWBACKGROUNDTILES)
             {
@@ -1134,7 +1134,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	int cy = yp+CELLSIZE+CELLSIZE/7;
     	for(CrosswordsChip ch : CrosswordsChip.assignedBlanks)
     	{
-    		ch.drawChip(gc,this, CELLSIZE, cx, cy, highlight, CrosswordsId.Blank,null,1.3,1.3);
+    		ch.draw(gc,this, CELLSIZE, cx, cy, highlight, CrosswordsId.Blank,null,1.3,1.3);
     		cx += CELLSIZE;
     		if(cx>=xp+w) { cx = xp+CELLSIZE; cy += CELLSIZE; }
     	}}
@@ -1256,7 +1256,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        {    
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,gb,stateRect,state);
-       getPlayerIcon(who).drawChip(gc,this,iconRect,null);
+       getPlayerIcon(who).draw(gc,this,iconRect,null);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        redrawChat(gc,selectPos);
        drawOptions(gc,((state==CrosswordsState.Puzzle)
@@ -1269,9 +1269,9 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        String goalmsg = bb.invalidReason==null ? GoalExplanation : InvalidExplanation;
        goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
        if(planned) 
-       	{ StockArt.Rotate180.drawChip(gc, this,rotateRect, selectPos, CrosswordsId.Rotate,s.get(RotateMessage)); 
+       	{ StockArt.Rotate180.draw(gc, this,rotateRect, selectPos, CrosswordsId.Rotate,s.get(RotateMessage)); 
        	  CrosswordsChip chip = lockOption ? CrosswordsChip.UnlockRotation : CrosswordsChip.LockRotation;
-       	  chip.drawChip(gc, this,lockRect, selectPos, CrosswordsId.Lock,s.get(chip.tip)); 
+       	  chip.draw(gc, this,lockRect, selectPos, CrosswordsId.Lock,s.get(chip.tip)); 
        	}
        drawNoChat(gc,altNoChatRect,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
@@ -1304,7 +1304,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     			   	ourTurnSelect==null); 
     	   if(isPassAndPlay() && !explicitlyVisible(gb,whop) && (currentGuiPlayer().boardIndex==whop))
     	   {   Rectangle rackEye = new Rectangle(G.Left(bigRack),G.Top(bigRack),G.Height(bigRack)/3,G.Height(bigRack)/3);
-    		   StockArt.Eye.drawChip(gc,this,rackEye,selectPos,CrosswordsId.RevealRack,SeeYourTilesMessage);
+    		   StockArt.Eye.draw(gc,this,rackEye,selectPos,CrosswordsId.RevealRack,SeeYourTilesMessage);
     	   }
 
       	}

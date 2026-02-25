@@ -1913,7 +1913,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	{
 		  boolean hit = false;
 		  if(image !=null)
-		  {	 if(image.drawChip(gc,this,h,left+h/2,top+h/2,	pt,id,help))
+		  {	 if(image.draw(gc,this,h,left+h/2,top+h/2,	pt,id,help))
 		  	  {
 			  pt.hit_index = i;
 			  hit = true;
@@ -2412,7 +2412,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		int h = G.Height(selectGameRect)*3/4;
 		if(currentGame==null)
 			{ 
-			StockArt.Pulldown.drawChip(gc,this,h,G.Right(selectGameRect),G.centerY(selectGameRect),null);
+			StockArt.Pulldown.draw(gc,this,h,G.Right(selectGameRect),G.centerY(selectGameRect),null);
 			}
 		else
 		{

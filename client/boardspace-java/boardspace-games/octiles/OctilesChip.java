@@ -165,7 +165,7 @@ public class OctilesChip extends chip<OctilesChip>
 	{	if(i>=RUNNER_INDEX) { return(getRunner(i-RUNNER_INDEX)); }
 		return(getTile(i-1));
 	}
-	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void draw(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
 	{	drawChip(gc,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,label,0,0);
 	}
 	/**

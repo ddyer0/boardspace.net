@@ -548,12 +548,12 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     		ContainerChip alt = ch;
     		boolean right = xp>G.Left(atSeaRect)+2*sz/3;
     		if(right) { alt = ch.getAltShip(); }
-    		alt.drawChip(g,this,sz,xp,yp,null);
+    		alt.draw(g,this,sz,xp,yp,null);
     		drawShipContents(g,b,ch,!right,false,null,null,null,sz,xp,yp);
     	}
     	else
     	{
-    	ch.drawChip(g,this,sz,xp,yp,null);
+    	ch.draw(g,this,sz,xp,yp,null);
     	}
      }
 
@@ -907,7 +907,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     }
     private void drawPlayerCard(Graphics gc,Rectangle r,ContainerChip goal)
     {	int cx = G.centerX(r);
-		goal.drawChip(gc,this,G.Width(r),cx,G.centerY(r),null);
+		goal.draw(gc,this,G.Width(r),cx,G.centerY(r),null);
 		if(b.first_shipment)
 		{
 			// blank out the gold
@@ -1041,7 +1041,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
   					&& (ob.player==gb.whoseTurn)
   					&& (allowed!=null) 
   					&& (allowa==null))
-   			{	StockArt.SmallX.drawChip(gc,this,3*wid/4,xp+offz/2,yp,null);
+   			{	StockArt.SmallX.draw(gc,this,3*wid/4,xp+offz/2,yp,null);
    			}
    			}       			
 		}
@@ -1111,7 +1111,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
        					&& (ob.player==gb.whoseTurn) 
        					&& (allowed!=null) 
        					&& (allowa==null))
-       			{	StockArt.SmallX.drawChip(gc,this,3*wid/4,xp+offz/2,yp,null);
+       			{	StockArt.SmallX.draw(gc,this,3*wid/4,xp+offz/2,yp,null);
        			}
        			}
        			
@@ -2344,7 +2344,7 @@ private void playSounds(commonMove m)
 			GC.Text(gc, true, nameRect,Color.black,null,s.get(SeeingCashMessage,name)); 
 			ContainerChip ship = ContainerChip.getShip(b.getColorMap()[bd.player]);
 			int w = G.Width(nameRect);
-			ship.drawChip(gc, this,w/4,G.Left(nameRect)+w-w/8,G.centerY(nameRect),null);	
+			ship.draw(gc, this,w/4,G.Left(nameRect)+w-w/8,G.centerY(nameRect),null);	
 		}
 		
 		boolean hidden = bd.hidden;
@@ -2353,7 +2353,7 @@ private void playSounds(commonMove m)
 		{
 		Rectangle eyeRect = interpolateBox(hiddenViewRect,hiddenEyeRect,bounds);
 		StockArt icon = hidden ? StockArt.Eye : StockArt.NoEye;
-		icon.drawChip(gc,this,eyeRect,hp,ContainerId.HideInfo);
+		icon.draw(gc,this,eyeRect,hp,ContainerId.HideInfo);
 		}
 		
 		{	// cash

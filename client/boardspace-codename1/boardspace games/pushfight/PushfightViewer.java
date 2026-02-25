@@ -337,7 +337,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     {   if (gc != null)
         { 	// draw a random pile of chips.  It's just for effect
         	PushfightChip chip = gb.getPlayerChip(pl.boardIndex);
-        	chip.drawChip(gc, this,r,null,0.7);
+        	chip.draw(gc, this,r,null,0.7);
         }
      }
     /**
@@ -352,7 +352,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	PushfightChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	PushfightChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -438,7 +438,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
             	highlight.awidth = CELLSIZE;
             }
            if(targets.get(cell)!=null)
-        	   {StockArt.SmallO.drawChip(gc,this,CELLSIZE, xpos, ypos , null);
+        	   {StockArt.SmallO.draw(gc,this,CELLSIZE, xpos, ypos , null);
         	   }
             }
         numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
@@ -537,7 +537,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
             				state!=PushfightState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
-        gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null,0.9);
+        gb.getPlayerChip(gb.whoseTurn).draw(gc,this,iconRect,null,0.9);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(PushVictoryCondition),progressRect, goalRect);
         DrawRepRect(gc,pl.displayRotation,Color.black,gb.Digest(),repRect);
         

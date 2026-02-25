@@ -335,7 +335,7 @@ public class TimeControl implements Config
 	  			  Color.black,null, s.get(kind.TimeMessage));
 	  	  if(writable)
 	  	  { int sz = h*(hit?4:3)/5;
-	  		StockArt.Pulldown.drawChip(inG,canvas,sz,
+	  		StockArt.Pulldown.draw(inG,canvas,sz,
 	      			G.Left(modeRect)+wt+sz/2,
 	      			G.centerY(modeRect),"");
 	  	  }}
@@ -364,7 +364,7 @@ public class TimeControl implements Config
 	  				  	G.briefTimeString(moveIncrement));
 	  	  	if(writable)
 	  	  		{int sz = h*(hit?4:3)/5;
-	  	  		 StockArt.Pulldown.drawChip(inG,canvas,sz,
+	  	  		 StockArt.Pulldown.draw(inG,canvas,sz,
 	      			lexx+wt+sz/2,
 	      			cy,"");
 	  	  		}
@@ -385,7 +385,7 @@ public class TimeControl implements Config
 	  	  				G.briefTimeString(differentialTime));
 	  		if(writable)
 	  			{int sz = h*(hit?4:3)/5;
-	  			 StockArt.Pulldown.drawChip(inG,canvas,sz,
+	  			 StockArt.Pulldown.draw(inG,canvas,sz,
 	      			G.Left(extraRect)+wt+sz/2,
 	      			G.centerY(extraRect),"");
 	  			}
@@ -409,7 +409,7 @@ public class TimeControl implements Config
 				  	G.briefTimeString(fixedTime));
 		  if(writable)
 			{int sz = h*(hit?4:3)/5;
-			 StockArt.Pulldown.drawChip(inG,canvas,sz,
+			 StockArt.Pulldown.draw(inG,canvas,sz,
 			 mainLeft+wt+sz/2,
 			 cy,"");
 			}

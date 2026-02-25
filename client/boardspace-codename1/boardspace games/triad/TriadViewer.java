@@ -225,12 +225,12 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         	int siz = G.Width(r)*2/3;
         	int cx = G.centerX(r);
         	int cy = G.centerY(r);
-        	c.drawChip(gc,this,siz,cx,cy,null);
+        	c.draw(gc,this,siz,cx,cy,null);
         	if(player==gb.candidate_player)
-        	{	tileImages[CANDIDATE_INDEX].drawChip(gc,this,siz,cx,cy,null);
+        	{	tileImages[CANDIDATE_INDEX].draw(gc,this,siz,cx,cy,null);
         	}
            	if(player==gb.bunny_player)
-        	{	tileImages[BUNNY_INDEX].drawChip(gc,this,siz,cx,cy,null);
+        	{	tileImages[BUNNY_INDEX].draw(gc,this,siz,cx,cy,null);
         	}
 
         }
@@ -247,7 +247,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
         int cellSize = (int)(bb.cellSize()*xscale);
-    	TriadChip.getChip(obj).drawChip(g,this,cellSize, xp, yp, null);
+    	TriadChip.getChip(obj).draw(g,this,cellSize, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -300,7 +300,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
               int bindex = HEXTILE_BORDER_NR_INDEX;
               int hidx = c.color.ordinal()+HEXTILE_NR_INDEX; 
               // to fine tune the board rendering.
-              tileImages[hidx].drawChip(gc,this,cell,xpos,ypos,null);
+              tileImages[hidx].draw(gc,this,cell,xpos,ypos,null);
               
               // decorate the borders with darker and lighter colors.  The border status
               // of cells is precomputed, so each cell has a mask of which borders it needs.
@@ -315,7 +315,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
             	  lastDropped = borders[bindex+5];
             	  adjustScales(borders[bindex+5].getScale(),lastDropped);
             	  if((border&(1<<dir))!=0)
-            	  {	borders[bindex+dir].drawChip(gc,this,cell,xpos,ypos,null);
+            	  {	borders[bindex+dir].draw(gc,this,cell,xpos,ypos,null);
             	  }
               }
           }
@@ -359,13 +359,13 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
             	 highlight.spriteColor = Color.red;
               }
            if(show && sources.get(cell)!=null)
-           {StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
+           {StockArt.SmallO.draw(gc,this,cellSize,xpos,ypos,null);
            }
            if(show && dests.get(cell)!=null)
-             {	StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
+             {	StockArt.SmallO.draw(gc,this,cellSize,xpos,ypos,null);
              }
            if(show && captures.get(cell)!=null)
-             	{StockArt.SmallX.drawChip(gc,this,cellSize,xpos,ypos,null);
+             	{StockArt.SmallX.draw(gc,this,cellSize,xpos,ypos,null);
              	}
             
         }
@@ -458,7 +458,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
             				whoseTurn,
             				stateRect);
              TriadChip cc = gb.getPlayerChip(whoseTurn);
-             cc.drawChip(gc,this,iconRect,null,0.7);
+             cc.draw(gc,this,iconRect,null,0.7);
             goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
             DrawRepRect(gc,0,Color.black, gb.Digest(),repRect);	
         }

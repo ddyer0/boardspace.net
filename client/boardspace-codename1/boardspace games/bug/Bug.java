@@ -2287,7 +2287,7 @@ addBug("8 7716485393248948135"); // 8#1448
 		 return box;
 	}
 	// draw a bug as a single entity.  This gets used to draw bugs in the game log.
-	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
+	public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) 
 	{	BugBoard b = (BugBoard)((BugViewer)c).getBoard();
 		Bbox box = getBbox(b);
 		double xspan = (box.right-box.left);
@@ -2304,7 +2304,7 @@ addBug("8 7716485393248948135"); // 8#1448
 			int yy = b.cellToY(cell.col,cell.row);
 			int x = (int)((xx - dx)/scale);
 			int y = (int)(-(yy- dy)/scale);
-			top.drawChip(gc,c,psize,posx+x,posy+y,null);
+			top.draw(gc,c,psize,posx+x,posy+y,null);
 		}
 	}
 	public boolean isAdjacent(BugCell c)

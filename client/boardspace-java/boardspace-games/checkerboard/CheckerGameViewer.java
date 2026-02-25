@@ -426,7 +426,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             {
             	if((cell==dest)||(cell==src)||(hitNow!=null))
 	            {
-	            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+	            	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
 	            }
             }
             if((cell.topChip()==null)
@@ -434,13 +434,13 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             			&& cell.lastCaptured>0
             			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
                     	{	
-                    		cell.lastContents.drawChip(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
-                    		StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+                    		cell.lastContents.draw(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
+                    		StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null);
                     	}
  
             if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }}
  
      	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);

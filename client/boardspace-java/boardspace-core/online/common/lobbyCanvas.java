@@ -711,7 +711,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 					 }
 					 hp.setHelpText(fav);
 				  	 }
-					 StockArt.Pulldown.drawChip(inG,this,h,right-h/2,top+h/2,""); 
+					 StockArt.Pulldown.draw(inG,this,h,right-h/2,top+h/2,""); 
 				  }	
 				  GC.translate(inG,-polyXoffset, -polyYoffset);
 			}
@@ -795,7 +795,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		Color color = selected ? AttColor : Color.lightGray;
 		int tleft =  left+h/20;
 		int tw = GC.Text(g, true,tleft, top+h/3,aw,h*2/3,color,null,s.get(name));
-		StockArt.Pulldown.drawChip(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
+		StockArt.Pulldown.draw(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
 
 	}
 	private void drawLobbyHelp(Graphics inG,HitPoint hp)
@@ -1479,7 +1479,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 				  null,msg);
 		   if(editable)
 		   {	int h = G.Height(botRect);
-		      	StockArt.Pulldown.drawChip(inG,this,h,
+		      	StockArt.Pulldown.draw(inG,this,h,
 		      			G.Left(botRect)+w+h/2,
 		      			G.centerY(botRect),"");
 		      }
@@ -1608,7 +1608,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  if(session.iOwnTheRoom && (session.mode!=Session.Mode.Tournament_Mode))
 	  {
 	  int h = G.Height(inviteModeRect);
-	  StockArt.Pulldown.drawChip(inG,this,h,G.centerX(inviteModeRect)+(w+h)/2,G.centerY(inviteModeRect),"");  
+	  StockArt.Pulldown.draw(inG,this,h,G.centerX(inviteModeRect)+(w+h)/2,G.centerY(inviteModeRect),"");  
 	  }
 	}
 
@@ -1626,7 +1626,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(newb || highlight)
 	      {	int h = G.Height(gameTypeRect);
 	        if(highlight) { hp.setHelpText(s.get(SelectGameMessage)); }
-	      	StockArt.Pulldown.drawChip(inG,this,h,
+	      	StockArt.Pulldown.draw(inG,this,h,
 	      			G.Left(gameTypeRect)+w+h*2/3,
 	      			G.Top(gameTypeRect)+h*3/5,"");
 	      }}
@@ -1642,7 +1642,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(newb || highlight)
 	      {	int h = G.Height(subgameSelectRect);
 	        if(highlight) { hp.setHelpText(s.get(SelectVariationMessage)); }
-	      	StockArt.Pulldown.drawChip(inG,this,h,
+	      	StockArt.Pulldown.draw(inG,this,h,
 	      			G.Left(subgameSelectRect)+w+h*2/3,
 	      			G.centerY(subgameSelectRect),"");
 	      }}
@@ -1709,7 +1709,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(isNewbieOrGuest() ? canChangeSessionType(session) : highlight)
 	      {	
 	      hp.setHelpText(s.get(SelectTypeMessage));
-	      StockArt.Pulldown.drawChip(inG,this,textH,textX+w+textH*3/5,textY+textH*3/5,"");
+	      StockArt.Pulldown.draw(inG,this,textH,textX+w+textH*3/5,textY+textH*3/5,"");
 	      }
 	      
 	    GameInfo game = session.currentGame;
@@ -1724,7 +1724,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    			{ hp.setHelpText(s.get(ShowRulesMessage));
 	    			  scl = 1.2;
 	    			}
-	    		StockArt.Rules.drawChip(inG,this,roomRulesRect,null,scl); 
+	    		StockArt.Rules.draw(inG,this,roomRulesRect,null,scl); 
 	    		session.drewRules = true;
 	    	}
 	    	if(game.hasRankings)
@@ -1736,7 +1736,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     			hp.setHelpText(s.get(ShowRankingMessage));
     			scl = 1.2;
     		}
-    		StockArt.Rankings.drawChip(inG, this,roomRankingsRect,null,scl);
+    		StockArt.Rankings.draw(inG, this,roomRankingsRect,null,scl);
 	    	}
 	    	if(game.howToVideo!=null)
 	    	{
@@ -1746,7 +1746,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    			{ hp.setHelpText(s.get(ShowVideoMessage));
 	    			  scl = 1.2; 
 	    			}
-	    		StockArt.Video.drawChip(inG,this,roomVideoRect,null,scl); 
+	    		StockArt.Video.draw(inG,this,roomVideoRect,null,scl); 
 	    		session.drewVideo = true;
 	    		
 	    	}

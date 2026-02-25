@@ -411,7 +411,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
 	        }
             if(removed.get(c)!=null)
             {	
-           	 StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+           	 StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
             }
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
          }

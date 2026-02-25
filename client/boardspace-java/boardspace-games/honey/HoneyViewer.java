@@ -443,7 +443,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard>
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
        		HBoard gb = currentPlayerBoard(bb);
-       		ch.drawChip(g,this,gb.cellSize(), xp, yp, null);  
+       		ch.draw(g,this,gb.cellSize(), xp, yp, null);  
        		}
    }
     /**
@@ -578,7 +578,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
             
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
  
             setLetterColor(gc,gb,cell);

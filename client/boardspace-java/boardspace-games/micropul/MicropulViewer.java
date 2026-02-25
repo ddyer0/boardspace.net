@@ -297,7 +297,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         	}
         	else
         	{
-        	StockArt.SmallO.drawChip(gc,this,ww,x,y,null);	
+        	StockArt.SmallO.draw(gc,this,ww,x,y,null);	
         	}
             cp.setLastSize( ww);
            	pl.rotateCurrentCenter(cp, x,y);
@@ -573,16 +573,16 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
             }
             
             if(cell==destCell)
-	            {	MicropulChip.BLANK.drawChip(gc,this,cellSize,xpos,ypos,null);
+	            {	MicropulChip.BLANK.draw(gc,this,cellSize,xpos,ypos,null);
 	            }
             else if(isASource)
 	            {
-            	StockArt.SmallO.drawChip(gc,this,cellSize*2/3,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,cellSize*2/3,xpos,ypos,null);
             	//GC.cacheAACircle(gc,xpos,ypos,cellSize/10,Color.green,Color.yellow,true);
 	            } else
             if(isADest)
 	            {
-            	StockArt.SmallO.drawChip(gc,this,cellSize*2/3,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,cellSize*2/3,xpos,ypos,null);
             	//GC.cacheAACircle(gc,xpos,ypos,cellSize/10,Color.red,Color.yellow,true);
 	            }
         }
@@ -680,7 +680,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         				state!=MicropulState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
-        gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null,2);
+        gb.playerChip[gb.whoseTurn].draw(gc,this,iconRect,null,2);
        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
         //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
     

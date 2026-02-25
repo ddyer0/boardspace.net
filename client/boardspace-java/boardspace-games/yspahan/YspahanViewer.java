@@ -416,7 +416,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		else 
     		{
     		if(ch.type==yclass.cards) { ch=ycard.back.chip; }
-    	   	ch.drawChip(g,this,size,xp,yp,null);
+    	   	ch.draw(g,this,size,xp,yp,null);
     		}
      }
 
@@ -609,7 +609,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 
     	if(player == gb.startPlayer) 
     		{
-    		ymisc.firstPlayer.chip.drawChip(gc,this,size,G.Left(br)+size/5,G.centerY(br),null);    			
+    		ymisc.firstPlayer.chip.draw(gc,this,size,G.Left(br)+size/5,G.centerY(br),null);    			
     		}
     	for(int i=0;i<pb.buildings.length; i++) 
     	{	YspahanCell c = pb.buildings[i];
@@ -651,14 +651,14 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 				if(nogold>0) 
 				{ int xp = xpos+S34;
 				  int yp = ypos-S2;
-				  ymisc.gold.chip.drawChip(gc,this,S34,xp,yp,null);
-				  StockArt.SmallX.drawChip(gc,this,S34,xp,yp,""+nogold);
+				  ymisc.gold.chip.draw(gc,this,S34,xp,yp,null);
+				  StockArt.SmallX.draw(gc,this,S34,xp,yp,""+nogold);
 				}
 				if(nocam>0) 
 				{ int xp = xpos+S34;
 				  int yp = ypos+S2;
-				  ymisc.camel.chip.drawChip(gc,this,S34,xp,yp,null);
-				  StockArt.SmallX.drawChip(gc,this,S34,xp,yp,""+nocam);
+				  ymisc.camel.chip.draw(gc,this,S34,xp,yp,null);
+				  StockArt.SmallX.draw(gc,this,S34,xp,yp,""+nocam);
 				}
 	    		if(hidden)
 	    		{
@@ -785,7 +785,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		int xpos = table.getX(c);
     		int ypos = CELLSIZE/2+table.getY(c);
     		HitPoint myHit = gb.legalToHitCell(c)?highlight:null;
-	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null); }
+	   		if(myHit!=null) { StockArt.LandingPad.draw(gc,this,CELLSIZE/2,xpos,ypos,null); }
 	   		if(c.drawStack(gc,this,(i<N_DICE)?null:myHit,CELLSIZE,xpos,ypos,0, 1.0,null))
     		{	highlight.spriteColor = Color.red;
     			highlight.awidth = CELLSIZE;
@@ -799,7 +799,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		int ypos = CELLSIZE/2+table.getY(d);
 			boolean canPick = gb.goldCount(whoseTurn)>0;
 	   		HitPoint myHit = gb.legalToHitCell(d)?highlight:null;
-	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null); }
+	   		if(myHit!=null) { StockArt.LandingPad.draw(gc,this,CELLSIZE/2,xpos,ypos,null); }
 			if(d.drawStack(gc,this,canPick?myHit:null,CELLSIZE,xpos,ypos,0, 1.0,null))
 				{ highlight.spriteColor = Color.red;
 				  highlight.awidth = CELLSIZE;
@@ -840,10 +840,10 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
       		highlight.spriteColor = Color.red;
         	}
         	if(dests.get(c)!=null)
-        	{	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+        	{	StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
         	}
         	if(c==gb.selectedCube)
-        	{	StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+        	{	StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
         	}
          }
         if(myState!=ystate.ROLL_STATE) { drawDiceTower(gc,gb,whoseTurn, highlight,anyone); }

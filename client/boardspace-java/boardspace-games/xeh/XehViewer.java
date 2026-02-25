@@ -440,7 +440,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	XehChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	XehChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -496,7 +496,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
              //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
              // to fine tune the board rendering.
              //G.print("cell "+CELLSIZE+" "+xsize);
-              tile.drawChip(gc,this,xsize,xpos,ypos,null);
+              tile.draw(gc,this,xsize,xpos,ypos,null);
               //equivalent lower level draw image
               // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
               //
@@ -511,7 +511,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
               for(int dir=0; dir<4;dir++)
               {	// precalculated border cell properties
             	  if((c.borders&(1<<dir))!=0)
-            	  {	  btiles[dir].drawChip(gc,this,xsize,xpos,ypos,null);
+            	  {	  btiles[dir].draw(gc,this,xsize,xpos,ypos,null);
             	  }
               }}
           }
@@ -587,7 +587,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
   
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
  /*           if(cell.isEmpty() && cell.isPossibleBridge(XehChip.White))
@@ -608,7 +608,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
             	{
             	//if((cell.row==11) && cell.col>='F') { G.print("c "+cell+" "+ev); }
             	//if(ev>10) {G.print(""+cell+" "+ev); }
-            	StockArt.SmallO.drawChip(gc,this,2*(int)(gb.cellSize()*(ev-rangeMin)/(rangeMax-rangeMin)),xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,2*(int)(gb.cellSize()*(ev-rangeMin)/(rangeMax-rangeMin)),xpos,ypos,null);
             	mineval = Math.min(mineval,ev);
             	maxeval = Math.max(maxeval,ev);
             	repaint(1000);

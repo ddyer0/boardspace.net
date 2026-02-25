@@ -43,7 +43,7 @@ public interface Drawable {
 	 * @param posy	the y position of the center of the object
 	 * @param msg	text to superimpose after drawing the object, or in combination with a HitPoint the help context
 	 */
-	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg);
+	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg);
 	/**
 	 * 
 	 * @param gc	the graphics object for drawing
@@ -51,9 +51,9 @@ public interface Drawable {
 	 * @param r		the rectangle to fill
 	 * @param msg	text to superimpose after drawing the object.
 	 */
-	public default void drawChip(Graphics gc,DrawingObject c,Rectangle r,String msg)
+	public default void draw(Graphics gc,DrawingObject c,Rectangle r,String msg)
 	{
-		drawChip(gc,c,Math.min(G.Height(r),G.Width(r)),G.centerX(r),G.centerY(r),msg);
+		draw(gc,c,Math.min(G.Height(r),G.Width(r)),G.centerX(r),G.centerY(r),msg);
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public interface Drawable {
 	  * 
 	  * @return true if this is the first hit
 	  */
-   public default boolean findChipHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight,double sscale)
+   public default boolean findHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight,double sscale)
 	 	{	
 	        if(pointInsideCell(highlight, e_x, e_y, squareWidth,squareHeight,sscale))
 	        {	// this is carefully balanced so we do not re-evaluate the selection if it is
@@ -172,9 +172,9 @@ public interface Drawable {
 	 * @param e_y the center y to draw
 	 * @return true if this chip is hit
 	 */
-   public default boolean findChipHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight)
+   public default boolean findHighlight(CellId rackLocation,HitPoint highlight,int e_x,int e_y,int squareWidth,int squareHeight)
    {
-   	return findChipHighlight(rackLocation,highlight,e_x,e_y,squareWidth,squareHeight,0.66);
+   	return findHighlight(rackLocation,highlight,e_x,e_y,squareWidth,squareHeight,0.66);
    }
 
    
@@ -190,8 +190,8 @@ public interface Drawable {
 	 * @param sscale  sensitive area scale factor
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,sscale,1);
+	public default boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip,double sscale)
+	{	return draw(gc,canvas,r,highlight,rackLocation,tooltip,sscale,1);
 	}
 	/**
 	 * draw stock art to fill the specified rectangle, return true if it is hit
@@ -205,8 +205,9 @@ public interface Drawable {
 	 * @param sscale  sensitive area scale factor
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,TextChunk.create(tooltip),sscale);
+	public default boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	{	
+		return draw(gc,canvas,r, highlight, rackLocation,tooltip,sscale,1);
 	}
 
 	
@@ -223,8 +224,8 @@ public interface Drawable {
 	 * @param tooltip
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,(String)null,1.3);
+	public default boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
+	{	return draw(gc,canvas,r,highlight,rackLocation,(String)null,1.3);
 	}
 
 	/**
@@ -239,8 +240,8 @@ public interface Drawable {
 	 * @param tooltip
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
+	public default boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip)
+	{	return draw(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
 	}
 
 	/**
@@ -255,8 +256,8 @@ public interface Drawable {
 	 * @param tooltip
 	 * @return true if the highlight point was hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip)
-	{	return drawChip(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
+	public default boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip)
+	{	return draw(gc,canvas,r,highlight,rackLocation,tooltip,1.3);
 	}
 	
 	public default double getAspectRatio(DrawingObject DrawOn)
@@ -285,16 +286,16 @@ public interface Drawable {
 	 * @param expansion		// 	size expansion factor (if hit and rackLocation not null)
 	 * @return true if this chip is hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject drawOn,int squareWidth,int e_x,
+	public default boolean draw(Graphics gc,DrawingObject drawOn,int squareWidth,int e_x,
 							int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
 	{ 
       double aspect = getAspectRatio(drawOn);
-      boolean val = findChipHighlight(rackLocation,highlight,e_x,e_y,squareWidth,(int)(squareWidth/aspect),sscale);
+      boolean val = findHighlight(rackLocation,highlight,e_x,e_y,squareWidth,(int)(squareWidth/aspect),sscale);
       String draw = helptext!=null && helptext.startsWith(NotHelp) 
     		  			? helptext.startsWith(NotHelpDraw) ? helptext.substring(NotHelpDraw.length()) : helptext
     		  			: null;
       String help = draw==null ? helptext : null;
-      drawChip(gc,drawOn,(int)((val&&rackLocation!=null)?expansion*squareWidth:squareWidth),e_x,e_y,draw);
+      draw(gc,drawOn,(int)((val&&rackLocation!=null)?expansion*squareWidth:squareWidth),e_x,e_y,draw);
       if(val)
       	{
     	  highlight.setHelpText(help);
@@ -316,10 +317,10 @@ public interface Drawable {
 
 	 * @return true if this chip is hit and rackLocation is not null
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject drawOn,int squareWidth,int e_x,int e_y,HitPoint highlight,CellId rackLocation,
+	public default boolean draw(Graphics gc,DrawingObject drawOn,int squareWidth,int e_x,int e_y,HitPoint highlight,CellId rackLocation,
 			String helptext)
 	{
-		return(drawChip(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,helptext,0.66,1.33));
+		return(draw(gc,drawOn,squareWidth,e_x,e_y,highlight,rackLocation,helptext,0.66,1.33));
 	}
 	/**
 	 * draw stock art to fill the width of the rectangle, based on the width of the rectangle
@@ -329,10 +330,11 @@ public interface Drawable {
 	 * @param label
 	 * @param scale
 	 */
-	public default void drawChip(Graphics gc,DrawingObject canvas,Rectangle r,String label,double scale)
+	public default void draw(Graphics gc,DrawingObject canvas,Rectangle r,String label,double scale)
 	{	
-		drawChip(gc,canvas,(int)(Math.max(G.Height(r),G.Width(r))*scale),G.centerX(r),G.centerY(r),label);
+		draw(gc,canvas,(int)(Math.max(G.Height(r),G.Width(r))*scale),G.centerX(r),G.centerY(r),label);
 	}
+
 	/**
 	 * 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
 		 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
@@ -352,34 +354,47 @@ public interface Drawable {
 	 * @param expansion
 	 * @return
 	 */
-	public default boolean drawChip(Graphics gc,DrawingObject drawOn,Rectangle r,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
+	public default boolean draw(Graphics gc,DrawingObject drawOn,Rectangle r,HitPoint highlight,CellId rackLocation,Text helptext,double sscale,double expansion)
 		{
-		return drawChip(gc,drawOn,r,highlight,rackLocation,TextChunk.create(helptext),sscale,expansion);
-	}
-	/**
-	 * 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
-		 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
-		 * hack, 
-		 * 	if the help text starts with NotHelpDraw the rest of the string is drawn instead of used as help text. 
-		 *    This is used by a few widgets to display text inside icons.
-		 *  if the help text starts with NotHelp, the string is passed through instead of used as help text.
-		 *    This is used in conjunction with drawChip methods to decorate or alter the images being drawn.
-		 * 
-	 * @param gc
-	 * @param drawOn the DrawingObject being drawn on, usually an exCanvas or null
-	 * @param r
-	 * @param highlight
-	 * @param rackLocation
-	 * @param helptext
-	 * @param sscale
-	 * @param expansion
-	 * @return
-	 */
-	public default boolean drawChip(Graphics gc,DrawingObject drawOn,Rectangle r,HitPoint highlight,CellId rackLocation,Text helptext,double sscale,double expansion)
-		{
-		boolean val = findChipHighlight(rackLocation,highlight,G.centerX(r),G.centerY(r),G.Width(r),G.Height(r),sscale);
+		boolean val = findHighlight(rackLocation,highlight,G.centerX(r),G.centerY(r),G.Width(r),G.Height(r),sscale);
 		int sz = (int)(Math.max(G.Height(r),G.Width(r))*(val ? expansion : 1));
-		drawChip(gc,drawOn,sz,G.centerX(r),G.centerY(r),null);
+		draw(gc,drawOn,sz,G.centerX(r),G.centerY(r),null);
+		if(val)
+		{	highlight.setHelpText(helptext);
+			if(expansion<=1)
+				{highlight.spriteColor = Color.red;
+				 highlight.spriteRect = r;
+				}
+		}
+		return(val && (rackLocation!=null));
+	}
+
+	/**
+	 * 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
+		 * multiplied by "expansion" to give a visual "pop" to indicate the hit.  As a special
+		 * hack, 
+		 * 	if the help text starts with NotHelpDraw the rest of the string is drawn instead of used as help text. 
+		 *    This is used by a few widgets to display text inside icons.
+		 *  if the help text starts with NotHelp, the string is passed through instead of used as help text.
+		 *    This is used in conjunction with drawChip methods to decorate or alter the images being drawn.
+		 * 
+	 * @param gc
+	 * @param drawOn the DrawingObject being drawn on, usually an exCanvas or null
+	 * @param r
+	 * @param highlight
+	 * @param rackLocation
+	 * @param helptext
+	 * @param sscale
+	 * @param expansion
+	 * @return
+	 */
+	public default boolean draw(Graphics gc,DrawingObject drawOn,Rectangle r,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
+		{
+		// this is essentually a duplicate of the above method that has Text helptext, but preserved to be compatible with 
+		// the magic interpretations of the help text string by bugspiel and others
+		boolean val = findHighlight(rackLocation,highlight,G.centerX(r),G.centerY(r),G.Width(r),G.Height(r),sscale);
+		int sz = (int)(Math.max(G.Height(r),G.Width(r))*(val ? expansion : 1));
+		draw(gc,drawOn,sz,G.centerX(r),G.centerY(r),null);
 		if(val)
 		{	highlight.setHelpText(helptext);
 			if(expansion<=1)
@@ -389,7 +404,6 @@ public interface Drawable {
 		}
 		return(val && (rackLocation!=null));
 		}
-
 
 
 }

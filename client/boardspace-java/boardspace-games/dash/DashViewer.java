@@ -230,7 +230,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
 
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	DashChip chip = DashChip.getChip(idx);
-    	chip.drawChip(g,this,SQUARESIZE,xp-SQUARESIZE/3,yp+SQUARESIZE/3,null);
+    	chip.draw(g,this,SQUARESIZE,xp-SQUARESIZE/3,yp+SQUARESIZE/3,null);
     }
 
 
@@ -302,7 +302,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
                  {	
                  	if(gc!=null) 
                  		{
-                 		cup.drawChip(gc,this,SQUARESIZE,xpos,ypos, null);
+                 		cup.draw(gc,this,SQUARESIZE,xpos,ypos, null);
                  		//this puts the region size in each cell of each region
                  		//String msg = (cell!=null) ? ""+cell.region_size : null;
                  		//G.Text(gc,false,xpos+SQUARESIZE/3,ypos-SQUARESIZE,SQUARESIZE,SQUARESIZE,Color.yellow,null,msg);

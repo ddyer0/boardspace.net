@@ -246,7 +246,7 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
     		// displau the letter if the tile is not tiny
     		if(SELECT.equals(label))
     		{
-    			StockArt.SmallO.drawChip(gc, canvas, ss*5, cx+ss/14,cy-ss/12,null);
+    			StockArt.SmallO.draw(gc, canvas, ss*5, cx+ss/14,cy-ss/12,null);
     		}
 
     		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);

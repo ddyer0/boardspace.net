@@ -230,8 +230,8 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	TakojudoChip king = TakojudoChip.getChip(b.reverseY()?1:0,TakojudoChip.TENTACLE_INDEX);
     	TakojudoChip reverse = TakojudoChip.getChip(b.reverseY()?0:1,TakojudoChip.TENTACLE_INDEX);
-    	reverse.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)/2,null);
-    	king.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)+G.Width(r)/2,null);
+    	reverse.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)/2,null);
+    	king.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)+G.Width(r)/2,null);
     	HitPoint.setHelpText(highlight,r, TacoId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  
     private void DrawLogoMarker(Graphics gc,Rectangle r)
@@ -254,7 +254,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         int h4 = h2/2;
         int left = G.Left(r);
         int bottom = G.Bottom(r);
-        thisChip.drawChip(gc,this,h2,left+h4,bottom-h4,null);
+        thisChip.draw(gc,this,h2,left+h4,bottom-h4,null);
         GC.setFont(gc,largeBoldFont());
         GC.Text(gc,true,left,(int)(bottom-width*0.4),width,h4, Color.black, null, gb.pieceSummary(forPlayer));
      }
@@ -269,7 +269,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	TakojudoChip ch = TakojudoChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
  
@@ -365,7 +365,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         	}
             if(show && gb.LegalToHitBoard(cell))
         	{
-        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+        	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
         	}
     	}
     	TakojudoCell hitCell = gb.closestCell(highlight,brect);
@@ -493,7 +493,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         				gb.whoseTurn,
         				stateRect);
         int w = G.Width(iconRect)/2;
-        playerChip(gb.whoseTurn).drawChip(gc, this,w,G.centerX(iconRect),G.centerY(iconRect)+w/2,null);
+        playerChip(gb.whoseTurn).draw(gc, this,w,G.centerX(iconRect),G.centerY(iconRect)+w/2,null);
         goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
 

@@ -45,7 +45,7 @@ public interface NumberMenuHost {
       public default void drawNumber(Graphics gc,PlacementProvider source,PlacementProvider dest,int cellSize,int x,int y,Font font,Color color, Drawable str)
       {	
     	  GC.setFont(gc,font);
-       	  str.drawChip(gc,null,cellSize,x,y,null);
+       	  str.draw(gc,null,cellSize,x,y,null);
       }
 
        	  

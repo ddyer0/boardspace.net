@@ -265,7 +265,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	MogulChip ch = MogulChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -317,21 +317,21 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	int w = G.Width(chip);
     	int x = G.Left(chip);
     	int bot = G.Bottom(chip);
-    	ch.drawChip(gc,this, w, G.centerX(chip), G.Top(chip)+w/2,null);
+    	ch.draw(gc,this, w, G.centerX(chip), G.Top(chip)+w/2,null);
     	if(b.getState()!=MogulState.Puzzle)
     	{
     	if(pl.hasTakenMoney) 
     		{ 
-    		  StockArt.SmallX.drawChip(gc,this,w,x+w/2,bot+w/2,null); 
+    		  StockArt.SmallX.draw(gc,this,w,x+w/2,bot+w/2,null); 
     		  HitPoint.setHelpText(highlight, chip,OutOfAuction);
     		}
     	else  { HitPoint.setHelpText(highlight,chip,StillInAuction); }
     	}
     	if(pl.myIndex==b.secondPlayer)
-    	{ StockArt.VCRForwardStep.drawChip(gc,this,w,x+w/3,bot,null);
+    	{ StockArt.VCRForwardStep.draw(gc,this,w,x+w/3,bot,null);
     	}
     	if(pl.myIndex==b.startPlayer)
-    	{ StockArt.VCRForwardStep.drawChip(gc,this,w,x+w/3,bot,null);
+    	{ StockArt.VCRForwardStep.draw(gc,this,w,x+w/3,bot,null);
     	}
 
     	GC.frameRect(gc,Color.black,card);
@@ -349,7 +349,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
 		boolean showNow = !showChips
 				&& (allPlayersLocal() || (pl.myIndex==gb.whoseTurn))
 				&& (remoteWindowIndex(any)<0)
-				&& (StockArt.Eye.drawChip(gc, this,  chipsiz, xstart,top+chipsiz/2+xstep/8,highlight,MogulId.SeeChips,null))
+				&& (StockArt.Eye.draw(gc, this,  chipsiz, xstart,top+chipsiz/2+xstep/8,highlight,MogulId.SeeChips,null))
 				;
 		HitPoint hitChip = gb.LegalToHitBoard(pl.chips) ? highlight : null;
 		if(showNow) 
@@ -434,7 +434,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
        		int patchXp = (int)(l +w*0.71);
     		int oatchYp = (int)(t + h*0.5);
     		if((state!=MogulState.Puzzle)&&(state!=MogulState.Gameover)) 
-    			{ images[PATCH_INDEX].drawChip(gc,this,(int)(unit*2.7),patchXp,oatchYp,null);
+    			{ images[PATCH_INDEX].draw(gc,this,(int)(unit*2.7),patchXp,oatchYp,null);
     			}
     		HitPoint.setHelpText(any,unit,patchXp,oatchYp,s.get(ChipHelpText,pot.height()));
  
@@ -1016,7 +1016,7 @@ private void playSounds(commonMove m)
     	GC.Text(gc,true,l+w/2,t,w/2-fs,topPart,Color.black,null,s.get(ServiceName,name));
     	boolean show = !pl.hide;
     	StockArt eye = show ? StockArt.NoEye : StockArt.Eye;
-    	eye.drawChip(gc, this,eyeRect, hp, MogulId.PlayerEye);
+    	eye.draw(gc, this,eyeRect, hp, MogulId.PlayerEye);
     	drawPlayerBoard(gc,hp,hp,b,pl,new Rectangle(l,t+topPart+step,w,h-topPart-step),show);
     	if(b.LegalToHitBoard(pl.chips))
     	{

@@ -1641,7 +1641,7 @@ graphics when using a touch screen.
         		int x = mouse.getX();
         		int y = mouse.getY();
         		int ms = G.minimumFeatureSize();
-         		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
+         		StockArt.SolidUpArrow.draw(gc,this,ms,x,y+ms/2,null);
         	}
            	else if(touchZoomInProgress() || touchZoomEnabled())
            	{	
@@ -2065,7 +2065,7 @@ graphics when using a touch screen.
 			if(G.Advise(hp.awidth>0,"Stock art size must be visible"))
 			{
 			Rectangle oldClip = GC.setClip(gc,null);
-		    hp.arrow.drawChip(gc,this,hp.awidth,hp.a_x>0?hp.a_x:G.Left(hp),hp.a_y>0?hp.a_y:G.Top(hp),null);
+		    hp.arrow.draw(gc,this,hp.awidth,hp.a_x>0?hp.a_x:G.Left(hp),hp.a_y>0?hp.a_y:G.Top(hp),null);
 		    GC.setClip(gc,oldClip); 
 		    }}
 		    }
@@ -2463,7 +2463,7 @@ graphics when using a touch screen.
     		{
     		in = true;
     		}
-    	StockArt.UnMagnifier.drawChip(offGC,this,size,x,y,hp,OnlineId.HitMagnifier,null);
+    	StockArt.UnMagnifier.draw(offGC,this,size,x,y,hp,OnlineId.HitMagnifier,null);
     	return in;
     }
 	/**

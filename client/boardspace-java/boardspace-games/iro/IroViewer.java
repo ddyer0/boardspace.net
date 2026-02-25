@@ -610,7 +610,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
             }
             if((picked!=null) && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
             }
         }
         numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
@@ -722,7 +722,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         
-        StockArt.Rotate180.drawChip(gc, this, rotate,selectPos, IroId.Rotate, s.get(ReverseViewExplanation));
+        StockArt.Rotate180.draw(gc, this, rotate,selectPos, IroId.Rotate, s.get(ReverseViewExplanation));
         altChip.draw(gc,selectPos);
         
         // draw the vcr controls, last so the pop-up version will be above everything else

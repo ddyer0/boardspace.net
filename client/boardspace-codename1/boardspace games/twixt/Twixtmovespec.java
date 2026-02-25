@@ -183,7 +183,7 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
             break;
         }
     }
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	String str0 = shortMoveString((TwixtViewer)v);
     	Text str = TextChunk.create(str0);
     	if(!"".equals(str0))

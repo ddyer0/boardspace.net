@@ -305,8 +305,8 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int t = G.Top(r);
-    	reverse.drawChip(gc,this,w,cx,t+w/3,null);
-    	king.drawChip(gc,this,w,cx,t+2*w/3,null);
+    	reverse.draw(gc,this,w,cx,t+w/3,null);
+    	king.draw(gc,this,w,cx,t+2*w/3,null);
     	HitPoint.setHelpText(highlight,r,ArimaaId.ReverseViewButton,s.get(ReverseViewExplanation));
       }
 
@@ -374,7 +374,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	ArimaaChip ch = ArimaaChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,CELLSIZE,xp,yp,null);
+    	ch.draw(g,this,CELLSIZE,xp,yp,null);
      }
 
     /* draw the deep unchangable objects, including those that might be rather expensive
@@ -456,15 +456,15 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
             	//msg = ""+cell.runwayScore;
             }
             if(top==null)
-            {	if(isAStep) { StockArt.Dot.drawChip(gc,this,2*CELLSIZE/3,xpos,ypos,null); }
+            {	if(isAStep) { StockArt.Dot.draw(gc,this,2*CELLSIZE/3,xpos,ypos,null); }
             }
             else 
             {	if(isAStep) 
-            	{ ArimaaChip.getTile(ArimaaChip.GLOW_TILE_INDEX).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	{ ArimaaChip.getTile(ArimaaChip.GLOW_TILE_INDEX).draw(gc,this,CELLSIZE,xpos,ypos,null);
             	}
             	if(gb.isFrozen(cell)) 
             		{
-            		ArimaaChip.getTile(ArimaaChip.BLUE_GLOW_INDEX).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            		ArimaaChip.getTile(ArimaaChip.BLUE_GLOW_INDEX).draw(gc,this,CELLSIZE,xpos,ypos,null);
             		}
             	
             	
@@ -477,10 +477,10 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
             boolean dead = gb.isDead(cell);
             ArimaaChip ch = gb.getPieceCaptured(cell);
             if(ch!=null) 
-            	{ ch.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	{ ch.draw(gc,this,CELLSIZE,xpos,ypos,null);
             	  dead = true;
             	}
-            if(dead) { StockArt.SmallX.drawChip(gc,this,2*CELLSIZE/3,xpos,ypos,null); }
+            if(dead) { StockArt.SmallX.draw(gc,this,2*CELLSIZE/3,xpos,ypos,null); }
         	}
     	
        	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);

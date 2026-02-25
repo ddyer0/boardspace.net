@@ -343,7 +343,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	TicTacNineChip ch = TicTacNineChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 

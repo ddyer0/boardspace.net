@@ -49,7 +49,7 @@ class RackIcon implements Drawable
 			rack[i] = new pstack(from[i],null);
 		}
 	}
-	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
+	public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
 		int len = rack.length;
 		int step = size/len;
 		int x = (int)(posx-step*(len/2.0));
@@ -57,7 +57,7 @@ class RackIcon implements Drawable
 		GC.frameRect(gc,Color.black,x-step/2,y-step/2,step*len,step);
 		for(pstack p : rack)
 		{
-			p.drawChip(gc,c,step,x,y,null);
+			p.draw(gc,c,step,x,y,null);
 			x += step;
 		}
 	}
@@ -794,7 +794,7 @@ public class pstack implements PlateauConstants, PlacementProvider, Drawable
     	ostack.setElementAt(out,oindex);
     	out.mystack = ostack;
      }
-	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
+	public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
 	{
 		Draw(gc,posx-size/2,posy-size/2,size,size,size(),null);		
 	}

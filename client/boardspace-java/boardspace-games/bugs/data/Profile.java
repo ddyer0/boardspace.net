@@ -204,7 +204,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
 			{
 			// generate the list for use in the delivered version
 			// because of the shortcuts in codename1 resoruces, the file names have to be unique
-			 out = new PrintStream(new FileOutputStream(uncomposite+indexResourceName(imagePath,"index.txt")));
+			 out = new PrintStream(new FileOutputStream(uncomposite+indexResourceName(imagePath,"new-index.txt")));
 			}
 		
 		for(String s : images)

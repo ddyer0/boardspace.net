@@ -342,7 +342,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 		                drawTile(gc, xp, yp, bigradius, null ,
 		                    HighlightColor, rackBackGroundColor, BallTextColors[index]);
 		            }
-            	zChip.getChip(index).drawChip(gc,this,size,xp,yp,null);
+            	zChip.getChip(index).draw(gc,this,size,xp,yp,null);
              	}
             if (drawhighlight)
             {
@@ -356,7 +356,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     
      public void drawSprite(Graphics g,int obj,int xp,int yp)
     {
-    	zChip.getChip(obj%10).drawChip(g,this,CELLSIZE,xp-CELLSIZE/4,yp-CELLSIZE/4,null);
+    	zChip.getChip(obj%10).draw(g,this,CELLSIZE,xp-CELLSIZE/4,yp-CELLSIZE/4,null);
     	
     }
 
@@ -395,7 +395,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                 {
                     if (gc != null)
                     {
-                      zChip.getChip(zChip.RING_INDEX).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                      zChip.getChip(zChip.RING_INDEX).draw(gc,this,CELLSIZE,xpos,ypos,null);
                       cel.rotateCurrentCenter(gc,xpos,ypos);
                       if(drawhighlight)
                 	  {	
@@ -405,11 +405,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                         { 
                     	   if(cel.activeAnimationHeight()==0)
                     	   {
-                    		   zChip.getChip(color).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                    		   zChip.getChip(color).draw(gc,this,CELLSIZE,xpos,ypos,null);
                     	   }
                     	   if (bd.CapturedColorIndex(piece) >= 0)
                             {
-                                StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                                StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
                             }
                         }
                        else {
@@ -459,8 +459,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
  	   	{   int cc = zChip.BallColorIndex(cel.lastContents);
  	   	   if(cc>=0)
  	   	   {
- 	   	   zChip.getChip(cc).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
- 		   StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+ 	   	   zChip.getChip(cc).draw(gc,this,CELLSIZE,xpos,ypos,null);
+ 		   StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
  	   	   }
  	   }
     }

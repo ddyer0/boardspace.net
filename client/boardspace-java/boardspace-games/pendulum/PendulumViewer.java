@@ -507,7 +507,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	PendulumChip chip = PendulumChip.getChip(obj);
-    	chip.drawChip(g,this,CELLSIZE*5/2, xp, yp, null);
+    	chip.draw(g,this,CELLSIZE*5/2, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -612,8 +612,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     		int xcx = G.centerX(brect);
     		int xcy = G.centerY(brect);
     		String tip = getTranslatedToolTip(bigChip);
-    		bigChip.drawChip(gc,this,siz,xcx,xcy,any,PendulumId.ShowCard,tip,1,1);
-    		StockArt.FancyCloseBox.drawChip(gc,this,siz/6,(int)(xcx+siz*0.33),(int)(xcy-siz*0.55),any,PendulumId.ShowCard,null);
+    		bigChip.draw(gc,this,siz,xcx,xcy,any,PendulumId.ShowCard,tip,1,1);
+    		StockArt.FancyCloseBox.draw(gc,this,siz/6,(int)(xcx+siz*0.33),(int)(xcy-siz*0.55),any,PendulumId.ShowCard,null);
     	}
     }
     private void showAchievementUI(Graphics gc, PendulumBoard gb, Rectangle brect, HitPoint highlight)
@@ -625,8 +625,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     	int yp = ypos+sz/2;
     	StockArt.Scrim.getImage().drawImage(gc,xp,yp,sz*4,sz);
     	GC.frameRect(gc,Color.black,xp,yp,sz*4,sz);
-    	PendulumChip.legendary.drawChip(gc,this,sz*2,xpos-sz,ypos+sz,null);
-    	gb.currentAchievement.chipAtIndex(0).drawChip(gc,this,sz*2/3,xpos+sz,ypos+sz,null);
+    	PendulumChip.legendary.draw(gc,this,sz*2,xpos-sz,ypos+sz,null);
+    	gb.currentAchievement.chipAtIndex(0).draw(gc,this,sz*2/3,xpos+sz,ypos+sz,null);
     	GC.setFont(gc,largeBoldFont());
        	G.SetRect(legendaryButton,xp+sz/8,yp+sz/4,sz*2,sz/3);
        	G.SetRect(standardButton,xp+sz/4+sz*2,yp+sz/4,sz*3/2,sz/3);
@@ -982,11 +982,11 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
         //StockArt.SmallO.drawChip(gc,this,siz,xpos,ypos,null);
         if(eyeRect.isOnNow() && targets.get(cell)!=null)
         {	boolean mouse = eyeRect.isMouseOver();
-        	StockArt.SmallO.drawChip(gc,this,siz*(mouse?2:1),xpos,ypos,null);
+        	StockArt.SmallO.draw(gc,this,siz*(mouse?2:1),xpos,ypos,null);
         }
         if(isSelected)
         {
-        	StockArt.Checkmark.drawChip(gc,this,siz*2/3,xpos,ypos,null);
+        	StockArt.Checkmark.draw(gc,this,siz*2/3,xpos,ypos,null);
         }
         return hit;
     }

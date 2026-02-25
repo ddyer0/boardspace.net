@@ -595,7 +595,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	PrototypeChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	PrototypeChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -663,7 +663,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).draw(gc,this,xsize,xpos,ypos,null);
         	  //equivalent lower level draw image
         	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
         	  //
@@ -716,7 +716,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             		}
             if(eyeRect.isOnNow() && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
             }
         }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
@@ -835,7 +835,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             				state!=PrototypeState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
-        getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
+        getPlayerIcon(gb.whoseTurn).draw(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;

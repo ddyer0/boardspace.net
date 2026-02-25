@@ -41,7 +41,7 @@ public class Zoomer
     	int size = (int)(G.Width(r)*siz);
     	int xp = G.Left(r)+(int)(posx*G.Width(r));
     	int yp = G.Top(r)+(int)(posy*G.Height(r));
-    	if(icon.drawChip(gc,canvas,size,xp,yp,hp,OnlineId.Magnifier,null))
+    	if(icon.draw(gc,canvas,size,xp,yp,hp,OnlineId.Magnifier,null))
     	{
     		hp.hitData = r;
     		hp.hit_index = rot;

@@ -281,8 +281,8 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	int w = 3*G.Width(r)/4;
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/3,null);
-    	king.drawChip(gc,this,w,cx,cy+w/3,null);
+    	reverse.draw(gc,this,w,cx,cy-w/3,null);
+    	king.draw(gc,this,w,cx,cy+w/3,null);
     	HitPoint.setHelpText(highlight,r, XId.ReverseViewButton,s.get(ReverseViewExplanation));
 
      }   
@@ -328,7 +328,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	XiangqiChip ch = XiangqiChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -417,8 +417,8 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         int fy = G.Bottom(brect)-gb.cellToY(from.col,from.row);
         int tx = G.Left(brect)+gb.cellToX(to.col,to.row);
         int ty = G.Bottom(brect)-gb.cellToY(to.col,to.row);
-        ornaments[SQUARE_INDEX].drawChip(gc,this,(int)(SQUARESIZE*0.7),fx,fy,null);
-        ornaments[SQUARE_INDEX].drawChip(gc,this,(int)(SQUARESIZE*1.2),tx,ty,null);
+        ornaments[SQUARE_INDEX].draw(gc,this,(int)(SQUARESIZE*0.7),fx,fy,null);
+        ornaments[SQUARE_INDEX].draw(gc,this,(int)(SQUARESIZE*1.2),tx,ty,null);
         //gc.setColor(color);
         //G.DrawArrow(gc, fx, fy, tx, ty, SQUARESIZE / 6);
         }

@@ -419,7 +419,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	EpaminondasChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	EpaminondasChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -489,7 +489,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.draw(gc,this,xsize,xpos,ypos,null);
         	  //equivalent lower level draw image
         	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
         	  //
@@ -532,7 +532,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
             {
             	if(targets.get(cell)!=null)
             	{
-            		StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            		StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
             	}
             }
         }

@@ -363,7 +363,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	}
 		if(show && highlight!=null)
 		{
-			StockArt.SmallO.drawChip(gc, this, CELLSIZE*2,x,y,null);
+			StockArt.SmallO.draw(gc, this, CELLSIZE*2,x,y,null);
 		}
     	return(hit);
     }
@@ -393,7 +393,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         boolean legalToHit = gb.LegalToHitChips(c,gb.whoseTurn,targets);
 		if(legalToHit)
 		{
-			StockArt.SmallO.drawChip(gc, this, CELLSIZE*4,G.centerX(r),G.centerY(r), null);
+			StockArt.SmallO.draw(gc, this, CELLSIZE*4,G.centerX(r),G.centerY(r), null);
 		}
 		int cx = G.centerX(r);
 		int cy = G.Top(r)+G.Width(r)/2;
@@ -532,12 +532,12 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
             drawStack(perspective,gc, canHit ? highlight : null, gb,cell, xpos,ypos,CELLSPACING+0.01*liftSteps,!numbers&&(cell==last)?".":null);
       		if(show && (targets.get(cell)!=null))
     		{
-    			StockArt.SmallO.drawChip(gc, this, CELLSIZE*2,xpos,ypos,null);
+    			StockArt.SmallO.draw(gc, this, CELLSIZE*2,xpos,ypos,null);
     		}
     		if((cell.height()==CaptureHeight)
     			&& gb.variation.removeStacksOf5()
     			&& gb.isOwnedBy(cell.topChip(),gb.whoseTurn))
-    			{ StockArt.SmallX.drawChip(gc,this,CELLSIZE*2,xpos,(int)(ypos-CELLSIZE*CELLSPACING*CaptureHeight),null);	
+    			{ StockArt.SmallX.draw(gc,this,CELLSIZE*2,xpos,(int)(ypos-CELLSIZE*CELLSPACING*CaptureHeight),null);	
     			}  
     		//StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
           }
@@ -831,7 +831,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	eyeRect.draw(gc,highlight);
     
     	LyngkChip swing = doRotation ?  LyngkChip.swing_cw : LyngkChip.swing_ccw;
-    	swing.drawChip(gc, this,rotateRect, highlight, swing.id,LyngkSwingBoard );
+    	swing.draw(gc, this,rotateRect, highlight, swing.id,LyngkSwingBoard );
     	
     	drawLiftRect(gc,liftRect,highlight,LyngkChip.lift.image);
     	

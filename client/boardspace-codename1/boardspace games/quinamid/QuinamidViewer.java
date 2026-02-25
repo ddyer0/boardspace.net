@@ -298,7 +298,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	QuinamidChip ch = QuinamidChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -532,14 +532,14 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      			rotation_center_y = G.Top(center)-yoff;
  				}
  			}
-          	QuinamidChip.getBoard(level).drawChip(activeGC,this,G.Width(center),
+          	QuinamidChip.getBoard(level).draw(activeGC,this,G.Width(center),
       						G.Left(center)-rotation_x_offset,
       						G.Top(center)-rotation_y_offset,
       						null);
       		}
       		if((flaggedBoard>=0) && (flaggedBoard<=level) && !rotationActive)
       		{	Rectangle snug = edgeBoards[level];
-      			QuinamidChip.getLandingPad().drawChip(activeGC,this,G.Width(snug),G.centerX(snug),
+      			QuinamidChip.getLandingPad().draw(activeGC,this,G.Width(snug),G.centerX(snug),
       					G.centerY(snug),null);
       			//G.frameRect(gc,Color.red,snug);
       		}
@@ -616,7 +616,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      	return(MovementZone.Move_None);	// none
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
-    { 	QuinamidChip.HelpPanel.drawChip(gc, this, showingHelp ? boardRect : helpRect,highlight,QIds.ShowHelp);
+    { 	QuinamidChip.HelpPanel.draw(gc, this, showingHelp ? boardRect : helpRect,highlight,QIds.ShowHelp);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 

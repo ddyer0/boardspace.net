@@ -265,20 +265,20 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
      		  	{	
      		  		int xp2 = left + bb.cellToX(src);
      		  		int yp2 = top - bb.cellToY(src);
-     		  		chip.drawChip(g,this,cellS, xp2,yp2, null);
+     		  		chip.draw(g,this,cellS, xp2,yp2, null);
      		  		GC.cacheAACircle(g,xp2,yp2,2,Color.green,Color.yellow,true);
      		  	}
      			 
      		  }
      		  else
      		  {
-     		  	chip.drawChip(g,this,cellS, xp, yp, null);
+     		  	chip.draw(g,this,cellS, xp, yp, null);
      		  }
      	      
-        	  second.drawChip(g,this,cellS, xp, yp, null);
+        	  second.draw(g,this,cellS, xp, yp, null);
      		}
      		else
-     		{ chip.drawChip(g,this,cellS, xp, yp, null);
+     		{ chip.draw(g,this,cellS, xp, yp, null);
      		}
 
     }
@@ -391,7 +391,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
                 if(gb.cherryCell==null) {}
                 else if((ccell==gb.cherryCell) && (ccell.activeAnimationHeight()==0)) // single cherry on the locked color
             	{
-            	SyzygyChip.Asteroid.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+            	SyzygyChip.Asteroid.draw(gc,this,cellSize/2,xpos,ypos,null);
             	}
                 
                 if (gc != null)
@@ -428,7 +428,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         {	SyzygyChip chip = SyzygyChip.getChip(i);
          	labelColor = Color.white;
          	GC.setFont(gc,largeBoldFont());
-        	chip.drawChip(gc,this,sz,x,y,""+chip.value);
+        	chip.draw(gc,this,sz,x,y,""+chip.value);
         }
     }
     /*

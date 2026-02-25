@@ -273,7 +273,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 		  if(usePerspective())
 		  {
 		  SantoriniChip view = useLeftView ? SantoriniChip.RightView : SantoriniChip.LeftView;
-		  if(view.drawChip(gc, this, rightView, highlight, SantorId.RightView))
+		  if(view.draw(gc, this, rightView, highlight, SantorId.RightView))
 		  	{
 			  highlight.spriteRect = rightView;
 			  highlight.spriteColor = Color.red;
@@ -329,7 +329,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     {  	// draw an object being dragged
     	SantoriniChip ch = SantoriniChip.getChip(obj);// Tiles have zero offset
     	int sz = scaleCell(b.displayParameters.CELLSIZE,xp,yp,boardRect);
-    	ch.drawChip(g,this,sz,xp,yp,null);
+    	ch.draw(g,this,sz,xp,yp,null);
      }
 
 
@@ -399,7 +399,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 				SantoriniChip god = gb.gods.chipAtIndex(step);
 				boolean selected = gb.godSelections()[step];
 				if(selected && (god==lastGodSelected)) { lastGodSelectedX = xp; }
-				if(god.drawChip(gc, this, xw,l+xp,t+yp,highlight,SantorId.GodsId,null,1.5,1.0))
+				if(god.draw(gc, this, xw,l+xp,t+yp,highlight,SantorId.GodsId,null,1.5,1.0))
 				{
 				}
 				if(selected)
@@ -412,7 +412,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 			if(lastGodSelectedX>=0 && rows>1)
 			{
 			 int lx = lastGodSelectedX>w/2 ? lastGodSelectedX-w/4 : lastGodSelectedX+w/4;
-			 lastGodSelected.drawChip(gc, this, w/3,
+			 lastGodSelected.draw(gc, this, w/3,
 					 l+lx,t+h/3,highlight,SantorId.Godless,null,2.5,1.0);
 			 GC.frameRect(gc,Color.black, l+lx-w/6,(int)(t+h*0.04),w/3,(int)(h*0.595));
 			}
@@ -430,7 +430,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	int xp = Math.min(Math.max(w+w/2, G.centerX(r)-w),G.Width(fullRect)-w-w/2);
     	int yp = Math.min(Math.max(h+h/2, G.centerY(r)-h),G.Height(fullRect)-h-h/2);
     	GC.setRotation(gc,pl.displayRotation,xp,yp);
-    	SantoriniChip.findGod(bigGod).drawChip(gc, this,sz,xp,yp,hp,bigGod,null,0.66,1.0);
+    	SantoriniChip.findGod(bigGod).draw(gc, this,sz,xp,yp,hp,bigGod,null,0.66,1.0);
     	GC.setRotation(gc,-pl.displayRotation,xp,yp);
     			}
     }
@@ -438,7 +438,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     {	SantoriniChip god = SantoriniChip.findGod(id);
     	if(god!=null)
     			{
-     			if(god.drawChip(gc, this,G.Width(r),G.centerX(r), G.centerY(r),hp,god.id,null,0.66,1.0))
+     			if(god.draw(gc, this,G.Width(r),G.centerX(r), G.centerY(r),hp,god.id,null,0.66,1.0))
     			{
     			hp.spriteColor = Color.red;
     				hp.spriteRect = bigGodRect = r;

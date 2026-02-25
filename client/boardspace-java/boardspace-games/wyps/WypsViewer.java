@@ -358,7 +358,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
     		WypsChip chip = gb.drawPile.chipAtIndex(i);
     		if(rand.nextInt(2)==1) { chip = chip.getAltChip(); }
-    		if(chip.drawChip(gc, this, cs, dx,dy,canHit?highlight:null,WypsId.DrawPile,
+    		if(chip.draw(gc, this, cs, dx,dy,canHit?highlight:null,WypsId.DrawPile,
     				hide ? WypsChip.BACK : null))
         		{
         			highlight.hitObject = gb.drawPile;
@@ -471,7 +471,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 
     	if(canDrop && top==null)
     	{
-    		StockArt.SmallO.drawChip(gc,this,tileSize,cx,cy,null);
+    		StockArt.SmallO.draw(gc,this,tileSize,cx,cy,null);
     		
     	}  
     	boolean ptin =  G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,h);
@@ -606,7 +606,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
-       		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
+       		ch.draw(g,this,CELLSIZE, xp, yp, null);  
        		}
    }
     /**
@@ -691,7 +691,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 	      {
 	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
 	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
-	    	  WypsChip.Tile.getAltDisplayChip(c).drawChip(gc,this,xsize,xpos,ypos,null);              
+	    	  WypsChip.Tile.getAltDisplayChip(c).draw(gc,this,xsize,xpos,ypos,null);              
 	      }     
        	
 	      if(DRAWBACKGROUNDTILES) 
@@ -813,7 +813,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
             int xpos = G.Left(brect) + gb.cellToX(cell);
              if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             boolean selected = (gb.isSelected(cell) || gb.isADest(cell));
             if(selected || (!cell.isFixed || !DRAWBACKGROUNDTILES))
@@ -922,9 +922,9 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
     	   GC.Text(gc,true,timeRect,Color.black,null,timeControl);
        }
        if(planned) 
-       	{ StockArt.Rotate180.drawChip(gc, this,rotateRect, selectPos, WypsId.Rotate,s.get(RotateMessage)); 
+       	{ StockArt.Rotate180.draw(gc, this,rotateRect, selectPos, WypsId.Rotate,s.get(RotateMessage)); 
        	  WypsChip chip = lockOption ? WypsChip.UnlockRotation : WypsChip.LockRotation;
-       	    chip.drawChip(gc, this,lockRect,
+       	    chip.draw(gc, this,lockRect,
        			  selectPos, WypsId.Lock,s.get(chip.tip)); 
        	}
        drawNoChat(gc,altNoChatRect,selectPos);

@@ -10,7 +10,7 @@ public class DrawnIcon implements Drawable
 		h = hh;
 		parameter = p;
 	}
-	public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
+	public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg) {
 		G.Error("drawChip must be overridden");
 		
 	}

@@ -278,7 +278,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     {  	// draw an object being dragged
      	int obj1 = obj;
     	ModxChip ch = ModxChip.getChipNumber(obj1);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
 
      }
 
@@ -321,7 +321,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
             //StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             if((cell==dest)||(cell==src))
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
     	}
     }
@@ -380,7 +380,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
         {	
         	ModxChip chip = gb.getPlayerChip(gb.whoseTurn);
         	int h = G.Height(stateRect);
-        	chip.drawChip(gc, this, h ,G.Left(stateRect)-h/2,G.centerY(stateRect),null);
+        	chip.draw(gc, this, h ,G.Left(stateRect)-h/2,G.centerY(stateRect),null);
         	
             standardGameMessage(gc,messageRotation,
             		vstate==ModxState.Gameover

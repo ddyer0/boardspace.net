@@ -449,7 +449,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TamskChip.getChip(obj).drawChip(g,this,CS*7/8, xp, yp, null);
+    	TamskChip.getChip(obj).draw(g,this,CS*7/8, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -548,7 +548,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
             }
             if(overlay!=null) { 
             	
-            	overlay.drawChip(gc,this,hsize,xpos,ypos,null);
+            	overlay.draw(gc,this,hsize,xpos,ypos,null);
              }
             TamskTimer timer = gb.findTimer(cell.timer);
             if(timer!=null && (cell.activeAnimationHeight()<=1))
@@ -560,7 +560,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
             }
             if(show && canHit)
             {	int button = cell.timer!=null ? CS/5 : 0;
-            	StockArt.SmallO.drawChip(gc,this,CS-yscale,xpos,ypos-hoffset+button,null);
+            	StockArt.SmallO.draw(gc,this,CS-yscale,xpos,ypos-hoffset+button,null);
             }
       //      StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
       //      G.print("pos('",cell.col,"',",(char)('0'+cell.row),",",(int)(xx*100/w)/100.0,",",(int)(yy*100/h)/100.0,");");
@@ -593,7 +593,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	}
     	TamskChip draw = chip==null ? timer.id.chip : chip;
     	labelColor = Color.white;
-    	draw.drawChip(gc,this,size,xpos,ypos,highlight,code,time);
+    	draw.draw(gc,this,size,xpos,ypos,highlight,code,time);
  
     	labelColor = Color.yellow;
     	if(sand && time==null)

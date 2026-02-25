@@ -260,8 +260,8 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     	int sz = 3*G.Width(r)/4;
     	int cx = G.centerX(r);
     	int cy = G.centerY(r)+sz/6;
-    	king.drawChip(gc,this,sz,cx,cy-sz/4,null);
-    	reverse.drawChip(gc,this,sz,cx,cy+sz/4,null);
+    	king.draw(gc,this,sz,cx,cy-sz/4,null);
+    	reverse.draw(gc,this,sz,cx,cy+sz/4,null);
     	HitPoint.setHelpText(highlight,r,KhetId.ReverseViewButton,s.get(ReverseViewExplanation));
  
      }  
@@ -311,7 +311,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	KhetChip ch = KhetChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -405,7 +405,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
         int ydistance = gb.cellToY(lastDest.col, lastDest.row);
       	int ypos = G.Bottom(brect) - ydistance;
         int xpos = G.Left(brect) + gb.cellToX(lastDest.col, lastDest.row);
-        StockArt.SmallO.drawChip(gc,this,SQUARESIZE*4,xpos,ypos-SQUARESIZE/6,null);
+        StockArt.SmallO.draw(gc,this,SQUARESIZE*4,xpos,ypos-SQUARESIZE/6,null);
         }}
         numberMenu.clearSequenceNumbers();
         Enumeration<KhetCell> cells = gb.getIterator(Itype.LRTB);
@@ -458,7 +458,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
             	  }
             	}
             if(isDest) 
-            	{ StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); 
+            	{ StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null); 
             	}
 			//mark center of all squares
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
@@ -994,10 +994,10 @@ private void playSounds(commonMove m)
   	  {
   	  default: break;
   	  case 10:
-  		  StockArt.SwingCW.drawChip(gc,this,cellSize/2,x,y+cellSize/6,null);
+  		  StockArt.SwingCW.draw(gc,this,cellSize/2,x,y+cellSize/6,null);
   		  break;
   	  case -10:
-  		  StockArt.SwingCCW.drawChip(gc,this,cellSize/2,x,y+cellSize/6,null);
+  		  StockArt.SwingCCW.draw(gc,this,cellSize/2,x,y+cellSize/6,null);
   		  break;
   	  }
   	 super.drawNumber(gc,source,dest,cellSize,x,y,font,color, str);

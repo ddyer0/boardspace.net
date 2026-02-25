@@ -321,7 +321,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	StymieChip.getChip(obj).getAltDisplayChip(bb.pickedAltChipIndex).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	StymieChip.getChip(obj).getAltDisplayChip(bb.pickedAltChipIndex).draw(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -408,7 +408,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
   
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);                
              }
             if(cell.drawStack(gc,this,drawhighlight ? highlight : null,CELLSIZE,xpos,ypos,0,0,null))
             {

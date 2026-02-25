@@ -344,7 +344,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	MajoritiesChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	MajoritiesChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -370,7 +370,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
                 int xpos = G.Left(brect) + gb.cellToX(c);
                 MajoritiesChip tile = c.removed?MajoritiesChip.hexTileDark:MajoritiesChip.hexTile;
                 int xsize = gb.cellSize();
-                tile.getAltDisplayChip(c).drawChip(gc,this,xsize,xpos,ypos,null);
+                tile.getAltDisplayChip(c).draw(gc,this,xsize,xpos,ypos,null);
                 /*
                  * test the 3 coloring algorithm
        			Color colors[] = new Color[] { Color.red,Color.green,Color.blue};
@@ -461,7 +461,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             	boolean empty = (cell.chip == null);
                 if (empty)
                 { // checking for pointable position
-               	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+               	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
                 }
 
                 boolean picked = (gb.pickedObject!=null);
@@ -752,15 +752,15 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     				{
         			int xp0 = G.Left(r)+gb.cellToX(c);
         			int yp0 = G.Bottom(r)-gb.cellToY(c);
-        			ch.drawChip(gc,this,gb.cellSize(),xp0,yp0,null);
+        			ch.draw(gc,this,gb.cellSize(),xp0,yp0,null);
        				}
    				c = c.exitTo(MajoritiesBoard.lineDirections[direction]);
     			}
       		}
     	}
        	int quarter = G.Height(r)/8;
-    	MajoritiesChip.White.drawChip(gc,this,quarter,G.Left(r)+quarter,G.Top(r)+G.Height(r)-quarter,"  "+white);
-       	MajoritiesChip.Black.drawChip(gc,this,quarter,G.Right(r)-quarter,G.Top(r)+G.Height(r)-quarter,"  "+black);
+    	MajoritiesChip.White.draw(gc,this,quarter,G.Left(r)+quarter,G.Top(r)+G.Height(r)-quarter,"  "+white);
+       	MajoritiesChip.Black.draw(gc,this,quarter,G.Right(r)-quarter,G.Top(r)+G.Height(r)-quarter,"  "+black);
     }
 
     /**

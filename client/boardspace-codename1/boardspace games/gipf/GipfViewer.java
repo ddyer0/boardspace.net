@@ -584,10 +584,10 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
           if(isCaptured)
            	{	
            		if(state==GipfState.DONE_CAPTURE_STATE)
-           		{StockArt.SmallX.drawChip(gc,this,7*CELLSIZE/8,xpos,ypos,null);
+           		{StockArt.SmallX.draw(gc,this,7*CELLSIZE/8,xpos,ypos,null);
            		}
            		else
-           		{StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+           		{StockArt.SmallO.draw(gc,this,CELLSIZE,xpos,ypos,null);
            		}
            	}
            	if(picked && isADest)
@@ -602,8 +602,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
                 	{	int vis = numberMenu.getVisibleNumber(c.lastCaptured);
                 		if(vis>0)
                 		{
-            			c.lastContents.drawChip(gc,this,CELLSIZE/2,xpos,ypos,numberMenu.moveNumberString(vis));
-                		StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            			c.lastContents.draw(gc,this,CELLSIZE/2,xpos,ypos,numberMenu.moveNumberString(vis));
+                		StockArt.SmallX.draw(gc,this,CELLSIZE,xpos,ypos,null);
                 		}
                 	}
         }

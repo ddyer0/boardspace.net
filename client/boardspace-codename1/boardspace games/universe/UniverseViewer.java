@@ -549,24 +549,24 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	int drawY = G.Top(r) - G.Top(bound) + (G.Height(r)-G.Height(bound)+ss)/2 ;
     	GC.setColor(gc,rackBackGroundColor);
     	GC.fillRect(gc,r);
-    	ch.drawChip(gc,this,ss,drawX,drawY,null);
+    	ch.draw(gc,this,ss,drawX,drawY,null);
     	// mark the attachment point on the floating chip
-    	StockArt.SmallO.drawChip(gc,this,ss,drawX,drawY,null);
+    	StockArt.SmallO.draw(gc,this,ss,drawX,drawY,null);
     	if((ch.getVariation(ch.rotated+1,ch.flipped)!=ch) 
-    		&& images[ROTATECW_INDEX].drawChip(gc,this,arrowSize/2,G.Right(r)-arrowSize/2,G.Top(r)+arrowSize/2,
+    		&& images[ROTATECW_INDEX].draw(gc,this,arrowSize/2,G.Right(r)-arrowSize/2,G.Top(r)+arrowSize/2,
     				highlight,ch.flipped?UniverseId.RotateCCW:UniverseId.RotateCW,null,2.5,1.33))
     	{	
     		GC.frameRect(gc,HighlightColor,G.Right(r)-arrowSize,G.Top(r)+1,arrowSize-2,arrowSize-2);
      	}
     	if((ch.getVariation(ch.rotated+3,ch.flipped)!=ch)
-    			&& images[ROTATECCW_INDEX].drawChip(gc,this,arrowSize/2,G.Left(r)+arrowSize/2,G.Top(r)+arrowSize/2,
+    			&& images[ROTATECCW_INDEX].draw(gc,this,arrowSize/2,G.Left(r)+arrowSize/2,G.Top(r)+arrowSize/2,
     					highlight,ch.flipped?UniverseId.RotateCW:UniverseId.RotateCCW,null,2.5,1.33))
     	{
     		GC.frameRect(gc,HighlightColor,G.Left(r)+1,G.Top(r)+1,arrowSize-2,arrowSize-2);
     	}
     	if(gb.LegalToFlip() && ch.getFlippedPattern(!ch.flipped)!=ch)
     	{
-    	if(images[FLIP_INDEX].drawChip(gc,this,arrowSize/2,G.Left(r)+G.Width(r)/2,G.Top(r)+arrowSize/2,highlight,UniverseId.FlipCell,null,2.5,1.33))
+    	if(images[FLIP_INDEX].draw(gc,this,arrowSize/2,G.Left(r)+G.Width(r)/2,G.Top(r)+arrowSize/2,highlight,UniverseId.FlipCell,null,2.5,1.33))
     	{
     		GC.frameRect(gc,HighlightColor,G.centerX(r)-arrowSize/2,G.Top(r)+1,arrowSize-2,arrowSize-2);
     	}}
@@ -639,7 +639,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		    	{
 		    	int xpos = cx+sw/2;
 		    	int ypos = cy+sh/2;
-		    	StockArt.SmallO.drawChip(gc,this,square*2,xpos,ypos,null);
+		    	StockArt.SmallO.draw(gc,this,square*2,xpos,ypos,null);
 		    	if(canDrop 
 		    			&& G.pointInRect(highlight,r)
 		    			&& !G.pointInRect(highlight,rotatorRect)
@@ -710,9 +710,9 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	UniverseChip ch = UniverseChip.getIsomer(obj);// Tiles have zero offset
     	boolean inBoard = G.pointInRect(xp,yp,boardRect);
     	int size = inBoard?b.cellSize():DISPLAYSQUARE;
-    	ch.drawChip(g,this,size,xp,yp,null);
+    	ch.draw(g,this,size,xp,yp,null);
     	// mark the attachment point on the floating chip
-    	StockArt.SmallO.drawChip(g,this,size,xp,yp,null);
+    	StockArt.SmallO.draw(g,this,size,xp,yp,null);
      }
 
 
@@ -745,7 +745,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
       for(UniverseCell c = gb.allCells; c!=null;  c=c.next)
       {	int ypos = G.Bottom(boardRect) - gb.cellToY(c.col, c.row);
       	int xpos = G.Left(boardRect) + gb.cellToX(c.col,c.row);
-      	images[c.cellImageIndex].drawChip(gc,this,gb.cellSize(),xpos,ypos,null);
+      	images[c.cellImageIndex].draw(gc,this,gb.cellSize(),xpos,ypos,null);
       	c.rotateCurrentCenter(gc,xpos,ypos);
       }
     	 
@@ -756,7 +756,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         
         String msg = ""+value;// ""+(cell.regionNumber);//+" "+(cell.sweep_counter%100);
         GC.setFont(gc,largeBoldFont());
-        StockArt.SmallO.drawChip(gc,this,SQUARE*2,xpos,ypos,msg); 
+        StockArt.SmallO.draw(gc,this,SQUARE*2,xpos,ypos,msg); 
     }
     
     public Rectangle drawImage(Graphics gc, Image im, double scale[],int x, int y, 
@@ -804,7 +804,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         	if(given!=null && (c.topChip()==null))
         	{	int ypos =bottom - gb.cellToY(c);
             	int xpos = left + gb.cellToX(c);
-        		if(given.drawChip(gc,this,SQUARE,xpos,ypos, high,UniverseId.GivenOnBoard,null))
+        		if(given.draw(gc,this,SQUARE,xpos,ypos, high,UniverseId.GivenOnBoard,null))
         		{	hitCell = c;
         			high.hitObject = c;
         		}
@@ -863,7 +863,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
          	cell.setCurrentCenter(xpos,ypos);
         	if(cell.topChip()==lastTop)
         	{	
-        		StockArt.SmallO.drawChip(gc,this,SQUARE,xpos,ypos,null);
+        		StockArt.SmallO.draw(gc,this,SQUARE,xpos,ypos,null);
         	}
          }}}}
         switch(rules)
@@ -883,7 +883,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 			int ypos = bottom - gb.cellToY(cell);
 			// show the touch points for placing a piece.  These can be 
 			// hard to guess on mobiles
-			StockArt.SmallO.drawChip(gc,this,b.cellSize(),xpos,ypos,null);
+			StockArt.SmallO.draw(gc,this,b.cellSize(),xpos,ypos,null);
 			}}}
 			break;
         case Nudoku_9x9:

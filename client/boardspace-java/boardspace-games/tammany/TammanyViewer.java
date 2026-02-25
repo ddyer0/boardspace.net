@@ -333,7 +333,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         	pl.rotateCurrentCenter(c,x,y+off);
     		if((targets!=null) && targets.get(c)!=null) 
     		{
-    			StockArt.SmallO.drawChip(gc,this,step,x,y+off,null);
+    			StockArt.SmallO.draw(gc,this,step,x,y+off,null);
     		}
  
         	x+= step+step/2; 		
@@ -352,19 +352,19 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 		int step = w/4;
 		if(p.myRoleCard!=null)
     	{	TammanyChip card = p.myRoleCard;
-     		card.drawChip(gc,this,role,any,TammanyId.RoleCard,card.helpText);
+     		card.draw(gc,this,role,any,TammanyId.RoleCard,card.helpText);
      		if(p.myRole==Role.CouncilPresident)
      		{
      			for(int i=0;i<p.locksAvailable;i++)
      			{
-     				TammanyChip.freezer.drawChip(gc,this,step,x,y,null);
+     				TammanyChip.freezer.draw(gc,this,step,x,y,null);
      				x+=step/2;
      			}
      		}
        	}
        	else if(p.myIndex==gb.firstPlayer)
        	{
-       		StockArt.LandingPad.drawChip(gc,this,step*2,x+step*2,y,"First\nPlayer");
+       		StockArt.LandingPad.draw(gc,this,step*2,x+step*2,y,"First\nPlayer");
        	} 	
 
     }
@@ -410,7 +410,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TammanyChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	TammanyChip.getChip(obj).draw(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -521,7 +521,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     			{
             	int ypos = gb.cellToY(cell);
                 int xpos = gb.cellToX(cell);
-                TammanyChip.slander.drawChip(gc,this,(int)(CELLSIZE*1.6),xpos+CELLSIZE/2,ypos+(int)(CELLSIZE*0.45),""+cell.row);
+                TammanyChip.slander.draw(gc,this,(int)(CELLSIZE*1.6),xpos+CELLSIZE/2,ypos+(int)(CELLSIZE*0.45),""+cell.row);
     			}
     		}
     		return;
@@ -564,11 +564,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             switch(cell.rackLocation())
             {
             case Bag:
-            	some = TammanyChip.bag.drawChip(gc,this,CELLSIZE,xpos,ypos,hit,TammanyId.Bag,null);
+            	some = TammanyChip.bag.draw(gc,this,CELLSIZE,xpos,ypos,hit,TammanyId.Bag,null);
             	cell.rotateCurrentCenter(gc,xpos,ypos);
             	if(bb.getDest()==bb.bag)
             	{	// draw the chip we just dropped on top of the bag
-            		bb.bag.topChip().drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            		bb.bag.topChip().draw(gc,this,CELLSIZE,xpos,ypos,null);
             	}
               	if(some) { hit.hitObject = bb.bag; }
             	break;
@@ -577,7 +577,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             	{
                 if(gb.electionMode && cell.row==gb.electionWard())
                 	{
-                		StockArt.LandingPad.drawChip(gc,this,3*CELLSIZE/2,xpos,ypos,null);
+                		StockArt.LandingPad.draw(gc,this,3*CELLSIZE/2,xpos,ypos,null);
                 	}
 
             	// spread out the stack if we might be trying to pick something from it.
@@ -666,23 +666,23 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             	switch(cell.rackLocation())
             	{
             	case CouncilPresident:
-            		TammanyChip.freezer.drawChip(gc,this,CELLSIZE,xpos+CELLSIZE,ypos,null);
+            		TammanyChip.freezer.draw(gc,this,CELLSIZE,xpos+CELLSIZE,ypos,null);
             		break;
             	case ChiefOfPolice:
-            		TammanyChip.bag.drawChip(gc,this,7*CELLSIZE/16,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
-               		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
+            		TammanyChip.bag.draw(gc,this,7*CELLSIZE/16,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
+               		TammanyChip.english.draw(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
             		break;
             	case DeputyMayor:
             		for(int off = 0;off<TammanyChip.influence.length;off++)
             		{
-            		TammanyChip.influence[off].drawChip(gc,this,5*CELLSIZE/6,xpos+CELLSIZE+off*3,
+            		TammanyChip.influence[off].draw(gc,this,5*CELLSIZE/6,xpos+CELLSIZE+off*3,
             				ypos-CELLSIZE/4+off*3,null);
             		}
             		break;
             	case PrecinctChairman:
-            		TammanyChip.cubeMove.drawChip(gc,this,CELLSIZE,xpos+(int)(1.2*CELLSIZE),ypos-(int)(0.15*CELLSIZE),null);
-            		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+(int)(0.8*CELLSIZE),ypos-CELLSIZE/3,null);
-            		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/2,ypos+CELLSIZE/6,null);
+            		TammanyChip.cubeMove.draw(gc,this,CELLSIZE,xpos+(int)(1.2*CELLSIZE),ypos-(int)(0.15*CELLSIZE),null);
+            		TammanyChip.english.draw(gc,this,2*CELLSIZE/3,xpos+(int)(0.8*CELLSIZE),ypos-CELLSIZE/3,null);
+            		TammanyChip.english.draw(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/2,ypos+CELLSIZE/6,null);
              		break;
             		default: ;
             	}
@@ -706,7 +706,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             } 
             if(hit!=null) 
             {
-            	StockArt.SmallO.drawChip(gc, this, CELLSIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc, this, CELLSIZE,xpos,ypos,null);
             }
             if(some) {
             	hit.awidth = CELLSIZE;
@@ -717,7 +717,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	
     	if(giantCard!=null)
     	{
-    		giantCard.drawChip(gc, this, brect ,any, TammanyId.RoleCard);
+    		giantCard.draw(gc, this, brect ,any, TammanyId.RoleCard);
      	}
 
     }
@@ -876,7 +876,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 		if(eyeR!=null)
 		{
 			StockArt icon = eyeState ? StockArt.NoEye : StockArt.Eye;
-			if(icon.drawChip(gc, this,eyeR,hp, TammanyId.ShowVotes))
+			if(icon.draw(gc, this,eyeR,hp, TammanyId.ShowVotes))
 			{
 				hp.hit_index = p.myIndex;
 			}

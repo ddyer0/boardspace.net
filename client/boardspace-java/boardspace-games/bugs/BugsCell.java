@@ -19,6 +19,7 @@ package bugs;
 import lib.Random;
 import lib.Sort;
 import lib.exCanvas;
+
 import bugs.BugsConstants.BugsId;
 import bugs.data.Profile;
 import lib.G;
@@ -183,13 +184,13 @@ public class BugsCell
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastPicked : lastDropped;
 	}
-	
+
 	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
 
     {	if(thislabel==BugsChip.TOP && piece==topChip()) { thislabel=null; }
     	if(piece instanceof BugsChip)
     	{	
-    		return ((BugsChip)piece).drawChip(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
+    		return ((BugsChip)piece).drawBug(gc,drawOn,this,highlight,squareWidth,scale,e_x,e_y,thislabel);
     	}
     	else {
     		return super.drawChip(gc,piece,drawOn,highlight,squareWidth,scale,e_x,e_y,thislabel);

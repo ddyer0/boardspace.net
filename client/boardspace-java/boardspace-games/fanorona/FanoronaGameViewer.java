@@ -285,7 +285,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 	    		}
                   if(gc!=null)
                 	{int pl = b.playerIndex(thisChip);
-                	 thisCell.drawChip(gc,this,cellW,G.Left(r) + cellW/2,  G.Top(r) + cellW/2,""+b.chips_on_board[pl]);
+                	 thisCell.draw(gc,this,cellW,G.Left(r) + cellW/2,  G.Top(r) + cellW/2,""+b.chips_on_board[pl]);
                 	 GC.setFont(gc,standardPlainFont());
                 	//G.frameRect(gc,Color.black,left,top,cellW,SQUARESIZE);
                 	}
@@ -293,7 +293,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         }
     }
     public void drawSprite(Graphics g,int idx,int xp,int yp)
-    {	FanoronaChip.getChip(idx).drawChip(g,this,SQUARESIZE, xp, yp,null);
+    {	FanoronaChip.getChip(idx).draw(g,this,SQUARESIZE, xp, yp,null);
 
     }
 
@@ -356,13 +356,13 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
             int xpos = G.Left(brect) + gb.cellToX(thiscol, row);
             FanoronaChip chip = cell.topChip();
             String orig = prevCells.get(cell);
-            cell.drawChip(gc, this, SQUARESIZE, xpos,ypos,null);
+            cell.draw(gc, this, SQUARESIZE, xpos,ypos,null);
             if((chip==null) && prevCaps.get(cell)!=null)
-            	 {	StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	 {	StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null);
               	 }
                	 if(orig!=null)
             	 {	// mark the path back
-               		StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,orig);
+               		StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,orig);
             	 }
                	 else if((chip!=null)&& G.debug())
                	 { // debug mcd
@@ -373,7 +373,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
               boolean canHit = gb.LegalToHitBoard(cell);
               if(show && canHit)
               {
-            	  StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	  StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
               }
               if((highlight!=null)
             		  && canHit

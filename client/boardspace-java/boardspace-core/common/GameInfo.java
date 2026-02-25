@@ -1309,12 +1309,30 @@ synchronized(allGames) {
 				slitherVideo,false, BlackOverWhite));
 
 	}
+	{
+	String tviewer = "twixt.TwixtViewer";
+	String trules = "/twixt/english/rules.html";
+	String tabout = "about_twixt.html";
+	String tvideo = "/twixt/english/twixt-video.html";
 	put(new GameInfo(125,ES.game,45,"TW",ConnectionGames,"Twixt","Twixt",
 			OneBotPlus,
 			new double[]{1,0.01},
-			"twixt.TwixtViewer","/twixt/english/rules.html","about_twixt.html",
-			"/twixt/english/twixt-video.html",
+			tviewer,trules,tabout,
+			tvideo,
 			false, RedOverBlack));
+	put(new GameInfo(126,ES.game,45,"TW",ConnectionGames,"Twixt","Twixt-18",
+			OneBotPlus,
+			new double[]{1,0.01},
+			tviewer,trules,tabout,
+			tvideo,
+			false, RedOverBlack));
+	put(new GameInfo(127,ES.game,45,"TW",ConnectionGames,"Twixt","Twixt-13",
+			OneBotPlus,
+			new double[]{1,0.01},
+			tviewer,trules,tabout,
+			tvideo,
+			false, RedOverBlack));
+	}
 
 	{
 	Color OrangeOverBlue[] = {bsOrange,Color.blue };
@@ -2760,15 +2778,15 @@ synchronized(allGames) {
 		InternationalStrings s = G.getTranslations();
 		if(rules!=null)
 		{
-			StockArt.Rules.drawChip(gc,drawOn,ystep,left,centery,hp,GameLink.ShowRules,s.get(GameLink.ShowRules.helpText));
+			StockArt.Rules.draw(gc,drawOn,ystep,left,centery,hp,GameLink.ShowRules,s.get(GameLink.ShowRules.helpText));
 		}
 		if(website!=null)
 		{
-			StockArt.Homepage.drawChip(gc,drawOn,ystep,left+xstep*4/5,centery,hp,GameLink.ShowPage,s.get(GameLink.ShowPage.helpText));
+			StockArt.Homepage.draw(gc,drawOn,ystep,left+xstep*4/5,centery,hp,GameLink.ShowPage,s.get(GameLink.ShowPage.helpText));
 		}
 		if(howToVideo!=null)
 		{
-			StockArt.Video.drawChip(gc,drawOn,ystep,left+xstep*2,centery,hp,GameLink.ShowVideo,s.get(GameLink.ShowVideo.helpText));
+			StockArt.Video.draw(gc,drawOn,ystep,left+xstep*2,centery,hp,GameLink.ShowVideo,s.get(GameLink.ShowVideo.helpText));
 		}			
 	}
 	/**

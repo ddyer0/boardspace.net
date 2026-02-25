@@ -131,7 +131,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
-	    	if( base.drawChip(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,null))
+	    	if( base.draw(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,null))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 				highlight.setHelpText(G.getTranslations().get(helpText));
@@ -224,7 +224,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void drawAnnotation(Graphics gc,Annotation an,int size,int x,int y)
 	{
-		if(an.chip!=null) { an.getChip(drawOn.reverseView()).drawChip(gc,drawOn,size,x,y,null); }
+		if(an.chip!=null) { an.getChip(drawOn.reverseView()).draw(gc,drawOn,size,x,y,null); }
 	}
 	/**
 	 * save an annotation on a move. The supplied x,y are absolute, but

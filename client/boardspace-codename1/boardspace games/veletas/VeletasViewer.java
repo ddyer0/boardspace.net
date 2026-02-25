@@ -260,8 +260,8 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	VeletasChip king = VeletasChip.getChip(b.reverseY()?1:0);
     	VeletasChip reverse = VeletasChip.getChip(b.reverseY()?0:1);
-    	reverse.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Height(r)/4,null);
-    	king.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Height(r)-G.Height(r)/4,null);
+    	reverse.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Height(r)/4,null);
+    	king.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Height(r)-G.Height(r)/4,null);
     	HitPoint.setHelpText(highlight,r,VeletasId.ReverseViewButton,s.get(ReverseViewExplanation));
 
      }  
@@ -323,7 +323,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     {  	// draw an object being dragged
     	int obj1 = obj%100;
     	VeletasChip ch = VeletasChip.getChipNumber(obj1);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
 
      }
 
@@ -369,15 +369,15 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
             	}
             if(((cell==dest)&&!moving)||(cell==src))
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             if((hitNow!=null)&&show)
             	{
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
             	}
         	}
      	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);

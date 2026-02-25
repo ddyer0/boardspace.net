@@ -703,10 +703,10 @@ public class ChatWidget
 		shortNameField.redrawBoard(g,ap);
 		nameField.redrawBoard(g,ap);
 		if(nameField.isVisible())
-			{ StockArt.Pencil.drawChip(g,canvas,pencilRect,ap,ChatId.Pencil,EditMessage);	
+			{ StockArt.Pencil.draw(g,canvas,pencilRect,ap,ChatId.Pencil,EditMessage);	
 			  if(!hideInputField) 
 			  	{ int w = G.Width(pencilRect)/2;
-			  	  StockArt.Exmark.drawChip(g, canvas, w,G.Left(pencilRect)+w/2,G.Top(pencilRect)+w/2,null); }
+			  	  StockArt.Exmark.draw(g, canvas, w,G.Left(pencilRect)+w/2,G.Top(pencilRect)+w/2,null); }
 			}
 		activePane().redrawBoard(g,ap);
 		messageLabel.redrawBoard(g,ap);

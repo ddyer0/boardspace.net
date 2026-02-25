@@ -439,7 +439,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     		if(other!=pl)
     		{
                 GC.setFont(gc,largeBoldFont());
-                other.flag.drawChip(gc, this, ww/2,l+xstep/2,t,null);
+                other.flag.draw(gc, this, ww/2,l+xstep/2,t,null);
     			GC.Text(gc, false, l, t+hh/4, xstep*2,hh,Color.black,null,
     					"$ "+Calculator.formatDisplay(""+known[other.index])
     					+ " ($" + Calculator.formatDisplay(""+lastKnown[other.index])
@@ -499,7 +499,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	QEChip.getChip(obj).drawChip(g,this,CELLSIZE*2, xp, yp, null);
+    	QEChip.getChip(obj).draw(g,this,CELLSIZE*2, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -683,7 +683,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     private void drawScoreCard(Graphics gc,QEPlayer p,int x,int y,int xstep,int ystep)
     {
     	QEChip.WhiteBoard.drawChip(gc, this, xstep+xstep/3,0.7,x+ xstep/2, y+ystep/2, null);
-    	p.flag.drawChip(gc, this, xstep/5, x+xstep/7,y+xstep/6,null);
+    	p.flag.draw(gc, this, xstep/5, x+xstep/7,y+xstep/6,null);
     	String name = prettyName(p.index);
     	GC.setFont(gc,standardBoldFont());
     	GC.Text(gc, true, x, y, xstep, xstep/4,Color.black,null,name);
@@ -870,7 +870,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
      	if(pl.hasOfferedBid()||pl.hasMadeBid())
     		{
      		if(concealed)
-    		{	if(!witnessing) { QEChip.BidCard.drawChip(gc, this,aw, cx,	cy,null,QEId.HitWhiteBoard,null); }   			
+    		{	if(!witnessing) { QEChip.BidCard.draw(gc, this,aw, cx,	cy,null,QEId.HitWhiteBoard,null); }   			
     			if(pl.hasOfferedBid())
     			{	GC.setFont(gc, largeBoldFont());
 					GC.Text(gc, true, G.Right(r)-sz*2-sz/4,G.centerY(r)-sz/2,sz,sz, Color.blue, null, "?");
@@ -902,11 +902,11 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     		}
 
     		int flagsz = 3*sz/2;
-        	flag.drawChip(gc, this, flagsz,G.Left(r)+sz,G.Bottom(r)-sz,null);
+        	flag.draw(gc, this, flagsz,G.Left(r)+sz,G.Bottom(r)-sz,null);
     		}
     	else 
     		{
-    		StockArt.Calculator_Icon.drawChip(gc,this,sz,cx,cy,null);
+    		StockArt.Calculator_Icon.draw(gc,this,sz,cx,cy,null);
     		}
 		GC.setFont(gc, largeBoldFont());
 		GC.Text(gc, true, G.Left(r), cy-(int)(G.Height(r)*0.3), w,G.Height(r)/5,Color.black,null,name);
@@ -1548,7 +1548,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     public void drawEye(Graphics gc,Rectangle eyeR,HitPoint hp,boolean censor,int index)
     {    	
       	StockArt icon = censor ? StockArt.Eye : StockArt.NoEye;
-       	if(icon.drawChip(gc, this, eyeR, hp, QEId.ShowHidden))
+       	if(icon.draw(gc, this, eyeR, hp, QEId.ShowHidden))
        	{
        		hp.hit_index = index;
        	}

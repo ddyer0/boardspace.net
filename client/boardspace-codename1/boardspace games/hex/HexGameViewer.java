@@ -452,7 +452,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	hexChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	hexChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -517,7 +517,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	  int y = top-gb.cellToY(c);
     	  int color = gb.triColor(c.col,c.row);
     	  hexChip to = tile.getAltDisplayChip(color);
-    	  to.drawChip(gc,this,xsize,x,y,null);
+    	  to.draw(gc,this,xsize,x,y,null);
           // test 3-coloring algorithm
     	  //Color colors[] = new Color[] { Color.red,Color.green,Color.blue};
           //GC.setColor(gc, colors[color]);
@@ -527,7 +527,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
               for(int dir=0; dir<4;dir++)
               {	// precalculated border cell properties
             	  if((c.borders&(1<<dir))!=0)
-        	  {	  btiles[dir].drawChip(gc,this,xsize,x,y,null);
+        	  {	  btiles[dir].draw(gc,this,xsize,x,y,null);
             	  }
               }}
           }
@@ -595,7 +595,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,size,xpos,ypos,null);
             

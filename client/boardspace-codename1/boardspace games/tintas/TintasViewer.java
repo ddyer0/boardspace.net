@@ -313,7 +313,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TintasChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	TintasChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -409,7 +409,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
             double yscale = perspective ? (0.99*yp0/G.Height(brect)-0.33)*CELLSIZE : 1.0;
             if (isSource || isDest || (hitCell && showTargets))
              { // checking for pointable position
-           	 	StockArt.SmallO.drawChip(gc,this,(int)(gb.cellSize()*((perspective ? 0 : 1)+(isSource ? 2 : 3))),xpos,ypos,null);                
+           	 	StockArt.SmallO.draw(gc,this,(int)(gb.cellSize()*((perspective ? 0 : 1)+(isSource ? 2 : 3))),xpos,ypos,null);                
              }
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
 

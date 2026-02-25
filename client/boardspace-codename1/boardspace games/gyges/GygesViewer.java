@@ -270,7 +270,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	commonPlayer pl = getPlayerOrTemp(p);
     	int extra = G.rotationQuarterTurns(pl.displayRotation);
     	return( new DrawnIcon(100,100,p)
-    		{ public void drawChip(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
+    		{ public void draw(Graphics gc, DrawingObject c, int size, int posx, int posy, String msg)
     			{	int ex = extra;
     			if(seatingFaceToFace()) { if(ex==3) { ex=1; }}
     			else { ex = 0; }
@@ -301,7 +301,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         	}
         if(canHit && canPick && show) 
         {
-        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,thisx,thisy,null);
+        	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,thisx,thisy,null);
         }
         thisx += SQUARESIZE-SQUARESIZE/4;
         }
@@ -317,7 +317,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	GygesChip ch = GygesChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -367,17 +367,17 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int xpos = G.Left(brect) + gb.cellToX(cell);
         int adjustedSize = adjustedSquareSize(SQUARESIZE,ydistance,G.Height(brect));
         //StockArt.SmallO.drawChip(gc,this,adjustedSize,xpos,ypos,null);
-        if(cell==src) { StockArt.SmallO.drawChip(gc,this,adjustedSize/2,xpos,ypos,null); }
+        if(cell==src) { StockArt.SmallO.draw(gc,this,adjustedSize/2,xpos,ypos,null); }
         boolean hitCell = cell.drawStack(gc,this,hit,adjustedSize,xpos,ypos,0,0.1,null);
     	boolean show = eyeRect.isOnNow();
 
         if(show && sources.get(cell)!=null)
         {
-        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
+        	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
     	}
         if(dests.get(cell)!=null)
         {
-        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
+        	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
     	}
         return(hitCell);
     }
@@ -406,7 +406,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 			        int xpos1 = G.Left(brect) + gb.cellToX(current);
 			        int direction = b.findDirection(prev.col,prev.row,current.col,current.row);
 			        
-			        stockArt[direction^reverse].drawChip(gc,this,SQUARESIZE/3,(xpos0+xpos1)/2,(ypos1+ypos0)/2,null);
+			        stockArt[direction^reverse].draw(gc,this,SQUARESIZE/3,(xpos0+xpos1)/2,(ypos1+ypos0)/2,null);
 			        }
 				}
 				prev  = current;
@@ -428,7 +428,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 		 {	double frac = idx/(double)(steps+1);
 			 int xp = G.interpolate(frac, x1,x2);
 			 int yp = G.interpolate(frac, y1,y2);
-			 StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xp,yp,null);
+			 StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xp,yp,null);
 		 }
     }
     private void decorateMovePath(Graphics gc,GygesBoard gb,Rectangle brect)
@@ -630,7 +630,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
             				vstate!=GygesState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
-        getPlayerIcon(gb.whoseTurn).drawChip(gc,this,iconRect,null);
+        getPlayerIcon(gb.whoseTurn).draw(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
 
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca

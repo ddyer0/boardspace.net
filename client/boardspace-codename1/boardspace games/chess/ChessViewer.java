@@ -320,7 +320,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	ChessChip chips[]= gb.rack;
     	ChessChip thisChip = chips[forPlayer];
         String msg = null;
-        thisChip.drawChip(gc,this,5*G.Width(r)/2,G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)/2,msg);
+        thisChip.draw(gc,this,5*G.Width(r)/2,G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)/2,msg);
      }
     private void DrawCaptured(Graphics gc,ChessBoard gb,commonPlayer pl,
     			HitPoint highlight,Hashtable<ChessCell,ChessMovespec>targets)
@@ -363,7 +363,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         
         if(showMoves && targets.get(thisCell)!=null)
         {
-        	StockArt.SmallO.drawChip(gc,this,h,
+        	StockArt.SmallO.draw(gc,this,h,
         			G.Left(r)+h/4,G.Top(r)+h/2,null);
     	}
         DrawCommonChipPool(gc, gb,forPlayer,chipRects[forPlayer], gb.whoseTurn);
@@ -381,7 +381,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	ChessChip ch = ChessChip.getChipNumber(obj);// Tiles have zero offset
-     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+     	ch.draw(g,this,SQUARESIZE,xp,yp,null);
 
      }
 
@@ -425,23 +425,23 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             	}
             if((cell==dest)||(cell==src))
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             if((cell==last) && (numberMenu.selected()==NumberMenu.NumberingMode.None ))
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             if((cell.topChip()==null)
         			&& cell.lastContents!=null 
         			&& cell.lastCaptured>0
         			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
                 	{
-                		cell.lastContents.drawChip(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
-                		StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+                		cell.lastContents.draw(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
+                		StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null);
                 	}
             if(showMoves && targets.get(cell)!=null)
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE/2,xpos,ypos,null);
         	}
             //if(cell.sweep_counter==sweep)
             //	{
@@ -530,7 +530,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             				vstate!=ChessState.Puzzle,
             				whoseTurn,
             				stateRect);
-            gb.rack[whoseTurn].drawChip(gc,this,iconRect,null,2);
+            gb.rack[whoseTurn].draw(gc,this,iconRect,null,2);
         }
         goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    

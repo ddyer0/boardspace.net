@@ -254,7 +254,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     	{	SnakesCell c = rack[idx];
     		int xpos = rackRect.x+col;
     		int ypos = rackRect.y+row;
-    		StockArt.SmallO.drawChip(gc,this,CELLSIZE*2,xpos,ypos,null);
+    		StockArt.SmallO.draw(gc,this,CELLSIZE*2,xpos,ypos,null);
     		boolean canhit = (highlight!=null) && b.LegalToHitChips(c);
     		if(c.drawChip(gc,this,c.topChip(),canhit?highlight:null,CELLSIZE*4,xpos,ypos,"x"))
     		{
@@ -288,7 +288,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     	int chip = obj%100;
     	int rotation = obj/100;
     	SnakesChip ch = SnakesChip.getChip(chip).getRotated(this,rotation);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 
@@ -322,7 +322,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
       {	int ypos = G.Bottom(boardRect) - gb.cellToY(c.col, c.row);
       	int xpos = G.Left(boardRect) + gb.cellToX(c.col, c.row);
       	SnakesChip cc = (c.onTarget ? tchip : chip);
-     	cc.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+     	cc.draw(gc,this,SQUARESIZE,xpos,ypos,null);
       }
 	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
 	    gb.SetDisplayRectangle(boardRect);
@@ -367,7 +367,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
             SnakesChip top = c.topChip();
             if(top!=null) 
             {
-            top.getRotated(this,c.rotation).drawChip(gc, this, SQUARESIZE,xpos,ypos,null);
+            top.getRotated(this,c.rotation).draw(gc, this, SQUARESIZE,xpos,ypos,null);
         	}           
  			}}
  		

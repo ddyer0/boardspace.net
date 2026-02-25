@@ -383,7 +383,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
             while (nc-- > 0)
             {	int rx = Random.nextInt(rand, spacex);
                 int ry = Random.nextInt(rand, spacey);
-                chip.drawChip(gc,this,cs*3/2,l+cs/2+rx,t+cs/2+ry,null);
+                chip.draw(gc,this,cs*3/2,l+cs/2+rx,t+cs/2+ry,null);
              }}
             GC.Text(gc, true, l,t,w/5,h/5,
             		Color.blue, null,""+bb.playerNChips[player]);
@@ -401,7 +401,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	KulamiChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	KulamiChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -459,7 +459,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
        		{
             	int ypos = G.Bottom(boardRect) - gb.cellToY(c);
                 int xpos = G.Left(boardRect) + gb.cellToX(c) - (int)(0.177*CELLSIZE);
-      			sub.chip.drawChip(gc,this,(int)(CELLSIZE*boardScale),xpos,ypos,null);
+      			sub.chip.draw(gc,this,(int)(CELLSIZE*boardScale),xpos,ypos,null);
        		}
        	}}
      }
@@ -508,7 +508,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
 
             if (drawhighlight && selective)
             { // checking for pointable position
-           	 StockArt.SmallO.drawChip(gc,this,CELLSIZE*2/3,xpos,ypos,null);                
+           	 StockArt.SmallO.draw(gc,this,CELLSIZE*2/3,xpos,ypos,null);                
             }
             if(cell.drawChip(gc,this,drawhighlight ? highlight : null,
             		(cell==prev1 || cell==prev2) ? largeBallsize : ballsize,xpos,ypos,null))

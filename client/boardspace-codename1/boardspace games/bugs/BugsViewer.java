@@ -664,7 +664,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		GC.fillRect(gc,Color.black,right+stroke,top+center-stroke/2,left-right,stroke);
     	}
 
-    	pb.cell.drawChip(gc,this,G.Width(r),G.centerX(r),G.centerY(r),null);
+    	pb.cell.draw(gc,this,G.Width(r),G.centerX(r),G.centerY(r),null);
     	GC.setFont(gc,largeBoldFont());
     	GC.Text(gc,true,score, Color.black, null, ""+pb.getScore());
     	drawCellInBox(gc,gb,pb,highlight,targets,pb.bugs,bug,seeBugs,0.5);
@@ -697,7 +697,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	GC.Text(gc,true,left+step/4,top,w-step/2,step,Color.black,null,s.get(ScoreMessage));
     	for(PlayerBoard p : gb.pbs)
     	{
-    		p.chip.drawChip(gc,this,step,left+step*2/3,t+step/2,null);
+    		p.chip.draw(gc,this,step,left+step*2/3,t+step/2,null);
     		int score = (int)gb.scoreBonusForPlayer(card,parent,p);
     		GC.TextRight(gc,left+step,t-step/4,(int)(step*1.5),step,Color.black,null,""+score);
     		t += step;
@@ -730,7 +730,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		//GC.frameRect(gc,Color.yellow,r);
     	}
     	{	
-    		if(StockArt.Eye.drawChip(gc,this,eye,highlight,BugsId.HitCell,"expand"))
+    		if(StockArt.Eye.draw(gc,this,eye,highlight,BugsId.HitCell,"expand"))
     		{
     			highlight.hitData = bugs;
     		}
@@ -756,7 +756,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	BugsChip ch = BugsChip.getChip(obj);
-    	ch.drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	ch.draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -827,7 +827,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
         	  // to fine tune the board rendering.
         	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
+        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).draw(gc,this,xsize,xpos,ypos,null);
         	  //equivalent lower level draw image
         	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
         	  //
@@ -892,12 +892,12 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 		}
      	if(eyeRect.isOnNow() && m!=null)
      	{
-     		StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
+     		StockArt.SmallO.draw(gc,this,cellSize,xpos,ypos,null);
      	}
      	
        	if(cell.height()>0 && cell.player!=null && cell.rackLocation()==BugsId.BoardLocation)
     	{
-    		cell.player.drawChip(gc,this,cellSize/3,xpos-(int)(cellSize*0.55),ypos-cellSize/10,null);
+    		cell.player.draw(gc,this,cellSize/3,xpos-(int)(cellSize*0.55),ypos-cellSize/10,null);
     		if(cell.rackLocation()==BugsId.BoardLocation && cell.placedInRound==gb.roundNumber)
     		{
     			GC.Text(gc,true,xpos-(int)(cellSize*0.6),ypos-cellSize/3,cellSize/3,cellSize/3, Color.black,null,"+");
@@ -932,7 +932,9 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			int lift,double xstep,double ystep,
     			String msg)
     {
-    	boolean val = cell.drawStack(gc,this,r,highlight,lift,xstep,ystep,msg);
+    	boolean val = 
+    	cell.drawStack(gc,this,r,highlight,lift,xstep,ystep,msg);
+    	//cell.drawChip(gc,this,r,highlight,cell.rackLocation(),msg);
 	    if(gc!=null)
 	    	{
 	    	int cx = G.centerX(r);
@@ -1006,8 +1008,8 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			break;
     		}
     		if(canHit
-    				&& (StockArt.SwingCW.drawChip(gc,this,cellSize/2,(int)(xpos+cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCCW,null)
-    					| StockArt.SwingCCW.drawChip(gc,this,cellSize/2,(int)(xpos-cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCW,null)))
+    				&& (StockArt.SwingCW.draw(gc,this,cellSize/2,(int)(xpos+cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCCW,null,1.33,1.33)
+    					| StockArt.SwingCCW.draw(gc,this,cellSize/2,(int)(xpos-cellSize*0.7),ypos,canHit?highlight:null,BugsId.RotateCW,null,1.33,1.33)))
     		{
     			highlight.hitObject = mainCell;
     			highlight.hit_index = pb.boardIndex;
@@ -1193,7 +1195,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 			for(PlayerBoard player : gb.pbs)
 			{
 				if(player.isReady()) {
-					player.cell.drawChip(gc,this,hs,xp,yp,null);
+					player.cell.draw(gc,this,hs,xp,yp,null);
 					xp += hs;
 					
 				}
@@ -1239,7 +1241,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     					r,0,0.002,0.001,hitDirective(pb,m));
     			if(isSelected(gb,pb,c))
     			{
-    				StockArt.Checkmark.drawChip(gc,this,w/4,x+w/2,yp+step/2,null);
+    				StockArt.Checkmark.draw(gc,this,w/4,x+w/2,yp+step/2,null);
     			}
     		}
     }
@@ -1260,7 +1262,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     			drawSingleCell(gc,highlight,m,c,r,0,0.002,0.001,hitDirective(pb,m));
     			if(isSelected(gb,pb,c))
     			{
-    				StockArt.Checkmark.drawChip(gc,this,w/4,x+w/2,yp+step/2,null);
+    				StockArt.Checkmark.draw(gc,this,w/4,x+w/2,yp+step/2,null);
      			}
        		}
     }
@@ -1317,7 +1319,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		int xpos = X;
     		int ypos = Y-(goalCard?bestWidth/10:0);
     		Rectangle r1 = new Rectangle(xpos,ypos,bestWidth,bestHeight);
-    		if(ch.drawChip(gc,this,r1,hp,cell.rackLocation(),
+    		if(ch.draw(gc,this,r1,hp,cell.rackLocation(),
     				m!=null 
     					? BugsChip.PICK
     					: BugsChip.BIGCHIP))
@@ -1339,7 +1341,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     		}
     		if(canPlay && eyeRect.isOnNow())
     		{
-    			StockArt.SmallO.drawChip(gc,this,bestHeight,xpos+bestWidth/2,ypos+bestHeight/2,null);
+    			StockArt.SmallO.draw(gc,this,bestHeight,xpos+bestWidth/2,ypos+bestHeight/2,null);
     		}
     		//GC.frameRect(gc,Color.blue,r1);
     		col++;
@@ -1374,14 +1376,14 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	w -= step*3;
     	int hstep = w/4;
     	int t1 = t+step/2;
-    	BugsChip.Predator.drawChip(gc,this,step,l0+hstep/2,t1,null);
-    	BugsChip.Vegetarian.drawChip(gc,this,step,l0+hstep+hstep/2,t1,null);
-    	BugsChip.Wings.drawChip(gc,this,step,l0+hstep*2+hstep/2,t1,null);
+    	BugsChip.Predator.draw(gc,this,step,l0+hstep/2,t1,null);
+    	BugsChip.Vegetarian.draw(gc,this,step,l0+hstep+hstep/2,t1,null);
+    	BugsChip.Wings.draw(gc,this,step,l0+hstep*2+hstep/2,t1,null);
     	GC.Text(gc,true,l0+hstep*3,t,hstep,step,Color.black,null,s.get(TotalMessage));
  
     	t += step;
     	for(TerrainSummary ts : sum)
-    	{	ts.type.tile.drawChip(gc,this,step*2/3,l+step*3/2,t+step/2,null);
+    	{	ts.type.tile.draw(gc,this,step*2/3,l+step*3/2,t+step/2,null);
     		printRow(gc,l0,t,w,step,
     				""+ts.predators,
     				""+ts.prey,""+ts.flying,""+ts.total
@@ -1458,7 +1460,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
       		StockArt.Scrim.getImage().drawImage(gc,G.Left(topCard)-margin/4,G.Top(topCard)-margin/4,
 					G.Width(topCard)+margin/2,h*2+margin);
  
-    		if(bigChip.drawChip(gc,this,topCard,hp,BugsId.HitChip)
+    		if(bigChip.draw(gc,this,topCard,hp,BugsId.HitChip)
     				| bigChip.drawExtendedChip(gc,this,hp,bottomCard,BugsId.HitChip));
     		{
     			hp.hitCode = BugsId.HitChip;

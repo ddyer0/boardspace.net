@@ -458,7 +458,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     {	CarnacChip ch = CarnacChip.findChip(FaceOrientation.Horizontal,
     					FaceColor.Red,FaceColor.Red,FaceColor.White);
     	ch = ch.getAltChip(1); 
-    	ch.drawChip(gc,this,G.Width(r)*3/4,G.Left(r)+G.Width(r)/3,G.centerY(r),null);
+    	ch.draw(gc,this,G.Width(r)*3/4,G.Left(r)+G.Width(r)/3,G.centerY(r),null);
 		GC.frameRect(gc,Color.black,r);
     	if(HitPoint.setHelpText(highlight,r, CarnacId.FlatViewButton,s.get(FlatViewExplanation)))
     	{	
@@ -554,7 +554,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
            		break;
     		}
     	}
-    	ch.drawChip(g,this,(int)(b.adjustedCellSize()*SIZE_ADJUST*sizeRect.value),xp,yp,null);
+    	ch.draw(g,this,(int)(b.adjustedCellSize()*SIZE_ADJUST*sizeRect.value),xp,yp,null);
     	GC.setRotation(g,-fullBoardRotation,xp,yp);
      }
 
@@ -807,11 +807,11 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         			int ypos1 = top - gb.cellToY(t1);
         			int xpos1 = left + gb.cellToX(t1);
         			t1.canTip = true;
-        			StockArt.SmallO.drawChip(gc,this,SQ,xpos1,ypos1,null);
+        			StockArt.SmallO.draw(gc,this,SQ,xpos1,ypos1,null);
         			CarnacCell t2 = t1.exitTo(dir);
         			int ypos2 = top - gb.cellToY(t2);
         			int xpos2 = left + gb.cellToX(t2);
-        			StockArt.SmallO.drawChip(gc,this,SQ,xpos2,ypos2,null);
+        			StockArt.SmallO.draw(gc,this,SQ,xpos2,ypos2,null);
         			t2.canTip = true;
         			
         		}
@@ -876,7 +876,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         {
 			int ypos0 = G.Bottom(brect) - gb.cellToY(lastPlaced);
 			int xpos0 = G.Left(brect) + gb.cellToX(lastPlaced);
-			StockArt.LandingPad.drawChip(gc,this,SQ/2,xpos0,ypos0-SQ,null);
+			StockArt.LandingPad.draw(gc,this,SQ/2,xpos0,ypos0-SQ,null);
         }
     }
      public void drawAuxControls(Graphics gc,CarnacBoard gb,HitPoint highlight)

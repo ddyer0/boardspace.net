@@ -288,7 +288,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	VoloChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	VoloChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -385,7 +385,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
              int xpos = G.Left(brect) + gb.cellToX(cell);
              if (drawhighlight || (cell==startLine && cell.chip!=null))
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
 
             boolean hitCell = gb.LegalToHitBoard(cell);
@@ -402,13 +402,13 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
             
             if((cell==startLine) || (selectDests.get(cell)!=null)||(cell==endLine) || (slideDests.get(cell)!=null))
             {
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE*2,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,CELLSIZE*2,xpos,ypos,null);
             }
             if((orangeZone!=null) && (orangeZone.contains(cell)))
-        	{  VoloChip.BlueO.drawChip(gc,this,CELLSIZE/3,xpos,ypos,null);
+        	{  VoloChip.BlueO.draw(gc,this,CELLSIZE/3,xpos,ypos,null);
         	}
             if((blueZone!=null) && (blueZone.contains(cell)))
-          	{  VoloChip.OrangeO.drawChip(gc,this,CELLSIZE/3,xpos,ypos,null);
+          	{  VoloChip.OrangeO.draw(gc,this,CELLSIZE/3,xpos,ypos,null);
           	}
           }
     }

@@ -229,7 +229,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     }
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	KnockaboutChip ic = KnockaboutChip.getChip(idx);
-    	ic.drawChip(g,this,scaleCell(SQUARESIZE,xp,yp,boardRect),xp,yp,null);
+    	ic.draw(g,this,scaleCell(SQUARESIZE,xp,yp,boardRect),xp,yp,null);
     }
 
 
@@ -285,7 +285,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     	KnockaboutChip cc = (idx>0) 
     					? KnockaboutChip.getChip(b.playerColor[player],6,idx)
     					: null;
-    	if(cc!=null) { cc.drawChip(gc,this,r,null,0.8); }
+    	if(cc!=null) { cc.draw(gc,this,r,null,0.8); }
     	}
     }
     
@@ -356,7 +356,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         		GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
         	}
          	if(cell==rb.rollCell)
-         	{	StockArt.Rotate_CW.drawChip(gc,this,3*SQUARESIZE/2,xpos,ypos,null);
+         	{	StockArt.Rotate_CW.draw(gc,this,3*SQUARESIZE/2,xpos,ypos,null);
          	}
         }
        	

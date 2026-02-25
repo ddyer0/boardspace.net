@@ -340,7 +340,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	KingsColorChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	KingsColorChip.getChip(obj).draw(g,this,CELLSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -401,9 +401,9 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
 	    	  KingsColorChip chip = c.gridColor.chip;
 	    	  int xp = left+gb.cellToX(c);
 	    	  int yp = top-gb.cellToY(c);
-	    	  chip.drawChip(gc, this,xsize,xp,yp,null);
+	    	  chip.draw(gc, this,xsize,xp,yp,null);
 	    	  if(c.wall) 
-	    	  	{ KingsColorChip.hexTile_pen.drawChip(gc,this,xsize,xp,yp,null);
+	    	  	{ KingsColorChip.hexTile_pen.draw(gc,this,xsize,xp,yp,null);
 	    	  	}
 	      }
 
@@ -470,11 +470,11 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
             boolean isSource = (cell==src) ;
             if( (moving && (targets.get(cell)!=null)) || (cell==dest) || isSource )
             {
-            	StockArt.SmallO.drawChip(gc,this,isSource ? CELLSIZE*3/2 : CELLSIZE*2/3,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,isSource ? CELLSIZE*3/2 : CELLSIZE*2/3,xpos,ypos,null);
             }
             else if((secondary!=null) && (secondary.get(cell)!=null))
             {
-            	StockArt.SmallX.drawChip(gc,this,isSource ? CELLSIZE : CELLSIZE/2,xpos,ypos,null);
+            	StockArt.SmallX.draw(gc,this,isSource ? CELLSIZE : CELLSIZE/2,xpos,ypos,null);
             }
    		
     	}

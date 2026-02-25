@@ -289,7 +289,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 			{	hitCell = c;
 			}
 			if(msg!=null) { HitPoint.setHelpText(any,sz/2,cx,cy,msg); }
-			if(c==src) { StockArt.SmallO.drawChip(gc,this,sz/4,cx,cy,null);}
+			if(c==src) { StockArt.SmallO.draw(gc,this,sz/4,cx,cy,null);}
 			if(msg!=null)
 			{	TextChunk.split(msg).draw(gc, pl.displayRotation, true, 
 					new Rectangle(cx-sz/2,cy-sz/2,sz,sz),
@@ -320,7 +320,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     {
        	ProteusChip idChip = ProteusChip.PlayerChips[b.getColorMap()[forPlayer]][0];
        	int w = G.Width(id);
-    	idChip.drawChip(gc,this,w*3,G.centerX(id)+w/6,G.centerY(id)+w/6,null);
+    	idChip.draw(gc,this,w*3,G.centerX(id)+w/6,G.centerY(id)+w/6,null);
     }
     
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
@@ -347,7 +347,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     		{
     			hitCell = c;
     		}
-			if(c==src) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE/4,cx,cy,null);}
+			if(c==src) { StockArt.SmallO.draw(gc,this,SQUARESIZE/4,cx,cy,null);}
 
     		x += space;
     	}
@@ -369,7 +369,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	ProteusChip ch = ProteusChip.getChipNumber(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
     Image scaled = null;
@@ -421,7 +421,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	hitCell = cell;
             	}
-            if(cell==src) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE/6,xpos,ypos,null); }
+            if(cell==src) { StockArt.SmallO.draw(gc,this,SQUARESIZE/6,xpos,ypos,null); }
             if(liveMsg!=null)
             {	ypos+=SQUARESIZE/5;
                 for(int x=xpos-3;x<=xpos+3;x++)

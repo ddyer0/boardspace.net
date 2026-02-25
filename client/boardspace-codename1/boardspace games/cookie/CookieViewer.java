@@ -313,19 +313,19 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
      		  	{	
      		  		int xp2 = left+bb.cellToX(src);
      		  		int yp2 = bottom-bb.cellToY(src);
-     		  		chip.drawChip(g,this,cellS, xp2,yp2, null);
+     		  		chip.draw(g,this,cellS, xp2,yp2, null);
      		  		GC.cacheAACircle(g,xp2,yp2,2,Color.green,Color.yellow,true);
      		  	}
      		  }
      		  else
      		  {
-     		  	chip.drawChip(g,this,cellS, xp, yp, null);
+     		  	chip.draw(g,this,cellS, xp, yp, null);
      		  }
      	      
-        	  second.drawChip(g,this,cellS, xp, yp, null);
+        	  second.draw(g,this,cellS, xp, yp, null);
      		}
      		else
-     		{ chip.drawChip(g,this,cellS, xp, yp, null);
+     		{ chip.draw(g,this,cellS, xp, yp, null);
      		}
 
     }
@@ -423,24 +423,24 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
             	{	
             		if((ccell!=gb.cherryCell) && (ccell.topChip()==gb.cherryChip)) // single cherry on the locked color
             		{	// if the cookie under the crawl cookie is locked, draw the cherry under
-                	CookieChip.Cherry.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+                	CookieChip.Cherry.draw(gc,this,cellSize/2,xpos,ypos,null);
                 	cherryDrawn = true;
                 	}
-            		CookieChip.Crawl.drawChip(gc,this,cellSize,xpos,ypos,null);
+            		CookieChip.Crawl.draw(gc,this,cellSize,xpos,ypos,null);
             	}
             	if((ccell==gb.cherryCell) && (ccell.activeAnimationHeight()==0))
             		{	// double cherry on the chip moved
-            		CookieChip.Cherry.drawChip(gc,this,cellSize/2,xpos-CELLSIZE/2,ypos-CELLSIZE/2,null); 
-      			  	CookieChip.Cherry.drawChip(gc,this,cellSize/2,xpos+CELLSIZE/2,ypos+CELLSIZE/4,null); 
+            		CookieChip.Cherry.draw(gc,this,cellSize/2,xpos-CELLSIZE/2,ypos-CELLSIZE/2,null); 
+      			  	CookieChip.Cherry.draw(gc,this,cellSize/2,xpos+CELLSIZE/2,ypos+CELLSIZE/4,null); 
             		}
             		else if(!cherryDrawn && (ccell.topChip()==gb.cherryChip) && (ccell.activeAnimationHeight()==0))
             		{
-            			CookieChip.Cherry.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+            			CookieChip.Cherry.draw(gc,this,cellSize/2,xpos,ypos,null);
             		}
             	}
                 else if((ccell==gb.cherryCell) && (ccell.activeAnimationHeight()==0)) // single cherry on the locked color
             	{
-            	CookieChip.Cherry.drawChip(gc,this,cellSize/2,xpos,ypos,null);
+            	CookieChip.Cherry.draw(gc,this,cellSize/2,xpos,ypos,null);
             	}
                 
                 if (gc != null)
@@ -462,7 +462,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	{	// draw the crawl cookie in the corner of the board if not elsewhere
         	int xp = G.Right(tbRect)-cellSize;
         	int yp = G.Top(tbRect)+cellSize;
-        	CookieChip.Crawl.drawChip(gc,this,cellSize,xp,yp,null);
+        	CookieChip.Crawl.draw(gc,this,cellSize,xp,yp,null);
     	}
         
         doBoardDrag(tbRect,anySelect,cellSize,CookieId.InvisibleDragBoard); 

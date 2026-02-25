@@ -36,6 +36,8 @@ public interface TwixtConstants
 	static String GuidelinesExplanation = "show guide lines";
 	static String TwixtStrings[] = 
 	{  "Twixt",
+		"Twixt-18",
+		"Twixt-13",
 		GuidelinesExplanation,
 		TwixtPlayState,
 		FlattenExplanation,
@@ -48,6 +50,8 @@ public interface TwixtConstants
 	static String TwixtStringPairs[][] = 
 	{   {"Twixt_family","Twixt"},
 		{"Twixt_variation","Standard Twixt"},
+		{"Twixt-18_variation","Smaller Board"},
+		{"Twixt-13_variation","Tiny Board"},
 	};
 
 	class StateStack extends OStack<TwixtState>
@@ -144,6 +148,8 @@ public interface TwixtConstants
  enum TwixtVariation
     {
     	twixt("twixt",24),
+       	twixt_18("twixt-18",18),
+    	twixt_13("twixt-13",13),
 	 	ghost("twixtghost",24);
     	String name ;
     	// constructor

@@ -414,7 +414,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
-       		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
+       		ch.draw(g,this,CELLSIZE, xp, yp, null);  
        		}
    }
     /**
@@ -740,7 +740,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	GC.frameRect(gc,Color.black,x,y,w,h);
     	int vspace = h/(personalCap.size()+everyoneCap.size()+extraLineCount);
     	GC.Text(gc,true,x,y,w,vspace,Color.white,null,statCaption);
-    	StockArt.FancyCloseBox.drawChip(gc, this, stateh,
+    	StockArt.FancyCloseBox.draw(gc, this, stateh,
 				 x+w-stateh/2,y+stateh/2,hit,CrosswordleId.CloseStats,null);
     	if(G.pointInRect(hit,x,y,w,h))
     	{

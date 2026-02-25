@@ -253,8 +253,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/4,null);
-    	king.drawChip(gc,this,w,cx,cy+w/4,null);
+    	reverse.draw(gc,this,w,cx,cy-w/4,null);
+    	king.draw(gc,this,w,cx,cy+w/4,null);
     	HitPoint.setHelpText(highlight,r,EntrapmentId.ReverseViewButton,s.get(ReverseViewExplanation));
     	
      }  
@@ -291,7 +291,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int xp = G.Left(r)+w/2;
         int yp = G.Top(r)+G.Height(r)/2-w/2;
         if(canHit && canDrop) 
-        	{ StockArt.SmallO.drawChip(gc,this,w*3,xp,yp,null); 
+        	{ StockArt.SmallO.draw(gc,this,w*3,xp,yp,null); 
         	}
         int wp = G.Width(r);
         thisCell.drawStack(gc,this,pt,(int)(wp*1.3),xp+wp/8,yp,0,-0.6,null);
@@ -313,7 +313,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     {  	// draw an object being dragged
     	EntrapmentChip ch = EntrapmentChip.getChip(obj);// Tiles have zero offset
     	int ss = G.pointInRect(xp,yp,boardRect) ? yScaleSize(yp,boardRect,SQUARESIZE) : SQUARESIZE;
-    	ch.drawChip(g,this,ss,xp,yp,null);
+    	ch.draw(g,this,ss,xp,yp,null);
      }
 
 
@@ -466,12 +466,12 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
                 	//StockArt.SmallO.drawChip(gc, this,CELLSIZE, xpos, ypos, null);
                 	if( cell.drawStack(gc,this,canHit?highlight:null,ss,xpos,ypos,0,0.1,null)) 
                     	{ hitCell = cell; 
-                    	  StockArt.SmallO.drawChip(gc,this,ss,xpos,ypos,null);
+                    	  StockArt.SmallO.draw(gc,this,ss,xpos,ypos,null);
                     	}
                     if (dead!=null)
                     	{ EntrapmentChip ch = dead.get(cell);
                     		if(ch!=null)
-                    			{ StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); 
+                    			{ StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null); 
                     			}
                     	}
                     if (isDest) 
@@ -536,7 +536,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
             if (dead!=null)
         	{ EntrapmentChip ch = dead.get(cell);
         		if(ch!=null)
-        			{ StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); 
+        			{ StockArt.SmallX.draw(gc,this,SQUARESIZE,xpos,ypos,null); 
         			}
         	}
             if (isDest) 
@@ -590,7 +590,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
             DrawBarrierPool(gc, i,barrierRects[i], gb.whoseTurn,ot);
             DrawRoamerPool(gc, i,roamerRects[i], gb.whoseTurn,ot);
             Rectangle cr = chipRects[i];
-        	EntrapmentChip.getRoamer(gb.getColorMap()[i]).drawChip(gc,this,cr,null,1);
+        	EntrapmentChip.getRoamer(gb.getColorMap()[i]).draw(gc,this,cr,null,1);
         	pl.setRotatedContext(gc, highlight,true);
         }
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);

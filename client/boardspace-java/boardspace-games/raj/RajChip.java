@@ -209,9 +209,9 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
 		GC.Text(gc,true,e_x-(int)(SQUARESIZE*0.45),e_y-(int)(SQUARESIZE*0.66),
 				SQUARESIZE,SQUARESIZE,color.color,null,""+cardValue());
 	}
-	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void draw(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
 	{
-		super.drawChip(gc, canvas, SQUARESIZE, cx, cy, label);
+		super.draw(gc, canvas, SQUARESIZE, cx, cy, label);
 		if(isFront())
 		{
 			drawChip(gc,((RajViewer)canvas).cardDeckFont,SQUARESIZE,cx,cy);
@@ -219,6 +219,6 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
 	}
 	// draw the chip fron itself and the aux number info
 	public void drawChipFront(Graphics gc,RajViewer drawOn,int squaresize,int e_x,int e_y)
-	{	getCardFront().drawChip(gc,drawOn,squaresize,e_x,e_y,null);
+	{	getCardFront().draw(gc,drawOn,squaresize,e_x,e_y,null);
 	}
 }

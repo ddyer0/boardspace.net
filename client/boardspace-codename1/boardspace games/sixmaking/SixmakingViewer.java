@@ -234,8 +234,8 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int t = G.Top(r);
-    	reverse.drawChip(gc,this,w,cx,t+w/4,null);
-    	king.drawChip(gc,this,w,cx,t+w*3/4,null);
+    	reverse.draw(gc,this,w,cx,t+w/4,null);
+    	king.draw(gc,this,w,cx,t+w*3/4,null);
     	HitPoint.setHelpText(highlight,r,SixmakingId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  
 
@@ -426,11 +426,11 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE/4,xpos,ypos,null);
             if((cell==dest)||(cell==src))
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/4,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE/4,xpos,ypos,null);
             }
            if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE/4,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,SQUARESIZE/4,xpos,ypos,null);
             }
         	}
     	}

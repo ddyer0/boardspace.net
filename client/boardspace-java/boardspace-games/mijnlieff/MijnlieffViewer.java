@@ -401,7 +401,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	MijnlieffChip.getChip(obj).drawChip(g,this,CELLSIZE*4, xp, yp, null);
+    	MijnlieffChip.getChip(obj).draw(g,this,CELLSIZE*4, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -488,7 +488,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
             	highlight.spriteColor = Color.red;
             	highlight.awidth = CELLSIZE;
             }
-            if(targets.get(cell)!=null) { StockArt.SmallO.drawChip(gc,this,CELLSIZE*2,xpos,ypos,null); }
+            if(targets.get(cell)!=null) { StockArt.SmallO.draw(gc,this,CELLSIZE*2,xpos,ypos,null); }
             
             }
         

@@ -294,7 +294,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	{	StockArt sample = CheChip.OBLIQUE_CHIPS[i/(quarter/2)];
     		int off = (w*(i/quarter))/5;
     		int rx = Random.nextInt(rr,(int)(ystep/2));	// a little randomness in x position
-    		sample.drawChip(gc,this,
+    		sample.draw(gc,this,
     				2*w/3,
     				x-off-rx,
     				bot-(int)((i%quarter)*ystep)+off,null);
@@ -313,7 +313,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
    		int cellS = inboard? bb.cellSize() : G.Width(chipRect) ;
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	CheChip.getChip(obj).drawChip(g,this,cellS, xp, yp, null);
+    	CheChip.getChip(obj).draw(g,this,cellS, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode

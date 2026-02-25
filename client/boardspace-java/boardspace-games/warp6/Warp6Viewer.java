@@ -228,7 +228,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     // override so CELLSIZE has a resonable value
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	Warp6Chip ic = Warp6Chip.getChip(idx);
-    	ic.drawChip(g,this,scaleCell(CELLSIZE,xp,yp,boardRect),xp,yp,null);
+    	ic.draw(g,this,scaleCell(CELLSIZE,xp,yp,boardRect),xp,yp,null);
     }
 
 
@@ -302,7 +302,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     	{
     	int idx = 6-b.chipsInWarp[player];
     	Warp6Chip cc = (idx>0) ? Warp6Chip.getChip(b.playerColor[player],6,idx) : null;
-    	if(cc!=null) { cc.drawChip(gc,this,(int)(G.Width(r)*scale),G.centerX(r),G.centerY(r),null); }
+    	if(cc!=null) { cc.draw(gc,this,(int)(G.Width(r)*scale),G.centerX(r),G.centerY(r),null); }
     	}
     }
     
@@ -331,7 +331,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     		case PLACE_STATE:
     		case CONFIRM_STATE:
     			if(canHit)
-    				{ StockArt.SmallO.drawChip(gc,this,space*2,x,y+space/2,null);
+    				{ StockArt.SmallO.draw(gc,this,space*2,x,y+space/2,null);
     				}
     			break;
     		case PUZZLE_STATE:
@@ -427,7 +427,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
             	if(chip!=null)
             	{	int show = (int)(now%chip.numSides)+1;
              		Warp6Chip alt = Warp6Chip.getChip(chip.color,chip.numSides,show);
-            		alt.drawChip(gc,this,scl,xpos,ypos,null);
+            		alt.draw(gc,this,scl,xpos,ypos,null);
             		
             	}
             }
@@ -440,7 +440,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
             	}
             	if(cell==lastDropped)
             	{
-            		StockArt.SmallO.drawChip(gc,this,scl*4,xpos,ypos,null);
+            		StockArt.SmallO.draw(gc,this,scl*4,xpos,ypos,null);
             	}
             	cell.drawStack(gc,canHit?highlight:null,xpos,ypos,this,0,scl,1.0,null);
             	
@@ -463,7 +463,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         		GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
         	}
          	if(cell==rb.rollCell)
-         	{	StockArt.Rotate_CW.drawChip(gc,this,3*CELLSIZE/2,xpos,ypos,null);
+         	{	StockArt.Rotate_CW.draw(gc,this,3*CELLSIZE/2,xpos,ypos,null);
          	}
         }}}
        	

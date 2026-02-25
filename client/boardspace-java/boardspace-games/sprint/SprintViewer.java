@@ -421,7 +421,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     		int dx = l+rand.nextInt(w);
     		int dy = t+rand.nextInt(h);
     		boolean hide = true;
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, cs, dx,dy,canHit?highlight:null,SprintId.DrawPile,
+    		if(gb.drawPile.chipAtIndex(i).draw(gc, this, cs, dx,dy,canHit?highlight:null,SprintId.DrawPile,
     				hide ? SprintChip.BACK : null))
     		{
     			highlight.hitObject = gb.drawPile;
@@ -513,7 +513,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 
     	if(localDrop && top==null)
     	{
-    		StockArt.SmallO.drawChip(gc,this,tileSize,cx,cy,null);
+    		StockArt.SmallO.draw(gc,this,tileSize,cx,cy,null);
     		
     	}  
      	if((canPick||localDrop) 
@@ -676,7 +676,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
        		// being displayed on hidden windows
        		GC.setColor(g,Color.black);
        		SingleBoard gb = currentPlayerBoard(bb);
-       		ch.drawChip(g,this,gb.cellSize(), xp, yp, null);  
+       		ch.draw(g,this,gb.cellSize(), xp, yp, null);  
        		}
    }
     /**
@@ -859,7 +859,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
  
             setLetterColor(gc,gb,cell);

@@ -316,8 +316,8 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/4,null);
-    	king.drawChip(gc,this,w,cx,cy+w/4,null);
+    	reverse.draw(gc,this,w,cx,cy-w/4,null);
+    	king.draw(gc,this,w,cx,cy+w/4,null);
     	HitPoint.setHelpText(highlight,r,CrossId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  
 
@@ -348,7 +348,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     						&& ((gb.pickedObject!=null) || (res.topChip()!=null));
     	int xp = G.centerX(r);
     	int yp = G.Bottom(r)-G.Width(r)/2;
-    	tileImages[BOWL_BASE_INDEX].drawChip(gc, this, (int)(CELLSIZE*CHIP_SIZE_SCALE*1.3),xp,yp, null);
+    	tileImages[BOWL_BASE_INDEX].draw(gc, this, (int)(CELLSIZE*CHIP_SIZE_SCALE*1.3),xp,yp, null);
          { // draw a random pile of chips.  It's just for effect
             //G.frameRect(gc, Color.black, r);
             if(res.drawStack(gc,this,canHit?highlight:null,(int)(CELLSIZE*CHIP_SIZE_SCALE),xp,yp,0,0.1,null))
@@ -407,7 +407,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-     	CrossfireChip.getChip(obj).drawChip(g,this,(int)(CELLSIZE*CHIP_SIZE_SCALE*ysizeadj(xp,yp-G.Top(boardRect))), xp, yp, null);
+     	CrossfireChip.getChip(obj).draw(g,this,(int)(CELLSIZE*CHIP_SIZE_SCALE*ysizeadj(xp,yp-G.Top(boardRect))), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -474,7 +474,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     	int celly = gb.cellToY(cell);
    	 	int ypos = G.Bottom(brect) - celly;
    	 	int xpos = G.Left(brect) + gb.cellToX(cell);
-   	 	tileImages[CELL_INDEX].drawChip(gc, this, (int)(CELLSIZE*CHIP_SIZE_SCALE*1.7*ysizeadj(xpos,ypos-G.Top(brect))),xpos,ypos, null);
+   	 	tileImages[CELL_INDEX].draw(gc, this, (int)(CELLSIZE*CHIP_SIZE_SCALE*1.7*ysizeadj(xpos,ypos-G.Top(brect))),xpos,ypos, null);
     	}
     }
    /** draw the board and the chips on it. the gc will normally draw on a background
@@ -531,7 +531,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
             }
             if (drawhighlight && picked && gb.pickedSource!=null && gb.pickedSource.onBoard)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,CELLSIZE*3,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,CELLSIZE*3,xpos,ypos,null);                
              }
 
         }

@@ -186,6 +186,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 			ghost = true;
 			//$FALL-THROUGH$
 		case twixt:		
+		case twixt_18:
+		case twixt_13:
 			int siz = variation.boardSize;
 			char last = (char)('A'+siz-1);
 			initBoard(siz,siz);
@@ -1548,6 +1550,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 	 		{
 	 		case twixt:
 	 		case ghost:
+	 		case twixt_18:
+	 		case twixt_13:
 	 			xpos -= cellsize/2;
 	 			break;
  			default: G.Error("case %s not handled",variation);
@@ -2114,5 +2118,44 @@ public double Static_Evaluate_Position2(int playerIndex,boolean print)
 	 return (moveNumber-lastDrawMove>4)
 				&& (movingObjectIndex()<0)
 				&& ((board_state==TwixtState.Play) || (board_state==TwixtState.QueryDraw));
+ }
+ double extrady[] = null;
+ double extradx[] = null;
+ 
+ public void setDisplayParameters(double dxs[],double dys[],
+		 double ll[],double lr[],double ul[],double ur[])
+ {
+	 extrady = dys;
+	 extradx = dxs;
+	 SetDisplayParameters(ll,lr,ul,ur);
+ }
+ public int cellToY(char x,int y)
+ {	int yp = super.cellToY(x,y);
+ 	if(extrady!=null)
+ 	{
+ 	double off = extrady[y];
+ 	if(off!=0)
+ 	{
+ 		int yp1 = super.cellToY(x,y+1);
+ 		return G.interpolate(off,yp,yp1);
+ 	}}
+ 	
+	if(extradx!=null)
+	{
+	double off = extradx[x-'A'];
+	if(off!=0)
+	{
+		int yp1 = super.cellToY((char)(x+1),y);
+		return G.interpolate(off,yp,yp1);
+	}
+
+	}
+ 	return yp;
+ }
+ public int cellToX(char x,int y)
+ {	int xp = super.cellToX(x,y);
+	
+
+ 	return xp;
  }
 }

@@ -353,7 +353,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
     }
     public void drawStop(Graphics g,exCanvas forCan,Rectangle r,double scl)
     {
-		  dot.drawChip(g,forCan,Math.max(8,(int)(scl*G.Width(r)/40)),
+		  dot.draw(g,forCan,Math.max(8,(int)(scl*G.Width(r)/40)),
   				  (int)(G.Left(r)+xpos*G.Width(r)/100),
   				  (int)(G.Top(r)+G.Height(r)*ypos/100),
   				  null);

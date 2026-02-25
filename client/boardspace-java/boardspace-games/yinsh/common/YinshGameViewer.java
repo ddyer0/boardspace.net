@@ -442,7 +442,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     		do {
     			int xpos = left+gb.cellToX(from.col,from.row);
     			int ypos = top-gb.cellToY(from.col,from.row);
-    			StockArt.SmallX.drawChip(gc,this, csize*2/3, 	xpos,	ypos,null);
+    			StockArt.SmallX.draw(gc,this, csize*2/3, 	xpos,	ypos,null);
     			if(from==to) { break; }
     			else { from = from.exitTo(direction); }
     		} while(true);
@@ -452,7 +452,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     
     void drawChip(Graphics gc, int idx, int x, int y, int boxw, double scale,
         double ring_yscale)
-    {	YinshChip.getChip(idx).drawChip(gc,this,(int)(boxw*scale),x,y,null);
+    {	YinshChip.getChip(idx).draw(gc,this,(int)(boxw*scale),x,y,null);
     }
 
 	public void drawFixedElements(Graphics gc)

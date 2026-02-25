@@ -617,7 +617,7 @@ public abstract class stackCell
     /**
      * this is the drawChip method for the {@link lib.Drawable} interface
      */
-	public void drawChip(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
+	public void draw(Graphics gc,DrawingObject c,int size, int posx,int posy,String msg)
 	{
 		drawStack(gc,DrawingObject.getCanvas(c),null,size,posx,posy,0,lastXScale(),lastYScale(),msg);
 	}

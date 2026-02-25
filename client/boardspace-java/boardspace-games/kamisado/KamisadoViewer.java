@@ -302,8 +302,8 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	KamisadoChip king = KamisadoChip.getChip(b.reverseY()?1:0,KamisadoChip.FIRST_CHIP_INDEX);
     	KamisadoChip reverse = KamisadoChip.getChip(b.reverseY()?0:1,KamisadoChip.FIRST_CHIP_INDEX);
-    	reverse.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)/2,null);
-    	king.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)+G.Width(r)/2,null);
+    	reverse.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)/2,null);
+    	king.draw(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)+G.Width(r)/2,null);
     	HitPoint.setHelpText(highlight,r, KamisadoId.ReverseViewButton,s.get(ReverseViewExplanation));
     }
 
@@ -311,7 +311,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     private void DrawCommonChipPool(Graphics gc, int forPlayer, Rectangle r, int player, HitPoint highlight)
     {	
         KamisadoChip thisChip = KamisadoChip.getChip(forPlayer,KamisadoChip.FIRST_CHIP_INDEX);
-        thisChip.drawChip(gc,this, G.Width(r),G.centerX(r), G.centerY(r),null);
+        thisChip.draw(gc,this, G.Width(r),G.centerX(r), G.centerY(r),null);
      }
 
     //
@@ -324,7 +324,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	KamisadoChip ch = KamisadoChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
      }
 
 

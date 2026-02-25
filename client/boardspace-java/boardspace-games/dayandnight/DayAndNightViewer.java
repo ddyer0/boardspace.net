@@ -404,7 +404,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	DayAndNightChip.getChip(obj).drawChip(g,this,CHIPSIZE, xp, yp, null);
+    	DayAndNightChip.getChip(obj).draw(g,this,CHIPSIZE, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -445,7 +445,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
      		int cy =  G.Bottom(brect) -gb.cellToY(c);
      		int cx =  G.Left(brect) + gb.cellToX(c);
      		DayAndNightChip ch = c.dark ? DayAndNightChip.DarkTile : DayAndNightChip.LightTile;
-     		ch.drawChip(gc, this, CHIPSIZE, cx,cy,null);
+     		ch.draw(gc, this, CHIPSIZE, cx,cy,null);
      	}
 
 	      // draw the tile grid.  The positions are determined by the underlying board
@@ -498,7 +498,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
            //}
            if(cell==src)
             {
-            	StockArt.SmallO.drawChip(gc, this, CHIPSIZE, xpos,ypos, null);
+            	StockArt.SmallO.draw(gc, this, CHIPSIZE, xpos,ypos, null);
             }
         }
     	numberMenu.drawSequenceNumbers(gc,CHIPSIZE,labelFont,labelColor);

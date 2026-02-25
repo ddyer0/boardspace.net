@@ -374,7 +374,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	ImagineChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	ImagineChip.getChip(obj).draw(g,this,bb.cellSize(), xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -525,12 +525,12 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	for(int i=0;i<buttons.length;i++)
     		{	ImagineChip chip = buttons[i];
     			int cx = left+step*i+sz/2;
-    		    if(chip.drawChip(gc, this, sz,cx,
+    		    if(chip.draw(gc, this, sz,cx,
     		    		cy,ready ? null : highlight,chip.id,null)) 
     		    	{ highlight.hit_index = who*100+i; 
     		    	}
     		    if(!spectator && i==stake) 
-    		    	{ pb.color.checkMark.drawChip(gc,this,sz/3,cx-sz/3,cy+sz/3,null); }
+    		    	{ pb.color.checkMark.draw(gc,this,sz/3,cx-sz/3,cy+sz/3,null); }
     		}
     }
     public void drawLegend(Graphics gc,ImagineBoard gb)
@@ -557,11 +557,11 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	G.insetRect(inset,step);
      StockArt.Scrim.getImage().stretchImage(gc, cards);
     	ImagineChip bigTop = bigChip.topChip();
-    	if(bigTop.drawChip(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,(String)null,1))
+    	if(bigTop.draw(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,(String)null,1))
     	{
     		highlight.hitObject = bigChip; 
     	}
-    	if(StockArt.FancyCloseBox.drawChip(gc, this, step*2, G.Right(inset),G.Top(inset),highlight,ImagineId.Eye,null,1.0,1.33)
+    	if(StockArt.FancyCloseBox.draw(gc, this, step*2, G.Right(inset),G.Top(inset),highlight,ImagineId.Eye,null,1.0,1.33)
     			|| (appreciate && G.pointInRect(highlight,inset))
     			)
     	{
@@ -692,13 +692,13 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		{
     		Rectangle r = topchip.getSnugRectangle(this,xp,yp,sstepx,sstepy);
     		
-    		if( topchip.drawChip(gc, this,r,ready ? null : highlight,pic.rackLocation(),debug ? ""+topchip : null,1.0))
+    		if( topchip.draw(gc, this,r,ready ? null : highlight,pic.rackLocation(),debug ? ""+topchip : null,1.0))
     		{	hitmain = true;
     		}
     		if(!spectator && pb.isSelected(pic)) {
-    			pb.color.checkMark.drawChip(gc, this, checksize, G.Left(r)+checksize/2,G.Bottom(r)-checksize/2,null);
+    			pb.color.checkMark.draw(gc, this, checksize, G.Left(r)+checksize/2,G.Bottom(r)-checksize/2,null);
     			}
-    		if(StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
+    		if(StockArt.Magnifier.draw(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
     			{ 
     			anyHighlight.hitObject = pic;
     			anyHighlight.spriteRect = null;
@@ -758,7 +758,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		HitPoint notMine = (gb.isStoryTeller(apIndex) || appreciate || gb.isReady(apIndex) || (topchip==myCard)) ? null : highlight;
 
     		boolean hitmain = false;
-    		if(topchip.drawChip(gc, this,r,notMine,pic.rackLocation(),debug ? ""+topchip : null, 1.0))
+    		if(topchip.draw(gc, this,r,notMine,pic.rackLocation(),debug ? ""+topchip : null, 1.0))
     		{	hitmain = true;
     			notMine.spriteColor =Color.red;
     		}
@@ -771,9 +771,9 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 			  GC.frameRect(gc, Color.red, r1); 
 			} 
     		if(!isArchitect && !appreciate && (picn==selectedPres)) {
-    			pb.color.checkMark.drawChip(gc, this, checksize, lr+checksize/2,br-checksize/2,null);
+    			pb.color.checkMark.draw(gc, this, checksize, lr+checksize/2,br-checksize/2,null);
     		}
-    		if(StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
+    		if(StockArt.Magnifier.draw(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
 			{ 
     		anyHighlight.hitObject = pic;
 			anyHighlight.spriteRect = null;
@@ -792,12 +792,12 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     			{
     			int ll =lr+margin*3;
     			int sz = stepx/5;
-    			chip.drawChip(gc, this, sz,ll, tr, stake);
+    			chip.draw(gc, this, sz,ll, tr, stake);
     			
       			for(int voten=0;voten<vote.size();voten++)
     				{
     				PlayerBoard voter = vote.elementAt(voten);
-    				voter.color.checkMark.drawChip(gc,this,stepx/6,lr+margin*3+(voten+1)*stepx/6,tr,""+voter.getBet());
+    				voter.color.checkMark.draw(gc,this,stepx/6,lr+margin*3+(voten+1)*stepx/6,tr,""+voter.getBet());
     				}
     			}}}
     		
@@ -843,9 +843,9 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         		DrawableImage<?> chip = pb.color.chip;
      			int ll =lr+margin*3;
     			int sz = stepx/5;
-    			chip.drawChip(gc, this, sz,ll, tr, null);    	
+    			chip.draw(gc, this, sz,ll, tr, null);    	
     			
-        		if(isArchitect && StockArt.Magnifier.drawChip(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
+        		if(isArchitect && StockArt.Magnifier.draw(gc, this, checksize, G.Right(r)-checksize/2,G.Bottom(r), anyHighlight, ImagineId.Eye,null,1.0,1.33))
     			{ 
         		anyHighlight.hitObject = card;
     			anyHighlight.spriteRect = null;

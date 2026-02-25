@@ -293,7 +293,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         
      }
     public void drawSprite(Graphics g,int idx,int xp,int yp)
-    {	Pyramid.getPyramid(idx).drawChip(g,this,SQUARESIZE,xp,yp,null);
+    {	Pyramid.getPyramid(idx).draw(g,this,SQUARESIZE,xp,yp,null);
     }
 
     void prepareBoardGeometry(VolcanoBoard b)

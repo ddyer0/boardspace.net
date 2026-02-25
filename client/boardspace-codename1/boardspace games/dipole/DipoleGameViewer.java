@@ -279,7 +279,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
 
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {     DipoleChip chip = DipoleChip.getTile(idx);	// tiles have the zero offset
-    	  chip.drawChip(g,this,SQUARESIZE, xp, yp, null);	
+    	  chip.draw(g,this,SQUARESIZE, xp, yp, null);	
     }
  
 
@@ -345,7 +345,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
              }
 
             if(isADest)
-            {	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,msg);
+            {	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,msg);
             //G.DrawAACircle(gc,e_xpos+dotsize,e_ypos,dotsize,Color.red,Color.gray,true);
         }
         	}

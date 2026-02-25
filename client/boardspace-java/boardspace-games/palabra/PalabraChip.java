@@ -366,12 +366,12 @@ public class PalabraChip extends chip<PalabraChip> implements PalabraConstants
     		{
     		case InfocardId:
     			{
-    			infoCard.drawChip(gc, drawOn,SQUARESIZE, 0,0,null);
+    			infoCard.draw(gc, drawOn,SQUARESIZE, 0,0,null);
     			}
     			break;
     		case JokerId:
     			{
-    			joker.drawChip(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
+    			joker.draw(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
     			int lx =  - letterw;
     			int ly = lettery - letterh/6;
     			GC.Text(gc,true,lx,ly,letterw*2,letterh,Color.black,null,"CANCEL");
@@ -388,7 +388,7 @@ public class PalabraChip extends chip<PalabraChip> implements PalabraConstants
     			break;
     		case VowelId:
     			{
-       			wild.drawChip(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
+       			wild.draw(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
        			String msg = "aeiouy";
     			int lx =  - 6*letterw/2;
     			int ly = lettery - letterh/4;
@@ -397,7 +397,7 @@ public class PalabraChip extends chip<PalabraChip> implements PalabraConstants
     			}
     		case WildcardId:
     			{
-    			wild.drawChip(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
+    			wild.draw(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
        			String msg = "A-Z";
     			int lx =  - 3*letterw/2;
     			int ly = lettery - letterh/4;
@@ -445,7 +445,7 @@ public class PalabraChip extends chip<PalabraChip> implements PalabraConstants
     			}
     		if(icon!=null)
     		{
-    			icon.drawChip(gc,drawOn,letterw,letterx+letterw/2,lettery+letterw/2,null);
+    			icon.draw(gc,drawOn,letterw,letterx+letterw/2,lettery+letterw/2,null);
     			lettery += letterh;
     		}
     		cy += stepy;
@@ -456,7 +456,7 @@ public class PalabraChip extends chip<PalabraChip> implements PalabraConstants
     	// now the stars
     	for(int i=0;i<getStars();i++)
     		{
-    		PalabraChip.star.drawChip(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
+    		PalabraChip.star.draw(gc,drawOn,letterw,letterx+letterw/2,lettery+letterh/2,null);
     		lettery += letterh;
     		}
     	}

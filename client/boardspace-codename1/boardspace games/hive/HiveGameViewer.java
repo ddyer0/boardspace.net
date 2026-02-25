@@ -340,7 +340,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
     private void DrawTilesetRect(Graphics gc,HitPoint highlight)
 		{ HivePiece ch = HivePiece.getCanonicalChip(HiveId.White_Bug_Pool,PieceType.QUEEN).getAltChip(1);
-    	ch.drawChip(gc,this,G.Width(tilesetRect)*3,G.centerX(tilesetRect),G.centerY(tilesetRect),
+    	ch.draw(gc,this,G.Width(tilesetRect)*3,G.centerX(tilesetRect),G.centerY(tilesetRect),
     			highlight,HiveId.TilesetRect,getAltChipset()==0? CarbonMessage : StandardMessage);
     }
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
@@ -412,7 +412,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         		if(topCup!=null)
         			{ 
         			pl.rotateCurrentCenter(thisCell, left,midr);
-        			topCup.drawChip(gc,this,pieceSize,left, midr,null);
+        			topCup.draw(gc,this,pieceSize,left, midr,null);
         			}
        		}
         		//if((gc!=null)&&(hitCell==thisCell)) { G.frameRect(gc,Color.red,left-cellW/2,top-CELLSIZE/2,cellW,2*CELLSIZE); }
@@ -435,7 +435,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	commonPlayer pl = getPlayerOrTemp(player);
     	pl.setRotatedContext(gc, highlight, false);
     	HivePiece idbug = HivePiece.getCanonicalChip(gb.playerColor(player),PieceType.QUEEN);
-    	idbug.drawChip(gc,this,G.Width(id)*2,G.centerX(id),G.centerY(id),null);
+    	idbug.draw(gc,this,G.Width(id)*2,G.centerX(id),G.centerY(id),null);
         int nCells = gb.numActivePieceTypes();	// omit some if not mosquito variant
         GC.frameRect(gc, Color.black, r); 
         boolean canhit = gb.LegalToHitChips(player) && G.pointInRect(highlight, r);
@@ -476,7 +476,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         			{ 
 	    			int pivot = baseY-CELLSIZE/6*(height-bug);
 	    			pl.rotateCurrentCenter(thisCell, left,pivot);
-	    			topCup.drawChip(gc,this,pieceSize,left, pivot,null);
+	    			topCup.draw(gc,this,pieceSize,left, pivot,null);
         			}
         		}
         		//if((gc!=null)&&(hitCell==thisCell)) { G.frameRect(gc,Color.red,left-cellW/2,top-CELLSIZE/2,cellW,2*CELLSIZE); }
@@ -500,7 +500,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        	int cellS = inboard? (int)(b.cellSize()*1.15*BOARD_TILE_SCALE) :RACKSCALE ;
        	HivePiece p = b.pickedObject;
        	if(p!=null) 
-       		{ p.drawChip(g,this,cellS,xp,yp,null); 
+       		{ p.draw(g,this,cellS,xp,yp,null); 
        		}
     }
     
@@ -602,7 +602,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              	
              		GC.setRotation(gc,-extra,xp,yp);
              	}
-               	drawpiece.drawChip(gc,this,(int)actCellSize, xp, yp,null);
+               	drawpiece.draw(gc,this,(int)actCellSize, xp, yp,null);
             	if(rotate)
              	{
              		GC.setRotation(gc,extra,xp,yp);
@@ -614,7 +614,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  	{
                    	GC.setFont(gc,actCellSize>240?largeBoldFont():standardBoldFont());
                    	GC.setColor(gc,Color.yellow);
-                 	StockArt.SmallO.drawChip(gc,this,(int)(actCellSize*0.5),xp,yp,id);
+                 	StockArt.SmallO.draw(gc,this,(int)(actCellSize*0.5),xp,yp,id);
                  	}
                 //if(gb.isRing(cell))
                 //{
@@ -780,7 +780,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
             				stateRect);
     	HivePiece idbug = HivePiece.getCanonicalChip(gb.playerColor(whoseTurn),PieceType.QUEEN);
     	int h = G.Height(iconRect);
-    	idbug.drawChip(gc, this, h*3, G.centerX(iconRect),G.centerY(iconRect),null);
+    	idbug.draw(gc, this, h*3, G.centerX(iconRect),G.centerY(iconRect),null);
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(HiveGoal),progressRect, goalRect);
         drawVcrGroup(nonDraggingSelect, gc);
 

@@ -1171,7 +1171,7 @@ public abstract class commonCanvas extends exCanvas
 	            int currentX = left + (i * vcrWidth);
 	            VcrId code = codes[i];
 	            GC.setFont(inG,standardBoldFont());
-	            if(StockArt.vcrButtons[i].drawChip(inG,commonCanvas.this,
+	            if(StockArt.vcrButtons[i].draw(inG,commonCanvas.this,
 	            			vcrWidth,currentX,centerY,
 	            			p,codes[i],s.get(code.helpText),1.33,1.33))
 	            {
@@ -3071,14 +3071,14 @@ public abstract class commonCanvas extends exCanvas
             int h = G.Height(r);
             int xp = G.Left(r)+w/2;
             int yp = G.Top(r)+h/2;
-            StockArt.VCRBar.drawChip(inG,this,w,xp,yp,null);
+            StockArt.VCRBar.draw(inG,this,w,xp,yp,null);
             }
             {
             int w = buttonWidth;
             int h = G.Height(r);
             int xp = G.Left(r) + sliderVal+w/2;
             int yp = G.Top(r) + h/2;
-            StockArt.VCRTick.drawChip(inG,this,w+(inSlider?w/3:0),xp,yp,null);
+            StockArt.VCRTick.draw(inG,this,w+(inSlider?w/3:0),xp,yp,null);
             GC.drawOutlinedText(inG,true,xp-w/2,yp-w/2,w,w,Color.white,Color.black,str);
             }
          }
@@ -3108,7 +3108,7 @@ public abstract class commonCanvas extends exCanvas
         int h = G.Height(r);
         int xp = G.Left(r)+sliderWidth+w*2/3;
         int yp = G.Top(r) + h/2;
-        if( (animating?StockArt.VCRStop:StockArt.VCRPlay).drawChip(inG,this,w,xp,yp,
+        if( (animating?StockArt.VCRStop:StockArt.VCRPlay).draw(inG,this,w,xp,yp,
         		p,VcrId.Animate,VcrId.Animate.helpText,1.33,1.33))
         	{
         	retval = VcrId.Animate;
@@ -3777,7 +3777,7 @@ public abstract class commonCanvas extends exCanvas
     		artObj = StockArt.VCRFrameShort;
     		}
      	}
-    		artObj.drawChip(inG,this,G.Width(vcrZone),
+    		artObj.draw(inG,this,G.Width(vcrZone),
     			G.centerX(vcrZone),
     			artY+artHeight/2,
     			null);
@@ -3806,7 +3806,7 @@ public abstract class commonCanvas extends exCanvas
         {
         if (mutable_game_record ) 
         {	
-       	if(StockArt.VCRBackBranch.drawChip(inG,this,hidden.vcrBackRect,p,VcrId.BackVariation,VcrId.BackVariation.helpText,1.33,1.33))
+       	if(StockArt.VCRBackBranch.draw(inG,this,hidden.vcrBackRect,p,VcrId.BackVariation,VcrId.BackVariation.helpText,1.33,1.33))
         	{
         		rval = VcrId.BackVariation;
         	}
@@ -3814,7 +3814,7 @@ public abstract class commonCanvas extends exCanvas
         	int nRemembered = History.nRememberedPositions();
         	if(nRemembered>0)
         	{
-        		if(StockArt.PaperClipSideMasked.drawChip(inG,this,hidden.vcrMoveRect,p,VcrId.Move,s.get(VcrId.Move.helpText),1.33,1.33))
+        		if(StockArt.PaperClipSideMasked.draw(inG,this,hidden.vcrMoveRect,p,VcrId.Move,s.get(VcrId.Move.helpText),1.33,1.33))
         		{
         		rval = p.hitCode;        		
         		}
@@ -3823,14 +3823,14 @@ public abstract class commonCanvas extends exCanvas
         	String name = History.getCurrentNodeName();
         	if(name!=null)
         	{
-        		if(StockArt.PaperClipSideMasked.drawChip(inG,this,hidden.vcrClipRect,p,VcrId.UnClip,s.get(VcrId.UnClip.helpText),1.33,1.33))
+        		if(StockArt.PaperClipSideMasked.draw(inG,this,hidden.vcrClipRect,p,VcrId.UnClip,s.get(VcrId.UnClip.helpText),1.33,1.33))
         		{
         		rval = p.hitCode;        		
         		}
         		GC.Text(inG,true,hidden.vcrClipRect,labelColor,null,name);
         	}
         	else 
-        	{ if(StockArt.PaperClipMasked.drawChip(inG,this,hidden.vcrClipRect,p,VcrId.Clip,
+        	{ if(StockArt.PaperClipMasked.draw(inG,this,hidden.vcrClipRect,p,VcrId.Clip,
         						s.get(VcrId.Clip.helpText),1.33,1.33))
         			{ rval = p.hitCode; 
         			}
@@ -3852,13 +3852,13 @@ public abstract class commonCanvas extends exCanvas
             int h = G.Height(hidden.vcrVarRect);
             int xp = G.Left(hidden.vcrVarRect) + w/2;
             int yp = G.Top(hidden.vcrVarRect) + h/2;
-            if(StockArt.VCRButton.drawChip(inG,this,hidden.vcrVarRect,p,VcrId.SelectVariation,VcrId.SelectVariation.helpText,1.33,1.2))
+            if(StockArt.VCRButton.draw(inG,this,hidden.vcrVarRect,p,VcrId.SelectVariation,VcrId.SelectVariation.helpText,1.33,1.2))
             {
             	rval = VcrId.SelectVariation;
             }
             GC.drawOutlinedText(inG,true,xp-w/2,yp-h/2,w,h,Color.white,Color.black,txt);
             }
-            if(StockArt.VCRForwardBranch.drawChip(inG,this,hidden.vcrFrontRect,p,VcrId.ForwardBranch,VcrId.ForwardBranch.helpText,1.33,1.33))
+            if(StockArt.VCRForwardBranch.draw(inG,this,hidden.vcrFrontRect,p,VcrId.ForwardBranch,VcrId.ForwardBranch.helpText,1.33,1.33))
             {
                 rval = VcrId.ForwardBranch;
             }}
@@ -7845,7 +7845,7 @@ public Drawable getPlayerIcon(int n)
 {	
 	return new DrawnIcon(100,100,n)
 			{
-			public void drawChip(Graphics gc,DrawingObject c,int sz,int x,int y,String msg)
+			public void draw(Graphics gc,DrawingObject c,int sz,int x,int y,String msg)
 				{
 				drawMouseSprite(gc,(int)parameter,x,y,sz*3/4);
 				}
@@ -8106,7 +8106,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
        	if(ToolTip!=null) { HitPoint.setHelpText(highlight,goalRect,s.get(ToolTip,message)); }
      	if(rules!=null)
     		{
-    		if(StockArt.Rules.drawChip(gc,this,rulesRect,highlight,GameId.HitRulesButton,ShowRulesMessage))
+    		if(StockArt.Rules.draw(gc,this,rulesRect,highlight,GameId.HitRulesButton,ShowRulesMessage))
     			{
     			highlight.spriteRect = rulesRect; 
     			highlight.spriteColor = Color.red;
@@ -9121,7 +9121,7 @@ public void verifyGameRecord()
 				: s.get(HideChatMessage);
     	StockArt img = cansee ? StockArt.Nochat : StockArt.Chat;
     	
-    	img.drawChip(gc, this, r, highlight,hitcode, msg);
+    	img.draw(gc, this, r, highlight,hitcode, msg);
     	
     	long now = G.Date();
     	
@@ -9450,7 +9450,7 @@ public void verifyGameRecord()
 					|| (rm==RecordingStrategy.Single));
 		}
 	    public void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight,CellId id)
-	    {	StockArt.Rotate180.drawChip(gc, this, r,highlight, id, s.get(ReverseViewExplanation));
+	    {	StockArt.Rotate180.draw(gc, this, r,highlight, id, s.get(ReverseViewExplanation));
 	    }
 
 	    public void drawViewsetMarker(Graphics gc,Rectangle r,HitPoint highlight)
@@ -9473,7 +9473,7 @@ public void verifyGameRecord()
 	    	}
 	    	if(icon!=null)
 	    	{
-	    	if(icon.drawChip(gc,this,r,highlight,button,help))
+	    	if(icon.draw(gc,this,r,highlight,button,help))
 	    		{
 	    		highlight.spriteRect = r;
 	    		}

@@ -149,7 +149,8 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     {
        	StringStack lis = new StringStack();
     	try {
-    	InputStream in = G.getResourceAsStream(indexResourceName(path,name));
+    	String irn = indexResourceName(path,name);
+    	InputStream in = G.getResourceAsStream(irn);
     	if(in!=null)
     	{
     	Utf8Reader ins = new Utf8Reader(in);
@@ -203,7 +204,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
 			{
 			// generate the list for use in the delivered version
 			// because of the shortcuts in codename1 resoruces, the file names have to be unique
-			 out = new PrintStream(new FileOutputStream(uncomposite+indexResourceName(imagePath,"index.txt")));
+			 out = new PrintStream(new FileOutputStream(uncomposite+indexResourceName(imagePath,"new-index.txt")));
 			}
 		
 		for(String s : images)

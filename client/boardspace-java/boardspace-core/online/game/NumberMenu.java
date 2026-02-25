@@ -134,7 +134,7 @@ public class NumberMenu extends Rectangle {
 	public void draw(Graphics gc,exCanvas drawOn,HitPoint highlight)
 	    {	int width = G.Width(this);
 	    	mouseIsOn = false;
-	    	if(base.drawChip(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,text))
+	    	if(base.draw(gc,drawOn,width,G.centerX(this),G.centerY(this),highlight,id,text))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 	    		mouseIsOn = true;

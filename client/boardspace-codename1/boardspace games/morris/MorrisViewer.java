@@ -274,7 +274,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         }
         if(pt!=null && canDrop) 
     	{ // draw a visible marker for the drop zone
-    	StockArt.SmallO.drawChip(gc, this, SQUARESIZE,x,y, "");
+    	StockArt.SmallO.draw(gc, this, SQUARESIZE,x,y, "");
     	}
         return(hit);
      }
@@ -289,7 +289,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
      	MorrisChip ch = MorrisChip.getChipNumber(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	ch.draw(g,this,SQUARESIZE,xp,yp,null);
 
      }
 
@@ -356,11 +356,11 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
             	}
             if((cell==dest)||(cell==src)||(show && canHitNow))
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.Dot.draw(gc,this,SQUARESIZE,xpos,ypos,null);
             }
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
         	}
@@ -442,7 +442,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
             				vstate!=MorrisState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
- 		gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null,0.7);
+ 		gb.playerChip[gb.whoseTurn].draw(gc,this,iconRect,null,0.7);
             goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
          
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca

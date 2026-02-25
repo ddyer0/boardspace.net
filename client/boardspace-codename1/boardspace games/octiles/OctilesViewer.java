@@ -353,7 +353,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	  }
     	  else
     	  {	// artwork is tuned to the flat version
-    	   	  disk.drawChip(gc,this,(int)(CELLSIZE*0.58),cx,cy,null);	   	   		  
+    	   	  disk.draw(gc,this,(int)(CELLSIZE*0.58),cx,cy,null);	   	   		  
     	  }
     	  }
       }
@@ -382,7 +382,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
 		highlight.awidth=SQUARESIZE/2;
 		highlight.spriteColor = Color.red;
         }
-       if(canhit && show) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); }
+       if(canhit && show) { StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,null); }
        cell.rotateCurrentCenter(gc,xpos,ypos);
 	}
  	return(hitCell);
@@ -461,7 +461,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
 	         		highlight.spriteColor = Color.red;
         	}
         if(show ?  hitStack!=null : (dests.get(c)!=null))
-        	{ StockArt.SmallO.drawChip(gc,this,SQUARESIZE,
+        	{ StockArt.SmallO.draw(gc,this,SQUARESIZE,
         			xpos-(int)(perspective?0:step*0.2*c.height()*SQUARESIZE),
         			ypos-(int)(perspective?step*c.height()*SQUARESIZE:0),null); 
         	}

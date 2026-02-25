@@ -327,7 +327,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	int unit = width/4;
     	Rectangle playerPrizeRect = new Rectangle(right-width/2,top+unit/3,width/2,height/3);
     	Rectangle chip = playerChips[pl];
-    	getPlayerIcon(pl).drawChip(gc,this,chip,null);
+    	getPlayerIcon(pl).draw(gc,this,chip,null);
     	int mid = top+height/2;
     	int step = (-width/5);
     	int cx = (left-step);
@@ -434,7 +434,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	if(ch.isCard() &&  (allPlayersLocal() || (reviewOnly || (!isSpectator() && (bb.playerOwning(ch.cardColor())==getActivePlayer().boardIndex)))))
     		{ drawCardFace(g,new Rectangle(xp-CELLSIZE,yp-5*CELLSIZE/3,CELLSIZE*2,CELLSIZE*3),ch);
     		}
-    	else { ch.drawChip(g,this,CELLSIZE*2, xp, yp, null); }
+    	else { ch.draw(g,this,CELLSIZE*2, xp, yp, null); }
     	}
     }
     // also related to sprites,
@@ -545,7 +545,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
             RajChip top = cell.topChip();
             if (drawhighlight)
              { // checking for pointable position
-            	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
+            	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             boolean show = (state==RajState.AWARD_PRIZE_STATE) && (top!=null) && (top.isCard());
             double skip = Math.min(0.7,(5*0.7)/cell.height());
@@ -656,7 +656,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         				activePl,
         				stateRect);
         PlayerBoard pb = gb.getPlayerBoard(gb.whoseTurn);
-       	if(pb!=null) { pb.cardBack.drawChip(gc,this,iconRect,null,0.75); }
+       	if(pb!=null) { pb.cardBack.draw(gc,this,iconRect,null,0.75); }
 
         goalAndProgressMessage(gc,nonDragSelect,s.get(GoalString),progressRect, goalRect);
         //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for raj
@@ -1310,10 +1310,10 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
        	RajChip ch = RajChip.getCardBack(pl.color);
        	int xp = l+w-topPart;
        	int yp = t+3*topPart/2;
-    	ch.drawChip(gc,this, topPart*2, xp,yp,null);
+    	ch.draw(gc,this, topPart*2, xp,yp,null);
     	
     	StockArt icon = pl.hiddenShowCards ? StockArt.NoEye : StockArt.Eye;
-    	icon.drawChip(gc,this,topPart,xp,yp+topPart*2,hp,RajId.ShowCards,null);
+    	icon.draw(gc,this,topPart,xp,yp+topPart*2,hp,RajId.ShowCards,null);
     	GC.setFont(gc, myfont);
     	GC.Text(gc,true,l+w/2,t,w/2,topPart,Color.black,null,s.get(ServiceName,name));
     	RajState state = bb.getState();

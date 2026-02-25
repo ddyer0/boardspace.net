@@ -469,9 +469,9 @@ public class MicropulChip extends chip<MicropulChip>
 	public String contentsString() { return("#"+index); }
 
 	// draw this chip unrotated
-	public void drawChip(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
+	public void draw(Graphics gc,DrawingObject canvas,int SQUARESIZE,int cx,int cy,String label)
     {	if((index<JEWEL_OFFSET)&&(label==null)) { drawChip(gc,0,DrawingObject.getCanvas(canvas),SQUARESIZE,cx,cy,label); }
-    	else { super.drawChip(gc,canvas,SQUARESIZE,cx,cy,label); }
+    	else { super.draw(gc,canvas,SQUARESIZE,cx,cy,label); }
     }
 	
     private int dys[] = { -1, -1, 1, 1};
@@ -481,12 +481,12 @@ public class MicropulChip extends chip<MicropulChip>
     public void drawChip(Graphics gc,int rotation,exCanvas canvas,int SQUARESIZE,int cx,int cy,String label)
 	{ 
       if(gc!=null)
-	  {	if(rotation<0) { super.drawChip(gc,canvas,SQUARESIZE,cx,cy,label); return; } 
+	  {	if(rotation<0) { super.draw(gc,canvas,SQUARESIZE,cx,cy,label); return; } 
 		if(index>=JEWEL_OFFSET)
 	  		{ int step = SQUARESIZE/4;
 	  		  int xp = ((rotation==0) || (rotation==3)) ? cx-step : cx+step;
 	  		  int yp = (rotation>1) ? cy+step : cy-step;
-	  		  super.drawChip(gc,canvas,SQUARESIZE,xp,yp,label); 
+	  		  super.draw(gc,canvas,SQUARESIZE,xp,yp,label); 
 	  		  return; 
 	  		}
 		StockArt alt = Elements[square_index+(((index&3)+rotation)%4)];
@@ -505,17 +505,17 @@ public class MicropulChip extends chip<MicropulChip>
 	    	switch(firstx)
 	    	{
 	    	default: throw G.Error("not expecting %s",firstx);
-	    	case WM4P:	Elements[red_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);	// big white micropul with plus
-	    				Elements[plus_index].drawChip(gc,canvas,SQUARESIZE,cxq,cyq,null);
+	    	case WM4P:	Elements[red_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);	// big white micropul with plus
+	    				Elements[plus_index].draw(gc,canvas,SQUARESIZE,cxq,cyq,null);
 	    		break;
-	    	case BM4P:	Elements[blue_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);	// big black microput with plus
-						Elements[plus_index].drawChip(gc,canvas,SQUARESIZE,cxq,cyq,null);
+	    	case BM4P:	Elements[blue_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);	// big black microput with plus
+						Elements[plus_index].draw(gc,canvas,SQUARESIZE,cxq,cyq,null);
 	    		break;
-	    	case WM41:	Elements[red_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);	// big white micropul with catalyst
-						Elements[dot_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);
+	    	case WM41:	Elements[red_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);	// big white micropul with catalyst
+						Elements[dot_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);
 	    		break;
-	    	case BM41:	Elements[blue_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);	// big black micropul with catalyst    
-	    				Elements[dot_index].drawChip(gc,canvas,SQUARESIZE,cxp,cy,null);
+	    	case BM41:	Elements[blue_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);	// big black micropul with catalyst    
+	    				Elements[dot_index].draw(gc,canvas,SQUARESIZE,cxp,cy,null);
     			break;
 	    	}
 	    }
@@ -531,24 +531,24 @@ public class MicropulChip extends chip<MicropulChip>
 	    		switch(comp)
 	    		{
 	    		case x: break;
-	    		case WM: Elements[red_index].drawChip(gc,canvas,ss,xx,yy,null);
+	    		case WM: Elements[red_index].draw(gc,canvas,ss,xx,yy,null);
 	    			break;
-	    		case BM: Elements[blue_index].drawChip(gc,canvas,ss,xx,yy,null);
+	    		case BM: Elements[blue_index].draw(gc,canvas,ss,xx,yy,null);
 	    			break;
-	    		case C1: Elements[dot_index].drawChip(gc,canvas,s3,xx,yy,null);
+	    		case C1: Elements[dot_index].draw(gc,canvas,s3,xx,yy,null);
 	    			break;
 	    		case C2: 
 	    			// keep the double dots pointing parallel to the circumference as we rotate
 	    			if((ii&1)!=0)
-	    				{Elements[dot_index].drawChip(gc,canvas,s3,xx-dx/4,yy-dx/4,null);
-	    				 Elements[dot_index].drawChip(gc,canvas,s3,xx+dx/3,yy+dx/3,null);
+	    				{Elements[dot_index].draw(gc,canvas,s3,xx-dx/4,yy-dx/4,null);
+	    				 Elements[dot_index].draw(gc,canvas,s3,xx+dx/3,yy+dx/3,null);
 	    				}
 	    				else
-	    				{Elements[dot_index].drawChip(gc,canvas,s3,xx+dx/4,yy-dx/4,null);
-	    				 Elements[dot_index].drawChip(gc,canvas,s3,xx-dx/3,yy+dx/3,null);
+	    				{Elements[dot_index].draw(gc,canvas,s3,xx+dx/4,yy-dx/4,null);
+	    				 Elements[dot_index].draw(gc,canvas,s3,xx-dx/3,yy+dx/3,null);
 	    				}
 	    			break;
-	    		case PL: Elements[plus_index].drawChip(gc,canvas,s3,xx,yy,null);
+	    		case PL: Elements[plus_index].draw(gc,canvas,s3,xx,yy,null);
 	    			break;
 				default:
 					break;

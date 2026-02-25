@@ -300,7 +300,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	YChip.getChip(obj).drawChip(g,this,(int)CELLSIZE, xp, yp, null);
+    	YChip.getChip(obj).draw(g,this,(int)CELLSIZE, xp, yp, null);
     }
 
 
@@ -381,7 +381,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
             int xpos = G.Left(brect) + gb.cellToX(cell);
             if(cell.drawChip(gc,this,drawhighlight ? highlight : null,CS,xpos,ypos,null))
             {	
-            	StockArt.SmallO.drawChip(gc,this,(int)(CS*2),xpos,ypos,null);   
+            	StockArt.SmallO.draw(gc,this,(int)(CS*2),xpos,ypos,null);   
             }
             /* verify the edge mask of board cells
             G.setColor(gc, Color.white);

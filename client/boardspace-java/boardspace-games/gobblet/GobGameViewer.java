@@ -289,14 +289,14 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
         		int cx = G.Left(r)+cellX;
         		int cy = top;
         		pl.rotateCurrentCenter(thisCell,cx,cy);
-        		topCup.drawChip(gc,this,size,cx,cy,null);
+        		topCup.draw(gc,this,size,cx,cy,null);
   	       		}
         	}
         }
     }
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {	GobCup sprite = GobCup.getCup(obj);
-    	sprite.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	sprite.draw(g,this,SQUARESIZE,xp,yp,null);
     }
  
     Image scaled = null;
@@ -365,7 +365,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
                 if(cup!=null)
                 {	int liftYval = (!use_perspective()&&dolift)?((liftSteps*SQUARESIZE)/(2*liftdiv))*cindex : 0;
                 	int liftXval = (dolift&&use_perspective())?((liftSteps*SQUARESIZE)/(2*liftdiv))*cindex : 0;
-                	cup.drawChip(gc,this,SQUARESIZE,xpos+liftXval,ypos+liftYval,null);
+                	cup.draw(gc,this,SQUARESIZE,xpos+liftXval,ypos+liftYval,null);
                   }}
               boolean hitpoint = (highlight!=null)
 	  			&& gb.LegalToHitBoard(cell)

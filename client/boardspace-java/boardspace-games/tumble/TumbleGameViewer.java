@@ -262,7 +262,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
      }
 
     public void drawSprite(Graphics g,int idx,int xp,int yp)
-    {	TumbleChip.getChip(idx).drawChip(g,this,SQUARESIZE,xp,yp,null);
+    {	TumbleChip.getChip(idx).draw(g,this,SQUARESIZE,xp,yp,null);
     }
 
 
@@ -343,8 +343,8 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     	int w = (int)(0.8*G.Width(r));
     	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	reverse.drawChip(gc,this,w,cx,cy-w/4,null);
-    	king.drawChip(gc,this,w,cx,cy+w/4 ,null);
+    	reverse.draw(gc,this,w,cx,cy-w/4,null);
+    	king.draw(gc,this,w,cx,cy+w/4 ,null);
     	HitPoint.setHelpText(highlight,r,TumbleId.ReverseViewButton, s.get(ReverseViewExplanation));
      }  
     public void drawAuxControls(Graphics gc,HitPoint highlight)

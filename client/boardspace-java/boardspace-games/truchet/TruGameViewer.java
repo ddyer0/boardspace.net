@@ -280,7 +280,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
                   if(gc!=null)
                 	{
                 	 GC.setFont(gc,largeBoldFont());
-                 	 thisChip.drawChip(gc,this,cellW,cx-cellW/3 ,cy+cellW/3,
+                 	 thisChip.draw(gc,this,cellW,cx-cellW/3 ,cy+cellW/3,
                 			 score ? ""+b.enemyBasesOccupied(forPlayer)+"-"+b.chips_on_board[forPlayer]
                 					: "");
                  	GC.setFont(gc,standardPlainFont());
@@ -293,7 +293,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
 
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	TruChip chip = TruChip.getChip(idx);
-    	chip.drawChip(g,this,SQUARESIZE,xp-SQUARESIZE/3,yp+SQUARESIZE/3,null);
+    	chip.draw(g,this,SQUARESIZE,xp-SQUARESIZE/3,yp+SQUARESIZE/3,null);
     }
 
 
@@ -372,7 +372,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
                 {	
                 	if(gc!=null) 
                 		{
-                		cup.drawChip(gc,this,SQUARESIZE,xpos,ypos, null);
+                		cup.draw(gc,this,SQUARESIZE,xpos,ypos, null);
                 		//this puts the region size in each cell of each region
                 		//String msg = (cell!=null) ? ""+cell.region_size : null;
                 		//G.Text(gc,false,xpos+SQUARESIZE/3,ypos-SQUARESIZE,SQUARESIZE,SQUARESIZE,Color.yellow,null,msg);
@@ -796,7 +796,7 @@ private void playSounds(TruMovespec m)
     	int xx = x-cellSize;
     	int yy = y+cellSize;
     	if(cell.lastFlipped>0) {
-    	StockArt.SwingCW.drawChip(gc,this,cellSize,xx,yy,null);
+    	StockArt.SwingCW.draw(gc,this,cellSize,xx,yy,null);
     	}
     	else
     	{

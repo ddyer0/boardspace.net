@@ -239,7 +239,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
 
     public void drawSprite(Graphics g,int idx,int xp,int yp)
     {	KubaChip chip = KubaChip.getChip(idx);
-    	chip.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	chip.draw(g,this,SQUARESIZE,xp,yp,null);
     }
 
 
@@ -271,7 +271,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     }
     private void drawBall(Graphics gc,KubaCell cell,int xpos,int ypos)
     {
-         cell.drawChip(gc, this, SQUARESIZE, xpos, ypos, null);
+         cell.draw(gc, this, SQUARESIZE, xpos, ypos, null);
     }
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, KubaBoard gb, Rectangle brect, HitPoint highlight)
@@ -301,7 +301,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
             drawBall(gc,cell,xpos,ypos);
         	 if((gc!=null) && (orig!=null))
         	 {	// mark the path back
-        		 StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,orig);
+        		 StockArt.SmallO.draw(gc,this,SQUARESIZE,xpos,ypos,orig);
         	 }
             if(gb.LegalToHitBoard(cell)
             		&& cell.closestPointToCell(highlight, SQUARESIZE,xpos, ypos)

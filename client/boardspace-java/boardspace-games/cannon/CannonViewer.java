@@ -237,8 +237,8 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     	int w = G.Width(r);
     	int t = G.Top(r);
     	int cx = G.centerX(r);
-    	reverse.drawChip(gc,this,w,cx,t+w/3,null);
-    	king.drawChip(gc,this,w,cx,t+w,null);
+    	reverse.draw(gc,this,w,cx,t+w/3,null);
+    	king.draw(gc,this,w,cx,t+w,null);
     	HitPoint.setHelpText(highlight,r,CannonId.ReverseViewButton,s.get(ReverseViewExplanation));
  
      } 
@@ -283,7 +283,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	CannonChip ch = CannonChip.getChip(obj);// Tiles have zero offset
-    	ch.drawChip(g,this,CELLSIZE,xp,yp,null);
+    	ch.draw(g,this,CELLSIZE,xp,yp,null);
      }
 
      //** this is used by the game controller to supply entertainment strings to the lobby */
@@ -348,10 +348,10 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
             if(shot) { cup = gb.captured; } 
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
              if((cell.activeAnimationHeight()==0) && (cup!=null))
-                {	cup.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                {	cup.draw(gc,this,CELLSIZE,xpos,ypos,null);
                 }
              if(shot || (dests.get(cell)!=null))
-             {	StockArt.SmallX.drawChip(gc,this,CELLSIZE*(shot?2:1),xpos,ypos,null);
+             {	StockArt.SmallX.draw(gc,this,CELLSIZE*(shot?2:1),xpos,ypos,null);
              }
               if((highlight!=null)
             		&& gb.LegalToHitBoard(cell)

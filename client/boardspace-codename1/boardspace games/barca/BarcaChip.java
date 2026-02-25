@@ -16,7 +16,6 @@
  */
 package barca;
 
-import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
 import barca.BarcaConstants.BarcaId;
@@ -112,15 +111,6 @@ public class BarcaChip extends chip<BarcaChip>
 		case 5: break;	// 5 is alternate+never rotate
 		}
 		return(rotation);
-	}
-	//
-	// alternate chipsets for playtable.  The normal presentation is ok for side by side play
-	// slightly disconcerting for face to face play.  This supports two alternates, one
-	// with white pieces inverted, one with pieces facing left and right
-	//
-	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
-	{	
-		drawRotatedChip(gc,canvas,getChipRotation(canvas),SQUARESIZE,xscale,cx,cy,label);
 	}
 
 
