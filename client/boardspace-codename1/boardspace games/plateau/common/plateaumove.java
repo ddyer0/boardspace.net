@@ -41,7 +41,8 @@ public class plateaumove extends commonMove implements PlateauConstants
     		"pick", MOVE_PICK,
     		"drop", MOVE_DROP,
     		"rflip",ROBOT_FLIP,
-    		"rpick",ROBOT_PICK
+    		"rpick",ROBOT_PICK,
+    		"rdelay",ROBOT_DELAY
     		);
 
     }
@@ -138,6 +139,12 @@ public class plateaumove extends commonMove implements PlateauConstants
 		pieces = ""+pick;
 	}
 
+	public plateaumove(int opc, int i, int whoseTurn) {
+		op = opc;
+		player = whoseTurn;
+		level = i;
+	}
+
 	/* true of this other move is the same as this one */
     public boolean Same_Move_P(commonMove o)
     {
@@ -186,6 +193,9 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         switch (op)
         {
+        case ROBOT_DELAY:
+        	level = msg.intToken();
+        	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         	
@@ -322,6 +332,9 @@ public class plateaumove extends commonMove implements PlateauConstants
 
         case MOVE_EXCHANGE:
         	return opname + pieces;
+        
+        case ROBOT_DELAY:
+        	return opname+level;
         	
         default:
         	return(opname);

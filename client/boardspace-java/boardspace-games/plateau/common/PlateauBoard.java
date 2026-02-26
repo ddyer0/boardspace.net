@@ -22,6 +22,7 @@
 package plateau.common;
 
 import java.awt.*;
+import java.util.Hashtable;
 
 import lib.Graphics;
 import lib.AR;
@@ -2823,7 +2824,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			return randomOrangeFinalMoves(who,cell,dx,-direction);	
 		}
     }
-
+    
     private boolean addNormalMoves(CommonMoveStack all,int who,pstack from,int mindistance,int maxdistance,int dx,int dy,piece top,pstack moving)
     {	int movingHeight = moving.size();
     	int ox = from.colNum();
@@ -3550,13 +3551,14 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		return(some);
 	}
     
- private void buildInitialMoves(CommonMoveStack all,int who,
+ private void buildInitialMoves(CommonMoveStack all,Hashtable<pstack,pstack>covered,
+		 	int who,
     		piece first,String firstTopColor,String firstBottomColor,
     		piece second,String secondTopColor,String secondBottomColor)
     {		
     	for(pstack cell = allCells; cell!=null; cell=cell.next)
     		{
-    		if((cell.size()==0) && isEdgeCell(cell))
+    		if((cell.size()==0) && isEdgeCell(cell) && covered.get(cell)==null)
     		{	
     			all.push(new plateaumove( cell.locus(),
     										100, 
@@ -3567,10 +3569,73 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		}
     	    	
     	}
-    }	
+    }
+ 
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack from,int dx,int dy,int movingHeight)
+{
+	int ox = from.colNum();
+	int oy = nrows-from.rowNum()-1;
+	boolean done = false;
+	for(int distance = 1; !done && distance<movingHeight; distance++)
+	{
+		int x = ox + distance*dx;
+		int y = oy + distance*dy;
+		if(validBoardPos(x,y))
+    		{	pstack target = getBoardXY(x,y);
+    			covered.put(target,target);
+    		}
+		else {	done = true;
+		}
+	}
+}
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int [][]directions,int distance)
+{
+		for(int dir[] : directions)
+		{
+			addCoveredSpaces(covered,start,dir[0],dir[1],distance);
+		}
+}
+	
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int who)
+{
+	int own = start.topOwner();
+	if(own==(who^1))
+	{
+		Face top = start.realTopColor();
+		switch(top)
+		{
+		default:
+		case Orange: break;	// don't worry about twisters
+		case Blank: break;
+		case Red:
+			addCoveredSpaces(covered,start,orthogonalDirections,3);
+			break;
+		case Blue:
+			addCoveredSpaces(covered,start,diagonalDirections,3);
+			break;
+			
+		}
+	}
+}
+//
+// build spaces that are directly covered by red or blue tops
+// this is a big hammer to prevent playing the initial stack
+// where it can just be captured.
+//
+private Hashtable<pstack,pstack> buildCoveredSpaces(int whoseTurn)
+{
+	Hashtable<pstack,pstack>covered = new Hashtable<pstack,pstack>();
+	for(int lim=cellArray.length-1; lim>=0; lim--)
+	{
+		pstack p = cellArray[lim];
+		addCoveredSpaces(covered,p,whoseTurn);
+	}
+	return covered;
+}
 private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 {	pstack pieces[] = rack[whoseTurn];
 	int ntypes = pieces.length;
+	Hashtable<pstack,pstack> covered = buildCoveredSpaces(whoseTurn);
 	for(int i1=0;i1<ntypes;i1++)
 	{	pstack firstPiece = pieces[i1];
 		piece firstTop = firstPiece.topElement();
@@ -3591,20 +3656,20 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 				String secondBottomColor = secondTop.realBottomColorString();
 				if(firstTopFace!=Face.Orange)
 				{
-				buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+				buildInitialMoves(all,covered,whoseTurn,firstTop,firstTopColor,firstBottomColor,
 							secondTop,secondTopColor,secondBottomColor);
 				if(!secondTop.isMonoColor())
-				{	buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+				{	buildInitialMoves(all,covered,whoseTurn,firstTop,firstTopColor,firstBottomColor,
 						secondTop,secondBottomColor,secondTopColor);
 				}
 				}
 				if(!firstTop.isMonoColor() && (firstBottomFace!=Face.Orange))
 				{
-					buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+					buildInitialMoves(all,covered,whoseTurn,firstTop,firstBottomColor,firstTopColor,
 							secondTop,secondTopColor,secondBottomColor);
 					if(!secondTop.isMonoColor())
 					{
-						buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+						buildInitialMoves(all,covered,whoseTurn,firstTop,firstBottomColor,firstTopColor,
     							secondTop,secondBottomColor,secondTopColor);
 					}
 				}

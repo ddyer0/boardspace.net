@@ -604,27 +604,6 @@ public class pstack implements PlateauConstants, PlacementProvider, Drawable
         return (false);
     }
     
- 
-    public int hashCode()
-    {	int mysize = size();
-    	int v = 0;
-        for (int i = 0; i < mysize; i++)
-        {
-            piece mypiece = elementAt(i);
-            v ^= mypiece.hashCode();
-        }
-        return(v);
-    }
-    // true if the other is a stack and is a copy of this stack
-    public boolean equals(Object other)
-    {
-        if (other instanceof pstack)
-        {
-            return (equals((pstack) other));
-        }
-
-        return (false);
-    }
 
 
     // make us into a copy of from stack

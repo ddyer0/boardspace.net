@@ -60,6 +60,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	private PlateauState unresign;
 	private PlateauState board_state;
 	public int placementIndex = -1;
+	public boolean useDelays = false;
+	public int delay_count = 0;
 	public PlateauState getState() {return(board_state); }
 	public void setState(PlateauState st) 
 	{ 	unresign = (st==PlateauState.RESIGN_STATE)?board_state:null;
@@ -734,6 +736,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         board_state = from_b.board_state;
         turnsSinceCapture = from_b.turnsSinceCapture;
         unresign = from_b.unresign;
+        useDelays = from_b.useDelays;
+        delay_count = from_b.delay_count;
         if(G.debug()) { sameboard(from_b); }
         checkStacks();     
     }
@@ -1221,6 +1225,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         m.startingState = board_state;
         switch (m.op)
         {
+        case ROBOT_DELAY:
+        	delay_count = m.level;
+        	break;
         case MOVE_FLIP:
         {
            piece mov = pieces[m.pick];
@@ -2464,6 +2471,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	public void initRobotValues(PlateauPlay plateauPlay) 
 	{
 		robotBoard = true;
+		useDelays = plateauPlay.useDelays;
 	}
 	public boolean winForPlayerNow(int i) 
 	{
@@ -2496,7 +2504,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	}
     	if(canBeDone)
     	{
- 			addDoneMove(all,whoseTurn);
+ 			addOptionalDone(all);
     	}
     }
     
@@ -2525,7 +2533,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     		}}
     		}
     	boolean canBeDone = (board_state==PlateauState.CAPTIVE_SHUFFLE_STATE);
-    	if(canBeDone) { return new plateaumove(MOVE_DONE,who); }
+    	if(canBeDone) { return getOptionalDone(); }
     	return null;
     }
     //
@@ -3107,7 +3115,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	boolean canStay = top!=Face.Blank && top!=Face.Orange;
     	int offset = r.nextInt(takeoff+(canStay ? 1 : 0));
     	if(offset==takeoff)  { 
-    		return new plateaumove(MOVE_DONE,who);
+    		return getOptionalDone();
     	}
     	int first = sz-takeoff;
     	pstack mov = pickedStack[moveStep-1];
@@ -3341,6 +3349,19 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
      	return randomDropMove(r,p,top,bottom,who);
      }
 
+    private commonMove getOptionalDone()
+    {	if(useDelays)
+    	{
+    	if(delay_count==0) { return new plateaumove(ROBOT_DELAY,1,whoseTurn); }
+    	delay_count--;
+    	if(delay_count<=0) { return new plateaumove(MOVE_DONE,whoseTurn); }
+    	}
+    	return new plateaumove(MOVE_DONE,whoseTurn);
+    }
+    private void addOptionalDone(CommonMoveStack all)
+    {
+    	all.push(getOptionalDone());
+    }
     private void addDoneMove(CommonMoveStack all,int who)
     {
     	all.push(new plateaumove(MOVE_DONE,who));
@@ -3531,13 +3552,14 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		return(some);
 	}
     
- private void buildInitialMoves(CommonMoveStack all,int who,
+ private void buildInitialMoves(CommonMoveStack all,Hashtable<pstack,pstack>covered,
+		 	int who,
     		piece first,String firstTopColor,String firstBottomColor,
     		piece second,String secondTopColor,String secondBottomColor)
     {		
     	for(pstack cell = allCells; cell!=null; cell=cell.next)
     		{
-    		if((cell.size()==0) && isEdgeCell(cell))
+    		if((cell.size()==0) && isEdgeCell(cell) && covered.get(cell)==null)
     		{	
     			all.push(new plateaumove( cell.locus(),
     										100, 
@@ -3549,9 +3571,72 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	    	
     	}
     }	
+ 
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack from,int dx,int dy,int movingHeight)
+{
+	int ox = from.colNum();
+	int oy = nrows-from.rowNum()-1;
+	boolean done = false;
+	for(int distance = 1; !done && distance<movingHeight; distance++)
+	{
+		int x = ox + distance*dx;
+		int y = oy + distance*dy;
+		if(validBoardPos(x,y))
+    		{	pstack target = getBoardXY(x,y);
+    			covered.put(target,target);
+    		}
+		else {	done = true;
+		}
+	}
+}
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int [][]directions,int distance)
+{
+		for(int dir[] : directions)
+		{
+			addCoveredSpaces(covered,start,dir[0],dir[1],distance);
+		}
+}
+	
+private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int who)
+{
+	int own = start.topOwner();
+	if(own==(who^1))
+	{
+		Face top = start.realTopColor();
+		switch(top)
+		{
+		default:
+		case Orange: break;	// don't worry about twisters
+		case Blank: break;
+		case Red:
+			addCoveredSpaces(covered,start,orthogonalDirections,3);
+			break;
+		case Blue:
+			addCoveredSpaces(covered,start,diagonalDirections,3);
+			break;
+			
+		}
+	}
+}
+//
+// build spaces that are directly covered by red or blue tops
+// this is a big hammer to prevent playing the initial stack
+// where it can just be captured.
+//
+private Hashtable<pstack,pstack> buildCoveredSpaces(int whoseTurn)
+{
+	Hashtable<pstack,pstack>covered = new Hashtable<pstack,pstack>();
+	for(int lim=cellArray.length-1; lim>=0; lim--)
+	{
+		pstack p = cellArray[lim];
+		addCoveredSpaces(covered,p,whoseTurn);
+	}
+	return covered;
+}
 private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 {	pstack pieces[] = rack[whoseTurn];
 	int ntypes = pieces.length;
+	Hashtable<pstack,pstack> covered = buildCoveredSpaces(whoseTurn);
 	for(int i1=0;i1<ntypes;i1++)
 	{	pstack firstPiece = pieces[i1];
 		piece firstTop = firstPiece.topElement();
@@ -3572,20 +3657,20 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 				String secondBottomColor = secondTop.realBottomColorString();
 				if(firstTopFace!=Face.Orange)
 				{
-				buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+				buildInitialMoves(all,covered,whoseTurn,firstTop,firstTopColor,firstBottomColor,
 							secondTop,secondTopColor,secondBottomColor);
 				if(!secondTop.isMonoColor())
-				{	buildInitialMoves(all,whoseTurn,firstTop,firstTopColor,firstBottomColor,
+				{	buildInitialMoves(all,covered,whoseTurn,firstTop,firstTopColor,firstBottomColor,
 						secondTop,secondBottomColor,secondTopColor);
 				}
 				}
 				if(!firstTop.isMonoColor() && (firstBottomFace!=Face.Orange))
 				{
-					buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+					buildInitialMoves(all,covered,whoseTurn,firstTop,firstBottomColor,firstTopColor,
 							secondTop,secondTopColor,secondBottomColor);
 					if(!secondTop.isMonoColor())
 					{
-						buildInitialMoves(all,whoseTurn,firstTop,firstBottomColor,firstTopColor,
+						buildInitialMoves(all,covered,whoseTurn,firstTop,firstBottomColor,firstTopColor,
     							secondTop,secondBottomColor,secondTopColor);
 					}
 				}
@@ -3649,7 +3734,7 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			break;
 		case PLAY_DONE_STATE:
 		case PLAY_CAPTURE_STATE:
-			addDoneMove(all,whoseTurn);
+			addOptionalDone(all);
 			//$FALL-THROUGH$
 		case PLAY_UNDONE_STATE:
 			addIntermediatePickMoves(all,movingStackOrigin[moveStep],whoseTurn);
@@ -3676,7 +3761,7 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			addInitialBoardPickMoves(all,whoseTurn);
 			if(all.size()==0)
 			{	if(losing!=null) { all.push(new plateaumove(MOVE_RESIGN,whoseTurn)); }
-				else { 	addDoneMove(all,whoseTurn); }
+				else { 	addOptionalDone(all); }
 			}}
 			break;
 
@@ -3750,11 +3835,11 @@ private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 			return m;
 			}
 		case PLAY_CAPTURE_STATE:
-			if(r.nextDouble()<0.75) { return new plateaumove(MOVE_DONE,whoseTurn); }	
+			if(r.nextDouble()<0.75) { return getOptionalDone(); }	
 			return randomIntermediatePickMove(r,movingStackOrigin[moveStep],whoseTurn);
 			
 		case PLAY_DONE_STATE:	
-			if(r.nextDouble()<0.2) { return new plateaumove(MOVE_DONE,whoseTurn); }	
+			if(r.nextDouble()<0.2) { return getOptionalDone(); }	
 			return randomIntermediatePickMove(r,movingStackOrigin[moveStep],whoseTurn);
 			
 		case PLAY_UNDONE_STATE:

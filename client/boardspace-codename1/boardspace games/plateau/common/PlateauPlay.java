@@ -71,6 +71,7 @@ public class PlateauPlay
     private int boardSearchLevel = 1;				// the current search depth
     public boolean randomize = false;
     public boolean sort = false;
+    public boolean useDelays = false;
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
@@ -98,6 +99,7 @@ public class PlateauPlay
     	cc.randomize = randomize;
     	cc.sort = sort;
     	cc.robotPlayer = robotPlayer;
+    	cc.useDelays = useDelays;
     	// consider this carefully, normally if the board knows about the robot,
     	// it should be the robot that runs it, not the master robot
     	cc.board.initRobotValues(cc);
@@ -359,7 +361,7 @@ public class PlateauPlay
         	MONTEBOT = DEPLOY_MONTEBOT; break;
         case SMARTBOT_LEVEL:
         	sequence = false;
-        	randomize = false;
+        	useDelays = true;
         	MONTEBOT = true;
         	break;
 

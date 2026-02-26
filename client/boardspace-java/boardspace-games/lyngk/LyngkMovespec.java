@@ -48,18 +48,7 @@ public class LyngkMovespec extends commonMove
         	"Claim", MOVE_FROM_TO,
         	"Move", MOVE_BOARD_BOARD);
   }
-    //
-    // adding these makes the move specs use Same_Move_P instead of == in hash tables
-    //needed when doing chi square testing of random move generation, but possibly
-    //hazardous to keep in generally.
-    //public int hashCode()
-    //{
-    //	return(to_row<<12+to_col<<18+player<<24+op<<25);
-    //}
-    //public boolean equals(Object a)
-    //{
-    //	return( (a instanceof commonMove) && Same_Move_P((commonMove)a)); 
-    //}
+
     //
     // variables to identify the move
     LyngkId source; // where from/to

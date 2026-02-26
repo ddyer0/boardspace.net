@@ -37,18 +37,7 @@ public class XehMovespec extends commonMove implements XehConstants
         D.putInt("Drop", MOVE_DROP);
         D.putInt("Dropb", MOVE_DROPB);
   }
-    //
-    // adding these makes the move specs use Same_Move_P instead of == in hash tables
-    //needed when doing chi square testing of random move generation, but possibly
-    //hazardous to keep in generally.
-    //public int hashCode()
-    //{
-    //	return(to_row<<12+to_col<<18+player<<24+op<<25);
-    //}
-    //public boolean equals(Object a)
-    //{
-    //	return( (a instanceof commonMove) && Same_Move_P((commonMove)a)); 
-    //}
+
     //
     // variables to identify the move
     XehId source; // where from/to

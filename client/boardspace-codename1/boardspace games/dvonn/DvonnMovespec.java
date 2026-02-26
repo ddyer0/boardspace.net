@@ -42,16 +42,7 @@ public class DvonnMovespec extends commonMove implements DvonnConstants
         	"Dropb", MOVE_DROPB,
 			"Move",MOVE_BOARD_BOARD);
     }
-    //needed when doing chi square testing of random move generation, but possibly
-    //hazardous to keep in generally.
-    //public int hashCode()
-    //{
-    //	return(from_row+from_col<<6+to_row<<12+to_col<<18+player<<24+op<<25);
-    //}
-    //public boolean equals(Object a)
-    //{
-    //	return( (a instanceof commonMove) && Same_Move_P((commonMove)a)); 
-    //}
+
     static String sourceName(int n)
     { 	return(D.findUnique(n));
     }

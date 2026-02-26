@@ -50,18 +50,7 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
 		D.putInt("Gameover",MOVE_GAMEOVER);
 		D.putInt("AllDone",MOVE_ALLDONE);
    }
-   //
-   // removed these, 3/2015.  They messed up the presentation of moves in game logs.
-   // I think they were obsoleted by the "liteMove" implementation in UniversePlay
-   //
-   // public int hashCode()
-   // {
-   // 	return((to_row<<12)+(to_col<<18)+(player<<24)+(op<<25)+(from_col<<4)+(from_row+rotation<<14));
-   // }
-   // public boolean equals(Object a)
-   // {
-   // 	return( (a instanceof commonMove) && Same_Move_P((commonMove)a)); 
-   // }
+
     
 	char from_col='A'; //for from-to moves, the source column
 	int from_row; // for from-to moves, the source row
