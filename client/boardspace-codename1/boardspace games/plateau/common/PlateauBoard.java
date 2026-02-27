@@ -23,6 +23,8 @@ package plateau.common;
 
 import lib.Graphics;
 
+import java.util.Hashtable;
+
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -2548,10 +2550,11 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
     
     // onboarding a piece
-    private void addBoardDropMoves(CommonMoveStack all,pstack cell,int who)
+    private boolean addBoardDropMoves(CommonMoveStack all,Hashtable<pstack,Integer>covered,pstack cell,int who)
     {	
 		int opponent = who^1;
-		if(cell.topOwner()!=opponent)
+		boolean some = false;
+		if(cell.topOwner()!=opponent && (getCovered(covered,cell)<=0))
 		{
 		int sz = cell.size();
 		pstack st = movingStack[moveStep];
@@ -2559,28 +2562,43 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		{
 			String str = "Onboard "+cell.locus()+" "+sz +" "+st.allRealColors()+" "+st.pieces();
 			all.push(new plateaumove(str,who));
+			some = true;
 			sz--;
 			if(sz>=0) { 
 				piece next = cell.elementAt(sz);
 				if(next.owner!=who) { sz = -1; }
 			}
 		}}
+		return some;
     }
     // onboarding a piece
-    private void addBoardDropMoves(CommonMoveStack all,int who)
+    private boolean addBoardDropMoves(CommonMoveStack all,int who)
     {	pstack loc = winningDropLocation(who);
+    	boolean some = false;
     	if(loc!=null)
     	{
         	pstack st = movingStack[moveStep];
     		winningMove = new plateaumove("Onboard " + loc.locus()+" "+DO_NOT_CAPTURE+" "+st.allRealColors()+" "+st.pieces(),who);
+    		some = true;
     	}
     	else
     	{
+    	Hashtable<pstack,Integer>covered = buildCoveredSpaces(who,true);
     	for(int lim=cellArray.length-1; lim>=0; lim--)
     	{
     		pstack cell = cellArray[lim];
-    		addBoardDropMoves(all,cell,who);
-    	}}
+    		some |= addBoardDropMoves(all,covered,cell,who);
+    	}
+    	if(!some)
+    		{	covered.clear();
+    	for(int lim=cellArray.length-1; lim>=0; lim--)
+    	{
+    		pstack cell = cellArray[lim];
+	    		some |= addBoardDropMoves(all,covered,cell,who);
+	    		}
+    		}
+    	}
+    	return some;
     }
     // return a temporary stack which contains all the
     // captives we have available.
@@ -3314,7 +3332,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	return null;
     }
     
-    private commonMove randomDropMove(Random r,piece p,Face top,Face bottom,int who)
+    private commonMove randomDropMove(Random r,Hashtable<pstack,Integer>covered,piece p,Face top,Face bottom,int who)
     {	
     	commonMove m = winningDropMove(p,top,bottom,who);
     	if(m!=null) { return m; }
@@ -3327,7 +3345,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 		{
 			pstack cell = cellArray[(idx+first)%last];
 			
-	  		if(cell.topOwner()!=opponent)
+	  		if(cell.topOwner()!=opponent && (getCovered(covered,cell)<=0))
     		{
     		int height = cell.size();
  			String pnum = ""+p.piecenumber;
@@ -3339,14 +3357,20 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			return new plateaumove(loc,height-1,colors,colors,pnum,who);
     		}
     	}
-		throw G.Error("there must be a drop move");
+		return null;
     }
     private commonMove randomDropMove(Random r,int who)
     {	pstack ps = movingStack();
     	piece p = ps.topElement();
     	Face top = p.realTopColor();
     	Face bottom = p.realBottomColor();
-     	return randomDropMove(r,p,top,bottom,who);
+    	Hashtable<pstack,Integer>covered = buildCoveredSpaces(who,true);
+     	commonMove m = randomDropMove(r,covered,p,top,bottom,who);
+     	if(m!=null) { 
+     		covered.clear();
+     		m = randomDropMove(r,covered,p,top,bottom,who);
+     	}
+     	return m;
      }
 
     private commonMove getOptionalDone()
@@ -3368,11 +3392,10 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     }
 	
 	private void buildOnboardPickMoves(CommonMoveStack all,piece p,Face top, Face bottom,int who)
-	{	String colors = top.shortName+bottom.shortName;
-		if(winningMove!=null) { return; }
+	{
+		String colors = top.shortName+bottom.shortName;
 		plateaumove topMove = new plateaumove(MOVE_RACKPICK,p,colors,who);
 		all.push(topMove);		// on top
-	
 	}  
 	private plateaumove winningOnboardMove(pstack win,int who)
 	{
@@ -3399,7 +3422,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 	}
 	// pick from rack to deploy to the board
     private void addOnboardPickMoves(CommonMoveStack all,int who)
-    {	pstack pieces[] = rack[who];
+    {
+    	if(winningMove!=null) { return; }
+    	pstack pieces[] = rack[who];
     	int typeMap = 0;
     	for(pstack stack : pieces)
     	{	
@@ -3551,15 +3576,19 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 			}
 		return(some);
 	}
-    
- private void buildInitialMoves(CommonMoveStack all,Hashtable<pstack,pstack>covered,
+ public int getCovered(Hashtable<pstack,Integer>covered,pstack key)
+ {
+	 Integer c = covered.get(key);
+	 return c==null ? 0 : c;
+ }
+ private void buildInitialMoves(CommonMoveStack all,Hashtable<pstack,Integer>covered,
 		 	int who,
     		piece first,String firstTopColor,String firstBottomColor,
     		piece second,String secondTopColor,String secondBottomColor)
     {		
     	for(pstack cell = allCells; cell!=null; cell=cell.next)
     		{
-    		if((cell.size()==0) && isEdgeCell(cell) && covered.get(cell)==null)
+    		if((cell.size()==0) && isEdgeCell(cell) && getCovered(covered,cell)<=0)
     		{	
     			all.push(new plateaumove( cell.locus(),
     										100, 
@@ -3572,7 +3601,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     	}
     }	
  
-private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack from,int dx,int dy,int movingHeight)
+private void addCoveredSpaces(Hashtable<pstack,Integer>covered,int increment,pstack from,int dx,int dy,int movingHeight)
 {
 	int ox = from.colNum();
 	int oy = nrows-from.rowNum()-1;
@@ -3583,21 +3612,22 @@ private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack from,int dx
 		int y = oy + distance*dy;
 		if(validBoardPos(x,y))
     		{	pstack target = getBoardXY(x,y);
-    			covered.put(target,target);
+    			int next = getCovered(covered,target)+increment;
+    			covered.put(target,next);
     		}
 		else {	done = true;
 		}
 	}
 }
-private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int [][]directions,int distance)
+private void addCoveredSpaces(Hashtable<pstack,Integer>covered,int increment,pstack start,int [][]directions,int distance)
 {
 		for(int dir[] : directions)
 		{
-			addCoveredSpaces(covered,start,dir[0],dir[1],distance);
+			addCoveredSpaces(covered,increment,start,dir[0],dir[1],distance);
 		}
 }
 	
-private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int who)
+private void addCoveredSpaces(Hashtable<pstack,Integer>covered,int increment,pstack start,int distance,int who)
 {
 	int own = start.topOwner();
 	if(own==(who^1))
@@ -3609,10 +3639,10 @@ private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int w
 		case Orange: break;	// don't worry about twisters
 		case Blank: break;
 		case Red:
-			addCoveredSpaces(covered,start,orthogonalDirections,3);
+			addCoveredSpaces(covered,increment,start,orthogonalDirections,distance);
 			break;
 		case Blue:
-			addCoveredSpaces(covered,start,diagonalDirections,3);
+			addCoveredSpaces(covered,increment,start,diagonalDirections,distance);
 			break;
 			
 		}
@@ -3623,20 +3653,23 @@ private void addCoveredSpaces(Hashtable<pstack,pstack>covered,pstack start,int w
 // this is a big hammer to prevent playing the initial stack
 // where it can just be captured.
 //
-private Hashtable<pstack,pstack> buildCoveredSpaces(int whoseTurn)
+private Hashtable<pstack,Integer> buildCoveredSpaces(int whoseTurn,boolean net)
 {
-	Hashtable<pstack,pstack>covered = new Hashtable<pstack,pstack>();
+	Hashtable<pstack,Integer>covered = new Hashtable<pstack,Integer>();
 	for(int lim=cellArray.length-1; lim>=0; lim--)
 	{
 		pstack p = cellArray[lim];
-		addCoveredSpaces(covered,p,whoseTurn);
+		// initial stacks use distance 3 so adding one more to the attacking stack of 2 is avoided
+		int distance = net ? p.takeOffHeight() : 3;
+		addCoveredSpaces(covered,1,p,distance,whoseTurn);
+		if(net) { addCoveredSpaces(covered,-1,p,distance,whoseTurn^1); }
 	}
 	return covered;
 }
 private void addInitialMoves(CommonMoveStack all,int whoseTurn)
 {	pstack pieces[] = rack[whoseTurn];
 	int ntypes = pieces.length;
-	Hashtable<pstack,pstack> covered = buildCoveredSpaces(whoseTurn);
+	Hashtable<pstack,Integer> covered = buildCoveredSpaces(whoseTurn,false);
 	for(int i1=0;i1<ntypes;i1++)
 	{	pstack firstPiece = pieces[i1];
 		piece firstTop = firstPiece.topElement();

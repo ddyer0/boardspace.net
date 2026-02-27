@@ -19,7 +19,6 @@ package bugs;
 import lib.CellId;
 import lib.CompareTo;
 import lib.DrawableImageStack;
-import lib.DrawingObject;
 import lib.EnumMenu;
 import lib.G;
 import lib.GC;

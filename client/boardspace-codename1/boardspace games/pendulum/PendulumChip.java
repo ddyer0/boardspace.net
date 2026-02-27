@@ -17,11 +17,9 @@
 package pendulum;
 
 import lib.AR;
-import lib.CellId;
 import lib.DrawableImageStack;
 import lib.G;
 import lib.Graphics;
-import lib.HitPoint;
 import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
