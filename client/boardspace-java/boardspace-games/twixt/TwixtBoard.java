@@ -39,6 +39,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 	private boolean ghost = false;
 	public boolean robotBoard = false;
 	public int boardSize = 19;
+	public boolean perspectiveView = false;
 	private StateStack robotState = new StateStack();
 	public TwixtState getState() { return(board_state); }
 	public int nCells() { return(variation.boardSize*variation.boardSize); }
@@ -273,6 +274,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         resetState = from_b.resetState;
         swapped = from_b.swapped;
         lastPicked = null;
+        perspectiveView = from_b.perspectiveView;
         robotBoard = from_b.robotBoard;
         lastDrawMove = from_b.lastDrawMove;
         getCell(redPegs,from_b.redPegs);
@@ -501,7 +503,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     		if(seed.col=='A') { return(-1); }
     		if(seed.col=='A'+ncols-1) { return(-1); }
     		if(seed.row==ncols) 
-    			{ if(currentDis<10) { G.Error("Not possible");}
+    			{ if(currentDis<(ncols-4)/2) { G.Error("Not possible");}
     			  return(currentDis); 	// made it!
     			}
     		break;
@@ -509,7 +511,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     		if(seed.row==1) { return(-1); }
     		if(seed.row==ncols) { return(-1); }
     		if(seed.col=='A'+ncols-1) 
-    			{ if(currentDis<10) { G.Error("Not possible"); }
+    			{ if(currentDis<(ncols-4)/2) { G.Error("Not possible"); }
     			  return(currentDis); 	// made it!
     			}
     		break;
@@ -1545,22 +1547,95 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
- {   if(Character.isDigit(txt.charAt(0)))
- 	{ switch(variation)
-	 		{
-	 		case twixt:
-	 		case ghost:
-	 		case twixt_18:
-	 		case twixt_13:
-	 			xpos -= cellsize/2;
-	 			break;
- 			default: G.Error("case %s not handled",variation);
-	 		}
-	 	}
- 		else
- 		{ 
- 		 if((boardRect!=null) && (ypos>G.centerY(boardRect))) {  ypos += cellsize/4; }
- 		}
+ { 
+	 int rotation = getRotation();
+	 boolean digit = Character.isDigit(txt.charAt(0));
+	 
+ 
+	if(perspectiveView)
+	{
+    switch(variation)
+    {
+    default:
+    case twixt:
+    	xpos -= cellsize/4;
+	 	if((boardRect!=null) && (ypos>G.centerY(boardRect))) 
+		 {  if((rotation&1)!=0) { ypos +=cellsize/4; } 
+		 	else { ypos += cellsize/2; }
+		 }
+	 	break;
+    case twixt_18:
+    	xpos -= cellsize/4;
+		//$FALL-THROUGH$
+	case twixt_13:
+    	switch(rotation)
+    	{
+    	default:
+    	case 0:
+    	case 2:
+    		if(digit) { ypos += cellsize/4; } else { ypos += cellsize/2;}
+    		break;
+    	case 1:
+    	case 3:
+    		if(!digit) { ypos += cellsize/4;};
+    		break;
+  
+    	}
+    	break;
+	}
+	}
+	else
+	{	// no perspective
+	    switch(variation)
+	    {
+	    default:
+	    case twixt:
+	    	xpos -= cellsize/4;
+		 	if((boardRect!=null) && (ypos>G.centerY(boardRect))) 
+			 {  if((rotation&1)!=0) { if(digit) { ypos -=cellsize; }} 
+			 	else { ypos += cellsize/4; }
+			 }
+		 	break;
+	    case twixt_18:
+	    	switch(rotation)
+	    	{
+	    	default:
+	    	case 0:
+	    		if(digit) { ypos += cellsize/4; } 
+	    		break;
+
+	    	case 2:
+	    		if(digit) { ypos += cellsize/4; } 
+	    		break;
+	    	case 1:
+	    		if(!digit) { xpos -= cellsize/2; }
+	    		if(digit) { ypos -= cellsize*5/6; xpos-=cellsize/8; }
+	    		break;
+	    	case 3:
+	    		xpos -= cellsize/2;
+	    		if(digit) { ypos -= cellsize*5/6; xpos += cellsize/4;};
+	    		break;
+	  
+	    	}
+	    	break;
+	    	//$FALL-THROUGH$
+		case twixt_13:
+	    	switch(rotation)
+	    	{
+	    	default:
+	    	case 0:
+	    	case 2:
+	    		if(digit) { ypos += cellsize/4; } else { ypos += cellsize/6;}
+	    		break;
+	    	case 1:
+	    	case 3:
+	    		if(digit) { ypos -= cellsize*6/7;} else { ypos -= 0; }
+	    		break;
+	  
+	    	}
+	    	break;
+		}	
+	}
  	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
  }
  public double scoreForPlayer0(int pl,boolean print)

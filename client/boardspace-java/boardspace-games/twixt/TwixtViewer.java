@@ -389,7 +389,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         					&& (gb.pickedObject.color()==gb.getPlayerColor(player));
         boolean hit = toDrop;
         boolean first = true;
-        int unit = SQUARESIZE;
+        int unit = SQUARESIZE*2/3;
         for(TwixtCell c : rack)
         {
             boolean canhit = gb.legalToHitChips(c,player);
@@ -465,6 +465,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     { // erase
       TwixtBoard gb = disB(gc);
       TwixtChip background = null;
+      gb.perspectiveView = usePerspective();
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -479,17 +480,19 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       boolean perspective = usePerspective();
       if(perspective)
       {
-    	 switch(bb.variation)
-    	 {
-    	 default:
+	      int l = G.Left(boardRect);
+	      int t = G.Top(boardRect);
+	      int w = G.Width(boardRect);
+	      int h = G.Height(boardRect);
+	      switch(bb.variation)
+	      {
+	      	default:
     		 background = TwixtChip.board;
-    	      
-    	      if((rotation&1)!=0)
+    		 if(background!=scaledChip) { scaled = null; }
+    		 scaled = background.getImage().centerScaledImage(gc, boardRect,scaled);
+    		 scaledChip = background;  	      
+    		 if((rotation&1)!=0)
     	      {
-    	      int l = G.Left(boardRect);
-    	      int t = G.Top(boardRect);
-    	      int w = G.Width(boardRect);
-    	      int h = G.Height(boardRect);
     	      // draw an overlay to make the stripes on the edges correct
     	      Rectangle leftRect = new Rectangle((int)(l+0.1*w),(int)(t+0.117*h),(int)(0.22*h),(int)(0.74*h));
     	      TwixtChip.left.image.centerImage(gc,leftRect);
@@ -503,11 +506,42 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		 break;
     	 case twixt_18:
     		 background = TwixtChip.board_18;
-    		 break;
+    		 if(background!=scaledChip) { scaled = null; }
+    		 scaled = background.getImage().centerScaledImage(gc, boardRect,scaled);
+       	  	scaledChip = background;		
+   		 if((rotation&1)!=0)
+			      {
+			      // draw an overlay to make the stripes on the edges correct
+			      Rectangle leftRect = new Rectangle((int)(l+0.1838*w),(int)(t+0.143*h),(int)(0.18*h),(int)(0.675*h));
+			      TwixtChip.left_18.image.centerImage(gc,leftRect);
+			      Rectangle rightRect = new Rectangle((int)(l+0.684*w),(int)(t+0.135*h),(int)(0.18*h),(int)(0.68*h));
+			      TwixtChip.right_18.image.centerImage(gc,rightRect);
+			      Rectangle topRect = new Rectangle((int)(l+0.28*w),(int)(t+0.0321*h),(int)(0.625*h),(int)(0.2*h));
+			      TwixtChip.top_18.image.centerImage(gc,topRect);
+			      Rectangle botRect = new Rectangle((int)(l+0.233*w),(int)(t+0.7256*h),(int)(0.76*h),(int)(0.2*h));
+			      TwixtChip.bottom_18.image.centerImage(gc,botRect);
+			     }
+   		 break;
     	 case twixt_13:
     		 background = TwixtChip.board_13;
+       	  	if(background!=scaledChip) { scaled = null; }
+       	  	scaled = background.getImage().centerScaledImage(gc, boardRect,scaled);
+       	  	scaledChip = background;
+      		 if((rotation&1)!=0)
+		      {
+		      // draw an overlay to make the stripes on the edges correct
+		      Rectangle leftRect = new Rectangle((int)(l+0.184*w),(int)(t+0.17*h),(int)(0.27*h),(int)(0.616	*h));
+		      TwixtChip.left_13.image.centerImage(gc,leftRect);
+		      Rectangle rightRect = new Rectangle((int)(l+0.674*w),(int)(t+0.17*h),(int)(0.20*h),(int)(0.618*h));
+		      TwixtChip.right_13.image.centerImage(gc,rightRect);
+		      Rectangle topRect = new Rectangle((int)(l+0.311*w),(int)(t+0.059*h),(int)(0.58*h),(int)(0.2*h));
+		      TwixtChip.top_13.image.centerImage(gc,topRect);
+		      Rectangle botRect = new Rectangle((int)(l+0.275*w),(int)(t+0.706*h),(int)(0.683*h),(int)(0.2*h));
+		      TwixtChip.bottom_13.image.centerImage(gc,botRect);
+		     }
     		 break;
     	 }
+
 
       }
       else
@@ -528,12 +562,12 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       		  background = TwixtChip.board_13_np;
       		  break;
       	  }
-
+      	  if(background!=scaledChip) { scaled = null; }
+    	  scaled = background.getImage().centerScaledImage(gc, boardRect,scaled);
+    	  scaledChip = background;
           if(rotate) { GC.setRotation(gc,-Math.PI/2, cx, cy); }
       }
-  	  if(background!=scaledChip) { scaled = null; }
-  	  scaled = background.getImage().centerScaledImage(gc, boardRect,scaled);
-  	  scaledChip = background;
+  	  
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
@@ -637,7 +671,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		vscale = 0.65;
     		break;
     	case twixt_13:
-    		vscale = 0.6;
+    		vscale = 0.7;
     		break;
     	}
     	return vscale*(1.0-(double)(cy-h/6)/(h*4.25));
@@ -1468,7 +1502,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	TwixtVariation v = bb.variation;
     	if((rotation&1)==0)
     	{	switch(v)
-    		{// perspective 24x with rotation
+    		{// perspective 24x no rotation
     		default:
     			gb.setDisplayParameters(null,null,
 					new double[] {0.07,0.075},
@@ -1497,6 +1531,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	
     	}
     	else {
+    		// no perspective with rotation
     		switch(v)
     		{
     		default:
@@ -1508,17 +1543,17 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     			break;
     		case twixt_13:
     			gb.setDisplayParameters(null,null,
-    					new double[] {0.093,0.115},
-    					new double[] {0.9775, 0.115},
-    					new double[] {0.093,1},
-    					new double[] {0.9775, 1});
+    					new double[] {0.093,0.1},
+    					new double[] {0.9775, 0.1},
+    					new double[] {0.093,0.99},
+    					new double[] {0.9775, 0.99});
        			break;
        		case twixt_18:
        			gb.setDisplayParameters(null,null,
-    					new double[] {0.062,0.086},
-    					new double[] {0.982, 0.086},
-    					new double[] {0.062,1.01},
-    					new double[] {0.982, 1.01});
+    					new double[] {0.09,0.08},
+    					new double[] {0.982, 0.08},
+    					new double[] {0.09,0.99},
+    					new double[] {0.982, 0.99});
        			break;
     		}
     		

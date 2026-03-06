@@ -21,9 +21,11 @@ import com.codename1.ui.Font;
 
 import lib.FontManager;
 import lib.Image;
+import lib.SizeProvider;
+
 import com.codename1.ui.geom.Point;
 
-public class Button extends com.codename1.ui.Button implements ActionProvider
+public class Button extends com.codename1.ui.Button implements ActionProvider,SizeProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
 	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
 	Image theImage = null;

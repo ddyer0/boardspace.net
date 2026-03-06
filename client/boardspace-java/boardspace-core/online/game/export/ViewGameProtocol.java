@@ -16,7 +16,6 @@
  */
 package online.game.export;
 
-
 import java.awt.Color;
 import java.io.PrintStream;
 import java.util.Vector;
@@ -112,7 +111,7 @@ public interface ViewGameProtocol
      * @param st  a move string to be parsed
      * @param player the player to parse for, ie the current player
      */
-    public boolean ParseMessage(String st, int player);
+    public boolean ParseMessage(String st, int player,int channel);
     
     /** parse a text move specification
      * 

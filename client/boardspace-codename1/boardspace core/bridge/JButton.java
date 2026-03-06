@@ -23,8 +23,9 @@ import com.codename1.ui.geom.Dimension;
 import bridge.SystemImage.ScaleType;
 import lib.FontManager;
 import lib.Image;
+import lib.SizeProvider;
 
-public class JButton extends Button 
+public class JButton extends Button implements SizeProvider
 {	Command command = null;
 	public JButton(String label) 
 	{ super(label); 

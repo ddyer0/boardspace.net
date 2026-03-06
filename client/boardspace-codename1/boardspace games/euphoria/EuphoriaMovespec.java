@@ -500,7 +500,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
      * don't have to be parseable, they're intended only to help humans understand
      * the game record.
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

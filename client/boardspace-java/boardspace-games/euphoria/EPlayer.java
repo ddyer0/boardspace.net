@@ -5295,7 +5295,7 @@ private void checkGaryTheForgetter(replayMode replay)
 {
 	if(recruitAppliesToMe(RecruitChip.GaryTheForgetter))
 	{	//b.p1("use gary the forgetter");
-		b.logGameEvent("lose 2 Knowledge (Gary the Forgetter)");
+		b.logGameEvent(ForgetGaryMessage);
 		b.useRecruit(RecruitChip.GaryTheForgetter,"gain worker");
 		decrementKnowledge(replay);
 		decrementKnowledge(replay);

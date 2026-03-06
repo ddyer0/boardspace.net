@@ -799,7 +799,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
      */
     public void drawBoardElements(Graphics gc, SingleBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
     {	long time =  getActivePlayer().elapsedTime;
-    	boolean leadin = !mutable_game_record && time<5000;
+    	boolean leadin = !mutable_game_record && time<5000 && !isSpectator();
  		boolean censor = all==null;
  		if(leadin) { highlight=null; }
     	boolean draggingBoard = draggingBoard(); 

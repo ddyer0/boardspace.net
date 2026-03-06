@@ -241,6 +241,8 @@ public interface EuphoriaConstants
  	static String Pay1Commod = "Pay 1 Commodity before bumping your own worker";
  	static String GainKnowledge = "After a knowledge check, gain knowledge if at least 2 of your workers have the same knowledge";
  	static String BumpKnowledge = "You must have less than 6 knowledge to bump your own workers.  If you do gain knowledge";
+ 	static String ForgetGaryMessage = "lose 2 Knowledge (Gary the Forgetter)";
+ 	static String GetResourceMessage = "get resource (Jeroen the Hoarder)";
 	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
@@ -1561,6 +1563,8 @@ public interface EuphoriaConstants
     			"WhiteMorale",
     			CardPeek,
     			CardFromJacko,
+    			ForgetGaryMessage,
+    			GetResourceMessage,
     			BrianTheVitculturistLoseCard,
     			BrianTheViticulturistMorale,
     			WastelanderInfluenceFromBrianTheViticulturist,

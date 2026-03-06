@@ -1552,11 +1552,13 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	}
         	break;
         case MOVE_BtoB:
+        	{
             lastMove = new movespec(m.player, MOVE_BtoB, m.from_col,
                     m.from_row, m.to_col, m.to_row);
+            zChip chip = pickedObject;
             unPickObject();
-            MoveBtoB(m,replay);
-
+            MoveBtoB(m,chip==null && replay==replayMode.Live ? replayMode.Single : replay);
+        	}
             break;
 
         case MOVE_BtoR:
@@ -1567,6 +1569,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             break;
 
         case MOVE_RtoB:
+        	{
             if(replay!=replayMode.Live)
             {	// repair some old, damaged games.  Note this gives the mover
             	// and extra ball!
@@ -1576,9 +1579,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             lastMove = new movespec(m.player, MOVE_RtoB,
             		m.from_col,m.from_row,
             		m.to_col, m.to_row);
+            zChip chip = pickedObject;
             unPickObject();
-            MoveRtoB(m,replay);
-
+            MoveRtoB(m,chip==null && replay==replayMode.Live ? replayMode.Single : replay);
+        	}
             break;
 
         case MOVE_RtoR:

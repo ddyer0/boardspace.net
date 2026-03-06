@@ -581,13 +581,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 
     public boolean Execute(commonMove m,replayMode replay)
     {	//System.out.println("e "+m);
-    	if((replay==replayMode.Live) && !OurMove())
-    	{ // zertz is unusual because human and robot moves both present
-    	  // the same gestures.  This makes the robot's moves generate
-    	  // animations anyway.
-    	  replay = replayMode.Single; 
-    	}
-    	
 
     handleExecute(b,m,replay);
     // record where the boundaries in move numbers lie

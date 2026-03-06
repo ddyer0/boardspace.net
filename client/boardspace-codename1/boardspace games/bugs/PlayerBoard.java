@@ -553,6 +553,10 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
 	        	  //G.print("last ",lastDroppedObject); 
 	        	}      	
+		        if(replay.animate && replay!=replayMode.Live)
+		        {
+		        	parent.animate(replay,pickedSource,dest);
+		        }
             	dropObject(dest); 
             	setNextStateAfterDrop();
             	if(parent.board_state==BugsState.Puzzle) { acceptPlacement(); }
@@ -564,7 +568,6 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
         case MOVE_DROPB:
     	{
     	findPickedObject();
-		BugsChip po = pickedObject;
 		BugsCell dest =  parent.getCell(BugsId.BoardLocation,m.to_col,m.to_row);
 		if(isSource(dest)) 
 			{ unPickObject(); 
@@ -580,7 +583,7 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
              * removed from the game record, so there are never picked stones in
              * single step replays.
              */
-            if(replay.animate && (po==null))
+            if(replay.animate && replay!=replayMode.Live)
             	{ parent.animate(replay,pickedSource,dest);
              	}
             setNextStateAfterDrop();

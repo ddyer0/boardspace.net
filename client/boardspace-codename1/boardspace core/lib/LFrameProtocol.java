@@ -42,6 +42,7 @@ public interface LFrameProtocol extends MenuParentInterface
     public void setDoSound(boolean enable);
     public void addWindowListener(WindowListener who);
     public JCheckBoxMenuItem addOption(String text, boolean initial,DeferredEventManager l);
+    
     public JMenu addChoiceMenu(String item,DeferredEventManager l);
     public JMenuItem addAction(JMenuItem b,DeferredEventManager l);
     public JMenu addAction(JMenu b,DeferredEventManager l);
@@ -53,7 +54,8 @@ public interface LFrameProtocol extends MenuParentInterface
 
     public void addAction(JMenu m,JMenuItem mi,DeferredEventManager l);
     public JMenuItem addAction(JMenu m,String mname,DeferredEventManager e);
-    public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager l);
+    
+    public JCheckBoxMenuItem addOption(JMenu m, String text, boolean initial,DeferredEventManager l);
     public void killFrame();
     public boolean killed();
     public void dispose();

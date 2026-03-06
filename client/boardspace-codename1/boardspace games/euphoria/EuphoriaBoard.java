@@ -38,7 +38,7 @@ import online.game.*;
  *
  */
 public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaConstants
-{		static int REVISION = 124;			// revision numbers start at 100
+{		static int REVISION = 125;			// revision numbers start at 100
 //TODO: rotate market cards when enlarged
 //TODO: open artifacts when unseen on touch screens
 //TODO: tweak side screen layout for more square screen shape
@@ -2659,6 +2659,22 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			//$FALL-THROUGH$
 		case Step2AfterGeorge: registerStep(ProceedStep.Step2AfterGeorge);
 			
+		// various recruits let you play another worker
+		if(revision>=125)
+		{
+			for(EPlayer cp : players)
+			{
+			if(cp.terriAuthorityHeight>cp.authority.height()
+					&& cp.canPay(Cost.Bliss)
+					&& cp.recruitAppliesToMe(RecruitChip.TerriTheBlissTrader))
+			{	
+				setContinuation(new Continuation(RecruitChip.TerriTheBlissTrader,Function.DoTerriTheBlissTrader,Function.DontTerriTheBlissTrader,cp));
+				// we'll come back to step 4
+				return;
+			}
+			else { cp.terriAuthorityHeight = cp.authority.height(); }
+			}
+		}
     		//
     		// here morale and cards are in balance for sure.
     		//
@@ -2730,7 +2746,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			}
 			else { p.taedAuthorityHeight = p.authority.height(); }
 			
-			// various recruits let you play another worker
+			if(revision<125)
+			{
 			if(p.terriAuthorityHeight>p.authority.height()
 					&& p.canPay(Cost.Bliss)
 					&& p.recruitAppliesToMe(RecruitChip.TerriTheBlissTrader))
@@ -2740,6 +2757,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 				return;
 			}
 			else { p.terriAuthorityHeight = p.authority.height(); }
+			}
 			
 			//$FALL-THROUGH$
 		case Step4AfterTerri:
@@ -3691,6 +3709,8 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         	break;
         case RePlace:	// dumbkoff move by the robot
         case Place:
+        case Gameover:	// some old damaged games need this
+        case ChooseRecruits:
         	break;
         default:
         	throw Error("Not expecting state %s",board_state);
@@ -4484,7 +4504,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     			&& (p.newWorkers.height()>=3)
     			&& p.recruitAppliesToMe(RecruitChip.JeroenTheHoarder))
     	{	//p1("use jeroen the hoarder "+dest);
-    		logGameExplanation("get resource (Jeroen the Hoarder)");
+    		logGameExplanation(GetResourceMessage);
     		useRecruit(RecruitChip.JeroenTheHoarder,"use");
     				
     		setContinuation(new Continuation(Benefit.Resource,Function.ReRollWorkersAfterJeroen,chosenValue,p));
@@ -6927,6 +6947,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
     	doneLast = false;
+    	//G.print("M "+m+" "+board_state);
         if(replay.animate) { animationStack.clear(); gameEvents.clear(); }
         if(board_state==EuphoriaState.Puzzle)
         {
@@ -8096,6 +8117,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
       default:       	
         	break;
         }
+        
     }
     int step=0;
 

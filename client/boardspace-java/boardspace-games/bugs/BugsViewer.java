@@ -154,7 +154,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     
     private TextButton readyButton = addButton(ReadyButton,BugsId.Ready,ExplainReady,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-    private Rectangle marketRect = addRect("both");
+    private Rectangle marketRect = addZoneRect("both");
     private boolean rotateMarket = false;
     private Rectangle marketCardRect = addRect("bugMarket");
     private Rectangle goalCardRect = addRect("goal");
@@ -232,7 +232,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
         	BugsConstants.putStrings();
-        	makeDeck = myFrame.addAction("make deck",deferredEvents);
+        	makeDeck = myFrame.addAction(debugMenu,"make deck",deferredEvents);
         }
         
         String type = info.getString(GameInfo.GAMETYPE, BugsVariation.bugspiel_parallel.name);
@@ -2359,8 +2359,9 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     	return pb.uiState;
     }
     public void adjustPlayers(int n)
-    {
+    {	
     	super.adjustPlayers(n);
+    	
     	guiPlayer = Math.min(n-1,guiPlayer);
     }
 	  public boolean allowResetUndo()
@@ -2475,7 +2476,20 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 	    	}
 	    	return ignoreThis;
 	    }
-
+	    
+	    /**
+	     * translate the mouse coordinate x,y into a size-independent representation
+	     * presumably based on the cell grid.  This is used to transmit our mouse
+	     * position to the other players and spectators, so it will be displayed
+	     * at approximately the same visual spot on their screen.  
+	     * 
+	     * Some trickier logic may be needed if the board has several orientations,
+	     * or if some mouse activity should be censored.
+	     */
+	    public String encodeScreenZone(int x, int y,Point p)
+	    {
+	    	return(super.encodeScreenZone(x,y,p));
+	    }
     /**
      * colorize a string and return a Text with the result.  This is used
      * to substitute icons for words, or translate the words, in the string;

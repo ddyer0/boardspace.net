@@ -49,6 +49,7 @@ public abstract class exCanvas extends Canvas
 		TouchMagnifierClient,
 		DrawingObject
 {	// two specials just for standard java
+	static final String SmoothMouse = "Smooth mouse tracking";
     static final String VirtualMouse = "Virtual Mouse";
     static final String SpeedTestMessage = "Cpu speed test";
     static final String FontSize = "Set Font Size";
@@ -85,6 +86,7 @@ public abstract class exCanvas extends Canvas
 
     public static final String CanvasMessages[] = {
     		VirtualMouse,
+    		SmoothMouse,
     		SpeedTestMessage,
     		ZoomMessage,
     		FontSize,
@@ -105,6 +107,7 @@ public abstract class exCanvas extends Canvas
 	    private JMenu languageMenu = null;	// select a language
 	    private JCheckBoxMenuItem useCache = null;
 	    private JCheckBoxMenuItem virtualMouseCheckbox = null;
+	    private JCheckBoxMenuItem smoothMouseTracking = null;
 	    private JMenuItem cpuTest = null;
 	    private JMenuItem setConsole = null;
 	    private Font standardBoldFont;
@@ -470,6 +473,9 @@ public abstract class exCanvas extends Canvas
     {
        lockAndLoadImages(); 
     }
+    public JMenu debugMenu = null;
+    public JMenu debugMenu() { return debugMenu; }
+    
     /** this init method should be wrapped by individual games
      * to do once-only initialization.
      * @param info
@@ -492,19 +498,22 @@ public abstract class exCanvas extends Canvas
         globalZoomRect.value=1.0;
 
         l.virtualMouseCheckbox = myFrame.addOption(s.get(VirtualMouse),false,deferredEvents);
-
+        l.smoothMouseTracking = myFrame.addOption(s.get(SmoothMouse),smoothMouseTracking=Config.Default.getBoolean(Config.Default.smoothMouse),deferredEvents);
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         if(extraactions)
         {
+        debugMenu = new XJMenu("Debug Actions",true);
+        myFrame.addToMenuBar(debugMenu);
+        
         painter.addUIChoices(myFrame,deferredEvents);
-        l.showRects = myFrame.addOption("Show Rectangles", show_rectangles,deferredEvents);	
-        l.showStats = myFrame.addOption("show stats", false,null);	// no events
-        l.showImages = myFrame.addOption("show Images",false,deferredEvents);
-        l.useCache = myFrame.addOption("Cache images",imageCache.cache_images,deferredEvents);
-        l.logGraphics = myFrame.addAction("log graphics",deferredEvents);
-        l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
-        l.useKeyboard = myFrame.addOption("use soft keyboard",G.defaultUseKeyboard(),deferredEvents);
-     	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
+        l.showRects = myFrame.addOption(debugMenu,"Show Rectangles", show_rectangles,deferredEvents);	
+        l.showStats = myFrame.addOption(debugMenu,"show stats", false,null);	// no events
+        l.showImages = myFrame.addOption(debugMenu,"show Images",false,deferredEvents);
+        l.useCache = myFrame.addOption(debugMenu,"Cache images",imageCache.cache_images,deferredEvents);
+        l.logGraphics = myFrame.addAction(debugMenu,"log graphics",deferredEvents);
+        l.debugSwitch = myFrame.addOption(debugMenu,"debug",G.debug(),deferredEvents);
+        l.useKeyboard = myFrame.addOption(debugMenu,"use soft keyboard",G.defaultUseKeyboard(),deferredEvents);
+     	l.debugOnceSwitch = myFrame.addOption(debugMenu,"debug once", false,deferredEvents);
         }
         
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
@@ -635,7 +644,7 @@ public abstract class exCanvas extends Canvas
     	setGlobalZoom(1.0,0.0);
     	generalRefresh();
     }
-    
+    public boolean smoothMouseTracking = true;
    /**
      * handle an event that was deferred.  This is a visitor method to 
      * handle menu items, both fixed and popup.
@@ -715,6 +724,11 @@ public abstract class exCanvas extends Canvas
 	   else if(target==l.virtualMouseCheckbox)
 	   {
 		   mouse.setVirtualMouseMode(l.virtualMouseCheckbox.getState());
+	   }
+	   else if(target==l.smoothMouseTracking)
+	   {
+		   smoothMouseTracking = l.smoothMouseTracking.getState();
+		   Config.Default.setBoolean(Config.Default.smoothMouse,smoothMouseTracking);
 	   }
 	   else if(selectFontSize(target)) {return(true); }
 	   else if(selectFontStyle(target)) { return true; }
@@ -1078,6 +1092,11 @@ graphics when using a touch screen.
     	mouseZones.pushNew(r);
     	addRect(name,r);
     	return(r);
+    }
+    public void removeZoneRect(String name)
+    {
+    	Rectangle r = allRects.remove(name);
+    	if(r!=null) { mouseZones.remove(r,false); }
     }
     public Rectangle rotateForPlayer(String key)
     {

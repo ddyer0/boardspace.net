@@ -65,7 +65,11 @@ public class Component extends com.codename1.ui.Component implements EventListen
 	public void pointerHover(int x[],int y[])
 	{	// as of 12/2022, this is called on the simulator but not on real devices
 		//G.print("Component Hover ",x[0]," ",y[0]);
-		if(mouse.pointerHover(x,y)) { super.pointerHover(x,y); }
+		if(!G.isSimulator())
+			{
+			G.print("Hover ",x[0]," ",y[0]);
+			if(mouse.pointerHover(x,y)) { super.pointerHover(x,y); }
+			}
 	}
 	
 	public Dimension getMinimumSize() { return(new Dimension(100,100)); }

@@ -202,7 +202,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
          // piece.bottom_images=load_images("inv-");    //preload the images for the pieces
         if (extraactions)
         {
-            showBoth = myFrame.addOption("Show Both Racks", false,deferredEvents);
+            showBoth = myFrame.addOption(debugMenu,"Show Both Racks", false,deferredEvents);
         }
         MouseColors = new Color[] {Color.black,Color.white};
         MouseDotColors = new Color[] { Color.white,Color.black};

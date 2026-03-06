@@ -3393,6 +3393,17 @@ private Color playerBackground[] = {
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
      * 5/25/2023 no problems
+     * 
+ssummary:
+24077: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\euphoria\euphoriagames\euphoriagames\archive-2021\games-Jul-7-2021.zip EU-Dumbot-mintylish-2021-06-13-0541.sgf lib.ErrorX: Nothing to pick from PlayerWorker
+25149: play Problem in file:G:\share\projects\boardspace-html\htdocs\euphoria\euphoriagames\euphoriagames\games-Jul-7-2021\EU-Dumbot-mintylish-2021-06-13-0541.sgf lib.ErrorX: Nothing to pick from PlayerWorker
+
+25580 files visited 2 problems
+initial layoutUndefined
+after primary layout Undefined 0.0 0.0% 40.0
+final Landscape 0.6336565096952909% 40.0
+
+
      */
     public void ReplayMove(sgf_node no)
     {

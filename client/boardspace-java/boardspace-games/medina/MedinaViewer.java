@@ -132,7 +132,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 
         if(extraactions)
         {
-            showAll = myFrame.addOption("Show All Racks", false,deferredEvents);
+            showAll = myFrame.addOption(debugMenu,"Show All Racks", false,deferredEvents);
         }
         
      }

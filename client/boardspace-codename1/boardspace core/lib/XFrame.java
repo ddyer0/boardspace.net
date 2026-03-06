@@ -166,7 +166,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	}
 
  
-	public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager e)
+	public JCheckBoxMenuItem addOption(JMenu m, String text, boolean initial,DeferredEventManager e)
     {	
 		if(options.getItemCount()==0) 
 		{	options.add(soundCheckBox);		// always first
@@ -181,7 +181,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 
     public JCheckBoxMenuItem addOption(String text, boolean initial,DeferredEventManager e)
     {
-        return (addOption(text, initial, options,e));
+        return (addOption(options, text, initial, e));
     }
     public JMenu addChoiceMenu(String text, DeferredEventManager e)
     {	if(options.getItemCount()==0) 

@@ -8,6 +8,7 @@ import bridge.Color;
 import java.util.Hashtable;
 import bugs.data.Taxonomy;
 import lib.CellId;
+import lib.DrawingObject;
 import lib.G;
 import lib.GC;
 import lib.Graphics;
@@ -53,15 +54,16 @@ public class GoalCard extends BugsChip implements BugsConstants
 		return null;
 	}
 	
+
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{
-		drawChip(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
+		draw(gc,canvas,SQUARESIZE,cx,cy,null,null,null,1.0,1.0);
 	}
-	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
+	public boolean draw(Graphics gc,DrawingObject canvas,Rectangle r,HitPoint highlight,CellId rackLocation,String tooltip,double sscale)
 	{
-		return drawChip(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
+		return draw(gc,canvas,G.Width(r),G.centerX(r),G.centerY(r),highlight,rackLocation,tooltip,sscale,1.0);
 	}
-	public boolean drawChip(Graphics gc,exCanvas drawOn,int squareWidth,int e_x,
+	public boolean draw(Graphics gc,DrawingObject drawOn,int squareWidth,int e_x,
 			int e_y,HitPoint highlight,CellId rackLocation,String helptext,double sscale,double expansion)
 	{	int squareH = (int)(squareWidth/aspectRatio());
 		Rectangle r = new Rectangle(e_x-squareWidth/2,e_y-squareH/2,squareWidth,squareH);
@@ -81,7 +83,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 	 	{
 	 	if(image==null)
 	 	{
-	 		image = makeGoalImage(drawOn,256,128);
+	 		image = makeGoalImage(DrawingObject.getCanvas(drawOn),256,128);
 	 	}
 	 	if(image!=null && image.getWidth()>squareWidth)
 	 	{
@@ -92,7 +94,7 @@ public class GoalCard extends BugsChip implements BugsConstants
 	 	HitPoint inaction = (helptext==NOTHING) ? null : highlight;
 		Font f = GC.getFont(gc);
 
- 		boolean hit = actualDrawChip(gc,  drawOn.standardPlainFont(),  action,action==null?BugsId.HitChip: rackLocation, r,inaction,helptext==BugsChip.TOP);
+ 		boolean hit = actualDrawChip(gc,  DrawingObject.getCanvas(drawOn).standardPlainFont(),  action,action==null?BugsId.HitChip: rackLocation, r,inaction,helptext==BugsChip.TOP);
 		GC.setFont(gc,f);
  		int yh = (int)(squareH/4);
  		if( (helptext==PICK || helptext==BIGCHIP)

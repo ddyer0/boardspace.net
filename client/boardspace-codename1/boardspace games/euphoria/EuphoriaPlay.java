@@ -220,9 +220,6 @@ public class EuphoriaPlay extends commonMPRobot<EuphoriaBoard>
 		  terminatedWithPrejudice = -1;
     	
     }
-	public void prepareForDescent(UCTMoveSearcher from)
-	{
-	}
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. 

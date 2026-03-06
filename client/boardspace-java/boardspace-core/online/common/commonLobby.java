@@ -474,10 +474,10 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     //menuSwing = myFrame.addOption("Swing Menus",false,null);
     if(extraactions)
     {
-        flushInput = myFrame.addOption("flush input",false,deferredEvents);
-        flushOutput = myFrame.addOption("flush output",false,deferredEvents);
+        flushInput = myFrame.addOption(v.debugMenu(),"flush input",false,deferredEvents);
+        flushOutput = myFrame.addOption(v.debugMenu(),"flush output",false,deferredEvents);
         // these are problematic because of the expectation that they are offline
-        startLauncher = myFrame.addAction("start offline launcher",deferredEvents);
+        startLauncher = myFrame.addAction(v.debugMenu(),"start offline launcher",deferredEvents);
     }
     startTurnbased = myFrame.addAction(s.get(StartTurnBasedMessage),deferredEvents);
     setGameTime();

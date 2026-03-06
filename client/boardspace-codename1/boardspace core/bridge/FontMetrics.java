@@ -114,13 +114,18 @@ public class FontMetrics {
 
 	public Font getFont() { return(myFont); }
 	public int getSize() { return(SystemFont.getFontSize(myFont)); }
-	
 	public int stringWidth(String str) 
 	{ 	int w = widthCache.getValue(str);
 		// widthcache per font is only intended to optimize when
 		// the same string is queried multiple times while being prepped for display
 		if(w!=LruCache.NOVALUE) { return w; }
-		w = myFont.stringWidth(str);
+		if(G.isEdt()) { w = myFont.stringWidth(str); }
+		else {
+			Integer v[]=new Integer[1];
+			G.runInEdt(new Runnable() 
+			{ public void run() { v[0] = myFont.stringWidth(str); }}); 
+			w = v[0];
+			}
 		widthCache.storeValue(str,w);
 		return(w); 
 	}

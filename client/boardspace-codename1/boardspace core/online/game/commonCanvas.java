@@ -177,13 +177,15 @@ public abstract class commonCanvas extends exCanvas
     { 
 	     
 	  int player; 
+	  int channel = -1;
       String str;
       DMType type;
       RpcInterface.Keyword key;
       SimpleObserver notify;
  
-      DeferredMessage(int pl,String s)
+      DeferredMessage(int pl,String s,int cha)
       {	  type = DMType.Move;
+      	  channel = cha;
       	  notify = null;
       	  key = null;
     	  player = pl;
@@ -209,9 +211,9 @@ public abstract class commonCanvas extends exCanvas
 	    private Vector<DeferredMessage> deferredMessages = new Vector<DeferredMessage>();
 	    // handle stored messages, either immediately or when exiting review mode.
 	    private boolean handleDeferredMessages()
-	    {	boolean playing = !mutable_game_record;
+	    {	
 	    	boolean some = false;
-	    	if (playing && reviewMode()) { return(true); }
+	    	
 	     	while(hasDeferredMessages())
 	    	{	DeferredMessage st = deferredMessages.elementAt(0);
 	    		deferredMessages.removeElementAt(0);
@@ -221,6 +223,21 @@ public abstract class commonCanvas extends exCanvas
 	    		case Move:
 	    			// a game move, nominally from another client,
 	    			// which could be from a RPC screen performing an ordinary game operation
+	    			if(smoothMouseTracking)
+	    			{	int transmitter = st.channel;
+	    				// if there is mouse animation still proceeding for this client, delay the interpretation
+	    				// of the incoming activity until it finishes.  This makes the dropped pieces not appear
+	    				// until after the animation of that piece toward the destination finishes.
+	    				commonPlayer pl = commonPlayer.findPlayerByChannel(players,transmitter);
+	    				if(pl==null) { pl = commonPlayer.findPlayerByChannel(spectators,transmitter); }
+	    				if(pl!=null && ((pl.animating || pl.unseenMouseActivity)))
+	    				{	// put it back until it settles
+	    					deferredMessages.insertElementAt(st,0);
+	    					if(pl.unseenMouseActivity) { repaint(); }
+	    					return(some);
+	    				}
+	    				
+	    			}
 	    			some |= performMessage(st.str,st.player);
 	    			break;
 	    		case Command:
@@ -279,9 +296,6 @@ public abstract class commonCanvas extends exCanvas
 	    private boolean deferWarningSent = false;
 	    private boolean tournamentMode = false;
 	    
-	    private long lastMouseTime = 0;
-	    private String mouseMessage = null;
-	    private int mouseObject = -1;
 	    private JMenuItem zoomButton = null;
 	    private JMenuItem unzoomButton = null;
 	    private IconMenu paperclipMenu = null;
@@ -1792,6 +1806,89 @@ public abstract class commonCanvas extends exCanvas
     { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
       if(myNetConn!=null) { myNetConn.LogMessage(ev,od); }
     }
+    /**
+     * smooth mouse tracking is a surprisingly complex answer to a simple problem.  The problem
+     * is that touch screen devices don't continuously track the position of the mouse (ie; your finger)
+     * consequently, when a player using a touch screen device makes a move using the usual pick/drop
+     * gestures, the other players will see the piece jump instantaneously from point a to point b.
+     * 
+     * this isn't so much of a problem when a player on a desktop moves, because the mouse is tracked
+     * all along the way - but any given game might include both types of players.  On desktops the
+     * pointer position is transmitted on a timer to limit the bandwidth, this results in a somewhat
+     * jerky track, but there's a sense of motion.
+     * 
+     * Smooth tracking takes both types - "big leap" and "incremental stops" and interpolates intermediate
+     * positions.  When the changes are small, as with positions from desktops, this results in just a few
+     * intermediate steps.  For big leaps, as from touch screens, this results in many intermediate positions
+     * that take a second or so to play out.  There's a small complication with this, that for that second
+     * or so, the piece would be seen both at the destination and moving toward the destination.
+     * 
+     * In most in-game animations, this is avoided by keeping a count of animations moving toward a destination,
+     * and supressing the drawing of the piece until the animation ends.   It would be very complicated and
+     * require intervention  in all the games to do this for the moving piece using this mechanism. Instead,
+     * we do a little sequencing in the transmission step, to make sure the new mouse positions are transmitted
+     * just ahead of the moves, and we stall the interpretation of the incoming moves until the mouse animation
+     * has finished.
+     * 
+     * 
+     * 
+     * @param p
+     * @param now
+     * @return
+     */
+    private Point interpolatedMousePosition(commonPlayer p,long now)
+    {	int obj = p.mouseObj;
+    	p.unseenMouseActivity = false;	// this flag is set when the mouse state changes
+        Point mp = decodeScreenZone(p.mouseZone,p.mouseX,p.mouseY);
+        
+    	if(!smoothMouseTracking) 
+    		{ // do everything the simple way
+    			p.startingMouseObj = obj; return mp; 
+    		} 
+
+        int xp = G.Left(mp);
+        int yp = G.Top(mp);
+        
+        if(obj>=0 && obj!=p.startingMouseObj)
+        	{ // when we pick something up
+        	  p.startingMouseTime = now; 
+        	  p.startingMouseObj = obj; 
+        	  p.startingMouseX = xp;
+        	  p.startingMouseY = yp;
+        	  p.startingAnimation = true;
+        	}
+        	  
+        if((xp!=p.startingMouseX) || (yp!=p.startingMouseY))
+        {	obj = p.startingMouseObj;
+        	if(p.startingAnimation)
+        		{ 
+        		// start motion
+        		p.startingMouseTime = now;
+        		p.startingAnimation = false;
+        		p.animating = true;
+        		}
+        	// distancnce in pixels that we're moving, adjusted for the display scale
+        	double distance = Math.max(1,(G.distance(p.startingMouseX,p.startingMouseY,xp,yp)/(1000*G.getDisplayScale())));
+        	// drawlagtime is time to spend moving 1000 normal pixel distance
+            double frac = Math.min(1,(double)(now-p.startingMouseTime)/(p.drawLagTime*distance));
+        	xp = G.interpolate(frac,p.startingMouseX,xp);
+        	yp = G.interpolate(frac,p.startingMouseY,yp);
+        	if(frac>=1)
+        		{ 
+        		p.startingMouseTime = now;
+        		p.startingMouseX = xp;
+        		p.startingMouseY = yp;
+        		p.startingMouseObj = p.mouseObj;
+        		p.animating = false;
+        		}
+        		repaint(50); 
+        	G.SetLeft(mp,xp);
+        	G.SetTop(mp,yp);
+        }
+        else { p.startingMouseTime = now; }
+  
+        return mp;
+    }
     /** draw a mouse sprite for a particular player, and if there is a moving
      * object, draw a representation of the object for the player in control.
      * @param g
@@ -1802,17 +1899,19 @@ public abstract class commonCanvas extends exCanvas
     	// our own mouse will have mouseX and mouseY = -1 so they won't be tracked here.
     	//
     	if ((p != null) && l.mouseCheckbox.getState())
-    	{ int mx = p.mouseX;
+    	{ 
+    	long now = G.Date();
+    	int mx = p.mouseX;
     	  int my = p.mouseY;
-    	  long now = G.Date();
-    	Point mp = decodeScreenZone(p.mouseZone,p.mouseX,p.mouseY);
+    	// get the interpolated position, or the raw position if smooth tracking is off
+        Point mp = interpolatedMousePosition(p,now);
+        int obj = p.startingMouseObj;
         int xp = G.Left(mp);
         int yp = G.Top(mp);
         
         if (fullRect.contains(xp, yp))
         {
             int col = p.boardIndex; //assign colors to players
-            int obj = p.mouseObj;
             String mode = p.mouseType; 
             if(mode!=null)
             {
@@ -1832,10 +1931,8 @@ public abstract class commonCanvas extends exCanvas
       			||(my!=p.drawnMouseY)
       			|| ((now-p.drawnMouseTime)<500)))
       	  {
-              p.drawnMouseX = mx;		// remember when and where
+      		 p.drawnMouseX = mx;
               p.drawnMouseY = my;
-              p.drawnMouseTime = now;
-
             drawMouseSprite(g,col,xp,yp,standardFontSize());
         }
     	}}
@@ -3527,11 +3624,15 @@ public abstract class commonCanvas extends exCanvas
      * @return true if the hitObject was handled.
      */
     public boolean performVcrButton(CellId hitCode, HitPoint hp)
-    {	if((hitCode==GameId.HitGameRecord)
-    		&& (hp.hitObject instanceof commonMove))
-    	{	commonMove m = (commonMove)hp.hitObject;
+    {	if(hitCode==GameId.HitGameRecord)
+    	{	if((hp.hitObject instanceof commonMove) 
+    			&& hasControlToken()
+    			)
+    		{
+    		commonMove m = (commonMove)hp.hitObject;
     			 doScrollTo(m.index());   			 
-    		return(true);
+    		}
+    		return true;
     	}
     	else {
         boolean rval = (hitCode instanceof VcrId);
@@ -5281,13 +5382,20 @@ public abstract class commonCanvas extends exCanvas
 	public String mouseMessage() 
     { 	String mm = annotationMenu.mouseMessage();
     	if(mm==null) 
-    		{ mm=l.mouseMessage; 
-    		  l.mouseMessage = null; 
+    		{ mm=trackMouseMessage; 
+    		  trackMouseMessage = null; 
     		  return(mm);
     		}
     	return mm;
     }
     
+	private int trackMouseX = -1;
+	private int trackMouseY = -1;
+	private int trackMouseObj = -1;
+	private String trackMouseZone = "x";
+	private String trackMouseMessage = null;
+	private long trackMouseTime = -1;
+	
     /**
      * this is called from mouse activity to register the current whereabouts of the mouse.
      * it is responsible for rate-limiting the tracking of opponents' mice
@@ -5299,11 +5407,11 @@ public abstract class commonCanvas extends exCanvas
     	{
         long now = G.Date();
         int mouseObj = getMovingObject(null);
-        boolean newState = mouseObj!=l.mouseObject;
-        l.mouseObject = mouseObj;
+        boolean newState = mouseObj!=trackMouseObj;
+        trackMouseObj = mouseObj;
         String oldzone = l.my.mouseZone!=null ? l.my.mouseZone : "";
         if (started
-        		&& (newState||((now - l.lastMouseTime) > 250)) // rate limit to 1 per 1/4 second
+        		&& (newState||((now - trackMouseTime) > 250)) // rate limit to 1 per 1/4 second
                  && canTrackMouse())
         {	Point pt = new Point(0,0);
             String zone = encodeScreenZone(x, y,pt); // not raw coordinates but normalized
@@ -5311,14 +5419,35 @@ public abstract class commonCanvas extends exCanvas
             {   int closestX = G.Left(pt);
                 int closestY = G.Top(pt);                
 
-                if ((closestX != l.my.mouseX) || (closestY != l.my.mouseY) || !oldzone.equals(zone))
-                {
-                	l.lastMouseTime = now;
-                	l.mouseMessage = G.concat(NetConn.SEND_GROUP+KEYWORD_TRACKMOUSE," ",zone," "
+                if (newState || (closestX != l.my.mouseX) || (closestY != l.my.mouseY) || !oldzone.equals(zone))
+                {	
+                	trackMouseTime = now;
+                	trackMouseZone = zone;
+                	trackMouseX = closestX;
+                	trackMouseY = closestY;
+                	trackMouseMessage = G.concat(NetConn.SEND_GROUP+KEYWORD_TRACKMOUSE," ",zone," "
                     		, closestX , " " ,closestY, " " , mouseObj);
             }
         }
         }}
+    }
+    /**
+     * check if the moving object has changed, and revise the mouse message
+     * this helps with the visibility of picked objects on mobiles, where 
+     * the mouse moves, then slightly later an object is picked up or dropped
+     * without any new mouse activity
+     */
+    public void reTrackMouse()
+    {
+    	 int mouseObj = getMovingObject(null);
+         boolean newState = mouseObj!=trackMouseObj;
+         if(newState)
+         {	long now = G.Date();
+         	trackMouseTime = now;
+         	trackMouseObj =mouseObj;
+         	trackMouseMessage = G.concat(NetConn.SEND_GROUP+KEYWORD_TRACKMOUSE," ",trackMouseZone," "
+             		, trackMouseX , " " ,trackMouseY, " " , mouseObj);
+         }
     }
     public enum ViewSet { Normal(0),Reverse(1),Twist(2);
     	int value;
@@ -5330,7 +5459,7 @@ public abstract class commonCanvas extends exCanvas
  
     public int getAltChipset() { return(currentViewset.value); }
 
-
+    public JMenu robotMenu = null;
     private TimeControl timeControl = new TimeControl(TimeControl.Kind.None);
     private TimeControl futureTimeControl = new TimeControl(TimeControl.Kind.None);
     public TimeControl timeControl() { return(timeControl); }
@@ -5403,6 +5532,7 @@ public abstract class commonCanvas extends exCanvas
         	autoDoneCheckbox = myFrame.addOption(s.get(AutoDoneEverywhere),autoDone,deferredEvents);
         }
         
+        
         boolean viewer = reviewOnly;
 
 
@@ -5421,20 +5551,20 @@ public abstract class commonCanvas extends exCanvas
 
             if(extraactions || G.debug())
             {
-        	hidden.showText = myFrame.addAction(s.get("Show Raw Text"),deferredEvents);
-        	hidden.replayCollection = myFrame.addAction(ReplayGameCollection,deferredEvents); 
-            hidden.replayFolder = myFrame.addAction(ReplayGameFolder,deferredEvents);
-            hidden.pauseCommunications = myFrame.addAction("pause communications",deferredEvents);
+        	hidden.showText = myFrame.addAction(debugMenu,s.get("Show Raw Text"),deferredEvents);
+        	hidden.replayCollection = myFrame.addAction(debugMenu,ReplayGameCollection,deferredEvents); 
+            hidden.replayFolder = myFrame.addAction(debugMenu,ReplayGameFolder,deferredEvents);
+            hidden.pauseCommunications = myFrame.addAction(debugMenu,"pause communications",deferredEvents);
             }
         }
 
        if (extraactions)
         {
-           setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
-    		hidden.gameTest = myFrame.addAction("In game test",deferredEvents);
-        	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
+           setNetConsole = myFrame.addAction(debugMenu,"Set Net Logger",deferredEvents);
+    		hidden.gameTest = myFrame.addAction(debugMenu,"In game test",deferredEvents);
+        	l.layoutAction = myFrame.addAction(debugMenu,"check layouts",deferredEvents);
         	{
-        	JMenu robotMenu = new XJMenu("Robot Actions",true);
+        	robotMenu = new XJMenu("Robot Actions",true);
         	myFrame.addToMenuBar(robotMenu);
         	
         	hidden.treeViewerMenu = myFrame.addAction(robotMenu,"view UCT search tree",deferredEvents);
@@ -5454,11 +5584,11 @@ public abstract class commonCanvas extends exCanvas
         	hidden.train = myFrame.addAction(robotMenu, "run training",deferredEvents);
         	hidden.stopTrain = myFrame.addAction(robotMenu,"stop training",deferredEvents);
         	}
-        	hidden.startShell = myFrame.addAction("start shell",deferredEvents);
-            hidden.editMove = myFrame.addAction("edit this game",deferredEvents);
-            l.auxSliders = myFrame.addOption("Use aux sliders",false,deferredEvents);
-           	hidden.alternateBoard = myFrame.addOption("Show Alternate Board", false,deferredEvents);
-            hidden.saveAndCompare = myFrame.addAction("Save/Compare Position",deferredEvents);
+        	hidden.startShell = myFrame.addAction(debugMenu,"start shell",deferredEvents);
+            hidden.editMove = myFrame.addAction(debugMenu,"edit this game",deferredEvents);
+            l.auxSliders = myFrame.addOption(debugMenu,"Use aux sliders",false,deferredEvents);
+           	hidden.alternateBoard = myFrame.addOption(debugMenu,"Show Alternate Board", false,deferredEvents);
+            hidden.saveAndCompare = myFrame.addAction(debugMenu,"Save/Compare Position",deferredEvents);
             if(allPlayersLocal())
             {
             if(REMOTEVNC) { 
@@ -5667,9 +5797,12 @@ public abstract class commonCanvas extends exCanvas
         else if(target==hidden.pauseCommunications)
         {
         	ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
+        	if(myNetConn!=null)
+        	{
         	boolean on = !myNetConn.paused();
         	myNetConn.setPaused(on);
         	hidden.pauseCommunications.setText(on ? "restart communications" : "pause communications");
+        }
         }
     	else if (target == autoDoneCheckbox)
     	{
@@ -6015,7 +6148,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	if(str!=null) 
     	{ 
-    		l.deferredMessages.addElement(new DeferredMessage(player,str)); 
+    		l.deferredMessages.addElement(new DeferredMessage(player,str,-1)); 
     		wake();
     		}
     }
@@ -6074,14 +6207,14 @@ public abstract class commonCanvas extends exCanvas
     {
     	if((remoteViewer!=NoRemoteViewer) && started)
     	{
-    		ParseMessage(null,remoteViewer);
+    		ParseMessage(null,remoteViewer,-1);
     	}
     }
     
     /**
      * parse an incoming "viewer" message from another player.
      */
-    public boolean ParseMessage(String str, int player)
+    public boolean ParseMessage(String str, int player,int channel)
     {	// this is a little convoluted because we want to defer execution
     	// if the user has scrolled back during a game.  The old logic parsed
     	// the message then added it to the history, so the replay at the
@@ -6099,18 +6232,24 @@ public abstract class commonCanvas extends exCanvas
     	// messages.
     	//
     	if(str!=null)
-    		{l.deferredMessages.addElement(new DeferredMessage(player,str));		// add to the list
+    		{l.deferredMessages.addElement(new DeferredMessage(player,str,channel));		// add to the list
     		}
-    	boolean some = l.handleDeferredMessages(); // do the list if we're live, or do nothing if we're in review
+    	
+    	boolean playing = !mutable_game_record;
+     	boolean reviewing = playing && reviewMode();
+     	boolean some = reviewing ? false : l.handleDeferredMessages(); // do the list if we're live, or do nothing if we're in review
     	
     	boolean has = hasDeferredMessages();
     	if((str!=null) && has)	
-        {	if(!l.deferWarningSent)
+        {
+         	if(reviewing)
+         	{
+    		if(!l.deferWarningSent)
         	{
         	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
                 s.get(MovesComingIn));}
         	l.deferWarningSent = true;
-        	}
+        	}}
          }
     	else { l.deferWarningSent = false; }
     	
@@ -7506,7 +7645,9 @@ public abstract class commonCanvas extends exCanvas
         {
         	waitTime = Math.min(waitTime,250);
         }
+        if(hasDeferredMessages()) { waitTime = Math.min(waitTime,50); }
         super.ViewerRun(waitTime);
+        reTrackMouse();
 
     }
 
@@ -8173,6 +8314,16 @@ public String encodeScreenZone(int x, int y,Point p)
 			return(zn);
 		}
 	}
+	for(commonPlayer pl : players)
+	{
+		Rectangle zone = pl.playerBox;
+		if(zone!=null && G.pointInRect(x,y,zone))
+		{
+			G.SetLeft(p,((x-G.Left(zone))*100)/G.Width(zone));
+			G.SetTop(p,((y-G.Top(zone))*100)/G.Height(zone));
+			return ".p."+pl.boardIndex;
+		}
+	}
 	//if in the board zone
 	Rectangle ref = fullRect;
 	String name = "on";
@@ -8221,6 +8372,20 @@ public Point decodeScreenZone(String zone,int x,int y)
 		}
 		 
 	}
+	if(zone.startsWith(".p."))
+	{	int n = zone.charAt(3)-'0';
+		for(commonPlayer pl : players)
+		{
+		if(pl!=null && pl.boardIndex==n)
+		{
+			Rectangle zr = pl.playerBox;
+			Point mp = new Point(G.Left(zr) + (int)(((x+0.5)/100)*G.Width(zr)), G.Top(zr) + (int)(((y+0.5)/100)*G.Height(zr)));
+			return mp;
+		}
+		}
+	}
+	
+	
 	// full screen is encoded as a arbitrary units from the upper left
 	double quant = Math.max(2,G.Width(fullRect)/100.0);
 	Point mp =new Point(G.Left(fullRect)+(int)((x+0.5)*quant),G.Top(fullRect)+(int)((y+0.5)*quant));

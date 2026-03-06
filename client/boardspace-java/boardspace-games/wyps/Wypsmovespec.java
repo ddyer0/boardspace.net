@@ -27,7 +27,7 @@ import online.game.*;
 import java.awt.Font;
 
 import lib.ExtendedHashtable;
-public class Wypsmovespec extends commonMPMove implements WypsConstants
+public class Wypsmovespec extends commonMove implements WypsConstants
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static final int MOVE_PICK = 204; // pick a chip from a pool

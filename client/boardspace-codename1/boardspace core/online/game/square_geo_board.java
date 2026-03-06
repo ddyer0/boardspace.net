@@ -29,9 +29,9 @@ import lib.Random;
  */
 public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends gBoard<CELLTYPE>
 {	
-	
+	private int localRotation = 0;
 	public void setRotation(int rotation)
-	{
+	{	localRotation = rotation;
 		switch(rotation%4)
     	{
     	default:
@@ -57,7 +57,14 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
 		break;
    	}
 	}
-
+	public void copyFrom(square_geo_board<CELLTYPE>from)
+	{	super.copyFrom(from);
+		localRotation = from.localRotation;
+	}
+	public int getRotation()
+	{
+		return localRotation;
+	}
     /**
      * find the direction from fc,fr to tc,tr (given that they are on a line)
      * these directions are appropriate for cell.exitTo.

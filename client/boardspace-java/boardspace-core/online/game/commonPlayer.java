@@ -129,10 +129,23 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     public int mouseX = -1;
     public int mouseY = -1;
     public int mouseObj = NothingMoving;
+    public long mouseTime = 0;
     public String mouseType = null;
+    public boolean unseenMouseActivity = false;
+    public boolean startingAnimation = false;
+    public boolean animating = false;
+    public int startingMouseX = -1;
+    public int startingMouseY = -1;
+    public long startingMouseTime = 0;
+    public int startingMouseObj = -1;
+    public int targetMouseX = -1;
+    public int targetMouseY = -1;
+    
     public int drawnMouseX = -1;
     public int drawnMouseY = -1;
     public long drawnMouseTime = 0;
+    public int drawLagTime = 750;		// 3/4 second
+    
     public String mouseZone = "off";
     public int focuschanged = 0; //count of focus changes
 
@@ -715,12 +728,13 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     {
         if ((mouseX != inx) || (mouseY != iny) || (!mouseZone.equals(zone)) ||
                 (mouseObj != obj))
-        {
+        {	unseenMouseActivity = true;
             mouseX = inx;
             mouseY = iny;
             mouseZone = zone;
             mouseObj = obj;
             mouseType = intype;
+            mouseTime = G.Date();
             return (true);
         }
 

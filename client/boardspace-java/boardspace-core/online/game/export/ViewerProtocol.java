@@ -18,6 +18,7 @@ package online.game.export;
 
 import java.awt.*;
 
+import bridge.JMenu;
 import lib.ExtendedHashtable;
 import lib.LFrameProtocol;
 import lib.TimeControl;
@@ -242,6 +243,7 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * @return
 	 */
 	public default String getUrlNotes() { return ""; }
+	public JMenu debugMenu();
 
 
 }

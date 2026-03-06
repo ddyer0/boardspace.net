@@ -158,7 +158,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     
     private TextButton readyButton = addButton(ReadyButton,BugsId.Ready,ExplainReady,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-    private Rectangle marketRect = addRect("both");
+    private Rectangle marketRect = addZoneRect("both");
     private boolean rotateMarket = false;
     private Rectangle marketCardRect = addRect("bugMarket");
     private Rectangle goalCardRect = addRect("goal");

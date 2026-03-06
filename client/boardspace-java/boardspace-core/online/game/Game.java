@@ -1623,9 +1623,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 // passing -1 instead of the current player boardIndex means the appropriate
                 // number will be used based on whose move it is.  In normal play this will
                 // be the same, but in replay or review, it may be anyone.
-                boolean parsed = wait || v.ParseMessage(rest, -1);
+                boolean parsed = wait || v.ParseMessage(rest, -1,playerID);
                 // here we've received a move from another player, presumable one that
                 // he recorded, so we don't need to record it, only remember the current state.
+                if(!my.isSpectator())
+                {
                 RecordingStrategy mode = v.gameRecordingMode();
                 switch(mode)
                 {
@@ -1640,7 +1642,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 		sendMessage(msg);
                 		}  	
                 	}
-                }
+                }}
                 
             	if (parsed) //true if accepted in a real game
                 { // note, don't do any of this if we're a reviewer type
@@ -2131,15 +2133,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
         if(extraactions || G.isCheerpj()) 
         {
-        	testswitch = myFrame.addAction("test switch",deferredEvents);
+        	testswitch = myFrame.addAction(v.debugMenu(),"test switch",deferredEvents);
         }
         if (extraactions)
-        {
+        {	JMenu debug = v.debugMenu();
             
-            inspectGame = myFrame.addAction("inspect game",deferredEvents);
-            inspectViewer = myFrame.addAction("inspect canvas",deferredEvents);
-            saveStart = myFrame.addAction("Save as Starting Position",deferredEvents);
-            if(useStory==null) { useStory = myFrame.addAction("Use Story",deferredEvents); }
+            inspectGame = myFrame.addAction(debug,"inspect game",deferredEvents);
+            inspectViewer = myFrame.addAction(debug,"inspect canvas",deferredEvents);
+            saveStart = myFrame.addAction(debug,"Save as Starting Position",deferredEvents);
+            if(useStory==null) { useStory = myFrame.addAction(debug,"Use Story",deferredEvents); }
 
         }        
     }
@@ -3729,18 +3731,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if (messageMenu == null)
         {
             messageMenu = new XJMenu(s.get(MessageMessage),true);
-            playerComments = myFrame.addOption(s.get(SeePlayerComments),
-                    true, messageMenu,deferredEvents);
-            spectatorComments = myFrame.addOption(s.get(SeeSpectatorComments),
-                    !isTournamentPlayer(), messageMenu,deferredEvents);
-            jointReview = myFrame.addOption(s.get(JointReview), reviewOnly,
-                    messageMenu,deferredEvents);
+            playerComments = myFrame.addOption(messageMenu,
+                    s.get(SeePlayerComments), true,deferredEvents);
+            spectatorComments = myFrame.addOption(messageMenu,
+                    s.get(SeeSpectatorComments), !isTournamentPlayer(),deferredEvents);
+            jointReview = myFrame.addOption(messageMenu, s.get(JointReview),
+                    reviewOnly,deferredEvents);
  
             if(extraactions)
             {
-                deferActions = myFrame.addOption("defer input",false,deferredEvents);
-                flushInput = myFrame.addOption("flush input",false,deferredEvents);
-                flushOutput = myFrame.addOption("flush output",false,deferredEvents);
+                deferActions = myFrame.addOption(v.debugMenu(),"defer input",false,deferredEvents);
+                flushInput = myFrame.addOption(v.debugMenu(),"flush input",false,deferredEvents);
+                flushOutput = myFrame.addOption(v.debugMenu(),"flush output",false,deferredEvents);
             }
             myFrame.addToMenuBar(messageMenu);
  
@@ -4014,7 +4016,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	boolean newturn = SetWhoseTurn();
     	if(newturn && turnBasedGame!=null && !my.isSpectator()) { recordAsyncGame(false); }
 
-    	boolean some = (v!=null) && v.ParseMessage(null, -1);
+    	boolean some = (v!=null) && v.ParseMessage(null, -1,-1);
     	if(some) 
     		{ if(v.getReviewPosition()<0) 
     				{ serverRecordString(RecordingStrategy.All);
@@ -4060,9 +4062,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 try
                 {	long now = G.Date();
                 	myFrame.screenResized();
-                    runStep(hadMessage 
-                    		? 0
-                    		: 2000); //common run things, including the lobby and waiting for time to pass
+                	int delay = hadMessage
+                					? 0
+                					: 2000;
+                    runStep(delay);		 //common run things, including the lobby and waiting for time to pass
                     if(requestControlNow) 
                     { requestControlNow = false; 
                       requestControlToken(); 
@@ -4601,7 +4604,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	// in one swell foop, followed by a game status.  This is not just
         	// cosmetic, it allows the server to hold the definitive game state.
         	doTouch();
- 
+        	// send the latest mouse info.  this makes the tracking information available before the activity
+        	// the "smoothMouseTracking" option depends on this to delay the action until the animation is done
+        	sendMouseMessage();	
         	String combined = NetConn.SEND_MULTIPLE;	// includes a trailing space
             while (!event.isEmpty())
 	            {	
@@ -4742,7 +4747,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        		
        		String msg = NetConn.SEND_AS_ROBOT_ECHO + p.channel + " "+KEYWORD_VIEWER+" "+ time + str;
        		// in the new mode, combine the robot move with the new game state
-       		v.ParseMessage(str, p.boardIndex);
+       		v.ParseMessage(str, p.boardIndex,-1);
        		// we send the new commands as an atomic operation, but if the 
        		// "append" half fails, we can end up with permanantly out of
        		// sync state.

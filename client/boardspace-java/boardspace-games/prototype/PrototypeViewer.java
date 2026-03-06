@@ -681,8 +681,18 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      * or if some mouse activity should be censored.
      */
     public String encodeScreenZone(int x, int y,Point p)
-    {
+    {	
     	return(super.encodeScreenZone(x,y,p));
+    }
+    /**
+     * decode a screen zone x,y
+     * @param zone
+     * @param x
+     * @param y
+     * @return a point representing the decoded position
+     */
+    public Point decodeScreenZone(String zone,int x,int y)
+    {	return super.decodeScreenZone(zone,x,y);
     }
 
     /**

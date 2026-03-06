@@ -115,7 +115,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
         b.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         
-        if(extraactions) { getSolutions =  myFrame.addAction("Get Solutions",deferredEvents); }
+        if(extraactions) { getSolutions =  myFrame.addAction(debugMenu,"Get Solutions",deferredEvents); }
 
         
      }

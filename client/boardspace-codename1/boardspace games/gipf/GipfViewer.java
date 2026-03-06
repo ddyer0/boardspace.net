@@ -121,7 +121,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         
         if (extraactions)
         {
-            startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
+            startEvaluator = myFrame.addOption(robotMenu,"Start Evaluator", false,deferredEvents);
         }
         String name =info.getString(GameInfo.GAMENAME,"Gipf");
         String name2 = "matrx".equals(name) ? "gipf-matrx" : info.getString(GameInfo.GAMETYPE,"gipf");
