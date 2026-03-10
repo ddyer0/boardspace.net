@@ -57,7 +57,7 @@ public final class XXTEA implements CommonConfig{
     }
     public static final byte[] encrypt(String data, byte[] key) {
         try {
-            return encrypt(data.getBytes("UTF-8"), key);
+            return encrypt(data.getBytes(UniversalConstants.UTF_8), key);
         }
         catch (UnsupportedEncodingException e) {
             return null;
@@ -68,7 +68,7 @@ public final class XXTEA implements CommonConfig{
      }
     public static final byte[] encrypt(String data, String key) {
         try {
-            return encrypt(data.getBytes("UTF-8"),fixKey(key));
+            return encrypt(data.getBytes(UniversalConstants.UTF_8),fixKey(key));
         }
         catch (UnsupportedEncodingException e) {
             return null;
@@ -117,7 +117,7 @@ public final class XXTEA implements CommonConfig{
         try {
             byte[] bytes = decrypt(data, key);
             if (bytes == null) return null;
-            return new String(bytes, "UTF-8");
+            return new String(bytes,UniversalConstants.UTF_8);
         }
         catch (UnsupportedEncodingException ex) {
             return null;
@@ -127,7 +127,7 @@ public final class XXTEA implements CommonConfig{
         try {
             byte[] bytes = decrypt(data, key);
             if (bytes == null) return null;
-            return new String(bytes, "UTF-8");
+            return new String(bytes, UniversalConstants.UTF_8);
         }
         catch (UnsupportedEncodingException ex) {
             return null;
@@ -137,7 +137,7 @@ public final class XXTEA implements CommonConfig{
         try {
             byte[] bytes = decrypt(Base64.decode(data), key);
             if (bytes == null) return null;
-            return new String(bytes, "UTF-8");
+            return new String(bytes,UniversalConstants.UTF_8);
         }
         catch (UnsupportedEncodingException ex) {
             return null;
@@ -147,7 +147,7 @@ public final class XXTEA implements CommonConfig{
         try {
             byte[] bytes = decrypt(Base64.decode(data), key);
             if (bytes == null) return null;
-            String s1 = new String(bytes, "UTF-8");
+            String s1 = new String(bytes, UniversalConstants.UTF_8);
             return(s1);
         }
         catch (UnsupportedEncodingException ex) {

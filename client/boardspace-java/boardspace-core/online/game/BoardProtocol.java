@@ -17,6 +17,7 @@
 package online.game;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import lib.Digestable;
 import online.game.BaseBoard.BoardState;
@@ -148,6 +149,26 @@ public interface BoardProtocol extends Digestable
      * @see #encodeCellPosition
      */
     public Point decodeCellPosition(int x,int y,double cellsize);
+    
+    /**
+     * encode a board position, nominally as a percent of the full size
+     * @param x
+     * @param y
+     * @param boardRect
+     * @return
+     */
+    public Point encodeBoardPosition(int x,int y,Rectangle boardRect);
+    /**
+	 * Override this method to decode an encoded board position.  
+	 *
+	 * @param x
+	 * @param y
+	 * @param the rectangle
+	 * @return a new "point" representing the mouse position 
+	 * @see #encodeCellPosition
+	 */
+	public Point decodeBoardPosition(int x,int y,Rectangle boardRect);
+	
     /**
      * 
      * @return the approximate size, in pixels, of a board square.

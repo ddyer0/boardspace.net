@@ -17,6 +17,7 @@
 package online.game;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import lib.AR;
 import lib.Digestable;
@@ -301,10 +302,10 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
      * @return a point representing the mouse position
      * @see #decodeCellPosition
      */
-	public Point encodeCellPosition(int x,int y,double cellsize)
+    public Point encodeCellPosition(int x,int y,double cellsize)
 	{	return( new Point((int)(x/cellsize),(int)(y/cellsize)));
 	}
-	/**
+    /**
 	 * Override this method to decode an encoded board position.  
 	 *
 	 * @param x
@@ -315,6 +316,22 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	 */
 	public Point decodeCellPosition(int x,int y,double cellsize)
 	{	return(new Point((int)(x*cellsize),(int)(y*cellsize)));
+	}
+	
+    public Point encodeBoardPosition(int x,int y,Rectangle boardRect)
+	{	return( new Point((((x-G.Left(boardRect))*1000)/G.Width(boardRect)),(((y-G.Top(boardRect))*1000)/G.Height(boardRect))));
+	}
+    /**
+	 * Override this method to decode an encoded board position.  
+	 *
+	 * @param x
+	 * @param y
+	 * @param cellsize
+	 * @return a new "point" representing the mouse position 
+	 * @see #encodeCellPosition
+	 */
+	public Point decodeBoardPosition(int x,int y,Rectangle boardRect)
+	{	return(new Point( (x*G.Width(boardRect))/1000+G.Left(boardRect),(y*G.Height(boardRect))/1000+G.Top(boardRect)));
 	}
 	/**
 	 * 

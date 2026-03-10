@@ -59,10 +59,11 @@ import online.game.*;
 public class BugsBoard 
 	extends hexBoard<BugsCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,BugsConstants
-{	static int REVISION = 103;			// 100 represents the initial version of the game
+{	static int REVISION = 104;			// 100 represents the initial version of the game
 										// 101 fixes the scoring of herbivores to not include other prey species
 										// 102 fixes the unstable initialization of the bug market
 										// 103 restricts the number of predators to predator_percentage
+										// 104 moves random predators toward the bottom of the deck
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel_parallel;
@@ -308,7 +309,11 @@ public class BugsBoard
 				}
 		}
 		activeDeck.shuffle(new Random(randomKey+2356366));
-		//G.print("Build new "+activeDeck.Digest(new Random(1245)));
+		if(revision>=104)
+		{
+		penalizePredators(activeDeck);
+		}
+		G.print("Build new "+activeDeck.Digest(new Random(1245)));
 		activeDeckCacheKey = key;
 		activeDeckCache.copyFrom(activeDeck);
     	}
@@ -320,6 +325,23 @@ public class BugsBoard
     	}
 		//G.print(cats.size()," categories"," ",activeDeck.height()," cards ",(int)(carnivore*100)/activeDeck.height(),"% carnivore");
 		
+    }
+    
+    private double PREDATOR_DEFER_CHANCE = 0.7;
+    private void penalizePredators(BugsCell deck)
+    {
+    	if(revision >= 104) {
+    	    Random r2 = new Random(randomKey + 9871234);
+    	    int deckHeight = deck.height();
+    	    for(int i = deckHeight-1; i>=deckHeight/2; i--)
+    	    {
+    	        BugCard card = (BugCard)deck.chipAtIndex(i);
+    	        if(card.getProfile().isPredator() && r2.nextDouble() < 1+PREDATOR_DEFER_CHANCE) {
+    	            int newPos = r2.nextInt(i);
+    	            deck.swap(i, newPos);
+    	        }
+    	    }
+    	}
     }
     private void buildGoalDeck()
     {	long key = randomKey+23525426;
@@ -433,16 +455,32 @@ public class BugsBoard
     	}
      }
     
-    public BugCard random1PointBug(Random r)
+    //
+    // not quite random 1 point.  If no 1 pointers can be found the value is relaxed
+    // and in rev 104 and up there's an additional bias against predators.
+    //
+    public BugCard randomLowValueBug(Random r, int maxvalue)
     {	BugCard ch = null;
-    	int index = 0;
-    	
+    	int index = 0;  	
     	int loops= 1;
+    	if(revision<104)
+    	{	// here the low value is always 1
     	do {
     		index = r.nextInt(activeDeck.height());
     		ch = (BugCard)activeDeck.chipAtIndex(index);
-    		if(loops++ % 10==0) { minDeckValue++; }
+       		if(loops++ % 10==0) { minDeckValue++; }
     	} while (ch.pointValue()>minDeckValue);
+    	}
+    	else
+    	{
+        	do {
+        		index = r.nextInt(activeDeck.height());
+        		ch = (BugCard)activeDeck.chipAtIndex(index);
+           		if(loops++ % 10==0) { minDeckValue++; }
+        	} while (ch.pointValue()>Math.max(maxvalue,minDeckValue)
+        				|| (ch.getProfile().isPredator() && r.nextDouble()<PREDATOR_DEFER_CHANCE));
+    		
+    	}
     	activeDeck.removeChipAtIndex(index);
     	if(revision<102) 
     		{ // backward compatibility
@@ -460,7 +498,12 @@ public class BugsBoard
 	    	  pb.doInit(); 
 	    	  // give a random goal and a random 1 point bug
 	    	  pb.goals.addChip(goalDeck.removeTop());
-	    	  pb.bugs.addChip(random1PointBug(r));
+	    	  pb.bugs.addChip(randomLowValueBug(r,1));
+	    	  if(revision>=104)
+	    	  {
+	    		  pb.goals.addChip(goalDeck.removeTop());
+		    	  pb.bugs.addChip(randomLowValueBug(r,1));  
+	    	  }
 	    	}
     }
     /* initialize a board back to initial empty state */
@@ -511,7 +554,7 @@ public class BugsBoard
 	 		break;
 		case bugspiel_sequential:
 		case bugspiel_sequential_large:
-			if(revision<102)
+			if(revision<103)
 			{	Random r = new Random(randomKey+4666646);
 				for(int i=0;i<bugMarket.length;)
 		 		{	int idx = r.nextInt(activeDeck.height());
@@ -526,8 +569,9 @@ public class BugsBoard
 			else
 			{	Random r = new Random(randomKey+4666646);
 				for(int i=0;i<bugMarket.length;i++)
-				{	// no "gimmies" in the startup bugMarket
-					BugCard ch = random1PointBug(r);
+				{	// no "gimmies" in the startup bugMarket, make sure the initial bugs
+					// initially cost more than they are worth 
+					BugCard ch = randomLowValueBug(r,bugMarket[i].cost);
 					bugMarket[i].addChip(ch);
 				}
 			}

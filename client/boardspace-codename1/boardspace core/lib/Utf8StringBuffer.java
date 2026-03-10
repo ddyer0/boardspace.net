@@ -44,8 +44,8 @@ package lib;
 * The UTF-8 decoding is done by this class and no additional buffers or Readers are used.
 * The UTF-8 code was inspired by http://javolution.org
 * 
-* The transformation can be done by Charset.forName("UTF-8").encode(myString)
-* and Charset.forName("UTF-8").decode(bytes)
+* The transformation can be done by Charset.forName(UniversalConstants.UTF_8).encode(myString)
+* and Charset.forName(UniversalConstants.UTF_8).decode(bytes)
 */
 class Utf8StringBuffer 
 {

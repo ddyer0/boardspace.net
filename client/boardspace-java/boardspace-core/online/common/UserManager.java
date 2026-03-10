@@ -243,5 +243,10 @@ public void FlushDeadUsers(commonLobby can)
 	  	}
 	  	userMenu.show(ex,ey);
 	  	}
- 
+ public static UserManager theinstance = null;
+ public static UserManager getInstance()
+ {
+	 if(theinstance==null) { theinstance = new UserManager(); }
+	 return theinstance;
+ }
 }

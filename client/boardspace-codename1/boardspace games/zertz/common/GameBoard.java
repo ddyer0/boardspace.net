@@ -584,7 +584,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = getCell(from_b.droppedDest);
         pickedObject = from_b.pickedObject;
-        
+        intermediatePick = getCell(from_b.intermediatePick);
+        intermediatePickState = from_b.intermediatePickState;
         AR.copy(CaptureColor,from_b.CaptureColor);
         AR.copy(CaptureState,from_b.CaptureState);
         getCell(Captures,from_b.Captures);       
@@ -630,6 +631,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 		int np = tok.hasMoreTokens() ? tok.intToken() : players_in_game;
     	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
     	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;	// revision not specified, old client
+    	
        	// 
     	// this is delicate - this version os doInit is called from copyFrom
     	// as part of copying the board, so it must use the current setup
@@ -649,7 +651,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     	variation = bs;
     	adjustRevision(rev);
     	setBoardType(bset);
-    	
+        intermediatePick = null;
+        intermediatePickState = null;
     	swapped_state = false;
     	needStart = true;
     	Grid_Style = ZERTZ_GRID_STYLE;
@@ -1478,6 +1481,9 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             setState(ZertzState.GAMEOVER_STATE);
         }
     }
+    zCell intermediatePick = null;
+    ZertzState intermediatePickState = null;
+    
     public boolean Execute(commonMove mm,replayMode replay)
     {	movespec m = (movespec)mm;
         
@@ -1518,14 +1524,17 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	if(f==pickedSource && pickedObject!=null)
         	{
         		SetBoard(f,pickedObject);
+        		if(f==intermediatePick) { setState(intermediatePickState); droppedDest = f; }
         		pickedSource = null;
         		pickedObject = null;
-        		AddBall(f);
+        		//AddBall(f);
         	}
         	else if(f==droppedDest && board_state!=ZertzState.CAPTURE_STATE) 
         		{ 
         			droppedDest = null;
         			pickedObject = f.topChip();
+        			intermediatePick = f;
+        			intermediatePickState = board_state;
         			SetBoard(f,Empty);
         			switch(board_state)
         			{

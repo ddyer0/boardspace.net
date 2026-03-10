@@ -159,6 +159,7 @@ public interface CommonConfig extends UniversalConstants {
 		   boardMax("false"),
 		   showgrid("false"),
 		   smoothMouse("true"),
+		   translateChat("true"),
 		   ;
 		   String value;
 		   Default(String v) { value = v; }

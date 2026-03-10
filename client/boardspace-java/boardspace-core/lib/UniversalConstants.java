@@ -30,6 +30,9 @@ public interface UniversalConstants {
 	static final String OFFERDRAW = "OfferDraw";
 	static final String DECLINEDRAW = "DeclineDraw";
 	static final String ACCEPTDRAW = "AcceptDraw";
+	
+	public final static String UTF_8 = "UTF-8";
+
 
 
 }

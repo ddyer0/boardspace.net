@@ -189,6 +189,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 166 fix extraneous "steal" when innkeeper placed on the dollar space
 										// revision 167 fixes the logic for "reaper" to not care about the numnber of grapes produced
 										// revision 168 changes the "with replacement" logic to distribute the replacements fairly
+										// revision 169 fixes an interaction with oracle playing the vendor card
 
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
@@ -4028,7 +4029,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	ViticultureChip ch = from.removeChipAtIndex(index);
     	ViticultureCell dest = discardPile(ch);
     	dest.addChip(ch);
-    	logGameEvent(msg,ch.type.toString(),ch.type.toString());
+    	logGameEvent(msg,ch.type.toString());
     	if(replay.animate)
     	{ 	animationStack.push(from);
     		animationStack.push(dest);

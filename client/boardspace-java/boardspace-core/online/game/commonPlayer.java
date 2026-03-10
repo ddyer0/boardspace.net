@@ -748,8 +748,10 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
             setChanged();
         }
     }
-    public void mouseTrackingObject(int obj) 
-    { mouseObj = obj; 
+    public void stopTracking() 
+    { 	startingMouseObj = mouseObj = NothingMoving; 
+    	animating = startingAnimation = false;
+    	startingMouseTime = 0;
     }
     
     public void setMouseTrack(String zone)

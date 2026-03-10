@@ -4223,7 +4223,7 @@ private void drawPlayerBoard(Graphics gc,
 		int cardW1 = (int)(cardStep*1.1);
 		int cardX = xp+cardStep*2/3;
 		Rectangle m1Rect = new Rectangle(cardX-cardW1/2,cardY-cardV/2,cardW1,cardV);
-		if(m1.draw(gc,this,m1Rect,highlight,ViticultureId.MamaCards,(Text)null))
+		if(m1.draw(gc,this,m1Rect,highlight,ViticultureId.MamaCards,(String)null))
 		{	highlight.hitObject = pb.cards;
 			highlight.hit_index = 3;
 			highlight.spriteRect = m1Rect;

@@ -16,6 +16,7 @@
  */
 package online.game;
 import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
 
 import lib.AR;
 import lib.Digestable;
@@ -314,6 +315,22 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	 */
 	public Point decodeCellPosition(int x,int y,double cellsize)
 	{	return(new Point((int)(x*cellsize),(int)(y*cellsize)));
+	}
+	
+    public Point encodeBoardPosition(int x,int y,Rectangle boardRect)
+	{	return( new Point((((x-G.Left(boardRect))*1000)/G.Width(boardRect)),(((y-G.Top(boardRect))*1000)/G.Height(boardRect))));
+	}
+    /**
+	 * Override this method to decode an encoded board position.  
+	 *
+	 * @param x
+	 * @param y
+	 * @param cellsize
+	 * @return a new "point" representing the mouse position 
+	 * @see #encodeCellPosition
+	 */
+	public Point decodeBoardPosition(int x,int y,Rectangle boardRect)
+	{	return(new Point( (x*G.Width(boardRect))/1000+G.Left(boardRect),(y*G.Height(boardRect))/1000+G.Top(boardRect)));
 	}
 	/**
 	 * 

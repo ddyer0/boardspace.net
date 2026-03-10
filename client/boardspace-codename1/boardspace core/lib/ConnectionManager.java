@@ -630,7 +630,7 @@ public class ConnectionManager
     {	
     	ByteArrayOutputStream out = new Utf8OutputStream();
 		try {
-			return(new netPrintStream(out,"UTF-8"));
+			return(new netPrintStream(out,UniversalConstants.UTF_8));
 		}
 		catch (UnsupportedEncodingException enc)
 		{

@@ -255,7 +255,7 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
         }
         else
         {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+            theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                 s.get(CensoredGameRecordString));
         }
 	}

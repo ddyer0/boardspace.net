@@ -46,7 +46,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.security.AccessControlException;
-
 import javax.swing.JCheckBoxMenuItem;
 
 import bridge.Config;

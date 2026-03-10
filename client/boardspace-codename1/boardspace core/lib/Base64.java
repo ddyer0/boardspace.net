@@ -134,7 +134,7 @@ public class Base64 implements CommonConfig {
    public static byte[] getUtf8(String b)
    {
 	   try {
-		return b.getBytes("UTF-8");
+		return b.getBytes(UniversalConstants.UTF_8);
 	} catch (UnsupportedEncodingException e) {
 		e.printStackTrace();
 	}
@@ -161,7 +161,7 @@ public class Base64 implements CommonConfig {
     */
    public static String getString(byte []data)
    {	try {
-	   		return data==null ? "" : new String(data,"UTF-8");
+	   		return data==null ? "" : new String(data,UniversalConstants.UTF_8);
    		}
    		catch (UnsupportedEncodingException a)
    			{

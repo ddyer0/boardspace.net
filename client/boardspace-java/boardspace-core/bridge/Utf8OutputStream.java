@@ -18,6 +18,8 @@ package bridge;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+
+import lib.UniversalConstants;
 /**
  * this is an output stream where the input is expected to be UTF-8 bytes,
  * and the final .toString() will re-encode the utf-8 bytes as a 
@@ -30,7 +32,7 @@ public class Utf8OutputStream extends ByteArrayOutputStream
 	public String toString() 
 	{	 
 		try {
-			return(toString("UTF-8"));
+			return(toString(UniversalConstants.UTF_8));
 		} catch (UnsupportedEncodingException e) {
 			return(toString());
 		} 

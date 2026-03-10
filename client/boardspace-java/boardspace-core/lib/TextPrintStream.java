@@ -37,7 +37,7 @@ public class TextPrintStream extends Utf8Printer implements ShellProtocol
 	
 	static public TextPrintStream getPrinter(ByteArrayOutputStream out,AppendInterface a)
 		{	try {
-			 	return(new TextPrintStream(out,a,"UTF-8"));
+			 	return(new TextPrintStream(out,a,UniversalConstants.UTF_8));
 			}
 			catch (UnsupportedEncodingException e)
 			{	return(new TextPrintStream(out,a));

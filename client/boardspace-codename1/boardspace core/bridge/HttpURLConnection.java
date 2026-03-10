@@ -29,4 +29,5 @@ public class HttpURLConnection extends URLConnection
 		setHttpMethod(string);
 		setPost("POST".equals(string.toUpperCase())); 	// this papers over a bug in android, where http method is effectively ignored.
 	}
+
 }

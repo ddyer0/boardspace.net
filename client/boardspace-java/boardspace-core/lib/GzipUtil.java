@@ -25,7 +25,7 @@ import java.util.zip.GZIPOutputStream;
  * https://myadventuresincoding.wordpress.com/2016/01/02/java-simple-gzip-utility-to-compress-and-decompress-a-string/
  * */
 public class GzipUtil {
-	static final String UTF_8 = "UTF-8";
+	static final String UTF_8 =UniversalConstants.UTF_8;
 	static final public int GZIP_MAGIC = 0x8b1f;
   // note, this works but on codename1 it appears to be 1000x slower than on regular hardware.
   // the culprit appears to be the implementation of GZIPOutputStream

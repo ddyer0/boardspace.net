@@ -18,6 +18,9 @@ package bridge;
 
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+
+import lib.UniversalConstants;
+
 import java.io.OutputStream;
 
 //
@@ -39,7 +42,7 @@ public class Utf8Printer extends PrintStream {
 	public static Utf8Printer getPrinter(OutputStream ss)
 	{
 		try {
-			return new Utf8Printer(ss,"UTF-8");
+			return new Utf8Printer(ss,UniversalConstants.UTF_8);
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -50,7 +53,7 @@ public class Utf8Printer extends PrintStream {
 	public void print(String s)
 	{
         try {
-        	byte bs[] = s.getBytes("UTF-8");
+        	byte bs[] = s.getBytes(UniversalConstants.UTF_8);
         	write(bs,0,bs.length);
 		} catch (UnsupportedEncodingException e) {
 			super.print(s);

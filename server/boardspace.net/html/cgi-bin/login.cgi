@@ -191,6 +191,7 @@ language=$language
 $gameparams
 extramouse=$extra
 $guestnameout$feat
+claudeapi=$'claudeapi
 final=true
 ");
 	my $cs = &simplecs($msg);

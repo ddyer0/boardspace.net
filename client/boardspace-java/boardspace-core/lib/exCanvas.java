@@ -50,6 +50,7 @@ public abstract class exCanvas extends Canvas
 		DrawingObject
 {	// two specials just for standard java
 	static final String SmoothMouse = "Smooth mouse tracking";
+	static final String TranslateChat = "Translate Chat";
     static final String VirtualMouse = "Virtual Mouse";
     static final String SpeedTestMessage = "Cpu speed test";
     static final String FontSize = "Set Font Size";
@@ -87,6 +88,7 @@ public abstract class exCanvas extends Canvas
     public static final String CanvasMessages[] = {
     		VirtualMouse,
     		SmoothMouse,
+    		TranslateChat,
     		SpeedTestMessage,
     		ZoomMessage,
     		FontSize,
@@ -108,6 +110,7 @@ public abstract class exCanvas extends Canvas
 	    private JCheckBoxMenuItem useCache = null;
 	    private JCheckBoxMenuItem virtualMouseCheckbox = null;
 	    private JCheckBoxMenuItem smoothMouseTracking = null;
+	    private JCheckBoxMenuItem translateChats = null;
 	    private JMenuItem cpuTest = null;
 	    private JMenuItem setConsole = null;
 	    private Font standardBoldFont;
@@ -499,6 +502,7 @@ public abstract class exCanvas extends Canvas
 
         l.virtualMouseCheckbox = myFrame.addOption(s.get(VirtualMouse),false,deferredEvents);
         l.smoothMouseTracking = myFrame.addOption(s.get(SmoothMouse),smoothMouseTracking=Config.Default.getBoolean(Config.Default.smoothMouse),deferredEvents);
+        l.smoothMouseTracking.setForeground(Color.blue);
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         if(extraactions)
         {
@@ -545,8 +549,10 @@ public abstract class exCanvas extends Canvas
         l.languageMenu = myFrame.addChoiceMenu(s.get(PREFERREDLANGUAGE),deferredEvents);
         l.languageMenu.setForeground(Color.blue);
         InternationalStrings.addLanguageNames(l.languageMenu,deferredEvents);
-
         
+        l.translateChats = myFrame.addOption(s.get(TranslateChat),translateChat=Config.Default.getBoolean(Config.Default.translateChat),deferredEvents);
+        l.translateChats.setForeground(Color.blue);
+         
         l.cpuTest = myFrame.addAction(SpeedTestMessage,deferredEvents);
        
         addMouseMotionListener(this);
@@ -645,6 +651,8 @@ public abstract class exCanvas extends Canvas
     	generalRefresh();
     }
     public boolean smoothMouseTracking = true;
+    public boolean translateChat = true;
+    
    /**
      * handle an event that was deferred.  This is a visitor method to 
      * handle menu items, both fixed and popup.
@@ -730,13 +738,19 @@ public abstract class exCanvas extends Canvas
 		   smoothMouseTracking = l.smoothMouseTracking.getState();
 		   Config.Default.setBoolean(Config.Default.smoothMouse,smoothMouseTracking);
 	   }
+	   else if(target==l.translateChats)
+	   {
+		   translateChat = l.translateChats.getState();
+		   theChat.setTranslate(translateChat);
+		   Config.Default.setBoolean(Config.Default.translateChat,translateChat);
+	   }
 	   else if(selectFontSize(target)) {return(true); }
 	   else if(selectFontStyle(target)) { return true; }
        else if(target==l.cpuTest) 
         	{ double time = G.cpuTest();
         	  
         	  if(theChat!=null)
-        		  {theChat.postMessage(ChatInterface.LOBBYCHANNEL , ChatInterface.KEYWORD_LOBBY_CHAT,
+        		  {theChat.postMessage(ChatInterface.LOBBYCHANNEL , null,null,ChatInterface.KEYWORD_LOBBY_CHAT,
 					  "cpu test "+time+" standard cpus");
         		  }
         	  //SSDP.main(null);
@@ -770,6 +784,7 @@ public abstract class exCanvas extends Canvas
     	{
     	p.setCanvas(this);
         theChat = p;
+        theChat.setTranslate(translateChat);
         resetBounds();
      	}
     	chatFramed = framed;
@@ -1723,7 +1738,7 @@ graphics when using a touch screen.
 
             if (chat != null)
             {
-                chat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, m + em);
+                chat.postMessage(ChatInterface.ERRORCHANNEL,null,null, ChatInterface.KEYWORD_CHAT, m + em);
             }
 
             if (err != null)
@@ -1826,7 +1841,7 @@ graphics when using a touch screen.
     		  G.getGlobals().putBoolean(G.LOWMEMORY,true); 
     		  String lowmessage = (s==null)?LowMemoryMessage:s.get(LowMemoryMessage);
     		  if(theChat!=null) 
-    		  { theChat.postMessage(ChatInterface.LOBBYCHANNEL , ChatInterface.KEYWORD_LOBBY_CHAT,
+    		  { theChat.postMessage(ChatInterface.LOBBYCHANNEL , null,null,ChatInterface.KEYWORD_LOBBY_CHAT,
     				  lowmessage);
     		  }
     		  else if(nlow==0)

@@ -2006,7 +2006,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    if (narrowPoly.contains(localX-SPECTATORBUTTONXCENTER,localY-ycenter))
 	      {  if((lobby.startingSession==null)) { return(true); }
 	    	  //waiting for another session to launch
-	         theChat.postMessage(ChatInterface.HINTCHANNEL,ChatInterface.KEYWORD_BADHINT,s.get(StillWaitingMessage));
+	         theChat.postMessage(ChatInterface.HINTCHANNEL,null,null,ChatInterface.KEYWORD_BADHINT,s.get(StillWaitingMessage));
 	       }
 	    }
 	    return(false);

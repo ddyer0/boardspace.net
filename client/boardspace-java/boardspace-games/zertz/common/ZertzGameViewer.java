@@ -577,7 +577,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         drawVariation(gc,bd,ourTurnSelect);
     }
 
-
+ 
     public boolean Execute(commonMove m,replayMode replay)
     {	//System.out.println("e "+m);    	
 

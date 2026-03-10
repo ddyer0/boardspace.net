@@ -128,5 +128,9 @@ public class URLConnection extends ConnectionRequest 		// native actionevents, n
 	public void openConnection() 
 	{	setUrl(url.urlString);
 	}
+	
+	public void setRequestProperty(String key,String val)
+	{	super.addRequestHeader(key,val);
+	}
 
 }

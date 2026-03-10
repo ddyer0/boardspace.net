@@ -205,7 +205,16 @@ public class BugsCell
 	{
 		Sort.sort(chipStack,0,height()-1);
 	}
-
+	public void swap(int idx1,int idx2)
+	{
+		if(idx1!=idx2)
+		{
+			BugsChip c1 = chipAtIndex(idx1);
+			BugsChip c2 = chipAtIndex(idx2);
+			setChipAtIndex(idx2,c1);
+			setChipAtIndex(idx1,c2);
+		}
+	}
 	/**
 	 * return true of this chip can be played here
 	 * @param c

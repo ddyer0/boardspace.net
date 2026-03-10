@@ -304,7 +304,7 @@ public class commonLobby extends commonPanel
   public long lobbyIdleTimeout;
   private boolean gaveWarning = false;
 
-  public UserManager users = new UserManager();
+  public UserManager users = UserManager.getInstance();
 
 
   public Hashtable<String,String> IgnoredUsers = new Hashtable<String,String>();
@@ -528,7 +528,7 @@ private void setGameTime()
         if(m!=null)
         {
         	m.logError(msg,err);
-        	if(theChat!=null) { theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,msg);}
+        	if(theChat!=null) { theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,msg);}
         	m.PrintLog(System.out);
         }
         else
@@ -618,18 +618,18 @@ private void doUNCONNECTED()
      else if (myNetConn.connFailed() || (connectionTimeout < now))
       { if(connectionTimeout<now)
       	{
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage1));
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage2));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage1));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage2));
       	}
       else
       	{
         String m = myNetConn.errString();
         if(m!=null) {  
-          theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(ConnectionErrorMessage)+":"+m);
+          theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(ConnectionErrorMessage)+":"+m);
           myNetConn.logError(m,null);
         }
         else {
-        	theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(SessionExpiredMessage));
+        	theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(SessionExpiredMessage));
         }}
         exitFlag=true;
       }
@@ -767,7 +767,7 @@ private boolean processEchoExit(String messType,Tokenizer localST,String fullmes
     	else if("bad-banner-id".equals(tok)||("bad-id".equals(tok)))
         { exitFlag=true;
           G.doDelay(5000);
-          theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,"rcv 221 err"+s.get(ConnectionErrorMessage));
+          theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT,"rcv 221 err"+s.get(ConnectionErrorMessage));
           suicide();
         }
       }
@@ -808,7 +808,7 @@ private void setUserName(User user,String name,String uid)
       
       theChat.setUser(user.serverIndex,user.publicName);
       if(users.all_users_seen && announcePlayers.getState() && !guestUID.equalsIgnoreCase(uid))
-        {theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(EnterMessage,user.publicName));
+        {theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(EnterMessage,user.publicName));
         }
       v.repaint("new user");
   
@@ -820,7 +820,7 @@ private void setUserName(User user,String name,String uid)
             { //if we're trustworthy, tell the world too
               sendMessage(NetConn.SEND_GROUP+"usermenu 0 "+user.serverIndex+" true");
             }
-            theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,name));
+            theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,name));
         }
     }
   }
@@ -970,7 +970,7 @@ private boolean handleChat(int playerID,String commandStr,Tokenizer localST)
          		   && !user.ignored 
          		   && !user.mutedMe 
          		   && !users.primaryUser().automute)
-             { theChat.postMessage(playerID,commandStr,localTempStr);
+             { theChat.postMessage(playerID,sharedInfo.getString(G.LANGUAGE),user.getInfo(G.LANGUAGE),commandStr,localTempStr);
                user.messages++;	// count the messages we've actually seen
              }
              user.setChatTime(); 
@@ -1062,7 +1062,7 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
             {
             user.ignored = true;
             sendMessage(NetConn.SEND_GROUP+KEYWORD_USERMENU+" 0 "+user.serverIndex+" true");
-            theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,user.prettyName()));
+            theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,user.prettyName()));
             }
         }
       }
@@ -1126,7 +1126,7 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
 	   		? s.get(InvitePlayMessage, actor.name,users.primaryUser().name,
 	   				s.get(sess.currentGame.variationName),""+room)
 	   		: s.get(InviteWhoMessage,actor.name,users.primaryUser().name,""+room);
-	   theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CCHAT,msg);
+	   theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CCHAT,msg);
 	  }
     }
     break;
@@ -1136,7 +1136,7 @@ private boolean processEchoGroup(String messType,Tokenizer localST,String fullMs
          +" MUTED by " + users.primaryUser().name+" @ " 
          + myNetConn.getLocalAddress());
   }
-  theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,
+  theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,
       s.get(ConsensusMuteMessage,victim.name));
   	victim.automute = true;
 		break;
@@ -1843,7 +1843,7 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
     v.setVisible(true);
     initialized=true;
 
-    theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,WelcomeMessage);
+    theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,WelcomeMessage);
     
     if(G.isCheerpj()) { newsStack.push(cheerpjTextFile); }
 
@@ -1874,7 +1874,7 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
         		}
         		else if(netFail++>1) {
         			netFail=0;
-        			theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,"the network connection is unhealthy");
+        			theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT,"the network connection is unhealthy");
         		}
         	}
 
@@ -2121,7 +2121,7 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
      	Session.Mode mode = sess.mode;
      	String chatMessage = mode.launchMessage;
    
-     	theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(chatMessage,""+sess.gameIndex));
+     	theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(chatMessage,""+sess.gameIndex));
 
      	v.repaint("launch");    
      }
@@ -2146,11 +2146,11 @@ private boolean processEchoRoomtype(String messType,Tokenizer localST)
         {  /* 1 min. warning */
         if (noPlayFrames && !gaveWarning)
         {
-          theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(TimeoutWarningMessage));
+          theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(TimeoutWarningMessage));
           gaveWarning = true;
         }}
         if (noPlayFrames && gaveWarning && (now > lobbyIdleTimeout)) {
-          theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(LobbyShutdownMessage));
+          theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(LobbyShutdownMessage));
           exitFlag=true;
           setLobbyState(ConnectionState.IDLE);
       }
@@ -2369,7 +2369,7 @@ public void ClearOtherInviteBox(Session sess)
   	{
   		boolean even = Random.nextInt(new Random(),2)==0;
   		String msg = s.get(CoinFlipMessage,users.primaryUser().prettyName(),s.get(even?Heads:Tails));
-  		theChat.sendAndPostMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_LOBBY_CHAT,msg);
+  		theChat.sendAndPostMessage(ChatInterface.LOBBYCHANNEL,null,null,ChatInterface.KEYWORD_LOBBY_CHAT,msg);
   		return(true);
    	}
   	else

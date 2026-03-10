@@ -16,12 +16,9 @@
  */
 package online.game;
 
-import bridge.*;
-import common.GameInfo;
 
 import jzlib.ZipEntry;
 import jzlib.ZipInputStream;
-
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Font;
@@ -30,15 +27,16 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.PrintStream;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import java.net.URL;
+
+import bridge.*;
+import common.GameInfo;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
-
+import java.io.PrintStream;
 import lib.*;
 import lib.RepaintManager.RepaintStrategy;
 import lib.SeatingChart.DefinedSeating;
@@ -240,7 +238,7 @@ public abstract class commonCanvas extends exCanvas
 	    				// until after the animation of that piece toward the destination finishes.
 	    				commonPlayer pl = commonPlayer.findPlayerByChannel(players,transmitter);
 	    				if(pl==null) { pl = commonPlayer.findPlayerByChannel(spectators,transmitter); }
-	    				if(pl!=null && ((pl.animating || pl.unseenMouseActivity)))
+	    				if(smoothMouseTracking && pl!=null && ((pl.animating || pl.unseenMouseActivity)))
 	    				{	// put it back until it settles
 	    					deferredMessages.insertElementAt(st,0);
 	    					if(pl.unseenMouseActivity) { repaint(); }
@@ -1848,28 +1846,29 @@ public abstract class commonCanvas extends exCanvas
      */
     private Point interpolatedMousePosition(commonPlayer p,long now)
     {	int obj = p.mouseObj;
+    	int start = p.startingMouseObj;
     	p.unseenMouseActivity = false;	// this flag is set when the mouse state changes
-        Point mp = decodeScreenZone(p.mouseZone,p.mouseX,p.mouseY);
-        
+	       
+	    Point mp = decodeScreenZone(p.mouseZone,p.mouseX,p.mouseY);
     	if(!smoothMouseTracking) 
     		{ // do everything the simple way
-    			p.startingMouseObj = obj; return mp; 
+    		   p.startingMouseObj = obj;
+    	       return mp; 
     		} 
 
     	int xp = G.Left(mp);
         int yp = G.Top(mp);
         
-        if(obj>=0 && obj!=p.startingMouseObj)
+        if(obj>=0 && obj!=start)
         	{ // when we pick something up
-        	  p.startingMouseTime = now; 
-        	  p.startingMouseObj = obj; 
-        	  p.startingMouseX = xp;
+         	  p.startingMouseX = xp;
         	  p.startingMouseY = yp;
+        	  p.startingMouseObj = obj;
         	  p.startingAnimation = true;	  
         	}
         
         if((xp!=p.startingMouseX) || (yp!=p.startingMouseY))
-        {	obj = p.startingMouseObj;
+        {	
         	if(p.startingAnimation)
         		{ 
         		// start motion
@@ -1878,9 +1877,10 @@ public abstract class commonCanvas extends exCanvas
         		p.animating = true;
         		}
         	// distancnce in pixels that we're moving, adjusted for the display scale
-        	double distance = Math.max(1,(G.distance(p.startingMouseX,p.startingMouseY,xp,yp)/(1000*G.getDisplayScale())));
+        	double distance = G.distance(p.startingMouseX,p.startingMouseY,xp,yp)/G.getDisplayScale();
+        	int targetDragTime = Math.min(p.drawLagTime,(int)((distance*p.drawLagTime)/1000));
         	// drawlagtime is time to spend moving 1000 normal pixel distance
-            double frac = Math.min(1,(double)(now-p.startingMouseTime)/(p.drawLagTime*distance));
+            double frac = Math.min(1,(double)(now-p.startingMouseTime)/targetDragTime);
         	xp = G.interpolate(frac,p.startingMouseX,xp);
         	yp = G.interpolate(frac,p.startingMouseY,yp);
         	if(frac>=1)
@@ -1888,16 +1888,34 @@ public abstract class commonCanvas extends exCanvas
         		p.startingMouseTime = now;
         		p.startingMouseX = xp;
         		p.startingMouseY = yp;
-        		p.startingMouseObj = p.mouseObj;
+        		p.startingMouseObj = obj;
         		p.animating = false;
         		}
         		repaint(50); 
         	G.SetLeft(mp,xp);
         	G.SetTop(mp,yp);
         }
+        else if (obj<0) { p.startingMouseObj = obj; }
         else { p.startingMouseTime = now; }
   
         return mp;
+    }
+    public void stopAnimatingMouse()
+    {	if(smoothMouseTracking)
+    	{
+    	for(commonPlayer p : players)
+    	{
+    		if(p!=null)
+    		{	p.stopTracking();
+    		}
+    	}
+    	for(commonPlayer p : spectators)
+    	{
+    		if(p!=null)
+    		{	p.stopTracking();
+    		}
+    	}
+    	}
     }
     /** draw a mouse sprite for a particular player, and if there is a moving
      * object, draw a representation of the object for the player in control.
@@ -2550,15 +2568,17 @@ public abstract class commonCanvas extends exCanvas
     {	//G.print("Set "+val+" "+getActivePlayer());
     	//G.print(G.getStackTrace());
      	if(val && (timeStamp>0))
-    	{
+    	{	if(!hidden.controlToken) { stopAnimatingMouse(); }
      		hidden.controlToken=val; 
      		hidden.controlTimeStamp=timeStamp; 
+     		
     	}
     	else 
     	{
     	 hidden.controlTimeStamp = timeStamp;
     	 if(hidden.controlTimeStamp==0)
     	 	{ 
+    		if(hidden.controlToken!=val) { stopAnimatingMouse(); }
     	 	hidden.controlToken=val; 
      	 	}
     	}
@@ -2911,20 +2931,21 @@ public abstract class commonCanvas extends exCanvas
     	startedOnce = started = true;
     }
 
-    private void doMouseTrackingInternal(commonPlayer player,commonPlayer[] plist,String zone,int inx,int iny,int ino,String intype)
-    {   for(int pl = 0;pl<plist.length;pl++)
-        {
-        // make only one player the tracking player
-        commonPlayer p = plist[pl];
-        if(p==player) 
-        { if(player!=getActivePlayer())
-        	{ player.mouseTracking(zone,inx, iny, ino,intype);
-        	}
-        }
-        else if((p!=null)&&(ino!=NothingMoving)) 
-        	{ p.mouseTrackingObject(NothingMoving); 
-        	}
-        }
+    private void doMouseTrackingInternal(commonPlayer player,commonPlayer[]plist,String zone,int inx,int iny,int ino,String intype)
+    {   
+    	for(commonPlayer p : plist) 
+    	{
+    		if(p==player) 
+            { if(player!=getActivePlayer())
+            	{ 
+            	
+            	player.mouseTracking(zone,inx, iny, ino,intype);
+            	}
+            }
+            else if((p!=null)&&(ino!=NothingMoving)) 
+            	{ p.stopTracking();
+            	}    	
+    	}
     }
     
     public void doMouseTracking(Tokenizer myST,commonPlayer player)
@@ -2934,7 +2955,7 @@ public abstract class commonCanvas extends exCanvas
         int iny = myST.intToken();
         int ino = myST.intToken();
         String typ = myST.hasMoreTokens() ? myST.nextToken() : null;
-        doMouseTracking(player,zone,inx,iny,ino,typ);
+        doMouseTracking(player,zone,inx,iny,(reviewOnly && hasControlToken() ? NothingMoving : ino),typ);
      }
 
     private void doMouseTracking(commonPlayer player,String zone,int inx,int iny,int ino,String intype)
@@ -6256,7 +6277,7 @@ public abstract class commonCanvas extends exCanvas
          	{
     		if(!l.deferWarningSent)
         	{
-        	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
+        	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL, null, null, ChatInterface.KEYWORD_LOBBY_CHAT,
                 s.get(MovesComingIn));}
         	l.deferWarningSent = true;
         	}}
@@ -6834,7 +6855,7 @@ public abstract class commonCanvas extends exCanvas
         if (ss != null)
         {
             if(theChat!=null)
-            	{ theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT, "Loading " + ss);
+            	{ theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, null, null, ChatInterface.KEYWORD_LOBBY_CHAT, "Loading " + ss);
             	}
             hidden.selectedGame = null;
 
@@ -7676,7 +7697,7 @@ public abstract class commonCanvas extends exCanvas
     {   
     	if(!canResign()) 
     	{if(theChat!=null) 
-    	{theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+    	{theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
             s.get(NoResignMessage));
     	}
     	}
@@ -7688,7 +7709,7 @@ public abstract class commonCanvas extends exCanvas
         }
         else if(theChat!=null)
         {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+            theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                 s.get(CantResign));
         }
     	}
@@ -7849,7 +7870,7 @@ public boolean replayStandardProps(String name,String value)
     }
     else if (name.equalsIgnoreCase(date_property))
     {
-    	if(theChat!=null) { theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
+    	if(theChat!=null) { theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_LOBBY_CHAT,
             s.get(PlayedOnDate,value));}
         datePlayed = value;
         print = false;
@@ -8285,7 +8306,7 @@ public String currentPlayerPrettyName(int who)
 {	// careful, who can be -1
 	return(prettyName(who>=0?who:0)+" : ");
 }
-
+private boolean USEBOARDPC = false;
 /**
  * translate the mouse coordinate x,y into a size-independent representation
  * presumably based on the cell grid.  This is used to transmit our mouse
@@ -8294,7 +8315,8 @@ public String currentPlayerPrettyName(int who)
  *  */
 public String encodeScreenZone(int x, int y,Point p)
 {	
-	if(G.pointInRect(x,y,boardRect))
+	// we can start using this after the decoder is widely accepted, starting with version  9.18
+	if(!USEBOARDPC && G.pointInRect(x,y,boardRect))
 	{ 	int screenXQuant = Math.max(2,G.Width(boardRect)/20);
 		BoardProtocol b = getBoard();
 		// this inited test is to combat an occasional nullpointerexception
@@ -8311,6 +8333,17 @@ public String encodeScreenZone(int x, int y,Point p)
 			}
 	}
 	
+	if(G.pointInRect(x,y,boardRect))
+	{ 	BoardProtocol b = getBoard();
+		if(b!=null)
+		{
+		Point pp = b.encodeBoardPosition(x,y,boardRect);
+		G.SetLeft(p,G.Left(pp));
+		G.SetTop(p,G.Top(pp));
+		}
+	return("boardPc");
+	}
+	
 	// if in one of the named zones
 	for(int z=0,lim=mouseZones.size(); z<lim; z++)
 	{
@@ -8325,15 +8358,26 @@ public String encodeScreenZone(int x, int y,Point p)
 		}
 	}
 	for(commonPlayer pl : players)
-	{
+	{	if(pl!=null)
+		{
 		Rectangle zone = pl.playerBox;
 		if(zone!=null && G.pointInRect(x,y,zone))
 		{
 			G.SetLeft(p,((x-G.Left(zone))*100)/G.Width(zone));
 			G.SetTop(p,((y-G.Top(zone))*100)/G.Height(zone));
 			return ".p."+pl.boardIndex;
-		}
+		}}
 	}
+	
+	if(USEBOARDPC)
+	{
+		//if in the board zone
+		G.SetLeft(p,((x-G.Left(fullRect))*100)/G.Width(fullRect));
+		G.SetTop(p,((y-G.Top(fullRect))*100)/G.Height(fullRect));
+		return ".full.";		
+	}
+	else
+	{
 	//if in the board zone
 	Rectangle ref = fullRect;
 	String name = "on";
@@ -8344,6 +8388,7 @@ public String encodeScreenZone(int x, int y,Point p)
 	G.SetLeft(p,(int)((x-G.Left(ref))/quant));
 	G.SetTop(p,(int)((y-G.Top(ref))/quant));
 	return(name);
+	}
 }
 /**
  * decode a screen zone x,y
@@ -8354,6 +8399,7 @@ public String encodeScreenZone(int x, int y,Point p)
  */
 public Point decodeScreenZone(String zone,int x,int y)
 {	//if(myFrame.getSoundState()) { G.print("Decode "+zone+" "+x+" "+y); }
+	
 	if("boardEnc".equals(zone))
 		{ int screenXQuant = Math.max(2,G.Width(boardRect)/20);
 		  BoardProtocol b = getBoard();
@@ -8370,6 +8416,14 @@ public Point decodeScreenZone(String zone,int x,int y)
 		  return(mp);
 		  }}
 		}
+	if("boardPc".equals(zone))
+	{ BoardProtocol b = getBoard();
+	  if(b!=null)
+	  {
+		  Point pp = b.decodeBoardPosition(x,y,boardRect); 
+		  return pp;
+	  }
+	}
 	{
 	Rectangle zr = allRects.get(zone);
 	if(zr!=null)
@@ -8394,7 +8448,12 @@ public Point decodeScreenZone(String zone,int x,int y)
 		}
 		}
 	}
-	
+	if(zone.equals(".full."))
+	{
+		Point mp = new Point(G.Left(fullRect) + (int)(((x+0.5)/100)*G.Width(fullRect)),
+								G.Top(fullRect) + (int)(((y+0.5)/100)*G.Height(fullRect)));
+		return(mp);
+	}
 	
 	// full screen is encoded as a arbitrary units from the upper left
 	double quant = Math.max(2,G.Width(fullRect)/100.0);

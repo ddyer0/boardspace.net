@@ -728,7 +728,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
      * @return a Text object
      */
     private static commonMove prev;
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	String m = shortMoveString();
     	if((prev!=null) && (prev.op==MOVE_MAKEWINE) && (op == MOVE_MAKEWINE))
     	{

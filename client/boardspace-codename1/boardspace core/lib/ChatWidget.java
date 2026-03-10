@@ -91,8 +91,10 @@ public class ChatWidget
 	static private final String USERPROMPT = "User ";
     static private final String InitMessage = "Type your message here.";
     static private final String EditMessage = "Edit the text";
+    static private final String TranslationLegend = "(#1 from #2)";
 	public static String[] ChatStrings = 
 		{	EditMessage,
+			TranslationLegend,
 			InitMessage,
 			MESSAGEPROMPT,
 			MESSAGEFROM,
@@ -389,7 +391,7 @@ public class ChatWidget
         messages.addObserver(this);
     }
 
-    public void postMessage(int userNum, String command, String theMessage)
+    public void postMessage(int userNum, String myLanguage,String hisLanguage,String command, String theMessage)
     {	SimpleUser u = getUser(userNum);
     	String name = command.equals(ChatInterface.KEYWORD_LOBBY_CHAT)
     			? s.get("Lobby")
@@ -402,6 +404,18 @@ public class ChatWidget
        {	name = s.get(MESSAGEFROM,name);
        }
        postMessageWithName(name,userNum<LASTUCHANNEL,command,theMessage,userNum!=HINTCHANNEL);
+       if(translate && myLanguage!=null && !myLanguage.equals(hisLanguage) && theConn!=null)
+       {  int len = theMessage.length();
+    	  if(len<400 && len > 3)
+    	  {
+    		  String result = Translator.simpleTranslate(myLanguage,theMessage,theConn);
+    		  String language = Translator.lastLanguage;
+    		  if(result!=null)
+    			  { 
+    			  postMessageWithName(s.get(TranslationLegend,myLanguage,language),userNum<LASTUCHANNEL,command,result,userNum!=HINTCHANNEL);    		  
+    			  }
+    	  }
+       }
     }
     public void postMessageWithName(String name,boolean fromRealUser,String command,String theMessage,boolean see)
     {
@@ -474,6 +488,9 @@ public class ChatWidget
  
     }
 
+    public boolean  translate = true;
+    public void setTranslate(boolean v) { translate = v; }
+    
     // this is synchronized so only one "post" process will be running
     // normally, this will only be called from a "newsreader" process
 	public synchronized void PostNews(String showNews)
@@ -514,7 +531,7 @@ public class ChatWidget
             	String line = fsb.readLine();
             	String ss = G.utfDecode(line);
              	if(ss==null) { break; }
-                postMessage(NEWSCHANNEL, KEYWORD_QCHAT, ss);
+                postMessage(NEWSCHANNEL, null,null,KEYWORD_QCHAT, ss);
             }  while (true);
             fsb.close();
             }
@@ -643,7 +660,7 @@ public class ChatWidget
 
 	/* below here definitely work in progress */
 	
-    public void sendAndPostMessage(int channel, String how, String msg)
+    public void sendAndPostMessage(int channel, String myLanguage, String hisLanguage, String how, String msg)
     {
         if (theConn != null)
         {	SimpleUser toSingleUser = users.getToSingleUser(); 
@@ -668,7 +685,7 @@ public class ChatWidget
 			theConn.na.Unlock();
 	}
 
-        postMessage(channel, KEYWORD_QCHAT, msg);
+        postMessage(channel, null,null,KEYWORD_QCHAT, msg);
     }
     
 	public void addTo(Container commonPanel) {

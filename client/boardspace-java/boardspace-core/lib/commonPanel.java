@@ -267,7 +267,7 @@ public class commonPanel extends FullscreenPanel
         	if(err!=null)
         	{
         		if(G.debug())
-        			{ theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, err);        			
+        			{ theChat.postMessage(ChatInterface.ERRORCHANNEL, null,null,ChatInterface.KEYWORD_CHAT, err);        			
         			}
         	}
 

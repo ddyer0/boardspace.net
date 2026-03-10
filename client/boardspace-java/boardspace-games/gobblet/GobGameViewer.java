@@ -641,7 +641,7 @@ private void playSounds(commonMove mm)
         }
         else
         {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+            theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                 s.get(CensoredGameRecordString));
         }
     }

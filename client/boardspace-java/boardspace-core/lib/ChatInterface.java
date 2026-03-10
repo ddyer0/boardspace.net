@@ -70,7 +70,7 @@ public interface ChatInterface extends Config {
     static final String LobbyChannel = "Lobby";
     
 	static final int FLOODLIMIT = 3;			// maximum number of over sized strings to transmit
-	void postMessage(int lobbychannel, String keywordLobbyChat, String string);
+	void postMessage(int lobbychannel, String myLanguage, String hisLanguage, String keywordLobbyChat, String string);
 	/**
 	 * return true if there is content in the chat that has
 	 * not been seen.  This is used to trigger blinking of the
@@ -118,7 +118,8 @@ public interface ChatInterface extends Config {
 	void addAMessage(String string);
 
 	void clearMessages(boolean b);
-
+	void setTranslate(boolean b);
+	
 	String getMessages();
 
 
@@ -130,7 +131,7 @@ public interface ChatInterface extends Config {
 
 	boolean resetEventCount();
 
-	void sendAndPostMessage(int gamechannel, String keywordLobbyChat, String string);
+	void sendAndPostMessage(int gamechannel, String myLanguage,String hisLanguage, String keywordLobbyChat, String string);
 
 	void setConn(ConnectionManager myNetConn);
 

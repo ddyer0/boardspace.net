@@ -450,7 +450,7 @@ public class commonChatApplet extends FullscreenPanel
     
 
 
-    public void postMessage(int userNum, String command, String theMessage)
+    public void postMessage(int userNum, String myLanguage,String hisLanguage,String command, String theMessage)
      {	SimpleUser u = getUser(userNum);
      	String name = command.equals(ChatInterface.KEYWORD_LOBBY_CHAT)
      			? s.get("Lobby")
@@ -535,7 +535,7 @@ public class commonChatApplet extends FullscreenPanel
         addAMessage(name + ("".equals(name) ? "" : ": ") + theMessage,see);
     }
 
-    public void sendAndPostMessage(int channel, String how, String msg)
+    public void sendAndPostMessage(int channel, String myLanguage,String hisLanguage,String how, String msg)
     {
         if (theConn != null)
         {	SimpleUser toSingleUser = users.getToSingleUser(); 
@@ -559,7 +559,7 @@ public class commonChatApplet extends FullscreenPanel
 			
         }
 
-        postMessage(channel, KEYWORD_CHAT, msg);
+        postMessage(channel, null,null,KEYWORD_CHAT, msg);
     }
 
     public String whatISaid()
@@ -730,7 +730,7 @@ public class commonChatApplet extends FullscreenPanel
             	String line = fsb.readLine();
             	String ss = G.utfDecode(line);
             	if(ss==null) { break; }
-                postMessage(NEWSCHANNEL, KEYWORD_QCHAT, ss);
+                postMessage(NEWSCHANNEL, null,null,KEYWORD_QCHAT, ss);
             }  while (true);
             fsb.close();
             }
@@ -800,7 +800,8 @@ public class commonChatApplet extends FullscreenPanel
 	public void MouseDown(HitPoint hp) {
 		
 	}
-
+	public void setTranslate( boolean v) {}
+	
 	public void setSingleUser(String name) {
 	  	SimpleUser user =setUser(0,name);
     	setSingleSend(user,false);

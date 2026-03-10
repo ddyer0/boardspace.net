@@ -73,7 +73,7 @@ public class NetPacketConn extends CommonNetConn<MixedPacket> implements Runnabl
       // so the byte level stream will be all single bytes
       // the old format for multi-byte strings will never occur
       //
-      byte[] theBuff = message.getBytes("UTF-8");
+      byte[] theBuff = message.getBytes(UniversalConstants.UTF_8);
       byte[] outBuf = outHeaderBuf;
       int outidx = 0;
       int msgLen = theBuff.length;

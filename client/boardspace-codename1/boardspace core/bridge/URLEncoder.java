@@ -19,6 +19,8 @@ package bridge;
 import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
 
+import lib.UniversalConstants;
+
 /**
  * Utility class for HTML form encoding. This class contains static methods
  * for converting a String to the <CODE>application/x-www-form-urlencoded</CODE> MIME
@@ -119,7 +121,7 @@ public class URLEncoder {
         dontNeedEncoding.set('.');
         dontNeedEncoding.set('*');
 
-        dfltEncName = "UTF-8";
+        dfltEncName = UniversalConstants.UTF_8;
     }
 
     /**

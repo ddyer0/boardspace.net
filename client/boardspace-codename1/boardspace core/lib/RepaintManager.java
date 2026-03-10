@@ -43,14 +43,14 @@ package lib;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
-
 import bridge.AccessControlException;
 import bridge.Color;
 import bridge.Component;
-import bridge.Config;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenu;
 import bridge.ThreadDeath;
+
+import bridge.Config;
+import bridge.JMenu;
 import vnc.VNCTransmitter;
 import vnc.VncScreenInterface;
 

@@ -342,7 +342,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
     {
         try
         {
-        byte[] theBuff = str.substring(0,n).getBytes("UTF-8");
+        byte[] theBuff = str.substring(0,n).getBytes(UniversalConstants.UTF_8);
     	int hash = 5381;
     	int len = theBuff.length;
     	serverHashChecksumOffset = len;
@@ -372,7 +372,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
       // so the byte level stream will be all single bytes
       // the old format for multi-byte strings will never occur
       //
-      byte[] theBuff = theBuffStr.getBytes("UTF-8");
+      byte[] theBuff = theBuffStr.getBytes(UniversalConstants.UTF_8);
       byte[] outBuf = realOutBuf;
       int inBufLength = theBuff.length;
       int outBufLength = (checksum & !split) ? 9 : 0;

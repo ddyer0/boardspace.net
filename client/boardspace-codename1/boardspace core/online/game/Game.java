@@ -485,7 +485,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         if (chat != null)
         {
-            chat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, m + em);
+            chat.postMessage(ChatInterface.ERRORCHANNEL, null,null,ChatInterface.KEYWORD_CHAT, m + em);
         }
 
         if (err != null)
@@ -700,7 +700,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         String msg = s.get(SelectingGameMessage, file);
         if(theChat!=null) 
-        	{ theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, msg);
+        	{ theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT, msg);
         	}
         sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_LOBBY_CHAT+" "+ msg);
 
@@ -998,7 +998,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             		sendMessage(NetConn.SEND_NOTE + info);
             	}
                 if(theChat!=null)
-                	{ theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, s.get(ReconOkMessage));                	
+                	{ theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null, ChatInterface.KEYWORD_CHAT, s.get(ReconOkMessage));                	
                 	}
                 myNetConn.reconnecting = false;
             }
@@ -1006,13 +1006,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       else if( myNetConn.connFailed() || (connectionTimeout < G.Date()))
       { if(theChat!=null)
       	{
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get("noresponse1"));
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get("noresponse2"));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get("noresponse1"));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get("noresponse2"));
       	}
         String m = myNetConn.errString();
         if(m!=null) {  
            if(theChat!=null) 
-        	   { theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get("Connection error")+":"+m);        	   
+        	   { theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get("Connection error")+":"+m);        	   
         	   }
            myNetConn.logError(m,null);
   	        }
@@ -1098,7 +1098,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             	// joined and quit, which cleared the session
             	String msg = s.get(LaunchFailedMessage);
             	setUserMessage(Color.red, msg);
-            	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, msg); }
+            	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT, msg); }
             }
             else 
             {	
@@ -1524,7 +1524,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		        {
 		            String msgstr = fullMsg.substring(ind);
 		            if (tmchat)
-		            {	theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_TMCHAT,msgstr);
+		            {	theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_TMCHAT,msgstr);
 		            }
 		            else if (tchat)
 		            {	String trimmed = msgstr.trim();
@@ -1537,7 +1537,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		                	// tournament games.
 		                	commandStr=ChatInterface.KEYWORD_QCHAT;
 		                }
-		                theChat.postMessage(ChatInterface.GAMECHANNEL, commandStr,
+		                theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,commandStr,
 		                		s.get(trimmed,theChat.getUserName(playerID)));
 		                char ch = msgstr.charAt(0);
 		                if((ch==' ') && trimmed.equalsIgnoreCase(CHATSPECTATOR) || trimmed.equalsIgnoreCase(NEWSPECTATOR))
@@ -1546,8 +1546,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		                }
 		            }
 		            else
-		            {
-		                theChat.postMessage(playerID, commandStr, msgstr);
+		            {	User us = UserManager.getInstance().getExistingUser(playerID);
+		            	String lan = us!=null ? us.getInfo(G.LANGUAGE) : null;
+		                theChat.postMessage(playerID, sharedInfo.getString(G.LANGUAGE),lan,commandStr, msgstr);
 		            }
 		        }
             }
@@ -1772,7 +1773,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     }
                     else if(!GameOver())
                     {
-                        theChat.postMessage(playerID, ChatInterface.KEYWORD_LOBBY_CHAT,
+                        theChat.postMessage(playerID,null,null, ChatInterface.KEYWORD_LOBBY_CHAT,
                             s.get(StartJointReview,player));
                     }
 
@@ -1783,7 +1784,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     if (!sentReviewHint)
                     {
                         sentReviewHint = true;
-                        theChat.postMessage(playerID, ChatInterface.KEYWORD_LOBBY_CHAT,
+                        theChat.postMessage(playerID, null,null,ChatInterface.KEYWORD_LOBBY_CHAT,
                             s.get(RequestJointReview,player));
                     }
                 }}
@@ -1978,7 +1979,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	if(!spectator) { restartRobots(); }
             setGameState((whoseTurn == my) ? ConnectionState.MYTURN : ConnectionState.NOTMYTURN);
             if(theChat!=null)
-            	{theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
+            	{theChat.postMessage(ChatInterface.LOBBYCHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                 s.get(ResumeGameMessage));
             	}
         }
@@ -2036,7 +2037,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	Bot weak = v.salvageRobot();
         	if(theChat!=null)
         	{
-        	theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
+        	theChat.postMessage(ChatInterface.LOBBYCHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                 s.get("#1 is taking over for #2", weak.name, p.trueName));
         	}
             myNetConn.LogMessage("stop robot wait (takeover) ",p," ",Thread.currentThread());
@@ -2126,16 +2127,21 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 }
             }
         if(extraactions || G.isCheerpj()) 
+        {	JMenu de = v.debugMenu();
+        	if(de!=null)
         {
-        	testswitch = myFrame.addAction("test switch",deferredEvents);
+        	testswitch = myFrame.addAction(de,"test switch",deferredEvents);
+        	}
         }
         if (extraactions)
+        {	JMenu debug = v.debugMenu();
+            if(debug!=null)
         {
-            
-            inspectGame = myFrame.addAction("inspect game",deferredEvents);
-            inspectViewer = myFrame.addAction("inspect canvas",deferredEvents);
-            saveStart = myFrame.addAction("Save as Starting Position",deferredEvents);
-            if(useStory==null) { useStory = myFrame.addAction("Use Story",deferredEvents); }
+            inspectGame = myFrame.addAction(debug,"inspect game",deferredEvents);
+            inspectViewer = myFrame.addAction(debug,"inspect canvas",deferredEvents);
+            saveStart = myFrame.addAction(debug,"Save as Starting Position",deferredEvents);
+            if(useStory==null) { useStory = myFrame.addAction(debug,"Use Story",deferredEvents); }
+            }
 
         }        
     }
@@ -2195,12 +2201,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if (theChat != null)
             {
  
-                theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT,
+                theChat.postMessage(ChatInterface.ERRORCHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                     s.get(ChatInterface.DisconnectedString, why));
 
                 if (myNetConn.can_reconnect && !myNetConn.do_not_reconnect)
                 {
-                    theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT,
+                    theChat.postMessage(ChatInterface.ERRORCHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                         s.get("Reconnecting"));
                 }
             }
@@ -2365,7 +2371,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 				}
 				if((theChat!=null) && !name.equalsIgnoreCase(newp.trueName))
 				{
-	              theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
+	              theChat.postMessage(ChatInterface.LOBBYCHANNEL,null,null, ChatInterface.KEYWORD_CHAT,
 	                    s.get(TakeOverDetail, name,
 	                        playcolor, newp.trueName));
 				}
@@ -2416,7 +2422,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 G.doDelay(5000);
                 if(theChat!=null)
                 {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+                theChat.postMessage(ChatInterface.GAMECHANNEL, null, null, ChatInterface.KEYWORD_CHAT,
                     s.get("Connection error"));
                 }
                 exitFlag=true;
@@ -2447,7 +2453,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 : ((deathcode != null)
                 ? (s.get(KilledByMessage, pname, deathcode))
                 : s.get(AQuitMessage, pname)));
-            theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, deathstring);
+            theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT, deathstring);
         }
         
         v.stopRobots();
@@ -2507,7 +2513,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 privateRoom = true;
                 if(theChat!=null)
                 {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+                theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                     s.get(PrivateRoomMessage));
                 }
             }
@@ -2520,7 +2526,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 privateRoom = false;
                 if(theChat!=null)
                 {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+                theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                     s.get(PublicRoomMessage));
                 }
             }
@@ -2836,7 +2842,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 					// which happened once due to excessive unicode encoding length
 					if(theChat!=null)
                 	{
-                    theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+                    theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
                         s.get(NoLaunchMessage) + fullMsg);
                 	}
                 }
@@ -3179,7 +3185,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             		savedmsg = s.get(ProblemSavingMessage,filename)+"\n"+e.toString();
             	}
                 if(theChat!=null)
-                	{theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT, savedmsg);
+                	{theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT, savedmsg);
                 	}
             }
             else if ((myNetConn!=null) && myNetConn.haveConn())
@@ -3193,7 +3199,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 	sentTheGame = true;
                     removeGameFromServer();
                     sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_TMCHAT+" " + savedmsg);
-                    theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_TMCHAT, savedmsg);
+                    theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_TMCHAT, savedmsg);
                 }
             }
         }
@@ -3448,7 +3454,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     						{ sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_LOBBY_CHAT+" " + line);
     						  if(theChat!=null)
     						  {
-                              theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT, line);
+                              theChat.postMessage(ChatInterface.GAMECHANNEL,null,null, ChatInterface.KEYWORD_CHAT, line);
     						  }
     						}
     				} while(line!=null);
@@ -3464,7 +3470,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
    		sendMessage(NetConn.SEND_GROUP+"tmchat rankingsfailed");
 
    		if(theChat!=null)
-   			{ theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_TMCHAT,"rankingsfailed");   			
+   			{ theChat.postMessage(ChatInterface.ERRORCHANNEL,null,null, ChatInterface.KEYWORD_TMCHAT,"rankingsfailed");   			
    			}
       	myNetConn.logError("Updating the rankings failed: " 
       			  + errorCxt
@@ -3636,7 +3642,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             ServerRemove(false,msg);
             if(theChat!=null)
             {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,msg);
+            theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,msg);
             }
         }
     }
@@ -3904,7 +3910,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		   && (theChat!=null)
                && (currentT > ((lasttouch + Timeout[timeindex]) - (60 * 1000))))
         {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,s.get(TimeOutWarning));
+            theChat.postMessage(ChatInterface.GAMECHANNEL,null,null,ChatInterface.KEYWORD_CHAT,s.get(TimeOutWarning));
             timeoutWarningGiven = true;
         }
 
@@ -3912,7 +3918,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
           {
 
              if(theChat!=null)
-            	 {theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
+            	 {theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,ChatInterface.KEYWORD_CHAT,
             			 s.get(TimedOutMessage));
             	 }
               if ((myNetConn != null) && (myNetConn.haveConn()))

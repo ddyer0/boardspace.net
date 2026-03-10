@@ -40,6 +40,9 @@ package net.sf.jazzlib;
 
 import java.io.EOFException;
 import java.io.InputStream;
+
+import lib.UniversalConstants;
+
 import java.io.IOException;
 
 /**
@@ -171,7 +174,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants
 
     byte[] buffer = new byte[nameLen];
     readFully(buffer);
-    String name = new String(buffer,"UTF-8");
+    String name = new String(buffer,UniversalConstants.UTF_8);
     
     entry = createZipEntry(name);
     entryAtEOF = false;

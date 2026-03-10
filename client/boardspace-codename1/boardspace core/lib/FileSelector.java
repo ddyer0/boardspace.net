@@ -665,7 +665,7 @@ public class FileSelector extends FullscreenPanel
         
         for(int i=0,lim=nondirectories.size(); i<lim;i++)
         {	String item = nondirectories.elementAt(i);
-        	String eitem = URLDecoder.decode(item,"UTF-8");		// decode %xx%yy into unicode strings for display
+        	String eitem = URLDecoder.decode(item,UniversalConstants.UTF_8);		// decode %xx%yy into unicode strings for display
         	gameList.add(new ProxyString(item,eitem));
         }
         
@@ -712,7 +712,7 @@ public class FileSelector extends FullscreenPanel
                 sorted.sort();
                 for(int i=0;i<sorted.size();i++)
                 { String el = sorted.elementAt(i).str;
-                  String del = URLDecoder.decode(el,"UTF-8");	// decode %xx%yy into unicode strings for display
+                  String del = URLDecoder.decode(el,UniversalConstants.UTF_8);	// decode %xx%yy into unicode strings for display
                   dirList.add(new ProxyString(el,del)); 
                 }
                 
@@ -884,7 +884,7 @@ public class FileSelector extends FullscreenPanel
             sorted.sort();
             for(int i=0;i<sorted.size();i++) 
             { String el = sorted.elementAt(i).str;
-              String del = URLDecoder.decode(el,"UTF-8");	// decode %xx%yy into unicode strings for display
+              String del = URLDecoder.decode(el,UniversalConstants.UTF_8);	// decode %xx%yy into unicode strings for display
               gameList.add(new ProxyString(el,del)); 
             }
             moveField.setText("    ");

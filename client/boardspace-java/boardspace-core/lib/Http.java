@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import bridge.Config;
 import bridge.Utf8OutputStream;
@@ -52,8 +51,14 @@ public class Http implements Config {
 	 * @param str
 	 */
 	public static void setHostName(String str)
-	{    int index = str==null?-1 : str.indexOf(':');
-	     if(index>=0) { str=str.substring(0,index); }	// strip off the port
+	{    if(str!=null)
+			{
+			{ int index = str.indexOf("://");
+			  if(index>=0) { str = str.substring(index+3); }	// strip off the protocol
+			}
+			{ int index = str==null?-1 : str.indexOf(':');
+		      if(index>=0) { str=str.substring(0,index); }	// strip off the port
+			}}
 	     hostName=str; 	
 	}
 	public static String getHostName() 
@@ -80,7 +85,7 @@ public class Http implements Config {
  */
     static public UrlResult postURL(String server, String urlStr, String data,int sockets[])
     {
-    	return(postURL(server,urlStr,data,sockets,new UrlResult()));
+    	return(postURL(server,urlStr,null,data,sockets,new UrlResult()));
     }
     
     
@@ -117,7 +122,7 @@ public class Http implements Config {
     	String combined = XXTEA.combineParams(data, XXTEA.getTeaKey());
     	String params = "params=" + combined;
     	if(G.debug()) { G.print(params); }
-    	Http.postURL(server,urlStr,params,sockets,result);
+    	Http.postURL(server,urlStr,null,params,sockets,result);
     	if(result.error==null)
     	{
     	String dec = XXTEA.Decode(result.text,XXTEA.getTeaKey());
@@ -171,18 +176,19 @@ public class Http implements Config {
  * perform a http POST to the specified server and url, using data as the body of the message
  * @param server
  * @param urlStr
+ * @param properties  null, or an  array of pairs of strings that become http headers
  * @param data
  * @param sockets an array of socket numbers to try, or null to try the standard list {@link bridge.Config#web_server_sockets}
- * @param result the results array to be returned.  It must not be null
- * @return a String[] where element 0 is an error message, or element 1 is the text returned from the url
+ * @param result a urlresult to receive the detailed status
+ * @return the urlresult 
  */
-    static public UrlResult postURL(String server, String urlStr, String data,int sockets[],UrlResult result)
+    static public UrlResult postURL(String server, String urlStr, String properties[][],String data,int sockets[],UrlResult result)
     {	
         if(hostName==null) { setHostName(server); }
         for(int myS : sockets==null?web_server_sockets:sockets)
         {	if(result.text==null)
         	{        	
-        	InputStream dis = postURLStream(server,myS,urlStr,data,result);
+        	InputStream dis = postURLStream(server,myS,urlStr,properties,data,result);
         	if(result.getRawStream) { result.inputStream = dis; }
         	else if(dis!=null)
         	{
@@ -230,7 +236,8 @@ public class Http implements Config {
       
     private static boolean httpError(String urlStr,UrlResult result,Throwable e)
     {	boolean retry = false;
-    	if(httpProtocol.equals("https:")
+    	if(!urlStr.contains("://")
+    			&& httpProtocol.equals("https:")
     			&& (hostName!=null)
         		&& e instanceof IOException)
         	{
@@ -263,7 +270,7 @@ public class Http implements Config {
         throws IOException
     {  // this must be null not "" so the method will be GET
     	// method POST would fail to read directories in codename1
-    	return(postURLStream(host,socket,url,null,new UrlResult()));
+    	return(postURLStream(host,socket,url,null,null,new UrlResult()));
     }
     
     // bad practice to use this - it can be hacked by using outgoing proxys
@@ -271,7 +278,7 @@ public class Http implements Config {
     		throws IOException
     {	// this must be null not "" so the method will be GET
     	// method POST would fail to read directories in codename1
-    	return(postURLStream(host,socket,url,null,res));
+    	return(postURLStream(host,socket,url,null,null,res));
     }
     /**
      * get the url contents using a socket number as spec.  This is the preferred method because it uses 
@@ -295,14 +302,14 @@ public class Http implements Config {
      * @param host
      * @param socket
      * @param url
-     * @param data
-     * @param result is an array of 3 strings, or null.  If supplied, postURLStream will set the
-     *  third strings to the concatenated result headers.
+     * @param properties  null, or an  array of pairs of strings that become http headers
+     * @param data data posted to the http stream
+     * @param result is packed into the urlresult. 
      * @return a binary reader stream for the data returned from the URL
      * @throws IOException
      */
      static public InputStream postURLStream(String host, int socket, String url,
-            String data,UrlResult result) 
+            String[][]properties,String data,UrlResult result) 
         {	String subdata = data==null ? "<null>" : "data["+data.length()+"]";
      		Plog.log.addLog("postURLStream ",url,"\n",subdata);
    	 		if(hostName!=null) { setHostName(host); }
@@ -334,24 +341,55 @@ public class Http implements Config {
     	 	do {
     	 	if(result!=null) { result.clear(); }
     	 	try {
-	 		URL u = new URL(httpProtocol+"//" + host + ((socket>0) ? ":"+socket : "")+ url);
+    	 	String preamble = host.contains("://") ? "" : httpProtocol+"//" ;
+	 		URL u = new URL(preamble + host + ((socket>0) ? ":"+socket : "")+ url);
 	 		//G.print("post "+u);
+	 		//
+	 		// this doesn't actually open the connections, but "c" is ready to receive headers
+	 		// and other http directives
+	 		//
 	 		URLConnection c = u.openConnection();
-        	if(data!=null)
+	 		
+	 		if(c instanceof HttpURLConnection)
+    		{
+    		HttpURLConnection conn = (HttpURLConnection)c;
+      		conn.setRequestMethod("POST");
+    		
+    		if(properties!=null)
+    		{
+     		for( String props[] : properties)
+	    		{	
+	    			conn.setRequestProperty(props[0],props[1]);
+	    		}
+       		 System.out.println();
+     		 //Map<String,List<String>> head = conn.getRequestProperties();
+     		 //head.forEach((k, v) -> System.out.println(k + ":" + v));
+     		 
+    		}
+    		
+      		// the connection is actually opened and the request performed here.
+      	      		    	   		
+      		if(data!=null)
         	{
         	c.setDoOutput(true);
-        	if(c instanceof HttpURLConnection)
-        		{ ((HttpURLConnection)c).setRequestMethod("POST");
-        		}
         	OutputStream os = 	c.getOutputStream();
+        
         	if(os!=null)
         	{
-        	OutputStreamWriter out = new OutputStreamWriter(os);
         	// output your data here
-        	out.write(data);
-        	out.close();
+        	
+        	// this is the original way.  using new OutputStreamWriter(osStandardCharsets.UTF_8 makes this work for translations
+        	// but for the size of data we're sending, the direct method is probably lower overhead
+        	//
+        	//	OutputStreamWriter out = new OutputStreamWriter(os);
+            //	out.write(data);
+            //	out.close();
+            	
+        	os.write(data.getBytes( UniversalConstants.UTF_8));
+        	os.close();
     	 	}}
-    	 	
+    		}
+      		
         	InputStream ins = getInputStream(c);
         	if(ins==null)
         	{	G.print("no response from "+u);
@@ -371,7 +409,7 @@ public class Http implements Config {
         		if(result!=null) { result.headers = s; }	// result gets the headers
              return (ins);
         	}
-    	 	}
+    		}
     	 	catch (Throwable err)
     	 	{
     	 		retry = httpError(url,result,err);
@@ -410,7 +448,7 @@ public class Http implements Config {
         static public Utf8Reader postURLReader(String host, int socket, String url,
              String data,UrlResult result) throws IOException
              {
-     	 			InputStream s = postURLStream(host,socket,url,data,result);
+     	 			InputStream s = postURLStream(host,socket,url,null,data,result);
     	 			return(s==null ? null : new Utf8Reader(s));
              }
      
@@ -550,7 +588,7 @@ static public UrlResult postAsyncUrl(final String server,final String urlStr,fin
 	Runnable r = new Runnable() 
 		{ public void run() 
 			{ try {
-				postURL( server,  urlStr,  data,sockets,result); 
+				postURL( server,  urlStr, null, data,sockets,result); 
 				}
 				finally
 				{	result.isComplete = true;
