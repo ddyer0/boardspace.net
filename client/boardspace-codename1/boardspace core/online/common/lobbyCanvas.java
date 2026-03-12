@@ -31,6 +31,7 @@ import common.GameInfo.ES;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageStack;
+import lib.InternationalStrings;
 import lib.Bitset;
 import lib.CanvasProtocol;
 import lib.CellId;
@@ -611,7 +612,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  int firstUser = UserScrollArea.getScrollPosition()/USERHEIGHT;
 	  GC.setFont(inG,smallerBoldBasicFont);
 	  int positionCtr=0;
-	  String myLanguage=G.getString(G.LANGUAGE,DefaultLanguageName);
+	  String myLanguage=InternationalStrings.getLanguage();
 	  if(myLanguage==null) { myLanguage=""; }
 
 	  if(!inUserArea) 
@@ -2004,7 +2005,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    }
 	    return(false);
 	  }
-
 
 	private boolean inChangeGame(Session sess,int localX,int localY)
 	{  return(

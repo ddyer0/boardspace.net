@@ -1552,9 +1552,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		                }
 		            }
 		            else
-		            {	User us = UserManager.getInstance().getExistingUser(playerID);
+		            {	commonPlayer pl = getPlayer(playerID);
+		            	if(pl==null) { pl = findSpectator(playerID); }
+		            	User us = UserManager.getInstance().getExistingUser(pl.uid);
 		            	String lan = us!=null ? us.getInfo(G.LANGUAGE) : null;
-		                theChat.postMessage(playerID, sharedInfo.getString(G.LANGUAGE),lan,commandStr, msgstr);
+		                theChat.postMessage(playerID, InternationalStrings.getLanguage(),lan,commandStr, msgstr);
 		            }
 		        }
             }

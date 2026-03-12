@@ -22,6 +22,7 @@ import java.util.*;
 import bridge.Config;
 import bridge.JMenu;
 import bridge.JMenuItem;
+import online.common.UserManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,6 +72,7 @@ import java.io.InputStream;
 public abstract class InternationalStrings implements Config
 { 
   public static String loadedLanguage = null;
+  public static String getLanguage() { return loadedLanguage; }
   public static boolean hasDataFiles = StringsHaveDataFiles;
   public static String languages[] = SupportedLanguages;
 
@@ -596,6 +598,7 @@ public abstract class InternationalStrings implements Config
          InternationalStrings s = (InternationalStrings) (G.MakeInstance(languageClass));
      	 s.readData(s.name);
      	 G.setTranslations(s);
+     	 loadedLanguage = lit;
      	 return(s);
          }
          catch (Throwable err)
@@ -638,6 +641,8 @@ public abstract class InternationalStrings implements Config
     			 	if(!old.equals(newl)) 
     			 	{
     			 		G.putGlobal(G.LANGUAGE,newl);
+    			 		UserManager users = UserManager.getInstance();
+    			 		users.primaryUser().setInfo(G.LANGUAGE,newl);
     		        	prefs.put(langKey,newl);
     		        	initLanguage();
     			 		addLanguageNames(m,ev);

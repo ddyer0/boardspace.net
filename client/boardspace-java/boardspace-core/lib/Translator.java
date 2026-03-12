@@ -49,8 +49,6 @@ public class Translator {
     "SourceLanguage: Translation " +
     "For example: English: Bonjour";
     
-    // ── Public API ────────────────────────────────────────────────────────────
-
     /**
      * Translates a line of text into the specified language.
      *
@@ -60,6 +58,7 @@ public class Translator {
      * @throws TranslationException if the API call fails or returns an error
      */
     public static String translate(String language, String text) throws TranslationException {
+    	// APIkey is provided by the server's login script. Better practice than embedding it here.
         String apiKey = G.getString(CLAUDEAPI,"");
         if (apiKey == null || apiKey.length()==0) {
             throw new TranslationException(
@@ -243,6 +242,7 @@ public class Translator {
     			if(to.equalsIgnoreCase(lang)) { result = null; }
     			else { result = result.substring(ind+1); }
     			lastLanguage = lang;
+    			if("unknown".equalsIgnoreCase(lang)) { result = ""; }
     		}
     		return result;
     	}

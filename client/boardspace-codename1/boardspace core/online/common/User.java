@@ -140,7 +140,7 @@ public class User implements LobbyConstants,CompareTo<User>
         return (val);
     }
 
-    void setInfo(String key, String val)
+    public void setInfo(String key, String val)
     { //not putString because we allow null and change in value
       //System.out.println("store " + name+": "+ key + "("+val+")");
         info.put(key, val);

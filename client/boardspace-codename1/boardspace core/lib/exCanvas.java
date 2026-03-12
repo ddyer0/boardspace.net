@@ -753,17 +753,21 @@ public abstract class exCanvas extends ProxyWindow
         	return(true);
         }
         else if(InternationalStrings.selectLanguage(l.languageMenu, target,deferredEvents)) 
-        	{	String fam = G.getTranslations().get("fontfamily");
-	 			FontManager.setDefaultFontFamily(fam);
-	 			FontManager.setGlobalDefaultFont();
-	 			doNullLayout();  
-	 			generalRefresh(); 
+        	{	languageChange();
 	 			return(true); 
         	}
 
 		return(false);
 	}
 
+	public void languageChange()
+	{
+		String fam = G.getTranslations().get("fontfamily");
+		FontManager.setDefaultFontFamily(fam);
+		FontManager.setGlobalDefaultFont();
+		doNullLayout();  
+		generalRefresh(); 
+	}
 	/** return the current error context string.  This is fetched
 	 * override or wrap this method to return interesting state for
 	 * errors to report.

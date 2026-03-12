@@ -40,6 +40,7 @@ import lib.DeferredEventHandler;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Http;
+import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.LoadThread;
 import lib.NetConn;
@@ -968,7 +969,7 @@ private boolean handleChat(int playerID,String commandStr,Tokenizer localST)
          		   && !user.ignored 
          		   && !user.mutedMe 
          		   && !users.primaryUser().automute)
-             { theChat.postMessage(playerID,sharedInfo.getString(G.LANGUAGE),user.getInfo(G.LANGUAGE),commandStr,localTempStr);
+             { theChat.postMessage(playerID,InternationalStrings.getLanguage(),user.getInfo(G.LANGUAGE),commandStr,localTempStr);
                user.messages++;	// count the messages we've actually seen
              }
              user.setChatTime(); 

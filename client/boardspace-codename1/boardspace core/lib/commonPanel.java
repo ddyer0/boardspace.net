@@ -238,7 +238,7 @@ public class commonPanel extends FullscreenPanel
 	      { // give a welcome message
 		      String sv=showVoice;
 		      if(sv!=null)
-		        { sv="/" + G.getString(G.LANGUAGE,DefaultLanguageName) + "/" + sv;
+		        { sv="/" + InternationalStrings.getLanguage() + "/" + sv;
 		          showVoice=null;
 		          if(myFrame.doSound())
 		            {

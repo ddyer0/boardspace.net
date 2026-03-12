@@ -2814,7 +2814,7 @@ synchronized(allGames) {
 				{
 				if(website!=null)
 		 		  {
-				  String myLanguage=G.getString(G.LANGUAGE,DefaultLanguageName);
+				  String myLanguage=InternationalStrings.getLanguage();
 		 		  URL u = G.getUrl(myLanguage+"/"+website,true);
 				  G.showDocument(u);
 		 		  }}

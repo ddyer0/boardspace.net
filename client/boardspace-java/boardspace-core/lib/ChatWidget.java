@@ -402,7 +402,7 @@ public class ChatWidget
        {	name = s.get(MESSAGEFROM,name);
        }
        postMessageWithName(name,userNum<LASTUCHANNEL,command,theMessage,userNum!=HINTCHANNEL);
-       if(translate && myLanguage!=null && !myLanguage.equals(hisLanguage) && theConn!=null)
+       if(translate && myLanguage!=null && hisLanguage!=null && !myLanguage.equals(hisLanguage) && theConn!=null)
        {  int len = theMessage.length();
     	  if(len<400 && len > 3)
     	  {
