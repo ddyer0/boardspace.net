@@ -413,7 +413,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     public void drawFixedElements(Graphics gc)
     {	
        MagnetChip.backgroundTile.image.tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     Image background = null;

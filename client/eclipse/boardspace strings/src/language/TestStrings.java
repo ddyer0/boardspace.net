@@ -31,7 +31,6 @@ public class TestStrings
 	{	try 
 		{ 
 		InternationalStrings s = (InternationalStrings)Class.forName("online.language."+name+"Strings").getDeclaredConstructor().newInstance();	// side effect read the main class
-		s.readData(null);
 		return(s);
 		} 
 		catch (Exception err) { throw G.Error("loading "+name+": "+err.toString()); }

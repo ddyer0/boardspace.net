@@ -92,6 +92,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private Rectangle displayBoardRect = new Rectangle();
     private Toggle eyeRect = new Toggle(this,"eye",
  			StockArt.NoEye,SquaresId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,SquaresId.ToggleEye,EyeExplanation
@@ -338,11 +339,12 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
     		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     	
@@ -375,15 +377,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
     	return(box);
     }
     
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
+
     /**
      * calculate a metric for one of three layouts, "normal" "wide" or "tall",
      * which should normally correspond to the area devoted to the actual board.
@@ -408,88 +402,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
         				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
         return(CELLSIZE);
     }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        placeRow( CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE,goalRect);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
-
+ 
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
@@ -568,7 +481,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
     public void drawFixedElements(Graphics gc)
     { 
      SquaresChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, displayBoardRect);
      }
     
     // land here after rotating the board drawing context if appropriate
@@ -702,7 +615,7 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,displayBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -722,8 +635,8 @@ public class SquaresViewer extends CCanvas<SquaresCell,SquaresBoard> implements 
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();

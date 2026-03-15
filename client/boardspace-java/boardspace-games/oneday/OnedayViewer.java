@@ -136,6 +136,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     private Rectangle platformViewRect = addRect("platformViewRect");
     private Rectangle playerStateRect = addRect("playerState");
     private Rectangle trainActionRect = addRect("trainAction");
+    private Rectangle displayBoardRect = new Rectangle();
     public synchronized void preloadImages()
     {	
        	Station.preloadImages(loader,ImageDir);
@@ -389,7 +390,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
        	int boardX = mainX+extraW/2;
        	int boardY = mainY+extraH/2+stateH;
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	
+    	G.copy(displayBoardRect,boardRect);
       	SQUARESIZE = cellsize;
        	CELLSIZE = cellsize/4;
        	
@@ -401,7 +402,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     		// and contents if the players are sitting opposite
     		// on the short side of the screen.
     		vcrX = G.Left(boardRect)+CELLSIZE;
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
        	SetupVcrRects(vcrX,vcrY,CELLSIZE*10,CELLSIZE*5);
@@ -564,8 +565,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       }
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      drawFixedBoard(gc,boardRect);
-	  gb.SetDisplayRectangle(boardRect);
+      drawFixedBoard(gc,displayBoardRect);
+	  gb.SetDisplayRectangle(displayBoardRect);
        
     }
     public void drawFixedBoard(Graphics gc,Rectangle r)
@@ -581,7 +582,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       scaled = images[BOARD_INDEX].centerScaledImage(gc, r,scaled);
 	  Line.drawAllLines(gc,r,0.5);
       Station.drawAllStops(gc,this,r,0.5);
-      double scl = (double)G.Width(r)/G.Width(boardRect);
+      double scl = (double)G.Width(r)/G.Width(displayBoardRect);
       for(OnedayCell cell = gb.allCells; cell!=null; cell=cell.next)
       { 
     	  int ypos = G.Bottom(r) - gb.cellToY(cell);
@@ -700,6 +701,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
    	 im = im.rotate( angle, 0x0);
    	 im.centerImage(gc, cx-w/2,cy-w/2,w,w);
     }
+ 
     public void drawPlatform(Graphics gc,OnedayLocation myLoc,Platform station,Rectangle r,HitPoint p,PlayerBoard bd)
     {	Station next = station.nextStation;
     	boolean left = "L".equals(station.uid);
@@ -905,8 +907,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	double ypos = loc.getY()/100.0;					// our location y % of the map
     	
     	double scale = pb.displayScale;					// scale factor for the local rect
-    	int width = (int)(G.Width(boardRect)*scale);	// virtual width of the local view
-    	int height = (int)(G.Height(boardRect)*scale);	// virtual height of the local view
+    	int width = (int)(G.Width(displayBoardRect)*scale);	// virtual width of the local view
+    	int height = (int)(G.Height(displayBoardRect)*scale);	// virtual height of the local view
     	int localX = (int)(width*xpos);					// our location x absolute
     	int localY = (int)(height*ypos);				// our location x absolute
     	
@@ -915,8 +917,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	int rHeight = G.Height(localViewRect);
     	int mWidth = (int)(rWidth/scale);
     	int mHeight = (int)(rHeight/scale);
-    	Rectangle bdisp = new Rectangle((int)(G.Left(boardRect)+xpos*G.Width(boardRect)-mWidth/2),
-    									(int)(G.Top(boardRect)+ypos*G.Height(boardRect)-mHeight/2),
+    	Rectangle bdisp = new Rectangle((int)(G.Left(displayBoardRect)+xpos*G.Width(displayBoardRect)-mWidth/2),
+    									(int)(G.Top(displayBoardRect)+ypos*G.Height(displayBoardRect)-mHeight/2),
     									mWidth,
     									mHeight);
     	GC.frameRect(gc, Color.yellow, bdisp);
@@ -930,7 +932,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	Rectangle oldclip = GC.combinedClip(gc,localViewRect);
     	GC.fillRect(gc, Color.gray,localViewRect);
     	
-        GC.setRotatedContext(gc,boardRect,hp,contextRotation);
+        GC.setRotatedContext(gc,displayBoardRect,hp,contextRotation);
         drawBoardElements(gc,gb,playerRect,null);
         GC.unsetRotatedContext(gc,hp);
 
@@ -1009,8 +1011,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
      	
-      GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
-      drawBoardElements(gc, gb, boardRect, highlight);
+      GC.setRotatedContext(gc,displayBoardRect,highlight,contextRotation);
+      drawBoardElements(gc, gb, displayBoardRect, highlight);
       GC.unsetRotatedContext(gc,highlight);
 
       GC.setFont(gc,standardBoldFont());
@@ -1170,7 +1172,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
      		// animations for long verses short moves.
       		double speed = masterAnimationSpeed*1.0;
       		double dist = from.distanceTo(to);
-     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
+     		double full = G.distance(0,0,G.Width(displayBoardRect),G.Height(displayBoardRect));
      		double endtime = starttime+speed*Math.sqrt(dist/full);
          	double rot = to.activeAnimationRotation();
     		SimpleSprite newSprite = new SimpleSprite(true,top,
@@ -1445,7 +1447,7 @@ private void playSounds(commonMove m)
     	{	if(G.Date()>lastGameOverAnimationTime)
     		{
     		TrainSimulator sim = new TrainSimulator(b.playerBoard[b.whoseTurn].rack);
-    		sim.runSimulation(this,boardRect);
+    		sim.runSimulation(this,boardRect,contextRotation!=0);
     		lastGameOverAnimationTime = G.Date()+10000;
     		}
 		}

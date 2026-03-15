@@ -22,8 +22,6 @@ import lib.G;
 import lib.InternationalStrings;
 import lib.Tokenizer;
 
-import com.codename1.ui.Font;
-
 import lib.ExtendedHashtable;
 
 
@@ -245,7 +243,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
 	    if(dest==yrack.Dice_Tower) { state[0]= state[1] = null; return(dest.name); }
     	return(describeDest());
 	}
-    String censoredMoveString(YspahanMovespec state[],YspahanBoard b,Font f)
+    String censoredMoveString(YspahanMovespec state[],YspahanBoard b)
     {	
      	switch(op)
     	{

@@ -458,16 +458,16 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants
       int centerx = (gb.boardColumns+1)/2;
       int centery = (gb.boardRows+1)/2;
       drawHoshi(gc,gb,centerx,centery,boardRect);
-   
-      drawHoshi(gc,gb,4,4,boardRect);
-      drawHoshi(gc,gb,4,gb.boardRows-3,boardRect);
-      drawHoshi(gc,gb,gb.boardColumns-3,gb.boardRows-3,boardRect);
-      drawHoshi(gc,gb,gb.boardColumns-3,4,boardRect);
+      int span = gb.boardColumns<=11 ? 3 : 4;
+      drawHoshi(gc,gb,span,span,boardRect);
+      drawHoshi(gc,gb,span,gb.boardRows-span+1,boardRect);
+      drawHoshi(gc,gb,gb.boardColumns-span+1,gb.boardRows-span+1,boardRect);
+      drawHoshi(gc,gb,gb.boardColumns-span+1,span,boardRect);
       
-      drawHoshi(gc,gb,centerx,4,boardRect);
-      drawHoshi(gc,gb,centerx,gb.boardColumns-3,boardRect);
-      drawHoshi(gc,gb,gb.boardRows-3,centerx,boardRect);
-      drawHoshi(gc,gb,4,centery,boardRect);
+      drawHoshi(gc,gb,centerx,span,boardRect);
+      drawHoshi(gc,gb,centerx,gb.boardColumns-span+1,boardRect);
+      drawHoshi(gc,gb,gb.boardRows-span+1,centerx,boardRect);
+      drawHoshi(gc,gb,span,centery,boardRect);
     }
     private void drawHoshi(Graphics gc,GoBoard gb,int x,int y,Rectangle r)
     {

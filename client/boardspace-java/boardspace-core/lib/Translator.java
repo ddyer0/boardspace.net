@@ -138,6 +138,24 @@ public class Translator {
     // ── JSON helpers (no external library needed) ─────────────────────────────
 
     private static String buildRequestBody(String userMessage) {
+    	// new version with prompt caching
+    	return "{"
+        + "\"model\":\""      + MODEL      + "\","
+        + "\"max_tokens\":"   + MAX_TOKENS  + ","
+        + "\"system\":["
+        +   "{"
+        +     "\"type\":\"text\","
+        +     "\"text\":"     + jsonString(SYSTEM_PROMPT) + ","
+        +     "\"cache_control\":{\"type\":\"ephemeral\"}"
+        +   "}"
+        + "],"
+        + "\"messages\":[{"
+        +   "\"role\":\"user\","
+        +   "\"content\":" + jsonString(userMessage)
+        + "}]"
+        + "}";
+    	// original version without caching
+    	/*
         return "{"
             + "\"model\":\""      + MODEL      + "\","
             + "\"max_tokens\":"   + MAX_TOKENS  + ","
@@ -147,6 +165,8 @@ public class Translator {
             +   "\"content\":" + jsonString(userMessage)
             + "}]"
             + "}";
+            */
+        
     }
 
     /**

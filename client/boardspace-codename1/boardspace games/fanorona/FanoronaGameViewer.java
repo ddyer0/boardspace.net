@@ -81,7 +81,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     // private state
     private FanoronaBoard b = null; 	// the board from which we are displaying
     private int SQUARESIZE;			// size of a board square
-    
+    private Rectangle displayBoardRect = new Rectangle();
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
@@ -89,7 +89,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
-    private double boardRotation = 0;
     private Rectangle []chipRects = addRect("chip",2);
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
@@ -208,7 +207,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	SQUARESIZE = (int)cs;
     	boardW = (int)(ncols*SQUARESIZE);
     	boardH = (int)(nrows*SQUARESIZE);
-    	boardRotation = 0;
+    	contextRotation = 0;
     	}
     	else
     	{
@@ -216,7 +215,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	SQUARESIZE = (int)cs;
     	boardW = (int)(nrows*SQUARESIZE);
     	boardH = (int)(ncols*SQUARESIZE);
-    	boardRotation = Math.PI/2;
+    	contextRotation = Math.PI/2;
     	}
     	int extraW = Math.max(0,(mainW-boardW)/2);
     	int extraH = Math.max(0,(mainH-boardH)/2);
@@ -232,9 +231,10 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         int stateX = boardX;
         placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-        if(boardRotation!=0)
+        G.copy(displayBoardRect,boardRect);
+        if(contextRotation!=0)
         {
-        	G.setRotation(boardRect, boardRotation,boardX+boardW/2,boardY+boardH/2);
+        	G.setRotation(displayBoardRect, contextRotation,boardX+boardW/2,boardY+boardH/2);
                        } 
  
     	// goal and bottom ornaments, depending on the rendering can share
@@ -306,7 +306,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawFixedBoard(gc, displayBoardRect);
     }
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -314,7 +314,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
       int cx = G.centerX(brect);
       int cy = G.centerY(brect);
       FanoronaBoard gb = disB(gc);
-      GC.setRotation(gc, boardRotation, cx,cy);
+      GC.setRotation(gc, contextRotation, cx,cy);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -328,14 +328,14 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 
       gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       
-      GC.setRotation(gc, -boardRotation, cx, cy);
+      GC.setRotation(gc, -contextRotation, cx, cy);
     }
 
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, FanoronaBoard gb, Rectangle brect, HitPoint highlight)
     {
         
-        GC.setRotatedContext(gc,boardRect,highlight,boardRotation);
+        GC.setRotatedContext(gc,brect,highlight,contextRotation);
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -429,7 +429,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
       FanoronaState vstate = gb.getState();
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
-        drawBoardElements(gc, gb, boardRect, ot);
+        drawBoardElements(gc, gb, displayBoardRect, ot);
         for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)
         {	commonPlayer p = getPlayerOrTemp(i);
         	p.setRotatedContext(gc, highlight, false);

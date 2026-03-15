@@ -231,7 +231,7 @@ public class GameTimerViewer extends CCanvas<cell<?>,GameTimerBoard> implements 
     public void drawFixedElements(Graphics gc)
     { 
      GameTimerChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

@@ -525,7 +525,7 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     public void drawFixedElements(Graphics gc)
     { 
      PendulumChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     Image scaledBoard = null;

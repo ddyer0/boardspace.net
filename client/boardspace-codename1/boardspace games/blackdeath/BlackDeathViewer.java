@@ -136,6 +136,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     private Rectangle mortalityRect = addRect("mortalityRect");
     private Rectangle rotatedMortalityRect = new Rectangle();
     private Rectangle infoRect = addRect("infoRect");
+    private Rectangle displayBoardRect = new Rectangle();
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -271,6 +272,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         placeStateRow(stateX,stateY,boardW-stateH ,stateH,idRect,stateRect,annotationMenu,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
     	G.SetRect(mortalityRect,
     			(int)(boardX+0.018*boardW),
     			(int)(boardY+0.2*boardH),
@@ -282,10 +284,10 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	if(rotate)
     	{	
     		contextRotation = -Math.PI/2;
-    		G.setRotation(boardRect, -Math.PI/2);
+    		G.setRotation(displayBoardRect, -Math.PI/2);
     		G.SetRect(mortalityRect,       			
-        			(int)(G.Left(boardRect)+0.018*boardH),
-        			(int)(G.Top(boardRect)+0.2*boardW),
+        			(int)(G.Left(displayBoardRect)+0.018*boardH),
+        			(int)(G.Top(displayBoardRect)+0.2*boardW),
         			(int)(boardH*0.14),
         			(int)(boardW*0.35));     
     		G.copy(rotatedMortalityRect,mortalityRect);
@@ -467,7 +469,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     public void drawFixedElements(Graphics gc)
     { // erase
        BlackDeathChip.backgroundTile.image.tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+       drawRotatedFixedBoard(gc,displayBoardRect);
     }
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -825,8 +827,8 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
    		gameLog.playerIcons = true;
    		gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.blue,boardBackgroundColor,standardBoldFont(),standardPlainFont());
 
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect,selectPos,targets);
        GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.blue,rotatedMortalityRect);
@@ -1539,7 +1541,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     }
     public Text censoredMoveText(SequenceElement m,int idx,Font f)
     {
-    	Text str = m.censoredMoveText(this,bb, f);
+    	Text str = m.censoredMoveText(this,bb,f);
     	str.colorize(null,gameMoveText());
     	return(str);
     }

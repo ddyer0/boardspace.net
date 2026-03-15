@@ -428,7 +428,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
     public void drawFixedElements(Graphics gc)
     { 
      BugChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate
@@ -584,9 +584,7 @@ public class BugViewer extends CCanvas<BugCell,BugBoard> implements BugConstants
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
-       GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
        int whoseTurn = gb.whoseTurn;

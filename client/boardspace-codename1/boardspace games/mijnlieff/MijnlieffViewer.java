@@ -419,7 +419,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     public void drawFixedElements(Graphics gc)
     { 
      MijnlieffChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     Image scaled = null;
     

@@ -204,6 +204,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     private Rectangle starRect = addRect(".stars");
     private Rectangle passRect = addRect(".passrect");
     private Rectangle passWarnRect = addRect(".passwarn");
+    // this is the version of the board that is used by the viewer; it
+    // might have been rotated if the board is being displayed with a 90 degree rotation
+    private Rectangle displayBoardRect = new Rectangle();
+    
     private Toggle hintRect = new Toggle(this,"hints",StockArt.Tooltips,ViticultureId.ShowHints,true,s.get(ShowAllHintsMessage));
     private Toggle scoreRect = new Toggle(this,"score",ViticultureChip.ScoreSheet,ViticultureId.ShowScores,true,s.get(ShowScoresMessage));
     public boolean isNextSeason()
@@ -513,13 +517,16 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         setProgressRect(progressRect,goalRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
+    	
     	selectedLayout.returnFromMain(extraW,extraH);
 
     	if(rotateBoard)
     	{
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
-    	}}
+    	}
+    	}
     	int boardX = G.Left(boardRect);
     	int boardY = G.Top(boardRect);
     	int boardH = G.Height(boardRect);
@@ -1129,7 +1136,7 @@ private void drawPlayerBoard(Graphics gc,
     
       */
     public void drawSprite(Graphics g,int obj,int xp,int yp)
-    {
+    {	
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	GC.setFont(g,largeBoldFont());
@@ -1164,7 +1171,7 @@ private void drawPlayerBoard(Graphics gc,
       //GC.fillRect(gc, fullRect);
      // G.tileImage(gc,ViticultureChip.backgroundTile.image, fullRect, this);   
      ViticultureChip.backgroundTile.getImage().stretchImage(gc, fullRect);  
-     GC.setRotatedContext(gc,boardRect,null,contextRotation);
+     GC.setRotatedContext(gc,displayBoardRect,null,contextRotation);
 
      if(reviewBackground)
       {	 
@@ -1179,7 +1186,7 @@ private void drawPlayerBoard(Graphics gc,
       // are carefully matched with the abstract grid
       if(remoteViewer<0)
       {
-      if(brect.equals(boardRect))
+      if(brect.equals(displayBoardRect))
       {
       scaled = ViticultureChip.board.image.centerScaledImage(gc,brect,scaled);
       }
@@ -1258,7 +1265,7 @@ private void drawPlayerBoard(Graphics gc,
            
        	   pl0.setRotatedContext(gc, null,true);
         }
-        GC.setRotatedContext(gc,boardRect,hitBoard,-Math.PI/2);
+        GC.setRotatedContext(gc,displayBoardRect,hitBoard,-Math.PI/2);
     	
     }
     public void drawBoardBackgroundElements(Graphics gc,commonPlayer pl,ViticultureBoard gb,Rectangle brect,
@@ -1300,7 +1307,7 @@ private void drawPlayerBoard(Graphics gc,
     
     public void drawFixedElements(Graphics gc)
     {
-    	drawFixedElements(gc,disB(gc),boardRect);
+    	drawFixedElements(gc,disB(gc),displayBoardRect);
     }
     
 
@@ -3071,7 +3078,7 @@ private void drawPlayerBoard(Graphics gc,
     	int y = G.Top(br)+(int)(boardH*0.05);
     	int nyears = Math.max(7, gb.year);
      	Rectangle scoreRect = new Rectangle(x,y,w,h);
-     ViticultureChip.Scrim.image.stretchImage(gc, boardRect);  
+     ViticultureChip.Scrim.image.stretchImage(gc, br);  
      	GC.fillRect(gc,Color.lightGray,scoreRect);
      	GC.frameRect(gc, Color.black, scoreRect);
      	
@@ -4687,13 +4694,13 @@ private void drawPlayerBoard(Graphics gc,
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn());
         boolean tempOff = currentZoomZone!=null;
         
-        ViticultureChip.NeutralBuilding.draw(gc,this,gb.pToS(0.04),
-        			gb.pToX(0.21),gb.pToY(0.570),
+        ViticultureChip.NeutralBuilding.draw(gc,this,gb.pToS(0.04,displayBoardRect),
+        			gb.pToX(0.21,displayBoardRect),gb.pToY(0.570,displayBoardRect),
         			highlightAll,ViticultureId.ShowBuildings,s.get(ShowBuildingInfo));
         if(mainBoard.variation==ViticultureVariation.viticulturep)
         {
-        	ViticultureChip.GenericWine.draw(gc,this,gb.pToS(0.03),
-        			gb.pToX(0.212),gb.pToY(0.50),
+        	ViticultureChip.GenericWine.draw(gc,this,gb.pToS(0.03,displayBoardRect),
+        			gb.pToX(0.212,displayBoardRect),gb.pToY(0.50,displayBoardRect),
         			highlightAll,ViticultureId.ShowOptions,s.get(ShowOptionInfo));
         	
         }
@@ -4976,10 +4983,10 @@ private void drawPlayerBoard(Graphics gc,
        	}
        else
     	{
-    	int boardX = G.Left(boardRect);
-    	int boardY = G.Top(boardRect);
-    	int boardW = G.Width(boardRect);
-    	int boardH = G.Height(boardRect);
+    	int boardX = G.Left(displayBoardRect);
+    	int boardY = G.Top(displayBoardRect);
+    	int boardW = G.Width(displayBoardRect);
+    	int boardH = G.Height(displayBoardRect);
     	zoomleft = G.Left(zoom)-boardX;
     	zoomtop = G.Top(zoom)-boardY;
     	double zleft = (double)(zoomleft)/boardW;
@@ -5021,7 +5028,7 @@ private void drawPlayerBoard(Graphics gc,
      		GC.translate(gc,xdis,ydis);
     		drawFixedElements(gc,gb,newBR);
     		GC.translate(gc,-xdis,-ydis);
-    		GC.setRotatedContext(gc,boardRect,highlightAll,contextRotation);
+    		GC.setRotatedContext(gc,displayBoardRect,highlightAll,contextRotation);
     		GC.setClip(gc,oldClip);
     	}
     	int hx = G.Left(highlightAll);
@@ -5049,7 +5056,7 @@ private void drawPlayerBoard(Graphics gc,
       	}
     	finally 
     		{ CELLSIZE = STANDARD_CELLSIZE;
-    	  	  gb.SetDisplayRectangle(boardRect);
+    	  	  gb.SetDisplayRectangle(displayBoardRect);
     	  	  G.SetLeft(highlightAll,hx);
     	  	  G.SetTop(highlightAll, hy);
        		}
@@ -5207,7 +5214,7 @@ private void drawPlayerBoard(Graphics gc,
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,boardRect);	// yes, the real boardRect
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -5226,9 +5233,9 @@ private void drawPlayerBoard(Graphics gc,
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,
     		   boardBackgroundColor, standardBoldFont(),standardBoldFont());
        
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
 
-       drawZoomedBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets,currentZoomZone);
+       drawZoomedBoardElements(gc, gb, displayBoardRect, ourTurnSelect,selectPos,targets,currentZoomZone);
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
        double messageRotation = pl.messageRotation();
        if((state != ViticultureState.Puzzle) && !showBigStack && (state!=ViticultureState.Gameover))
@@ -5357,7 +5364,7 @@ private void drawPlayerBoard(Graphics gc,
  	{ 	 
  		if(currentZoomZone!=null)
  		{	if((chip instanceof ViticultureChip) && ((ViticultureChip)chip).type.isCard()) { return(thissize); }
- 			return ((int)(thissize*((double)G.Width(boardRect)/G.Width(currentZoomZone))));
+ 			return ((int)(thissize*((double)G.Width(displayBoardRect)/G.Width(currentZoomZone))));
  		}
  		return(thissize);
  	}

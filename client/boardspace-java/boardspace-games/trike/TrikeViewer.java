@@ -446,7 +446,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     public void drawFixedElements(Graphics gc)
     { 
      TrikeChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

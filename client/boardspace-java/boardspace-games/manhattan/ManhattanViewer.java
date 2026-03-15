@@ -122,7 +122,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
     private Rectangle visualBoardRect = new Rectangle();
     private Rectangle visualBoardRectRotated = new Rectangle();
-    
+    private Rectangle displayBoardRect = new Rectangle();
     // private state
     private ManhattanBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
@@ -397,12 +397,12 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     	G.SetRect(visualBoardRect,boardX,boardY+stateH,boardW,boardH-stateH*2);
     	G.copy(visualBoardRectRotated,visualBoardRect);
     	G.setRotation(visualBoardRectRotated,Math.PI/2);
-    	
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
     		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     	
@@ -523,7 +523,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
     public void drawFixedElements(Graphics gc)
     { 
      ManhattanChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, displayBoardRect);
      }
     
     Image scaledBoard = null;
@@ -1079,7 +1079,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,displayBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -1126,7 +1126,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
        }
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
        
        ManhattanCell deckOverlay = overlayDeck;
        boolean deckSelect = false;
@@ -1162,7 +1162,7 @@ public class ManhattanViewer extends CCanvas<ManhattanCell,ManhattanBoard> imple
 
        numberMenu.clearSequenceNumbers();
 
-       drawBoardElements(gc, gb, boardRect, boardSelect,targets,anyOverlay ? null : selectPos);
+       drawBoardElements(gc, gb, displayBoardRect, boardSelect,targets,anyOverlay ? null : selectPos);
 
        GC.unsetRotatedContext(gc,selectPos);
        

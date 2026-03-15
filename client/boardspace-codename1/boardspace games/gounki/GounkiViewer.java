@@ -323,7 +323,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     Image background = null;

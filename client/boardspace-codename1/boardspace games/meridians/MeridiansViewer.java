@@ -408,7 +408,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     public void drawFixedElements(Graphics gc)
     { 
      MeridiansChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

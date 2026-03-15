@@ -356,7 +356,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
     public void drawFixedElements(Graphics gc)
     { 
      KingsColorChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

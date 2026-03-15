@@ -20,8 +20,6 @@ import lib.G;
 import lib.Tokenizer;
 import online.game.*;
 
-import com.codename1.ui.Font;
-
 import lib.ExtendedHashtable;
 
 public class TammanyMovespec extends commonMPMove implements TammanyConstants
@@ -486,7 +484,7 @@ public class TammanyMovespec extends commonMPMove implements TammanyConstants
     	}
     	return(false);
     }
-    String censoredMoveString( CommonMoveStack history, int idx,TammanyBoard b,Font f)
+    String censoredMoveString( CommonMoveStack history, int idx,TammanyBoard b)
     {	if((op == MOVE_VOTE)&& !hasFutureNonVote(history,idx))
     	{
     	return("");

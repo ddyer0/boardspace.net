@@ -469,7 +469,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
     public void drawFixedElements(Graphics gc)
     { 
      SlitherChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     Image scaled = null;
     private void setupBoardRect(SlitherBoard gb,Rectangle br)

@@ -93,7 +93,8 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     private Rectangle playerRoleRect[] = addRect("role",5);	
     private Rectangle playerInfluenceRect[] = addRect("influence",5);
     private Rectangle playerEyeRect[] = addRect("eye",5);
-
+    private Rectangle displayBoardRect = new Rectangle();
+    
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -260,16 +261,17 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
     	if(!portrait)
     	{	contextRotation = Math.PI/2;
-    		G.setRotation(boardRect, Math.PI/2);
+    		G.setRotation(displayBoardRect, Math.PI/2);
     	}
         int wardW = CELLSIZE+C2;
     	{
-    	int rbx = G.Left(boardRect);
-    	int rby = G.Top(boardRect);
-    	int rbw = G.Width(boardRect);
-    	int rbh = G.Height(boardRect);
+    	int rbx = G.Left(displayBoardRect);
+    	int rby = G.Top(displayBoardRect);
+    	int rbw = G.Width(displayBoardRect);
+    	int rbh = G.Height(displayBoardRect);
         G.SetRect(infoRect,rbx + (int)(rbw*0.72),
         		rby + (int)(rbh*0.7),
         		rbw/5,rbh/6);
@@ -435,7 +437,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
       {	 
        TammanyChip.backgroundReviewTile.image.tileImage(gc,boardRect);   
       }
-       	drawFixedBoard(gc);
+       	drawRotatedFixedBoard(gc, displayBoardRect);
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       }
@@ -444,7 +446,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
      public void drawFixedBoard(Graphics gc,Rectangle rect)
      {	TammanyBoard gb = disB(gc);
     	 if(remoteViewer<0) { scaled = TammanyChip.board.image.centerScaledImage(gc, rect,scaled);	} 
-         setDisplayParameters(gb,boardRect);      	
+         setDisplayParameters(gb,rect);      	
      }
     /**
      * translate the mouse coordinate x,y into a size-independent representation
@@ -910,7 +912,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     {  
     	
        TammanyBoard gb = disB(gc);
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,displayBoardRect);
        int nPlayers = gb.nPlayers();
        TammanyState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
@@ -935,8 +937,8 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     		   standardBoldFont(),standardBoldFont());
        Hashtable<TammanyCell,TammanyMovespec> targets = gb.getTargets();
        
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect,selectPos,targets);
        GC.unsetRotatedContext(gc,selectPos);
            
        

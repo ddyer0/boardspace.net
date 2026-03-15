@@ -311,7 +311,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants
     public void drawFixedElements(Graphics gc)
     { 
      YChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     Image scaled = null;
     // land here after rotating the board drawing context if appropriate

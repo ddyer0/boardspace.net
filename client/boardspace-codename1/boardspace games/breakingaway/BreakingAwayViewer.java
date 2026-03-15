@@ -141,6 +141,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     private Rectangle cycleRect[] = addRect("cycle",6);
     private Rectangle chipRect[] = addRect("chip",6);
 
+    private Rectangle displayBoardRect = new Rectangle();
      
     public synchronized void preloadImages()
     {	BreakingAwayPiece.preloadImages(loader,ImageDir);
@@ -287,13 +288,14 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	int stateX = boardX;
     	layout.returnFromMain(extra,0);
     	G.SetRect(boardRect, boardX, boardY+stateH, boardW,boardH-stateH);
+    	G.copy(displayBoardRect,boardRect);
     	int stateY = boardY;
     	boolean rotate = boardH>boardW;
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
     		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     
@@ -322,10 +324,10 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     G.AlignTop(timeStepRect, G.Right(backwardTimeRect)+CELLSIZE/4,backwardTimeRect);
     G.AlignTop(forwardTimeRect, G.Right(timeStepRect)+CELLSIZE/4,timeStepRect);
     
-    G.SetRect(animateButton,boardX+boardW-7*BCELL,boardY+BCELL*7, timeW*3, timeW);
+    G.SetRect(animateButton,G.Right(boardRect)-7*BCELL,G.Top(boardRect)+BCELL*7, timeW*3, timeW);
     
     int revw = G.Width(animateButton)+BCELL*2;
-    G.SetRect(reverseViewRect, G.Right(boardRect)-revw-BCELL,boardY+BCELL*2,
+    G.SetRect(reverseViewRect, G.Right(boardRect)-revw-BCELL,G.Top(boardRect)+BCELL*2,
     			revw,BCELL*4);
     
     G.SetRect(bubbleRect, boardX+boardW-BCELL*4+BCELL/2, boardY+boardH-BCELL*4, BCELL*3,BCELL*3);
@@ -369,7 +371,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
        	double comp = 1.0;
        	if(inboard)
        	{
-       	int closestRow = b.closestRow(xp-G.Left(boardRect),(yp-G.Top(boardRect)));
+       	int closestRow = contextRotation==0 ?  b.closestRow(xp-G.Left(boardRect),(yp-G.Top(boardRect)))
+       			: b.closestRow((G.Bottom(boardRect)-yp),xp-G.Left(boardRect));
        	if(closestRow>=0)
        	{
         comp = (100-b.rowCompress(closestRow))/100.0;
@@ -391,19 +394,19 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     BreakingAwayBoard gb = disB(gc);
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
       textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
-      GC.setRotatedContext(gc,boardRect,null,contextRotation);    
+     GC.setRotatedContext(gc,displayBoardRect,null,contextRotation);    
       if(remoteViewer<0) 
       	{ 
     	  textures[backgroundReview ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
-    	          		boardRect); 
+    			  displayBoardRect);
     	  Image boardImage = images[(gb.reverseY()?BOARD_OBLIQUE_REVERSE_INDEX:BOARD_OBLIQUE_INDEX)];
     	  if(boardImage!=background) { scaled = null; }
     	  background = boardImage;
-    	  scaled = boardImage.centerScaledImage(gc, boardRect,scaled);
+    	  scaled = boardImage.centerScaledImage(gc, displayBoardRect,scaled);
   		
       	}
   		
-      gb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayRectangles(boardRect,displayBoardRect);
     
       GC.unsetRotatedContext(gc,null);
       // visualize the center lines of the track wedges
@@ -914,9 +917,9 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 				HighlightColor, rackBackGroundColor);
         }
       	
-        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
+        GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
 
-        drawBoardElements(gc, gb, boardRect, ourTurnSelect,vcrSelect);
+        drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect,vcrSelect);
         
         GC.unsetRotatedContext(gc,selectPos);
         

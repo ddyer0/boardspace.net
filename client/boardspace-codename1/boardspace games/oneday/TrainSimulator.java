@@ -48,20 +48,30 @@ public class TrainSimulator {
 	}
 	
 	// this runs the endgame simulation which traces the winning route at high speed
-	public void runSimulation(exCanvas forCan,Rectangle r)
+	public void runSimulation(exCanvas forCan,Rectangle r,boolean rot)
 	{	double startingTime = 0.0;
+		int w = rot ? G.Height(r) : G.Width(r);
+		int h = rot ? G.Width(r) : G.Height(r);
+		int l = G.Left(r);
+		int t = G.Top(r);
 		while(stops.size()>=2)
 		{	
 			Station start = stops.remove(0,true).station;
 			Station next = stops.elementAt(0).station;
 			double dist = start.distanceTo(next);
 			double duration =(dist*speed);
+			int sxp = (int)(start.xpos*w/100);
+			int syp = (int)(start.ypos*h/100);
+			int nxp = (int)(next.xpos*w/100);
+			int nyp = (int)(next.ypos*h/100);
+			
 			SimpleSprite newSprite = new SimpleSprite(true,StockArt.SmallO,
      				G.Width(r)/6,	// use the same cell size as drawSprite would
      				startingTime,
      				duration,
-             		G.Left(r)+(int)(start.xpos*G.Width(r)/100),G.Top(r)+(int)(start.ypos*G.Height(r)/100),
-             		G.Left(r)+(int)(next.xpos*G.Width(r)/100),G.Top(r)+(int)(next.ypos*G.Height(r)/100),0);
+             		l+(rot?syp:sxp),t+(rot?w-sxp:syp),
+             		l+(rot?nyp:nxp),t+(rot?w-nxp:nyp),
+             		0);
      		newSprite.movement = Movement.SlowInOut;
      		forCan.addSprite(newSprite);
 			startingTime +=duration+stationTime;

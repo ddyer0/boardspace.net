@@ -785,7 +785,7 @@ private void playSounds(commonMove m)
     public void drawFixedElements(Graphics gc)
     {	
        ChessChip.backgroundTile.image.tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { ChessBoard gb = disB(gc);

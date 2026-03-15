@@ -120,6 +120,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private Rectangle displayBoardRect = new Rectangle();
     private Rectangle chipRect[] = addZoneRect("chip",2);
     private Rectangle repRect = addRect("repRect");	
     private Rectangle reverseRect = addRect("reverseRect");
@@ -306,7 +307,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
         G.SetRect(iconRect,stateX,stateY,stateH,stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{	double rd = -Math.PI/2;
     		DefinedSeating seat = seatingChart();
@@ -318,7 +319,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     				rd = Math.PI/2;
     				break;
     			}
-    		G.setRotation(boardRect,rd);
+    		G.setRotation(displayBoardRect,rd);
     		contextRotation = rd;
     	}
     	// goal and bottom ornaments, depending on the rendering can share
@@ -370,7 +371,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     public void drawFixedElements(Graphics gc)
     { // erase
      PushfightChip.backgroundTile.image.tileImage(gc, fullRect);
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, displayBoardRect);
     }
     Image scaled = null;
     PushfightChip background = null;
@@ -477,7 +478,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
    		{
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case   
-   		setDisplayParameters(gb,boardRect);
+   		setDisplayParameters(gb,displayBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -494,8 +495,8 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
        
        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();

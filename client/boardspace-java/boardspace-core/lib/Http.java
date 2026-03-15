@@ -353,7 +353,6 @@ public class Http implements Config {
 	 		if(c instanceof HttpURLConnection)
     		{
     		HttpURLConnection conn = (HttpURLConnection)c;
-      		conn.setRequestMethod("POST");
     		
     		if(properties!=null)
     		{
@@ -372,6 +371,7 @@ public class Http implements Config {
       		if(data!=null)
         	{
         	c.setDoOutput(true);
+      		conn.setRequestMethod("POST");
         	OutputStream os = 	c.getOutputStream();
         
         	if(os!=null)

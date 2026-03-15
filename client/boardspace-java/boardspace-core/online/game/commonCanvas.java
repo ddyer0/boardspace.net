@@ -1608,11 +1608,15 @@ public abstract class commonCanvas extends exCanvas
      * provide the rotation context, if needed, for the board.  Define drawFixedBoard(gc,rect)
      * to do the work, after the optional board rotating transformation is applied.
      * @param gc
+     * @param rect normally "rect" is boardRect, but games that use the rotatation
      */
-    public void drawFixedBoard(Graphics gc)
-    {
-        GC.setRotatedContext(gc,boardRect,null,contextRotation);
-        drawFixedBoard(gc,boardRect);
+    public void drawRotatedFixedBoard(Graphics gc, Rectangle rect)
+    {	// Normally "rect" is boardRect, but games that use the rotatation
+    	// to display rectangular boards rotated will use displayBoardRect
+    	// 
+    	//
+        GC.setRotatedContext(gc,rect,null,contextRotation);
+        drawFixedBoard(gc,rect);
         GC.unsetRotatedContext(gc,null);      
     }
 
@@ -1947,7 +1951,10 @@ public abstract class commonCanvas extends exCanvas
             }
             else if ((obj >= 0) && !reviewMode())
                 { // draw an object being dragged
-                   drawSprite(g,obj,xp,yp);
+                    
+            	GC.setRotatedContext(g,xp,yp,null,contextRotation);
+            	drawSprite(g,obj,xp,yp);
+               	GC.unsetRotatedContext(g,null);
                 }
             
       	  // only draw the mouse sprite if it has moved or for 1/2 second after
@@ -8306,7 +8313,7 @@ public String currentPlayerPrettyName(int who)
 {	// careful, who can be -1
 	return(prettyName(who>=0?who:0)+" : ");
 }
-private boolean USEBOARDPC = false;
+private boolean USEBOARDPC = true;
 /**
  * translate the mouse coordinate x,y into a size-independent representation
  * presumably based on the cell grid.  This is used to transmit our mouse
@@ -8337,7 +8344,7 @@ public String encodeScreenZone(int x, int y,Point p)
 	{ 	BoardProtocol b = getBoard();
 		if(b!=null)
 		{
-		Point pp = b.encodeBoardPosition(x,y,boardRect);
+		Point pp = encodeBoardPosition(x,y,boardRect);
 		G.SetLeft(p,G.Left(pp));
 		G.SetTop(p,G.Top(pp));
 		}
@@ -8420,7 +8427,7 @@ public Point decodeScreenZone(String zone,int x,int y)
 	{ BoardProtocol b = getBoard();
 	  if(b!=null)
 	  {
-		  Point pp = b.decodeBoardPosition(x,y,boardRect); 
+		  Point pp = decodeBoardPosition(x,y,boardRect); 
 		  return pp;
 	  }
 	}
@@ -8462,6 +8469,45 @@ public Point decodeScreenZone(String zone,int x,int y)
 	return(mp);
 }
 
+/* encode the board position as a percentage of the max size,
+integerized as 0-999.
+*/
+public Point encodeBoardPosition(int x,int y,Rectangle boardRect)
+	{	int rawX = (((x-G.Left(boardRect))*1000)/G.Width(boardRect));
+		int rawY = (((y-G.Top(boardRect))*1000)/G.Height(boardRect));
+		// contextRotation will be 0 -pi/2 pi or pi/2
+		switch(G.signum(contextRotation))
+		{
+		case 0:		return( new Point(rawX,rawY));
+		case 1:		return( new Point(rawY,1000-rawX));
+		default:		return( new Point(1000-rawX,1000-rawY));
+		case -1:		return( new Point(1000-rawY,rawX));
+		}
+	}
+ /**
+	 * Override this method to decode an encoded board position.  
+	 *
+	 * @param x
+	 * @param y
+	 * @param cellsize
+	 * @return a new "point" representing the mouse position 
+	 * @see #encodeCellPosition
+	 */
+public Point decodeBoardPosition(int x0,int y0,Rectangle boardRect)
+	{	
+		int x = x0;
+		int y = y0;
+		// contextRotation will be 0 -pi/2 pi or pi/2
+		switch(G.signum(contextRotation))
+		{
+		case 0:	break;
+		case 1: x = 1000-y0; y = x0; break;
+		default: x = 1000-y0; y = 1000-x0; break;
+		case -1: 
+			x = y0; y = 1000-x0; break;
+		}
+		return(new Point( (x*G.Width(boardRect))/1000+G.Left(boardRect),(y*G.Height(boardRect))/1000+G.Top(boardRect)));
+	}
 /**
  * absorb the first few tokens from a game history string.  These
  * will the produced by your {@link #gameType} method.   Note that originally,

@@ -74,7 +74,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     private Rectangle chipRects[] = addRect("icon",2);
     private Rectangle scoreRects[] = addRect("score",2);
     private Rectangle capturedRects[] = addRect("captured",2);
-    
+    private Rectangle displayBoardRect = new Rectangle();
 
     public synchronized void preloadImages()
     {	
@@ -243,9 +243,11 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
         int stateX = boardX;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
      	if(rotateBoard) 
       		{ 
-      		  G.setRotation(boardRect, Math.PI/2,boardX+boardW/2,boardY+boardH/2);
+      		  G.setRotation(displayBoardRect, Math.PI/2,boardX+boardW/2,boardY+boardH/2);
+      		  contextRotation = Math.PI/2;
     }
         
     	// goal and bottom ornaments, depending on the rendering can share
@@ -587,8 +589,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
      * */
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
-    	int cx = G.centerX(boardRect);
-    	int cy = G.centerY(boardRect);
+    	int cx = G.centerX(displayBoardRect);
+    	int cy = G.centerY(displayBoardRect);
     	RithmomachyBoard gb = disB(gc);
       // erase
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
@@ -599,16 +601,16 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	
       if(reviewBackground)
       {	 
-       textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
+	       textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,displayBoardRect);   
       }
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, displayBoardRect,scaled);
       gb.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
-      gb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayRectangle(displayBoardRect);
 
-      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,displayBoardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       
       if(rotateBoard) 
   		{ GC.setRotation(gc, -Math.PI/2, cx, cy);
@@ -678,7 +680,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
      private void drawBoardElements(Graphics gc, RithmomachyBoard gb, Rectangle brect, HitPoint highlight,HitPoint anySelect)
     {
     	if(rotateBoard) 
-    	{ GC.setRotatedContext(gc,boardRect,highlight,Math.PI/2);
+    	{ GC.setRotatedContext(gc,displayBoardRect,highlight,Math.PI/2);
     	}
      	boolean dolift = doLiftAnimation();
      	
@@ -755,7 +757,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
       RithmomachyState vstate = gb.getState();
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
-        drawBoardElements(gc, gb, boardRect, ot,highlight);
+        drawBoardElements(gc, gb, displayBoardRect, ot,highlight);
         
         
         boolean planned = plannedSeating();

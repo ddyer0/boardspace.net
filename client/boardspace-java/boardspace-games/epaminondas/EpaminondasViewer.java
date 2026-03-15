@@ -435,7 +435,7 @@ public class EpaminondasViewer extends CCanvas<EpaminondasCell,EpaminondasBoard>
     public void drawFixedElements(Graphics gc)
     { 
      EpaminondasChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

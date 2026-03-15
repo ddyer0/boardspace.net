@@ -462,7 +462,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     public void drawFixedElements(Graphics gc)
     { 
      IroChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     double rotations[] = {0,-Math.PI/2,Math.PI,-Math.PI*3/2};

@@ -106,6 +106,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle scoreRects[] = addRect("score",2);
     private Rectangle  rackRects[] = addRect(".rack",2);
+    private Rectangle displayBoardRect = new Rectangle();
     private Toggle eyeRect = new Toggle(this,"eye",
 			StockArt.NoEye,DvonnId.ToggleEye,NoeyeExplanation,
 			StockArt.Eye,DvonnId.ToggleEye,EyeExplanation
@@ -244,21 +245,24 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
     int stateX = boardX;
     placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
 	G.SetRect(boardRect,boardX,boardY+(rotate?CELLSIZE/2:CELLSIZE),boardW,boardH);
+	G.copy(displayBoardRect,boardRect);
 	if(rotate)
 	{	// this conspires to rotate the drawing of the board
 		// and contents if the players are sitting opposite
 		// on the short side of the screen.
-		G.setRotation(boardRect,-Math.PI/2);
+		G.setRotation(displayBoardRect,-Math.PI/2);
 		contextRotation = -Math.PI/2;
 	}
 	G.copy(innerBoardRect,boardRect);
     G.SetHeight(innerBoardRect,G.Height(innerBoardRect)-CELLSIZE);
-    int bx = G.Left(boardRect);
-    int by = G.Top(boardRect);
-    int bh = G.Height(boardRect);
-    int bw = G.Width(boardRect);
+    {
+    int bx = G.Left(displayBoardRect);
+    int by = G.Top(displayBoardRect);
+    int bh = G.Height(displayBoardRect);
+    int bw = G.Width(displayBoardRect);
 	G.SetRect(rackRects[0],bx,by,CELLSIZE,bh-CELLSIZE);
 	G.SetRect(rackRects[1],bx+bw-CELLSIZE,by,CELLSIZE,bh-CELLSIZE);
+    }
  
 	// goal and bottom ornaments, depending on the rendering can share
 	// the rectangle or can be offset downward.  Remember that the grid
@@ -309,7 +313,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+       drawRotatedFixedBoard(gc, displayBoardRect);
     }
     Image scaled = null;
     Image background = null;
@@ -329,12 +333,12 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     	{
     	   	gb.SetDisplayParameters(.78,1.03, 0.1,0.33, 30,0,0,0.0);  		
     	}
- 	    gb.SetDisplayRectangle(brect);
+ 	    gb.SetDisplayRectangle(displayBoardRect);
     	}
 
       if(reviewBackground)
       {	 
-       textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
+       textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
       }
       Rectangle rect = perspective ? brect : innerBoardRect;
       Image board = perspective ? images[BOARD_INDEX] : images[BOARD_FLAT_INDEX];
@@ -454,8 +458,8 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       DvonnState vstate = gb.getState();
       
-      GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
-      drawBoardElements(gc, gb, boardRect, ot, highlight);
+      GC.setRotatedContext(gc,displayBoardRect,highlight,contextRotation);
+      drawBoardElements(gc, gb, displayBoardRect, ot, highlight);
       GC.unsetRotatedContext(gc,highlight);
       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     

@@ -20,6 +20,8 @@ import static viticulture.Viticulturemovespec.*;
 
 import java.util.*;
 
+import com.codename1.ui.geom.Rectangle;
+
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -11491,15 +11493,15 @@ public int cellToX(ViticultureCell c) {
 public int cellToY(ViticultureCell c) {
 	throw G.Error("Not expected");
 }
-public int pToX(double pos)
+public int pToX(double pos,Rectangle r)
 {
-	return(G.Left(boardRect)+(int)(pos*G.Width(boardRect)));
+	return(G.Left(r)+(int)(pos*G.Width(r)));
 }
-public int pToY(double pos)
+public int pToY(double pos,Rectangle r)
 {
-	return(G.Top(boardRect)+(int)(pos*G.Height(boardRect)));
+	return(G.Top(r)+(int)(pos*G.Height(r)));
 }
-public int pToS(double sz) { return((int)(sz*G.Width(boardRect))); }
+public int pToS(double sz,Rectangle r) { return((int)(sz*G.Width(r))); }
 
 // this is called from robot initialization so the bot moves
 // don't know the actual card order

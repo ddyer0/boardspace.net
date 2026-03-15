@@ -246,7 +246,10 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.copy(activeBoardRect,boardRect);
-    	if(twistBoard) { G.setRotation(activeBoardRect,Math.PI/2,boardX+boardW/2,boardY+boardH/2); }
+    	if(twistBoard)
+    		{ G.setRotation(activeBoardRect,Math.PI/2,boardX+boardW/2,boardY+boardH/2); 
+    		  contextRotation = -Math.PI/2;
+    		}
     	G.SetRect(reserveRect,(int)(G.Left(activeBoardRect)+0.1*G.Width(activeBoardRect)),
     			(int)(G.Top(activeBoardRect)+0.7*G.Height(activeBoardRect)),
     			(int)(G.Width(activeBoardRect)*0.8),(int)(G.Height(activeBoardRect)*0.20));
@@ -394,7 +397,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
 	  	setDisplayParameters(gb,activeBoardRect);
       if(twistBoard)
       {
-    	  GC.setRotation(gc,-Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));
+    	  GC.setRotation(gc,contextRotation,G.centerX(boardRect),G.centerY(boardRect));
       }
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
@@ -407,7 +410,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
       gb.DrawGrid(gc, activeBoardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
       if(twistBoard)
       {
-    	  GC.setRotation(gc,Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));
+    	  GC.setRotation(gc,-contextRotation,G.centerX(boardRect),G.centerY(boardRect));
       }
 
     }    
@@ -432,7 +435,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         // because there will be no gaps or overlaps between cells.
         if(twistBoard)
         { drawingBoard = true;
-          GC.setRotatedContext(gc,brect,highlight,-Math.PI/2);
+          GC.setRotatedContext(gc,brect,highlight,contextRotation);
         }
         numberMenu.clearSequenceNumbers();
         MbraneCell closestCell = gb.closestCell(highlight,brect);
@@ -498,9 +501,9 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      	  GC.setFont(gc,font);
      	  if(twistBoard)
      	  {
-     		  GC.setRotation(gc,Math.PI/2,x+cellSize/2,y+cellSize/2);
+     		  GC.setRotation(gc,-contextRotation,x+cellSize/2,y+cellSize/2);
      		  super.drawNumber(gc,source,dest,cellSize,x-cellSize/5,y+cellSize/5,font,color, str);
-     		  GC.setRotation(gc,-Math.PI/2,x+cellSize/2,y+cellSize/2);
+     		  GC.setRotation(gc,contextRotation,x+cellSize/2,y+cellSize/2);
      	  }
      	  else
      	  {

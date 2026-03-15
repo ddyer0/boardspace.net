@@ -134,6 +134,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     // private state
     private HavannahBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
+    private Rectangle displayBoardRect = new Rectangle();
  
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
@@ -348,10 +349,10 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{
-    		G.setRotation(boardRect, -Math.PI/2);
+    		G.setRotation(displayBoardRect, -Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     	// goal and bottom ornaments, depending on the rendering can share
@@ -453,7 +454,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     { // erase
     HavannahChip.backgroundTile.image.tileImage(gc, fullRect);   
      
-    	drawFixedBoard(gc);
+    	drawRotatedFixedBoard(gc, displayBoardRect);
     }
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -626,7 +627,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,displayBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -645,8 +646,8 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
        
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();

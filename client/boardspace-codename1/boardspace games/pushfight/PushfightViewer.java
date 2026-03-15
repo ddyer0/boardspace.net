@@ -370,7 +370,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     public void drawFixedElements(Graphics gc)
     { // erase
      PushfightChip.backgroundTile.image.tileImage(gc, fullRect);
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     PushfightChip background = null;

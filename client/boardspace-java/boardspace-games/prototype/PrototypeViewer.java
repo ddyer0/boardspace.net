@@ -141,6 +141,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  			StockArt.NoEye,PrototypeId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,PrototypeId.ToggleEye,EyeExplanation
  			);
+    // this is a rotated copy of boardRect, used in the display loop.  This is only
+    // needed if the contextRotation convention is used to display rectangular boards
+    // with nonstandard rotation.
+    private Rectangle displayBoardRect = new Rectangle();
     private Rectangle reverseRect = addRect("reverse");
     private Rectangle chipRects[] = addZoneRect("chip",2);
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
@@ -355,7 +359,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
-    	// the test.  For boards that are noticably rectangular, such as Push Fight,
+    	// the test.  For boards that are noticeably rectangular, such as Push Fight,
     	// use mainW<mainH
     	boolean rotate = mainW<mainH;	
         int nrows = rotate ? 24 : 15;  // b.boardRows
@@ -383,11 +387,12 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
     		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
+    		G.setRotation(displayBoardRect,-Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     	
@@ -464,6 +469,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 
         G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
         		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
+        G.copy(displayBoardRect,boardRect);
         int stateY = G.Top( boardRect);
         int stateX = C2;
         int stateH = CELLSIZE;
@@ -613,7 +619,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public void drawFixedElements(Graphics gc)
     { 
      PrototypeChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, displayBoardRect);
      }
     
     // land here after rotating the board drawing context if appropriate
@@ -769,7 +775,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
       
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,boardRect);	// yes, boardrect not displayBoardRect
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -789,8 +795,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();

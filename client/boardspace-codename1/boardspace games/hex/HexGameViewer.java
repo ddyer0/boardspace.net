@@ -471,7 +471,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     { // erase
     hexChip.backgroundTile.image.tileImage(gc, fullRect);   
       
-    	drawFixedBoard(gc);
+    	drawRotatedFixedBoard(gc, boardRect);
     }
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)

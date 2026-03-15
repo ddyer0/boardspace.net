@@ -137,31 +137,30 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
  	int bcols = 18;
 	int brows = 9;	// size of full sized board
 	int chatCols = 30;
-	double fullBoardRotation = 0;
 	public void setLocalBounds(int x,int y,int width,int height)
 	{	if(height>width*1.2)
 		{
 		G.SetRect(fullRect,x,y,width,height);
-		fullBoardRotation = -Math.PI/2;
-       	G.setRotation(fullRect, fullBoardRotation,G.centerX(fullRect),G.centerY(fullRect));
+		contextRotation = -Math.PI/2;
+       	G.setRotation(fullRect, contextRotation,G.centerX(fullRect),G.centerY(fullRect));
         setLocalBoundsWT(G.Left(fullRect),G.Top(fullRect),G.Width(fullRect),G.Height(fullRect));
 		}
 		else
 		{
-		fullBoardRotation = 0;
+		contextRotation = 0;
 		setLocalBoundsWT(x,y,width,height);
 		}
 	}
 	public boolean rectangleIsVisible(Rectangle r)
 	{
-		if(fullBoardRotation!=0)  { return true; }
+		if(contextRotation!=0)  { return true; }
 		return super.rectangleIsVisible(r);
 	}
     public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
     {	
         if(tallMode) { return 0; }
         int chatHeight = selectChatHeight(height);
-        boolean rotated = fullBoardRotation!=0;
+        boolean rotated = contextRotation!=0;
         boolean nochat = chatHeight==0;
       	double sncols = bcols*SUBCELL+(tallMode ? -20 : (wideMode ? chatCols+5 : 10)); // more cells wide to allow for the aux displays
       	double snrows = brows*SUBCELL+(tallMode ? 14 : 3)+((rotated&&!nochat)?25:0);  
@@ -173,7 +172,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
       	return(SQUARESIZE);
     }
     public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   boolean rotated = fullBoardRotation!=0;
+    {   boolean rotated = contextRotation!=0;
         int chatHeight = selectChatHeight(height);
      	boolean noChat = (chatHeight==0);
         int ideal_logwidth = CELLSIZE * 18;
@@ -321,9 +320,11 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         setProgressRect(progressRect,goalRect);
 
         positionTheChat(chatRect,veryLtGreen,rackBackGroundColor);
+        G.copy(displayBoardRect,boardRect);
+        G.setRotation(boardRect,-contextRotation);
         generalRefresh();
          }
-    
+    Rectangle displayBoardRect = new Rectangle();
     /*
      * version using modern layout, works but is still inferior
     public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) 
@@ -453,7 +454,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 		GC.frameRect(gc,Color.black,r);
 		HitPoint.setHelpText(highlight,r,CarnacId.ReverseViewButton,s.get(ReverseViewExplanation));
     	
-    	setBoardParameters(gb,boardRect);
+    	setBoardParameters(gb,displayBoardRect);
      }  
 	
     private void DrawChipsetMarker(Graphics gc, CarnacBoard gb,Rectangle r,HitPoint highlight)
@@ -467,7 +468,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     		showChipSet = chipSetLock ? currentChipSet : currentChipSet^1;
     	}
     	else { showChipSet = currentChipSet; chipSetLock = false; }
-    	setBoardParameters(gb,boardRect);
+    	setBoardParameters(gb,displayBoardRect);
      } 
 	// draw a selection of starting pieces
     private void DrawCommonChipPool(Graphics gc, CarnacBoard gb,Rectangle r, HitPoint highlight)
@@ -527,7 +528,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     public void drawSprite(Graphics g,int obj,int xp,int yp)
     {  	// draw an object being dragged
     	CarnacChip ch = CarnacChip.getChip(obj);// Tiles have zero offset
-    	GC.setRotation(g,fullBoardRotation,xp,yp);
+    	GC.setRotation(g,contextRotation,xp,yp);
     	if(b.reverseXneqReverseY())
     	{	CarnacCell a1 = b.getCell('A',1);
      		switch(ch.getFaceOrientation())
@@ -557,13 +558,13 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     		}
     	}
     	ch.draw(g,this,(int)(b.adjustedCellSize()*SIZE_ADJUST*sizeRect.value),xp,yp,null);
-    	GC.setRotation(g,-fullBoardRotation,xp,yp);
+    	GC.setRotation(g,-contextRotation,xp,yp);
      }
 
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
     public Point spriteDisplayPoint()
-	{   return(new Point(G.Right(boardRect)-SQUARESIZE/2,G.Bottom(boardRect)-SQUARESIZE/2));
+	{   return(new Point(G.Right(displayBoardRect)-SQUARESIZE/2,G.Bottom(displayBoardRect)-SQUARESIZE/2));
 	}
 
 
@@ -584,22 +585,22 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     { boolean backgroundReview = reviewMode() && !mutable_game_record;
       // erase
       CarnacBoard gb = disB(gc);
-    	GC.setRotatedContext(gc,fullRect,null,fullBoardRotation);
+    	GC.setRotatedContext(gc,fullRect,null,contextRotation);
     	GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
     	//GC.fillRect(gc, fullRect);
     	CarnacChip.backgroundTile.image.tileImage(gc, fullRect);   
     	if(backgroundReview)
 	      {	 
-	       CarnacChip.backgroundReviewTile.image.tileImage(gc,boardRect);   
+	       CarnacChip.backgroundReviewTile.image.tileImage(gc,displayBoardRect);   
 	      }
 	       
     	// if the board is one large graphic, for which the visual target points
     	// are carefully matched with the abstract grid
-    	scaled = gb.rules.board.image.centerScaledImage(gc, boardRect, scaled);
+    	scaled = gb.rules.board.image.centerScaledImage(gc, displayBoardRect, scaled);
 	      
-    	setBoardParameters(gb,boardRect); 
+    	setBoardParameters(gb,displayBoardRect); 
 	
-    	gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,gb.rules.gridColor);
+    	gb.DrawGrid(gc,displayBoardRect,use_grid,Color.white,Color.black,Color.blue,gb.rules.gridColor);
     	GC.unsetRotatedContext(gc,null);
    }
     private CarnacCell reverseViewCell(CarnacCell c)
@@ -893,12 +894,12 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  CarnacBoard gb = disB(gc);
-       GC.setRotatedContext(gc,fullRect,highlight,fullBoardRotation);
+       GC.setRotatedContext(gc,fullRect,highlight,contextRotation);
        if(gc!=null)
 		{
 		// note this gets called in the game loop as well as in the display loop
 		// and is pretty expensive, so we shouldn't do it in the mouse-only case
-	       setBoardParameters(gb,boardRect);
+	       setBoardParameters(gb,displayBoardRect);
 		}
      boolean ourTurn = OurMove();
      boolean moving = hasMovingObject(highlight);
@@ -907,7 +908,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       CarnacState vstate = gb.getState();
       gameLog.redrawGameLog(gc,vcrSelect, logRect,  veryLtGreen,boardBackgroundColor,standardBoldFont(),standardBoldFont());
-      drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+      drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
       DrawCommonChipPool(gc, gb,poolRect,ourTurnSelect);
  
       GC.setFont(gc,standardBoldFont());

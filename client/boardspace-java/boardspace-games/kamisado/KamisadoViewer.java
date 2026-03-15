@@ -344,7 +344,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)

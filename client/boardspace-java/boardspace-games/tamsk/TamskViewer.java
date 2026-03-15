@@ -467,7 +467,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     public void drawFixedElements(Graphics gc)
     { 
       TamskChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     Image scaled = null;
     

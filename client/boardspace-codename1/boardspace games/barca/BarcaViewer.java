@@ -295,7 +295,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     public void drawFixedElements(Graphics gc)
     { // erase
        BarcaChip.backgroundTile.image.tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     Image lastBoard = null;

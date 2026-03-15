@@ -388,7 +388,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     public void drawFixedElements(Graphics gc)
     { 
      ImagineChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

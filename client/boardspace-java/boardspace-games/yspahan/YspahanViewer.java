@@ -129,6 +129,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     private YspahanBoard b = null; 	// the board from which we are displaying
     private int CELLSIZE; 			// size of the layout cell.  
     
+    private Rectangle displayBoardRect = new Rectangle();
+    
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
@@ -320,6 +322,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         int stateX = boardX;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
        	if(rotate)
     	{	// this conspires to rotate the drawing of the board
     		// and contents if the players are sitting opposite
@@ -327,7 +330,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        		boolean left = (G.centerX(boardRect)>width/2);
      		double rot = left ? Math.PI/2 : -Math.PI/2;
      		if(left) { G.SetLeft(boardRect,G.Left(boardRect)+CELLSIZE*extraRows); }
-    		G.setRotation(boardRect,rot);
+    		G.setRotation(displayBoardRect,rot);
      		contextRotation = rot;
     	}
 
@@ -338,18 +341,18 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	//
     	// the board can be presented either normal or rotated
     	//
-    	int boardH = G.Height(boardRect);
-    	int boardW = G.Width(boardRect);
-    	int boardBottom = G.Bottom(boardRect);
-    	int boardX = G.Left(boardRect);
+    	{
+    	int boardH = G.Height(displayBoardRect);
+    	int boardW = G.Width(displayBoardRect);
+    	int boardBottom = G.Bottom(displayBoardRect);
+    	int boardX = G.Left(displayBoardRect);
     	int lidW = boardH*2/3;
 
         G.SetRect(lidRect, 
-        		G.Right(boardRect)-lidW,
-        		G.Top(boardRect) ,
+        		G.Right(displayBoardRect)-lidW,
+        		G.Top(displayBoardRect) ,
         		lidW,
-        		G.Height(boardRect));
-   	
+        		G.Height(displayBoardRect));
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -374,7 +377,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
          
         G.AlignXY(discardRect, G.Right(cardRect)+CELLSIZE/3,auxTop ,cardRect);
 
-        
+        	
+
         // "edit" rectangle, available in reviewers to switch to puzzle mode
         G.SetRect(editRect, G.Right(discardRect)+CELLSIZE/2,auxTop, CELLSIZE*9/4,CELLSIZE);
 
@@ -387,6 +391,9 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
 		return boardW*boardH;
+		
+       	}
+
 	}
 
     //
@@ -448,13 +455,13 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     GC.setRotation(gc,contextRotation,G.centerX(boardRect),G.centerY(boardRect));
-     Rectangle rb = G.copy(null,boardRect);
+     GC.setRotation(gc,contextRotation,G.centerX(displayBoardRect),G.centerY(displayBoardRect));
+     Rectangle rb = G.copy(null,displayBoardRect);
      G.setRotation(rb,-Math.PI/2);
-     if(remoteViewer<0) { scaled = textures[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled); }
-	    gb.SetDisplayRectangle(boardRect);
+     if(remoteViewer<0) { scaled = textures[BOARD_INDEX].centerScaledImage(gc, displayBoardRect,scaled); }
+	    gb.SetDisplayRectangle(displayBoardRect);
 	 
-	 GC.setRotation(gc,-contextRotation,G.centerX(boardRect),G.centerY(boardRect));
+	 GC.setRotation(gc,-contextRotation,G.centerX(displayBoardRect),G.centerY(displayBoardRect));
    
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
@@ -813,7 +820,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	//
         // now draw the contents of the board and anything it is pointing at
         //
-    	gb.SetDisplayRectangle(boardRect);
+    	gb.SetDisplayRectangle(displayBoardRect);
     	ystate myState = gb.getState();
     	Hashtable<YspahanCell,YspahanCell>dests = gb.getDests();
          // conventionally light source is to the right and shadows to the 
@@ -972,8 +979,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		  standardBoldFont(),standardBoldFont());
     
       {
-       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
-       drawBoardElements(gc, gb, boardRect, gb.whoseTurn, ot,highlight);
+       GC.setRotatedContext(gc,displayBoardRect,highlight,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, gb.whoseTurn, ot,highlight);
        drawCaravanBoard(gc,gb,caravanRect,gb.whoseTurn,ot,highlight);
        drawAuxControls(gc,gb,ot,ourSelect);
        GC.setFont(gc,largeBoldFont());

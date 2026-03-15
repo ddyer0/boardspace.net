@@ -437,7 +437,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     public void drawFixedElements(Graphics gc)
     { 
      TweedChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     // land here after rotating the board drawing context if appropriate

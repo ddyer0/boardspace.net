@@ -770,7 +770,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     public void drawFixedElements(Graphics gc)
     { 
      BugsChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     
     BugsCell bonusCell = null;

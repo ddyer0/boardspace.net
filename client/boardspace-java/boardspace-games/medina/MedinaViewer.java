@@ -82,7 +82,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 
     private Rectangle reverseRect = addRect("reverse");
     private Rectangle unownedRect = addRect("unowned");
-    
+    private Rectangle displayBoardRect = new Rectangle();
     private Rectangle playerChipRect[] = addRect(".chip",4);
     private Rectangle playerPieceRect[] = addRect(".piece",4);    
     Rectangle playerCardRect[] = addRect(".card",4);
@@ -238,11 +238,12 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     	placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,viewsetRect,reverseRect,noChatRect);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.copy(displayBoardRect,boardRect);
     	placeRow( boardX, boardBottom-stateH, boardW, stateH,goalRect);
     	setProgressRect(progressRect,goalRect);
     	if(rotate)
-    	{
-    		G.setRotation(boardRect, -Math.PI/2);
+    	{	
+    		G.setRotation(displayBoardRect, -Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
         positionTheChat(chatRect,chatColor,chatColor);
@@ -404,7 +405,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, displayBoardRect);
     }
     Image scaled = null;
     Image background = null;
@@ -590,8 +591,8 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
       MedinaState vstate = gb.getState();
       gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black, boardBackgroundColor, standardBoldFont(), standardPlainFont());
 
-      GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
-      drawBoardElements(gc, gb, boardRect, ot);
+      GC.setRotatedContext(gc,displayBoardRect,highlight,contextRotation);
+      drawBoardElements(gc, gb, displayBoardRect, ot);
       GC.unsetRotatedContext(gc,highlight);
        
        drawPlayerStuff(gc,(vstate==MedinaState.PUZZLE_STATE),ourSelect,HighlightColor, rackBackGroundColor);

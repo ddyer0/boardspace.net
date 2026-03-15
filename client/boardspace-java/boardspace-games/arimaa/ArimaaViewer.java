@@ -283,7 +283,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
-    	{
+    	{	// this is only used in offline pass and play games, so doesn't need to coordinate with displayOnlyBoardRotation
     		contextRotation = -Math.PI/2;
     	}
 

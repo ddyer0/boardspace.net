@@ -339,7 +339,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     public void drawFixedElements(Graphics gc)
     { 
      StymieChip.backgroundTile.image.tileImage(gc, fullRect);   
-      drawFixedBoard(gc);
+      drawRotatedFixedBoard(gc, boardRect);
      }
     Image scaled = null;
     

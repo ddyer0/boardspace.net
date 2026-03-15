@@ -288,13 +288,12 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
     //
     // set up the mapping so BCtoX and BCtoY work for the current display
     //
-	public void SetDisplayRectangle(Rectangle tbRect)
-	{	       
+	public void SetDisplayRectangles(Rectangle board,Rectangle tbRect)
+	{	  SetDisplayRectangle(board);
 	      // calculate the rectangle where the image will actually reside.  
 	      // This is redundant to what G.CenterImage normally does.
 		  // 800x311 is the size of the image we measured
 	      double ratio = 800/311.0;
-	      G.SetRect(boardRect,G.Left(tbRect),G.Top(tbRect),G.Width(tbRect),G.Height(tbRect));
 	      
 	      if ((G.Height(tbRect)*ratio)<G.Width(tbRect))
 	      {	// too wide, use full height and clip x

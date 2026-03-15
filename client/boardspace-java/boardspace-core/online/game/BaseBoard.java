@@ -17,8 +17,6 @@
 package online.game;
 
 import java.awt.Point;
-import java.awt.Rectangle;
-
 import lib.AR;
 import lib.Digestable;
 import lib.G;
@@ -317,22 +315,12 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	public Point decodeCellPosition(int x,int y,double cellsize)
 	{	return(new Point((int)(x*cellsize),(int)(y*cellsize)));
 	}
-	
-    public Point encodeBoardPosition(int x,int y,Rectangle boardRect)
-	{	return( new Point((((x-G.Left(boardRect))*1000)/G.Width(boardRect)),(((y-G.Top(boardRect))*1000)/G.Height(boardRect))));
-	}
-    /**
-	 * Override this method to decode an encoded board position.  
-	 *
-	 * @param x
-	 * @param y
-	 * @param cellsize
-	 * @return a new "point" representing the mouse position 
-	 * @see #encodeCellPosition
-	 */
-	public Point decodeBoardPosition(int x,int y,Rectangle boardRect)
-	{	return(new Point( (x*G.Width(boardRect))/1000+G.Left(boardRect),(y*G.Height(boardRect))/1000+G.Top(boardRect)));
-	}
+/* this is a rotation amount used by boards that display
+   the board, rotated using GC tricks.  In that case the
+   boardRect should reflect the actual screen coordinates
+   of the board
+*/
+
 	/**
 	 * 
 	 * this is a default-default that will probably not be used by anyone,

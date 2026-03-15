@@ -331,7 +331,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
     public void drawFixedElements(Graphics gc)
     {	
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
-        drawFixedBoard(gc);
+        drawRotatedFixedBoard(gc, boardRect);
     }
     Image scaled = null;
     Image background = null;

@@ -305,7 +305,7 @@ public class ManhattanMovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	//if(gameEvents!=null) { setLineBreak(true); }
         switch (op)
         {
