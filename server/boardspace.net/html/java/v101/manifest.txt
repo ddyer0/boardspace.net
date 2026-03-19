@@ -1,0 +1,14 @@
+class-path: OnlineLobby.jar Game.jar Sounds.jar jzlib.jar OnlineGame.jar Exxit.jar Gobblet.jar Hex.jar Hive.jar OnlineGame.jar OnlineLoa.jar
+  HoneyComb.jar OnlinePlateau.jar OnlineYinsh.jar Punct.jar Trax.jar Hnefatafl.jar Tumble.jar Truchet.jar Dipole.jar  Fanorona.jar Volcano.jar Sprint.jar
+  Gametimer.jar Manhattan.jar Epaminondas.jar Circle.jar Pendulum.jar Bugs.jar Slither.jar Bug.jar
+  Havannah.jar Iro.jar Traboulet.jar Dvonn.jar Tzaar.jar Qyshinsu.jar Knockabout.jar Gipf.jar Palago.jar Santorini.jar Spangles.jar Micropul.jar Pushfight.jar
+  Crosswordle.jar Cannon.jar Warp6.jar Triad.jar Che.jar Mutton.jar Octiles.jar Frogs.jar Xiangqi.jar BreakingAway.jar Khet.jar Qe.jar Icons.jar KingsColor.jar
+  Wyps.jar DayAndNight.jar Crosswords.jar Dictionary.jar Dice.jar Language.jar Stones.jar Ygame.jar Stymie.jar Imagine.jar Mijnlieff.jar Jumbulaya.jar
+  Trench.jar Trike.jar Ordo.jar Tumbleweed.jar Container.jar Arimaa.jar Crossfire.jar Entrapment.jar Quinamid.jar Gounki.jar Yspahan.jar Cookie.jar BlackDeath.jar
+  Tamsk.jar Raj.jar Universe.jar Volo.jar Syzygy.jar Carnac.jar  Takojudo.jar Gyges.jar Euphoria.jar Tammany.jar Magnet.jar Tintas.jar Twixt.jar Kulami.jar
+  Meridians.jar Morelli.jar Rithmomachy.jar Mogul.jar Shogi.jar OnedayInLondon.jar Colorito.jar Euphoria.jar Ponte.jar Chess.jar Barca.jar Viticulture.jar
+  bsh.jar pf-joi.jar Modx.jar Majorities.jar Proteus.jar Stac.jar Checkers.jar Go.jar Morris.jar Sixmaking.jar Veletas.jar Lyngk.jar Blooms.jar Mbrane.jar
+permissions: all-permissions
+codebase: *.boardspace.net
+Main-Class: util.JWSApplication
+application-name: Boardspace Games

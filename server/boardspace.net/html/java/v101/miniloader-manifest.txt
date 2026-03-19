@@ -1,0 +1,5 @@
+permissions: all-permissions
+codebase: *
+Application-Name: Boardspace.net
+Class-Path: .
+Main-Class: Boardspace

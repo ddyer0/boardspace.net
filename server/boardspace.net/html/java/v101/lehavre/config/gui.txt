@@ -1,0 +1,276 @@
+#==============================================================================#
+#                                 GUI settings                                 #
+#==============================================================================#
+#
+# This file contains the various numerical values needed to align the GUI
+# components properly within their parent components.
+# This file follows a simple naming convention for the constant names:
+#
+#	prefix + name [+ suffix] + whitespace + value[s]
+#
+# The prefix names the window which the constant is used in.
+# The name may contain any letters and/or numbers, but may not end in any of
+# the suffixes. It may, however, contain substrings equal to one or more of
+# the suffixes. The program reads suffixes at the end of a name only.
+# Suffixes are used to address special values such as locations or bounds.
+# The value part may consist of one or more numerical values seperated by
+# spaces. Floating point numbers must not be used in suffixed constants, but
+# may be used in any other constant.
+#
+# Comments may be included anywhere and need to start with '#'. Any text after
+# a '#' symbol will be ignored.
+#
+# The suffixes used in this file to represent special data are:
+#
+#	Name		Represented Object		# values	Order of Values
+#	----------	----------------------	----------	-----------------------
+#	Bounds		java.awt.Rectangle		4 values	x y width height
+#	Color		java.awt.Color			3 values	red green blue
+#	Offset		java.awt.Point			2 values	x y
+#	Padding		java.awt.Insets			4 values	top left bottom right
+#	Size		java.awt.Dimension		2 values	width height
+#
+# A single value will be directly parsed as integer or double.
+# Unsuffixed multiple values will be stored in an array of integers or doubles.
+#
+#=== MAIN WINDOW ==============================================================#
+#
+
+mainScrollUnit			40				# mouse wheel strength
+mainInfoDX				125				# horizontal offset of the labels in a player's info panel
+mainInfoDY				23				# vertical offset of the labels in a player's info panel
+mainButtonHGap			5				# horizontal space between the buttons above the game board
+mainButtonVGap			5				# vertical space between the buttons above the game board
+mainDetailsWidth		250				# width of the building details popup window
+mainDismissDelay		5000			# time in milliseconds before a tooltip closes
+mainInitialDelay		1500			# time in milliseconds before a tooltip opens
+mainReshowDelay			500				# time in milliseconds before a tooltip re-opens
+mainWorkerShift			9				# the offset of multiple worker discs on one building between each other
+
+mainSupplyX				22 104 193 281 373 463 551
+mainSupplyY				230				# locations of the supply chits relative to the game board
+
+mainBoardOffset			0 100			# location of the game board relative to the window
+mainLogoOffset			0 0				# location of the logo image relative to the window
+mainSpecialOffset		95 0			# location of the special buildings card relative to the game board
+mainStandardOffset		270 10			# location of the building stacks relative to the game board
+mainStackOffset			90 -10			# offset between the cards in the building stacks
+mainBuildWarnOffset		-4 10			# location of the red triangle relative to the building card
+mainLoanOffset			691 5			# location of the loan card relative to the player tab
+mainButteryOffset		7 5				# location of the buttery card relative to the player tab
+mainFoodOffset			12 40			# location of the food token relative to the buttery card
+mainRoundOffset			624 198			# location of the round card relative to the game board
+mainInfoOffset			376 10			# location of the info panel contents relative to the player tab
+mainOfferOffset			14 63			# location of an offer space relative to the supply chit
+mainCounterOffset		14 20			# location of a player's ship token relative to the supply chit
+mainBrickOffset			28 82			# location of the brick chit relative to the wharf card
+mainShipOffset			0 30			# offset between the ships in the player tabs
+mainWoodenOffset		635 2			# location of the wooden ships stack relative to the game board
+mainIronOffset			719 2			# location of the iron ships stack relative to the game board
+mainSteelOffset			719 126			# location of the steel ships stack relative to the game board
+mainLuxuryOffset		719 250			# location of the luxury liners stack relative to the game board
+mainCraftOffset			650 16			# location of the craft symbol relative to the player tab
+mainHammerOffset		650 52			# location of the hammer symbol relative to the player tab
+mainFishingOffset		650 90			# location of the fishing symbol relative to the player tab
+mainWarnOffset			15 76			# location of the yellow triangle relative to the player tab
+mainWorkerOffset		22 58			# location of a player's worker token relative to a building card
+
+mainWindowSize			820 788			# size of the main window
+mainContentSize			801 749			# size of the contents of the main window
+mainScrollSize			778 778			# size of the scroll pane of a player tab
+mainInfoSize			156 20			# size of an info label in the info panel of a player tab
+mainGapSize				5 5				# offset between cards in a player or town tab
+mainGoodGapSize			4 0				# offset between the goods in the goods panel
+
+mainWindowColor			15 50 105		# background color of the main window
+mainTabColor			239 234 204		# background color of the town tab
+mainActiveColor			240 192 22		# background color of the active undo/continue button
+mainInactiveColor		127 127 127		# background color of the inactive undo/continue button
+mainRoundColor			0 0 0			# border color of the round card highlighter
+mainShipWoodenColor		107 70 32		# font color of the wooden ships info label in the player tab
+mainShipIronColor		7 50 132		# font color of the iron ships info label in the player tab
+mainShipSteelColor		7 50 132		# font color of the steel ships info label in the player tab
+mainShipLuxuryColor		192 192 192		# font color of the luxury liners info label in the player tab
+mainFrancColor			193 147 33		# font color of the francs info label in the player tab
+mainFoodColor			24 142 158		# font color of the food info label in the player tab
+mainEnergyColor			123 125 126		# font color of the energy info label in the player tab
+mainPointsColor			193 147 33		# font color of the victory points info label in the player tab
+
+mainGoodPadding			5 4 0 4			# padding of the goods panel in the player tab
+
+mainTypeBounds			0 100 100 20	# location and size of the game type label
+mainTabBounds			0 454 801 295	# location and size of the tabs relative to the window
+mainTownBounds			6 5 765 768		# location and size of the town panel relative to the town tab
+mainBuildingBounds		91 133 680 640	# location and size of the buildings panel relative to the player tab
+mainLoanBounds			701 95 60 23	# location and size of the loan info relative to the player tab
+mainFoodBounds			25 55 28 14		# location and size of the food token info label relative to the food token
+mainGoodBounds			95 5 264 123	# location and size of the goods panel relative to the player tab
+mainInfoBounds			369 5 312 123	# location and size of the info panel relative to the player tab
+mainShipBounds			7 138 80 640	# location and size of the ships panel relative to the player tab
+mainOfferBounds			2 32 24 15		# location and size of the offer info label relative to the offer label
+mainBackBounds			624 158 80 30	# location and size of the undo button relative to the game board
+mainContinueBounds		624 331 80 30	# location and size of the continue button relative to the game board
+mainCraftBounds			608 18 40 20	# location and size of the craft info label relative to the player tab
+mainHammerBounds		608 56 40 20	# location and size of the hammer info label relative to the player tab
+mainFishingBounds		608 94 40 20	# location and size of the fishing info label relative to the player tab
+mainButtonBounds		540 10 250 80	# location and size of the buttons panel relative to the window
+
+#
+#=== LOGIN WINDOW =============================================================#
+#
+
+loginGapSize			10 10			# offset between the parts of the login window
+
+loginWindowColor		15 50 105		# background color of the login window
+loginLogoColor			206 202 216		# background color of the logo panel
+loginLoginColor			206 202 216		# background color of the login panel
+loginTextColor			0 0 128			# text color of the login panel
+
+loginWindowPadding		20 20 20 20		# padding of the login window
+loginLogoPadding		0 5 5 5			# padding of the logo panel
+loginLoginPadding		10 10 10 10		# padding of the login panel
+
+#
+#=== LOBBY WINDOW =============================================================#
+#
+
+lobbyPlayerDY			45				# vertical offset between two player rows
+
+lobbyPlayerOffset		20 30			# location of the player row relative to the lobby panel
+lobbyBonusOffset		280 30			# location of the bonus button relative to the lobby panel
+
+lobbyWindowSize			500 500			# size of the lobby window
+lobbyPlayerSize			250 35			# size of the player row
+lobbyBonusSize			150 35			# size of the bonus button
+
+lobbyWindowColor		15 50 105		# background color of the lobby window
+lobbyPlayerColor		206 202 216		# background color of the player row
+lobbyLoginTitleColor	239 238 243		# font color of the lobby title
+
+lobbyListBounds			5 4 40 25		# location and size of the start position list relative to the player row
+lobbyNameBounds			55 0 155 35		# location and size of the name label relaitve to the player row
+lobbyColorBounds		220 4 25 25		# location and size of the player color label relative to the player row
+
+lobbyWindowPadding		10 20 20 20		# padding of the lobby window
+
+#
+#=== CHAT WINDOW ==============================================================#
+#
+
+chatFontHeight			12				# font size
+chatScrollUnit			50				# mouse wheel strength
+
+chatEditorPaneColor		239 234 204		# background color of the input box
+chatTextFieldColor		206 202 216		# background color of the output box
+
+chatWindowBounds		20 50 500 300	# size of the chat window
+
+chatMessageLimit		15				# limitation of displayed messages
+
+#
+#=== INSTRUCTIONS WINDOW ======================================================#
+#
+
+instrScrollUnit			50				# mouse wheel strength
+
+instrTextSize			600 500			# size of the description text
+
+instrWindowColor		206 202 216		# background color of the instructions window
+
+#
+#=== SETTINGS WINDOW ==========================================================#
+#
+
+setScrollUnit			50				# mouse wheel strength
+setLineHGap				20				# horizontal offset between entries
+setLineVGap				5				# vertical offset between entries
+setEntryHGap			10				# horizontal offset between entry components
+setEntryVGap			5				# vertical offset between entry components
+
+setWindowSize			600 500			# size of the settings window
+setLargeDescrSize		400 120			# size of the large description texts
+setSmallDescrSize		400 40			# size of the smaller description texts
+setExtraSize			50 25			# size of the Marketplace list
+
+setWindowColor			15 50 105		# background color of the settings window
+setTabColor				239 234 204		# background color of the tabs
+
+setTabPadding			20 20 40 20		# padding of the tabs
+
+#
+#=== BONUS WINDOW =============================================================#
+#
+
+bonusLineHGap			20				# horizontal offset between entries
+bonusLineVGap			5				# vertical offset between entries
+bonusEntryHGap			10				# horizontal offset between entry components
+bonusEntryVGap			5				# vertical offset between entry components
+
+bonusDescrSize			400 160			# size of the description text
+
+bonusWindowColor		239 234 204		# background color of the bonus window
+
+bonusWindowPadding		0 20 30 20		# padding of the bonus window
+
+#
+#=== DIALOG WINDOW ============================================================#
+#
+
+dialogButtonHGap		0				# horizontal margin of the button
+dialogButtonVGap		20				# vertical margin of the button
+dialogLineHGap			20				# horizontal offset between entries
+dialogLineVGap			10				# vertical offset between entries
+dialogEntryHGap			5				# horizontal offset between entry components
+dialogEntryVGap			5				# vertical offset between entry components
+dialogTextWidth			3				# size of an input box
+dialogItemCount			3				# number of items per row
+
+dialogDescrSize			400 200			# default size of the description text
+dialogLineSize			400 40			# size of an item row
+dialogSumSize			90 28			# size of the sum label
+dialogTextSize			50 30			# size of the input box in a process dialog
+choiceDescrSize			400 150			# size of the description text in a choice dialog
+energyDescrSize			400 150			# size of the description text in an energy dialog
+entryDescrSize			400 150			# size of the description text in an entry dialog
+marketDescrSize			400 230			# size of the description text in a Marketplace dialog
+pawnDescrSize			400 150			# size of the description text in a Pawnbroker's dialog
+processDescrSize		400 150			# size of the description text in a process dialog
+
+dialogWindowColor		239 234 204		# background color of the dialog window
+
+dialogWindowPadding		0 20 0 20		# padding of the dialog window
+
+#
+#=== SCORING WINDOW ===========================================================#
+#
+
+scoreUnit				50
+
+scoreWindowSize			600 500			# size of the scoring window
+scoreDescrSize			400 120			# size of the description text
+
+scoreWindowColor		239 234 204		# background color of the scoring window
+scoreTitleColor			15 50 105		# font color of the table headers
+scoreCellColor			206 202 216		# font color of the table cells
+scorePointsColor		255 215 0		# font color of the victory points
+
+scoreWindowPadding		20 20 40 20		# padding of the scoring window
+
+#
+#=== WHARF MODERNISATION ======================================================#
+#
+
+brickSmallOffset		28 81			# location of the small brick icon relative to the card
+brickLargeOffset		85 242			# location of the large brick icon relative to the card
+
+#
+#=== FONTS ====================================================================#
+#
+
+fontLargeButtons	16	# font size of the text on all the other buttons AND the labels of the info panel
+fontSmallButtons	14	# font size of the text on the six buttons at the top of the main window
+fontGoodLabels		15	# font size of the labels of goods in the offer spaces and the goods panel
+fontSymbolLabels	20	# font size of the labels in front of the symbols in the info panel (also: loan card)
+fontLobbyLabels		24	# font size of the labels in the lobby window
+fontLoginLabels		15	# font size of the labels in the login window
+fontSettingLabels	18	# font size of the labels in the settings window
