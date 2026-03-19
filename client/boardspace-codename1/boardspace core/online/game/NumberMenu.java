@@ -567,8 +567,9 @@ public class NumberMenu extends Rectangle {
 		double cos = Math.cos(angle);
 		double sin2 = Math.sin(angle+Math.PI/2);
 		double cos2 = Math.cos(angle+Math.PI/2);
-		int xpos = (int)(x2+sin*cellSize*position+sin2*cellSize*lineWidthMultiplier);
-		int ypos = (int)(y2+cos*cellSize*position+cos2*cellSize*lineWidthMultiplier);
+		double cs = dx==0 && dy==0 ? 0 : cellSize;
+		int xpos = (int)(x2+sin*cs*position+sin2*cs*lineWidthMultiplier);
+		int ypos = (int)(y2+cos*cs*position+cos2*cs*lineWidthMultiplier);
 		if(includeNumbers)
 		{
 		 	  /** call back to the host window for actual drawing.  This allows the 

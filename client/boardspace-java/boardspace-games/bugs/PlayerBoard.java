@@ -721,20 +721,21 @@ public class PlayerBoard implements BugsConstants,CompareTo<PlayerBoard>
 			case Play:
 			case SequentialPlay:
 				BugsId rack = droppedDest.rackLocation();
+				int CC[] = parent.revision>=105 ? COSTS105 : COSTS;
 				switch(rack)
 				{
 				default: throw G.Error("not expecting %s",rack);
 				case PlayerGoals:
 					G.Assert(pickedSource.rackLocation()==BugsId.GoalMarket,"should be a goal");
-					{
-						int cost = COSTS[pickedSource.row];
+					{	
+						int cost = CC[pickedSource.row];
 						changeScore(-cost);
 					}
 					break;
 				case PlayerBugs:
 					G.Assert(pickedSource.rackLocation()==BugsId.BugMarket,"should be a bug");
 					{
-						int cost = COSTS[pickedSource.row];
+						int cost = CC[pickedSource.row];
 						changeScore(-cost);
 					}
 					

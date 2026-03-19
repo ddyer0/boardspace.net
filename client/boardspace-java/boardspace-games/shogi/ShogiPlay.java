@@ -49,6 +49,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
 	private int MAX_DEPTH = BESTBOT_DEPTH;
 	private double TIME_LIMIT = BESTBOT_TIME_LIMIT;
 	private boolean FIXED_DEPTH_SEARCH = false;
+	private int robotLevel = DUMBOT_LEVEL;
      /* strategies */
 	private int boardSearchLevel = 0;				// the current search depth
 	private boolean depth_limited = false;
@@ -109,10 +110,28 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
      * @return
      */
     private double ScoreForPlayer(ShogiBoard evboard,int player,boolean print)
-    {	
-    	return(evboard.ScoreForPlayer(player,print));
+    {	double v = 0;
+    	switch(robotLevel)
+    	{
+    	default:
+    	case WEAKBOT_LEVEL:
+    	case DUMBOT_LEVEL:
+    	case SMARTBOT_LEVEL:
+    		//return evboard.ScoreForPlayer(player,print);
+    		v = board.ScoreForPlayer2(player,print);	// adds a positive hand weight
+    		break;
+    	case BESTBOT_LEVEL:
+    		//v = board.ScoreForPlayer3(player,print);	// failed, reduce value when many pieces in hand
+    		v = board.ScoreForPlayer4(player,print);	// add king distance
+    		break;
+    	case TESTBOT_LEVEL_1:
+    		//v = board.ScoreForPlayer3(player,print);	// failed, reduce value when many pieces in hand
+    		v = board.ScoreForPlayer5(player,print);	// add king distance
+    		break;
 
-    }
+    	}
+    	return v;
+     }
     
     /**
      * this is it! just tell me that the position is worth.  
@@ -167,23 +186,20 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
         InitRobot(newParam, info, strategy);
         GameBoard = (ShogiBoard) gboard;
         board = (ShogiBoard)GameBoard.cloneBoard();
+        robotLevel = strategy;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	TIME_LIMIT = DUMBOT_TIME_LIMIT;
         	break; 	
+        case TESTBOT_LEVEL_1:
+        case SMARTBOT_LEVEL:
         case DUMBOT_LEVEL:
+        case BESTBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	TIME_LIMIT = DUMBOT_TIME_LIMIT;
-        	break;
-        case SMARTBOT_LEVEL:
-        	MAX_DEPTH = GOODBOT_DEPTH;
-        	TIME_LIMIT = GOODBOT_TIME_LIMIT;
-        	break;
-        case BESTBOT_LEVEL:
-         	MAX_DEPTH = BESTBOT_DEPTH;
-         	TIME_LIMIT = BESTBOT_TIME_LIMIT;
+        	
         	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }

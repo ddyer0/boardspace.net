@@ -21,6 +21,7 @@ import java.util.Hashtable;
 
 import lib.*;
 import online.game.*;
+import shogi.ShogiChip.PieceType;
 
 
 /**
@@ -394,7 +395,87 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
      	return(finalv);
     }
 
+    // look for a win for player.  
+    double promptionWeight = 0.1;
+    public double ScoreForPlayer1(int player,boolean print)
+    {  	double finalv=0.0;
+    	CellStack pieces = occupied[player];
+    	for(int i=0,lim=pieces.size(); i<lim;i++)
+    	{
+    	ShogiCell c = pieces.elementAt(i);
+    	ShogiChip top = c.topChip();
+    	PieceType type = top.pieceType;
+    	// count the wood
+    	finalv += type.standardValue;
+    	if(type.canBePromoted())
+    	{
+    	int promo = distanceToPromotion[player][c.row];
+    	finalv -= promptionWeight*promo;
+    	}
+    	}
+    	for(ShogiCell c : rack[player])
+    	{	ShogiChip ch = c.topChip();
+    		if(ch!=null)
+    		{	ShogiChip.PieceType pp = ch.pieceType.demoted;
+    			finalv += pp.standardValue*c.height()*0.5;	// half credit for captured pieces
+    		}
+    	}
+     	return(finalv);
+    }
+    double handWeight = 1.2;
 
+    public double ScoreForPlayer2(int player,boolean print)
+    {  	double finalv=0.0;
+    	CellStack pieces = occupied[player];
+    	for(int i=0,lim=pieces.size(); i<lim;i++)
+    	{
+    	ShogiCell c = pieces.elementAt(i);
+    	ShogiChip top = c.topChip();
+    	PieceType type = top.pieceType;
+    	// count the wood
+    	finalv += type.standardValue;
+    	if(type.canBePromoted())
+    	{
+    	int promo = distanceToPromotion[player][c.row];
+    	finalv -= promptionWeight*promo;
+    	}
+    	}
+    	for(ShogiCell c : rack[player])
+    	{	ShogiChip ch = c.topChip();
+    		if(ch!=null)
+    		{	ShogiChip.PieceType pp = ch.pieceType.demoted;
+    			finalv += pp.standardValue*c.height()*handWeight;	// half credit for captured pieces
+    		}
+    	}
+     	return(finalv);
+    }
+    double handWeight3 = 0.9;
+    
+    public double ScoreForPlayer3(int player,boolean print)
+    {  	double finalv=0.0;
+    	CellStack pieces = occupied[player];
+    	for(int i=0,lim=pieces.size(); i<lim;i++)
+    	{
+    	ShogiCell c = pieces.elementAt(i);
+    	ShogiChip top = c.topChip();
+    	PieceType type = top.pieceType;
+    	// count the wood
+    	finalv += type.standardValue;
+    	if(type.canBePromoted())
+    	{
+    	int promo = distanceToPromotion[player][c.row];
+    	finalv -= promptionWeight*promo;
+    	}
+    	}
+    	for(ShogiCell c : rack[player])
+    	{	ShogiChip ch = c.topChip();
+    		if(ch!=null)
+    		{	ShogiChip.PieceType pp = ch.pieceType.demoted;
+    			finalv += pp.standardValue*c.height()*handWeight3;	// half credit for captured pieces
+    		}
+    	}
+     	return(finalv);
+    }
     //
     // return true if balls[rack][ball] should be selectable, meaning
     // we can pick up a ball or drop a ball there.  movingBallColor is 

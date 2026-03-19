@@ -59,7 +59,12 @@ public interface ShogiConstants
     	 {true,true,true,true,false,false,false,false,false,false},	// true for 1-3 (0 unused)
        	 {false,false,false,false,false,false,false,true,true,true},	// true for 7-9 (0 unused)
    	 };// true for 1-3
-    
+    static final int distanceToPromotion[][]=
+    	{
+    	 {0,0,0,0,1,2,3,4,5,6},	// true for 1-3 (0 unused)
+       	 {6,5,4,3,2,1,0,0,0,0},	// true for 7-9 (0 unused)
+   	 };// true for 1-3
+ 
     public enum ShogiState implements BoardState
     {	Puzzle(StateRole.Puzzle,PuzzleStateDescription),
     	Confirm(StateRole.Confirm,ConfirmStateDescription),

@@ -260,6 +260,8 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     private void DrawPlayerMarker(Graphics gc, int forPlayer, Rectangle r)
     {	ShogiChip king = ShogiChip.getChip(forPlayer,ShogiChip.PieceType.General);
     	king.drawChip(gc,this,r,null);
+    	int sc = (int)b.ScoreForPlayer(forPlayer,false) - (int)b.ScoreForPlayer(forPlayer^1,false);
+    	if(sc>0) { GC.Text(gc,true,G.Left(r),G.Bottom(r),G.Width(r),G.Height(r)/10,Color.blue,null,"+"+sc); }
      }
 	
     private void DrawChipsetMarker(Graphics gc, Rectangle r,HitPoint highlight)
@@ -401,6 +403,12 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
               		highlight.awidth = SQUARESIZE/2;
               		highlight.spriteColor = Color.red;
             	}
+         //   {
+         //   ShogiChip top = cell.topChip();
+         //   if(top!=null)
+         //   {	ShogiChip chip = top.playerIndex==1 ? ShogiChip.blueTint : ShogiChip.redTint;
+         //   	chip.drawChip(gc,this,SQUARESIZE,1,xpos,ypos,null);
+         //   }}
             if(moving)
             {
            	int scale = Math.max(2,(int)(0.1 * SQUARESIZE));

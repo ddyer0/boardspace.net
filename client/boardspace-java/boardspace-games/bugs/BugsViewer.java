@@ -48,7 +48,11 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.ImageStack;
 import lib.StockArt;
+import lib.Text;
 import lib.TextButton;
+import lib.TextChunk;
+import lib.TextGlyph;
+import lib.TextStack;
 import lib.Toggle;
 import lib.Tokenizer;
 import lib.LFrameProtocol;
@@ -2490,6 +2494,23 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
 	    {
 	    	return(super.encodeScreenZone(x,y,p));
 	    }
+	    
+	    Text gameMoveText[] = null;  
+	    private Text[] gameMoveText()
+	    {  	
+	    	//if(gameMoveText==null)
+	    	{
+	    	TextStack texts = new TextStack();
+	    	double bscale[] = {1,1.5,0,-0.4};
+	    	for(BugsChip chip : BugsChip.Colors)
+	    	{
+	    	texts.push(TextGlyph.create(chip.file, "x",chip, this,bscale));
+	    	}
+	    	gameMoveText = texts.toArray();
+	    	}
+	    	return gameMoveText;
+	    }
+	    	
     /**
      * colorize a string and return a Text with the result.  This is used
      * to substitute icons for words, or translate the words, in the string;
@@ -2501,9 +2522,10 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
      * @param str
      * @return the new Text object
      */
-    //public Text colorize(String str)
-    //{	return(TextChunk.create(str));
-    //}
+    public Text colorize(String str)
+    {	
+    	return TextChunk.colorize(str,G.getTranslations(),gameMoveText());
+    }
     
 }
 

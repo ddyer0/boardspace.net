@@ -223,13 +223,13 @@ public class BugsMovespec
     	if(chip!=null)
     	{	
     		if(chip.isBugCard())
-    		{	double chipScale[] = new double[] { 2,1.5,0.2,-0.2};
+    		{	double chipScale[] = new double[] { 2,1,0.2,-0.2};
     			m = TextChunk.join(TextGlyph.create("xxxxx", chip, v,chipScale),
     					m);
     		}
     		else
     		{
-    			double chipScale[] = new double[] { 2,1.25,0.1,-0.2};
+    			double chipScale[] = new double[] { 2,1,0.1,-0.2};
     			m = TextChunk.join(TextGlyph.create("xxxx", chip, v,chipScale),
     					m);
     		}

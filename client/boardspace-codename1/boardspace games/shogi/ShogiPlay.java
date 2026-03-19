@@ -49,6 +49,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
 	private int MAX_DEPTH = BESTBOT_DEPTH;
 	private double TIME_LIMIT = BESTBOT_TIME_LIMIT;
 	private boolean FIXED_DEPTH_SEARCH = false;
+	private int robotLevel = DUMBOT_LEVEL;
      /* strategies */
 	private int boardSearchLevel = 0;				// the current search depth
 	private boolean depth_limited = false;
@@ -109,9 +110,21 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
      * @return
      */
     private double ScoreForPlayer(ShogiBoard evboard,int player,boolean print)
+    {	double v = 0;
+    	switch(robotLevel)
     {	
-    	return(evboard.ScoreForPlayer(player,print));
-
+    	default:
+    	case WEAKBOT_LEVEL:
+    	case DUMBOT_LEVEL:
+    	case SMARTBOT_LEVEL:
+    		//return evboard.ScoreForPlayer(player,print);
+    		v = board.ScoreForPlayer2(player,print);	// adds a positive hand weight
+    		break;
+    	case BESTBOT_LEVEL:
+    		v = board.ScoreForPlayer3(player,print);	// adds a minimal promotion awareness
+    		break;
+    	}
+    	return v;
     }
     
     /**
@@ -167,6 +180,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
         InitRobot(newParam, info, strategy);
         GameBoard = (ShogiBoard) gboard;
         board = (ShogiBoard)GameBoard.cloneBoard();
+        robotLevel = strategy;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:

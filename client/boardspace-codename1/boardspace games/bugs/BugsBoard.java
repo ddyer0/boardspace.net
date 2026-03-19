@@ -59,11 +59,12 @@ import online.game.*;
 public class BugsBoard 
 	extends hexBoard<BugsCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,BugsConstants
-{	static int REVISION = 104;			// 100 represents the initial version of the game
+{	static int REVISION = 105;			// 100 represents the initial version of the game
 										// 101 fixes the scoring of herbivores to not include other prey species
 										// 102 fixes the unstable initialization of the bug market
 										// 103 restricts the number of predators to predator_percentage
 										// 104 moves random predators toward the bottom of the deck
+										// 105 changes the cost schedule
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel_parallel;
@@ -173,7 +174,10 @@ public class BugsBoard
  		 gameEvents.push(trans);
  		}
  	}
-
+ 	void logRawGameEvent(String s)
+ 	{
+ 		gameEvents.push(s);
+ 	}
     private BugsState resetState = BugsState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -204,16 +208,13 @@ public class BugsBoard
 	    for(int i=0;i<N_MARKETS;i++)
 	    {
 	    	bugMarket[i] = new BugsCell(this,r,BugsId.BugMarket,i);
-	    	bugMarket[i].cost = COSTS[i];
 	    }
 	    for(int i=0;i<N_GOALS;i++)
 	    {
 	    	goalMarket[i] = new BugsCell(this,r,BugsId.GoalMarket,i);
-	    	goalMarket[i].cost = COSTS[i];
 	    }
 
         doInit(init,key,players,rev); // do the initialization 
-        autoReverseY();		// reverse_y based on the color map
     }
     
     public String gameType() { return(G.concat(gametype," ",players_in_game," ",randomKey," ",revision)); }
@@ -522,6 +523,19 @@ public class BugsBoard
 		roundProgress = progress = 0;
 		lackOfProgress = false;
 		targetsCache = null;
+		
+		int CC[] = revision>=105 ? COSTS105 : COSTS;
+		
+	    for(int i=0;i<N_MARKETS;i++)
+	    {
+	    	bugMarket[i].cost = CC[i];
+	    }
+	    for(int i=0;i<N_GOALS;i++)
+	    {
+	    	goalMarket[i].cost = CC[i];
+	    }
+
+	    
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
@@ -1746,10 +1760,12 @@ public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
 	 * 
 	 */
 	BugsCell parentCell = getCell(cell.col,cell.row%100);	// get the parent cell on the board
+	StringBuilder b = new StringBuilder();
 	if(!ADVERSARIAL_BONUS)
 	{
 	int score = (int)scoreBonusForPlayer(card,parentCell,pb);
 	pb.changeScore(score); 
+	if(score!=0) { b.append(s.get("#1 + #2",pb.chip.file,""+score)); }
 	}
 	else
 	{
@@ -1757,7 +1773,11 @@ public void scoreBonusForPlayers(PlayerBoard pb,BugsCell cell,replayMode replay)
 	{	
 		int score = (int)scoreBonusForPlayer(card,parentCell,p);
 		p.changeScore(score);
+		if(score!=0) { 
+			b.append(s.get("#1 + #2 ",p.chip.file,""+score));
+			}
 	}}
+	if(b.length()>0) { logRawGameEvent(b.toString()); }
 }
 
 }

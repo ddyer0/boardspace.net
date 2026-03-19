@@ -57,6 +57,7 @@ public class ShogiChip extends chip<ShogiChip>
 			standardValue = va;
 			demoted = this;
 		}
+		public boolean canBePromoted() { return promoted!=null; }
 		static {
 			for(PieceType p : values())
 			{	PieceType prom = p.promoted;
@@ -105,6 +106,8 @@ public class ShogiChip extends chip<ShogiChip>
 
      	"up-large-blank","up-bishop-p","up-medium-blank","up-silver-p","up-knight-p","up-lance-p","up-rook-p","up-pawn-p",
       	"up-general","up-bishop","up-gold","up-silver","up-knight","up-lance","up-rook","up-pawn",
+      	// two extra images
+      	//"blue-tint","red-tint",
      	
     	};
     static final String w_ImageNames[] = {
@@ -130,7 +133,7 @@ public class ShogiChip extends chip<ShogiChip>
 	public String toString()
 	{	return("<"+ name+" #"+pieceIndex+">");
 	}
-
+	
 	// note, do not make these private, as some optimization failure
 	// tries to access them from outside.
     static private ShogiChip CANONICAL_PIECE[] = null;	// created by preload_images
@@ -209,6 +212,9 @@ public class ShogiChip extends chip<ShogiChip>
     static final String[] extraNames = {"check"};
     static ShogiChip check = null;
     
+    static ShogiChip blueTint = null;
+    static ShogiChip redTint = null;
+    
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(CANONICAL_PIECE==null)
@@ -228,6 +234,9 @@ public class ShogiChip extends chip<ShogiChip>
         	im2.isAlt = true;
       	
         	}
+      //  blueTint = new ShogiChip(e_ImageNames[nPieces],-1,IM2[nPieces],0,new double[] { 0.6,0.5,1});
+      //  redTint = new ShogiChip(e_ImageNames[nPieces+1],-2,IM2[nPieces+1],0,new double[] { 0.6,0.5,1});
+        
         check_digests(CC);
         
         // add the check sign

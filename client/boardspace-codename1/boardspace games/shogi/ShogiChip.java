@@ -57,6 +57,7 @@ public class ShogiChip extends chip<ShogiChip>
 			standardValue = va;
 			demoted = this;
 		}
+		public boolean canBePromoted() { return promoted!=null; }
 		static {
 			for(PieceType p : values())
 			{	PieceType prom = p.promoted;

@@ -213,7 +213,7 @@ public class ShogiMovespec extends commonMove implements ShogiConstants
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	double scl[] = new double[]{1.5,1.5,0,-0.3};
         switch (op)
         {

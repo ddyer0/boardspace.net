@@ -33,6 +33,7 @@ import online.game.BaseBoard.StateRole;
 
 public interface BugsConstants
 {	int COSTS[] = { 15, 12, 10, 8, 6, 4, 2, 1};
+	int COSTS105[] = { 12, 10, 8, 6, 4, 2, 1, 0};
 	int N_MARKETS = COSTS.length;
 	int N_GOALS = N_MARKETS;
 	int STARTING_POINTS = 00;

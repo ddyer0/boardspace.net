@@ -99,7 +99,7 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 	static public BugsChip Green = new BugsChip("green-cube",new double[]{0.47,0.49,1.44});
 	static public BugsChip Blue = new BugsChip("blue-cube",new double[]{0.50,0.510,1.44});
 	static public BugsChip Red = new BugsChip("red-cube",new double[]{0.47,0.49,1.44});
-
+	static public BugsChip Colors[] = { Yellow,Green,Blue,Red };
 	static BugsChip getGoalCard(int n) { return null; }
 	static BugsChip getBugCard(int n) { return null; }
 	
