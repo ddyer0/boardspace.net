@@ -254,10 +254,15 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         return(box);
     }
     
-	
-    private void DrawPlayerMarker(Graphics gc, int forPlayer, Rectangle r)
-    {	ShogiChip king = ShogiChip.getChip(forPlayer,ShogiChip.PieceType.General);
+    private void DrawPlayerMarker(Graphics gc, int forPlayer, Rectangle r,boolean includeScore)
+    {
+    	ShogiChip king = ShogiChip.getChip(forPlayer,ShogiChip.PieceType.General);
     	king.drawChip(gc,this,r,null);
+    	if(includeScore)
+    	{
+    	int sc = (int)b.ScoreForPlayer(forPlayer,false) - (int)b.ScoreForPlayer(forPlayer^1,false);
+    	if(sc>0) { GC.Text(gc,true,G.Left(r),G.Bottom(r),G.Width(r),G.Height(r)/10,Color.blue,null,"+"+sc); }
+    	}
      }
 	
     private void DrawChipsetMarker(Graphics gc, Rectangle r,HitPoint highlight)
@@ -399,6 +404,12 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
               		highlight.awidth = SQUARESIZE/2;
               		highlight.spriteColor = Color.red;
             	}
+         //   {
+         //   ShogiChip top = cell.topChip();
+         //   if(top!=null)
+         //   {	ShogiChip chip = top.playerIndex==1 ? ShogiChip.blueTint : ShogiChip.redTint;
+         //   	chip.drawChip(gc,this,SQUARESIZE,1,xpos,ypos,null);
+         //   }}
             if(moving)
             {
            	int scale = Math.max(2,(int)(0.1 * SQUARESIZE));
@@ -486,7 +497,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
           {	commonPlayer pl = getPlayerOrTemp(i);
           	pl.setRotatedContext(gc, highlight, false);
             DrawCommonChipPool(gc, i,rackRects[i], gb.whoseTurn,ot);
-            DrawPlayerMarker(gc,(pl.displayRotation==0)?i:nextPlayer[i],chipRects[i]);            
+            DrawPlayerMarker(gc,(pl.displayRotation==0)?i:nextPlayer[i],chipRects[i],true);            
           	if(planned && (i==gb.whoseTurn))
         {
           		handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
@@ -499,7 +510,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 
         DrawChipsetMarker(gc,altchipRect,highlight);
         DrawReverseMarker(gc,reverseViewRect,highlight);
-        DrawPlayerMarker(gc,gb.whoseTurn, iconRect);
+        DrawPlayerMarker(gc,gb.whoseTurn, iconRect,false);
         GC.setFont(gc,standardBoldFont());
         double standardRotation = pl.messageRotation();
         

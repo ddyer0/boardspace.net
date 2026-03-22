@@ -64,7 +64,7 @@ public class BugsBoard
 										// 102 fixes the unstable initialization of the bug market
 										// 103 restricts the number of predators to predator_percentage
 										// 104 moves random predators toward the bottom of the deck
-										// 105 changes the cost schedule
+										// 105 changes the cost schedule, excudes predators from the initial gifts
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	BugsVariation variation = BugsVariation.bugspiel_parallel;
@@ -334,10 +334,11 @@ public class BugsBoard
     	if(revision >= 104) {
     	    Random r2 = new Random(randomKey + 9871234);
     	    int deckHeight = deck.height();
+    	    double defer = (revision<105 ? 1 : 0)+PREDATOR_DEFER_CHANCE;
     	    for(int i = deckHeight-1; i>=deckHeight/2; i--)
     	    {
     	        BugCard card = (BugCard)deck.chipAtIndex(i);
-    	        if(card.getProfile().isPredator() && r2.nextDouble() < 1+PREDATOR_DEFER_CHANCE) {
+    	        if(card.getProfile().isPredator() && r2.nextDouble() < defer) {
     	            int newPos = r2.nextInt(i);
     	            deck.swap(i, newPos);
     	        }
@@ -473,13 +474,14 @@ public class BugsBoard
     	} while (ch.pointValue()>minDeckValue);
     	}
     	else
-    	{
+    	{	boolean includePredators = revision<105;
         	do {
         		index = r.nextInt(activeDeck.height());
         		ch = (BugCard)activeDeck.chipAtIndex(index);
            		if(loops++ % 10==0) { minDeckValue++; }
         	} while (ch.pointValue()>Math.max(maxvalue,minDeckValue)
-        				|| (ch.getProfile().isPredator() && r.nextDouble()<PREDATOR_DEFER_CHANCE));
+        				|| (ch.getProfile().isPredator() 
+        						&& (!includePredators || r.nextDouble()<PREDATOR_DEFER_CHANCE)));
     		
     	}
     	activeDeck.removeChipAtIndex(index);

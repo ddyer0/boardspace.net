@@ -451,6 +451,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     }
     public double king_distance_multiplier4 = 0.01;
     public double king_distance_multiplier5 = 0.02;
+    public double king_distance_multiplier6 = 0.04;		// worse than 0.02
+    public double king_distance_multiplier6a = 0.01;	// best
     public double ScoreForPlayer4(int player,boolean print)
     {
     	return ScoreForPlayer4(player,print,king_distance_multiplier4);
@@ -458,6 +460,10 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     public double ScoreForPlayer5(int player,boolean print)
     {
     	return ScoreForPlayer4(player,print,king_distance_multiplier5);
+    }
+    public double ScoreForPlayer6(int player,boolean print)
+    {
+    	return ScoreForPlayer4(player,print,king_distance_multiplier6a);
     }
 
     public double ScoreForPlayer4(int player,boolean print,double kingDistance)

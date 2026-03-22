@@ -117,12 +117,23 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
     	case WEAKBOT_LEVEL:
     	case DUMBOT_LEVEL:
     	case SMARTBOT_LEVEL:
-    		//return evboard.ScoreForPlayer(player,print);
-    		v = board.ScoreForPlayer2(player,print);	// adds a positive hand weight
+    		//v = evboard.ScoreForPlayer(player,print);
+    		//v = evboard.ScoreForPlayer2(player,print);	// adds a positive hand weight
+    		v = evboard.ScoreForPlayer6(player,print);	// add king distance
     		break;
     	case BESTBOT_LEVEL:
-    		v = board.ScoreForPlayer3(player,print);	// adds a minimal promotion awareness
+    		//v = evboard.ScoreForPlayer3(player,print);	// failed, reduce value when many pieces in hand
+    		v = evboard.ScoreForPlayer4(player,print);	// add king distance
     		break;
+    	case TESTBOT_LEVEL_1:
+    		//v = evboard.ScoreForPlayer3(player,print);	// failed, reduce value when many pieces in hand
+    		v = evboard.ScoreForPlayer5(player,print);	// add king distance
+    		break;
+      	case TESTBOT_LEVEL_2:
+    		//v = evboard.ScoreForPlayer3(player,print);	// failed, reduce value when many pieces in hand
+    		v = evboard.ScoreForPlayer6(player,print);	// add king distance
+    		break;
+
     	}
     	return v;
     }
@@ -187,17 +198,14 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	TIME_LIMIT = DUMBOT_TIME_LIMIT;
         	break; 	
+        case TESTBOT_LEVEL_2:
+        case TESTBOT_LEVEL_1:
+        case SMARTBOT_LEVEL:
         case DUMBOT_LEVEL:
+        case BESTBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	TIME_LIMIT = DUMBOT_TIME_LIMIT;
-        	break;
-        case SMARTBOT_LEVEL:
-        	MAX_DEPTH = GOODBOT_DEPTH;
-        	TIME_LIMIT = GOODBOT_TIME_LIMIT;
-        	break;
-        case BESTBOT_LEVEL:
-         	MAX_DEPTH = BESTBOT_DEPTH;
-         	TIME_LIMIT = BESTBOT_TIME_LIMIT;
+        	
         	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }

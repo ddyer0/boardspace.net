@@ -960,7 +960,7 @@ Aborolabis cerrobarjai	GenusAndSpecies	2025-05-01 23:11:52	Dermaptera	soil	no	he
 
 Acalyptus carpini	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	herbivore
 
-Acanthacorydalis fruhstorferi	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Acanthacorydalis fruhstorferi	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Acanthacorydalis orientalis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
@@ -1014,9 +1014,9 @@ Agriocnemis femina	GenusAndSpecies	2025-05-01 23:11:52	Odonata	freshwater	yes	ca
 
 Agrotis ipsilon	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	herbivore
 
-Agulla adnixa	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest	yes	herbivore
+Agulla adnixa	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest	yes	carnivore
 
-Agulla amaura	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest, freshwater	yes	herbivore
+Agulla amaura	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest, freshwater	yes	carnivore
 
 Agulla assimilis	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest, freshwater	yes	carnivore
 
@@ -1024,11 +1024,11 @@ Agulla bicolor	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest	yes	carnivo
 
 Agulla bractea	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	forest	yes	carnivore
 
-Agulla herbsti	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	herbivore
+Agulla herbsti	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
-Agulla modesta	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	herbivore
+Agulla modesta	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
-Agulla nixa	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	herbivore
+Agulla nixa	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
 Agulla paramerica	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
@@ -1042,7 +1042,7 @@ Allonemobius fasciatus	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	
 
 Alloperla furcula	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	herbivore
 
-Allothrombium fuliginosum	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	forest, soil	no	herbivore
+Allothrombium fuliginosum	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	forest, soil	no	carnivore
 
 Allygus mixtus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	yes	herbivore
 
@@ -1190,9 +1190,9 @@ Armadillidium vulgare	GenusAndSpecies	2025-05-01 23:11:52	Malacostraca	freshwate
 
 Arrenurus cuspidator	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	carnivore
 
-Arrenurus globator	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	herbivore
+Arrenurus globator	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	carnivore
 
-Arrenurus manubriator	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	parasite
+Arrenurus manubriator	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	carnivore
 
 Artemia franciscana	GenusAndSpecies	2025-05-01 23:11:52	Branchiopoda	freshwater	no	herbivore
 
@@ -1216,7 +1216,7 @@ Asilus crabroniformis	GenusAndSpecies	2025-05-01 23:11:52	Diptera	grassland	yes	
 
 Asphondylia solidaginis	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	herbivore
 
-Aspisoma lineatum	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	carnivore
+Aspisoma lineatum	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	negavore
 
 Atemnus politus	GenusAndSpecies	2025-05-01 23:11:52	Pseudoscorpiones	soil	no	herbivore
 
@@ -1224,7 +1224,7 @@ Atheta coriaria	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	carnivor
 
 Atractomorpha sinensis	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	no	herbivore
 
-Aturus acadiensis	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	parasite
+Aturus acadiensis	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	freshwater	no	carnivore
 
 Atylotus rusticus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
@@ -1238,7 +1238,7 @@ Automeris io	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	y
 
 Avicularia avicularia	GenusAndSpecies	2025-05-01 23:11:52	Araneae	forest	no	carnivore
 
-Baccha elongata	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	carnivore
+Baccha elongata	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	herbivore
 
 Bacillus rossius	GenusAndSpecies	2025-05-01 23:11:52	Phasmatodea	forest	no	herbivore
 
@@ -1316,11 +1316,11 @@ Bombus impatiens	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	he
 
 Bombus terrestris	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	herbivore
 
-Bombyx mori	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	herbivore
+Bombyx mori	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	no	herbivore
 
 Boophilus microplus	GenusAndSpecies	2025-05-01 23:11:52	Ixodida	forest, soil	no	parasite
 
-Boreus hyemalis	GenusAndSpecies	2025-05-01 23:11:52	Mecoptera	forest	yes	scavenger
+Boreus hyemalis	GenusAndSpecies	2025-05-01 23:11:52	Mecoptera	forest	no	scavenger
 
 Boreus westwoodi	GenusAndSpecies	2025-05-01 23:11:52	Mecoptera	forest	yes	detritivore
 
@@ -1568,7 +1568,7 @@ Chlaenius tricolor	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carniv
 
 Chlorida festiva	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
 
-Chloronia mexicana	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Chloronia mexicana	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Chloronia mirifica	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
@@ -1678,9 +1678,9 @@ Corixa punctata	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	herb
 
 Corixa robusta	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	detritivore
 
-Corydalus affinis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus affinis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Corydalus amazonas	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus amazonas	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Corydalus bidenticulatus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
@@ -1688,17 +1688,17 @@ Corydalus cornutus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	ye
 
 Corydalus luteus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
-Corydalus maculatus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus maculatus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Corydalus magnus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
-Corydalus nubilus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater, soil	yes	carnivore
+Corydalus nubilus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater, soil	yes	negavore
 
-Corydalus peruvianus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus peruvianus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Corydalus regalis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus regalis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Corydalus texanus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Corydalus texanus	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Corydidarum magnifica	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
 
@@ -1710,7 +1710,7 @@ Cosmopolites sordidus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	n
 
 Craterostigmus tasmanianus	GenusAndSpecies	2025-05-01 23:11:52	Chilopoda	soil	no	carnivore
 
-Creobroter gemmatus	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	no	carnivore
+Creobroter gemmatus	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	yes	carnivore
 
 Creophilus maxillosus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivore
 
@@ -1918,7 +1918,7 @@ Dermacentor andersoni	GenusAndSpecies	2025-05-01 23:11:52	Ixodida	forest, soil	n
 
 Dermacentor variabilis	GenusAndSpecies	2025-05-01 23:11:52	Ixodida	forest, soil	no	parasite
 
-Deroplatys desiccata	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	forest	no	carnivore
+Deroplatys desiccata	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	forest	yes	carnivore
 
 Desmoxytes purpurosea	GenusAndSpecies	2025-05-01 23:11:52	Diplopoda	soil	no	herbivore
 
@@ -1926,7 +1926,7 @@ Deuteraphorura schoetti	GenusAndSpecies	2025-05-01 23:11:52	Hexapoda	soil	no	her
 
 Diacamma rugosum	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	soil	no	herbivore
 
-Diachlorus ferrugatus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Diachlorus ferrugatus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
 Diadegma insulare	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	forest, grassland	yes	parasite
 
@@ -1960,7 +1960,7 @@ Dipterophagus daci	GenusAndSpecies	2025-05-01 23:11:52	Strepsiptera	forest, gras
 
 Diradius vandykei	GenusAndSpecies	2025-05-01 23:11:52	Pseudoscorpiones	soil	no	herbivore
 
-Dissosteira carolina	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	no	herbivore
+Dissosteira carolina	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	yes	herbivore
 
 Dolichovespula arenaria	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	forest, grassland, urban	yes	carnivore
 
@@ -1984,7 +1984,7 @@ Dorylus molestus	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	soil	no	detriti
 
 Dorylus wilverthi	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	soil	no	carnivore
 
-Draeculacephala minerva	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	herbivore
+Draeculacephala minerva	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	yes	herbivore
 
 Drunella grandis	GenusAndSpecies	2025-05-01 23:11:52	Ephemeroptera	freshwater	yes	herbivore
 
@@ -2032,7 +2032,7 @@ Embioptera indica	GenusAndSpecies	2025-05-01 23:11:52	Embioptera	soil	no	herbivo
 
 Empoasca fabae	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	parasite
 
-Empusa pennata	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	no	carnivore
+Empusa pennata	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	yes	carnivore
 
 Enallagma cyathigerum	GenusAndSpecies	2025-05-01 23:11:52	Odonata	freshwater	yes	carnivore
 
@@ -2292,7 +2292,7 @@ Haematopinus eurysternus	GenusAndSpecies	2025-05-01 23:11:52		forest	no	parasite
 
 Haematopinus suis	GenusAndSpecies	2025-05-01 23:11:52		forest	no	parasite
 
-Haematopota crassicornis	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Haematopota crassicornis	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
 Haematopota pluvialis	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
@@ -2356,7 +2356,7 @@ Heliothrips haemorrhoidalis	GenusAndSpecies	2025-05-01 23:11:52	Thysanoptera	gra
 
 Helophilus pendulus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	detritivore
 
-Helopicus subvarians	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	carnivore
+Helopicus subvarians	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	negavore
 
 Hemerotrecha denticulata	GenusAndSpecies	2025-05-01 23:11:52	Solifugae	desert	no	carnivore
 
@@ -2404,7 +2404,7 @@ Hogna carolinensis	GenusAndSpecies	2025-05-01 23:11:52	Araneae	urban	no	carnivor
 
 Holcocephala calva	GenusAndSpecies	2025-05-01 23:11:52	Diptera	grassland	yes	carnivore
 
-Homalodisca vitripennis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	herbivore
+Homalodisca vitripennis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	yes	herbivore
 
 Hoplopleura edentula	GenusAndSpecies	2025-05-01 23:11:52	Psocodea	forest, grassland	no	parasite
 
@@ -2492,7 +2492,7 @@ Ips pini	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	herbivore
 
 Ips typographus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	detritivore
 
-Ischnoptera deropeltiformis	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
+Ischnoptera deropeltiformis	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	yes	herbivore
 
 Ischnosoma splendidum	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	carnivore
 
@@ -2566,7 +2566,7 @@ Lamprima aurata	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivo
 
 Lamprochernes chyzeri	GenusAndSpecies	2025-05-01 23:11:52	Pseudoscorpiones	soil	no	herbivore
 
-Lampyris noctiluca	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	carnivore
+Lampyris noctiluca	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	negavore
 
 Laphria flava	GenusAndSpecies	2025-05-01 23:11:52	Diptera	grassland	yes	herbivore
 
@@ -2642,7 +2642,7 @@ Lestremia cinerea	GenusAndSpecies	2025-05-01 23:11:52	Diptera	soil	yes	detritivo
 
 Lethocerus albinus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	carnivore
 
-Lethocerus americanus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, freshwater	no	parasite
+Lethocerus americanus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, freshwater	no	carnivore
 
 Lethocerus annulipes	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater, soil	no	parasite
 
@@ -2656,7 +2656,7 @@ Lethocerus insulanus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater, g
 
 Lethocerus medius	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	parasite
 
-Lethocerus patruelis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	carnivore
+Lethocerus patruelis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	yes	carnivore
 
 Lethocerus uhleri	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	carnivore
 
@@ -2688,7 +2688,7 @@ Liothrips urichi	GenusAndSpecies	2025-05-01 23:11:52	Thysanoptera	grassland, fre
 
 Liposcelis bostrychophila	GenusAndSpecies	2025-05-01 23:11:52	Psocodea	soil, urban, forest	yes	detritivore
 
-Locusta migratoria	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland, freshwater	no	herbivore
+Locusta migratoria	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland, freshwater	yes	herbivore
 
 Loensia variegata	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	detritivore
 
@@ -2702,11 +2702,11 @@ Loxoconcha tumida	GenusAndSpecies	2025-05-01 23:11:52	Ostracoda	freshwater	no	he
 
 Loxosceles reclusa	GenusAndSpecies	2025-05-01 23:11:52	Araneae	soil	no	carnivore
 
-Lucanus capreolus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	detritivore
+Lucanus capreolus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	yes	detritivore
 
 Lucanus cervus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
 
-Lucanus elaphus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
+Lucanus elaphus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	yes	herbivore
 
 Lucanus formosanus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
 
@@ -2750,7 +2750,7 @@ Lycorma delicatula	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	yes	p
 
 Lycosa tarantula	GenusAndSpecies	2025-05-01 23:11:52	Araneae	urban	no	carnivore
 
-Lygus lineolaris	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, grassland	no	detritivore
+Lygus lineolaris	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, grassland	yes	detritivore
 
 Macdunnoa brunnea	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	carnivore
 
@@ -2764,7 +2764,7 @@ Macrodontia cervicornis	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no
 
 Macrolophus pygmaeus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, grassland	no	carnivore
 
-Macromantis hyalina	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland, freshwater	no	carnivore
+Macromantis hyalina	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland, freshwater	yes	carnivore
 
 Macromia taeniolata	GenusAndSpecies	2025-05-01 23:11:52	Odonata	freshwater	yes	herbivore
 
@@ -2810,7 +2810,7 @@ Mastigoproctus colombianus	GenusAndSpecies	2025-05-01 23:11:52	Thelyphonida	soil
 
 Mastigoproctus dominicanus	GenusAndSpecies	2025-05-01 23:11:52	Thelyphonida	soil	no	herbivore
 
-Mastigoproctus floridanus	GenusAndSpecies	2025-05-01 23:11:52	Thelyphonida	soil	no	carnivore
+Mastigoproctus floridanus	GenusAndSpecies	2025-05-01 23:11:52	Thelyphonida	soil	no	parasite
 
 Mastigoproctus formosus	GenusAndSpecies	2025-05-01 23:11:52	Thelyphonida	soil	no	herbivore
 
@@ -2858,7 +2858,7 @@ Melanostoma scalare	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grasslan
 
 Melipona beecheii	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	herbivore
 
-Melipona scutellaris	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	carnivore
+Melipona scutellaris	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	herbivore
 
 Meliscaeva cinctella	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	parasite
 
@@ -2868,7 +2868,7 @@ Merodon equestris	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	
 
 Mesaphorura macrochaeta	GenusAndSpecies	2025-05-01 23:11:52	Hexapoda	soil	no	herbivore
 
-Mesobuthus tamulus	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	herbivore
+Mesobuthus tamulus	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	carnivore
 
 Mesopsocus unipunctatus	GenusAndSpecies	2025-05-01 23:11:52	Psocodea	soil	no	herbivore
 
@@ -3024,11 +3024,11 @@ Neoponera villosa	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	soil	no	herbiv
 
 Neoseiulus cucumeris	GenusAndSpecies	2025-05-01 23:11:52		soil	no	carnivore
 
-Neostylopyga rhombifolia	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
+Neostylopyga rhombifolia	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	yes	herbivore
 
 Neotermes castaneus	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	forest	no	herbivore
 
-Neotibicen canicularis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	herbivore
+Neotibicen canicularis	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	yes	herbivore
 
 Neotibicen linnei	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	herbivore
 
@@ -3036,7 +3036,7 @@ Neotibicen lyricen	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	herbivo
 
 Neotibicen pruinosus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	herbivore
 
-Neotibicen robinsonianus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	detritivore
+Neotibicen robinsonianus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	yes	herbivore
 
 Neotibicen tibicen	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	soil	no	herbivore
 
@@ -3074,7 +3074,7 @@ Nicrophorus carolinus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	her
 
 Nicrophorus defodiens	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
 
-Nicrophorus hebes	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
+Nicrophorus hebes	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	herbivore
 
 Nicrophorus humator	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
 
@@ -3084,7 +3084,7 @@ Nicrophorus investigator	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	
 
 Nicrophorus lunatus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	detritivore
 
-Nicrophorus marginatus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
+Nicrophorus marginatus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	herbivore
 
 Nicrophorus mexicanus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
 
@@ -3152,7 +3152,7 @@ Ocypus olens	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivore
 
 Odiellus spinosus	GenusAndSpecies	2025-05-01 23:11:52	Opiliones	soil	no	herbivore
 
-Odontolabis gazella	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
+Odontolabis gazella	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	yes	herbivore
 
 Odontolabis siva	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	carnivore
 
@@ -3266,7 +3266,7 @@ Paederus fuscipes	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivo
 
 Pamphobeteus antinous	GenusAndSpecies	2025-05-01 23:11:52	Araneae	forest	no	carnivore
 
-Panchlora nivea	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
+Panchlora nivea	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	yes	herbivore
 
 Pandinus imperator	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	soil	no	carnivore
 
@@ -3306,7 +3306,7 @@ Pantala flavescens	GenusAndSpecies	2025-05-01 23:11:52	Odonata	freshwater	yes	ca
 
 Papilio machaon	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	herbivore
 
-Parabuthus transvaalicus	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	herbivore
+Parabuthus transvaalicus	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	carnivore
 
 Paraceras melis	GenusAndSpecies	2025-05-01 23:11:52	Siphonaptera	forest, grassland	no	parasite
 
@@ -3348,13 +3348,13 @@ Paraponera rufescens	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	soil	no	her
 
 Parasphendale affinis	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	no	carnivore
 
-Parasyrphus malinellus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	carnivore
+Parasyrphus malinellus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	herbivore
 
 Paratemnoides nidificator	GenusAndSpecies	2025-05-01 23:11:52	Pseudoscorpiones	soil	no	carnivore
 
 Paraxenos westwoodii	GenusAndSpecies	2025-05-01 23:11:52	Strepsiptera	forest, grassland	no	parasite
 
-Parcoblatta pennsylvanica	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
+Parcoblatta pennsylvanica	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	yes	herbivore
 
 Paroligolophus agrestis	GenusAndSpecies	2025-05-01 23:11:52	Opiliones	soil	no	omnivore
 
@@ -3388,7 +3388,7 @@ Peripatus dominicae	GenusAndSpecies	2025-05-01 23:11:52		forest	no	herbivore
 
 Peripatus juliformis	GenusAndSpecies	2025-05-01 23:11:52		forest	no	herbivore
 
-Periplaneta americana	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	omnivore
+Periplaneta americana	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	yes	omnivore
 
 Periplaneta brunnea	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
 
@@ -3396,7 +3396,7 @@ Peripsocus phaeopterus	GenusAndSpecies	2025-05-01 23:11:52	Psocodea	soil	no	fung
 
 Perla marginata	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	herbivore
 
-Perlodella cinctipes	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	carnivore
+Perlodella cinctipes	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	negavore
 
 Peromyscopsylla hesperomys	GenusAndSpecies	2025-05-01 23:11:52	Siphonaptera	forest, grassland	no	parasite
 
@@ -3576,7 +3576,7 @@ Porcellionides pruinosus	GenusAndSpecies	2025-05-01 23:11:52	Malacostraca	freshw
 
 Potamanthus luteus	GenusAndSpecies	2025-05-01 23:11:52	Ephemeroptera	freshwater	yes	negavore
 
-Prionus coriarius	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
+Prionus coriarius	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	yes	herbivore
 
 Proclinopyga melanderi	GenusAndSpecies	2025-05-01 23:11:52	Diptera	freshwater	yes	detritivore
 
@@ -3658,7 +3658,7 @@ Ptenothrix atra	GenusAndSpecies	2025-05-01 23:11:52	Hexapoda	soil	no	herbivore
 
 Pterinochilus murinus	GenusAndSpecies	2025-05-01 23:11:52	Araneae	forest	no	carnivore
 
-Pteronarcys californica	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	carnivore
+Pteronarcys californica	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	negavore
 
 Pterophylla camellifolia	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	no	herbivore
 
@@ -3670,7 +3670,7 @@ Pulex irritans	GenusAndSpecies	2025-05-01 23:11:52	Siphonaptera	forest, freshwat
 
 Pyemotes tritici	GenusAndSpecies	2025-05-01 23:11:52	Trombidiformes	soil	no	parasite
 
-Pyrocoelia rufa	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	carnivore
+Pyrocoelia rufa	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest, soil	yes	negavore
 
 Pyrops atroalbus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	herbivore
 
@@ -3724,7 +3724,7 @@ Ranatra unicolor	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	car
 
 Ranatra varipes	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	carnivore
 
-Raphidia alcoholica	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	herbivore
+Raphidia alcoholica	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
 Raphidia ligurica	GenusAndSpecies	2025-05-01 23:11:52	Raphidioptera	forest	yes	carnivore
 
@@ -3776,7 +3776,7 @@ Rhopalopsyllus saevus	GenusAndSpecies	2025-05-01 23:11:52	Siphonaptera	forest, g
 
 Rhotana trivittata	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest	no	herbivore
 
-Rhyacophila dorsalis	GenusAndSpecies	2025-05-01 23:11:52	Trichoptera	freshwater	yes	carnivore
+Rhyacophila dorsalis	GenusAndSpecies	2025-05-01 23:11:52	Trichoptera	freshwater	yes	negavore
 
 Rhynchophorus ferrugineus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	herbivore
 
@@ -3820,11 +3820,11 @@ Sarscypridopsis aculeata	GenusAndSpecies	2025-05-01 23:11:52	Ostracoda	freshwate
 
 Saturnia pyri	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, grassland	yes	negavore
 
-Scaeva pyrastri	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	carnivore
+Scaeva pyrastri	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	herbivore
 
 Scaphoideus titanus	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	herbivore
 
-Scarabaeus sacer	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
+Scarabaeus sacer	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	herbivore
 
 Scarabaeus viettei	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
 
@@ -3878,7 +3878,7 @@ Sericostoma personatum	GenusAndSpecies	2025-05-01 23:11:52	Trichoptera	freshwate
 
 Sericothrips staphylinus	GenusAndSpecies	2025-05-01 23:11:52	Thysanoptera	grassland	no	parasite
 
-Serradigitus gertschi	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	herbivore
+Serradigitus gertschi	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	desert	no	carnivore
 
 Serratella ignita	GenusAndSpecies	2025-05-01 23:11:52	Ephemeroptera	freshwater	yes	detritivore
 
@@ -3888,9 +3888,9 @@ Shelfordella lateralis	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	he
 
 Sialis aequalis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
 
-Sialis americana	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis americana	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Sialis californica	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis californica	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Sialis concava	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
@@ -3898,19 +3898,19 @@ Sialis dicolor	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	he
 
 Sialis flavilabris	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Sialis fuliginosa	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis fuliginosa	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Sialis hamata	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis hamata	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Sialis hasta	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
-Sialis infumata	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis infumata	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Sialis longicornis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Sialis lutaria	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
-Sialis minnesotensis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	carnivore
+Sialis minnesotensis	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	negavore
 
 Sialis morio	GenusAndSpecies	2025-05-01 23:11:52	Megaloptera	freshwater	yes	herbivore
 
@@ -3960,7 +3960,7 @@ Sisyphus schaefferi	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbi
 
 Sitophilus granarius	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	herbivore
 
-Sitophilus oryzae	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	herbivore
+Sitophilus oryzae	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	yes	herbivore
 
 Skogsbergia lerneri	GenusAndSpecies	2025-05-01 23:11:52	Ostracoda	marine	no	scavenger
 
@@ -4038,7 +4038,7 @@ Speleonectes tulumensis	GenusAndSpecies	2025-05-01 23:11:52		soil	no	herbivore
 
 Sphex ichneumoneus	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	forest, grassland	no	herbivore
 
-Sphingonotus caerulans	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	no	herbivore
+Sphingonotus caerulans	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	yes	herbivore
 
 Spilopsyllus cuniculi	GenusAndSpecies	2025-05-01 23:11:52	Siphonaptera	forest, grassland	no	parasite
 
@@ -4050,7 +4050,7 @@ Spodoptera frugiperda	GenusAndSpecies	2025-05-01 23:11:52	Lepidoptera	forest, gr
 
 Spongovostox semitaeniatus	GenusAndSpecies	2025-05-01 23:11:52	Dermaptera	soil	no	omnivore
 
-Stagmomantis carolina	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	no	carnivore
+Stagmomantis carolina	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	yes	carnivore
 
 Staphylinus erythropterus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivore
 
@@ -4104,7 +4104,7 @@ Stylops pacificus	GenusAndSpecies	2025-05-01 23:11:52	Strepsiptera	forest, grass
 
 Stylops thwaitesi	GenusAndSpecies	2025-05-01 23:11:52	Strepsiptera	forest, grassland	no	parasite
 
-Superstitionia donensis	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	soil, desert	no	herbivore
+Superstitionia donensis	GenusAndSpecies	2025-05-01 23:11:52	Scorpiones	soil, desert	no	carnivore
 
 Suwallia pallidula	GenusAndSpecies	2025-05-01 23:11:52	Plecoptera	freshwater	yes	detritivore
 
@@ -4118,19 +4118,19 @@ Synsphyronus elegans	GenusAndSpecies	2025-05-01 23:11:52	Pseudoscorpiones	forest
 
 Syrphus ribesii	GenusAndSpecies	2025-05-01 23:11:52	Diptera	forest, grassland	yes	herbivore
 
-Tabanus americanus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Tabanus americanus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
-Tabanus atratus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Tabanus atratus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
-Tabanus bovinus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Tabanus bovinus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
-Tabanus lineola	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Tabanus lineola	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
 Tabanus molestus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
 Tabanus nigrovittatus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
 
-Tabanus sudeticus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	carnivore
+Tabanus sudeticus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	varied	yes	parasite
 
 Tachypodoiulus niger	GenusAndSpecies	2025-05-01 23:11:52	Diplopoda	soil	no	herbivore
 
@@ -4152,9 +4152,9 @@ Tarachodula pantherina	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	forest, gras
 
 Telebasis salva	GenusAndSpecies	2025-05-01 23:11:52	Odonata	freshwater	yes	carnivore
 
-Teleogryllus oceanicus	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	no	herbivore
+Teleogryllus oceanicus	GenusAndSpecies	2025-05-01 23:11:52	Orthoptera	grassland	yes	herbivore
 
-Tenagogerris euphrosyne	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	no	carnivore
+Tenagogerris euphrosyne	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	freshwater	yes	carnivore
 
 Tenodera sinensis	GenusAndSpecies	2025-05-01 23:11:52	Mantodea	grassland	no	carnivore
 
@@ -4162,7 +4162,7 @@ Tepa yerma	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	forest, grassland	no	he
 
 Termes panamaensis	GenusAndSpecies	2025-05-01 23:11:52	Blattodea	urban	no	herbivore
 
-Tetracha carolina	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivore
+Tetracha carolina	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	carnivore
 
 Tetragonula carbonaria	GenusAndSpecies	2025-05-01 23:11:52	Hymenoptera	grassland	no	herbivore
 
@@ -4216,7 +4216,7 @@ Tomicus piniperda	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	pa
 
 Tomocerus minor	GenusAndSpecies	2025-05-01 23:11:52	Hexapoda	soil	no	herbivore
 
-Toxorhynchites rutilus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	freshwater, urban	no	carnivore
+Toxorhynchites rutilus	GenusAndSpecies	2025-05-01 23:11:52	Diptera	freshwater, urban	no	herbivore
 
 Toya propinqua	GenusAndSpecies	2025-05-01 23:11:52	Hemiptera	grassland	no	herbivore
 
@@ -4452,9 +4452,9 @@ Aleochara bipustulata	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	car
 
 Brachinus crepitans	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	carnivore
 
-Calopteron reticulatum	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	carnivore
+Calopteron reticulatum	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
 
-Cantharis livida	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	carnivore
+Cantharis livida	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland	no	omnivore
 
 Clytus arietis	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	forest	no	herbivore
 
@@ -4462,7 +4462,7 @@ Dynastes hercules	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivo
 
 Epicauta pensylvanica	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	grassland, desert	no	parasite
 
-Goliathus goliatus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	no	herbivore
+Goliathus goliatus	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	soil	yes	herbivore
 
 Gyrinus natator	GenusAndSpecies	2025-05-01 23:11:52	Coleoptera	freshwater	yes	carnivore
 

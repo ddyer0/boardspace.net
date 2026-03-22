@@ -449,10 +449,61 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     	}
      	return(finalv);
     }
-    double handWeight3 = 0.9;
+    public double king_distance_multiplier4 = 0.01;
+    public double king_distance_multiplier5 = 0.02;
+    public double king_distance_multiplier6 = 0.04;		// worse than 0.02
+    public double king_distance_multiplier6a = 0.01;	// worse than 0.02
+    public double ScoreForPlayer4(int player,boolean print)
+    {
+    	return ScoreForPlayer4(player,print,king_distance_multiplier4);
+    }
+    public double ScoreForPlayer5(int player,boolean print)
+    {
+    	return ScoreForPlayer4(player,print,king_distance_multiplier5);
+    }
+    public double ScoreForPlayer6(int player,boolean print)
+    {
+    	return ScoreForPlayer4(player,print,king_distance_multiplier6a);
+    }
     
-    public double ScoreForPlayer3(int player,boolean print)
+    public double ScoreForPlayer4(int player,boolean print,double kingDistance)
     {  	double finalv=0.0;
+    	double kingv = 0.0;
+    	CellStack pieces = occupied[player];
+    	for(int i=0,lim=pieces.size(); i<lim;i++)
+    	{
+    	ShogiCell c = pieces.elementAt(i);
+    	ShogiChip top = c.topChip();
+    	PieceType type = top.pieceType;
+    	// count the wood
+    	finalv += type.standardValue;
+     	kingv += G.distance(c.col,c.row,kingLocation[0].col,kingLocation[0].row);
+     	kingv += G.distance(c.col,c.row,kingLocation[1].col,kingLocation[1].row);
+    	if(type.canBePromoted())
+    	{
+    	int promo = distanceToPromotion[player][c.row];
+    	finalv -= promptionWeight*promo;
+    	}
+    	}
+    	for(ShogiCell c : rack[player])
+    	{	ShogiChip ch = c.topChip();
+    		if(ch!=null)
+    		{	ShogiChip.PieceType pp = ch.pieceType.demoted;
+    			finalv += pp.standardValue*c.height()*handWeight;	// half credit for captured pieces
+    		}
+    	}
+    	double kingfactor = kingv*kingDistance;
+    	finalv -= kingfactor;
+     	return(finalv);
+    }
+    double handWeight3 = 1.2;
+    /*
+    // this is a failed experiment which downgraded the value of pieces in hand
+    // proportional to their quantity. The idea being to prevent hoarding lots
+    // of pieces in hand rather than using them.
+    private double ScoreForPlayer3(int player,boolean print)
+    {  	double finalv=0.0;
+    	
     	CellStack pieces = occupied[player];
     	for(int i=0,lim=pieces.size(); i<lim;i++)
     	{
@@ -467,15 +518,23 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     	finalv -= promptionWeight*promo;
     	}
     	}
-    	for(ShogiCell c : rack[player])
+    	{
+    	double handv = 0.0;
+     	for(ShogiCell c : rack[player])
     	{	ShogiChip ch = c.topChip();
     		if(ch!=null)
     		{	ShogiChip.PieceType pp = ch.pieceType.demoted;
-    			finalv += pp.standardValue*c.height()*handWeight3;	// half credit for captured pieces
+    			handv += pp.standardValue*c.height()*handWeight3;	// half credit for captured pieces
     		}
+    		}
+     	// make the value of pieces in hand decline as there get to be too may of them.
+     	// the theory is that this will encourage them to be played rather than  hoarded
+     	double decline = G.interpolateD(handv/50.0,0,0.1)*handv;
+     	finalv += handv-decline;
     	}
      	return(finalv);
     }
+    */
     //
     // return true if balls[rack][ball] should be selectable, meaning
     // we can pick up a ball or drop a ball there.  movingBallColor is 
@@ -620,7 +679,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         		}
         		
         	}
-        	if(attackingPosition(occupied[nextPlayer[whoseTurn]],kingLocation[whoseTurn],null,null))
+        	if(checkmateAttacker(occupied[nextPlayer[whoseTurn]],kingLocation[whoseTurn],null,null)!=null)
         			{ // uncovered check
         			  setState(ShogiState.IllegalMove);
         			  break;
@@ -686,11 +745,12 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	break;
     	case Confirm:
     	case Puzzle:
-    		if(attackingPosition(occupied[nextPlayer[whoseTurn]],kingLocation[whoseTurn],null,null))
+    		if(checkmateAttacker(occupied[nextPlayer[whoseTurn]],kingLocation[whoseTurn],null,null)!=null)
     				{ 	setState(ShogiState.Check); 
     					if(!hasMoves(whoseTurn))
     					{
     					// if this is a drop-pawn checkmate, disallow it.
+    						hasMoves(whoseTurn);
     					setGameOver(false,true); 
     					}
     				break;
@@ -1109,20 +1169,18 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 
 
 
- //
- // this is the canonical check for "check" in a static position
- //
-
- private boolean attackingPosition(CellStack from,ShogiCell to,ShogiCell empty,ShogiCell filled)
- {	if(to!=null)
+ private ShogiCell checkmateAttacker(CellStack from,ShogiCell to,ShogiCell empty,ShogiCell filled)
+ {
+	 if(to!=null)
 	{for(int i=0,lim=from.size(); i<lim; i++)
  	{
 	 ShogiCell c = from.elementAt(i);
 	 if(attackingPosition(c,c.topChip(),to,empty,filled))
-	 	{ return(true); }
+		 	{ return(c); }
  	}}
-	return(false);
+		return null;
  }
+ 
  boolean vacantDirection(ShogiCell from,ShogiCell to,int forward,ShogiCell empty,ShogiCell filled)
  {
 	ShogiCell next = from.exitTo(forward);
@@ -1283,19 +1341,80 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  {	boolean some = false;
  	ShogiCell drops[] = rack[who];
  	boolean shortcut = (v==null);
- 	if(shortcut&&(board_state==ShogiState.Check)) { v = new CommonMoveStack(); } 
+ 	ShogiCell attacker = null;
+ 	ShogiChip atop = null;
+ 	ShogiCell king = kingLocation[who];
+	if(board_state==ShogiState.Check)
+	 		{
+	 		attacker = checkmateAttacker(occupied[nextPlayer[whoseTurn]],king,null,null);
+	 		atop = attacker.topChip();
+	 		}
+	int forbidden_column_mask = -1;
+ 	for(ShogiCell c = allCells; c!=null; c=c.next)
+ 	{	if(c.topChip()==null
+ 			&& ((attacker==null) 
+ 				|| !attackingPosition(attacker,atop,king,null,c))
+ 			)
+ 		{
  	for(ShogiCell drop : drops)
  	{	ShogiChip top = drop.topChip();
  		if(top!=null)
- 		{	some |= getDropMoves(v,top,who);
- 			if(some && (v==null)) { return(true); }
+	 		{	
+	 			switch(top.pieceType)
+	 			{
+	 			case Pawn:
+	 			case Promoted_Pawn:
+	 				// build a mask when first needed
+	 				if(forbidden_column_mask==-1) { forbidden_column_mask = buildForbiddenDropMask(who); }
+	 				// if forbidden by the pawn column rule, skip
+	 				if( ((1<<c.col-'A')&forbidden_column_mask)!=0) break;
+					//$FALL-THROUGH$
+				default: 
+					some |= getDropMoves(v,top,c,who);
+					if(some && shortcut) { return(true); }
+					break;
  		}
  	}
- 	if(board_state==ShogiState.Check)
- 	{	some = filterCheckMoves(v,who,shortcut);
+	 	}}
   	}
  	return(some);
  }
+ //
+ // this is a performance optimization.  Build a mask of the columns
+ // occupied by friendly pawns, so they can be quickly excluded from
+ // drop moves.
+ //
+ private int buildForbiddenDropMask(int who)
+ {
+	 int forbidden_column_mask = 0;
+	 for(ShogiCell c = allCells; c!=null; c=c.next)
+	 {
+	 ShogiChip topchip = c.topChip();
+	 if((topchip!=null) && (topchip.playerIndex==who) && (topchip.pieceType==ShogiChip.PieceType.Pawn))
+			{ forbidden_column_mask |= (1<<(c.col-'A'));
+			}
+	 }
+	 return forbidden_column_mask; 
+ }
+ 
+ public boolean getDropMoves(CommonMoveStack v,ShogiChip top,int who)
+ {	boolean some = false;
+ 	int forbidden_columns = 0;
+ 	switch(top.pieceType)
+ 	{
+ 	default: break;
+ 	case Pawn:
+ 	case Promoted_Pawn:
+ 			forbidden_columns = buildForbiddenDropMask(who);
+ 			break;
+ 	}
+ 	for(ShogiCell c = allCells; c!=null; c=c.next)
+		 {	if(c.topChip()==null && ((1<<(c.col-'A')&forbidden_columns)==0))
+		 		{ some |= getDropMoves(v,top,c,who); } 
+		 }
+ 	return some;
+ }
+ 
  //
  // get the available drop moves for piece "top"
  // top may be either promoted or not, but the unpromoted
@@ -1304,7 +1423,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  //
  // v can be null, in which case no list is returned
  // return true if any drop moves exist
- public boolean getDropMoves(CommonMoveStack  v,ShogiChip top,int who)
+ public boolean getDropMoves(CommonMoveStack  v,ShogiChip top,ShogiCell c,int who)
  {	boolean some = false;
 	switch(top.pieceType)
 	{
@@ -1314,50 +1433,24 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 		// knights can't drop into the last two rows because they would be unable to move.
 		int forbidden_row = (who!=0) ? DEFAULT_ROWS : 1;
 		int forbidden_row_2 = (who!=0) ? DEFAULT_ROWS-1 : 2;
-		for(ShogiCell c = allCells; c!=null; c=c.next)
-		{	if((c.row!=forbidden_row) && (c.row!=forbidden_row_2) && (c.topChip()==null))
+		if((c.row!=forbidden_row) && (c.row!=forbidden_row_2))
 			{	if(v==null) { return(true); }
 				ShogiChip.PieceType type = top.pieceType.demoted;
 				v.addElement(new ShogiMovespec(MOVE_ONBOARD,c.col,c.row,type.ordinal(),who));
 				some = true;
 			}
-		}
 		}
 		break;
 	case Lance:
 	case Promoted_Lance:
-		// can't drop on the back row because it would be unable to move
-		{
-		int forbidden_row = (who!=0) ? DEFAULT_ROWS : 1;
-		for(ShogiCell c = allCells; c!=null; c=c.next)
-		{	if((c.row!=forbidden_row) && (c.topChip()==null))
-			{	if(v==null) { return(true); }
-				ShogiChip.PieceType type = top.pieceType.demoted;
-				v.addElement(new ShogiMovespec(MOVE_ONBOARD,c.col,c.row,type.ordinal(),who));
-				some = true;
-			}
-		}
-		}
-		break;
 	case Pawn:
 	case Promoted_Pawn:
 		// can't drop on a column with another unpromoted pawn, or in the back row
 		// also can't drop to cause checkmate, but that isn't handled here.
 		{
 		int forbidden_row = (who!=0) ? DEFAULT_ROWS : 1;
-		int forbidden_column_mask = 0;	// mask of columns that contain our pawns
-		for(ShogiCell c = allCells; c!=null; c=c.next)
-			{	// scan the board for our pawn, build a mask
-				ShogiChip topchip = c.topChip();
-				if((topchip!=null) && (topchip.playerIndex==who) && (topchip.pieceType==ShogiChip.PieceType.Pawn))
-					{ forbidden_column_mask |= (1<<(c.col-'A'));
-					}
-			}
-		for(ShogiCell c = allCells; c!=null; c=c.next)
-			{
-			if( (c.row!=forbidden_row)	// in the back row 
-					&& (((1<<(c.col-'A')) & forbidden_column_mask ) ==0) // not a forbidden column
-					&& (c.topChip()==null))	// and in an empty space
+
+		if( c.row!=forbidden_row)	// in the back row 
 				{
 				if(v==null) { return(true); }
 				ShogiChip.PieceType type = top.pieceType.demoted;
@@ -1365,7 +1458,6 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 				some = true;
 				}
 			}
-		}
 		break;
 	case Bishop:
 	case Promoted_Bishop:
@@ -1377,14 +1469,11 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 	case General:	// general can be moved to and from the rack in puzzle mode
 
 		// major pieces can drop anywhere
-		for(ShogiCell c = allCells; c!=null; c=c.next)
-		{	if(c.topChip()==null)
-			{	if(v==null) { return(true); }
+		if(v==null) { return(true); }
 				ShogiChip.PieceType type = top.pieceType.demoted;
 				v.addElement(new ShogiMovespec(MOVE_ONBOARD,c.col,c.row,type.ordinal(),who));
 				some = true;
-			}
-		}
+		
 		break;
 		
 	case Promoted_Gold:		// nonexistent
@@ -1539,7 +1628,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
 		{	ShogiMovespec m = (ShogiMovespec)v.elementAt(lim);
 			ShogiCell from = getCell(m.from_col,m.from_row);
 			ShogiCell to = getCell(m.to_col,m.to_row);
-			if(attackingPosition(occupied[nextPlayer[victim]],from==king?to:king,from,to))
+			if(checkmateAttacker(occupied[nextPlayer[victim]],from==king?to:king,from,to)!=null)
 			{	// still in check after this move
 				v.remove(lim,false);
 			}
@@ -1578,6 +1667,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  					{ //if we didn't make a list, make one now
  					v = new CommonMoveStack(); 
  					getListOfMoves(v,occupied[who],who);
+ 					getDropMoves(v,who);
  					}
  				some = filterCheckMoves(v,who,shortcut);
 
@@ -1598,7 +1688,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  // if we're also in check.
  //
  private boolean hasMoves(int who)
- {	return(getListOfMoves(null,who) || getDropMoves(null,who));
+ {	return(getListOfMoves(null,who));
  }
  
  //

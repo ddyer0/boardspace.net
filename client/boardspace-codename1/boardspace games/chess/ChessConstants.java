@@ -36,6 +36,7 @@ public interface ChessConstants
 		Ultima(ChessChip.ultima,null,"ultima",8),		// ultima chess
 		Chess960(ChessChip.chess960,null,"chess960",8),
 		Atomic(ChessChip.atomic,null,"atomic",8),
+		CrazyHouse(ChessChip.crazy,null,"crazy",8),
 		;	// chess 960
 		int size;
 		String name;

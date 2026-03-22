@@ -345,6 +345,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
      	default:  throw G.Error(WrongInitError,gtype);
      	case Chess:
      	case Atomic:
+     	case CrazyHouse:
      	case Chess960:
     	case Ultima:
      		boardColumns = variation.size;
@@ -1129,6 +1130,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    		case Chess960: break;
 	    		default:
 	    		case Atomic:
+	    		case CrazyHouse:
 	    		case Chess:
 	    		if(dcol==2)
 	    		{	// castle king side
@@ -2216,6 +2218,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 {
 	 case Chess960:	return add960CastlingMoves(all,from,who);
 	 case Atomic:
+	 case CrazyHouse:
 	 case Chess: return(addStandardCastlingMoves(all,from,who));
 	 default: throw G.Error("not expecting %s",variation);
 	 }
@@ -2804,6 +2807,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Ultima:
 	 case Chess960:
 	 case Atomic:
+	 case CrazyHouse:
 	 case Chess:
  		 // captures are mandatory
 		 CellStack cells =  occupiedCells[who];
@@ -2845,6 +2849,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Ultima:
 	 case Chess960:
 	 case Atomic:
+	 case CrazyHouse:
 	 case Chess:
  		 switch(board_state)
  		 {
