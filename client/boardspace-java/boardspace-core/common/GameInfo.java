@@ -150,7 +150,9 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	/** note that minPlayers here must agree with the min_players field of the variation database table */
 	public int minPlayers=2;
 	public int maxRobotPlayers = 1;
-	public boolean variableColorMap = false;				// if true, player order is linked to color map
+	public boolean variableColorMap = false;				
+		// if false, for 2 player games, player order is linked to color map,
+		// as is the case for Chess where the first player is always white.
 	public boolean randomizeFirstPlayer = false;			// if true, mandatory randomization of the first player
 	public boolean unrankedOnly = false;					// only available in unranked games
 	public Color[] colorMap = null;
@@ -1563,6 +1565,7 @@ synchronized(allGames) {
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
 	mm.maxPlayers = 2;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	mm = put(new GameInfo(703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
 			OneBotPlus,
@@ -1570,6 +1573,7 @@ synchronized(allGames) {
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
 	mm.maxPlayers = 4;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	
 	mm = put(new GameInfo(704,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel",
@@ -1579,6 +1583,7 @@ synchronized(allGames) {
 			null,false, map));
 	mm.maxPlayers = 2;
 	mm.randomizeFirstPlayer = true;
+	mm.variableColorMap = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
 	mm = put(new GameInfo(705,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel-large",
@@ -1587,6 +1592,7 @@ synchronized(allGames) {
 			pViewer,pRules,"about_pendulum.html",
 			null,false, map));
 	mm.maxPlayers = 4;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;

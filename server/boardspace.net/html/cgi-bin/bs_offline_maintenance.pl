@@ -18,6 +18,7 @@ var $::testdel = 0;
 sub markdelinquent()
 {
 	my ($dbh,$status,$speed,$oldmark,$newmark,$days) = @_;
+	#print "\nfrom $status to ($newmark) days $days\n";
 	my $qstatus = $dbh->quote($status);
 	my $qspeed= $speed ? " and speed = " . $dbh->quote($speed) : "";
 	my $mark = $oldmark ? " marked = " . $dbh->quote($oldmark) : " marked is null ";
@@ -31,11 +32,11 @@ sub markdelinquent()
 	my $q = "$sel where $mark $qspeed and status=$qstatus and DATE_ADD(last,INTERVAL $days DAY)<utc_timestamp()"; 
 	my $sth = &commandQuery($dbh,$q);
 	my $nr = &numRows($sth);
+	#print "\nrows $nr $q\n";
 	if ($nr>0)
 		{
 		return "$nr games marked $newmark stat=$status days=$days\n";
 		}
-	#print "rows $nr $q\n";
 	return "";
 }
 
@@ -55,12 +56,15 @@ sub changemarks()
 	# complete games and damaged games disappear after 2 weeks
 	$msg .= &markdelinquent($dbh,'complete','','','expired',14);
 	$msg .= &markdelinquent($dbh,'suspended','','','expired',14);
+
 	
-	# delibquent games become expired after 3 weeks
-	$msg .= &markdelinquent($dbh,'','','delinquent','expired',21);
+	# delinquent games become expired after 3 weeks
+	$msg .= &markdelinquent($dbh,'delinquent','','','expired',21);
 
 	# expired games are deleted after a month
-	$msg .= &markdelinquent($dbh,'','','expired','',30);
+	$msg .= &markdelinquent($dbh,'expired','','','',30);
+	# cancelled games disappear after a week
+	$msg .= &markdelinquent($dbh,'canceled','','','',7);
 
 	return $msg;
 }

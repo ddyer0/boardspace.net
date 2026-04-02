@@ -473,7 +473,6 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 		nodeExpansionSizeThisRun = 0;
 		
 		if(blitz) { robot.getBoard().copyFrom(master.root_board); }
-		
 		robot.prepareForDescent(master);
 		//UCTNode.marked = master.root;
 		// walk down the tree, selecting a child to visit, until we get to a leaf		

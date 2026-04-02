@@ -96,14 +96,14 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 		}
 	    if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }
 	    if(max>=VALUE_OF_WIN) { return(-VALUE_OF_WIN); }
-	    double v = val-max;
-	    return(v);
+	    val = val-max;
 	   	}
-	   	else {
-		    if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }
-		    return(val);
-	   	}
+	   	
+	   	if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }
+	   	if(val<=-VALUE_OF_WIN) { return(-VALUE_OF_WIN); }
+	   	return(val);
    } 
+    
     public double reScoreProportional(int forplayer,double VALUE_OF_WIN)
     {	
 	    int nplay = playerScores.length;

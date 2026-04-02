@@ -1120,7 +1120,12 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
 
 			// the !robotboard is because robots don't make illegal moves, and the state of robots unmaking moves
 			// tended to trigger unPickobject unexpectedly
-			if(!robotBoard && revision>=101 && m.to_col==picked_col && m.to_row==picked_row && m.rotation==picked_rotation)
+			if(!robotBoard 
+					&& revision>=101 
+					&& m.to_col==picked_col
+					&& m.to_row==picked_row 
+					&& m.rotation==picked_rotation
+					&& m.from_level>=0)
 				{
 					unPickObject();
 				}

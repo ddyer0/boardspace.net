@@ -21,6 +21,7 @@ import lib.G;
 import lib.Image;
 import lib.SizeProvider;
 
+import com.codename1.components.InteractionDialog;
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
 import com.codename1.ui.Dialog;
@@ -33,7 +34,7 @@ import com.codename1.ui.plaf.Style;
 //
 // this is a workaround to keep pop-ups from apprearing too close to the top
 //
-class ComboDialog extends Dialog implements SizeProvider
+class ComboDialog extends Dialog  implements SizeProvider
 {
 	ComboDialog(String uu,String lm)
 	{ super();
@@ -63,6 +64,42 @@ class ComboDialog extends Dialog implements SizeProvider
 	{	
 		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
 	}
+}
+//
+//this is a workaround to keep pop-ups from apprearing too close to the top
+//
+class ComboDialog2 extends InteractionDialog /*Dialog */ implements SizeProvider
+{
+	ComboDialog2(String uu,String lm)
+	{ super();
+	}
+	
+	/*
+
+	@SuppressWarnings("deprecation")
+	public Command show(int top,int bot,int left,int right,boolean title,boolean modal)
+	{
+		return super.show(Math.max(top, G.minimumFeatureSize()),bot,left,right,title,modal);
+	}
+	public void paint(com.codename1.ui.Graphics g0)
+	{
+		boolean rotated = MasterForm.rotateNativeCanvas(this,g0);
+		super.paint(g0);
+		if(rotated) { MasterForm.unrotateNativeCanvas(this, g0); }
+	}
+	public void pointerPressed(int x,int y)
+	{	
+		super.pointerPressed(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
+	}
+	public void pointerReleased(int x,int y)
+	{	
+		super.pointerReleased(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
+	}
+	public void pointerDragged(int x,int y)
+	{	
+		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
+	}
+	*/
 }
 
 public class ComboBox<T> extends com.codename1.ui.ComboBox<T> 

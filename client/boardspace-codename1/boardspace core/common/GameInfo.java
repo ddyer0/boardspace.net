@@ -1563,6 +1563,7 @@ synchronized(allGames) {
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
 	mm.maxPlayers = 2;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	mm = put(new GameInfo(703,ES.game,125,"BS",EuroGames,"BugSpiel","BugSpiel-sequential-large",
 			OneBotPlus,
@@ -1570,6 +1571,7 @@ synchronized(allGames) {
 			pViewer,sRules,"about_bugspiel.html",
 			null,false, map));
 	mm.maxPlayers = 4;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	
 	mm = put(new GameInfo(704,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel",
@@ -1579,6 +1581,7 @@ synchronized(allGames) {
 			null,false, map));
 	mm.maxPlayers = 2;
 	mm.randomizeFirstPlayer = true;
+	mm.variableColorMap = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
 	mm = put(new GameInfo(705,ES.test,125,"BS",EuroGames,"BugSpiel","BugSpiel-parallel-large",
@@ -1587,6 +1590,7 @@ synchronized(allGames) {
 			pViewer,pRules,"about_pendulum.html",
 			null,false, map));
 	mm.maxPlayers = 4;
+	mm.variableColorMap = true;
 	mm.randomizeFirstPlayer = true;
 	mm.okForTurnbased = false;		// parallel setup
 	mm.okForPassAndPlay = false;
@@ -2814,7 +2818,7 @@ synchronized(allGames) {
 				{
 				if(website!=null)
 		 		  {
-				  String myLanguage=G.getString(G.LANGUAGE,DefaultLanguageName);
+				  String myLanguage=InternationalStrings.getLanguage();
 		 		  URL u = G.getUrl(myLanguage+"/"+website,true);
 				  G.showDocument(u);
 		 		  }}

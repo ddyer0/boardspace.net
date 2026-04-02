@@ -41,9 +41,11 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
 	private static final double VALUE_OF_WIN = 1000000.0;
 	private static final int WEAKBOT_DEPTH = 7;
 	private static final int DUMBOT_DEPTH = 8;
+	@SuppressWarnings("unused")
 	private static final int GOODBOT_DEPTH = 10;
 	private static final int BESTBOT_DEPTH = 12;
 	private static final double DUMBOT_TIME_LIMIT = 0.5;
+	@SuppressWarnings("unused")
 	private static final double GOODBOT_TIME_LIMIT = 1.0;
 	private static final double BESTBOT_TIME_LIMIT = 2.0;
 	private int MAX_DEPTH = BESTBOT_DEPTH;

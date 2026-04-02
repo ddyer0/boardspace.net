@@ -1785,12 +1785,17 @@ public class RepaintManager implements VncScreenInterface,Config
         		if(complete) 
         	    	 { // redraw the deep background
         	    		Graphics allFixedGC = fixed.getGraphics();
+        	    		if(allFixedGC!=null)
+        	    		{
+        	    		// if the image is bad (ie; out of memory or something, then gc will be null
+        	    		// things aren't going well, but don't fail here!
         	    		allFixedGC.translate(-tx,-ty);
         	    		helper.drawBackground(allFixedGC, fixed.getImage());
         	    		// this is an experiment to stall the pipeline and try
         	    		// to avoid the damaged background image problem
         	    		blank.drawImage(allFixedGC,0,0);
          	    		allFixedGC.translate(tx,ty);
+        	    		}
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;
    						fixed.setWritten(when);

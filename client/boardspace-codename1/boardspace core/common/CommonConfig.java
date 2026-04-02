@@ -124,6 +124,7 @@ public interface CommonConfig extends UniversalConstants {
     public static final int minFontHeight = 8;
     public static final int maxFontHeight = 40;
      
+    
 	Color FrameBackgroundColor = new Color(0xdee3f6);	// boardspace blue
 	String DEVELOPHOST = "develophost";
 	String RELEASEHOST = "releasehost";
@@ -198,7 +199,6 @@ public interface CommonConfig extends UniversalConstants {
 	public final static Color bsOrange = new Color(220,95,65);// boardspace orange
 	public final static Color bsPurple = new Color(0x60,0x22,0x84);	// boardspace purple
 	public final static Color bsBrown = new Color(180,124,94);	// boardspace brown
-	
 	// this list corresponds to the enum in the translations table
 	public final static String SupportedLanguages[] = 	
 		{
