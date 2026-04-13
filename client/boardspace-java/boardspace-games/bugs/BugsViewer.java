@@ -238,7 +238,14 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         	BugsConstants.putStrings();
         	makeDeck = myFrame.addAction(debugMenu,"make deck",deferredEvents);
         }
-        
+        {
+        	GameInfo g = sharedInfo.getGameInfo();
+        	if(g!=null)
+        	{
+        		MouseColors = g.colorMap;
+        	}
+        		
+        }
         String type = info.getString(GameInfo.GAMETYPE, BugsVariation.bugspiel_parallel.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
@@ -551,7 +558,7 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         commonPlayer pl = getPlayerOrTemp(0);
         double playersize = G.Width(pl.playerBox)*G.Height(pl.playerBox)*nPlayers;
-        return boardW*boardH+playersize;
+        return layout.fails>0 ? 0 : boardW*boardH+playersize;
     }
     boolean flatPlayer = false;
     /**

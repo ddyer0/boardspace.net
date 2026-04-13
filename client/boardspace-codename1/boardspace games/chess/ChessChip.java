@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,15 +12,18 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package chess;
 
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
+import bridge.Color;
 import bridge.Config;
 import lib.DrawableImageStack;
+import lib.G;
+import lib.GC;
 import lib.Random;
 import lib.exCanvas;
 import online.game.chip;
@@ -36,14 +39,19 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static DrawableImageStack allTiles = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
-
+	static int promotedOffset = 100;
 	public ChessId color;
 	public ChessPiece piece;
-
+	public boolean promoted = false;
 	private int chipIndex;
-	public int chipNumber() { return(chipIndex); }
+	public int chipNumber() { return(chipIndex + (promoted ? promotedOffset : 0)); }
 	public static ChessChip getChipNumber(int id)
-	{	return((ChessChip)allChips.elementAt(id));
+	{	ChessChip chip = (ChessChip)allChips.elementAt(id%promotedOffset);
+		if(id>=promotedOffset)
+		{
+			return getChip(chip.piece,chip.color,true);
+		}
+		return chip;
 	}
 
 	// constructor for chips not expected to be part of the UI
@@ -58,7 +66,6 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 		scale = scl;
 		stack.push(this);
 	}
-	
 	public double getChipRotation(exCanvas canvas)
 	{	int chips = exCanvas.getAltChipset(canvas); // in rare circumstances, canvas is null
 		double rotation = 0;
@@ -81,10 +88,33 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 		color = uid;
 		piece = p;
 	}
-
+	static ChessChip pieces[][] = new ChessChip[2][ChessPiece.values().length];
+	static ChessChip promotedPieces[][] = new ChessChip[2][ChessPiece.values().length];
 	
+	static public ChessChip getChip(ChessPiece type,ChessId color,boolean promoted)
+	{
+		ChessChip chips[] = (promoted ? promotedPieces : pieces)[color==ChessId.Black_Chip_Pool ? 0 : 1];
+		return chips[type.ordinal()];
+	}
+	private ChessChip(ChessChip from,boolean prom)
+	{	chipIndex = from.chipIndex;
+		color = from.color;
+		file = from.file;
+		piece = from.piece;
+		scale = from.scale;
+		image = from.image;
+		randomv = r.nextLong();
+		promoted = prom;
+	}
+	public ChessChip changeColor()
+	{	G.Assert(!promoted,"promoted chips shouldn't be dropped");
+		ChessChip changed = getChip(piece,color==ChessId.Black_Chip_Pool ? ChessId.White_Chip_Pool :ChessId.Black_Chip_Pool ,false);
+		//ChessChip changedBack = getChip(changed.piece,(ChessId)color);
+		//G.Assert(changedBack==this,"should 0be same");
+		return changed;
+	}
 	public String toString()
-	{	return("<"+ color+piece+" #"+chipIndex+">");
+	{	return("<"+ color+piece+" #"+chipIndex+(promoted?"+>" : ">"));
 	}
 	public String contentsString() 
 	{ return(color==null?"":color.shortName+piece.toString()); 
@@ -179,14 +209,6 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 			ChessId.Black_Chip_Pool,ChessPiece.UltimaKing,
 			new double []{0.505,0.49,0.891});
 
-	// pieces for chess promotions
-	public static ChessChip whitePromotedPawn = new ChessChip("white-pawn",
-			ChessId.White_Chip_Pool,ChessPiece.Pawn,
-			new double []{0.521,0.304,1.3});
-	public static ChessChip blackPromotedPawn = new ChessChip("black-pawn",
-			ChessId.Black_Chip_Pool,ChessPiece.Pawn,
-			new double []{0.521,0.304,1.3});
-	
 	static private ChessChip chips[] = 
 		{
 		whitePawn,
@@ -244,6 +266,10 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{	
 		drawRotatedChip(gc,canvas,getChipRotation(canvas),SQUARESIZE,xscale,cx,cy,label);
+		if(promoted)
+		{	// mark promoted chips
+			GC.Text(gc,true,cx-SQUARESIZE/2,cy-SQUARESIZE/2,SQUARESIZE,SQUARESIZE,Color.yellow,null,"+");
+		}
 	}
 	static double noscale[]= {0,0,1};
 	public static ChessChip backgroundTile = new ChessChip( "background-tile-nomask",null,allTiles);
@@ -255,15 +281,23 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	public static ChessChip crazy = new ChessChip("crazy",noscale);
 	public static ChessChip QueenChip[] = new ChessChip[]{whiteQueen,blackQueen};
 	public static ChessChip PawnChip[] = new ChessChip[]{whitePawn,blackPawn};
-	public static ChessChip PromotedPawnChip[] = new ChessChip[]{whitePromotedPawn,blackPromotedPawn};
-	// call from the viewer's preloadImages
+		// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(!imagesLoaded)
 		{
 		imagesLoaded = forcan.load_masked_images(ImageDir,allChips)
 						&& forcan.load_masked_images(StonesDir, allTiles);
 		if(imagesLoaded) { Image.registerImages(allChips); Image.registerImages(allTiles); }
+		
+		for(ChessChip chip : chips) 
+			{ ChessChip prom = new ChessChip(chip,true);
+			  int ind = chip.color==ChessId.Black_Chip_Pool ? 0 : 1;
+			  int ord = chip.piece.ordinal();
+			  pieces[ind][ord] = chip; 
+			  promotedPieces[ind][ord] = prom;
+			}	
 		}
+
 	}
 
 

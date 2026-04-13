@@ -498,7 +498,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
             				vstate!=SixmakingState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
- 		gb.rack[gb.whoseTurn].topChip().drawChip(gc, this, iconRect, null);
+ 		gb.getPlayerChip(gb.whoseTurn).drawChip(gc, this, iconRect, null);
  		
         goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
         

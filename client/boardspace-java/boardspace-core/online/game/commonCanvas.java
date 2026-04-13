@@ -1962,12 +1962,16 @@ public abstract class commonCanvas extends exCanvas
           // the view by hovering his mouse over something.
       	  if((mx>=0) 
       			  && (my>=0)
-      			  && ((mx!=p.drawnMouseX)
-      					  ||(my!=p.drawnMouseY)
-      					  || ((now-p.drawnMouseTime)<500)))
+      			  && ( (now-p.drawnMouseTime)<500)
+      			  		|| (mx!=p.drawnMouseX)
+      			  		|| (my!=p.drawnMouseY))     			  
       	  	{
-      		 p.drawnMouseX = mx;
-      		 p.drawnMouseY = my;
+      		 if((mx!=p.drawnMouseX)
+   			  	 || (my!=p.drawnMouseY))
+      		 	{ p.drawnMouseTime = now; 
+      		 	  p.drawnMouseX = mx;
+          		  p.drawnMouseY = my;      		 
+      		 	}
              drawMouseSprite(g,col,xp,yp,standardFontSize());
       	  	}
     	}}
@@ -8313,7 +8317,6 @@ public String currentPlayerPrettyName(int who)
 {	// careful, who can be -1
 	return(prettyName(who>=0?who:0)+" : ");
 }
-private boolean USEBOARDPC = true;
 /**
  * translate the mouse coordinate x,y into a size-independent representation
  * presumably based on the cell grid.  This is used to transmit our mouse
@@ -8323,6 +8326,7 @@ private boolean USEBOARDPC = true;
 public String encodeScreenZone(int x, int y,Point p)
 {	
 	// we can start using this after the decoder is widely accepted, starting with version  9.18
+	/* obsolete
 	if(!USEBOARDPC && G.pointInRect(x,y,boardRect))
 	{ 	int screenXQuant = Math.max(2,G.Width(boardRect)/20);
 		BoardProtocol b = getBoard();
@@ -8339,7 +8343,7 @@ public String encodeScreenZone(int x, int y,Point p)
 			return("boardEnc");
 			}
 	}
-	
+	*/
 	if(G.pointInRect(x,y,boardRect))
 	{ 	BoardProtocol b = getBoard();
 		if(b!=null)
@@ -8375,27 +8379,29 @@ public String encodeScreenZone(int x, int y,Point p)
 			return ".p."+pl.boardIndex;
 		}}
 	}
-	
-	if(USEBOARDPC)
+	/* obsolete
+	if(!USEBOARDPC)
+	{
+		//if in the board zone
+		Rectangle ref = fullRect;
+		String name = "on";
+
+
+		// full screen is encoded as arbitrary units from the upper left
+		double quant = Math.max(2,G.Width(ref)/100.0);
+		G.SetLeft(p,(int)((x-G.Left(ref))/quant));
+		G.SetTop(p,(int)((y-G.Top(ref))/quant));
+		return(name);
+		}
+	else
+	*/
 	{
 		//if in the board zone
 		G.SetLeft(p,((x-G.Left(fullRect))*100)/G.Width(fullRect));
 		G.SetTop(p,((y-G.Top(fullRect))*100)/G.Height(fullRect));
 		return ".full.";		
 	}
-	else
-	{
-	//if in the board zone
-	Rectangle ref = fullRect;
-	String name = "on";
 
-
-	// full screen is encoded as arbitrary units from the upper left
-	double quant = Math.max(2,G.Width(ref)/100.0);
-	G.SetLeft(p,(int)((x-G.Left(ref))/quant));
-	G.SetTop(p,(int)((y-G.Top(ref))/quant));
-	return(name);
-	}
 }
 /**
  * decode a screen zone x,y
@@ -8407,6 +8413,7 @@ public String encodeScreenZone(int x, int y,Point p)
 public Point decodeScreenZone(String zone,int x,int y)
 {	//if(myFrame.getSoundState()) { G.print("Decode "+zone+" "+x+" "+y); }
 	
+	// no longer produced, but keep for a while
 	if("boardEnc".equals(zone))
 		{ int screenXQuant = Math.max(2,G.Width(boardRect)/20);
 		  BoardProtocol b = getBoard();

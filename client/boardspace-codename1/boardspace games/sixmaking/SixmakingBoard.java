@@ -215,6 +215,11 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
     {
     	doInit(gtype,rv,players_in_game);
     }
+    private SixmakingChip playerChip[] = new SixmakingChip[2];
+    public SixmakingChip getPlayerChip(int who)
+    {
+    	return playerChip[who];
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long rv,int np)
     {  	drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
@@ -242,9 +247,11 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
      		boardRows = variation.size;
      		initBoard(boardColumns,boardRows);
      		gametype = gtype;
+     		playerChip[map[FIRST_PLAYER_INDEX]] = SixmakingChip.white;
+     		playerChip[map[SECOND_PLAYER_INDEX]] = SixmakingChip.black;
      		for(int lim = variation.startingChips-1; lim>=0; lim--)
-     		{	rack[map[FIRST_PLAYER_INDEX]].addChip(SixmakingChip.white);
-     			rack[map[SECOND_PLAYER_INDEX]].addChip(SixmakingChip.black);
+     		{	rack[0].addChip(playerChip[0]);
+     			rack[1].addChip(playerChip[1]);
      		}
      		break;
      	}

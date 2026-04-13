@@ -538,6 +538,9 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
 				null,false, WhiteOverBlack));	  
+	  put(new GameInfo(785,ES.game,129,"CX",AncientGames,"Chess","CrazyHouse",OneBotPlus,
+				chessBot,"chess.ChessViewer","/chess/english/crazyhouse-rules.html","about_chess.html",
+				null,false, WhiteOverBlack)).familyName="CrazyHouse";
 	}
 	{
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,

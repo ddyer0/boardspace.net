@@ -40,6 +40,8 @@ public class ChessMovespec extends commonMove implements ChessConstants
     static final int MOVE_SUICIDE = 211;
     static final int MOVE_STALEMATE = 212;
     static final int MOVE_CASTLE = 213;		// castling used in chess960
+    static final int MOVE_DROPCAPTIVE = 214;
+    static final int MOVE_SELECT = 215;
 
     static
     {
@@ -52,6 +54,8 @@ public class ChessMovespec extends commonMove implements ChessConstants
  			"Move",MOVE_BOARD_BOARD,
  			"Suicide",MOVE_SUICIDE,
  			"Stalemate",MOVE_STALEMATE,
+ 			"DropCaptive",MOVE_DROPCAPTIVE,
+ 			"Select",MOVE_SELECT,
  			"Castle",MOVE_CASTLE);
    }
 
@@ -69,6 +73,16 @@ public class ChessMovespec extends commonMove implements ChessConstants
     {
     	player = pl;
     	op = opc;
+    }
+    public ChessMovespec(int opc,ChessCell from,int row,ChessCell to,int who)
+    {
+    	player = who;
+    	op = opc;
+    	source = from.rackLocation();
+    	from_row = row;
+    	dest = to.rackLocation();
+    	to_col = to.col;
+    	to_row = to.row;
     }
     // constructor for most moves
     public ChessMovespec(ChessCell from,ChessCell to,int who)
@@ -153,6 +167,17 @@ public class ChessMovespec extends commonMove implements ChessConstants
 
         switch (op)
         {
+        case MOVE_SELECT:
+        	from_row = ChessPiece.valueOf(msg.nextToken()).ordinal();
+        	break;
+        case MOVE_DROPCAPTIVE:
+        	source = ChessId.find(msg.nextToken());
+        	from_row = msg.intToken();
+        	dest = ChessId.BoardLocation;
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
+        	break;
+        	
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_SUICIDE:
@@ -182,6 +207,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
 
         case MOVE_PICK:
             source = ChessId.get(msg.nextToken());
+            from_row = msg.intToken();
             break;
             
         case MOVE_DROP:
@@ -210,16 +236,21 @@ public class ChessMovespec extends commonMove implements ChessConstants
     }
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {
+        case MOVE_SELECT:
+        	return icon(v,chip,"");
         case MOVE_PICKB:
         	return(icon(v,from_col,from_row));
  
 		case MOVE_DROPB:
             return (icon(v," - ",to_col,to_row));
-
+            
+		case MOVE_DROPCAPTIVE:
+			return icon(v,to_col,from_row);
+			
         case MOVE_DROP:
         case MOVE_PICK:
             return (icon(v,source.shortName));
@@ -247,8 +278,13 @@ public class ChessMovespec extends commonMove implements ChessConstants
         // review mode
         switch (op)
         {
+        case MOVE_SELECT:
+        	return opname+ChessPiece.values()[from_row];
         case MOVE_PICKB:
 	        return (opname+ from_col + " " + from_row);
+	        
+        case MOVE_DROPCAPTIVE:
+        	return G.concat(opname , source.shortName()," ", from_row," ",to_col," ",to_row);
 
 		case MOVE_DROPB:
 	        return (opname + to_col + " " + to_row);

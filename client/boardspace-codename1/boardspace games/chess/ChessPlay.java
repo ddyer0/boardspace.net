@@ -94,7 +94,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     public CommonMoveStack  List_Of_Legal_Moves()
     {   CommonMoveStack all = board.GetListOfMoves(board.robotDepth==0);
     	if(board.robotDepth==0)
-    	{
+    	{	board.filterCheckMoves(all,board.whoseTurn);
     		board.filterStalemateMoves(all);
     		// we don't need to include draw offers at lower depths.
     		if(all.size()==0) { all=board.GetListOfMoves(board.robotDepth==0); }
@@ -174,7 +174,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
         InitRobot(newParam, info, strategy);
         GameBoard = (ChessBoard) gboard;
         board = (ChessBoard)GameBoard.cloneBoard();
-        boolean ultima = board.variation==Variation.Ultima;
+        boolean reduced = board.variation==Variation.Ultima || board.variation==Variation.CrazyHouse;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
@@ -183,7 +183,7 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
 		case DUMBOT_LEVEL:
         	// implements an unwind mode monte bot.
         	// faster and kicks ass.
-        	MAX_DEPTH = ultima ? ULTIMA_DUMBOT_DEPTH : DUMBOT_DEPTH;
+        	MAX_DEPTH = reduced ? ULTIMA_DUMBOT_DEPTH : DUMBOT_DEPTH;
          	MONTEBOT = false;
         	break;
 

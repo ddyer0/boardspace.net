@@ -27,7 +27,7 @@ import online.game.BaseBoard.StateRole;
 public interface ChessConstants 
 {	static String VictoryCondition = "Checkmate your opponent's king";
 	static String ChessMoveDescription = "Move a piece";
-
+	static String PromoteStateDescription = "Choose what to promote to, and click on Done";
 
 	static enum Variation
 	{	
@@ -36,6 +36,7 @@ public interface ChessConstants
 		Ultima(ChessChip.ultima,null,"ultima",8),		// ultima chess
 		Chess960(ChessChip.chess960,null,"chess960",8),
 		Atomic(ChessChip.atomic,null,"atomic",8),
+		CrazyHouse(ChessChip.crazy,null,"crazyhouse",8),
 		;	// chess 960
 		int size;
 		String name;
@@ -74,7 +75,6 @@ public interface ChessConstants
 		double value;
 		String prettyName;
 		ChessPiece(double v,String p) { value = v; prettyName = p; }
-		
 		public static void putStrings()
 		{
 			for(ChessPiece p : values())
@@ -91,6 +91,7 @@ public interface ChessConstants
     	White_Captured("WC"),
         BoardLocation(null),
         ReverseViewButton(null),
+        Select(null),
         ToggleEye(null),
   	;
     	String shortName = name();
@@ -117,6 +118,7 @@ public interface ChessConstants
     	Draw(StateRole.RepetitionPending,DrawStateDescription),				// involuntary draw by repetition
     	Resign(StateRole.Resign, ResignStateDescription),
     	Gameover(StateRole.GameOver,GameOverStateDescription),
+    	Promote(StateRole.Confirm,PromoteStateDescription),
     	Confirm(StateRole.Confirm,ConfirmStateDescription),
     	Play(StateRole.Play,ChessMoveDescription),
     	Check(StateRole.Other,CheckStateExplanation),
@@ -145,6 +147,7 @@ public interface ChessConstants
     			"Ultima",
     			"Chess960",
     			"Atomic",
+    			PromoteStateDescription,
     			ChessMoveDescription,
     			VictoryCondition,
     		};
@@ -155,6 +158,8 @@ public interface ChessConstants
     			{"Ultima_variation","Ultima Chess"},
     			{"Ultima_family","Ultima"},
     			{"Chess960_variation","Chess 960"},
+    			{"CrazyHouse","Crazy House Chess"},
+    			{"CrazyHouse_variation","Crazy House Chess"},
     		};
     		InternationalStrings.put(ChessStrings);
     		InternationalStrings.put(ChessStringPairs);

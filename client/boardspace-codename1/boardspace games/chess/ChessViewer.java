@@ -41,6 +41,7 @@ import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Text;
 import lib.Toggle;
 import lib.Tokenizer;
 
@@ -325,8 +326,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     private void DrawCaptured(Graphics gc,ChessBoard gb,commonPlayer pl,
     			HitPoint highlight,Hashtable<ChessCell,ChessMovespec>targets)
     {	int forPlayer = pl.boardIndex;
-    	ChessCell chips[]= gb.captured;
-        ChessCell thisCell = chips[forPlayer];
+        ChessCell thisCell = gb.visibleCaptured(forPlayer);
         ChessChip thisChip = thisCell.topChip();
         Rectangle r = capRects[forPlayer];
         
@@ -339,10 +339,34 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         prerotated = true;
         int px = G.Left(r)+h/2;
         int py = G.Top(r)+h/2;
-        if(thisCell.drawStack(gc,this,pt,h*4/3,px,py,0,0.25,0.0,null))
-        {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
+        // draw one chip at a time so promoted chips can be treated specially in the Crazy house variant
+        int lim = thisCell.height();
+        boolean censor = gb.variation==Variation.CrazyHouse ;//&& !reviewOnly;
+        int sz = h*4/3;
+        ChessId rack = thisCell.rackLocation();
+        for(int i=0;i<lim;i++)
+        {
+        	ChessChip ch = thisCell.chipAtIndex(i);
+        	if(censor && ch.promoted)
+        	{
+        		if(ch.piece==ChessPiece.Pawn) { ch = null; }
+        		else { ch = ChessChip.getChip(ChessPiece.Pawn,ch.color,false);	// present as a regular pawn
+        		}
+        	}
+        	if(ch!=null)
+        	{
+        		//blic default boolean draw(Graphics gc,DrawingObject drawOn,Rectangle r,HitPoint highlight,
+        		//CellId rackLocation,Text helptext,double sscale,double expansion)
+        		if(ch.draw(gc,this,new Rectangle(px-sz/2,py-sz/2,sz,sz),pt,rack,(Text)null,0.5,1.3))
+        		{
+        			highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
         	highlight.awidth = G.Height(r)/2;
         	highlight.spriteColor = Color.red;
+                	highlight.hit_index = i;
+        		}
+        		px += sz/3;
+        	}
+        	
         }
         // 
         // this is a little complicated.  thisCell.curret_rotation will be used
@@ -385,7 +409,37 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 
      }
 
+    private void drawPromoteOverlay(Graphics gc,ChessBoard gb, Rectangle brect, HitPoint highlight)
+    {
+    	ChessChip chips[] = gb.getBackRowInit();
+    	int count = 0;
+    	int mask = 0;
+    	for(ChessChip chip : chips) 
+    		{ int bit = 1<<chip.piece.ordinal();  
+    		  if((chip.piece!=ChessPiece.King) && (mask&bit)==0) { count++; mask |= bit; }
+    		}
 
+    	int w = SQUARESIZE*count;
+    	int l =G.centerX(brect)-w/2;
+    	int t =G.centerY(brect)-SQUARESIZE/2;
+    	StockArt.Scrim.image.stretchImage(gc, new Rectangle(l, t, w, SQUARESIZE));
+
+    	for(ChessChip chip : chips)
+    	{	int bit = 1<<chip.piece.ordinal();
+    		if((mask&bit)!=0)
+    		{
+    		if(chip.draw(gc,this,new Rectangle(l,t,SQUARESIZE,SQUARESIZE),highlight,ChessId.Select,(String)null))
+    		{
+    			highlight.hitData = chip.piece;
+    		}
+    		if(chip.piece==gb.selectedForPromotion.piece) 
+    			{ StockArt.Checkmark.draw(gc,this,SQUARESIZE/2,l+SQUARESIZE/2,t+SQUARESIZE/2,null); 
+    			}
+    		mask ^= bit;
+    		l += SQUARESIZE;
+    		}
+    	}
+    }
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, ChessBoard gb, Rectangle brect, HitPoint highlight,Hashtable<ChessCell,ChessMovespec>targets)
     {
@@ -487,6 +541,10 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
        */
        GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
        drawBoardElements(gc, gb, boardRect, ot,targets);
+       if(vstate==ChessState.Promote)
+       {
+    	  drawPromoteOverlay(gc,gb,boardRect,ot);
+       }
        GC.unsetRotatedContext(gc,highlight);
        
 
@@ -710,7 +768,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-
+        case Select:
+        	PerformAndTransmit("Select "+((ChessPiece)hp.hitData).name());
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -833,6 +893,7 @@ private void playSounds(commonMove m)
    }
     public String sgfGameType() { return(Chess_SGF); }
   
+    
     /**
      * parse and perform the initialization sequence for the game, which
      * was produced by {@link online.game.commonCanvas#gameType}

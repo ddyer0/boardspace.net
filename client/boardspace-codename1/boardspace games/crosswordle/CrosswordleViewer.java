@@ -252,7 +252,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int fh = standardFontSize();
     	int minLogW = fh*12;	
     	int crossw = fh*40;
-       	int minChatW = Math.min(fh*45,width-fh*2);
+       	int minChatW = Math.min(fh*45,width>height*1.2 ? (int)(width*0.5) : Math.min(width-fh*2,height/2));
        	int vcrw = fh*16;
        	int vcrh = vcrw*3/2;
         int margin = fh/2;
@@ -288,7 +288,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int lh = G.Height(logoRect);
     	G.SetRect(dateRect,ll,lt+lh-stateH*2,lw,stateH*2);
     	G.SetHeight(logoRect,lh-stateH);
-    	layout.placeRectangle(logRect,minLogW, Math.min(minLogW*2,height-vcrh-margin*4), minLogW, minLogW*4,BoxAlignment.Edge,false);
+    	layout.placeRectangle(logRect,minLogW, Math.min(minLogW*3/2,height-vcrh-margin*4), minLogW, minLogW*4,BoxAlignment.Edge,false);
     	//int ll = G.Left(logRect);
     	//int lt = G.Top(logRect);
     	//int lw = G.Width(logRect);	

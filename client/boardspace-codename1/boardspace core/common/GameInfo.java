@@ -150,7 +150,9 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	/** note that minPlayers here must agree with the min_players field of the variation database table */
 	public int minPlayers=2;
 	public int maxRobotPlayers = 1;
-	public boolean variableColorMap = false;				// if true, player order is linked to color map
+	public boolean variableColorMap = false;				
+		// if false, for 2 player games, player order is linked to color map,
+		// as is the case for Chess where the first player is always white.
 	public boolean randomizeFirstPlayer = false;			// if true, mandatory randomization of the first player
 	public boolean unrankedOnly = false;					// only available in unranked games
 	public Color[] colorMap = null;
@@ -536,6 +538,9 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
 				null,false, WhiteOverBlack));	  
+	  put(new GameInfo(785,ES.game,129,"CX",AncientGames,"Chess","CrazyHouse",OneBotPlus,
+				chessBot,"chess.ChessViewer","/chess/english/crazyhouse-rules.html","about_chess.html",
+				null,false, WhiteOverBlack)).familyName="CrazyHouse";
 	}
 	{ 
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,

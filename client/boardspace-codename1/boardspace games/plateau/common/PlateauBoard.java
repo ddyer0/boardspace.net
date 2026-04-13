@@ -15,9 +15,7 @@
     If not, see https://www.gnu.org/licenses/. 
     
     TODO: allow "done" and change the prompt when no moves are possible.
-    TODO: make the robot smarter about trades, not offer completely extra pieces
-    TODO: suppress the wandering picked piece when the bot is pondering the drop
-    
+     
  */
 package plateau.common;
 
