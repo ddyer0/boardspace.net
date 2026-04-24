@@ -785,8 +785,8 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				  pendingNotifications.push(message);
 				}
 			updateGame(WHOSETURN,""+who,
-					BODY,Base64.encodeSimple(b),
-					CHAT,Base64.encodeSimple(c),
+					BODY,b==null ? null : Base64.encodeSimple(b),
+					CHAT,c==null ? null : Base64.encodeSimple(c),
 					NAG,forced ? null : message,
 					NAGTIME,forced ? null : ""+speed.firstNag);	
 			}

@@ -142,15 +142,17 @@ public class Critter extends OStack<CircleCell> implements CircleConstants,Diges
 	public void findCritter(CircleCell c)
 	{	push(c);
 		c.myCritter = this;
+		if(c.onBoard)
+		{
 		for(int dir = 0; dir<6; dir++)
 		{
 			CircleCell next = c.exitTo(dir);
 			if(next!=null && next.myCritter!=this && next.topChip()==top)
 			{	findCritter(next);
 			}
-		}
+		}}
 	}
-	
+
 	public void forget()
 	{
 		for(int i=0;i<size();i++) { 

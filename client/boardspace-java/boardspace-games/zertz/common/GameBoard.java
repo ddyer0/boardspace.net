@@ -1515,6 +1515,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	int row = m.from_row;
         	zCell from = rack[col][row];
         	pickedSource = from;
+        	droppedDest = null;
         	pickedObject = from.topChip();
         	decBalls(col,row);
         	break;

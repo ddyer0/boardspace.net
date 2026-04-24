@@ -199,7 +199,7 @@ sub process_form()
 # input is a single parameter "params" which is base64, encrypted, checksummed
 #
 sub doit()
-{	__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
+{	#__dStart( "$::debug_log",$ENV{'SCRIPT_NAME'});;
 
   	print header;
 
@@ -238,7 +238,7 @@ sub doit()
  		&printResult("Ok",$::result);
  	}
 
-  __dEnd( "end!" );
+  #__dEnd( "end!" );
 }
 
 

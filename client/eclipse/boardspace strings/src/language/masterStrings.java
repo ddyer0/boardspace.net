@@ -38,6 +38,7 @@ import imagine.ImagineConstants;
 import iro.IroConstants;
 import jumbulaya.JumbulayaConstants;
 import lib.TimeControl;
+import lib.XFrame;
 import lyngk.LyngkConstants;
 import magnet.MagnetConstants;
 import lib.FileSelector;
@@ -181,6 +182,7 @@ public class masterStrings extends InternationalStrings
         Session.Mode.putStrings();
         Session.PlayMode.putStrings();
         GearMenu.putStrings();
+        put(XFrame.XFrameMessages);
         put(FileSource.FileSourceStrings);
         put(FileSelector.FileSelectorStrings);
         put(LobbyConstants.LobbyMessages);

@@ -377,7 +377,7 @@ sub showTournaments
   my $qtid = $dbh->quote($tid);
   my $tidclause = ($tid>0) ? " and tournament.uid=$qtid " : "";
   my $cond = $historic ? "(status='finished')" : "(status='completed' or status='signup' or status='active')";
-  my $q = "SELECT status,uid,description,count(pid),sum(if(pid=$qu,1,0)),start,longdescription from tournament left join participant "
+  my $q = "SELECT status,uid,description,count(pid),sum(if(pid=$qu,1,0)),start,type,longdescription from tournament left join participant "
               . " on uid=tid where $cond $tidclause group by uid order by start desc";
 #message print "tournament $q<p>";
   my $sth = &query($dbh,$q);
@@ -408,10 +408,14 @@ sub showTournaments
 	  print "</td><td><b>"
 	  . &trans("status")
 	  . "</b></td><td><b>"
+
+	  . &trans("speed")
+	  . "</b></td><td><b>"
+
 	  . &trans("Starting Date")
 	  . "</b></td></tr>\n";
     while($n-->0)
-      {my ($thisstat,$thistid,$messid,$nplayers,$myplayers,$start,$longform) = &nextArrayRow($sth);
+      {my ($thisstat,$thistid,$messid,$nplayers,$myplayers,$start,$type,$longform) = &nextArrayRow($sth);
        print "<tr>";
 	   $activestatus |= (lc($thisstat) eq 'signup');
 	   if($admin)
@@ -424,8 +428,8 @@ sub showTournaments
        print"<td align=center>$nplayers</td><td>";
        my $adm= $admin ? "&t2admin=$admin" : "";
 	   &printTournamentLink($messid,$thistid,$admin,$historic);
-       
-       print "</td><td>$thisstat</td><td>$start</td></tr>\n";
+       my $thistype = &trans($type);
+       print "</td><td>$thisstat</td><td>$thistype</td><td>$start</td></tr>\n";
        
        if($tid>0)
         {print "<tr>";
@@ -757,11 +761,11 @@ sub processTournamentForm
 sub get_tournament_variation()
 {	my ($dbh,$tournament) = @_;
 	my $qt = $dbh->quote($tournament);
-	my $q = "select variation,game_threshold,format,subvariants from tournament left join variation on variation.name=tournament.variation where uid=$qt";
+	my $q = "select variation,game_threshold,format,subvariants,type from tournament left join variation on variation.name=tournament.variation where uid=$qt";
 	my $sth = &query($dbh,$q);
-	my ($var,$thresh,$format,$subvariant) = &nextArrayRow($sth);
+	my ($var,$thresh,$format,$subvariant,$type) = &nextArrayRow($sth);
 	&finishQuery($sth);
-	return($var,$thresh,$format,$subvariant);
+	return($var,$thresh,$format,$subvariant,$type);
 }
 sub get_tournament_description()
 {
@@ -971,7 +975,7 @@ sub show_matches_in_group()
 	print "<!-- show_matches_in_group() --!>\n";
 
 
-	my ($variation,$thresh,$format) = &get_tournament_variation($dbh,$tournamentid);
+	my ($variation,$thresh,$format,$subvariants,$type) = &get_tournament_variation($dbh,$tournamentid);
 	my $isRR = ($format eq 'open-rr');
 	my $matchplayers = &getPlayersForVariation($dbh,$variation);
 	my @ids = &fill_player_info($dbh,$tournamentid,'');
@@ -1198,7 +1202,7 @@ sub show_matches_in_group()
 	#
 	if(!$closed)
 	{
-	my ($variation,$thresh,$format,$subvariants) = &get_tournament_variation($dbh,$tournamentid);
+	my ($variation,$thresh,$format,$subvariants,$type) = &get_tournament_variation($dbh,$tournamentid);
 	my $matchplayercount = &getPlayersForVariation($dbh,$variation);
 
 	if($matchplayercount eq 2)
@@ -1216,6 +1220,8 @@ sub show_matches_in_group()
 	print "<option value=10>Round Robin, Max 10 players\n";
 	print "</select>\n";
 
+	if($type eq 'turnbased')
+	{
 	print " create games ";
 	print "<select name=roundrobinvariant>\n";
 	print "<option value=''>Do Not Create Games</option>\n";
@@ -1232,6 +1238,14 @@ sub show_matches_in_group()
 			}
 		}
 	print "</select>\n";
+
+	print "  game speed ";
+	my @allspeed = &get_enum_choices($dbh,'offlinegame','speed');
+	my $sel = &get_selector_string('game_speed','day2',@allspeed);
+	print $sel;
+	}}
+	else { 
+	print "<input type=hidden name=roundrobinvariant value=''>\n";
 	}
 
 	print "<table><caption>Create New matches for $group</caption>";
@@ -1309,7 +1323,7 @@ sub deleteOfflineTournamentGame($dbh,$matchid)
 
 sub createOneMatch()
 {
-  my ($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player1,$player2) = @_;
+  my ($dbh,$tournamentid,$tournamentdesc,$group,$variant,$rrspeed,$player1,$player2) = @_;
   my $qp1 = $dbh->quote($player1);
   my $qp2 = $dbh->quote($player2);
   my $qtour = $dbh->quote($tournamentid);
@@ -1319,7 +1333,7 @@ sub createOneMatch()
   if(!($variant eq ''))
 	{
 	my $comment = "this game is in tournament $tournamentdesc, $group";
-	my $gid = &create2PlayerGame($dbh,$player1,$player2,$variant,$comment);
+	my $gid = &create2PlayerGame($dbh,$player1,$player2,$variant,$rrspeed,$comment);
 	if($gid > 0)
 	  {
 	  my $qgid = $dbh->quote($gid);
@@ -1351,7 +1365,7 @@ sub createOneMatch()
 }
 sub createRRmatches()
 {
-	my ($dbh,$tournamentid,$group,$rrstart,$rrsize,$variant,$ids) = @_;
+	my ($dbh,$tournamentid,$group,$rrstart,$rrsize,$rrspeed,$variant,$ids) = @_;
 	print "group $group $rrstart $rrsize<br>\n";
 	my $rrend = $rrstart + $rrsize;
 	my $count = 0;
@@ -1365,11 +1379,11 @@ sub createRRmatches()
 	 my $player2 = @$ids[$right];
 	 if(($count & 1) == 0)
 		{
-		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player1,$player2);
+		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$rrspeed,$player1,$player2);
 		}
 		else
 		{
-		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$player2,$player1);
+		 &createOneMatch($dbh,$tournamentid,$tournamentdesc,$group,$variant,$rrspeed,$player2,$player1);
 		}
 	 $count++;
 	 }
@@ -1378,7 +1392,7 @@ sub createRRmatches()
 }
 
 sub createRoundRobin()
-{	my ($dbh,$maxsize,$tournamentid,$group,$variant,$admin) = @_;
+{	my ($dbh,$maxsize,$rrspeed,$tournamentid,$group,$variant,$admin) = @_;
 	my @ids = &fill_player_info($dbh,$tournamentid,'');
 	my $nplayers = $#ids+1;
 	my $rrsize = $maxsize;
@@ -1397,7 +1411,7 @@ sub createRoundRobin()
 	my $invrem = $rrsize-$rem;
 	while($rrstart < $nplayers)
 	{
-	 &createRRmatches($dbh,$tournamentid,$group,$rrstart,$rrsize,$variant,\@ids);
+	 &createRRmatches($dbh,$tournamentid,$group,$rrstart,$rrsize,$rrspeed,$variant,\@ids);
 	 $rrstart += $rrsize;
 	 $invrem--;
 	 # decrease the size for subsequent matches
@@ -1478,9 +1492,11 @@ sub creatematches()
 	{
 	my $rrsize = &param('roundrobinsize');
 	my $rrvariant = &param('roundrobinvariant');
+	my $rrspeed = &param('game_speed');
+
 	if($rrsize>0)
 		{
-		&createRoundRobin($dbh,$rrsize,$tournamentid,$group,$rrvariant,$admin);
+		&createRoundRobin($dbh,$rrsize,$rrspeed,$tournamentid,$group,$rrvariant,$admin);
 		}
 	}
 
@@ -1648,13 +1664,17 @@ sub do_edit_tournament()
 	my $matchplayercount = &getPlayersForVariation($dbh,$variation);
 	my $qvariation = $dbh->quote($variation);
 	my $format = $dbh->quote(&param('tournament_format'));
+	my $type = $dbh->quote(&param('tournament_type'));
 	my $qgame_threshold = $dbh->quote(&param('game_threshold'));
 	my $useTeams = &param('useteams');
 	my $tset = ($useTeams eq 'Yes') ? "teams=1," : "teams=0,";
 	my $sets = "set status=$status, longdescription=$longdescription,game_threshold=$qgame_threshold,"
 	        . "start=$start,end=$end,variation=$qvariation,"
-	    . $tset
-		. "format=$format,description=$description";
+	    	. $tset
+		. "format=$format,"
+		. "type=$type,"
+		. "description=$description"
+		;
 	my $q = ($tournamentid<0)
 			? "insert into tournament $sets"
 			: "update tournament $sets where uid=$qt";
@@ -1683,15 +1703,16 @@ sub show_edit_tournament()
 	print "<!-- show_edit_tournament() --!>\n";
 
 	my $qt = $dbh->quote($tournamentid);
-	my $q = "select status,longdescription,start,end,variation,game_threshold,format,description,if(teams=0,'No','Yes')  "
+	my $q = "select status,longdescription,start,end,variation,type,game_threshold,format,description,if(teams=0,'No','Yes')  "
 		. " from tournament where uid=$qt";
 	my @allstat = &get_enum_choices($dbh,'tournament','status');
 	my @allformat = &get_enum_choices($dbh,'tournament','format');
 	my @allvars = &all_variations($dbh);
+	my @alltypes = &get_enum_choices($dbh,'tournament','type');
 	my $sth = &query($dbh,$q);
 	if($sth)
 	{
-	my ($status,$longdescription,$start,$end,$variation,$game_threshold,$format,$description,$useTeams)
+	my ($status,$longdescription,$start,$end,$variation,$type,$game_threshold,$format,$description,$useTeams)
 				= &nextArrayRow($sth);
 
 	&printEditTeamForm($tournamentid,$admin);
@@ -1711,6 +1732,12 @@ sub show_edit_tournament()
 			. &trans("Format")
 			. ":</td><td>";
 		print &get_selector_string('tournament_format',$format,@allformat);
+		print "</td></tr>\n";
+
+		print "<tr><td>"
+			. &trans("Speed")
+			. ":</td><td>";
+		print &get_selector_string('tournament_type',$type,@alltypes);
 		print "</td></tr>\n";
 
 		print "<tr><td>Variation</td><td>";

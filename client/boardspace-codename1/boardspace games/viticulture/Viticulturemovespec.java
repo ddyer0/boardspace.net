@@ -65,6 +65,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     static final int MOVE_READY = 237;
     static final int MOVE_OK = 238;
     static final int MOVE_SETOPTION = 239;
+    static final int MOVE_DRAFT = 240;
+    static final int EPHEMERAL_DRAFT = 241;
+    static final int EPHEMERAL_DRAFT_OK = 242;
+
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -97,10 +101,17 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         "Train",MOVE_TRAIN,
         "PlaceBonus",MOVE_BONUS,
         "Unselect", MOVE_UNSELECT,
+        
         "Option",EPHEMERAL_OPTION,
         "SetOption",MOVE_SETOPTION,
+        
+        "EDraft",EPHEMERAL_DRAFT,
+        "Draft",MOVE_DRAFT,
+        "DraftOk",EPHEMERAL_DRAFT_OK,
+        
         "Ready",EPHEMERAL_READY,
         "Ok",MOVE_READY,
+        
         "Commence",MOVE_COMMENCE,
         "Ecommence",EPHEMERAL_COMMENCE);
     }
@@ -111,9 +122,29 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     	case EPHEMERAL_COMMENCE:
     	case EPHEMERAL_OPTION:
     	case EPHEMERAL_READY: 
+    	case EPHEMERAL_DRAFT:
+    	case EPHEMERAL_DRAFT_OK:
     		return true;
     	default: return false;
     	}
+    }
+
+    public commonMove convertToSynchronous()
+    {
+    	switch(op)
+    	{
+    	case EPHEMERAL_DRAFT:
+    		op = MOVE_DRAFT;
+    		return this;
+    	case EPHEMERAL_DRAFT_OK:
+    		op = MOVE_READY;
+    		return this;
+    	case EPHEMERAL_COMMENCE:
+    		op = MOVE_COMMENCE; 
+    		return this;
+    	default: return null;
+    	}
+ 
     }
 
     //
@@ -411,9 +442,17 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	break;
         case MOVE_READY:
         case EPHEMERAL_READY:
+        case EPHEMERAL_DRAFT_OK:
         	from_col = msg.charToken();
         	from_row = msg.boolToken() ?1:0;
         	break;
+        	
+        case MOVE_DRAFT:
+        case EPHEMERAL_DRAFT:
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	break;
+        	
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	from_col = msg.charToken();
@@ -622,14 +661,24 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	{
         	Bitset<Option> b = new Bitset<Option>();
         	b.setMembers(from_row);
+        	if(from_row!=0)
+        	{
         	return "Options: "+b.memberString(Option.values());
+        	}
+        	else
+        	{
+        		return "";
+        	}
         	}
         case MOVE_PICKB:
         	String name = currentWorkerName();
         	return(name==null ? source.shortName : "Retrieve "+name);
         case MOVE_READY:
         case EPHEMERAL_READY:
-           	return G.concat("Ready ",from_col," ",((from_row==0) ? "false" : "true"));     	
+        case MOVE_DRAFT:
+        case EPHEMERAL_DRAFT:
+        	return "";
+        	
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	{
@@ -781,8 +830,13 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 
         case MOVE_READY:
         case EPHEMERAL_READY:
+        case EPHEMERAL_DRAFT_OK:
        	 	return G.concat(opname,from_col," ",(from_row==0 ? "false" : "true"));
        	 	
+        case MOVE_DRAFT:
+        case EPHEMERAL_DRAFT:
+        	 return G.concat(opname,from_col," ",from_row);
+
         case MOVE_SETOPTION:
         case EPHEMERAL_OPTION:
         	 return G.concat(opname,from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
@@ -887,5 +941,25 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     public static Viticulturemovespec copyFrom(Viticulturemovespec from)
     {	return ((from==null) ? null : (Viticulturemovespec)from.Copy(null));
     }
-    
+    public static void ephemeralSort(CommonMoveStack ephemera)
+    {
+    	for(int i=0,siz=ephemera.size();i<siz;i++)
+    	{
+    	Viticulturemovespec m = (Viticulturemovespec)ephemera.elementAt(i);
+    	switch(m.op)
+    	{    	
+    	case EPHEMERAL_DRAFT_OK:
+    		m.player = m.from_col-'A';
+    		m.setEvaluation(m.player*1000);
+    		break;
+    	case EPHEMERAL_DRAFT:
+     		m.player = m.from_col-'A';
+    		m.setEvaluation(m.player*1000+1);
+    		break;
+    	default:
+    		m.setEvaluation(10000);
+    		break;
+      	}}
+    	ephemera.sort(false);
+    }
 }

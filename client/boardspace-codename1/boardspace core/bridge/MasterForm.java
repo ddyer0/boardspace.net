@@ -19,6 +19,7 @@ package bridge;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
+import lib.Plog;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
 
@@ -41,7 +42,7 @@ class FixedTopLayout extends com.codename1.ui.layouts.BorderLayout
 	FixedTopLayout() {  }
 	public void layoutContainer(com.codename1.ui.Container parent)
 	{	//G.print("Layout master, scale ",isScaleEdges());
-		MasterToolBar.getSafeAreaHeight();
+		MasterToolBar.getSafeArea();
 		super.layoutContainer(parent);
 	}
 }
@@ -55,10 +56,30 @@ class MasterToolBar extends Toolbar
 
 	}
 	static int savedNotch = -1;
+	//
+	// galaxy s24 results, display w = 1440 h = 3120
+	//
+	// normal : 0,113, 1440, 2839 (also upside down) = 168 bottom
+	// horizontal ccw  112,84,2840, 1356 = 168 right
+	// horizontal cw  168, 84, 2840, 1356 = 112 right
+
+	//  big tablet actual size 1920x1080 
+	//  screen size landscape 1920x1008
+	//  master size landscape 1920x1008
+	//  screen size portrait 1080x1848
+	//  master size portrait 1080x1848
 	
-	static int getSafeAreaHeight()
+	// phone actual size 1080x2408
+	// master size 1080x2199
+	// master safe 0,0 1089x2199 (top and bottom safe areas excluded)
+	
+	// ipad actual size 1536x2048
+	// master portrait size 1536x1945
+	// master portrait safe 0,40 1536x1945
+	
+	static Rectangle getSafeArea()
 	{
-		Rectangle rect = Display.getInstance().getDisplaySafeArea(new Rectangle());
+		Rectangle rect = MasterForm.getSafe();
 		int current = rect.getY();
 		if(G.isIOS())
 		{
@@ -73,9 +94,11 @@ class MasterToolBar extends Toolbar
 		int rw = rect.getWidth();
 		int rh = rect.getHeight();
 		boolean dissonent = (rw<rh != disw<dish);
-		// G.print("disw=",disw," dish=",dish," ",dissonent);
+		Plog.log.addLog("frame=",disw," dish=",dish," ",dissonent," screen=",G.getScreenWidth(),"x",G.getScreenHeight());
+		//Rectangle form = mf.getBounds();
+		//Plog.log.addLog("form = ",G.Left(form),",",G.Top(form)," ",G.Width(form),"x",G.Height(form));
 		
-		G.print("initial safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
+		Plog.log.addLog("initial safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
 
 		if(dissonent) { 
 			current = (disw>dish) ? 0 : Math.max(0,savedNotch);
@@ -83,18 +106,24 @@ class MasterToolBar extends Toolbar
 			rect.setX(current==0 ? Math.max(0,savedNotch) : 0);
 			rect.setWidth(rh);
 			rect.setHeight(rw);
-			G.print("safe area dissonent, ",rw,"x",rh," vs ",disw,"x",dish);
+			Plog.log.addLog("safe area dissonent, ",rw,"x",rh," vs ",disw,"x",dish);
 			}
 			else
 			{
 			savedNotch = Math.max(rect.getX(),current);
 			}
-		}}
 		// this is a hack for the simulator, set the safe area by modding the official rect
 		// rect.setY(150);
-		G.print("final safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
-		G.print("current ",current);
-		return current;
+		Plog.log.addLog("current ",current);
+		}
+		}
+		{
+		MasterForm mf = MasterForm.masterForm;
+		if (mf!= null)
+		{
+		Plog.log.addLog("final safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight()," bot =",mf.getHeight()-G.Bottom(rect));
+		}}
+		return rect;
 	}
 	int remembered = -1;
 	public Dimension getPreferredSize()
@@ -104,8 +133,11 @@ class MasterToolBar extends Toolbar
 		// the safe area.
 		Style s = getStyle();
 		s.setPaddingUnitTop(Style.UNIT_TYPE_PIXELS);
-		s.setPaddingTop(getSafeAreaHeight());
+		Rectangle rect = getSafeArea();
+		int safeTop = G.Top(rect);
+		s.setPaddingTop(safeTop);
 		Dimension sz = super.getPreferredSize();
+		sz.setWidth(Math.min(G.Width(rect),sz.getWidth()));		
 		if(G.isIOS() && savedNotch>=0)
 		{
 		// this is complete kludgery - iphones get it right the first time
@@ -114,14 +146,14 @@ class MasterToolBar extends Toolbar
 		if(remembered<0) { remembered = sz.getHeight()-savedNotch; }
 		else {
 			int oldsize = sz.getHeight();
-			int newsize = remembered+getSafeAreaHeight();
+			int newsize = remembered+safeTop;
 			if(oldsize!=newsize)
 			{
 				sz.setHeight(newsize);
-				G.print("kludge:  toolbar size changed from ",oldsize," to ",newsize);
+				Plog.log.addLog("kludge:  toolbar size changed from ",oldsize," to ",newsize);
 			}
 		}}
-		G.print("toolbar preferred size ",sz.getWidth(),"x",sz.getHeight());
+		Plog.log.addLog("toolbar preferred size ",sz.getWidth(),"x",sz.getHeight());
 		return sz;
 	}
 }
@@ -136,6 +168,12 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	String appname = "unnamed";
 	private MasterToolBar toolBar;
 	boolean recordEvents = true;
+	
+	public static Rectangle getSafe()
+	{	Rectangle r = Display.getInstance().getDisplaySafeArea(new Rectangle());
+		return new Rectangle(G.Left(r),G.Top(r),G.Width(r),G.Height(r));
+	}
+	
 	public void adjustTabStyles()
 	{
 		toolBar.setShouldCalcPreferredSize(true);
@@ -147,6 +185,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		toolBar = new MasterToolBar();
 		setToolBar(toolBar);
 	}
+
 	public void showStyles()
 	{
 		Rectangle rect = Display.getInstance().getDisplaySafeArea(new Rectangle());
@@ -289,15 +328,17 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  title.setText(name);
 	}
 	public void setWidth(int n)
-	{	
+	{	Plog.log.addLog("master set width "+n);
+		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setWidth(n);
 	}
 	public void setHeight(int n)
-	{	//G.print("master set height "+n);
+	{	Plog.log.addLog("master set height "+n);
 		super.setHeight(n);
 	}
 	public void setSize(Dimension d)
-	{	//G.print("master set size "+d);
+	{	Plog.log.addLog("master set size "+d);
+		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setSize(d);
 	}
 	private Rectangle oldbounds = null; 

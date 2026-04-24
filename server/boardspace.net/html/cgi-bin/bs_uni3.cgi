@@ -19,7 +19,7 @@ require "tlib/params.pl";
 
 $| = 1;                         # force writes
 	
-__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
+#__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
 if( param() ) 
 {
   $| = 1;                         # force writes
@@ -28,7 +28,7 @@ if( param() )
   {
   print header;
 
-  __d("from $ENV{'REMOTE_ADDR'} $ENV{'QUERY_STRING'}" );
+  #__d("from $ENV{'REMOTE_ADDR'} $ENV{'QUERY_STRING'}" );
   my $game0 = param('game');
   my $fname = param('fname');
   my $tourney = param('tournament') ? 'Yes' : 'No';
@@ -391,7 +391,7 @@ if( param() )
   {
   print header;
 
-  __d( "No update parameters parameter found..." );
+  #__d( "No update parameters parameter found..." );
   print "score update failed\n";
   }
-__dEnd( "end!" );
+#__dEnd( "end!" );

@@ -520,7 +520,7 @@ synchronized(allGames) {
 		 m.familyName="Kings Color";
 		}
 	
-	{ double chessBot[] = {0.5,0.05};
+	{ double chessBot[] = {0.8,0.05};
 	  put(new GameInfo(780,ES.game,82,"CS",AncientGames,"Chess","Chess",OneBotPlus,
 			chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf","about_chess.html",
 			null,false, WhiteOverBlack));
@@ -942,6 +942,7 @@ synchronized(allGames) {
 	{	Color []ecolors = {  Color.blue, Color.green, bsOrange, bsPurple, Color.white, Color.yellow };
 	String mmside = "ViticultureInfoMessage";
 	String viticultureRules ="/viticulture/english/VitiultureAndTuscany.pdf";
+	String plusRules ="/viticulture/english/plus-rules.html";
 	String viticultureViewer =  "viticulture.ViticultureViewer";
 	GameInfo mm = put(new GameInfo(144,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture",
 			NoBots,null,
@@ -959,7 +960,7 @@ synchronized(allGames) {
 	
 	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
 				NoBots,null,
-				viticultureViewer,viticultureRules,"about_viticulture.html",
+				viticultureViewer,plusRules,"about_viticulture.html",
 				null,true, ecolors));		
 		 mm.minPlayers = 1;
 		 mm.maxPlayers = 6;

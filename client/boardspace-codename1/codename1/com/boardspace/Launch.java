@@ -226,11 +226,11 @@ public class Launch  implements stuff {
 		//G.namedClasses = NamedClasses.classes;
 		G.setGlobalStatus(G.GlobalStatus.awake);
 		if (current != null) 
-		{   G.print("Launcher restart "+new BSDate().toString());
+		{   Plog.log.addLog("Launcher restart "+new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());
 			current.show();
 			return;
 		}
-		G.print("Launcher start "+new BSDate().toString());
+		Plog.log.addLog("\nLauncher start "+new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());
 		runBoardspace();
 		
 	}
@@ -238,13 +238,13 @@ public class Launch  implements stuff {
 	public void stop() {
 		current = Display.getInstance().getCurrent();
 		G.setGlobalStatus(G.GlobalStatus.asleep);
-		G.print("Launcher stop " +new BSDate().toString());
+		Plog.log.addLog("Launcher stop " +new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());
 	}
 
 	public void destroy() {
 		current = Display.getInstance().getCurrent();
 		G.setGlobalStatus(G.GlobalStatus.asleep);
-		G.print("Launcher destroy "+new BSDate().toString());
+		Plog.log.addLog("Launcher destroy "+new BSDate().toString());
 	}
 	
     private Resources theme;

@@ -172,5 +172,6 @@ public interface ChatInterface extends Config {
 	public void postHostMessages(String host);
 	public void getEncodedContents(StringBuilder b);
 	public void setEncodedContents(Tokenizer contents);
+	public boolean changedEncodedComments();
 	public void setSingleUser(String name);
 }

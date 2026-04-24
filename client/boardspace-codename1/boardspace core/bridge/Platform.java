@@ -179,8 +179,14 @@ public abstract class Platform implements Config{
         PrintStream os = Utf8Printer.getPrinter(b);
         try { throw new ErrorTrace("Stack trace");
         } catch (Error e)
-        {
+        {	Plog.log.addLog("stack trace ",e);
+        	try {
         	printStackTrace(e,os);
+        	}
+        	catch (Throwable er)
+        	{
+        		Plog.log.addLog("error getting stack trace "+er);
+        	}
         	os.flush();
         }
     	return b.toString();

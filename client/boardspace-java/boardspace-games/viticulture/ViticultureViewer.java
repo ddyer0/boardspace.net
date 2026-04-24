@@ -18,11 +18,8 @@ package viticulture;
 
 //TODO: side screens need to display the context sensitive cards for planting and building
 // TODO: add "blended wines" as a new option - use 2 or more cheap wines to make a better
-//       add "3 special workers" (use only 2) as an option
 //		 add "no seasons" as an option
 // TODO: preselect the font size for grapes and wines value
-// TODO: draft orange cards at the start
-// TODO: market for wine orders, extended wine orders require more valuable wines.
 
 import static viticulture.Viticulturemovespec.*;
 
@@ -527,10 +524,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     		contextRotation = -Math.PI/2;
     	}
     	}
-    	int boardX = G.Left(boardRect);
-    	int boardY = G.Top(boardRect);
-    	int boardH = G.Height(boardRect);
-    	int boardW = G.Width(boardRect);
+    	int boardX = G.Left(displayBoardRect);
+    	int boardY = G.Top(displayBoardRect);
+    	int boardH = G.Height(displayBoardRect);
+    	int boardW = G.Width(displayBoardRect);
        	int third = (int)(boardW*0.2);
     	int mid = boardX+(int)(boardW*0.12);
   	
@@ -538,8 +535,8 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	G.SetRect(starRect, mid-third,boardY+(int)(boardH*0.6),third*2,(int)(boardH*0.45));
  
 		// set a default position so replay animations will be quasi reasonable
-    	{int cx = G.centerX(boardRect);
-		int cy = G.centerY(boardRect);
+    	{int cx = G.centerX(displayBoardRect);
+		int cy = G.centerY(displayBoardRect);
 		for(ViticultureCell c = mainBoard.uiCells; c!=null; c=c.next) 	
 			{	c.rotateCurrentCenter(0,cx,cy,cx,cy);
 			}}
@@ -1869,22 +1866,24 @@ private void drawPlayerBoard(Graphics gc,
     {
     	PlayerBoard pb = gb.getCurrentPlayerBoard();
     	int nMeeples = 0;
-    	ViticultureState state = gb.resetState;
-    	int w = G.Width(br);
-    	int step = Math.min((int)(G.Height(br)*0.3),w*3/10);
-    	w = step*4;
-    	int totalW = step*3;
-    	int left = G.centerX(br)-step;
-    	int top = G.centerY(br)-step;
-    	int totalH = step*2+step/3;
     	
- 
+    	 
     	for(Enumeration<Viticulturemovespec> e = targets.elements(); e.hasMoreElements();)
     	{	
     		Viticulturemovespec m = e.nextElement();
     		while(m!=null) { nMeeples++; m=(Viticulturemovespec)m.next; }
     	}
-    	int mstep = w/Math.max(6,nMeeples+5);
+
+    	ViticultureState state = gb.resetState;
+    	int w = G.Width(br);
+    	int step =(int)(w*0.15);
+    	int mstep = (int)(step*0.7);
+    	w = step*(nMeeples+2);
+    	int totalW = step*(Math.max(2,nMeeples));
+    	int left = G.centerX(br)-(mstep*(nMeeples+1))/2;
+    	int totalH = (int)(step*2.7);
+    	int top = G.centerY(br)-totalH/2;
+    	
   	
     	Rectangle workerRect = new Rectangle(left,top,totalW,totalH);
    
@@ -1925,10 +1924,10 @@ private void drawPlayerBoard(Graphics gc,
         				{
         				
         				ViticultureChip card = ViticultureChip.getChip(ChipType.WorkerCard,chip.type.name());
-        				card.draw(gc, this,step*2,G.centerX(workerRect),ytop+step+step/10,null);
+        				card.draw(gc, this,step*2,G.centerX(workerRect),(int)(ytop+step*1.4),null);
         				}
          			}
-    			GC.Text(gc, true, xleft-mstep/2, ytop+step/8, mstep, step/4,Color.black,null,chip.type.name());
+    			GC.Text(gc, true, xleft-mstep/2, ytop+step/6, mstep, step/4,Color.black,null,chip.type.name());
     			
     			loadCoins(pb.cashDisplay,cost);
     			if(cost>0)
@@ -1941,7 +1940,7 @@ private void drawPlayerBoard(Graphics gc,
 
     			
   			xleft += mstep;
-      			m = (Viticulturemovespec)m.next;
+  			m = (Viticulturemovespec)m.next;
        		}
     	}
 
@@ -2619,7 +2618,9 @@ private void drawPlayerBoard(Graphics gc,
     			// of Text methods that includes a HitPoint.  Additional complication
     			// is that when gc==null, w1 = 0;
     			int w0 = lastWleft;
-    			int w1 = GC.Text(gc,true,xpos0,ypos0,boxw,step/2,Color.black,null,msg);
+    			// not centered because the calculation is based on the original text length, not
+    			// the text+icons length that's acually used.
+    			int w1 = GC.Text(gc,false,xpos0+step/8,ypos0,boxw-step/8,step/2,Color.black,null,msg);
     			if(w1>0) { lastWleft = w0 = w1;}
     			int xo = (boxw-w0)/2;
     			
@@ -2663,7 +2664,7 @@ private void drawPlayerBoard(Graphics gc,
     		if(totalvalue>0 && wineMove==null)
     		{	hasInvalidWines = true;
     			if(!mixedOk)
-    			{GC.Text(gc,true,xpos,ypos+step/8,boxw,step/2,Color.yellow,null,InvalidWine);
+    			{GC.Text(gc,true,xpos0,ypos+step/8,boxw,step/2,Color.yellow,null,InvalidWine);
     			}
     		}
     		else if((pickedObject==null) && (wineMove!=null))
@@ -3389,12 +3390,13 @@ private void drawPlayerBoard(Graphics gc,
         boolean apCards = false;
         boolean showFields = true;
      	ViticultureState state = gb.resetState;
+        boolean drafting = state.activity==Activity.DraftCards;
      	boolean swapMode = false;
         int nToDiscard = state.discardCards();
         //int nToKeep = state.keepCards();
         StockArt mark = (nToDiscard>=0?StockArt.Exmark:StockArt.Checkmark);
         boolean quickExit = false;
-        PlayerBoard pb = gb.getCurrentPlayerBoard();
+        PlayerBoard pb = drafting ? gb.pbs[getActivePlayer().boardIndex] : gb.getCurrentPlayerBoard();
        	ViticultureCell cards = pb.cards;
 		ViticultureCell cardDisplay = gb.cardDisplay;
 		CardPointerStack cardIndex = new CardPointerStack();
@@ -3455,7 +3457,9 @@ private void drawPlayerBoard(Graphics gc,
         if(!apCards)
         {
         switch(state.activity) {
-
+        case DraftCards:
+        	cards = pb.oracleCards;
+        	break;
         case DiscardWines: 
         	selectWines = true;
 			//$FALL-THROUGH$
@@ -3928,6 +3932,30 @@ private void drawPlayerBoard(Graphics gc,
        	GC.frameRect(gc,Color.black,fieldRect);
 		GC.setFont(gc, largeBoldFont());
        	}
+       	
+       	if(drafting)
+       	{	int y = yp+cardH*3/4;
+       		int xstep = cardH/5;
+       		int xxp = G.centerX(br)-(gb.pbs.length*step)/2;
+    		for(PlayerBoard p : gb.pbs)
+    		{
+    			ViticultureChip ch = p.getRooster();
+    			boolean ready = p.isReady;
+    			boolean me = (allPlayersLocal() || ( p.boardIndex==getActivePlayer().boardIndex))
+    					&& (pb.selectedCards.size()==1);
+    			if(ch.draw(gc,this,xstep,xxp,y,me ? highlight:null,ViticultureId.SetReady,null))
+    			{
+    				highlight.hitObject = p;
+    				highlight.hit_index = ready ? 0 : 1;
+    				highlight.setHelpText(s.get(AcceptOptionsMessage));
+    			}
+    			if(ready)
+    			{
+    				StockArt.Checkmark.draw(gc,this,xstep,xxp,y,null);
+    			}
+    			xxp+= step;
+    		}}
+
 		if(apCards)
 		{
 		if(StockArt.FancyCloseBox.draw(gc, this, totalW/20,
@@ -3968,7 +3996,7 @@ private void drawPlayerBoard(Graphics gc,
 		ViticultureCell cardDisplay = gb.cardDisplay;
 		CardPointerStack cardIndex = new CardPointerStack();
 		cardDisplay.reInit();
-		
+		ChipType showType = cards.chipAtIndex(0).type;
 		int hi = remoteWindowIndex(highlightAll);
 		PlayerBoard activePlayer = (hi>=0) ? gb.pbs[hi] : showPlayerCards();
 		if(activePlayer==null) { activePlayer = pb; }
@@ -4027,7 +4055,7 @@ private void drawPlayerBoard(Graphics gc,
 		for(int i=pb.cards.height()-1; i>=0;i--)
 		{
 			ViticultureChip ch = c.chipAtIndex(i);
-			if(ch.type==ChipType.GreenCard)
+			if(ch.type==showType)
 			{
 				ch.draw(gc,this,step/3,left,bot+step/20,censor ? null : highlightAll,ViticultureId.ShowBigChip,cardLabel);
 				left += step/2;
@@ -4115,7 +4143,10 @@ private void drawPlayerBoard(Graphics gc,
 		int nPlayers = gb.nPlayers();
 		for(Option op : options)
 		{	// the limit option is only relevant if 5-6 players
-			if(nPlayers>4 || (op!=Option.LimitPoints))
+			if( ((nPlayers>4 || (op!=Option.LimitPoints))
+					&& (nPlayers!=1 || (op!=Option.DraftStructures)))
+				&& (op.revision<=gb.revision)					
+					)
 			{
 			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.lightGray,null,null); 
 			boolean on = gb.testOption(op);
@@ -4498,6 +4529,20 @@ private void drawPlayerBoard(Graphics gc,
     		{
     			highlight.hitObject = cardDisplay.chipAtIndex(highlight.hit_index);
     			highlight.hit_index = cardIndex.elementAt(highlight.hit_index).index;
+    			Rectangle rr = highlight.spriteRect;
+    			if(rr!=null)
+    			{	// 
+    				int h = G.Height(rr);
+    				Rectangle r2 = new Rectangle(G.Left(rr),G.Top(rr)+h*3/4,G.Width(rr),h/4);
+    				if(G.pointInRect(highlight,r2))
+    				{
+    					highlight.spriteRect = r2;
+   						highlightAll.hitCode=ViticultureId.ShowBigChip;
+   						highlight.awidth = step/6;
+   						highlightAll.arrow = StockArt.Eye;
+     				}
+    				
+    			}
     		}
         	CardPointerStack discards = pb.selectedCards;
     		// mark the currently selected cards
@@ -4808,9 +4853,9 @@ private void drawPlayerBoard(Graphics gc,
 				{ c.rotateCurrentCenter(gc,cx,cy); 
 				}
 		}
-        
-        GC.setRotation(gc,pl.displayRotation,cx,cy);
-        HitPoint.setRotation(highlightAll, pl.displayRotation,cx, cy);
+        double effectiveRotation = pl.displayRotation - contextRotation;
+        GC.setRotation(gc,effectiveRotation,cx,cy);
+        HitPoint.setRotation(highlightAll, effectiveRotation,cx, cy);
         switch(resetState)
         {
         case TakeActionPrevious:
@@ -4822,7 +4867,7 @@ private void drawPlayerBoard(Graphics gc,
     	default: break;
         }
         Rectangle rotatedBoard = G.copy(null,brect);
-        G.setRotation(rotatedBoard, pl.displayRotation, G.centerX(brect),G.centerY(brect));
+        G.setRotation(rotatedBoard, effectiveRotation, G.centerX(brect),G.centerY(brect));
         
         ViticultureChip flash = gb.flashChip;
     	gb.flashChip = null;
@@ -4849,8 +4894,8 @@ private void drawPlayerBoard(Graphics gc,
         		gb,showBigStack,bc,highlight,highlightAll,targets);
  
         zoomer.drawMagnifier(gc,highlightAll,brect,0.03,0.93,0.99,0);
-        GC.setRotation(gc,-pl.displayRotation,cx,cy);
-        HitPoint.setRotation(highlightAll, -pl.displayRotation,cx, cy);
+        GC.setRotation(gc,-effectiveRotation,cx,cy);
+        HitPoint.setRotation(highlightAll, -effectiveRotation,cx, cy);
         
     }
     private void showOverlay(UI ui,Graphics gc,Rectangle brect,ViticultureBoard gb,boolean showBig,ViticultureCell bigStack,
@@ -4967,7 +5012,7 @@ private void drawPlayerBoard(Graphics gc,
 		return newbr;
    		}
    }
-    // draw the board zoomed to bounds[]
+// draw the board zoomed to bounds[]
 //    private void drawZoomedBoardElements(Graphics gc, EuphoriaBoard gb, Rectangle brect, HitPoint highlight,HitPoint highlightAll,
 //    		Hashtable<EuphoriaCell,EuphoriaMovespec>sources,Hashtable<EuphoriaCell,EuphoriaMovespec>dests,double bounds[],HitPoint tip)
    public void drawZoomedBoardElements(Graphics gc, ViticultureBoard gb, Rectangle brect, 
@@ -4983,40 +5028,24 @@ private void drawPlayerBoard(Graphics gc,
        	}
        else
     	{
-    	int boardX = G.Left(displayBoardRect);
-    	int boardY = G.Top(displayBoardRect);
-    	int boardW = G.Width(displayBoardRect);
-    	int boardH = G.Height(displayBoardRect);
+    	int boardX = G.Left(brect);
+    	int boardY = G.Top(brect);
+    	int boardW = G.Width(brect);
+    	int boardH = G.Height(brect);
     	zoomleft = G.Left(zoom)-boardX;
     	zoomtop = G.Top(zoom)-boardY;
     	double zleft = (double)(zoomleft)/boardW;
     	double ztop = (double)(zoomtop)/boardH;
     	double right = (double)(G.Right(zoom)-boardX)/boardW;
-    	double bottom = (double)(G.Bottom(zoom)-boardY)/boardH;
 		double boardRatio = (double)boardW/boardH;
-		int viewW = G.Width(brect);
-		int viewH = G.Height(brect);
-		double viewRatio = (double)viewW/viewH;
 		int viewL = G.Left(brect);
 		int viewT = G.Top(brect);
 		Rectangle dispR;
-		// 
-		// this is extra tricky because the board aspect ratio is sacrosanct.  All the objects
-		// on the board are relative to the full board size, and the shape of the display rectangle
-		// has to match the shape of the board image.  The zoom views are not constrained to this
-		// so the first determination is if the zoom area will be limited by the height or the width
-		if(viewRatio > boardRatio)
-		{	// dominated by view height
-			int vieww = (int)(viewH*boardRatio);
-			dispR = new Rectangle(viewL+(viewW-vieww)/2 , viewT, vieww, viewH);
-			zoomscale = (viewH/(boardH*(bottom-ztop)));
-		}
-		else
-		{	// dominated by view width
-			int viewh = (int)(G.Width(brect)/boardRatio);
-			dispR = new Rectangle(viewL, viewT+(viewH-viewh)/2 , viewW, viewh);
-			zoomscale = viewW/(boardW*(right-zleft));
-		}
+
+		int viewh = (int)(G.Width(brect)/boardRatio);
+		dispR = new Rectangle(viewL, viewT+(boardH-viewh)/2 , boardW, viewh);
+		zoomscale = boardW/(boardW*(right-zleft));
+
 		double neww = (boardW*zoomscale);
 		double newh = (boardH*zoomscale);
     	Rectangle newBR = new Rectangle(boardX-(int)(zleft*neww),boardY-(int)(ztop*newh),(int)neww,(int)newh);
@@ -5028,7 +5057,7 @@ private void drawPlayerBoard(Graphics gc,
      		GC.translate(gc,xdis,ydis);
     		drawFixedElements(gc,gb,newBR);
     		GC.translate(gc,-xdis,-ydis);
-    		GC.setRotatedContext(gc,displayBoardRect,highlightAll,contextRotation);
+    		GC.setRotatedContext(gc,brect,highlightAll,contextRotation);
     		GC.setClip(gc,oldClip);
     	}
     	int hx = G.Left(highlightAll);
@@ -5056,7 +5085,7 @@ private void drawPlayerBoard(Graphics gc,
       	}
     	finally 
     		{ CELLSIZE = STANDARD_CELLSIZE;
-    	  	  gb.SetDisplayRectangle(displayBoardRect);
+    	  	  gb.SetDisplayRectangle(brect);
     	  	  G.SetLeft(highlightAll,hx);
     	  	  G.SetTop(highlightAll, hy);
        		}
@@ -5294,10 +5323,10 @@ private void drawPlayerBoard(Graphics gc,
 				?gameOverMessage(gb)
 				:gameStateMessage(gb,state);
       	Text stateText = TextChunk.colorize(stateMessage, null, gameMoveText());
-
+      	boolean simul = gb.simultaneousTurnsAllowed();
         standardGameMessage(gc,pl.displayRotation,Color.black,
             				stateText,
-            				state!=ViticultureState.Puzzle,
+            				state!=ViticultureState.Puzzle&&!simul,
             				gb.whoseTurn,
             				rect);
         if(state.ui==UI.Main)
@@ -5305,7 +5334,10 @@ private void drawPlayerBoard(Graphics gc,
         goalAndProgressMessage(gc,selectPos,Color.black,s.get(ViticultureVictoryCondition),progressRect, goalRect);
         }
         int stateH = G.Height(stateRect);
-        gb.getCurrentPlayerBoard().getRooster().draw(gc, this, stateH*2,G.Left(stateRect)-stateH,G.centerY(stateRect),null);
+        if(!simul)
+        {
+            gb.getCurrentPlayerBoard().getRooster().draw(gc, this, stateH*2,G.Left(stateRect)-stateH,G.centerY(stateRect),null);       	
+        }
        
         // draw the vcr controls, last so the pop-up version will be above everything else
         redrawChat(gc,selectPos);
@@ -5643,7 +5675,9 @@ private void drawPlayerBoard(Graphics gc,
         case SetReady:
         	{
         	PlayerBoard ap = (PlayerBoard)hp.hitObject;
-        	PerformAndTransmit((simultaneousTurnsAllowed() ? "Ready " : "Ok ")+(char)('A'+ap.boardIndex)+" "+((hp.hit_index==0)?false:true));
+        	PerformAndTransmit((simultaneousTurnsAllowed()
+        						? ((state==ViticultureState.DraftCards) ? "DraftOk " : "Ready ")
+        						: "Ok ")+(char)('A'+ap.boardIndex)+" "+((hp.hit_index==0)?false:true));
         	}
         	break;
         case SetOption:
@@ -5893,13 +5927,16 @@ private void drawPlayerBoard(Graphics gc,
         		PerformAndTransmit("Select "+pb.cards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
        			}
        			break;
-       		
+        	
            	case Keep1ForOracle:
         	case Keep2ForOracle:
        			{
         		PerformAndTransmit("Select "+pb.cards.rackLocation().name()+" @ 0 "+hp.hit_index);     		
        			}
        			break;
+        	case DraftCards:
+        		PerformAndTransmit((simultaneousTurnsAllowed() ? "EDraft " : "Draft ")+(char)('A'+getActivePlayer().boardIndex)+" "+hp.hit_index);     
+        		break;
           	case Select1Of1FromMarket:
         	case Select1Of2FromMarket:
         	case Select2Of2FromMarket:
@@ -6295,12 +6332,22 @@ private void drawPlayerBoard(Graphics gc,
 
           if(!reviewOnly 
         	 && !reviewMode() 
-        	 && simultaneousTurnsAllowed()
-        	 && (mainBoard.getState()==ViticultureState.ChooseOptions)
-        	 && (mainBoard.allPlayersReady())
+         	 && simultaneousTurnsAllowed()
+         	 && mainBoard.allPlayersReady()
         	 && (allPlayersLocal() ||(mainBoard.whoseTurn == getActivePlayer().boardIndex)))
           {	  
-        	  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.values()));
+        	  switch(mainBoard.getState())
+        	  {
+        	  case DraftCards:
+        		  PerformAndTransmit( "ECommence");
+        		  break;
+        	  case ChooseOptions:
+         		  PerformAndTransmit( "ECommence " +mainBoard.options.memberString(Option.values()));
+         		  break;
+        	  default:
+        		  break;
+        	  }
+        	  
           }
      }
     /**
@@ -6698,10 +6745,11 @@ private void drawPlayerBoard(Graphics gc,
   }
 
   public commonMove convertToSynchronous(commonMove m)
-  {	  if(m.op==EPHEMERAL_COMMENCE) { m.op = MOVE_COMMENCE; return m; }
-  		return null;
+  {	  return ((Viticulturemovespec)m).convertToSynchronous();
   }
-
+  public void ephemeralSort(CommonMoveStack ephemera)
+  {	   Viticulturemovespec.ephemeralSort(ephemera);
+  }
   public void updatePlayerTime(long inc,commonPlayer p)
   {	if(!reviewMode() && simultaneousTurnsAllowed()) {}
   	else { super.updatePlayerTime(inc,p); }

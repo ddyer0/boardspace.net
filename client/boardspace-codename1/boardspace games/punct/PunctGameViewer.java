@@ -857,7 +857,11 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     public void performHistoryInitialization(Tokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        b.doInit(token);
+    	//Punct 2 0 101 0 , 0 Start P0 , +T 2560 1 Pick W 11 , +T 4604 2 Dropb 11 L 1
+    	int np = his.intToken();
+    	long key = his.longToken();
+    	int rev = his.intToken();
+        b.doInit(token,key,np,rev);
     }
 
 

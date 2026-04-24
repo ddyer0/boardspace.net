@@ -79,7 +79,7 @@ public class Session implements LobbyConstants
 	static final String TournamentGame = "Tournament Game";
     static final String SpectatorMessage = "Spectator";
     static final String TimedGameMessage = "Timed Game";
-    static final String PleaseJoinMessage = "Please Join Me";
+    static final String PleaseJoinMessage = "Open to Anyone";
     static final String JoinOnlyMessage = "Join only if Invited";
     static final String LaunchingMessage = "Launching...";
     static final String UnknownStateMessage = "State unknown.";

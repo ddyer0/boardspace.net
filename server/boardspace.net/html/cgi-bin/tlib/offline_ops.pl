@@ -161,14 +161,15 @@ sub deleteOfflineGame()
 # this is for the use of the tournament system
 #
 sub create2PlayerGame()
-{	my ($dbh,$player1,$player2,$variation,$comment) = @_;
+{	my ($dbh,$player1,$player2,$variation,$speed,$comment) = @_;
 	my $qp1 = $dbh->quote($player1);
 	# create a match
 	my $qup = $dbh->quote("|$player1|$player2|");
 	my $qvariation = $dbh->quote($variation);
+	my $qspeed = $dbh->quote($speed);
 	my $qcomment = $dbh->quote(&encode64($comment));
 	my $qm = "insert into offlinegame set acceptedplayers=$qup,invitedplayers=$qup,variation=$qvariation,whoseturn=$qp1,comments=$qcomment,"
-			. "status='active',speed='day2',allowotherplayers='false',created=utc_timestamp(),last=utc_timestamp()";
+			. "status='active',speed=$qspeed,allowotherplayers='false',created=utc_timestamp(),last=utc_timestamp()";
 	my $sth = &commandQuery($dbh,$qm);
 	my $gid = &last_insert_id($sth);
 }

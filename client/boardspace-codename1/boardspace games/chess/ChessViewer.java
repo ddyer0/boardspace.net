@@ -344,6 +344,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         boolean censor = gb.variation==Variation.CrazyHouse ;//&& !reviewOnly;
         int sz = h*4/3;
         ChessId rack = thisCell.rackLocation();
+        {
         for(int i=0;i<lim;i++)
         {
         	ChessChip ch = thisCell.chipAtIndex(i);
@@ -359,14 +360,22 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         		//CellId rackLocation,Text helptext,double sscale,double expansion)
         		if(ch.draw(gc,this,new Rectangle(px-sz/2,py-sz/2,sz,sz),pt,rack,(Text)null,0.5,1.3))
         		{
-        			highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
+        			highlight.arrow = StockArt.UpArrow;
         	highlight.awidth = G.Height(r)/2;
         	highlight.spriteColor = Color.red;
                 	highlight.hit_index = i;
         		}
         		px += sz/3;
         	}
-        	
+        }
+        if(canDrop && G.pointInRect(pt,r))
+        {
+        	highlight.arrow = StockArt.DownArrow;
+        	highlight.spriteRect = r;
+        	highlight.spriteColor = Color.red;
+        	highlight.hit_index = 0;
+        	highlight.hitCode = thisCell.rackLocation();
+        }
         }
         // 
         // this is a little complicated.  thisCell.curret_rotation will be used
@@ -428,11 +437,12 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     	{	int bit = 1<<chip.piece.ordinal();
     		if((mask&bit)!=0)
     		{
-    		if(chip.draw(gc,this,new Rectangle(l,t,SQUARESIZE,SQUARESIZE),highlight,ChessId.Select,(String)null))
+    		boolean selected = chip.piece==gb.selectedForPromotion.piece;
+    		if(chip.draw(gc,this,new Rectangle(l,t,SQUARESIZE,SQUARESIZE),selected ? null : highlight,ChessId.Select,(String)null))
     		{
     			highlight.hitData = chip.piece;
     		}
-    		if(chip.piece==gb.selectedForPromotion.piece) 
+    		if(selected) 
     			{ StockArt.Checkmark.draw(gc,this,SQUARESIZE/2,l+SQUARESIZE/2,t+SQUARESIZE/2,null); 
     			}
     		mask ^= bit;
@@ -827,7 +837,7 @@ private void playSounds(commonMove m)
 
 			}
             else {
-            	PerformAndTransmit("Pick "+((hitObject==ChessId.Black_Captured)?"BC ":"WC "+hp.hit_index));
+            	PerformAndTransmit("Pick "+(((hitObject==ChessId.Black_Captured)?"BC ":"WC ")+hp.hit_index));
             }
          	}
             break;

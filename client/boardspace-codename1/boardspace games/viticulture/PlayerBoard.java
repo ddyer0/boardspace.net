@@ -1562,5 +1562,16 @@ public class PlayerBoard
 		}
 		
 	}
+	public void takeSelectedDraft(replayMode replay) {
+		G.Assert(selectedCards.size()==1,"should be a selected");
+		ViticultureChip card = selectedCards.top().card;
+		oracleCards.removeChip(card);
+		cards.addChip(card);
+		if(replay.animate)
+		{
+			bb.animationStack.push(oracleCards);
+			bb.animationStack.push(cards);
+		}
+	}
 
 }

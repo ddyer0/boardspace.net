@@ -271,6 +271,12 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 			GC.Text(gc,true,cx-SQUARESIZE/2,cy-SQUARESIZE/2,SQUARESIZE,SQUARESIZE,Color.yellow,null,"+");
 		}
 	}
+	
+	public static ChessChip changeColor(ChessChip ch)
+	{
+		return ch==null ? ch : ch.changeColor();
+	}
+	
 	static double noscale[]= {0,0,1};
 	public static ChessChip backgroundTile = new ChessChip( "background-tile-nomask",null,allTiles);
 	public static ChessChip backgroundReviewTile = new ChessChip( "background-review-tile-nomask",null,allTiles);

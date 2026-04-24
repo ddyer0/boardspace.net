@@ -100,7 +100,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 169;			// 100 represents the initial version of the game
+{	static int REVISION = 171;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -191,7 +191,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 167 fixes the logic for "reaper" to not care about the numnber of grapes produced
 										// revision 168 changes the "with replacement" logic to distribute the replacements fairly
 										// revision 169 fixes an interaction with oracle playing the vendor card
-
+										// revision 170 adds purple market, extra special workers, drafting structures
+										// revision 171 fixes the first player after drafting
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -203,6 +204,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	public void clearOption(Option val) { options.clear(val); }
 	
 	boolean optionsResolved = false;
+	boolean draftResolved = false;
 	boolean playedAsTurnBased = false;
 	public boolean playedAsTurnBased() { return playedAsTurnBased; }
 	static int MarketSize = 2;
@@ -977,13 +979,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
   	ViticultureCell tradeRedGrape = newUIcell(ViticultureId.RedGrape,'@',1);
   	ViticultureCell tradeWhiteGrape = newUIcell(ViticultureId.WhiteGrape,'@',1);
 	
-
-  	ViticultureCell boardMagnifier = newUIcell(ViticultureId.Magnifier,'@',0);
-	ViticultureCell starMagnifier = newUIcell(ViticultureId.Magnifier,'@',1);
-	ViticultureCell wakeupMagnifier = newUIcell(ViticultureId.Magnifier,'@',2);
-	ViticultureCell magnifiers[] = { boardMagnifier, wakeupMagnifier, starMagnifier};
-	
-
 	private ViticultureState board_state = ViticultureState.Puzzle;	
 	public ViticultureState resetState = ViticultureState.Puzzle;
 	private ViticultureState unresign = null;	// remembers the orignal state when "resign" is hit
@@ -1201,6 +1196,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
       	adjustRevision(rev);
 		options.clear();
 		optionsResolved = false;
+		draftResolved = false;
     	randomKey = key;
     	players_in_game = players;
     	automa = (players==1);
@@ -1328,7 +1324,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	   	if(players_in_game<=2) { workerCards.removeChip(ViticultureChip.InnkeeperCard); }
 	   	specialWorkerCards.addChip(workerCards.chipAtIndex(0));
 	   	specialWorkerCards.addChip(workerCards.chipAtIndex(1));
-	   	
+	   	if(revision>=170 && testOption(Option.ExtraSpecial))
+	   	{
+		   	specialWorkerCards.addChip(workerCards.chipAtIndex(2));
+		   	specialWorkerCards.addChip(workerCards.chipAtIndex(3));
+	   	}
 	   	for(ViticultureChip ch : ViticultureChip.AutomaDeck) { automaCards.addChip(ch); }
 	   	automaCards.shuffle(random);
 	   	
@@ -1376,7 +1376,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		residualTrack[0].addChip(pb.getResidualMarker());
        	 
         }
-
+        if(testOption(Option.DraftStructures))
+        {
+        	for(PlayerBoard pb : pbs)
+        	{
+        		for(int i=0;i<4;i++) { pb.oracleCards.addChip(structureCards.removeTop()); }
+        	}
+        }
         // note that firstPlayer is NOT initialized here
     }
     private void setInitialWakeupPositions(int startPosition)
@@ -1475,6 +1481,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    lastDroppedWorkerIndex = from_b.lastDroppedWorkerIndex;
 
 		optionsResolved = from_b.optionsResolved;
+		draftResolved = from_b.draftResolved;
 		options.copy(from_b.options);
 
 		choiceA.selected = from_b.choiceA.selected;
@@ -1523,6 +1530,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         Assert(choiceA.selected==choiceA.selected,"choiceA different");
         Assert(choiceB.selected==from_b.choiceB.selected,"choiceB different");
 		Assert(optionsResolved == from_b.optionsResolved,"optionsResolved mismatch");
+		Assert(draftResolved == from_b.draftResolved,"draftResolved mismatch");
 		Assert(options.equals(from_b.options),"options mismatch");
 		Assert(playedAsTurnBased==from_b.playedAsTurnBased,"playedAsTurnBased mismatch");
         // this is a good overall check that all the copy/check/digest methods
@@ -1590,6 +1598,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v ^= Digest(r,currentWorker);
 		v ^= Digest(r,currentAction);
 		v ^= Digest(r,optionsResolved);
+		v ^= Digest(r,draftResolved);
 		v ^= Digest(r,choiceA.selected);
 		v ^= Digest(r,choiceB.selected);
 		v ^= Digest(r,playedAsTurnBased);
@@ -1658,6 +1667,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         case Confirm:
         case FullPass:
         case ChooseOptions:
+        case DraftCards:
         case Resign:
         	boolean continuous = testOption(Option.ContinuousPlay);    	
         	PlayerBoard next = (continuous&&year>0) ? findNextPlayerAnySeason() : findNextPlayerInSeason();
@@ -1748,6 +1758,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private PlayerBoard findNextPlayerAnySeason()
     {	
     	PlayerBoard pb = getCurrentPlayerBoard();
+    	return findNextPlayerAnySeason(pb);
+    }
+    private PlayerBoard findNextPlayerAnySeason(PlayerBoard pb)
+    {
     	// activeWakeupposition is the same as wakeupPosition
     	// except in changing from one year to the next
     	ViticultureCell wake = pb.activeWakeupPosition;
@@ -1975,7 +1989,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		break;
     		}
     	}
-    	else if(board_state==ViticultureState.ChooseOptions)
+    	else if(board_state.simultaneousTurnsAllowed())
     		{ return allPlayersReady();
     		}
 
@@ -2379,6 +2393,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	case PlaySecondBlue:
     	case FullPass:
     	case Puzzle:
+    	case DraftCards:
     	case Play:
     		setNextPlayState(replay);
     	}
@@ -2433,7 +2448,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		else if(pb.workers.height()==0) 
 		{
 			setState(ViticultureState.FullPass );
-		}else 
+		}
+		else if(!draftResolved && testOption(Option.DraftStructures))
+		{	
+			setState(ViticultureState.DraftCards);
+		}
+		else 
 		{	triggerCard = null;
 			setState(ViticultureState.Play );
 		}}
@@ -3202,9 +3222,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		int startn = pb.cards.height();
        		nextState = drawCards(ncards,greenCards,pb,testOption(Option.GreenMarket)?replayMode.Replay:replay,m);
        		// under extreme circumstances, there may not be enough cards
-       		int gotncards = pb.cards.height()-startn;
        		if(testOption(Option.GreenMarket))
     			{
+           		int gotncards = pb.cards.height()-startn;
   				if(nextState==null)
    				{
   					pb.oracleCards.reInit();
@@ -3230,19 +3250,40 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		// purple cards can have an unusual after action - filling them
     		// if the mercado is in effect
     		//
-    		if((currentWorker!=null)
+    		{
+       		int startn = pb.cards.height();
+       		boolean bonus = (dest.row==DrawPurpleBonusRow);
+       		int ncards = (testOption(Option.PurpleMarket) ? MarketSize : 0) + (bonus||isFarmer ? 2 : 1);
+       		if((currentWorker!=null)
     				&& (currentWorker.type==ChipType.Politico)
-    				&& (dest==drawPurpleWorkers[DrawPurpleBonusRow])
+    				&& bonus
     				&& ((revision>=133) || (pb.cash>0)))
     			{
     	   		// politico pay a dollar to take 3, after seeing the first two
        			addContinuation(Continuation.PoliticoPurple);
-    			nextState = drawCards(2,purpleCards,pb,replay,m);
-    			}
-    			else 
+     			}
+   			nextState = drawCards(ncards,purpleCards,pb,replay,m);
+  			    		
+       		if(testOption(Option.PurpleMarket))
     			{
-    			nextState = drawCards(isFarmer||(dest.row==DrawPurpleBonusRow)?2:1,purpleCards,pb,replay,m);
+           		int gotncards = pb.cards.height()-startn;
+ 				if(nextState==null)
+   				{
+  					pb.oracleCards.reInit();
+  	   				for(int i=0;i<gotncards;i++) { pb.oracleCards.addChip(pb.cards.removeTop()); }
+  	   				nextState = bonus|(revision>=156&&isFarmer) 
+  	   							? ViticultureState.Select2Of2FromMarket 
+  	   							: ViticultureState.Select1Of1FromMarket;
+   				}
+   				else if(nextState==ViticultureState.Discard1ForOracle)
+   				{	
+ 					pb.oracleCards.reInit();
+  	   				for(int i=0;i<gotncards;i++) { pb.oracleCards.addChip(pb.cards.removeTop()); }
+   					nextState = bonus ? ViticultureState.Select2Of3FromMarket : ViticultureState.Select1Of2FromMarket;
+   				}
+   				else { G.Error("Not expecting nextstate %s",nextState); }
     			}
+    		}
     		break;
     	case GiveTourWorker:
     		// no impact for politico
@@ -7455,6 +7496,24 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	}
     	return(nextState);
     }
+    private void doDraft(replayMode replay)
+    {
+		for(PlayerBoard pb : pbs)
+		{	pb.takeSelectedDraft(replay);
+			pb.drawnCards.copyFrom(pb.oracleCards);
+			pb.isReady = false;
+		}
+		PlayerBoard first = findFirstPlayerAnySeason(0);
+		PlayerBoard pb = first;
+		do {
+			PlayerBoard next = findNextPlayerAnySeason(pb);
+			if(next==null) { next = first; }
+			pb.oracleCards.copyFrom(next.drawnCards);
+			next.drawnCards.reInit();
+			pb = next;
+		} while(pb!=first);
+		
+    }
     private void doDone(replayMode replay,Viticulturemovespec m)
     {	
     	ViticultureState nextState = null;
@@ -7491,6 +7550,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
 					setState(ViticultureState.Confirm);
 					addContinuation(Continuation.Place1Star);	// this will evaluate to move1star
 				}
+				break;
+			case DraftCards:
+				doDraft(replay);
 				break;
 			case ChooseOptions:
 				optionsResolved = true;
@@ -7543,8 +7605,19 @@ public int getMaxRevisionLevel() { return(REVISION); }
         case PlaySecondYellow:
 	       	setState(ViticultureState.Confirm); 	// shouldn't be allowed, but it has happened 
         	break;
+        case DraftCards:
+        	if(pb.oracleCards.height()==0)
+        	{	draftResolved = true;
+        		nextState = ViticultureState.Play;
+        		if(revision>=171)
+        		{
+        		whoseTurn = findFirstPlayerAnySeason(0).boardIndex;
+        		}
+        	}
+        	break;
         case ChooseOptions:
         	setNextPlayState(replay);
+        	pb.isReady = false;
         	nextState = board_state;
         	break;
 		default:
@@ -8075,14 +8148,18 @@ public int getMaxRevisionLevel() { return(REVISION); }
    					   	: resetState);
    		   }		   
    		   break;
+   	   	
    	   case Select2Of2FromMarket:
    	   case Select2Of3FromMarket:
    	   case Select1Of1FromMarket:
    	   case Select1Of2FromMarket:
-   		   {
+   		   {   
    			   ViticultureChip card = pb.oracleCards.chipAtIndex(m.from_index);
    			   ViticultureChip removed = pb.selectedCards.remove(m.source,card,m.from_index);
-   			   if(removed==null) { pb.selectedCards.push(m.source,card,m.from_index); }
+   			   if(removed==null) 
+   			   	{ 
+   			   	  pb.selectedCards.push(m.source,card,m.from_index); 
+   			   	}
    			   int finalh = resetState.nToTake();
    			   int committed = pb.committedCost();
    			   int nSelected = pb.selectedCards.size();
@@ -8302,7 +8379,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			return(confirm);
 	}
 	public boolean allPlayersReady()
-	{	if(board_state==ViticultureState.ChooseOptions)
+	{	if(board_state.simultaneousTurnsAllowed())
 		{
 			for(PlayerBoard p : pbs) { if (!p.isReady) { return false; }}
 			return true;
@@ -8323,17 +8400,20 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{
     		PlayerBoard nn = pbs[m.from_col-'A'];
     		nn.isReady = m.from_row!=0;
-    		if(allPlayersReady()) { doDone(replay,m); }
+    		if(allPlayersReady()) 
+    			{ doDone(replay,m); 
+    			}
     		else { 	setNextPlayer(replay); }
     		}
         	break;
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
-        	options.setMembers(m.from_row);
+        	if(board_state==ViticultureState.ChooseOptions) { options.setMembers(m.from_row); }
         	doDone(replay,m);
         	break;
+        case EPHEMERAL_DRAFT_OK:
         case EPHEMERAL_READY:
-        	if(board_state==ViticultureState.ChooseOptions)
+        	if(board_state.simultaneousTurnsAllowed())
         	{	// ignore strays that arrive late
         		PlayerBoard nn = pbs[m.from_col-'A'];
         		nn.isReady = m.from_row!=0;
@@ -8921,6 +9001,15 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			setState(ViticultureState.Gameover);
 			break;
 
+		case MOVE_DRAFT:
+		case EPHEMERAL_DRAFT:
+	   	   	{	PlayerBoard player = getPlayerBoard(m.from_col-'A');
+	   	   		ViticultureChip card = player.oracleCards.chipAtIndex(m.from_row);
+	   	   		player.selectedCards.clear();
+	   	   		player.isReady = false;
+	   	   		player.selectedCards.push(player.oracleCards.rackLocation(),card,m.from_row);
+	   	   	}
+	   	   	break;
         default:
         	cantExecute(m);
         }
@@ -9073,7 +9162,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 
     }
     
-
+private CommonMoveStack getDraftMoves()
+{	CommonMoveStack all = new CommonMoveStack();
+	for(PlayerBoard pb : pbs)
+	{
+		getListOfMoves(MoveGenerator.All,all,pb);
+	}
+	return all;
+}
 
  public Hashtable<ViticultureCell,Viticulturemovespec> getTargets()
  {
@@ -9085,11 +9181,19 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	 default:
 		 switch(board_state)
 		 {
+		 case DraftCards:	// simultaneous
+		 	{
+			 CommonMoveStack all = getDraftMoves();
+			 includeBasedOn(all,val);
+		 	}
+			 break;
 		 case Gameover:
 		 case Puzzle: break;
 		 default: 
+		 	{
 			 CommonMoveStack all = GetListOfMoves(MoveGenerator.All);
 			 includeBasedOn(all,val);
+		 	}
 		 }}
 	 return(val);
  }
@@ -9811,7 +9915,9 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		{
 		all.push(new Viticulturemovespec(MOVE_TRAIN,ViticultureId.Workers,pb.colCode,ChipType.Worker,whoseTurn));
 		}
-		for(int i=0,limit=(all_workers||robotBoard ? workerCards.height() : 2);i<limit; i++)
+		for(int i=0,limit=(all_workers||robotBoard 
+				? workerCards.height() 
+				: testOption(Option.ExtraSpecial) ? 4 : 2);i<limit; i++)
 		{
 		ChipType special1 = ChipType.find(workerCards.chipAtIndex(i).cardName);
 		addTrainWorkerType(pb,all,special1);
@@ -9822,11 +9928,24 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
  private void addTrainWorkerType(PlayerBoard pb,CommonMoveStack all,ChipType special1)
  {
 	 ViticultureChip type1 = ViticultureChip.getChip(special1,pb.color);
+	 int nspecial = 0;
+	 for(int i=0;i<pb.workerTypes.height();i++)
+	 {
+		 ViticultureChip chip = pb.workerTypes.chipAtIndex(i);
+		 switch(chip.type)
+		 {
+		 case Worker:
+		 case GrandeWorker: break;
+		 default: nspecial++;
+		 }
+	 }
+	 if(nspecial<2)
+	 {
 	 if(!pb.workerTypes.containsChip(type1) && (pb.cash>=costOfWorker(pb,type1,resetState)))
 	 {
 		all.push(new Viticulturemovespec(MOVE_TRAIN,ViticultureId.Workers,pb.colCode,
 					special1,whoseTurn));
-	 }
+	 }}
  }
  
  private boolean addUnbuildStructureMoves(PlayerBoard pb,CommonMoveStack all,MoveGenerator generator)
@@ -10879,9 +10998,14 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 
  CommonMoveStack  GetListOfMoves(MoveGenerator generator)
  {	CommonMoveStack all = new CommonMoveStack();
- 	int discount = 0;
- 	boolean hasDone = false;
  	PlayerBoard pb = getCurrentPlayerBoard();
+ 	
+ 	return getListOfMoves(generator,all,pb);
+ }
+ 
+ private CommonMoveStack getListOfMoves(MoveGenerator generator,CommonMoveStack all,PlayerBoard pb)
+ {	boolean hasDone = false;
+	int discount = 0;
   	switch(board_state)
  	{
 	case Confirm:
@@ -11419,6 +11543,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			 }
 		}
 		break;
+	case DraftCards:
 	case Select1Of1FromMarket:
 	case Select2Of2FromMarket:
 	case Select1Of2FromMarket:	// oracle gets one extrafree card choice
@@ -11466,12 +11591,14 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			}
 		}
 		break;
+		
 	case ChooseOptions:
 		for(Option op : Option.values())
 		{
 			all.push(new Viticulturemovespec(simultaneousTurnsAllowed()?EPHEMERAL_OPTION: MOVE_SETOPTION,op,testOption(op),whoseTurn));
 		}
 		break;
+
 	default:
 		G.Error("Not expecting sate %s",resetState);
 		break;

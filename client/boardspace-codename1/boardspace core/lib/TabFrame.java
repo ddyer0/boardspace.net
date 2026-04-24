@@ -139,6 +139,7 @@ public class TabFrame extends Frame
 	{ 	canSavePanZoom = m;
 		MasterForm.getMasterPanel().adjustTabStyles(); 
 	}
+
 	public void setHasSavePanZoom(boolean v) 
 	{ hasSavePanZoom = v; 
 	  MasterForm.getMasterPanel().adjustTabStyles(); 

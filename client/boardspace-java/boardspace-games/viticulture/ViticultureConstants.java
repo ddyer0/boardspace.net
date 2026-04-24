@@ -46,12 +46,17 @@ public interface ViticultureConstants
 			ContinuousPlay("Continue playing after entering a season"),	// play immediately after moving to next season
 			DrawWithReplacement("Draw from decks with replacement"),	// draw from all decks with replacement
 			LimitPoints("limit per-player visitor cards to 3 VP and $6"),			// limit vp and cash windfalls
+			PurpleMarket(170,"select wine orders from a market"),	
+			DraftStructures(170,"draft structure cards"),
+			ExtraSpecial(170,"select from 4 special workers"),
 			;				
 		 
 		 String message;
+		 int revision = 0;
 		 ViticultureChip onIcon;
 		 ViticultureChip offIcon;
 		 Option(String ms) { message = ms; }
+		 Option(int rev,String ms) { revision = rev; message=ms;}
 		 static Option getOrd(int n) { return(values()[n]); }
 	 }
 	 
@@ -102,6 +107,7 @@ public interface ViticultureConstants
 	static String DiscardWineMode = "Discard Wine";
 	static String DiscardGrapeMode = "Discard Grapes";
 	static String ChooseCardsMode = "Take #1{##,# Card,# Cards}";
+	static String DraftCardsMode = "Take 1 card, pass the rest";
 	static String PlayCardsMode = "Play Cards";
 	static String GiveCardsMode = "Give Cards";
 	static String AutomaBonus = "Bonus Action";
@@ -377,6 +383,7 @@ public interface ViticultureConstants
 		DestroyStructureMode,
 		BuildStructureMode,
 		ChooseCardsMode,
+		DraftCardsMode,
 		GiveCardsMode,
 		DiscardCardMode,
 		DiscardOracleMode,
@@ -749,6 +756,7 @@ public interface ViticultureConstants
 		Flip(FlipProperty),
 		ChoosePlayers(ChoosePlayersMode),
 		ChooseOptions(ChooseOptionsMode),
+		DraftCards(DraftCardsMode),
 		;
 		String name;
 		String getName() { return(name); }
@@ -938,6 +946,8 @@ public interface ViticultureConstants
 	Select2Of2FromMarket(Activity.ChooseCards,"Select two cards from the Market",false,false,UI.ShowMarket),
 	SelectPandM(Activity.ChooseCards,"Select one Papa and one Mama",false,false,UI.ShowPandM),
 	ChooseOptions(Activity.ChooseOptions,"Select the options for this game",false,false,UI.ShowOptions),
+	DraftCards(Activity.DraftCards,DraftCardsMode,false,false,UI.ShowCards),
+
 	;
 		
 	//
@@ -971,6 +981,8 @@ public interface ViticultureConstants
 	{
 		switch(this)
 		{
+		case DraftCards:
+			return 4;
 		case Keep2ForOracle:
 		case Select1Of2FromMarket:
 		case Select2Of2FromMarket:
@@ -1001,6 +1013,7 @@ public interface ViticultureConstants
 		case Keep1ForOracle:
 		case Select1Of2FromMarket:
 		case Select1Of1FromMarket:
+		case DraftCards:
 			return 1;
 			
 		default: throw G.Error("shouldn't be asking");
@@ -1041,7 +1054,7 @@ public interface ViticultureConstants
 	public boolean digestState() { return(digestState); }
 	public boolean Puzzle() { return(this==Puzzle); }
 	public boolean simultaneousTurnsAllowed()
-		{ return(this==ViticultureState.ChooseOptions);
+		{ return(this==ViticultureState.ChooseOptions)||(this==ViticultureState.DraftCards);
 		}
 	
 	public boolean isWinemaking() { return(ui==UI.ShowWines); };

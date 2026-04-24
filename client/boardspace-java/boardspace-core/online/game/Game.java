@@ -3174,6 +3174,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             String savedmsg = TSAVEDMSG + " " + filename;
         	if(turnBasedGame!=null)
         	{
+        		sentTheGame = true;
         		turnBasedGame.recordGame(filename,grs);
         	}
         	else if(offlineGame)
@@ -4021,8 +4022,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     	checkUrlLoaded();
     	if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
+    	
+    	if(turnBasedGame!=null &&  !my.isSpectator())
+    	{
     	boolean newturn = SetWhoseTurn();
-    	if(newturn && turnBasedGame!=null && !my.isSpectator()) { recordAsyncGame(false); }
+    	if(newturn) { recordAsyncGame(false); }
+    	else { recordAsyncComments(); }
+
+    	}
 
     	boolean some = (v!=null) && v.ParseMessage(null, -1,-1);
     	if(some) 
@@ -4551,6 +4558,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	StringBuilder b = new StringBuilder();
         	theChat.getEncodedContents(b);
         	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),forced);		
+    	}
+    }
+    private void recordAsyncComments()
+    {
+       	if(turnBasedGame!=null 
+       			&& (whoseTurn.uid!=null) 
+       			&& !my.isSpectator() 
+       			&& theChat.changedEncodedComments()
+       			&& (turnBasedGame.status==AsyncStatus.active) || (turnBasedGame.status==AsyncStatus.complete))
+    	{	StringBuilder b = new StringBuilder();
+       		theChat.getEncodedContents(b);
+       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true);
     	}
     }
     private String serverRecordString(RecordingStrategy mode)

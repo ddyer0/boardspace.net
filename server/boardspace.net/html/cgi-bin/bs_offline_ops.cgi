@@ -47,7 +47,7 @@ if( param() )
 			}
 		elsif('checkname' eq $tagname) { $msg = &getPlayerUid($dbh,$pname,0); }	# obsolete version, sunset with 8.25
 		elsif('checknamebounce' eq $tagname) { $msg = &getPlayerUid($dbh,$pname,1); }
-		elsif('creategame' eq $tagname) { $msg = &creategame($dbh,$pname,$passwd); }
+		elsif('creategame' eq $tagname) { $msg = &creategame($dbh,$pname,$passwd); }	# also update game
 		elsif('getinfo' eq $tagname) 
 			{ my $own = &param('owner');
 		          my $inv = &param('invitedplayers');

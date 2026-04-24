@@ -44,6 +44,10 @@ public class Frame extends Window
 		setOpaque(true);
 		glassPane.setSize(getWidth(),getHeight());
 		addSelf(glassPane);
+		activate();
+	}
+	public void activate()
+	{
 		MasterForm.getMasterPanel().addC(this);
 	}
 	public Frame() 
@@ -108,11 +112,19 @@ public class Frame extends Window
 		if(glassPane!=null) { glassPane.setFrameBounds(0,0,w,h); }
 	}
 
+	// this is the ultimate target of setInitialBounds for TabFrame.  On codename1 this is unnecessary
+	// because the top level frames are forced to be full sized.  Removing it fixes a race between
+	// the initial repaing that the setInitialSize in startLFrame.  This was harmless as long as all
+	// the sizes agree.  With the new (4/2026) logic to shrink the height of windows if safe area
+	// seems to dictate it, the initial "full size" frame is too big.  The result is an initially
+	// oversize frame that tends to be shrunk when the configuration is perturbed by a menu or
+	// rotating the screen.   Long story short, if the safe area logic becomes unnecessary then
+	// this could be reinstated, but there shouldn't be any reason to.
 	public void setFrameBounds(int x,int y,int w,int h) 
 	{ 
-		setSize(w,h);
-		setX(x);
-		setY(y);
+	//	setSize(w,h);
+	//	setX(x);
+	//	setY(y);
 	}
 	
 	public void showInEdt()

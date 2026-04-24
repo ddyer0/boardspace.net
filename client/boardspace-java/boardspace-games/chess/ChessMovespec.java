@@ -225,7 +225,10 @@ public class ChessMovespec extends commonMove implements ChessConstants
     }
 	static double chipScale[] = {1.5,3.5,0,-0.40};
     private Text icon(commonCanvas v,Object... msg)
-    {	
+    {	return icon(v,chip,msg);
+    }
+    private Text icon(commonCanvas v,ChessChip chip,Object... msg)
+    {
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
@@ -249,7 +252,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
             return (icon(v," - ",to_col,to_row));
             
 		case MOVE_DROPCAPTIVE:
-			return icon(v,to_col,from_row);
+			return icon(v,ChessChip.changeColor(chip),to_col,to_row);
 			
         case MOVE_DROP:
         case MOVE_PICK:

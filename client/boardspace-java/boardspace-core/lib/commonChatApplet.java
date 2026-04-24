@@ -593,7 +593,7 @@ public class commonChatApplet extends FullscreenPanel
     	String str = inputField.getText();
     	int scount = stringCount;
     	eventcount++;
-    	if (str!=null && (str.length()>0)) 
+     	if (str!=null && (str.length()>0)) 
     		{
     		int len = prevstr.length;
     		if ((theConn != null))
@@ -806,5 +806,10 @@ public class commonChatApplet extends FullscreenPanel
 	  	SimpleUser user =setUser(0,name);
     	setSingleSend(user,false);
     	messageLabel.setText(s.get(MESSAGEFROM,name));		
+	}
+	
+	public boolean changedEncodedComments()
+	{
+		return false;
 	}
 }

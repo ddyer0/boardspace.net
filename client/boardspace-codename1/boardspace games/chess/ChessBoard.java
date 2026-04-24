@@ -805,10 +805,16 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     		switch(ps.rackLocation())
     		{
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
-    		case White_Chip_Pool:
-    		case Black_Chip_Pool:
+    		
     		case Black_Captured:
     		case White_Captured:
+    			if(variation==Variation.CrazyHouse)
+    				{
+    				po = pickedObject = pickedObject.changeColor();
+    				}
+				//$FALL-THROUGH$
+    		case White_Chip_Pool:
+    		case Black_Chip_Pool:
     			if(pickedIndex<0) { ps.addChip(po); } else { ps.insertChipAtIndex(pickedIndex,po); }
     			break;
     		case BoardLocation: 
@@ -1556,13 +1562,19 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         case MOVE_DROP: // drop on chip pool;
         	{
         	ChessCell c = getCell(m.source, m.to_col, m.to_row);
+        	if(c==getSource())
+        	{	
+        		unPickObject();
+        	}
+        	else
+        	{
             dropObject(c,c.height()-1,replay);
             setNextStateAfterDrop(false);
             if(replay==replayMode.Single)
 			{
 			animationStack.push(getSource());
 			animationStack.push(c);
-			}}
+			}}}
             break;
 
 
@@ -1686,8 +1698,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         case Confirm:
         case Promote:
         	return(cell==getDest());
-        case Draw:
         case Play: 
+        case Draw:
         case Filter:
 		case Gameover:
 		case Resign:
@@ -1696,7 +1708,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		case DrawPending:
 		case AcceptPending:
 		case Check:
-			return(targets.get(cell)!=null);
+			return(cell==getSource() || targets.get(cell)!=null);
         case Puzzle:
         	int pi = variation==Variation.CrazyHouse ? player^1 : player;
         	return((pickedObject==null)?true:(pi==playerIndex(pickedObject)));

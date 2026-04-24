@@ -57,7 +57,7 @@ public class ChatWidget
 		MessageLabel;
 			
 	};
-	
+	boolean changedContents = false;
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.defaultUseKeyboard();
 	boolean hasFocus = false;
@@ -797,6 +797,7 @@ public class ChatWidget
     		for(int i=1; i<len; i++) { prevstr[i-1]=prevstr[i]; }
     		prevstr[len-1]= str;
     		prevStringCount=scount;
+        	changedContents = true;
     		}}
     	inputField.setText("");
     	canvas.requestFocus(inputField);
@@ -1053,10 +1054,16 @@ public class ChatWidget
 		b.append(SIMPLETEXT);
 		b.append(" ");
 		b.append(Base64.encodeSimple(activePane().getText()));
+		changedContents = false;
+	}
+	public boolean changedEncodedComments()
+	{
+		return changedContents;
 	}
 	/** change the text as shared over the network */
 	public void setEncodedContents(Tokenizer contents) {
 		String kind = contents.nextToken();
+		changedContents = false;
 		if(SIMPLETEXT.equals(kind) && contents.hasMoreTokens())
 		{
 		String tok = contents.nextToken();

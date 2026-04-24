@@ -23,6 +23,7 @@ import lib.G;
 import lib.GC;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
+import lib.Plog;
 import lib.TabFrame;
 import lib.TopFrameProtocol;
 
@@ -90,10 +91,13 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			{ 
 			  addTab((TopFrameProtocol)cc); 
 			}
+		setShouldLayout(true);
 	}
 	
 	public void remove(com.codename1.ui.Component cc)
-	{	Component top = getTopWindow();
+	{	
+		Component top = getTopWindow();
+		
 		super.remove(cc);
 		if(cc instanceof TopFrameProtocol) { removeTab((TopFrameProtocol)cc); }
 		if(cc==top)
@@ -146,7 +150,21 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	{	com.codename1.ui.Container parent = getParent();
 		return(new Dimension(parent.getWidth(),parent.getHeight()));
 	}
-	
+	public void setSize(Dimension sz)
+	{	Plog.log.addLog("Master panel size ",sz);
+		super.setSize(sz);
+	}
+	public void setWidth(int w)
+	{
+		Plog.log.addLog("Master panel width ",w);
+		super.setWidth(w);
+	}
+	public void setHeight(int h)
+	{
+		Plog.log.addLog("Master panel height ",h);
+		//Plog.log.addLog("Stack: ",G.getStackTrace());
+		super.setHeight(h);
+	}
 	//
 	// get the component bounds, clipped to our bounds.
 	// we allow oversized windows, but the consideration of visibility
@@ -495,20 +513,23 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	public void setLocalBounds(int l,int t,int w0, int h)
 	{	// this "safe" nonsense is to avoid the notch on iphones held horizontally
 		Rectangle safe = MasterForm.getMasterForm().getSafeArea();
+		int cc = getComponentCount();
 		int sx = safe.getX();
 		int x = (int)(sx*0.66);
 		int w = w0-sx;
-		for(int nc = getComponentCount()-1 ; nc>=0; nc--)
+		int availableh = Math.min(h,MasterForm.getSafe().getHeight());
+		if(availableh < h) { Plog.log.addLog("Height reduced from ",h," to ",availableh); }
+		for(int nc = cc-1 ; nc>=0; nc--)
 		{
 			Component c = getComponentAt(nc);
 			int cw = c.getWidth();
 			int ch = c.getHeight();
-			if((cw!=w)||(ch!=h))
+			if((cw!=w)||(ch!=availableh))
 			{	
 				c.setX(x);
 				c.setY(0);
 				c.setWidth(w);
-				c.setHeight(h);
+				c.setHeight(availableh);
 			}
 		}
 	}
