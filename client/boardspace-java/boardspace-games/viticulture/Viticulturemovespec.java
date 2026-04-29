@@ -942,24 +942,32 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     {	return ((from==null) ? null : (Viticulturemovespec)from.Copy(null));
     }
     public static void ephemeralSort(CommonMoveStack ephemera)
-    {
-    	for(int i=0,siz=ephemera.size();i<siz;i++)
+    {	int lim = ephemera.size();
+    	for(int i=0;i<lim;i++)
     	{
     	Viticulturemovespec m = (Viticulturemovespec)ephemera.elementAt(i);
     	switch(m.op)
     	{    	
     	case EPHEMERAL_DRAFT_OK:
     		m.player = m.from_col-'A';
-    		m.setEvaluation(m.player*1000);
+    		m.setEvaluation(m.player*10000+1000+m.index());
     		break;
     	case EPHEMERAL_DRAFT:
      		m.player = m.from_col-'A';
-    		m.setEvaluation(m.player*1000+1);
+    		m.setEvaluation(m.player*10000+m.index());
     		break;
     	default:
-    		m.setEvaluation(10000);
+    		m.setEvaluation(100000+m.index());
     		break;
       	}}
     	ephemera.sort(false);
+    	// remove duplicates
+    	commonMove prev = null;
+    	for(int i=lim-1; i>=0; i--)
+    	{
+    		commonMove m = ephemera.elementAt(i);
+    		if(prev!=null && m.op==prev.op) { ephemera.remove(i+1,true); }
+    		prev = m;
+    	}
     }
 }

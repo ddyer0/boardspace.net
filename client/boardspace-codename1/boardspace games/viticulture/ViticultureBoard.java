@@ -8401,10 +8401,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{
     		PlayerBoard nn = pbs[m.from_col-'A'];
     		nn.isReady = m.from_row!=0;
-    		if(allPlayersReady()) 
-    			{ doDone(replay,m); 
-    			}
-    		else { 	setNextPlayer(replay); }
+    		setNextPlayer(replay); 
     		}
         	break;
         case EPHEMERAL_COMMENCE:

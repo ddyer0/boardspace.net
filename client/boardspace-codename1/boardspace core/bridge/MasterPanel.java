@@ -37,7 +37,8 @@ import com.codename1.ui.plaf.Style;
 
 /**
  * This is the top level container that contains all the full-sized windows,
- * which can be navigated using a tab interface.
+ * which can be navigated using a tab interface.  The master panel's location
+ * and size correspond exactly to the safe area excluding the title bar
  * 
  * @author Ddyer
  *
@@ -148,20 +149,22 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 	public Dimension getPreferredSize()
 	{	com.codename1.ui.Container parent = getParent();
-		return(new Dimension(parent.getWidth(),parent.getHeight()));
+		int h = parent.getHeight();
+		int w = parent.getWidth();
+		return(new Dimension(w,h));
 	}
 	public void setSize(Dimension sz)
-	{	Plog.log.addLog("Master panel size ",sz);
+	{	//Plog.log.addLog("Master panel size ",sz);
 		super.setSize(sz);
 	}
 	public void setWidth(int w)
 	{
-		Plog.log.addLog("Master panel width ",w);
+		//Plog.log.addLog("Master panel width ",w);
 		super.setWidth(w);
 	}
 	public void setHeight(int h)
 	{
-		Plog.log.addLog("Master panel height ",h);
+		//Plog.log.addLog("Master panel height ",h);
 		//Plog.log.addLog("Stack: ",G.getStackTrace());
 		super.setHeight(h);
 	}
@@ -507,29 +510,26 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 	
 	public void doNullLayout()
-	{
-		setLocalBounds(0,0,getWidth(),getHeight());
-	}
-	public void setLocalBounds(int l,int t,int w0, int h)
-	{	// this "safe" nonsense is to avoid the notch on iphones held horizontally
-		Rectangle safe = MasterForm.getMasterForm().getSafeArea();
+	{	com.codename1.ui.Container parent = getParent();
+		int w = parent.getWidth();
+		int h = parent.getHeight();
+		setWidth(w);
+		setHeight(h);
+		setX(0);
+		setY(0);
+
 		int cc = getComponentCount();
-		int sx = safe.getX();
-		int x = (int)(sx*0.66);
-		int w = w0-sx;
-		int availableh = Math.min(h,MasterForm.getSafe().getHeight());
-		if(availableh < h) { Plog.log.addLog("Height reduced from ",h," to ",availableh); }
 		for(int nc = cc-1 ; nc>=0; nc--)
 		{
 			Component c = getComponentAt(nc);
 			int cw = c.getWidth();
 			int ch = c.getHeight();
-			if((cw!=w)||(ch!=availableh))
+			if((cw!=w)||(ch!=h))
 			{	
-				c.setX(x);
+				c.setX(0);
 				c.setY(0);
 				c.setWidth(w);
-				c.setHeight(availableh);
+				c.setHeight(h);
 			}
 		}
 	}

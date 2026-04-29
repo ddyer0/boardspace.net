@@ -2112,9 +2112,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
         }
   
+        if(v!=null)
+        {
  
-            if (  (v!=null)
-            		&& !v.isScored()
+            if ( !v.isScored()
             		&& !GameOver() 
             		&& (nva != 0)        		
             		&& (v.salvageRobot()!=null)
@@ -2146,6 +2147,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
 
         }        
+    }
     }
     //
     // check if we're being bumped by another instance of the same player,

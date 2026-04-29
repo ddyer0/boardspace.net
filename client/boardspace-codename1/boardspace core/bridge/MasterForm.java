@@ -19,6 +19,8 @@ package bridge;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
+import lib.NullLayout;
+import lib.NullLayoutProtocol;
 import lib.Plog;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
@@ -37,25 +39,30 @@ import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 
-class FixedTopLayout extends com.codename1.ui.layouts.BorderLayout
-{
-	FixedTopLayout() {  }
-	public void layoutContainer(com.codename1.ui.Container parent)
-	{	//G.print("Layout master, scale ",isScaleEdges());
-		MasterToolBar.getSafeArea();
-		super.layoutContainer(parent);
-	}
-}
+
 class MasterToolBar extends Toolbar
 {
 	MasterToolBar()
 	{
 		super();
-		setLayout(new FixedTopLayout());
+		setLayout(new BorderLayout());
 		setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
 
 	}
 	static int savedNotch = -1;
+}
+@SuppressWarnings("rawtypes")
+public class MasterForm extends Form implements com.codename1.ui.events.ActionListener,Config,NullLayoutProtocol
+{	static MasterForm masterForm = null;
+	private static MasterPanel masterPanel = null;
+	JPanel tabs = new JPanel(new TabLayout(),"ContainerMasterForm");
+	JPanel menus = new JPanel(new TabLayout(),"ContainerMasterForm");
+	JPanel centers = new JPanel(new TabLayout(),"ContainerMasterForm");
+	Spacer spacer = null;
+	String appname = "unnamed";
+	private MasterToolBar toolBar;
+	boolean recordEvents = true;
+	
 	//
 	// galaxy s24 results, display w = 1440 h = 3120
 	//
@@ -77,103 +84,26 @@ class MasterToolBar extends Toolbar
 	// master portrait size 1536x1945
 	// master portrait safe 0,40 1536x1945
 	
-	static Rectangle getSafeArea()
-	{
-		Rectangle rect = MasterForm.getSafe();
-		int current = rect.getY();
-		if(G.isIOS())
-		{
-			// this is a kludge to paper over a codenameone bug, that iphones
-			// return an impossible dissonant safe area when held horizontally
-			// it also fails to swap displaywidth and displayheight
-		MasterForm mf = MasterForm.masterForm;
-		if (mf!= null)
-		{
-		int disw = mf.getWidth();
-		int dish = mf.getHeight();
-		int rw = rect.getWidth();
-		int rh = rect.getHeight();
-		boolean dissonent = (rw<rh != disw<dish);
-		Plog.log.addLog("frame=",disw," dish=",dish," ",dissonent," screen=",G.getScreenWidth(),"x",G.getScreenHeight());
-		//Rectangle form = mf.getBounds();
-		//Plog.log.addLog("form = ",G.Left(form),",",G.Top(form)," ",G.Width(form),"x",G.Height(form));
-		
-		Plog.log.addLog("initial safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight());
+	// android 16 tablet landscape 1280x800 screen=1280x800 safe 0,24 1280x720 frame=1280x720 panel=0,0 1280x720
+	//		             portrait  800x1280 screen=800x1280 safe 0,24 800x1200 frame=800x1200 panel=0,0 800x1200
+	//
+	// android 16 phone  landscape 3120x1440                safe 112,84 2840x1356 frame 3120x1440 (twist cw)
+	//				     landscape 3120x1440			    safe 168,84 2840x1356 frame 
+	//					 portrait  1440x3120				safe 0,113  1440x2839  frame 1440x3120 
+	//
+	// online platform Android 
+	// vertical  screen=1440x3120 safe 0,154 1440x2798 frame=1440x2696 panel=0,0 1440x2696 ip 81.2.66.243
+	// horizontal cw [2026/04/27 21:19:04] offline platform Android 26.97 screen=1440x3120 safe 0,154 1440x2798 frame=1440x2696 panel=0,0 1440x2696 ip 81.2.66.243
 
-		if(dissonent) { 
-			current = (disw>dish) ? 0 : Math.max(0,savedNotch);
-			rect.setY(current);
-			rect.setX(current==0 ? Math.max(0,savedNotch) : 0);
-			rect.setWidth(rh);
-			rect.setHeight(rw);
-			Plog.log.addLog("safe area dissonent, ",rw,"x",rh," vs ",disw,"x",dish);
-			}
-			else
-			{
-			savedNotch = Math.max(rect.getX(),current);
-			}
-		// this is a hack for the simulator, set the safe area by modding the official rect
-		// rect.setY(150);
-		Plog.log.addLog("current ",current);
-		}
-		}
-		{
-		MasterForm mf = MasterForm.masterForm;
-		if (mf!= null)
-		{
-		Plog.log.addLog("final safe x=",rect.getX()," y=",rect.getY()," w=",rect.getWidth()," h=",rect.getHeight()," bot =",mf.getHeight()-G.Bottom(rect));
-		}}
-		return rect;
-	}
-	int remembered = -1;
-	public Dimension getPreferredSize()
-	{	// this is the essential repair to the toolbar logic.  Include
-		// the height of the safe area in the toolbar size.  Other kludgery
-		// in com.codename1.ui.Container will add a margin corresponding to
-		// the safe area.
-		Style s = getStyle();
-		s.setPaddingUnitTop(Style.UNIT_TYPE_PIXELS);
-		Rectangle rect = getSafeArea();
-		int safeTop = G.Top(rect);
-		s.setPaddingTop(safeTop);
-		Dimension sz = super.getPreferredSize();
-		sz.setWidth(Math.min(G.Width(rect),sz.getWidth()));		
-		if(G.isIOS() && savedNotch>=0)
-		{
-		// this is complete kludgery - iphones get it right the first time
-		// so remember the answer and reuse it. At least until codename1's notch
-		// logic is fixed.
-		if(remembered<0) { remembered = sz.getHeight()-savedNotch; }
-		else {
-			int oldsize = sz.getHeight();
-			int newsize = remembered+safeTop;
-			if(oldsize!=newsize)
-			{
-				sz.setHeight(newsize);
-				Plog.log.addLog("kludge:  toolbar size changed from ",oldsize," to ",newsize);
-			}
-		}}
-		Plog.log.addLog("toolbar preferred size ",sz.getWidth(),"x",sz.getHeight());
-		return sz;
-	}
-}
-@SuppressWarnings("rawtypes")
-public class MasterForm extends Form implements com.codename1.ui.events.ActionListener,Config
-{	static MasterForm masterForm = null;
-	private static MasterPanel masterPanel = null;
-	JPanel tabs = new JPanel(new TabLayout(),"ContainerMasterForm");
-	JPanel menus = new JPanel(new TabLayout(),"ContainerMasterForm");
-	JPanel centers = new JPanel(new TabLayout(),"ContainerMasterForm");
-	Spacer spacer = null;
-	String appname = "unnamed";
-	private MasterToolBar toolBar;
-	boolean recordEvents = true;
-	
 	public static Rectangle getSafe()
 	{	Rectangle r = Display.getInstance().getDisplaySafeArea(new Rectangle());
 		return new Rectangle(G.Left(r),G.Top(r),G.Width(r),G.Height(r));
 	}
-	
+	public static String getSafeBounds()
+	{
+		Rectangle s = getSafe();
+		return G.concat(s.getX(),",",s.getY()," ",s.getWidth(),"x",s.getHeight());
+	}
 	public void adjustTabStyles()
 	{
 		toolBar.setShouldCalcPreferredSize(true);
@@ -224,7 +154,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	@SuppressWarnings("deprecation")
 	private MasterForm(String app) 
 	{ super(app);
-	  new BoxLayout(this,BoxLayout.Y_AXIS);
+	  setLayout(new NullLayout(this));
 	  UIManager man = UIManager.getInstance();
 	  man.setLookAndFeel(new BSLookAndFeel(man));
 	  showStyles();
@@ -328,16 +258,16 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  title.setText(name);
 	}
 	public void setWidth(int n)
-	{	Plog.log.addLog("master set width "+n);
+	{	//Plog.log.addLog("master set width "+n);
 		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setWidth(n);
 	}
 	public void setHeight(int n)
-	{	Plog.log.addLog("master set height "+n);
+	{	//Plog.log.addLog("master set height "+n);
 		super.setHeight(n);
 	}
 	public void setSize(Dimension d)
-	{	Plog.log.addLog("master set size "+d);
+	{	//Plog.log.addLog("master set size "+d);
 		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setSize(d);
 	}
@@ -360,7 +290,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		int w = getWidth();
 		@SuppressWarnings("deprecation")
 		int titleh = getTitleArea().getHeight();
-		int h = getHeight()-titleh;
+		int h = Math.min(getSafe().getHeight(),getHeight())-titleh;		
 		p.setX(0);
 		p.setY(titleh);
 		p.setSize(new Dimension(w,h));
@@ -413,6 +343,12 @@ public void addToMenus(JButton m)
 			G.runInEdt(new Runnable() { public void run() { form.addMasterPanel(); }});
 			}
 		  return(masterPanel);
+	}
+	
+	public static String getPanelBounds()
+	{
+		if(masterPanel==null) { return ""; }
+		return G.concat(masterPanel.getX(),",",masterPanel.getY()," ",masterPanel.getWidth(),"x",masterPanel.getHeight());
 	}
 	public void actionPerformed(ActionEvent evt) {
 		if(evt==null) { G.print(Http.stackTrace("null event in error catcher!")); }
@@ -772,5 +708,37 @@ public void addToMenus(JButton m)
 			if(mp!=null) { mp.setShouldCalcPreferredSize(true); }
 			setShouldCalcPreferredSize(true);
 			}
+	}
+
+	public void doNullLayout() {
+		Rectangle safe = getSafe();
+		int safeX = safe.getX();
+		int safeY = safe.getY();
+		int safeW = safe.getWidth();
+		int safeH = safe.getHeight();
+		// manually layout the title bar and contents pane to avoid the safe area
+		com.codename1.ui.Container bar = getTitleBar();
+		com.codename1.ui.Container content = getContentPane();
+		//Rectangle sz = getBounds();
+		Dimension barsize = bar.getPreferredSize();
+		int barH = barsize.getHeight();
+		// bar sits just below the safe area
+		bar.setX(safeX);
+		bar.setY(safeY);
+		bar.setWidth(safeW);
+		bar.setHeight(barH);
+		// content covers the rest of the safe area
+		content.setX(safeX);
+		content.setY(safeY+barH);
+		content.setWidth(safeW);
+		if(G.isIOS()) {
+			// ignore the bottom safe area on idevices, it's actually usable
+			content.setHeight(getHeight()-barH-safeY);
+		}
+		else
+		{	// bottom safe area on androids is the nav bar
+			content.setHeight(safeH-barH);
+		}
+		
 	}
 }

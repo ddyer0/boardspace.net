@@ -335,6 +335,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         boolean canPick = (thisChip!=null);
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
         int h = G.Height(r);
+        int w = G.Width(r);
         //G.frameRect(gc, Color.blue, r);
         prerotated = true;
         int px = G.Left(r)+h/2;
@@ -345,6 +346,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         int sz = h*4/3;
         ChessId rack = thisCell.rackLocation();
         {
+        int step = Math.min(sz/3,w/(lim+1));
         for(int i=0;i<lim;i++)
         {
         	ChessChip ch = thisCell.chipAtIndex(i);
@@ -365,7 +367,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         	highlight.spriteColor = Color.red;
                 	highlight.hit_index = i;
         		}
-        		px += sz/3;
+        		px += step;
         	}
         }
         if(canDrop && G.pointInRect(pt,r))

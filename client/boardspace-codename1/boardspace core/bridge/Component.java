@@ -199,6 +199,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 	public static String getHierarchy(Container c)
     {
      	StringBuilder b = new StringBuilder();
+     	b.append("window hierarchy\n");
     	while(c!=null)
     	{	b.append(c.getClass().getName()+" : ");
     		b.append(c.getX()+","+c.getY()+" "+c.getWidth()+"x"+c.getHeight()+"\n");

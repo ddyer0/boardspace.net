@@ -5535,7 +5535,11 @@ Benefit collectBenefit(Benefit benefit,replayMode replay)
 		return(null); 
 		
 	case IcariteInfluenceAndCardx2:
-		if(b.variation.isIIB()) { return(benefit); }	// must interact
+		if(b.variation.isIIB()) 
+			{ 
+			if(b.revision>=126) { b.incrementAllegiance(Allegiance.Icarite,replay); }
+			return(benefit); 
+			}	// must interact
 		else {b.incrementAllegiance(Allegiance.Icarite,replay);
 		 doArtifact(2,b,replay);
 		}

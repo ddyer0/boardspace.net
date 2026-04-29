@@ -22,6 +22,7 @@ import lib.MenuInterface;
 import lib.MenuParentInterface;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
+import lib.Plog;
 
 import com.codename1.ui.Component;
 
@@ -74,7 +75,7 @@ public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuPa
 		actualPaint(g);
 	}
 	public void setLocalBounds(int l,int t,int w, int h)
-	{	
+	{	//Plog.log.addLog("Panel set local bounds h ",h);
 		for(int nc = getComponentCount()-1 ; nc>=0; nc--)
 		{
 			Component c = getComponentAt(nc);

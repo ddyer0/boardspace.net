@@ -816,6 +816,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 			case White_Chip_Pool:
     		case Black_Chip_Pool:
     			if(pickedIndex<0) { ps.addChip(po); } else { ps.insertChipAtIndex(pickedIndex,po); }
+        		pickedIndex = -1;
     			break;
     		case BoardLocation: 
     				ps.addChip(po);
@@ -828,7 +829,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     				break;
     		}
     		pickedObject = null;
-    		pickedIndex = -1;
      	}
      }
     
@@ -980,6 +980,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		case White_Captured:
 			if(index>=0) { c.insertChipAtIndex(index,pickedObject); }
 			else { c.addChip(pickedObject); }
+	      	pickedIndex = -1;
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
@@ -987,8 +988,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	dropState.push(board_state);
        	droppedDestStack.push(c);
        	pickedObject = null;
-       	pickedIndex = -1;
-    }
+     }
 
     private void pickObject(ChessCell c,int lvl)
     {	G.Assert(pickedObject==null,"pickedObject should be null");
@@ -1011,11 +1011,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
 			pickedObject = lvl<0 ? c.topChip() : c.removeChipAtIndex(lvl);
+			pickedIndex = lvl;
 			break;	// don't add back to the pool
     	
     	}
     	pickedSourceStack.push(c);
-		pickedIndex = lvl;
    }
 
     //
@@ -1770,6 +1770,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         robotCapture.push(kingHasMoved[whoseTurn]?1:0);
         robotCapture.push(kingRookHasMoved[whoseTurn]?1:0);
         robotCapture.push(queenRookHasMoved[whoseTurn]?1:0);
+        robotCapture.push(pickedIndex);
         robotDepth++;
         
       
@@ -1962,7 +1963,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         }
         lastSrc[whoseTurn] = robotLast.pop();
         lastDest[whoseTurn] = robotLast.pop();
-        
+        pickedIndex = robotCapture.pop();
         queenRookHasMoved[whoseTurn] = robotCapture.pop()!=0;
         kingRookHasMoved[whoseTurn] = robotCapture.pop()!=0;
         kingHasMoved[whoseTurn] = robotCapture.pop()!=0;

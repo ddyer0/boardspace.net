@@ -52,6 +52,7 @@ import lib.LFrameProtocol;
 import lib.MenuParentInterface;
 import lib.MouseState;
 import lib.OfflineGames;
+import lib.Plog;
 import lib.PopupManager;
 import lib.Random;
 import lib.ScrollArea;
@@ -232,6 +233,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	public void setLocalBounds(int l, int t, int w, int h) 
 	{	needNewLayout = false;
 		G.SetRect(fullRect,l,t,w,h); 
+		Plog.log.addLog(G.screenSummary()," seating ",l,",",t," ",w,"x",h);
+		
 		// to benefit lastgameboard, don't switch to portrait if the board is nearly square
 		portrait = w<(h*0.9);	
 		double ratio = Math.abs((double)w/h);

@@ -3939,16 +3939,17 @@ private void drawPlayerBoard(Graphics gc,
        	}
        	
        	if(drafting)
-       	{	int y = yp+cardH*3/4;
+       	{	
        		int xstep = cardH/5;
-       		int xxp = G.centerX(br)-(gb.pbs.length*step)/2;
+       		int y = centerY-xstep;
+       		int xxp = xp+xstep/2;
     		for(PlayerBoard p : gb.pbs)
     		{
     			ViticultureChip ch = p.getRooster();
     			boolean ready = p.isReady;
     			boolean me = (allPlayersLocal() || ( p.boardIndex==getActivePlayer().boardIndex))
     					&& (pb.selectedCards.size()==1);
-    			if(ch.draw(gc,this,xstep,xxp,y,me ? highlight:null,ViticultureId.SetReady,null))
+    			if(ch.draw(gc,this,xstep*2/3,xxp,y,me ? highlight:null,ViticultureId.SetReady,null))
     			{
     				highlight.hitObject = p;
     				highlight.hit_index = ready ? 0 : 1;
@@ -3956,9 +3957,9 @@ private void drawPlayerBoard(Graphics gc,
     			}
     			if(ready)
     			{
-    				StockArt.Checkmark.draw(gc,this,xstep,xxp,y,null);
+    				StockArt.Checkmark.draw(gc,this,xstep/3,xxp,y,null);
     			}
-    			xxp+= step;
+    			y += xstep/2;
     		}}
 
 		if(apCards)

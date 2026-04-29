@@ -38,7 +38,7 @@ import online.game.*;
  *
  */
 public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaConstants
-{		static int REVISION = 125;			// revision numbers start at 100
+{		static int REVISION = 126;			// revision numbers start at 100
 //TODO: rotate market cards when enlarged
 //TODO: open artifacts when unseen on touch screens
 //TODO: tweak side screen layout for more square screen shape
@@ -76,6 +76,9 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	// revision 123 fixes recycling of some artifacts - they weren't and so couldn't come up again. 
 	//				this also is the demarcation between traditional and ignorance is bliss rules
 	// revision 124 adds the "lose morale" payment for doubles
+	// revision 125 fixes the timing of TerriTheBlissTrader
+	// revision 126 fixes a missing allegiance bump from the breeze bar
+	
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	
