@@ -1274,6 +1274,10 @@ public class BugsBoard
            setState(BugsState.Puzzle);
            break;
 
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(BugsState.Gameover);
+			break;
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(BugsState.Gameover);

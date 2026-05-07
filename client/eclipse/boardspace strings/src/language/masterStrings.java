@@ -176,7 +176,7 @@ public class masterStrings extends InternationalStrings
     	put(VNCConstants.VncStrings);
     	
     	setContext("lobby");
-        put("fontfamily", "sansserif");
+    	put("fontfamily", "sansserif");
         put(TimeControl.TimeControlStrings);
         put(TimeControl.TimeControlStringPairs);
         Session.Mode.putStrings();

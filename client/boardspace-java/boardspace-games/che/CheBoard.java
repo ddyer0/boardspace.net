@@ -627,6 +627,10 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
             setState(CheState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(CheState.GAMEOVER_STATE);
+			break;
 
        case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

@@ -2951,6 +2951,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	}
     	return(true);
     }
+    
     // set the state to the appropriate running state
     void setRunningState(replayMode replay)
     {	//
@@ -3378,7 +3379,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     		{	RecruitChip newRecruit = (RecruitChip)c.chipAtIndex(lim);
     			if(recruitShouldBeActive(newRecruit))
     			{	c.removeChipAtIndex(lim);
-    				p.addActiveRecruit(newRecruit,replay);
+    				some |= p.addActiveRecruit(newRecruit,replay);
     				logGameEvent(ActivateRecruitMessage,p.color.name(),newRecruit.name);
     				if(getAllegianceValue(newRecruit.allegiance)>=(AllegianceSteps-1))
     				{
@@ -6945,7 +6946,6 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
        	normalStartSeen = true;
     	}
     }
-    
     public boolean Execute(commonMove mm,replayMode replay)
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
@@ -7453,6 +7453,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
             continuationStack.clear();
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(EuphoriaState.Gameover);
+			break;
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(EuphoriaState.Gameover);
@@ -11607,6 +11611,8 @@ EPlayer robotPlayer = null;
 	{
 		if(G.p1(msg) && (robot!=null))
 		{	String dir = "g:/share/projects/boardspace-html/htdocs/euphoria/euphoriagames/robot/";
+			// note that these replays won't work reliably unless the robot autodone is turned off,
+			// and probably also the robot hidden state randomization
 			robot.saveCurrentVariation(dir+msg+".sgf");
 			return(true);
 		}
@@ -11617,6 +11623,8 @@ EPlayer robotPlayer = null;
 		p1(msg);
 		return G.Error(msg);
 	}
+
+
 	public boolean Assert(boolean condition,String msg,Object...args)
 	{	if(!condition)
 		{	if(args.length>0) { msg = G.format(msg,args); }

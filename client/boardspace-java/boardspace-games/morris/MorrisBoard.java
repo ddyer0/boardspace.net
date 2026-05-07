@@ -881,6 +881,9 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
             setState(MorrisState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

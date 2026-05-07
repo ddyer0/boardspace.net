@@ -452,7 +452,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     public double king_distance_multiplier4 = 0.01;
     public double king_distance_multiplier5 = 0.02;
     public double king_distance_multiplier6 = 0.04;		// worse than 0.02
-    public double king_distance_multiplier6a = 0.01;	// worse than 0.02
+    public double king_distance_multiplier6a = 0.01;	// best
     public double ScoreForPlayer4(int player,boolean print)
     {
     	return ScoreForPlayer4(player,print,king_distance_multiplier4);
@@ -990,6 +990,9 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         		addChip(dest,top.getFlipped());
         	}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

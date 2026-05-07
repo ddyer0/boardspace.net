@@ -4421,8 +4421,12 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
             setState(ContainerState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(ContainerState.GAMEOVER_STATE);
+			break;
             
-        case MOVE_GAMEOVERONTIME:
+       case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(ContainerState.GAMEOVER_STATE);
 			break;

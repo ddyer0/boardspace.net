@@ -2631,8 +2631,8 @@ private void drawPlayerBoard(Graphics gc,
     			
     			int h1w = (int)(w0*0.3);
     			int x1 = xpos0+xo+w0-h1w;
-    			Rectangle r0 = new Rectangle(x1+h1w/4,ypos0,h1w,h1);
-    			Rectangle r1 = new Rectangle(x1-h1w,ypos0,h1w,h1);
+    			Rectangle r0 = new Rectangle(x1,ypos0,h1w*2/3,h1);
+    			Rectangle r1 = new Rectangle(x1-h1w*5/4,ypos0,h1w*2/3,h1);
     			
 				if(HitPoint.setHelpText(highlight,r0,MakeChampagne))
     				{ highlight.spriteRect = r0;
@@ -3752,9 +3752,16 @@ private void drawPlayerBoard(Graphics gc,
 				int xpos = xp+cardStep+cardStep*i;
 				CardPointer p = card1Index.elementAt(i);
 				G.Assert(ch==p.card,"must match");
-				if(selected.contains(p.source,p.card,p.index)) {
+				int ind = selected.indexOf(p.source,p.card,p.index);
+				if(ind>=0) {
 					
 		     		mark.draw(gc,this,cardStep/2,xpos,cardy2,null);
+		     		if(selected.size()>1)
+		     		{
+		     			GC.Text(gc,true,
+		     					xpos-cardStep/8,cardy2-cardStep/8,cardStep/4,cardStep/4,
+		     					Color.black,null,""+(ind+1));
+		     		}
 				}
 				Rectangle sr = new Rectangle(xpos-cardStep/2,cardy2+cardStep/2,cardStep,cardStep/3);
 				viewCard(highlight,sr,ch);
@@ -3807,8 +3814,13 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureChip ch = cardDisplay.chipAtIndex(i);
 			int xpos = xp+cardStep+cardStep*i;
 			CardPointer p = cardIndex.elementAt(i);
-			if(selected.contains(p.source,p.card,p.index)) {
+			int ind = selected.indexOf(p.source,p.card,p.index);
+			if(ind>=0) {
 	     		mark.draw(gc,this,cardStep/2,xpos,cardY,null);
+     			GC.Text(gc,true,
+     					xpos-cardStep/8,cardY-cardStep/8,cardStep/4,cardStep/4,
+     					Color.black,null,""+(ind+1));
+
 			}
 			Rectangle sr = new Rectangle(xpos-cardStep/2,cardY+cardStep/2,cardStep,cardStep/3);
 			viewCard(highlight,sr,ch);

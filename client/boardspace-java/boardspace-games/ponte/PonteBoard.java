@@ -1154,6 +1154,9 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
         case MOVE_GAMEOVER:
         	setGameOver();
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

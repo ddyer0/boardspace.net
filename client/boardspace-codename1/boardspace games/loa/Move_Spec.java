@@ -111,7 +111,11 @@ public class Move_Spec extends Stone_Spec implements UIC, LoaMove
         {
         	op = M_Edit;
         }
-        else if(lower.startsWith("winontime")) { op = MOVE_GAMEOVERONTIME; }
+        else if(lower.startsWith(LOSEGAMEONTIME))
+        {
+        	op = MOVE_LOSEGAMEONTIME;
+        }
+        else if(lower.startsWith(GAMEOVERONTIME)) { op = MOVE_GAMEOVERONTIME; }
         else if((UNDO.equalsIgnoreCase(specstring))
         		|| (RESET.equalsIgnoreCase(specstring))) 
         	{ op = M_Undo; player = 0; 

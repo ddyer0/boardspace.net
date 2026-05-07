@@ -843,6 +843,9 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
              setState(DvonnState.PUZZLE_STATE);
   
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

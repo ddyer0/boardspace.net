@@ -963,6 +963,9 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
             setState(VolcanoState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

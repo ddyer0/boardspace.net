@@ -950,6 +950,9 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
             setState(GoState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

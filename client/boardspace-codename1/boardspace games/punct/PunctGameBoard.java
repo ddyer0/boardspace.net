@@ -1192,6 +1192,9 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
         	G.Assert(pickedObject!=null,"something moving");
         	pickedObject.rotation=(pickedObject.rotation+1)%6;
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

@@ -878,6 +878,9 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
             setState(GygesState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

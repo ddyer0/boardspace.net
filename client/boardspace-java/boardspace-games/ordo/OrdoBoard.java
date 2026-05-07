@@ -1114,6 +1114,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             setState(OrdoState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
             
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

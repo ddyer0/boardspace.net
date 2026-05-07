@@ -1767,6 +1767,10 @@ class PendulumBoard
         	acceptPlacement();
             setState(PendulumState.Puzzle);
             break;
+		case MOVE_LOSEGAMEONTIME:
+		   	   win[whoseTurn^1] = true;
+	    	   setState(PendulumState.Gameover);
+	 			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

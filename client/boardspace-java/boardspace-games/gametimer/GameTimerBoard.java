@@ -319,6 +319,10 @@ class GameTimerBoard
        case MOVE_EDIT:
             setState(GameTimerState.Puzzle);
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(GameTimerState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

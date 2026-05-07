@@ -1295,6 +1295,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
             undoCell.doInit();
             transportCell.doInit();
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
         case MOVE_GAMEOVERONTIME:
         	setGameOver(true,false);
         	break;

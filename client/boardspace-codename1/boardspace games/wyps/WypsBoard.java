@@ -419,7 +419,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	static DictionaryHash privateDictionaryInternal = new DictionaryHash(1); 
     private static boolean privateDictionaryInited = false;
     private synchronized void initPrivateDictionary()
-    {	G.print("init private dictionary "+privateDictionaryInited);
+    {
 		// make sure the single letters are there
     	if(!privateDictionaryInited)
     	{
@@ -1923,6 +1923,10 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
             setState(WypsState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(WypsState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(WypsState.Gameover);

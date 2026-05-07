@@ -55,8 +55,9 @@ if( param() )
 			  my $var = &param('variation');
 			  my $limit = &param('limit');
 			  my $first = &param('first');
+			  my $mar = &param('marked');
 			  #print "\nget o=$own i=$inv s=$sta v=$var\n";
-                          $msg = &getgameinfo($dbh,$own,$inv,$sta,$var,$first,$limit); 
+                          $msg = &getgameinfo($dbh,$own,$inv,$sta,$mar,$var,$first,$limit); 
 			}
 		elsif('recordgame' eq $tagname)
 		{

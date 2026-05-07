@@ -1367,6 +1367,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         case MOVE_RESIGN:
            setState(unresign==null?PlateauState.RESIGN_STATE:unresign);
            break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

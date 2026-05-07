@@ -1209,6 +1209,9 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
         	finalizePlacement();
             setState(FanoronaState.PUZZLE_STATE);
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

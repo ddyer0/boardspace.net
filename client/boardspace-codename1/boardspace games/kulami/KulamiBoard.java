@@ -852,6 +852,10 @@ void doSwap(replayMode replay)
             setState(KulamiState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(KulamiState.Gameover);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

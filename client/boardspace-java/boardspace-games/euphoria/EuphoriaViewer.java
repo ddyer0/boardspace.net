@@ -3381,7 +3381,7 @@ private Color playerBackground[] = {
     		}
     }
     public void ReplayGame(sgf_game ga)
-    {
+    {	
     	super.ReplayGame(ga);
     	if(collectingStats)
     	{

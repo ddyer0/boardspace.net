@@ -1285,6 +1285,10 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
             setState(CookieState.PUZZLE_STATE);
             unwind_state = board_state;
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(CookieState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(CookieState.GAMEOVER_STATE);

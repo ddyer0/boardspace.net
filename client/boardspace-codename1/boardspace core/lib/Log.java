@@ -40,6 +40,13 @@ public class Log {
 	   	    eventLog = e;
 		   }
 	   }
+	public static void reset()
+	{
+		synchronized(eventLog)
+		{
+			eventLog.setLength(0);
+		}
+	}
 	public static void startLog(String msg)
 	   {	
 		    Log.finishLog();
@@ -158,6 +165,5 @@ public class Log {
 	   }
 	public static void finishLog() { finishLog(false); }
 	public static boolean logActive() { return(startTimeNanos>0); }
-	
 
 }

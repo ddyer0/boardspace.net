@@ -1051,10 +1051,12 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
             setState(KubaState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
-			win[whoseTurn] = true;
-			setState(KubaState.GAMEOVER_STATE);
+			setGameOver(true,false);
 			break;
 
         default:

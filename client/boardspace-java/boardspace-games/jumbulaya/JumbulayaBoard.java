@@ -1991,6 +1991,10 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
             setState(JumbulayaState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(JumbulayaState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

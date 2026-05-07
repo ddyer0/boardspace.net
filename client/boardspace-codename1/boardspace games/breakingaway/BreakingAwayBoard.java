@@ -1197,6 +1197,10 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			acceptPlacement();
 			setState(BreakState.PUZZLE_STATE);
 			break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(BreakState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(BreakState.GAMEOVER_STATE);

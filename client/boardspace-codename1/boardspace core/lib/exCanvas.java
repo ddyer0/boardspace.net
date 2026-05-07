@@ -449,7 +449,7 @@ public abstract class exCanvas extends ProxyWindow
     	{	throw G.Error("error in lockAndLoadImages:"+err+"\n"+G.getStackTrace(err));
     	}
       }
- 
+    
     public void adjustStandardFonts(double height)
     {	double zoom = getGlobalZoom();
     	int FontHeight = Math.min((int)(maxFontHeight*zoom),

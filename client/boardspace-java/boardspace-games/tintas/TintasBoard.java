@@ -804,6 +804,10 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
             setState(TintasState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(TintasState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TintasState.Gameover);

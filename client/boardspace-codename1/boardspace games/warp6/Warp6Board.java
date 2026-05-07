@@ -851,6 +851,9 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
             setState(Warp6State.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

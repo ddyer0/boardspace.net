@@ -2588,6 +2588,10 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 			setState(ystate.PUZZLE_STATE);
 
 			break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(ystate.GAMEOVER_STATE);
+			break;
 			
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

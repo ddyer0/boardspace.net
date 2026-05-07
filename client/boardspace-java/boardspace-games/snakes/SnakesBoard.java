@@ -741,6 +741,9 @@ class SnakesBoard extends squareBoard<SnakesCell> implements BoardProtocol,Snake
             setState(SnakeState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(SnakeState.GAMEOVER_STATE);

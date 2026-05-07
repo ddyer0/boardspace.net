@@ -799,6 +799,10 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
             setState(TriadState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(TriadState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TriadState.GAMEOVER_STATE);

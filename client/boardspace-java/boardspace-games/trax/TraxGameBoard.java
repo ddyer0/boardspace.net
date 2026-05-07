@@ -998,6 +998,10 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
             setState(TraxState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(TraxState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TraxState.GAMEOVER_STATE);

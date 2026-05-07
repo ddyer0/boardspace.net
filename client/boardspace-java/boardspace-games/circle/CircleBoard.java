@@ -758,6 +758,10 @@ class CircleBoard
         	acceptPlacement();
             setState(CircleState.Puzzle);
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(CircleState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

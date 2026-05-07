@@ -765,6 +765,8 @@ sub get_tournament_variation()
 	my $sth = &query($dbh,$q);
 	my ($var,$thresh,$format,$subvariant,$type) = &nextArrayRow($sth);
 	&finishQuery($sth);
+	#print "<p>$q<br> sub $subvariant<p>\n";
+
 	return($var,$thresh,$format,$subvariant,$type);
 }
 sub get_tournament_description()

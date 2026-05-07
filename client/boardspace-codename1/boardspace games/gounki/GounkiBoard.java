@@ -903,6 +903,9 @@ default:
             setState(GounkiState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

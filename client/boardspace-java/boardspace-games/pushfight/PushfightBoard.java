@@ -885,7 +885,11 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         	setState(resetState=PushfightState.Puzzle);
  
             break;
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+	     	   win[whoseTurn^1] = true;
+	     	   setState(PushfightState.Gameover);
+			break;
+		case MOVE_GAMEOVERONTIME:
      	   win[whoseTurn] = true;
      	   setState(PushfightState.Gameover);
      	   break;

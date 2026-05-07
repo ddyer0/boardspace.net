@@ -2011,6 +2011,10 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  
             break;
 
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(CrosswordsState.Gameover);
+			break;
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(CrosswordsState.Gameover);

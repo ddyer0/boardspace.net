@@ -633,6 +633,10 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
             setState(SpanglesState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(SpanglesState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(SpanglesState.GAMEOVER_STATE);

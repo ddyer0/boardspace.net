@@ -678,9 +678,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {	skipGetStory = true;	// if there's a story on the way, ignore it.
         		myFrame.moveToFront(); 
         		v.doLoadUrl(serverFile, selectedGame);
-                
             }
-         changeActionMenus();
 
         //don't call SetWhoseTurn since no game may have been selected
         expectingHistory = false;
@@ -1072,7 +1070,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendMessage(NetConn.SEND_MYNAME + my.userName + " " + my.uid);
 
             if (my.isSpectator())
-            {
+            {	spectatorConnections = commonPlayer.changePlayerList(spectatorConnections,my,null,true);
+            	if(theChat!=null) { theChat.setUser(my.channel,my.userName); }
                 sendMyName(); //to everyone
                 if(!chatOnly && !skipGetStory) 	// if we're  a reviewer, the first game selection can beat us here
                 	{  // this is a true kludge - this will be ignored by old clients, and 
@@ -1337,12 +1336,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	}
         }
 
-        if(v!=null) 
         	{ commonPlayer p = new commonPlayer(-1);
         	  p.channel = tempID;
         	  p.uid = uid;
         	  p.setPlayerName(name,true,this);
-        	  v.changeSpectatorList(p,null); 
+        if(v!=null) { v.changeSpectatorList(p,null); } 
         	  spectatorConnections = commonPlayer.changePlayerList(spectatorConnections,p,null,true);
         	}
         }
@@ -1548,7 +1546,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		            else
 		            {	commonPlayer pl = getPlayer(playerID);
 		            	if(pl==null) { pl = findSpectator(playerID); }
-		            	User us = UserManager.getInstance().getExistingUser(pl.uid);
+		            	User us = pl==null ? null : UserManager.getInstance().getExistingUser(pl.uid);
 		            	String lan = us!=null ? us.getInfo(G.LANGUAGE) : null;
 		                theChat.postMessage(playerID, InternationalStrings.getLanguage(),lan,commandStr, msgstr);
 		            }
@@ -3524,9 +3522,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     			{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
-		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+		            String purlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
     	            if(G.debug()) { G.print("result "+urlStr); }
-		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
+		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+purlStr);
 		    	}
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
@@ -3743,7 +3741,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             jointReview = myFrame.addOption(messageMenu, s.get(JointReview),
                     reviewOnly,deferredEvents);
  
-            if(extraactions)
+            if(extraactions && v!=null)
             {
                 deferActions = myFrame.addOption(v.debugMenu(),"defer input",false,deferredEvents);
                 flushInput = myFrame.addOption(v.debugMenu(),"flush input",false,deferredEvents);
@@ -4018,10 +4016,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     	checkUrlLoaded();
     	if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
-    	
+    	boolean newturn = SetWhoseTurn();
     	if(turnBasedGame!=null &&  !my.isSpectator())
     	{
-    	boolean newturn = SetWhoseTurn();
     	if(newturn) { recordAsyncGame(false); }
     	else { recordAsyncComments(); }
 
@@ -4546,7 +4543,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void recordAsyncGame(boolean forced)
     {
-    	if(turnBasedGame!=null && (whoseTurn.uid!=null) && !my.isSpectator() && (turnBasedGame.status==AsyncStatus.active))
+    	if(turnBasedGame!=null && whoseTurn!=null && (whoseTurn.uid!=null) && !my.isSpectator() && (turnBasedGame.status==AsyncStatus.active))
     	{
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);
@@ -4559,10 +4556,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void recordAsyncComments()
     {
        	if(turnBasedGame!=null 
+       			&& whoseTurn!=null
        			&& (whoseTurn.uid!=null) 
        			&& !my.isSpectator() 
        			&& theChat.changedEncodedComments()
-       			&& (turnBasedGame.status==AsyncStatus.active) || (turnBasedGame.status==AsyncStatus.complete))
+       			&& ((turnBasedGame.status==AsyncStatus.active) 
+       				|| (turnBasedGame.status==AsyncStatus.complete)))
     	{	StringBuilder b = new StringBuilder();
        		theChat.getEncodedContents(b);
        		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true);

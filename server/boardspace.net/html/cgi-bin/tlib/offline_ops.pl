@@ -255,7 +255,7 @@ sub creategame()
 	{
 	my $preamble = $gameuid>0 
 			? "update offlinegame set last=utc_timestamp()" 
-			: "insert into offlinegame set last=utc_timestamp(),created=utc_timestamp()";
+			: "insert into offlinegame set last=utc_timestamp(),created=utc_timestamp(),marked=null";
 	my $andchange = $lastchange ? " and last=$qlastchange" : "";
 	my $andsequence = $lastsequence ? " and sequence=$qlastsequence" : "";
 	my $postamble = $gameuid>0 
@@ -378,14 +378,16 @@ sub getbody()
 # repeated as necessary, but gameuid starts each block
 #
 sub getgameinfo()
-{	my ($dbh, $owner, $invited, $status, $variation,$first,$limit) = @_;
-
+{	my ($dbh, $owner, $invited, $status, $marked, $variation,$first,$limit) = @_;
+	#__dStart( "$'debug_log", "getinfo"); 
 	#print "\n o=$owner i=$invited s=$status\n";
 	#
 	# construct the condition selector
 	#
 	my $cond = '';
 	my $comma = '';
+	my $mark = 'marked is null';
+
 	# make damn sure any supplied parameters are integers
         if (!$first) { $first = 0; } 
         if (!$limit) { $limit = 100; };
@@ -418,19 +420,35 @@ sub getgameinfo()
 		$cond .= "${comma}status=$qstat";
 		$comma = " and ";	
 		}
+		else
+		{
+		$cond .= "${comma}status!='canceled'";
+		$comma = " and ";
+		}
 	if(!($variation eq ''))
 		{
 		my $qvariation = $dbh->quote($variation);
 		$cond .= "${comma}variation=$qvariation";
 		$comma = " and ";
 		}
-	$cond = "where $cond $comma marked is null ";
+
+	if(!($marked eq ''))
+		{
+		# marked can be 'any' 'recent' 'delinquent' 'expired' 'none'
+		if($marked eq 'any') { $mark = ''; }
+		elsif($marked eq 'recent') { $mark = "(marked='delinquent' or marked is null)"; }
+		elsif($marked eq 'delinquent') { $mark = "marked='delinquent'"; }
+		elsif($marked eq 'expired') { $mark = "marked='expired'"; }
+		elsif ($marked eq 'none') { $mark = "marked is null"; }
+		}
+	$cond = "where $cond $comma $mark";
 	my $index = ($status && $invited ) ? "use index (status)" : "";
 	my $q = "select owner,whoseturn,gameuid,sequence,status,variation,playmode,"
 		."comments,firstplayer,speed,"
+		."marked,"
 		."invitedplayers,acceptedplayers,allowotherplayers,created,last "
 		."from offlinegame $index $cond order by last desc,status limit $limit offset $first";
-	#print "\nQ: $q\n";
+	#__d("\nQ: $q\n");
 	my $sth = &query($dbh,$q);
 	my $n = &numRows($sth);
 	my $msg = "";
@@ -442,6 +460,7 @@ sub getgameinfo()
 	#
 	my ($owner,$whoseturn,$gameuid,$sequence,$status,$variation,$playmode,
 		$comments,$firstplayer,$speed,
+		$marked,
 		$invitedplayers,$acceptedplayers,$allow,$created,$last) = &nextArrayRow($sth);
 	$msg .= "gameuid \"$gameuid\"\n"
 		. "whoseturn \"$whoseturn\"\n"
@@ -449,6 +468,7 @@ sub getgameinfo()
 		. "owner \"$owner\"\n"
 		. "status \"$status\"\n"
 		. "speed \"$speed\"\n"
+		. "marked \"$marked\"\n"
 		. "variation \"$variation\"\n"
 		. "playmode \"$playmode\"\n"
 		. "comments \"$comments\"\n"
@@ -461,7 +481,7 @@ sub getgameinfo()
 	
 	}
 	&finishQuery($sth);
-
+	#__dEnd();
 	return $msg;
 }
 sub sendNotification()

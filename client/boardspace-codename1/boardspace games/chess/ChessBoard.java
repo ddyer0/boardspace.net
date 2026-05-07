@@ -1652,6 +1652,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
             setState(ChessState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

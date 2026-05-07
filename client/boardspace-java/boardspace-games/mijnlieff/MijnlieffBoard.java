@@ -760,7 +760,11 @@ class MijnlieffBoard
  
             break;
 
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(MijnlieffState.Gameover);
+			break;
+		case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(MijnlieffState.Gameover);
     	   break;

@@ -762,6 +762,10 @@ void doSwap(replayMode replay)
         	acceptPlacement();
             setState(PrototypeState.Puzzle);
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(PrototypeState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

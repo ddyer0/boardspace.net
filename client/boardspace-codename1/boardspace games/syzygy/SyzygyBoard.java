@@ -996,6 +996,10 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
         	setState(SyzygyState.PUZZLE_STATE);
             unwind_state = board_state;
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(SyzygyState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(SyzygyState.GAMEOVER_STATE);

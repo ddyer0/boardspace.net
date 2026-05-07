@@ -1070,6 +1070,10 @@ void doSwap(replayMode replay)
             setState(SlitherState.Puzzle);
             break;
 
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(SlitherState.Gameover);
+			break;
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(SlitherState.Gameover);

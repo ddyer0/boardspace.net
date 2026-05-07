@@ -729,6 +729,9 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
             setState(ColoritoState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

@@ -1185,6 +1185,10 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
             setState(SprintState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(SprintState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

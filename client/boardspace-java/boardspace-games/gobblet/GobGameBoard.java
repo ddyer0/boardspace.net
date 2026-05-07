@@ -759,6 +759,9 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
             setState(GobbletState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

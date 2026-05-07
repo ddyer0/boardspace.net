@@ -1005,6 +1005,9 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
             setState(RithmomachyState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

@@ -841,6 +841,9 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
         case MOVE_PASS:
         	doDone(replay);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

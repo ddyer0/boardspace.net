@@ -699,7 +699,11 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
             setState(PalagoState.PUZZLE_STATE);
 
             break;
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(PalagoState.GAMEOVER_STATE);
+			break;
+		case MOVE_GAMEOVERONTIME:
      	   win[whoseTurn] = true;
      	   setState(PalagoState.GAMEOVER_STATE);
      	   break;

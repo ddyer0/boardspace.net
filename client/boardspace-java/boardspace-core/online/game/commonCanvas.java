@@ -161,7 +161,9 @@ public abstract class commonCanvas extends exCanvas
     private static String StepForwardMessage = "go forward 1 step";
     private static String PlayerForwardMessage = "go forward to the next player";
     private static String ToEndMessage = "go forward to the end";
-
+    private static String EndGameMessage = "End the game as a win for you";
+    private static String YesMessage = "Yes";
+    private static String NoMessage = "No";
 	/**
 	 * board cell iterator types, used to iterate over all cells of a game board.
 	 * @author Ddyer
@@ -444,6 +446,7 @@ public abstract class commonCanvas extends exCanvas
 	    }
 	    private LaunchUserStack localPlayers = new LaunchUserStack();
 	    private boolean gameOverlayEnabled = false;
+	    private boolean endgameOverlayEnabled = false;
 	    private Thread displayThread = null;
 	    private String lastParsed = "";
 		private SimpleRobotProtocol extraBot;
@@ -525,6 +528,9 @@ public abstract class commonCanvas extends exCanvas
 	    	StepForwardMessage,
 	    	PlayerForwardMessage,
 	    	ToEndMessage,
+	    	EndGameMessage,
+	    	YesMessage,
+	    	NoMessage,
 			VcrMoveMessage,
 			SaveSingleGame,
 			//ReplayGameFolder, // debug only
@@ -2295,6 +2301,8 @@ public abstract class commonCanvas extends exCanvas
     			doFlashAnimation(gc);
     		}
     	if(l.gameOverlayEnabled) { drawGameOverlay(gc,p); }
+    	if(l.endgameOverlayEnabled) { drawEndgameOverlay(gc,p); }
+    	
     }
     	finally {
     		Thread later = l.displayThread;
@@ -2518,6 +2526,54 @@ public abstract class commonCanvas extends exCanvas
     	l.drawingGameOverlay = drawing;
     }
 
+    public void drawEndgameOverlay(Graphics gc,HitPoint p)
+    {	// simple version that uses a modal dialog 
+    	/*
+    	String answer = G.optionBox("end the game?",
+    			"Ending the game as a win for you",YesMessage,NoMessage);
+    	l.endgameOverlayEnabled = false;
+    	if(YesMessage.equals(answer))
+    	{   PerformAndTransmit(LOSEGAMEONTIME,false,replayMode.Replay);
+    	}
+    	*/
+    	
+    	InternationalStrings s = G.getTranslations();
+    	HitPoint hitPoint = p;
+    	if(hitPoint!=null) { hitPoint.neutralize(); }
+    	int left = G.Left(boardRect);
+    	int top = G.Top(boardRect);
+    	int width = G.Width(boardRect);
+    	int inside = (int)(width*0.05);
+       	int h = inside*5;
+    	int ll =left+inside;
+    	int t = top+(G.Height(boardRect)-h)/2;
+    	int w = width-inside*2;
+     	Rectangle ir = new Rectangle(ll,t,w,h);
+    	StockArt.Scrim.getImage().stretchImage(gc, ir);  
+    	GC.setFont(gc,largeBoldFont());
+    	String banner = s.get(EndGameMessage);
+    	GC.Text(gc,true,ll,t,w,inside*2,Color.black,null,banner);
+    	
+    	if(GC.handleSquareButton(gc, new Rectangle(ll+inside*2,t+inside*2,w-inside*4,inside), hitPoint, 
+    			s.get(YesMessage),
+    			bsBlue,Color.lightGray))
+    	{	if(hitPoint.down)
+    		{
+    		PerformAndTransmit(LOSEGAMEONTIME,false,replayMode.Replay);
+    		l.endgameOverlayEnabled = false;
+    		}
+    	}
+    	if(GC.handleSquareButton(gc, new Rectangle(ll+inside*2,t+(int)(inside*3.5),w-inside*4,inside), hitPoint, 
+    			s.get(NoMessage),
+    			bsBlue,Color.lightGray))
+    	{	if(hitPoint.down)
+    		{	
+    		l.endgameOverlayEnabled = false;
+    		}
+    	}
+    	GC.frameRect(gc,Color.black,ir);
+    	
+    }
     /** return the player whose turn it really is.  This is used by the game controller
      * to key sounds and other per player turn actions.  This does not change if the 
      * player goes into review mode.
@@ -5709,6 +5765,10 @@ public abstract class commonCanvas extends exCanvas
     	if(pl!=null) { pl.setReviewTime(-1); }
     }
     l.gameOverlayEnabled = true;
+    if(turnBasedGame!=null && turnBasedGame.endgame)
+    {
+    	l.endgameOverlayEnabled = true;
+    }
     repeatedPositions.clear();
     }
     public void stopRobots()

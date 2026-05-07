@@ -1109,6 +1109,9 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         	default: throw G.Error("Not expecting state %s",board_state);
         	}}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

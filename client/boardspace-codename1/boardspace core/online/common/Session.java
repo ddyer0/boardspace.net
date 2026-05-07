@@ -684,7 +684,7 @@ public class Session implements LobbyConstants
 		Bot robotGame = ((startingRobot!=null) && (startingRobot.idx>=0 ))? startingRobot : null;
 		boolean chatmode = mode==Mode.Chat_Mode;
 		boolean tournamentMode = submode==Session.JoinMode.Tournament_Mode;
-		String roomType = s.get(mode.name());
+		String roomType = s.get(mode.menuItem());
 		if(spectator) { numOpps=0;  }
 		else
 		{

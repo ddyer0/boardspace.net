@@ -915,6 +915,9 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
         case MOVE_PASS:
         	setState((board_state==CarnacState.CONFIRM_PASS_STATE) ? CarnacState.TIP_OR_PASS_STATE : CarnacState.CONFIRM_PASS_STATE);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
         case MOVE_GAMEOVERONTIME:
         	setGameOver(true,false);
         	break;

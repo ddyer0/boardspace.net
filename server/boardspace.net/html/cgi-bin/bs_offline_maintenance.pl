@@ -49,7 +49,7 @@ sub changemarks()
 
 	# active games disappear on a schedule related to their play speed
 	$msg .= &markdelinquent($dbh,'active','day1','','delinquent',3);
-	$msg .= &markdelinquent($dbh,'active','day2','','delinquent',5);
+	$msg .= &markdelinquent($dbh,'active','day2','','delinquent',4);
 	$msg .= &markdelinquent($dbh,'active','day4','','delinquent',8);
 	$msg .= &markdelinquent($dbh,'active','day8','','delinquent',16);
 

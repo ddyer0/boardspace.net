@@ -1114,6 +1114,10 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         	playerBoards[m.player].doSelect(m,replay);
         	acceptPlacement();
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(RajState.GAMEOVER_STATE);
+			break;
 
         case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

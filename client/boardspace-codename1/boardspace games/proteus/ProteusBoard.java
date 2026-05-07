@@ -863,7 +863,10 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
             setState(ProteusState.Puzzle);
  
             break;
-            
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
+           
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

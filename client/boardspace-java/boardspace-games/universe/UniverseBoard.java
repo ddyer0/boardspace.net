@@ -3056,6 +3056,10 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 	        			}
 	        	}}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(UniverseState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(UniverseState.GAMEOVER_STATE);

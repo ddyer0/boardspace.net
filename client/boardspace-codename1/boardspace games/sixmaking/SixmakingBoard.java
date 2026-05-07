@@ -793,6 +793,9 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
             setState(SixmakingState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

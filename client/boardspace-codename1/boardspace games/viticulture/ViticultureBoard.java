@@ -823,18 +823,19 @@ public int getMaxRevisionLevel() { return(REVISION); }
     public void setRobotBoard(boolean v) { robotBoard = v; }
     
 	void logGameEvent(String str,String... args)
-	{	//if(!robotBoard)
+	{	if(!robotBoard)
 		{String trans = s.get(str,args);	// substitute, but no lookup in the dictionary
 		 gameEvents.push(trans);
 		}
 	}
 	void logRawGameEvent(String str)
-	{	//if(!robotBoard)
-		gameEvents.push(str);
+	{	if(!robotBoard)
+		 { gameEvents.push(str);
+		 }
 	}
 
 	void logRawGameEvent(String str,String... args)
-	{	//if(!robotBoard)
+	{	if(!robotBoard)
 		{String trans = s.subst(str,args);	// substitute, but no lookup in the dictionary
 		 gameEvents.push(trans);
 		}
@@ -4133,7 +4134,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		int harvest[] = pb.harvest(vine,replay);
     		if(harvest[0]>0 || harvest[1]>0)
     		{
-    		logGameEvent(G.concat("+ ",
+    		logRawGameEvent(G.concat("+ ",
     								harvest[0]>0 ? "RedGrape " : "",
     								harvest[1]>0 ? "WhiteGrape" : ""));
     		if(revision<167) { n++; }
@@ -7613,6 +7614,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		if(revision>=171)
         		{
         		whoseTurn = findFirstPlayerAnySeason(0).boardIndex;
+    	        if(revision>=172) { seasonRow = pbs[whoseTurn].wakeupPosition.row; }
         		}
         	}
         	break;
@@ -8993,6 +8995,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	setState(ViticultureState.Confirm);
         	}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(ViticultureState.Gameover);
+			break;
         	
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

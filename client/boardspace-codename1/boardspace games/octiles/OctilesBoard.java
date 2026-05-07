@@ -1381,7 +1381,11 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
             setState(OctilesState.PUZZLE_STATE);
 
             break;
-        case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(OctilesState.GAMEOVER_STATE);
+			break;
+		case MOVE_GAMEOVERONTIME:
       	   win[whoseTurn] = true;
       	   setState(OctilesState.GAMEOVER_STATE);
       	   break;

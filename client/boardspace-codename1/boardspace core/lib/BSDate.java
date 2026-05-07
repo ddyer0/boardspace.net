@@ -50,6 +50,10 @@ public class BSDate extends SystemDate
  public String shortTime() 
  { 	return(G.shortTime(getTime()));
  }
+ public long getTime()
+ {
+	 return super.getTime();
+ }
  /** initialize a data from an ad-hoc date/time string using {@link #simpleDateParse}
   * format is ignored 
   */
@@ -244,7 +248,7 @@ public class BSDate extends SystemDate
 			{
 				dateformat += " a";
 			}
-			if(timezone!=null ) { if(!G.isCodename1()) { dateformat += " zzz"; }}
+			if(timezone!=null ) { dateformat += " zzz"; }
 			else { timezone = ""; }
 			SimpleDateFormat sd = new SimpleDateFormat(dateformat,Locale.ENGLISH);
 			// at the end of our ad-hoc parsing, construct a completely predictable date/time

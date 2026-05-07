@@ -41,7 +41,8 @@ public class U implements UIC,Opcodes
         if (n <= 0)
         {	switch(n)
         	{
-        	case MOVE_GAMEOVERONTIME: return("winontime");
+        	case MOVE_LOSEGAMEONTIME: return(LOSEGAMEONTIME);
+        	case MOVE_GAMEOVERONTIME: return(GAMEOVERONTIME);
         	case M_Undo: 	{ return("Undo"); }
         	case M_Pass:  	{     return (PASS);	}
         	case M_Resign:  {     return ("Resigns"); }
@@ -173,8 +174,11 @@ public class U implements UIC,Opcodes
 }
 
 /*
-$Id: U.java,v 1.1.2.18.2.15 2024/02/16 02:38:36 ddyer Exp $
+$Id: U.java,v 1.1.2.18.2.16 2026/05/07 22:09:45 ddyer Exp $
 $Log: U.java,v $
+Revision 1.1.2.18.2.16  2026/05/07 22:09:45  ddyer
+add a "Loose on time" opcode
+
 Revision 1.1.2.18.2.15  2024/02/16 02:38:36  ddyer
 *** empty log message ***
 

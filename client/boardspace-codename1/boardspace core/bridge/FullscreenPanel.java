@@ -22,8 +22,6 @@ import lib.MenuInterface;
 import lib.MenuParentInterface;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.Plog;
-
 import com.codename1.ui.Component;
 
 public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuParentInterface

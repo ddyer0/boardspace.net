@@ -1889,6 +1889,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         			}
         	}}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

@@ -1995,6 +1995,10 @@ import static tammany.TammanyMovespec.*;
         	setState(TammanyState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(TammanyState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TammanyState.Gameover);

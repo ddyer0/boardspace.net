@@ -1057,6 +1057,9 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
             setState(QuinamidState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

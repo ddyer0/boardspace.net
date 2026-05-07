@@ -1339,6 +1339,11 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Const
         {	board_state = LoaState.GameOver;
             winner_by_resignation = previous_player; /* forfeit or resignation */
         }
+        else if(n==MOVE_LOSEGAMEONTIME)
+        {
+        	board_state = LoaState.GameOver;
+        	winner_by_resignation = previous_player;
+        }
         else if (n==MOVE_GAMEOVERONTIME)
         {	board_state = LoaState.GameOver;
         	winner_by_resignation = next_player;

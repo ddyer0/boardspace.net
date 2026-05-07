@@ -1294,7 +1294,11 @@ import online.game.*;
             setState(QEState.Puzzle);
  
             break;
-            
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(QEState.Gameover);
+			break;
+           
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(QEState.Gameover);

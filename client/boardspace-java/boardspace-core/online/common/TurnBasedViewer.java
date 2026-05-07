@@ -172,6 +172,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String TAGNAME = "tagname";
 	static final String WHOSETURN = "whoseturn";
 	static final String STATUS = "status";
+	static final String MARKED = "marked";
 	static final String USERS = "users";
 	static final String ERROR = "error";
 	static final String SAVEDAS = "savedas";
@@ -196,7 +197,25 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		}
 		
 	};
-	
+	public enum Marked
+	{	late("Move is past due"),
+		delinquent("Move is very late, the game can be ended"),
+		expired("Games that are discontinued");
+		String prompt = "";
+		Marked(String p) { prompt = p; }
+		public static Marked find(String f)
+		{
+			if(f==null || "".equals(f)||("null".equals(f))) { return null ;}
+			return valueOf(f);
+		}
+		static public void putStrings()
+		{
+			for(Marked s : values())
+				{ InternationalStrings.put(s.prompt); 
+				  InternationalStrings.put(s.name());
+				}
+		}
+	}
 	/**
 	PendingStatus returns the stats of pending asynch transactions.
 	The general plan is that Yes means check again soon, and Complete means 
@@ -272,7 +291,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	/**
 	 * local cache for an async game on the server. 
 	 */
-	enum AsyncId implements CellId { Cancel, Accept, Start, Open };
+	enum AsyncId implements CellId { Cancel, Accept, Start, Play, Spectate, EndGame};
 	
 	@SuppressWarnings("serial")
 	/**
@@ -400,6 +419,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		//
 		int sequence;			// sequence state for this game
 		public AsyncStatus status;		// active, setup etc.
+		public Marked marked;	// maintenance marks
 		public String variation;// the game type being played
 		GameInfo game;			// the gameinfo that matches variation
 		PlayMode playMode;		// ranked, unranked, tournament
@@ -414,7 +434,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		String body;				// the actual game restart information
 		boolean bodyKnown = false;	// true if the body has been fetched
 		private String chat;		// the chat from the game
-		
+		public boolean endgame;			// end the game as a loss for the current player
 		public String toString() { return ("<game #"+gameuid+" "+status+" "+variation); }
 		
 		// return the new top
@@ -517,6 +537,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			if(loggedInUser!=null)
 			{
 			String button = ReviewGameMessage;
+			AsyncId role = AsyncId.Spectate;
 			switch(status)
 			{
 			case active:
@@ -524,21 +545,35 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				String msg = s.get(ToMoveMessage,uids.getName(whoseturn));
 				l = left+buttonW+hSpace;
 				GC.Text(gc,false,l,top,buttonW,lineH,Color.blue,null,msg);
-				button = (loggedInUser!=null && (whoseturn==loggedInUser.uid()))
+				boolean active = (loggedInUser!=null && (whoseturn==loggedInUser.uid()));
+				if(active) { role = AsyncId.Play ; }
+				button = active
 							? MoveMessage 
 							: ViewGameMessage;
 				BSDate last= new BSDate(lastTime+" GMT");
 				long late = G.Date()-last.getTime();
 				String el = G.timeString(late);
 				GC.Text(gc,false,l+buttonW+hSpace,top,buttonW,lineH,Color.black,null,el);
-				
+				if(marked!=null)
+				{
+					GC.Text(gc,false,l+buttonW*2,top,buttonW,lineH,Color.red,null,s.get(marked.name()));
+					if(!active && marked==Marked.delinquent)
+					{
+						if(GC.handleSquareButton(gc,new Rectangle(l+buttonW*3,top,buttonW,lineH),
+								pt,s.get(EndGameMessage),Color.white,Color.lightGray))
+						{
+							hitCode = AsyncId.EndGame;
+						}
+
+					}
+				}
 				}
 				// fall through
 			case suspended:
 			case complete:
 				{
 				if(GC.handleSquareButton(gc,new Rectangle(left,top,buttonW,lineH),pt,s.get(button),Color.white,Color.lightGray))
-				{hitCode = AsyncId.Open;
+				{hitCode = role;
 				}
 				}
 				top += lineH;
@@ -597,7 +632,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			return top;
 		}
 		Session sess = new Session(1);
-		public void launchGame()
+		public void launchGame(AsyncId role)
 		{	
 			getBody();	/// get started now
 			sess.password = "start";
@@ -630,7 +665,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			sess.setCurrentGame(game, false,false,false);
 			sess.turnBasedGame = this;
 			sess.startingName = sess.launchName(null,true);
-			sess.spectator = (targetPlayerIndex<0) ||  (status!=AsyncStatus.active);
+			sess.spectator = (role==AsyncId.Spectate) || (targetPlayerIndex<0) ||  (status!=AsyncStatus.active);
 			sess.launchUser = (targetPlayerIndex<0) ? null : lusers.elementAt(targetPlayerIndex);
 
 			sess.numActivePlayers = sess.startingNplayers = lusers.size();
@@ -639,6 +674,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			AR.copy(players,sess.players);
 			
 			sess.startingTimeControl = sess.timeControl();
+			endgame = role==AsyncId.EndGame;
 			if(sess.spectator) {
 				sess.launchSpectator(players[0],true,getCanvasRotation(),sess.currentGame,true);
 			}
@@ -814,6 +850,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		{	if(loggedInUser!=null)
 			{
 			StringBuilder b = new StringBuilder();
+			name = G.replace(name,"*","");	// some may be **unknown**
 			comments = s.get(SAVEDMSG,name);
 			 G.append(b,versionParameter,
 					 "&",TAGNAME,"=recordgame",
@@ -912,8 +949,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 			
 			switch(hitCode)
 			{
-			case Open:
-				launchGame();
+			case EndGame:
+			case Play:
+			case Spectate:
+				if(this.game==null)
+				{
+				G.infoBox("Sorry",
+							s.get(Nolaunch,variation));	
+		
+				}
+				else
+				{
+				launchGame(hitCode);
+				}
 				break;
 			case Start:
 				startGame();
@@ -1035,7 +1083,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					String field = tok.nextElement();
 					if(GAMEUID.equals(field))
 						{ 
-						if(info!=null) { push(info); }
+						if(info!=null) { saveInfo(info); }
 						info = new AsyncGameInfo(); 
 						int uid = tok.intToken();
 						info.gameuid = uid;
@@ -1051,6 +1099,11 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					else if(STATUS.equals(field))
 						{
 						info.status = AsyncStatus.valueOf(tok.nextElement());
+						}
+					else if(MARKED.equals(field))
+						{
+						String m = tok.nextElement();
+						info.marked = Marked.find(m);
 						}
 					else if(INVITEDPLAYERS.equals(field))
 						{
@@ -1102,10 +1155,19 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 						G.print("Unexpected AsyncGame field ",field," : ",value);
 					}
 				}
-				if(info!=null && info.game!=null) { push(info); }
+				if(info!=null && info.game!=null) { saveInfo(info); }
 			}
 		}
 		
+		private void saveInfo(AsyncGameInfo info)
+		{
+			if(info.marked==null && info.speed!=null && info.lastTime!=null)
+			{	long lastDate = new BSDate(info.lastTime).getTime();
+				long now = G.Date();
+				if(lastDate+info.speed.timepermove<now) { info.marked = Marked.late; }
+			}
+			push(info);
+		}
 
 		private UrlResult getInfoResult = null;
 		private PendingStatus parseInfoResult()
@@ -1149,6 +1211,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 					}
 				if(selectedVariant!=null) { G.append(b,"&",VARIATION,"=",selectedVariant.variationName); }
 				if(stat!=null) { G.append(b, "&",STATUS,"=",stat); }
+				G.append(b,"&",MARKED,"=recent");
 				
 				appendNotifications(b);
 				
@@ -2425,15 +2488,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 public enum PlaySpeed implements EnumMenu
 	{
 		
-		day1("Up to 1 day per move",1),
-		day2("Up to 2 days per move",1),
-		day4("Up to 4 days per move",3),
-		day8("Up to 8 days per move",6),;
+		day1("Up to 1 day per move",1,1000*60*60*24),
+		day2("Up to 2 days per move",1,2000*60*60*24),
+		day4("Up to 4 days per move",3,4000*60*60*24),
+		day8("Up to 8 days per move",6,8000*60*60*24),;
 		String message;
 		int firstNag = 0;
+		int timepermove = 0;
 		public String menuItem() { return message; }
 
-		PlaySpeed(String m,int nt) { message = m; firstNag=nt;}	
+		PlaySpeed(String m,int nt,int tpm) { message = m; firstNag=nt; timepermove=tpm; }	
 		static public void putStrings() { 	 
 			for(PlaySpeed p : values()) { InternationalStrings.put(p.menuItem()); }
 		}
@@ -2488,6 +2552,7 @@ private static String NotAcceptedMessage = "This player hasn't accepted the invi
 private static String StartGameMessage = "Start this Game";
 private static String MoveMessage = "Make Move";
 private static String ViewGameMessage = "View Game";
+private static String EndGameMessage = "End Game";
 private static String ReviewGameMessage = "Review this Game";
 private static String ToMoveMessage = "#1 to move";
 static String NewGameMessage = "New Game";
@@ -2521,9 +2586,11 @@ static String LeaveGameMessage = "leave this game" ;
 static String JoinGameMessage = "join this game";
 static String RemoveAnyMessage = "remove a player by unchecking their box";
 static String OnlyGamePrompt = "Showing only games of #1";
+static String Nolaunch = "You can't launch this game, #1 isn't supported by this client";
 static public void putStrings()
 	{	String TurnStrings[] = {
 			OnlyGamePrompt,
+			Nolaunch,
 			WaitingForStartMessage,RemoveAnyMessage,JoinGameMessage,LeaveGameMessage,
 			PlayerNotFoundMessage,PlayerNotFoundName,SuspendedMessage,
 			BounceWarning,RemainLogMessage,BounceWarningCaption,
@@ -2556,6 +2623,7 @@ static public void putStrings()
 		PlaySpeed.putStrings();
 		FirstPlayer.putStrings();
 		AsyncStatus.putStrings();
+		Marked.putStrings();
 		InternationalStrings.put(TurnStrings);
 		InternationalStrings.put(TurnStringPairs);
 	}

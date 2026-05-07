@@ -987,6 +987,9 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
             setState(VeletasState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

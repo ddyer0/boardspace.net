@@ -848,6 +848,9 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         case MOVE_DECLINE_DRAW:
         	setState(board_state==XiangqiState.DECLINE_DRAW_STATE?XiangqiState.QUERY_DRAW_STATE:XiangqiState.DECLINE_DRAW_STATE);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

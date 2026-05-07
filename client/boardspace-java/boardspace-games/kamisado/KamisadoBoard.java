@@ -614,6 +614,9 @@ class KamisadoBoard extends rectBoard<KamisadoCell> implements BoardProtocol,Kam
             setState(KamisadoState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

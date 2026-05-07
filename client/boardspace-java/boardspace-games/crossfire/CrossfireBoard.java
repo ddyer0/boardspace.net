@@ -724,6 +724,10 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
             setState(CrossfireState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(CrossfireState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(CrossfireState.GAMEOVER_STATE);

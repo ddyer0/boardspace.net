@@ -927,6 +927,10 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
             moveStack.push(m);
             stateStack.push(board_state);
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(VoloState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(VoloState.GAMEOVER_STATE);

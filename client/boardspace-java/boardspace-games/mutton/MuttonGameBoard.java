@@ -1405,6 +1405,10 @@ class MuttonGameBoard extends BaseBoard implements BoardProtocol, MuttonConstant
 				win[nextPlayer[whoseTurn]] = true;
 	        	setState(MuttonState.GAMEOVER_STATE);				
 				break;
+			case MOVE_LOSEGAMEONTIME:
+	        	win[whoseTurn^1] = true;
+	        	setState(MuttonState.GAMEOVER_STATE);
+		     	break;
 	        case MOVE_GAMEOVERONTIME:
 	        	win[whoseTurn] = true;
 	        	setState(MuttonState.GAMEOVER_STATE);

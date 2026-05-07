@@ -1415,6 +1415,9 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
         	doSplit(m,replay);
         	setState(TruchetState.CONFIRM_STATE);
       		break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

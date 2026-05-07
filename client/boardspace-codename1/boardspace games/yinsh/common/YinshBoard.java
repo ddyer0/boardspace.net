@@ -1431,6 +1431,10 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         default:
         	cantExecute(m);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(YinshState.GAMEOVER_STATE);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(YinshState.GAMEOVER_STATE);

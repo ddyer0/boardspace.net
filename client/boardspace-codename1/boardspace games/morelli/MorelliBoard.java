@@ -850,6 +850,9 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         	doInit(gametype,randomKey,revision,Setup.getSetup(m.from_row));
         	setState(MorelliState.FirstPlay);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

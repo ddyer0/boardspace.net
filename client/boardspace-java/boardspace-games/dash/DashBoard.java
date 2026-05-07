@@ -687,6 +687,9 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
             setState(DashState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

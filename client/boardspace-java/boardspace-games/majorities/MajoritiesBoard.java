@@ -749,6 +749,10 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
             setState(MajoritiesState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(MajoritiesState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(MajoritiesState.Gameover);

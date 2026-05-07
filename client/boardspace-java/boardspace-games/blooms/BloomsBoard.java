@@ -1098,6 +1098,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
             setState(BloomsState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			AR.setValue(score,-1);
+			setState(BloomsState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			AR.setValue(score,-1);

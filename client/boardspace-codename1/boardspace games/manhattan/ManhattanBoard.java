@@ -2532,8 +2532,12 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
             setState(ManhattanState.Puzzle);
             resetState = board_state;
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(ManhattanState.Gameover);
+			break;
 
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(ManhattanState.Gameover);
     	   break;

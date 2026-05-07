@@ -785,6 +785,10 @@ class DayAndNightBoard
             setState(DayAndNightState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(DayAndNightState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

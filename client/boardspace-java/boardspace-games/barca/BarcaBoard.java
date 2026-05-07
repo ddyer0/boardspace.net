@@ -767,6 +767,10 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
             setState(BarcaState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(BarcaState.Gameover);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

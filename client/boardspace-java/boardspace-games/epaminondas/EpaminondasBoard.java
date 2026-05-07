@@ -982,6 +982,10 @@ void doSwap(replayMode replay)
             setState(EpaminondasState.Puzzle);
             break;
 
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(EpaminondasState.Gameover);
+			break;
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(EpaminondasState.Gameover);

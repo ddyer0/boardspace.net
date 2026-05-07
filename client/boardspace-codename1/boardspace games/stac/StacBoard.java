@@ -832,10 +832,13 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
         		   setState(StacState.DeclinePending);
         	}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;
-       	
+      	
         default:
         	cantExecute(m);
         }

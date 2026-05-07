@@ -2177,6 +2177,9 @@ public long positionDigest()
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
  
         default:
         	cantExecute(m);

@@ -1651,6 +1651,11 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_RESIGN:
             setState(unresign==null?ZertzState.RESIGN_STATE:unresign);
             break;
+            
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(ZertzState.GAMEOVER_STATE);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;

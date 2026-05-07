@@ -991,6 +991,10 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
             setState(MogulState.Puzzle);
             startRound(replay);
             break;
+		case MOVE_LOSEGAMEONTIME:
+	     	   win[whoseTurn^1] = true;
+	     	   setState(MogulState.Gameover);
+			break;
         case MOVE_GAMEOVERONTIME:
 	     	   win[whoseTurn] = true;
 	     	   setState(MogulState.Gameover);

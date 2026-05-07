@@ -20,10 +20,12 @@ import lib.CellId;
 import lib.InternationalStrings;
 import lib.UniversalConstants;
 
-public interface Opcodes extends UniversalConstants{
+public interface Opcodes extends UniversalConstants 
+{
 	   static final String WrongInitError = "game type %s is not this game";	// not a translated string
 	static final int NothingMoving = -2;
 	static final String GAMEOVERONTIME = "WinOnTime";
+	static final String LOSEGAMEONTIME = "LoseOnTime";
 	static final String EDIT = "Edit";		// stop playing and allow rearrangement of the board
 	static final String SWAP = "Swap";
 	static String RESET = "Reset";
@@ -63,6 +65,8 @@ public interface Opcodes extends UniversalConstants{
 	static final int MOVE_ALLOWUNDO = -118;
 	static final int ScrollGameRecord = -120;
 	static final int MOVE_GAMEOVERONTIME = -121;
+	static final int MOVE_LOSEGAMEONTIME = -122;
+	
 	static int nextPlayer[] = {SECOND_PLAYER_INDEX,FIRST_PLAYER_INDEX};
 	enum GameId implements CellId
 	{	/** 
@@ -76,6 +80,7 @@ public interface Opcodes extends UniversalConstants{
 		HitSwapButton(SWAP,MOVE_SWAP),	// "swap" button
 		HitResignButton(RESIGN,MOVE_RESIGN),
 		HitGameOverOnTime(GAMEOVERONTIME,MOVE_GAMEOVERONTIME),
+		HitLoseGameOnTIme(LOSEGAMEONTIME,MOVE_LOSEGAMEONTIME),
 		HitStartButton(START,MOVE_START),
 		HitUButton(null,MOVE_UNKNOWN),
 		HitChatButton(null,MOVE_UNKNOWN),
@@ -128,6 +133,7 @@ public interface Opcodes extends UniversalConstants{
 		};
 		String pairs[][] = {
 				{GAMEOVERONTIME,"Win On Time"},
+				{LOSEGAMEONTIME,"Lose On Time"},
 		};
 		InternationalStrings.put(strings);
 		InternationalStrings.put(pairs);

@@ -806,6 +806,9 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
             setState(DipoleState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

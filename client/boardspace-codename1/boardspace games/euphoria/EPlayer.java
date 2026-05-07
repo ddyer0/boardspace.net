@@ -56,6 +56,8 @@ RecruitChip originalHiddenRecruit = null;
 RecruitChip originalActiveRecruit = null;
 EuphoriaCell discardedRecruits = null;	// discarded, destined for the global unusedRecruits
 ArtifactChip usedAlternateArtifact = null;	// used an alternate as for AlexandraTheHeister
+
+// alternate artifacts tracks which artifact chips can be used as wildcards
 EuphoriaCell alternateArtifacts = null;
 
 // commodities are stacked, height is the number the player has. 
@@ -206,8 +208,8 @@ int retrievals = 0;					// total worker retrievals
 int lostGoods = 0;					// goods lost to penalties
 
 // add a new recruit chip to the active list
-public void addActiveRecruit(EuphoriaChip ch,replayMode replay)
-{
+public boolean addActiveRecruit(EuphoriaChip ch,replayMode replay)
+{	boolean some = false;
 	activeRecruits.addChip(ch);
 	if(ch==RecruitChip.SteveTheDoubleAgent)
 	{	
@@ -216,7 +218,7 @@ public void addActiveRecruit(EuphoriaChip ch,replayMode replay)
 		if(b.getAllegianceValue(faction)>=(AllegianceSteps-1)) 
 			{ 
 			//b.p1("Activate steve the double agent "+faction);
-			activateForSteveTheDoubleAgent(faction,replay);
+			some |= activateForSteveTheDoubleAgent(faction,replay);
 			}
 		}			
 	}
@@ -228,6 +230,7 @@ public void addActiveRecruit(EuphoriaChip ch,replayMode replay)
 	  }
 	
 	setupAlternateArtifacts();
+	return some;
 }
 
 // notification when a new market opens.
@@ -526,8 +529,8 @@ public void addAllegianceStar(replayMode replay)
 		  }
 		}
 }
-void activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
-{
+boolean activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
+{	boolean some = false;
 	PFlag flag = null;
 	//b.p1("Use steve for "+faction);
 	b.useRecruit(RecruitChip.SteveTheDoubleAgent,faction.name());
@@ -548,8 +551,12 @@ void activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
 	}
 	if(flag!=null && !testPFlag(flag))
 	{	setPFlag(flag);
-		if(authority.height()>0) { addAllegianceStar(replay); } 
+		if(authority.height()>0) 
+			{ addAllegianceStar(replay); 
+			  some = true;
+			} 
 	}
+	return some;
 }
 //
 // award the start for current recruits.
@@ -2770,19 +2777,19 @@ Cost payCost(Cost item,replayMode replay)
 		return item;
 	case FreeOrWaterMwicheTheFlusherAndCommodity:
 		if(water.height()==0) { return null; }	// have to take free
-		b.p1("pay "+item);
+		//b.p1("pay "+item);
 		return item;
 	case FreeOrMwicheTheFlusherAndCommodity:
 		if(water.height()<3) { return null; }	// have to take free
-		b.p1("pay "+item);
+		//b.p1("pay "+item);
 		return item;
 	case FreeOrFoodMwicheTheFlusherAndCommodity:
 		if(food.height()==0) { return payCost(Cost.FreeOrMwicheTheFlusherAndCommodity,replay); }	
-		b.p1("pay "+item);
+		//b.p1("pay "+item);
 		return item;
 	case FreeOrEnergyMwicheTheFlusherAndCommodity:
 		if(energy.height()==0) { return payCost(Cost.FreeOrMwicheTheFlusherAndCommodity,replay); }
-		b.p1("pay "+item);
+		//b.p1("pay "+item);
 		return item;
 	default: throw b.Error("Unexpected payment for %s",item);
 	
@@ -4878,7 +4885,7 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	default: 
 		if(actualCost.name().indexOf("Flusher")>0) 
 		{
-			b.p1("Probably should not be default "+actualCost);
+			//b.p1("Probably should not be default "+actualCost);
 		}
 		break;
 	}
@@ -5682,7 +5689,7 @@ public void checkDropWorker(EuphoriaCell dest,replayMode replay) {
 		{
 			
 		default:	
-			b.p1("drop with "+ch.name+" #"+ch.recruitId);
+			//b.p1("drop with "+ch.name+" #"+ch.recruitId);
 			//throw b.Error("recruit %s #%s not handled for DropWorker",ch,ch.recruitId);
 			break;
 		case 101: // maxime the ambassador

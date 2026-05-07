@@ -911,6 +911,10 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			setState(FrogState.PUZZLE_STATE);
 
 			break;
+		case MOVE_LOSEGAMEONTIME:
+        	win[whoseTurn^1] = true;
+        	setState(FrogState.GAMEOVER_STATE);
+			break;
 
         case MOVE_GAMEOVERONTIME:
         	win[whoseTurn] = true;

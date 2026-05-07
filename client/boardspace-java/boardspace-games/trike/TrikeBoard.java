@@ -783,7 +783,11 @@ void doSwap(replayMode replay)
  
             break;
 
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(TrikeState.Gameover);
+			break;
+		case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(TrikeState.Gameover);
     	   break;

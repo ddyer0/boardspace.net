@@ -1061,6 +1061,10 @@ class ImagineBoard
             setState(ImagineState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+	    	   win[whoseTurn^1] = true;
+	    	   setState(ImagineState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

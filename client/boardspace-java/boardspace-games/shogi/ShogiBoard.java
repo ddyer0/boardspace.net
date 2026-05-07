@@ -990,6 +990,9 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         		addChip(dest,top.getFlipped());
         	}
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

@@ -1714,6 +1714,10 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
         case MOVE_RESIGN:
         	setState(unresign==null?MedinaState.RESIGN_STATE:unresign);
         	break;
+		case MOVE_LOSEGAMEONTIME:
+	     	   win[whoseTurn^1] = true;
+	     	   setState(MedinaState.GAMEOVER_STATE);
+			break;
 
         case MOVE_GAMEOVERONTIME:
      	   win[whoseTurn] = true;

@@ -762,7 +762,11 @@ void doSwap(replayMode replay)
             setState(HavannahState.Puzzle);
  
             break;
-        case MOVE_GAMEOVERONTIME:
+		case MOVE_LOSEGAMEONTIME:
+        	win[whoseTurn^1] = true;
+        	setState(HavannahState.Gameover);
+			break;
+       case MOVE_GAMEOVERONTIME:
         	win[whoseTurn] = true;
         	setState(HavannahState.Gameover);
         	break;

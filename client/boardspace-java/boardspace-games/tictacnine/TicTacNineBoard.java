@@ -608,6 +608,9 @@ class TicTacNineBoard extends rectBoard<TicTacNineCell> implements BoardProtocol
             setState(TictacnineState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TictacnineState.GAMEOVER_STATE);

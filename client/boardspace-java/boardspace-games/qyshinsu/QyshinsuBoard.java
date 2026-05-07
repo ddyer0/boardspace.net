@@ -708,6 +708,9 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
    		  	setState(QyshinsuState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

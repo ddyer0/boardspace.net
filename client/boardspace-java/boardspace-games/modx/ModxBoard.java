@@ -970,6 +970,9 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
             setState(ModxState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);

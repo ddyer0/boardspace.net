@@ -1026,8 +1026,12 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
             setState(StymieState.Puzzle);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(StymieState.Gameover);
+			break;
 
-       case MOVE_GAMEOVERONTIME:
+		case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;
     	   setState(StymieState.Gameover);
     	   break;

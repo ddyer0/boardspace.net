@@ -897,6 +897,9 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
             setState(KhetState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

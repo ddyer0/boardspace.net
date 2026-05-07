@@ -649,6 +649,9 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
             setState(TakojudoState.PUZZLE_STATE);
  
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

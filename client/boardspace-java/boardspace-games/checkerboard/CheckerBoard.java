@@ -1490,6 +1490,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  
             break;
             
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

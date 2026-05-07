@@ -1177,6 +1177,10 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         case MOVE_SWAP:
         	doSwap();
         	break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(TwixtState.Gameover);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			win[whoseTurn] = true;
 			setState(TwixtState.Gameover);

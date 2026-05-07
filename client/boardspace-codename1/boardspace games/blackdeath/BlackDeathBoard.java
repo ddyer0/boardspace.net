@@ -2390,6 +2390,10 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
        			};  
        		}
        		break;
+		case MOVE_LOSEGAMEONTIME:
+			win[whoseTurn^1] = true;
+			setState(BlackDeathState.Gameover);
+			break;
 
        case MOVE_GAMEOVERONTIME:
     	   win[whoseTurn] = true;

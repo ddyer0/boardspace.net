@@ -735,6 +735,9 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
             setState(TumbleState.PUZZLE_STATE);
 
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;

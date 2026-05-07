@@ -882,6 +882,9 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     		acceptPlacement();
             setState(CannonState.PUZZLE_STATE);
             break;
+		case MOVE_LOSEGAMEONTIME:
+			setGameOver(false,true);
+			break;
         case MOVE_GAMEOVERONTIME:
         	setGameOver(true,false);
         	break;
