@@ -13,8 +13,8 @@ public interface NumberMenuHost {
      * this draws the numbers just beyond the point of the arrow.
      * 
      * @param gc
-     * @param source TODO
-     * @param dest
+     * @param source source location
+     * @param dest destination location
      * @param cellSize
      * @param font
      * @param color
@@ -69,10 +69,12 @@ public interface NumberMenuHost {
     		  Color color,double arrowOpacity,
     		  int ticksize,double linew)
       { Color oldColor = GC.getColor(gc);
+      	double opac = GC.getOpacity(gc);
   	    GC.setColor(gc,color);
 		GC.setOpacity(gc,arrowOpacity);		 	
   	 	GC.drawArrow(gc,x1,y1,x2,y2,ticksize,linew);
 	 	GC.setColor(gc,oldColor);	// also resets opactity
+	 	GC.setOpacity(gc,opac);		// paper over an ios bug
       }
       
       public default int getLastPlacement() {

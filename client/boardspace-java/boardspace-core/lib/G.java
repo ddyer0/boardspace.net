@@ -1208,6 +1208,14 @@ public class G extends Platform implements Timestamp
 		  return(val);
 		}
 	
+	public static boolean isIOSMetal()
+	{
+		return isIOS() && isMetal;
+	}
+	public static boolean isIOSWooden()
+	{
+		return isIOS() && !isMetal;
+	}
 	
 	public static boolean isResourceName(String name,boolean doc)
 	    {	String lcname =  name.toLowerCase();
@@ -2096,11 +2104,18 @@ public static String expandClassName(String classname)
 	    {
 	    	return G.concat(getPlatformName(),getPlatformSubtype()," ",getAppVersion());
 	    }
+	    
+
+	    /** this is entered in the online contact.log
+	     *
+	     * @return
+	     */
 	    public static String platformString()
-	    {	String id = platformId();
+	    {	String id = platformId()+screenSummary();
 	    	return("&"
 	    			+ PlatformParameterName 
-	    			+ "="+Http.escape(id));
+	    			+ "="+Http.escape(id)
+	    			);
 	    }
 		public static void getFeedback() {
 			String msg = G.concat("feedback for ",platformId()); 	

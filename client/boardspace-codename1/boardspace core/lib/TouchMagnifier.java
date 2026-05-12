@@ -52,8 +52,7 @@ public class TouchMagnifier {
 		int w = client.getRotatedWidth();
 		int h = client.getRotatedHeight();
 		int feat = sz;
- 		int w3 = Math.max(po/2,feat);			// border of the avoidance zone
-		int h3 = Math.max(po/2,feat);
+ 		int margin = Math.max(po/2,feat);			// border of the avoidance zone
 		/*
 		 *  a little basic geometry review
 		double sq2 = Math.sqrt(2);
@@ -72,51 +71,63 @@ public class TouchMagnifier {
 		*/
 		magnifierPadX = (int)(x + Math.cos(magnifierPadAngle)*po);
 		magnifierPadY = (int)(y - Math.sin(magnifierPadAngle)*po);
+		boolean change = false;
+		int loop=0;
+		do {
+		change = false;
+		loop++;
 		// if we're encroaching the edge, shift the angle
-		if(magnifierPadY<h3)
-		{	double dy = y-h3;		// move y to the h3 line
-			double dx = Math.sqrt(Math.max(0, po*po-dy*dy));
-			if(Math.abs(magnifierPadAngle)>Math.PI/2) { dx = -dx; }
+		if(magnifierPadY<margin)
+		{	double dy = y-margin;		// move y to the h3 line
+		    // po is the hypotenuse, we changed dy, calculate a new dx
+			double dx = Math.sqrt(Math.abs(po*po-dy*dy))*((magnifierPadX<x)?-1:1);
 			magnifierPadAngle = atan2(dy,dx);
    		    magnifierPadX = (int)(x+Math.cos(magnifierPadAngle)*po);
 		    magnifierPadY = (int)(y-Math.sin(magnifierPadAngle)*po);
+		    // new x/y positions, x may be offscreen which we'll deal with below
+		    change = true;
   		}
-		else if(magnifierPadY+h3>h)
-		{	double dy = y-(h-h3);
-			double dx = Math.sqrt(Math.max(0, po*po-dy*dy));
-   			if(Math.abs(magnifierPadAngle)>Math.PI/2) { dx = -dx; }
+		else if(magnifierPadY+margin>h)
+		{	double dy = y-(h-margin);
+			double dx = Math.sqrt(Math.abs(po*po-dy*dy))*((magnifierPadX<x)?-1:1);
 			magnifierPadAngle = atan2(dy,dx);
    		    magnifierPadX = (int)(x+Math.cos(magnifierPadAngle)*po);
 		    magnifierPadY = (int)(y-Math.sin(magnifierPadAngle)*po);
+		    change = true;
   		}
-		if(magnifierPadX<w3)
-		{	double dx = w3-x;	// move x to the w3 line
-		    double dy = Math.sqrt(Math.max(0, po*po-dx*dx));
-		    if(magnifierPadAngle<0) { dy = -dy; }
+		if(magnifierPadX<margin)
+		{	double dx = margin-x;	// move x to the w3 line
+		    double dy = Math.sqrt(Math.abs(po*po-dx*dx))*((magnifierPadY<y)?1:-1);
+		    // if x was pushed offscreen by the change above, flip it 
+		    if(change) { dx = -dx; }
 		    magnifierPadAngle = atan2(dy,dx);
 		    magnifierPadX = (int)(x + Math.cos(magnifierPadAngle)*po);
 		    magnifierPadY = (int)(y - Math.sin(magnifierPadAngle)*po);
+		    change = true;
 		}
-		else if(magnifierPadX+w3>w)
-		{	double dx = (w-w3)-x;
-		    double dy = Math.sqrt(Math.max(0, po*po-dx*dx));
-		    if(magnifierPadAngle<0) { dy = -dy; }
+		else if(magnifierPadX+margin>w)
+		{	double dx = (w-margin)-x;
+		    double dy = Math.sqrt(Math.abs(po*po-dx*dx))*((magnifierPadY<y)?1:-1);
+		    if(change) { dx = -dx; }
 		    magnifierPadAngle = atan2(dy,dx);
 		    magnifierPadX = (int)(x+Math.cos(magnifierPadAngle)*po);
-		    magnifierPadY = Math.max(sz,(int)(y-Math.sin(magnifierPadAngle)*po));
-			}
-		// if after adjustment we're still moving off, rotate by 90 degrees
-		// the +1 is for rounding error on magnifierPadY
-		if(((magnifierPadY+1<h3)&&(magnifierPadAngle>0)) 
-				|| ((magnifierPadY+h3>h)&&(magnifierPadAngle<0)))
-		{	magnifierPadAngle += ((x*2<w)!=(magnifierPadY<h3))? Math.PI/2 : -Math.PI/2;
-		    	magnifierPadX = (int)(x + Math.cos(magnifierPadAngle)*po);
 		    magnifierPadY = (int)(y-Math.sin(magnifierPadAngle)*po);
+		    change = true;
+			}
+	    if(loop>1 && ( magnifierPadY+1<margin || magnifierPadY+margin-1>h))
+	    {	// if we're stuck in a corner, flip the direction to the center
+	    	 magnifierPadAngle += Math.PI;
+	    	 magnifierPadX = (int)(x+Math.cos(magnifierPadAngle)*po);
+		    magnifierPadY = (int)(y-Math.sin(magnifierPadAngle)*po);
+	    	 change = true;
 		}
+		} while (change && loop<4);
+		
     }
     public int getMagnifierSourceSize()
-    {
-    	return(magnifierSourceSize);
+    {	// consider the size of the window as well as the feature size
+    	return(Math.min((int)(Math.min(client.getWidth(),client.getHeight())/(getMagnifierScale()*3)),
+    				magnifierSourceSize));
     }
     public double getMagnifierScale()
     {
@@ -156,7 +167,7 @@ public class TouchMagnifier {
     	//
     	magnifierDisplay = magnifierDraw;
     	magnifierDraw = temp;	
-    	G.print("draw "+temp+" show "+show);
+    	//G.print("draw "+temp+" show "+show);
 
     	Graphics g2 = temp.getGraphics();
     	

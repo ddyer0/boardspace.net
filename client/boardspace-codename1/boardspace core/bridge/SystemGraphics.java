@@ -350,6 +350,11 @@ public abstract class SystemGraphics {
 	public void setOpactity(double op) {
 		graphics.setAlpha(Math.max(0,Math.min(255,(int)(255*op))));
 	}
+	public double getOpacity()
+	{
+		int a = graphics.getAlpha();
+		return a/255.0;
+	}
 	public void sync()
     {
     	// there is no corresponding operation

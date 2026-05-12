@@ -5600,6 +5600,10 @@ public abstract class commonCanvas extends exCanvas
         if(gameInfo!=null)
         {  String name = gameInfo.gameName;
            if(G.debug()) { name += " "+myPlayer.trueName(); }
+           if(turnBasedGame!=null)
+           {
+        	   name += " #" + turnBasedGame.getuid();
+           }
            myFrame.setTitle(name);
         }
         // gameicon is initialized as part of the contract of preloadImages(), even

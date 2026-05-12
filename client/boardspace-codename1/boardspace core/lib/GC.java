@@ -1157,6 +1157,12 @@ public class GC {
 	public static void setOpacity(Graphics gc,double op)
 	{	if(gc!=null) { gc.setOpactity(op); }
 	}
+	
+	public static double getOpacity(Graphics gc)
+	{
+		if(gc!=null) { return gc.getOpacity(); }
+		return 1.0;
+	}
 	 /**
 	  * return true if no part of the rectangle is visible.  This is intended to be used
 	  * when drawing images, to determine if the image will be visible before any loading,

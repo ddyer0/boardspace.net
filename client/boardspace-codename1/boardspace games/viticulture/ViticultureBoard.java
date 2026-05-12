@@ -101,7 +101,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 171;			// 100 represents the initial version of the game
+{	static int REVISION = 172;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -194,6 +194,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 169 fixes an interaction with oracle playing the vendor card
 										// revision 170 adds purple market, extra special workers, drafting structures
 										// revision 171 fixes the first player after drafting
+										// revision 172 fixes the second player after drafting
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	

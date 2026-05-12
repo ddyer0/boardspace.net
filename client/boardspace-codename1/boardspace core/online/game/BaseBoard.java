@@ -20,6 +20,7 @@ import lib.AR;
 import lib.Digestable;
 import lib.G;
 import lib.IStack;
+import lib.InternationalStrings;
 import lib.Plog;
 import lib.Random;
 /**
@@ -447,11 +448,20 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	{	//G.print(G.uniqueName()+" Check rev from ",revision," to ",clientRevisionLevel);
 		started = true;
 		Plog.log.addLog("checkClientRevision client ",clientRevisionLevel," rev ",revision);
-		if(clientRevisionLevel>=0 && revision>=0 && clientRevisionLevel<revision) 
+		if(clientRevisionLevel>=0 && revision>=0)
+			{
+			if (clientRevisionLevel<revision) 
 			{ Plog.log.addLog(G.uniqueName()," Reinit to change revision from ",revision," to ",clientRevisionLevel);
 			  revision = clientRevisionLevel;
 			  doInit(); 
 			  return(true);
+			}
+			if(clientRevisionLevel>getMaxRevisionLevel())
+				{
+				InternationalStrings s = G.getTranslations();
+				G.infoBox(s.get(ClientOutOfDateMessage),
+						s.get(UpdateClientMessage));
+				}
 			}
 		return(false);
 	}

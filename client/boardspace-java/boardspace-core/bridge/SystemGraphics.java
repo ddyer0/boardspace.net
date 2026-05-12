@@ -396,6 +396,11 @@ public abstract class SystemGraphics
 		Color cc = getColor();
 		setColor(new Color(cc.getRed(),cc.getGreen(),cc.getBlue(),(int)(op*255)));
 	}
+	public double getOpacity()
+	{	Color cc = getColor();
+		int alp = cc.getAlpha();
+		return alp/255.0;
+	}
 	public void drawArrow(int ox, int oy, int dest_x,  int dest_y, int ticksize,double thickness)
 		{	
 			Graphics g = create();

@@ -23,6 +23,8 @@ import lib.UniversalConstants;
 public interface Opcodes extends UniversalConstants 
 {
 	static final String WrongInitError = "game type %s is not this game";	// not a translated string
+	static final String ClientOutOfDateMessage = "client out of date";
+	static final String UpdateClientMessage = "Your client needs to be updated - this may not work!";
 	static final int NothingMoving = -2;
 	static final String GAMEOVERONTIME = "WinOnTime";
 	static final String LOSEGAMEONTIME = "LoseOnTime";
@@ -129,7 +131,8 @@ public interface Opcodes extends UniversalConstants
 	}
 	public static void putStrings()
 	{	String strings[] = {
-			PASS,RESIGN,UNDO,EDIT,SWAP,
+			PASS,RESIGN,UNDO,EDIT,SWAP,ClientOutOfDateMessage,UpdateClientMessage,ClientOutOfDateMessage,
+			WrongInitError
 		};
 		String pairs[][] = {
 				{GAMEOVERONTIME,"Win On Time"},

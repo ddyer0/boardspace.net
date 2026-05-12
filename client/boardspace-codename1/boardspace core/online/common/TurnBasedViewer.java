@@ -438,7 +438,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		private String chat;		// the chat from the game
 		public boolean endgame;			// end the game as a loss for the current player
 		public String toString() { return ("<game #"+gameuid+" "+status+" "+variation); }
-		
+		public int getuid() { return gameuid; }
 		// return the new top
 		public int drawGame(Graphics gc, HitPoint pt, int left, int top, int w, int h,Color background) 
 		{	

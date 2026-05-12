@@ -1205,7 +1205,15 @@ public class G extends Platform implements Timestamp
 		  return(val);
 		}
 	
-
+	public static boolean isIOSMetal()
+	{
+		return isIOS() && isMetal;
+	}
+	public static boolean isIOSWooden()
+	{
+		return isIOS() && !isMetal;
+	}
+	
 	public static boolean isResourceName(String name,boolean doc)
 	    {	String lcname =  name.toLowerCase();
 	    	return(!(doc 
@@ -2093,24 +2101,8 @@ public static String expandClassName(String classname)
 	    {
 	    	return G.concat(getPlatformName(),getPlatformSubtype()," ",getAppVersion());
 	    }
-	    
-	    // ipad  landscape 2048x1536 screen=2048x1536 safe 0,40 2048x1496 frame=2048x1433 panel=0,0 2048x1433 
-	    //       portrait  1536x2048 screen=1536x2048 safe 0,40 1536x2008 frame=1536x1945 panel=0,0 1536x1945
-	    //
-	    // iphone landscape 2079x960  screen=2079x960 safe 117,0 1845x900 frame=2079x891 panel=0,0 2079x891 
-	    //		  portrait  960x2079  screen=960x2079 safe 0,117 960x1878 frame=960x1878 panel=0,0 960x1878
-	    //
-	    // phone landscape  1920x1080 screen=2199x1008 safe 0,0 2199x1008 frame=2199x921 panel=0,0 2199x921
-	    //       portrait   1080x1900 screen=1080x2194 safe 0,0 1080x2194 frame=1080x2107 panel=0,0 1080x2107
-	    //
-	    // tablet landscape 1920x1080 screen=1920x972 safe 0,0 1920x972 frame=1920x915 panel=0,0 1920x915
-	    //        portrait  1080x1920 screen=1080x1812 safe 0,0 1080x1812 frame=1080x1755 panel=0,0 1080x1755
-	    //
-	   
-	    public static String screenSummary()
-	    {
-	    	return G.concat(" screen=",getScreenSize()," safe ",MasterForm.getSafeBounds()," frame=",getFrameWidth(),"x",getFrameHeight()," panel=",MasterForm.getPanelBounds());
-	    }
+
+
 	    /** this is entered in the online contact.log
 	     *
 	     * @return

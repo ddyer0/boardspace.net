@@ -21,7 +21,6 @@ import lib.G;
 import lib.Http;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.Plog;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
 
@@ -258,8 +257,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  title.setText(name);
 	}
 	public void setWidth(int n)
-	{	Plog.log.addLog("master set width "+n);
-		Plog.log.addLog("stack: ",G.getStackTrace());
+	{	//Plog.log.addLog("master set width "+n);
+		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setWidth(n);
 	}
 	public void setHeight(int n)
@@ -267,8 +266,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		super.setHeight(n);
 	}
 	public void setSize(Dimension d)
-	{	Plog.log.addLog("master set size "+d);
-		Plog.log.addLog("stack: ",G.getStackTrace());
+	{	//Plog.log.addLog("master set size "+d);
+		//Plog.log.addLog("stack: ",G.getStackTrace());
 		super.setSize(d);
 	}
 	private Rectangle oldbounds = null; 
