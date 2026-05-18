@@ -16,8 +16,8 @@
  */
 package online.game;
 
-import bridge.ActionListener;
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -486,7 +486,8 @@ public abstract class commonMove
         return (null);
     }
 
-    public void variationsMenu(PopupManager menu,MenuParentInterface window,ActionListener listen)
+    @SuppressWarnings("rawtypes")
+	public void variationsMenu(PopupManager menu,MenuParentInterface window,ActionListener listen)
     {	menu.newPopupMenu(window,listen);
     	StackIterator<commonMove> variations = getVariations();
         if (variations != null)

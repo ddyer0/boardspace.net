@@ -19,6 +19,9 @@ package lib;
 import bridge.*;
 import java.util.Vector;
 
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
+
 /**
  * one of the rules for a well behaved application is that the actions resulting
  * from buttons and menus should be handled by the main process thread rather than
@@ -33,6 +36,7 @@ import java.util.Vector;
  * @author ddyer
  *
  */
+@SuppressWarnings("rawtypes")
 public class DeferredEventManager implements ActionListener,ItemListener,ListSelectionListener
 {
 	private Vector<Object> deferredEvents = new Vector<Object>();
@@ -90,7 +94,8 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  }
 		  else if(e instanceof ActionEvent)
 		  	{  ActionEvent ee = (ActionEvent)e;
-		  	   cp.handleDeferredEvent(ee.getSource(), ee.getActionCommand());		  	
+		  	   Object source = ee.getSource();
+		  	   cp.handleDeferredEvent(source, null);		  	
 		  	}
 		  else if(e instanceof ListSelectionEvent)
 		  {

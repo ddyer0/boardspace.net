@@ -146,6 +146,7 @@ public class NumberMenu extends Rectangle {
 	 *  in StopDragging when the menu icon is hit.  The menu itself will
 	 *  be serviced in the canvas handleDeferredEvent method
 	 */
+	@SuppressWarnings("rawtypes")
 	public void showMenu(MenuParentInterface drawOn,ActionListener listener)
 	{
 		if(menu==null) { menu=new PopupManager(); }

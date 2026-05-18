@@ -18,6 +18,9 @@
 package util;
 
 import com.codename1.ui.Component;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
+
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.layouts.Layout;
@@ -51,7 +54,8 @@ import udp.PlaytableStack;
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
 
- public class PasswordCollector extends JPanel
+ @SuppressWarnings("rawtypes")
+public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
 {
@@ -935,9 +939,8 @@ import udp.PlaytableStack;
     }
 	public void actionPerformed(ActionEvent e) 
 	{	Object source = e.getSource();
-        Object cmd1 = e.getActionCommand();
         captureValues(false);
-        if(cmd1!=null)
+        if(source!=null)
         {
         if(source==cancelButton) 
         	{ 
@@ -966,12 +969,12 @@ import udp.PlaytableStack;
         	reconfigure(Screen.Register);
         	return;
         }
-        else if((source==finalRegisterButton) || FINALREGISTER.equals(cmd1))
+        else if(source==finalRegisterButton)
         {
         	reconfigure(Screen.Login);
         	return;
         }
-        else if((source==registerButton) || REGISTER.equals(cmd1))
+        else if(source==registerButton)
     	{
          if(performRegistration())
          {
@@ -994,7 +997,7 @@ import udp.PlaytableStack;
         	G.setOffline(true);
         	exit();
         }
-        if((source==reviewButton) || ReviewMessage.equals(cmd1))
+        if(source==reviewButton)
         {
         	exitWith(ReviewMessage);
         	G.setOffline(true);
@@ -1011,7 +1014,7 @@ import udp.PlaytableStack;
         		}
         	}
         }
-        if((source==okButton) || OK.equals(cmd1))
+        if(source==okButton)
         	{
         	 exitWith(OK);
      
@@ -1195,11 +1198,9 @@ import udp.PlaytableStack;
 		}
 		repaint();
 	}
-	  
 	public static String getSavedPname()
 	{	return prefs.get(loginNameKey,null);
 	}
-	
 	public static String getSavedPassword(String forname)
 	{
 		 String p = prefs.get(passKey,"");

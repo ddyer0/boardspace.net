@@ -165,8 +165,8 @@ public class PlayerBoard
 	char colCode;
 	public boolean publicCensoring = true;
 	public boolean hiddenCensoring = true;
-	Bitset<Option> selectedOptions = new Bitset<Option>();
-	Bitset<Option> unSelectedOptions = new Bitset<Option>();
+	Bitset<Option> selectedOptions = new Bitset<Option>(Option.class);
+	Bitset<Option> unSelectedOptions = new Bitset<Option>(Option.class);
 	ViticultureCell messengerCell;	// place where your messenger was placed in the future
 	Viticulturemovespec messengerMove;
 	

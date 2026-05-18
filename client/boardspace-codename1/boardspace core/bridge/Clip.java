@@ -26,7 +26,7 @@ import lib.G;
 import com.codename1.media.Media;
 import com.codename1.media.MediaManager;
 
-public class AudioClip {
+public class Clip {
 	String name;
 	byte[] data;
 	File clipFile = null;
@@ -35,7 +35,7 @@ public class AudioClip {
 	String format = "audio/wav"; //"audio/wave";
 	public String toString() { return(G.concat("<clip ",name," ",data==null?0:data.length,">")); }
 	File tempFile = null;
-	public AudioClip(URL url)
+	public Clip(URL url)
 	{
 		name = url.getFile();
 		int idx = name.lastIndexOf('/');
@@ -64,7 +64,7 @@ public class AudioClip {
 		catch (IOException e) {};
 		useFiles = true;
 	}
-	public AudioClip(String n,InputStream d)
+	public Clip(String n,InputStream d)
 	{	name = n;
 		try {
 			// get a copy of the data
@@ -89,7 +89,7 @@ public class AudioClip {
 	Media media = null;
 	InputStream stream = null;
 	double starttime = 0;
-	AudioClip clip = this;
+	Clip clip = this;
 	Runnable complete = new Runnable() 
 	{ public void run() 
 		{ completed = true; media = null; 
@@ -132,4 +132,5 @@ public class AudioClip {
 		  if(G.isIOS()) { G.startInEdt(play); }
 				else { play.run(); }
 	}}
+	
 }

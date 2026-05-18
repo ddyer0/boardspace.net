@@ -19,9 +19,9 @@ package online.game;
 
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Rectangle;
 import static com.codename1.util.MathUtil.atan2;
-import bridge.ActionListener;
 import bridge.Color;
 
 import java.util.Enumeration;
@@ -149,6 +149,7 @@ public class NumberMenu extends Rectangle {
 	 *  in StopDragging when the menu icon is hit.  The menu itself will
 	 *  be serviced in the canvas handleDeferredEvent method
 	 */
+	@SuppressWarnings("rawtypes")
 	public void showMenu(MenuParentInterface drawOn,ActionListener listener)
 	{
 		if(menu==null) { menu=new PopupManager(); }

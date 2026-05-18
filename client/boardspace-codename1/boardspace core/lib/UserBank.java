@@ -16,9 +16,10 @@
  */
 package lib;
 
-import bridge.ActionListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import com.codename1.ui.events.ActionListener;
 
 //
 // maintains a list of users accessible to a chat, including some that
@@ -44,7 +45,8 @@ public class UserBank
 		  destMenu.addMenuItem(menu,name,v);
 		}
 	}
-    public void selectDestination(MenuParentInterface parent,ActionListener listen,String prompt,int x,int y)
+    @SuppressWarnings("rawtypes")
+	public void selectDestination(MenuParentInterface parent,ActionListener listen,String prompt,int x,int y)
     {	int maxsz = users.size();
     	int sz = 0;
     	SimpleUser us[] = new SimpleUser[maxsz];

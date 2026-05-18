@@ -18,6 +18,7 @@ package bridge;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 
 import lib.FontManager;
 import lib.Image;
@@ -25,9 +26,10 @@ import lib.SizeProvider;
 
 import com.codename1.ui.geom.Point;
 
-public class Button extends com.codename1.ui.Button implements ActionProvider,SizeProvider
+public class Button extends com.codename1.ui.Button implements SizeProvider
 {	private final MouseAdapter mouse = new MouseAdapter(this);
-	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
+	public void addActionListener(@SuppressWarnings("rawtypes") ActionListener m) 
+		{ mouse.addActionListener(m); }
 	Image theImage = null;
 	public Button(Image image) { super(image.getSystemImage()); theImage = image; }
 	public Image getImage() { return theImage; }

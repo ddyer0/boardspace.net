@@ -30,6 +30,7 @@ import bridge.Config;
 import lib.Graphics;
 import lib.AR;
 import lib.Random;
+import lib.SoundManager;
 import lib.CellId;
 import lib.Drawable;
 import lib.ExtendedHashtable;
@@ -113,6 +114,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
     		: "/pendulum/images/";
 
 	static final String flipSound = ImageDir + "flip" + Config.SoundFormat;
+	
+	public static final String soundNames[] = { flipSound };
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color chatBackgroundColor = new Color(240,240,240);
@@ -184,7 +187,8 @@ public class PendulumViewer extends CCanvas<PendulumCell,PendulumBoard> implemen
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	PendulumChip.preloadImages(loader,ImageDir);	// load the images used by stones
+    {	SoundManager.preloadSounds(soundNames);
+    	PendulumChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = PendulumChip.Icon.image;
     }
 

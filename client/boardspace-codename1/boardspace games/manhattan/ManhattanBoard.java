@@ -223,7 +223,7 @@ class ManhattanBoard extends RBoard<ManhattanCell>	// for a square grid board, t
     private PlayerBoard playerBoardOrder[] = new PlayerBoard[ManhattanChip.playerColors.length];
     // player boards by board index
     PlayerBoard pbs[] = null;
-	Bitset<Options> options = new Bitset<Options>();
+	Bitset<Options> options = new Bitset<Options>(Options.class);
 	public boolean testOption(Options op)
 	{
 		return options.test(op);

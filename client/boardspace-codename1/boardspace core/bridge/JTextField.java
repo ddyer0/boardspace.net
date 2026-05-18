@@ -17,6 +17,8 @@
 package bridge;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
+
 import lib.FontManager;
 import lib.G;
 
@@ -27,6 +29,7 @@ public class JTextField extends JTextComponent
 		{ mouse.addMouseListener(m); }
 	public void addMouseMotionListener(MouseMotionListener m) 
 		{ mouse.addMouseMotionListener(m); }
+	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener m) 
 		{ mouse.addActionListener(m); }
 

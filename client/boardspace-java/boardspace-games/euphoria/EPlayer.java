@@ -93,7 +93,7 @@ enum PFlag {
 	RetrievePrisonersDilemmaBefore,
 	StartWithKofiTheHermit,
 }
-Bitset<PFlag> pf = new Bitset<PFlag>();
+Bitset<PFlag> pf = new Bitset<PFlag>(PFlag.class);
 
 public void setPFlag(PFlag val) { pf.set(val); }
 public boolean testPFlag(PFlag val) { return(pf.test(val)); }
@@ -135,7 +135,7 @@ enum TFlag {
 	UsedBornaTheStoryteller, HasLostMorale, UsedJonathanTheGamblerThisWorker, UsedJonathanTheGamblerThisTurn,
 	AskedJonathanTheGambler,	// used her once
 }
-Bitset<TFlag> tf = new Bitset<TFlag>();
+Bitset<TFlag> tf = new Bitset<TFlag>(TFlag.class);
 
 public void setTFlag(TFlag val) 
 { 	tf.set(val);
@@ -1524,6 +1524,7 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
     		// a separate step.
     		switch(cost)
     			{
+    			case Infinite: break;
     			case Energy:	cost = Cost.EnergyAndCommodity; break;
     			case Food:	cost = Cost.FoodAndCommodity; break;
     			case Water: cost = Cost.WaterAndCommodity; break;

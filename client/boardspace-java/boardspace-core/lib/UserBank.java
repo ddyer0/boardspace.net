@@ -44,6 +44,7 @@ public class UserBank
 		  destMenu.addMenuItem(menu,name,v);
 		}
 	}
+    @SuppressWarnings("rawtypes")
     public void selectDestination(MenuParentInterface parent,ActionListener listen,String prompt,int x,int y)
     {	int maxsz = users.size();
     	int sz = 0;

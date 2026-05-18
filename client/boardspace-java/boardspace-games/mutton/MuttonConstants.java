@@ -200,7 +200,7 @@ public interface MuttonConstants
 	static final String SND_EAT_WOLF    = "mutton/sounds/EatWolf" + Config.SoundFormat;
 	static final String SND_SHOOT_SHEEP = "mutton/sounds/ShootSheep" + Config.SoundFormat;
 	static final String SND_SHOOT_WOLF  = "mutton/sounds/ShootWolf" + Config.SoundFormat;
-	static final String Sounds[] = 
+	public static final String Sounds[] = 
 		{SND_PICKUP,SND_EAT_SHEEP,SND_EAT_WOLF,SND_SHOOT_SHEEP,SND_SHOOT_WOLF
 		};
 }

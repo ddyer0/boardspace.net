@@ -130,7 +130,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     }
     
     public synchronized void preloadImages()
-    {	
+    {	SoundManager.preloadSounds(soundNames);
        	ArimaaChip.preloadImages(loader,ImageDir);
         if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
@@ -141,6 +141,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         gameIcon = ArimaaChip.getChip(0,ArimaaChip.ELEPHANT_INDEX).getImage();
     }
 
+    public static String soundNames[] = { sucking_sound };
 
 	/**
 	 * 
@@ -657,7 +658,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         return (new ArimaaMovespec(st, player));
     }
     
-   
+
 private void playSounds(commonMove mm)
 {
 	ArimaaMovespec m = (ArimaaMovespec) mm;

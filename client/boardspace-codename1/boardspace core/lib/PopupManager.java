@@ -16,6 +16,8 @@
  */
 package lib;
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 
 import bridge.*;
 import java.util.Hashtable;
@@ -43,6 +45,7 @@ import java.util.Hashtable;
  * to old components if that fails.
 
  */
+@SuppressWarnings("rawtypes")
 public class PopupManager extends SimpleObservable implements ActionListener,DrawingObject
 {
     // menu support.  
@@ -105,6 +108,7 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	}
 		   
 	// add a leaf item
+	@SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(String item,ActionListener listener)
 	{
 		JMenuItem newitem = new JMenuItem(item,font);
@@ -190,7 +194,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 		   public String toString() { return("<Box "+jsubmenu.toString()+">"); }
 		   
 		   // add a leaf item
-		   public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
+		   @SuppressWarnings("rawtypes")
+		public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
 		   {	
 			   Icon ic = item.getIcon(parent);
 			   JMenuItem newitem = ic!=null 
@@ -202,7 +207,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 		   }
 		   
 		   // add a leaf item
-		   public NativeMenuItemInterface add(String item,ActionListener listener)
+		   @SuppressWarnings("rawtypes")
+		public NativeMenuItemInterface add(String item,ActionListener listener)
 		   {
 			   JMenuItem newitem = new JMenuItem(item,font);
 			   jsubmenu.add(newitem);
@@ -255,7 +261,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	   }
 	   
 	   // add a leaf item
-	   public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
+	   @SuppressWarnings("rawtypes")
+	public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener)
 	   {	
 		   MenuItem newitem = new MenuItem(item.getString(),font);
 		   awtPopupMenu.add(newitem);
@@ -264,7 +271,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	   }
 	   
 	   // add a leaf item
-	   public NativeMenuItemInterface add(String item,ActionListener listener)
+	   @SuppressWarnings("rawtypes")
+	public NativeMenuItemInterface add(String item,ActionListener listener)
 	   {
 		   MenuItem newitem = new MenuItem(item,font);
 		   awtPopupMenu.add(newitem);
@@ -310,6 +318,7 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 
 
    private Hashtable<NativeMenuItemInterface,Object> popupTarget=null;
+   @SuppressWarnings("rawtypes")
    private ActionListener listener=null;
    private SimpleObserver observer = null;
    private MenuParentInterface parent = null;
@@ -499,7 +508,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
      * @param window the window where the menu will appear
      * @param listen the listener for action events associated with the menu
      */
-    public void newPopupMenu(MenuParentInterface window,ActionListener listen,SimpleObserver o)
+    @SuppressWarnings("rawtypes")
+	public void newPopupMenu(MenuParentInterface window,ActionListener listen,SimpleObserver o)
     {	popupTarget = new Hashtable<NativeMenuItemInterface,Object>();	
     	listener = listen;
     	observer = o;
@@ -517,7 +527,8 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
     {
     	return menu.getFont();
     }
-    public void newPopupMenu(MenuParentInterface window,ActionListener listen)
+    @SuppressWarnings("rawtypes")
+	public void newPopupMenu(MenuParentInterface window,ActionListener listen)
     {
     	newPopupMenu(window,listen,null);
     }

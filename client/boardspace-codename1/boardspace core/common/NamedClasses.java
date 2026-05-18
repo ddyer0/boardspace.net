@@ -29,7 +29,7 @@ public class NamedClasses {
     	// of the defenses of the live site boardspace against accidental damage from
     	// experiments using sources cloned from github.
     	classes.put("common.Salt",common.Salt.class);
-    	
+    	classes.put("graphicstest.GraphicsViewer",graphicstest.GraphicsViewer.class);
     	classes.put("vnc.AuxViewer",vnc.AuxViewer.class);
     	classes.put("online.common.SeatingViewer",online.common.SeatingViewer.class);
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);

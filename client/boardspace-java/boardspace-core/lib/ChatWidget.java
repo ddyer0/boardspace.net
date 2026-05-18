@@ -42,6 +42,7 @@ import lib.TextContainer.Op;
 // TODO: make it possible to copy/paste images
 // TODO: make chat windows float or pop out so they can be large without encumbering layout of the overall screen
 //
+@SuppressWarnings("rawtypes")
 public class ChatWidget
 	implements ChatInterface,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener
@@ -106,7 +107,7 @@ public class ChatWidget
 	        LobbyChannel,
 		};
    
-    
+ 
 	public boolean isWindow() { return(false); }	// we're free of the window system
     private InternationalStrings s = null;
     private int floodStrings = 0;
@@ -354,6 +355,8 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
+        SoundManager.preloadSounds(soundNames);
+
         basicFont = FontManager.getFont(s.get("fontfamily"), FontManager.Style.Plain, FontManager.standardizeFontSize(FontManager.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));

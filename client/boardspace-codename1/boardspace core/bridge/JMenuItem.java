@@ -24,10 +24,14 @@ import lib.Graphics;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.events.ActionEvent;
+
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 
 
+@SuppressWarnings("rawtypes")
 public class JMenuItem extends Component implements ActionListener,NativeMenuItemInterface
 {	MouseAdapter mouse = new MouseAdapter(null);
 	String text = null;
@@ -87,6 +91,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	public com.codename1.ui.Container  getShowingOn() { return(null); }
 	public void show(com.codename1.ui.Container c,int x,int y) throws AccessControlException {};	// dummy method
 	Vector<ItemListener>itemListeners=null;
+	@SuppressWarnings("rawtypes")
 	Vector<ActionListener>actionListeners = null;
 	public JMenuItem() 
 	{  setFont(FontManager.menuFont()); 
@@ -117,14 +122,15 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 		if(!itemListeners.contains(listener)) { itemListeners.addElement(listener); }		
 		}
 	
+	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener deferredEvents) 
 	{	if(actionListeners==null) { actionListeners = new Vector<ActionListener>();}
 		actionListeners.add(deferredEvents);
 	}
-	public ActionListener[] getActionListeners()
+	public ActionListener<?>[] getActionListeners()
 	{	if(actionListeners==null) { return(new ActionListener[0]); }
 		int sz = actionListeners.size();
-		ActionListener ar[] = new ActionListener[sz];
+		ActionListener<?> ar[] = new ActionListener[sz];
 		for(int i=0;i<sz;i++) { ar[i]=actionListeners.elementAt(i); }
 		return(ar);
 	}
@@ -142,6 +148,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 			}
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public void handleActionEvent(ActionEvent ev)
 	{	if(actionListeners!=null)
 		{

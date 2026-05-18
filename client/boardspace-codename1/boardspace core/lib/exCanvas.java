@@ -17,6 +17,8 @@
 package lib;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Rectangle;
 
 
@@ -33,6 +35,7 @@ import java.util.Vector;
 import lib.RepaintManager.RepaintHelper;
 import lib.RepaintManager.RepaintStrategy;
 
+@SuppressWarnings("rawtypes")
 public abstract class exCanvas extends ProxyWindow 
 	implements SimpleObserver,DeferredEventHandler,
 		CanvasProtocol,Config,ActionListener,

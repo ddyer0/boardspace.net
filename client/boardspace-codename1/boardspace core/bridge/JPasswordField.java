@@ -18,12 +18,13 @@ package bridge;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.TextField;
+import com.codename1.ui.events.ActionListener;
 
 import lib.FontManager;
 
 public class JPasswordField extends TextField
 {	MouseAdapter mouse = new MouseAdapter(this);
-	public void addActionListener(ActionListener who) { mouse.addActionListener(who); }
+	public void addActionListener(@SuppressWarnings("rawtypes") ActionListener who) { mouse.addActionListener(who); }
 	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }

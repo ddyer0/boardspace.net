@@ -28,6 +28,9 @@ import lib.TopFrameProtocol;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
+
 import lib.Graphics;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
@@ -42,6 +45,7 @@ import com.codename1.ui.plaf.Style;
  * @author Ddyer
  *
  */
+@SuppressWarnings("rawtypes")
 public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionListener,Config
 {	public boolean fancyPaint = true;
 	public boolean useFakePaint = false;
@@ -54,13 +58,13 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	Image rotateImage = Image.getImage(IMAGEPATH+"rotate-nomask.png");
 	Image rotateQImage = Image.getImage(IMAGEPATH+"rotateq-nomask.png");
 	Image rotate3QImage = Image.getImage(IMAGEPATH+"rotateqc-nomask.png");
-	JButton menuButton = new JButton("actionmenu",menuImage,1);
-	JButton closeButton = new JButton("close",closeImage,1);
-	JButton paperclipButton = new JButton("savepanzoom",paperClipImage,1);
-	JButton paperclipSideButton = new JButton("restorepanzoom",paperClipSideImage,1);
-	JButton rotateButton = new JButton("rotate",rotateImage,1);
-	JButton twistButton = new JButton("twist",rotateQImage,1);
-	JButton twist3Button = new JButton("twist3",rotate3QImage,1);
+	public JButton menuButton = new JButton("actionmenu",menuImage,1);
+	public JButton closeButton = new JButton("close",closeImage,1);
+	public JButton paperclipButton = new JButton("savepanzoom",paperClipImage,1);
+	public JButton paperclipSideButton = new JButton("restorepanzoom",paperClipSideImage,1);
+	public JButton rotateButton = new JButton("rotate",rotateImage,1);
+	public JButton twistButton = new JButton("twist",rotateQImage,1);
+	public JButton twist3Button = new JButton("twist3",rotate3QImage,1);
 	// the order here defines the order from left to right
 	// clipsidebutton is leftmost so it can appear and disappear and look natural
 	JButton playtableButtons[] = { paperclipSideButton,paperclipButton,twist3Button,rotateButton,twistButton,menuButton,closeButton };
@@ -456,7 +460,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		return(cc<=0 ? null : safeGetComponentAt(cc-1));
 	}
 
-	public void buttonTopWindow(ActionEvent evt,String cmd)
+	public void buttonTopWindow(ActionEvent evt)
 	{
 		Component f = getTopWindow();
 		if(f instanceof TabFrame)
@@ -504,8 +508,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 
 	public void actionPerformed(ActionEvent evt) 
-	{
-		buttonTopWindow(evt,evt.getActionCommand());
+	{	
+		buttonTopWindow(evt);
 	}
 	
 	public void doNullLayout()

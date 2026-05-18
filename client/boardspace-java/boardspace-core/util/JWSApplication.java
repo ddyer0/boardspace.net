@@ -272,7 +272,7 @@ public class JWSApplication implements Config,Runnable,OnlineConstants
 			// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
-				
+			OfflineGames.pruneOfflineGames(90);				
 		  	runLframe();					
 		  	// 
 		  	// restore the globals to their initial state, except serverName

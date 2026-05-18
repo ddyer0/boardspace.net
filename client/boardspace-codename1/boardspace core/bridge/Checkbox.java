@@ -17,12 +17,16 @@
 package bridge;
 
 import com.codename1.ui.Font;
-
 import lib.FontManager;
 
-public class Checkbox extends com.codename1.ui.CheckBox implements ActionProvider
+public class Checkbox extends com.codename1.ui.CheckBox
 {	private final MouseAdapter mouse = new MouseAdapter(this);
-	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
+	@SuppressWarnings("unchecked")
+	public void addItemListener(ItemListener m) 
+		{
+		addActionListener(mouse);
+		mouse.addItemListener(m); 
+		}
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))
 		{ 

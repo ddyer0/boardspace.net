@@ -23,4 +23,5 @@ import com.codename1.ui.events.ActionListener;
 public interface ActionProvider {
 	public void addActionListener(ActionListener<?> m);
 	public void removeActionListener(ActionListener<?>m);
+	public void superAddActionListener(ActionListener<?>m);
 }

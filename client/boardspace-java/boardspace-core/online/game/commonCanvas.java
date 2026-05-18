@@ -144,6 +144,11 @@ public abstract class commonCanvas extends exCanvas
     public static final String beepBeepSoundName = SOUNDPATH + "meepmeep"  + SoundFormat;
     public static final String doorBell = SOUNDPATH + "Doorbl" + SoundFormat;
 	public static final String CARD_SHUFFLE = SOUNDPATH + "CardShuffle"+ Config.SoundFormat;
+	
+	private String soundNames[] = {
+			light_drop,heavy_drop,diceSoundName,scrape,swish,clockSound,beepBeepSoundName,
+			doorBell,CARD_SHUFFLE,hurrySound
+	};
 	public static final String TimeExpiredMessage = "Time has expired for #1";
 	public static final String TimeEndGameMessage = "end the game with a loss for #1";
 	public static final String ChangeLimitsMessage = "change the time limits";
@@ -1010,7 +1015,7 @@ public abstract class commonCanvas extends exCanvas
 	   							hist.push(var);
 	   							var = var.best_move();
 	   						}
-	   						doSaveGame(save_game(hist));
+	   						save_game(hist).doSaveGame(gameName());
 
 	               		}
 
@@ -5567,7 +5572,7 @@ public abstract class commonCanvas extends exCanvas
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-        
+        SoundManager.preloadSounds(soundNames);
         SeatingChart chart = (SeatingChart)sharedInfo.get(SEATINGCHART);
         turnBasedGame = (TurnBasedViewer.AsyncGameInfo)info.get(TURNBASEDGAME);
         offlineGame = info.getBoolean(OFFLINEGAME,true);
@@ -5734,9 +5739,8 @@ public abstract class commonCanvas extends exCanvas
         if(seatingChart==null) 
         	{ seatingChart = SeatingChart.defaultSeatingChart(info.getInt(PLAYERS_IN_GAME,2)); 
         	}
-        SoundManager.loadASoundClip(turnChangeSoundName);
-        SoundManager.loadASoundClip(beepBeepSoundName);
-
+        SoundManager.preloadSounds(turnChangeSoundName,beepBeepSoundName);
+ 
      }
 
     /**
@@ -6791,23 +6795,10 @@ public abstract class commonCanvas extends exCanvas
     }
     
     private void doSaveGame()
-    {	doSaveGame(save_game());
+    {	save_game().doSaveGame(gameName());
     }
 
-    private void doSaveGame(sgf_game game)
-    {
-        String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,gameName(), "*.sgf");
-        if (ss != null)
-        {
-            int lastDot = ss.lastIndexOf('.');
-            int lastSlash = ss.lastIndexOf('/');
-            if((lastDot<0) || (lastSlash>lastDot)) 
-            	{ ss += ".sgf"; 
-            	}
-            
-            sgf_reader.sgf_save(ss, game);
-        }
-    }
+
     public void doSaveUrl(String file)
     {	if(l.zipArchive!=null)
     	{
@@ -6820,11 +6811,11 @@ public abstract class commonCanvas extends exCanvas
     	if(dot<0 || slash>dot) 
     		{ file += ".sgf"; 
     		}
-    	sgf_reader.sgf_save(G.getUrl(file),save_game());
+    	save_game().sgf_save(G.getUrl(file));
     }
     public void saveGame(String file)
     {
-    	sgf_reader.sgf_save(file,save_game());
+    	sgf_game.sgf_save(file,save_game());
     }
     public void doSaveCollection(String ss)
     {
@@ -6842,7 +6833,7 @@ public abstract class commonCanvas extends exCanvas
             int lastSlash = ss.lastIndexOf('/');
             if((lastDot<0) || (lastSlash>lastDot)) { ss += ".sgf"; }
 
-            sgf_reader.sgf_save(ss, hidden.Games.toArray());
+            sgf_game.sgf_save(ss, hidden.Games.toArray());
         }
     }
     public commonPlayer[] getPlayers() { return(players); }
@@ -7065,7 +7056,7 @@ public abstract class commonCanvas extends exCanvas
         sgf_game game = save_game();
         Utf8OutputStream lbs = new Utf8OutputStream();
         PrintStream os = Utf8Printer.getPrinter(lbs);
-        sgf_reader.sgf_save(os, new sgf_game[] {game});
+        game.sgf_save(os,false);
         os.close();
         String msg = lbs.toString();
         emailGame("",s.get(RecordOfGame,game.short_name()),msg);
@@ -7078,7 +7069,7 @@ public abstract class commonCanvas extends exCanvas
         sgf_game game = save_game();
         Utf8OutputStream lbs = new Utf8OutputStream();
         PrintStream os = Utf8Printer.getPrinter(lbs);
-        sgf_reader.sgf_save(os, new sgf_game[] { game});
+        game.sgf_save(os, false);
         os.close();
         String msg = lbs.toString();
         TextDisplayFrame f = new TextDisplayFrame(s.get(RecordOfGame,game.short_name()));
@@ -8389,25 +8380,6 @@ public String currentPlayerPrettyName(int who)
  *  */
 public String encodeScreenZone(int x, int y,Point p)
 {	
-	// we can start using this after the decoder is widely accepted, starting with version  9.18
-	/* obsolete
-	if(!USEBOARDPC && G.pointInRect(x,y,boardRect))
-	{ 	int screenXQuant = Math.max(2,G.Width(boardRect)/20);
-		BoardProtocol b = getBoard();
-		// this inited test is to combat an occasional nullpointerexception
-		// when the mouse gets ahead of the game setup
-		Point pp = (b!=null 
-					 ? b.encodeCellPosition(x-G.Left(boardRect),G.Bottom(boardRect)-y,screenXQuant)
-					 : null);
-
-		if(pp!=null)
-			{
-			G.SetLeft(p,G.Left(pp));
-			G.SetTop(p,G.Top(pp));
-			return("boardEnc");
-			}
-	}
-	*/
 	if(G.pointInRect(x,y,boardRect))
 	{ 	BoardProtocol b = getBoard();
 		if(b!=null)
@@ -8443,22 +8415,7 @@ public String encodeScreenZone(int x, int y,Point p)
 			return ".p."+pl.boardIndex;
 		}}
 	}
-	/* obsolete
-	if(!USEBOARDPC)
-	{
-		//if in the board zone
-		Rectangle ref = fullRect;
-		String name = "on";
 
-
-		// full screen is encoded as arbitrary units from the upper left
-		double quant = Math.max(2,G.Width(ref)/100.0);
-		G.SetLeft(p,(int)((x-G.Left(ref))/quant));
-		G.SetTop(p,(int)((y-G.Top(ref))/quant));
-		return(name);
-		}
-	else
-	*/
 	{
 		//if in the board zone
 		G.SetLeft(p,((x-G.Left(fullRect))*100)/G.Width(fullRect));

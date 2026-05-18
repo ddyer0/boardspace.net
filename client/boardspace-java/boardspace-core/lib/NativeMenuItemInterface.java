@@ -28,7 +28,9 @@ public interface NativeMenuItemInterface
 	public int getNativeHeight();	// this has a unique name to avoid overriding getHeight
 	public int getNativeWidth();	// this has a unique name to avoid overriding getWidth
 	public Font getFont();
+	@SuppressWarnings("rawtypes")
 	public ActionListener[]getActionListeners();
+	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener d);
 	public String getActionCommand();
 	

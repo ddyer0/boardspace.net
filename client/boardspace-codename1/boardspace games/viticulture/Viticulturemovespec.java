@@ -431,7 +431,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         {
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
-        	Bitset<Option> b = new Bitset<Option>();
+        	Bitset<Option> b = new Bitset<Option>(Option.class);
         	while(msg.hasMoreTokens())
         	{
         		Option a = Option.valueOf(msg.nextToken());
@@ -659,7 +659,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{
-        	Bitset<Option> b = new Bitset<Option>();
+        	Bitset<Option> b = new Bitset<Option>(Option.class);
         	b.setMembers(from_row);
         	if(from_row!=0)
         	{
@@ -822,7 +822,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{
-        	Bitset<Option> b = new Bitset<Option>();
+        	Bitset<Option> b = new Bitset<Option>(Option.class);
         	b.setMembers(from_row);
         	String os = b.memberString(Option.values());
         	return G.concat(opname,os);

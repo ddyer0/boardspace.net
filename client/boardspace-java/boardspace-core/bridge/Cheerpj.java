@@ -1,10 +1,9 @@
 package bridge;
 
-import java.applet.AudioClip;
 import java.net.URL;
 
 @SuppressWarnings("deprecation")
-public class Cheerpj implements AudioClip
+public class Cheerpj 
 {
 	
     public native int getWidth();

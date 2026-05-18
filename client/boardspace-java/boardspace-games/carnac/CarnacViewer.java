@@ -299,7 +299,6 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
             vcrW,
             vcrW/2);
  
-        
         G.SetRect(sizeRect, G.Left( vcrRect), G.Bottom(vcrRect)+CELLSIZE, CELLSIZE*8, CS+C2);
        
         G.SetRect(reverseViewRect,

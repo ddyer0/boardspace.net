@@ -16,8 +16,8 @@
  */
 package lib;
 
-import bridge.AudioClip;
 import bridge.URL;
+import bridge.Clip;
 import java.util.Hashtable;
 
 
@@ -31,7 +31,7 @@ public class SoundManager implements Runnable
     private  URL[] sounds = new URL[QUEUELENGTH];
     private  long[] delays = new long[QUEUELENGTH];
     private  long nextDelay=0;
-    private  Hashtable<String,AudioClip> soundClips = new Hashtable<String,AudioClip>();
+    public  Hashtable<String,Clip> soundClips = new Hashtable<String,Clip>();
 	public synchronized void showClips(String msg)
 	{	long now = G.Date();
 		int rp = readPtr;
@@ -82,15 +82,17 @@ public class SoundManager implements Runnable
 	        return (null);
 	    }
 
-	    private AudioClip getAClip()
+	    private Clip getAClip()
 	    {	URL n = extractAClip();
-	    	return(GetCachedClip(n));
+	    	Clip cc = GetCachedClip(n);
+	    	//G.print("fetch ",n,cc);
+	    	return(cc);
 	    }
 
-	    private AudioClip GetCachedClip(URL clipUrl)
+	    private Clip GetCachedClip(URL clipUrl)
 	    {	if (clipUrl != null)
 	        {	String name = clipUrl.toExternalForm();
-	            AudioClip clip = soundClips.get(name);
+	            Clip clip = soundClips.get(name);
 
 	            if (clip == null)
 	            {	
@@ -107,34 +109,21 @@ public class SoundManager implements Runnable
 	    }
 
 
-	    public static AudioClip LoadAClip(URL name)
+	    public static Clip LoadAClip(URL name)
 	    {
-	        AudioClip v = null;
-
-	        try
-	        {	
-	        	v = G.getAudioClip(name);
-	        }
-	        catch (NullPointerException ex)
-	        {
-	             /* shouldn't happen */
-	        }
-	        catch (Throwable err)
-	        {	G.print("LoadAClip Failed for ",name, " ", err);
-	            Http.postError(theInstance, "LoadAClip Failed for " + name, err);
-	        }
+	        Clip v = G.getAudioClip(name);
 
 	        return (v);
 	    }
 
-	    public static void loadASoundClip(String clipName, boolean doc)
+	    public static Clip loadASoundClip(String clipName, boolean doc)
 	    {	
-	        getInstance().GetCachedClip(G.getUrl(clipName,doc));
+	       return  getInstance().GetCachedClip(G.getUrl(clipName,doc));
 	    }
 
-	    public static void loadASoundClip(String clipName)
+	    public static Clip loadASoundClip(String clipName)
 	    {
-	    	getInstance().GetCachedClip((G.getUrl(clipName, false)));
+	    	return getInstance().GetCachedClip((G.getUrl(clipName, false)));
 	    }
 	    public synchronized static void makeNewInstance()
 	    {	if(theInstance==null)
@@ -159,6 +148,7 @@ public class SoundManager implements Runnable
 	        URL u = G.getUrl(clipName,doc);
 	        if(GetCachedClip(u)!=null)	// get it loaded now
 	        {
+	        //G.print("load ",u);
 	        playASoundClip(u,delay);
 	        }}
 	    }
@@ -206,10 +196,10 @@ public class SoundManager implements Runnable
         //System.out.println("run");
         G.setThreadName(Thread.currentThread(),"Sound");
         for (; !exit;)
-        {	final AudioClip clip = getAClip();
+        {	final Clip clip = getAClip();
         	if (clip != null)
                 {	
-        		clip.play(); 	
+                	G.playAudioClip(clip);
                 }
              };
         }

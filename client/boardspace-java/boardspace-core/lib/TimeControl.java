@@ -417,6 +417,7 @@ public class TimeControl implements Config
 	  }
   
 	  private PopupManager timeControlMenu;
+	  @SuppressWarnings("rawtypes")
 	  public PopupManager changeTimeControlKind(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	timeControlMenu = new PopupManager();  
 	  	timeControlMenu.newPopupMenu(parent,deferredEvents);
@@ -425,6 +426,7 @@ public class TimeControl implements Config
 	  }
 	  private PopupManager minutesMenu;
 	  /** present a menu of minutes choices */
+	  @SuppressWarnings("rawtypes")
 	  public PopupManager changeMinutes(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents,int minimum)
 	  { minutesMenu = new PopupManager();
 	  	minutesMenu.newPopupMenu(parent,deferredEvents);
@@ -440,6 +442,7 @@ public class TimeControl implements Config
 	  }
 	  private PopupManager secondsMenu;
 	  /** present a menu of seconds choices */
+	  @SuppressWarnings("rawtypes")
 	  public PopupManager changeSeconds(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	secondsMenu = new PopupManager();
 	  	secondsMenu.newPopupMenu(parent,deferredEvents);
@@ -456,6 +459,7 @@ public class TimeControl implements Config
 
 	  private PopupManager minutesMenu2;
 	  /** present a second "minutes" menu */
+	  @SuppressWarnings("rawtypes")
 	  public PopupManager changeMinutes2(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	minutesMenu2 = new PopupManager();
 		InternationalStrings s = G.getTranslations();
@@ -515,6 +519,7 @@ public class TimeControl implements Config
 	  			? prettyPrint()
 	  			: null);
 	  }
+	@SuppressWarnings("rawtypes")
 	  public boolean handleMenus(TimeId id,int left,int top,MenuParentInterface canvas,ActionListener ac)
 	  {
 		switch(id)

@@ -118,8 +118,6 @@ public class commonChatApplet extends FullscreenPanel
     public boolean muted = false;
     private String prevstr[]={"","",""};
     private int prevStringCount=0;
-    private String soundNames[]={ knockSoundName,chatSoundName,ChatInterface.challengeSoundName,lobbySoundName,
-    		goodHintSoundName,badHintSoundName,gameSoundName};
 
 
 	public void setBackgroundColor(Color c)
@@ -144,7 +142,6 @@ public class commonChatApplet extends FullscreenPanel
         s = G.getTranslations();
         basicFont = FontManager.getFont(s.get("fontfamily"), FontManager.Style.Plain, FontManager.standardizeFontSize(FontManager.defaultFontSize));
         theFrame = frame;
-        for(String sn : soundNames) { SoundManager.loadASoundClip(sn); }
 
         if (G.isUnix()) {  MINTEXTHEIGHT = 20;  }
         else if(G.isCodename1()) { MINTEXTHEIGHT = (int)(35*G.getDisplayScale());  }

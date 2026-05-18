@@ -129,7 +129,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     }
   
     public synchronized void preloadImages()
-    {	
+    {	SoundManager.preloadSounds(soundNames);
        	ArimaaChip.preloadImages(loader,ImageDir);
         if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
@@ -140,6 +140,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         gameIcon = ArimaaChip.getChip(0,ArimaaChip.ELEPHANT_INDEX).getImage();
     }
 
+    public static String soundNames[] = { sucking_sound };
 
 	/**
 	 * 
@@ -282,7 +283,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
-    	{
+    	{	// this is only used in offline pass and play games, so doesn't need to coordinate with displayOnlyBoardRotation
     		contextRotation = -Math.PI/2;
     	}
         

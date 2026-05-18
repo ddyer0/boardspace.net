@@ -40,7 +40,10 @@ import com.codename1.ui.EncodedImage;
 
 import lib.LFrameProtocol;
 import lib.Plog;
+import lib.G.GlobalStatus;
+
 import com.codename1.ui.URLImage.ImageAdapter;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
@@ -296,7 +299,20 @@ public abstract class Platform implements Config{
        	return (mouseMoveEvents==0) || Display.getInstance().isPureTouch();
     }
     
- 
+	public static void waitForEdt()
+	{	// the first process will hold the lock, others will pile up
+		if(G.globalStatus!=GlobalStatus.awake)
+			{
+			if (G.debug())
+				{ Plog.log.addLog("wait for edt"); 				 
+				}
+			synchronized(G.globalStatus) 
+			{	
+				while(G.globalStatus!=GlobalStatus.awake) { G.doDelay(1000); }
+			}
+			}
+	}
+
     /**
      * run in the edt thread, which is where GUI operations have to be in codename1.
      * 
@@ -310,6 +326,7 @@ public abstract class Platform implements Config{
     		}
     	else
     		{
+    		waitForEdt();
     		Display.getInstance().callSeriallyAndWait(r); 
     		}
     }
@@ -318,7 +335,15 @@ public abstract class Platform implements Config{
      * @param r
      */
     public static void startInEdt(Runnable r)
-    {	Display.getInstance().callSerially(r); 
+    {	if(isEdt())
+			{
+			r.run();
+			}
+    	else 
+    	{
+    		waitForEdt();
+    		Display.getInstance().callSerially(r); 
+    	}
     }
     static public Hashtable<String, Class<?>> namedClasses = 
     		NamedClasses.classes;
@@ -480,7 +505,10 @@ public abstract class Platform implements Config{
 	}
     
     static public String replace(String from, String find, String repl)
-    {	int index = from.indexOf(find);
+    {	
+    	//from.replace(find,repl);
+    	
+    	int index = from.indexOf(find);
     	if(index>=0)
     	{	return( from.substring(0,index) 
     				+ repl + 
@@ -690,7 +718,7 @@ windroid
     	return("unknown");
     }
     static final public boolean isSimulator() 
-    {	boolean sim = Display.getInstance().isSimulator();
+    {	boolean sim = CN.isSimulator();
     	return( sim);
     }
     
@@ -878,24 +906,28 @@ windroid
 
 
 	public static boolean useFileClips = true;
-	public static AudioClip getAudioClip(URL url)
+	public static Clip getAudioClip(URL url)
 	{	
 		if(useFileClips)
 		{
-			return(new AudioClip(url));
+			return(new Clip(url));
 		}
 		else
 		{
 		InputStream s;
 		try {
 			s = url.openStream();
-			if(s!=null) { return(new AudioClip(url.toExternalForm(),s)); }
+			if(s!=null) { return(new Clip(url.toExternalForm(),s)); }
 		} catch (IOException e) {
-			G.print("Missing AudioClip "+e);
+			G.print("Missing Clip "+e);
 		}
 		return(null);
 		}
 
+	}
+	public static void playAudioClip(Clip clip)
+	{
+		clip.play();
 	}
 	public static int getIdentity()
 	{
@@ -1069,5 +1101,11 @@ public static boolean isMetal = G.BoolToken(CN.getProperty("codename1.ios.metal"
 public static String screenSummary()
 {
 	return G.concat(" screen=",getScreenSize()," safe ",MasterForm.getSafeBounds()," frame=",getFrameWidth(),"x",getFrameHeight()," panel=",MasterForm.getPanelBounds());
+}
+
+/** get an actionevent with source.  This papers over platform differences with codename1 */
+public static ActionEvent actionEvent(Object mi)
+{
+	return new ActionEvent(mi);
 }
 }

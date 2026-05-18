@@ -45,6 +45,7 @@ import lib.GC;
 import lib.GameLayoutManager;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.SoundManager;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
@@ -138,10 +139,14 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	static String DOOR_OPEN = SoundDir + "door"+ Config.SoundFormat;
 	static String KACHING = SoundDir + "CashRegister"+ Config.SoundFormat;
 	static String WONTGETFOOLED = SoundDir + "wontgetfooled"+ Config.SoundFormat;
-	static String DIE_ROLL[] = { SoundDir + "Dice roll #1"+ Config.SoundFormat,
+	public static String DIE_ROLL[] = { SoundDir + "Dice roll #1"+ Config.SoundFormat,
 		SoundDir + "Dice roll #2"+ Config.SoundFormat,
 		SoundDir + "Dice roll #3"+ Config.SoundFormat,
 		SoundDir + "Dice roll #4"+ Config.SoundFormat};
+	
+	public static final String soundNames[] = {
+			CARD_PLACE,DOOR_OPEN,KACHING,WONTGETFOOLED,
+	};
 	static final String Euphoria_SGF = "Euphoria"; // sgf game number allocated for nuphoria   
 
 	static final int BACKGROUND_TILE_INDEX = 0;
@@ -425,6 +430,9 @@ private Color playerBackground[] = {
  */
     public synchronized void preloadImages()
     {	
+    	SoundManager.preloadSounds(soundNames);
+    	SoundManager.preloadSounds(DIE_ROLL);
+
        	EuphoriaChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		WorkerChip.preloadImages(loader, ImageDir);	// worker dice
 		MarketChip.preloadImages(loader, ImageDir);	// market cards

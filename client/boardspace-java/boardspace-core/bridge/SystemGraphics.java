@@ -493,4 +493,9 @@ public abstract class SystemGraphics
 	{
 		p.setLocation(x,y);
 	}
+	
+	public void translate(int inX, int inY) {
+		graphics.translate(inX,inY);
+	}
+	
 }

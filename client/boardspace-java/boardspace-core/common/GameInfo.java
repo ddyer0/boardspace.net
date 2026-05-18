@@ -1612,6 +1612,18 @@ synchronized(allGames) {
 			pViewer,pRules,"about_prototype.html",
 			null,false, WhiteOverBlack));
 	}
+	
+	{
+	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
+	String pViewer = "graphicstest.GraphicsViewer";  
+	GameInfo g = put(new GameInfo(691,ES.test,400,"PG",ConnectionGames,"GraphicsTest","GraphicsTest",
+			NoBots,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_prototype.html",
+			null,false, WhiteOverBlack));
+	g.maxPlayers = g.minPlayers = 1;
+	}
+	
 	{
 	String pRules = "/trench/english/rules.pdf";
 	String pViewer = "trench.TrenchViewer";  

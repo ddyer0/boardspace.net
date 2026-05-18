@@ -35,6 +35,7 @@ import javax.swing.event.ListSelectionListener;
  * @author ddyer
  *
  */
+@SuppressWarnings("rawtypes")
 public class DeferredEventManager implements ActionListener,ItemListener,ListSelectionListener
 {
 	private Vector<Object> deferredEvents = new Vector<Object>();
@@ -92,7 +93,8 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  }
 		  else if(e instanceof ActionEvent)
 		  	{  ActionEvent ee = (ActionEvent)e;
-		  	   cp.handleDeferredEvent(ee.getSource(), ee.getActionCommand());
+		  	   Object source = ee.getSource();
+		  	   cp.handleDeferredEvent(source, null);		  	
 		  	}
 		  else if(e instanceof ListSelectionEvent)
 		  {

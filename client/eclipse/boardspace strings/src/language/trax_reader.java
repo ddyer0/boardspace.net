@@ -307,7 +307,7 @@ String next_line_token()
         sgf_game[] g = trax_reader.parse_sgf_file(args[0],console);
         if(g!=null)
         {
-         if(n>1) { sgf_reader.sgf_save(args[1],g); }
+         if(n>1) { sgf_game.sgf_save(args[1],g); }
          else
          {
          console.println(g.length + " Games: ");

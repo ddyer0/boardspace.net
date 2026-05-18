@@ -21,6 +21,8 @@ import java.util.Vector;
 
 import com.codename1.ui.Component;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.list.DefaultListCellRenderer;
 import com.codename1.ui.list.ListModel;
@@ -78,6 +80,7 @@ class BSrenderer<T> extends DefaultListCellRenderer<T>
     	}
 }
 
+@SuppressWarnings("rawtypes")
 public class Menu extends JMenuItem implements ActionListener,SizeProvider,NativeMenuInterface
 {	private MouseAdapter mouse = null;
 	public MouseAdapter getMouse() 
@@ -231,10 +234,12 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 			}}
 			else
 			{
-			ItemEvent itemEvent = new ItemEvent(item,evt.getX(),evt.getY());
+			int x = evt.getX();
+			int y = evt.getY();
+			ItemEvent itemEvent = new ItemEvent(item,x,y);
 			item.actionPerformed(evt);
 			item.handleItemEvent(itemEvent); 
-			ActionEvent itemAction = new ActionEvent(item,item.toString(),showAtX,showAtY);
+			ActionEvent itemAction = new ActionEvent(item,showAtX,showAtY);
 			item.handleActionEvent(itemAction);
 			}
 			

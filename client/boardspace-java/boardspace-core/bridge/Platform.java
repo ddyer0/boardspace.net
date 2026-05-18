@@ -16,8 +16,6 @@
  */
 package bridge;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -34,6 +32,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 import java.awt.geom.Dimension2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,6 +49,12 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -218,8 +223,27 @@ public static Object MakeInstance(String classname)
 			G.print(getStackTrace(t,tr));
 		}
 	}
-	
-	
+	public static Clip getAudioClip(URL name)
+	{	
+		Clip v = null;
+		try {
+		v = AudioSystem.getClip();
+		AudioInputStream ais = AudioSystem.getAudioInputStream(name);
+    	v.open(ais);
+    	ais.close();
+		}
+		catch ( UnsupportedAudioFileException| IOException | LineUnavailableException e)
+		{
+			G.print("Problem loading audio ",name," ",e);
+		}
+    	return v;
+
+	}
+	public static void playAudioClip(Clip clip)
+	{	G.print("play ",clip);
+		clip.setFramePosition(0);
+    	clip.start(); 
+	}
 	
 	   /** get the current stack trace as a String */
     public static String getStackTrace()
@@ -649,14 +673,7 @@ public static Object MakeInstance(String classname)
 	public static Clipboard getSystemClipboard(Component c) 
 	{ return(c.getToolkit ().getSystemClipboard ()); 
 	}
-	
-	public static AudioClip getAudioClip(URL url)
-	{	
-		if(G.isCheerpj()) 
-			{ return new Cheerpj(url); }
-		return Applet.newAudioClip(url); 
-	}
-	
+		
 	public static int getIdentity()
 	{
 		String id = getHostUID();
@@ -791,5 +808,12 @@ public static Object MakeInstance(String classname)
 	    {
 	    	return G.concat(" screen=",getScreenSize()," frame=",getFrameWidth(),"x",getFrameHeight());
 	    }
+	    
+	    /** get an actionevent with source.  This papers over platform differences with codename1 */
+	    public static ActionEvent actionEvent(Object mi)
+	    {
+	    	return new ActionEvent(mi,0,null, 0);
+	    }
+	    
 	    
 }

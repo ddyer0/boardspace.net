@@ -61,13 +61,13 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     private Color rackBackGroundColor = new Color(194,175,148);
     private Color boardBackgroundColor = new Color(220,165,155);
     
-    private static String rotates[] = {
+    public static String rotates[] = {
     		"/quinamid/images/rotate-1" + Config.SoundFormat,
     		"/quinamid/images/rotate-2" + Config.SoundFormat,    				
     		"/quinamid/images/rotate-3" + Config.SoundFormat,
     		"/quinamid/images/rotate-4" + Config.SoundFormat    			
     };
-    private static String shifts[] = {
+    public static String shifts[] = {
     		"/quinamid/images/scrape-1" + Config.SoundFormat,
     		"/quinamid/images/scrape-2" + Config.SoundFormat,    				
     		"/quinamid/images/scrape-3" + Config.SoundFormat,
@@ -96,7 +96,8 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     private boolean showingHelp = false;
     
     public synchronized void preloadImages()
-    {	
+    {	SoundManager.preloadSounds(rotates);
+    	SoundManager.preloadSounds(shifts);
        	QuinamidChip.preloadImages(loader,ImageDir);
         if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

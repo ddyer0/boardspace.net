@@ -16,10 +16,10 @@
  */
 package lib;
 
+import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Rectangle;
 
-import bridge.ActionEvent;
-import bridge.ActionListener;
 import bridge.Color;
 import bridge.FontMetrics;
 
@@ -29,7 +29,7 @@ import bridge.FontMetrics;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId { Year,Month,Day;
 	}

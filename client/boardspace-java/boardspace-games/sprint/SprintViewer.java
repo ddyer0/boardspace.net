@@ -40,6 +40,7 @@ import lib.StockArt;
 import lib.TextButton;
 import lib.Tokenizer;
 import lib.Random;
+import lib.SoundManager;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -71,8 +72,9 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     private Dictionary dictionary = Dictionary.getInstance();
     private int rackSize = 2;
     private int plannedRackSize = 4;
-    public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
+    public static String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
     
+    public static final String soundNames[] = {deskBellSoundName };
     // private state
     private SprintBoard bb = null; //the board from which we are displaying
     
@@ -105,7 +107,8 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	SprintChip.preloadImages(loader,ImageDir);	// load the images used by stones
+    {	SoundManager.preloadSounds(soundNames);
+    	SprintChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = SprintChip.Icon.image;
     }
 

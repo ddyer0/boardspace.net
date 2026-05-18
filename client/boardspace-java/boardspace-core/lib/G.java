@@ -50,11 +50,10 @@ public class G extends Platform implements Timestamp
 	public static final String TABLEHEIGHT = "tableheight";
 	public static final String JAVADROID = "javadroid";			// jvm on android
 	public static final String TABINTERFACE = "tabinterface";	// use tabbed interface instead of free window
-	public enum GlobalStatus { awake,asleep }
+	public enum GlobalStatus { awake,asleep,destroyed }
 	public static GlobalStatus globalStatus = GlobalStatus.awake;
 	public static GlobalStatus getGlobalStatus() { return(globalStatus); }
 	public static void setGlobalStatus(GlobalStatus st ) { globalStatus = st; }
-	
 	public static boolean TimedRobots() { return(TIMEDROBOTS || debug()); }
 	
 	

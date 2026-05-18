@@ -17,10 +17,13 @@
 package lib;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 
 import bridge.*;
 
 
+@SuppressWarnings("rawtypes")
 public class TextDisplayFrame extends XFrame implements ActionListener,ItemListener,Config
 {
     /**

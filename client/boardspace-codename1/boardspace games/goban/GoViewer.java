@@ -1431,12 +1431,12 @@ private void playSounds(commonMove m)
     	System.out.println("Correct "+correct.size()+" Incorrect "+badScores.size());
     	
     	{String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,"go", "correct.sgf");
-    	  if(ss!=null) { sgf_reader.sgf_save(ss, correct.toArray()); }
+    	  if(ss!=null) { sgf_game.sgf_save(ss, correct.toArray()); }
      	}
     	
     	if(unscored.size()>0)
        	{String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,"go", "unscored.sgf");
-       	if(ss!=null) { sgf_reader.sgf_save(ss, unscored.toArray()); }
+       	if(ss!=null) { sgf_game.sgf_save(ss, unscored.toArray()); }
        	}
   	
     	if(badScores.size()>0)
@@ -1452,7 +1452,7 @@ private void playSounds(commonMove m)
        	    incorrect.push(nextGame);
        	 }
        	 String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE, "go","incorrect.sgf");
-    		if(ss!=null) { sgf_reader.sgf_save(ss,incorrect.toArray()); }
+    		if(ss!=null) { sgf_game.sgf_save(ss,incorrect.toArray()); }
     	}
     }
     public boolean allowUndo() { return(false); }

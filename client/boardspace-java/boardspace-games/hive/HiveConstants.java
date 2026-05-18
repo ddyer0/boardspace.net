@@ -88,7 +88,7 @@ public interface HiveConstants
     	hive_pielm("hive-pielm",true,true,true,false),
     	hive_u("hive-ultimate",true,true,true,true);
     	String name = null;
-    	Bitset<PieceType> included = new Bitset<PieceType>();
+    	Bitset<PieceType> included = new Bitset<PieceType>(PieceType.class);
     	variation(String n,boolean i_m,boolean i_l,boolean i_p,boolean i_u)
     	{	name = n;
     		included.clear();

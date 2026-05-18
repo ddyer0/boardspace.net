@@ -24,7 +24,6 @@ import jzlib.ZipInputStream;
 import java.io.*;
 import java.util.Hashtable;
 
-import bridge.Utf8Printer;
 import lib.*;
 import online.game.sgf.export.sgf_names;
 
@@ -756,89 +755,6 @@ public class sgf_reader implements sgf_names
             ((zipname == null) ? "" : (":" + zipname)) + " at line " +
             line_number + " expected " + expected + " but found " + got+" "+explode(got));
     }
-
-    /** print an array of sgf_games as a readable sgf text file
-    to a supplied stream */
-    public static boolean sgf_save(PrintStream out, sgf_game... games)
-    {
-        return (sgf_save(out, games, false));
-    }
-
-    public static boolean sgf_save(PrintStream out,  sgf_game[] games, boolean strip)
-    {
-        try
-        {
-            for (int i = 0; i < games.length; i++)
-            {
-                games[i].sgf_print(out, strip);
-            }
-        }
-        catch (IOException e)
-        {
-        }
-
-        return (true);
-    }
-
-    /** print an array of sgf_games as a readable sgf text file */
-    public static boolean sgf_save(String file,   sgf_game... games)
-    {
-        return (sgf_save(new File(file), games, false));
-    }
-
-    public static boolean sgf_save(String file,  sgf_game[] games, boolean strip)
-    {
-        return (sgf_save(new File(file), games, strip));
-    }
-
-    public static boolean sgf_save(File file, sgf_game... games)
-    {
-        return (sgf_save(file, games, false));
-    }
-    
-    public static boolean sgf_save(URL file, sgf_game...games)
-    {
-    	return sgf_save(file,games,false);
-    }
-    public static boolean sgf_save(URL file, sgf_game[]games,boolean strip)
-    {
-    	if("file".equals(file.getProtocol()))
-    	{
-    		return(sgf_save(new File(file.getFile()),games,strip));
-    	}
-    	return(false);
-    }
-    public static boolean sgf_save(File file,  sgf_game[] games, boolean strip)
-    {
-        try
-        {
-            OutputStream fs = null;
-            PrintStream out = null;
-            try
-            {
-                fs = new FileOutputStream(file);
-                out = Utf8Printer.getPrinter(fs);
-                sgf_save(out,games,strip);
-                return (true);
-            }
-            finally
-            {
-                if (out != null)
-                {
-                    out.flush();
-                }
-                if(fs!=null) { fs.close(); }
-            }
-        }
-        catch (IOException err)
-        {
-            G.print("Can't open output " + file + " " +
-                err.toString());
-        }
-
-        return (true);
-    }
-    
 
     static public FileDialog do_sgf_dialog_only(int key, String baseDir,String filter)
     {

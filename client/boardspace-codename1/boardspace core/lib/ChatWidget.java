@@ -17,12 +17,12 @@
 package lib;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.AccessControlException;
-import bridge.ActionEvent;
-import bridge.ActionListener;
 import bridge.Color;
 import bridge.Config;
 import bridge.Container;
@@ -44,6 +44,7 @@ import lib.TextContainer.Op;
 // TODO: make it possible to copy/paste images
 // TODO: make chat windows float or pop out so they can be large without encumbering layout of the overall screen
 //
+@SuppressWarnings("rawtypes")
 public class ChatWidget 
 	implements ChatInterface,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener
@@ -356,6 +357,8 @@ public class ChatWidget
     	embedded = emb;
         s = G.getTranslations();
         theFrame = frame;
+        SoundManager.preloadSounds(soundNames);
+
         basicFont = FontManager.getFont(s.get("fontfamily"), FontManager.Style.Plain, FontManager.standardizeFontSize(FontManager.defaultFontSize));
         setUser(NEWSCHANNEL, s.get(NewsChannel));
         setUser(LOBBYCHANNEL, s.get("Lobby"));

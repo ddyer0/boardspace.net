@@ -17,11 +17,13 @@
 package lib;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 
-import bridge.ActionListener;
 
 public interface MenuInterface {
+	@SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(String item,ActionListener listener);
+	@SuppressWarnings("rawtypes")
 	public NativeMenuItemInterface add(Text item,DrawingObject parent,ActionListener listener);
 	public NativeMenuInterface getNativeMenu();	
 	public void add(MenuInterface item);

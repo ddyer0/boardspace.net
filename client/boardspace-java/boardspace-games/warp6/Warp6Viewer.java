@@ -74,7 +74,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     
     private Warp6Cell roll_anim_cell = null;
     private long roll_anim_stop = 0;
-
+    public static String soundNames[] = { sucking_sound };
     public synchronized void preloadImages()
     {	
     	if (textures == null)

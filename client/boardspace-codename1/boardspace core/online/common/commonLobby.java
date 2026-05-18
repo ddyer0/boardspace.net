@@ -458,7 +458,7 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
 
     doTouch();        
 
-    SoundManager.loadASoundClip(deskBellSoundName);
+    SoundManager.preloadSounds(deskBellSoundName);
             
     String namePassedIn=sharedInfo.getString(ConnectionManager.USERNAME,"me");
     addUser(-1,namePassedIn,sharedInfo.getString(ConnectionManager.UID,"0"),true); 

@@ -5464,7 +5464,7 @@ private void drawPlayerBoard(Graphics gc,
 		 playASoundClip(drainSound,500);
 	 }
 	 if(mainBoard.reshuffled())
-	 {	G.print("Play "+CARD_SHUFFLE);
+	 {	
 		 playASoundClip(CARD_SHUFFLE,500);
 	 }
  }

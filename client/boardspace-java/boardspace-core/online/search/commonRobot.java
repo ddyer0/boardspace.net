@@ -34,7 +34,7 @@ import online.game.commonMove;
 import online.game.commonPlayer;
 import online.game.replayMode;
 import online.game.export.ViewerProtocol;
-import online.game.sgf.sgf_reader;
+import online.game.sgf.sgf_game;
 
 
 
@@ -963,7 +963,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 				newgame.push(var);
 				var = var.best_move();
 			}
-	  		sgf_reader.sgf_save(file,v.save_game(newgame));
+	  		sgf_game.sgf_save(file,v.save_game(newgame));
 	  }
 	 /** return true if the game is over.
 	  * 

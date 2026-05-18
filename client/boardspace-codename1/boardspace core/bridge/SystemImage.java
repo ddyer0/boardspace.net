@@ -193,7 +193,7 @@ public static Image getURLImage(URL name)
 
 	public void createBlankImage(int w,int h)
 	   {
-		setImage(com.codename1.ui.Image.createImage(w,h));
+		G.runInEdt(new Runnable () { public void run() { setImage(com.codename1.ui.Image.createImage(w,h)); }});
 	   }
 
 

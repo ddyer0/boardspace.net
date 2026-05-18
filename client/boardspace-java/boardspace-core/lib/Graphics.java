@@ -87,11 +87,12 @@ public class Graphics extends SystemGraphics
 		graphics.drawLine(ox,oy,dest_x,dest_y);		
 		if(logging) { Log.finishEvent(); }
 	}
+	
 	public void translate(int inX, int inY) {
 		if(logging)
 		{ Log.appendNewLog("translate ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
 		}
-		graphics.translate(inX, inY);
+		super.translate(inX,inY);
 		shadow.translate(inX,inY);
 		if(logging) { Log.finishEvent(); }
 	}

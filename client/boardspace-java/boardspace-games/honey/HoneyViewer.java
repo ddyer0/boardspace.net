@@ -863,9 +863,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 //        	bb.animationStack.clear();
 //     } 
      
- String badHintSoundName = SOUNDPATH + "badhint" + Config.SoundFormat;
- String takeBackSoundName = SOUNDPATH + "pick-3" + Config.SoundFormat;
+ static String badHintSoundName = SOUNDPATH + "badhint" + Config.SoundFormat;
+ static String takeBackSoundName = SOUNDPATH + "pick-3" + Config.SoundFormat;
  
+ public static final String[] soundNames = {badHintSoundName,takeBackSoundName };
  void playSounds(Honeymovespec mm)
  {
 	 switch(mm.op)

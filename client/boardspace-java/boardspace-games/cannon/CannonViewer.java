@@ -56,9 +56,10 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     private Color rackBackGroundColor = new Color(170,177,200);
     private Color boardBackgroundColor = new Color(220,227,200);
     private Color chatBackgroundColor = new Color(230,230,255);
-    static final String cannonSoundName = SOUNDPATH + "cannon" + Config.SoundFormat;
+    public static final String cannonSoundName = SOUNDPATH + "cannon" + Config.SoundFormat;
 
- 
+    public static final String soundNames[] = { cannonSoundName };
+    
     // images
     private static Image[] textures = null;// background textures
     private static Image[] images = null;	// images with transparency
@@ -76,7 +77,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
    
 
     public synchronized void preloadImages()
-    {	
+    {	SoundManager.preloadSounds(soundNames);
        	CannonChip.preloadImages(loader,ImageDir);
         if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

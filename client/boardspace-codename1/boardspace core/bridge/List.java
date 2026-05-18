@@ -17,6 +17,7 @@
 package bridge;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.list.DefaultListCellRenderer;
 import com.codename1.ui.list.ListModel;
 
@@ -30,6 +31,7 @@ import lib.G;
 public class List<T> extends com.codename1.ui.List<T> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
+	public void superAddActionListener(ActionListener<?> m) { super.addActionListener(m); }
 	boolean down = false;
 	boolean dragged = false;
 	boolean longPress = false;

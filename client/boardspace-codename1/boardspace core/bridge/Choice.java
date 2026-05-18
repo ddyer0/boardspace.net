@@ -19,14 +19,16 @@ package bridge;
 
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 
 import lib.FontManager;
 
 public class Choice<TYPE> extends ComboBox<TYPE> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
+	public void superAddActionListener(ActionListener<?>m) { super.addActionListener(m); }
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
-	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
+	public void addActionListener(@SuppressWarnings("rawtypes") ActionListener m) { mouse.addActionListener(m); }
 	public Font getFont() { return(FontManager.getFont(getStyle())); }	
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))

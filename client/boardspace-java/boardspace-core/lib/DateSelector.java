@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  * @author ddyer
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId { Year,Month,Day;
 	}

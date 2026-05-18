@@ -21,6 +21,7 @@ import lib.Graphics;
 import lib.StockArt;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionEvent;
 
 public class JCheckBoxMenuItem extends JMenuItem implements Icon
 {

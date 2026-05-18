@@ -16,8 +16,9 @@
  */
 package lib;
 
+import com.codename1.ui.events.ActionEvent;
+
 import bridge.AccessControlException;
-import bridge.ActionEvent;
 import bridge.Config;
 import bridge.Container;
 import bridge.Frame;
@@ -150,20 +151,21 @@ public class TabFrame extends Frame
 
 	// this is used in the codename1 branch
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
-	{	String cmd = evt.getActionCommand();
-		if("twist3".equals(cmd))
+	{	Object source = evt.getSource();
+		MasterPanel mp = MasterForm.getMasterPanel();
+		if(mp.twist3Button==source)
 		{
 			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1);revalidate();  }			
 		}
-		else if("twist".equals(cmd))
+		else if(mp.twistButton==source)
 		{
 			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); revalidate(); }
 		}
-		else if("rotate".equals(cmd))
+		else if(mp.rotateButton==source)
 		{
 			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+2); revalidate(); }
 		}
-		else if("actionmenu".equals(cmd))
+		else if(mp.menuButton==source)
 			{if(popupMenuBar!=null)
 			{ 	
 			try 
@@ -174,19 +176,19 @@ public class TabFrame extends Frame
 						);
 			} catch (AccessControlException e) {}
 			}}
-		else if("close".equals(cmd))
+		else if(mp.closeButton==source)
 		{
 			if(getCloseable()) 
 				{ dispose(); 
 				}
 		}
-		else if("savepanzoom".equals(cmd) || "restorepanzoom".equals(cmd))
+		else if(mp.paperclipButton==source || mp.paperclipSideButton==source)
 		{	if(canSavePanZoom!=null)
 			{	canSavePanZoom.deferActionEvent(evt);
 			}
 		}
 		else if(G.debug()) {
-			Http.postError(this,"unexpected action event: "+cmd,null);
+			Http.postError(this,"unexpected action event: "+source,null);
 		}
 	}
 	private Image iconImage = null;

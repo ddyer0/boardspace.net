@@ -199,7 +199,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
 	// extended options
-	public Bitset<Option>options = new Bitset<Option>();
+	public Bitset<Option>options = new Bitset<Option>(Option.class);
 	
 	public void setOption(Option val) { options.set(val); }
 	public boolean testOption(Option val) { return(options.test(val)); }

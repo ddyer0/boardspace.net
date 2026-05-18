@@ -18,6 +18,7 @@ package bridge;
 
 import static com.codename1.util.MathUtil.atan2;
 
+import com.codename1.ui.CN;
 import com.codename1.ui.Font;
 import com.codename1.ui.RGBImage;
 import com.codename1.ui.Stroke;
@@ -397,5 +398,18 @@ public abstract class SystemGraphics {
 	public void setAntialias(boolean on) {
 		graphics.setAntiAliased(on);
 	}
+	static boolean isSimulator = CN.isSimulator();
+	public void translate(int inX, int inY) {
+		if(isSimulator)
+			{
+			graphics.translate(inX,inY);
+			}
+		else
+		{	//graphics.translate(inX,inY);
+			graphics.translateMatrix(inX,inY);
+		}
+		if(logging) { Log.finishEvent(); }
+	}
+     
 
 }

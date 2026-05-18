@@ -41,6 +41,7 @@ import lib.HitPoint;
 import lib.Keyboard;
 import lib.LFrameProtocol;
 import lib.MouseState;
+import lib.SoundManager;
 import lib.StockArt;
 import lib.TextContainer;
 import lib.Tokenizer;
@@ -71,8 +72,8 @@ public class ImagineViewer extends CCanvas<ImagineCell,ImagineBoard> implements 
 			? "/appdata/imagine-deck1/images/"
 			: ImageDir;
 
-static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
-
+	static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
+	public static final String soundNames[] = { SWOOSH };
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color chatBackgroundColor = new Color(255,230,230);
@@ -115,7 +116,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	ImagineChip.preloadImages(loader,ImageDir,Deck1Dir);	// load the images used by stones
+    {	SoundManager.preloadSounds(soundNames);
+    	ImagineChip.preloadImages(loader,ImageDir,Deck1Dir);	// load the images used by stones
 		gameIcon = ImagineChip.Icon.image;
     }
 

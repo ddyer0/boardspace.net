@@ -1538,7 +1538,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		                theChat.postMessage(ChatInterface.GAMECHANNEL, null,null,commandStr,
 		                		s.get(trimmed,theChat.getUserName(playerID)));
 		                char ch = msgstr.charAt(0);
-		                if((ch==' ') && trimmed.equalsIgnoreCase(CHATSPECTATOR) || trimmed.equalsIgnoreCase(NEWSPECTATOR))
+		                if((ch==' ') && 
+		                		( trimmed.equalsIgnoreCase(CHATSPECTATOR)) 
+		                		  || trimmed.equalsIgnoreCase(NEWSPECTATOR))
 		                {	// this is a side channel that signals the sender will accept ASK/ANSWER
 		                	doAsk(playerID);
 		                }
@@ -3772,7 +3774,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void FinishSetup()
     { //do these things before we let the screen refresh
 
-    	SoundManager.loadASoundClip(gameOverSoundName);
+    	SoundManager.preloadSounds(gameOverSoundName);
  
     	setServerFile(serverFile);
 

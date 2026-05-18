@@ -38,7 +38,7 @@ public class PlayerBoard implements ManhattanConstants
 	int nUranium = 0;
 	int nPlutonium = 0;
 	int nEspionage = 0;
-	private Bitset<TurnOption> turnOptions = new Bitset<TurnOption>();
+	private Bitset<TurnOption> turnOptions = new Bitset<TurnOption>(TurnOption.class);
 	public boolean testOption(TurnOption op)
 	{
 		return turnOptions.test(op);

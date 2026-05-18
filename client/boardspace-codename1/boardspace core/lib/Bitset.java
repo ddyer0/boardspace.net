@@ -17,7 +17,7 @@
 package lib;
 
 /**
- * Bitset implements sets of enums with up to 64 members, represented by integers
+ * Bitset implements sets of enums with up to 64 members, represented by longs
  * 
  * @param <P>
  */
@@ -25,14 +25,17 @@ public class Bitset <P extends Enum<?>> implements Digestable
 {	private long members = 0;
 	public long members() { return(members);}
 	public void setMembers(long v) { members = v; }
+	public Class<?> cl = null;
 	
-	public Bitset() 
+	public Bitset() { G.Error("this shouldn't be called"); }
+	public Bitset(Class<?> c)
 	{ 
+		cl = c;
 	}
-	
 	@SafeVarargs
 	public Bitset(P... mods) 
-	{ 	set(mods);
+	{ 	cl = mods[0].getClass();
+		set(mods);
 	}
 	/**
 	 * set val as a member of the set
@@ -125,8 +128,18 @@ public class Bitset <P extends Enum<?>> implements Digestable
 	 * @param other
 	 * @return true if other has the same members
 	 */
-	public boolean equals(Bitset<P>other) { return members==other.members; }
+	public boolean equals(Bitset<P>other) { return cl==other.cl && members==other.members; }
 
+	public boolean equals(Object other) {
+	    if (!(other instanceof Bitset)) return false;
+	    return equals((Bitset<?>) other);
+	}
+	
+	public int hashCode()
+	{
+		return (int)(members>>>32^members)+cl.hashCode();
+	}
+	
 	public long Digest(Random r) {
 		return r.nextLong()*members;
 	}

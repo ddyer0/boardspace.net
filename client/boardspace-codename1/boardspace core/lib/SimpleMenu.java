@@ -17,6 +17,7 @@
 package lib;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
 
@@ -128,6 +129,7 @@ public class SimpleMenu {
 	// on the HP. If any are found, it triggers action events and returns false
 	// as a signal that the menu should come down.
 	//
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean drawMenu(Graphics gc,HitPoint hp,int sx,int sy)
 	{	
 		int hpX =G.Left(hp);
@@ -190,10 +192,12 @@ public class SimpleMenu {
 			{ selectedItem = mi;
 			if(downSeen && hp.isUp)
 			{	
+			@SuppressWarnings("rawtypes")
 			ActionListener listen[] = mi.getActionListeners();
 				
 			for(ActionListener l : listen) 
-				{ l.actionPerformed(new ActionEvent(mi,ActionEvent.ACTION_PERFORMED,mi.getActionCommand()));
+				{
+				l.actionPerformed(G.actionEvent(mi));
 				}
 			nextMenu = mi.getSubmenu();
 				rv = false;

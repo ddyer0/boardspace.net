@@ -16,7 +16,12 @@
  */
 package online.game.sgf;
 
+import bridge.File;
+import bridge.FileDialog;
+import bridge.FileOutputStream;
 import bridge.URL;
+import bridge.Utf8Printer;
+import lib.G;
 import online.game.sgf.export.sgf_names;
 
 import java.io.*;
@@ -24,11 +29,14 @@ import java.io.*;
 
 
 /*
- $Id: sgf_game.java,v 1.1.1.1.2.12.2.17 2025/01/29 00:16:46 ddyer Exp $
+ $Id: sgf_game.java,v 1.1.1.1.2.12.2.19 2026/05/18 01:52:18 ddyer Exp $
 
  $Log: sgf_game.java,v $
- Revision 1.1.1.1.2.12.2.17  2025/01/29 00:16:46  ddyer
- clean up and improve the StackIterator class
+ Revision 1.1.1.1.2.12.2.19  2026/05/18 01:52:18  ddyer
+ modernize sound formats and add a test suite
+
+ Revision 1.1.1.1.2.12.2.18  2026/05/16 01:05:37  ddyer
+ mostly dogwash
 
  Revision 1.1.1.1.2.19  2023/09/22 03:57:33  ddyer
  add copyright and license
@@ -248,5 +256,104 @@ public class sgf_game extends Object implements sgf_names
         }
 
         out.println(")");
+    }
+    
+    public void doSaveGame(String gameName)
+    {
+        String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,gameName, "*.sgf");
+        if (ss != null)
+        {
+            int lastDot = ss.lastIndexOf('.');
+            int lastSlash = ss.lastIndexOf('/');
+            if((lastDot<0) || (lastSlash>lastDot)) 
+            	{ ss += ".sgf"; 
+            	}
+            
+            sgf_game.sgf_save(ss, this);
+        }
+    }
+	/** print an array of sgf_games as a readable sgf text file
+	to a supplied stream */
+	public static boolean sgf_save(PrintStream out, sgf_game... games)
+	{
+	    return (sgf_save(out, games, false));
+	}
+	/** print an array of sgf_games as a readable sgf text file */
+	public static boolean sgf_save(String file,   sgf_game... games)
+	{
+	    return (sgf_save(new File(file), games, false));
+	}
+	public static boolean sgf_save(String file,  sgf_game[] games, boolean strip)
+	{
+	    return (sgf_save(new File(file), games, strip));
+	}
+	public static boolean sgf_save(URL file, sgf_game[]games,boolean strip)
+	{
+		if("file".equals(file.getProtocol()))
+		{
+			return(sgf_save(new File(file.getFile()),games,strip));
+		}
+		return(false);
+	}
+	public boolean sgf_save(URL file, sgf_game...games)
+	{
+		return sgf_save(file,games,false);
+	}
+	public static boolean sgf_save(File file,  sgf_game[] games, boolean strip)
+	{
+	    try
+	    {
+	        OutputStream fs = null;
+	        PrintStream out = null;
+	        try
+	        {
+	            fs = new FileOutputStream(file);
+	            out = Utf8Printer.getPrinter(fs);
+	            sgf_save(out,games,strip);
+	            return (true);
+	        }
+	        finally
+	        {
+	            if (out != null)
+	            {
+	                out.flush();
+	            }
+	            if(fs!=null) { fs.close(); }
+	        }
+	    }
+	    catch (IOException err)
+	    {
+	        G.print("Can't open output " + file + " " +
+	            err.toString());
+	    }
+	
+	    return (true);
+	}
+	public static boolean sgf_save(File file, sgf_game... games)
+	{
+	    return (sgf_game.sgf_save(file, games, false));
+	}
+	public static boolean sgf_save(PrintStream out,  sgf_game[] games, boolean strip)
+	{
+	    try
+	    {
+	        for (int i = 0; i < games.length; i++)
+	        {
+	            games[i].sgf_print(out, strip);
+	        }
+	    }
+	    catch (IOException e)
+	    {
+	    }
+	
+	    return (true);
+	}
+    public void sgf_save(PrintStream out,boolean strip)
+    {	try {
+    		sgf_print(out, strip);
+    		}
+    	catch (IOException fr)
+    	{	G.print("IO exception "+fr);
+    	}
     }
 }

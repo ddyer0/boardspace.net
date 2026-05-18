@@ -28,14 +28,18 @@ import com.codename1.ui.Display;
 import com.codename1.ui.Font;
 import com.codename1.ui.Form;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Dimension;
 
 
 // this is unused as long as we don't reinstate the window based chat
 
+@SuppressWarnings("rawtypes")
 public class TextArea extends com.codename1.ui.TextArea 
 	implements ActionProvider,AppendInterface,ActionListener
 {	TextArea(int r,int c) { super(r,c); }
+	public void superAddActionListener(ActionListener m) { super.addActionListener(m); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 	public void startEditing() { }
@@ -98,6 +102,7 @@ public class TextArea extends com.codename1.ui.TextArea
 	public Dimension getMinimumSize() { return(new Dimension(100,40)); } 
 
 	MouseAdapter mouse = new MouseAdapter(this);
+	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener t) { mouse.addActionListener(t); }
 	public void addMouseListener(MouseListener m) { mouse.addMouseListener(m); }
 	public void addMouseMotionListener(MouseMotionListener m) { mouse.addMouseMotionListener(m); }

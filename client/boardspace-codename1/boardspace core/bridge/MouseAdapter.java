@@ -33,7 +33,10 @@ import lib.PinchEvent;
 import com.codename1.ui.Component;
 import com.codename1.ui.Button;
 import com.codename1.ui.Command;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionEvent.Type;
+import com.codename1.ui.events.ActionListener;
+
 import static com.codename1.util.MathUtil.atan2;
 
 
@@ -217,7 +220,7 @@ public class MouseAdapter
 		}
 	}
 	
-	public void addActionListener(ActionListener m)
+	public void addActionListener(ActionListener<?> m)
 	{
 		if(actionListeners==null) { actionListeners = new Vector<ActionListener>(); }
 		if(!actionListeners.contains(m)) { actionListeners.addElement(m); }
@@ -271,8 +274,9 @@ public class MouseAdapter
 		if(component instanceof ActionProvider)
 		{	// this adds the actionlistener for the native codename1 window 
 			ActionProvider b = (ActionProvider)component;
-			b.addActionListener(this);
-		}else
+			b.superAddActionListener(this);
+		}
+		else
 		{
 		if(component!=null) 
 			{ component.addPointerReleasedListener(this); }
@@ -476,15 +480,16 @@ public class MouseAdapter
 			}		
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public void handleActionEvent(int x,int y,Type type)
 	{
 		if(actionListeners!=null)
 		{
 			for(int idx = 0;idx<actionListeners.size();idx++)
 			{
-				bridge.ActionListener listener = actionListeners.elementAt(idx); 
+				ActionListener listener = actionListeners.elementAt(idx); 
 				//G.print("dispatch action to "+listener);
-				ActionEvent ev = new ActionEvent(component,getCommand(type),x,y);
+				ActionEvent ev = new ActionEvent(component,x,y);
 				listener.actionPerformed(ev);
 			}
 		}

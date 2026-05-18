@@ -65,6 +65,8 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
 	// sounds
 	static final String NESTED_PICK_SOUND = SOUNDPATH+ "pick-3" + Config.SoundFormat;
 	
+	public static String soundNames[] = { NESTED_PICK_SOUND};
+	
     static final int BOARD_INDEX = 0;
     static final String[] ImageFileNames = 
         {   "board-overhead",
@@ -111,7 +113,8 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     
 
     public synchronized void preloadImages()
-    {	GobCup.preloadImages(loader,GobImageDir);
+    {	SoundManager.preloadSounds(soundNames);
+    	GobCup.preloadImages(loader,GobImageDir);
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
       // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html

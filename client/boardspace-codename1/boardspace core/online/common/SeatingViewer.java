@@ -19,10 +19,10 @@ package online.common;
 import lib.Graphics;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Rectangle;
 
-import bridge.ActionEvent;
-import bridge.ActionListener;
 import bridge.Color;
 import bridge.FontMetrics;
 import bridge.JCheckBoxMenuItem;
@@ -73,7 +73,7 @@ import vnc.AuxViewer;
 import vnc.VNCService;
 import static util.PasswordCollector.VersionMessage;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParentInterface,ActionListener
 {	
 	private static final String FAVORITES = "SeatingFavorites";
@@ -1649,7 +1649,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if(sess.timeControl().handleDeferredEvent(e.getSource(), e.getActionCommand()))
+		Object source = e.getSource();
+		if(sess.timeControl().handleDeferredEvent(source,null))
 		{
 			// note that this is passed through the canvas because in live games, it needs
 			// to be passed on to the other players.

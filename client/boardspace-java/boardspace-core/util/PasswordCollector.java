@@ -863,10 +863,11 @@ import udp.PlaytableStack;
     }
 	 
     public String exitValue=null;
-    public static String language = null;
+
     public static boolean isGuest = false;
     public static String password=null;
     public static String name = "";
+    public static String language = null;
     private static String realName = "";
     private static String password2 = "";
     private static String country = "";
@@ -894,12 +895,12 @@ import udp.PlaytableStack;
     }
 	public void actionPerformed(ActionEvent e) 
 	{	Object source = e.getSource();
-        Object cmd1 = e.getActionCommand();
         captureValues(false);
-        if(cmd1!=null)
+        if(source!=null)
         {
         if(source==cancelButton) 
-        	{ reconfigure(Screen.Login);
+        	{ 
+        	reconfigure(Screen.Login);
            	  return;
         	}
         if(source==exitButton) 
@@ -908,6 +909,7 @@ import udp.PlaytableStack;
     	  exit();
       	  return;
     	}
+
        if(source==feedbackButton)
         {	
         	G.getFeedback();
@@ -922,12 +924,12 @@ import udp.PlaytableStack;
         	reconfigure(Screen.Register);
         	return;
         }
-        else if((source==finalRegisterButton) || FINALREGISTER.equals(cmd1))
+        else if(source==finalRegisterButton)
         {	
         	reconfigure(Screen.Login);
          	return;
         }
-        else if((source==registerButton) || REGISTER.equals(cmd1))
+        else if(source==registerButton)
     	{
          if(performRegistration())
          {
@@ -950,7 +952,7 @@ import udp.PlaytableStack;
         	G.setOffline(true);
         	exit();
         }
-        if((source==reviewButton) || ReviewMessage.equals(cmd1))
+        if(source==reviewButton)
         {
         	exitWith(ReviewMessage);
         	G.setOffline(true);
@@ -967,11 +969,12 @@ import udp.PlaytableStack;
         		}
         	}
         }
-        if((source==okButton) || OK.equals(cmd1))
+        if(source==okButton)
         	{
         	 exitWith(OK);
-        	}
+     
          exit();
+        	}
          
        }
     }
@@ -991,7 +994,6 @@ import udp.PlaytableStack;
 	   			catch (BackingStoreException err) 
 	   			{ System.out.println("E "+err.toString());};
 	}
-	
 	private void exit()
 	{	G.wake(observer);
 		suicide();
@@ -1060,20 +1062,10 @@ import udp.PlaytableStack;
 	}
 	public void windowClosed(WindowEvent e) {
 	}
+
 	public void windowClosing(WindowEvent e) {
 		if(exitValue==null) { exitValue = cancel; }	// this is so closing the window while in the dialog will exit and recycle
 		G.wake(observer);
-	}
-	public void windowDeactivated(WindowEvent e) {
-	
-	}
-	public void windowDeiconified(WindowEvent e) {
-	}
-	public void windowIconified(WindowEvent e) {
-	
-	}
-	public void windowOpened(WindowEvent e) {
-		
 	}
 	public void adjustGuestPassword(boolean beGuest,boolean reset)
 	{
@@ -1169,6 +1161,26 @@ import udp.PlaytableStack;
 		 if(!"".equals(p))
 		 	{ p = password = unobfuscate(p,forname+SALT); }	
 		 return p;
+	}
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

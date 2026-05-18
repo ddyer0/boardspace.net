@@ -29,10 +29,13 @@ class NodeStack extends OStack<sgf_node> implements StackIterator<sgf_node>
 
 }
 /*
- $Id: sgf_node.java,v 1.1.1.1.2.11.2.17 2025/01/29 00:16:47 ddyer Exp $
+ $Id: sgf_node.java,v 1.1.1.1.2.11.2.18 2026/05/16 01:05:37 ddyer Exp $
 
  $Log: sgf_node.java,v $
- Revision 1.1.1.1.2.11.2.17  2025/01/29 00:16:47  ddyer
+ Revision 1.1.1.1.2.11.2.18  2026/05/16 01:05:37  ddyer
+ mostly dogwash
+
+ Revision 1.1.1.1.2.19  2025/01/29 00:15:12  ddyer
  clean up and improve the StackIterator class
 
  Revision 1.1.1.1.2.18  2023/09/22 03:57:33  ddyer

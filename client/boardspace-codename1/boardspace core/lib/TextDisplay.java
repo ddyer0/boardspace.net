@@ -16,7 +16,11 @@
  */
 package lib;
 
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
+
 import bridge.*;
+@SuppressWarnings("rawtypes")
 public class TextDisplay extends XFrame implements ActionListener,ItemListener,Config
 {
     /**

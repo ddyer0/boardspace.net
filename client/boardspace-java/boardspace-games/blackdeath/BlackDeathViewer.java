@@ -24,6 +24,7 @@ import java.util.*;
 
 import common.GameInfo;
 import lib.Random;
+import lib.SoundManager;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
@@ -103,9 +104,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     private Color chatBackgroundColor = new Color(255,230,230);
     private Color rackBackGroundColor = new Color(225,192,182);
     private Color boardBackgroundColor = new Color(220,165,155);
-    private String DiceRoll = DICEPATH + "dice-roll-2" + SoundFormat;
-    private String DiceShake = DICEPATH + "dice-rattle-2" + SoundFormat;
-     
+    private static String DiceRoll = DICEPATH + "dice-roll-2" + SoundFormat;
+    private static String DiceShake = DICEPATH + "dice-rattle-2" + SoundFormat;
+    public static String soundNames[] = { DiceRoll, DiceShake };
     // private state
     private BlackDeathBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
@@ -138,7 +139,8 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	BlackDeathChip.preloadImages(loader,ImageDir);	// load the images used by stones
+    {	SoundManager.preloadSounds(soundNames);
+    	BlackDeathChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = BlackDeathChip.SkullIcon.image;
     }
 

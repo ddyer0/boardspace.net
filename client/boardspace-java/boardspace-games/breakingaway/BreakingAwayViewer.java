@@ -311,7 +311,6 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     SetupVcrRects(vcrX,
         vcrY, CELLSIZE * 10,
         5 * CELLSIZE);
-
     G.SetRect(sprintRect, Math.max(boardX+BCELL,G.Right(vcrZone)),bottomLine, BCELL*15, BCELL*2);
     
 	placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);

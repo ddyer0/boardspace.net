@@ -48,6 +48,8 @@ public interface ChatInterface extends Config {
 	String gameSoundName = SOUNDPATH + "rgamechat" + Config.SoundFormat;
     String lobbySoundName = SOUNDPATH + "rlobbychimes" + Config.SoundFormat;
     String knockSoundName=SOUNDPATH + "knock" + Config.SoundFormat;
+    String soundNames[]={ knockSoundName,chatSoundName,ChatInterface.challengeSoundName,lobbySoundName,
+    		goodHintSoundName,badHintSoundName,gameSoundName};
 
 	String KEYWORD_CHAT = "chat";
 	String KEYWORD_CCHAT = "cchat";

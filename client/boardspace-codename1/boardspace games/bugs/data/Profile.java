@@ -29,7 +29,7 @@ public class Profile extends DataHelper<Profile> implements KeyProvider,BugsCons
     public Rank rank;
     public String lastChanged;
     public String profileGroup;
-    public Bitset<Habitat> habitat = new Bitset<Habitat>();
+    public Bitset<Habitat> habitat = new Bitset<Habitat>(Habitat.class);
     public Flying flying;
     public Diet diet;
     public Image illustrationImage = null;

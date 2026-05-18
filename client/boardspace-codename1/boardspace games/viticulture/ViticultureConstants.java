@@ -1307,6 +1307,7 @@ public interface ViticultureConstants
     // file names for jpeg images and masks
     static final String ImageDir = G.isCodename1() ? "/appdata/viticulture/images/" : "/viticulture/images/";
     public String drainSound = ImageDir + "drainsink" + Config.SoundFormat;
+    public String soundNames[] = { drainSound };
 
 
 }

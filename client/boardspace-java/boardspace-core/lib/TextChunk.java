@@ -312,7 +312,6 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     public Color getColor() { return(dataColor); }
     public void setColor(Color c) { dataColor = c; }
 	public String getString() { return(data); }
-	public boolean equals (String str) { return(data==null ? data==str : data.equals(str)); }
 	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getSimpleName()+" "+((dataColor==null)?"":dataColor)+data+">"); }
 	public void append(String str) 

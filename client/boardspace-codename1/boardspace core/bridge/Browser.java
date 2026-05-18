@@ -181,13 +181,13 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		// source will be a "Command" object which prints as the original string we fed in.
 		try {
 		Object source = evt.getSource();
-		if(OK.equals(""+source)||(source==url))
+		if(source==url)
 			{	String target = url.getText();
 				//G.print("Rewrite use ",target);
 				b.setURL(reWrite(target));
 				b.repaint();
 			}
-			else if(BACK.equals(""+source))
+			else if(back==source)
 			{
 				b.back();
 				String ne = b.getURL();

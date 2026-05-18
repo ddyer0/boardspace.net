@@ -539,7 +539,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     private BlackDeathCell bd(String name,double px,double py, int co,Bitset<DiseaseMod> set)
     {	
     	BlackDeathCell c = new BlackDeathCell(randomInit,BlackDeathId.BoardLocation,name);
-    	if(set==null) { set = new Bitset<DiseaseMod>(); }
+    	if(set==null) { set = new Bitset<DiseaseMod>(DiseaseMod.class); }
     	c.climate = set;
     	c.xpos = px;
     	c.ypos = py;

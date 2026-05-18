@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 /** obsolete version uses TextArea */
+@SuppressWarnings("rawtypes")
 public class TextDisplay extends XFrame implements ActionListener,ItemListener,Config
 {
     /**

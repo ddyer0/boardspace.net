@@ -19,11 +19,13 @@ package bridge;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.TextField;
+import com.codename1.ui.events.ActionListener;
 
 import lib.FontManager;
 
 public class XPasswordField extends TextField
 {	MouseAdapter mouse = new MouseAdapter(this);
+	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener who) { mouse.addActionListener(who); }
 	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }

@@ -206,6 +206,18 @@ public class Launch  implements stuff {
 	public boolean isDevelopmentVersion() { return(false); }
 	public void runBoardspace()
 	{	if(console || isDevelopmentVersion()) { G.createConsole(); }
+		/*
+		new Thread(new Runnable() { public void run() {
+			while(true)
+			{
+				boolean in = Display.isInitialized();
+				if (G.globalStatus!=GlobalStatus.awake) {
+					Plog.log.addLog(G.globalStatus+" "+in);
+				}
+				G.doDelay(2000);
+			}
+		}}).start();
+		*/
 		new Thread(new BoardspaceLauncher(isDevelopmentVersion()),"launcher").start();
 	}
 
@@ -227,6 +239,7 @@ public class Launch  implements stuff {
 		G.setGlobalStatus(G.GlobalStatus.awake);
 		if (current != null) 
 		{   Plog.log.addLog("Launcher restart "+new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());
+			//Plog.log.addLog(G.getStackTrace());
 			current.show();
 			return;
 		}
@@ -234,16 +247,17 @@ public class Launch  implements stuff {
 		runBoardspace();
 		
 	}
-
+	
 	public void stop() {
 		current = Display.getInstance().getCurrent();
 		G.setGlobalStatus(G.GlobalStatus.asleep);
 		Plog.log.addLog("Launcher stop " +new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());
+		Plog.log.addLog(G.getStackTrace());
 	}
 
 	public void destroy() {
 		current = Display.getInstance().getCurrent();
-		G.setGlobalStatus(G.GlobalStatus.asleep);
+		G.setGlobalStatus(G.GlobalStatus.destroyed);
 		Plog.log.addLog("Launcher destroy "+new BSDate().toString());
 	}
 	
