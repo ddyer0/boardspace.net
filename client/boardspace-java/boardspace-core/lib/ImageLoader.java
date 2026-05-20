@@ -169,7 +169,7 @@ public Image[] load_images(String baseDir, String[] namelist,String suffix)
     	if(name!=null)
     {	boolean isPng = name.endsWith(".png");
     	// special handling, images with name xx-nomask are not loaded
-    	if(("".equals(suffix) || ((name.indexOf("-nomask")<0))) && !isPng)
+    	if( "".equals(suffix) || ((name.indexOf("-nomask")<0) && !isPng))
         {
     	String ext = (name.indexOf('.')<0) ? ".jpg" : "";
     	String maskName = namelist[i] +  suffix + ext;

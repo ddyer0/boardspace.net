@@ -208,8 +208,8 @@ int retrievals = 0;					// total worker retrievals
 int lostGoods = 0;					// goods lost to penalties
 
 // add a new recruit chip to the active list
-public boolean addActiveRecruit(EuphoriaChip ch,replayMode replay)
-{	boolean some = false;
+public void addActiveRecruit(EuphoriaChip ch,replayMode replay)
+{	
 	activeRecruits.addChip(ch);
 	if(ch==RecruitChip.SteveTheDoubleAgent)
 	{	
@@ -218,7 +218,7 @@ public boolean addActiveRecruit(EuphoriaChip ch,replayMode replay)
 		if(b.getAllegianceValue(faction)>=(AllegianceSteps-1)) 
 			{ 
 			//b.p1("Activate steve the double agent "+faction);
-			some |= activateForSteveTheDoubleAgent(faction,replay);
+			activateForSteveTheDoubleAgent(faction,replay);
 			}
 		}			
 	}
@@ -230,7 +230,6 @@ public boolean addActiveRecruit(EuphoriaChip ch,replayMode replay)
 	  }
 	
 	setupAlternateArtifacts();
-	return some;
 }
 
 // notification when a new market opens.
@@ -529,8 +528,8 @@ public void addAllegianceStar(replayMode replay)
 		  }
 		}
 }
-boolean activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
-{	boolean some = false;
+void activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
+{	
 	PFlag flag = null;
 	//b.p1("Use steve for "+faction);
 	b.useRecruit(RecruitChip.SteveTheDoubleAgent,faction.name());
@@ -553,10 +552,8 @@ boolean activateForSteveTheDoubleAgent(Allegiance faction,replayMode replay)
 	{	setPFlag(flag);
 		if(authority.height()>0) 
 			{ addAllegianceStar(replay); 
-			  some = true;
 			} 
 	}
-	return some;
 }
 //
 // award the start for current recruits.
@@ -566,15 +563,14 @@ void awardAllegianceStars(Allegiance faction,replayMode replay)
 	if(recruitAppliesToMe(RecruitChip.SteveTheDoubleAgent))
 	{	activateForSteveTheDoubleAgent(faction,replay);
 	}
-	{
 	for(int lim=activeRecruits.height()-1; lim>=0; lim--)
 	{
 		RecruitChip ch = (RecruitChip)activeRecruits.chipAtIndex(lim);
 		if((ch!=RecruitChip.SteveTheDoubleAgent) && (ch.allegiance==faction))
 		{	b.logGameEvent(GainStarFor,color.name(),faction.name());
-			if(authority.height()>0) { addAllegianceStar(replay); } 
+			if(authority.height()>0) { addAllegianceStar(replay);  } 
 		}
-	}}
+	}
 }
 // number of unresolved recruit cards.  If nonzero triggers the recruit choice gui
 int newRecruitCardCount() { int sum=0; for(EuphoriaCell c : newRecruits) { sum += c.height(); } return(sum); }

@@ -100,14 +100,13 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
    
     static String DiceSound = "/yspahan/images/dice" + Config.SoundFormat;
     static String ClickSound = "/yspahan/images/click" + Config.SoundFormat;
-    static String Sounds[] = { DiceSound, ClickSound };
+    public static String Sounds[] = { DiceSound, ClickSound };
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color chatBackgroundColor = new Color(236,229,213);
     private Color rackBackGroundColor = new Color(215,195,148);
     private Color rackActiveColor = new Color(235,215,168);
-    
     private Color reallyDoneColor = new Color(0.7f,0.4f,0.4f);
     private Color redHighlightColor = new Color(0.6f, 0.95f, 0.75f);
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);

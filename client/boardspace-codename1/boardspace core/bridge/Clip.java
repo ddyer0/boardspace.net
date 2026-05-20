@@ -16,6 +16,7 @@
  */
 package bridge;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,12 @@ import lib.G;
 import com.codename1.media.Media;
 import com.codename1.media.MediaManager;
 
+
 public class Clip {
+	public class AudioFormat 
+	{
+		
+	}
 	String name;
 	byte[] data;
 	File clipFile = null;
@@ -132,5 +138,8 @@ public class Clip {
 		  if(G.isIOS()) { G.startInEdt(play); }
 				else { play.run(); }
 	}}
+	public AudioFormat getFormat() {
+		return null;
+	}
 	
 }

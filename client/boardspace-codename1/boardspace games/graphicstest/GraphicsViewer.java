@@ -29,11 +29,16 @@ import online.game.*;
 import online.game.sgf.sgf_node;
 
 import online.search.SimpleRobotProtocol;
+
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
 
+import bridge.Clip;
+import bridge.Clip.AudioFormat;
 import bridge.Color;
 import bridge.Polygon;
 import bridge.XJMenu;
@@ -494,8 +499,9 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     }
     class soundclips implements TestAble
     {	// games known to have custom clips:  Arimaa BlackDeath Cannon Euphoria Gobblet Honey Imagine Mutton
-    	//    pendulum, quinamid sprint viticulture warp6
-    	//static {
+    	//    pendulum, quinamid sprint viticulture warp6 yspahan
+    	boolean inited = false;
+    	public void init(){
     		//SoundManager.preloadSounds(ArimaaViewer.soundNames);
     		//SoundManager.preloadSounds(BlackDeathViewer.soundNames);
     		//SoundManager.preloadSounds(CannonViewer.soundNames);
@@ -511,11 +517,14 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     		//SoundManager.preloadSounds(SprintViewer.soundNames);
     		//SoundManager.preloadSounds(ViticultureViewer.soundNames);
     		//SoundManager.preloadSounds(Warp6Viewer.soundNames);
-    	//}
+    		//SoundManager.preloadSounds(YspahanViewer.Sounds);
+    		inited = true;
+    	}
     	Enumeration<String>keys = null;
     	String clip = null;
     	int mystep = 0;
 		public void runTest(Graphics gc) {
+			if(!inited) { init(); }
 			if(keys==null || !keys.hasMoreElements()) 
 				{ keys = SoundManager.getInstance().soundClips.keys();
 				}
@@ -527,9 +536,9 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
 			gc.fillRect(0,0,w,h);
 			gc.setColor(Color.white);
 			gc.Text(""+clip,w/10,h/10);
-			//Clip sound = SoundManager.loadASoundClip(clip);
-			//AudioFormat format = sound.getFormat();
-			//gc.Text(""+format,w/10,h/10*2);
+			Clip sound = SoundManager.loadASoundClip(clip);
+			AudioFormat format = sound.getFormat();
+			gc.Text(""+format,w/10,h/10*2);
 			if(SoundManager.soundIdle()) 
 			{  	gc.Text("playing "+clip,w/10,3*h/10);
 				SoundManager.playASoundClip(clip,1000); 
@@ -538,11 +547,127 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
 			
 		}
     }
+   
+ class Dtest_3108_and_3470 implements TestAble
+ {
+	 
+	 private int initialBoardScaleIndex = 3;
+	 private double boardScaleIndex = initialBoardScaleIndex;
+	 private double newBoardScaleIndex = boardScaleIndex;
+	 private double boardScales[] = {1.0,2.0,3.0,4.0};
+	 private int numBoardScales = boardScales.length;
+	 public double SCALE = 1.5;
+	 public void init()
+	 {
+
+	 	double isi = boardScaleIndex;
+	 	double tableScale = SCALE;
+	 	isi*=tableScale;
+	 	boardScaleIndex = newBoardScaleIndex = Math.min(numBoardScales-1,(int)(isi*SCALE));
+	  		
+	 }
+	 public void runTest(Graphics gc)
+	 {             	int w = getWidth();
+	 	int h = getHeight();
+	 	String phase = "xx ";
+	  	try {
+	   	gc.setColor(new Color(0x909090));	// gray rectangle
+		gc.fillRect(0,0,w,h);
+	   	phase = "array copy ";
+	    int ar[] = new int[100];
+	    // issue 3470
+	    gc.setColor(Color.black);
+	    int ar2[] = Arrays.copyOf(ar);
+	    gc.Text("ar2 "+ar2,100,150);
+	    phase = "arithmetic ";
+	   	init();
+			gc.setColor(Color.black);
+			gc.Text("no problem "+boardScaleIndex+" "+newBoardScaleIndex,100,100);
+	    
+	   	}
+	   	catch(Throwable err)
+	   	{
+	   		gc.setColor(Color.black);
+	   		gc.Text(phase + "error "+err,100,200);
+	   	}
+
+         }
+ }
+         
+ class dtest_3136 implements TestAble
+ {	 // death by gc
+	 public Link chain(int n)
+	 {
+		 Link result=null;
+		 while(n-- > 0) { result = new Link(result); }
+		 return(result);
+	 }
+	 public Vector<Link> construct(int totalsize,int chainsize)
+	 {
+		 Vector<Link> v = new Vector<Link>();
+		 int n=0;
+		 while(n<totalsize)
+		 {
+		 v.addElement(chain(chainsize));
+		 n+=chainsize;
+		 }
+	 return(v);
+	 }
+
+	 class Link
+		 {
+		 Link next;
+		 Link(Link o)
+		 {
+		 next = o;
+		 }
+	 }
+
+	int totalsize = 10000;
+ 	int chainsize = totalsize/10;
+ 	int pass = 1;
+ 	boolean inited = false;
+ 	String message = "";
+ 	public void runTest(Graphics gc)
+	 {	int w = getWidth();
+	 	int h = getHeight();
+	 	gc.setColor(new Color(0xf0f0f0));
+	 	gc.fillRect(0,0,w,h);
+		try {
+	 		if(!inited) { 
+	 			
+		 		chainsize = totalsize/10;
+		 		inited = true;
+	 		}
+	 		while(chainsize<totalsize)
+	 		{	for(int i=0;i<10;i++)
+	 			{construct(totalsize,chainsize);
+	 			 pass++;
+	 			 gc.setColor(Color.black);
+	 			}
+	 			chainsize += totalsize/10;
+	 		}
+			 gc.Text("Pass "+pass+" totalsize "+totalsize+" chainsize "+chainsize,100,100);
+ 	    	 gc.Text(message, 100,200);
+ 			 repaint();
+	 		totalsize *=2;
+			}
+			catch (Throwable err)
+			{
+				message = "terminated with "+err; 
+				repaint();
+			}
+	 }
+ }
+
+
     Test[] tests = {  	
     		new Test("issue 3921","complex clipping and rotation",new Test_3921()),
     		new Test("issue 3302","scaling and translation",new Test_3302()),
         	new Test("issue 3037","simpler rotation test",new Test_3037()),
         	new Test("sound clips","test all sound clips",new soundclips()),
+        	new Test("ios bad code","gets nullpointerexception",new Dtest_3108_and_3470()),
+        	new Test("issue 3136 gc","death by gc",new dtest_3136()),
         };
         Test selectedTest = tests[0];
      

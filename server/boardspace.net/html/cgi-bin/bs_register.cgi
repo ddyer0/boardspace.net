@@ -94,8 +94,6 @@ sub setup_php()
 	my $que = "select user_id from phpbb_users where username=$qname ";
 	my $sth = &query($dbh,$que);
 	my $num = &numRows($sth);
-	my $formsg = &trans("Use your boardspace username and password to access the #1 forums #2",
-				"<a href=/BB/>","</a><p>");
 	if($num==0)
 	{	my $sth2 = &query($dbh,"select max(user_id) from phpbb_users");
 		my $nr2 = &numRows($sth2);
@@ -266,8 +264,7 @@ sub doRegister()
 	my $stamp = param('timestamp');
 	&bless_parameter_length($stamp,40);	#assess for penalty
 	
-	# note, this is used by the apps, which don't refresh their timestamps after
-	# every interaction, so it's not suitable to update to the stronger checks
+	
 	if(&check_timestamp($stamp))
 	{
 	if ( $email && $pname && $password && ($password eq $password2))
@@ -307,7 +304,7 @@ sub doit()
 	if($dbh)
 	{
 		my $myaddr = $ENV{'REMOTE_ADDR'};	
-		if( &allow_ip_access($dbh,$myaddr))
+		if( &allow_ip_login($dbh,$myaddr))
 		{
 		&doRegister($dbh);	
 		}

@@ -3291,9 +3291,16 @@ private void drawPlayerBoard(Graphics gc,
   				  	int xp = xleft+cardStep*i;
   				  	int yp = yleft+step*2+cardStep/2;
   				  	ViticultureChip chip = cardDisplay.chipAtIndex(i);
-  				  	if(pb.selectedCards.contains(pb.cards.rackLocation(),chip,cardIndex.elementAt(i)))
+  				  	int index = pb.selectedCards.indexOf(pb.cards.rackLocation(),chip,cardIndex.elementAt(i));
+  				  	if(index>=0)
     				  {	boolean isDiscard = state.discardCards()>=0;
-    		     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).draw(gc, this, step/2,xp,yp,null);
+    		     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).draw(gc, this, step/2,xp,yp+step/4,null);
+    		     		if(pb.selectedCards.size()>1)
+			     		{
+			     			GC.Text(gc,true,
+			     					xp-cardStep/8,yp-cardStep/8,cardStep/4,cardStep/4,
+			     					Color.white,null,""+(index+1));
+			     		}
     				  }
   				  	  Rectangle sr = new Rectangle(xp-step/2,yp+step,step,step/3);
   				  	  viewCard(highlight,sr,chip);
@@ -3817,10 +3824,12 @@ private void drawPlayerBoard(Graphics gc,
 			int ind = selected.indexOf(p.source,p.card,p.index);
 			if(ind>=0) {
 	     		mark.draw(gc,this,cardStep/2,xpos,cardY,null);
+	     		if(selected.size()>1)
+	     		{
      			GC.Text(gc,true,
      					xpos-cardStep/8,cardY-cardStep/8,cardStep/4,cardStep/4,
      					Color.black,null,""+(ind+1));
-
+	     		}
 			}
 			Rectangle sr = new Rectangle(xpos-cardStep/2,cardY+cardStep/2,cardStep,cardStep/3);
 			viewCard(highlight,sr,ch);
@@ -5675,6 +5684,12 @@ private void drawPlayerBoard(Graphics gc,
        			missedOneClick = performStandardActions(hp,missedOneClick);   
        			showBuildings = false;     
        			showOptions = false;
+       			showBigStack = false;
+       			if(touchPlayer!=null)
+            	{	touchPlayer.showCards = false;
+            		touchPlayer = null;
+       			} 
+       			if(overlayClosed) { setOverlayClosed(gb,false); }
        			} 
        	}
         else {

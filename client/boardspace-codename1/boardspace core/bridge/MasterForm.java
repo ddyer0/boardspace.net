@@ -48,7 +48,6 @@ class MasterToolBar extends Toolbar
 		setUIID("TitleAreaMasterForm");	// our own structure with a margin on top
 
 	}
-	static int savedNotch = -1;
 }
 @SuppressWarnings("rawtypes")
 public class MasterForm extends Form implements com.codename1.ui.events.ActionListener,Config,NullLayoutProtocol
@@ -173,7 +172,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  // but there's a bug induced by clicking on the chat "to user" button that puts it
 	  // there anyway, and messes up the status bar.  Hence we avoid the whole mess and
 	  // add our own status bar spacer.
-	  if(!G.isIOS())
+	  //if(!G.isIOS()) seems unnecessary now, test on iphone
 	  {
 		Style s = toolBar.getStyle();
 		s.setMargin(0,0,0,0);			// remove the margin except on ios
@@ -498,6 +497,7 @@ public void addToMenus(JButton m)
 	public void pointerPressed(int x,int y)
 	{
 		//G.print("\npressed ",x," ",y);
+		//G.print(getHierarchy());
 		//G.print(G.getStackTrace());
 		super.pointerPressed(x,y); 
 	}
@@ -683,7 +683,7 @@ public void addToMenus(JButton m)
 	    { //G.print("master paintComponentBackground" );
 	    }
 	public com.codename1.ui.Container getTitleBar() { return toolBar; }
-	
+	/*
 	// the spacer is an invisible window on the top of iphone-X screens, meant to occupy
 	// the divot which contains the status bar.  When switching to landscape mode, the 
 	// divot moves to the left instead of top, and it's accounted for by the way the 
@@ -708,7 +708,7 @@ public void addToMenus(JButton m)
 			setShouldCalcPreferredSize(true);
 			}
 	}
-
+*/
 	public void doNullLayout() {
 		Rectangle safe = getSafe();
 		int safeX = safe.getX();
@@ -740,4 +740,26 @@ public void addToMenus(JButton m)
 		}
 		
 	}
+	public String getHierarchy()
+	{	
+		StringBuilder b = new StringBuilder();
+		getHierarchy(this,b,0);
+		return b.toString();
+	}
+	@SuppressWarnings("deprecation")
+	private void getHierarchy(com.codename1.ui.Component w,StringBuilder b,int lvl)
+	{
+		if(w instanceof com.codename1.ui.Container)
+		{
+			for(int i=0;i<lvl*3;i++) { b.append(' '); }
+			b.append(w.getClass().getName()+" "+w.getX()+","+w.getY()+" "+w.getWidth()+"x"+w.getHeight()+"\n");
+			com.codename1.ui.Container cc = (com.codename1.ui.Container)w;
+			int count = cc.getComponentCount();
+			for(int i=0;i<count; i++)
+			{
+				getHierarchy(cc.getComponentAt(i),b,lvl+1);
+			}
+		}
+	}
+	
 }

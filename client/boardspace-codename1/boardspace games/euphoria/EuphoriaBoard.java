@@ -2338,6 +2338,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	if(winner!=null)
     	{
     		win[winner.boardIndex] = true;
+    		setState(EuphoriaState.Gameover);
     		return(true);
     	}
     	return(false);
@@ -2622,7 +2623,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	switch(proceedGameStep)
     	{
     	case Start: registerStep(ProceedStep.Start);
-    		if(checkGameOver()) {  setState(EuphoriaState.Gameover); return; }
+    		if(checkGameOver()) {  return; }
     		
 			//$FALL-THROUGH$
 		case Step1:	registerStep(ProceedStep.Step1);
@@ -3371,25 +3372,23 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     //
     // activate recruits that should now be active
     //
-    boolean revealHiddenRecruits(replayMode replay)
-    {	boolean some = false;
+    private void revealHiddenRecruits(replayMode replay)
+    {	
     	for(EPlayer p : players)
     	{	EuphoriaCell c = p.hiddenRecruits;
     		for(int lim = c.height()-1; lim>=0; lim--)
     		{	RecruitChip newRecruit = (RecruitChip)c.chipAtIndex(lim);
     			if(recruitShouldBeActive(newRecruit))
     			{	c.removeChipAtIndex(lim);
-    				some |= p.addActiveRecruit(newRecruit,replay);
+    				p.addActiveRecruit(newRecruit,replay);
     				logGameEvent(ActivateRecruitMessage,p.color.name(),newRecruit.name);
     				if(getAllegianceValue(newRecruit.allegiance)>=(AllegianceSteps-1))
     				{
     					p.addAllegianceStar(replay);
-    					some = true;
     				}
     			}
     		}
     	}
-    	return(some);
     }
     //
     // award a card to all other players, and do morale checks
@@ -3719,18 +3718,17 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         default:
         	throw Error("Not expecting state %s",board_state);
         }
-        if(revealHiddenRecruits(replay))
-        {
+    	revealHiddenRecruits(replay);
         	checkGameOver();
-        }
     	if(board_state==EuphoriaState.ExtendedBenefit)
     	{	// this happens if StevenTheScholar requires a late benefit dialog, but there are no
     		// other penalties or benefits associated.
          	acceptPlacement();
     		doContinuation(replay);
     	}
-        if((revision>=120) && revealHiddenRecruits(replay))
-        {	// continuations above can incremement allegiance tracks and should cause
+        if(revision>=120) 
+        {	revealHiddenRecruits(replay);
+        	// continuations above can incremement allegiance tracks and should cause
         	// recruits to be revaled.  This was pointed out for game EU-Umbrage-Dumbot-2015-06-12-1527 
         	// at move 37.
         	checkGameOver();
@@ -6990,7 +6988,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         		logGameEvent("Added recruit #1",newguy.getName());
         		m.chip = newguy;
         		}
-        		if(checkGameOver()) {  setState(EuphoriaState.Gameover); }
+        		checkGameOver();
         	}
         	break;
         case MOVE_MARKET:

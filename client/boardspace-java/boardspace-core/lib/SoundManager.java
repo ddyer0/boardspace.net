@@ -33,13 +33,11 @@ public class SoundManager implements Runnable
     private  long nextDelay=0;
     public  Hashtable<String,Clip> soundClips = new Hashtable<String,Clip>();
  	public synchronized void showClips(String msg)
-	{	long now = G.Date();
+	{
 		int rp = readPtr;
-		G.print("");
 		G.print(msg);
 		while(rp!=writePtr)
 		{
-			G.print("Play "+sounds[rp]+" "+(delays[rp]-now));
 			rp++;
 			if (rp == QUEUELENGTH)
             {
