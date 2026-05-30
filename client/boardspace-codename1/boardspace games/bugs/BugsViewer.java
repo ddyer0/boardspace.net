@@ -1084,8 +1084,10 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     public boolean goalOverlay = false;
     
     public boolean useDirectMagnification(HitPoint hp)
-    {	return super.useDirectMagnification(hp)
-    		&& !G.pointInRect(hp,boardRect);
+    {	return false;
+    	// removed because codename1 still punts when there is rotation
+    	//super.useDirectMagnification(hp)
+    	//	&& !G.pointInRect(hp,boardRect);
     }
   
     /**

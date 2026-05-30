@@ -343,15 +343,13 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     private double animx[] = new double[NLEVELS];
     private double animy[] = new double[NLEVELS];
     private boolean new_board = true;
-    private Image rotationImage = null;
     private void drawBoardElements(Graphics gc, QuinamidBoard gb, Rectangle brect, HitPoint highlight)
     {	Rectangle []edgeBoards = new Rectangle[NLEVELS];
     	Rectangle []edgeCenters = new Rectangle[NLEVELS];
   		QuinamidCell hitCell = null;
      	Graphics activeGC = gc;
 		boolean rotating = false;
- 		Graphics rotationGC = null;
-    	long now = G.Date();
+     	long now = G.Date();
     	double animAmount = 0.0;
     	boolean rotationActive = false;
     	boolean end_anim = false;
@@ -386,7 +384,6 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      						|| (prev_board_y[level]!=yo) 
      						|| prev_board_rot[level]!=lboard.rot)) 
      			{ animStart = now; 
-     			  rotationImage = null;
       			}
      		rotating |= (prev_board_rot[level]!=lboard.rot);// note the rotation
      		//
@@ -487,54 +484,36 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
          		}
          	}
          } 
-     	int rotation_x_offset = 0;
- 		int rotation_y_offset = 0;
- 		int rotation_center_x = 0;
+  		int rotation_center_x = 0;
  		int rotation_center_y = 0;
- 		int rotateDirection = 0;
- 		int rwidth = 0;
-     	//
+ 		double rotationAmount = 0;
+    	//
         // now draw the contents of the board and anything it is pointing at
         //
-
      	for(int level = 0; level<b.stackedBoards.length;level++)
      	{	
      		{
+     		QuinamidChip bpic = QuinamidChip.getBoard(level);
      		Rectangle center = edgeCenters[level];
-     		    		
-     		if((animStart!=0) && !rotationActive)
+     		int centerLeft = G.Left(center);
+     		int centerTop = G.Top(center);
+     		int centerSize = G.Width(center);
+     		if((animStart!=0) && !rotationActive && gc!=null)
  			{	int rotdir = (prev_board_rot[level]-b.stackedBoards[level].rot+4)%4;// start the rotation
  				if(rotdir!=0)	// is this the level where we start the rotation?
  				{
- 				rotationActive = true;
-     			rwidth = (int)(G.Width(center)*1.42);
-     			if(rotdir==3) { rotdir=-1; }
-     			rotateDirection = -rotdir;
-     			if(rotationImage==null) 
-     				{ rotationImage = Image.createTransparentImage(rwidth,rwidth);
-     				}
-     			else { rotationImage = Image.clearTransparentImage(rotationImage); }
-    			rotationGC = rotationImage.getGraphics();
- 			
-    			// Make all filled pixels transparent
-       			//rotationGC.setColor(new Color(0xffffff,true));
-     			//rotationGC.fillRect(0,0,rwidth,rwidth);
-       			activeGC = rotationGC;
-       			// correct for the x,y,scale associated with the board images, so
-       			// the board image is drawn visually centered in rotationimage
-       			QuinamidChip bpic = QuinamidChip.getBoard(level);
-       			int xoff = bpic.local_x_offset(G.Width(center));
-       			int yoff = bpic.local_y_offset(G.Height(center));
-       			
-     			rotation_x_offset = G.Left(center)-rwidth/2-xoff;
-     			rotation_y_offset = G.Top(center)-rwidth/2-yoff;
-     			rotation_center_x = G.Left(center)-xoff;
-     			rotation_center_y = G.Top(center)-yoff;
- 				}
+ 	    		if(rotdir==3) { rotdir=-1; }
+ 	    		rotationActive = true;
+            	rotationAmount = -rotdir*Math.PI/2*animAmount;
+     			rotation_center_x = centerLeft-bpic.local_x_offset(centerSize);
+     			rotation_center_y = centerTop-bpic.local_y_offset(centerSize);
+     			// draw the rest of the stack rotated
+     			gc.setRotation(rotationAmount,rotation_center_x,rotation_center_y);
+     			}
  			}
-          	QuinamidChip.getBoard(level).draw(activeGC,this,G.Width(center),
-      						G.Left(center)-rotation_x_offset,
-      						G.Top(center)-rotation_y_offset,
+          	bpic.draw(activeGC,this,G.Width(center),
+      						centerLeft,
+      						centerTop,
       						null);
       		}
       		if((flaggedBoard>=0) && (flaggedBoard<=level) && !rotationActive)
@@ -551,8 +530,8 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      			{
      	            int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
      	            int xpos =G.Left( brect) + gb.cellToX(c.col, c.row);
-     	            int ax = xpos+(int)(animx[level]-rotation_x_offset);
-     	            int ay = ypos+(int)(animy[level]-rotation_y_offset);
+     	            int ax = xpos+(int)(animx[level]);
+     	            int ay = ypos+(int)(animy[level]);
      	            if( c.drawStack(activeGC,canhit,
      	            			ax,
      	            			ay,
@@ -575,15 +554,10 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      	}
         
         if(rotationActive)
-        {	if(gc!=null)
-        	{
-        	Image r2 = rotationImage.rotate(rotateDirection*Math.PI/2*animAmount,0x0);
-        	int xp = rotation_center_x-rwidth/2;
-        	int yp = rotation_center_y-rwidth/2;
-        	r2.makeTransparent(0.25).drawImage(gc,xp,yp);
-        	}
+        {	// this correctly displays the rotated bitmap
+      		gc.setRotation(-rotationAmount,rotation_center_x,rotation_center_y);
         	repaint(20);
-       }
+        }
        
     }
     public MovementZone movementZone(HitPoint highlight,Rectangle r,int level)

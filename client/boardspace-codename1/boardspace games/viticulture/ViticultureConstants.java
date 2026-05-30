@@ -943,8 +943,8 @@ public interface ViticultureConstants
 	Select1Of1FromMarket(Activity.ChooseCards,"Select one card from the Market",false,false,UI.ShowMarket),
 	Select2Of2FromMarket(Activity.ChooseCards,"Select two cards from the Market",false,false,UI.ShowMarket),
 	SelectPandM(Activity.ChooseCards,"Select one Papa and one Mama",false,false,UI.ShowPandM),
-	ChooseOptions(Activity.ChooseOptions,"Select the options for this game",false,false,UI.ShowOptions),
-	DraftCards(Activity.DraftCards,DraftCardsMode,false,false,UI.ShowCards),
+	ChooseOptions(Activity.ChooseOptions,"Select the options for this game",true,false,UI.ShowOptions),
+	DraftCards(Activity.DraftCards,DraftCardsMode,true,false,UI.ShowCards),
 
 	;
 		

@@ -8406,9 +8406,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		PlayerBoard nn = pbs[m.from_col-'A'];
     		nn.isReady = m.from_row!=0;
     		setNextPlayer(replay); 
-    		}
         	break;
-        case EPHEMERAL_COMMENCE:
+    		}
+		case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	if(board_state==ViticultureState.ChooseOptions) { options.setMembers(m.from_row); }
         	doDone(replay,m);

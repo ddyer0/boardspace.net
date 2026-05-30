@@ -720,6 +720,43 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 		   }
 	}
 	
+	static public void rotate(int[]ipix,int []opix,int w,int h,double angle,int fillColor,double percent)
+	{
+	     double sina = Math.sin(angle);
+	     double cosa = Math.cos(angle);
+	     int h1 = h-1;
+	     int w1 = w-1;
+	     boolean dim = percent<1;
+	     for(int dx=0,centerx=w/2;dx<w;dx++) 
+	     	{ for(int dy=0,centery=h/2;dy<h;dy++) 
+	     	{
+	      	 int sidxx = (int)(cosa*(dx-centerx)-sina*(dy-centery))+centerx;
+	    	 int sidyy = (int)(sina*(dx-centerx)+cosa*(dy-centery))+centery;
+	    	 // consider the actual border pixel to be absent, and use the fill color instead
+	    	 // this avoids messy edges from jpegs or scaled images.
+	    	 boolean inbounds = (sidxx>0) && (sidxx<w1) && (sidyy>0) && (sidyy<h1);
+	    	 int didx = dx+w*dy;
+	    	 if(inbounds)
+	    	 {int idx = sidxx+sidyy*w;
+	    	  int pix = ipix[idx];
+	    	  if(dim)
+	    	  {
+	    	  int tr = 0xff&(pix>>24);
+		       tr = (int)(tr*percent);
+			   opix[didx]=(tr<<24)|(0xffffff&pix);
+	    	  }
+	    	  else
+	    	  {
+	    		  opix[didx] = pix;
+	    	  }
+	    	 }
+	    	 else
+	    	 {
+	    		 opix[dx+w*dy] = fillColor;
+	    	 }
+	    	 }
+	      }
+	}
 	/** 
      * call this to rotate an image around its center by an angle in radians.  
      * This ignores the right and bottom edges of the input image, because the
@@ -733,21 +770,23 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
      * @param angle the angle (in radians) to rotate counter clockwise
      * @return a rotated version of the input image. 
      * */
-   public Image rotate( double angle, int fillColor)
+   public Image rotate( double angle, int fillColor,double trans)
    { 
      int w = getWidth();
      int h = getHeight();
      int opix[] = new int[w*h];
      int ipix[] = new int[w*h];
      getRGB(0,0,w,h,ipix,0,w);
-     G.Rotate(ipix,opix,w,h,angle,fillColor);
+     rotate(ipix,opix,w,h,angle,fillColor,trans);
      SystemImage.pixelCount += w*h;
      Image fin = new Image("temp for rotate");
      fin.createImageFromInts(opix,w,h,0,w);
      	
      return(fin);
    }
-
+   public Image rotate( double angle, int fillColor)
+   { return rotate(angle,fillColor,1.0);
+   }
 	
 	/**
 	 * extract the alpha channel as an integer array to be used to make a new image.

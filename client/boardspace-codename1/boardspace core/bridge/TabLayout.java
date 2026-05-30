@@ -81,14 +81,14 @@ public class TabLayout extends com.codename1.ui.layouts.Layout
 		Font f = SystemFont.getGlobalDefaultFont();
 		int fs = SystemFont.getFontSize(f);
 		int max = (int)(fs*2.2);
-		G.print("Tablayout "+f+" sz ",fs," h ",max);
+		//G.print("Tablayout "+f+" sz ",fs," h ",max);
 		for(int i=0;i<nc;i++)
 			{ com.codename1.ui.Component comp = parent.getComponentAt(i);
 			  int sz = comp.getPreferredSize().getHeight();
 			  max = Math.max(sz,max); 
-			  G.print("c ",comp," h ",sz);
+			  //G.print("c ",comp," h ",sz);
 			}
-		G.print("final max ",max);
+		//G.print("final max ",max);
 		return(max);
 	}
 	public Dimension getPreferredSize(Container parent) {

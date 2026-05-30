@@ -9388,7 +9388,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  private boolean hasPaidArtifact(EPlayer p,EuphoriaChip type)
  {	if(numberOfArtifactsPaid()==1)
  	{	ArtifactChip top = (ArtifactChip)usedArtifacts.topChip();
- 		if((top==type) || p.alternateArtifacts.containsChip(top)) { return(true); }
+ 		if((type==null) || (top==type) || p.alternateArtifacts.containsChip(top)) { return(true); }
  	}
  	return false;
  }
@@ -9402,7 +9402,14 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	}
 	 return(na);
  }
- 
+
+ boolean canCompleteArtifactPair(EPlayer p)
+ {	// number already paid is 1
+	if(p.artifacts.height()>=2) { return true; }	// can always play 3
+	ArtifactChip unpaid = (ArtifactChip)p.artifacts.topChip();
+	ArtifactChip paid = (ArtifactChip)usedArtifacts.topChip();
+	return p.artifactsMatch(paid,unpaid);
+ }
  void addPayCardMoves(CommonMoveStack all,EPlayer p)
  {	 if(numberOfArtifactsPaid()>=3) { return; }
 	 if(robotBoard)
@@ -9713,7 +9720,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	int nb = numberPaid(bliss);
 	 	if((nc<=1) || (na==0))
 	 		{// not committed to bliss+commodities, or no artifacts paid yet
-	 		 addPayArtifactMoves(all,p); 
+	 		 if(na!=1 || canCompleteArtifactPair(p))
+	 		 {	// if its possible to make the 3 (or pair) artifacts, add
+	 			 addPayArtifactMoves(all,p); 
+	 		 }
 	 		}
 	 	if(nc<3)
 	 		{if(nc-nb>0) { addPayBlissMoves(all,p); }	// only bliss will do
@@ -10278,7 +10288,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 }
 	if((all.size()==0)&&robotBoard)
 	{	//robotBoard = false;
-		throw Error("Didn't produce playment moves for %s",cost);
+		throw Error("Didn't produce payment moves for %s",cost);
 	}}
  }
  

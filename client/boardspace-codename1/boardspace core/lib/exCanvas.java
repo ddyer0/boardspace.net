@@ -26,6 +26,7 @@ import com.codename1.ui.geom.Rectangle;
 
 /* below here should be the same for codename1 and standard java */
 import bridge.*;
+import bridge.ThreadDeath;
 
 import java.io.PrintStream;
 import java.util.Enumeration;

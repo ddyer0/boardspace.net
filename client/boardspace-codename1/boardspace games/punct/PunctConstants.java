@@ -324,8 +324,8 @@ public interface PunctConstants
     		CenterMessage,
     };
     static final String PunctStringPairs[][] = {
-    		{"Punct","Pünct"},
-    		{"Punct_variation","standard Pünct"},
-    		{"Punct_family","Pünct"},
+    		{"Punct","P\\u00FCnct"},
+    		{"Punct_variation","standard P\\u00FCnct"},
+    		{"Punct_family","P\\u00FCnct"},
     };
 }

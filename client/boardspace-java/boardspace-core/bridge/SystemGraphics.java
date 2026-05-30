@@ -391,7 +391,7 @@ public abstract class SystemGraphics
 	{
 		graphics.scale(x, y);
 	}
-	public void setOpactity(double op)
+	public void setOpacity(double op)
 	{
 		Color cc = getColor();
 		setColor(new Color(cc.getRed(),cc.getGreen(),cc.getBlue(),(int)(op*255)));
@@ -497,5 +497,18 @@ public abstract class SystemGraphics
 	public void translate(int inX, int inY) {
 		graphics.translate(inX,inY);
 	}
+	public void translateMatrix(float inX, float inY) {
+		graphics.translate(inX,inY);
+	}
 	
+	Shape savedClip = null;
+	public void pushClip() {
+		G.Assert(savedClip==null,"only 1 level");
+		savedClip = getClip();	
+	}
+	public void popClip()
+	{
+		setClip(savedClip);
+		savedClip = null;
+	}
 }

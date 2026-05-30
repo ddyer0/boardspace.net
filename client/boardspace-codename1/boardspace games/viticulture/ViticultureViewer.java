@@ -3408,7 +3408,9 @@ private void drawPlayerBoard(Graphics gc,
         //int nToKeep = state.keepCards();
         StockArt mark = (nToDiscard>=0?StockArt.Exmark:StockArt.Checkmark);
         boolean quickExit = false;
-        PlayerBoard pb = drafting ? gb.pbs[getActivePlayer().boardIndex] : gb.getCurrentPlayerBoard();
+        PlayerBoard pb = (drafting && simultaneousTurnsAllowed())
+        						? gb.pbs[getActivePlayer().boardIndex] 
+        						: gb.getCurrentPlayerBoard();
        	ViticultureCell cards = pb.cards;
 		ViticultureCell cardDisplay = gb.cardDisplay;
 		CardPointerStack cardIndex = new CardPointerStack();
@@ -3968,7 +3970,7 @@ private void drawPlayerBoard(Graphics gc,
     		{
     			ViticultureChip ch = p.getRooster();
     			boolean ready = p.isReady;
-    			boolean me = (allPlayersLocal() || ( p.boardIndex==getActivePlayer().boardIndex))
+    			boolean me = (p==pb)		
     					&& (pb.selectedCards.size()==1);
     			if(ch.draw(gc,this,xstep*2/3,xxp,y,me ? highlight:null,ViticultureId.SetReady,null))
     			{
@@ -5302,13 +5304,20 @@ private void drawPlayerBoard(Graphics gc,
        GC.unsetRotatedContext(gc,selectPos);
 
        boolean planned = plannedSeating();
+       boolean donestate = gb.DoneState();
+       if(donestate && (state==ViticultureState.DraftCards))
+       {
+   		commonPlayer p = simultaneousTurnsAllowed()?getActivePlayer():viewerWhoseTurn();
+   		PlayerBoard pboard = gb.getPlayerBoard(p.boardIndex);
+   		if(pboard.selectedCards.size()!=1) { donestate=false; }
+       }
        for(int i=0;i<gb.nPlayers();i++)
        	{  commonPlayer pla = getPlayerOrTemp(i);
        	   pla.setRotatedContext(gc, selectPos,false);
     	   drawPlayerBoard(gc, playerBoardRects[i],gb,playerSideRects[i],chipRects[i],i, ourTurnSelect,selectPos,targets);
     	   if(planned && gb.whoseTurn==i)
     	   {
-    		   doneButton(gc,doneRects[i],(gb.DoneState() ? buttonSelect : null));
+    		   doneButton(gc,doneRects[i],(donestate ? buttonSelect : null));
     	   }
        	   pla.setRotatedContext(gc, selectPos,true);
        	}
@@ -5321,7 +5330,7 @@ private void drawPlayerBoard(Graphics gc,
 			// is currently active.
 			boolean emergency = targets.size()==0 && (state!=ViticultureState.Gameover);
 			if(!planned)
-				{doneButton(gc,doneRect,(emergency || (gb.DoneState()) ? buttonSelect : null));		
+				{doneButton(gc,doneRect,(emergency || donestate ? buttonSelect : null));		
 				}
         }
 
@@ -5660,6 +5669,18 @@ private void drawPlayerBoard(Graphics gc,
        	{
         	switch(gb.resetState)
         	{
+        	case ChooseOptions:
+        	case DraftCards:
+        		if(!gb.allPlayersReady())
+        		{
+        			
+        		id = ViticultureId.SetReady;
+        		commonPlayer pl = simultaneousTurnsAllowed()?getActivePlayer():viewerWhoseTurn();
+        		PlayerBoard pboard = gb.getPlayerBoard(pl.boardIndex);
+        		hp.hitObject = pboard;
+        		hp.hit_index = pboard.isReady ? 0 : 1;
+        		}
+        		break;
         	case SwitchVines:
         	{
         		Viticulturemovespec swap = gb.findSwitchMove(pb);
@@ -5968,7 +5989,15 @@ private void drawPlayerBoard(Graphics gc,
        			}
        			break;
         	case DraftCards:
-        		PerformAndTransmit((simultaneousTurnsAllowed() ? "EDraft " : "Draft ")+(char)('A'+getActivePlayer().boardIndex)+" "+hp.hit_index);     
+        		if(simultaneousTurnsAllowed())
+        		{
+            		PerformAndTransmit("EDraft "+(char)('A'+getActivePlayer().boardIndex)+" "+hp.hit_index);     
+       			
+        		}
+        		else
+        		{
+        		PerformAndTransmit("Draft "+(char)('A'+pb.boardIndex)+" "+hp.hit_index);     
+        		}
         		break;
            	case Select1Of1FromMarket:
         	case Select1Of2FromMarket:

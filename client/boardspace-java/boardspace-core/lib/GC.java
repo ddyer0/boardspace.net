@@ -1155,7 +1155,7 @@ public class GC {
 	}
 
 	public static void setOpacity(Graphics gc,double op)
-	{	if(gc!=null) { gc.setOpactity(op); }
+	{	if(gc!=null) { gc.setOpacity(op); }
 	}
 	
 	public static double getOpacity(Graphics gc)

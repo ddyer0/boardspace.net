@@ -97,7 +97,15 @@ public class Graphics extends SystemGraphics
 		if(logging) { Log.finishEvent(); }
 	}
      
-    
+	public void translateMatrix(float inX, float inY) {
+		if(logging)
+		{ Log.appendNewLog("translateMatrix ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
+		}
+		super.translateMatrix(inX,inY);
+		shadow.translate(inX,inY);
+		if(logging) { Log.finishEvent(); }
+	}
+ 
 	public void clipRect(int left, int top, int max, int max2) {
 		if(logging)
 		{ Log.appendNewLog("clipRect "); Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
@@ -606,5 +614,4 @@ public class Graphics extends SystemGraphics
 	      }
 	      return !invisible;
 	  }
-
 }

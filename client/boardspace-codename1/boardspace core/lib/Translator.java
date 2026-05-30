@@ -45,7 +45,7 @@ public class Translator {
     private static final String SYSTEM_PROMPT =
     "You are a professional translator. " +
     "Translate the text the user provides into the requested language naturally and accurately. " +
-    "Reply using EXACTLY this format and nothing else — no quotes, no period, no explanation: " +
+    "Reply using EXACTLY this format and nothing else - no quotes, no period, no explanation: " +
     "SourceLanguage: Translation " +
     "For example: English: Bonjour";
     

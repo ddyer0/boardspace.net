@@ -410,7 +410,14 @@ public static boolean getImageValid(Component c,Image e)
     * @param im
     */
    static public Image clearTransparentImage(Image im)
-   {	return(createTransparentImage(im.getSystemImage().getWidth(),im.getSystemImage().getHeight()));
+   {	//return(createTransparentImage(im.getSystemImage().getWidth(),im.getSystemImage().getHeight()));
+	   Graphics gc = im.getGraphics();
+	   //gc.setComposite(0);
+	   //gc.setColor(Color.black);
+	   //gc.setOpacity(0);
+	   gc.getGraphics().clearRect(0,0,im.getWidth(),im.getHeight());
+	   //gc.setOpacity(1.0);
+	   return im;
    }
 /** create a blank image with the specified size, which is initially transparent
     * 

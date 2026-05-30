@@ -17,6 +17,7 @@
 package util;
 
 import bridge.*;
+import bridge.ThreadDeath;
 import common.GameInfo;
 import lib.CanvasProtocol;
 import lib.DataCache;

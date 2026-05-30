@@ -80,6 +80,20 @@ public abstract class SystemGraphics {
 	public abstract void setActualSize(int w,int h);
 	protected int actualX = 0;
 	protected int actualY = 0;
+	
+	int savedColor = 0;
+	Font savedFont = null;
+	
+	public void saveState()
+	{
+		savedColor = graphics.getColor();
+		savedFont = graphics.getFont();
+	}
+	public void restoreState()
+	{
+		graphics.setColor(savedColor);
+		graphics.setFont(savedFont);
+	}
 	public static Graphics create(com.codename1.ui.Graphics g,int x,int y,int w,int h)
 	{	// a window in the process of being destroyed can return null from getGraphics()
 		if(g==null) { return(null); }
@@ -348,7 +362,7 @@ public abstract class SystemGraphics {
 	{
 		return fm.getStringBounds(line, g);
 	}
-	public void setOpactity(double op) {
+	public void setOpacity(double op) {
 		graphics.setAlpha(Math.max(0,Math.min(255,(int)(255*op))));
 	}
 	public double getOpacity()
@@ -400,7 +414,7 @@ public abstract class SystemGraphics {
 	}
 	static boolean isSimulator = CN.isSimulator();
 	public void translate(int inX, int inY) {
-		if(isSimulator)
+		if(isSimulator||G.isAndroid())
 			{
 			graphics.translate(inX,inY);
 			}
@@ -410,6 +424,27 @@ public abstract class SystemGraphics {
 		}
 		if(logging) { Log.finishEvent(); }
 	}
-     
+	
+	public void translateMatrix(float inX, float inY) {
+		//if(isSimulator||G.isAndroid())
+		//	{
+		//	graphics.translate((int)inX,(int)inY);
+		//	}
+		//else
+		{	//graphics.translate(inX,inY);
+			graphics.translateMatrix(inX,inY);
+		}
+		if(logging) { Log.finishEvent(); }
+	}
+
+	
+    public void pushClip()
+    {
+    	graphics.pushClip();
+    }
+    public void popClip()
+    {
+    	graphics.popClip();
+    }
 
 }

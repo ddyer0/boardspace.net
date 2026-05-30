@@ -1120,25 +1120,7 @@ public class G extends Platform implements Timestamp
 				&& ((Character.isUpperCase(ch) || Character.isLowerCase(ch) || Character.isDigit(ch))));
 	}
 
-	static public void Rotate(int[]ipix,int []opix,int w,int h,double angle,int fillColor)
-	{
-	     double sina = Math.sin(angle);
-	     double cosa = Math.cos(angle);
-	     int h1 = h-1;
-	     int w1 = w-1;
-	     for(int dx=0,centerx=w/2;dx<w;dx++) 
-	     	{ for(int dy=0,centery=h/2;dy<h;dy++) 
-	     	{
-	      	 int sidxx = (int)(cosa*(dx-centerx)-sina*(dy-centery))+centerx;
-	    	 int sidyy = (int)(sina*(dx-centerx)+cosa*(dy-centery))+centery;
-	    	 // consider the actual border pixel to be absent, and use the fill color instead
-	    	 // this avoids messy edges from jpegs or scaled images.
-	    	 boolean inbounds = (sidxx>0) && (sidxx<w1) && (sidyy>0) && (sidyy<h1);
-	     	 opix[dx+w*dy] = inbounds
-	     	 	? ipix[sidxx+sidyy*w] 
-	     	    : fillColor;  	// outside value of black/transparent
-	      }}
-	}
+
 	/**
 	 * get the standard scale factor to the nominal 96ppi display
 	 * @return a double

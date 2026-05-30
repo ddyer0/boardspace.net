@@ -3221,11 +3221,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			// pay a dollar to take 3 after seeing the first
     			addContinuation(Continuation.PoliticoGreen);
     			}
-       		int ncards = (testOption(Option.GreenMarket) ? MarketSize : 0) + (bonus||isFarmer ? 2 : 1);
+    		boolean green = testOption(Option.GreenMarket);
+       		int ncards = (green ? MarketSize : 0) + (bonus||isFarmer ? 2 : 1);
        		int startn = pb.cards.height();
-       		nextState = drawCards(ncards,greenCards,pb,testOption(Option.GreenMarket)?replayMode.Replay:replay,m);
+       		nextState = drawCards(ncards,greenCards,pb,green?replayMode.Replay:replay,m);
        		// under extreme circumstances, there may not be enough cards
-       		if(testOption(Option.GreenMarket))
+       		if(green)
     			{
            		int gotncards = pb.cards.height()-startn;
   				if(nextState==null)
@@ -3256,7 +3257,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
        		int startn = pb.cards.height();
        		boolean bonus = (dest.row==DrawPurpleBonusRow);
-       		int ncards = (testOption(Option.PurpleMarket) ? MarketSize : 0) + (bonus||isFarmer ? 2 : 1);
+       		boolean purple = testOption(Option.PurpleMarket);
+       		int ncards = (purple ? MarketSize : 0) + (bonus||isFarmer ? 2 : 1);
     		if((currentWorker!=null)
     				&& (currentWorker.type==ChipType.Politico)
     				&& bonus
@@ -3265,9 +3267,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	   		// politico pay a dollar to take 3, after seeing the first two
        			addContinuation(Continuation.PoliticoPurple);
     			}
-   			nextState = drawCards(ncards,purpleCards,pb,replay,m);
+   			nextState = drawCards(ncards,purpleCards,pb,purple?replayMode.Replay : replay,m);
   			    		
-       		if(testOption(Option.PurpleMarket))
+       		if(purple)
     			{
            		int gotncards = pb.cards.height()-startn;
  				if(nextState==null)
@@ -8405,9 +8407,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		PlayerBoard nn = pbs[m.from_col-'A'];
     		nn.isReady = m.from_row!=0;
     		setNextPlayer(replay); 
-    		}
         	break;
-        case EPHEMERAL_COMMENCE:
+    		}
+       case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	if(board_state==ViticultureState.ChooseOptions) { options.setMembers(m.from_row); }
         	doDone(replay,m);

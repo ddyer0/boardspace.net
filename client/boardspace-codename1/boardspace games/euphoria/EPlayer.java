@@ -2895,13 +2895,7 @@ Cost payCost(Cost item,replayMode replay)
 	case ArtifactAndBlissx2AndCommodity:
 		{	
 		sendBliss(2,replay);
-		Cost residual = payCost(Cost.Artifact,replay);
-		if(nKindsOfCommodity()==1) 
-			{ sendCommodity(1,Cost.Commodity,replay); 
-			  return residual;
-		    }
-		if(residual==null) { return(Cost.Commodity);}
-		return item;
+		return payCost(Cost.Commodity_Artifact,replay);
 		}
 		
 	case Artifactx3OrArtifactAndBlissx2AndCommodity:

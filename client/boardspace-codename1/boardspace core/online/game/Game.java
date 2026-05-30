@@ -17,6 +17,9 @@
 package online.game;
 
 import bridge.*;
+import bridge.File;
+import bridge.FileOutputStream;
+import bridge.ThreadDeath;
 import common.GameInfo;
 import common.GameInfo.ScoringMode;
 import online.common.*;
@@ -52,6 +55,7 @@ import java.util.*;
  * players disconnect and restart in a new room.  Spectators should be severed from the remains
  */
 import lib.*;
+import lib.Base64;
 
 public class Game extends commonPanel implements PlayConstants,OnlineConstants,DeferredEventHandler,Config,ColorNames,Opcodes
 {	/**
