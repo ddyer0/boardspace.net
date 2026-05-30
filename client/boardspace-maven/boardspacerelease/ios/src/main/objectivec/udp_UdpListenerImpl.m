@@ -1,14 +1,15 @@
 #import "udp_UdpListenerImpl.h"
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#define BUFLEN 512
+
 @implementation udp_UdpListenerImpl
 
- #include <arpa/inet.h>
- #include <netinet/in.h>
- #include <stdio.h>
- #include <sys/types.h>
- #include <sys/socket.h>
- #include <unistd.h>
- #define BUFLEN 512
 
 NSMutableArray<NSString *>* messages ;
 BOOL exitRequest = false;
@@ -28,7 +29,7 @@ static void _resume() {
 // get something and/or wait
 -(NSString*)getMessage:(int)waitTime
 {   NSString *m=nil;
-    if(!exitRequest)
+    if(!exitRequest && messages!=nil)
     { 
     if((waitTime>=0) && ([messages count]==0))
     {

@@ -240,7 +240,7 @@ public static Object MakeInstance(String classname)
 
 	}
 	public static void playAudioClip(Clip clip)
-	{	G.print("play ",clip);
+	{	//G.print("play ",clip);
 		clip.setFramePosition(0);
     	clip.start(); 
 	}

@@ -298,7 +298,6 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     	to.to_color = to_color;
     	to.chipIn = chipIn;
         to.gameEvents = gameEvents;
-       if( (op==USE_RECRUIT_OPTION) && (chip==null)) { G.Error("Missing recruit") ; }
     }
 
     public commonMove Copy(commonMove to)

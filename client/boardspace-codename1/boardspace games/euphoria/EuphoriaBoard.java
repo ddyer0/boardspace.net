@@ -38,7 +38,7 @@ import online.game.*;
  *
  */
 public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaConstants
-{		static int REVISION = 126;			// revision numbers start at 100
+{		static int REVISION = 127;			// revision numbers start at 100
 //TODO: rotate market cards when enlarged
 //TODO: open artifacts when unseen on touch screens
 //TODO: tweak side screen layout for more square screen shape
@@ -78,6 +78,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	// revision 124 adds the "lose morale" payment for doubles
 	// revision 125 fixes the timing of TerriTheBlissTrader
 	// revision 126 fixes a missing allegiance bump from the breeze bar
+	// revision 127 fixes replay of old games, which sometimes had a move or two after gameover
 	
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
@@ -6948,6 +6949,12 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
     	doneLast = false;
+    	if(revision<127 && board_state==EuphoriaState.Gameover && replay.isReplay){
+    		// when we switched to always checking for gameover, sometimes post-game actions
+    		// occurred.   This will ignore them in replay.
+    		stepNumber++;	// cause the digest to change
+    		return true;
+    	}
     	//G.print("M "+m+" "+board_state);
         if(replay.animate) { animationStack.clear(); gameEvents.clear(); }
         if(board_state==EuphoriaState.Puzzle)

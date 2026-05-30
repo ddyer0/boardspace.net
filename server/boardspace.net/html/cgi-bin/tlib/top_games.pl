@@ -3,8 +3,10 @@ sub randomimage()
 	my @start = @list;
 	my $len = $#list;
 	my $possible = 0;
-	if($len>0)
+ 	if($len>0)
 	{
+        my $seed = int(time() / 86400);
+        srand($seed);
 	my $n = rand($len);
 	do
 	{

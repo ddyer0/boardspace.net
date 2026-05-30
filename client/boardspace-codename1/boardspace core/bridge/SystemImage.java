@@ -109,7 +109,7 @@ public abstract class SystemImage implements ImageObserver
 	}
 
 public void loadImage(URL name)
-{	G.print("loading image ",name);
+{
 	if(name.getProtocol()==null)
 		{ loadImage(name.urlString);
 		}
