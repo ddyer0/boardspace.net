@@ -35,7 +35,10 @@ import lib.Log;
 import lib.Plog;
 
 public abstract class SystemGraphics {
+	
 	public static boolean logging = false;
+	public static int sequence = 0;
+	protected int seq = sequence++;
 	protected com.codename1.ui.Graphics graphics;
 	public com.codename1.ui.Graphics getGraphics() { return(graphics); }
 
@@ -97,12 +100,24 @@ public abstract class SystemGraphics {
 	public static Graphics create(com.codename1.ui.Graphics g,int x,int y,int w,int h)
 	{	// a window in the process of being destroyed can return null from getGraphics()
 		if(g==null) { return(null); }
-		if(logging) { Log.addLog("create new graphics"); }
 		Graphics gn = new Graphics();
+		if(logging) { Log.addLog("#",gn.seq," new graphics with ",g); }
 		gn.graphics = g;
 		gn.setActualSize(w,h);
 		gn.actualX = x;
 		gn.actualY = y;
+		if(logging)
+		{
+		int tx = g.getTranslateX();
+		int ty = g.getTranslateY();
+		if(tx!=x || ty!=y) 
+		{
+			Log.appendNewLog("initial graphics translate "+tx+","+ty);
+		}
+		int cl[] = g.getClip();
+		if(cl[0]!=x || cl[1]!=0)
+		{	Log.appendNewLog("initial graphics clip "+cl[0]+","+cl[1]+" "+cl[2]+"x"+cl[3]);
+		}}
 		return(gn);
 	}
 	public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) {
@@ -113,7 +128,7 @@ public abstract class SystemGraphics {
 	}
 	
 	public void setColor(Color c)
-    {	if(logging) { Log.addLog("setColor"); }
+    {	if(logging) { Log.addLog("setColor ",c); }
     	graphics.setColor(c.getRGB());
     }
     public Color getColor()
@@ -204,7 +219,8 @@ public abstract class SystemGraphics {
  			int fx,int fy,int fx2,int fy2)
  {		if(logging)
 			{
-			Log.appendNewLog("drawImage-8 ");Log.appendLog(im0.toString());Log.appendLog(" ");
+			Log.appendNewLog("drawImage-8 #"+seq);Log.appendLog(" ");
+			Log.appendLog(im0.toString());Log.appendLog(" ");
 			Log.appendLog(dx);Log.appendLog(",");Log.appendLog(dy);Log.appendLog(" - ");
 			Log.appendLog(dx2);Log.appendLog(",");Log.appendLog(dy2);Log.appendLog(" - ");
 			Log.appendLog(fx);Log.appendLog(",");Log.appendLog(fy);Log.appendLog(" - ");
@@ -222,17 +238,22 @@ public abstract class SystemGraphics {
  		int imh = im.getHeight();
  		double xscale = w/(double)sw;
  		double yscale = h/(double)sh;
-	   	int[]clip = gc.getClip();
+	   	Rectangle clip = getClipBounds();
 	   	// clip the destination to exclude pixels from the source.
 	   	// note that this only works for unrotated images.
-		if(clip!=null && (clip instanceof int[]) && (clip.length>=4))
+		if(clip!=null)
 		{
-	   	gc.clipRect(dx,dy,w,h);			// combine with proper clipping region
+		   	gc.clipRect(dx,dy,w,h);			// combine with proper clipping region
+		   	if(logging)
+		   	{
+		   		Log.addLog(" clip "+dx+" "+dy + " " + w + "x" +h);
+		   	}
 	   	//gc.setClip(dx,dy,w,h);		// runs wild, can write anywhere!
 	   	int finx = dx-(int)(fx*xscale);
 	   	int finy = dy-(int)(fy*yscale);
 	   	int finw = (int)(imw*xscale);
 	   	int finh = (int)(imh*yscale);
+	   	if(logging) { Log.addLog(" draw "+finx+" "+finy+" "+finw+"x"+finh);	   	}
 	   	gc.drawImage(im,finx,finy,finw,finh);
 	   	recordDraw(finx,finy,finw,finh);
 	   	gc.setClip(clip);
@@ -256,11 +277,13 @@ public abstract class SystemGraphics {
 	}
 	
 	public void setRotation(double r,int cx,int cy)
-	{	if(logging) { Log.addLog("setRotation ");Log.appendLog(r); }
+	{	if(logging) { Log.addLog("setRotation #"+seq);Log.appendLog(" ");Log.appendLog(r); }
 		graphics.rotateRadians((float)r,cx,cy); 
 	}
 	public void setRotation(double r)
-	{	if(logging) { Log.addLog("setRotation ");Log.appendLog(r); }
+	{	if(logging) { Log.addLog("setRotation #"+seq);
+		Log.appendLog(" ");
+		Log.appendLog(r); }
 		graphics.rotateRadians((float)r); 
 	}
 
@@ -271,10 +294,11 @@ public abstract class SystemGraphics {
     
 	public Rectangle getClipBounds()
 	{	
-		if(logging) { Log.addLog("getClipBounds");}
+		if(logging) { Log.addLog("getClipBounds #"+seq); Log.appendLog(" ");}
 		int []bounds = graphics.getClip();
 		if(bounds!=null)
 		{	
+		if(logging) { Log.addLog(" bounds ",bounds[0]," ",bounds[1]," ",bounds[2]," ",bounds[3]);}
 		if(bounds instanceof int[])
 		{			
 			return(new Rectangle(bounds[0],bounds[1],bounds[2],bounds[3]));
@@ -328,7 +352,11 @@ public abstract class SystemGraphics {
 	public Rectangle setClip(Shape sh)
 	{
 		Rectangle val = getClipBounds();
-		  
+		if(logging) { 
+			Log.appendNewLog("setclip #"+seq);
+			Log.appendLog(" "+sh);
+			Log.finishEvent();
+		}
 		if(sh instanceof Rectangle)
 		  {
 		  Rectangle rs = (Rectangle)sh;
@@ -413,28 +441,20 @@ public abstract class SystemGraphics {
 		graphics.setAntiAliased(on);
 	}
 	static boolean isSimulator = CN.isSimulator();
+	
 	public void translate(int inX, int inY) {
-		if(isSimulator||G.isAndroid())
+		graphics.translate(inX,inY);
+	}
+	
+	public void translateMatrix(float inX, float inY) {
+		if(isSimulator)
 			{
-			graphics.translate(inX,inY);
+			graphics.translate((int)inX,(int)inY);
 			}
 		else
 		{	//graphics.translate(inX,inY);
 			graphics.translateMatrix(inX,inY);
 		}
-		if(logging) { Log.finishEvent(); }
-	}
-	
-	public void translateMatrix(float inX, float inY) {
-		//if(isSimulator||G.isAndroid())
-		//	{
-		//	graphics.translate((int)inX,(int)inY);
-		//	}
-		//else
-		{	//graphics.translate(inX,inY);
-			graphics.translateMatrix(inX,inY);
-		}
-		if(logging) { Log.finishEvent(); }
 	}
 
 	

@@ -1207,4 +1207,19 @@ public class GC {
 	      }
 	      return !invisible;
 	  }
+	 /**
+	  * clear a rectangle to be transparent.  This can't be done using fillRect
+	  * @param gc
+	  * @param x
+	  * @param y
+	  * @param w
+	  * @param h
+	  */
+	 public static void clearRect(Graphics gc,int x,int y,int w,int h)
+	 {
+		 if(gc!=null)
+		 {
+			 gc.clearRect(x,y,w,h);
+		 }
+	 }
 }

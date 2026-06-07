@@ -247,6 +247,7 @@ sub creategame()
 
 	my $nag = &param('nag');
 	my $qnag = $dbh->quote($nag);
+	my $clearMark = &param('clearmark');
 	my $nagtime = int(&param('nagtime'));
 	my $nextnag = ($nag and ($nagtime>0) && ($nagtime<9)) ? "DATE_ADD(utc_timestamp(),INTERVAL $nagtime DAY)" : "NULL";
 	my $gid = 0;
@@ -277,6 +278,7 @@ sub creategame()
 			. ($var ? ",variation=$qvar" : "")
 			. ($nag ? ",nag=$qnag,nagtime=$nextnag" : "")
 			. ($sequence ? ",sequence=$qsequence" : "")
+			. (($clearMark eq 'true') ? ",marked=null" : "")
 			. $postamble;
 	#print "\nQ: $q\n";
 	my $sth = &commandQuery($dbh,$q);

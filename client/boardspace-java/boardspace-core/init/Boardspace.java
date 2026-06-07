@@ -14,6 +14,8 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
+package init;
+
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.BufferedReader;
@@ -264,8 +266,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	static String activeProtocol = protocol;
 	static String webHost() { return(activeProtocol+"://"+hostName); }   
 	static final String CACHENAME = "cachename.txt";// file in the temp dir to contain the cache ID
-	static boolean verbose = false;
-	static boolean debug = false;
+	public static boolean verbose = false;
+	public static boolean debug = false;
 	static ByteArrayOutputStream log = new ByteArrayOutputStream();
 	static PrintStream out = new PrintStream(log);
 	// the local cache directory
@@ -869,8 +871,11 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		}
 		if(foregroundMode) { System.out.println(); }
 	}
-	
-	private static void showOut()
+	public static void setDebug()
+	{
+		debug = verbose = true;
+	}
+	public static void showOut()
 	{
 		out.flush();
 		if(log.size()>0)

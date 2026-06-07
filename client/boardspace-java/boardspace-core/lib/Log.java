@@ -111,7 +111,12 @@ public class Log {
 		     {	
 		    long now = G.nanoTime();
 		    finishEvent(now);
-		    startEventTimeNanos = now;
+			   	}
+	   		}
+	   		synchronized (eventLog)
+	   		{ 
+	   		long now = G.nanoTime();
+		    startEventTimeNanos = startTimeNanos = now;
 		    long interval = (int)(now-startTimeNanos);
 		    if(isLogThread()) {eventLog.append("E "); }
 		    else { eventLog.append(Thread.currentThread().getName()); eventLog.append(" "); }
@@ -126,7 +131,7 @@ public class Log {
 	   		else if(micros<100) { eventLog.append("0");}
 	   		eventLog.append(micros);
 			eventLog.append(" ");
-		   	}}
+		   	}
 		   	}
 	public static void appendLog(String msg)
 	   {	if(startTimeNanos>0) 
@@ -161,7 +166,11 @@ public class Log {
 		   		eventLog.setLength(0);
 		   		startTimeNanos = 0;
 		  		}}
-	   		if(str!=null) { if(G.isSimulator()) { System.out.println(str); } else { G.print(str); }}
+	   		if(str!=null)
+	   		{ if(G.isSimulator()) 
+	   			{ System.out.println(str); } 
+	   			else { G.print(str); }
+	   		}
 	   }
 	public static void finishLog() { finishLog(false); }
 	public static boolean logActive() { return(startTimeNanos>0); }

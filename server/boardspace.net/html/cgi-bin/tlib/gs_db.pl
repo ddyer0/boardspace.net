@@ -461,7 +461,7 @@ sub allow_ip_access()
 		my $bancom = $dbh->quote("excess long penalty=$long_penalty");
 		my $quid = $dbh->quote($uid);
 		&commandQuery($dbh,"update ipinfo set status='autobanned',long_time=0,short_time=0,comment=concat(comment,'\n',$da,$bancom) where uid=$quid");
-		my $gooduid = 0;
+		$gooduid = 0;
         }
        
        $::single_ip_uid = $uid;

@@ -35,7 +35,7 @@ public class Label extends com.codename1.ui.Label
 		super(ic.getSystemImage());
 	}
 	public Font getFont() { return(FontManager.getFont(getStyle())); }
-	public void setLabelFor(XPasswordField passwordField) {
+	public void setLabelFor(JPasswordField passwordField) {
 		
 	}
 

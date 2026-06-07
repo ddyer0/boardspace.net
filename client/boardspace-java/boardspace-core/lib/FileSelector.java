@@ -18,7 +18,6 @@ package lib;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import bridge.JPanel;
 import bridge.XTextField;
@@ -258,14 +257,16 @@ public class FileSelector extends FullscreenPanel
 
         filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));
-        JLabel matchLabel = new JLabel(s.get(MatchWords));
+        Label matchLabel = new Label(s.get(MatchWords));
         matchLabel.setBackground(Config.FrameBackgroundColor);
         filterPanel.addC(matchLabel);
         filterField = new XTextField(40);
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
         filterField.setText("");
-        filterField.setFont(FontManager.getFont(s.get("fontfamily"), FontManager.Style.Bold, 12));
+        filterField.setFont(FontManager.getFont(FontManager.getGlobalDefaultFont(),
+        						FontManager.Style.Bold, 
+        						FontManager.defaultFontSize()));
         //filterField.setMaximumSize(new Dimension(1000,30));
         filterPanel.setBackground(Config.FrameBackgroundColor);
         filterPanel.setOpaque(true);
@@ -938,20 +939,16 @@ public class FileSelector extends FullscreenPanel
     		}
     	}
         if (target == filterField)
-        {	if("ok".equals(command))
-        {
+        {	
             initDir((currentSource.currentZip != null) ? currentSource.currentZip : currentSource.filePaneDir);
-        }
-        }
+         }
         else if (target == dirField)
         {
-        	if("ok".equals(command))
-        	{
         	String text = dirField.getText();
         	if("".equals(text) || (text.indexOf(':')>=0) || text.endsWith("/"))
         		{dirList.removeAll();
             getDir();
-        		}}
+        		}
         }
         else if (target == cancelButton)
         {

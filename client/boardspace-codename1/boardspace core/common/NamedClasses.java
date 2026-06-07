@@ -31,6 +31,7 @@ public class NamedClasses {
     	classes.put("common.Salt",common.Salt.class);
     	classes.put("graphicstest.GraphicsViewer",graphicstest.GraphicsViewer.class);
     	classes.put("vnc.AuxViewer",vnc.AuxViewer.class);
+    	classes.put("online.common.TurnBasedViewer",online.common.TurnBasedViewer.class);
     	classes.put("online.common.SeatingViewer",online.common.SeatingViewer.class);
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);
     	classes.put("lib.commonPanel", lib.commonPanel.class);

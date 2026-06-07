@@ -4551,14 +4551,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void recordAsyncGame(boolean forced)
     {
-    	if(turnBasedGame!=null && whoseTurn!=null && (whoseTurn.uid!=null) && !my.isSpectator() && (turnBasedGame.status==AsyncStatus.active))
+    	if(turnBasedGame!=null 
+    			&& whoseTurn!=null
+    			&& (whoseTurn.uid!=null)
+    			&& !my.isSpectator() 
+    			&& (turnBasedGame.status==AsyncStatus.active))
     	{
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);
         	//G.print("Fixed "+msg);
         	StringBuilder b = new StringBuilder();
         	theChat.getEncodedContents(b);
-        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),forced);		
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),true,forced);		
     	}
     }
     private void recordAsyncComments()
@@ -4572,7 +4576,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        				|| (turnBasedGame.status==AsyncStatus.complete)))
     	{	StringBuilder b = new StringBuilder();
        		theChat.getEncodedContents(b);
-       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true);
+       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),false,true);
     	}
     }
     private String serverRecordString(RecordingStrategy mode)

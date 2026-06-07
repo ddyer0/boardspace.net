@@ -19,7 +19,7 @@ package lib;
 import bridge.*;
 import java.util.Vector;
 
-import com.codename1.ui.events.ActionEvent;
+import bridge.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 
 /**
@@ -37,7 +37,7 @@ import com.codename1.ui.events.ActionListener;
  *
  */
 @SuppressWarnings("rawtypes")
-public class DeferredEventManager implements ActionListener,ItemListener,ListSelectionListener
+public class DeferredEventManager implements ActionListener<ActionEvent>,ItemListener,ListSelectionListener
 {
 	private Vector<Object> deferredEvents = new Vector<Object>();
 	DeferredEventHandler handler = null;
@@ -95,7 +95,7 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  else if(e instanceof ActionEvent)
 		  	{  ActionEvent ee = (ActionEvent)e;
 		  	   Object source = ee.getSource();
-		  	   cp.handleDeferredEvent(source, null);		  	
+		  	   cp.handleDeferredEvent(source, ee.getActionCommand());		  	
 		  	}
 		  else if(e instanceof ListSelectionEvent)
 		  {

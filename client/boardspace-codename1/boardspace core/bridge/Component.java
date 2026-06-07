@@ -80,7 +80,7 @@ public class Component extends com.codename1.ui.Component implements EventListen
 		  return FontManager.getFont(s);
 		}
 	public Component getComponent() { return(this); }
-	
+
 	public Component() 
 	{ super(); 
 	  //** warning 10/15/2021 turning this on had severe effects on the behavior of codename1 buttons

@@ -737,7 +737,7 @@ public abstract class exCanvas extends ProxyWindow
 	   else if(target==l.translateChats)
 	   {
 		   translateChat = l.translateChats.getState();
-		   theChat.setTranslate(translateChat);
+		   if(theChat!=null) { theChat.setTranslate(translateChat); }
 		   Config.Default.setBoolean(Config.Default.translateChat,translateChat);
 	   }
 	   else if(selectFontSize(target)) {return(true); }

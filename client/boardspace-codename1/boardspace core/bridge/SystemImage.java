@@ -306,8 +306,8 @@ public Graphics getGraphics()
 	// for the VNC code
 	G.Assert(!G.isIOS() || G.isEdt(), "should be edt"); 
 	}
-	gr.setClip(0,0,w,h);
-	gr.resetAffine();
+	//gr.setClip(0,0,w,h);
+	//gr.resetAffine();
 	return Graphics.create(gr,0,0,getWidth(),getHeight());
 	}
 	return(null);
@@ -412,11 +412,7 @@ public static boolean getImageValid(Component c,Image e)
    static public Image clearTransparentImage(Image im)
    {	//return(createTransparentImage(im.getSystemImage().getWidth(),im.getSystemImage().getHeight()));
 	   Graphics gc = im.getGraphics();
-	   //gc.setComposite(0);
-	   //gc.setColor(Color.black);
-	   //gc.setOpacity(0);
-	   gc.getGraphics().clearRect(0,0,im.getWidth(),im.getHeight());
-	   //gc.setOpacity(1.0);
+	   gc.clearRect(0,0,im.getWidth(),im.getHeight());
 	   return im;
    }
 /** create a blank image with the specified size, which is initially transparent

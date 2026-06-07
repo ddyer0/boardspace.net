@@ -245,14 +245,16 @@ public class FileSelector extends FullscreenPanel
 
         filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel,BoxLayout.X_AXIS));
-        JLabel matchLabel = new JLabel(s.get(MatchWords));
+        Label matchLabel = new Label(s.get(MatchWords));
         matchLabel.setBackground(Config.FrameBackgroundColor);
         filterPanel.addC(matchLabel);
         filterField = new XTextField(40);
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
         filterField.setText("");
-        filterField.setFont(FontManager.getFont(s.get("fontfamily"), FontManager.Style.Bold, 12));
+        filterField.setFont(FontManager.getFont(FontManager.getGlobalDefaultFont(),
+				FontManager.Style.Bold, 
+				FontManager.defaultFontSize()));
         //filterField.setMaximumSize(new Dimension(1000,30));
         filterPanel.setBackground(Config.FrameBackgroundColor);
         filterPanel.setOpaque(true);

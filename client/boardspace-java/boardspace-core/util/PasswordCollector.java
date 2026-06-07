@@ -197,6 +197,7 @@ import udp.PlaytableStack;
 	 
 	 private XPasswordField passwordField;	// the password
 	 private XPasswordField passwordField2;	// second copy for registration
+	 private JCheckBox showPasswordField;		// show option
 	 private JCheckBox savePasswordField;	// save the password (and the liver!)
 	 private JCheckBox loginAsGuestField;	// log in as a guest instead of a registered user
 	 private JComboBox<String> langField;				// preferred language
@@ -480,6 +481,10 @@ import udp.PlaytableStack;
 		 passwordField.addActionListener(this);
 		 pane.add(passwordField);
 		 
+		 showPasswordField = new JCheckBox(s.get("Show"),false);
+		 showPasswordField.addItemListener(this);
+		 pane.add(showPasswordField);
+
 		 if(includeSave)
 		 {	String passw = s.get(SavePassword);
 			 savePasswordField = new JCheckBox(passw,"true".equals(prefs.get(savePassKey,"true")));
@@ -877,7 +882,13 @@ import udp.PlaytableStack;
     {	if(always || !isGuest)
     	{
         if(passwordField!=null)
-        	{ password = new String(passwordField.getPassword()); }
+        	{ password = new String(passwordField.getPassword()); 
+        	  if(showPasswordField!=null) 
+        	  { boolean showPassword = G.getState(showPasswordField); 
+    		  if(showPassword) { passwordField.setEchoChar((char) 0); }
+    		  else {  passwordField.setEchoChar('*');}
+        	  }
+        	}
         if(nameField!=null) { name = nameField.getText(); }
         if(emailField!=null) { email = emailField.getText(); }
         if(realNameField!=null) { realName = realNameField.getText(); }

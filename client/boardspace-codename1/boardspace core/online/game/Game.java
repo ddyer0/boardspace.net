@@ -4556,7 +4556,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	//G.print("Fixed "+msg);
         	StringBuilder b = new StringBuilder();
         	theChat.getEncodedContents(b);
-        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),forced);		
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),false,forced);		
     	}
     }
     private void recordAsyncComments()
@@ -4570,7 +4570,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        				|| (turnBasedGame.status==AsyncStatus.complete)))
     	{	StringBuilder b = new StringBuilder();
        		theChat.getEncodedContents(b);
-       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true);
+       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true,true);
     	}
     }
     private String serverRecordString(RecordingStrategy mode)

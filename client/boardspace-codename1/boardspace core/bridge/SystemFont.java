@@ -52,13 +52,17 @@ public class SystemFont implements Config
 		}
 		return(f);
 	}
+	private static Object badFont = null; 
 	public static int getFontSize(Font f)
 	{	double fs = GetPixelSize(f);
 		if(fs>0) { return((int)fs); }
 		
 		int sz = fontSize.containsKey(f) ? fontSize.get(f) : -1;
-		if(!G.Advise(sz>=0,"Unregistered font %s %s %s",f,f.isTTFNativeFont(),fs))
-			{ sz = 1; }
+		
+		if(!G.Advise(f==badFont || sz>=0,"Unregistered font %s %s %s",f,f.isTTFNativeFont(),fs))
+			{ sz = 1; 
+			  badFont = f;
+			}
 		return(sz);
 	}
 	static Font defaultFont = null;

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-    
+
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,12 +12,14 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/. 
+    If not, see https://www.gnu.org/licenses/.
  */
+package bridge;
 
-/**
-This package contains the miniloader and it's configuration.  The miniloader
-maintains a jar cache and class loader, as a replacement for java web start.
-It's not relevant for the codename1 branch, but a modified version of the 
-miniloader is used by the codename1 branch to fetch resource files.
-*/
+public class ActionEvent extends com.codename1.ui.events.ActionEvent {
+	public ActionEvent(Object t,String c,int x,int y) { super(t,x,y); command=c; }
+	public ActionEvent(Object t,int eventType,String c) { super(t,0,0); command=c; }
+	String command = null;
+	public String getActionCommand() { return(command); }
+	public static int ACTION_PERFORMED = 1001;
+}

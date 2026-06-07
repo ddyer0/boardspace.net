@@ -19,7 +19,7 @@ package online.game;
 
 import net.sf.jazzlib.*;
 import com.codename1.ui.Font;
-import com.codename1.ui.events.ActionEvent;
+import bridge.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;

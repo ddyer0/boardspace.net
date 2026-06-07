@@ -90,7 +90,7 @@ public class Graphics extends SystemGraphics
 	
 	public void translate(int inX, int inY) {
 		if(logging)
-		{ Log.appendNewLog("translate ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
+		{ Log.appendNewLog("translate #"+seq);Log.appendLog(" ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
 		}
 		super.translate(inX,inY);
 		shadow.translate(inX,inY);
@@ -108,7 +108,8 @@ public class Graphics extends SystemGraphics
     
 	public void clipRect(int left, int top, int max, int max2) {
 		if(logging)
-		{ Log.appendNewLog("clipRect "); Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
+		{ Log.appendNewLog("clipRect #"+seq);Log.appendLog(" ");
+		  Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
 		  Log.appendLog(max);Log.appendLog(",");Log.appendLog(max2);
 		}
 		graphics.clipRect(left, top, max, max2);
@@ -116,7 +117,9 @@ public class Graphics extends SystemGraphics
 	}
 	public void setClip(int left, int top, int max, int max2) {
 		if(logging)
-		{ Log.appendNewLog("setClip "); Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
+		{ Log.appendNewLog("setClip #"+seq);
+		  Log.appendLog(" ");
+		  Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
 		  Log.appendLog(max);Log.appendLog(",");Log.appendLog(max2);
 		}
 		graphics.setClip(left,top,max,max2);
@@ -124,7 +127,8 @@ public class Graphics extends SystemGraphics
 	}
 	public void setFont(Font f) {
 		if(logging)
-		{ Log.appendNewLog("setfont "); Log.appendLog(f.toString()); 
+		{ Log.appendNewLog("setfont #"+seq);Log.appendLog(" ");
+		  Log.appendLog(f.toString()); 
 		}
 		super.setFont(f);
 		if(logging) { Log.finishEvent(); }
@@ -614,4 +618,9 @@ public class Graphics extends SystemGraphics
 	      }
 	      return !invisible;
 	  }
+	  
+	  public void clearRect(int x,int y,int w,int h)
+		{	graphics.clearRect(x,y,w,h);
+		}
+
 }

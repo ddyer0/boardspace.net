@@ -1,3 +1,4 @@
+package init;
 import javax.swing.JOptionPane;
 /*
 This file is part of the Boardspace project.

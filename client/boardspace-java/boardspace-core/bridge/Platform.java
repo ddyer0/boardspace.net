@@ -323,17 +323,15 @@ public static Object MakeInstance(String classname)
      
     public static Class<?>classForName(String name,boolean testOnly)
     {	
+		ClassLoader loader = Platform.class.getClassLoader();
     	try {
-    		//Plog.log.addLog("classForName ",name);
-    		//G.print("classForName ",name," ",testOnly);
-    		ClassLoader loader = Platform.class.getClassLoader();
     		return loader.loadClass(name);
 			} 
     		catch (Throwable e) 
     		{			
 				if(!testOnly)
-					{ System.out.println("classForName failed for "+name+" "+e);
-					  Plog.log.addLog("classForName failed for ",name," ",e);
+					{ System.out.println("classForName failed for "+loader+":"+name+" "+e);
+					  Plog.log.addLog("classForName failed for ",loader,":",name," ",e);
 					  throw new ErrorX(e);
 					}
 			}

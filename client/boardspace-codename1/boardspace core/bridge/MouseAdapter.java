@@ -220,7 +220,7 @@ public class MouseAdapter
 		}
 	}
 	
-	public void addActionListener(ActionListener<?> m)
+	public void addActionListener(ActionListener m)
 	{
 		if(actionListeners==null) { actionListeners = new Vector<ActionListener>(); }
 		if(!actionListeners.contains(m)) { actionListeners.addElement(m); }
@@ -489,7 +489,7 @@ public class MouseAdapter
 			{
 				ActionListener listener = actionListeners.elementAt(idx); 
 				//G.print("dispatch action to "+listener);
-				ActionEvent ev = new ActionEvent(component,x,y);
+				ActionEvent ev = new bridge.ActionEvent(component,getCommand(type),x,y);
 				listener.actionPerformed(ev);
 			}
 		}

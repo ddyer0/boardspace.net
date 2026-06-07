@@ -18,6 +18,7 @@
 package util;
 
 import com.codename1.ui.Component;
+import com.codename1.ui.TextField;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 
@@ -201,8 +202,9 @@ public class PasswordCollector extends JPanel
 	 public boolean finished = false;
 	 private TopFrameProtocol controllingFrame; 		//the controlling frame, needed for dialogs
 	 
-	 private XPasswordField passwordField;	// the password
-	 private XPasswordField passwordField2;	// second copy for registration
+	 private JPasswordField passwordField;	// the password
+	 private JPasswordField passwordField2;	// second copy for registration
+	 private Checkbox showPasswordField;		// show option
 	 private Checkbox savePasswordField;	// save the password (and the liver!)
 	 private Checkbox loginAsGuestField;	// log in as a guest instead of a registered user
 	 private Choice<String> langField;				// preferred language
@@ -485,12 +487,18 @@ public class PasswordCollector extends JPanel
 		 pane.addC(label);
 
 		 
-		 passwordField = new XPasswordField(13);
+		 passwordField = new JPasswordField(13);
 		 passwordField.setActionCommand(OK);
 		 passwordField.addActionListener(this);
 		 passwordField.setUIID("LoginTextField");
-
+		 
 		 pane.addC(passwordField);
+		 showPasswordField = new Checkbox(s.get("Show"),false);
+
+		 Component.setSameHeight(passwordField,showPasswordField);
+		 showPasswordField.setUIID("LoginLabel");
+		 showPasswordField.addItemListener(this);
+		 pane.add(showPasswordField);
 		 
 		 if(includeSave)
 		 {	String passw = s.get(SavePassword);
@@ -563,7 +571,8 @@ public class PasswordCollector extends JPanel
 		 nameLabel.setUIID("LoginLabel");
 		 nameField = new XTextField(13);
 		 nameField.setUIID("LoginTextField");
-
+		 Component.setSameHeight(nameLabel,nameField);
+		 
 		 nameField.setActionCommand(OK);
 		 panel.addC(nameLabel);
 		 panel.addC(nameField);
@@ -594,6 +603,7 @@ public class PasswordCollector extends JPanel
 		 llab.setUIID("LoginLabel");
 
 		 langField = new Choice<String>();
+		 Component.setSameHeight(llab,langField);
 		 langField.setUIID("LoginChoice");
 		 panel.addC(llab);
 		 llab.setLabelFor(langField);
@@ -911,10 +921,18 @@ public class PasswordCollector extends JPanel
     private static String country = "";
     private static String email = "";
     @SuppressWarnings("deprecation")
+    
     private void captureValues(boolean always)
     {	if(always || !isGuest)
     	{
-        if(passwordField!=null) { password = new String(passwordField.getPassword()); }
+        if(passwordField!=null) 
+        	{ password = new String(passwordField.getPassword()); 
+        	if(showPasswordField!=null) 
+        		{ boolean showPassword = G.getState(showPasswordField); 
+        		  if(showPassword) { passwordField.setConstraint(TextField.ANY); }
+        		  else {  passwordField.setConstraint(TextField.PASSWORD);}
+        		}
+        	}
         if(nameField!=null) { name = nameField.getText(); }
         if(emailField!=null) { email = emailField.getText(); }
         if(realNameField!=null) { realName = realNameField.getText(); }

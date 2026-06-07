@@ -19,6 +19,7 @@ package bridge;
 import java.util.Vector;
 
 import lib.FontManager;
+import lib.G;
 import lib.GC;
 import lib.Graphics;
 import lib.NativeMenuInterface;
@@ -127,10 +128,10 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	{	if(actionListeners==null) { actionListeners = new Vector<ActionListener>();}
 		actionListeners.add(deferredEvents);
 	}
-	public ActionListener<?>[] getActionListeners()
+	public ActionListener[] getActionListeners()
 	{	if(actionListeners==null) { return(new ActionListener[0]); }
 		int sz = actionListeners.size();
-		ActionListener<?> ar[] = new ActionListener[sz];
+		ActionListener ar[] = new ActionListener[sz];
 		for(int i=0;i<sz;i++) { ar[i]=actionListeners.elementAt(i); }
 		return(ar);
 	}
@@ -153,7 +154,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	{	if(actionListeners!=null)
 		{
 		for(int i=0;i<actionListeners.size();i++)
-			{	actionListeners.elementAt(i).actionPerformed(ev);
+			{	actionListeners.elementAt(i).actionPerformed(G.actionEvent(ev.getSource()));
 			}
 		}
 	}

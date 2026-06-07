@@ -26,9 +26,11 @@ import lib.FontManager;
 public class Choice<TYPE> extends ComboBox<TYPE> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
-	public void superAddActionListener(ActionListener<?>m) { super.addActionListener(m); }
+	@SuppressWarnings("rawtypes") 
+	public void superAddActionListener(ActionListener m) { super.addActionListener(m); }
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
-	public void addActionListener(@SuppressWarnings("rawtypes") ActionListener m) { mouse.addActionListener(m); }
+	@SuppressWarnings("rawtypes") 
+	public void addActionListener(ActionListener m) { mouse.addActionListener(m); }
 	public Font getFont() { return(FontManager.getFont(getStyle())); }	
 	public void repaint() 
 	{ 	if(MasterForm.canRepaintLocally(this))

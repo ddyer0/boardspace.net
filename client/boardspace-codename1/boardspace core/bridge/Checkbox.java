@@ -17,6 +17,8 @@
 package bridge;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.geom.Dimension;
+
 import lib.FontManager;
 
 public class Checkbox extends com.codename1.ui.CheckBox
@@ -32,6 +34,10 @@ public class Checkbox extends com.codename1.ui.CheckBox
 		{ 
 		  super.repaint();
 		} 
+	}
+	public Dimension getPreferredSize() 
+	{	 Dimension s = super.getPreferredSize();
+		 return new Dimension(s.getWidth()+s.getHeight(),s.getHeight());
 	}
 	public Font getFont() { return(FontManager.getFont(getStyle())); }
 	public Checkbox(String string, boolean b) { super(string); setSelected(b); }

@@ -29,8 +29,6 @@
 package online.common;
 
 import java.awt.Color;
-
-import lib.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.net.URL;
@@ -52,6 +50,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.GearMenu;
+import lib.Graphics;
 import lib.HitPoint;
 import lib.Http;
 import lib.IStack;
@@ -154,6 +153,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	static final String CREATED = "created";
 	static final String LAST = "last";
 	static final String BODY = "body";
+	static final String CLEARMARK = "clearmark";
 	static final String CHAT = "chat";
 	static final String NAG = "nag";
 	static final String NAGTIME = "nagtime";
@@ -806,7 +806,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		 * @param b
 		 * @param c
 		 */
-		public void setBody(int who,String b,String c,boolean forced)
+		public void setBody(int who,String b,String c,boolean clearmark,boolean forced)
 		{	G.Assert(loggedInUser!=null && acceptedPlayers.contains(who),"incorrect whoseTurn %s",who);
 			if(forced || whoseturn!=who)
 			{
@@ -819,6 +819,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 				  pendingNotifications.push(message);
 				}
 			updateGame(WHOSETURN,""+who,
+					CLEARMARK, (clearmark ? "true" : "false"),
 					BODY,b==null ? null : Base64.encodeSimple(b),
 					CHAT,c==null ? null : Base64.encodeSimple(c),
 					NAG,forced ? null : message,
@@ -1377,6 +1378,15 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		  id = i;
 		  help = hel;
 		}
+		public static void putStrings()
+		{
+			for(Filters f : values())
+			{
+				InternationalStrings.put(f.help);
+				InternationalStrings.put(f.title);
+			}
+		}
+
 	};
 	/** action ids for various gui elements
 	 * 
@@ -2624,6 +2634,7 @@ static public void putStrings()
 		FirstPlayer.putStrings();
 		AsyncStatus.putStrings();
 		Marked.putStrings();
+		Filters.putStrings();
 		InternationalStrings.put(TurnStrings);
 		InternationalStrings.put(TurnStringPairs);
 	}

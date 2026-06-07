@@ -14,6 +14,8 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
+package init;
+
 public interface LoaderConfig {
 	static String protocol = "https";
 	
@@ -43,11 +45,12 @@ public interface LoaderConfig {
 	 */
     static final String errorURL = "/cgi-bin/error.cgi";	
     
-	static final String MiniloaderVersion = "1.7";
+	static final String MiniloaderVersion = "1.8";
 				// version 1.4 adds a retry in copyurl
 				// version 1.5 adds a -setup arg that sends the rest of args to the app
 				// version 1.6 removed a "synchronized" that caused deadlocks
 				// version 1.7 adds limits of errors associated with storage full
+				// version 1.8 moves the package to init/ and adds some debugging functions
 	
     static final String MiniloaderId = "miniloader=version-"+MiniloaderVersion;
 

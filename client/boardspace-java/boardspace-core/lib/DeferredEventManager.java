@@ -94,7 +94,7 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  else if(e instanceof ActionEvent)
 		  	{  ActionEvent ee = (ActionEvent)e;
 		  	   Object source = ee.getSource();
-		  	   cp.handleDeferredEvent(source, null);		  	
+		  	   cp.handleDeferredEvent(source, ee.getActionCommand());		  	
 		  	}
 		  else if(e instanceof ListSelectionEvent)
 		  {

@@ -31,7 +31,7 @@ import lib.G;
 public class List<T> extends com.codename1.ui.List<T> implements ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
-	public void superAddActionListener(ActionListener<?> m) { super.addActionListener(m); }
+	public void superAddActionListener(@SuppressWarnings("rawtypes") ActionListener m) { super.addActionListener(m); }
 	boolean down = false;
 	boolean dragged = false;
 	boolean longPress = false;

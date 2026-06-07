@@ -933,7 +933,6 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 		// Save the game events to the log
 		StringBuilder s = new StringBuilder();
 		for(int i=0;i<gameEvents.length;i++) { s.append(gameEvents[i]); s.append('\n'); }
-		setComment(s.toString());
 		}
     	return(str);
     }

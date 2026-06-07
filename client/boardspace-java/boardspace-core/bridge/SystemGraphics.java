@@ -41,7 +41,8 @@ public abstract class SystemGraphics
 {
 	public static boolean logging = false;
 	protected java.awt.Graphics2D graphics;
-	
+	static int sequence = 0;
+	public int seq = sequence++;
 	public java.awt.Graphics2D getGraphics() { return(graphics); }
 
 	/**
@@ -511,4 +512,6 @@ public abstract class SystemGraphics
 		setClip(savedClip);
 		savedClip = null;
 	}
+
+	
 }

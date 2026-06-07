@@ -196,7 +196,8 @@ public class masterStrings extends InternationalStrings
         
         put(SeatingViewer.SeatingStringPairs);
         put(LoginStrings);
-        put(InternationalStrings.languages)
+        put(InternationalStrings.languages);
+        
         ;
         setContext("Game Timer");
         GameTimerConstants.putStrings();
