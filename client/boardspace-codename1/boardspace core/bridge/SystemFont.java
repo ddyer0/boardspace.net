@@ -1,6 +1,7 @@
 package bridge;
 
 import java.util.Hashtable;
+import java.util.IdentityHashMap;
 
 import com.codename1.ui.Font;
 
@@ -13,9 +14,9 @@ public class SystemFont implements Config
 	private static int fontcount = 0;
 	private static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
 	private static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
-	private static Hashtable<Font,Integer> fontUid = new Hashtable<Font,Integer>();
-	private static Hashtable<Font,String> fontOrigin = new Hashtable<Font,String>();
-	private static Hashtable<Font,Integer> fontSize = new Hashtable<Font,Integer>();
+	private static IdentityHashMap<Font,Integer> fontUid = new IdentityHashMap<Font,Integer>();
+	private static IdentityHashMap<Font,String> fontOrigin = new IdentityHashMap<Font,String>();
+	private static IdentityHashMap<Font,Integer> fontSize = new IdentityHashMap<Font,Integer>();
 	public static int PLAIN = com.codename1.ui.Font.STYLE_PLAIN;
 	public static int ITALIC = com.codename1.ui.Font.STYLE_ITALIC;
 	public static int BOLD = com.codename1.ui.Font.STYLE_BOLD;
@@ -108,7 +109,8 @@ public class SystemFont implements Config
 		return derived;
 	}
 	private static int getUid(Font f)
-	{	synchronized (fontUid)
+	{	
+		synchronized (fontUid)
 		{
 		Integer id = fontUid.get(f);
 		if(id==null)

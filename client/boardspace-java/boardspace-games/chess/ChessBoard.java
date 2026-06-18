@@ -1091,6 +1091,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         	break;
         case Check:
 		case Play:
+			selectedForPromotion = null;
         	if((variation==Variation.Atomic) && (kingLocation[whoseTurn]==null))
         	{	// trashed our own king
         		setGameOver(false,true);
@@ -1478,7 +1479,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         					{ setGameOver(false,true); 	// we didn't escape check
          	        		}
         			else {
-        				boolean promote = (dest.row==startingRow(nextPlayer[whoseTurn]) && po.piece==ChessPiece.Pawn);
+        				boolean promote = (dest.row==startingRow(nextPlayer[whoseTurn]) 
+        									&& po.piece==ChessPiece.Pawn
+        									&& dest.topChip()!=null);	// atomic chess it explodes!
         				setNextStateAfterDrop(promote);
         			}
         			break;
@@ -1510,7 +1513,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         			}
     
                		dropObject(dest,0,replay);
-            		boolean promote = po.piece==ChessPiece.Pawn && dest.row==startingRow(nextPlayer[whoseTurn]);
+            		boolean promote = po.piece==ChessPiece.Pawn 
+            				&& dest.row==startingRow(nextPlayer[whoseTurn])
+            				&& dest.topChip()!=null;	// atomic chess it explodes
             		setNextStateAfterDrop(promote);
              		}
 			}

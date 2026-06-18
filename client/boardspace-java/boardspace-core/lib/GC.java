@@ -1191,21 +1191,11 @@ public class GC {
 	   * @return
 	   */
 	 public static boolean checkVisibility(Graphics gc,int ax,int ay,int w,int h)
+	  {	  if(gc!=null)
 	  {
-		  boolean invisible = GC.isInvisible(gc,ax,ay,w,h);
-	      // if the image is completely invisible at the current pan/zoom settings,
-		  // then skip all the clipping and scaling and the actual drawing.
-	      if(invisible && gc!=null)
-	      {   gc.setColor(Color.blue);
-	    	  gc.fillRect(ax,ay,w,h);
-	          if(gc.flag)
-	          {	
-	          	gc.flag = false;
-	          	gc.setColor(Color.red);
-	          	gc.drawRect(ax-100,ay-100,w+200,h+200);
+		  	return gc.checkVisibility(ax,ay,w,h);
 	          }
-	      }
-	      return !invisible;
+	  	return false;
 	  }
 	 /**
 	  * clear a rectangle to be transparent.  This can't be done using fillRect

@@ -50,3 +50,16 @@ copy the new boardspace.jar and boardspace.exe there
 create a new .zip containing boardspace.exe
 
 
+--
+
+When I came back to this process after a year, signing failed with a windows message.
+	SignTool Error: An unexpected internal error has occurred.
+	Error information: "Error: SignerSign() failed." (-2146869243/0x80096005)
+
+After much frustration and runaround involving alternative signing stratgegies,
+I solved the problem by updating signtool with the latest version from GitHub.
+https://github.com/Delphier/SignTool/releases
+but there seems to be several equivalents.  However, this one worked.
+
+
+

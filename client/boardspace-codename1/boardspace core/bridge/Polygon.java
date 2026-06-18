@@ -18,8 +18,11 @@ package bridge;
 
 import lib.G;
 import lib.Graphics;
+
 import com.codename1.ui.Stroke;
 import com.codename1.ui.geom.GeneralPath;
+import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.geom.Rectangle;
 
 public class Polygon
@@ -34,6 +37,15 @@ public class Polygon
 			{ path.moveTo(x,y); } 
 			else { path.lineTo(x,y); }
 	}
+	public  void addPoint(Point p)
+	{
+		addPoint((int)p.getX(),(int)p.getY());
+	}
+	public  void addPoint(Point2D p)
+	{
+		addPoint((int)p.getX(),(int)p.getY());
+	}
+	
 	public void fill(Graphics g)
 	{
 		g.getGraphics().fillShape(path);

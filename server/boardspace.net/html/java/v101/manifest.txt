@@ -1,4 +1,4 @@
-class-path: OnlineLobby.jar Game.jar Sounds.jar jzlib.jar OnlineGame.jar Exxit.jar Gobblet.jar Hex.jar Hive.jar OnlineGame.jar OnlineLoa.jar
+class-path: Launcher.jar OnlineLobby.jar Lobby.jar Game.jar Sounds.jar jzlib.jar OnlineGame.jar Exxit.jar Gobblet.jar Hex.jar Hive.jar OnlineGame.jar OnlineLoa.jar
   HoneyComb.jar OnlinePlateau.jar OnlineYinsh.jar Punct.jar Trax.jar Hnefatafl.jar Tumble.jar Truchet.jar Dipole.jar  Fanorona.jar Volcano.jar Sprint.jar
   Gametimer.jar Manhattan.jar Epaminondas.jar Circle.jar Pendulum.jar Bugs.jar Slither.jar Bug.jar
   Havannah.jar Iro.jar Traboulet.jar Dvonn.jar Tzaar.jar Qyshinsu.jar Knockabout.jar Gipf.jar Palago.jar Santorini.jar Spangles.jar Micropul.jar Pushfight.jar

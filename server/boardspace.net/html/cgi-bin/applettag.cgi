@@ -352,8 +352,7 @@ sub print_appjars()
 	my $refdir = $test ? "test" : "jws";
 	my (@jars) = &list_dir($dir);
 	foreach my $jar (@jars)
-	{ if( (index(lc($jar),'launcher.jar')<0)
-			&& (index(lc($jar),".jar")>0)) { print "<jar href='$refdir/$jar' download='lazy'/>\n"; }
+	{ if( (index(lc($jar),".jar")>0)) { print "<jar href='$refdir/$jar' download='lazy'/>\n"; }
 	 }
 }
 
@@ -368,8 +367,7 @@ sub print_appjarinfo()
 	my (@jars) = &list_dir($dir);
 	print "version,$::appjar_version,$host\n";
 	foreach my $jar (@jars)
-	{ if( (index(lc($jar),'launcher.jar')<0)
-			&& (index(lc($jar),".jar")>0))
+	{ if( (index(lc($jar),".jar")>0))
 			{
 			my $modtime = (stat("$dir$jar"))[9]; 
 			print "$modtime,$host$jar\n"; 

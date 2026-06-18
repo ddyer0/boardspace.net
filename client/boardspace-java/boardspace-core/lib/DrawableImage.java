@@ -267,7 +267,8 @@ public class DrawableImage<T extends DrawableImage<T>> implements Drawable,Stack
 		else { G.print("no image for ",this); }
 		}
 		else 
-		{canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
+		{
+		 canvas.drawImage(gc, getImage(canvas) , pscale,cx, cy, SQUARESIZE, xscale,jitter,label,artcenter);
 		}
 	}
 	/**

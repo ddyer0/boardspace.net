@@ -108,7 +108,7 @@ public class Container extends com.codename1.ui.Container
 	}
 	public void addC(com.codename1.ui.Component c)
 	{ 
-		G.runInEdt(new Runnable() { public void run() { add(c); }});
+		G.runInEdt(new Runnable() { public void run() { add(c); setShouldLayout(true); }});
 	}
 	public void addC(String where,com.codename1.ui.Component c)
 	{

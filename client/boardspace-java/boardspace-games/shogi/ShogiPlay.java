@@ -84,7 +84,7 @@ public class ShogiPlay extends commonRobot<ShogiBoard> implements Runnable, Shog
  */
     public void Make_Move(commonMove m)
     {   ShogiMovespec mm = (ShogiMovespec)m;
-    	depth_limited = (board.RobotExecute(mm,boardSearchLevel==0)>=3);
+    	depth_limited = (board.RobotExecute(mm,boardSearchLevel==0)>=2);
         boardSearchLevel++;
     }
 

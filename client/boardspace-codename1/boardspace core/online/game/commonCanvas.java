@@ -2994,6 +2994,9 @@ public abstract class commonCanvas extends exCanvas
     	   }
     	resetBounds();
     	wake();
+    	if(GameOver())
+    		{ mutable_game_record = allowed_to_edit = true;
+    		}
     	startedOnce = started = true;
     }
 
@@ -3074,9 +3077,7 @@ public abstract class commonCanvas extends exCanvas
     public void setLimbo(boolean v)
     {
         inLimbo = v;
-        if(v)
-        	{ started = false; 
-        	}
+        started = !v;
     }
 
     /** move the view of the game history back to a particular step.  The default inplementation
@@ -9516,7 +9517,6 @@ public void verifyGameRecord()
 		else { 
 			DrawArrow(offGC,hp);
 		}
-       
         drawUnmagnifier(offGC,hp);
     }
     	else {

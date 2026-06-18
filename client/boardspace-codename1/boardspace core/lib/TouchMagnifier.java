@@ -224,7 +224,20 @@ public class TouchMagnifier {
      * @param useDirect
      */
     public void drawMagnifiedPad(Graphics gc,HitPoint pt,boolean useDirect)
-    {	MouseManager mouse = client.getMouse();
+    {	
+    	/*
+    	 * this can use any of 3 different strategies for drawing the magnifier.
+    	 * (1) draw from a backing bitmap to a small target bitmap.  This doesn't provide
+    	 * any additional detail, but the view is magnified.  This is the fastest.
+    	 * in debug builds this has a yellow frame
+    	 * (2) draw from a fresh screen to a small target bitmap.  This incurs the full
+    	 * overhead of drawing the screen, but provides new detail.
+    	 * in debug builds this has a green frame
+    	 * (3) draw from a fresh screen to the live screen.  This has less overhead, but
+    	 * depends on the fidelity of clipping, which is lacking in some combinations.
+    	 * in debug builds, this has a red frame. 
+    	 */
+    	MouseManager mouse = client.getMouse();
     	if(!mouse.isDown()) { magnifierPadAngle = 3*Math.PI/4;  }
     	else if( touchZoomInProgress())
     	{	boolean alwaysPredraw = !G.isCodename1();

@@ -22,6 +22,7 @@ import com.codename1.ui.CN;
 import com.codename1.ui.Font;
 import com.codename1.ui.RGBImage;
 import com.codename1.ui.Stroke;
+import com.codename1.ui.Transform;
 import com.codename1.ui.geom.GeneralPath;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Point2D;
@@ -40,6 +41,10 @@ public abstract class SystemGraphics {
 	public static int sequence = 0;
 	protected int seq = sequence++;
 	protected com.codename1.ui.Graphics graphics;
+	protected boolean debug = false;
+	boolean isRetina = false;
+	double retinaScale = 1.0;
+	protected boolean realScreen = false;
 	public com.codename1.ui.Graphics getGraphics() { return(graphics); }
 
 	/**
@@ -81,9 +86,7 @@ public abstract class SystemGraphics {
 
 	public SystemGraphics() {}
 	public abstract void setActualSize(int w,int h);
-	protected int actualX = 0;
-	protected int actualY = 0;
-	
+
 	int savedColor = 0;
 	Font savedFont = null;
 	
@@ -97,34 +100,10 @@ public abstract class SystemGraphics {
 		graphics.setColor(savedColor);
 		graphics.setFont(savedFont);
 	}
-	public static Graphics create(com.codename1.ui.Graphics g,int x,int y,int w,int h)
-	{	// a window in the process of being destroyed can return null from getGraphics()
-		if(g==null) { return(null); }
-		Graphics gn = new Graphics();
-		if(logging) { Log.addLog("#",gn.seq," new graphics with ",g); }
-		gn.graphics = g;
-		gn.setActualSize(w,h);
-		gn.actualX = x;
-		gn.actualY = y;
-		if(logging)
-		{
-		int tx = g.getTranslateX();
-		int ty = g.getTranslateY();
-		if(tx!=x || ty!=y) 
-		{
-			Log.appendNewLog("initial graphics translate "+tx+","+ty);
-		}
-		int cl[] = g.getClip();
-		if(cl[0]!=x || cl[1]!=0)
-		{	Log.appendNewLog("initial graphics clip "+cl[0]+","+cl[1]+" "+cl[2]+"x"+cl[3]);
-		}}
-		return(gn);
-	}
-	public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) {
-		return Graphics.create(g,g.getTranslateX(),g.getTranslateY(),canvas.getWidth(),canvas.getHeight());
-	}
-	public static Graphics create(com.codename1.ui.Graphics g, com.codename1.ui.Component canvas) {
-		return Graphics.create(g,g.getTranslateX(),g.getTranslateY(),canvas.getWidth(),canvas.getHeight());
+
+	public void setColor(int c) 
+	{ if(logging) { Log.addLog("setColor ",c); }
+	  graphics.setColor(c); 
 	}
 	
 	public void setColor(Color c)
@@ -194,7 +173,10 @@ public abstract class SystemGraphics {
     		}
     	if(logging) { Log.finishEvent(); } 
     }	
-
+    public void drawString(String msg,int x,int y)
+    {
+    	Text(msg,x,y);
+    }
     public boolean drawImage(Image im,int x,int y)
     {	//G.addLog("draw "+x+" "+y);
     	if(im!=null) 
@@ -214,10 +196,99 @@ public abstract class SystemGraphics {
     		}
     	return(false);
     }
-    public void drawImage(Image im0,
+    public abstract Rectangle getClipBounds();
+    public abstract Rectangle combinedClip(int left,int top,int w,int h);
+    public abstract void setClip(int left,int top,int w,int h);
+    
+	boolean showClippedImage = false;
+   	boolean showFinalImage = true;
+    boolean useNative = true;
+
+   	public void drawImageRegion(Image img,
+	        int dx1, int dy1, int dx2, int dy2,
+	        int sx1, int sy1, int sx2, int sy2) {
+
+	    double scaleX = (double)(dx2 - dx1) / (sx2 - sx1);
+	    double scaleY = (double)(dy2 - dy1) / (sy2 - sy1);
+
+	    // Where would pixel (0,0) of the source land, given that
+	    // sx1 must map to dx1?
+	    int imgX = (int)(dx1 - sx1 * scaleX);
+	    int imgY = (int)(dy1 - sy1 * scaleY);
+
+	    int imgW = (int)(img.getWidth()  * scaleX);
+	    int imgH = (int)(img.getHeight() * scaleY);
+
+	    
+	    // Clip to dest rect so the rest of the scaled image is invisible
+	    if(useNative)
+	    {
+	     int[] oldClip = graphics.getClip();
+	     int tx = -0;
+	     int ty = 0;
+	     graphics.clipRect(tx+Math.min(dx1, dx2), ty+Math.min(dy1, dy2),Math.abs(dx2 - dx1), Math.abs(dy2 - dy1));
+		if(showClippedImage)
+		{
+		graphics.setColor(0xffff00);
+		setOpacity(0.5);
+		graphics.fillRect(0,0,9999,9999);	// see where the clipping region really is
+		setOpacity(1.0);
+		}
+		if(showFinalImage)
+		{
+		drawImage(img, imgX, imgY, imgW, imgH);
+		}
+	     graphics.setClip(oldClip);
+	    }
+	    else
+	    {
+	    Rectangle oldr = getClipBounds();
+	    combinedClip(dx1,dy1,dx2-dx1,dy2-dy1);
+	    if(showClippedImage)
+	   	{
+	   	graphics.setColor(0xffff00);
+	   	setOpacity(0.5);
+	   	graphics.fillRect(0,0,9999,9999);	// see where the clipping region really is
+	   	setOpacity(1.0);
+	   	}
+	   	if(showFinalImage)
+	   	{
+	    drawImage(img, imgX, imgY, imgW, imgH);
+	   	}
+	   	setClip(oldr);
+	    }
+	   	
+	   	
+	    //
+	}
+   	
+    public void drawSubimage(Image im,int dx,int dy,int dx2,int dy2,
+	 			int fx,int fy,int fx2,int fy2)
+    {      
+    	   int fromW = fx2-fx;
+    	   int fromH = fy2-fy;
+ 
+    	   Image bim = Image.createImage(fromW,fromH);
+    	   // draw the stretched image into a new smaller image
+    	   Graphics g2 = bim.getGraphics();
+    	   g2.drawImageRegion(im,0,0,fromW,fromH,fx,fy,fx2,fy2);
+    	   // stretch the smaller image
+    	   drawImage(bim,dx,dy,dx2-dx,dy2-dy);	   
+    }
+    
+   	public void drawImage(Image img,
+	        int dx1, int dy1, int dx2, int dy2,
+	        int sx1, int sy1, int sx2, int sy2) 
+   	{
+
+   		drawImageRegion(img,dx1,dy1,dx2,dy2,sx1,sy1,sx2,sy2);
+	}
+    public void drawImagex(Image im0,
  			int dx,int dy,int dx2,int dy2,
  			int fx,int fy,int fx2,int fy2)
- {		if(logging)
+    {	boolean showClippedImage = true;
+    	boolean showFinalImage = true;
+    	if(logging)
 			{
 			Log.appendNewLog("drawImage-8 #"+seq);Log.appendLog(" ");
 			Log.appendLog(im0.toString());Log.appendLog(" ");
@@ -241,24 +312,38 @@ public abstract class SystemGraphics {
 	   	Rectangle clip = getClipBounds();
 	   	// clip the destination to exclude pixels from the source.
 	   	// note that this only works for unrotated images.
-		if(clip!=null)
-		{
-		   	gc.clipRect(dx,dy,w,h);			// combine with proper clipping region
-		   	if(logging)
+	   	if(clip!=null)
+			{
+			   	combinedClip(dx,dy,w,h);			// combine with proper clipping region
+				//gc.clipRect(dx,dy,w,h);
+			   	if(logging)
+			   	{
+			   		Log.addLog(" clip "+dx+" "+dy + " " + w + "x" +h);
+			   	}	   	
+			}
+			else
 		   	{
-		   		Log.addLog(" clip "+dx+" "+dy + " " + w + "x" +h);
+		   		setClip(dx,dy,w,h);
 		   	}
-	   	//gc.setClip(dx,dy,w,h);		// runs wild, can write anywhere!
+	   	if(showClippedImage)
+	   	{
+	   	graphics.setColor(0xffff00);
+	   	setOpacity(0.5);
+	   	graphics.fillRect(0,0,999,999);	// see where the clipping region really is
+	   	setOpacity(1.0);
+	   	}
+
+	   	//graphics.fillRect(0,0,999,999);	// see where the clipping region really is
 	   	int finx = dx-(int)(fx*xscale);
 	   	int finy = dy-(int)(fy*yscale);
 	   	int finw = (int)(imw*xscale);
 	   	int finh = (int)(imh*yscale);
 	   	if(logging) { Log.addLog(" draw "+finx+" "+finy+" "+finw+"x"+finh);	   	}
-	   	gc.drawImage(im,finx,finy,finw,finh);
+	   	if(showFinalImage) { gc.drawImage(im,finx,finy,finw,finh); }
 	   	recordDraw(finx,finy,finw,finh);
-	   	gc.setClip(clip);
+	   	setClip(clip);
 		}
- 		}
+ 
     	if(logging) { Log.finishEvent(); }
  }
 	public int getTranslateX()
@@ -292,7 +377,7 @@ public abstract class SystemGraphics {
     	graphics.resetAffine(); 
     }
     
-	public Rectangle getClipBounds()
+	public Rectangle getClipBoundsStd()
 	{	
 		if(logging) { Log.addLog("getClipBounds #"+seq); Log.appendLog(" ");}
 		int []bounds = graphics.getClip();
@@ -305,15 +390,16 @@ public abstract class SystemGraphics {
 		}
     		
 		return(new Rectangle(0,0,0,0)); 
+		}
+		return null;
 	}
-	return(null);
-	}
+
 	public Shape getClip()
 	{
-		return(getClipBounds());
+		return(getClipBoundsStd());
 	}
 	public void scale(double x,double y)
-	{
+	{	// no correction for the current translate is needed.  the translation is not scaled.
 		graphics.scale((float)x, (float)y);
 	}
 	
@@ -348,10 +434,14 @@ public abstract class SystemGraphics {
 		graphics.drawShape(path,s);
 	    
 	}
+	protected void setClipStd(int left,int top,int max,int max2)
+	{	
+		graphics.setClip(left,top,max,max2);
+	}
 	
-	public Rectangle setClip(Shape sh)
+	public Rectangle setClipStd(Shape sh)
 	{
-		Rectangle val = getClipBounds();
+		Rectangle val = getClipBoundsStd();
 		if(logging) { 
 			Log.appendNewLog("setclip #"+seq);
 			Log.appendLog(" "+sh);
@@ -360,15 +450,16 @@ public abstract class SystemGraphics {
 		if(sh instanceof Rectangle)
 		  {
 		  Rectangle rs = (Rectangle)sh;
-		  graphics.setClip(Platform.Left(rs),Platform.Top(rs),Platform.Width(rs),Platform.Height(rs));
+		  setClip(G.Left(rs),G.Top(rs),G.Width(rs),G.Height(rs));
 		  }
-		  else if(sh==null)
-		  	{ 	
-		  		graphics.setClip(0,0,9999,9999);
+		else 
+		  	{ 	graphics.setClip(0,0,9999,9999);
 		  	}
-		  else { G.Error("Non rectangular clip region not supported"); }
-		  return(val);
+		return(val);
 	}
+	
+	public abstract Rectangle setClip(Rectangle r);
+
 	public void setClip(Rectangle include,Rectangle exclude)
     {  // draw the final result in one swell foop.  This is not implemented
        // in JDK1.1 and causes errors if you try.
@@ -382,6 +473,7 @@ public abstract class SystemGraphics {
     	}
     	else { setClip(include); }
    }
+	
 	public static com.codename1.ui.geom.Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line, int i, int line0)
 	{
 		return fm.getStringBounds(line,i,line0,g);
@@ -402,21 +494,22 @@ public abstract class SystemGraphics {
     {
     	// there is no corresponding operation
     }
-    private float from[] = null;
+    protected float from[] = null;
     private float to[] =null;
     private Point pt = null;
-    @SuppressWarnings("deprecation")
-	public Point transform(int x,int y)
+ 
+    public Point transformStd(int x,int y)
     {	if(from==null) { from = new float[3]; }
     	if(to==null) { to = new float[3]; }
     	if(pt==null) { pt = new Point(0,0); }
-    	int tx = graphics.getTranslateX()-actualX;
-    	int ty = graphics.getTranslateY()-actualY;
+    	int tx = graphics.getTranslateX();
+    	int ty = graphics.getTranslateY();
     	from[0] = x+tx;
     	from[1] = y+ty;
-    	graphics.getTransform().transformPoint(from,to);
-    	pt.setX((int)to[0]);
-    	pt.setY((int)to[1]);
+    	Transform tr = graphics.getTransform();
+    	tr.transformPoint(from,to);
+    	pt.setX((int)((to[0]-tx)/retinaScale));
+    	pt.setY((int)((to[1]-ty)/retinaScale));
     	return pt;
     }
 
@@ -429,7 +522,11 @@ public abstract class SystemGraphics {
 		p.setX(x);
 		p.setY(y);
 	}
-
+	public static void setLocation(Point p,int x,int y)
+	{
+		p.setX(x);
+		p.setY(y);	
+	}
 	public void setFont(Font f) 
 	{ 	graphics.setFont(f); 
 		int sz = SystemFont.getFontSize(f);
@@ -444,27 +541,81 @@ public abstract class SystemGraphics {
 	
 	public void translate(int inX, int inY) {
 		graphics.translate(inX,inY);
+		
 	}
 	
 	public void translateMatrix(float inX, float inY) {
-		if(isSimulator)
-			{
-			graphics.translate((int)inX,(int)inY);
-			}
-		else
-		{	//graphics.translate(inX,inY);
-			graphics.translateMatrix(inX,inY);
-		}
+		graphics.translateMatrix(inX,inY);	
 	}
 
 	
+	int pushCount = 0;
     public void pushClip()
     {
     	graphics.pushClip();
+    	pushCount++;
     }
     public void popClip()
-    {
+    {	pushCount--;
     	graphics.popClip();
     }
+    int initialX = 0;
+    int initialY = 0;
+    boolean simulator = false;
+    protected void setGraphics(com.codename1.ui.Graphics g)
+    {
+    	graphics = g;
+    	initialX = getTranslateX();
+    	initialY = getTranslateY();
+    	simulator = G.isSimulator();
+		retinaScale = graphics.getTransform().getScaleX();
+		isRetina = retinaScale > 1.0;
+
+    }
+   // public void isVisible(int x,int y,int w,int h)
+   // {	graphics.isVisible(x,y,w,h);
+   // }
+	/**
+	 * this creates a lib.Graphics which uses the underlying system graphics, NOT a copy of it
+	 * @param g
+	 * @param clipw
+	 * @param cliph
+	 * @return
+	 */
+	public static Graphics create(com.codename1.ui.Graphics g,int clipw,int cliph) 
+	{	if(g==null) { return(null); }
+		if(logging) { Log.addLog("create new graphics"); }
+		Graphics gt = new Graphics();
+		gt.setGraphics(g);
+		gt.setActualSize(clipw,cliph);
+		gt.setClip(gt.getClipBounds());
+		return(gt);
+	}
+	
+/**
+ * this creates a lib.Graphics which uses the underlying system graphics, NOT a copy of it
+ * @param g
+ * @param client
+ * @return
+ */
+	public static Graphics create(com.codename1.ui.Graphics g, Component client) 
+	{
+		if(logging) { Log.addLog("create new graphics"); }
+		Graphics gt = new Graphics();
+		gt.setGraphics(g);
+		gt.debug = G.debug();
+		int aw = client.getWidth();
+		int ah = client.getHeight();
+		gt.setActualSize(aw,ah);
+		gt.realScreen = true;
+		gt.setClip(gt.getClipBounds());
+		return gt;
+	}
+
+	public static Graphics create(com.codename1.ui.Graphics g, com.codename1.ui.Component canvas) {
+		return create(g,canvas.getWidth(),canvas.getHeight());
+	}
+	
+
 
 }

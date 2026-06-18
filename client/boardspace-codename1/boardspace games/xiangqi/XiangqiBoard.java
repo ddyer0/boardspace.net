@@ -95,7 +95,9 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
     public int boardColumns = DEFAULT_COLUMNS;	// size of the board
     public int boardRows = DEFAULT_ROWS;
     public void SetDrawState() 
-    { if(prev_state!=XiangqiState.CHECK_STATE) { setState(XiangqiState.ILLEGAL_MOVE_STATE); }}
+    { if(prev_state!=XiangqiState.CHECK_STATE) 
+    	{ setState(XiangqiState.ILLEGAL_MOVE_STATE); }
+    }
     public XiangqiCell rack[][] = null;
  	public CellStack occupied[] = new CellStack[2];
     public XiangqiCell kingPosition[] = new XiangqiCell[2];
@@ -943,23 +945,25 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
 
         if (Execute(m,replayMode.Replay))
-        {
+        {	boolean illegal = false;
             if(digest)
             {	long dig = Digest();
             	num = repeatedPositions.addToRepeatedPositions(dig,m);
+            	if(num>=2)
+            	{	illegal = true;
+            		acceptPlacement();
+            		setGameOver(false,true);	// say we lose, that will discourage this position
+            	}
             } 
         	
-        	if ((m.op==MOVE_NULL) || (m.op == MOVE_DONE))
+        	if (illegal|| (m.op==MOVE_NULL) || (m.op == MOVE_DONE))
             {
             }
             else if (DoneState())
             {
                 doDone();
             }
-            else
-            {
-            	throw G.Error("Robot move should be in a done state");
-            }
+            
         }
         return(num);
     }

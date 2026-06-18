@@ -1251,6 +1251,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 	
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
 	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
+		
 		if(needNewLayout)
 		{
 			setLocalBounds(0,0,getWidth(),getHeight());

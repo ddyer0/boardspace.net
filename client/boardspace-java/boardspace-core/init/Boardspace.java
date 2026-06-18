@@ -206,9 +206,11 @@ class CacheInfo {
 			  input.close(); 			  
 			}
 		if(verbose) { Boardspace.log("copy "+from+" finished"); }
-		loaded = true;
 		// register the new jar
-		parent.addURL(toFile.toURI().toURL());
+		URL df =toFile.toURI().toURL();
+		parent.addURL(df);
+		if(verbose) { Boardspace.log("addurl "+df); }
+		loaded = true;
 		}
 		}
 		catch (SSLHandshakeException|SocketException err) 
@@ -448,11 +450,11 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		if(assureCached(name))
 		{
 		//track("findclass ",name);
-		Class<?>v  = (super.findClass(name));
+		Class<?>v =super.findClass(name);
 		if(verbose) { log("findClass found "+v); }
 		return v;
 		}
-		log("AssureCached "+name+" failed");
+		if(verbose) { log("AssureCached "+name+" failed"); }
 		return null;
 	}
     /*
@@ -911,6 +913,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	public static void main(String[]args)
 	{	boolean fastExit = false;
 		String runtimeServer = null;
+
 		try {
 		int setupIndex = args.length;
 		for(int i=0;i<args.length;i++)

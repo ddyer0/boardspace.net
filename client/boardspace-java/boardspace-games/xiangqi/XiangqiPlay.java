@@ -89,7 +89,9 @@ public class XiangqiPlay extends commonRobot<XiangqiBoard> implements Runnable, 
  */
     public void Make_Move(commonMove m)
     {   XiangqiMovespec mm = (XiangqiMovespec)m;
-    	depth_limited = (board.RobotExecute(mm,boardSearchLevel==0)>=3);
+    	// >= 2 terminates the search when 2 repetitions occur, which greatly
+    	// disadvantages those moves.
+    	depth_limited = (board.RobotExecute(mm,boardSearchLevel==0)>=2);
         boardSearchLevel++;
     }
 /** return an enumeration of moves to consider at this point.  It doesn't have to be

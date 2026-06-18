@@ -19,6 +19,8 @@ package bridge;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 import lib.LFrameProtocol;
 import lib.LoadThread;
@@ -330,8 +332,8 @@ public static Object MakeInstance(String classname)
     		catch (Throwable e) 
     		{			
 				if(!testOnly)
-					{ System.out.println("classForName failed for "+loader+":"+name+" "+e);
-					  Plog.log.addLog("classForName failed for ",loader,":",name," ",e);
+					{ System.out.println("classForName failed for "+loader+":"+name+" "+e+"\ncause: "+e.getCause());
+					  Plog.log.addLog("classForName failed for ",loader,":",name," ",e,"\ncause: ",e.getCause());
 					  throw new ErrorX(e);
 					}
 			}
@@ -405,6 +407,14 @@ public static Object MakeInstance(String classname)
     	double h = (getScreenHeight()/den);
     	return(Math.sqrt(w*w+h*h)); 	
     }
+    static double retinaScale = 1.0;
+    static public boolean isRetinaTest()
+    {	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	GraphicsDevice gd = ge.getDefaultScreenDevice();
+    	double scale = gd.getDefaultConfiguration().getDefaultTransform().getScaleX();
+    	retinaScale = scale;
+    	return scale > 1.0;
+    }
     
     static public String screenSize()
     {
@@ -427,11 +437,12 @@ public static Object MakeInstance(String classname)
     	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
     	int width = (int)con.getWidth();
     	int height = (int)con.getHeight();
+    	boolean retina = isRetinaTest();
     	if(G.isCheerpj() ) 
     		{ width = Math.min(width,Cheerpj.getScreenWidth()); 
     		  height = Math.min(height,Cheerpj.getScreenHeight()); 
     	    }
-    	return(""+width+"x"+height);
+    	return(""+width+"x"+height+ (retina ? " "+retinaScale+"x" : ""));
     }
     
     static public boolean isGPPC() { return false; }

@@ -308,7 +308,7 @@ public Graphics getGraphics()
 	}
 	//gr.setClip(0,0,w,h);
 	//gr.resetAffine();
-	return Graphics.create(gr,0,0,getWidth(),getHeight());
+	return Graphics.create(gr,getWidth(),getHeight());
 	}
 	return(null);
 }
@@ -479,10 +479,10 @@ public void paintIcon(bridge.Component c, Graphics g, int x, int y) {
 }
 public static Graphics create(com.codename1.ui.Graphics g, Canvas canvas) 
 {
-	return Graphics.create(g,canvas.getX(),canvas.getY(),canvas.getWidth(),canvas.getHeight());
+	return Graphics.create(g,canvas.getWidth(),canvas.getHeight());
 }
 public static Graphics create(com.codename1.ui.Graphics g, Component canvas) {
-	return Graphics.create(g,canvas.getX(),canvas.getY(),canvas.getWidth(),canvas.getHeight());
+	return Graphics.create(g,canvas.getWidth(),canvas.getHeight());
 }
 public boolean saveImage(String output)
 {	

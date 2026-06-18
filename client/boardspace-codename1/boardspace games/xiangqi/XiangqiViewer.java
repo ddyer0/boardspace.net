@@ -193,7 +193,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
     	layout.placeDrawGroup(FontManager.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
-       	layout.placeDoneEdit(buttonW,3*buttonW/2,doneRect,editRect);
+       	layout.placeDoneEditRep(buttonW,3*buttonW/2,doneRect,editRect,repRect);
        	layout.placeTheVcr(this,vcrW,vcrW*3/2);
        	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

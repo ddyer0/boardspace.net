@@ -1375,8 +1375,7 @@ public class RepaintManager implements VncScreenInterface,Config
 
 	    	helper.ShowStats(offGC,pt,x,y);	// add some stats on top of everything
 			    
-	    	GC.setColor(offGC,Color.blue);
-	    	GC.translate(offGC,-x,-y);
+	    	GC.translate(offGC,x,y);
 	    	//G.addLog("writing "+offScreen);
 	    	drawToRealScreen(gc,offScreen);
 		    

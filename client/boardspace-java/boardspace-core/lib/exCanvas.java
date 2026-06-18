@@ -1929,7 +1929,6 @@ graphics when using a touch screen.
 	  //GC.setClip(gc,clip);
 	  }
   }
-
     /**
      * this is the primary method to draw an images with transparent
      * backgrounds on a canvas.  If there's no rotation, the images are clipped 

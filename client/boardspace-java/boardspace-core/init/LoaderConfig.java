@@ -27,7 +27,7 @@ public interface LoaderConfig {
 	 * this is the root class expected to be present in the list of jars.  It should
 	 * contain the standard jar manifest that lists all the other classes.
 	 */
-	static final String cacheRoot = "OnlineLobby.jar";		// jar file at the root of the app
+	static final String cacheRoot = "Launcher.jar";		// jar file at the root of the app
 	/**
 	 * this is the runnable class that is actually run from the cache
 	 */
@@ -45,13 +45,14 @@ public interface LoaderConfig {
 	 */
     static final String errorURL = "/cgi-bin/error.cgi";	
     
-	static final String MiniloaderVersion = "1.8";
+	static final String MiniloaderVersion = "1.9";
 				// version 1.4 adds a retry in copyurl
 				// version 1.5 adds a -setup arg that sends the rest of args to the app
 				// version 1.6 removed a "synchronized" that caused deadlocks
 				// version 1.7 adds limits of errors associated with storage full
 				// version 1.8 moves the package to init/ and adds some debugging functions
-	
+			  // version 1.9 reads the jar files from launcher.jar instead of onlinelobby.jar
+			  //						 which fixes the "first time missing jar" problem.
     static final String MiniloaderId = "miniloader=version-"+MiniloaderVersion;
 
 	/**

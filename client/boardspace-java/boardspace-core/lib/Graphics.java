@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 import bridge.Polygon;
@@ -42,7 +43,6 @@ public class Graphics extends SystemGraphics
 	public void setTextColor(Color newColor) { txtColor=newColor; }
 	public void setNeutralFrameColor(Color newColor) { ntrColor=newColor; }
 	public boolean _rotated_ = false;
-	protected double rotation = 0.0;
 	protected int actualWidth = 0;
 	protected int actualHeight = 0;
 	public boolean flag = false;
@@ -56,7 +56,7 @@ public class Graphics extends SystemGraphics
 	
 	public int actualWidth() { return actualWidth; }
 	public int actualHeight() { return actualHeight; }
-	public double getRotation() { return rotation; }
+	public double getRotation() { return currentRotation; }
 	public void setActualSize(int w,int h) { actualWidth = w; actualHeight = h; }
    
 	public void fillRoundRect(int left, int top, int width, int height, int rx, int ry) 
@@ -87,6 +87,17 @@ public class Graphics extends SystemGraphics
 		graphics.drawLine(ox,oy,dest_x,dest_y);		
 		if(logging) { Log.finishEvent(); }
 	}
+	int currentTranslateX = 0;
+	int currentTranslateY = 0;
+	double currentClipX = 0;
+	double currentClipY = 0;
+	double currentClipW = -1;
+	double currentClipH = -1;
+	double currentScaleX = 1;
+	double currentScaleY = 1;
+	double currentRotation = 0;
+	int currentRotationX = 0;
+	int currentRotationY = 0;
 	
 	public void translate(int inX, int inY) {
 		if(logging)
@@ -94,9 +105,31 @@ public class Graphics extends SystemGraphics
 		}
 		super.translate(inX,inY);
 		shadow.translate(inX,inY);
+		currentTranslateX += inX;
+		currentTranslateY += inY;
 		if(logging) { Log.finishEvent(); }
 	}
-
+    public void scale(double x,double y)
+    {		if(logging)
+			{ Log.appendNewLog("scale #"+seq);Log.appendLog(" ");  Log.appendLog(x);Log.appendLog(",");Log.appendLog(x);; 
+			}
+    
+     	super.scale(x,y);
+    	
+    	shadow.scale(x,y);
+     	currentScaleX *= x;
+     	currentScaleY *= y;
+     	
+    	if(currentClipW>=0) 
+    	{	double newright = (currentClipW+currentClipX)/x;
+    		double newbot = (currentClipH+currentClipY)/y;
+    		currentClipX /= x;
+    		currentClipY /= y;
+    		currentClipW = (newright-currentClipX);
+    		currentClipH = (newbot-currentClipY);
+     	}
+    	if(logging) { Log.finishEvent(); }
+    }
 	public void translateMatrix(float inX, float inY) {
 		if(logging)
 		{ Log.appendNewLog("translateMatrix ");  Log.appendLog(inX);Log.appendLog(",");Log.appendLog(inY);; 
@@ -113,6 +146,8 @@ public class Graphics extends SystemGraphics
 		  Log.appendLog(max);Log.appendLog(",");Log.appendLog(max2);
 		}
 		graphics.clipRect(left, top, max, max2);
+		combineCurrentClip(left,top,max,max2);
+		
 		if(logging) { Log.finishEvent(); }
 	}
 	public void setClip(int left, int top, int max, int max2) {
@@ -122,7 +157,14 @@ public class Graphics extends SystemGraphics
 		  Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");
 		  Log.appendLog(max);Log.appendLog(",");Log.appendLog(max2);
 		}
-		graphics.setClip(left,top,max,max2);
+		
+		setClipStd(left,top,max,max2);
+		
+		
+		currentClipX = left+currentTranslateX;
+		currentClipY = top+currentTranslateY;
+		currentClipW = max;
+		currentClipH = max2;
 		if(logging) { Log.finishEvent(); }
 	}
 	public void setFont(Font f) {
@@ -155,18 +197,21 @@ public class Graphics extends SystemGraphics
 	}
 	public void setRotation(double r)
 	{
-		rotation = r;
+		currentRotation = r;
 		super.setRotation(r);
 		shadow.setRotation(r);
+		currentRotationX = 0;
+		currentRotationY = 0;
 	}
 	public void setRotation(double ang,int cx,int cy)
-	{	rotation += ang;
+	{	currentRotation += ang;
+		currentRotationX = cx;
+		currentRotationY = cy;
 		super.setRotation(ang,cx,cy);
 		shadow.setRotation(ang,cx,cy);
 	}
 	public void resetAffine()
 	{
-		rotation = 0;
 		super.resetAffine();
 		shadow.resetAffine();
 	}
@@ -231,28 +276,104 @@ public class Graphics extends SystemGraphics
 	
 	static final boolean HARDWAY = true;
 
+    private void combineCurrentClip(int ileft,int itop,int iw,int ih)
+    {	if(currentClipW>=0)
+    	{
+    	/*
+    	if( currentRotation!=0)
+    	{
+    		int newl =  G.rotateX(ileft,itop,currentRotation,currentRotationX,currentRotationY);
+    		int newt = G.rotateY(ileft,itop,currentRotation,currentRotationX,currentRotationY);
+    		int newr = newl;
+    		int newb = newt;
+    		{
+    		int rx = G.rotateX(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
+    		int ry = G.rotateY(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
+    		if(rx<newl) { newl = rx; }
+    		if(rx>newr) { newr = rx; }
+    		if(ry<newt) { newt = ry; }
+    		if(ry>newb) { newb = ry; }
+    		}
+       		{
+        		int rx = G.rotateX(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
+        		int ry = G.rotateY(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
+        		if(rx<newl) { newl = rx; }
+        		if(rx>newr) { newr = rx; }
+        		if(ry<newt) { newt = ry; }
+        		if(ry>newb) { newb = ry; }
+        		}
+      		{
+        		int rx = G.rotateX(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
+        		int ry = G.rotateY(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
+        		if(rx<newl) { newl = rx; }
+        		if(rx>newr) { newr = rx; }
+        		if(ry<newt) { newt = ry; }
+        		if(ry>newb) { newb = ry; }
+        		}
+      		ileft = newl;
+      		itop = newt;
+      		iw = newr-newl;
+      		ih = newb-newt;
+    	}*/
+    	double left = ileft;
+    	double top = itop;
+    	double w = iw;
+    	double h = ih;
+ 		double lr = currentClipX;
+ 		double tr = currentClipY;
+		if(left<lr) { w = Math.max(0,w+(left-lr)); left = lr; }
+		if(top<tr) { h = Math.max(0,h+(top-tr)); top = tr; }
+		double rr = currentClipX+currentClipW;
+		double br = currentClipY+currentClipH;
+		if((left+w)>rr) { w = rr-left; }
+		if((top+h)>br) { h = br-top; }
+ 		// ios behaves badly with negative width or height
+    	}
+    	if(iw<0) { iw = 0; }
+    	if(ih<0) { ih = 0; }
+		currentClipX = ileft;
+		currentClipY = itop;
+		currentClipW = iw;
+		currentClipH = ih;
+		
+    }
+    
+    public Rectangle getClipBounds()
+    {	if(currentClipW < 0) { return null; }
+    	int ccx =(int)(currentClipX-currentTranslateX);
+    	int ccy = (int)(currentClipY-currentTranslateY);
+    	int ccw = (int)currentClipW;
+    	int cch = (int)currentClipH;
+    	Rectangle r = new Rectangle(ccx,ccy,ccw,cch);
+    	return r;
+    	/*
+    	Rectangle bounds = super.getClipBounds();
+    	if(bounds!=null
+    			&& (G.Left(bounds)!=ccx
+    				|| G.Top(bounds)!=ccy
+    				|| G.Width(bounds)!=ccw
+    				|| G.Height(bounds)!=cch)
+    			)
+    	{
+    		G.print("dif");
+    	}
+    	return bounds==null ? null : r;
+    	*/
+    	
+    }
 	public Rectangle combinedClip(int left,int top,int w,int h)
-	{	Rectangle r =null;
-		r = getClipBounds();
+	{	
+		Rectangle r = getClipBounds();
+		combineCurrentClip(left,top,w,h);
 		if(HARDWAY)
 		{	
-		if(r!=null)
-	    	{
-			int lr = G.Left(r);
-			int tr = G.Top(r);
-			if(left<lr) { w = Math.max(0,w+(left-lr)); left = lr; }
-    		if(top<tr) { h = Math.max(0,h+(top-tr)); top = tr; }
-    		int rr = G.Right(r);
-    		int br = G.Bottom(r);
-    		if((left+w)>rr) { w = rr-left; }
-    		if((top+h)>br) { h = br-top; }
-	    	}
-			// ios behaves badly with negative width or height
-   			graphics.setClip(left,top,Math.max(0, w),Math.max(0, h));
-			
+			setClipStd((int)currentClipX,
+					(int)currentClipY,
+					(int)currentClipW,
+					(int)currentClipH);
 		}
 		else
-		{
+		{	
 			// ios behaves badly with negative width or height
 	    	graphics.clipRect(left,top,Math.max(0, w),Math.max(0, h));	// clip bounds are to the included pixel
 		}
@@ -465,9 +586,9 @@ public class Graphics extends SystemGraphics
 	 {	
 		 boolean alt = isInvisibleAlt(x,y,w,h);
 		 /*
-		 if(G.debug())
+		 if(false && debug)
 		 {
-		 boolean std = isNotVisibleStd(x,y,w,h);
+		 boolean std = isInvisibleStd(x,y,w,h);
 		 if(std!=alt)
 		 {	// one case where there is divergence is the pulldown for annotations in games.
 			// the alt transformation is used, which is correct.  For reasons I don't understand,
@@ -479,35 +600,74 @@ public class Graphics extends SystemGraphics
 		 */
 		 return alt;
 	 }
+	 
+	 public boolean isCompletelyVisible(int x,int y,int w,int h)
+	 {	
+		 boolean alt = isCompletelyVisibleAlt(x,y,w,h);
+		 /*
+		 if(false && debug)
+		 {
+		 boolean std = isCompletelyVisibleStd(x,y,w,h);
+		 if(std!=alt)
+		 {	// one case where there is divergence is the pulldown for annotations in games.
+			// the alt transformation is used, which is correct.  For reasons I don't understand,
+			// the transformation calculated using the native transform is sometimes incorrect
+			 G.print("isNotVisible different views std:",std," alt:",alt," ",x," ",y," ",w,"x",h," std ",preferStd);
+			 flag = true;
+			 return preferStd ? std : alt;
+		 }}
+		 */
+		 return alt;
+	 }
+	 
 	 @SuppressWarnings("unused")
 	private boolean isInvisibleStd(int x,int y,int w,int h)
 	  {	 
-		 int aw = actualWidth();
-		 int ah = actualHeight();
-		 int al = 0;
-		 int at = 0;
-		 /* include the current clipping region in the logic
-		 Rectangle clip = graphics.getClipBounds();
-		 if(clip!=null)
-		 {
-			 at = G.Width(clip);
-			 ah = G.Height(clip);
-			 al = G.Left(clip);
-			 at = G.Top(clip);
-		 }
-		 */
+		 double aw = currentClipW*currentScaleX;
+		 double ah = currentClipH*currentScaleY;
+		 double al = currentClipX*currentScaleX;
+		 double at = currentClipY*currentScaleY;
+		 //Rectangle bb = getClipBounds();
+		 if(currentClipW<0) 
+		 	{ aw = actualWidth(); 
+		 	  ah = actualHeight(); 
+		 	  al = 0; at = 0;
+		 	}
 		 Point dest = transform(x,y);
-		 double left = dest.getX();
-		 double top = dest.getY();
+		 double left = dest.getX()+currentTranslateX;
+		 double top = dest.getY()+currentTranslateY;
+		 double right = left;
+		 double bottom = top;
+		 {
 		 Point dest1 = transform(x+w,y+h);
-		 double right = dest1.getX();
-		 double bottom = dest1.getY();
-		 if(right<left) { double d = left; left=right; right=d; }
-		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
-		 boolean invisible = ( left>aw
+		 double d1x = dest1.getX()+currentTranslateX;
+		 double d1y = dest1.getY()+currentTranslateY;
+		 if(d1x<left) { left = d1x; }
+		 else if(d1x>right) { right=d1x; }
+		 if(d1y<top) { top = d1y; }
+		 else if(d1y>bottom) { bottom = d1y; }}
+		 if(currentRotation!=0)
+		 {	{
+			 Point dest1 = transform(x+w,y);
+			 double d1x = dest1.getX()+currentTranslateX;
+			 double d1y = dest1.getY()+currentTranslateY;
+			 if(d1x<left) { left = d1x; }
+			 else if(d1x>right) { right=d1x; }
+			 if(d1y<top) { top = d1y; }
+			 else if(d1y>bottom) { bottom = d1y; }}
+		 	{
+			 Point dest1 = transform(x,y+h);
+			 double d1x = dest1.getX()+currentTranslateX;
+			 double d1y = dest1.getY()+currentTranslateY;
+			 if(d1x<left) { left = d1x; }
+			 else if(d1x>right) { right=d1x; }
+			 if(d1y<top) { top = d1y; }
+			 else if(d1y>bottom) { bottom = d1y; }}
+		 }
+		 boolean invisible = ( left>al+aw
 				 			|| right<al
 				 			|| bottom<at
-				 			|| top>ah);	 
+				 			|| top>at+ah);	 
 		 return invisible;		  
 	  }
 
@@ -522,64 +682,231 @@ public class Graphics extends SystemGraphics
 	  * @return
 	  */
 	 public Point2D shadowTransform(int x,int y)
+	 {	
+		Point2D p = shadow.transform(x,y);
+		setLocation(p,(p.getX()-currentTranslateX),(p.getY()-currentTranslateY));
+		return p;
+	 }
+	 
+	 public Point transform(int x,int y)
+	 {	 Point p = transformStd(x,y);
+	 	 return p;
+	 }
+	 public void drawImage(Image im,
+	 			int dx,int dy,int dx2,int dy2,
+	 			int fx,int fy,int fx2,int fy2)
+	   {   
+		   if(currentRotation!=0 && currentClipW>=0 && !isCompletelyVisible(dx,dy,dx2-dx,dy2-dy))
+		   {   // native java draws outside the clip, so draw even harderway
+			   drawSubimage(im,dx,dy,dx2,dy2, fx,fy, fx2, fy2);
+		   }
+		   else
+		   {
+			   super.drawImage(im,dx,dy,dx2,dy2, fx,fy, fx2, fy2);
+		   }
+	   }
+	 void showTransformAlt(Color c,int x,int y,int w,int h)
 	 {
-		return shadow.transform(x,y);
+		 int aw = (int)(currentClipW+1);
+		 int ah = (int)(currentClipH+1);
+		 int al = (int)currentClipX;
+		 int at = (int)currentClipY;
+		 
+		 Point2D dest = shadowTransform(x,y);
+		 int left = (int)dest.getX();
+		 int top = (int)dest.getY();
+		 Point2D dest1 = shadowTransform(x+w,y+h);
+		 int right = (int)dest1.getX();
+		 int bottom = (int)dest1.getY();
+
+		 setColor(c);
+		 drawLine(al,at,al+aw,at);
+		 drawLine(al+aw,at,al+aw,at+ah);
+		 drawLine(al+aw,at+ah,al,at+ah);
+		 drawLine(al,at+ah,al,at);
+		 
+		 drawLine(left,top,right,top);
+		 drawLine(right,top,right,bottom);
+		 drawLine(right,bottom,left,bottom);
+		 drawLine(left,bottom,left,top);
+		 
+	 }
+	 public Rectangle setClip(Rectangle clip)
+	 {	 if(clip==null)
+	 		{ currentClipX = currentClipY = 0;
+	 		  currentClipW = currentClipH = -1; 
+	 		  return setClipStd(clip);
+	 		}
+	 	else {
+	 		Rectangle val = getClipBoundsStd();
+	 		setClip(G.Left(clip),G.Top(clip),G.Width(clip),G.Height(clip));
+	 		return val;
+	 	}
+	 }
+	 public Rectangle setClip(Shape clip)
+	 {	if(clip==null)
+	 		{ currentClipX = currentClipY = 0;
+	 		  currentClipW = currentClipH = -1; 
+	 		  return setClipStd(clip);
+	 		}
+	 	else {
+	 		Rectangle old = getClipBounds();
+	 		Rectangle cl = clip.getBounds();
+	 		setClip(G.Left(cl),G.Top(cl),G.Width(cl),G.Height(cl));
+	 		return old;
+	 	}
+	 }
+ 
+	 void showTransformStd(Color c,int x,int y,int w,int h)
+	 {
+		 Point d = transform(x,y);
+		 int p0x = (int)d.getX();
+		 int p0y = (int)d.getY();
+		 Point d1 = transform(x+w,y);
+		 int p1x = (int)d1.getX();
+		 int p1y = (int)d1.getY();
+		 Point d2 = transform(x+w,y+h);
+		 int p2x = (int)d2.getX();
+		 int p2y = (int)d2.getY();
+		 Point d3 = transform(x,y+h);
+		 int p3x = (int)d3.getX();
+		 int p3y = (int)d3.getY();
+		 
+		 Rectangle clip = setClip(null);
+		 //java.awt.geom.AffineTransform tr = getGraphics().getTransform();
+		 double rx = currentRotation;
+		 double sx = currentScaleX;
+		 double sy = currentScaleY;
+		 int tx = getTranslateX();
+		 int ty = getTranslateY();
+		 setRotation(-currentRotation,currentRotationX,currentRotationY);
+		 scale(1/sx,1/sy);
+		 translate(-tx,-ty);
+		 /*
+		  // show the effective clipping region.  rotations mess this up
+		 int aw = getClipWidth();
+		 int ah = getClipHeight();
+		 int al = getClipX();
+		 int at = getClipY();
+		 setColor(c);
+		 drawLine(al,at,al+aw,at);
+		 drawLine(al+aw,at,al+aw,at+ah);
+		 drawLine(al+aw,at+ah,al,at+ah);
+		 drawLine(al,at+ah,al,at);
+		 drawLine(al,at,al+aw,at+ah);
+		 */
+		 setColor(c);
+		 drawLine(p0x,p0y,p1x,p1y);
+		 drawLine(p1x,p1y,p2x,p2y);
+		 drawLine(p2x,p2y,p3x,p3y);
+		 drawLine(p3x,p3y,p0x,p0y);
+		 drawLine(p0x,p0y,p2x,p2y);
+		 //getGraphics().setTransform(tr);
+		 translate(tx,ty);
+		 scale(sx,sy);
+		 setRotation(rx,currentRotationX,currentRotationY);
+		 setClip(clip);
 	 }
 	 private boolean isInvisibleAlt(int x,int y,int w,int h)
 	  {
-		 int aw = actualWidth();
-		 int ah = actualHeight();
-		 int al = 0;
-		 int at = 0;
-		 /* include the current clipping region in the logic
-		 int clip[] = graphics.getClip();
-		 if(clip!=null)
-		 {
-			 at = clip[1];
-			 al = clip[0];
-			 ah = at+clip[3];
-			 aw = al+clip[2];
-		 }*/
-		 
-		 Point2D dest = shadow.transform(x,y);
-		 double left = dest.getX();
-		 double top = dest.getY();
-		 Point2D dest1 = shadow.transform(x+w,y+h);
-		 double right = dest1.getX();
-		 double bottom = dest1.getY();
+		 double aw = currentClipW*currentScaleX;
+		 double ah = currentClipH*currentScaleY;
+		 double al = currentClipX*currentScaleX;
+		 double at = currentClipY*currentScaleY;
+		 if(currentClipW<0) 
+		 	{ aw = actualWidth(); 
+		 	  ah = actualHeight(); 
+		 	  al = 0; at = 0;
+		 	}
+
+		 Point2D dest = shadowTransform(x,y);
+		 double left = dest.getX()+currentTranslateX;
+		 double top = dest.getY()+currentTranslateY;
+		 Point2D dest1 = shadowTransform(x+w,y+h);
+		 double right = dest1.getX()+currentTranslateX;
+		 double bottom = dest1.getY()+currentTranslateY;
 		 if(right<left) { double d = left; left=right; right=d; }
 		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
-		 if(rotation!=0)
+		 if(currentRotation!=0)
 		 {{
-			 Point2D dest2 = shadow.transform(x+w,y);
-			 double x2 = dest2.getX();
-			 double y2 = dest2.getY();
+			 Point2D dest2 = shadowTransform(x+w,y);
+			 double x2 = dest2.getX()+currentTranslateX;
+			 double y2 = dest2.getY()+currentTranslateY;
 			 if(x2<left) { left = x2; }
 			 else if(x2>right) { right=x2; }
 			 if(y2<top) { top = y2; }
 			 else if(y2>bottom) { bottom=y2; }
 		 }
 		 {
-			 Point2D dest2 = shadow.transform(x,y+h);
-			 double x2 = dest2.getX();
-			 double y2 = dest2.getY();
+			 Point2D dest2 = shadowTransform(x,y+h);
+			 double x2 = dest2.getX()+currentTranslateX;
+			 double y2 = dest2.getY()+currentTranslateY;
 			 if(x2<left) { left = x2; }
 			 else if(x2>right) { right=x2; }
 			 if(y2<top) { top = y2; }
 			 else if(y2>bottom) { bottom=y2; }
 		 }
 		 }
-		 boolean invisible = ( left>aw
+		 boolean invisible = ( left>al+aw
 				 			|| right<al
 				 			|| bottom<at
-				 			|| top>ah);	 
+				 			|| top>at+ah);	 
 		 return invisible;		  
 	  }
+	 
+	 private boolean isCompletelyVisibleAlt(int x,int y,int w,int h)
+	  {
+		 double aw = currentClipW*currentScaleX;
+		 double ah = currentClipH*currentScaleY;
+		 double al = currentClipX*currentScaleX;
+		 double at = currentClipY*currentScaleY;
+		 if(currentClipW<0) 
+		 	{ aw = actualWidth(); 
+		 	  ah = actualHeight(); 
+		 	  al = 0; at = 0;
+		 	}
+
+		 Point2D dest = shadowTransform(x,y);
+		 double left = dest.getX()+currentTranslateX;
+		 double top = dest.getY()+currentTranslateY;
+		 Point2D dest1 = shadowTransform(x+w,y+h);
+		 double right = dest1.getX()+currentTranslateX;
+		 double bottom = dest1.getY()+currentTranslateY;
+		 if(right<left) { double d = left; left=right; right=d; }
+		 if(bottom<top) { double d = bottom; bottom=top; top = d; }
+		 if(currentRotation!=0)
+		 {{
+			 Point2D dest2 = shadowTransform(x+w,y);
+			 double x2 = dest2.getX()+currentTranslateX;
+			 double y2 = dest2.getY()+currentTranslateY;
+			 if(x2<left) { left = x2; }
+			 else if(x2>right) { right=x2; }
+			 if(y2<top) { top = y2; }
+			 else if(y2>bottom) { bottom=y2; }
+		 }
+		 {
+			 Point2D dest2 = shadowTransform(x,y+h);
+			 double x2 = dest2.getX()+currentTranslateX;
+			 double y2 = dest2.getY()+currentTranslateY;
+			 if(x2<left) { left = x2; }
+			 else if(x2>right) { right=x2; }
+			 if(y2<top) { top = y2; }
+			 else if(y2>bottom) { bottom=y2; }
+		 }
+		 }
+		 boolean visible = ( left>=al
+				 			 && top>=at
+				 			 && bottom<at+ah
+				 			 && right<al+aw);
+		 return visible;		  
+	  }
+	 
 	 static public void setAntialias(Graphics gc,boolean on)
 	 {
 		 if(gc!=null) { gc.setAntialias(on); }
 	 }
 	 private Polygon scratch = null;
+	 public boolean fromBitmap = false;
 	 public void fillPolygon(int[] pts) {
 		 if(scratch==null) { scratch=new Polygon(); }
 		 scratch.reset();
@@ -606,15 +933,36 @@ public class Graphics extends SystemGraphics
 		  boolean invisible = isInvisible(ax,ay,w,h);
 	      // if the image is completely invisible at the current pan/zoom settings,
 		  // then skip all the clipping and scaling and the actual drawing.
-	      if(invisible)
+	      if(invisible && debug)
 	      {   setColor(Color.blue);
-	    	  fillRect(ax,ay,w,h);
+	      	  setOpacity(0.25);
+	      	  fillRect(ax,ay,w,h);
+			  setOpacity(1);
+	/*
+	    	  setColor(Color.yellow);
+	    	  setOpacity(0.5);
+	    	  for(int i=0;i<actualWidth;i+=2)
+	    	  {
+	    		  for(int j=0;j<actualHeight;j+=2)
+	    		  {
+	    			  if(!isInvisible(i,j,1,1))
+	    			  {
+	    				  fillRect(i,j,1,1);
+	    			  }
+	    		  }
+	    	  setOpacity(1);
+	    	  } */
 	          if(flag)
 	          {	
 	          	flag = false;
 	          	setColor(Color.red);
 	          	drawRect(ax-100,ay-100,w+200,h+200);
 	          }
+		      // if the image is completely invisible at the current pan/zoom settings,
+			  // then skip all the clipping and scaling and the actual drawing.
+		      //showTransformAlt(Color.red,ax,ay,w,h);
+		      //showTransformStd(Color.yellow,ax,ay,w,h);
+	
 	      }
 	      return !invisible;
 	  }

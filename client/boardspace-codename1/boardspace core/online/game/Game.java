@@ -1267,9 +1267,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	sentTheResult = (nextChan & 2)==0;		// game has been scored
     	sentTheGame = (nextChan & 4)==0;		// game has been record
     	if(doNotRecord || sentTheGame || sentTheResult) 
-    		{ quitPlayer = null; 
+    		{ 
     		  robotPlayer=null; 
+    		  v.setScored(true);
     		}
+    	
      	}
         //G.print(""+players[0]+players[1]);
         // now players[0] corresponds to p0 in the history
@@ -1294,6 +1296,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         boolean gameo = GameOver();
         if(gameo)
         	{ playedGameOverSound = true; 
+        	  v.setScored(true);
         	  v.stopRobots();
         	}
         if(theChat!=null) { theChat.setSpectator(my.isSpectator()); }
@@ -4549,14 +4552,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void recordAsyncGame(boolean forced)
     {
-    	if(turnBasedGame!=null && whoseTurn!=null && (whoseTurn.uid!=null) && !my.isSpectator() && (turnBasedGame.status==AsyncStatus.active))
+    	if(turnBasedGame!=null 
+    			&& whoseTurn!=null
+    			&& (whoseTurn.uid!=null)
+    			&& !my.isSpectator() 
+    			&& (turnBasedGame.status==AsyncStatus.active))
     	{
         	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
         	String msg = v.fixedServerRecordMessage(fixedHist);
         	//G.print("Fixed "+msg);
         	StringBuilder b = new StringBuilder();
         	theChat.getEncodedContents(b);
-        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),false,forced);		
+        	turnBasedGame.setBody(G.IntToken(whoseTurn.uid),msg,b.toString(),true,forced);		
     	}
     }
     private void recordAsyncComments()
@@ -4570,7 +4577,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        				|| (turnBasedGame.status==AsyncStatus.complete)))
     	{	StringBuilder b = new StringBuilder();
        		theChat.getEncodedContents(b);
-       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),true,true);
+       		turnBasedGame.setBody(G.IntToken(whoseTurn.uid),null,b.toString(),false,true);
     	}
     }
     private String serverRecordString(RecordingStrategy mode)

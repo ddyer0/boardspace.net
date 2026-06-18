@@ -939,16 +939,20 @@ public class FileSelector extends FullscreenPanel
     		}
     	}
         if (target == filterField)
+        {	if("ok".equals(command))
         {	
             initDir((currentSource.currentZip != null) ? currentSource.currentZip : currentSource.filePaneDir);
          }
+        }
         else if (target == dirField)
         {
+        	if("ok".equals(command))
+        	{
         	String text = dirField.getText();
         	if("".equals(text) || (text.indexOf(':')>=0) || text.endsWith("/"))
         		{dirList.removeAll();
             getDir();
-        		}
+        		}}
         }
         else if (target == cancelButton)
         {

@@ -46,6 +46,7 @@ import com.codename1.ui.URLImage.ImageAdapter;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.geom.Rectangle;
 
 import common.NamedClasses;
@@ -146,6 +147,7 @@ public abstract class Platform implements Config{
    public static int Top(Rectangle r) { return(r.getY()); }
 
    public static void SetTop(Rectangle r,int v) { r.setY(v); }
+   public static void SetTop(Point2D r,int v) { r.setY(v); }
 
    public static int Left(Rectangle r) { return(r.getX()); }
    public static int Left(Point x) { return(x.getX()); }
@@ -153,7 +155,8 @@ public abstract class Platform implements Config{
    public static void SetTop(Point p,int v) { p.setY(v); }
    public static void SetLeft(Rectangle r,int to) { r.setX(to); }
    public static void SetLeft(Point p,int v) { p.setX(v); }
-   
+   public static void SetLeft(Point2D p,int v) { p.setX(v); }
+  
    public static int Right(Rectangle r) { return(r.getX()+r.getWidth()); }
 
    public static int Width(Rectangle r) { return(r.getWidth()); }

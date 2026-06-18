@@ -1,19 +1,21 @@
 package graphicstest;
 
-import com.codename1.ui.geom.Rectangle;
-import bridge.Color;
+import java.awt.Color;
+import java.awt.Rectangle;
+
 import graphicstest.GraphicsViewer.TestAble;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
 
-class test_exp implements TestAble
-{	static Image background = null;
+class test_5171 implements TestAble
+{	Image background = null;
 	public void init(int w,int h,int pass)
 	 {
 		   	background = Image.createImage(w,h);
-		 
 	    	Graphics g = background.getGraphics();
+	    	g.setClip(0,0,w,h);
+	    	g.resetAffine();
 	    	for(int x=0;x<w; x+= w/2+1)
 	    	{
 	    		for (int y=0; y<h; y+=h/2+1)

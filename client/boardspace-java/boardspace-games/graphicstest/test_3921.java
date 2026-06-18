@@ -1,6 +1,11 @@
 package graphicstest;
 
 import java.awt.Color;
+import java.awt.Shape;
+import java.util.Vector;
+
+
+import bridge.Polygon;
 import graphicstest.GraphicsViewer.TestAble;
 import lib.Graphics;
 import lib.Image;
@@ -33,8 +38,10 @@ public void draw_3921(Graphics gc,int w,int h,boolean prescale,boolean globalCli
 	if(!prepared_3921) {  prepare_3921(); }
 	gc.setColor(new Color(0xfff0f0f));
 	gc.fillRect(0,0,w,h);
-
+	Vector<Polygon>images = new Vector<Polygon>();
 	float scale = 2.5f;
+	int drawW = 60;
+	int drawH = 50;
 	int tx = -134;
 	int ty = -399;
 	int cx = w/6;
@@ -63,16 +70,23 @@ public void draw_3921(Graphics gc,int w,int h,boolean prescale,boolean globalCli
 				for(int yp=0;yp<h;yp+=120)
 	{	
 		//gc.drawLine(0,0,i,i);
-		//Shape clip = gc.getClip();
-		gc.pushClip();
+		Shape clip = gc.getClip();
+		
 		if(rotate) { gc.setRotation((float)Math.PI/3,xp,yp); }
 		if(localClip) { gc.clipRect(xp+2,yp+2,56,56); }
-		gc.drawImage(test,xp,yp,60,60);
+		Polygon p = new Polygon();
+		p.addPoint(gc.transform(xp,yp));
+		p.addPoint(gc.transform(xp+drawW,yp));
+		p.addPoint(gc.transform(xp+drawW,yp+drawH));
+		p.addPoint(gc.transform(xp,yp+drawH));
+		p.addPoint(gc.transform(xp,yp));
+		images.addElement(p);
+		gc.drawImage(test,xp,yp,drawW,drawH);
 		// this is the actual point of failure.  In this context,
 		// getclip + setclip is not idempotent
 		if(rotate) { gc.setRotation(-(float)Math.PI/3,xp,yp); }
 		//gc.setClip(clip);
-		gc.popClip();
+		gc.setClip(clip);
 	}
 	if(prescale)
 	{
@@ -80,6 +94,13 @@ public void draw_3921(Graphics gc,int w,int h,boolean prescale,boolean globalCli
 	gc.scale(1/scale,1/scale);
 	}
 	if(globalClip) { gc.setClip(0,0,w,h); }
+	for(int i=0;i<images.size();i++)
+	{
+		Polygon p = images.elementAt(i);
+		gc.setColor(Color.black);
+		p.framePolygon(gc);
+		
+	}
 }
 
 

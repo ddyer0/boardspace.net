@@ -3000,6 +3000,9 @@ public abstract class commonCanvas extends exCanvas
  	   	}
     	resetBounds();
     	wake();
+    	if(GameOver())
+    		{ mutable_game_record = allowed_to_edit = true;
+    		}
     	startedOnce = started = true;
     }
 
@@ -3080,9 +3083,7 @@ public abstract class commonCanvas extends exCanvas
     public void setLimbo(boolean v)
     {
         inLimbo = v;
-        if(v)
-        	{ started = false; 
-        	}
+        started = !v;
     }
 
     /** move the view of the game history back to a particular step.  The default inplementation
@@ -4806,6 +4807,11 @@ public abstract class commonCanvas extends exCanvas
     	return (m.op==MOVE_PLEASEUNDO);
     }
     
+    public boolean checkForRepetitions(BoardProtocol bd,commonMove m)
+    {
+    	return repeatedPositions.checkForRepetition(bd,m);
+    }
+    
     /**
      * perform and optionally transmit a move, return true if ok.  Note, it's tempting
      * to do any "auto move" that is needed in the continuation of this method, but don't.
@@ -4873,7 +4879,7 @@ public abstract class commonCanvas extends exCanvas
             		BoardProtocol bd = getBoard();
                  	m.setDigest(bd.Digest());
                  	m.setGameover(false);
-                 	if(repeatedPositions.checkForRepetition(bd,m))
+                 	if(checkForRepetitions(bd,m))
                  		{
                  		// we changed state, the display may need to be updated
                  		saveDisplayBoard();
@@ -8416,12 +8422,16 @@ public String encodeScreenZone(int x, int y,Point p)
 		}}
 	}
 
-	{
+	int w = G.Width(fullRect);
+	int h = G.Height(fullRect);
+	if(w>0 && h>0)
+	{	
 		//if in the board zone
-		G.SetLeft(p,((x-G.Left(fullRect))*100)/G.Width(fullRect));
-		G.SetTop(p,((y-G.Top(fullRect))*100)/G.Height(fullRect));
+		G.SetLeft(p,((x-G.Left(fullRect))*100)/w);
+		G.SetTop(p,((y-G.Top(fullRect))*100)/h);
 		return ".full.";		
 	}
+	return null;
 
 }
 /**
@@ -9522,7 +9532,6 @@ public void verifyGameRecord()
 		else { 
 			DrawArrow(offGC,hp);
 		}
-       
         drawUnmagnifier(offGC,hp);
     	}
     	else {

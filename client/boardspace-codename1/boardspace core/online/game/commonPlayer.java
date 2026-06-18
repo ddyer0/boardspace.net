@@ -70,7 +70,8 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>,online.
     public long readyToPlayTime = 0;	// time at which readytoplay became true
     public boolean startedToPlay = false;	// actually running the game loop
     private boolean spectator; //true if we are a spectator	
-    public boolean isSpectator() { return spectator; }
+    public boolean isSpectator() 
+    	{ return spectator; }
     public void setIsSpectator(boolean v) { spectator = v; }
     public String playerString=null;
     public String playerString() 

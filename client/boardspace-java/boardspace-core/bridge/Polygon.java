@@ -16,7 +16,9 @@
  */
 package bridge;
 
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 
 import lib.G;
 import lib.Graphics;
@@ -41,7 +43,15 @@ public class Polygon extends java.awt.Polygon
 	    addPoint(l,b);
 	    addPoint(l,t);	
 	}
-
+	public  void addPoint(Point p)
+	{
+		addPoint((int)p.getX(),(int)p.getY());
+	}
+	public  void addPoint(Point2D p)
+	{
+		addPoint((int)p.getX(),(int)p.getY());
+	}
+	
 	public void fillPolygon(Graphics inG)
 	{
 		if(inG!=null) { inG.fillPolygon(this); }

@@ -9,4 +9,4 @@ rm -rf temp
 copy Boardspace-1.0.msi unsigned\
 del Boardspace-1.0.msi
 copy unsigned\Boardspace-1.0.msi signed\Boardspace-1.0.msi
-signtool sign /sha1 970b8ca191f7fc94e387f93d2e51b6a2f0fb4335 /fd SHA256 /tr "http://timestamp.digicert.com" signed\Boardspace-1.0.msi
+signtool\signtool sign /td sha256 /sha1 970b8ca191f7fc94e387f93d2e51b6a2f0fb4335 /fd SHA256 /tr "http://timestamp.digicert.com" signed\Boardspace-1.0.msi

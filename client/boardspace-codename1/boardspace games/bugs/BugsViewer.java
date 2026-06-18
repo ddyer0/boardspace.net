@@ -1083,13 +1083,14 @@ public class BugsViewer extends CCanvas<BugsCell,BugsBoard> implements BugsConst
     public boolean deckOverlay = false;
     public boolean goalOverlay = false;
     
+    /*
     public boolean useDirectMagnification(HitPoint hp)
     {	return false;
     	// removed because codename1 still punts when there is rotation
     	//super.useDirectMagnification(hp)
     	//	&& !G.pointInRect(hp,boardRect);
     }
-  
+  */
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.

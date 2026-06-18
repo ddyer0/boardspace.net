@@ -12,7 +12,7 @@ rem
 copy %1 %2
 rem #
 rem #
-sign4j.exe --verbose signtool sign /sha1 %3 /fd SHA256 /tr "http://timestamp.digicert.com"  %2
+sign4j.exe --verbose signtool\signtool sign /td sha256 /sha1 %3 /fd SHA256 /tr "http://timestamp.digicert.com"  %2
 
 goto END
 

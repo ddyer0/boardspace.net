@@ -95,7 +95,6 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			{ 
 			  addTab((TopFrameProtocol)cc); 
 			}
-		setShouldLayout(true);
 	}
 	
 	public void remove(com.codename1.ui.Component cc)

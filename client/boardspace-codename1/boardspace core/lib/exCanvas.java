@@ -1689,6 +1689,7 @@ graphics when using a touch screen.
            	{	
            		magnifier.drawMagnifiedPad(gc,hp,
            							// the math gets too complicated if there is rotation involved
+           							// also the clipping in codename1 is still unreliale
            							useDirectMagnification(hp));
            	}
 			drawHelpText(gc,hp);	// draw the tooltip last of all
@@ -1925,7 +1926,6 @@ graphics when using a touch screen.
     	  //GC.setClip(gc,clip);
     	  }
       }
-
     /**
      * this is the primary method to draw an images with transparent
      * backgrounds on a canvas.  If there's no rotation, the images are clipped 

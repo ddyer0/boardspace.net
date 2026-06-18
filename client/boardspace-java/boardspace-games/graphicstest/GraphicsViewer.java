@@ -145,13 +145,13 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
 
 	
     static boolean toggle = false;
-    static int step = 15;
+    static int step = 0;
 
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {
     	if(gc!=null)
     	{
-    		selectedTest.run.runTest(gc,0,0,getWidth(),getHeight()); 	
+    		selectedTest.run.runTest(gc,0,0,G.Width(fullRect),G.Height(fullRect)); 	
     	}
 
     }
@@ -271,11 +271,14 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     Test[] tests = {  	
     		//new Test("issue 4914","glitchy animation",new Test_4914()),   		// seems cured 6/1/2026
     		new Test("issue 3302","scaling and translation",new Test_3302()),
-    		new Test("issue 3921","complex clipping and rotation",new test_3921()),
+    		new Test("boardspace graphics","complex clipping and rotation",new test_boardspace_graphics()),
+    		new Test("boardspace scale","simple scaling",new test_scale()),
+    		// no longer considered a problem
+    		// new Test("issue 3921","complex clipping and rotation",new test_3921()),
         	new Test("issue 3037","simpler rotation test",new Test_3037()),
         	//new Test("sound clips","test all sound clips",new soundclips()),
         	
-        	new Test("exp test","test under development",new test_exp()),
+        	new Test("issue 5171","clipping outside",new test_5171()),
     		new Test("issue 5058","ios crash overpush",new Test_5058()), 
     		new Test("issue 5058a","ios crash overpop",new Test_5058a()), 
         	//new Test("ios bad code #3108","gets nullpointerexception",new Dtest_3108()),

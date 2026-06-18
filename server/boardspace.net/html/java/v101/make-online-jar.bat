@@ -3,9 +3,10 @@ copy G:\share\projects\eclipse\pf\pf-joi.jar .
 copy G:\share\projects\eclipse\bsh-2.1.8.jar .\bsh.jar
 set JAR = "f:\java\jdk-15.0.1\bin\jar.exe"
 
-%JAR -cmf manifest.txt OnlineLobby.jar  util/*.class lib/*.class bridge/*.class online/common/*.class common/*.class rpc/*.class udp/*.class vnc/*.class online/images/*.jpg online/images/*.png online/language/*.class
-%JAR -cmf manifest.txt Launcher.jar util/*.class lib/*.class bridge/*.class online/common/OnlineConstants*.class
-%JAR -cmf miniloader-manifest.txt boardspace.jar *.class
+%JAR -cmf manifest.txt OnlineLobby.jar  
+%JAR -cmf launcher-manifest.txt Launcher.jar util/*.class 
+%JAR -cmf generic-manifest.txt Lobby.jar util/*.class lib/*.class bridge/*.class online/common/*.class common/*.class rpc/*.class udp/*.class vnc/*.class online/images/*.jpg online/images/*.png online/language/*.class
+%JAR -cmf miniloader-manifest.txt boardspace.jar init/*.class
 %JAR -cmf generic-manifest.txt Bugs.jar bugs/*.class bugs/data/*.class bugs/images/*.png bugs/images/*.jpg bugs/images/bugpix-1/*.jpg bugs/images/bugpix-1/*index.txt bugs/images/bugpix-2/*.jpg bugs/images/bugpix-2/*index.txt bugs/images/categorypix/*.jpg bugs/images/categorypix/*index.txt bugs/data/*.tsv
 %JAR -cmf generic-manifest.txt Game.jar online/game/*.class online/game/export/*.class online/game/sgf/*.class online/game/sgf/export/*.class online/search/*.class online/search/nn/*.class
 %JAR -cmf generic-manifest.txt Sounds.jar bfms/*.au
