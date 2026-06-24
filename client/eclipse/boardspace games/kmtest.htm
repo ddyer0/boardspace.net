@@ -1,0 +1,90 @@
+<HTML>
+<TITLE>Ajax VNC Keyboard/Mouse Testing</TITLE>
+<HEAD></HEAD>
+<script type="text/javascript" src="ajaxvnc.js"></script>
+<script type="text/javascript">
+
+
+function keyHandler(code) {
+	self.status = new Date() + ":  Keyboard event: Keycode = " + code;
+}
+
+function mousemoveHandler(x, y) {
+	self.status = new Date() + ":  MouseMove event: x = " + x + "; y = " + y + "; windowX = " + getWinMouseX() + "; windowY = " + getWinMouseY();
+}
+
+function mousebuttonHandler(act, button) {
+	self.status = new Date() + ":  MouseButton event: action = " + act + "; button = " + button;
+}
+
+function windowresizeHandler(x, y) {
+	self.status = new Date() + ":  WindowResize event: width = " + getWinWidth() + "; y = " + getWinHeight() + "; scrollX = " + getScrollX() + "; scrollY = " + getScrollY();
+}
+
+startKeyListener(keyHandler);
+startMouseMoveListener(mousemoveHandler);
+startMouseButtonListener(mousebuttonHandler);
+startWindowResizeListener(windowresizeHandler);
+setInterval(autoScrolling, 100);
+alert("Testing Script Started");
+</script> 
+<BODY topmargin="10" leftmargin="10" marginheight="10" marginwidth="10" oncontextmenu="return false">
+<h1><a href="http://sourceforge.net/projects/ajaxvnc">Ajax VNC</a></h1>
+<h2> Keyboard/Mouse event testing </h2>
+<br>
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+<br>
+1. The status bar will show all keyboard and mouse event.
+<br>
+2. All keys press/release should be handled. Key code will be displayed on the status bar.
+<br>
+3. All mouse move should be handled. Mouse position will be displayed on the status bar.
+<br>
+4. All mouse button press/release should be handled. Mouse button code will be displayed on the status bar.
+<br>
+5. If you cannot see the correct event status, it means that Ajax VNC is not compatible with your browser.
+<br>
+<br>
+<strong>Please contact us if you have any issue by following means:-</strong>
+<br>
+Project web: <a href="http://sourceforge.net/projects/ajaxvnc">http://sourceforge.net/projects/ajaxvnc</a><br>
+Forum: <a href="http://sourceforge.net/forum/forum.php?forum_id=693603">http://sourceforge.net/forum/forum.php?forum_id=693603</a><br>
+Email: heiczxcv@users.sourceforge.net
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2>Page End</h2>
+</BODY>
+</HTML>
