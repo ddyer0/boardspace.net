@@ -1,16 +1,23 @@
 
 This is the root for java based projects.  To get running, 
 
+First, make a copy of the "eclipse" folder.  I recommend calling it "myeclipse"
+If you call it something else, add the name to the .gitignore file.
+This is your private copy of the eclipse projects needed to build boardspace.
+
 open eclipse
 choose "new workspace"
-navigate to this folder
+navigate to this myeclipse folder
 select import/general/exisiting projects
 
 you should be offered all projects in this directory, select them all.
 
-the initial build may include a lot of errors, caused by changes in 
-the structure and contents of the projects since the eclipse skeleton
-was last used.  Use the eclipse "refresh" option to update everything.
+the initial build state should contain a few build path problems that
+Need to be edited to your file system. There also should be "Missing"
+Class files common/Salt.java.  These are missing by design, as they contain
+Crypto keys to communicate with the real boardspace.net server.  Replace
+These files with a copy of Dummy.java
+
 You should end up with a project with no errors and a finite number of
 warnings, the exact number depending on your eclipse settings.
 
@@ -38,4 +45,8 @@ the files in the codename1 and desktop branches are almost identical.  My practi
 is to do development in the desktop branch, then use winmerge to migrate the changes
 to the codename1 branch.  This is a bit inconvenient, but provides a check against 
 coding accidents.
+
+The starting launches for "prototype" and "offline" are the starting points.
+
+
 
