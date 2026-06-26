@@ -2123,6 +2123,7 @@ public static String expandClassName(String classname)
 
 		static boolean useKeyboardSet = false;
 		static boolean useKeyboard = false;
+		public static boolean predictVisibility=true;
 		public static boolean defaultUseKeyboard() {
 			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}		

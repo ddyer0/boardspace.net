@@ -388,10 +388,7 @@ public class DataCache implements Runnable,Config
 			}
 		}
 
-		DataCache cl = new DataCache(urls);
-		cl.loadCache(cacheDir);
-		
-		return(cl);
+		return new DataCache(urls);
 	}
 	/**
 	 * return a File if it exists and should be used in the list of files.
@@ -524,7 +521,7 @@ public class DataCache implements Runnable,Config
 		else if("<br>".equals(firstLine)) {}	// old version of appinfo, shouldn't happen but..
 		else {
 			if(reader!=null) { reader.close(); } 
-			throw new Error("bad cache key:\n"+firstLine);
+			throw new IOException("bad cache key:\n"+firstLine);
 		}
 		if(reader!=null) { reader.close(); } 
 		}
@@ -589,7 +586,11 @@ public class DataCache implements Runnable,Config
 		// set the runargs as system properties for the benefit of the real start
 
 		File cacheDir = createTempDir();
+		
 		DataCache m = instance = getDataCache(cacheDir);
+		// load the cache after "instance" is set, so it won't be null even if its empty
+		m.loadCache(cacheDir);
+
 		Thread t = new Thread(m,"Background data cache loader");
 		t.setPriority(Thread.MIN_PRIORITY);
 		t.start();		// load the rest of the classes in background
@@ -604,7 +605,8 @@ public class DataCache implements Runnable,Config
 			}
 		}}
 		catch (Throwable e) {
-			showError("Error setting up data cache",e);
+			Plog.log.addLog("Error setting up data cache "+e);
+			G.print("Error setting up data cache "+e);
 		} 		
 	}
 }

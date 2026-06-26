@@ -2,12 +2,9 @@ package graphicstest;
 
 import java.util.Vector;
 
-import com.codename1.ui.geom.Rectangle;
-
 import bridge.Color;
 import bridge.Polygon;
 import graphicstest.GraphicsViewer.TestAble;
-import lib.G;
 import lib.Graphics;
 import lib.Image;
 

@@ -114,7 +114,7 @@ class PTStack extends OStack<PaintTimer>
 }
 
 public class RepaintManager implements VncScreenInterface,Config
-{	boolean USE_VOLATILE_IMAGE = true;	// this uses native hardware, fixes the mac/catalina "terrible font" bug, 4/2020
+{	boolean USE_VOLATILE_IMAGE = false;	// this uses native hardware, fixes the mac/catalina "terrible font" bug, 4/2020
 	boolean USE_BUFFERED_IMAGE = true;
 	boolean ZOOM_IS_SLOW = G.isCodename1();
 	int MINIMUM_FRAME_TIME = 1000/60;		// frames per second
@@ -1017,9 +1017,12 @@ public class RepaintManager implements VncScreenInterface,Config
 	    }
 	    
 	    public Image getOffScreenImage()  
-	    { XImage pb = getViewBuffer();
-	      return((pb!=null)? pb.theImage : null);
+	    {   // this is used by the touch magnigier, and if it wants an offscreen image
+	    	// then it really must have one
+	    	XImage pb = getViewBuffer();
+	    	return((pb!=null)? pb.theImage : null);
 	    };
+	    
 	    public XImage getOrCreateViewBuffer()
 	    {
 	    	XImage im = getViewBuffer();

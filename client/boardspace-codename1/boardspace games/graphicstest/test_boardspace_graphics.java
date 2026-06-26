@@ -2,6 +2,7 @@ package graphicstest;
 
 import java.util.Vector;
 
+import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -47,8 +48,7 @@ public Image prepare(Image pimage,int w,int h)
 public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boolean imageClip,
 		boolean rotate,int phase)
 {	boolean localClip = false;
-	boolean scaleThenClip = false;
-	boolean checkVisibility = false;
+	boolean scaleThenClip = true;
 	double imagexscale = 0.05;
 	double imageyscale = 0.04;
 	int imageW = (int)(w*imagexscale);
@@ -69,6 +69,7 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 	Vector<Polygon>images = new Vector<Polygon>();
 	int ordinal=0;
 	float scale = 1.2f;//2.5f;
+	float effectiveScale = prescale ? scale : 1;
 	double angle = 1.1;//Math.PI/10;
 	int cx = w/6;
 	int cy = h/4;
@@ -105,34 +106,48 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		gc.setColor(Color.darkGray);
 		gc.fillRect(0,0,w,h);
 	}
-	
+	int drawnCx = 0;
+	int drawnCy = 0;
 	for(int xp0=xspace/2,xstep=1;xp0<w/2;xp0+=xspace,xstep=-xstep)
 				for(int yp0=yspace/2,ystep=1;yp0<h/2;yp0+=yspace,ystep=-ystep)
 	{	int xp = xstep*xp0+centerX;
 		int yp = ystep*yp0+centerY;
 		//gc.drawLine(0,0,i,i);
+		if(ordinal==0)
+		{
+			Point drawnCenter = gc.transform(xp,yp);
+			drawnCx = G.Left(drawnCenter);
+			drawnCy = G.Top(drawnCenter);
+		}
 		Rectangle clip = gc.getClipBounds();
 		ordinal++;
+		//if(ordinal==149)
+		{
 		Image testImage = xstep*ystep>0 ? htest : vtest;
+		boolean effectiveRotate = rotate && ordinal>1;
 		int iW = testImage.getWidth();
 		int iH = testImage.getHeight();
+		int iSize = Math.min(imageW,imageH);
 		int drawW = iW-(xstep<0 ? 0 : iW/3);
 		int drawH = iH+(ystep<0 ? 0 : iH/4);
 		double effectiveAngle = angle+0.01*ordinal;
 		Rectangle brclip = null;
-		if(rotate) 
+		if(effectiveRotate) 
 			{ brclip = gc.getClipBounds(); 
 			  gc.setRotation(effectiveAngle,xp,yp); 
 			}
 		if(localClip) { gc.combinedClip(xp+2,yp+2,56,56); }
 		Polygon p = new Polygon();
+		if(effectiveRotate) 
+			{ p.addPoint(gc.transform(xp-10,yp-10)); 
+			}
 		p.addPoint(gc.transform(xp,yp));
 		p.addPoint(gc.transform(xp+drawW,yp));
 		p.addPoint(gc.transform(xp+drawW,yp+drawH));
 		p.addPoint(gc.transform(xp,yp+drawH));
 		p.addPoint(gc.transform(xp,yp));
 	
-		if(checkVisibility ? gc.checkVisibility(xp,yp,drawW,drawH) : true)
+		if(gc.predictVisibility ? gc.checkVisibility(xp,yp,drawW,drawH) : true)
 		{
 		if(imageClip)
 			{
@@ -155,17 +170,24 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		// this is the actual point of failure.  In this context,
 		// getclip + setclip is not idempotent
 		if(localClip) { gc.setClip(clip); }
-		if(rotate) 
+		if(effectiveRotate) 
 			{ gc.setRotation(-effectiveAngle,xp,yp); 
 			  gc.setClip(brclip);
-	}
-	}
+			}
+		if(globalClip)
+		{	gc.setColor(Color.yellow);
+			gc.setOpacity(0.5);
+			int yx = (int)((cx+cw-iSize/2)/effectiveScale);
+			int yy = (int)((cy+ch-iSize/2)/effectiveScale);
+			gc.fillRect(yx,	yy,	iSize*2,iSize*2);
+			gc.setOpacity(1.0);
+		}
+	}}
 	
 	if(prescale) { gc.scale(1/scale,1/scale); }
 	if(globalClip) 
 		{ gc.setClip(initialClip); 
 	}
-	gc.setClip(null);
 	for(int i=0;i<images.size();i++)
 	{
 		Polygon p = images.elementAt(i);
@@ -176,6 +198,12 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		gc.Text("."+(i+1),G.centerX(r),G.centerY(r));
 		
 	}
+	gc.setColor(Color.blue);
+	gc.setOpacity(0.25);
+	gc.drawLine(0,drawnCy,w,drawnCy);
+	gc.drawLine(drawnCx,0,drawnCx,h);
+	gc.setOpacity(1.0);
+		
 	gc.setColor(Color.black);
 	gc.fillRect(w/10,0,w/2,h/15);
 	gc.setColor(Color.white);

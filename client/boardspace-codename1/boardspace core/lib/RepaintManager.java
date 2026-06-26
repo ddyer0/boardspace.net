@@ -1018,9 +1018,12 @@ public class RepaintManager implements VncScreenInterface,Config
 	    }
 	    
 	    public Image getOffScreenImage()  
-	    { XImage pb = getViewBuffer();
+	    { // this is used by the touch magnigier, and if it wants an offscreen image
+	      // then it really must have one
+	      XImage pb = getViewBuffer();
 	      return((pb!=null)? pb.theImage : null);
 	    };
+	    
 	    public XImage getOrCreateViewBuffer()
 	    {
 	    	XImage im = getViewBuffer();

@@ -37,7 +37,10 @@ public class GC {
 	{
 		return(gc!=null ? gc.getClip() : null);
 	}
-
+	public void setClipToScreen(Graphics gc,int l,int t,int w,int h)
+	{
+		if(gc!=null) { gc.setClipToScreen(l,t,w,h); }
+	}
 	/** 
 	 * 
 	 * @param gc the current gc or null
@@ -1000,7 +1003,7 @@ public class GC {
 	public static Rectangle setClip(Graphics gc,int left,int top,int w,int h)
 	{	Rectangle r = getClipBounds(gc);
 		// IOS behaves badly with negative width or height
-		if(gc!=null) { gc.setClip(left,top,Math.max(0, w),Math.max(0, h)); }
+		if(gc!=null) { gc.setClip(left,top,w,h); }
 		return(r);
 	}
 
@@ -1212,4 +1215,21 @@ public class GC {
 			 gc.clearRect(x,y,w,h);
 		 }
 	 }
+	 public static double getScaleX(Graphics gc) 
+	 {
+		 if(gc!=null)
+		 {
+			 return gc.getScaleX();
+		 }
+		 return 1.0;
+	 }
+	 public static double getScaleY(Graphics gc) 
+	 {
+		 if(gc!=null)
+		 {
+			 return gc.getScaleX();
+		 }
+		 return 1.0;
+	 }
+
 }

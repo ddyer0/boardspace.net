@@ -1212,4 +1212,21 @@ public class GC {
 			 gc.clearRect(x,y,w,h);
 		 }
 	 }
+	 public static double getScaleX(Graphics gc) 
+	 {
+		 if(gc!=null)
+		 {
+			 return gc.getScaleX();
+		 }
+		 return 1.0;
+	 }
+	 public static double getScaleY(Graphics gc) 
+	 {
+		 if(gc!=null)
+		 {
+			 return gc.getScaleX();
+		 }
+		 return 1.0;
+	 }
+
 }

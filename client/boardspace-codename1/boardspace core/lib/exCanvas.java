@@ -141,6 +141,7 @@ public abstract class exCanvas extends ProxyWindow
 	
 	}
 	Layout l = new Layout();
+	public JCheckBoxMenuItem predictVisibilityMenuItem;
 	
 		/**
 		 * this is the thtead executing the viewerRun method.  Since the basic
@@ -514,6 +515,7 @@ public abstract class exCanvas extends ProxyWindow
         l.debugSwitch = myFrame.addOption(debugMenu,"debug",G.debug(),deferredEvents);
         l.useKeyboard = myFrame.addOption(debugMenu,"use soft keyboard",G.defaultUseKeyboard(),deferredEvents);
      	l.debugOnceSwitch = myFrame.addOption(debugMenu,"debug once", false,deferredEvents);
+     	predictVisibilityMenuItem = myFrame.addOption(debugMenu,"predict visibility",G.predictVisibility,deferredEvents);
         }
         
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
@@ -670,6 +672,10 @@ public abstract class exCanvas extends ProxyWindow
        	resetBounds();
        	generalRefresh();
        	return  true;
+       }
+       else if(target == predictVisibilityMenuItem)
+       {
+    	   G.predictVisibility = predictVisibilityMenuItem.getState();
        }
        else if(target == sliderMenu)
        {

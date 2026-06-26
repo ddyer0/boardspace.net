@@ -81,6 +81,19 @@ import javax.swing.JTextArea;
  * a hard reset, change applettag.cgi to change the version number.   To facilitate softer resets, a "miniloader" tag is 
  * passed to the main class, and the main class can decide what to do based on the totality of circumstances.
  * 
+ * June 2024 Notes for version 1.9
+ * The "class not found" problem persisted at a low level, so after re-investigation and 
+ * more experiments, I settled on this as the explanation.  When Java loads a main jar
+ * file with a manifest, it begins to preload and cache indexes for all the jars it mentions.
+ * when this classloader supersedes these jars, the cached indexes become invalid, leading
+ * to load failures.   The fix is that java should NEVER encounter a manifest in the jar
+ * file, and instead this classloader provides all the jars on an as-needed basis via
+ * the addUrl mechanism.  Now the problem - legacy classloaders before 1.9 scan onlineLobby.jar
+ * which also contains the main classes, so that has to remain, and therefore legacy class
+ * loaders will still have this problem.   Version 1.9 scans Launcher.jar, which now contains
+ * a duplicate manifest.  All the working classes have been moved from onlineLobby.jar to
+ * the new Lobby.jar.  Unfortunately this requires a complete spin of all the launcher variants.
+ * 
  * @author Ddyer
  *
  */

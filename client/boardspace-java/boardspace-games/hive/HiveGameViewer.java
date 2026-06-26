@@ -510,10 +510,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      * in our cease, we draw the board and the chips on it. 
      * */
     public void drawFixedElements(Graphics gc)
-    { boolean reviewBackground = reviewMode()&&!mutable_game_record;
+    { 
+      boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : rackBackGroundColor);
-     textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
-     textures[reviewBackground ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
+      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
+      textures[reviewBackground ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
           		boardRect); 
       GC.frameRect(gc,Color.black,boardRect);
 
@@ -530,7 +531,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      private void drawBoardElements(Graphics gc, HiveGameBoard gb, Rectangle tbRect,HitPoint ourTurnSelect,HitPoint anySelect)
      {	boolean rotate = currentRotation!=0;
     	double extra = rotate ? (2*Math.PI)*(currentRotation/360.0) : 0;
-     	Rectangle oldClip = GC.combinedClip(gc,boardRect);
+      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
+      	//this gives the board area a green tint to verify where the clipping region
+      	//actually is.  It needs checking when zoom is in effect.
+     	//GC.setColor(gc,Color.green);
+     	//GC.setOpacity(gc,0.5);
+     	//GC.fillRect(gc,boardRect);
+     	//GC.setOpacity(gc,1.0);
      	int csize = gb.cellSize();
      	stableCellSize = csize;
      	numberMenu.numberIcon = StockArt.DownArrowAbove;
@@ -683,7 +690,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //
  
     public void redrawBoard(Graphics gc, HitPoint selectPos)
-    {  
+    {  	
     	if(targetRotation!=currentRotation)
     	{long time = endingRotationTime - startingRotationTime;
     	 long now = G.Date();

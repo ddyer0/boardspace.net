@@ -136,7 +136,14 @@ public class Login implements SimpleObserver,Config,OnlineConstants
     	{
     	while(!exit)
     	{
-		PasswordCollector collector = PasswordCollector.createAndShowGUI(this);
+		PasswordCollector collector = null;
+		try {
+			collector = PasswordCollector.createAndShowGUI(this);
+		}
+		catch (Throwable er)
+		{
+			G.print("error in create gui: "+er);
+		}
 		// note than in the codename1 port, createAndShowGui operates as
 		// a modal dialog, so this is allready complete and this waiting
 		// is superfluous.

@@ -33,7 +33,9 @@ public interface TouchMagnifierClient extends SizeProvider
 	public int getSX();
 
 	public int getSY();
-
+	
+	public double getGlobalZoom();
+	
 	public Component getComponent();
 
 	public void repaintForMouse(int fromNow, String string);

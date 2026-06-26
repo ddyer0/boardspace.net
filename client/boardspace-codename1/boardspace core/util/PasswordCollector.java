@@ -1084,7 +1084,7 @@ public class PasswordCollector extends JPanel
     }
 
     private static void createGui(SimpleObserver parent,PasswordCollector[]result)
-    {
+    {	try {
     	String host = Http.getHostName();
       	boolean isTest = G.getBoolean(TESTSERVER,false);
     	password = null;
@@ -1129,6 +1129,11 @@ public class PasswordCollector extends JPanel
         frame.repaint();
 
         result[0]=newContentPane;
+    	}
+    	catch (Throwable err)
+    	{
+    		G.infoBox("creategui error",err+"\n"+G.getStackTrace(err));
+    	}
     }
 
 	public void windowClosing(WindowEvent e) {
@@ -1160,6 +1165,8 @@ public class PasswordCollector extends JPanel
 	static public void reloadAppletParameters()
 	{	
 		String host = Http.getHostName();
+		if(!"none".equals(host))
+		{
 		String params = "&tagname=mobileinfo"+G.platformString();
 		String uid = prefs.get(loginUidKey,"");
 		if(!"".equals(uid))
@@ -1176,6 +1183,7 @@ public class PasswordCollector extends JPanel
 	    				// + " "+getInfoUrl+" "+params
 	    				);
 	    	}
+		}
 	}
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
