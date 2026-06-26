@@ -31,4 +31,5 @@
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="boardspace-cn2"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="com.boardspace.Develop"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace-cn2"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dparameters=servername,offline&#13;&#10;-Dservername=none&#13;&#10;-Doffline=true"/>
 </launchConfiguration>

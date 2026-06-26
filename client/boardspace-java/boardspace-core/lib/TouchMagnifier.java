@@ -221,21 +221,36 @@ public class TouchMagnifier {
      * last choice is to use the backing and scale it, which results in a simple stretched image
      * @param gc
      * @param pt
-     * @param useDirect
+     * @param canUseDirect
      */
-    public void drawMagnifiedPad(Graphics gc,HitPoint pt,boolean useDirect)
+    public void drawMagnifiedPad(Graphics gc,HitPoint pt,boolean canUseDirect)
     {	MouseManager mouse = client.getMouse();
+   	/*
+    	 * this can use any of 3 different strategies for drawing the magnifier.
+    	 * (1) draw from a backing bitmap to a small target bitmap.  This doesn't provide
+    	 * any additional detail, but the view is magnified.  This is the fastest.
+    	 * in debug builds this has a yellow frame
+    	 * (2) draw from a fresh screen to a small target bitmap.  This incurs the full
+    	 * overhead of drawing the screen, but provides new detail.
+    	 * in debug builds this has a green frame
+    	 * (3) draw from a fresh screen to the live screen.  This has less overhead, but
+    	 * depends on the fidelity of clipping, which is lacking in some combinations.
+    	 * in debug builds, this has a red frame. 
+    	 */
     	if(!mouse.isDown()) { magnifierPadAngle = 3*Math.PI/4;  }
     	else if( touchZoomInProgress())
-    	{	boolean alwaysPredraw = !G.isCodename1();
+    	{	// none of the platforms work well if the window is already zoomed
+    		// TODO: make the combination of a zoomed window and a touch magnifier work better in direct mode
+    		boolean useDirect = canUseDirect && client.getGlobalZoom()==1;
      		//
     		// the default mode is the use the existing offscreen image.  This produces a larger
     		// image, but no new details.
     		//
-    		Image fore = alwaysPredraw || useDirect ? null : client.getOffScreenImage();
+    		Image fore = useDirect ? null : client.getOffScreenImage();
+    		
     		// alwaysPredraw uses a freshly drawn image at the real
     		// magnification, so new details will be visible.
-    		Image shadow = alwaysPredraw||(fore==null && !useDirect) ?  makePrescaledImage(pt) : null;
+    		Image shadow = fore==null ?  makePrescaledImage(pt) : null;
     		{
     		
     	//G.addLog("magnifier");

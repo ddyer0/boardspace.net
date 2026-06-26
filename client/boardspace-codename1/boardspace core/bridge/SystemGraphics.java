@@ -239,6 +239,7 @@ public abstract class SystemGraphics {
 		drawImage(img, imgX, imgY, imgW, imgH);
 		}
 	     graphics.setClip(oldClip);
+
 	    }
 	    else
 	    {
@@ -498,7 +499,7 @@ public abstract class SystemGraphics {
     private float to[] =null;
     private Point pt = null;
  
-    public Point transformStd(int x,int y)
+    public Point transformStd(int x,int y,int atx,int aty)
     {	if(from==null) { from = new float[3]; }
     	if(to==null) { to = new float[3]; }
     	if(pt==null) { pt = new Point(0,0); }

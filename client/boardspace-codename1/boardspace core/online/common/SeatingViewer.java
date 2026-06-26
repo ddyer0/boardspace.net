@@ -590,17 +590,15 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 		int top = (centerY-yo);
 		int right = (centerX+xo);
 		int bottom = (centerY+yo);
-		Rectangle clip = GC.combinedClip(gc,left+2,top+2,right-left-4,bottom-top-4);
 		im.drawImage(gc,
-						left,top,right,bottom,
-						0,0,im.getWidth(),im.getHeight());
+						left+2,top+2,right-4,bottom-4,
+						2,2,im.getWidth()-4,im.getHeight()-4);
 		if(text!=null)
 			{ 	Font f = GC.getFont(gc);
 				GC.setFont(gc,getDefaultFont());
 				GC.Text(gc,true,left,top,right-left,bottom-top,Color.lightGray,null,text); 
 				GC.setFont(gc,f);
 			}
-		GC.setClip(gc,clip);
 		return G.pointInRect(pt,left,top,right-left,bottom-top);
 	}
 	private void drawSeatingSchematic(Graphics gc,SeatingChart chart,HitPoint mainSelect,int tableSize,int centerX,int centerY,HitPoint bubbleSelect,boolean portrait)
@@ -1251,7 +1249,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants,MenuParent
 
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
 	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
-		GC.setClip(gc,0,0,getWidth(),getHeight());
 		if(needNewLayout)
 		{
 			setLocalBounds(0,0,getWidth(),getHeight());

@@ -5673,7 +5673,7 @@ public abstract class commonCanvas extends exCanvas
 
        if (extraactions)
         {
-           setNetConsole = myFrame.addAction(debugMenu,"Set Net Logger",deferredEvents);
+            setNetConsole = myFrame.addAction(debugMenu,"Set Net Logger",deferredEvents);
     		hidden.gameTest = myFrame.addAction(debugMenu,"In game test",deferredEvents);
         	l.layoutAction = myFrame.addAction(debugMenu,"check layouts",deferredEvents);
         	{

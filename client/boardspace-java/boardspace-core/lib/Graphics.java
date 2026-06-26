@@ -46,7 +46,7 @@ public class Graphics extends SystemGraphics
 	protected int actualWidth = 0;
 	protected int actualHeight = 0;
 	public boolean flag = false;
-	
+	public boolean predictVisibility = G.predictVisibility;
 	/**
 	 * this is a hack to allow images to immediately get the slow-scaled version
 	 * instead of temporay pixellated images.
@@ -109,6 +109,9 @@ public class Graphics extends SystemGraphics
 		currentTranslateY += inY;
 		if(logging) { Log.finishEvent(); }
 	}
+	public double getScaleX() { return currentScaleX; }
+	public double getScaleY() { return currentScaleY; }
+	
     public void scale(double x,double y)
     {		if(logging)
 			{ Log.appendNewLog("scale #"+seq);Log.appendLog(" ");  Log.appendLog(x);Log.appendLog(",");Log.appendLog(x);; 
@@ -147,7 +150,6 @@ public class Graphics extends SystemGraphics
 		}
 		graphics.clipRect(left, top, max, max2);
 		combineCurrentClip(left,top,max,max2);
-		
 		if(logging) { Log.finishEvent(); }
 	}
 	public void setClip(int left, int top, int max, int max2) {
@@ -167,6 +169,7 @@ public class Graphics extends SystemGraphics
 		currentClipH = max2;
 		if(logging) { Log.finishEvent(); }
 	}
+	
 	public void setFont(Font f) {
 		if(logging)
 		{ Log.appendNewLog("setfont #"+seq);Log.appendLog(" ");
@@ -274,68 +277,37 @@ public class Graphics extends SystemGraphics
 	{	if(c!=null) { c.rotateCurrentCenter(rotatedAmount,cx,cy,rotatedCenterX,rotatedCenterY); }
 	}
 	
-	static final boolean HARDWAY = true;
-
     private void combineCurrentClip(int ileft,int itop,int iw,int ih)
-    {	if(currentClipW>=0)
+    {	
+    	if(currentClipW<0)
     	{
-    	/*
-    	if( currentRotation!=0)
-    	{
-    		int newl =  G.rotateX(ileft,itop,currentRotation,currentRotationX,currentRotationY);
-    		int newt = G.rotateY(ileft,itop,currentRotation,currentRotationX,currentRotationY);
-    		int newr = newl;
-    		int newb = newt;
-    		{
-    		int rx = G.rotateX(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
-    		int ry = G.rotateY(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
-    		if(rx<newl) { newl = rx; }
-    		if(rx>newr) { newr = rx; }
-    		if(ry<newt) { newt = ry; }
-    		if(ry>newb) { newb = ry; }
-    		}
-       		{
-        		int rx = G.rotateX(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		int ry = G.rotateY(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		if(rx<newl) { newl = rx; }
-        		if(rx>newr) { newr = rx; }
-        		if(ry<newt) { newt = ry; }
-        		if(ry>newb) { newb = ry; }
-        		}
-      		{
-        		int rx = G.rotateX(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		int ry = G.rotateY(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		if(rx<newl) { newl = rx; }
-        		if(rx>newr) { newr = rx; }
-        		if(ry<newt) { newt = ry; }
-        		if(ry>newb) { newb = ry; }
-        		}
-      		ileft = newl;
-      		itop = newt;
-      		iw = newr-newl;
-      		ih = newb-newt;
-    	}*/
-    	double left = ileft;
-    	double top = itop;
+    		currentClipW = actualWidth;
+    		currentClipH = actualHeight;
+    		currentClipX = 0;
+    		currentClipY = 0;
+     	}
+    	double left = ileft+currentTranslateX;
+    	double top = itop+currentTranslateY;
     	double w = iw;
     	double h = ih;
  		double lr = currentClipX;
  		double tr = currentClipY;
-		if(left<lr) { w = Math.max(0,w+(left-lr)); left = lr; }
+		if(left<lr)
+			{ w = Math.max(0,w+(left-lr)); left = lr; 
+			}
 		if(top<tr) { h = Math.max(0,h+(top-tr)); top = tr; }
 		double rr = currentClipX+currentClipW;
 		double br = currentClipY+currentClipH;
 		if((left+w)>rr) { w = rr-left; }
 		if((top+h)>br) { h = br-top; }
  		// ios behaves badly with negative width or height
-    	}
     	if(iw<0) { iw = 0; }
     	if(ih<0) { ih = 0; }
-		currentClipX = ileft;
-		currentClipY = itop;
-		currentClipW = iw;
-		currentClipH = ih;
-		
+    	
+		currentClipX = left;
+		currentClipY = top;
+		currentClipW = w;
+		currentClipH = h;
     }
     
     public Rectangle getClipBounds()
@@ -365,18 +337,8 @@ public class Graphics extends SystemGraphics
 	{	
 		Rectangle r = getClipBounds();
 		combineCurrentClip(left,top,w,h);
-		if(HARDWAY)
-		{	
-			setClipStd((int)currentClipX,
-					(int)currentClipY,
-					(int)currentClipW,
-					(int)currentClipH);
-		}
-		else
-		{	
-			// ios behaves badly with negative width or height
-	    	graphics.clipRect(left,top,Math.max(0, w),Math.max(0, h));	// clip bounds are to the included pixel
-		}
+		// ios behaves badly with negative width or height
+		setClipToScreen(left,top,Math.max(0, w),Math.max(0, h));	// clip bounds are to the included pixel
 		return(r);
 		}
 		
@@ -689,14 +651,17 @@ public class Graphics extends SystemGraphics
 	 }
 	 
 	 public Point transform(int x,int y)
-	 {	 Point p = transformStd(x,y);
+	 {	 Point p = transformStd(x,y,currentTranslateX,currentTranslateY);
 	 	 return p;
 	 }
 	 public void drawImage(Image im,
 	 			int dx,int dy,int dx2,int dy2,
 	 			int fx,int fy,int fx2,int fy2)
 	   {   
-		   if(currentRotation!=0 && currentClipW>=0 && !isCompletelyVisible(dx,dy,dx2-dx,dy2-dy))
+		   if(currentRotation!=0 
+				   && currentClipW>=0 
+				   && !isCompletelyVisible(dx,dy,dx2-dx,dy2-dy)
+				   && (fx!=0 || fy!=0 || dx2!=im.getWidth() || dy2!=im.getHeight()))
 		   {   // native java draws outside the clip, so draw even harderway
 			   drawSubimage(im,dx,dy,dx2,dy2, fx,fy, fx2, fy2);
 		   }
@@ -930,14 +895,15 @@ public class Graphics extends SystemGraphics
 	   */
 	  public boolean checkVisibility(int ax,int ay,int w,int h)
 	  {
-		  boolean invisible = isInvisible(ax,ay,w,h);
+		  boolean invisible = predictVisibility && isInvisible(ax,ay,w,h);
 	      // if the image is completely invisible at the current pan/zoom settings,
 		  // then skip all the clipping and scaling and the actual drawing.
 	      if(invisible && debug)
 	      {   setColor(Color.blue);
 	      	  setOpacity(0.25);
 	      	  fillRect(ax,ay,w,h);
-			  setOpacity(1);
+	      	  setOpacity(1);
+			  
 	/*
 	    	  setColor(Color.yellow);
 	    	  setOpacity(0.5);

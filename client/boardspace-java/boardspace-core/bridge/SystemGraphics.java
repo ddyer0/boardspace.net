@@ -292,7 +292,7 @@ public abstract class SystemGraphics
     public abstract Rectangle getClipBounds();
     public abstract Rectangle combinedClip(int left,int top,int w,int h);
     public abstract void setClip(int left,int top,int w,int h);
-    boolean HARDWAY= true;
+    boolean HARDWAY= false;
     // this uses the same logic as on codename1, which doesn't have
     // an 8 argument drawimage.  It only works for the simpler cases
     public void drawImageHardway(Image im0,
@@ -483,9 +483,21 @@ public abstract class SystemGraphics
 	}
 	
 	protected void setClipStd(int left,int top,int max,int max2)
-	{
-			graphics.setClip(left,top,max,max2);
+	{	
+		graphics.setClip(left,top,max,max2);
 	}
+	/*
+	 * this is to be used if clipping in screen coordinates. It's the same if translate(x,y) is 0
+	 * which is the case in all normal screens, but zoomed screens make thing complicated.
+	 */
+	public void setClipToScreen(int left,int top,int max,int max2)
+	{	int tx = getTranslateX();
+		int ty = getTranslateY();
+		graphics.translate(-tx,-ty);
+		graphics.setClip(left+tx,top+ty,max,max2);
+		graphics.translate(tx,ty);
+	}
+	
 	public Rectangle setClip(Shape sh)
     {	if(logging) { Log.addLog("setClip");}
     	Rectangle val = graphics.getClipBounds();
@@ -518,6 +530,14 @@ public abstract class SystemGraphics
 	{	// this messes with the reported value of getClip, so to avoid
 		// confusing the visibility calculations, scale should precede clip
 		graphics.scale(x, y);
+	}
+	public double getScaleXStd()
+	{
+		return graphics.getTransform().getScaleX();
+	}
+	public double getScaleYStd()
+	{
+		return graphics.getTransform().getScaleY();
 	}
 	public void setOpacity(double op)
 	{
@@ -590,15 +610,15 @@ public abstract class SystemGraphics
     }	
     private Point from = null;
     private Point to =null;
-    public Point transformStd(int x,int y)
+    public Point transformStd(int x,int y,int tx,int ty)
     {	if(from==null) { from = new Point(); }
     	if(to==null) { to = new Point(); }
     	from.setLocation(x,y);
     	AffineTransform tr = graphics.getTransform();
     	tr.transform(from,to);
     	// return screen coordinates
-    	setLocation(to,(int)((to.getX()-tr.getTranslateX())/retinaScale),
-    				(int)((to.getY()-tr.getTranslateY())/retinaScale));
+    	setLocation(to,(int)((to.getX()-tx)/retinaScale),
+    				(int)((to.getY()-ty)/retinaScale));
 
     	return to;
     }

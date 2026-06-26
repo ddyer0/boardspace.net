@@ -272,7 +272,6 @@ public class ResourceBundle
     	{
     	// load from the data cache
     	xName = xName.substring(APPDATA.length());
-    	DataCache cache = DataCache.getInstance();
     	int ind = xName.indexOf('/',1);
         String file0 = ind>=0 ? xName.substring(0,ind) : xName;		// resource name including the /
     	String file = (file0.endsWith(".gz")||file0.endsWith(".zip")||file0.endsWith(".res")) 
@@ -280,7 +279,8 @@ public class ResourceBundle
     					: file0+".res";
     	ResourceBundle res = appdata;
     	if(res==null || !res.resFile.equals(file))
-    	{	File f = cache.findResource(file);
+    	{   DataCache cache = DataCache.getInstance();
+    		File f = cache==null ? null : cache.findResource(file);
     		if(G.Advise(f!=null,"Appdata resource %s not found",name))
     				{
     				//Plog.log.addLog("Load resource data ",file);

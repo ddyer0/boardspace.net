@@ -1,13 +1,11 @@
 package graphicstest;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.Vector;
 
 
 import bridge.Polygon;
 import graphicstest.GraphicsViewer.TestAble;
-import lib.G;
 import lib.Graphics;
 import lib.Image;
 

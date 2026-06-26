@@ -15,6 +15,6 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="util.JWSApplication"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="boardspace"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="extraactions true&#13;&#10;debug true&#13;&#10;offline true&#13;&#10;servername unknown.xxx"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="extraactions true&#13;&#10;debug true&#13;&#10;offline true&#13;&#10;servername none"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace games"/>
 </launchConfiguration>

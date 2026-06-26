@@ -30,6 +30,8 @@ import bridge.LayoutManager;
 import common.GameInfo;
 import bridge.Config;
 
+import java.util.Vector;
+
 import com.codename1.io.Log;
 import com.codename1.ui.CN;
 import com.codename1.ui.Display;
@@ -41,8 +43,7 @@ import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 
 interface stuff {
-	public String connectHost = "boardspace.net" ; //;
-	public String serverHost = "boardspace.net";
+	public String connectHost = "boardspace.net" ; 
 	public String developHost = "local.boardspace.net";
 	public String game = "arimaa";
 	public String viewer = "arimaa.ArimaaViewer";
@@ -94,8 +95,31 @@ class Splash extends FullscreenPanel implements Runnable,Config
 	}
 
 	public void run() {
+		boolean[] down = new boolean[1];
+		while(!down[0])
+		{
 		G.doDelay(5000);	
-		G.runInEdt(new Runnable() { public void run() { frame.remove();}});
+		
+		G.runInEdt(new Runnable()
+			{ public void run() 
+			{ try {
+				// this is a complete kludge.  frame.remove() also kills modal
+				// dialogs, so this waits until the modal dialog we may have
+				// created exits.
+				if(G.popupCount==0)
+					{
+					frame.remove();
+					down[0]=true;
+					}
+				else { G.print("Loop waiting for splash component");
+				}}
+			catch (Throwable err)
+			{
+				G.print("error removing splash screen " +err);
+			}
+			}}
+		);
+		}
 	}
 }
 
@@ -104,24 +128,38 @@ class BoardspaceLauncher implements Runnable,stuff
 	boolean develop = false;
 	public BoardspaceLauncher(boolean dev) {develop=dev; }
 	public void launchLobby()
-	{	
-	    //test login window
-        String params[] = new String[]
+	{	Vector<String> params = new Vector<String>();
+        for(String pv : new String[] 
         		{"servername",connectHost,
         		 "develophost",developHost,
         		 "development",""+develop,
         		 "extraactions",""+develop,
          		 //"playtable","true",
         		 G.DEBUG,""+develop,
-        		};
-        util.JWSApplication.runLobby(params);
+        		})
+        		{ params.addElement(pv);   		
+        		}
+        String parameters = System.getProperty("parameters");
+        if(parameters!=null)
+        {
+        for(String pname : G.split(parameters,','))
+        {
+        	String pv = System.getProperty(pname);
+        	if(pv!=null && !"".equals(pv)) 
+        		{ params.addElement(pname);
+        		  params.addElement(pv);
+        		  G.print("launcher override ",pname,"=",pv);
+        		}
+        }}
+ 		
+        util.JWSApplication.runLobby(params.toArray(new String[params.size()]));
  	}
 	
 	public void launchGame()
 	{	
 	       //test login window
         String params[] = new String[]
-        		{"servername",connectHost,
+        		{OnlineConstants.SERVERNAME,connectHost,
         		Config.PROTOCOL,(develop?"http":"https"),
         		G.DEBUG,""+develop,
         		OnlineConstants.EXTRAACTIONS,"true",
@@ -233,9 +271,7 @@ public class Launch  implements stuff {
  	}
 	
 	public void start() {
-		Http.setHostName(connectHost);
-		//no longer needed as of 5/2017
-		//G.namedClasses = NamedClasses.classes;
+		
 		G.setGlobalStatus(G.GlobalStatus.awake);
 		if (current != null) 
 		{   Plog.log.addLog("Launcher restart "+new BSDate().toString()," ",G.getScreenWidth(),"x",G.getScreenHeight());

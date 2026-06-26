@@ -145,6 +145,7 @@ public abstract class exCanvas extends Canvas
 	
 	}
 	Layout l = new Layout();
+	public JCheckBoxMenuItem predictVisibilityMenuItem;
 	
 	/**
 	 * this is the thtead executing the viewerRun method.  Since the basic
@@ -518,6 +519,7 @@ public abstract class exCanvas extends Canvas
         l.debugSwitch = myFrame.addOption(debugMenu,"debug",G.debug(),deferredEvents);
         l.useKeyboard = myFrame.addOption(debugMenu,"use soft keyboard",G.defaultUseKeyboard(),deferredEvents);
      	l.debugOnceSwitch = myFrame.addOption(debugMenu,"debug once", false,deferredEvents);
+     	predictVisibilityMenuItem = myFrame.addOption(debugMenu,"predict visibility",G.predictVisibility,deferredEvents);
         }
         
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
@@ -674,6 +676,10 @@ public abstract class exCanvas extends Canvas
        	resetBounds();
        	generalRefresh();
        	return  true;
+       }
+       else if(target == predictVisibilityMenuItem)
+       {
+    	   G.predictVisibility = predictVisibilityMenuItem.getState();
        }
        else if(target == sliderMenu)
        {
@@ -1693,6 +1699,7 @@ graphics when using a touch screen.
            	{	
            		magnifier.drawMagnifiedPad(gc,hp,
            							// the math gets too complicated if there is rotation involved
+           							// also the clipping in codename1 is still unreliale
            							useDirectMagnification(hp));
            	}
 			drawHelpText(gc,hp);	// draw the tooltip last of all

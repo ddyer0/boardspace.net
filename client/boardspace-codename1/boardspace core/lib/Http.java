@@ -187,6 +187,12 @@ public class Http implements Config {
     static public UrlResult postURL(String server, String urlStr, String properties[][],String data,int sockets[],UrlResult result)
     {	
         if(hostName==null) { setHostName(server); }
+        if("none".equals(server))
+        {
+        	// return a fast busy
+        	result.error = "no host";
+        	return result;
+        }
         for(int myS : sockets==null?web_server_sockets:sockets)
         {	if(result.text==null)
         	{
@@ -554,6 +560,7 @@ public class Http implements Config {
     	            					: (caller.getClass().getName());
     	            Plog.log.addLog("Log request from " ,cname);
     	            Plog.log.addLog(msg);
+    	            Plog.log.finishLog();
     	            String finalmsg = "&tagname=posterror&name="+Http.escape(cname)
     	            	+ "&data=" + Http.escape(msg);
     	            if((hostName!=null) 

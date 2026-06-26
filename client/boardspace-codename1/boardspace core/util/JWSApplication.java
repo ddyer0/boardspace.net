@@ -300,7 +300,9 @@ public class JWSApplication implements Config,OnlineConstants
 					  Plog.log.addLog("put arg " ,par," ",arg);
 					}
 			}
+			
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);
+			Http.setHostName(serverName);
 			//System.out.println("Servername "+serverName);
 			G.print("Screen: ",G.screenSize()," = ",G.screenDiagonal());
 			G.print("w ",G.getScreenWidth()," h ",G.getScreenHeight()," dpi ",G.getRealScreenDPI()," ppi ",G.getPPI()," scale ",G.getDisplayScale());

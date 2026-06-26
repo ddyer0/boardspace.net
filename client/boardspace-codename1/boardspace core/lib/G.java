@@ -1209,11 +1209,17 @@ public class G extends Platform implements Timestamp
 	//
 	public static void infoBox(String caption,String infoMessage)
 	{	Plog.log.addLog(caption,":",infoMessage);
+		popupCount++;
+		try {
 	    JOptionPane.showMessageDialog(null, infoMessage, caption, JOptionPane.INFORMATION_MESSAGE);
+		}
+		finally { popupCount--; }
 	}
-	
+	// this is a kludge so the splash screen can avoid killing itself and us
+	public static int popupCount=0;
 	public static String optionBox(String caption, String infoMessage, String... options)
-	{
+	{	popupCount++;
+		try {
 		int n = JOptionPane.showOptionDialog(null,infoMessage,caption,
 				  JOptionPane.INFORMATION_MESSAGE,
 				  JOptionPane.INFORMATION_MESSAGE,
@@ -1222,6 +1228,8 @@ public class G extends Platform implements Timestamp
 				  options[0]
 				 );
 		return( (n>=0&&n<options.length) ? options[n] : null);
+		} finally {	popupCount--; }
+
 	}
 	/**
 	 * wait for a time, but with the expectation that the 
@@ -2120,6 +2128,7 @@ public static String expandClassName(String classname)
 
 		static boolean useKeyboardSet = false;
 		static boolean useKeyboard = false;
+		public static boolean predictVisibility=true;
 		public static boolean defaultUseKeyboard() {
 			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}
