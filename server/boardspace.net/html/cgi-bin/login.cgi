@@ -192,6 +192,7 @@ $gameparams
 extramouse=$extra
 $guestnameout$feat
 claudeapi=$'claudeapi
+claudemodel=$'claudemodel
 final=true
 ");
 	my $cs = &simplecs($msg);

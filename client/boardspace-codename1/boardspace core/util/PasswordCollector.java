@@ -1132,7 +1132,8 @@ public class PasswordCollector extends JPanel
     	}
     	catch (Throwable err)
     	{
-    		G.infoBox("creategui error",err+"\n"+G.getStackTrace(err));
+    		Runnable r = new Runnable() { public void run() { G.infoBox("creategui error",err+"\n"+G.getStackTrace(err)); }};
+    		new Thread(r).start();
     	}
     }
 
@@ -1179,12 +1180,15 @@ public class PasswordCollector extends JPanel
 			parseInfoGroup(new Tokenizer(result.text));
 		}
 		else {
+			Runnable r = new Runnable() { public void run() {
 	    		G.infoBox("network error","Can't contact "+host
 	    				// + " "+getInfoUrl+" "+params
-	    				);
-	    	}
-		}
-	}
+	    				); }};
+	    				
+	    	new Thread(r).start();
+	    	
+		}}}
+		
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 		captureValues(false);

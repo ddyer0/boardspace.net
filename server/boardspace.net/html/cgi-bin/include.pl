@@ -98,7 +98,7 @@ $from_email = "registrationdesk\@boardspace.net";
 $bonus_games=5;
 $mobile_login_message = "none";
 $mobile_version_info = "test_games xx enable_games xx disable_games xx java_version $class_dir ios_min_version 5.40 android_min_version 5.40 android_version 5.98 ios_version 5.98 android_reject_versions 0 ios_reject_versions 0 ";
-
+$claudemodel="claude-sonnet-4-6";
 $db_password = "xxxxx";
 $stealth_password = "xxxxx";
 $tournament_password = "xxxxx";
@@ -107,12 +107,14 @@ $proposal_password="xxxxx";
 $changenews_password="xxxxx";
 $log_viewer_password = "xxxxx";
 $tea_key="xxxxxxxxxx";
+$claudeapi="xxxxxxxxx";
 $checksum_salt2 = 'some salt for version 2';
 $checksum_version = 0;
 $checksum_salt1 = some salt for version 1';
 $checksum_saltx = 'the rest of them';
 $webhook = "https://discord.com/xxxxx";
 $turnhook = "https://discord.com/api/xxxx";
+
 
 
 
