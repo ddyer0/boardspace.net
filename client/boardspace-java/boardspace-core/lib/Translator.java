@@ -38,14 +38,16 @@ public class Translator {
 
 	//private static final String API_URL   = "https://api.anthropic.com/v1/messages";
     private static final String API_VER   = "2023-06-01";
-    private static final String MODEL     = "claude-sonnet-4-20250514";
+    // these models are occasionally retired by antropic and will cause the api url to fail
+    // with a file-not-found type of error.   Ask claude for a new model.
+    private static final String MODEL     = "claude-sonnet-4-6";
     private static final int    MAX_TOKENS = 256;
     public static final String CLAUDEAPI = "claudeapi";
-
+    public static final String CLAUDEMODEL = "claudemodel";
     private static final String SYSTEM_PROMPT =
     "You are a professional translator. " +
     "Translate the text the user provides into the requested language naturally and accurately. " +
-    "Reply using EXACTLY this format and nothing else � no quotes, no period, no explanation: " +
+    "Reply using EXACTLY this format and nothing else - no quotes, no period, no explanation: " +
     "SourceLanguage: Translation " +
     "For example: English: Bonjour";
     
@@ -60,11 +62,12 @@ public class Translator {
     public static String translate(String language, String text) throws TranslationException {
     	// APIkey is provided by the server's login script. Better practice than embedding it here.
         String apiKey = G.getString(CLAUDEAPI,"");
+        String model = G.getString(CLAUDEMODEL,MODEL);
         if (apiKey == null || apiKey.length()==0) {
             throw new TranslationException(
                 "ANTHROPIC_API_KEY environment variable is not set.");
         }
-        return translate(language, text, apiKey);
+        return translate(language, text, apiKey,model);
     }
 
     /**
@@ -76,7 +79,7 @@ public class Translator {
      * @return          the translated string
      * @throws TranslationException if the API call fails or returns an error
      */
-    public static String translate(String language, String text, String apiKey)
+    public static String translate(String language, String text, String apiKey,String model)
             throws TranslationException {
 
         if (language == null || language.length()==0)
@@ -87,7 +90,7 @@ public class Translator {
         if (text.length()==0) return text;
 
         String userMessage = "Translate to " + capitalise(language) + ": " + text;
-        String requestBody = buildRequestBody(userMessage);
+        String requestBody = buildRequestBody(userMessage,model);
 
         try {
         	String props[][] = {
@@ -135,12 +138,12 @@ public class Translator {
         }
     }
 
-    // ── JSON helpers (no external library needed) ─────────────────────────────
+    // -- JSON helpers (no external library needed) -----------------------------
 
-    private static String buildRequestBody(String userMessage) {
+    private static String buildRequestBody(String userMessage,String model) {
     	// new version with prompt caching
     	return "{"
-        + "\"model\":\""      + MODEL      + "\","
+        + "\"model\":\""      + model      + "\","
         + "\"max_tokens\":"   + MAX_TOKENS  + ","
         + "\"system\":["
         +   "{"

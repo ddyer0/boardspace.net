@@ -117,7 +117,7 @@ public class Graphics extends SystemGraphics
 			{ Log.appendNewLog("scale #"+seq);Log.appendLog(" ");  Log.appendLog(x);Log.appendLog(",");Log.appendLog(x);; 
 			}
     
-    	super.scale(x,y);
+    	scaleStd(x,y,currentScaleX,currentScaleY);
     	
      	shadow.scale(x,y);
      	currentScaleX *= x;
@@ -277,7 +277,7 @@ public class Graphics extends SystemGraphics
 	{	if(c!=null) { c.rotateCurrentCenter(rotatedAmount,cx,cy,rotatedCenterX,rotatedCenterY); }
 	}
 
-	static final boolean HARDWAY = true;
+	static final boolean HARDWAY = false;
 	
     private void combineCurrentClip(int ileft,int itop,int iw,int ih)
     	{
@@ -285,57 +285,18 @@ public class Graphics extends SystemGraphics
     	{
     		currentClipW = actualWidth;
     		currentClipH = actualHeight;
-    		currentClipX = -currentTranslateX;
-    		currentClipY = -currentTranslateY;
-  
-    		//currentClipX = ileft;
-    		//currentClipY = itop;
-    		//currentClipW = iw;
-    		//currentClipH = ih;
+    		currentClipX = 0;
+    		currentClipY = 0;
     	}
-    	/*
-    	if( currentRotation!=0)
-    	{
-    		int newl =  G.rotateX(ileft,itop,currentRotation,currentRotationX,currentRotationY);
-    		int newt = G.rotateY(ileft,itop,currentRotation,currentRotationX,currentRotationY);
-    		int newr = newl;
-    		int newb = newt;
-    		{
-    		int rx = G.rotateX(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
-    		int ry = G.rotateY(ileft+iw,itop,currentRotation,currentRotationX,currentRotationY);
-    		if(rx<newl) { newl = rx; }
-    		if(rx>newr) { newr = rx; }
-    		if(ry<newt) { newt = ry; }
-    		if(ry>newb) { newb = ry; }
-    		}
-       		{
-        		int rx = G.rotateX(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		int ry = G.rotateY(ileft+iw,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		if(rx<newl) { newl = rx; }
-        		if(rx>newr) { newr = rx; }
-        		if(ry<newt) { newt = ry; }
-        		if(ry>newb) { newb = ry; }
-        		}
-      		{
-        		int rx = G.rotateX(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		int ry = G.rotateY(ileft,itop+ih,currentRotation,currentRotationX,currentRotationY);
-        		if(rx<newl) { newl = rx; }
-        		if(rx>newr) { newr = rx; }
-        		if(ry<newt) { newt = ry; }
-        		if(ry>newb) { newb = ry; }
-        		}
-      		ileft = newl;
-      		itop = newt;
-      		iw = newr-newl;
-      		ih = newb-newt;
-    	}*/
-    	double left = ileft;
-    	double top = itop;
+    	double left = ileft+currentTranslateX;
+    	double top = itop+currentTranslateY;
     	double w = iw;
     	double h = ih;
  		double lr = currentClipX;
  		double tr = currentClipY;
-		if(left<lr) { w = Math.max(0,w+(left-lr)); left = lr; }
+		if(left<lr)
+			{ w = Math.max(0,w+(left-lr)); left = lr; 
+			}
 		if(top<tr) { h = Math.max(0,h+(top-tr)); top = tr; }
 		double rr = currentClipX+currentClipW;
 		double br = currentClipY+currentClipH;
@@ -344,6 +305,7 @@ public class Graphics extends SystemGraphics
  		// ios behaves badly with negative width or height
     	if(iw<0) { iw = 0; }
     	if(ih<0) { ih = 0; }
+    	
 		currentClipX = left;
 		currentClipY = top;
 		currentClipW = w;
@@ -351,44 +313,15 @@ public class Graphics extends SystemGraphics
     	}
     
     public Rectangle getClipBounds()
-    {	if(currentClipW < 0) { return null; }
-    	int ccx =(int)(currentClipX-currentTranslateX);
-    	int ccy = (int)(currentClipY-currentTranslateY);
-    	int ccw = (int)currentClipW;
-    	int cch = (int)currentClipH;
-    	Rectangle r = new Rectangle(ccx,ccy,ccw,cch);
-    	return r;
-    	/*
-    	Rectangle bounds = super.getClipBounds();
-    	if(bounds!=null
-    			&& (G.Left(bounds)!=ccx
-    				|| G.Top(bounds)!=ccy
-    				|| G.Width(bounds)!=ccw
-    				|| G.Height(bounds)!=cch)
-    			)
-    	{
-    		G.print("dif");
-    	}
-    	return bounds==null ? null : r;
-    	*/
-    	
+    {	  	
+    	return getClipBoundsStd();    	
     }
 	public Rectangle combinedClip(int left,int top,int w,int h)
 	{	
 		Rectangle r = getClipBounds();
 		combineCurrentClip(left,top,w,h);
-		if(HARDWAY)
-		{	
-			setClipStd((int)currentClipX,
-					(int)currentClipY,
-					(int)currentClipW,
-					(int)currentClipH);
-		}
-		else
-		{
 			// ios behaves badly with negative width or height
-	    	graphics.clipRect(left,top,Math.max(0, w),Math.max(0, h));	// clip bounds are to the included pixel
-		}
+		setClipToScreen(left,top,Math.max(0, w),Math.max(0, h));	// clip bounds are to the included pixel
 		return(r);
 		}
 		
@@ -953,6 +886,7 @@ public class Graphics extends SystemGraphics
 	      	  setOpacity(0.25);
 	    	  fillRect(ax,ay,w,h);
 			  setOpacity(1);
+			  
 	    	  /*
 	    	  setColor(Color.yellow);
 	    	  setOpacity(0.5);

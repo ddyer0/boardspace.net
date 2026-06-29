@@ -34,10 +34,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+
 import lib.G;
 import lib.Graphics;
 import lib.Image;
 import lib.Log;
+import lib.Plog;
 
 public abstract class SystemGraphics 
 {
@@ -48,6 +50,12 @@ public abstract class SystemGraphics
 	protected boolean debug = false;
 	boolean isRetina = false;
 	double retinaScale = 1.0;
+	double initialScaleX = 1.0;
+	double initialScaleY = 1.0;
+	int initialX = 0;
+	int initialY = 0;
+	Rectangle initialBounds = null;
+	
 	public java.awt.Graphics2D getGraphics() { return(graphics); }
 
 	/**
@@ -526,11 +534,12 @@ public abstract class SystemGraphics
      	Shape sh = graphics.getClip();
     	return(sh);
     }
-	public void scale(double x,double y)
+	public void scaleStd(double x,double y,double cx,double cy)
 	{	// this messes with the reported value of getClip, so to avoid
 		// confusing the visibility calculations, scale should precede clip
 		graphics.scale(x, y);
 	}
+	
 	public double getScaleXStd()
 	{
 		return graphics.getTransform().getScaleX();
@@ -684,9 +693,14 @@ public abstract class SystemGraphics
 	protected void setGraphics(java.awt.Graphics g)
 	{	graphics = (java.awt.Graphics2D)g;
 		setRenderingHints(graphics);	
-		retinaScale = graphics.getTransform().getScaleX();
+		AffineTransform tr = graphics.getTransform();
+		initialScaleX = retinaScale = tr.getScaleX();
+		initialScaleY = tr.getScaleY();
+		initialX = getTranslateX();
+		initialY = getTranslateY();
 		isRetina = retinaScale > 1.0;
-		setClip(graphics.getClipBounds());
+		initialBounds = graphics.getClipBounds();
+		setClip(initialBounds);
 	}
 	protected Rectangle setClipStd(Rectangle r)
 	{	Rectangle or = graphics.getClipBounds();
@@ -714,5 +728,45 @@ public abstract class SystemGraphics
 		gt.setGraphics(g);
 		return gt;
 	}
-	
+    public boolean checkFinalValues()
+    {	boolean bad = false;
+    	if(debug)
+    	{
+    	int tx = getTranslateX();
+    	int ty = getTranslateY();
+       	AffineTransform tr = graphics.getTransform();
+     	if((tx!=initialX) || (ty!=initialY))
+    	{ bad = true; Plog.log.addLog("gc translate not preserved, is ",tx,",",ty);
+    	}
+       	
+       	double scaleX = tr.getScaleX();
+    	double scaleY = tr.getScaleY();
+    	if((Math.abs(scaleX-initialScaleX)>0.001) 
+    			     || Math.abs(scaleY-initialScaleY)>0.001)
+    	{ bad = true; Plog.log.addLog("gc scale not preserved, is ",scaleX,",",scaleY);
+    	}
+    	
+    	Rectangle bounds = graphics.getClipBounds();
+    	if((bounds!=initialBounds)
+    		&&( (initialBounds==null)
+    		|| (bounds==null)
+    		|| (Math.abs(initialBounds.getX()-bounds.getX())>1)
+    		|| (Math.abs(initialBounds.getY()-bounds.getY())>1)
+    		|| (initialBounds.getWidth()!=bounds.getWidth())
+    		|| (initialBounds.getHeight()!=bounds.getHeight())))
+    	{
+    		bad = true;
+    		String bm = (bounds==null)
+					? " null" 
+					: ""+bounds.getX()+","+bounds.getY()+" "+bounds.getWidth()+"x"+bounds.getHeight();
+    		String im = (initialBounds==null)
+					? " null" 
+					: ""+initialBounds.getX()+","+initialBounds.getY()+" "+initialBounds.getWidth()+"x"+initialBounds.getHeight();
+    		Plog.log.addLog("clip bounds changed is now ",
+    				bm,	" was ",im	);
+    	}
+    	}
+      	return bad;
+           		   
+    }
 }

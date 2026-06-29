@@ -338,6 +338,24 @@ public class AR {
 	   		b.append("]");
 	   		return b.toString();
 	   }
+	   public static String toString(int []a)
+	   {	StringBuilder b = new StringBuilder("[");
+	   		if(a!=null)
+	   		{
+	   		for(int i=0,lim=a.length-1;i<=lim; i++)
+	   			{ if(i>20 && lim>i)
+	   				{ b.append( "... + "); 
+	   				  b.append((lim-i)); 
+	   				  i=lim; 
+	   				}
+	   			else 
+	   				{ b.append(" "); 
+	   				  b.append(a[i]); 
+	   				}
+	   			}}
+	   		b.append("]");
+	   		return b.toString();
+	   }
 	/**
 	 * @param list
 	 * @param c

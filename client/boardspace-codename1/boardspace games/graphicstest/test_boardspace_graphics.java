@@ -131,9 +131,8 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		int drawW = iW-(xstep<0 ? 0 : iW/3);
 		int drawH = iH+(ystep<0 ? 0 : iH/4);
 		double effectiveAngle = angle+0.01*ordinal;
-		Rectangle brclip = null;
 		if(effectiveRotate) 
-			{ brclip = gc.getClipBounds(); 
+			{ 
 			  gc.setRotation(effectiveAngle,xp,yp); 
 			}
 		if(localClip) { gc.combinedClip(xp+2,yp+2,56,56); }
@@ -172,11 +171,13 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		if(localClip) { gc.setClip(clip); }
 		if(effectiveRotate) 
 			{ gc.setRotation(-effectiveAngle,xp,yp); 
-			  gc.setClip(brclip);
+			 // this is "good practice" when rotating and unrotating a lot, because
+			 // the clipping region can drift.
+			 gc.setClip(clip);
 			}
 		if(globalClip)
 		{	gc.setColor(Color.yellow);
-			gc.setOpacity(0.5);
+			gc.setOpacity(0.2);
 			int yx = (int)((cx+cw-iSize/2)/effectiveScale);
 			int yy = (int)((cy+ch-iSize/2)/effectiveScale);
 			gc.fillRect(yx,	yy,	iSize*2,iSize*2);
@@ -184,10 +185,23 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		}
 	}}
 	
-	if(prescale) { gc.scale(1/scale,1/scale); }
-	if(globalClip) 
-		{ gc.setClip(initialClip); 
+
+	if(prescale && globalClip)
+	{
+		if(scaleThenClip)
+		{	// clip will be scaled
+			gc.scale(1/scale,1/scale);
+			gc.setClip(initialClip);
+		}
+		else
+		{	
+			gc.setClip(initialClip); 
+			gc.scale(1/scale,1/scale);
+		}
 	}
+	else if(prescale) { gc.scale(1/scale,1/scale); }
+	else if(globalClip) { gc.setClip(initialClip); }
+
 	for(int i=0;i<images.size();i++)
 	{
 		Polygon p = images.elementAt(i);

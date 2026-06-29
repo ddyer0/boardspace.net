@@ -65,7 +65,9 @@ public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuPa
 		int y = getY();
 		int x = getX();
 		g.translate(x, y);
-		paint(lib.Graphics.create(g,this));
+		lib.Graphics g2 = lib.Graphics.create(g,this);
+		paint(g2);
+		g2.checkFinalValues();
 		g.translate(-x, -y);
 	}
 	public void paint(lib.Graphics g)

@@ -16,6 +16,7 @@
  */
 package bridge;
 
+import lib.AR;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
@@ -231,6 +232,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	public void setVisible(boolean v)
 	{	
 		super.setVisible(v);
+
 	}
 	public void paint(com.codename1.ui.Graphics g)
 	{
@@ -478,13 +480,11 @@ public void addToMenus(JButton m)
 		return b.toString();
 	}*/
 	public void pointerPressed(int xa[],int ya[])
-	{	if(xa!=null && xa.length>0)
+	{	
+		
+		if(xa!=null && xa.length>0)
 		{
-		//if(ya[0]<=20)
-		//{
-		//	G.print("Low Y ",toString(xa),toString(ya));
-		//}
-
+		//lib.Plog.log.addLog("press ",AR.toString(xa)," : ",AR.toString(ya));
 		Point p = moveNearerMenu(xa[0],ya[0]);
 		//G.print("mpress ",xa[0]," ",ya[0]);
 		if(p!=null) 
@@ -496,6 +496,7 @@ public void addToMenus(JButton m)
 	}
 	public void pointerPressed(int x,int y)
 	{
+		//lib.Plog.log.addLog("press ",x," : ",y);
 		//G.print("\npressed ",x," ",y);
 		//G.print(getHierarchy());
 		//G.print(G.getStackTrace());
@@ -509,6 +510,7 @@ public void addToMenus(JButton m)
 	}
 	public void pointerDragged(int x,int y)
 	{
+		//lib.Plog.log.addLog("drag ",x," : ",y);
 		//G.print("\ndragged ",x," ",y);
 		//G.print(G.getStackTrace());
 		super.pointerDragged(x,y); 
@@ -516,7 +518,8 @@ public void addToMenus(JButton m)
 	public void pointerDragged(int xa[],int ya[])
 	{	if(xa!=null && xa.length>0)
 		{
-			//G.print("\ndraggs ",xa.length," ",xa[0]," ",ya[0]);
+		//lib.Plog.log.addLog("drag ",AR.toString(xa)," : ",AR.toString(ya));
+		//G.print("\ndraggs ",xa.length," ",xa[0]," ",ya[0]);
 			//G.print(G.getStackTrace());
 			super.pointerDragged(xa,ya);
 		}

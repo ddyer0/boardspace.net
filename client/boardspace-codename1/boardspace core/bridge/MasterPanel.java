@@ -330,6 +330,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			fakePaint(offG.getGraphics());
 			g.translate(-200,-200);
 			GC.setClip(g1,clip);
+			g1.checkFinalValues();
 			}
 			else 
 			{

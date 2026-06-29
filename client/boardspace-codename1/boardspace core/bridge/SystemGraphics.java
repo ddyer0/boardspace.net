@@ -399,9 +399,10 @@ public abstract class SystemGraphics {
 	{
 		return(getClipBoundsStd());
 	}
-	public void scale(double x,double y)
+	
+	protected void scaleStd(double x,double y,double cx,double cy)
 	{	// no correction for the current translate is needed.  the translation is not scaled.
-		graphics.scale((float)x, (float)y);
+		graphics.scale((float)x,(float)y);
 	}
 	
 	public void drawFatLine(int fx,int fy,int tx,int ty,double strokeWidth)
@@ -439,7 +440,18 @@ public abstract class SystemGraphics {
 	{	
 		graphics.setClip(left,top,max,max2);
 	}
-	
+	/*
+	 * this is to be used if clipping in screen coordinates. It's the same if translate(x,y) is 0
+	 * which is the case in all normal screens, but zoomed screens make thing complicated.
+	 */
+	public void setClipToScreen(int left,int top,int max,int max2)
+	{	int tx = getTranslateX();
+		int ty = getTranslateY();
+		graphics.translate(-tx,-ty);
+		graphics.setClip(left+tx,top+ty,max,max2);
+		graphics.translate(tx,ty);
+	}
+
 	public Rectangle setClipStd(Shape sh)
 	{
 		Rectangle val = getClipBoundsStd();
@@ -453,8 +465,9 @@ public abstract class SystemGraphics {
 		  Rectangle rs = (Rectangle)sh;
 		  setClip(G.Left(rs),G.Top(rs),G.Width(rs),G.Height(rs));
 		  }
-		else 
-		  	{ 	graphics.setClip(0,0,9999,9999);
+		else if(sh==null) { graphics.setClip(initialBounds); }
+		else
+			{ 	graphics.setClip(sh);
 		  	}
 		return(val);
 	}
@@ -542,8 +555,7 @@ public abstract class SystemGraphics {
 	
 	public void translate(int inX, int inY) {
 		graphics.translate(inX,inY);
-		
-	}
+		}
 	
 	public void translateMatrix(float inX, float inY) {
 		graphics.translateMatrix(inX,inY);	
@@ -562,16 +574,64 @@ public abstract class SystemGraphics {
     }
     int initialX = 0;
     int initialY = 0;
+    double initialScaleX = 1.0;
+    double initialScaleY = 1.0;
     boolean simulator = false;
+    int initialBounds[] = null;
     protected void setGraphics(com.codename1.ui.Graphics g)
     {
     	graphics = g;
     	initialX = getTranslateX();
     	initialY = getTranslateY();
+    	Transform tr = graphics.getTransform();
+    	
     	simulator = G.isSimulator();
-		retinaScale = graphics.getTransform().getScaleX();
+		initialScaleX = retinaScale = tr.getScaleX();
+		initialScaleY = tr.getScaleY();
 		isRetina = retinaScale > 1.0;
-
+		initialBounds = graphics.getClip();
+    }
+    public boolean checkFinalValues()
+    {	boolean bad = false;
+    	if(debug)
+    	{
+    	int tx = getTranslateX();
+    	int ty = getTranslateY();
+       	Transform tr = graphics.getTransform();
+     	if((tx!=initialX) || (ty!=initialY))
+    	{ bad = true; Plog.log.addLog("gc translate not preserved, is ",tx,",",ty);
+    	}
+       	
+       	double scaleX = tr.getScaleX();
+    	double scaleY = tr.getScaleY();
+    	if((Math.abs(scaleX-initialScaleX)>0.001) 
+    			     || Math.abs(scaleY-initialScaleY)>0.001)
+    	{ bad = true; Plog.log.addLog("gc scale not preserved, is ",scaleX,",",scaleY);
+    	}
+    	
+    	int bounds[] = graphics.getClip();
+    	if((bounds!=initialBounds)
+    		&& ((initialBounds==null)
+    		|| (bounds==null)
+    		|| (Math.abs(initialBounds[0]-bounds[0])>1)
+    		|| (Math.abs(initialBounds[1]-bounds[1])>1)
+    		|| initialBounds[2]!=bounds[2]
+    		|| initialBounds[3]!=bounds[3]))
+    	{
+    		bad = true;
+    		String bm = (bounds==null)
+					? " null" 
+					: ""+bounds[0]+","+bounds[1]+" "+bounds[2]+"x"+bounds[3];
+    		String im = (initialBounds==null)
+					? " null" 
+					: ""+initialBounds[0]+","+initialBounds[1]+" "+initialBounds[2]+"x"+initialBounds[3];
+    		Plog.log.addLog("clip bounds changed is now ",
+    				bm,	" was ", im	);
+    	}}
+    	
+      	return bad;
+           		
+    		   
     }
    // public void isVisible(int x,int y,int w,int h)
    // {	graphics.isVisible(x,y,w,h);

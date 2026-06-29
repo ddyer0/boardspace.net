@@ -309,10 +309,12 @@ public class JWSApplication implements Config,OnlineConstants
 			G.print(G.screendpiDetails);
 			if(G.debug()) 
     		{ 
-    			G.print("\nOS: ",G.getOSInfo(),"\nPlaytable ",G.isTable(),
+    			G.print("\nOS: ",G.getOSInfo(),
+    				 "\nPlaytable ",G.isTable(),
 					 "\nreal playtable: ",G.isRealPlaytable(),
 					 "\nreal InfinityTable: ",G.isRealInfinityTable(),
-					 "\nreal LastGameBoard:",G.isRealLastGameBoard(),
+					 "\nreal LastGameBoard: ",G.isRealLastGameBoard(),
+					 "\nreal mac: ",G.isRealMac(),
 					 "\n");
 
     		}

@@ -278,7 +278,7 @@ import udp.PlaytableStack;
 	    		String val = tok.hasMoreTokens() ? Base64.decodeString(tok.nextToken()) : "";
 	    		
 	    		if("languages".equals(next)) { parseLanguageList(val); }
-	    		else if("checksumversion".equals(next)) { XXTEA.loadChecksum(G.IntToken(val)); }
+	    		else if("checksumversion".equals(next)) { XXTEA.loadChecksum(val); }
 	    		else if("versions".equals(next)) { parseVersionTokens(val); }
 	    		else if("message".equals(next)) { G.putGlobal(next,val); }
 	    		else if("turnbasedmoves".equals(next)) { turnBasedMoves = G.IntToken(val); }

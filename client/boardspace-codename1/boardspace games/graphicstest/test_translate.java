@@ -1,5 +1,6 @@
 package graphicstest;
 
+
 import bridge.Color;
 import bridge.Polygon;
 import graphicstest.GraphicsViewer.TestAble;

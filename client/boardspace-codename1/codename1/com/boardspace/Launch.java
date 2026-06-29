@@ -15,18 +15,16 @@
     If not, see https://www.gnu.org/licenses/.
  */
 package com.boardspace;
+import bridge.MasterForm;
 import lib.BSDate;
 import lib.G;
 import lib.GC;
 import lib.Http;
-import lib.NullLayout;
 import lib.Plog;
 import online.common.OnlineConstants;
 import util.JWSApplication;
 import bridge.Color;
-import bridge.Frame;
 import bridge.FullscreenPanel;
-import bridge.LayoutManager;
 import common.GameInfo;
 import bridge.Config;
 
@@ -41,7 +39,6 @@ import lib.Graphics;
 import lib.Image;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
-
 interface stuff {
 	public String connectHost = "boardspace.net" ; 
 	public String developHost = "local.boardspace.net";
@@ -55,13 +52,11 @@ interface stuff {
 
 class Splash extends FullscreenPanel implements Runnable,Config
 {	Image splash ;
-	Frame frame;
 	
 	public Splash(Image im) 
 	{ splash = im;
-	  frame = new Frame(); 
-	  frame.setLayout((LayoutManager)new NullLayout(frame));
-	  frame.addC(this);
+	 
+	  MasterForm.getMasterPanel().add(this);
 	}
 
 	public void paint(Graphics gr)
@@ -95,31 +90,10 @@ class Splash extends FullscreenPanel implements Runnable,Config
 	}
 
 	public void run() {
-		boolean[] down = new boolean[1];
-		while(!down[0])
-		{
-		G.doDelay(5000);	
-		
-		G.runInEdt(new Runnable()
+		G.doDelay(4000);	
+		G.runInEdt(new Runnable() 
 			{ public void run() 
-			{ try {
-				// this is a complete kludge.  frame.remove() also kills modal
-				// dialogs, so this waits until the modal dialog we may have
-				// created exits.
-				if(G.popupCount==0)
-					{
-					frame.remove();
-					down[0]=true;
-					}
-				else { G.print("Loop waiting for splash component");
-				}}
-			catch (Throwable err)
-			{
-				G.print("error removing splash screen " +err);
-			}
-			}}
-		);
-		}
+				{ remove();}});
 	}
 }
 
@@ -216,11 +190,11 @@ class BoardspaceLauncher implements Runnable,stuff
 	{	Http.setHostName(connectHost);
 		try {
 			Log.setReportingLevel(Log.REPORTING_DEBUG);
-			//MasterForm form = MasterForm.getMasterForm();
-			//form.show();
+			MasterForm form = MasterForm.getMasterForm();
+			form.show();
+			Splash.doSplash();
 			if(launchLobby)
 				{
-				Splash.doSplash();
 				launchLobby(); 
 				} 
 			else

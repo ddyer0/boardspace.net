@@ -54,8 +54,9 @@ public class Canvas extends Component implements WindowListener,MouseListener,Mo
 	public void paint(Graphics g) { G.Error("Should be overridden");}
 	
 	public void paint(com.codename1.ui.Graphics g)
-	{	
-		paint(Graphics.create(g,this));
+	{	Graphics g2 = Graphics.create(g,this);
+		paint(g2);
+		g2.checkFinalValues();
 	}
 
 	/* dummy methods to be overridden */

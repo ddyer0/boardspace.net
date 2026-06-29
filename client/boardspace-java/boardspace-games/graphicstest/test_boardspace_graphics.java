@@ -48,8 +48,8 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		boolean rotate,int phase)
 {	boolean localClip = false;
 	boolean scaleThenClip = true;
-	double imagexscale = 0.05;
-	double imageyscale = 0.04;
+	double imagexscale = 0.10;
+	double imageyscale = 0.08;
 	int imageW = (int)(w*imagexscale);
 	int imageH = (int)(h*imageyscale);
 	int imageS = Math.max(imageW,imageH);
@@ -86,18 +86,18 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		}
 	
 	if(prescale && globalClip)
-	{
+		{ 
 		if(scaleThenClip)
 		{	// clip will be scaled
-			gc.scale(scale,scale);
+		gc.scale(scale,scale);
 			gc.setClip((int)(cx/scale),(int)(cy/scale),(int)(cw/scale),(int)(ch/scale));
 		}
 		else
-		{	
-			gc.setClip(cx,cy,cw,ch); 
+		{
+		gc.setClip(cx,cy,cw,ch);
 			gc.scale(scale,scale);
 		}
-	}
+		}
 	else if(prescale) { gc.scale(scale,scale); }
 	else if(globalClip) { gc.setClip(cx,cy,cw,ch); }
 	if(globalClip)
@@ -129,10 +129,10 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		int iSize = Math.min(imageW,imageH);
 		int drawW = iW-(xstep<0 ? 0 : iW/3);
 		int drawH = iH+(ystep<0 ? 0 : iH/4);
-		double effectiveAngle =  angle+0.01*ordinal;
+		double effectiveAngle = angle+0.01*ordinal;
 		Rectangle brclip = null;
 		if(effectiveRotate) 
-			{ brclip = gc.getClipBounds(); 
+			{ 
 			  gc.setRotation(effectiveAngle,xp,yp); 
 			}
 		if(localClip) { gc.combinedClip(xp+2,yp+2,56,56); }
@@ -145,22 +145,22 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		p.addPoint(gc.transform(xp+drawW,yp+drawH));
 		p.addPoint(gc.transform(xp,yp+drawH));
 		p.addPoint(gc.transform(xp,yp));
-
+	
 		if(gc.predictVisibility ? gc.checkVisibility(xp,yp,drawW,drawH) : true)
 		{
 		if(imageClip)
-		{
+			{
 			gc.drawImage(testImage,xp,yp,xp+drawW,yp+drawH, iW/5,1, iW-iW/5-1,iH-iH/5);
-		}
+			}
 		else
-		{
+			{
 			gc.drawImage(testImage,xp,yp,drawW,drawH); 
-		}
+			}
 		}
 		else
 		{	p.addPoint(gc.transform(xp+drawW/2,yp+drawH/2));
 		}
-		
+
 		
 		gc.setColor(Color.white);
 		gc.Text("#"+ordinal,xp,yp+drawH/3);
@@ -171,7 +171,6 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		if(localClip) { gc.setClip(clip); }
 		if(effectiveRotate) 
 			{ gc.setRotation(-effectiveAngle,xp,yp); 
-			  gc.setClip(brclip);
 			}
 		if(globalClip)
 		{	gc.setColor(Color.yellow);
@@ -183,10 +182,23 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		}
 	}}
 	
-	if(prescale) { gc.scale(1/scale,1/scale); }
-	if(globalClip) 
-		{ gc.setClip(initialClip); 
+
+	if(prescale && globalClip)
+	{
+		if(scaleThenClip)
+		{	// clip will be scaled
+			gc.scale(1/scale,1/scale);
+			gc.setClip(initialClip);
 		}
+		else
+		{	
+			gc.setClip(initialClip); 
+			gc.scale(1/scale,1/scale);
+		}
+	}
+	else if(prescale) { gc.scale(1/scale,1/scale); }
+	else if(globalClip) { gc.setClip(initialClip); }
+
 	for(int i=0;i<images.size();i++)
 	{
 		Polygon p = images.elementAt(i);

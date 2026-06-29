@@ -1205,6 +1205,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		    	 {
 		    	 Graphics g = Graphics.create(client.getGraphics(),client);
 		       	 redrawCanvas(g,false);
+		       	 g.checkFinalValues();
 		    	 }
 		    	 break;
 	     	default:

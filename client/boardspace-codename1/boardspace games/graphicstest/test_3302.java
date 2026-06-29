@@ -6,7 +6,7 @@ import graphicstest.GraphicsViewer.TestAble;
 import lib.Graphics;
 import lib.Image;
 
-class Test_3302 implements TestAble
+public class Test_3302 implements TestAble
 {	
 	public void runTest(Graphics gc,int x,int y,int w,int h)
 	{
@@ -58,7 +58,7 @@ class Test_3302 implements TestAble
             	p.framePolygon(g);
                 	
       			g.translate(-xp, -yp);
-              	g.scale(1.0f/x,1.0f/y);
+              	g.scale(1.0/x,1.0/y);
      			
      			g.setColor(Color.red);
      			g.fillRect(xp*x,yp*y,x*4,y*4);

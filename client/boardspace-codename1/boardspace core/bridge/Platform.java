@@ -629,18 +629,14 @@ windroid
      static final public String getPlatformSubtype()
      {
     	 return 
-         isGPPC() 
-         ? "GPPC"	// google play for pc
-         :
-    	 isRealWindroid()
-    	  ? " WinDroid"
-    	  : isRealLastGameBoard()
-    	 	? " lastgameboard"
-    	 	: isRealPlaytable()
-    	 		? " playtable"
-    	 		: isRealInfinityTable()
-    	 			? " infinitytable"
-    	 			: isTable() ? " sometable" : "";
+    	 isRealMac()? "iMac"
+    	 : isGPPC() ? "GPPC"	// google play for pc
+         : isRealWindroid() ? " WinDroid"
+    	 : isRealLastGameBoard() ? " lastgameboard"
+    	 : isRealPlaytable() ? " playtable"
+    	 : isRealInfinityTable() ? " infinitytable"
+    	 : isTable() ? " sometable"
+    	 : "";
      }
      
      static final public boolean isJavadroid()
@@ -810,10 +806,10 @@ windroid
     // ipad screen=2048x1536 diag=12.8 (actual 9.5) ppi=200 deviceDPI=200 scale =2.083333 
     public static boolean isTable()
     {	    	return(G.getBoolean(G.PLAYTABLE,false)
-    			|| ((screenDiagonal()>17.1) 
+    							|| ((screenDiagonal()>17.1) && !isRealMac())
     							|| isRealPlaytable() 
     							|| isRealInfinityTable()
-    							|| isRealLastGameBoard()));
+    							|| isRealLastGameBoard());
     }
       
     public static int tableWidth() {
@@ -1001,38 +997,45 @@ public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
 	 protected static SystemTime time = null;
 	 static boolean nanotimeSupported = false;
 	 static boolean asknanotime = true;
-	 public static long nanoTime()
-		{	
-			if(nanotimeSupported)
-			{
-				return(time.currentNanoTime());
-			}
-			else if(asknanotime)
-			{	asknanotime = false;
-				time = NativeLookup.create(SystemTime.class);
-				if(time!=null && time.isSupported())
-				{	// try once
-					try {
-						
-						time.currentNanoTime();
-						nanotimeSupported = true;
+	 
+	 private static boolean resolveNanotime()
+	 {
+		 if(asknanotime)
+		 {	asknanotime = false;
+			time = NativeLookup.create(SystemTime.class);
+			boolean supported = time!=null && time.isSupported();
+			if(supported)
+			{	try {
+					time.currentNanoTime();
+					nanotimeSupported = true;
 				}
 				catch (Throwable err)
-						{
-						nanotimeSupported = false;
-						/* some android platforms don't support nanotime
-						 * [2022/01/07 20:26:30] log request from com.boardspace.BoardspaceLauncher (131.100.104.245)
-						 * data=[Java cpu=1.5% screen=240x301 ppi=120 deviceDPI=120 scale =1.0 Codename1  5.97 0 The Android Project http://www.android.com/ 50.0 Linux armv7l 3.0.15-1269351] (launcher 8 threads)outermost run
-						 * error is : java.lang.NoSuchMethodError: android.os.SystemClock.elapsedRealtimeNanos
-						 * java.lang.NoSuchMethodError: android.os.SystemClock.elapsedRealtimeNanos
-						 */
-						Plog.log.addLog("currentNanoTime failed:",err.toString());
-						}
+				{
+					nanotimeSupported = false;
+				/* some android platforms don't support nanotime
+				 * [2022/01/07 20:26:30] log request from com.boardspace.BoardspaceLauncher (131.100.104.245)
+				 * data=[Java cpu=1.5% screen=240x301 ppi=120 deviceDPI=120 scale =1.0 Codename1  5.97 0 The Android Project http://www.android.com/ 50.0 Linux armv7l 3.0.15-1269351] (launcher 8 threads)outermost run
+				 * error is : java.lang.NoSuchMethodError: android.os.SystemClock.elapsedRealtimeNanos
+				 * java.lang.NoSuchMethodError: android.os.SystemClock.elapsedRealtimeNanos
+				 */
+			    Plog.log.addLog("currentNanoTime failed:",err.toString());
+				}
 			}
-				// recurse this once, either use the native code or avoid it.
-				return(nanoTime());
+		 }
+		 return nanotimeSupported;
+	 }
+	 public static boolean isRealMac()
+	 {	return resolveNanotime()
+			 	&& time.isRunningOnMac();
+	 }
+	 
+	 public static long nanoTime()
+		{	if(resolveNanotime())
+			{
+			return time.currentNanoTime();
 			}
-			else {
+		else
+			{
 			long tim = System.currentTimeMillis();
 			return((tim-basetime)*1000000);
 			}

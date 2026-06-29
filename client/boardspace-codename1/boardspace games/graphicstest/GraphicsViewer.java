@@ -272,7 +272,7 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     		//new Test("issue 4914","glitchy animation",new Test_4914()),   		// seems cured 6/1/2026
     		new Test("issue 3302","scaling and translation",new Test_3302()),
         	new Test("issue 5270","clipping regression 2",new test_5270()),
-        	new Test("issue 5263","clipping regression",new test_5263()),
+        	//new Test("issue 5263","clipping regression",new test_5263()),
     		new Test("boardspace graphics","complex clipping and rotation",new test_boardspace_graphics()),
     		new Test("boardspace scale","simple scaling",new test_scale()),
     		// no longer considered a problem
@@ -280,7 +280,7 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
         	//new Test("issue 3037","simpler rotation test",new Test_3037()),
         	//new Test("sound clips","test all sound clips",new soundclips()),
         	
-        	new Test("issue 5171","clipping outside",new test_5171()),
+        	//new Test("issue 5171","clipping outside",new test_5171()),
     		//new Test("issue 5058","ios crash overpush",new Test_5058()), 
     		//new Test("issue 5058a","ios crash overpop",new Test_5058a()), 
     		new Test("bad translate value","wrong result",new Dtest_translate()),

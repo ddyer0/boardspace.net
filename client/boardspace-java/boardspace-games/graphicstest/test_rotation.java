@@ -1,16 +1,14 @@
 package graphicstest;
 
-import com.codename1.ui.geom.Rectangle;
-import com.codename1.ui.geom.Shape;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.Shape;
 
 import graphicstest.GraphicsViewer.TestAble;
 import lib.Graphics;
 import lib.Image;
 
-
-
-
-class test_5263 implements TestAble
+class test_rotation implements TestAble
 {		
 	public void runTest(Graphics gc,int x,int y,int w,int h)
 	{
@@ -40,35 +38,42 @@ public Image prepare(Image pimage,int w,int h)
 int paints = 0;
 public void draw(Graphics gc,int w,int h)
 {	
-	double imagexscale = 0.04;
-	double imageyscale = 0.03;
+	double imagexscale = 0.24;
+	double imageyscale = 0.1;
 	int imageW = (int)(w*imagexscale);
 	int imageH = (int)(h*imageyscale);
 	Image testImage = prepare(null,imageW,imageH); 
 	Shape originalClip = gc.getClip();
 	{
-	gc.setColor(0xa000);
+	gc.setColor(Color.lightGray);
 	gc.fillRect(0,0,w,h);
-	for(int i=0;i<3;i++)
+	gc.setClip(w/4,h/5,w/2,h/2);
+	gc.setColor(Color.blue);
+	gc.fillRect(0,0,w,h);
+	int steps = 20;
+	for(int i=0;i<steps;i++)
 	{
-	paints++;
-	gc.setClip(200,200,w-400,h-400);
-	gc.setColor(0xb000);
-	gc.fillRect(0,0,w,h);
-	Rectangle clip = gc.getClipBounds();
-	gc.clipRect(w-100,h-100,30,10);
-	gc.setColor(0xff00);
-	gc.fillRect(0,0,w,h);
-		
-	gc.drawImage(testImage,w-110,h-110,50,30);
-	
-	gc.setClip(clip);
-
-	}}
+		for(int j=0;j<steps; j++)
+		{
+			int xp =i*w/steps;
+			int yp =j*h/steps;
+			double r = Math.PI/3;
+			gc.setRotation(r,xp,yp);
+			gc.setColor(Color.red);
+			gc.setOpacity(1);
+			int aw = w/steps/2;
+			int ah = h/steps/2;
+			//gc.fillRect(xp,yp,aw,ah);
+			gc.drawImage(testImage,xp,yp,aw,ah);
+			gc.setRotation(-r,xp,yp);
+			gc.setColor(Color.green);
+			//gc.setOpacity(0.01);
+			//gc.fillRect(0,0,w,h);
+			gc.setOpacity(1);
+		}
+	}
 	gc.setClip(originalClip);
 
+}}}
 
-}
 
-
-}

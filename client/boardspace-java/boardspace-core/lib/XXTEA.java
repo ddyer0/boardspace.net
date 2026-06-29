@@ -323,7 +323,7 @@ public final class XXTEA implements CommonConfig{
     	loadSalt();
     	return theSalt==null ? 0 : theSalt.checksumVersion();
     }
-    public static void loadChecksum(int n)
+    public static void loadChecksum(String n)
     {
     	loadSalt();
     	if(theSalt!=null) { theSalt.loadChecksum( n); }

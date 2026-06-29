@@ -18,6 +18,7 @@
 package util;
 
 import com.codename1.ui.Component;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.TextField;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
@@ -1082,7 +1083,10 @@ public class PasswordCollector extends JPanel
     	G.runInEdt(new Runnable() { public void run() { createGui(parent,result); }});
     	return(result[0]);
     }
-
+    public void paint(Graphics g)
+    {		
+    	super.paint(g);
+    }
     private static void createGui(SimpleObserver parent,PasswordCollector[]result)
     {	try {
     	String host = Http.getHostName();
@@ -1132,9 +1136,10 @@ public class PasswordCollector extends JPanel
     	}
     	catch (Throwable err)
     	{
-    		Runnable r = new Runnable() { public void run() { G.infoBox("creategui error",err+"\n"+G.getStackTrace(err)); }};
+    		Runnable r = new Runnable() 
+    			{ public void run() {G.infoBox("creategui error",err+"\n"+G.getStackTrace(err)); }};
     		new Thread(r).start();
-    	}
+     	}
     }
 
 	public void windowClosing(WindowEvent e) {
@@ -1180,15 +1185,13 @@ public class PasswordCollector extends JPanel
 			parseInfoGroup(new Tokenizer(result.text));
 		}
 		else {
-			Runnable r = new Runnable() { public void run() {
-	    		G.infoBox("network error","Can't contact "+host
+	    	Runnable r = new Runnable() {public void run() {	G.infoBox("network error","Can't contact "+host
 	    				// + " "+getInfoUrl+" "+params
-	    				); }};
-	    				
+	    				);}};
 	    	new Thread(r).start();
-	    	
-		}}}
-		
+	    	}
+		}
+	}
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 		captureValues(false);

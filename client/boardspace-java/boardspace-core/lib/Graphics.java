@@ -116,8 +116,8 @@ public class Graphics extends SystemGraphics
     {		if(logging)
 			{ Log.appendNewLog("scale #"+seq);Log.appendLog(" ");  Log.appendLog(x);Log.appendLog(",");Log.appendLog(x);; 
 			}
-    
-     	super.scale(x,y);
+
+     	scaleStd(x,y,currentScaleX,currentScaleY);
     	
     	shadow.scale(x,y);
      	currentScaleX *= x;
@@ -150,6 +150,7 @@ public class Graphics extends SystemGraphics
 		}
 		graphics.clipRect(left, top, max, max2);
 		combineCurrentClip(left,top,max,max2);
+		
 		if(logging) { Log.finishEvent(); }
 	}
 	public void setClip(int left, int top, int max, int max2) {
@@ -169,7 +170,6 @@ public class Graphics extends SystemGraphics
 		currentClipH = max2;
 		if(logging) { Log.finishEvent(); }
 	}
-	
 	public void setFont(Font f) {
 		if(logging)
 		{ Log.appendNewLog("setfont #"+seq);Log.appendLog(" ");
@@ -277,6 +277,8 @@ public class Graphics extends SystemGraphics
 	{	if(c!=null) { c.rotateCurrentCenter(rotatedAmount,cx,cy,rotatedCenterX,rotatedCenterY); }
 	}
 	
+	static final boolean HARDWAY = false;
+	
     private void combineCurrentClip(int ileft,int itop,int iw,int ih)
     {	
     	if(currentClipW<0)
@@ -311,27 +313,8 @@ public class Graphics extends SystemGraphics
     }
     
     public Rectangle getClipBounds()
-    {	if(currentClipW < 0) { return null; }
-    	int ccx =(int)(currentClipX-currentTranslateX);
-    	int ccy = (int)(currentClipY-currentTranslateY);
-    	int ccw = (int)currentClipW;
-    	int cch = (int)currentClipH;
-    	Rectangle r = new Rectangle(ccx,ccy,ccw,cch);
-    	return r;
-    	/*
-    	Rectangle bounds = super.getClipBounds();
-    	if(bounds!=null
-    			&& (G.Left(bounds)!=ccx
-    				|| G.Top(bounds)!=ccy
-    				|| G.Width(bounds)!=ccw
-    				|| G.Height(bounds)!=cch)
-    			)
     	{
-    		G.print("dif");
-    	}
-    	return bounds==null ? null : r;
-    	*/
-    	
+    	return getClipBoundsStd();    	
     }
 	public Rectangle combinedClip(int left,int top,int w,int h)
 	{	
