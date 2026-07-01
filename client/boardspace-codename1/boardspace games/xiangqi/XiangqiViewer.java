@@ -88,6 +88,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     private Rectangle reverseViewRect = addRect("reverse");
     private boolean traditional_chips = false;
     private boolean prerotated = false;
+	
     public int getAltChipset()
     {	int rotate = (!prerotated && seatingFaceToFace())
     					? b.reverseY()?4:2
@@ -221,7 +222,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
         G.SetRect(boardRect,boardX, boardY, boardW, boardH);         
         placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,reverseViewRect,altchipRect);       
         if(rotate)
@@ -379,6 +380,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         
        	drawArrow(gc,gb,YELLOWDOT,gb.pickedSource,gb.droppedDest,brect);
        	drawArrow(gc,gb,YELLOWDOT,gb.prevPickedSource,gb.prevDroppedDest,brect);
+       	numberMenu.clearSequenceNumbers();
 
         // drawing order doesn't matter for these graphics
     	for(XiangqiCell cell = gb.allCells;
@@ -388,6 +390,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
             boolean canhit = gb.LegalToHitBoard(cell);
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             if( cell.drawStack(gc,this,canhit?highlight:null,SQUARESIZE,xpos,ypos,0,0.1,null)) 
             	{ highlight.arrow = moving 
@@ -408,6 +411,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
             	}
         	}
     	}    	
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor,0.5); 
     }
     private void drawArrow(Graphics gc,XiangqiBoard gb,Color color,XiangqiCell from,XiangqiCell to,Rectangle brect)
     {
@@ -505,7 +509,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     {	
 
         handleExecute(b,mm,replay);
-        
+        numberMenu.recordSequenceNumber(b.activeMoveNumber()); 
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         
         if(replay.animate) { playSounds(mm); }
@@ -778,5 +782,10 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+    public int getLastPlacement()
+    {
+    	return b.moveNumber;
+    }
+
 }
 

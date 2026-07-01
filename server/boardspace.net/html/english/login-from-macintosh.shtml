@@ -32,23 +32,25 @@ new google.translate.TranslateElement({pageLanguage: 'en', layout: google.transl
 <h1 style="text-align: center;">Boardspace from MacOS</h1><div style="text-align: center;"><a href="login-from-windows.shtml">Windows download</a> &nbsp; &nbsp; <a href="login-from-linux.shtml">Linux download</a> &nbsp; <a href="login-from-android.html">Android download</a> &nbsp; &nbsp;<a href="login-from-ios.html">IPhone/Ipad download</a></div><br><span style="font-weight: bold;">Preferred:</span> Boardspace.net uses a <a href="https://apps.apple.com/us/app/boardspace-net-launcher/id1387045155?mt=12">launcher app</a>, which can be installed from the official <span style="font-weight: bold;">Macintosh App Store</span>, found <a href="https://apps.apple.com/us/app/boardspace-net-launcher/id1387045155?mt=12">here</a> &nbsp;the app bundles it's own java runtime<br>and
 runs in a sandbox. &nbsp;Just install, and run from the macintosh
 launcher icon. &nbsp;You can find it in /Applications/ if you want to
-make your own <br>desktop link to it. &nbsp;Once installed and launched, you'll need to <a href="#account">log in</a> to play online.<br><br>That's the simple way. &nbsp;Otherwise, you'll need to start by installing Java. &nbsp;If you do not have java yet, visit <a href="https://java.com/">Java.com</a>, download and install it.<br><a href="needsjava.shtml">This page</a>
+make your own <br>desktop
+link to it. &nbsp;This version works on both intel and apple silicon/
+&nbsp; &nbsp;Once installed and launched, you'll need to <a href="#account">log in</a> to play online.<br><br>That's the simple way. &nbsp;Otherwise, you'll need to start by installing Java. &nbsp;If you do not have java yet, visit <a href="https://java.com/">Java.com</a>, download and install it.<br><a href="needsjava.shtml">This page</a>
 has other information about getting java installed and configured on
-your computer.<br><br>The
+your computer. &nbsp;For now, we recommend installing the <br>Intel version even if you have Apple silicon.<br><br>The
 actual boardspace application is a set of java ".jar" files which are
 downloaded once and cached locally. &nbsp;There are three variant<br><span style="font-weight: bold;">launchers</span>
 that take care of the details, and also keep your local copy up to date
-with the current version. &nbsp;Whever method you choose,<br>you'll have to cope with windows efforts to prevent you being tricked in to downloading malware. &nbsp; <br>For the record: boardspace isn't malware, doesn't damage your PC, and won't annoy you with advertising.<br><br><span style="font-weight: bold;">Method #1</span>: Download this MacOS <a href="../java/launcher/boardspace.dmg">disk image</a>&nbsp; <a href="../java/launcher/boardspace.dmg"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="boardspace icon" src="../java/launcher/boardspace-icon-32x32.jpg"></a> . &nbsp;Open the disk image, and drag the boardspace app anywhere. Your desktop is a good place.<br><br>When you try to open the app, you'll probably see a window similar to this.<br>&nbsp;<img style="width: 270px; height: 87px;" alt="mac warning" src="../images/mac-warning.jpg">. &nbsp; <br>
+with the current version. &nbsp;Whever method you choose,<br>you'll have to cope with windows efforts to prevent you being tricked in to downloading malware. &nbsp; <br>For the record: boardspace isn't malware, doesn't damage your PC, and won't annoy you with advertising.<br><br><span style="font-weight: bold;">Method #1</span>: Download this MacOS <a href="../java/launcher/boardspace.dmg">disk image</a>&nbsp; <a href="../java/launcher/boardspace.dmg"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="boardspace icon" src="../java/launcher/boardspace-icon-32x32.jpg"></a> . &nbsp;Open the disk image, and drag the boardspace app anywhere. Your desktop is a good place.<br>Note that the app in this image requires an <span style="font-weight: bold;">Intel</span> java to be installed.<br><br>When you try to open the app, you'll probably see a window similar to this.<br>&nbsp;<img style="width: 270px; height: 87px;" alt="mac warning" src="../images/mac-warning.jpg">. &nbsp; <br>
 Click on the ?, or The <span style="font-weight: bold;">first time you click to run the executable, use CONTROL-CLICK</span>
 and select "Open". &nbsp;You will probably see a scary pop-up similar
 to this, which outlines the rest of the process to approve running the
 app.<br><img style="width: 285px; height: 249px;" alt="warning message" src="../images/mac-control.jpg"><br>the final step is to launch the security control panel, and allow third party apps to run<br><img style="width: 602px; height: 199px;" alt="security panel" src="../images/mac-security.jpg"><br><br><br><br><br><span style="font-weight: bold;">Method #2</span>: Use&nbsp;
 
-<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+<a href="%3C%21--#include%20virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink%20--%3E">
 
 <img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="../images/java-web-star-icon.jpg"></a> to
 
-<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+<a href="%3C%21--#include%20virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink%20--%3E">
 
 launch</a>
 

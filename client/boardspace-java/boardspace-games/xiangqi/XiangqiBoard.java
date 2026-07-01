@@ -83,6 +83,9 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
 {
 	private XiangqiState unresign;
 	private int lastDrawMove = 0;
+	private int prevLastPicked = -1;
+	private int prevLastDropped = -1;
+
 	private XiangqiState board_state;
 	public XiangqiState getState() {return(board_state); }
 	public void setState(XiangqiState st) 
@@ -315,6 +318,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         moveNumber = 1;
         unresign = null;
         lastDrawMove = 0;
+        prevLastPicked = prevLastDropped = -1;
         prev_state = XiangqiState.PUZZLE_STATE;
 
         // note that firstPlayer is NOT initialized here
@@ -501,6 +505,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
     	if(po!=null)
     	{
     	XiangqiCell ps = pickedSource;
+       	ps.lastPicked = prevLastPicked;
+    	prevLastPicked = -1;
     	pickedSource=null;
     	pickedObject = null;
     	addChip(ps,po);
@@ -710,6 +716,10 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         				  }
         				}
         			XiangqiChip moving = removeChip(from);
+        			prevLastPicked = from.lastPicked;
+        			prevLastDropped = to.lastDropped;
+        			from.lastPicked = moveNumber;
+        			to.lastDropped = moveNumber;
         			m.chip = moving;
         			pickedSource = from;
         			droppedDest = to;
@@ -758,6 +768,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
             		{	progressMove = moveNumber;
             		}
             		
+               		prevLastDropped = droppedDest.lastDropped;
+            		droppedDest.lastDropped = moveNumber;
             		setNextStateAfterDrop();
             		}
 
@@ -783,6 +795,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         	else 
         		{ pickedSource = from;
         		  pickedObject = removeChip(from);
+        		  prevLastPicked = from.lastPicked;
+        		  from.lastPicked = moveNumber;
         		  m.chip = pickedObject;
         			// if you pick up a gobblet and expose a row of 4, you lose immediately
           		}

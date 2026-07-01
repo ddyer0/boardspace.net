@@ -889,7 +889,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 				}
 				
 		        if(replay==replayMode.Live)
-		        	{ lastDroppedObject = dropped.getAltDisplayChip(dest);
+		        	{ lastDroppedObject = dropped;//dropped.getAltDisplayChip(dest);
 		        	  //G.print("last ",lastDroppedObject); 
 		        	}
 		           
@@ -950,7 +950,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         	// come here only where there's something to pick, which must
  			{
  			StymieCell src = getCell(m.source,m.to_col,m.to_row);
- 			if(isDest(src) && (board_state!=StymieState.Jump))
+ 			if(isDest(src) && (board_state==StymieState.Jump) && captureStack.size()>0)
  			{
  				unDropObject();
  				StymieCell mid = captureStack.pop();

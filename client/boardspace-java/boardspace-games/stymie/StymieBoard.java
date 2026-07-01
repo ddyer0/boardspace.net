@@ -889,7 +889,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 				}
 				
 		        if(replay==replayMode.Live)
-		        	{ lastDroppedObject = dropped.getAltDisplayChip(dest);
+		        	{ lastDroppedObject = dropped;//dropped.getAltDisplayChip(dest);
 		        	  //G.print("last ",lastDroppedObject); 
 		        	}
 		           

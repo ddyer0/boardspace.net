@@ -18,16 +18,38 @@ package xiangqi;
 import lib.Random;
 
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<XiangqiCell>
 {
 	public XiangqiCell[] newComponentArray(int n) { return(new XiangqiCell[n]); }
 }
-public class XiangqiCell extends stackCell<XiangqiCell,XiangqiChip> implements XiangqiConstants
+public class XiangqiCell extends stackCell<XiangqiCell,XiangqiChip> implements XiangqiConstants,PlacementProvider
 {	public XiangqiChip[] newComponentArray(int n) { return(new XiangqiChip[n]); }
 	public boolean isPalace = false;
-	
+	int lastPicked = -1;
+	int lastDropped = -1;
+
+    
+	public void copyFrom(XiangqiCell o)
+	{
+		super.copyFrom(o);
+		lastPicked = o.lastPicked;
+		lastDropped = o.lastDropped;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPicked = -1;
+		lastDropped = -1;
+	}
+	public int getLastPlacement(boolean empty)
+	{
+		return empty ? lastPicked : lastDropped;
+	}
+
+
 	// true if this cell is across the river for that player
 	public boolean acrossTheRiver(int forPlayer)
 	{	return((forPlayer==0)==(row<6));
@@ -51,4 +73,5 @@ public class XiangqiCell extends stackCell<XiangqiCell,XiangqiChip> implements X
 	 */
 	public int stackBaseLevel() { return(1); }
 	public static boolean sameCell(XiangqiCell c,XiangqiCell d) { return((c==null)?(d==null):c.sameCell(d)); }
+
 }
