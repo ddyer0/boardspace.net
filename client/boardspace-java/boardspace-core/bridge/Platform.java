@@ -52,11 +52,14 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -225,28 +228,202 @@ public static Object MakeInstance(String classname)
 			G.print(getStackTrace(t,tr));
 		}
 	}
-	public static Clip getAudioClip(URL name)
-	{	
-		Clip v = null;
-		try {
-		v = AudioSystem.getClip();
-		AudioInputStream ais = AudioSystem.getAudioInputStream(name);
-    	v.open(ais);
-    	ais.close();
-		}
-		catch ( UnsupportedAudioFileException| IOException | LineUnavailableException e)
-		{
-			G.print("Problem loading audio ",name," ",e);
-		}
-    	return v;
+	//
+	// validate the format is what we prefer - this is only intended
+	// to catch new sound clips before they get baked in.
+	//
+	public static void validateAIS(URL url, AudioInputStream ais)
+	{	AudioFormat format = ais.getFormat();
+		int channels = format.getChannels();
+		Encoding encoding = format.getEncoding();
+		float rate = format.getSampleRate();
+		G.Advise(channels==1,"%s channels=%s, should be 1",url,channels);
+		G.Advise(encoding==Encoding.PCM_SIGNED,"%s encoding is %s, should be PCM_SIGNED",url,encoding);
+		G.Advise(rate==44100,"%s samples is %s, should be 44100",url,rate);
 
 	}
+	
+	
+	/**
+	 * low level Linux audio hacking.  June 2026.  
+	 *  boardspace on linux never had audio.
+	 *  after much experimentation, the "pulseaudio" mixer was implicated.
+	 *  the current state bypasses the pulseaudio mixer in favor of whatever else is available.
+	 *  probably none of the rest of the reformatting and resampling code is needed, but
+	 * converted to a format. 
+	 */
+	private static AudioInputStream convertToFormat(URL url, AudioInputStream ais,AudioFormat target)
+	{
+
+		AudioInputStream converted = AudioSystem.getAudioInputStream(target, ais);
+		//Plog.log.addLog(url+" converted from\n"+original+"\nto  format "+ target);
+		return converted;
+
+	}
+	private static boolean isLineSupported(AudioFormat format)
+	{
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+		return AudioSystem.isLineSupported(info);
+	}
+	
+	private static Mixer findAlsaMixer()
+	{
+	    for (Mixer.Info mi : AudioSystem.getMixerInfo())
+	    {   String name = mi.getName();
+	        // Skip PulseAudio, use direct ALSA
+	        if (name.contains("PulseAudio")) { continue; }
+	        if (name.contains("Port")) { continue; } // Port mixers are control only
+	        Mixer mixer = AudioSystem.getMixer(mi);
+	        DataLine.Info info = new DataLine.Info(SourceDataLine.class, (AudioFormat)null);
+	        if (mixer.isLineSupported(info))
+	        {   return mixer;
+	        }
+	    }
+	    return null;
+	}
+
+	// this is the acid test
+	static int audioErrors=0;
+	private static Clip getClip(URL name,AudioInputStream ais)
+	{	try {
+		Clip cc = AudioSystem.getClip();
+		
+	    if (G.isUnix())
+	    {   Mixer mixer = findAlsaMixer();
+	        DataLine.Info info = new DataLine.Info(Clip.class, ais.getFormat());
+	        cc = (mixer != null && mixer.isLineSupported(info))
+	            ? (Clip) mixer.getLine(info)
+	            : (Clip) AudioSystem.getLine(info);
+	    }
+	    else
+	    {   // Mac/Windows — default AudioSystem works fine
+	        DataLine.Info info = new DataLine.Info(Clip.class, ais.getFormat());
+	        cc = (Clip) AudioSystem.getLine(info);
+	    }
+
+		cc.open(ais);
+		ais.close();
+		return cc;
+		}
+		catch (Throwable err)
+		{	audioErrors++;
+			if(audioErrors<5)
+			{
+			
+			Plog.log.addLog("Problem loading ",name," ",err,"\n"+getStackTrace(err));
+			}
+		}
+		return null;
+	}
+	/**
+	 * Probe a matrix of common PCM formats, preferring ones closest to the
+	 * original (same channel count and rate first), and return the first
+	 * one the platform actually supports for output.
+	 */
+	private static Clip findSupportedFormat(URL name,AudioInputStream ais)
+	{	
+		Clip clip = getClip(name,ais);	// first just try ir
+		if(clip!=null) { return clip; }
+		
+		AudioFormat original = ais.getFormat();
+		int origChannels = original.getChannels();
+		float origRate = original.getSampleRate();
+		int depth = original.getSampleSizeInBits();
+		boolean origEndian = original.isBigEndian();
+
+		// ordered by preference: try to match original rate/channels first,
+		// then fall back to common rates
+		float[] rates = { origRate, 44100f, 48000f, 22050f, 16000f, 11025f, 8000f };
+		int[] channelOptions = { origChannels, 1, 2 };
+		int[] bitDepths = { depth, 16, 8 };
+
+		// de-dup while preserving order
+		java.util.LinkedHashSet<Float> rateSet = new java.util.LinkedHashSet<>();
+		for (float r : rates) { rateSet.add(r); }
+
+		java.util.LinkedHashSet<Integer> chSet = new java.util.LinkedHashSet<>();
+		for (int c : channelOptions) { chSet.add(c); }
+
+		for (int ch : chSet)
+		{	for (float rate : rateSet)
+			{	for (int bits : bitDepths)
+				{	
+					{	if((ch!=origChannels) || (rate!=origRate) || (bits!=depth) )
+						{
+					
+						int frameSize = (bits/8) * ch;
+						AudioFormat candidate = new AudioFormat(
+							Encoding.PCM_SIGNED, rate, bits, ch, frameSize, rate, origEndian);
+
+						if (isLineSupported(candidate)
+							&& AudioSystem.isConversionSupported(candidate, original))
+						{	AudioInputStream converted = convertToFormat(name, ais, candidate);
+						
+							Clip cc = getClip(name,converted);
+							if(cc!=null) { 	return cc; }
+						}
+					}
+				}
+			}
+		}
+		}
+		Plog.log.addLog("No supported format for "+name);
+		return null;
+	}
+
+	public static Clip getAudioClip(URL url)
+	{	
+		try {
+		AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+
+		validateAIS(url, ais);
+		return findSupportedFormat(url,ais);
+		}
+		catch (Throwable err)
+		{	audioErrors++;
+			if(audioErrors<5)
+			{
+			Plog.log.addLog("problem loading "+url+" : "+err+"\n"+getStackTrace(err));
+			}
+		}
+		return null;
+	}
+
 	public static void playAudioClip(Clip clip)
 	{	//G.print("play ",clip);
 		clip.setFramePosition(0);
     	clip.start(); 
 	}
-	
+	/* left as a reference.  Someday it may be useful again
+	public static void diagnosAudio()
+	{
+	    // List all mixers and what lines they support
+	    Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+	    Plog.log.addLog("Audio mixers available: "+ mixers.length);
+	    for (Mixer.Info mi : mixers)
+	    {   Plog.log.addLog("Mixer: "+mi.getName()+" "+ mi.getDescription());
+	        Mixer mixer = AudioSystem.getMixer(mi);
+	        Line.Info[] lines = mixer.getSourceLineInfo();
+	        for (Line.Info li : lines)
+	        {   Plog.log.addLog("  SourceLine: ", li);
+	        }
+	    }
+	    for (Mixer.Info mi : AudioSystem.getMixerInfo())
+	    {   Mixer mixer = AudioSystem.getMixer(mi);
+	        DataLine.Info info = new DataLine.Info(SourceDataLine.class, (AudioFormat)null);
+	        if (mixer.isLineSupported(info))
+	        {   Plog.log.addLog("Mixer "+mi.getName()+" supports SourceDataLine");
+	            try
+	            {   SourceDataLine line = (SourceDataLine)mixer.getLine(info);
+	                Plog.log.addLog("  Got line: "+line);
+	            }
+	            catch (LineUnavailableException e)
+	            {   Plog.log.addLog("  Line unavailable: "+ e.getMessage());
+	            }
+	        }
+	    }
+	}
+	*/
 	   /** get the current stack trace as a String */
     public static String getStackTrace()
     {

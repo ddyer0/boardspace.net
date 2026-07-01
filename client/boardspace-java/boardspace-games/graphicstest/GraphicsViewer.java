@@ -279,7 +279,7 @@ public class GraphicsViewer extends CCanvas<GraphicsCell,GraphicsBoard> implemen
     		// no longer considered a problem
     		// new Test("issue 3921","complex clipping and rotation",new test_3921()),
         	//new Test("issue 3037","simpler rotation test",new Test_3037()),
-        	//new Test("sound clips","test all sound clips",new soundclips()),
+        	new Test("sound clips","test all sound clips",new soundclips()),
         	
         	//new Test("issue 5171","clipping outside",new test_5171()),
     		//new Test("issue 5058","ios crash overpush",new Test_5058()), 

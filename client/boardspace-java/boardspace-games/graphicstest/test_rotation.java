@@ -1,7 +1,6 @@
 package graphicstest;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.Shape;
 
 import graphicstest.GraphicsViewer.TestAble;

@@ -130,7 +130,6 @@ public void draw(Graphics gc,int w,int h,boolean prescale,boolean globalClip,boo
 		int drawW = iW-(xstep<0 ? 0 : iW/3);
 		int drawH = iH+(ystep<0 ? 0 : iH/4);
 		double effectiveAngle = angle+0.01*ordinal;
-		Rectangle brclip = null;
 		if(effectiveRotate) 
 			{ 
 			  gc.setRotation(effectiveAngle,xp,yp); 

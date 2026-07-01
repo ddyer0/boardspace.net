@@ -70,7 +70,7 @@ public class StymieChip extends chip<StymieChip> implements StymieConstants,Comm
 	static public StymieChip Gold = new StymieChip("gold-1",new double[]{0.63,0.44,1.12},StymieId.Gold_Chip_Pool);
 	static public StymieChip gold_1 = new StymieChip("gold-2",new double[]{0.60,0.44,1.25},null);
 	static public StymieChip gold_2 = new StymieChip("gold-3",new double[]{0.61,0.42,1.15},null);
-	static public StymieChip gold_3 = new StymieChip("gold-3",new double[]{0.63,0.43,1.14},null);
+	static public StymieChip gold_3 = new StymieChip("gold-4",new double[]{0.63,0.43,1.14},null);
 	
 	static public StymieChip Silver = new StymieChip("silver-1",new double[]{0.60,0.39,1.15},StymieId.Silver_Chip_Pool);
 	static public StymieChip silver_1 =  new StymieChip("silver-2",new double[]{0.61,0.37,1.15},null);

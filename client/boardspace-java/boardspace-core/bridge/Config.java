@@ -29,7 +29,7 @@ public interface Config extends CommonConfig
    static boolean WAITFOREVER = false;
    
    static final String LANGUAGEPATH = "/languages/translations/";
-   static final String SoundFormat = ".au";
+   static final String SoundFormat = ".wav";
    static final String SMALL_MAP_LOC_URL = IMAGEPATH + "earthshadesmall.jpg";
 
    // if true, use the NativeSockets implementation for networking

@@ -16,7 +16,6 @@
  */
 package bridge;
 
-import lib.AR;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
