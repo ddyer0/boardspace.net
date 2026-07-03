@@ -14,6 +14,13 @@
         return((long long)nanos);
 }
 
+// MyClass.m (native iOS implementation)
+-(BOOL)isRunningOnMac {
+    if (@available(iOS 14.0, *)) {
+        return [[NSProcessInfo processInfo] isiOSAppOnMac];
+    }
+    return NO;
+}
 
 -(BOOL)isSupported{
     return YES;

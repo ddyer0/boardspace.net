@@ -44,17 +44,18 @@
 
     -->
 
-<project name="boardspace-core-CN1" basedir=".">
+<project name="boardspace core CN1" basedir=".">
 	<description>Builds, tests, and runs the project CodenameOne111.</description>
 	<property file="codenameone_settings.properties" />
 	<property file="build.props" />
 	<property environment="env"/>
 	<property name="javaHome" value="${env.JAVA_HOME}"/>
-	<!-- taskdef name="codeNameOne" classname="com.codename1.build.client.CodeNameOneBuildTask" classpath="CodeNameOneBuildClient.jar" /> -->
-    <!-- taskdef name="prepareTests" classname="com.codename1.build.client.PrepareTestsTask" classpath="CodeNameOneBuildClient.jar"/> -->
-    <!-- taskdef name="installLibs" classname="com.codename1.build.client.InstallLibsTask" classpath="CodeNameOneBuildClient.jar"/> -->
-    <!-- taskdef name="verifyDir" classname="com.codename1.build.client.VerifyDir" classpath="CodeNameOneBuildClient.jar"/> -->
-    <!-- taskdef name="generateGuiSources" classname="com.codename1.build.client.GenerateGuiSources" classpath="CodeNameOneBuildClient.jar"/> -->
+	<taskdef name="codeNameOne" classname="com.codename1.build.client.CodeNameOneBuildTask" classpath="CodeNameOneBuildClient.jar" />
+    <taskdef name="prepareTests" classname="com.codename1.build.client.PrepareTestsTask" classpath="CodeNameOneBuildClient.jar"/>
+    <taskdef name="installLibs" classname="com.codename1.build.client.InstallLibsTask" classpath="CodeNameOneBuildClient.jar"/>
+    <taskdef name="verifyDir" classname="com.codename1.build.client.VerifyDir" classpath="CodeNameOneBuildClient.jar"/>
+    <taskdef name="generateGuiSources" classname="com.codename1.build.client.GenerateGuiSources" classpath="CodeNameOneBuildClient.jar"/>
+    
 	<path id="master-classpath">
 	  <fileset dir="lib">
 	    <include name="*.jar"/>

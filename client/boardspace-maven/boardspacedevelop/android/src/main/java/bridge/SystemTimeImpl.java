@@ -16,15 +16,13 @@
  */
 package bridge;
 
-import android.os.SystemClock;
-
-public class SystemTimeImpl {
+public class SystemTimeImpl implements bridge.SystemTime{
     public long currentNanoTime() {
-    	return SystemClock.elapsedRealtimeNanos();
+    	return System.nanoTime();
     }
 
     public boolean isSupported() {
         return true;
     }
-
+    public boolean isRunningOnMac() { return false; }
 }

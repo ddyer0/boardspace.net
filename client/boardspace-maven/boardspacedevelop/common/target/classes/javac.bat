@@ -1,1 +1,0 @@
-cmd.exe /X /C "F:\java\jdk-1.8_381\jre\..\bin\javac.exe @G:/share/projects/boardspace-maven/boardspacedevelop/common/target/classes/org.codehaus.plexus.compiler.javac.JavacCompiler2743863117925889985arguments"
