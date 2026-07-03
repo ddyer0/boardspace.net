@@ -19,7 +19,7 @@
 		<link>
 			<name>boardspace-games</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/boardspace-java/boardspace-games</locationURI>
+			<locationURI>CODE_LOC/boardspace-java/boardspace-games</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
@@ -60,4 +60,10 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>CODE_LOC</name>
+			<value>$%7BPARENT-1-WORKSPACE_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

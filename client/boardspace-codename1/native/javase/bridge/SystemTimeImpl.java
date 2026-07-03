@@ -24,5 +24,5 @@ public class SystemTimeImpl implements bridge.SystemTime{
     public boolean isSupported() {
         return true;
     }
-
+    public boolean isRunningOnMac() { return false; }
 }

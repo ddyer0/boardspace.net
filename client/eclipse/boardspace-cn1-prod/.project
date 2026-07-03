@@ -28,17 +28,17 @@
 		<link>
 			<name>boardspace core</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/boardspace%20core</locationURI>
+			<locationURI>CODE_LOC/boardspace-codename1/boardspace%20core</locationURI>
 		</link>
 		<link>
-			<name>boardspace-games</name>
+			<name>boardspace games</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/boardspace%20games</locationURI>
+			<locationURI>CODE_LOC/boardspace-codename1/boardspace%20games</locationURI>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/boardspace-codename1/codename1</locationURI>
+			<locationURI>CODE_LOC/boardspace-codename1/codename1</locationURI>
 		</link>
 		<link>
 			<name>icons</name>
@@ -69,8 +69,8 @@
 	</filteredResources>
 	<variableList>
 		<variable>
-			<name>projects</name>
-			<value>file:/G:/share/projects</value>
+			<name>CODE_LOC</name>
+			<value>$%7BPARENT-1-WORKSPACE_LOC%7D</value>
 		</variable>
 	</variableList>
 </projectDescription>
