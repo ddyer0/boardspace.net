@@ -69,7 +69,6 @@ goban\shape\shape\LocationProvider.class
 goban\shape\shape\ResultProtocol.class
 tintas\TintasConstants$TintasId.class
 bugs\TerrainSummary.class
-graphicstest\GraphicsViewer$Test_3921.class
 fanorona\FanoronarPlay.class
 vnc\VNCConstants$Compression.class
 kingscolor\ChipStack.class
@@ -122,6 +121,7 @@ oneday\StopStack.class
 bugs\BugsMovespec.class
 volcano\VolcanoRBoard.class
 punct\PunctConstants$PunctState.class
+org.codehaus.plexus.compiler.javac.JavacCompiler5860159055995446540arguments
 tintas\TintasConstants$StateStack.class
 stymie\ChipStack.class
 arimaa\ArimaaChip.class
@@ -845,7 +845,6 @@ tzaar\TzaarViewer.class
 dvonn\DvonnBoard.class
 volo\VoloBoard.class
 bridge\SystemImage$ScaleType.class
-graphicstest\GraphicsViewer$Test_5058.class
 pendulum\PendulumConstants$BB.class
 online\search\MutantStack.class
 fanorona\FanoronaGameViewer.class
@@ -984,7 +983,6 @@ goban\shape\shape\Globals$Fate.class
 yspahan\YspahanConstants$ybuild.class
 goban\shape\shape\Globals.class
 online\search\Evaluator.class
-bridge\XPasswordField.class
 oneday\OnedayBoard$PlayerBoard.class
 lib\DrawingObject.class
 takojudo\CellStack.class
@@ -1212,7 +1210,6 @@ carnac\CarnacBoard.class
 veletas\VeletasMovespec.class
 wyps\WypsCell.class
 cannon\CannonBoard$1.class
-graphicstest\GraphicsViewer$Test_3037.class
 lib\SpriteStack.class
 jumbulaya\JumbulayaConstants$JumbulayaId.class
 lib\Slider.class
@@ -1326,7 +1323,6 @@ tumble\TumbleChip.class
 dipole\DipoleMovespec.class
 crosswordle\CrosswordleBoard.class
 online\search\nn\GenericLayer.class
-graphicstest\GraphicsViewer$Test_5058a.class
 lib\exCanvas$Layout.class
 syzygy\SyzygyBoard$1.class
 oneday\OnedayViewer.class
@@ -1833,7 +1829,6 @@ stymie\CellStack.class
 lib\SoundManager.class
 container\CC.class
 viticulture\ViticultureConstants$Activity.class
-graphicstest\GraphicsViewer$soundclips.class
 euphoria\ArtifactChip.class
 online\common\TurnBasedUser.class
 online\game\Game$1.class
@@ -1848,7 +1843,6 @@ euphoria\DilemmaChip.class
 gounki\GounkiViewer.class
 mbrane\MbraneConstants$StateStack.class
 exxit\ExxitGameViewer$1.class
-graphicstest\GraphicsViewer$Dtest_3108.class
 stac\StacChip.class
 volo\VoloConstants$VoloState.class
 lib\ErrorX.class
@@ -1988,7 +1982,6 @@ epaminondas\CellStack.class
 crosswords\CrosswordsConstants$StateStack.class
 lib\CellId.class
 shogi\ShogiViewer$1.class
-org.codehaus.plexus.compiler.javac.JavacCompiler819920567460192272arguments
 lib\ChatWidget.class
 yspahan\YspahanViewer$1.class
 che\CheBoard$1.class
@@ -2210,7 +2203,6 @@ checkerboard\CheckerConstants$CheckerId.class
 online\game\RepeatedPositions.class
 ponte\PonteBoard.class
 stac\StacConstants.class
-graphicstest\GraphicsViewer$Test_3302.class
 tintas\TintasCell.class
 hive\RevisedAugustEvaluator.class
 lib\LocationProvider.class
@@ -2275,6 +2267,7 @@ lyngk\LyngkBoard$1.class
 modx\ModxChip$1.class
 online\search\nn\HexCoordinateMap.class
 spangles\SpanglesBoard$1.class
+util\PasswordCollector$7.class
 carnac\CarnacCell$1.class
 pushfight\PushfightConstants.class
 warp6\CellStack.class
@@ -2410,7 +2403,6 @@ mijnlieff\MijnlieffConstants$StateStack.class
 online\common\Session$PlayMode.class
 tablut\TabGameBoard$1.class
 viticulture\ChipStack.class
-graphicstest\GraphicsViewer$dtest_3136$Link.class
 qyshinsu\QyshinsuCell.class
 arimaa\ArimaaViewer.class
 cookie\CookieConstants$CookieId.class
@@ -2468,7 +2460,6 @@ triad\TriadChip$ChipColor.class
 sixmaking\CellStack.class
 bugs\BugsConstants.class
 manhattan\ManhattanCell$1.class
-graphicstest\GraphicsViewer$dtest_3136.class
 online\game\dummyMove.class
 triad\TriadBoard$1.class
 lib\GearMenu.class
@@ -2681,7 +2672,6 @@ gyges\GygesBoard$1.class
 proteus\ProteusConstants$Trade.class
 frogs\CellStack.class
 jumbulaya\JumbulayaBoard$1.class
-graphicstest\GraphicsViewer$Test_4914.class
 shogi\ShogiViewer.class
 yspahan\YspahanMovespec.class
 trike\TrikePlay.class

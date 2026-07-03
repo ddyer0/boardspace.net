@@ -23,6 +23,8 @@ public class SystemTimeImpl {
     	return SystemClock.elapsedRealtimeNanos();
     }
 
+    public boolean isRunningOnMac() { return false; }
+    
     public boolean isSupported() {
         return true;
     }
