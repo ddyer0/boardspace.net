@@ -1,25 +1,33 @@
 
 This is the root for java based projects.  To get running, 
 
-First, make a copy of the "eclipse" folder.  I recommend calling it "myeclipse"
+First, duplicate the "eclipse" folder.  I recommend calling it "myeclipse"
 If you call it something else, add the name to the .gitignore file.
-This is your private copy of the eclipse projects needed to build boardspace.
+This is your private copy of the eclipse projects needed to build boardspace,
+which git won't try to push back into the repository.
 
 open eclipse
 choose "new workspace"
 navigate to this myeclipse folder
-select import/general/exisiting projects
+select file + open projects from file system.
 
 you should be offered all projects in this directory, select them all.
 
-the initial build state should contain a few build path problems that
-Need to be edited to your file system. There also should be "Missing"
-Class files common/Salt.java.  These are missing by design, as they contain
-Crypto keys to communicate with the real boardspace.net server.  Replace
-These files with a copy of Dummy.java
+the initial build state should be clean, with no errors and a bunch of warnings.
+I configure eclipse to suppress these warnings, but you may have other preferences.
+If any problems have crept in, they're probably errors in the build path thich
+are easily corrected.
 
-You should end up with a project with no errors and a finite number of
-warnings, the exact number depending on your eclipse settings.
+You're ready to go.  Try the debug configuration for "Offline Viewer for Hex".
+This is the normal development mode for new games or working on existing games.
+No external servers are needed. All the live play machinery is unnecessary
+for routine work.
+
+There are other launches; The starting launches for "prototype" and "offline"
+are the other good starting points. There are other launches that connect to 
+servers, which will be useful for live testing, but you can safely ignore
+ all of that for now.  Note that as distributed, the files in the repository 
+will not be able to connect to the live boardspace server without some additional magic.
 
 bsh, joi, pf, and jzlib are minor supporting projects, with very little
 dependency in the main java projects. 
@@ -32,6 +40,11 @@ version had some trouble with file names containing unicode characters.  At some
 that may be unnecessary, but that would have to be verified. Don't revert to the standard
 version without testing.
 
+boardspace-cn1-prod and boardspace-cn2 are projects used to build the IOS and Android versions
+of boardspace.  You can safely close these projects, and ignore all the source files in the
+"boardspace-codename1" hierarchy.   These source files are almost copies of the main sources,
+and you can safely ignore them in normal development.
+
 the main projects are 
 
 boardspace-core		the core boardspace.net files that support all the games.
@@ -41,12 +54,10 @@ boardspace-cn2		the debug project for mobile development, which shares all
 			all sources with boardspace-cn1-prod
 boardspace-strings	maintains the language translation database, in the boardspace "translation" table.
 
-the files in the codename1 and desktop branches are almost identical.  My practice
-is to do development in the desktop branch, then use winmerge to migrate the changes
-to the codename1 branch.  This is a bit inconvenient, but provides a check against 
-coding accidents.
-
-The starting launches for "prototype" and "offline" are the starting points.
-
+Generally, I recommend using the existing games as a template for anything you do, and
+treat the way things are done as an idiom to be imitated.  The javadoc, while somewhat
+useful, is generally much less useful than working examples.  Of course you're free to
+invent your own, but the existing framework knits everything together in many synergistic
+ways.
 
 
