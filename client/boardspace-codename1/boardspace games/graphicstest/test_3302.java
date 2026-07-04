@@ -6,7 +6,7 @@ import graphicstest.GraphicsViewer.TestAble;
 import lib.Graphics;
 import lib.Image;
 
-public class Test_3302 implements TestAble
+class Test_3302 implements TestAble
 {	
 	public void runTest(Graphics gc,int x,int y,int w,int h)
 	{
