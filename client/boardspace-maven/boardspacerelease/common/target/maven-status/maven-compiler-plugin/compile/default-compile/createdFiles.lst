@@ -121,7 +121,6 @@ oneday\StopStack.class
 bugs\BugsMovespec.class
 volcano\VolcanoRBoard.class
 punct\PunctConstants$PunctState.class
-org.codehaus.plexus.compiler.javac.JavacCompiler5860159055995446540arguments
 tintas\TintasConstants$StateStack.class
 stymie\ChipStack.class
 arimaa\ArimaaChip.class
@@ -2285,6 +2284,7 @@ che\CheConstants.class
 modx\ModxConstants$Variation.class
 exxit\Exxitmovespec.class
 goban\GoConstants$GoId.class
+org.codehaus.plexus.compiler.javac.JavacCompiler3237613758010437105arguments
 container\ContainerConstants$StateStack.class
 tablut\TabChip.class
 tintas\TintasConstants$TintasState.class

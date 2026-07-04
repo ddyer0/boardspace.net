@@ -1,1 +1,3 @@
 Completed compliance check on boardspacerelease-common
+Rewritten class files to Java 17 major version: 0
+Rewritten JDK API callsites: 0 across 0 class(es)
