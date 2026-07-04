@@ -16,6 +16,13 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>jars</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/jars</locationURI>
+		</link>
+	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1643500851677</id>
