@@ -86,7 +86,9 @@ public class TimeControl implements Config
 		}	
 		return change;
 	}
-
+	private static String Seconds = "Seconds";
+	private static String Minutes = "Minutes";
+	private static String Type = "Type of Control";
 	private static String SecondsMessage = "#1{ seconds, second, seconds}";
 	private static String MinutesMessage = "#1{##zero minutes, minute, minutes}";
 	private static String PrettyFixedTimeMessage = "Time: #1 minutes";
@@ -101,6 +103,9 @@ public class TimeControl implements Config
 	private static String NoTime = "Clocks count Up";
 	public static String []TimeControlStrings = {
 		FixedTime,
+		Minutes,
+		Seconds,
+		Type,
 		SecondsMessage,
 		TimeIncMessage,
 		MinutesMessage,
@@ -420,7 +425,7 @@ public class TimeControl implements Config
 	  @SuppressWarnings("rawtypes")
 	public PopupManager changeTimeControlKind(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	timeControlMenu = new PopupManager();
-	  	timeControlMenu.newPopupMenu(parent,deferredEvents);
+	  	timeControlMenu.newPopupMenu(Type,parent,deferredEvents);
 	    timeControlMenu.show(ex,ey,TimeControl.Kind.values());
 	  	return(timeControlMenu);
 	  }
@@ -429,8 +434,8 @@ public class TimeControl implements Config
 	  @SuppressWarnings("rawtypes")
 	public PopupManager changeMinutes(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents,int minimum)
 	  { minutesMenu = new PopupManager();
-	  	minutesMenu.newPopupMenu(parent,deferredEvents);
 	  	InternationalStrings s = G.getTranslations();
+	  	minutesMenu.newPopupMenu(s.get(Minutes),parent,deferredEvents);
 	  	for(int i=minimum;i<=120;i++)
 	  	{	if((i<=12) || (i<60 && i%5==0) || (i%10==0))
 	  		{
@@ -442,10 +447,17 @@ public class TimeControl implements Config
 	  }
 	  private PopupManager secondsMenu;
 	  /** present a menu of seconds choices */
-	  @SuppressWarnings("rawtypes")
+	  /**
+	 * @param ex
+	 * @param ey
+	 * @param parent
+	 * @param deferredEvents
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
 	public PopupManager changeSeconds(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	secondsMenu = new PopupManager();
-	  	secondsMenu.newPopupMenu(parent,deferredEvents);
+	  	secondsMenu.newPopupMenu(Seconds,parent,deferredEvents);
 	  	InternationalStrings s = G.getTranslations();
 	  	secondsMenu.addMenuItem(s.get(TimeControl.SecondsMessage,2),2);
 	  	secondsMenu.addMenuItem(s.get(TimeControl.SecondsMessage,5),5);
@@ -463,7 +475,7 @@ public class TimeControl implements Config
 	public PopupManager changeMinutes2(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
 	  {	minutesMenu2 = new PopupManager();
 		InternationalStrings s = G.getTranslations();
-	  	minutesMenu2.newPopupMenu(parent,deferredEvents);
+	  	minutesMenu2.newPopupMenu(Minutes,parent,deferredEvents);
 	  	for(int i=1;i<=15; i++)
     	{
 	  		minutesMenu2.addMenuItem(s.get(TimeControl.MinutesMessage,i),i);

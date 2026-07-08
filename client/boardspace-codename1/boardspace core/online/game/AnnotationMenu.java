@@ -101,12 +101,13 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	static String helpText = "Add an Annotation";
 	static String CancelMessage = "click here to cancel annotation";
 	static String StopMessage = "Stop placing annotations";
-
+	static String AnnotationMessage = "Select Annotation";
 	static public void putStrings()
 	{
 		InternationalStrings.put(helpText);
 		InternationalStrings.put(CancelMessage);
 		InternationalStrings.put(StopMessage);
+		InternationalStrings.put(AnnotationMessage);
 	}
 	/**
 	 * create an annotation menu.  Generally, each canvas creates one so it's always there.
@@ -147,7 +148,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		boolean Columns2 = true;
 		if(menu==null) { menu=new PopupManager(); }
 		menu.useSimpleMenu = true;
-		menu.newPopupMenu(drawOn,drawOn.deferredEvents);
+		menu.newPopupMenu(G.getTranslations().get(AnnotationMessage),drawOn,drawOn.deferredEvents);
 		double ysize = 1.25;
 		double xsize = 1;
 		selected = null;

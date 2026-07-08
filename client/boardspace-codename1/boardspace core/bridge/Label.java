@@ -39,9 +39,6 @@ public class Label extends com.codename1.ui.Label
 		
 	}
 
-	public void setLabelFor(Choice<String> langField) {
-		
-	}
 	public void setText(String n)
 	{
 		if(n==null) { n = ""; }

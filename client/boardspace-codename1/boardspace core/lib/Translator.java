@@ -138,7 +138,7 @@ public class Translator {
         }
     }
 
-    // ── JSON helpers (no external library needed) ─────────────────────────────
+    // -- JSON helpers (no external library needed) -----------------------------
 
     private static String buildRequestBody(String userMessage,String model) {
     	// new version with prompt caching

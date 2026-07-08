@@ -1692,7 +1692,7 @@ private void playSounds(commonMove m)
     public void showHandicapMenu(int x,int y)
     {
     	if(handicapMenu==null) { handicapMenu = new PopupManager(); }
-    	handicapMenu.newPopupMenu(this,deferredEvents,this);
+    	handicapMenu.newPopupMenu(s.get(SetHandicapAction),this,deferredEvents,this);
     	int items[][] = b.getHandicapValues();
     	handicapMenu.addMenuItem(NoHandicapAction,0);
     	for(int i[] : items) { handicapMenu.addMenuItem(""+i[0],i[0]); }
@@ -1701,7 +1701,7 @@ private void playSounds(commonMove m)
     public void showKomiMenu(int x,int y)
     {
     	if(komiMenu==null) { komiMenu = new PopupManager(); }
-    	komiMenu.newPopupMenu(this,deferredEvents,this);
+    	komiMenu.newPopupMenu(s.get(SetKomiAction),this,deferredEvents,this);
     	String items[][] = {{NoKomiAction,"0.0"},{"1/2 point","0.5"},{"4 1/2 points","4.5"},
     			{"5 1/2 points","5.5"},{"6 1/2 points","6.5"},{"7 1/2 points","7.5"}};
    

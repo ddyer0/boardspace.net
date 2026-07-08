@@ -23,9 +23,11 @@ import online.game.BaseBoard.BoardState;
 public interface UniverseConstants 
 {	static final String NormalPlayDescription = "Place a piece on the board";
 	static final String PlayOrSwapDescription = "Place a piece on the board, or swap colors with your opponent";
+	static final String PatternMessage = "Select Pattern";
 	static public String[] PolyominoStrings =
 	{        
-        "Polyomino Flip",
+			PatternMessage,
+			"Polyomino Flip",
         "make the last move",
         "own the most blocks",
         NormalPlayDescription,

@@ -8,7 +8,9 @@ import lib.NativeMenuItemInterface;
 
 @SuppressWarnings("serial")
 public class MenuItem extends java.awt.MenuItem implements NativeMenuItemInterface
-{
+{	private boolean isLabel = false;
+	public boolean isLabel() { return isLabel; }
+	public void setIsLabel(boolean v) { isLabel=v; }
 	public MenuItem(String string) { super(string); }
 	public MenuItem(String string,Font f) { this(string); setFont(f==null ? FontManager.menuFont() : f); }
 	public Icon getNativeIcon() {	return null; }

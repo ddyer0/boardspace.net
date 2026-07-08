@@ -418,7 +418,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     }
     PopupManager numbers = new PopupManager();
     public void headsMenu()
-    {  	numbers.newPopupMenu(this,deferredEvents);
+    {  	numbers.newPopupMenu(s.get("Heads"),this,deferredEvents);
     	numbers.addMenuItem("Any",0);
     	for(int i=1;i<=5;i++) { numbers.addMenuItem(""+i,i); }
     	numbers.show(numberRect.x,numberRect.y);
@@ -438,7 +438,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     
     PopupManager pattern = new PopupManager();
     public void patternMenu()
-    {	pattern.newPopupMenu(this,deferredEvents);
+    {	pattern.newPopupMenu("Pattern",this,deferredEvents);
     	  for(targetType target : targetType.values())
     	  {
     		  pattern.addMenuItem(target.name,target);

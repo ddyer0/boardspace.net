@@ -1498,14 +1498,16 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 		youfirst("Opponent first");
 		String message;
 		FirstPlayer(String m) { message = m; }
+		static String WhoPlaysFirst = "Who Plays First";
 		public String menuItem() { return message; }
 		static public void putStrings() { 	 
-			for(FirstPlayer p : values()) { InternationalStrings.put(p.menuItem()); }
+			InternationalStrings.put(WhoPlaysFirst);
+			InternationalStrings.put(values());
 		}
 		static FirstPlayer firstChoice = random;
 		static PopupManager firstChoiceMenu = new PopupManager();
 		static void show(exCanvas turnBasedViewer, int left, int top) {
-			firstChoiceMenu.newPopupMenu(turnBasedViewer,turnBasedViewer);
+			firstChoiceMenu.newPopupMenu(s.get(WhoPlaysFirst),turnBasedViewer,turnBasedViewer);
 			firstChoiceMenu.show(left,top,values());			
 		}
 		static boolean selectMenuTarget(Object target) {
@@ -1840,7 +1842,7 @@ public class TurnBasedViewer extends exCanvas implements LobbyConstants
 	PopupManager gameModeMenu = new PopupManager();
 	public void changeModeType(exCanvas showOn,int ex,int ey)
 	{
-		gameModeMenu.newPopupMenu(showOn,showOn);
+		gameModeMenu.newPopupMenu(PlayMode.PlayModeString,showOn,showOn);
 		gameModeMenu.show(ex,ey,PlayMode.values());
 		
 	}
@@ -2509,16 +2511,17 @@ public enum PlaySpeed implements EnumMenu
 		int firstNag = 0;
 		int timepermove = 0;
 		public String menuItem() { return message; }
-
+		static final String PlaySpeedMessage = "Play Speed";
 		PlaySpeed(String m,int nt,int tpm) { message = m; firstNag=nt; timepermove=tpm; }	
-		static public void putStrings() { 	 
-			for(PlaySpeed p : values()) { InternationalStrings.put(p.menuItem()); }
+		static public void putStrings() { 
+			InternationalStrings.put(PlaySpeedMessage);
+			InternationalStrings.put(values());
 		}
 		static PopupManager speedMenu = new PopupManager();
 		static PlaySpeed currentSpeed = PlaySpeed.day2;
 		static void show(exCanvas turnBasedViewer, int left, int top)
 		{
-			speedMenu.newPopupMenu(turnBasedViewer,turnBasedViewer);
+			speedMenu.newPopupMenu(G.getTranslations().get(PlaySpeedMessage),turnBasedViewer,turnBasedViewer);
 			speedMenu.show(left,top,values());
 		}
 		static boolean selectMenuTarget(Object target) 

@@ -273,7 +273,7 @@ public class GoMovespec extends commonMove implements GoConstants
             return (D.findUniqueTrans(op));
         }
     }
-    public Text shortMoveText(commonCanvas c, Font font)
+    public Text shortMoveText(commonCanvas c,Font f)
     {	String str = shortMoveString(c);
     	return(TextChunk.create(str));
     }

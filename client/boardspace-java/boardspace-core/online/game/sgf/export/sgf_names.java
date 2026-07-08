@@ -21,7 +21,6 @@ public interface sgf_names
     // public property names, common to all SGF.  In a more modern cast these would be
 	// made into an enum, but changing them is not worth the effort because these known
 	// names are embedded in a lot of places.
-	
     public static final String fileformat_property = "FF"; //format of the file
     public static final String sgf_file_format = "4"; //we comply with format 4
     public static final String game_property = "GM"; //integer indicating the game type

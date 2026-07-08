@@ -154,10 +154,12 @@ public interface GameConstants
     static final String ConfirmSecondMessage = "Click on Done to confirm moving second";
     static final String BoardSetup = "Board: #1";
     static final String SwapFirst = "Play second instead of first";
+    static final String SelectBoard = "Select Board";
     static void putStrings()
     {
     	String [] ZertzStrings = 
     	{
+    	SelectBoard,
     	BoardSetup,
     	SwapFirst,
     	AddOrRemoveMessage,

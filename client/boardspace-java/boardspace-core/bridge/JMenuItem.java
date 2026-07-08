@@ -9,6 +9,9 @@ import lib.NativeMenuItemInterface;
 @SuppressWarnings("serial")
 public class JMenuItem extends javax.swing.JMenuItem implements NativeMenuItemInterface
 {	Icon ic = null;
+	private boolean isLabel = false;
+	public boolean isLabel() { return isLabel; }
+	public void setIsLabel(boolean v) { isLabel = v; }
 	public Icon getNativeIcon() { return(ic); }
 	public JMenuItem(Icon m) { super(m); ic = m; }
 	public void setItemFont(Font f) { setFont(f==null ? FontManager.menuFont() : f);}

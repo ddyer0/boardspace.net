@@ -131,7 +131,7 @@ public class AuxViewer extends exCanvas
 		if(needMenu)
 		{	needMenu = false;
 	        int nservers = PlaytableStack.getNServers();
-	        serverMenu.newPopupMenu(this, deferredEvents);
+	        serverMenu.newPopupMenu(null,this, deferredEvents);
 	        for(int i=0;i<nservers;i++)
 	        {	PlaytableServer ser = PlaytableStack.getNthServer(i);
 	        	serverMenu.addMenuItem(ser.toString(),ser);

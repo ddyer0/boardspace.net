@@ -962,7 +962,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     
     PopupManager pattern = new PopupManager();
     public void patternMenu()
-    {	pattern.newPopupMenu(this,deferredEvents);
+    {	pattern.newPopupMenu(s.get(PatternMessage),this,deferredEvents);
     	  for(variation target : variation.values())
     	  {   if(target.isNudoku())
     			  {

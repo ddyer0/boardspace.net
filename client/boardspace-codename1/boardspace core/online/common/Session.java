@@ -64,6 +64,7 @@ public class Session implements LobbyConstants
 	static final int CLIENTX = 215;
  
 	static final String GameRoom = "Play Games";
+	static final String GameType = "Game Name";
 	static final String TurnbasedRoom = "Turn Based Games";
 	static final String TurnbasedDescription = "Play asynchronous games";
 	static final String ChatRoom = "Chat Room";
@@ -77,11 +78,7 @@ public class Session implements LobbyConstants
 	static final String ReviewRoomDescription = "replay or review saved games";
 	static final String UnrankedRoom = "Unranked Games";
 	static final String UnrankedDescription = "Games do not affect your Ranking";
-	static final String TournamentGame = "Tournament Game";
     static final String SpectatorMessage = "Spectator";
-    static final String TimedGameMessage = "Timed Game";
-    static final String PleaseJoinMessage = "Open to Anyone";
-    static final String JoinOnlyMessage = "Join only if Invited";
     static final String LaunchingMessage = "Launching...";
     static final String UnknownStateMessage = "State unknown.";
     static final String StartMessage = "Start";
@@ -96,11 +93,11 @@ public class Session implements LobbyConstants
 			LaunchGameMessage,LaunchChatMessage,LaunchReviewMessage,LaunchSpectatorMessage,
 			LaunchingMessage,UnknownStateMessage,StartMessage,SpectateMessage,
 			PrivateRoomMessage,ClosingMessage,
-			TimedGameMessage,PleaseJoinMessage,JoinOnlyMessage,
+			GameType,
 			GameRoom,GameRoomDescription,ChatRoom,ReviewRoom,ReviewRoomDescription,
 			MapRoom,UnrankedRoom,UnrankedDescription,MasterRoom,MasterDescription,
 			TournamentRoom,TournamentDescription,
-			TournamentGame,SpectatorMessage,
+			SpectatorMessage,
 			TurnbasedRoom,TurnbasedDescription,
 	};
 	public boolean resumableGameType()
@@ -206,6 +203,7 @@ public class Session implements LobbyConstants
 	{	// case matters for these names - 'ranked' not 'Ranked'
 		// the menu names must be capitalized to avoid case conflicts in the translations
 		ranked("Ranked",Mode.Game_Mode), unranked("Unranked",Mode.Unranked_Mode), tournament("Tournament",Mode.Tournament_Mode);
+		static final String PlayModeString = "Play Mode";
 		public String menuItem() {
 			return menu;
 		}
@@ -215,7 +213,10 @@ public class Session implements LobbyConstants
 			{ menu = m; 
 			  sessionMode = sm; 
 			}
-		public static void putStrings() { InternationalStrings.put(values()); }
+		public static void putStrings() 
+		{ 	InternationalStrings.put(PlayModeString); 
+			InternationalStrings.put(values()); 
+		}
 	}
 
 	/** true if the game being launched will include a robot */	
@@ -262,11 +263,13 @@ public class Session implements LobbyConstants
 
 
     enum JoinMode  implements EnumMenu
-    {
-    	Open_Mode(PleaseJoinMessage),
-    	Closed_Mode(JoinOnlyMessage),
-    	Timed_Mode(TimedGameMessage),
-    	Tournament_Mode(TournamentGame);
+    {    
+    	Open_Mode("Open to Anyone"),
+    	Closed_Mode("Join only if Invited"),
+    	Timed_Mode("Timed Game"),
+    	Tournament_Mode("Tournament Game");	
+
+    	static final String InvitationMessage = "Invitation Mode";
     	boolean isTimed() { return((this==Tournament_Mode)||(this==Timed_Mode)); }
     	String name;
     	JoinMode(String n)
@@ -278,6 +281,10 @@ public class Session implements LobbyConstants
     	{
     		for(JoinMode m : values()) { if(n==m.ordinal()) { return(m); }}
     		return(null);
+    	}
+    	public static void putStrings()
+    	{	InternationalStrings.put(InvitationMessage);
+    		InternationalStrings.put(values());
     	}
     }
     enum SessionState
@@ -1045,7 +1052,7 @@ public class Session implements LobbyConstants
 	public void changeGameType(exCanvas showOn,int ex,int ey,boolean isTestServer,boolean isPassAndPlay,boolean isTurnBased,String firstItem)
 	  {	InternationalStrings s = G.getTranslations();
 	  	gameTypeMenu = new PopupManager();
-	    gameTypeMenu.newPopupMenu(showOn,showOn);
+	    gameTypeMenu.newPopupMenu(s.get(GameType),showOn,showOn);
 	    if(firstItem!=null) { gameTypeMenu.addMenuItem("any game",null); }
 	    Bitset<ES> typeClass = getGameTypeClass(isTestServer,isPassAndPlay,isTurnBased);
 	    GameInfo gameNames[] = GameInfo.groupMenu(typeClass,0);
@@ -1085,5 +1092,10 @@ public class Session implements LobbyConstants
 	    gameTypeMenu.show(ex,ey);
 	  }
 
-    
+    public static void putStrings()
+    {
+    	JoinMode.putStrings();
+        PlayMode.putStrings();
+    	Mode.putStrings();
+    }
 }

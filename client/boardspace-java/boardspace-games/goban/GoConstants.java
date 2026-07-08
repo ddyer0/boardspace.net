@@ -45,6 +45,7 @@ public interface GoConstants
 	static String NumberView = "Show move numbers";
 	static String NumberViewExplanation = "Show move numbers on top of stones";
 	static String KomiPoints = "#1 points";
+	static String Variations =  "Variation";
 	static String ScoringFailedMessage = "Automatic scoring failed, click for details";
 	/**
 	 * NumberingMode encapsulates most of the behavior associated
@@ -64,7 +65,7 @@ public interface GoConstants
 		{
 			if(menu==null) { menu=new PopupManager(); }
 			viewer = v;
-			menu.newPopupMenu(v,v.deferredEvents);
+			menu.newPopupMenu(Variations,v,v.deferredEvents);
 			menu.show(x,y,values());
 		}
 		// handle the user clicking on one of the choices
@@ -568,6 +569,7 @@ public interface GoConstants
 				ScoringFailedMessage,
 				YesUndoMessage,
 				DenyUndoMessage,
+				Variations,
 				PlayDescription,
 				Play1Description,
 				ScoreDescription,

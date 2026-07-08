@@ -288,7 +288,7 @@ public class PasswordCollector extends JPanel
 	    		String val = tok.hasMoreTokens() ? Base64.decodeString(tok.nextToken()) : "";
 	    		
 	    		if("languages".equals(next)) { parseLanguageList(val); }
-	    		else if("checksumversion".equals(next)) { XXTEA.loadChecksum(G.IntToken(val)); }
+	    		else if("checksumversion".equals(next)) { XXTEA.loadChecksum(val); }
 	    		else if("versions".equals(next)) { parseVersionTokens(val); }
 	    		else if("message".equals(next)) { G.putGlobal(next,val); }
 	    		else if("turnbasedmoves".equals(next)) { turnBasedMoves = G.IntToken(val); }
@@ -607,7 +607,6 @@ public class PasswordCollector extends JPanel
 		 Component.setSameHeight(llab,langField);
 		 langField.setUIID("LoginChoice");
 		 panel.addC(llab);
-		 llab.setLabelFor(langField);
 		 for(String ll : InternationalStrings.languages) 
 			 { langField.add(s.get(ll));
 			 }
@@ -626,7 +625,6 @@ public class PasswordCollector extends JPanel
 		 countryField = new Choice<String>();
 		 countryField.setUIID("LoginChoice");
 		 panel.addC(llab);
-		 llab.setLabelFor(countryField);
 		 for(int i=1;i<countries.length; i++) 	// skip element 0
 			 { countryField.add(countries[i]);
 			 }

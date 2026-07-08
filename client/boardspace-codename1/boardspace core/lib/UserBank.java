@@ -16,10 +16,9 @@
  */
 package lib;
 
+import com.codename1.ui.events.ActionListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
-import com.codename1.ui.events.ActionListener;
 
 //
 // maintains a list of users accessible to a chat, including some that
@@ -50,7 +49,7 @@ public class UserBank
     {	int maxsz = users.size();
     	int sz = 0;
     	SimpleUser us[] = new SimpleUser[maxsz];
-    	destMenu.newPopupMenu(parent,listen);
+    	destMenu.newPopupMenu(G.getTranslations().get(ChatWidget.ToUser),parent,listen);
     	destMenu.addMenuItem(prompt,null);		// to all
     	if(prevToSingle!=null) 	// to that one special user
     		{ destMenu.addMenuItem(prevToSingle.name(),prevToSingle); 

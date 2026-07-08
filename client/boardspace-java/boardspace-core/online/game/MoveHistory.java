@@ -138,11 +138,11 @@ public class MoveHistory extends CommonMoveStack  implements SequenceStack,sgf_n
 	 * @param x
 	 * @param y
 	 */
-	public void showRememberedPositionMenu(exCanvas parent,int x,int y)
+	public void showRememberedPositionMenu(String title,exCanvas parent,int x,int y)
 	{
 		PopupManager pop = rememberedPositionPopup();
 		int size = nRememberedPositions();
-		pop.newPopupMenu(parent,parent.deferredEvents);
+		pop.newPopupMenu(title,parent,parent.deferredEvents);
 		for(int i=0;i<size;i++)
 	    	{
 			commonMove m = getRememberedPosition(i);

@@ -66,7 +66,7 @@ import lib.Tokenizer;
 import lib.exCanvas;
 
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
-{	
+{	private static final String ChatMessage = "Chat Filter";
     private static final String AcceptChatMessage =  "Accept chat from #1";
     private static final String IgnoreChatMessage = "Ignore chat from #1";
     private static final String NoChallengeMessage = "No challenges from #1";
@@ -108,6 +108,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     private static final String ViewHelpVideos = "view the help videos page";
     public static final String LCStrings[] = {
         	LowMemoryMessage,
+        	ChatMessage,
         	ViewHelpVideos,
         	HelpVideos,
         	LobbyGuide,
@@ -1018,7 +1019,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	     if(tournament && session.isAGameRoom()) 
 	        { //tournament notification for spectators
 	          GC.Text(inG,false,gameTournamentRect,
-	              Color.black,null,s.get(Session.TournamentGame));
+	              Color.black,null,s.get(Session.Mode.Tournament_Mode.menuItem()));
 	        }
 
 	  }
@@ -1095,7 +1096,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private PopupManager robotMenu = new PopupManager();
 	  private void ChangeRobot(Session sess,int ex,int ey)
 	  {	changeRoom = sess;
-	  	robotMenu.newPopupMenu(this,deferredEvents);
+	  	robotMenu.newPopupMenu(G.getTranslations().get(SelectBotMessage),this,deferredEvents);
 	  	
 	  	if(!sess.currentGame.randomizeFirstPlayer) { robotMenu.addMenuItem(s.get(Bot.NoRobot.name),Bot.NoRobot.idx); }
 	  	robotMenu.addMenuItem(s.get(Bot.NoRobotRandom.name),Bot.NoRobotRandom.idx);
@@ -1120,7 +1121,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private PopupManager subroomMenu = new PopupManager();
 	  private void changeSubmode(Session sess,int ex,int ey)
 	  {  changeRoom = sess;
-	     subroomMenu.newPopupMenu(this,deferredEvents);
+	     subroomMenu.newPopupMenu(G.getTranslations().get(JoinMode.InvitationMessage),this,deferredEvents);
 	     subroomMenu.show(ex,ey,JoinMode.values());
 	  }
 	  
@@ -1150,7 +1151,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private void changeVariationType(Session sess,int ex,int ey)
 	  {
 	  changeRoom=sess;
-	  variationMenu.newPopupMenu(this,deferredEvents);
+	  variationMenu.newPopupMenu(s.get(SelectVariationMessage),this,deferredEvents);
 	  GameInfo currentGame = sess.currentGame;
 	  Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false,false);
 	  //(sess.mode == Session.Mode.Review_Mode)
@@ -2213,7 +2214,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private Session changeRoom = null;
 	private void changeRoom(Session sess,int ex,int ey)
 	{	changeRoom = sess;
-		roomMenu.newPopupMenu(this,deferredEvents);
+		roomMenu.newPopupMenu(s.get(SelectTypeMessage),this,deferredEvents);
 		roomMenu.show(ex,ey,Session.Mode.values());
 	}	
 	private boolean iCanEnterRoom(Session sess)
@@ -2898,7 +2899,7 @@ private User invitedUser = null;
 private long invitedTime = 0;
 
 private void DoMute(User user,int ex,int ey)
-{	muteMenu.newPopupMenu(this,deferredEvents);
+{	muteMenu.newPopupMenu(s.get(ChatMessage),this,deferredEvents);
 	muteUser = user;
 	muteMenu.addMenuItem(s.get(user.ignored 
 						       	?AcceptChatMessage

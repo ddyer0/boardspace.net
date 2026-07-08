@@ -227,7 +227,7 @@ public void FlushDeadUsers(commonLobby can)
     // generate a menu of user names and manipulations
     public void changeUserMenu(PopupManager userMenu,boolean addOperations,exCanvas can,int slot,int ex,int ey)
     {	InternationalStrings s = G.getTranslations();
-	  	userMenu.newPopupMenu(can,can.deferredEvents);
+	  	userMenu.newPopupMenu(s.get(UsersMessage),can,can.deferredEvents);
 	  	userMenu.addMenuItem(s.get(EmptyName),EmptyName);
 	  	for(int i=0;i<numberOfUsers;i++)
 	  	{	User u = Users[i];

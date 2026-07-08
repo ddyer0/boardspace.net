@@ -127,6 +127,12 @@ public abstract class commonCanvas extends exCanvas
     public  static String DrawOutcome = "The game is a draw";
     public  static String DrawNotAllowed = "You can't offer a draw at this time";
     public  static String WonOutcome = "Game won by #1";
+    public static String SelectRobot = "Select Robot";
+    public static String SelectThread = "Select Thread";
+    public static String SelectGame = "Select Game";
+    public static String RestorePanZoom = "Restore Pan+Zoom";
+	public static final String RememberPosition = "Remembered Position";
+
     public  static String StackHeightMessage = "Stack Height";
     private  static String GoalExplanationOnlyDetail = "The goal of the game is:\n#1";
     public static final String diceSoundName = DICEPATH + "dice" + Config.SoundFormat;
@@ -515,6 +521,11 @@ public abstract class commonCanvas extends exCanvas
 	private static final String ReplayGameFolder = "Replay games in folder";
 	private static final String RemoteFor = "Remote for #1";
 	static public String[] CanvasStrings = {
+			RememberPosition,
+			SelectRobot,
+		    SelectThread,
+		    SelectGame,
+		    RestorePanZoom,
 			VcrClipMessage,
 			VcrUnClipMessage,
 			WayBackMessage,
@@ -921,7 +932,7 @@ public abstract class commonCanvas extends exCanvas
 	       	G.setPrinter(shell);
 	       }
 	       private void selectRobot(int x,int y)
-	       {	robotPopup.newPopupMenu(commonCanvas.this,deferredEvents);
+	       {	robotPopup.newPopupMenu(SelectRobot,commonCanvas.this,deferredEvents);
 	       	for(Bot b : Bot.values())
 	       	{	if(b.idx>=0) { hidden.robotPopup.addMenuItem(b.name,b); }   		
 	       	}
@@ -939,7 +950,7 @@ public abstract class commonCanvas extends exCanvas
 	               	{	UCTThread threads[] = r.getThreads();
 	               		if(threads!=null)
 	               		{	
-	               			threadPopup.newPopupMenu(commonCanvas.this,deferredEvents);
+	               			threadPopup.newPopupMenu(s.get(SelectThread),commonCanvas.this,deferredEvents);
 	               			threadPopupRobot = r;
 	               			for(UCTThread t : threads) { threadPopup.addMenuItem(t.toString(),t); }
 	               			threadPopup.show(x,y);
@@ -1315,7 +1326,7 @@ public abstract class commonCanvas extends exCanvas
 	    }
 	  
 	    private void selectGameMenu(int x,int y)
-	    {	gamePopup.newPopupMenu(commonCanvas.this,deferredEvents);
+	    {	gamePopup.newPopupMenu(s.get(SelectGame),commonCanvas.this,deferredEvents);
 	    	if(hidden.Games!=null)
 	    	{
 	    	 gameSubMenu(null,0,hidden.Games.size());
@@ -3761,7 +3772,7 @@ public abstract class commonCanvas extends exCanvas
         	playASoundClip(Keyboard.clickSound,50); 
         	break;
         case Move:
-        	History.showRememberedPositionMenu(this,G.Left(hp),G.Top(hp));
+        	History.showRememberedPositionMenu(s.get(RememberPosition),this,G.Left(hp),G.Top(hp));
         	break;
         case BackVariation:
         	{
@@ -4801,6 +4812,11 @@ public abstract class commonCanvas extends exCanvas
     	return (m.op==MOVE_PLEASEUNDO);
     }
     
+    public boolean checkForRepetitions(BoardProtocol bd,commonMove m)
+    {
+    	return repeatedPositions.checkForRepetition(bd,m);
+    }
+    
     /**
      * perform and optionally transmit a move, return true if ok.  Note, it's tempting
      * to do any "auto move" that is needed in the continuation of this method, but don't.
@@ -4868,7 +4884,7 @@ public abstract class commonCanvas extends exCanvas
             		BoardProtocol bd = getBoard();
                  	m.setDigest(bd.Digest());
                  	m.setGameover(false);
-                 	if(repeatedPositions.checkForRepetition(bd,m))
+                 	if(checkForRepetitions(bd,m))
                  		{
                  		// we changed state, the display may need to be updated
                  		saveDisplayBoard();
@@ -6046,7 +6062,7 @@ public abstract class commonCanvas extends exCanvas
     }
     public void doRestorePanZoom(int x,int y)
     {	PopupManager pop = hidden.panzoomPopup;
-    	pop.newPopupMenu(this,deferredEvents);
+    	pop.newPopupMenu(s.get(RestorePanZoom),this,deferredEvents);
     	for(int i=0;i<l.panAndZoom.size();i++)
     	{	String e = l.panAndZoom.elementAt(i);
     		pop.addMenuItem((i+1)+": "+summarize(e),e);
@@ -8411,12 +8427,16 @@ public String encodeScreenZone(int x, int y,Point p)
 		}}
 	}
 
+	int w = G.Width(fullRect);
+	int h = G.Height(fullRect);
+	if(w>0 && h>0)
 	{
 		//if in the board zone
-		G.SetLeft(p,((x-G.Left(fullRect))*100)/G.Width(fullRect));
-		G.SetTop(p,((y-G.Top(fullRect))*100)/G.Height(fullRect));
+		G.SetLeft(p,((x-G.Left(fullRect))*100)/w);
+		G.SetTop(p,((y-G.Top(fullRect))*100)/h);
 		return ".full.";		
 	}
+	return null;
 
 }
 /**
@@ -10058,6 +10078,14 @@ public void verifyGameRecord()
 	    		}
 	    		
 			}
+	    }
+	    public static void putStrings()
+	    {
+	        InternationalStrings.put(CanvasStrings);
+	        InternationalStrings.put(commonStringPairs);
+	        InternationalStrings.put(BaseBoard.BoardState.StateStrings);
+	        InternationalStrings.put(lib.XFrame.XFrameMessages);
+	        NumberMenu.NumberingMode.putStrings();
 	    }
 
 }

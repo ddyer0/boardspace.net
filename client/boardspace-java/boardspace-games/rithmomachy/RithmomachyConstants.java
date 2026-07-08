@@ -28,8 +28,10 @@ public interface RithmomachyConstants
 	static String EruptionMessage = "Eruption";
 	static String EqualityMessage = "Equality";
 	static String CapturedMessage = "#1 Captured, #2%";
+	static String ChooseNumber = "Choose Number";
 	static String RithmomachyStrings[] =
 	{	"Rithmomachy",
+		ChooseNumber,
 		PlayDescription,
 		"arithmetic",
 		"Arithmetic series",

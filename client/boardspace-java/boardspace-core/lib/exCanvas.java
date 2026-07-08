@@ -574,38 +574,38 @@ public abstract class exCanvas extends Canvas
         }
 
    }
+    
     private boolean selectFontSize(Object target)
     {	JMenu m = (JMenu)l.fontSizeMenu;
-		boolean some = false;
+    	JMenuItem sel = null;
     	if(m!=null)
     	{
     	int nItems = m.getItemCount();
-    	JCheckBoxMenuItem sel = null;
+
     	for(int i = 0; i<nItems; i++)
-    	{	JCheckBoxMenuItem item = (JCheckBoxMenuItem)m.getItem(i);
-    		boolean isSel = item.isSelected();
-    		if(item==target)
-    		{	
-    			int val = G.IntToken(item.getText());
-    			if(isSel && (val>6) && (val!=FontManager.defaultFontSize)) 
-    				{ 
-    					FontManager.setDefaultFontSize(val);
-    					FontManager.setGlobalDefaultFont();
-    					doNullLayout();  
-    					generalRefresh();
-    					item.setSelected(true);
-    					
-     				}
- 				  some = true;
-    		}
-    		else if(isSel) 
-    			{ sel = item; }
-    	}	
-    	if(some && sel!=null) 
-    		{ sel.setSelected(false); 
-    		}}
-    	return(some);
+    	{	JMenuItem item = m.getItem(i);
+    	    if(target==item && item.isSelected()) { sel = item; }
+    	}
+    	if(sel!=null)
+    	{	int val = 0;
+    		sel.setSelected(true);
+    		for(int i = 0; i<nItems; i++)
+        	{	JMenuItem item = m.getItem(i);
+        		
+        		if(item==sel) { val = G.IntToken(item.getText()); }
+        		else if(item!=null) { item.setSelected(false); }
+        	}
+    		if((val>6) && (val!=FontManager.defaultFontSize)) 
+			{ 
+				FontManager.setDefaultFontSize(val);
+				FontManager.setGlobalDefaultFont();
+				doNullLayout();  
+				generalRefresh();
+			}
+    	}}
+    	return(sel!=null);
     }
+    
     private boolean selectFontStyle(Object target)
     {	JMenu m = (JMenu)l.fontStyleMenu;
 		boolean some = false;
@@ -615,9 +615,9 @@ public abstract class exCanvas extends Canvas
     	JCheckBoxMenuItem sel = null;
     	for(int i = 0; i<nItems; i++)
     	{	JCheckBoxMenuItem item = (JCheckBoxMenuItem)m.getItem(i);
-    		boolean isSel = item.isSelected();
     		if(item==target)
     		{	
+        		boolean isSel = item.isSelected();
     			String val = item.getText();
     			if(isSel) 
     				{ 
@@ -630,7 +630,7 @@ public abstract class exCanvas extends Canvas
      				}
  				  some = true;
     		}
-    		else if(isSel) 
+    		else if(item!=null && !item.isSelected()) 
     			{ sel = item; }
     	}	
     	if(some && sel!=null) 

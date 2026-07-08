@@ -17,9 +17,10 @@
 package bridge;
 
 
-import java.util.Vector;
+import java.util.Hashtable;
 
 import com.codename1.ui.Component;
+import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.events.ActionEvent;
@@ -29,6 +30,7 @@ import com.codename1.ui.list.ListModel;
 import com.codename1.ui.plaf.Border;
 import com.codename1.ui.plaf.Style;
 
+import lib.FontManager;
 import lib.G;
 import lib.Http;
 import lib.Image;
@@ -83,31 +85,43 @@ class BSrenderer<T> extends DefaultListCellRenderer<T>
 @SuppressWarnings("rawtypes")
 public class Menu extends JMenuItem implements ActionListener,SizeProvider,NativeMenuInterface
 {	private MouseAdapter mouse = null;
+	private String title = null;
 	public MouseAdapter getMouse() 
 	{
 		if(mouse==null) { mouse = new MouseAdapter(getMenu()); }
 		return(mouse);
 	}
-	private ComboBox<JMenuItem> menu =  null;
+	private ComboBox internalmenu =  null;
+	private Hashtable<Object,JMenuItem> internalitems = null;
+	public Hashtable<Object,JMenuItem>getItems() 
+	{ 	if(internalitems== null)
+		{
+		internalitems = new Hashtable<Object,JMenuItem>();
+		}
+		return internalitems;
+	}
 	
-	public ComboBox<JMenuItem> getMenu() 
+	public ComboBox getMenu() 
 	{
-		if(menu==null) 
-			{ menu = new ComboBox<JMenuItem>();
+		if(internalmenu==null) 
+			{ String et = title==null ? "" : title;
+			  ComboBox menu = internalmenu = new ComboBox();
+			  JMenuItem m = new JMenuItem(et);
+			  m.setIsLabel(true);
+			  Font font = m.getFont();
+			  Font de = FontManager.deriveFont(font,FontManager.getFontSize(font)+2,FontManager.BOLD);
+			  m.setFont(de);
+			  add(m);
+
 			  BSrenderer<JMenuItem> bsRender = new BSrenderer<JMenuItem>(this);
 			  bsRender.setShowNumbers(false);
 			  setBackground(new Color(0xccccff)/*menu.getBackground()*/);
 			  setForeground(menu.getForeground());
 			  menu.setRenderer(bsRender);
 			}
-		return(menu);
+		return(internalmenu);
 	}
-	private Vector<JMenuItem>items = null;
-	public Vector<JMenuItem>getItems()
-	{
-		if(items==null) { items = new Vector<JMenuItem>(); }
-		return(items);
-	}
+
 	public boolean isTreeMenu() { return(getItemCount()>0); }
 	public boolean getTopLevel() { return(isTreeMenu()); }
 	// constructors
@@ -117,12 +131,18 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		}
 	public Menu(String msg) 
 	{ 	super(msg);
+		title = msg;
 		finishInit();
 	}
 	public int getComponentIndex(JMenu m) 
-	{
-		Vector<JMenuItem> v = getItems();
-		return v.indexOf(m);
+	{	Object impl = m.getImplementation();
+		int count = getItemCount();
+		for(int n = 0;n<count;n++)
+		{
+			Object e = getItem(n);
+			if(e==impl) { return n; }
+		}
+		return -1;
 	}
 	private com.codename1.ui.Container  showingOn = null;
 	private int showingX;
@@ -131,11 +151,11 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	public void setShowingOn(com.codename1.ui.Container  on) { showingOn = on; }
 	public int getWidth()
 	{
-		return((menu!=null) ? menu.getWidth() : 100);
+		return((internalmenu!=null) ? internalmenu.getWidth() : 100);
 	}
 	public int getHeight()
 	{
-		return((menu!=null) ? menu.getHeight() : 100);
+		return((internalmenu!=null) ? internalmenu.getHeight() : 100);
 	}
 
 	private void showMenu(com.codename1.ui.Component parent ,Menu jMenu,int atX,int atY)
@@ -145,7 +165,7 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		  MasterForm form = MasterForm.getMasterForm();
 		  int ax = parent.getAbsoluteX();
 		  int ay = parent.getAbsoluteY();
-		  ComboBox<JMenuItem>m = getMenu();
+		  ComboBox m = getMenu();
 		 // m.setShouldCalcPreferredSize(true);
 		 // m.calcPreferredSize();
 		  Dimension menuSize = m.getPreferredSize();
@@ -194,8 +214,8 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		ma.addActionListener(this);
 	};
 	public JMenuItem getSelectedItem()
-	{
-		return((JMenuItem)(getMenu().getSelectedItem()));
+	{	Object item = getMenu().getSelectedItem();
+		return(item instanceof JMenuItem ? (JMenuItem)item : null);
 	}
 	public int getSelectedIndex()
 	{
@@ -205,21 +225,16 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	public void actionPerformed(ActionEvent evt)
 	{
 		Object ob = evt.getSource();
-		ComboBox<JMenuItem>m = getMenu();
+		ComboBox m = getMenu();
 		com.codename1.ui.Container so = showingOn;
 		// showingOn can be null if multiple events are generated
 		// and the first one has completed
 		if(ob==m && so!=null)
 		{
-			Object impl = m.getSelectedItem();
+			JMenuItem item = m.getSelectedItem();
 			int index = m.getSelectedIndex();
-			if(index>=0)
-			{
-			JMenuItem item = getItems().elementAt(index);
 			if(item!=null)
 			{
-			Object itemImpl = item.getImplementation();
-			G.Assert(index==0 || impl==itemImpl,"item mismatch, is %s expected %s",impl,itemImpl);
 			
 			if(item.isTreeMenu())	// item zero is the original menu head
 			{
@@ -244,16 +259,16 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 			}
 			
 			m.setSelectedIndex(0);
-			}}
+			}
 		}
 		handleActionEvent(evt);
 	}
 
 	public void add(JMenuItem b)
 		{ JMenuItem imp = b.getImplementation();
-		  ComboBox<JMenuItem>m = getMenu();
+		  ComboBox m = getMenu();
 		  m.addItem(imp); 
-		  getItems().addElement(b);
+		  getItems().put(imp,b);
 		  MouseAdapter ma = getMouse();
 		  m.addActionListener(ma);
 		  ma.addActionListener(this);
@@ -261,32 +276,32 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	
 	public void remove(JMenuItem m) 
 	{ 	// List doesn't expose a removeItem method
-		ListModel<JMenuItem> model = menu.getModel();
+		ListModel<JMenuItem> model = getMenu().getModel();
+		Object impl = m.getImplementation();
 		for(int size=model.getSize()-1; size>=0; size--)
-		{	if(model.getItemAt(size)==m.getImplementation())
+		{	if(model.getItemAt(size)==impl)
 				{ model.removeItem(size);
-				getItems().remove(size);
+				  getItems().remove(impl);
+				  break;
 				}
 
 		}
 	}
 	
-	public void remove(int n) {
-		ListModel<JMenuItem> model = getMenu().getModel();
-		model.removeItem(n);
-		getItems().remove(n);		
-	}
 	
 	public void removeAll() 
 	{ 
 		// List doesn't expose a removeItem method
 		ListModel<JMenuItem> model = getMenu().getModel();
-		for(int size=model.getSize()-1; size>=0; size--)
+		for(int size=model.getSize()-1; size>=1; size--)
 		{	model.removeItem(size); 
-			getItems().remove(size);
 		} 
+		getItems().clear();
 	}
-	public JMenuItem getItem(int i) { return(getItems().elementAt(i)); }
+	public JMenuItem getItem(int i) 
+	{ 	Object m = getMenu().getModel().getItemAt(i);
+		JMenuItem got = getItems().get(m);
+		return(got); }
 
 	public int getItemCount() { return(getMenu().getModel().getSize());  }
 	

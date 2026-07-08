@@ -49,7 +49,7 @@ public class UserBank
     {	int maxsz = users.size();
     	int sz = 0;
     	SimpleUser us[] = new SimpleUser[maxsz];
-    	destMenu.newPopupMenu(parent,listen);
+    	destMenu.newPopupMenu(G.getTranslations().get(ChatWidget.ToUser),parent,listen);
     	destMenu.addMenuItem(prompt,null);		// to all
     	if(prevToSingle!=null) 	// to that one special user
     		{ destMenu.addMenuItem(prevToSingle.name(),prevToSingle); 

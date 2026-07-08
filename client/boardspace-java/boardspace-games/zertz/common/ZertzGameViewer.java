@@ -472,7 +472,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     PopupManager changeBoard = new PopupManager();
     private void changeBoardMenu(HitPoint hp)
     {
-    	changeBoard.newPopupMenu(this, deferredEvents);
+    	changeBoard.newPopupMenu(s.get(SelectBoard),this, deferredEvents);
     	for(Zvariation v : Zvariation.values())
     	{
     		if(v.boardSetup==v) 

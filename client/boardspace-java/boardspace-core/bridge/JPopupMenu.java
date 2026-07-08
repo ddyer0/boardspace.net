@@ -30,13 +30,35 @@ import lib.Plog;
 @SuppressWarnings("serial")
 public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInterface
 {	public JPopupMenu() { super(); }
-	public JPopupMenu(String msg) { super(msg); } 
+	JLabel label = null;
+	public JPopupMenu(String msg)
+	{ super(msg); 
+	  if(msg!=null && !"".equals(msg))
+	  {
+		JLabel title = new JLabel(msg);
+		title.setFont(getFont().deriveFont(Font.BOLD));
+		add(title);
+		addSeparator();
+		title.setAlignmentX(Component.CENTER_ALIGNMENT);
+		label = title;
+	  }
+	}
+	public void setFont(Font f)
+	{
+		super.setFont(f);
+		if(label!=null)
+		{
+			label.setFont(f.deriveFont(Font.BOLD));
+		}
+	}
 	public JPopupMenu(String msg,Font f) { this(msg); setFont(f==null ? FontManager.menuFont() : f); }
 	public int getItemCount() { return(getComponentCount()); }
+	public Component add(Component s) { return super.add(s); }
 	public NativeMenuItemInterface getMenuItem(int n) 
 	{ Component c = getComponent(n);
-	  return((NativeMenuItemInterface)c);
+	  return(c instanceof NativeMenuItemInterface ? (NativeMenuItemInterface)c : null);
 	}
+
 	public void hide(Component window)
 	{
 		if(window instanceof Container) { ((Container)window).remove(this); }
@@ -61,5 +83,7 @@ public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInte
 		setLayout(new GridLayout(0,n));	
 	}
 	public boolean useSimpleMenu() { return false; }
+
+
 }
 

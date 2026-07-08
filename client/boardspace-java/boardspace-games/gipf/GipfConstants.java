@@ -42,6 +42,7 @@ public interface GipfConstants
 		String menuItem = null;
 		Potential(String tt) { menuItem = tt;  }
 		public String menuItem() { return menuItem; }
+		public static void putStrings() { InternationalStrings.put(values()); }
 	};
 
 	enum GColor { W, B};
@@ -200,6 +201,7 @@ public interface GipfConstants
        		InternationalStrings.put(GipfStringPairs);
        		InternationalStrings.put(Potential.values());
        		GipfState.putStrings();
+       		Potential.putStrings();
 
     }
     

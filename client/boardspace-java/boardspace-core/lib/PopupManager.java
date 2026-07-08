@@ -15,7 +15,6 @@
     If not, see https://www.gnu.org/licenses/. 
  */
 package lib;
-
 import bridge.JPopupMenu;
 import bridge.Icon;
 import bridge.JMenu;
@@ -96,6 +95,7 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
 	public bsSwingMenu(String msg,Font f)
 	{
 		popupSwingMenu = new JPopupMenu(msg,f); 
+		
 		// just expetimentally, lightweight menus have fewer mystery 
 		// crashes [ddyer 1/2023]
 		popupSwingMenu.setLightWeightPopupEnabled(lightweightMenus);
@@ -516,13 +516,13 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
      * @param listen the listener for action events associated with the menu
      */
     @SuppressWarnings("rawtypes")
-    public void newPopupMenu(MenuParentInterface window,ActionListener listen,SimpleObserver o)
+	public void newPopupMenu(String title,MenuParentInterface window,ActionListener listen,SimpleObserver o)
     {	popupTarget = new Hashtable<NativeMenuItemInterface,Object>();	
     	listener = listen;
     	observer = o;
     	parent = window;
     	// simple menus always go through the swing interface, but will be short circuited to the simplemenu instead of used
-    	menu = (useSimpleMenu() || useSwing) ? new bsSwingMenu(null,font) : new bsAwtMenu(null,font);
+    	menu = (useSimpleMenu() || useSwing) ? new bsSwingMenu(title,font) : new bsAwtMenu(title,font);
     	//G.print("\nsimple "+useSimpleMenu+" swing "+useSwing+" lightweight "+lightweightMenus);
     }
     private Font font = null;
@@ -535,9 +535,9 @@ public class PopupManager extends SimpleObservable implements ActionListener,Dra
     	return menu.getFont();
     }
     @SuppressWarnings("rawtypes")
-    public void newPopupMenu(MenuParentInterface window,ActionListener listen)
+	public void newPopupMenu(String title,MenuParentInterface window,ActionListener listen)
     {
-    	newPopupMenu(window,listen,null);
+    	newPopupMenu(title,window,listen,null);
     }
     /**
      * show a memu consisting of all the enums in the list, normally

@@ -1404,7 +1404,26 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 
 	}
-	
+	{
+	String havannahRules = "/hexade/english/Rules.html";
+	String havannahViewer = "hexade.HexadeViewer";  
+	put(new GameInfo(595,ES.test,130,"HX",ConnectionGames,"Hexade","Hexade-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,"about_havannah.html",
+			null,false, WhiteOverBlack));
+	put(new GameInfo(596,ES.test,130,"HX",ConnectionGames,"Hexade","Hexade-8",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,"about_havannah.html",
+			null,false, WhiteOverBlack));
+	put(new GameInfo(597,ES.test,130,"HX",ConnectionGames,"Hexade","Hexade-10",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,"about_hexade.html",
+			null,false, WhiteOverBlack));
+
+	}
 	{
 	String meridiansRules = "/meridians/english/Meridians_rules.pdf";
 	String meridiansViewer = "meridians.MeridiansViewer";  

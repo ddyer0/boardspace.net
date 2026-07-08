@@ -115,6 +115,12 @@ public class NumberMenu extends Rectangle {
 	  {	  // true if this mode should use explicit numbers 
 		  return !(this==None||this==Last);
 	  }
+	  static final String title = "Show Numbers";
+	  public static void putStrings()
+	  { InternationalStrings.put(title);
+		InternationalStrings.put(values());  
+	  }
+	
 	}
 	/**
 	 * 
@@ -153,7 +159,7 @@ public class NumberMenu extends Rectangle {
 	public void showMenu(MenuParentInterface drawOn,ActionListener listener)
 	{
 		if(menu==null) { menu=new PopupManager(); }
-		menu.newPopupMenu(drawOn,listener);
+		menu.newPopupMenu(G.getTranslations().get(NumberingMode.title),drawOn,listener);
 		menu.show(G.Left(this),G.Top(this),NumberingMode.values());
 	}
 	/**

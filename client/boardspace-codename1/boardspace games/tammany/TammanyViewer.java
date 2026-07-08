@@ -1163,7 +1163,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
    TammanyChip electionPlayer = null;
    void electionMenu(MenuParentInterface parent,TammanyCell c,int cx,int cy)
    {
-	   electionMenu.newPopupMenu(parent,deferredEvents);
+	   electionMenu.newPopupMenu(s.get(ChipsMessage),parent,deferredEvents);
 	   electionMenu.addMenuItem(s.get(ChipsNone),0);
 	   electionMenu.addMenuItem(s.get(ChipsOne),1);
 	   electionChip = c.topChip();

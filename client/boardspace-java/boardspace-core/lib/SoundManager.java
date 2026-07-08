@@ -35,7 +35,6 @@ public class SoundManager implements Runnable
  	public synchronized void showClips(String msg)
 	{
 		int rp = readPtr;
-		G.print(msg);
 		while(rp!=writePtr)
 		{
 			rp++;

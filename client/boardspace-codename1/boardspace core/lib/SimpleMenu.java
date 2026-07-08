@@ -21,12 +21,19 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
 
-//
-// this presents a JPopupMenu without being a window in the window hierarchy
-// it's used to present menus on offscreen windows, but it could be used in
-// other places.
-// TODO: add "fling" scrolling for touch screens
-//
+
+/**
+ this presents a JPopupMenu or PopupMenu without being a window in the window hierarchy
+ it's used to present menus on offscreen windows, but it could be used in
+ other places.
+ This works by using a normal menu that has been built but not activated, as a data
+ source; extacting the text and icons from the menu and presenting them in a menu-like
+ interface.
+ 
+ TODO: add "fling" scrolling for touch screens
+
+
+ */
 public class SimpleMenu {
 	public int margin = 6;
 	public NativeMenuInterface menu=null;
@@ -160,6 +167,8 @@ public class SimpleMenu {
 		for(int i=0;i<nitems;i++)
 			{
 			NativeMenuItemInterface mi = menu.getMenuItem(i);
+			if(mi!=null)
+			{
 			int colWidth = columnWidth[thisCol];
 			Icon ic = mi.getNativeIcon();
 			String str = mi.getText();
@@ -187,7 +196,9 @@ public class SimpleMenu {
 					}
 			}
 			
-			if(G.pointInRect(hp, xpos,ypos,colWidth,h)
+			if(mi.isEnabled() 
+					&& !mi.isLabel()
+					&& G.pointInRect(hp, xpos,ypos,colWidth,h)
 					&& ((ic!=null) || !"".equals(str)))
 			{ selectedItem = mi;
 			if(downSeen && hp.isUp)
@@ -214,7 +225,7 @@ public class SimpleMenu {
 				xpos += colWidth+margin;
 			}
 			
-			}
+			}}
 		if(nextMenu!=null)
 			{
 			int hx = G.Left(hp);
@@ -255,6 +266,8 @@ public class SimpleMenu {
 		for(int i=0;i<=lastItem;i++)
 		{
 		NativeMenuItemInterface item = menu.getMenuItem(i);
+		if(item!=null)
+		{
 		boolean hasSubmenu = (item.getSubmenu()!=null);
 		Font f = item.getFont();
 		if(f!=lastFont)
@@ -276,7 +289,7 @@ public class SimpleMenu {
 			columnHeight = 0;
 			thisCol = 0;
 			}
-		}
+		}}
 		int szx = 0;
 		for(int i=0;i<nCols;i++) { szx += columnWidth[i]; }
 		

@@ -176,6 +176,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
         	CrosswordleConstants.putStrings();
+        	DateSelector.DateCode.putStrings();
         }
         
         String type = info.getString(GameInfo.GAMETYPE, CrosswordleVariation.Crosswordle_55.name);

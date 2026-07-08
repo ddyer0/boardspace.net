@@ -84,7 +84,7 @@ public class ChatWidget
 	public boolean embedded() { return(embedded); }
 	boolean allowPM = true;
 	public void setAllowPM(boolean v) { allowPM = v; }
-	
+	static final String ToUser = "send to";
     static private final String MESSAGEPROMPT = "To ALL:";
 	static private final String MESSAGETOPROMPT = "To #1:";
 	static private final String MESSAGEFROM = "From #1";
@@ -95,6 +95,7 @@ public class ChatWidget
     static private final String TranslationLegend = "(#1 from #2)";
 	public static String[] ChatStrings = 
 		{	EditMessage,
+			ToUser,
 			TranslationLegend,
 			InitMessage,
 			MESSAGEPROMPT,

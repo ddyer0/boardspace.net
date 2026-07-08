@@ -12,6 +12,7 @@ public class GearMenu extends Rectangle {
 	public GearMenu(exCanvas p) { parent = p; parent.addRect("gear"); }	
 	PopupManager gearMenu = new PopupManager();
 	public boolean includeExit = true;
+	public String GearActions = "Actions";
 	enum GearId implements CellId,EnumMenu
 	{	Exit("Exit"),
 		Feedback("Send Feedback"),
@@ -24,7 +25,7 @@ public class GearMenu extends Rectangle {
 		GearId(String m) { message = m; }
 
 		static void putStrings()
-		{
+		{	
 			InternationalStrings.put( values());
 		}
 		public String menuItem() {
@@ -39,8 +40,8 @@ public class GearMenu extends Rectangle {
 	
 	public void doGearMenu(int x,int y)
 	{
-		gearMenu.newPopupMenu(parent,parent);
 		InternationalStrings s = G.getTranslations();
+		gearMenu.newPopupMenu(s.get(GearId.GearMenu.message),parent,parent);
 		if(includeExit) { gearMenu.addMenuItem(s.get(GearId.Exit.message),GearId.Exit); }
 		gearMenu.addMenuItem(s.get(GearId.Feedback.message),GearId.Feedback);
 		if(G.isRealLastGameBoard())

@@ -43,14 +43,14 @@ public class FontManager extends SystemFont {
 		return((int)(G.getDisplayScale()*sz));
 	}
 
-	public static final Style MenuTextStyle = Style.Plain;
+	public static final Style MenuTextStyle = Style.Bold;
 	
 
 	public static Font menuFont()
 	{
 		return getFont(getGlobalDefaultFont(),
 				MenuTextStyle,
-				standardizeFontSize(standardizeFontSize(G.MenuTextSize)));
+				standardizeFontSize(G.MenuTextSize));
 	}
 	/**
 	 * set a global default font scaled to the size of the and resolution of the screen

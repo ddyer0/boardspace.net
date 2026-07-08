@@ -34,7 +34,10 @@ import com.codename1.ui.geom.Dimension;
 
 @SuppressWarnings("rawtypes")
 public class JMenuItem extends Component implements ActionListener,NativeMenuItemInterface
-{	MouseAdapter mouse = new MouseAdapter(null);
+{	private boolean isLabel = false;
+    public boolean isLabel() { return isLabel; }
+    public void setIsLabel(boolean v) { isLabel = v; }
+	MouseAdapter mouse = new MouseAdapter(null);
 	String text = null;
 	Object item = null;
 	private Icon icon = null;
@@ -50,6 +53,8 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	public Color getForeground() { return(fgcolor); }
 	public void setBackground(Color c) { bgcolor = c; }
 	public void setForeground(Color c) { fgcolor = c; }
+	public boolean isSelected() { return false; }
+	public void setSelected(boolean n) { }
 	public void setFont(Font d) 
 	{ font = d; 
 	}
@@ -59,6 +64,15 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 		{ font = FontManager.menuFont();
 		}
 	  return(font);
+	}
+	public Font getFont(Component parent)
+	{	Font f = font;
+		if(f==null)
+		{
+			f = parent.getFont();
+		}
+		if(f==null) { f = FontManager.menuFont(); }
+		return f;
 	}
 	public Dimension getPreferredSize()
 	{
@@ -77,7 +91,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 		 { cachedParent = parent;
 		   cachedImage = (icon!=null) 
 			? Image.getIconImage(icon,parent)
-			: getTextImage(text,parent.getFont(),getForeground(),getBackground());
+			: getTextImage(text,getFont(parent),getForeground(),getBackground());
 		 }
 		return(cachedImage);
 	}
@@ -112,7 +126,7 @@ public class JMenuItem extends Component implements ActionListener,NativeMenuIte
 	{	this(m);
 		setFont(f==null ? FontManager.menuFont() : f);
 	}
-	public JMenuItem(String m) { super(); text = m; }
+	public JMenuItem(String m) { super(); text = m; setFont(FontManager.menuFont()); }
 	
 	public void setText(String t) { text = t; cachedImage = null; }
 

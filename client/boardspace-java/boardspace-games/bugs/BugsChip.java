@@ -27,6 +27,7 @@ import lib.HitPoint;
 import lib.Image;
 import lib.ImageLoader;
 import lib.ImageStack;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.Random;
 import lib.exCanvas;
@@ -274,6 +275,10 @@ public class BugsChip extends chip<BugsChip> implements CommonConfig,CompareTo<B
 		BugsChip tile;
 		public String menuItem() {
 			return name();
+		}
+		public static void putStrings()
+		{
+			InternationalStrings.put(values());
 		}
 	}
 	public static void initialSort()

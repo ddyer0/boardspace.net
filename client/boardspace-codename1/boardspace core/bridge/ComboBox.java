@@ -18,25 +18,25 @@ package bridge;
 
 import lib.FontManager;
 import lib.G;
-import lib.Image;
 import lib.SizeProvider;
+import lib.Image;
 
-import com.codename1.components.InteractionDialog;
 import com.codename1.ui.Command;
-import com.codename1.ui.Component;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.Font;
 import com.codename1.ui.Form;
 import com.codename1.ui.List;
 import com.codename1.ui.animations.CommonTransitions;
 import com.codename1.ui.plaf.Style;
+import com.codename1.ui.Container;
+
 
 //
 // this is a workaround to keep pop-ups from apprearing too close to the top
 //
-class ComboDialog extends Dialog  implements SizeProvider
+class ComboBoxDialog extends Dialog  implements SizeProvider
 {
-	ComboDialog(String uu,String lm)
+	ComboBoxDialog(String uu,String lm)
 	{ super();
 	  setTitleComponent(new Label(Image.createImage(1,1)));
 	}
@@ -65,52 +65,16 @@ class ComboDialog extends Dialog  implements SizeProvider
 		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
 	}
 }
-//
-//this is a workaround to keep pop-ups from apprearing too close to the top
-//
-class ComboDialog2 extends InteractionDialog /*Dialog */ implements SizeProvider
-{
-	ComboDialog2(String uu,String lm)
-	{ super();
-	}
-	
-	/*
 
-	@SuppressWarnings("deprecation")
-	public Command show(int top,int bot,int left,int right,boolean title,boolean modal)
-	{
-		return super.show(Math.max(top, G.minimumFeatureSize()),bot,left,right,title,modal);
-	}
-	public void paint(com.codename1.ui.Graphics g0)
-	{
-		boolean rotated = MasterForm.rotateNativeCanvas(this,g0);
-		super.paint(g0);
-		if(rotated) { MasterForm.unrotateNativeCanvas(this, g0); }
-	}
-	public void pointerPressed(int x,int y)
-	{	
-		super.pointerPressed(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
-	}
-	public void pointerReleased(int x,int y)
-	{	
-		super.pointerReleased(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
-	}
-	public void pointerDragged(int x,int y)
-	{	
-		super.pointerDragged(MasterForm.translateX(this,x), MasterForm.translateY(this,y));
-	}
-	*/
-}
-
-public class ComboBox<T> extends com.codename1.ui.ComboBox<T> 
+public class ComboBox extends com.codename1.ui.ComboBox<JMenuItem> 
 {	public boolean centerMenu = false;
-	public ComboBox(String s) 
-		{ super(s);
-		}
 	public ComboBox() 
 		{ super(); 
 		}
-
+	public ComboBox(String title)
+	{
+		super(title);
+	}
 	public Font getFont()
 	{ return(FontManager.getFont(getStyle())); 
 	}
@@ -118,9 +82,9 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 
 	// workaround to keep the pop-ups from appearing too close to the top
-    protected Dialog createPopupDialog(List<T> l) 
+    protected Dialog createPopupDialog(List<JMenuItem> l) 
     {
-    	Dialog popupDialog = new ComboDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
+    	Dialog popupDialog = new ComboBoxDialog(getUIID() + "Popup", getUIID() + "PopupTitle");
             popupDialog.setScrollable(false);
             popupDialog.getContentPane().setAlwaysTensile(false);
             popupDialog.setAlwaysTensile(false);
@@ -132,9 +96,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
             popupDialog.addComponent(BorderLayout.CENTER, l);
             return popupDialog;
      }
-	public FontMetrics getFontMetrics(Font f) {
-		return FontManager.getFontMetrics(f);
-	}
+
 	public void paint(com.codename1.ui.Graphics g0)
 	{	
 		boolean rotated = MasterForm.rotateNativeCanvas(this, g0);
@@ -146,6 +108,12 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 	public boolean isShowingPopupDialog() {
 	        return showingPopupDialog || super.isShowingPopupDialog();
 	}
+	public JMenuItem getSelectedItem()
+	{
+		Object f = super.getSelectedItem();
+		return f instanceof JMenuItem ? (JMenuItem) f : null;
+	}
+	
 	public Command showPopupDialog(Dialog popupDialog, @SuppressWarnings("rawtypes") List l) {
 		if(centerMenu) { return super.showPopupDialog(popupDialog,l); }
 		else {
@@ -153,48 +121,35 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 	            Form parentForm = getComponentForm();
 
 	            int listW = Math.max(getWidth() , l.getPreferredW());
-	            listW = Math.min(listW + l.getSideGap(), parentForm.getContentPane().getWidth());
+	            listW = Math.min(listW + l.getSideGap()*3/2, parentForm.getContentPane().getWidth());
 
 
-	            Component content = popupDialog.getDialogComponent();
+	            Container content = popupDialog.getDialogComponent();
 	            Style contentStyle = content.getStyle();
 
 	            int listH = content.getPreferredH()
 	                    + contentStyle.getVerticalMargins();
 
 	            @SuppressWarnings("deprecation")
-				Component title = popupDialog.getTitleArea();
-	            listH += title.getPreferredH()
-	                    + title.getStyle().getVerticalMargins();
+				Container title = popupDialog.getTitleArea();
+	            listH += title.getPreferredH()+title.getStyle().getVerticalMargins() ;
 
 	            bottom = 0;
 	            top = getAbsoluteY();
 	            int formHeight = parentForm.getHeight();
 	            if(parentForm.getSoftButtonCount() > 1) {
-	                Component c = parentForm.getSoftButton(0).getParent();
+	                Container c = parentForm.getSoftButton(0).getParent();
 	                formHeight -= c.getHeight();
 	                Style s = c.getStyle();
 	                formHeight -= (s.getVerticalMargins());
 	            }
 
 	            if(listH < formHeight) {
-	                // pop up or down?
-	            	if(centerMenu)
-	            	{
-	            		if(top > formHeight / 2) {
-	                        bottom = formHeight - top;
-	                        top = top - listH;
-	                    } else {
-	                        top +=  getHeight();
-	                        bottom = formHeight - top - listH;
-	                    }
-	            	}
-	            	else {
-	            		// leave top at the top
-	            		bottom = formHeight - top - listH;
-	            		if(bottom<0) 
-	            			{ top += bottom; bottom = 0;
-	            			}
+	            	// pop up or down?
+	            	// leave top at the top
+	            	bottom = formHeight - top - listH;
+	            	if(bottom<0) 
+	            	{ top += bottom; bottom = 0;
 	            	}
 	            } else {
 	                top = 0;
@@ -207,6 +162,12 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 	                right = 0;
 	            }
 	            showingPopupDialog = true;
+	            // this is a complete kludge - we can't seem to get rid of the
+	            // title and pulldown, so move the main part to cover them up.
+	            Font c = getFont();
+	            int lineh = FontManager.getFontSize(c);
+	            top -= lineh;
+	            bottom +=lineh;
 	            @SuppressWarnings("deprecation")
 				Command out =  popupDialog.show(Math.max(top, 0),
 	                    Math.max(bottom, 0),
@@ -217,5 +178,4 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T>
 	        
 	    }
 	}
-
 }

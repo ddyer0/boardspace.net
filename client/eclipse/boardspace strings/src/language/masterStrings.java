@@ -22,7 +22,7 @@ import colorito.ColoritoConstants;
 import common.GameInfo;
 import breakingaway.BreakingAwayConstants;
 import bug.BugConstants;
-import bugs.BugsConstants;
+import bugs.BugsViewer;
 import cannon.CannonConstants;
 import container.ContainerConstants;
 import cookie.CookieConstants;
@@ -66,6 +66,7 @@ import gounki.GounkiConstants;
 import gyges.GygesConstants;
 import havannah.HavannahConstants;
 import hex.HexConstants;
+import hexade.HexadeConstants;
 import majorities.MajoritiesConstants;
 import manhattan.ManhattanConstants;
 import mbrane.MbraneConstants;
@@ -87,6 +88,7 @@ import online.common.TurnBasedViewer;
 import online.game.AnnotationMenu;
 import online.game.NumberMenu;
 import online.game.Opcodes;
+import online.game.commonCanvas;
 import ordo.OrdoConstants;
 import palago.PalagoConstants;
 import pendulum.PendulumConstants;
@@ -179,8 +181,7 @@ public class masterStrings extends InternationalStrings
     	put("fontfamily", "sansserif");
         put(TimeControl.TimeControlStrings);
         put(TimeControl.TimeControlStringPairs);
-        Session.Mode.putStrings();
-        Session.PlayMode.putStrings();
+        Session.putStrings();
         GearMenu.putStrings();
         put(XFrame.XFrameMessages);
         put(FileSource.FileSourceStrings);
@@ -209,7 +210,7 @@ public class masterStrings extends InternationalStrings
         SlitherConstants.putStrings();
         
         setContext("bugs");
-        BugsConstants.putStrings();
+        BugsViewer.putStrings();
         
         setContext("pendulum");
         PendulumConstants.putStrings();
@@ -250,6 +251,9 @@ public class masterStrings extends InternationalStrings
         setContext("Havannah");
         HavannahConstants.putStrings();
         
+        setContext("Hexade");
+        HexadeConstants.putStrings();
+      
         setContext("Iro");
         IroConstants.putStrings();
         
@@ -439,10 +443,7 @@ public class masterStrings extends InternationalStrings
         // system error
         setContext("CommonGames");
         Opcodes.putStrings();
-        put(online.game.commonCanvas.CanvasStrings);
-        put(online.game.commonCanvas.commonStringPairs);
-        put(online.game.BaseBoard.BoardState.StateStrings);
-        put(lib.XFrame.XFrameMessages);
+        commonCanvas.putStrings();
         put(lib.exCanvas.CanvasMessages);
         put(online.common.commonLobby.LobbyMessages);
         put(online.common.commonLobby.LobbyMessagePairs);

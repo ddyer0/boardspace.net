@@ -2304,7 +2304,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         for (int i = 0; i < m; i++)
         {	
-        	choices.getItem(i).addItemListener(deferredEvents);
+        	JMenuItem mm = choices.getItem(i);
+        	if(mm!=null) { mm.addItemListener(deferredEvents); }
         }
 
         return (choices);

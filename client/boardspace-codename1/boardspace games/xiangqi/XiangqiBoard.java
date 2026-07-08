@@ -493,6 +493,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
     	{
     	droppedDest = null;
     	pickedObject = removeChip(dr);
+    	dr.lastDropped = prevLastDropped;
+    	prevLastDropped = -1;
     	if(captured!=null) { addChip(dr,captured.removeTop()); captured = null;  }
     	}
     }

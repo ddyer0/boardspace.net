@@ -396,7 +396,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     {	IStack numbers = b.availableNumbers(-1,true);
     	numbers.sort();
     	selectedNumberChoice = (RithId)hp.hitCode;
-    	numberChoice.newPopupMenu(this,deferredEvents);
+    	numberChoice.newPopupMenu(s.get(ChooseNumber),this,deferredEvents);
     	for(int i=0;i<numbers.size();i++)
     	{	int v = numbers.elementAt(i);
     		numberChoice.addMenuItem(""+v,v);

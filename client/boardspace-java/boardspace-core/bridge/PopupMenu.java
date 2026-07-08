@@ -18,16 +18,39 @@ package bridge;
 
 import java.awt.Component;
 import java.awt.Font;
-
 import lib.FontManager;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
 
 @SuppressWarnings("serial")
 public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface,NativeMenuItemInterface
-{	public PopupMenu(String m) { super(m==null?"":m); }
-	public PopupMenu(String m,Font f) { super(m); setFont(f==null ? FontManager.menuFont() : f); }
-	public NativeMenuItemInterface getMenuItem(int n) { return((NativeMenuItemInterface)getItem(n)); }
+{	public MenuItem label = null;
+	public boolean isLabel() { return false;}
+	public PopupMenu(String m)
+	{ super(m==null?"":m); 
+	  if(m!=null && !"".equals(m))
+	  {
+		  MenuItem title = new MenuItem(m);
+		  title.setFont(getFont().deriveFont(Font.BOLD));
+		  title.setEnabled(false);
+		  title.setIsLabel(true);
+		  add(title);
+		  label = title;
+		  addSeparator();
+
+	  }
+	}
+	public void setFont(Font g)
+	{
+		super.setFont(g);
+		if(label!=null) { label.setFont(g.deriveFont(Font.BOLD)); }
+	}
+	//public Component add(Component c) { return add(c); }
+	public PopupMenu(String m,Font f) { this(m); setFont(f==null ? FontManager.menuFont() : f); }
+	public NativeMenuItemInterface getMenuItem(int n) 
+	{ Object m = getItem(n);
+	  return(m instanceof NativeMenuItemInterface ? (NativeMenuItemInterface)m : null); 
+	}
 	public NativeMenuInterface getSubmenu() { return(this); }
 	public Icon getNativeIcon() {	return null;	}
 	public String getText() { return(getLabel()); }
@@ -53,4 +76,5 @@ public class PopupMenu extends java.awt.PopupMenu implements NativeMenuInterface
 	public void setNColumns(int n) {
 		ncols = n;
 	}
+
 }

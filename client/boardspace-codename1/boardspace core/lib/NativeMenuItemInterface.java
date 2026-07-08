@@ -34,5 +34,7 @@ public interface NativeMenuItemInterface
 	@SuppressWarnings("rawtypes")
 	public void addActionListener(ActionListener d);
 	public String getActionCommand();
+	public boolean isLabel();
+	public boolean isEnabled();
 	
 }

@@ -485,8 +485,8 @@ public abstract class commonMove
         return (null);
     }
 
-    public void variationsMenu(PopupManager menu,MenuParentInterface window,ActionListener listen)
-    {	menu.newPopupMenu(window,listen);
+	public void variationsMenu(PopupManager menu,MenuParentInterface window,@SuppressWarnings("rawtypes") ActionListener listen)
+    {	menu.newPopupMenu(null,window,listen);
     	StackIterator<commonMove> variations = getVariations();
         if (variations != null)
         {

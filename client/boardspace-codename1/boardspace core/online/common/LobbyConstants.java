@@ -41,7 +41,7 @@ public interface LobbyConstants extends OnlineConstants
 	static final String GAMESPLAYED = "gamesplayed";
 	static final String RejoinGameMessage = "Rejoin";
     static final String StartMessage = "Start";
-
+    static final String UsersMessage = "Users";
     static final String AddAName = "Add a name";
     static final String EmptyName = "<no one>";
     static final String RemoveAName = "Remove a name";
@@ -91,6 +91,7 @@ public interface LobbyConstants extends OnlineConstants
         	DiscardGameMessage,
         	EmptyName,
         	AddAName,
+        	UsersMessage,
         	RemoveAName,
         	PlayerNumber,
         	UnsupportedGameMessage,

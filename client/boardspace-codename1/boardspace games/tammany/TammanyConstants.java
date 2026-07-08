@@ -74,8 +74,10 @@ public interface TammanyConstants
 	static String EnglishInfluence = "English influence";
 	static String ItalianInfluence = "Italian influence";
 	static String ServiceName = "Info for #1";
+	static String ChipsMessage = "Spend Influence";
 	static String TammanyStrings[] = 
 	{  "Tammany Hall",
+		ChipsMessage,
 		ServiceName,
 		IrishInfluence,
 		EnglishInfluence,

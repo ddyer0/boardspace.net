@@ -522,7 +522,7 @@ class XehBoard extends hexBoard<XehCell> implements BoardProtocol,XehConstants
     
     // set the contents of a cell, and maintain the books
     // this logic uses ch==null to clear the cell, needs
-    // to be adjusted if HavannahCell is based on stackCell
+    // to be adjusted if HexadeCell is based on stackCell
     public XehChip SetBoard(XehCell c,XehChip ch)
     {	XehChip old = c.chip;
     	if(c.onBoard)

@@ -33,6 +33,7 @@ import lib.SizeProvider;
 @SuppressWarnings("serial")
 public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,NativeMenuItemInterface,SizeProvider
 {	public JMenu(String m) { super(m); }
+	public boolean isLabel() { return false; }
 	public JMenu() { super(); }
 	public JMenu(String m,Font f)
 	{
@@ -114,5 +115,15 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 		setLayout(new GridLayout(0,n));		
 	}
 	public boolean useSimpleMenu() { return false;}
+	public javax.swing.JMenuItem getSelectedItem() {
+		int nItems = getItemCount();
+	  	for(int i = 0; i<nItems; i++)
+    	{	javax.swing.JMenuItem item = getItem(i);
+    		boolean isSel = item.isSelected();
+    		if(isSel) { return item; }
+    	}
+	  	return null;
+
+	}
 	
 }

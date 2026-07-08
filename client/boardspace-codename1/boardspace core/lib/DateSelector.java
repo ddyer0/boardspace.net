@@ -31,7 +31,16 @@ import bridge.FontMetrics;
  */
 @SuppressWarnings({ "serial", "rawtypes" })
 public class DateSelector extends Rectangle implements ActionListener
-{	public enum DateCode implements CellId { Year,Month,Day;
+{	public enum DateCode implements CellId,EnumMenu
+	{ Year,Month,Day;
+
+	@Override
+	public String menuItem() {
+		return name();
+	}
+	public static void putStrings()
+	{	InternationalStrings.put(values());
+	}
 	}
 	int minYear = 0;		// defaults to whatever the initial year is
 	int maxYear = 0;		// defaults to minYear+1
@@ -123,8 +132,8 @@ public class DateSelector extends Rectangle implements ActionListener
 		if(hit instanceof DateCode)
 		{
 		selection = (DateCode)hit;
-		menu.newPopupMenu(parent,this);
 		InternationalStrings s = G.getTranslations();
+		menu.newPopupMenu(s.get(selection.menuItem()),parent,this);
 		switch (selection)
 		{
 		case Year:
