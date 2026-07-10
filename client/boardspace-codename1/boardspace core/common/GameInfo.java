@@ -1407,17 +1407,17 @@ synchronized(allGames) {
 	{
 	String havannahRules = "/hexade/english/Rules.html";
 	String havannahViewer = "hexade.HexadeViewer";  
-	put(new GameInfo(595,ES.game,130,"HX",ConnectionGames,"Hexade","Hexade-6",
+	put(new GameInfo(595,ES.game,130,"HX",TilePatternGames,"Hexade","hexade-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
-	put(new GameInfo(596,ES.game,130,"HX",ConnectionGames,"Hexade","Hexade-8",
+	put(new GameInfo(596,ES.game,130,"HX",TilePatternGames,"Hexade","hexade-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
-	put(new GameInfo(597,ES.game,130,"HX",ConnectionGames,"Hexade","Hexade-10",
+	put(new GameInfo(597,ES.game,130,"HX",TilePatternGames,"Hexade","hexade-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,"about_hexade.html",

@@ -161,7 +161,7 @@ public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  Rob
         monte_search_state.timePerMove =
         		(board.board_state==DvonnState.PLACE_RING_STATE)
         			? MONTE_START_TIME 
-        			: MONTE_TIME;		// 20 seconds per move
+        			: MONTE_TIME;		// seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;
         monte_search_state.simulationsPerNode = 1;

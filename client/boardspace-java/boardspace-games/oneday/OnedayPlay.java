@@ -235,7 +235,7 @@ public class OnedayPlay extends commonMPRobot<OnedayBoard> implements Runnable, 
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = (dumbPhase?1:10);		// 10 seconds per move
+        monte_search_state.timePerMove = (dumbPhase?1:10);		// seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;
         monte_search_state.sort_moves = false;

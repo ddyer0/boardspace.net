@@ -230,7 +230,7 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = TIMEPERMOVE;		// 20 seconds per move
+        monte_search_state.timePerMove = TIMEPERMOVE;		// seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.only_child_optimization = true;

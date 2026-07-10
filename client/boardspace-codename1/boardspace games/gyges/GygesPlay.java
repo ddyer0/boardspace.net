@@ -167,7 +167,7 @@ public class GygesPlay extends commonRobot<GygesBoard> implements Runnable,
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = play ? 10 : 1;		// 10 seconds per move
+        monte_search_state.timePerMove = play ? 10 : 1;		// seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.sort_moves = false;
         monte_search_state.only_child_optimization = true;

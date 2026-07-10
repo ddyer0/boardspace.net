@@ -572,7 +572,7 @@ Update -1.0 0 P1[onboard B 4 1 J 10] P0[onboard A 5 6 D 7]
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = TIMEPERMOVE;		// 20 seconds per move
+        monte_search_state.timePerMove = TIMEPERMOVE;		// seconds per move
         monte_search_state.random_moves_per_second = WEAKBOT ? PLAYRATE/20 : PLAYRATE;
         //monte_search_state.uct_tree_depth = TREE_DEPTH;
         monte_search_state.verbose = verbose;

@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,12 +12,16 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package yspahan;
 
+
+import bridge.Color;
 import lib.CellId;
+import lib.EnumMenu;
 import lib.G;
+import lib.InternationalStrings;
 import lib.NameProvider;
 import lib.OStack;
 import online.game.BaseBoard.BoardState;
@@ -31,7 +35,8 @@ public interface YspahanConstants
   
 	//
 	// these values must be distinct from standard opcodes and widget ids, which are all negative.
-	//
+	// these strings are part of the gamerecord+movespec universe, so shouldn't share constants with
+	// the translation strings
 	enum yrack implements CellId
 	{	NoWhere("Nowhere"),
 		Bag_Neighborhood("Bag"),
@@ -73,14 +78,15 @@ public interface YspahanConstants
 	static String victoryHelpText = "#1{##no Victory points, Victory Point, Victory Points}";
 	static String ServiceName = "Yspahan Player info for #1";
 	static String WarnCubeMessage = "Warning: it's not your cube!";
-	
+	static String SupervisorText = "Supervisor";
+
     // this represents the "type of" a chip, and also the "type of" a cell. 
 	// most cells have a prescribed type, and can only hold objects of that type.
-    public enum yclass
+    public enum yclass implements EnumMenu
     {	playerCubes("Player Cubes"), 
     	gold(goldHelpText),
     	camels(camelHelpText),
-    	supervisor("Supervisor"),
+    	supervisor(SupervisorText),
     	timeCubes("Time Cubes"),
     	dice("Dice"),
     	cards(cardHelpText),
@@ -91,6 +97,10 @@ public interface YspahanConstants
     	{	helpText = text;
     	}
     	String helpText = null;
+		public String menuItem() {
+			return helpText;
+		}
+		static void putStrings() { InternationalStrings.put(values()); }
     }
     
     // cards that do special things
@@ -124,13 +134,14 @@ public interface YspahanConstants
 
     // cubes that represent players
 	public enum ycube implements NameProvider
-	{	green("green-cube"),
-		yellow("yellow-cube"),
-		red("red-cube"),
-		blue("blue-cube");
+	{	green("green-cube",new Color(0x80ff80)),
+		yellow("yellow-cube",Color.yellow),
+		red("red-cube",new Color(0xff6060)),
+		blue("blue-cube",new Color(0x8080ff));
 		// constructor
-		ycube(String im) { imageName=im;}
+		ycube(String im,Color pc) { imageName=im;color=pc;}
 		yclass type = yclass.playerCubes;
+		Color color;
 		String imageName;
 		public String getName() { return(imageName); } 
 		YspahanChip chip = null;
@@ -219,7 +230,7 @@ public interface YspahanConstants
 	}
 	
 	// second row of the player card, contains gold camels, cards cubes, vps
-	public enum ypmisc
+	public enum ypmisc implements EnumMenu
 	{	camel(0,yclass.camels,"#1 camels"),
 		gold(1,yclass.gold,"#1 gold"),
 		card(2,yclass.cards,"#1 cards"),
@@ -231,15 +242,21 @@ public interface YspahanConstants
 		yclass type = null;
 		String helpText = null;
 		int index;
+		public String getMenuItem() { return helpText; }
+		public static void putstrings() { InternationalStrings.put(values()); }
+		public String menuItem() {
+			return helpText;
+		}
+		static void putStrings() { InternationalStrings.put(values()); }
 	}
 	// dice selections
 	public enum ydicetower {
-		take_camels(0,"take #1 camels",ystate.THREEWAY_TAKE_CAMEL_STATE,ystate.TAKE_CAMEL_STATE,yrack.Camel_Pool),
-		place_bag(1,"place #1 cubes in Bag neighborhood",ystate.THREEWAY_PLACE_BAG_STATE,ystate.PLACE_BAG_STATE,yrack.Bag_Neighborhood),
-		place_barrel(2,"place #1 cubes in Barrel neighborhood",ystate.THREEWAY_PLACE_BARREL_STATE,ystate.PLACE_BARREL_STATE,yrack.Barrel_Neighborhood),
-		place_chest(3,"place #1 cubes in Chest neighborhood",ystate.THREEWAY_PLACE_CHEST_STATE,ystate.PLACE_CHEST_STATE,yrack.Chest_Neighborhood),
-		place_vase(4,"place #1 cubes in Vase neighborhood",ystate.THREEWAY_PLACE_VASE_STATE,ystate.PLACE_VASE_STATE,yrack.Vase_Neighborhood),
-		take_gold(5,"take #1 gold",ystate.THREEWAY_TAKE_GOLD_STATE,ystate.TAKE_GOLD_STATE,yrack.Gold_Pool);
+		take_camels(0,ystate.TAKE_CAMEL_STATE.stateMsg,ystate.THREEWAY_TAKE_CAMEL_STATE,ystate.TAKE_CAMEL_STATE,yrack.Camel_Pool),
+		place_bag(1,ystate.PLACE_BAG_STATE.stateMsg,ystate.THREEWAY_PLACE_BAG_STATE,ystate.PLACE_BAG_STATE,yrack.Bag_Neighborhood),
+		place_barrel(2,ystate.PLACE_BARREL_STATE.stateMsg,ystate.THREEWAY_PLACE_BARREL_STATE,ystate.PLACE_BARREL_STATE,yrack.Barrel_Neighborhood),
+		place_chest(3,ystate.PLACE_CHEST_STATE.stateMsg,ystate.THREEWAY_PLACE_CHEST_STATE,ystate.PLACE_CHEST_STATE,yrack.Chest_Neighborhood),
+		place_vase(4,ystate.PLACE_VASE_STATE.stateMsg,ystate.THREEWAY_PLACE_VASE_STATE,ystate.PLACE_VASE_STATE,yrack.Vase_Neighborhood),
+		take_gold(5,ystate.TAKE_GOLD_STATE.stateMsg,ystate.THREEWAY_TAKE_GOLD_STATE,ystate.TAKE_GOLD_STATE,yrack.Gold_Pool);
 		// constructor
 		ydicetower(int ind,String text,ystate st,ystate st2,yrack nn)
 			{ helpText = text;
@@ -266,7 +283,7 @@ public interface YspahanConstants
 	}
 	/* states of the board/game.  Because several gestures are needed to complete a move, and
     there are several types of move, we use a undoInfo machine to determine what is legal */
-	enum ystate implements BoardState
+	enum ystate implements BoardState, EnumMenu
 	{	PUZZLE_STATE(false,PuzzleStateDescription),
 		RESIGN_STATE(false,ResignStateDescription),
 		GAMEOVER_STATE(false,GameOverStateDescription),
@@ -305,7 +322,7 @@ public interface YspahanConstants
 	    DESIGNATED_CUBE_STATE(false,"Click on Done to send cubes to the carvan"),
 	    PAY_CAMEL_STATE(false,"Pay a camel or click Done to send the cube to the caravan"),
 	    PAID_CAMEL_STATE(false,"Click on Done to confirm paying a camel"),
-	    PASS_STATE(false,"Click on Done to pass")
+	    PASS_STATE(false,"click on Done to pass")
 		;
 		// constructor
 		ystate(boolean card,String msg) { stateMsg = msg; canTakeCard=card; }
@@ -315,105 +332,79 @@ public interface YspahanConstants
 		String stateMsg;
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
 		public boolean GameOver() { return(this==GAMEOVER_STATE); }
+		public static void putStrings()
+		{
+			InternationalStrings.put(values());
+		}
+		public String menuItem() {
+			return stateMsg;
+		}
 	};
-    static final String rowDesc[] = 
-    	{
-    	"Camels","Bag","Barrel","Chest","Vase","Gold"
-    	};
-
     static final int MOVE_PICK = 204; // pick a chip from a pool
     static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 	static final int MOVE_VIEWCARDS = 211;		// view your card rack
-	
+	static final String PayCamelMessage = "Pay Camel";
+	static final String PayCamelsMessage = "Pay Camels";
+	static final String RollMessage = "Roll";
+	static final String SelectMessage = "Select #1";
+	static final String SendCubeMessage = "Send Cube";
+	static final String DieRollMessage = "This die will be rolled";
+	static final String DieNorollMessage = "This die will not be rolled";
+	static final String PayGoldMessage = "Pay Gold";
+	static final String HoistMessage = "Hoist";
+	static final String TradedMessage = "Traded #1 camels become gold";
+	static final String PastTradedMessage = "Traded: #1 gold become camels";
+	static final String CamelsForPointsMessage = "Traded: #1 camels for #2 points";
+	static final String GoldForPointsMessage = "Traded: #1 gold for #2 points";
+	static final String LastBeforeScoreMessage = "Last Turn before Scoring";
+	static final String LastTurnMessage = "Last Turn";
+	static final String Plus2Message = "Plus2";
+	static final String DiscardMessage = "Discards";
+	static final String CamelsMessage = "Camels";
+	static final String BagMessage =  "Bag";
+	static final String GoldMessage = "Gold";
+	static final String CardsMessage = "Cards";
+	static final String CardMessage = "Card";
+	static final String PlayedMessage = "Played";
+	static final String VaseMessage = "Vase";
+	static final String ChestMessage = "Chest";
+	static final String BarrelMessage = "Barrel";
 	static void putStrings()
-	{	/*
+	{	ystate.putStrings();
+		yclass.putStrings();
+		ypmisc.putStrings();
 	    String YspahanStrings[] = 
 	        { "Yspahan",
+	         SelectMessage,
 	      	 ServiceName,
+	      	 PayGoldMessage,
 	      	 WarnCubeMessage,
-	      	"Roll",
-	      	"Receive 2 extra gold when you take gold",
-	        	"Move the supervisor up to 3 extra spaces when you move the supervisor",
-	        	"Receive a card when you place a cube in the caravan",
-	        	"Receive 2 extra points for each completed souk",
-	        	"Receive 1 extra cube when you place cubes in a souk",
-	        	"This die will be rolled",
-	        	"This die will not be rolled",
-	        	"#1 Cards",
-	        	"do what it takes to win",
-	        	"Player Cubes",
-	        	"#1 Gold",
-	        	"#1 Camels",
-	        	"Add Extra Dice, or click Done to Roll",
-	        	"Select a group of dice",
-	        	"Take #1 camels, take a card, or move the supervisor #2 spaces",
-	        	"Take #1 gold, take a card, or move the supervisor #2 spaces",
-	        	"Place #1 cubes in Bag neighborhood, take a card, or move the supervisor #2 spaces",
-	        	"Place #1 cubes in Barrel neighborhood, take a card, or move the supervisor #2 spaces",
-	        	"Place #1 cubes in Chest neighborhood, take a card, or move the supervisor #2 spaces",
-	        	"Place #1 cubes in Vase neighborhood, take a card, or move the supervisor #2 spaces",
-	         	"#1{##no cards, card, cards}",
-	      	"#1{##no Camels, Camel, Camels}",
-	      	"#1{##no Gold, Gold, Gold}",
-	      	"#1{##no Victory points, Victory Point, Victory Points}", 	
-	        	"Take #1 camels",
-	        	"Take #1 gold",
-	        	"Place #1 cubes in Bag neighborhood",
-	        	"Place #1 cubes in Barrel neighborhood",
-	        	"Place #1 cubes in Chest neighborhood",
-	        	"Place #1 cubes in Vase neighborhood",
-	        	"Take a card",
-	        	"Move the supervisor",
-	        	"Click on Done to begin the building phase",
-	        	"Build a building, play cards, or click on Done",
-	        	"Pay a camel or click Done to send the cube to the caravan",
-	        	"Trade up to 10 gold for 1 victory point each",
-	        	"Trade up to 4 camels for 2 victory points each",
-	        	"Place a cube in any unclaimed souk",
-	        	"Trade camels for gold",
-	        	"Place a cube on the caravan",	
-	        	"Buy a building with no gold",
-	        	"Buy a building with no camels",
-	        	"Receive 3 gold",
-	        	"Receive 3 camels",
-	        	"Play a card",
-	        	"Click on Done to confirm this card action",
-	        	"Select Row #1",
-	        	"Cubes",
-	        	"Camels",
-	        	"Gold",
-	        	"Cards",
-	        	"Table",
-	        	"Card",
-	  		"Buildings",
-	  		"Vase",
-	  		"Barrel",
-	  		"Chest",
-	  		"Dice",
-	  		"Click on Done to confirm paying a camel",
-	  		"Click on Done to send cubes to the carvan",
-	  		"Pick the first cube to send to the caravan",
-	  		"Traded #1 camels become gold",
-	  		"Bag",
-	  		"Discards",
-	  		"Add die",
-	  		"Played",
-	  		"Traded: #1 gold become camels",
-	  		"Traded: #1 camels for #2 points",
-	  		"Traded: #1 gold for #2 points",
-	  		"Game Over!  Final scores ",
-	  		"Pay Gold",
-	  		"Last Turn before Scoring",
-	  		"Last Turn",
-	  		"Pay Camel",
-	  		"Pay Camels",
-	  		"Supervisor",
-	  		"Hoist",
-	  		"Plus2",
-	  		"Select #1",
-	  		"+1 die",
-	  		"Send Cube",
+	      	 RollMessage,
+	        	DieRollMessage,
+	        	DieNorollMessage,
+	        	CamelsMessage,
+	        	GoldMessage,
+	        	CardsMessage,
+	        	CardMessage,
+	  		VaseMessage,
+	  		BarrelMessage,
+	  		ChestMessage,
+	  		TradedMessage,
+	  		BagMessage,
+	  		DiscardMessage,
+	  		PlayedMessage,
+	  		PastTradedMessage,
+	  		CamelsForPointsMessage,
+	  		GoldForPointsMessage,
+	  		PayGoldMessage,
+	  		LastBeforeScoreMessage,
+	  		LastTurnMessage,
+	  		PayCamelMessage,
+	  		PayCamelsMessage,
+	  		HoistMessage,
+	  		Plus2Message,
+	  		SendCubeMessage,
 	       };
 	  String [][] YspahanStringPairs = {
 	  	   	{"Yspahan_family","Yspahan"},
@@ -427,6 +418,12 @@ public interface YspahanConstants
 	  };
 	  	InternationalStrings.put(YspahanStrings);
 	  	InternationalStrings.put(YspahanStringPairs);
-	*/
 	}
+	
+    static final String rowDesc[] = 
+    	{
+    	CamelsMessage,BagMessage,BarrelMessage,ChestMessage,VaseMessage,GoldMessage
+    	};
+
+
 }

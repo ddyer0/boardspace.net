@@ -336,7 +336,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = 15;		// 30 seconds per move
+        monte_search_state.timePerMove = 15;		// seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;
         monte_search_state.move_limit = 500;

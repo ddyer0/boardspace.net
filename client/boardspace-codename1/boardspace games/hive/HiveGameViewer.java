@@ -739,7 +739,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
  
         if(state==HiveState.PLAY_OR_SWAP_STATE || state==HiveState.CONFIRM_SWAP_STATE)
         {
-        	if(GC.handleRoundButton(gc,repRect,ourTurnSelect,s.get("Swap colors"),
+        	if(GC.handleRoundButton(gc,repRect,ourTurnSelect,s.get(SWAP),
         			HighlightColor, gb.colorsInverted()?HighlightColor:rackBackGroundColor
         			))
         	{

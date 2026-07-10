@@ -257,7 +257,7 @@ public class YspahanPlay extends commonMPRobot<YspahanBoard> implements Runnable
         monte_search_state.save_top_digest = false;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = 10;		// 20 seconds per move
+        monte_search_state.timePerMove = 10;		// seconds per move
         monte_search_state.verbose = 3;
         monte_search_state.alpha = 0.5;
          monte_search_state.only_child_optimization = false;

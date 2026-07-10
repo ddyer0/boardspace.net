@@ -72,10 +72,14 @@ public enum GameTimerState implements BoardState,GameTimerConstants
 	static final String PausedStateDescription = "game paused";
 	static final String PauseMessage = "Pause";
 	static final String ResumeMessage = "Resume";
+	static final String StartMessage = "Start";
+	static final String ExplainStartMessage = "Start the timer for this player";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "GameTimer",
+			StartMessage,
+			ExplainStartMessage,
 			RunningStateDescription,
 			PauseMessage,
 			ResumeMessage,

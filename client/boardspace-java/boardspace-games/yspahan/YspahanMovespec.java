@@ -167,7 +167,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
 	   	case Dice_Tower:
 	   		if(from_col=='A')
 	   		{
-	   		return(s.get("Select #1",rowDesc[from_row]));
+	   		return(s.get(SelectMessage,rowDesc[from_row]));
 	   		}
 	   		break;
 	   	case Misc_Track:
@@ -179,7 +179,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
 	   		case cubes: return("");
 	   		case camel: return("");
 	   		case gold: return("");
-	   		case card: return(s.get("Card"));
+	   		case card: return(s.get(CardMessage));
 	   		}}
 	   		
 	   	case Camel_Pool: return("Take Camels");
@@ -196,7 +196,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
     }
 
     public String building_name[] = {
-    		"Camels","Gold","Supervisor","Card","Plus2","Hoist"
+    		CamelsMessage,GoldMessage,SupervisorText,CardMessage,Plus2Message,HoistMessage
     };
     public String describeDest()
     {
@@ -205,9 +205,9 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
 	   	default: break;
 	   	case Building_Track: return("Build "+building_name[to_row]);
 	   	case Misc_Track: return("");
-	   	case Camel_Pool: return(s.get("Pay Camels"));
-	   	case Discard_Stack: return(" "+s.get("Played"));
-	   	case Gold_Pool:  return(s.get("Pay Gold"));
+	   	case Camel_Pool: return(s.get(PayCamelsMessage));
+	   	case Discard_Stack: return(" "+s.get(PlayedMessage));
+	   	case Gold_Pool:  return(s.get(PayGoldMessage));
 	   	case Dice_Table:
 	   	case Supervisor_Track: return("");
 	   		

@@ -347,7 +347,7 @@ public commonMove DoMonteCarloFullMove()
        monte_search_state.save_top_digest = true;	// always on as a background check
        monte_search_state.save_digest=false;	// debugging only
        monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-       monte_search_state.timePerMove = WEAKBOT ? 5 : EXP_MONTEBOT ? 20:20;		// 10 seconds per move
+       monte_search_state.timePerMove = WEAKBOT ? 5 : EXP_MONTEBOT ? 20:20;		// seconds per move
        monte_search_state.verbose = verbose;
        monte_search_state.alpha = MONTE_ALPHA;
        monte_search_state.sort_moves = MONTE_SORT;

@@ -117,9 +117,9 @@ public interface VoloConstants
     static final int BOARD_INDEX = 0;
     static final int BOARD84_INDEX = 1;
     static final String ImageNames[] = { "board","boardsmall" };
-    
+    static final String goalMessage = "connect all your birds into one flock";
     static final String[] extraStrings = 
-    { "connect all your birds into one flock"
+    { goalMessage
     };
 
 }

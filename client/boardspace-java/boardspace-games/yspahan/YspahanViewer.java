@@ -560,6 +560,14 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	boolean seecards = !hidden
     						? pb.showCards
     						: pb.showHiddenWindowCards;
+    	commonPlayer pl = getPlayerOrTemp(pb.myIndex);
+    	GC.setColor(gc,Color.lightGray);
+    	GC.fillRect(gc,pl.playerBox);
+    	GC.setColor(gc,pb.color.color);
+    	GC.setOpacity(gc,0.3);
+    	GC.fillRect(gc,pl.playerBox);
+    	GC.setOpacity(gc,1.0);
+    	
      	if ( seecards) { showCards(gc,gb,pb,br,high); }
     	else { showMainPlayerBoard(gc,gb,pb,br,high,anyone); }
     }
@@ -796,7 +804,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		{	highlight.spriteColor = Color.red;
     			highlight.awidth = CELLSIZE;
     		}
-    		HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will be rolled"));
+    		HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get(DieRollMessage));
     		i++;
     		}
     	for(YspahanCell d : extra)
@@ -810,7 +818,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 				{ highlight.spriteColor = Color.red;
 				  highlight.awidth = CELLSIZE;
 				}
-			HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will not be rolled"));
+			HitPoint.setHelpTextNear(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get(DieNorollMessage));
     		}
     }
    /* draw the board and the chips on it. */
@@ -934,17 +942,17 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     YspahanMovespec logState[] = new YspahanMovespec[2];
 
     private Text icons[] = {
-    		TextGlyph.create("Played","x",StockArt.SolidDownArrow,this,new double[]{1.0,2.0,-0.3,-0.6}),
-    		TextGlyph.create("Hoist","xx",YspahanChip.plusCube,this,new double[]{1.0,1.7,0,-0.3}),
-    		TextGlyph.create("Plus2","xx",YspahanChip.plus2,this,new double[]{1.0,1.2,0,-0.3}),
-    		TextGlyph.create("Card","xx",YspahanChip.cardBack,this,new double[]{1.0,0.7,0,-0.3}),
-    		TextGlyph.create("Bag","xx",YspahanChip.rows[0],this,new double[]{1.0,1.5,0,-0.3}),
-    		TextGlyph.create("Barrel","xx",YspahanChip.rows[1],this,new double[]{1.0,1.5,0,-0.3}),
-    		TextGlyph.create("Chest","xxx",YspahanChip.rows[2],this,new double[]{1.0,1.1,0,-0.3}),
-    		TextGlyph.create("Vase","xx",YspahanChip.rows[3],this,new double[]{1.0,1.5,0,-0.3}),
-    		TextGlyph.create("Supervisor","xx",YspahanChip.getMiscChip(ymisc.supervisor),this,new double[]{1.0,1.3,0,-0.2}),
-    		TextGlyph.create("Camels","xx",YspahanChip.getMiscChip(ymisc.camel),this,new double[]{1.0,1.5,0,-0.3}),
-    		TextGlyph.create("Gold","xx",YspahanChip.getMiscChip(ymisc.gold),this,new double[]{1.0,1.5,0,-0.3}),
+    		TextGlyph.create(PlayedMessage,"x",StockArt.SolidDownArrow,this,new double[]{1.0,2.0,-0.3,-0.6}),
+    		TextGlyph.create(HoistMessage,"xx",YspahanChip.plusCube,this,new double[]{1.0,1.7,0,-0.3}),
+    		TextGlyph.create(Plus2Message,"xx",YspahanChip.plus2,this,new double[]{1.0,1.2,0,-0.3}),
+    		TextGlyph.create(CardMessage,"xx",YspahanChip.cardBack,this,new double[]{1.0,0.7,0,-0.3}),
+    		TextGlyph.create(BagMessage,"xx",YspahanChip.rows[0],this,new double[]{1.0,1.5,0,-0.3}),
+    		TextGlyph.create(BarrelMessage,"xx",YspahanChip.rows[1],this,new double[]{1.0,1.5,0,-0.3}),
+    		TextGlyph.create(ChestMessage,"xxx",YspahanChip.rows[2],this,new double[]{1.0,1.1,0,-0.3}),
+    		TextGlyph.create(VaseMessage,"xx",YspahanChip.rows[3],this,new double[]{1.0,1.5,0,-0.3}),
+    		TextGlyph.create(SupervisorText,"xx",YspahanChip.getMiscChip(ymisc.supervisor),this,new double[]{1.0,1.3,0,-0.2}),
+    		TextGlyph.create(CamelsMessage,"xx",YspahanChip.getMiscChip(ymisc.camel),this,new double[]{1.0,1.5,0,-0.3}),
+    		TextGlyph.create(GoldMessage,"xx",YspahanChip.getMiscChip(ymisc.gold),this,new double[]{1.0,1.5,0,-0.3}),
    };
     
     public Text censoredMoveText(SequenceElement m,int idx,Font f)
@@ -987,7 +995,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        {	HitPoint sel = (ds? select : null);
        	boolean endturn = ((myState==ystate.CONFIRM_STATE)||(myState==ystate.BUILD_STATE));
             if (!planned && GC.handleRoundButton(gc, doneRect, 
-           		sel, s.get((myState==ystate.ROLL_STATE)?"Roll":DoneAction),
+           		sel, s.get((myState==ystate.ROLL_STATE)?RollMessage:DoneAction),
                    endturn?redHighlightColor:HighlightColor, 
                    		endturn?reallyDoneColor
                    				:ds ?  rackActiveColor : rackBackGroundColor))
@@ -1002,13 +1010,13 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        GC.setFont(gc,standardBoldFont());
        if (myState ==ystate.PAY_CAMEL_STATE)
         {if (GC.handleRoundButton(gc, payCamelRect, 
-        		select,s.get("Pay Camel"),
+        		select,s.get(PayCamelMessage),
                 HighlightColor, rackBackGroundColor))
                 {
                 select.hitCode = yrack.HitPayCamelButton;
                 }
         if (GC.handleRoundButton(gc, sendCubeRect, 
-        		select,s.get("Send Cube"),
+        		select,s.get(SendCubeMessage),
                 HighlightColor, rackBackGroundColor))
                 {
                 select.hitCode = yrack.HitSendCubeButton;
@@ -1031,7 +1039,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        else if((gb.gameDay%7)==6)
        {   
     	   GC.setFont(gc,largeBoldFont());
-    	   GC.Text(gc,true,turnRect,Color.blue,null, s.get((gb.gameDay>14)?"Last Turn" : "Last Turn before Scoring"));
+    	   GC.Text(gc,true,turnRect,Color.blue,null, s.get((gb.gameDay>14)?LastTurnMessage : LastBeforeScoreMessage));
        }
        GC.unsetRotatedContext(gc,highlight);
        }
@@ -1052,7 +1060,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	   		 if(planned && whoseTurn==i)
     	    	   {
     	   			if(GC.handleRoundButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
-    	   					s.get((myState==ystate.ROLL_STATE)?"Roll":DoneAction),
+    	   					s.get((myState==ystate.ROLL_STATE)?RollMessage:DoneAction),
     	   					HighlightColor, rackBackGroundColor))
     	   				{
     	   				select.hitCode = GameId.HitDoneButton;
@@ -1112,14 +1120,14 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         	switch(myState)
         	{
         	case CARD_TRADE_CAMELS_GOLD:
-        		if(gb.cardTradeCount>=0) { rawstate += "  -  " + s.get("Traded #1 camels become gold", gb.cardTradeCount); }
-        		else { rawstate += "  -  " + s.get("Traded: #1 gold become camels",gb.cardTradeCount); }
+        		if(gb.cardTradeCount>=0) { rawstate += "  -  " + s.get(TradedMessage, gb.cardTradeCount); }
+        		else { rawstate += "  -  " + s.get(PastTradedMessage,gb.cardTradeCount); }
         		break;
         	case CARD_SCORE_CAMELS:
-        		rawstate += "  -  " + s.get("Traded: #1 camels for #2 points",gb.cardTradeCount,gb.cardTradeCount*2);
+        		rawstate += "  -  " + s.get(CamelsForPointsMessage,gb.cardTradeCount,gb.cardTradeCount*2);
         		break;
         	case CARD_SCORE_GOLD:
-        		rawstate += "  -  " + s.get("Traded: #1 gold for #2 points",gb.cardTradeCount,gb.cardTradeCount);
+        		rawstate += "  -  " + s.get(GoldForPointsMessage,gb.cardTradeCount,gb.cardTradeCount);
         		break;
         	case TAKE_CAMEL_STATE:
         		secondCount=-1;

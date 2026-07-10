@@ -407,7 +407,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         				gb.whoseTurn,
         				stateRect);
 		gb.playerChip[gb.whoseTurn].drawChip(gc, this, iconRect, null);
-        goalAndProgressMessage(gc,ourSelect,s.get("Capture your opponent's tallest king stack"),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         drawAuxControls(gc,ourSelect);
         zoomRect.draw(gc,ourSelect);

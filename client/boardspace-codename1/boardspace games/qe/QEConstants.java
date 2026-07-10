@@ -30,7 +30,7 @@ public interface QEConstants
 	static String OpenBidStateDescription = "Make an open bid";
 	static String EphemeralWaitDescription = "Wait for all other bids";
 	static String NoQEMessage = "No QE";
-	static String VPMessage = "#1 victory Points";
+	static String VPMessage = "#1 victory points";
 	static String MoneyMessage = "money created";
 	static String TileValueMessage = "for value of tiles";
 	static String NationalMessage = "for #1 tiles from #2";

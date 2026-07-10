@@ -213,7 +213,7 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable, Pont
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomthreshold;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove =timePerMove;		// 20 seconds per move
+        monte_search_state.timePerMove =timePerMove;		// seconds per move
         monte_search_state.verbose = 1;
         monte_search_state.alpha = 0.5;
         monte_search_state.sort_moves = false;

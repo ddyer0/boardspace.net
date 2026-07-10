@@ -440,7 +440,7 @@ public enum PendulumState implements BoardState
 	static final String TakeStandardMessage = "Take Standard";
 	static final String ResumeMovesMessage = "Resume Moves";
 	static final String PauseMovesMessage = "Pause Moves";
-	static final String CardCountMessage = "#1 Cards";
+	static final String CardCountMessage = "#1 cards";
 	static final String SimultaneousFlipMessage = "simultaneous flip, ignored";
 	static void putStrings()
 	{
