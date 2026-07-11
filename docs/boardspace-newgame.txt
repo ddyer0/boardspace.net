@@ -12,7 +12,6 @@ Add the game to the database (assign two letter short name).  Also to local deve
  add to the enum in zertz_gamerecord or mp_gamerecord
  The game server has to be restarted once sometime after this is done.
 
-Upload at least 2 120x120 samples to images/samples/
 Add to include.pl
 Create "about_game.html page, linked to some others and added to logon-page.html
 Edit strings in translations table.
@@ -38,6 +37,7 @@ In Eclipse
 
 Add a gameInfo record
 Add a link to translatable strings, Upload and Download them.
+Add 2 or more icon images to icons\ and also to appdata\icons.res
 
 -------------------------------------------------
 On development machine
