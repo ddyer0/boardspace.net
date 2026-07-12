@@ -1,5 +1,7 @@
 permissions: all-permissions
 codebase: *
 Application-Name: Boardspace.net
+Main-Class: init.Boardspace
 Class-Path: .
-Main-Class: Boardspace
+Implementation-Title: Boardspace.net
+

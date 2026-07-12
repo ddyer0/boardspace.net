@@ -12,8 +12,7 @@ rem sign the copies, not the originals
 rm ..\v102\*.jar
 rm ..\jws\*.jar
 rm ..\..\cheerpj\*.jar
-
-for %%f in (*.jar) do jarsigner -tsa http://ts.ssl.com -keystore NONE -storetype PKCS11  -providerClass sun.security.pkcs11.SunPKCS11 -certchain "g:/share/usr/ddyer/crypto/david dyer.p7b" -addProvider SunPKCS11 -providerArg g:/share/usr/ddyer/crypto/yubikey-pkcs11-java.cfg -storepass 599100 -signedjar ../v102/%%f %%f "Certificate for PIV Authentication"
+for %%f in (*.jar) do f:\java\jdk-15.0.1\bin\jarsigner -tsa http://ts.ssl.com -keystore NONE -storetype PKCS11  -providerClass sun.security.pkcs11.SunPKCS11 -certchain "g:/share/usr/ddyer/crypto/david dyer.p7b" -addProvider SunPKCS11 -providerArg g:/share/usr/ddyer/crypto/yubikey-pkcs11-java.cfg -storepass 599100 -signedjar ../v102/%%f %%f "Certificate for PIV Authentication"
 rem
 cp ../v102/*.jar ../jws
 cp ../v102/*.jar ../../cheerpj/
