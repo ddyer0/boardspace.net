@@ -62,6 +62,7 @@ import fanorona.FanoronaConstants;
 import gipf.GipfConstants;
 import goban.GoConstants;
 import gobblet.GobConstants;
+import gomoku.GomokuConstants;
 import gounki.GounkiConstants;
 import gyges.GygesConstants;
 import havannah.HavannahConstants;
@@ -209,6 +210,9 @@ public class masterStrings extends InternationalStrings
         setContext("slither");
         SlitherConstants.putStrings();
         
+        setContext("gomoku");
+        GomokuConstants.putStrings();
+       
         setContext("bugs");
         BugsViewer.putStrings();
         

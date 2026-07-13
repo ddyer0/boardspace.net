@@ -17,10 +17,8 @@
 package lib;
 
 import java.net.URL;
+import bridge.BSClip;
 import java.util.Hashtable;
-
-import javax.sound.sampled.Clip;
-
 
 public class SoundManager implements Runnable 
 {	private static SoundManager theInstance = null;
@@ -31,7 +29,7 @@ public class SoundManager implements Runnable
     private  URL[] sounds = new URL[QUEUELENGTH];
     private  long[] delays = new long[QUEUELENGTH];
     private  long nextDelay=0;
-    public  Hashtable<String,Clip> soundClips = new Hashtable<String,Clip>();
+    public  Hashtable<String,BSClip> soundClips = new Hashtable<String,BSClip>();
  	public synchronized void showClips(String msg)
 	{
 		int rp = readPtr;
@@ -79,17 +77,17 @@ public class SoundManager implements Runnable
 	        return (null);
 	    }
 
-	    private Clip getAClip()
+	    private BSClip getAClip()
 	    {	URL n = extractAClip();
-	    	Clip cc = GetCachedClip(n);
+	    	BSClip cc = GetCachedClip(n);
 	    	//G.print("fetch ",n,cc);
 	    	return(cc);
 	    }
 
-	    private Clip GetCachedClip(URL clipUrl)
+	    private BSClip GetCachedClip(URL clipUrl)
 	    {	if (clipUrl != null)
 	        {	String name = clipUrl.toExternalForm();
-	            Clip clip = soundClips.get(name);
+	            BSClip clip = soundClips.get(name);
 
 	            if (clip == null)
 	            {	
@@ -106,19 +104,19 @@ public class SoundManager implements Runnable
 	    }
 
 
-	    public static Clip LoadAClip(URL name)
+	    public static BSClip LoadAClip(URL name)
 	    {
-	        Clip v = G.getAudioClip(name);
+	    	BSClip v = BSClip.getAudioClip(name);
 
 	        return (v);
 	    }
 
-	    public static Clip loadASoundClip(String clipName, boolean doc)
+	    public static BSClip loadASoundClip(String clipName, boolean doc)
 	    {	
 	       return  getInstance().GetCachedClip(G.getUrl(clipName,doc));
 	    }
 
-	    public static Clip loadASoundClip(String clipName)
+	    public static BSClip loadASoundClip(String clipName)
 	    {
 	    	return getInstance().GetCachedClip((G.getUrl(clipName, false)));
 	    }
@@ -193,13 +191,13 @@ public class SoundManager implements Runnable
         //System.out.println("run");
         G.setThreadName(Thread.currentThread(),"Sound");
         for (; !exit;)
-        {	final Clip clip = getAClip();
+        {	final BSClip clip = getAClip();
         	if (clip != null)
                 {	
-                	G.playAudioClip(clip);
+                	clip.playAudioClip();
                 }
              };
-    }
+        }
        catch (Throwable err) 
         { Http.postError(this,"in round manager run()",err); 
         }

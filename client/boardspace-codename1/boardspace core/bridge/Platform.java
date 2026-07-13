@@ -904,30 +904,6 @@ windroid
 	}
 
 
-	public static boolean useFileClips = true;
-	public static Clip getAudioClip(URL url)
-	{	
-		if(useFileClips)
-		{
-			return(new Clip(url));
-		}
-		else
-		{
-		InputStream s;
-		try {
-			s = url.openStream();
-			if(s!=null) { return(new Clip(url.toExternalForm(),s)); }
-		} catch (IOException e) {
-			G.print("Missing Clip "+e);
-		}
-		return(null);
-		}
-
-	}
-	public static void playAudioClip(Clip clip)
-	{
-		clip.play();
-	}
 	public static int getIdentity()
 	{
 		String id = getHostUID();

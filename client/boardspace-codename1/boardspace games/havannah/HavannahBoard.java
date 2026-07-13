@@ -83,6 +83,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public HavannahChip getPlayerChip(int p) { return(playerChip[p]); }
+	public int getPlayerIndex(HavannahChip ch) { return (ch==playerChip[0]) ? 0 : 1; }
 	public HavannahId getPlayerColor(int p) { return(playerColor[p]); }
 	public HavannahCell getPlayerCell(int p) { return(playerCell[p]); }
 	public HavannahChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
@@ -114,6 +115,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     private StateStack stateStack = new StateStack();
     
     private CellStack emptyCells=new CellStack();
+    private CellStack occupiedCells[] = {new CellStack(),new CellStack() };
     private HavannahState resetState = HavannahState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
@@ -190,6 +192,8 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
 		playerChip[1]=HavannahChip.Black;
 	    // set the initial contents of the board to all empty cells
 		emptyCells.clear();
+		occupiedCells[0].clear();
+		occupiedCells[1].clear();
 		for(HavannahCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
 		fullBoard = emptyCells.size();
         animationStack.clear();
@@ -221,6 +225,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
         fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
+        getCell(occupiedCells,from_b.occupiedCells);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
@@ -380,9 +385,11 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     	HavannahChip pch = playerChip[player];
     	sweep_counter++;
     	edge_sweep_counter++;
-    	for(HavannahCell home=allCells; home!=null; home = home.next)
+    	CellStack cells = occupiedCells[player];
+    	for(int lim = cells.size()-1; lim>=0; lim--)
     	{	
-       	if((home.topChip()==pch) && (home.sweep_counter!=sweep_counter))
+    	HavannahCell home = cells.elementAt(lim);
+       	if(home.sweep_counter!=sweep_counter)
         {
         	HavannahBlob blob = new HavannahBlob(pch);
         	if(buildBlobForWin(blob,home)) 
@@ -414,8 +421,19 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     {	HavannahChip old = c.chip;
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); c.lastPlaced = previousPlaced; }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); previousPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
+    	if(old!=null) 
+    		{ chips_on_board--;
+    		  emptyCells.push(c); moveStack.pop(); 
+    		  occupiedCells[getPlayerIndex(old)].remove(c,false);
+    		  c.lastPlaced = previousPlaced; 
+    		}
+     	if(ch!=null) 
+     		{ chips_on_board++; 
+     		  emptyCells.remove(c,false); 
+     		  moveStack.push(c); 
+     		  previousPlaced = c.lastPlaced; 
+     		  occupiedCells[getPlayerIndex(ch)].push(c);
+     		  c.lastPlaced = moveNumber; }
     	}
        	c.chip = ch;
     	return(old);
@@ -573,7 +591,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state %s",board_state);
@@ -955,7 +973,6 @@ void doSwap(replayMode replay)
  {		int sz = emptyCells.size();
  		int off = Random.nextInt(rand,sz);
  		HavannahCell empty = emptyCells.elementAt(off);
- 		G.Assert(empty.isEmpty(),"isn't empty");
  		return(new HavannahMovespec(MOVE_DROPB,empty.col,empty.row,playerColor[whoseTurn],whoseTurn));
  }
  CommonMoveStack  GetListOfMoves()
@@ -964,10 +981,8 @@ void doSwap(replayMode replay)
  	{
  		all.addElement(new HavannahMovespec(SWAP,whoseTurn));
  	}
- 	for(HavannahCell c = allCells;
- 	    c!=null;
- 	    c = c.next)
- 	{	if(c.isEmpty())
+ 	for(int lim = emptyCells.size()-1; lim>=0; lim--)
+ 	{	HavannahCell c = emptyCells.elementAt(lim);
  		{all.addElement(new HavannahMovespec(MOVE_DROPB,c.col,c.row,playerColor[whoseTurn],whoseTurn));
  		}
  	}

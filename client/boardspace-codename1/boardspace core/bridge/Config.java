@@ -20,9 +20,9 @@ import common.CommonConfig;
 
 public interface Config extends CommonConfig{
     static boolean NAMEGUESTS = true;
-    static final String LANGUAGEPATH = "/languages/translations/";
-    static final String SOUNDPATH = "/bsdata/data/";
-    static final String IMAGEPATH = "/bsdata/images/";
+    static final String LANGUAGEPATH = "/languages.zip/translations/";
+    static final String SOUNDPATH = "/bsdata.zip/data/";
+    static final String IMAGEPATH = "/bsdata.zip/images/";
     static boolean REMOTEVNC = false;
     static boolean REMOTERPC = true;
     
@@ -31,7 +31,7 @@ public interface Config extends CommonConfig{
 	static final String SoundFormat = ".wav";
     static final String SPLASHSCREENIMAGE = IMAGEPATH + "homepage-splash.jpg";
     static final String SMALL_MAP_LOC_URL = IMAGEPATH + "earthshadesmall.jpg";	
-    static final String IconsDir = "/appdata/icons/";
+    static final String IconsDir = "/icons.zip/icons/";
     // if true, use the NativeSockets implementation for networking
     // to make the overall code structure more like the codename1 implementation
     static final boolean USE_NATIVE_SOCKETS = true; 

@@ -4,8 +4,7 @@ import java.awt.Color;
 import java.util.Enumeration;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.Clip;
-
+import bridge.BSClip;
 import graphicstest.GraphicsViewer.TestAble;
 import lib.Graphics;
 import lib.SoundManager;
@@ -47,7 +46,7 @@ class soundclips implements TestAble
 		gc.fillRect(0,0,w,h);
 		gc.setColor(Color.white);
 		gc.Text(""+clip,w/10,h/10);
-		Clip sound = SoundManager.loadASoundClip(clip);
+		BSClip sound = SoundManager.loadASoundClip(clip);
 		AudioFormat format = sound.getFormat();
 		gc.Text(""+format,w/10,h/10*2);
 		if(SoundManager.soundIdle()) 

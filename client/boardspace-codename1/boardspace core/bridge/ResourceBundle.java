@@ -16,28 +16,28 @@
  */
 package bridge;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.codename1.ui.Display;
 import com.codename1.ui.Image;
 import com.codename1.ui.util.Resources;
 
 import lib.DataCache;
 import lib.G;
 import lib.Plog;
+import net.sf.jazzlib.ZipEntry;
 import net.sf.jazzlib.ZipInputStream;
 
 /*
  * resource bundle is a cache on the resources provided by codename1,
  * and also wraps some really awful APIs into more reasonable ones.
- * 
- * TODO: do something about resource file size limits.
- * as it is, the underlying codename1 implementation reads the whole thing into memory
- * which effectively limits the size of resource files, especially on cheap tablets.
- * Possible workarounds
- *  - manually or automatically splitting resources into multiple files
- *  - reimplementing .res reader to build a directory id actual files
- *  - switching to .zip (aka .jar) format (assuming the zip reader doesn't have this problem) 
  * 
  */
 
@@ -148,46 +148,234 @@ class RawResources implements ResourceInterface
 }
 
 /**
- * this is not ready to use, but is a placeholder for a future
- * in which it's possible to use a zip file instead of a .res file
- * 
+ * reads resources from a .zip (aka .jar) archive instead of a .res file.
+ * entries are indexed by their base name (the part after the last '/'),
+ * matching the flat namespace ResourceBundle already uses for .res files,
+ * so an archive entry like "icons/euphoria-sample1.jpg" is looked up as
+ * just "euphoria-sample1.jpg". If two entries share a base name (e.g. two
+ * different subdirectories), the later one encountered wins - archives
+ * meant for use here should keep base names unique.
+ *
+ * two constructors, matching the two real use cases in ResourceBundle:
+ *
+ *  - ZipResources(File): the data-cache case (a downloaded archive like
+ *    icons.jar). This jazzlib build only provides the streaming API
+ *    (ZipInputStream/ZipEntry), not a random-access ZipFile, so instead:
+ *    one sequential pass over the archive records the byte offset where
+ *    each entry's local header begins. A later lookup opens a fresh
+ *    stream on the same File, skip()s straight to that offset, and reads
+ *    just that one entry - no need to rescan everything before it, and
+ *    no need to hold the whole archive in memory.
+ *
+ *  - ZipResources(String): the embedded-resource case (an archive bundled
+ *    into the app itself). CN1 only exposes embedded resources as a
+ *    stream, not a filesystem path, so there's no file to skip() within -
+ *    this reads the archive sequentially once at construction time and
+ *    caches every entry's bytes in memory. Fine for small bundled
+ *    archives; for anything large, prefer the File-based constructor.
  */
 class ZipResources implements ResourceInterface
 {
-	ZipInputStream zip = null;
-	File zipName = null;
-	String zipResourceName = null;
+	// used by the File (offset-index) constructor
+	private File zipFile = null;
+	private Map<String,Long> offsetByName = null;
+
+	// used by the String (embedded, stream-based) constructor
+	private Map<String,byte[]> dataByName = null;
+
+	private String[] dataNames = null;
+	private String[] imageNames = null;
+
 	public ZipResources() {}
-	
+
+	// constructor for a zip/jar bundled into the app itself, opened by name
 	public ZipResources(String input)
-	{	zipResourceName = input; 
-		//zip = new ZipInputStream(Display.getInstance().getResourceAsStream(null, input));
+	{	InputStream in = null;
+		try
+		{
+			in = Display.getInstance().getResourceAsStream(null,input);
+			if(in!=null) { loadFromStream(in); }
+			else { G.Advise(false,"Zip resource %s not found",input); }
+		}
+		catch (IOException e)
+		{
+			G.Advise(false,"Error opening zip resource %s %s",input,e);
+		}
+		finally
+		{
+			if(in!=null) { try { in.close(); } catch (IOException e) {} }
+		}
 	}
+
+	// constructor for a zip/jar in the local data cache, opened by File.
+	// builds a name -> byte offset index with one sequential scan, so
+	// individual entries can be fetched later without rescanning.
 	public ZipResources(File input)
-	{	zipName = input;
-
-		
+	{	FileInputStream fin = null;
+		try
+		{
+			zipFile = input;
+			offsetByName = new HashMap<String,Long>();
+			List<String> data = new ArrayList<String>();
+			List<String> images = new ArrayList<String>();
+			fin = new FileInputStream(input);
+			CountingInputStream counting = new CountingInputStream(fin);
+			ZipInputStream zin = new ZipInputStream(counting);
+			ZipEntry entry;
+			long offset = counting.count();
+			while((entry = zin.getNextEntry())!=null)
+			{	if(!entry.isDirectory())
+				{	String n = baseName(entry.getName());
+					offsetByName.put(n,offset);
+					if(isImageName(n)) { images.add(n); } else { data.add(n); }
+				}
+				// drain the entry so we're positioned at the next local header
+				byte buf[] = new byte[4096];
+				while(zin.read(buf)>0) {}
+				zin.closeEntry();
+				offset = counting.count();
+			}
+			zin.close();
+			dataNames = data.toArray(new String[data.size()]);
+			imageNames = images.toArray(new String[images.size()]);
+		}
+		catch (IOException e)
+		{
+			G.Advise(false,"Error opening zip resource file %s %s",input,e);
+		}
+		finally
+		{
+			if(fin!=null) { try { fin.close(); } catch (IOException e) {} }
+		}
 	}
-	public boolean isData(String name) { return false; }
-	public boolean isImage(String name) { return false; }
-	
-	public InputStream getData(String name) {
-		throw G.Error("Not implemented");
+
+	private void loadFromStream(InputStream in) throws IOException
+	{	dataByName = new HashMap<String,byte[]>();
+		List<String> data = new ArrayList<String>();
+		List<String> images = new ArrayList<String>();
+		ZipInputStream zin = new ZipInputStream(in);
+		ZipEntry entry;
+		while((entry = zin.getNextEntry())!=null)
+		{	if(!entry.isDirectory())
+			{	String n = baseName(entry.getName());
+				dataByName.put(n,readAll(zin));
+				if(isImageName(n)) { images.add(n); } else { data.add(n); }
+			}
+			zin.closeEntry();
+		}
+		zin.close();
+		dataNames = data.toArray(new String[data.size()]);
+		imageNames = images.toArray(new String[images.size()]);
 	}
 
-	public Image getImage(String name) {
-		throw G.Error("Not implemented");
+	private static byte[] readAll(InputStream in) throws IOException
+	{	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		byte buf[] = new byte[4096];
+		int len;
+		while((len=in.read(buf))>0) { bos.write(buf,0,len); }
+		return bos.toByteArray();
 	}
 
-	public String[] getDataResourceNames() {
-		throw G.Error("Not implemented");
+	private static String baseName(String entryName)
+	{	int ind = entryName.lastIndexOf('/');
+		return ind>=0 ? entryName.substring(ind+1) : entryName;
 	}
 
-	public String[] getImageResourceNames() {
-		throw G.Error("Not implemented");
+	// treat these image types as images, everything else as data.
+	// adjust this list if the archives you're loading use other formats.
+	private static boolean isImageName(String n)
+	{	String lc = n.toLowerCase();
+		return lc.endsWith(".jpg") || lc.endsWith(".jpeg")
+				|| lc.endsWith(".png") || lc.endsWith(".gif");
 	}
 
-	
+	private byte[] getBytes(String name)
+	{	if(dataByName!=null) { return dataByName.get(name); }
+		if(offsetByName!=null && zipFile!=null)
+		{	Long offset = offsetByName.get(name);
+			if(offset!=null)
+			{	FileInputStream fin = null;
+				try
+				{
+					fin = new FileInputStream(zipFile);
+					long skipped = fin.skip(offset.longValue());
+					if(skipped!=offset.longValue())
+					{	G.Advise(false,"short skip reading zip entry %s",name);
+						return null;
+					}
+					ZipInputStream zin = new ZipInputStream(fin);
+					ZipEntry entry = zin.getNextEntry();
+					if(entry!=null)
+					{	return readAll(zin); }
+				}
+				catch (IOException ex)
+				{
+					G.Advise(false,"Error reading zip entry %s %s",name,ex);
+				}
+				finally
+				{
+					if(fin!=null) { try { fin.close(); } catch (IOException ex) {} }
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean isData(String name) { return !isImageName(name) && contains(name); }
+	public boolean isImage(String name) { return isImageName(name) && contains(name); }
+
+	private boolean contains(String name)
+	{	if(dataByName!=null) { return dataByName.containsKey(name); }
+		if(offsetByName!=null) { return offsetByName.containsKey(name); }
+		return false;
+	}
+
+	public InputStream getData(String name)
+	{	byte b[] = getBytes(name);
+		return b==null ? null : new ByteArrayInputStream(b);
+	}
+
+	public Image getImage(String name)
+	{	byte b[] = getBytes(name);
+		return b==null ? null : Image.createImage(b,0,b.length);
+	}
+
+	public String[] getDataResourceNames() { return dataNames; }
+	public String[] getImageResourceNames() { return imageNames; }
+}
+
+/**
+ * wraps an InputStream to track how many bytes have been read through it,
+ * so we can record the byte offset at which each zip entry's local header
+ * begins during the initial indexing scan. Built on plain InputStream
+ * (with manual delegation) rather than FilterInputStream, since the
+ * latter isn't part of this CN1 build's java.io subset.
+ */
+class CountingInputStream extends InputStream
+{
+	private InputStream in;
+	private long count = 0;
+	public CountingInputStream(InputStream i) { in = i; }
+	public long count() { return count; }
+	public int read() throws IOException
+	{	int b = in.read();
+		if(b>=0) { count++; }
+		return b;
+	}
+	public int read(byte[] b) throws IOException
+	{	return read(b,0,b.length); }
+	public int read(byte[] b,int off,int len) throws IOException
+	{	int n = in.read(b,off,len);
+		if(n>0) { count += n; }
+		return n;
+	}
+	public long skip(long n) throws IOException
+	{	long skipped = in.skip(n);
+		count += skipped;
+		return skipped;
+	}
+	public int available() throws IOException { return in.available(); }
+	public void close() throws IOException { in.close(); }
 }
 public class ResourceBundle
 {	
@@ -200,7 +388,7 @@ public class ResourceBundle
 	
 	ResourceInterface openResourceFile(String f)
 	{   
-		if(f.endsWith(".zip")) { return new ZipResources(f); }
+		if(f.endsWith(".zip")||f.endsWith(".jar")) { return new ZipResources(f); }
 		else if(f.endsWith(".res")) { return new CN1Resources(f); }
 		else { return new RawResources(new File(f),f); }
 	}
@@ -209,7 +397,7 @@ public class ResourceBundle
 	ResourceInterface openLocalFile(File f,String name)
 	{	resFile = name;
 		cacheFile = f;
-		if(name.endsWith(".zip")) { return new ZipResources(f); }
+		if(name.endsWith(".zip")||name.endsWith(".jar")) { return new ZipResources(f); }
 		else if(name.endsWith(".res")) { return new CN1Resources(f); }
 		else { return new RawResources(f,name); }
 	}
@@ -274,7 +462,7 @@ public class ResourceBundle
     	xName = xName.substring(APPDATA.length());
     	int ind = xName.indexOf('/',1);
         String file0 = ind>=0 ? xName.substring(0,ind) : xName;		// resource name including the /
-    	String file = (file0.endsWith(".gz")||file0.endsWith(".zip")||file0.endsWith(".res")) 
+    	String file = (file0.endsWith(".gz")||file0.endsWith(".zip")||file0.endsWith(".jar")||file0.endsWith(".res")) 
     					? file0 
     					: file0+".res";
     	ResourceBundle res = appdata;
@@ -297,7 +485,9 @@ public class ResourceBundle
     	{
     	int ind = xName.indexOf('/',1);
         String file0 = ind>=0 ? xName.substring(0,ind) : xName;
-    	String file = file0.endsWith(".res") ? file0 : file0+".res";
+    	String file = (file0.endsWith(".zip")||file0.endsWith(".jar")||file0.endsWith(".res")) 
+    					? file0 
+    					: file0+".res";
     	ResourceBundle res = bundle;
     	if(res==null || !res.resFile.equals(file))
     	{	

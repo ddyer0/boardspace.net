@@ -220,7 +220,7 @@ public abstract class SystemGraphics {
 	    int imgH = (int)(img.getHeight() * scaleY);
 
 	    
-	    // Clip to dest rect so the rest of the scaled image is invisible
+	    // BSClip to dest rect so the rest of the scaled image is invisible
 	    if(useNative)
 	    {
 	     int[] oldClip = graphics.getClip();
