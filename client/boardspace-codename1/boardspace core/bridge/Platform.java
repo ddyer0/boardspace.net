@@ -1081,7 +1081,7 @@ public static boolean isMetal = G.BoolToken(CN.getProperty("codename1.ios.metal"
 //
 
 public static String screenSummary()
-{
+{	
 	return G.concat(" screen=",getScreenSize()," safe ",MasterForm.getSafeBounds()," frame=",getFrameWidth(),"x",getFrameHeight()," panel=",MasterForm.getPanelBounds());
 }
 

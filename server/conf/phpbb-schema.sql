@@ -217,7 +217,7 @@ CREATE TABLE `phpbb_posts` (
   KEY `topic_id` (`topic_id`),
   KEY `poster_id` (`poster_id`),
   KEY `post_time` (`post_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=3184 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3263 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +323,7 @@ CREATE TABLE `phpbb_search_wordlist` (
   `word_common` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`word_text`),
   KEY `word_id` (`word_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82146 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=84983 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -521,7 +521,7 @@ CREATE TABLE `phpbb_topics` (
   KEY `topic_moved_id` (`topic_moved_id`),
   KEY `topic_status` (`topic_status`),
   KEY `topic_type` (`topic_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=979 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=996 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -613,7 +613,8 @@ CREATE TABLE `phpbb_users` (
   `user_login_tries` smallint(5) unsigned NOT NULL DEFAULT '0',
   `user_last_login_try` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`),
-  KEY `user_session_time` (`user_session_time`)
+  KEY `user_session_time` (`user_session_time`),
+  KEY `user` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -693,4 +694,4 @@ CREATE TABLE `phpbb_words` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-30 17:47:27
+-- Dump completed on 2026-07-01  0:05:46

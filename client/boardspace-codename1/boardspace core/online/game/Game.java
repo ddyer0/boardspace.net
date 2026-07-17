@@ -369,6 +369,18 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         resultForMe = false;
         myFrame.setDontKill(false); //keep people from quitting while the score is being reported
         
+ 
+		if(G.getBoolean(ROBOTEXIT,false))
+			{	
+			v.stopRobots();
+			myFrame.killFrame();
+			exitFlag = true;
+			}
+          
+    	}
+    }
+    private void gameOverEditable()
+    {
     	if(!knownEditable)
     		{knownEditable = true;
     		v.setEditable(false);
@@ -379,17 +391,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	      	{ sendMessage(NetConn.SEND_REQUEST_LOCK+"0"); }
     		}
     		}
-
-		if(G.getBoolean(ROBOTEXIT,false))
-			{	
-			v.stopRobots();
-			myFrame.killFrame();
-			exitFlag = true;
-			}
-          
-    	}
     }
-    
     private void discardGame(boolean error,String message)
     {	
     	removeGameFromServer();
@@ -4121,14 +4123,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                     
                     if (GameOver())
+                    {	if(!playedGameOverSound)
                     {
-                        if (!playedGameOverSound && !reviewOnly && doSound)
+                        playedGameOverSound = true;
+                        if (!reviewOnly && doSound)
                         { 
                         SoundManager.playASoundClip(gameOverSoundName,700);
                         SoundManager.playASoundClip(gameOverSoundName,450);
                         SoundManager.playASoundClip(gameOverSoundName,500);
-                            playedGameOverSound = true;
                         }
+                        if(!my.isSpectator())
+                        {
+                            gameOverEditable();
+                        }}
 
                         v.stopRobots();
                         if(offlineGame && !reviewOnly)

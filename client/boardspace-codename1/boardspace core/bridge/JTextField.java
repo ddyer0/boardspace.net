@@ -22,7 +22,7 @@ import com.codename1.ui.events.ActionListener;
 import lib.FontManager;
 import lib.G;
 
-public class JTextField extends JTextComponent 
+public class JTextField extends  JTextComponent
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addMouseListener(MouseListener m) 
@@ -51,7 +51,8 @@ public class JTextField extends JTextComponent
 	  setDoneListener(mouse);
 	}
 	public void keyPressed(int keycode)
-	{	
+	{	// note that this never calls super.keyPressed, which has the non-obvious
+		// side effect of making the interface NOT eat spaces.
 		if(keycode==-90) // where does this number come from?
 		{ 
 		  fireDoneEvent(); 

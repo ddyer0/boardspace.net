@@ -194,7 +194,7 @@ public class SoundManager implements Runnable
         {	final BSClip clip = getAClip();
         	if (clip != null)
                 {	
-                	clip.play();
+                	clip.playAudioClip();
                 }
              };
         }

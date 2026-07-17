@@ -371,17 +371,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         resultForMe = false;
         myFrame.setDontKill(false); //keep people from quitting while the score is being reported
         
-    	if(!knownEditable)
-    		{knownEditable = true;
-    		v.setEditable(false);
-    		if(!reviewOnly) 
-    		{ v.setControlToken(false,0); 
-    		  // start with no one has control
-    	      if((myNetConn!=null) && myNetConn.hasLock && (numberOfConnections()>1))
-    	      	{ sendMessage(NetConn.SEND_REQUEST_LOCK+"0"); }
-    		}
-    		}
-
+ 
 		if(G.getBoolean(ROBOTEXIT,false))
 			{	
 			v.stopRobots();
@@ -391,7 +381,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
           
     	}
     }
-    
+    private void gameOverEditable()
+    {
+    	if(!knownEditable)
+		{knownEditable = true;
+		v.setEditable(false);
+		if(!reviewOnly) 
+		{ v.setControlToken(false,0); 
+		  // start with no one has control
+	      if((myNetConn!=null) && myNetConn.hasLock && (numberOfConnections()>1))
+	      	{ sendMessage(NetConn.SEND_REQUEST_LOCK+"0"); }
+		}
+		}
+    }
     private void discardGame(boolean error,String message)
     {	
     	removeGameFromServer();
@@ -430,7 +432,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     (my.sameClock(playerConnections) ? " same clock" : "") +
                     " ping " + my.clock + "+" + my.ping + tablestuff);
             }}
-        }
+         }
     }
 
     private String modeString()
@@ -2306,7 +2308,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         for (int i = 0; i < m; i++)
         {	
-        	choices.getItem(i).addItemListener(deferredEvents);
+        	JMenuItem mm = choices.getItem(i);
+        	if(mm!=null) { mm.addItemListener(deferredEvents); }
         }
 
         return (choices);
@@ -4122,14 +4125,19 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                     
                     if (GameOver())
-                    {
-                        if (!playedGameOverSound && !reviewOnly && doSound)
-                        { 
-                        SoundManager.playASoundClip(gameOverSoundName,700);
-                        SoundManager.playASoundClip(gameOverSoundName,450);
-                        SoundManager.playASoundClip(gameOverSoundName,500);
-                            playedGameOverSound = true;
-                        }
+                    {	if(!playedGameOverSound)
+                    	{
+                        playedGameOverSound = true;
+                        if (!reviewOnly && doSound)
+	                        { 
+	                        SoundManager.playASoundClip(gameOverSoundName,700);
+	                        SoundManager.playASoundClip(gameOverSoundName,450);
+	                        SoundManager.playASoundClip(gameOverSoundName,500);     
+	                        }
+                        if(!my.isSpectator())
+                        {
+                            gameOverEditable();
+                        }}
 
                         v.stopRobots();
                         if(offlineGame && !reviewOnly)

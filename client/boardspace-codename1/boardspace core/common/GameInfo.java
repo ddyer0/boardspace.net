@@ -27,7 +27,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 {	
 	public static GameInfoStack allGames = new GameInfoStack();
 	public static GameInfo firstGame = null;
-	static final String TilePatternGames = "Tile Pattern Games";
+	static final String TilePatternGames = "Pattern Games";
 	static final String AncientGames = "Ancient Games";
 	static final String NInARowGames = "N-in-a-row Games";
 	static final String EuroGames = "Euro Games";
@@ -105,13 +105,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		OtherGames,
 		Hive,
 	};
-	public static void putStrings()
-	{
-		InternationalStrings.put(GameInfo.GameFamilies);
-		for(GameLink l : GameLink.values()) { InternationalStrings.put(l.helpText); }
-		InternationalStrings.put(GameInfoStringPairs);
 	
-	}
 	public enum ScoringMode { SM_Normal, SM_Multi, SM_Single, SM_None }
 	
 	public enum ES 
@@ -1315,6 +1309,21 @@ synchronized(allGames) {
 				slitherVideo,false, BlackOverWhite));
 
 	}
+	
+	{
+		String gomokuClass = "gomoku.GomokuViewer"; 
+		String gomokuRules = "/gomoku/english/Rules.html";
+		String gomokuVideo = null;
+		String gomokuAbout = "about_gomoku.html";
+		double gomokuTimes[] = new double[]{1.0,0.01};
+		put(new GameInfo(266,ES.test,131,"GU",TilePatternGames,"Gomoku","Gomoku",
+				OneBotPlus,
+				gomokuTimes,
+				gomokuClass,gomokuRules,gomokuAbout,
+				gomokuVideo,false, BlackOverWhite));
+
+	}
+	
 	{
 	String tviewer = "twixt.TwixtViewer";
 	String trules = "/twixt/english/rules.html";
@@ -2875,7 +2884,10 @@ synchronized(allGames) {
 		return false;
 	}
 
-	public static String GameInfoStringPairs[][] =
+
+	public static void putStrings()
+	{
+		String GameInfoStringPairs[][] =
 			{	{"PlateauGameInfoMessage","side screens are needed to conceal your rack"},
 				{"MogulInfoMessage","side screens are needed to keep your stack of chips secret"},
 				{"PortfolioInfoMessage","side screens are needed to keep your stock holdings secret"},
@@ -2912,4 +2924,9 @@ synchronized(allGames) {
 				{"TammanyInfoMessage","side screens are needed for secret votes"},
 				{"CrosswordsInfoMessage","side screens are needed to conceal your rack\n..Or you can play with open racks"},				
 			};
+
+		InternationalStrings.put(GameInfoStringPairs);
+		InternationalStrings.put(GameInfo.GameFamilies);
+		for(GameLink l : GameLink.values()) { InternationalStrings.put(l.helpText); }
+	}
 }

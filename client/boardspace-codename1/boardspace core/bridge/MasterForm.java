@@ -21,6 +21,7 @@ import lib.G;
 import lib.Http;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
+import lib.Plog;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
 
@@ -639,15 +640,11 @@ public void addToMenus(JButton m)
 		super.addKeyListener(keyCode,listener);
 	}
 	public void fireKeyEvent(int keycode,boolean pressed)
-	{	//Plog.log.addLog("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
-		//		focusedListener," ",pressed);
+	{	G.print("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
+			focusedListener," ",pressed);
+	
 		if(keylisteners!=null)
 		{	int code = keycode;
-			switch(keycode)
-			{
-			case -90: code = '\r'; break;
-			default: break;
-			}
 			for(KeyListener k : keylisteners)
 			{	KeyEvent event = new KeyEvent(code);
 				//if(k==focusedListener)

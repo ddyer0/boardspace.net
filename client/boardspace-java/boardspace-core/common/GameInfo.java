@@ -1316,7 +1316,7 @@ synchronized(allGames) {
 		String gomokuVideo = null;
 		String gomokuAbout = "about_gomoku.html";
 		double gomokuTimes[] = new double[]{1.0,0.01};
-		put(new GameInfo(266,ES.game,131,"GU",TilePatternGames,"Gomoku","Gomoku",
+		put(new GameInfo(266,ES.test,131,"GU",TilePatternGames,"Gomoku","Gomoku",
 				OneBotPlus,
 				gomokuTimes,
 				gomokuClass,gomokuRules,gomokuAbout,

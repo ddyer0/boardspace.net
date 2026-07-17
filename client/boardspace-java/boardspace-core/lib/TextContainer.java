@@ -905,13 +905,20 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		return(hit);
 	}
 	private void doControlCodes(int code)
-	{	code = (char)(0x40|code);	// uppercase
+	{	code = code>=0 ? (0x40|code) : code;	// uppercase
 		switch(code)
 		{
+				case -90:
+						insert(' ');
+						break;
+				case -91:		//simulator
+				case -23448:	//ios
 		case 'A':	
 				selectAll();
 				setChanged(Op.Repaint);
 				break;
+				case -93:
+				case -23446:
 		case 'B':
 				doBack();
 				break;
@@ -921,12 +928,17 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		case 'D':
 				doDel(true);
 				break;
+				case -92:		//simulator
+				case -23449:	// ios
 		case 'E':
 				doToEnd();
 				break;
+				case -94:		//simulator
+				case -23447:	//ios
 		case 'F':
 				doForward();
 				break;
+				case -23453:	//ios
 		case 'H':
 				doDel(false);
 				break;
@@ -951,7 +963,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			char code = e.getKeyChar();
 			if((mod & KeyEvent.CTRL_DOWN_MASK)!=0)
 			{
-				doControlCodes(code);
+				doControlCodes(e.getKeyCode());
 			}
 			else {
 				switch(code)
