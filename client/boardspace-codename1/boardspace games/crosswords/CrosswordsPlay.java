@@ -126,6 +126,10 @@ public class CrosswordsPlay extends commonMPRobot<CrosswordsBoard> implements Ru
         return(board.GetListOfMoves());
     }
 
+    // not used, but invoked if debugging 
+	public void StaticEval() {
+		//return board.score[whoseTurn];
+	}
 
 
 /** prepare the robot, but don't start making moves.  G is the game object, gboard

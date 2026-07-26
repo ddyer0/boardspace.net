@@ -138,9 +138,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
  			StockArt.Eye,SlitherId.ToggleEye,EyeExplanation
  			);
     private Rectangle chipRects[] = addZoneRect("chip",2);
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
-	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
+ 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 
 	
@@ -638,17 +636,7 @@ public class SlitherViewer extends CCanvas<SlitherCell,SlitherBoard> implements 
        
        GC.setFont(gc,standardBoldFont());
        
-       // draw the board control buttons 
-       boolean conf = (state==SlitherState.ConfirmSwap) ;
-		if( conf
-			|| (state==SlitherState.PlayOrSwap) 
-			|| (state==SlitherState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-			swapButton.highlightWhenIsOn = true;
-        	swapButton.setIsOn(conf);
-        	swapButton.show(gc, buttonSelect);
-			}
-
+ 
 		if (state != SlitherState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button

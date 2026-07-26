@@ -24,6 +24,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;
@@ -82,13 +83,13 @@ class WordStack extends OStack<Word>
 	}
 	// record a candidate word if it is a plausible candidate.
 	// trim the active list to the prescribed size
-	public Word recordCandidate(String message,CrosswordsCell c,String s,int direction,int score,Entry e)
+	public Word recordCandidate(String message,CrosswordsCell c,ByteKey s,int direction,int score,Entry e)
 	{	if(score>=bestScore*threshold && score>leastScore)
 		{
 		for(int lim=size()-1;lim>=0;lim--)
 		{
 			Word entry = elementAt(lim);
-			if(entry.name.equals(e.word) && entry.seed==c) 
+			if(entry.name.equals(e) && entry.seed==c) 
 			{
 				return(null);
 			}
@@ -132,7 +133,7 @@ class WordStack extends OStack<Word>
  */
 class Word implements StackIterator<Word>,CompareTo<Word>
 {
-	String name;			// the actual word
+	ByteKey name;			// the actual word
 	CrosswordsCell seed;	// starting point
 	int direction=-1;		// scan direction
 	int points=-1;			// the value of the word when played
@@ -152,7 +153,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		  b.append(points);
 		  if(entry!=null)
 		  {	b.append(" Order:");
-		    b.append(entry.order);
+		    b.append(entry.getOrder());
 		  }
 	  }
 	  b.append(">");
@@ -186,13 +187,12 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		}
 		return(false);
 	}
-	public Word(CrosswordsCell s, String n, int di)
+	public Word(CrosswordsCell s, ByteKey n, int di)
 	{
 		seed = s;
 		name = n;
 		direction = di%s.geometry.n;
 	}
-	
 	// true if this word and target word share a cell
 	public boolean connectsTo(Word target,int sweep)
 	{
@@ -621,6 +621,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         chipsOnBoard = from_b.chipsOnBoard;
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
+        getCell(startCaps,from_b.startCaps);
+        getCell(endCaps,from_b.endCaps);
         stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
@@ -1237,7 +1239,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     
     StringBuilder builder = new StringBuilder();
     boolean isNew = false;	// the word in the builder includes a new letter
-	Hashtable<String,Word> wordsUsed = new Hashtable<String,Word>();
+	Hashtable<ByteKey,Word> wordsUsed = new Hashtable<ByteKey,Word>();
 	WordStack words = new WordStack();
 	WordStack newWords = new WordStack();
 	WordStack nonWords = new WordStack();
@@ -1336,7 +1338,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
    		wordsUsed.clear();
    		for(int lim=words.size()-1; lim>=0; lim--)
    		{	Word target = words.elementAt(lim);
-   			String name = target.name;
+   			ByteKey name = target.name;
    			if(wordsUsed.get(name)!=null) { return(target); }
    			wordsUsed.put(name,target);
    		}
@@ -1345,7 +1347,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
    	// 
    	// collect a word from a starting cell with a given direction
    	// 
-    private String collectWord(CrosswordsCell from,int direction)
+    private ByteKey collectWord(CrosswordsCell from,int direction)
     {
     	builder.setLength(0);
     	int n=0;
@@ -1361,7 +1363,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     		c = c.exitTo(direction);
     	}
     	// leave builder primed with the letters, so it can be reversed
-    	return(n>1 ? builder.toString() : null);
+    	return(n>1 ? ByteKey.create(builder) : null);
     }
     
     // keep track of the word level bonus cells that
@@ -1414,7 +1416,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     // with any new words that are formed.  CrossIndex is the index 
     // of the known crossword - ie the word we are building from,
     // which has already been checked and also won't score
-    public int checkIllegalCrosswords(String word,int crossIndex,CrosswordsCell from,int inDirection,CrosswordsCell fromRack[])
+    public int checkIllegalCrosswords(ByteKey word,int crossIndex,CrosswordsCell from,int inDirection,CrosswordsCell fromRack[])
     {	int extraScore = 0;
     	CrosswordsCell c = from;
     	int oppdir = (inDirection+CELL_HALF_TURN)%CELL_FULL_TURN;
@@ -1471,7 +1473,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     		 				}}
     		 			if(nchars>1)
     		 			{
-    		 			String newWord = builder.toString();
+    		 			ByteKey newWord = ByteKey.create(builder);
     		 			Entry e = lookupRobotWord(newWord);
     		 			if(e==null) { // found an illegal crossword
     		 					return(-1);
@@ -1516,15 +1518,15 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		}}
 		return(letterScore);
     }
-    private Entry lookupRobotWord(String word)
+    private Entry lookupRobotWord(ByteKey word)
     {	Entry entry = dictionary.get(word);
-    	if(entry!=null) { if(entry.order>robotVocabulary) { entry = null; }}
+    	if(entry!=null) { if(entry.getOrder()>robotVocabulary) { entry = null; }}
     	return(entry);
     }
     
     // backwards words allows palindromes to be entered twice, which we do not want
     private boolean isUnique(Word newWord,WordStack existingWords)
-    {	String word = newWord.name;
+    {	ByteKey word = newWord.name;
     	for(int lim = existingWords.size()-1; lim>=0; lim--)
     	{
     	Word e = existingWords.elementAt(lim);
@@ -1567,7 +1569,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     		if(top!=null) { n += validateFrom(next); }
     		else if(dir<lastDir)
     		{ 	int oppDir = dir+CELL_HALF_TURN;
-    			String w = collectWord(c,oppDir);
+    			ByteKey w = collectWord(c,oppDir);
     			if(w!=null) 
     				{ Entry e = dictionary.get(w);		// this deliberately uses the unlimited dictionary
     				  Word word = new Word(c,w,oppDir);
@@ -1599,7 +1601,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	{
     		for(int lim=newWords.size()-1; lim>=0; lim--)
     		{	Word w = newWords.elementAt(lim);
-    			logGameEvent(AddWordMessage,w.name,""+w.points);
+    			logGameEvent(AddWordMessage,w.name.getString(),""+w.points);
     		}
     	}
     	lastLetters.copyFrom(droppedDestStack);
@@ -2199,7 +2201,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // return the cell that would be the head of the new word
  // this is used both the place ordinary crosswords (where one letter is already placed)
  // and "cap words" where we are placing a crossword at the beginning or end of an existnig word
- private CrosswordsCell canPlaceWord(String word,int firstIndex,CrosswordsCell from,int direction)
+ private CrosswordsCell canPlaceWord(ByteKey word,int firstIndex,CrosswordsCell from,int direction)
  {	int reverse = direction+CELL_HALF_TURN;
  	CrosswordsCell head = from;
  	int usedLetters = 0;
@@ -2257,7 +2259,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // this does not check for illegal crosswords
  // one complication is that the search for words using blanks
  // involves "temporarily" placing the actual letter in the rack
- private int scoreWord(String word,CrosswordsCell from,int direction,CrosswordsCell fromRack[])
+ private int scoreWord(ByteKey word,CrosswordsCell from,int direction,CrosswordsCell fromRack[])
  {	
 	int score = 0;
 	sweep_counter++;
@@ -2295,7 +2297,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // true if this word can be placed from the rack.  This is called
  // if the set of letters is plausible, but there might be more duplicates
  // in the targetWord than there are in the rack
- private boolean canPlaceFromRack(String targetWord,CrosswordsCell rack[],char targetLetter)
+ private boolean canPlaceFromRack(ByteKey targetWord,CrosswordsCell rack[],char targetLetter)
  {	char seedLetter = targetLetter;
  	sweep_counter++;
  	for(int lim=targetWord.length()-1; lim>=0; lim--)
@@ -2318,7 +2320,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  	}
 	return(true);
  }
- private int findLetter(String targetString,char wordLetter,int usedLetters)
+ private int findLetter(ByteKey targetString,char wordLetter,int usedLetters)
  {
 	 int used = 1;
 	 for(int lim=targetString.length()-1; lim>=0; lim--)
@@ -2328,7 +2330,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	 }
 	 return(0);
  }
- private boolean canPlaceFromRack(String targetWord,CrosswordsCell rack[],String targetString)
+ private boolean canPlaceFromRack(ByteKey targetWord,CrosswordsCell rack[],ByteKey targetString)
  {	int usedLetters = 0;
  	sweep_counter++;
  	for(int lim=targetWord.length()-1; lim>=0; lim--)
@@ -2376,32 +2378,32 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 					: diagonals 
 						? firstDir+CELL_HALF_TURN-1	// cell-down-left is 0 but we want > firstDir
 						: CELL_FULL_TURN;
-	int total = 0;
+	
+ 	int total = 0;
  	for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
  		{	Entry word = words.nextElement();
- 			String targetWord = word.word;
  			// first a quick check that the word doesn't contain any letters that aren't available
  			// this ought to filter out the vast majority of words
- 			if(word.order<robotVocabulary								// within the vocabulary limit 
- 					&& ((word.letterMask | letterMask)==letterMask))	// if the word doesn't require any letters not in the rack
+ 			if(word.getOrder()<robotVocabulary								// within the vocabulary limit 
+ 					&& ((word.letterMask() | letterMask)==letterMask))	// if the word doesn't require any letters not in the rack
  			{
-			 int targetIndex = targetWord.indexOf(targetLetter);
+			 int targetIndex = word.indexOf(targetLetter);
 			 while(targetIndex>=0)
 			 {
 			 for(int direction = firstDir; direction<lastDir; direction+=directionStep )
 			 {	 if(direction!=notInDirection)
 			 	{
-				 if(canPlaceFromRack(targetWord,fromRack,targetLetter))
+				 if(canPlaceFromRack(word,fromRack,targetLetter))
 			 	 {
-				 CrosswordsCell head = canPlaceWord(targetWord,targetIndex,startingAt,direction);
+				 CrosswordsCell head = canPlaceWord(word,targetIndex,startingAt,direction);
 				 if(head!=null)
 				 {
-				 int value = scoreWord(targetWord,head,direction,fromRack);
+				 int value = scoreWord(word,head,direction,fromRack);
 			     Word newword = candidateWords.recordCandidate(notInDirection<0?"Ordinary Crossword":"Cap word",
-			    		 				head, targetWord, direction,value,word);
+			    		 				head, word, direction,value,word);
 			     if(newword!=null)
 			     {	 
-			    	 int extra = checkIllegalCrosswords(targetWord,targetIndex,head,direction,fromRack);
+			    	 int extra = checkIllegalCrosswords(word,targetIndex,head,direction,fromRack);
 			    	 if(extra<0) { candidateWords.unAccept(newword); }
 			    	 else if(extra>0)
 			    	 	{ newword.points += extra;
@@ -2411,7 +2413,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 				 total++;
 				 }}}
 			 }
-			 targetIndex = targetWord.indexOf(targetLetter,targetIndex+1);
+			 targetIndex = word.indexOf(targetLetter,targetIndex+1);
 			 }
  			}
  		}
@@ -2425,22 +2427,21 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  	int direction = seed.direction;
  	for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
  	{	Entry word = words.nextElement();
- 		String targetWord = word.word;
- 		// first a quick check that the word doesn't contain any letters that aren't available
+  		// first a quick check that the word doesn't contain any letters that aren't available
  		// this ought to filter out the vast majority of words
- 		if(word.order<robotVocabulary								// within the vocabulary limit 
- 				&& ((word.letterMask | letterMask)==letterMask)	// if the word doesn't require any letters not in the rack
+ 		if(word.getOrder()<robotVocabulary								// within the vocabulary limit 
+ 				&& ((word.letterMask() | letterMask)==letterMask)	// if the word doesn't require any letters not in the rack
  				)		// can actually be placed
- 		{	int position = targetWord.indexOf(seed.name);
- 			if(position>=0 && canPlaceFromRack(targetWord,fromRack,seed.name))
- 				{CrosswordsCell head = canPlaceWord(targetWord,position,seed.seed,direction);
+ 		{	int position = word.indexOf(seed.name);
+ 			if(position>=0 && canPlaceFromRack(word,fromRack,seed.name))
+ 				{CrosswordsCell head = canPlaceWord(word,position,seed.seed,direction);
  				if(head!=null)
  				{
- 				int value = scoreWord(targetWord,head,direction,fromRack);
-			    Word newword = candidateWords.recordCandidate("Extension Word",head, targetWord, direction,value,word);
+ 				int value = scoreWord(word,head,direction,fromRack);
+			    Word newword = candidateWords.recordCandidate("Extension Word",head, word, direction,value,word);
 			    if(newword!=null)
 			     {
-			    	 int extra = checkIllegalCrosswords(targetWord,position,head,direction,fromRack);
+			    	 int extra = checkIllegalCrosswords(word,position,head,direction,fromRack);
 			    	 if(extra<0) { candidateWords.unAccept(newword); }
 			    	 else if(extra>0)
 			    	 	{ newword.points += extra;
@@ -2527,16 +2528,17 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // then add complete crosswords from the rack using that letter.
  private int checkCapWords(CrosswordsCell wordHead,CrosswordsCell rack[],long letterMask,boolean atStart)
  {	int total = 0;
+ 	ByteKey probe =ByteKey.MutableByteKey();
  	for(int lim=wordHead.wordHead.size()-1; lim>=0; lim--)
 	 {
 		 Word w = wordHead.wordHead.elementAt(lim);
-		 String name = w.name;
+		 ByteKey name = w.name;
 		 for(CrosswordsCell r : rack)
 		 {
 			 CrosswordsChip top = r.topChip();
 			 if(top!=null)
 			 {
-				 String newWord = atStart ? top.lcChar+name : name+top.lcChar;
+				 ByteKey newWord = atStart ? probe.setData(top.lcChar,name) : probe.setData(name,top.lcChar);
 				 Entry e = lookupRobotWord(newWord);
 				 if(e != null) 
 				 {	
@@ -2555,14 +2557,14 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // look for adding multiple letters to the beginning or end of a word
  private int checkExtensionWords(Word w,CrosswordsCell rack[],long letterMask,boolean atStart)
  {	int total = 0;
- 	String name = w.name;
+ 	ByteKey name = w.name;
  	Entry e = lookupRobotWord(name);
  	if(e != null) 
 		 {	int namelen = name.length();
 		    for(int len= namelen+2,max = Math.min(Dictionary.MAXLEN, namelen+rackSize); len<=max;len++)
 		    {
 		    	DictionaryHash subDict = dictionary.getSubdictionary(len);
-		    	total += checkExtensionWords(subDict,rack,letterMask|e.letterMask,w);
+		    	total += checkExtensionWords(subDict,rack,letterMask|e.letterMask(),w);
 		    }
 		 }
  	return(total);

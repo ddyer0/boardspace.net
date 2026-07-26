@@ -1003,7 +1003,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     		{
     		return(s.get(prev 
     					? e.isJumbulaya() ? JumbulayaMessage : PrevWordMessage 
-    					: PendingWordMessage ,ee.word,ee.getDefinition()));
+    					: PendingWordMessage ,ee.getString(),ee.getDefinition()));
     		}
     	}
     	return(s.get(JumbulayaVictoryCondition));

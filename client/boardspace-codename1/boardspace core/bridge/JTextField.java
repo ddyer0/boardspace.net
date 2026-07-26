@@ -57,6 +57,7 @@ public class JTextField extends  JTextComponent
 		{ 
 		  fireDoneEvent(); 
 		} 
+		else { super.keyPressed(keycode);}
 	}
 
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
@@ -80,12 +81,6 @@ public class JTextField extends  JTextComponent
 	public void requestFocusInWindow() {
 	}
 
-	public void repaint() 
-	{ 	if(MasterForm.isInFront(this))
-		{
-		  super.repaint();
-		} 
-	}
 
 	//
 	// jan 2026, switch to this instead of deferring the settext to paint()

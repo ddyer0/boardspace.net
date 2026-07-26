@@ -2440,7 +2440,6 @@ void LaunchGameNow(Tokenizer localST)
 	int nplayers = 0;
 	LaunchUser itsme = null;
 	boolean inhibitLaunch = false;
-	int seedvalue = randomseed.nextInt();
 	String myHost = users.primaryUser().getHostUID();
 	// one for each player, always up to the max players for this game
 	String peek = null;
@@ -2481,7 +2480,8 @@ void LaunchGameNow(Tokenizer localST)
 	}}}
 	sess.startingName= peek==null ? localST.nextToken() : peek;
 	
-	seedvalue = localST.intToken();				// random seed for the game
+	int seedvalue = localST.intToken();				// random seed for the game
+
 	int starter =  localST.intToken();	// boss player
 	
 	

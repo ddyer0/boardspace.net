@@ -701,7 +701,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	   if(G.Date()>definedTime) { definedWord = null; }
     	   else { Entry e = dictionary.get(definedWord.name);
     	          if(e!=null) 
-    	        	  { msg = e.word + ":" +e.getDefinition(); 
+    	        	  { msg = e.getString() + ":" +e.getDefinition(); 
     	        	  }
     	   }
        }

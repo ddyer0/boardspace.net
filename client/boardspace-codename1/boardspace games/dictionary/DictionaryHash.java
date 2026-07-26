@@ -17,9 +17,9 @@
 package dictionary;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
 
 import lib.G;
+import lib.SimpleHashtable;
 import lib.StringStack;
 
 @SuppressWarnings("serial")
@@ -28,17 +28,17 @@ import lib.StringStack;
  * @author Ddyer
  *
  */
-public class DictionaryHash extends Hashtable<String,Entry>
+public class DictionaryHash extends SimpleHashtable<ByteKey,Entry> // Hashtable<ByteKey,Entry>
 {	public int size  = 0;
-	public DictionaryHash(int x) { size = x; }
+	public DictionaryHash(int x) { super(x); }
 	public void removeFakes()
 	{	
 		int fakes=0;
 		int nonfakes=0;
-		for(Enumeration<String>k = keys(); k.hasMoreElements(); )
-		{	String name = k.nextElement();
+		for(Enumeration<ByteKey>k = keys(); k.hasMoreElements(); )
+		{	ByteKey name = k.nextElement();
 			Entry item = get(name);
-			if(item.order<=0)
+			if(item.getOrder()<=0)
 			{
 				remove(name);
 				if((name.length()<=3)||(name.length()>7)) 
@@ -60,11 +60,12 @@ public class DictionaryHash extends Hashtable<String,Entry>
 		for(Enumeration<Entry> de = elements(); de.hasMoreElements();)
 		 {
 	 		Entry e = de.nextElement();
-	 		if(e.order<vocabulary)
+	 		if(e.getOrder()<vocabulary)
 	 		{
-	 			entries.push(e.word);
+	 			entries.push(e.getString());
 	 		}
 		 }
 		return entries;
 	}
+
 }

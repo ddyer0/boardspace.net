@@ -839,7 +839,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
     {
     	if(e!=null)
     	{
-    		return(s.get(PrevWordMessage,e.word,e.getDefinition()));
+    		return(s.get(PrevWordMessage,e.getString(),e.getDefinition()));
     	}
     	return("");
     }

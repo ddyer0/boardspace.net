@@ -24,6 +24,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;
@@ -385,7 +386,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		int row = tok.intToken();
     		seed.push(getCell(col,row));
     	}
-    	HWord newword = new HWord(seed,m.word);
+    	HWord newword = new HWord(seed,ByteKey.create(m.word));
     	if(rejectCommon && commonWords.contains(newword))
     		{ m.isCommon = true;
     		}
@@ -415,10 +416,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	}
 
 	public HWord findWord(String w)
-	{	return words.find(w);
+	{	return words.find(ByteKey.create(w));
 	}
 	public HWord findCommonWord(String w)
-	{	return commonWords.find(w);
+	{	return commonWords.find(ByteKey.create(w));
 	}
 
     public boolean Execute(commonMove mm,replayMode replay)
@@ -481,7 +482,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
      * @param stack
      * @return
     */
- public boolean findWord(HoneyCell from,String word,CellStack stack)
+ public boolean findWord(HoneyCell from,ByteKey word,CellStack stack)
  {
  	sweep_counter++;
  	return findWordFrom(from,word,0,stack);
@@ -495,7 +496,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
   * @param stack
   * @return
   */
- private boolean findWordFrom(HoneyCell from,String word,int idx,CellStack stack)
+ private boolean findWordFrom(HoneyCell from,ByteKey word,int idx,CellStack stack)
  {
  	if(from.sweep_counter==sweep_counter) { return false; }
  	from.sweep_counter = sweep_counter;
@@ -528,7 +529,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  {
 	 for(HoneyCell c = allCells; c!=null; c=c.next)
 	    {
-		 if(findWord(c,word.word,null)) { return c; }
+		 if(findWord(c,word,null)) { return c; }
 	    }
 	 return null;
  }
@@ -547,12 +548,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  		{ DictionaryHash subdict = dictionary.getSubdictionary(wordlen);
  		  for(Enumeration<Entry>e = subdict.elements(); e.hasMoreElements();)
  		  {	Entry word = e.nextElement();
- 		  	if(word.order<robotVocabulary)
+ 		  	if(word.getOrder()<robotVocabulary)
  		  	{	HoneyCell c = findWord(word);
  		  		if(c!=null)
  		  		{	CellStack stack = new CellStack();
- 		    		findWord(c,word.word,stack);
- 		    		HWord neww = new HWord(stack,word.word);
+ 		    		findWord(c,word,stack);
+ 		    		HWord neww = new HWord(stack,word);
  		    		int ss = scoreWord(neww.seed); 
  		    		neww.points = ss;
  		    		all.pushNew(neww);

@@ -146,6 +146,11 @@ public static Object MakeInstance(String classname)
     		}
     else
     {
+    return MakeInstance(cl);
+    }
+}
+public static Object MakeInstance(Class<?> cl)
+{
     try {
     	synchronized (makeObject)
     	{
@@ -153,10 +158,9 @@ public static Object MakeInstance(String classname)
     	}
     }
     catch (Exception e)
-    {	throw G.Error("Makeinstance "+expname+":"+e.toString()); 
-    }}
+    {	throw G.Error("Makeinstance "+cl.getName()+":"+e.toString()); 
+    }
 }
-
 	static int color = 0;
 
 	/**

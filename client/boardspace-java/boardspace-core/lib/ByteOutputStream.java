@@ -20,8 +20,13 @@ public class ByteOutputStream
 {	private int size=0;
 	private int lim;
 	private byte data[];
+	private boolean fixedSize = false;
 	
 	public byte elementAt(int n) { return data[n]; }
+	
+	// these are for specialized usage with fixedSize, where we will cannabize rthe original buffer
+	public int getSize() { return size;}
+	public byte[] getBuffer() { return data; }
 	
 	public ByteOutputStream()
 	{
@@ -32,14 +37,23 @@ public class ByteOutputStream
 		lim = siz;
 		data = new byte[siz];
 	}
+	public ByteOutputStream(int siz,boolean fixed)
+	{
+		lim = siz;
+		fixedSize = fixed;
+		data = new byte[siz];
+	}
+	
 	private void expand()
 	{	if(size>=lim)
 		{	expand(lim*2+1);
 		}
 	}
 	private void expand(int newsiz)
-	{	if(lim<newsiz)
 		{
+		if(lim<newsiz)
+		{
+		if(fixedSize) { G.Error("capacity reached"); }
 		byte newdata[] = new byte[newsiz];
 		for(int i= 0; i< lim; i++)  { newdata[i] = data[i]; }
 		data = newdata;

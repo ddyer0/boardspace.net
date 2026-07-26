@@ -842,7 +842,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	if(gb.getCell(word.seed)==closestCell)
         	{	all.hitCode = SprintId.Definition;
         		all.hitObject = closestCell;
-        		all.setHelpText(s.get(GetDefinitionMessage,word.name));
+        		all.setHelpText(s.get(GetDefinitionMessage,word.name.getString()));
         		definitionCell = closestCell;
         	}
         	}
@@ -1009,7 +1009,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     			Entry e = dictionary.get(word.name);
     			if(e!=null)
     				{
-    				message.append(word.name);
+    				message.append(word.name.getString());
     				message.append(": ");
     				String def = e.getDefinition();
     				if(def!=null)

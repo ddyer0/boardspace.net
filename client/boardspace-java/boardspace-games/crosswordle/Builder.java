@@ -26,8 +26,10 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Stack;
 import java.util.zip.GZIPInputStream;
 
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;
@@ -365,7 +367,7 @@ public class Builder implements CrosswordleConstants
 	 }
 	 // not a general purpose comparison
 	 // target is known to be shorter than probe
-	 private int compareStrings(String target,String probe)
+	 private int compareStrings(ByteKey target,String probe)
 	 {
 		 int tlen = target.length();
 		 for(int i=0;i<tlen; i++)
@@ -379,7 +381,7 @@ public class Builder implements CrosswordleConstants
 	 }
 	 
 	 // binary search for a matching prefix
-	 private String findPrefixWord(String target,String []wordList)
+	 private ByteKey findPrefixWord(ByteKey target,String []wordList)
 	 {
 		 int min = 0;
 		 int max = wordList.length-1;
@@ -392,7 +394,7 @@ public class Builder implements CrosswordleConstants
 			 String probe = wordList[probeIdx];
 			 int direction = compareStrings(target,probe);
 			 if(direction==0) 
-			 	{ return probe; }
+			 	{ return ByteKey.create(probe); }
 			 if(direction<0) 
 			 	{ max = probeIdx; }
 			 else 
@@ -406,8 +408,8 @@ public class Builder implements CrosswordleConstants
 	 private boolean checkDownPossible(String wordlist[])
 	 {	char all[][] = grid;
 	 	for(int col=0,lim=all[0].length; col<lim;col++)
-	 	{	String word = getVerticalWord(all,col);
-	 		String target = findPrefixWord(word,getVerticalWordList());
+	 	{	ByteKey word = getVerticalWord(all,col);
+	 		ByteKey target = findPrefixWord(word,getVerticalWordList());
 	 		boolean ok = target!=null;
 	 		/**
 	 		boolean ok = findClosest
@@ -424,7 +426,7 @@ public class Builder implements CrosswordleConstants
 		return true;
 	 }
 	 
-	 private StringStack localDups = new StringStack();
+	 private Stack<ByteKey> localDups = new Stack<ByteKey>();
 	 // check that each of the vertical words is in the dictionary
 	 private boolean checkDownComplete()
 	 {	char all[][] = grid;
@@ -432,11 +434,11 @@ public class Builder implements CrosswordleConstants
 	 	//G.print(getGrid());
 	 	for(int col=0,lim=all[0].length; col<lim;col++)
 	 	{
-	 		String w = getVerticalWord(all,col);
-	 		if(dups.get(w)!=null || localDups.contains(w)) { return false; }
+	 		ByteKey w = getVerticalWord(all,col);
+	 		if(dups.get(w.getString())!=null || localDups.contains(w)) { return false; }
 	 		localDups.push(w);
 	 		Entry e = dictionary.get(w);
-	 		if((e==null) || (e.order>=vocabulary))
+	 		if((e==null) || (e.getOrder()>=vocabulary))
 	 		{ 	
 	 			//G.print("Step ",steps," col ",col,"\n",getGrid());
 	 			return false; 
@@ -470,23 +472,23 @@ public class Builder implements CrosswordleConstants
 		return true;
 	 }
 	 // get a vertical word in some column
-	 private String getVerticalWord(char all[][],int col)
+	 private ByteKey getVerticalWord(char all[][],int col)
 	 {	StringBuilder b = new StringBuilder();
 	 	for(int i=0,lim=all.length; i<lim; i++)
 	 	{	char c = all[i][col];
 	 		if(c!=0) {  b.append(c); }
 	 	}
-		return b.toString();
+		return ByteKey.create(b);
 	 }
 	 // get a vertical word in some column
-	 private String getHorizontalWord(char all[][],int row)
+	 private ByteKey getHorizontalWord(char all[][],int row)
 	 {	StringBuilder b = new StringBuilder();
 	 	char r[] = all[row];
 	 	for(char ch : r)
 	 	{
 	 		b.append(ch);
 	 	}
-		return b.toString();
+		return ByteKey.create(b);
 	 }
 	  
 	 static boolean definitionsLoaded = false;
@@ -565,14 +567,14 @@ public class Builder implements CrosswordleConstants
 			return puzzles.toArray();
 		}
 		private class freq implements Comparable<freq>{
-			String name;
+			ByteKey name;
 			int count;
 			boolean alist;
 			boolean blist;
 			public int compareTo(freq o) {
 				return count-o.count;
 			}
-			freq(String s,int c,boolean a) 
+			freq(ByteKey s,int c,boolean a) 
 				{ name=s; count=c;
 				  if(a) { alist=true; } else {blist=true; }
 				}
@@ -614,7 +616,7 @@ public class Builder implements CrosswordleConstants
 			}
 			saveResultToFile(new File(file),b.toString());
 		}
-		private void accumulateStats(Hashtable<String,freq> h, String w,boolean a)
+		private void accumulateStats(Hashtable<ByteKey,freq> h, ByteKey w,boolean a)
 		{	G.Assert(dictionary.get(w)!=null,"is a word");
 			freq old = h.get(w);
 			if(old==null)
@@ -627,7 +629,7 @@ public class Builder implements CrosswordleConstants
 				}
 		}
 		
-		private Hashtable<String,freq> h = new Hashtable<String,freq>();
+		private Hashtable<ByteKey,freq> h = new Hashtable<ByteKey,freq>();
 		@SuppressWarnings("unused")
 		private void wordStats(String puzzles[],int ncols,int nrows)
 		{	boolean isAlist = h.size()==0;
@@ -645,11 +647,11 @@ public class Builder implements CrosswordleConstants
 				}
 			}
 			int max = 0;
-			String winner = null;
+			ByteKey winner = null;
 			freq stor[] = new freq[h.size()];
 			int idx=0;
-			for(Enumeration<String> e = h.keys(); e.hasMoreElements();)
-			{	String w =e.nextElement();
+			for(Enumeration<ByteKey> e = h.keys(); e.hasMoreElements();)
+			{	ByteKey w =e.nextElement();
 				freq val = h.get(w);
 				int count = val.count;
 				stor[idx++] = val;

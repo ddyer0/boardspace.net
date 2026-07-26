@@ -436,7 +436,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             if not, then dispose of it */
             if (save_all_variations)
             {	commonMove ev[] = sn.cmoves();
-            	int nev = sn.next_move_index;
+            	int nev = sn.next_move_index();
             	commonMove cc = parent.current_move;
             	for(int i=0;i<nev;i++) 
             		{recordVariation(cc,ev[i]);
@@ -455,7 +455,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 parent.best_value = value_to_parent;
                 parent.principle_variation = sn;
                 parent.best_move = pcm;
-                parent.best_move_index = parent.next_move_index-1;
+                parent.best_move_index = parent.next_move_index()-1;
                 new_best_value = true;
             	}
           		else
@@ -541,7 +541,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             	sn.best_value = value_to_parent;
             	sn.principle_variation = null;
             	sn.best_move = cm;
-            	sn.best_move_index = sn.next_move_index-1;
+            	sn.best_move_index = sn.next_move_index()-1;
                 Do_Search_Cutoffs();
         		}
             }
@@ -605,7 +605,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 
         if (search_single)
         {
-            root_node.next_move_index =root_node.number_of_moves;
+            root_node.set_next_move_index(root_node.number_of_moves);
         }
         commonMove rmove = current_node.root_move;
         
@@ -701,7 +701,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {
             Search_Node ss = root_node;
             commonMove cm[] = ss.cmoves();
-            int nmoves = ss.all_terminals ? cm.length : ss.next_move_index;
+            int nmoves = ss.all_terminals ? cm.length : ss.next_move_index();
             G.Assert(nmoves > 0, "no moves were evaluated");
             double best = ss.best_move.evaluation();
             Sort.sort(cm,0,nmoves-1,false);	// sort the evaluated moves, standard sort

@@ -437,7 +437,7 @@ public class Builder implements CrosswordleConstants
 	 		if(dups.get(w)!=null || localDups.contains(w)) { return false; }
 	 		localDups.push(w);
 	 		Entry e = dictionary.get(w);
-	 		if((e==null) || (e.order>=vocabulary))
+	 		if((e==null) || (e.getOrder()>=vocabulary))
 	 		{ 	
 	 			//G.print("Step ",steps," col ",col,"\n",getGrid());
 	 			return false; 

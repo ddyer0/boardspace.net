@@ -273,7 +273,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
-    		Font f = FontManager.getFont(canvas.labelFont,ss);
+    		Font f = FontManager.getFont(canvas==null ? GC.getFont(gc) : canvas.labelFont,ss);
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = FontManager.getFontMetrics(f);

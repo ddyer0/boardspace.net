@@ -270,7 +270,7 @@ public class Slithermovespec
         	return G.concat(opname);
         	
         default:
-            throw G.Error("can't handle %s",this);
+            throw G.Error("can't handle op %s",op);
         }
     }
     /**

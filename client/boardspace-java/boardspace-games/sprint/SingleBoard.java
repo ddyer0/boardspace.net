@@ -24,6 +24,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.Entry;
 
@@ -805,7 +806,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
    	// 
    	// collect a word from a starting cell with a given direction
    	// 
-    private String collectWord(SprintCell from,int direction)
+    private ByteKey collectWord(SprintCell from,int direction)
     {
     	builder.setLength(0);
     	int n=0;
@@ -822,7 +823,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	}
     	// leave builder primed with the letters, so it can be reversed
     	//G.print("Collect from "+from+" "+direction+" "+builder.toString());
-    	return(n>1 ? builder.toString() : null);
+    	return(n>1 ?  ByteKey.create(builder) : null);
     }
  
     int wordMultiplier = 1;
@@ -908,7 +909,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     		else if(dir<lastDir)
     		{ 	int oppDir = dir+CELL_HALF_TURN;
     			
-    			String w = collectWord(c,oppDir);
+    			ByteKey w = collectWord(c,oppDir);
     			if(w!=null) 
     				{ Entry e = dictionary.get(w);		// this deliberately uses the unlimited dictionary
     				  Word word = new Word(c,w,oppDir);
