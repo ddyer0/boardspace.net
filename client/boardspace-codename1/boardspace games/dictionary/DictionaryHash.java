@@ -18,8 +18,8 @@ package dictionary;
 
 import java.util.Enumeration;
 
+import lib.BulkSimpleHashtable;
 import lib.G;
-import lib.SimpleHashtable;
 import lib.StringStack;
 
 @SuppressWarnings("serial")
@@ -28,7 +28,7 @@ import lib.StringStack;
  * @author Ddyer
  *
  */
-public class DictionaryHash extends SimpleHashtable<ByteKey,Entry> // Hashtable<ByteKey,Entry>
+public class DictionaryHash extends BulkSimpleHashtable<ByteKey,Entry> // Hashtable<ByteKey,Entry>
 {	public int size  = 0;
 	public DictionaryHash(int x) { super(x); }
 	public void removeFakes()

@@ -255,7 +255,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 	{	long l = letterMask;
 		if(l==0)
 			{	
-			l = letterMask = Dictionary.letterMask(l, name);
+			l = letterMask = ByteKey.calcMask(l, name);
 			}
 		return(l);
 	}
@@ -2501,7 +2501,7 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
  private int checkRow(WordStack saveWords,JumbulayaCell rack[],long letterMask,Word current)
  {	
 	 int total = 0;
-	 long rowMask = Dictionary.letterMask(letterMask, current.name);	// mask that includes the rack and the letters on the board
+	 long rowMask = ByteKey.calcMask(letterMask, current.name);	// mask that includes the rack and the letters on the board
 	 int minTiles = current.nTiles;
 	 int maxTiles = Math.min(NCOLS, current.name.length()+4);	// could add 2 tiles with 2 letters each
 	 Dictionary dict = Dictionary.getInstance();
@@ -2580,10 +2580,10 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 			JumbulayaChip ch = c.topChip();
 			if(ch!=null)
 			{	int exc = ch.extendedCharCode();
-				s = Dictionary.letterMask(s,(char)(exc&0xff));
+				s = ByteKey.calcMask(s,(char)(exc&0xff));
 				if(exc>0xff)
 				{
-					s = Dictionary.letterMask(s, (char)(exc>>8));
+					s = ByteKey.calcMask(s, (char)(exc>>8));
 				}				
 			}
 		}
@@ -2622,7 +2622,7 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 	 if(fromRow<=NROWS)
  	{
 	 char ch = word.charAt(fromLetter);
-	 long mask = Dictionary.letterMask(0, ch);
+	 long mask = ByteKey.calcMask(0, ch);
 	 Word currentWord = getCurrentWord(NROWS-fromRow+1);
 	 long wordMask = currentWord.letterMask();
 	 if((wordMask & mask)!=0)

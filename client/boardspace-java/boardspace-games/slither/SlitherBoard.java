@@ -20,6 +20,7 @@ package slither;
 import static slither.Slithermovespec.*;
 
 import java.awt.Color;
+
 import java.util.*;
 import lib.*;
 import lib.Random;

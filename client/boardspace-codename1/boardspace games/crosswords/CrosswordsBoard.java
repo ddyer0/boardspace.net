@@ -2464,7 +2464,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  		CrosswordsCell seed = fromPlaces.elementAt(lim);
  		CrosswordsChip top = seed.topChip();
  		char targetLetter = top.lcChar;
- 		total += checkCrossWords(subDictionary,rack,Dictionary.letterMask(letterMask,targetLetter),seed,targetLetter,-1,-1); 
+ 		total += checkCrossWords(subDictionary,rack,ByteKey.calcMask(letterMask,targetLetter),seed,targetLetter,-1,-1); 
  	}
  	return(total);
  }
@@ -2499,7 +2499,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 			CrosswordsChip ch = c.topChip();
 			if(ch!=null)
 			{	char letter = ch.lcChar;
-				s = Dictionary.letterMask(s,letter);
+				s = ByteKey.calcMask(s,letter);
 			}
 		}
 		return(s);
@@ -2528,7 +2528,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // then add complete crosswords from the rack using that letter.
  private int checkCapWords(CrosswordsCell wordHead,CrosswordsCell rack[],long letterMask,boolean atStart)
  {	int total = 0;
- 	ByteKey probe =ByteKey.MutableByteKey();
+ 	ByteKey probe =dictionary.createKey();
  	for(int lim=wordHead.wordHead.size()-1; lim>=0; lim--)
 	 {
 		 Word w = wordHead.wordHead.elementAt(lim);
@@ -2537,7 +2537,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		 {
 			 CrosswordsChip top = r.topChip();
 			 if(top!=null)
-			 {
+			 {	probe.reset();
 				 ByteKey newWord = atStart ? probe.setData(top.lcChar,name) : probe.setData(name,top.lcChar);
 				 Entry e = lookupRobotWord(newWord);
 				 if(e != null) 

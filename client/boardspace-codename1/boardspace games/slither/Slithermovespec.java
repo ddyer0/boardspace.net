@@ -211,7 +211,7 @@ public class Slithermovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

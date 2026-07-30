@@ -134,6 +134,7 @@ public enum SlitherState implements BoardState,SlitherConstants
 		{   {"Slither_family","Slither"},
 			{"Slither_variation","Slither"},
 			{"Slither-9_variation","Slither 9x board"},
+			{"Slither-11_variation","Slither 11x board"},
 			{"Slither-13_variation","Slither 13x board"},
 			{"Slither-19_variation","Slither 19x board"},
 		};

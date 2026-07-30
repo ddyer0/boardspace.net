@@ -2172,7 +2172,7 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 			WypsChip ch = c.topChip();
 			if(ch!=null)
 			{	char letter = ch.lcChar;
-				s = Dictionary.letterMask(s,letter);
+				s = ByteKey.calcMask(s,letter);
 			}
 		}
 		return(s);

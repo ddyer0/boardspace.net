@@ -28,7 +28,7 @@ public interface Entry extends ByteKey
 	public int getOrder();
 	public void setOrder(int loaded);
 	public long letterMask();
-	
+	public void setLetterMask(long v);
 	
 	public default int setDefinition(String words,ByteOutputStream f,ByteOutputStream d)
 	{
