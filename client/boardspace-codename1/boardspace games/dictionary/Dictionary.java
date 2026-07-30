@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package dictionary;
 
@@ -22,16 +22,18 @@ package dictionary;
  * 
  * */
 
+import bridge.Config;
 import bridge.File;
 import bridge.FileOutputStream;
 import com.codename1.io.BufferedInputStream;
 import com.codename1.io.gzip.GZIPInputStream;
+import com.codename1.io.gzip.GZIPOutputStream;
 
-import bridge.Config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
 
 import lib.ByteOutputStream;
 import lib.G;
@@ -55,20 +57,20 @@ public class Dictionary implements Config
 {  	
 	static final byte[] COMPRESSED_DICTIONARY_MAGIC = { 0x32, 0x12, 0x58, 0x4a};
 	
+	boolean bulkable() { return wordlen[1].bulkable();}
 	public static final int MAXLEN = 15;
 	
 	static DictionaryHash wordlen[];	// subdictionaries
 	static boolean loaded = false;		// true if loaded from the data file
 	static boolean definitionsLoaded = false;
 	static boolean definitionsAllLoaded = false;
-	static int definitionStringSize = 0;
-	static int definitionByteSize = 0;
+	static int rawSize = 0;
+	static int compressedSize = 0;
 	static int definitionCount = 0;
 	
 	static Dictionary instance = null;	// the canonical instance of the full sized dictionary
 	private int orderedSize;				// the break between formally ordered words and "all the rest" of rare words.
 	private int totalSize;				// the number of words in the dictionary
-	
 	/*
 	 * get a sub dictionary of words of a specified length
 	 * 
@@ -93,8 +95,7 @@ public class Dictionary implements Config
 	 * constructor, don't call, use Dictionary.getInstance()
 	 */
 	private Dictionary()
-	{
-
+	{	boolean saveBulk = false;
 		if(wordlen==null)
 		{
 		wordlen = new DictionaryHash[MAXLEN+1];
@@ -102,37 +103,60 @@ public class Dictionary implements Config
 		}
 		new Thread(new Runnable() 
 		{ public void run() { 
-		try {
-		load();
-		loadDefinitions();
-		}
-		catch (Throwable e)
-		{
-			Http.postError(this,"Loading Dictionary",e);
-		}
+			try {
+			if(bulkable() && useBulkLoad)
+			{
+				loadBulkDictionary(DictionaryDir+"bulkdictionary.gz");
+				Entry rep = get("reprise");
+				G.Assert(rep!=null,"dictionary looks corrupt");
+			}
+			else
+			{
+			load(); 
+			loadDefinitions();
+			checkForCorruption();
+			if(bulkable() && saveBulk)
+			{
+				saveBulkDictionary("bulkdictionary.gz");
+				loadBulkDictionary("bulkdictionary.gz");
+				checkForCorruption();
+			}
+			}}
+			catch (Throwable e)
+			{	G.print("Error loading dictionary "+e);
+				Http.postError(this,"Loading Dictionary",e);
+			}
 		}}).start();
+	}
+	
+	public void printStats()
+	{
+		for(int sz = 1; sz<wordlen.length; sz++)
+		{
+			G.print(sz,": ",wordlen[sz].statsSummary());
+		}
 	}
 	public void waitForLoaded() 
 	{	int n = 0;
 		while(!loaded) 
 			{ if(n>0) { G.print("Wait for loaded "+n); }
-			  G.doDelay(100); 
+			  G.doDelay(1000); 
 			  n++;
 			}
 		if(n>1)
-	{
+		{
 			G.print("done waiting");
-			}
+		}
 	}
 	public void waitForDefinitions()
 	{	int n = 0;
 		while(!definitionsAllLoaded) 
 			{ if(n>0) { G.print("Wait for definitions "+n); }
-			  G.doDelay(100);  
+			  G.doDelay(1000);  
 			  n++;
 			}
 		if(n>1)
-	{
+		{
 			G.print("done waiting");
 		}
 	}
@@ -146,24 +170,34 @@ public class Dictionary implements Config
 	}
 	public Entry get(String w)
 	{	waitForLoaded();
+		return getInternal(ByteKey.create(w));
+	}
+	public Entry get(ByteKey w)
+	{	waitForLoaded();
 		return getInternal(w);
 	}
 	public boolean isLoaded()
 	{
 		return loaded;
 	}
-	private Entry getInternal(String w)
+	private Entry getInternal(ByteKey w)
 	{
 		int len = w.length();
-		if(len>0 && len<=MAXLEN) { return(wordlen[len].get(w)) ; }
+		if(len>0 && len<=MAXLEN) 
+			{ Entry e = (wordlen[len].get(w)) ;
+			  return e;
+			}
 		return(null);
 	}
-	private void put(String w,Entry e)
-	{
+	private void put(ByteKey w,Entry e)
+	{	
 		int len = w.length();
-		if(len>=1 && len<=MAXLEN) { wordlen[len].put(w,e); }
+		if(len>=1 && len<=MAXLEN) 
+			{ wordlen[len].put(w,e); 
+			}
 		else { G.Error("Length out of range for %s", w); }
 	}
+	
 	private boolean isAlphabetic(int ch)
 	{
 		return (((ch>='A')&&(ch<='Z'))
@@ -171,22 +205,37 @@ public class Dictionary implements Config
 				|| ((ch>='a')&&(ch<='z')));
 	}
 	/**
-	 * read a token from the input stream
+	 * read a lower case token from the input stream.  res is a probe (mutable byte key)
 	 */
-	private String readToken(BufferedInputStream stream) throws IOException
-	{	StringBuilder b = new StringBuilder();
+	private ByteKey readToken(Utf8Reader stream,StringBuilder b,ByteKey res) throws IOException
+	{	
 		int ch = 0;
+		b.setLength(0);
 		while ( ((ch = stream.read())>0)
 				&& !isAlphabetic(ch)) {};
 		if(ch<0) { return(null); }
-		b.append((char)ch);
+		char chr = Character.toLowerCase((char)ch);
+		b.append(chr);
 		while(((ch = stream.read())>0)
-				&& isAlphabetic(ch)) { b.append((char)ch); }
+				&& isAlphabetic(ch)) { b.append(Character.toLowerCase((char)ch)); }
 		
-		return(b.toString().toLowerCase());
+		return(res.setData(b));
 
 	}
-
+	private ByteKey readToken(InputStream stream,ByteOutputStream b,ByteKey probe) throws IOException
+	{	
+		int ch = 0;
+		int index = b.getSize();
+		while ( ((ch = stream.read())>0)
+				&& !isAlphabetic(ch)) {};
+		if(ch<0) { return(null); }
+		char chr = Character.toLowerCase((char)ch);
+		b.write(chr);
+		while(((ch = stream.read())>0)
+				&& isAlphabetic(ch)) { b.write(Character.toLowerCase((char)ch)); }
+		int newIndex = b.getSize();
+		return(probe.setData(b.getBuffer(),index,newIndex-index));
+	}
 	/*
 	 * load the contents of a file. If extensions, load only the words
 	 * that are extensions of existing words.
@@ -220,38 +269,81 @@ public class Dictionary implements Config
 	@SuppressWarnings("unused")
 	private void loadDefinitions(Utf8Reader stream) throws IOException
 	{
-		String word = null;
 		G.print("loading definitions");
 		long loadtime = 0;	//  1374mS
 		long inctime = 0;
+		int targetSize = 1024*10;
+		int segments = 1;
 		ByteOutputStream def = new ByteOutputStream();
-		long now = G.nanoTime();
-		while( (word = stream.readToWhitespace(true))!=null)
-		{	
+		long now0 = G.nanoTime();
+		long now = now0;
+		int maxsize = 0;
+		ByteOutputStream verb = new ByteOutputStream();
+		boolean bulkable = bulkable();
+		//
+		// this is a specialized use of a custom byteoutput stream. 
+		// we make links to its actual data array as as fill it.
+		//
+		ByteOutputStream data = new ByteOutputStream(targetSize,!bulkable);
+		StringBuilder b = new StringBuilder();
+		Entry storageProbe = null;
+		ByteKey probe = createKey();
+		while( readToken(stream,b,probe)!=null)
+		{	if(bulkable) { data.reset(); }
+			else if( targetSize-data.getSize() < maxsize*2)
+			{
+			 maxsize = 0;
+			 long later = G.nanoTime();
+			 G.print("seg "+segments," @"+definitionCount," ",(later-now)/1000000,"mS");
+			 now = later;
+			 segments++;
+			 // discard the original data array and start a  new one.  
+			 data = new ByteOutputStream(targetSize,true);
+			}
+
 			stream.readBinaryLine(def);
-			Entry e = getInternal(word);
-			if(e==null)
-			{	G.print("Non word "+word);
+			// this is a careful dance - in onepass mode storageProbe is same as probe
+			Entry e = getInternal(probe);
+			if( e==null)
+			{	G.print("Non word "+probe);
+				Entry ee = getInternal(probe);
 			}
 			else 
-			{ 
-			  int size = e.setCompressedDefinition(def);
-			  definitionByteSize += size;
-			  definitionStringSize += def.size();
+			{ // this will make a definition that shares a pointer into the "data" actual buffer
+			  int size = e.setCompressedDefinition(def,verb,data);
+			  if(bulkable)
+			  	{ put(e,e); 
+			  	  if(!bulkable) { probe = storageProbe = createEntry(); }
+			  	}
+			  maxsize = Math.max(maxsize,size);
+			  compressedSize += size;
+			  rawSize += def.size();
 			  definitionCount++;
-			  
-			  //if(definitionCount%1000==0) { G.print("Defs "+definitionCount+" "+(loadtime/1000000));}
+
+			 if(false && definitionCount%1000==0)
+			 { 
+				  long later = G.nanoTime();
+				  long dif = (later-now);
+				  loadtime += dif;
+				  now = later;
+				 G.print("Defs "+definitionCount+" "+(loadtime/1000000));
+			 }
+
 			  //String redef = e.getDefinition();
 			  //G.Assert(def.equals(redef),"def mismatch\n%s\n%s",def,redef);
 			}
+			probe.reset();
 		}
 		long later = G.nanoTime();
 		  
-		long dif = (later-now);
+		long dif = (later-now0);
 		loadtime += dif;
-		G.print(G.format("loaded %d definitions, %smS string size %sK byte size %sK",
+		orderedSize = Math.max(orderedSize,definitionCount);
+		totalSize = orderedSize;
+		G.print(G.format("loaded %d definitions, %smS compressed size %sK raw size %sK %s segments",
 				definitionCount,(loadtime/1000000),
-				definitionStringSize/1024,definitionByteSize/1024));
+				compressedSize/1024,rawSize/1024,segments));
+		printStats();
 	}
 	/*
 	 * this is the simple version that loads the same file, but stores the definitions
@@ -263,9 +355,12 @@ public class Dictionary implements Config
 		String msg = null;
 		G.print("loading definitions");
 		long loadtime = 0;
+		ByteOutputStream f = new ByteOutputStream();
+		ByteOutputStream d = new ByteOutputStream();
+
 		while( (msg = stream.readLine())!=null)
 		{	int ind = msg.indexOf('\t');
-			String word = msg.substring(0,ind).toLowerCase();
+			ByteKey word = ByteKey.create(msg,0,ind,true);
 			String def = msg.substring(ind+1);
 			Entry e = getInternal(word);
 			if(e==null)
@@ -273,24 +368,27 @@ public class Dictionary implements Config
 			}
 			else 
 			{ long now = G.nanoTime();
-			  int size = e.setDefinition(def);
+			  int size = e.setDefinition(def,f,d);
 			  long later = G.nanoTime();
 			  loadtime += (later-now);
-			  definitionByteSize += size;
-			  definitionStringSize += def.length();
+			  compressedSize += size;
+			  rawSize += def.length();
 			  definitionCount++;
 			  //if(definitionCount%1000==0) { G.print("defs "+definitionCount+" "+(loadtime/1000000));}
 			  //String redef = e.getDefinition();
 			  //G.Assert(def.equals(redef),"def mismatch\n%s\n%s",def,redef);
 			}
 		}
-		G.print(G.format("loaded %d definitions, %smS, string size %s byte size %s",definitionCount,(loadtime/1000000),definitionStringSize,definitionByteSize));
+		G.print(G.format("loaded %d definitions, %smS, compressed size %s raw size %s",definitionCount,(loadtime/1000000)
+				,compressedSize,rawSize));
 	}
 	
 	public void loadDefinitionsAlways(String file)
 	{	
 		try {
 			InputStream rawStream = G.getResourceAsStream(file);
+			if(rawStream!=null)
+			{
 			BufferedInputStream stream = new BufferedInputStream(file.endsWith(".gz")
 							? new GZIPInputStream(rawStream)
 							: rawStream);
@@ -302,51 +400,86 @@ public class Dictionary implements Config
 											// loaded 279496 definitions, string size 12327815 byte size 8401986 3660mS,
 			 */
 			rawStream.close();
+			}
 		} catch (Throwable  e) {
 			Http.postError(this,"error reading "+file,e);
 		}
 	}
+	// everything is bulkable now, use shared because it doesn't create garbage on the way down 
+	public ByteKey createKey() { return new SharedByteKey(); }
+	public Entry createEntry() { return new SharedEntry(); }
+	public Entry createEntry(ByteKey k) { return new SharedEntry(k); }
+	public Entry createEntry(char letter) { return new SharedEntry(letter); }
+	public Entry createEntry(String key) { return new SharedEntry(key); }
 	
 	private int load(BufferedInputStream stream,boolean extensions,boolean inorder) throws IOException
 	{
-		String msg = null;
 		int loaded = 0;
 		int excluded = 0;
-		
+		int targetCapacity = 1024*10;
 		orderedSize = -1;
-		put("a",new Entry("a"));
-		while( (msg = readToken(stream))!=null)
-		{	if("---".equals(msg)) 
+		int segments = 1;
+		Entry ea = createEntry("a");
+		put(ea,ea);
+		boolean bulkable = bulkable();
+		ByteOutputStream builder = new ByteOutputStream(targetCapacity,bulkable);
+		ByteKey probe = createKey();
+		ByteKey eprobe = extensions ? createKey() : null;
+		ByteKey terminator = new BulkByteKey("---");
+		long now = G.nanoTime();
+		while( readToken(stream,builder,probe)!=null)
+		{	if(probe.equals(terminator)) 
 				{ orderedSize = loaded; 
 				}
 			else
-			if(getInternal(msg)==null)
+			if(getInternal(probe)==null)
 			{	if(extensions)
 					{
-					int len = msg.length();
+					int len = probe.length();
 					boolean keep = false;
 					for(int lim=len-2;!keep && lim>0;lim--)
 						{
-						if(getInternal(msg.substring(0,lim))!=null) 
+						eprobe.setData(probe,0,lim,false);
+						if(getInternal(eprobe)!=null) 
 							{ keep = true; 
 							}
-						if(getInternal(msg.substring(len-lim))!=null) 
+						eprobe.setData(probe,len-lim,len,false);
+						if(getInternal(eprobe)!=null) 
 							{ keep = true; }
 						}
-					if(keep) { put(msg,new Entry(msg)); loaded++; }
+					if(keep)
+					{
+						loaded++; 
+						Entry em = createEntry(probe);
+						em.setOrder(loaded); 
+						em.setLetterMask(em.calcMask());
+					  put(em,em); 
+					 
+					}
 					else { excluded++; }
 					}
 				else {
 					loaded++;
-					Entry e = new Entry(msg);
-					e.order = loaded; 
-					put(msg,e);
+					Entry e = createEntry(probe);
+					e.setOrder(loaded); 
+					e.setLetterMask(e.calcMask());
+					put(e,e);
 					}
 			}
-			else { G.print("Duplicate word "+msg); }
+			else { G.print("Duplicate word "+probe); }
+		 if(bulkable) { builder.reset(); }
+		 else if(targetCapacity-builder.getSize()<probe.length()*2)
+		 {
+			 builder = new ByteOutputStream(targetCapacity,true);
+			 long later = G.nanoTime();
+			 G.print("seg "+segments," @"+definitionCount," ",(later-now)/1000000,"mS");
+			 now = later;
+			 segments++;
+		 }
+		 probe.reset();
 		}
 		if(orderedSize<0) { orderedSize = loaded; }
-		G.print("loaded ",loaded," excluded ",excluded," ordered ",orderedSize);
+		G.print("loaded ",loaded," excluded ",excluded," ordered ",orderedSize," "+segments+" segments");
 		totalSize = loaded;
 		return(loaded);
 	}
@@ -362,11 +495,14 @@ public class Dictionary implements Config
 	{
 		try {
 			InputStream rawStream = G.getResourceAsStream(file);
+			if(rawStream!=null)
+			{
 			BufferedInputStream stream = new BufferedInputStream(file.endsWith(".gz")
 					? new GZIPInputStream(rawStream)
 					: rawStream);
 			loadOrder(stream);
 			rawStream.close();
+			}
 		}
 		catch (IOException  e) {
 			G.Error("error reading %s %s",file,e);
@@ -380,25 +516,48 @@ public class Dictionary implements Config
 		int excluded = 0;
 		int duplicates = 0;
 		int total = 0;
+		int targetSize = 1024*10;
+		int segments = 1;
 		int msize = size();
-			String msg = null;
-			while( (msg = readToken(stream))!=null)
-			{	Entry existing = getInternal(msg);
+		int maxlen = 0;
+		long now0 = G.nanoTime();
+		long now = now0;
+		boolean bulkable = bulkable();
+		ByteKey probe = createKey();
+		ByteOutputStream builder = new ByteOutputStream(targetSize,!bulkable);
+		while(readToken(stream,builder,probe)!=null)
+			{	probe.reset();
+				Entry existing = getInternal(probe);
 				total++;
+				maxlen = Math.max(probe.length(),maxlen);
 				if(existing!=null)
 				{
-					if(existing.order>0) 
+					if(existing.getOrder()>0) 
 						{ //G.print("Duplicate word "+msg+" was "+existing.order+" at "+loaded);
 						  duplicates++;
 						}
 					else
 					{ loaded++; 
-					  existing.order = loaded;
+					  existing.setOrder(loaded);
 					}
 				}
 				else { excluded++; }
+			if(bulkable) { builder.reset(); }
+			if(targetSize-builder.size()<maxlen*2)
+			{
+				builder = new ByteOutputStream(targetSize,true);
+				 long later = G.nanoTime();
+				 G.print("seg "+segments," @"+definitionCount," ",(later-now)/1000000,"mS");
+				 now = later;
+				segments++;
 			}
-		G.print("\nloaded "+loaded+" excluded "+excluded+ " duplicates "+duplicates+" total "+total+" size "+msize);
+			}
+		G.print("\nloaded "+loaded+" excluded "
+				+excluded+ " duplicates "
+				+duplicates+" total "
+				+total+" size "
+				+msize+" "
+				+segments+" segments");
 		return(loaded);
 	}
 	@SuppressWarnings("unused")
@@ -424,8 +583,8 @@ public class Dictionary implements Config
 			for(int i=0,lim=combined.size();i<lim;i++)
 			{
 				Entry e = combined.elementAt(i);
-				if(first && e.order<=0) { first=false; stream.println("---"); }
-				stream.println(e.word);
+				if(first && e.getOrder()<=0) { first=false; stream.println("---"); }
+				stream.println(e.getString());
 			}
 			stream.close();
 			fstream.close();
@@ -435,14 +594,82 @@ public class Dictionary implements Config
 			throw G.Error("output file "+file+" %s",e);
 		}
 	}
-
+	
+	private void saveBulkDictionary(String file)
+	{
+		try {
+			OutputStream stream = new FileOutputStream(new File(file));
+			GZIPOutputStream fstream = new GZIPOutputStream(stream);
+			for(DictionaryHash d : wordlen)
+			{
+				if(d!=null) { d.save(fstream); }
+			}
+			fstream.close();
+			stream.close();
+		}
+		catch (IOException e)
+		{
+			throw G.Error("output file "+file+" %s",e);
+		}
+	}
+	private void checkForCorruption()
+	{
+		try {
+		Entry reprise = get("reprise");		
+		G.Assert(reprise!=null,"dictionary looks corrupted, no reprise");
+		String def = reprise.getDefinition();
+		G.Assert("to take back by force, also REPRIZE".equals(def),"wrong definition for reprise");
+		}
+		catch (Throwable err)
+		{
+			G.Error("error using dictionary "+err);
+		}
+	}
+	private void loadBulkDictionary(String file) 
+	{	if(!definitionsLoaded)
+		{	
+		try {
+			long now = G.nanoTime();
+			InputStream stream = G.getResourceAsStream(file);// new FileInputStream(new File(file));
+			if(stream!=null)
+			{
+			GZIPInputStream fstream = new GZIPInputStream(stream);
+			orderedSize = 0;
+			for(DictionaryHash d : wordlen)
+			{
+				if(d!=null)
+					{ d.load(fstream); 
+					  orderedSize += d.size();
+					}
+			}
+			fstream.close();
+			stream.close();
+			long later = G.nanoTime();
+			String ss = G.format(" definitions %F seconds",(later-now)/1000000000.0);
+			G.print("Loaded bulk dictionary ",orderedSize,ss );
+			totalSize = orderedSize;
+			definitionsLoaded = loaded = true;
+			checkForCorruption();
+			}
+		}
+		catch (IOException e)
+		{
+			throw G.Error("input file "+file+" %s",e);
+		}
+		catch (Throwable e)
+		{
+			G.print("Unexpected error loading bulk dictionary "+e);
+		}
+		}
+	}
 	public void loadDefinitions()
 	{
 		if(!definitionsLoaded)
 		{
 			definitionsLoaded = true;
 			loadDefinitionsAlways(DictionaryDir+"worddefsa.txt.gz");
-			definitionsAllLoaded = true;
+			// in onepass mode, we also did the inital load
+			definitionsAllLoaded = loaded = true;
 		}	
 	}
 	public void load()
@@ -478,42 +705,13 @@ public class Dictionary implements Config
 	//removeFakes();
 	loaded = true;
 	G.print("final size is "+size());
+	
+
 	}
 		
 	}
 	 /*
 	  
 	  */ 
-/**
- *  this generates a bit mask 52 bits wide that indicate which letters
- * are used in a word.  The low order 26 bits indicate which letters
- * are present, the high order bits which letters are present more than
- * once.
- * @param from the mask so far
- * @param letter the new letter to add
- * @return the new composite mask
- */
-	 public static long letterMask(long from,char letter)
-	 {	if((letter>='A') && letter<='Z') { letter = (char)( letter ^ ('a'^'A')); }
-		 if((letter>='a')&&(letter<='z'))
-			{
-			 long bit = 1<<(letter-'a');
-			 if((bit&from)!=0) { bit=bit<<26; }
-			 return(bit|from);
-			}
-		 else { throw G.Error("char "+letter+" out of range");}
-	 }
-	 /** generates a letterMask for a base lettermask plus the
-	  * characters in a string.
-	  * @param from
-	  * @param letters
-	  * @return
-	  */
-	 public static long letterMask(long from,String letters)
-	 {	long val = from;
-	 	for(int i=0,lim=letters.length();i<lim; i++)
-	 	{ val = letterMask(val,letters.charAt(i)); 
-	 	}
-	 	return(val);
-	 }
+
 }

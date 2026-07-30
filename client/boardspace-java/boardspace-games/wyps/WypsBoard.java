@@ -21,6 +21,7 @@ import static wyps.Wypsmovespec.*;
 import java.awt.Color;
 import java.util.*;
 
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;
@@ -309,7 +310,7 @@ class WordStack extends OStack<Word>
 		boolean first = (size()==0);
 		if(first) 
 			{
-			Word w = new Word(c,e.word);
+			Word w = new Word(c,e.getString());
 			push(w);
 			w.entry = e;
 			w.points = score;
@@ -322,7 +323,7 @@ class WordStack extends OStack<Word>
 		else if(acceptScore(score))
 		{
 		trimToSize();
-		Word w = new Word(c,e.word);
+		Word w = new Word(c,e.getString());
 		push(w);
 		w.entry = e;
 		w.points = score;
@@ -376,7 +377,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		  b.append(comment);
 		  if(entry!=null)
 		  {	b.append(" Order:");
-		    b.append(entry.order);
+		    b.append(entry.getOrder());
 		  }
 	  }
 	  b.append(">");
@@ -423,11 +424,14 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 		// make sure the single letters are there
     	if(!privateDictionaryInited)
     	{
+    	ByteOutputStream f = new ByteOutputStream();
+    	ByteOutputStream d = new ByteOutputStream();
+
     	for(char code = 'a'; code<='z'; code++)
-    	{	String letter = ""+code;
+    	{	ByteKey letter = ByteKey.create(code);
     		if(dictionary.get(letter)==null)
-    		{	Entry e = new Entry(letter);
-    			e.setDefinition("Not really a word, but allowed");
+    		{	Entry e = dictionary.createEntry(letter);
+    			e.setDefinition("Not really a word, but allowed",f,d);
     			privateDictionaryInternal.put(letter,e);
     		}
     	}}
@@ -1422,7 +1426,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	if(sz==target.size()) 
     	{
     		// end of the line, we either have a word or not
-    		String word = builder.toString();
+    		ByteKey word = ByteKey.create(builder);
     		Entry e = dictionary.get(word);
     		if(sz==1 && e==null) { e = privateDictionary().get(word); }	// allow the single letters
     		if(e!=null)
@@ -2103,9 +2107,9 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 			nWordsTried++;
 			// first a quick check that the word doesn't contain any letters that aren't available
 			// this ought to filter out the vast majority of words
-			if(word.order<robotVocabulary								// within the vocabulary limit 
-					&& ((word.letterMask | letterMask)==letterMask)
-					&& canPlaceWord(word.word,template,rack))	// if the word doesn't require any letters not in the rack
+			if(word.getOrder()<robotVocabulary								// within the vocabulary limit 
+					&& ((word.letterMask() | letterMask)==letterMask)
+					&& canPlaceWord(word,template,rack))	// if the word doesn't require any letters not in the rack
 			{	nfound++;
 				candidateWords.recordCandidate("built",template,word);
 				if(!findAll) { return(nfound); }
@@ -2116,7 +2120,7 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 
  // return true if we can place this word on this template from this rack
  // we've already done the quick checks, but this is definitive
- private boolean canPlaceWord(String targetWord,Template template,WypsCell rack[])
+ private boolean canPlaceWord(ByteKey targetWord,Template template,WypsCell rack[])
  {	 WypsCell toCells[] = template.cells;
 	 long usedLetters = 0;
 	 boolean broken = false;
@@ -2168,7 +2172,7 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 			WypsChip ch = c.topChip();
 			if(ch!=null)
 			{	char letter = ch.lcChar;
-				s = Dictionary.letterMask(s,letter);
+				s = ByteKey.calcMask(s,letter);
 			}
 		}
 		return(s);

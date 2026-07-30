@@ -6811,5 +6811,18 @@ private void drawPlayerBoard(Graphics gc,
   {	if(!reviewMode() && simultaneousTurnsAllowed()) {}
   	else { super.updatePlayerTime(inc,p); }
   }
+  public void performAndTransmitAfter(commonMove m,boolean transmit,replayMode replay)
+  {	  // this was developed to help with a hard to find bug, which turned out not to be
+	  // so hard.  The intention is to pass information to all players about the state
+	  // we see.  Its not thoroughly debugged.
+	  /*
+	  StringStack debugInfo = mainBoard.debugEvents;
+	  for(int i=0;i<debugInfo.size();i++)
+	  {
+		  PerformAndTransmit("info "+debugInfo.elementAt(i),transmit,replay);
+	  }
+	*/  
+	  
+  }
 }
 

@@ -1855,7 +1855,7 @@ public static String expandClassName(String classname)
 	}
 
 	/** this is the hash checksum used by the server */
-    public static int hashChecksum(String str,int n)
+    public static int hashChecksum(CharSequence str,int n)
     {   int hash = 5381;
     	int c;
     	for (int i=0; i<n;i++)

@@ -173,8 +173,9 @@ public class Smaz {
     	return(true);
     }
 
-    public static byte[] compress(String inString) {
-    	return compress(inString.getBytes());
+    public static byte[] compress(String inString,ByteOutputStream verb,ByteOutputStream d)
+    {
+    	return compress(inString.getBytes(),verb,d);
     }
  /*
     public static byte[] compressOriginal(String inString) {
@@ -304,12 +305,11 @@ public class Smaz {
      * @param inString
      * @return byte array
      */
-    public static byte[] compress(byte[] inString) {
+    public static byte[] compress(byte[] inString,ByteOutputStream verb,ByteOutputStream output) {
         confirmOnlyAscii(inString);
 
-        ByteOutputStream verb = new ByteOutputStream();
-        ByteOutputStream output = new ByteOutputStream();
-
+        verb.reset();
+        output.reset();
         int limit = inString.length;
         int index = 0;
          // loop through input looking for matches in codebook
@@ -400,11 +400,9 @@ public class Smaz {
      * @param inString
      * @return byte array
      */
-    public static byte[] compress(ByteOutputStream inString) {
+    public static void compress(ByteOutputStream inString,ByteOutputStream verb,ByteOutputStream output) {
 
-        ByteOutputStream verb = new ByteOutputStream();
-        ByteOutputStream output = new ByteOutputStream();
-
+        verb.reset();
         int limit = inString.size();
         int index = 0;
          // loop through input looking for matches in codebook
@@ -486,7 +484,6 @@ public class Smaz {
             }
 
         }
-        return output.toByteArray();
     }
 
 
@@ -514,16 +511,16 @@ public class Smaz {
      * @return decompressed String
      * @see Smaz#compress(String)
      */
-    public static String decompress(byte[] strBytes) {
+    public static String decompress(byte[] strBytes,int index,int strlen) {
         StringBuilder out = new StringBuilder();
-        for (int i = 0; i < strBytes.length; i++) {
-            char b = (char) (0xFF & strBytes[i]);
+        for (int i = 0; i < strlen; i++) {
+            char b = (char) (0xFF & strBytes[index+i]);
             if (b == 254) {
-                out.append((char) strBytes[++i]);
+                out.append((char) strBytes[index + ++i]);
             } else if (b == 255) {
-                byte length = strBytes[++i];
+                byte length = strBytes[index + ++i];
                 for (int j = 1; j <= length; j++) {
-                    out.append((char) strBytes[i + j]);
+                    out.append((char) strBytes[index + i + j]);
                 }
                 i += length;
             } else {

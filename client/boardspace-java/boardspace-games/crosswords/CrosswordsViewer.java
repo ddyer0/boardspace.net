@@ -1015,7 +1015,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	if(!resolve && (word.seed==cc))
         	{	all.hitCode = CrosswordsId.Definition;
         		all.hitObject = cc;
-        		all.setHelpText(s.get(GetDefinitionMessage,word.name));
+        		all.setHelpText(s.get(GetDefinitionMessage,word.name.getString()));
         		definitionCell = cc;
         	}
         	}
@@ -1080,7 +1080,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     			Entry e = dictionary.get(word.name);
     			if(e!=null)
     				{
-    				message.append(word.name);
+    				message.append(word.name.getString());
     				message.append(": ");
     				String def = e.getDefinition();
     				if(def!=null)

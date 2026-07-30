@@ -146,7 +146,7 @@ public abstract class commonCanvas extends exCanvas
 	public static final String CARD_SHUFFLE = SOUNDPATH + "CardShuffle"+ Config.SoundFormat;
 	
 	private String soundNames[] = {
-			light_drop,heavy_drop,diceSoundName,scrape,swish,clockSound,beepBeepSoundName,
+			light_drop,heavy_drop,scrape,swish,clockSound,beepBeepSoundName,
 			doorBell,CARD_SHUFFLE,hurrySound
 	};
 	public static final String TimeExpiredMessage = "Time has expired for #1";
@@ -4817,6 +4817,8 @@ public abstract class commonCanvas extends exCanvas
     	return repeatedPositions.checkForRepetition(bd,m);
     }
     
+    public void performAndTransmitAfter(commonMove m,boolean transmit,replayMode replay) {}
+    
     /**
      * perform and optionally transmit a move, return true if ok.  Note, it's tempting
      * to do any "auto move" that is needed in the continuation of this method, but don't.
@@ -4909,6 +4911,7 @@ public abstract class commonCanvas extends exCanvas
                 addEvent(str);
             }
             if((replay==replayMode.Live) && playerChanging()) { playTurnChangeSounds(); }
+            performAndTransmitAfter(m,transmit,replay);
             return (true);
         }
         return (false);

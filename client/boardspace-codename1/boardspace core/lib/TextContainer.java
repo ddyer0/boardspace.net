@@ -17,7 +17,6 @@
 package lib;
 
 
-import com.codename1.ui.Display;
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;

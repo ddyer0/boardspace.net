@@ -16,6 +16,7 @@
  */
 package sprint;
 
+import dictionary.ByteKey;
 import dictionary.Entry;
 import lib.OStack;
 
@@ -62,13 +63,13 @@ public class WordStack extends OStack<Word>
 	}
 	// record a candidate word if it is a plausible candidate.
 	// trim the active list to the prescribed size
-	public Word recordCandidate(String message,SprintCell c,String s,int direction,int score,Entry e)
+	public Word recordCandidate(String message,SprintCell c,ByteKey s,int direction,int score,Entry e)
 	{	if(score>=bestScore*threshold && score>leastScore)
 		{
 		for(int lim=size()-1;lim>=0;lim--)
 		{
 			Word entry = elementAt(lim);
-			if(entry.name.equals(e.word) && entry.seed==c) 
+			if(entry.name.equals(e) && entry.seed==c) 
 			{
 				return(null);
 			}

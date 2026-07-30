@@ -266,7 +266,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     private boolean GameOver() { return((v!=null)&&v.GameOver()); }
     
-   
     private String fileNameString()
     {	StringBuilder str = new StringBuilder();
     	if(tournamentMode)
@@ -2308,8 +2307,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         for (int i = 0; i < m; i++)
         {	
-        	JMenuItem mm = choices.getItem(i);
-        	if(mm!=null) { mm.addItemListener(deferredEvents); }
+        	choices.getItem(i).addItemListener(deferredEvents);
         }
 
         return (choices);

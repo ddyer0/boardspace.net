@@ -183,21 +183,41 @@ public class sgf_property
         String val = this.value.toString();
         printBracketedString(val,out);
     }
-    public static String bracketedString(String str)
-    {	String val = "";
+    public static boolean needsBracket(String str)
+    {
     	for(int i=0,len=str.length(); i<len; i++)
     	{	char ch = str.charAt(i);
     		switch(ch)
     		{
     		case '\\': 
     		case ']':
-    		case '[': val += '\\';
-				//$FALL-THROUGH$
-			default: val += ch;
+    		case '[':
+				 return true;
+			default: break;
+    		}
+    	}
+    	return false;
+    }
+    
+    public static String bracketedString(String str)
+    {	if(needsBracket(str))
+    	{
+    	StringBuilder val = new StringBuilder();
+    	for(int i=0,len=str.length(); i<len; i++)
+    	{	char ch = str.charAt(i);
+    		switch(ch)
+    		{
+    		case '\\': 
+    		case ']':
+    		case '[': val.append('\\');
+			default: val.append(ch);
       		}
     	}
-    	return(val);
+    	return(val.toString());
     }
+    	return str;
+    }
+    
     public static void printBracketedString(String val,PrintStream out)
     {
         out.print("[");

@@ -27,7 +27,7 @@ import online.game.*;
 import com.codename1.ui.Font;
 
 import lib.ExtendedHashtable;
-public class Wypsmovespec extends commonMPMove implements WypsConstants
+public class Wypsmovespec extends commonMove implements WypsConstants
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static final int MOVE_PICK = 204; // pick a chip from a pool
@@ -279,7 +279,7 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

@@ -73,11 +73,13 @@ public class CrosswordsCell extends stackCell<CrosswordsCell,CrosswordsChip>
 	public void reInit()
 	{	super.reInit();
 		isFixed = false;
+		wordHead = null;
 	}
 	public void copyFrom(CrosswordsCell other)
 	{
 		super.copyFrom(other);
 		isFixed = other.isFixed;
+		wordHead = other.wordHead;
 	}
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips

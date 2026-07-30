@@ -44,6 +44,7 @@ public interface Config extends CommonConfig
    static final String feedbackUrl = "https://boardspace.net/cgi-bin/feedback.cgi";
    // files no longer needed, but which might still be in the online java/appdata/ folder
    
+   static final boolean useBulkLoad = true;
    static final String[] BlacklistedDataFiles = {""};
    
    static final String DictionaryDir = "/dictionary/words/";

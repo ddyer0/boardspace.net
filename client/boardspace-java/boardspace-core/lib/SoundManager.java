@@ -55,7 +55,11 @@ public class SoundManager implements Runnable
 	            		  synchronized(this) { wait(); }
 	            		}
 	            		else 
-	            		{ synchronized (this) { wait(Math.max(1, delays[readPtr]-now)); }};
+	            		{ synchronized (this) 
+	            			{ long time = delays[readPtr]-now;
+	            			  wait(Math.max(1,time ));
+	            			}
+	            		};
 	            	now = G.Date();
 	            }
 	        }

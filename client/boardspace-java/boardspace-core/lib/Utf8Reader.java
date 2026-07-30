@@ -32,7 +32,7 @@ import java.io.Reader;
  * @author Ddyer
  *
  */
-public class Utf8Reader extends Reader
+public class Utf8Reader extends Reader 
 {	InputStream stream;
 	byte in[] = new byte[1024];
 	int offset = 0;
@@ -157,10 +157,10 @@ public class Utf8Reader extends Reader
 		return(len);	
 	}
 	
-	StringBuffer out = null;
+	StringBuilder out = null;
 	public String readLine() throws IOException
 	{	readline = true;
-		if(out==null) { out = new StringBuffer(); } else { out.setLength(0); }
+		if(out==null) { out = new StringBuilder(); } else { out.setLength(0); }
 		int ch;
 		charn = 0;
 		errs = 0;
@@ -197,21 +197,27 @@ public class Utf8Reader extends Reader
 	// and return the next word as a string
 	//
 	public String readToWhitespace(boolean lowercase) throws IOException
+	{	
+		if(out==null) { out = new StringBuilder(); } 
+		StringBuilder o = readToWhitespace(lowercase,out);
+		return o==null ? null : o.toString();
+	}
+	public StringBuilder readToWhitespace(boolean lowercase,StringBuilder buf)  throws IOException
 	{	readline = true;
-		if(out==null) { out = new StringBuffer(); } else { out.setLength(0); }
 		int ch;
 		charn = 0;
 		errs = 0;
+		buf.setLength(0);
 		startOfLineOffset = offset;
-		while (( (ch=getCharCode())>=0) && (ch!=' ') && (ch!='\t') && (ch!='\n') && (ch!='\r'))
-		{	if(lowercase && ch>='A' && ch<='Z') { ch=ch+('a'-'A'); }
-			out.append((char)ch);
+		while (( (ch=getCharCode())>=0) && !Character.isWhitespace((char)ch))
+		{	if(lowercase) { ch=Character.toLowerCase((char)ch); }
+			buf.append((char)ch);
 			charn++;
 		}
 		if(ch=='\r') { ch = getCharCode(); if(ch!='\n') { peekByte = ch; }}
 		if(charn==0) { return(null); }
 		linen++;
-		return(out.toString());
+		return(buf);
 	}
 	// 
 	// read an ascii file up to the next end of line

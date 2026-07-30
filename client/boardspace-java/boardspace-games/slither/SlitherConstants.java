@@ -59,8 +59,6 @@ public enum SlitherState implements BoardState,SlitherConstants
 	Pass(StateRole.Play,PassState,true,true),
 	Gameover(StateRole.GameOver,GameOverStateDescription,false,false),
 	Confirm(StateRole.Confirm,ConfirmStateDescription,true,true),
-	ConfirmSwap(StateRole.Confirm,ConfirmSwapDescription,true,false),
-	PlayOrSwap(StateRole.Other,PlayOrSwapState,false,false),
 	PlayOrSlide(StateRole.Play,PlayOrSlideState,false,false),
 	SlideFix(StateRole.Play,SlideFixState,false,false),
 	SlideBeforeDrop(StateRole.Play,SlideOrDoneState,true,true),
@@ -89,6 +87,7 @@ public enum SlitherState implements BoardState,SlitherConstants
  enum SlitherVariation
     {
     	slither("slither-9",9),
+    	slither_11("slither-11",11),
 	 	slither_13("slither-13",13),
 	 	slither_19("slither-19",19);
     	String name ;
@@ -135,6 +134,7 @@ public enum SlitherState implements BoardState,SlitherConstants
 		{   {"Slither_family","Slither"},
 			{"Slither_variation","Slither"},
 			{"Slither-9_variation","Slither 9x board"},
+			{"Slither-11_variation","Slither 11x board"},
 			{"Slither-13_variation","Slither 13x board"},
 			{"Slither-19_variation","Slither 19x board"},
 		};

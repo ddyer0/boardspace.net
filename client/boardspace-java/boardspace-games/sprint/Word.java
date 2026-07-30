@@ -16,6 +16,7 @@
  */
 package sprint;
 
+import dictionary.ByteKey;
 import dictionary.Entry;
 import lib.CompareTo;
 import lib.G;
@@ -32,7 +33,7 @@ import lib.StackIterator;
  */
 public class Word implements StackIterator<Word>,CompareTo<Word>
 {
-	String name;			// the actual word
+	ByteKey name;			// the actual word
 	SprintCell seed;	// starting point
 	int direction=-1;		// scan direction
 	int points=-1;			// the value of the word when played
@@ -41,7 +42,7 @@ public class Word implements StackIterator<Word>,CompareTo<Word>
 	public String toString() 
 	{ StringBuilder b = new StringBuilder();
 	  b.append("<word ");
-	  b.append(name);
+	  b.append(name.getString());
 	  b.append(" ");
 	  b.append(seed.col);
 	  b.append(seed.row);
@@ -52,7 +53,7 @@ public class Word implements StackIterator<Word>,CompareTo<Word>
 		  b.append(points);
 		  if(entry!=null)
 		  {	b.append(" Order:");
-		    b.append(entry.order);
+		    b.append(entry.getOrder());
 		  }
 	  }
 	  b.append(">");
@@ -86,7 +87,7 @@ public class Word implements StackIterator<Word>,CompareTo<Word>
 		}
 		return(false);
 	}
-	public Word(SprintCell s, String n, int di)
+	public Word(SprintCell s, ByteKey n, int di)
 	{
 		seed = s;
 		name = n;

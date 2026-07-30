@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,10 +12,12 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package online.search;
 
+
+import java.util.concurrent.atomic.AtomicInteger;
 import lib.*;
 import online.game.*;
 
@@ -25,7 +27,11 @@ public class Search_Node implements Constants,Opcodes
 {	commonMove root_move;		// the move that this node corresponds to
     public Search_Node predecessor;
     public commonMove theNullMove=null;
-    Search_Node successor;
+
+    // cosmetic/progress-reporting only (feeds PercentDone()); benign last-writer-wins
+    // race under a shared tree, volatile only for visibility, not ordering.
+    volatile Search_Node successor;
+
     Search_Node principle_variation;
     void setPV(Search_Node t) 
     {         principle_variation = t; 
@@ -34,24 +40,67 @@ public class Search_Node implements Constants,Opcodes
     private commonMove cmoves[];	// converted to an array of commonMove
     boolean some_terminals = false;		// some are depth limited or gameover
     boolean all_terminals = false;		// all are depth limited or gameover
-    int next_move_index;			// the index at which the next move will start
+
+    // lock-free cursor: multiple worker threads under a shared search tree can call
+    // next_candidate_move() on the same node concurrently. A plain int with post-increment
+    // was a classic lost-update race (two threads read the same index before either
+    // increments). AtomicIntegerx.getAndIncrement() gives each caller a distinct index
+    // with no lock.
+    private final AtomicInteger next_move_index_a = new AtomicInteger(0);
+    public int next_move_index() { return next_move_index_a.intValue(); }
+    public void set_next_move_index(int v) { next_move_index_a.set(v); }
+    
     int number_of_moves;			// the number of moves in cmoves
     int prepare_clock = 0;			// search clock at which this node was prepared
+
     // note, number_of_moves may be less than cmoves.length
+
+    // NOTE: under a shared search tree, multiple worker threads can each pull a
+    // different move from this same node via next_candidate_move(). A single shared
+    // "current_move" field can't mean "the move I am evaluating" once that happens --
+    // it will just hold whichever thread wrote last. Treat this as informational/
+    // debugging only; if evaluation logic needs to know which move a given worker is
+    // handling, that value should be carried as a local/return value in the caller,
+    // not read back from this field.
     public commonMove current_move;	// the move being evaluated now
-    
-    commonMove best_move;		// the best move so far
-    double best_value;			// the value of best_move
-    int best_move_index;		// the index at which the current best move was found
-    // note, best_move_index may not point to best move any more, if cmoves has
-    // been resorted. It's only for documentation of the search process.
-        
-    Stop_Reason stop = Stop_Reason.Dont_Stop;
+
+    // best_move / best_value / best_move_index: written exactly once per node by
+    // whichever single thread's PrepareNode() call wins the "prepared" race (the lock
+    // there already guarantees only one thread's writes ever land), and -- per
+    // confirmation -- only read by anyone (killer heuristics, reporting, etc.) after
+    // all parallel search threads have already terminated (joined/completed). No
+    // concurrent writer + no concurrent reader means no torn-read hazard, so these
+    // are plain fields again: no volatile, no bundling, no accessor-method API change
+    // needed on callers. This is only sound if "terminated" is established through a
+    // real Java synchronization action (Thread.join(), Future.get(),
+    // ExecutorService.awaitTermination(), CountDownLatch.await(), etc.) -- any of
+    // those give the required happens-before edge for these plain writes to become
+    // visible; an ad-hoc polled flag would not.
+    commonMove best_move;
+    double best_value;
+    int best_move_index;
+
+    // volatile: this is a cross-thread abort signal. Without volatile there's no
+    // guarantee a worker spinning/polling this field ever observes another thread's
+    // write in a timely way (or at all).
+    volatile Stop_Reason stop = Stop_Reason.Dont_Stop;
+
     double i_can_get = -INFINITY;
     double he_can_get = -INFINITY;
 
     Search_Driver search_driver;
-    private boolean prepared = false;	// if true the move list has been asked for
+
+    // volatile + double-checked init: previously a plain boolean with an unsynchronized
+    // check-then-act in next_candidate_move()/cmoves(). Two threads could both observe
+    // "false" and both run PrepareNode() concurrently, double-calling into the robot
+    // and stomping on vmoves/cmoves/number_of_moves/best_*. Just as importantly, the
+    // original code set this flag to true as the FIRST line of PrepareNode(), before
+    // any of those fields were populated -- so even with synchronization added naively,
+    // a second thread could see prepared==true and read half-initialized state. The
+    // flag is now set last, after every field it guards has been written, and the
+    // volatile + synchronized combination gives full happens-before: once a thread
+    // observes prepared==true, it is guaranteed to see all the writes that preceded it.
+    private volatile boolean prepared = false;
     private int level = 0;
 
     public Search_Node(Search_Driver sd, Search_Node parent,commonMove cm)
@@ -61,19 +110,24 @@ public class Search_Node implements Constants,Opcodes
         if(parent!=null) { level = parent.level+1; }
     }
     public String toString()
-    { return("<Search_Node "+level+", "+next_move_index+" of "+number_of_moves+" "+current_move+">");
+    { return("<Search_Node "+level+", "+next_move_index_a.get()+" of "+number_of_moves+" "+current_move+">");
     }
 
     public commonMove[] cmoves()	// fetch the full list of moves
-    {	if(!prepared) { PrepareNode(); }
+    {	if(!prepared)
+    	{
+    		synchronized(this)
+    		{
+    			if(!prepared) { PrepareNode(); }
+    		}
+    	}
       	return(cmoves);
     }
     public commonMove next_candidate_move()	// get the current move
     {
-    	if (!prepared)  {   PrepareNode();   }
-    	commonMove ccm = ((number_of_moves>0)&&(next_move_index<number_of_moves))
-    				? cmoves[next_move_index++] 
-    				: null;
+    	commonMove[] mv = cmoves();	// ensures PrepareNode() has run (see cmoves())
+    	int idx = (number_of_moves>0) ? next_move_index_a.getAndIncrement() : -1;
+    	commonMove ccm = (idx>=0 && idx<number_of_moves) ? mv[idx] : null;
     	current_move = ccm;
     	return(ccm);
     }
@@ -111,7 +165,7 @@ public class Search_Node implements Constants,Opcodes
     	if(pv2!=null)
     	{
     	commonMove emoves[] = pv2.cmoves();
-    	int nemoves = pv2.next_move_index;
+    	int nemoves = pv2.next_move_index_a.get();
     	for(int i=0;i<nemoves;i++)
     	{	commonMove ct = emoves[i];
     		if(ct.Same_Move_P(mm))
@@ -123,7 +177,8 @@ public class Search_Node implements Constants,Opcodes
     }
     public void PrepareNode()
     {
-        prepared = true;
+        // NOTE: "prepared" is now set at the END of this method, after every field
+        // below has been written -- see the field comment on "prepared" above.
 
         RobotProtocol rr = search_driver.robot;
         vmoves=null;
@@ -167,11 +222,12 @@ public class Search_Node implements Constants,Opcodes
             commonMove bm = cmoves[0];;
             G.Assert(bm.player != -1, "player must be set in %s",bm);
 
-            if (predecessor != null && predecessor.best_move!=null)
+            commonMove predBest = (predecessor!=null) ? predecessor.best_move : null;
+            if (predecessor != null && predBest!=null)
             {
                 predecessor.successor = this;
                 // transfer the alpha-beta information
-                if (bm.player == predecessor.best_move.player)
+                if (bm.player == predBest.player)
                 {
                     i_can_get = predecessor.i_can_get;
                     he_can_get = predecessor.he_can_get;
@@ -198,14 +254,28 @@ public class Search_Node implements Constants,Opcodes
                 best_value = -(predecessor.current_move.evaluation()); /* game is over */
             }
         }
+
+        prepared = true;	// published last: guarantees happens-before for every write above
     }
 
   
     // old_node contains some evaluated positions.  Presort
     // the current node so similar nodes have the same ordinal position
+    //
+    // TODO(concurrency): this reorders old_node's cmoves array in place (Sort.sort)
+    // and reorders this node's cmoves via swaps in promote_to_position(). Under a
+    // shared tree, if any worker thread may already be calling next_candidate_move()
+    // against either node (reading cmoves[idx] by position) while this runs, an
+    // in-place reorder racing against index-based consumption can hand out a move
+    // twice or skip one outright -- the index and the array contents would silently
+    // disagree. Fixing the fields in this class does not address this: it needs a
+    // scheduling-order guarantee from Search_Driver (e.g. presorting only happens
+    // during a single-threaded setup phase strictly before workers are dispatched
+    // against these nodes), or this method needs to hold a lock that
+    // next_candidate_move() also respects.
     void Presort_Search_Nodes(Search_Node old_node)
     {	commonMove em[] = old_node.cmoves();
-    	int nem = old_node.next_move_index;
+    	int nem = old_node.next_move_index_a.get();
     	if(nem>0)
     	{
     	Sort.sort(em,0,nem-1,true);	// alt sort, puts terminal nodes first
@@ -259,7 +329,7 @@ public class Search_Node implements Constants,Opcodes
     double PercentDone()
     {
         double nm = number_of_moves;
-        int nmi = next_move_index;
+        int nmi = next_move_index_a.get();
         Search_Node succ = successor;
         if ((nm > 0)&&(nmi>0))
         {

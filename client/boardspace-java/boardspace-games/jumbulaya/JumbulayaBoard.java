@@ -24,6 +24,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
+import dictionary.ByteKey;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;
@@ -150,7 +151,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 		  b.append(points);
 		  if(entry!=null)
 		  {	b.append(" Order:");
-		    b.append(entry.order);
+		    b.append(entry.getOrder());
 		  }
 	  }
 	  b.append(">");
@@ -254,7 +255,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 	{	long l = letterMask;
 		if(l==0)
 			{	
-			l = letterMask = Dictionary.letterMask(l, name);
+			l = letterMask = ByteKey.calcMask(l, name);
 			}
 		return(l);
 	}
@@ -1482,10 +1483,10 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     			else { c=c.exitTo(CELL_RIGHT); }
     		}}
     	
-    	String name = b.toString().toLowerCase();
+    	ByteKey name = ByteKey.create(b,true);
     	if((Word.jumbulayaScore(ntiles)>0)
     			&& Dictionary.getInstance().get(name)!=null)
-    	{	return(new Word(cells,name));
+    	{	return(new Word(cells,name.getString()));
     	}
     	return(null);
     }
@@ -2500,7 +2501,7 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
  private int checkRow(WordStack saveWords,JumbulayaCell rack[],long letterMask,Word current)
  {	
 	 int total = 0;
-	 long rowMask = Dictionary.letterMask(letterMask, current.name);	// mask that includes the rack and the letters on the board
+	 long rowMask = ByteKey.calcMask(letterMask, current.name);	// mask that includes the rack and the letters on the board
 	 int minTiles = current.nTiles;
 	 int maxTiles = Math.min(NCOLS, current.name.length()+4);	// could add 2 tiles with 2 letters each
 	 Dictionary dict = Dictionary.getInstance();
@@ -2512,9 +2513,9 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 		 for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
 		 {
 			 Entry word = words.nextElement();
-			 if(word.order<robotVocabulary								// within the vocabulary limit 
-				&& ((word.letterMask & ( letterMask|rowMask))==word.letterMask))
-			 {	String targetWord = word.word;
+			 if(word.getOrder()<robotVocabulary								// within the vocabulary limit 
+				&& ((word.letterMask() & ( letterMask|rowMask))==word.letterMask()))
+			 {	String targetWord = word.getString();
 			 	{
 				 Word placed = testFromRack(current,rack,targetWord);
 				 if((placed!=null)
@@ -2579,10 +2580,10 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 			JumbulayaChip ch = c.topChip();
 			if(ch!=null)
 			{	int exc = ch.extendedCharCode();
-				s = Dictionary.letterMask(s,(char)(exc&0xff));
+				s = ByteKey.calcMask(s,(char)(exc&0xff));
 				if(exc>0xff)
 				{
-					s = Dictionary.letterMask(s, (char)(exc>>8));
+					s = ByteKey.calcMask(s, (char)(exc>>8));
 				}				
 			}
 		}
@@ -2616,12 +2617,12 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 	 }
 	 return(null);
  }
- private boolean placeJumbulaya(String word,int wordLen,int fromRow,int fromLetter,int matches,CellStack path)
+ private boolean placeJumbulaya(ByteKey word,int wordLen,int fromRow,int fromLetter,int matches,CellStack path)
  {
 	 if(fromRow<=NROWS)
  	{
 	 char ch = word.charAt(fromLetter);
-	 long mask = Dictionary.letterMask(0, ch);
+	 long mask = ByteKey.calcMask(0, ch);
 	 Word currentWord = getCurrentWord(NROWS-fromRow+1);
 	 long wordMask = currentWord.letterMask();
 	 if((wordMask & mask)!=0)
@@ -2645,13 +2646,13 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
  }
  
  private void checkJumbulayas(WordStack candidateWords,Entry entry,CellStack path,boolean onlyIfWinning)
- {	 String name = entry.word;
+ {	 ByteKey name = entry;
  	 path.clear();
 	 boolean plausible = placeJumbulaya(name,name.length(),1,0,0,path);
 	 if(plausible)
 	 {	CellStack cp = new CellStack();
 		cp.copyFrom(path);
-		Word word = new Word(cp,name);
+		Word word = new Word(cp,name.getString());
 		int score =  word.jumbulayaScore()+staticEval(whoseTurn);
 		if(!onlyIfWinning || score>0)
 		{
@@ -2667,7 +2668,7 @@ private Word testFromRack(Word current,JumbulayaCell rack[],String targetWord)
 	 for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
 	 {
 		 Entry word = words.nextElement();
-		 if(word.order<robotVocabulary)
+		 if(word.getOrder()<robotVocabulary)
 		 {
 		 checkJumbulayas(candidateWords,word,path,onlyIfWinning);
 		 }

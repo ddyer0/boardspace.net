@@ -101,7 +101,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 172;			// 100 represents the initial version of the game
+{	static int REVISION = 173;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -195,6 +195,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 170 adds purple market, extra special workers, drafting structures
 										// revision 171 fixes the first player after drafting
 										// revision 172 fixes the second player after drafting
+										// revision 173 adds debuginfo
+
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -841,6 +843,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		 gameEvents.push(trans);
 		}
 	}
+	StringStack debugEvents = new StringStack();
+	public void debugEvent(String v)
+	{
+		if(revision>=173) { debugEvents.push(v); }
+	}
 
    	ViticultureCell[]a4(ViticultureId id,int sea,String tip,int off)
    	{
@@ -1298,7 +1305,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
  	   		
  	   	}
  	   	randomizeHiddenState(random);
- 	   	
+ 	   	debugEvent("Structured "+structureCards.Digest(new Random(12300)));
+
 	   	for(ViticultureChip ch : ViticultureChip.MamasDeck) { mamaCards.addChip(ch); }
 	   	mamaCards.shuffle(random);
 	   	
@@ -2593,11 +2601,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		do {
     			if(revision>=168 && testOption(Option.DrawWithReplacement))
     			{
-    			// remove a random card
-    			long seed = from.CardDigest() * (moveNumber+1000);
-    	    	Random r = new Random(seed);
-    	    	chip = from.removeChipAtIndex(r.nextInt(from.height()));
-    			}
+    	   			// remove a random card
+        			long dig = from.CardDigest();
+        			long seed = dig * (moveNumber+1000);
+        	    	Random r = new Random(seed);
+        	    	int idx = r.nextInt(from.height());
+        	    	chip = from.removeChipAtIndex(idx);
+        	    	debugEvent("@"+moveNumber+" chip "+chip+" "+dig+" "+seed+" "+idx);
+        			}
     		else {
     			chip = from.removeTop();
     			}
@@ -8398,6 +8409,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         m.cards = null;
         turnChangeSamePlayer = false;
         flashChip = null;
+        debugEvents.clear();
         PlayerBoard pb = getCurrentPlayerBoard();
         //G.print("E "+m+" for "+whoseTurn+" "+resetState); 
         switch (m.op)
@@ -8410,6 +8422,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	break;
     		}
        case EPHEMERAL_COMMENCE:
+			if(resetState!=ViticultureState.ChooseOptions) { moveNumber += players_in_game; }
+			//$FALL-THROUGH$
         case MOVE_COMMENCE:
         	if(board_state==ViticultureState.ChooseOptions) { options.setMembers(m.from_row); }
         	doDone(replay,m);
@@ -9017,6 +9031,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	   	   		player.selectedCards.push(player.oracleCards.rackLocation(),card,m.from_row);
 	   	   	}
 	   	   	break;
+		case DEBUGINFO:
+			break;
         default:
         	cantExecute(m);
         }

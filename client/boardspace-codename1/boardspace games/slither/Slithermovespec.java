@@ -211,7 +211,7 @@ public class Slithermovespec
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {
@@ -270,7 +270,7 @@ public class Slithermovespec
         	return G.concat(opname);
         	
         default:
-            throw G.Error("can't handle %s",this);
+            throw G.Error("can't handle op %s",op);
         }
     }
     /**

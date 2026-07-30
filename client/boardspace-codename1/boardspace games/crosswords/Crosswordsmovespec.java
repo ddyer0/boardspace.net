@@ -98,7 +98,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
     	to_col = w.seed.col;
     	to_row = w.seed.row;
     	direction = w.direction;
-    	word = w.name;
+    	word = w.name.getString();
     	player = who;
     	mapped_row = -1;
     }
@@ -280,7 +280,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
      * to provide colored text or mixed text and icons.
      * 
      * */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {
         switch (op)
         {

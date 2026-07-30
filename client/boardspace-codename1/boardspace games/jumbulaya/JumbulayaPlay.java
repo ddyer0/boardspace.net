@@ -117,6 +117,11 @@ public class JumbulayaPlay extends commonMPRobot<JumbulayaBoard>
     {   Jumbulayamovespec mm = (Jumbulayamovespec)m;
         board.RobotExecute(mm);
     }
+    // not used, but invoked if debugging 
+ 	public void StaticEval() {
+ 		//return board.score[whoseTurn];
+ 	}
+
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will

@@ -16,6 +16,7 @@
  */
 package honey;
 
+import dictionary.ByteKey;
 import lib.Digestable;
 import lib.OStack;
 import lib.Random;
@@ -54,7 +55,7 @@ public class HWordStack extends OStack<HWord> implements Digestable,SequenceStac
 		return size()-1;
 	}
 	
-	public HWord find(String w)
+	public HWord find(ByteKey w)
 	{	for(int lim=size()-1; lim>=0; lim--)
 		{	
 		HWord h = elementAt(lim);

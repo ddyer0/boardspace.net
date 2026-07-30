@@ -116,7 +116,7 @@ public abstract class Platform implements Config{
 	    	// this shouldn't be reached if we're in edt on codename1, deadly embrace can result
 	    	synchronized (makeObject)
 	    	{
-	        return (cl.newInstance()); //was clazz.newInstance()
+	        return MakeInstance(cl);
 	    	}
 	    }
 	    catch (Exception e)
@@ -125,6 +125,15 @@ public abstract class Platform implements Config{
 	    }
 
 		}
+	public static Object MakeInstance(Class<?>cl)
+	{	try {
+		return (cl.newInstance()); //was clazz.newInstance()
+		}
+		catch (Exception e)
+		{
+		throw G.Error("Error making %s %s",cl,e);
+		}
+	}
 	
 	public static int standardDisplayDensity()
 	{

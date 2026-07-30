@@ -68,6 +68,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     static final int MOVE_DRAFT = 240;
     static final int EPHEMERAL_DRAFT = 241;
     static final int EPHEMERAL_DRAFT_OK = 242;
+    static final int DEBUGINFO = 243;
 
     static
     {	// load the dictionary
@@ -113,6 +114,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         "Ok",MOVE_READY,
         
         "Commence",MOVE_COMMENCE,
+        "info",DEBUGINFO,
         "Ecommence",EPHEMERAL_COMMENCE);
     }
     public boolean isEphemeral()
@@ -163,6 +165,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     public String[] gameEvents() { return(gameEvents); }
     public ViticultureChip currentWorker = null;
 	public double montecarloWeight;
+    public String debugInfo = null;
     
     public Viticulturemovespec()
     {
@@ -633,6 +636,9 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	to_col = 'A';
         	to_row = msg.intToken();
         	break;
+        case DEBUGINFO:
+        	debugInfo = msg.getRest();
+        	break;
         default:
 
             break;
@@ -670,6 +676,9 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         		return "";
         	}
         	}
+        case DEBUGINFO:
+        	if(G.debug()) { return debugInfo; }
+        	return "";
         case MOVE_PICKB:
         	String name = currentWorkerName();
         	return(name==null ? source.shortName : "Retrieve "+name);
@@ -760,7 +769,6 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 
         case MOVE_SELECTWAKEUP:
         	return("wakeup "+(to_row+1));
-        	
         default:
             return (D.findUnique(op));
 
@@ -916,6 +924,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_PLACE_STAR:
         case MOVE_SELECTWAKEUP:
         	return(opname+to_row + extraChips());
+        	
+        case DEBUGINFO:
+        	return opname + debugInfo;
+
         default:
         case MOVE_UNSELECT:
             return (opname + extraChips());

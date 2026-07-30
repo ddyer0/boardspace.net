@@ -18,6 +18,7 @@ package honey;
 
 import com.codename1.ui.Font;
 
+import dictionary.ByteKey;
 import lib.CompareTo;
 import lib.Digestable;
 import lib.Random;
@@ -39,14 +40,14 @@ import online.game.commonCanvas;
  */
 public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,SequenceElement
 {
-	String name;			// the actual word
+	ByteKey name;			// the actual word
 	CellStack seed = new CellStack();	// starting point
 	int points=-1;			// the value of the word when played
 	String comment = null;	// for the word search
 	public String toString() 
 	{ StringBuilder b = new StringBuilder();
 	  b.append("<word ");
-	  b.append(name);
+	  b.append(name.getString());
 	  b.append(" ");
 	  if(comment!=null)
 	  {	  b.append(" ");
@@ -58,7 +59,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 	  return(b.toString());
 	}
 
-	public HWord(CellStack s, String n)
+	public HWord(CellStack s, ByteKey n)
 	{
 		seed.copyFrom(s);
 		name = n;
@@ -72,7 +73,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return(new HWordStack().push(this).insertElementAt(item,at));		
 	}
 
-	public static int compareTo(String s1,String s2)
+	public static int compareTo(ByteKey s1,ByteKey s2)
 	{
 		if(s1==null)
 		{
@@ -115,7 +116,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return true;
 	}
 
-	public Text shortMoveText(commonCanvas canvas, Font font) {
+	public Text shortMoveText(commonCanvas canvas,Font f) {
 		return TextChunk.create(name+((points>0) ? " ("+points+")" : ""));
 	}
 
@@ -127,7 +128,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,S
 		return "";
 	}
 
-	public Text censoredMoveText(commonCanvas canvas, BoardProtocol bb, Font font) {
-		return shortMoveText(canvas, font);
+	public Text censoredMoveText(commonCanvas canvas, BoardProtocol bb,Font f) {
+		return shortMoveText(canvas,f);
 	}
 }

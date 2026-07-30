@@ -20,6 +20,7 @@ package slither;
 import static slither.Slithermovespec.*;
 
 import java.awt.Color;
+
 import java.util.*;
 import lib.*;
 import lib.Random;
@@ -176,8 +177,6 @@ class SlitherBoard
 	public void SetDrawState() { setState(SlitherState.Draw); }	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
-
-    private boolean swapped = false;
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public SlitherChip pickedObject = null;
@@ -397,6 +396,7 @@ class SlitherBoard
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case slither:
+		case slither_11:
 		case slither_13:
 		case slither_19:
 			// using reInitBoard avoids thrashing the creation of cells 
@@ -435,7 +435,6 @@ class SlitherBoard
 		fullBoard = emptyCells.size();
 	    
         animationStack.clear();
-        swapped = false;
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -582,7 +581,6 @@ class SlitherBoard
         	// some damaged games have 2 dones in a row
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
-		case ConfirmSwap:
 		case SlideAfterDrop:
 		case SlideBeforeDrop:
         case Confirm:
@@ -854,9 +852,6 @@ class SlitherBoard
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
     	case Gameover: break;
-    	case ConfirmSwap: 
-    		setState(SlitherState.Play); 
-    		break;
     	case Confirm:	
     	case Pass:
     	case SlideAfterDrop:
@@ -909,35 +904,6 @@ class SlitherBoard
         	}
         }
     }
-void doSwap(replayMode replay)
-{	SlitherId c = playerColor[0];
-	SlitherChip ch = playerChip[0];
-	playerColor[0]=playerColor[1];
-	playerChip[0]=playerChip[1];
-	playerColor[1]=c;
-	playerChip[1]=ch;
-	SlitherCell cc = playerCell[0];
-	playerCell[0]=playerCell[1];
-	playerCell[1]=cc;
-	swapped = !swapped;
-	switch(board_state)
-	{	
-	default: 
-		throw G.Error("Not expecting swap state "+board_state);
-	case Play:
-		// some damaged game records have double swap
-		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
-		//$FALL-THROUGH$
-	case PlayOrSwap:
-		  setState(SlitherState.ConfirmSwap);
-		  break;
-	case ConfirmSwap:
-		  setState(SlitherState.PlayOrSwap);
-		  break;
-	case Gameover:
-	case Puzzle: break;
-	}
-	}
 	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Slithermovespec m = (Slithermovespec)mm;
@@ -946,9 +912,6 @@ void doSwap(replayMode replay)
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
-		case MOVE_SWAP:	// swap colors with the other player
-			doSwap(replay);
-			break;
         case MOVE_DONE:
 
          	doDone(replay);
@@ -1022,7 +985,7 @@ void doSwap(replayMode replay)
         	case Puzzle:
          		break;
         	case Confirm:
-        		setState(((chips_on_board==1) && !swapped) ? SlitherState.PlayOrSwap : SlitherState.Play);
+        		setState(SlitherState.Play);
         		break;
         	default: ;
         	}}}
@@ -1049,7 +1012,6 @@ void doSwap(replayMode replay)
             setWhoseTurn(m.player);
             acceptPlacement();
             dropAt = null;
-            slideTo = null;
             moveFrom = null;
             slideTo = null;
             if(validBoard())
@@ -1107,7 +1069,6 @@ void doSwap(replayMode replay)
         	// but it's really optional
         	return(player==whoseTurn && (pickedObject==null || !getSource().onBoard));
         case Confirm:
-		case ConfirmSwap:
 		case Resign:
 		case Pass:
 		case Gameover:
@@ -1131,7 +1092,6 @@ void doSwap(replayMode replay)
 		case SlideAfterDrop:
 			return(targets.get(c)!=null 
 				|| (pickedObject==null ? isDest(c) : isSource(c)));
-		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
@@ -1193,13 +1153,8 @@ void doSwap(replayMode replay)
         default:
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
-         case MOVE_PASS:
+        case MOVE_PASS:
             break;
-            
-        case MOVE_SWAP:
-        	setState(state);
-        	doSwap(replayMode.Replay);
-        	break;
         case MOVE_PLACE_THEN_FIX:
         case MOVE_DROPB:
         	SetBoard(getCell(m.to_col,m.to_row),null);
@@ -1426,17 +1381,12 @@ private commonMove getValidSlideMove(SlitherCell from,int firstDirection,Slither
  
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
-	if(board_state==SlitherState.PlayOrSwap)
-	{
-		all.addElement(new Slithermovespec(SWAP,whoseTurn));
-	}
-	{
+
  	boolean some = getListOfMoves(all,whoseTurn);
 	if(!some) 
 		{ all.push(new Slithermovespec(MOVE_PASS,whoseTurn)); 
 		}
  	return all;
-	}
  }
  private boolean getListOfMoves(CommonMoveStack all,int who)
  {	
@@ -1570,7 +1520,6 @@ public commonMove getRandomMove(Random rand,CellStack focus)
 
 	switch(board_state)
 	 	{
-	 	case PlayOrSwap:
 	 	case Puzzle:
 	 	case Resign:
 	 	case Confirm:
