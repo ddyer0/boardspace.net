@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
+import java.util.Enumeration;
 
 import lib.ByteOutputStream;
 import lib.G;
@@ -99,12 +99,12 @@ public class Dictionary implements Config
 		if(wordlen==null)
 		{
 		wordlen = new DictionaryHash[MAXLEN+1];
-		for(int i=1;i<=MAXLEN;i++) {  wordlen[i] = new DictionaryHash(i); }
+		for(int i=1;i<=MAXLEN;i++) {  wordlen[i] = new DictionaryHash(10,i); }
 		}
 		new Thread(new Runnable() 
 		{ public void run() { 
 			try {
-			if(bulkable() && useBulkLoad)
+			if(bulkable() && useBulkLoad && !saveBulk)
 			{
 				loadBulkDictionary(DictionaryDir+"bulkdictionary.gz");
 				Entry rep = get("reprise");
@@ -600,9 +600,19 @@ public class Dictionary implements Config
 		try {
 			OutputStream stream = new FileOutputStream(new File(file));
 			GZIPOutputStream fstream = new GZIPOutputStream(stream);
-			for(DictionaryHash d : wordlen)
+			for(int i=0;i<wordlen.length;i++)
+			{	DictionaryHash from = wordlen[i];
+				if(from!=null) 
+					{ 
+					  DictionaryHash to = new DictionaryHash(from.wordCount(),from.wordlength);
+					  for(Enumeration<Entry> e = from.elements(); e.hasMoreElements();)
 			{
-				if(d!=null) { d.save(fstream); }
+						  Entry v =e.nextElement();
+						  to.put(v,v);
+					  }
+					wordlen[i] = to;
+					to.save(fstream); 
+					}
 			}
 			fstream.close();
 			stream.close();
@@ -635,11 +645,11 @@ public class Dictionary implements Config
 			{
 			GZIPInputStream fstream = new GZIPInputStream(stream);
 			orderedSize = 0;
-			for(DictionaryHash d : wordlen)
-			{
+			for(int i=0;i<wordlen.length;i++)
+			{	DictionaryHash d = wordlen[i];
 				if(d!=null)
 					{ d.load(fstream); 
-					  orderedSize += d.size();
+					  orderedSize += d.wordCount();
 					}
 			}
 			fstream.close();

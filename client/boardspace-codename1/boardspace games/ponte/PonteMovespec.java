@@ -201,7 +201,7 @@ public class PonteMovespec extends commonMove
     }
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas viewer, Font font)
+    public Text shortMoveText(commonCanvas viewer,Font f)
     {
         switch (op)
         {

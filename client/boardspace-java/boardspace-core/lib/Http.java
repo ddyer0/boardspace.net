@@ -538,8 +538,9 @@ public class Http implements Config {
       */
     static public boolean postError(Object caller, String message, Throwable err)
     	    {
-    		if(G.isCheerpj())
-    			{ G.infoBox(message,err==null ? "no error caught" : ""+err+err.getStackTrace()); 
+    	
+    		if(G.isCheerpj()||G.isJS())
+    			{ G.infoBox(message,err==null ? "no error caught" : ""+err+G.getStackTrace()); 
     			}
     		try {
     			G.setPostedError(message+":"+err);

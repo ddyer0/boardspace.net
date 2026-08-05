@@ -31,6 +31,7 @@ import bridge.Config;
 import java.util.Vector;
 
 import com.codename1.io.Log;
+import com.codename1.system.Lifecycle;
 import com.codename1.ui.CN;
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
@@ -213,11 +214,11 @@ class BoardspaceLauncher implements Runnable,stuff
 }
 
 
-public class Launch  implements stuff {
+public class Launch extends Lifecycle implements stuff {
 	Form current = null;
 	public boolean isDevelopmentVersion() { return(false); }
 	public void runBoardspace()
-	{	if(console || isDevelopmentVersion()) { G.createConsole(); }
+	{	//if(console || isDevelopmentVersion()) { G.createConsole(); }
 		/*
 		new Thread(new Runnable() { public void run() {
 			while(true)

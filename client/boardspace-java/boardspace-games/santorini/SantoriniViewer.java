@@ -496,7 +496,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
        		
        		String msg = 
        			(dolift && (hgh>1))
-       				? "" + (hgh-((ccell.topChip()==SantoriniChip.MainTile)?1:2))
+       				? "" + (hgh-((ccell.topChip().isMainTile())?1:2))
        				: null;
             if(ccell.drawStack(gc,this,canHit?highlight:null,scl,xpos,ypos,liftSteps,xs,ys,msg))
             {	highlight.awidth = scl/3;

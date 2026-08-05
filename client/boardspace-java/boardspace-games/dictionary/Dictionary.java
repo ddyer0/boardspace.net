@@ -26,6 +26,7 @@ import bridge.Config;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
 
 import java.io.IOException;
@@ -99,12 +100,12 @@ public class Dictionary implements Config
 		if(wordlen==null)
 		{
 		wordlen = new DictionaryHash[MAXLEN+1];
-		for(int i=1;i<=MAXLEN;i++) {  wordlen[i] = new DictionaryHash(i); }
+		for(int i=1;i<=MAXLEN;i++) {  wordlen[i] = new DictionaryHash(10,i); }
 		}
 		new Thread(new Runnable() 
 		{ public void run() { 
 			try {
-			if(bulkable() && useBulkLoad)
+			if(bulkable() && useBulkLoad && !saveBulk)
 			{
 				loadBulkDictionary(DictionaryDir+"bulkdictionary.gz");
 				Entry rep = get("reprise");
@@ -116,7 +117,7 @@ public class Dictionary implements Config
 			loadDefinitions();
 			checkForCorruption();
 			if(bulkable() && saveBulk)
-			{
+			{	
 				saveBulkDictionary("bulkdictionary.gz");
 				loadBulkDictionary("bulkdictionary.gz");
 				checkForCorruption();
@@ -600,9 +601,19 @@ public class Dictionary implements Config
 		try {
 			OutputStream stream = new FileOutputStream(new File(file));
 			GZIPOutputStream fstream = new GZIPOutputStream(stream);
-			for(DictionaryHash d : wordlen)
-			{
-				if(d!=null) { d.save(fstream); }
+			for(int i=0;i<wordlen.length;i++)
+			{	DictionaryHash from = wordlen[i];
+				if(from!=null) 
+					{ 
+					  DictionaryHash to = new DictionaryHash(from.wordCount(),from.wordlength);
+					  for(Enumeration<Entry> e = from.elements(); e.hasMoreElements();)
+					  {
+						  Entry v =e.nextElement();
+						  to.put(v,v);
+					  }
+					wordlen[i] = to;
+					to.save(fstream); 
+					}
 			}
 			fstream.close();
 			stream.close();
@@ -635,11 +646,11 @@ public class Dictionary implements Config
 			{
 			GZIPInputStream fstream = new GZIPInputStream(stream);
 			orderedSize = 0;
-			for(DictionaryHash d : wordlen)
-			{
+			for(int i=0;i<wordlen.length;i++)
+			{	DictionaryHash d = wordlen[i];
 				if(d!=null)
 					{ d.load(fstream); 
-					  orderedSize += d.size();
+					  orderedSize += d.wordCount();
 					}
 			}
 			fstream.close();

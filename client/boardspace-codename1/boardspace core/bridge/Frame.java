@@ -40,7 +40,8 @@ public class Frame extends Window
 	public String tabName() { return(getName()); }
 	public void setTabName(String g) { setName(g); }
 	public void init()
-	{	super.setLayout((Layout)new NullLayout(this));
+	{	
+		super.setLayout((Layout)new NullLayout(this));
 		setOpaque(true);
 		glassPane.setSize(getWidth(),getHeight());
 		addSelf(glassPane);

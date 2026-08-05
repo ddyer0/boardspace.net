@@ -29,8 +29,8 @@ import lib.StringStack;
  *
  */
 public class DictionaryHash extends BulkSimpleHashtable<ByteKey,Entry> // Hashtable<ByteKey,Entry>
-{	public int size  = 0;
-	public DictionaryHash(int x) { super(x); }
+{	public int wordlength  = 0;
+	public DictionaryHash(int capacity,int wordlen) { super(capacity); wordlength = wordlen; }
 	public void removeFakes()
 	{	
 		int fakes=0;

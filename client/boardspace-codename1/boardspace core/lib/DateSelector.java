@@ -45,7 +45,7 @@ public class DateSelector extends Rectangle implements ActionListener
 	int minYear = 0;		// defaults to whatever the initial year is
 	int maxYear = 0;		// defaults to minYear+1
 	public boolean changed = false;
-	@SuppressWarnings("deprecation")
+	
 	// day of the month
 	public int getDate() { return date.getDate(); }
 	// universal date/time 
@@ -54,14 +54,12 @@ public class DateSelector extends Rectangle implements ActionListener
 	{
 		date.setTime(v);
 	}
-	@SuppressWarnings("deprecation")
 	public int minYear() 
 	{	if(minYear==0) 
 		{ minYear = 1900+date.getYear(); 
 		}
 		return minYear;
 	}
-	@SuppressWarnings("deprecation")
 	public int maxYear()
 	{ 	if(maxYear==0) { maxYear = 1900+date.getYear()+1; }
 		return maxYear;
@@ -161,7 +159,6 @@ public class DateSelector extends Rectangle implements ActionListener
 	}
 	
 	}
-	@SuppressWarnings("deprecation")
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
 		if(menu.selectMenuTarget(target))

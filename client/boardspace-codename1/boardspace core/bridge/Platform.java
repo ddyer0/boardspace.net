@@ -98,8 +98,15 @@ class ErrorTrace extends Error
 }
 
 public abstract class Platform implements Config{
-	  
-	 protected static InstallerPackage installerPackage = NativeLookup.create(InstallerPackage.class);
+
+private static InstallerPackage createInstallerPackage()
+{
+	InstallerPackage p = NativeLookup.create(InstallerPackage.class);
+	if(!checkSupport(p)) { p = null; }
+	return p;
+}
+
+	 protected static InstallerPackage installerPackage = createInstallerPackage();
 	 
 	 private static Object makeObject = new Object();
 	 /**
@@ -393,12 +400,11 @@ public abstract class Platform implements Config{
     }
     static public void hardExit()
     {
-    	if((installerPackage!=null) && installerPackage.isSupported()) { installerPackage.hardExit(); }
+    	if(checkSupport(installerPackage)) { installerPackage.hardExit(); }
     }
     static public String setDrawers(boolean vis)
     {	
-    	if((installerPackage!=null)
-    			&& installerPackage.isSupported()
+    	if(checkSupport(installerPackage)
     			&& isRealLastGameBoard())
     	{	
     			installerPackage.setDrawers(vis);
@@ -456,7 +462,7 @@ public abstract class Platform implements Config{
     static public int getScreenDPI()
     {	if(screendpi>0) { return screendpi; }
     	int codename1 =  getDisplayDPI();
-    	if(installerPackage!=null && installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     	{
     	int raw = (int)installerPackage.getScreenDPI();
     	int stable = raw>>22;
@@ -605,6 +611,7 @@ public abstract class Platform implements Config{
     	{ String name = Display.getInstance().getPlatformName();
     	  if("ios".equals(name)) { return(G.Ios); }
     	  if("and".equals(name)) { return(G.Android); }
+    	  if(name.startsWith("HTML")) { return G.Javascript; }
     	  return(name); 
     	}
     /**
@@ -665,7 +672,7 @@ windroid
     	if(G.isAndroid())
     	{
     	try {
-    	if(installerPackage != null && installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     	{	   		
     		String res = installerPackage.getInstaller(installerPackageName);
     		// amazon should be "com.amazon.venezia"
@@ -683,7 +690,7 @@ windroid
     {	if(G.isAndroid())
     	{
     	try {
-    	if(installerPackage != null && installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     		{	   		
     		int o = installerPackage.getOrientation();
     		return(o);
@@ -700,7 +707,7 @@ windroid
     {	if(G.isAndroid())
 		{
     	try {
-    	if(installerPackage != null && installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     		{	 
     		installerPackage.setOrientation(portrait,rev);
      		}
@@ -714,7 +721,7 @@ windroid
     {	if(G.isAndroid())
 		{
     	try {
-    	if(installerPackage != null && installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     		{	   	
     		return(installerPackage.getLocalWifiIpAddress());
      		}
@@ -879,8 +886,7 @@ windroid
     }
     public static String getPackages()
     {	String packs = null;
-    	if((installerPackage!=null)
-    		&& installerPackage.isSupported())
+    	if(checkSupport(installerPackage))
     	{
     	packs = installerPackage.getPackages();
     	}
@@ -891,8 +897,7 @@ windroid
     public static String getOSInfo()
     {	try {
     	if((osinfo==null)
-    			&& (installerPackage!=null)
-        		&& installerPackage.isSupported())
+    			&& checkSupport(installerPackage))
     			{osinfo = "getting";
     			 osinfo = installerPackage.getOSInfo();
     			}
@@ -941,7 +946,9 @@ public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
 	@SuppressWarnings("unchecked")
 	public static NativeInterface MakeNative(Class<?>n)
     {	
-    	return(NativeLookup.create((Class<NativeInterface>)n));
+    	NativeInterface nat = (NativeLookup.create((Class<NativeInterface>)n));
+    	if(!checkSupport(nat)) { nat = null; }
+    	return nat;
     }
 	public static void writeTextToClipboard(String s) {
 		//System.out.println("S '"+s+"'");
@@ -983,12 +990,23 @@ public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
 	 static boolean nanotimeSupported = false;
 	 static boolean asknanotime = true;
 	 
+	 private static boolean checkSupport(NativeInterface s)
+	 {	try {
+		 return (s!=null && s.isSupported());
+	 	}
+		 catch (Throwable err) 
+		 {
+			 G.print(s," native interface not supported",err);
+		 }
+	 	return false;
+	 }
+	 
 	 private static boolean resolveNanotime()
 	 {
 		 if(asknanotime)
 		 {	asknanotime = false;
 			time = NativeLookup.create(SystemTime.class);
-			boolean supported = time!=null && time.isSupported();
+			boolean supported = checkSupport(time);
 			if(supported)
 			{	try {
 					time.currentNanoTime();
@@ -1006,6 +1024,7 @@ public static int getAbsoluteX(Component c) { return(c.getAbsoluteX()); }
 			    Plog.log.addLog("currentNanoTime failed:",err.toString());
 				}
 			}
+			else { time = null; }
 		 }
 		 return nanotimeSupported;
 	 }

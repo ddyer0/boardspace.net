@@ -120,7 +120,6 @@ public class JWSApplication implements Config,OnlineConstants
             }
 
         }
-    	catch (ThreadDeath err) { throw err;}
         catch (Throwable err)
         {	
             Http.postError(null, "Error in FrameLauncher init", err);

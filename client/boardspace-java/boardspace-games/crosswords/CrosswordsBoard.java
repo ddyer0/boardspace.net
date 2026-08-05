@@ -2518,7 +2518,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	for(int wordlen=2;wordlen<=rackSize+1;wordlen++)
  	{	DictionaryHash sub = dictionary.getSubdictionary(wordlen);
  		checkCrossWords(sub,fromPlaces,rack,letterMask);
- 		usedSize += sub.size();
+ 		usedSize += sub.wordCount();
  		recordProgress(baseProgress+usedSize*progressFraction/totalsize);
  	}
  }

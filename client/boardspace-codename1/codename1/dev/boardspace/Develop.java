@@ -16,9 +16,7 @@
  */
 package dev.boardspace;
 
-
-
-public class Develop extends com.boardspace.Launch {
+public class Develop extends com.boardspace.Launch  {
 	public boolean isDevelopmentVersion() { return(true); }
 	public void init(Object context)
 	{

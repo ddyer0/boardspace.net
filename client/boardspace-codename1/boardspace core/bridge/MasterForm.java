@@ -324,16 +324,13 @@ public void addToMenus(JButton m)
 		return(masterForm);
 	}
 	private void addMasterPanel()
-	{	try {
+	{
 	  if(masterPanel==null)
 		  {MasterPanel mp = masterPanel = new MasterPanel(this);
 		  add(mp);
 		  mp.setVisible(true);
 		  masterPanel = mp;
 		  }
-		}
-		catch (ThreadDeath err) { throw err;}
-		catch (Throwable err) { Http.postError(this,"adding master panel",err); }
 	}
 	public static MasterPanel getMasterPanel()
 	{	final MasterForm form = getMasterForm();

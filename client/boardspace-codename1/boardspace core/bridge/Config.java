@@ -41,7 +41,7 @@ public interface Config extends CommonConfig{
 
    public static final String FONT_FAMILIES[] =  { "Serif","SansSerif","Monospaced"};
     // separate data file cache isn't used in the main line java, only in the codename1 branch
-	public final boolean useBulkLoad = false;
+	public final boolean useBulkLoad = true;
 	public String BlacklistedDataFiles[] =// useBulkLoad 
 				//? {"wordsinorder.txt.gz","worddefsa.txt.gz"} 
 				//: 

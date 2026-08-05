@@ -35,21 +35,28 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	private SantoriniChip npChip = null;
+	private SantoriniChip altChip = null;
 	int index = 0;
 	Type type=null;
 	SantorId id;
 	enum Type { Man,God,Tile,Dome};
 	
-	private SantoriniChip(String name,SantorId idx,Type typ,double[]sc)
+	private SantoriniChip(String name,SantorId idx,Type typ,double[]sc,SantoriniChip alt,SantoriniChip np)
 	{
 		index = allChips.size();
 		type=typ;
+		altChip = alt;
+		npChip = np;
 		id = idx;
 		scale=sc;
 		file = name;
 		randomv = r.nextLong();
 		allChips.push(this);
 	}
+	private SantoriniChip(String name,SantorId idx,Type typ,double[]sc)
+	{	this(name,idx,typ,sc,null,null);
+	}
+
 	public int chipNumber() { return(index); }
 
     static final int FIRST_CHIP_INDEX = 0;
@@ -60,7 +67,7 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
     	{	if(npChip!=null) { return(npChip); }
     	}
     	else 
-    	{if((this==MainTile)&&(set>0)) { return(AltTile); }
+    	{if((set>0) && (altChip!=null)) { return(altChip); }
     	}
     	return(this);
     }
@@ -76,18 +83,27 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
   /* pre load images and create the canonical pieces
    * 
    */
-   static public SantoriniChip MainTile = new SantoriniChip("square-b",null,Type.Tile,new double[]{0.538,0.456,1.5});
-   static public SantoriniChip AltTile =  new SantoriniChip("square-a",null,Type.Tile,new double[]{0.5,0.5,1.5});;
-   static public SantoriniChip Dome =  new SantoriniChip("dome",null,Type.Dome,new double[]{0.585,0.515,1.0});;
-   static public SantoriniChip Cube_A =  new SantoriniChip("cube-a",null,Type.Man,new double[]{0.586,0.50,1.0});;
-   static public SantoriniChip Cube_B =  new SantoriniChip("cube-b",null,Type.Man,new double[]{0.553,0.559,1.0});;
-   static public SantoriniChip Cylinder_A =  new SantoriniChip("cylinder-a",null,Type.Man,new double[]{0.468,0.50,1.05});;
-   static public SantoriniChip Cylinder_B =  new SantoriniChip("cylinder-b",null,Type.Man,new double[]{0.53,0.476,1.175});;
-
    static public SantoriniChip Tile_NP = new SantoriniChip("square-np",null,Type.Tile,new double[]{0.556,0.502,1.5});
+   static public SantoriniChip AltTile =  new SantoriniChip("square-a",null,Type.Tile,new double[]{0.5,0.5,1.5});
+   static public SantoriniChip MainTile = new SantoriniChip("square-b",null,Type.Tile,new double[]{0.538,0.456,1.5},AltTile,Tile_NP);
+
+   static public SantoriniChip Tile_NPBase = new SantoriniChip("square-npb",null,Type.Tile,new double[]{0.556,0.502,1.7});
+   static public SantoriniChip AltTileBase =  new SantoriniChip("square-ab",null,Type.Tile,new double[]{0.5,0.5,1.6});
+   static public SantoriniChip MainTileBase = new SantoriniChip("square-bb",null,Type.Tile,new double[]{0.538,0.456,1.7},AltTileBase,Tile_NPBase);
+   
+   public boolean isMainTile()
+   {
+	   return this==MainTile || this==MainTileBase;
+   }
+   static public SantoriniChip Dome =  new SantoriniChip("dome",null,Type.Dome,new double[]{0.585,0.515,1.0});
+   static public SantoriniChip Cube_A =  new SantoriniChip("cube-a",null,Type.Man,new double[]{0.586,0.50,1.0});
+   static public SantoriniChip Cube_B =  new SantoriniChip("cube-b",null,Type.Man,new double[]{0.553,0.559,1.0});
+   static public SantoriniChip Cylinder_A =  new SantoriniChip("cylinder-a",null,Type.Man,new double[]{0.468,0.50,1.05});
+   static public SantoriniChip Cylinder_B =  new SantoriniChip("cylinder-b",null,Type.Man,new double[]{0.53,0.476,1.175});
+
    static public SantoriniChip Dome_NP =  new SantoriniChip("dome-np",null,Type.Dome,new double[]{0.725,0.377,1.2});
    static public SantoriniChip Cube_NP =  new SantoriniChip("cube-np",null,Type.Man,new double[]{0.636,0.408,1.379});
-   static public SantoriniChip Cylinder_NP =  new SantoriniChip("cylinder-np",null,Type.Man,new double[]{0.613,0.466,1.652});;
+   static public SantoriniChip Cylinder_NP =  new SantoriniChip("cylinder-np",null,Type.Man,new double[]{0.613,0.466,1.652});
    static public SantoriniChip LeftView = new SantoriniChip("leftview-nomask",null,null,new double[] {0.5,0.5,1});
    static public SantoriniChip RightView = new SantoriniChip("rightview-nomask",null,null,new double[] {0.5,0.5,1});
   
@@ -191,7 +207,6 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
 		{
 		forcan.load_images(ImageDir,Gods,forcan.load_image(ImageDir,"gods-mask"));
 		forcan.load_masked_images(ImageDir,allChips);
-		MainTile.npChip = AltTile.npChip = Tile_NP;
 		Dome.npChip = Dome_NP;
 		Cylinder_A.npChip = Cylinder_B.npChip = Cylinder_NP;
 		Cube_A.npChip = Cube_B.npChip = Cube_NP; 

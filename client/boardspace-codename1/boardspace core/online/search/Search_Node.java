@@ -16,7 +16,6 @@
  */
 package online.search;
 
-
 import java.util.concurrent.atomic.AtomicInteger;
 import lib.*;
 import online.game.*;
@@ -44,10 +43,30 @@ public class Search_Node implements Constants,Opcodes
     // lock-free cursor: multiple worker threads under a shared search tree can call
     // next_candidate_move() on the same node concurrently. A plain int with post-increment
     // was a classic lost-update race (two threads read the same index before either
-    // increments). AtomicIntegerx.getAndIncrement() gives each caller a distinct index
-    // with no lock.
+    // increments). AtomicInteger removes that race without a lock.
+    //
+    // AtomicInteger has no built-in *bounded* increment, so getAndIncrementIfBelow()
+    // below is a small CAS retry loop that reproduces the original code's exact
+    // semantics: next_move_index++ only ever ran inside the
+    // "next_move_index < number_of_moves" branch of the ternary, so once exhausted,
+    // repeated calls left the counter frozen rather than drifting past the bound.
+    // A plain getAndIncrement() bounded by a separate outside check would not be
+    // atomic (another thread could slip in between the check and the increment);
+    // this loop keeps the check-and-increment as one atomic unit via compareAndSet.
     private final AtomicInteger next_move_index_a = new AtomicInteger(0);
-    public int next_move_index() { return next_move_index_a.intValue(); }
+
+    private static int getAndIncrementIfBelow(AtomicInteger counter, int bound)
+    {
+        while (true)
+        {
+            int current = counter.get();
+            if (current >= bound) { return -1; }
+            if (counter.compareAndSet(current, current + 1)) { return current; }
+            // else another thread updated it first -- retry with the new value
+        }
+    }
+
+    public int next_move_index() { return next_move_index_a.get(); }
     public void set_next_move_index(int v) { next_move_index_a.set(v); }
     
     int number_of_moves;			// the number of moves in cmoves
@@ -126,8 +145,8 @@ public class Search_Node implements Constants,Opcodes
     public commonMove next_candidate_move()	// get the current move
     {
     	commonMove[] mv = cmoves();	// ensures PrepareNode() has run (see cmoves())
-    	int idx = (number_of_moves>0) ? next_move_index_a.getAndIncrement() : -1;
-    	commonMove ccm = (idx>=0 && idx<number_of_moves) ? mv[idx] : null;
+    	int idx = (number_of_moves>0) ? getAndIncrementIfBelow(next_move_index_a, number_of_moves) : -1;
+    	commonMove ccm = (idx>=0) ? mv[idx] : null;
     	current_move = ccm;
     	return(ccm);
     }

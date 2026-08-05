@@ -326,6 +326,7 @@ public class G extends Platform implements Timestamp
       				out.append("(%");
       				out.append(next);
       				out.append(")");
+      				nextStrIdx++;
       				break;
     			case 'X':
     			case 'x':
@@ -1170,6 +1171,7 @@ public class G extends Platform implements Timestamp
 	public static final String Ios = "Ios";
 	public static final String Android = "Android";
 	public static final String Igt = "IGT";	// infinity game table
+	public static final String Javascript = "Javascript";
 	
 	static public String getOS() { 
 	String prop = System.getProperty(G.OS_NAME);
@@ -1188,7 +1190,10 @@ public class G extends Platform implements Timestamp
 		{ boolean val = getOS().equalsIgnoreCase(Ios);
 		  return(val);
 		}
-	
+	static public boolean isJS()
+	{
+		return getOS().equals(Javascript);
+	}
 	public static boolean isIOSMetal()
 	{
 		return isIOS() && isMetal;

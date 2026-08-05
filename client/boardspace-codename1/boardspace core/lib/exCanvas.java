@@ -23,7 +23,6 @@ import com.codename1.ui.geom.Rectangle;
 
 
 
-
 /* below here should be the same for codename1 and standard java */
 import bridge.*;
 
@@ -816,7 +815,6 @@ public abstract class exCanvas extends ProxyWindow
     			if(chatCol!=null) { theChat.setBackgroundColor(chatCol); }
     			if(butCol!=null) { theChat.setButtonColor(butCol); }
     			}
-    		catch (ThreadDeath err) { throw err;}
     		catch(Throwable err) { Http.postError(this,"set chat width",err); }
     		}
     	});
@@ -1751,7 +1749,6 @@ graphics when using a touch screen.
             {
                 err.printStackTrace();
             }
-            if(!(err instanceof ThreadDeath))
             {
             if (conn != null)
     	        {   conn.logError(m+exm, err);

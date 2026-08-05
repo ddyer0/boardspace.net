@@ -154,7 +154,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         
         // fill the board with the background tiles
         for(SantoriniCell c = allCells; c!=null; c=c.next)
-        {  c.addChip(SantoriniChip.MainTile);
+        {  c.addChip(SantoriniChip.MainTileBase);
         }
         
         whoseTurn = FIRST_PLAYER_INDEX;
@@ -1628,7 +1628,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 	 for(int dir=0;dir<CELL_FULL_TURN;dir++)
 	 {	SantoriniCell d = c.exitTo(dir);
 		if((d!=null) 
-				&& (d.topChip()==SantoriniChip.MainTile)
+				&& (d.topChip().isMainTile())
 				&& (d!=except)
 				&& canDrop(pickedObject,d))
 			{	addBuildMove(all,d,who);			
@@ -1640,7 +1640,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 	 for(int dir=0;dir<CELL_FULL_TURN;dir++)
 	 {	SantoriniCell d = c.exitTo(dir);
 		if((d!=null) 
-				&& (d.topChip()==SantoriniChip.MainTile)) 
+				&& (d.topChip().isMainTile())) 
 			{ return(true); 
 			}
 	 }
@@ -1676,7 +1676,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
  	case MAN2_STATE:
  		// place a man on an unoccupied space
  		for(SantoriniCell c=allCells; c!=null; c=c.next)
- 		{	if(c.topChip()==SantoriniChip.MainTile)
+ 		{	if(c.topChip().isMainTile())
  			{	all.addElement(new SantoriniMovespec(whoseTurn,MOVE_DROPB,c.col,c.row));
  			}
  		}
