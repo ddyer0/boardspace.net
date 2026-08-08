@@ -5,7 +5,9 @@ Add the new language to the translations table enum in the database
 
 These first two steps are enough for translations to begin.
 
-Add a new class to the languages list
+If special hyphenation or translation rules are needed, add a new class to the languages list
+in online/language/  otherwise the englishTranslations class will be used.   The only language
+with special rules (at present) is Japanese, but probably should also include Chinese
 
 Add the new class to the kawa compile script
 

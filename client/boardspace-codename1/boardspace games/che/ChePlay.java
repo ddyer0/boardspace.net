@@ -40,7 +40,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
     int MAX_DEPTH = DEFAULT_MAX_DEPTH;						// search depth.
     double TIME_LIMIT = 0.5;				// 30 seconds progressive search
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
 				// this is appropriate for simple games, but probably not too effective
 				// until there is a much better evaluator.
     // this is an arbitrary value assigned to a winning position, so minmax

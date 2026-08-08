@@ -62,7 +62,7 @@ public class PalagoPlay extends commonRobot<PalagoBoard> implements Runnable, Pa
     private double TIME_LIMIT = DUMBOT_TIME_LIMIT;
     private int MAX_RANDOM_DEPTH = 5;				// search depth when randomizing
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     
     private int Strategy = PALABOT_LEVEL;
     

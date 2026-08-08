@@ -49,7 +49,7 @@ public class TraxPlay extends commonRobot<TraxGameBoard> implements Runnable, Tr
 	static final double LINE_WEIGHT = 10.0;
 	static final double CORNER_WEIGHT= 1.0;
 	static final double VALUE_OF_WIN = 100000.0;
-	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
 	boolean EXP_MONTEBOT = false;
 	
     boolean SAVE_TREE = false;				// debug flag for the search driver

@@ -595,23 +595,25 @@ public abstract class InternationalStrings implements Config
      public static InternationalStrings initLanguage(String lit)
      {
          String languageClass = LANGUAGECLASS + lit+ "Strings";
+         InternationalStrings s = null;
          try {
-         InternationalStrings s = (InternationalStrings) (G.MakeInstance(languageClass));
+        	 try { 
+        		 s = (InternationalStrings) (G.MakeInstance(languageClass));
+        		 
+        	 } catch (Throwable err)
+        	 {	// no special class, not an error
+        		 s = (InternationalStrings)G.MakeInstance(DefaultLanguageClass);
+        	 }    
+       	 s.name = lit;
      	 s.readData(s.name);
      	 G.setTranslations(s);
      	 loadedLanguage = lit;
      	 return(s);
          }
          catch (Throwable err)
-         {
- 			 Plog.log.addLog("Language ",lit," ",err);
- 			 if(!"english".equalsIgnoreCase(lit))
- 			 {
- 				 G.putGlobal(G.LANGUAGE,"english");
- 				 return initLanguage();
- 			 }
+         {	// no special class, not an error
          }
-         return((InternationalStrings)G.MakeInstance(DefaultLanguageClass));
+         return(s);
      }
      
      public static void addLanguageNames(JMenu langField,DeferredEventManager ev)

@@ -41,25 +41,11 @@ public class NamedClasses {
     	classes.put("online.common.lobbyCanvas",online.common.lobbyCanvas.class);
      	classes.put("online.common.LobbyMapViewer",online.common.LobbyMapViewer.class);
     	classes.put("online.language.englishStrings",online.language.englishStrings.class);
-    	classes.put("online.language.frenchStrings",online.language.frenchStrings.class);
-    	classes.put("online.language.swedishStrings",online.language.swedishStrings.class);
-    	classes.put("online.language.chineseStrings",online.language.chineseStrings.class);
     	classes.put("online.language.japaneseStrings",online.language.japaneseStrings.class);
-    	classes.put("online.language.portugueseStrings",online.language.portugueseStrings.class);
-    	classes.put("online.language.frenchStrings",online.language.frenchStrings.class);
-    	classes.put("online.language.spanishStrings",online.language.spanishStrings.class);
-    	classes.put("online.language.catalaStrings",online.language.catalaStrings.class);
-    	classes.put("online.language.russianStrings",online.language.russianStrings.class);
-    	classes.put("online.language.norwegianStrings",online.language.norwegianStrings.class);
-    	classes.put("online.language.polishStrings",online.language.polishStrings.class);
-    	classes.put("online.language.esperantoStrings",online.language.esperantoStrings.class);
-    	classes.put("online.language.dutchStrings",online.language.dutchStrings.class);
-    	classes.put("online.language.romanianStrings",online.language.romanianStrings.class);
-    	classes.put("online.language.germanStrings",online.language.germanStrings.class);
-    	classes.put("online.language.czechStrings",online.language.czechStrings.class);
-
+    	// the rest of languages do not currently need a special class.  English class is used with appropriage translations
     
     	// game classes
+    	classes.put("gomoku.GomokuViewer",gomoku.GomokuViewer.class);
        	classes.put("slither.SlitherViewer",slither.SlitherViewer.class);
       	classes.put("bugs.BugsViewer",bugs.BugsViewer.class);
        	classes.put("pendulum.PendulumViewer",pendulum.PendulumViewer.class);

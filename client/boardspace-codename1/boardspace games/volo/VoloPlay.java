@@ -76,7 +76,7 @@ public class VoloPlay extends commonRobot<VoloBoard>
     private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int MAX_DEPTH = 4;						// search depth.
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     
 	private int boardSearchLevel = 0;				// the current search depth
     

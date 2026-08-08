@@ -67,7 +67,7 @@ public class PlateauPlay
     private static final double VALUE_OF_WIN = 10000.0;
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
     public boolean randomize = false;
     public boolean sort = false;

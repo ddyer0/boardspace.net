@@ -430,7 +430,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
     boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     int MAX_DEPTH = 5;						// search depth.
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
 	
 	boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 

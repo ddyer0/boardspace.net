@@ -642,6 +642,9 @@ private void swapDetails()
 	HavannahCell cc = playerCell[0];
 	playerCell[0]=playerCell[1];
 	playerCell[1]=cc;
+	CellStack s = occupiedCells[0];
+	occupiedCells[0] = occupiedCells[1];
+	occupiedCells[1] = s;
 	swapped = !swapped;
 }
 void doSwap(replayMode replay)

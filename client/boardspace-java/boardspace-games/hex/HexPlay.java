@@ -83,8 +83,11 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
     private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
     private int MAX_DEPTH = 5;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-	
+    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
+   	// the +0.25 works with the staticeval trick to favor quicker wins. This makes the quit happen
+	// only when an immediate win is found, not when a deep search finds a win.  This avoids the
+	// undedesirable behavior of not playing directly to a win when one is available.
+
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 
     private int Strategy = DUMBOT_LEVEL;

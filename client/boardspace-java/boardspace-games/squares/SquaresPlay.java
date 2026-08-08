@@ -81,7 +81,7 @@ public class SquaresPlay extends commonRobot<SquaresBoard> implements Runnable, 
     private int DUMBOT_DEPTH = 7;
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+    private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
   
     // mcts parameters

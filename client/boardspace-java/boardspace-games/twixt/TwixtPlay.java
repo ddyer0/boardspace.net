@@ -502,7 +502,7 @@ public class TwixtPlay extends commonRobot<TwixtBoard> implements Runnable, Twix
     boolean deadChildOptimization = true;
     
 	static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
-	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
+	static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
 	
 	boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 

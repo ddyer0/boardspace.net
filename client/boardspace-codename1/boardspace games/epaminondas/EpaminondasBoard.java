@@ -79,8 +79,6 @@ class EpaminondasBoard
     private EpaminondasId playerColor[]={EpaminondasId.White,EpaminondasId.Black};    
     private EpaminondasChip playerChip[]={EpaminondasChip.White,EpaminondasChip.Black};
     private EpaminondasCell playerCell[]=new EpaminondasCell[2];
-    // get the chip pool and chip associated with a player.  these are not 
-    // constants because of the swap rule.
 	public EpaminondasChip getPlayerChip(int p) { return(playerChip[p]); }
 	public EpaminondasId getPlayerColor(int p) { return(playerColor[p]); }
 	public EpaminondasCell getPlayerCell(int p) { return(playerCell[p]); }
@@ -811,30 +809,8 @@ class EpaminondasBoard
         	setNextStateAfterDone(replay);
         }
     }
-void doSwap(replayMode replay)
-{	EpaminondasId c = playerColor[0];
-	EpaminondasChip ch = playerChip[0];
-	playerColor[0]=playerColor[1];
-	playerChip[0]=playerChip[1];
-	playerColor[1]=c;
-	playerChip[1]=ch;
-	EpaminondasCell cc = playerCell[0];
-	playerCell[0]=playerCell[1];
-	playerCell[1]=cc;
-	switch(board_state)
-	{	
-	default: 
-		throw G.Error("Not expecting swap state "+board_state);
-	case Play:
-		// some damaged game records have double swap
-		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
-		//$FALL-THROUGH$
 
-	case Gameover:
-	case Puzzle: break;
-	}
-	}
-	public void doCaptures(EpaminondasCell c,int direction,replayMode replay)
+    public void doCaptures(EpaminondasCell c,int direction,replayMode replay)
 	{
 		EpaminondasCell from = c;
 		EpaminondasChip target = c.topChip();

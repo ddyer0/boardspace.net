@@ -25,7 +25,7 @@ use Digest::MD5 'md5_hex';
 "eo"=>"esperanto",
 #   "fi"=>"finnish",
     "es"=>"spanish",
-#     "ms"=>"bahasa",
+     "ms"=>"bahasa",
      "pl"=>"polish",
      "pt"=>"portuguese",
      "jp"=>"japanese",
