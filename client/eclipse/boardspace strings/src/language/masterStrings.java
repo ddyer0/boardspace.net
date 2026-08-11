@@ -502,8 +502,7 @@ public class masterStrings extends InternationalStrings
         
         // punct strings
         setContext("punct");
-        put(PunctConstants.PunctStrings);
-        put(PunctConstants.PunctStringPairs);
+        PunctConstants.putStrings();
      
         // gobblet strings
         setContext("gobblet");

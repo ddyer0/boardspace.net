@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -37,6 +38,22 @@ import com.jcraft.jsch.Session;
 import lib.G;
 import lib.Tokenizer;
 
+class ValueSet
+{
+	String value;
+	String group;
+	String context;
+	String comment;
+	ValueSet next;
+	ValueSet(boolean decode,String v,String g,String cv,String cm,ValueSet n)
+	{
+		value = decode ? G.utfDecode(v) : v;
+		group = decode ? G.utfDecode(g) : g;
+		context = decode ? G.utfDecode(cv) : cv;
+		comment = decode ? G.utfDecode(cm):cm;
+		next = n;
+	}
+}
 /**
  * this is the downloader that downloads the contents of masterStrings from a database.  
  * it's only relevant to maintaining the translation strings for a live web site
@@ -92,40 +109,37 @@ public class downloadLanguages {
 	  	}
 	  	return(conn);	  
 	  }	  
-	  public static String utfDecode(String str)
-	    {		int nchars = str.length();
-	    		int idx = 0;
-	    		StringBuffer out = new StringBuffer();
-	    		while(idx<nchars)
-	    		{	char ch = str.charAt(idx++);
-	    			if((ch!='\\') || (idx==nchars) || (str.charAt(idx)!='u')) { out.append(ch); }
-	    			else 
-	    			{ idx++;	// got \\u
-	    			  int lim = Math.min(idx+4,nchars);
-	    			  int v = Integer.parseInt(str.substring(idx,lim),16);
-	    			  idx = lim;
-	    			  out.append((char)v);
-	    			}}
-	    	return(out.toString());
-	    }
-	    
-	  public static Hashtable<String,String> downloadStrings(Connection conn,String language) throws SQLException
-	  {	Hashtable<String,String> trans = new Hashtable<String,String>();
-	    PreparedStatement ret = conn.prepareStatement("select keystring,translation from translation where language=? and collection!='web'");
+
+	  
+	  // normally we are downloading the strings used by the app, and don't want web strings
+	  // when trying to dump the entire database, -includeweb true
+	  // the odd duck in this is "japanese" which is both a language name and a web key
+	  //
+	  private static Hashtable<String,ValueSet> downloadStrings(Connection conn,String language,boolean includeWeb)
+			  		throws SQLException
+	  {	Hashtable<String,ValueSet> trans = new Hashtable<String,ValueSet>();
+	    PreparedStatement ret = conn.prepareStatement("select keystring,translation,context,comment,collection from translation where language=?" 
+	    				+ (includeWeb ? "" : " and collection!='web' or keystring=language"));
 	    ret.setString(1,language);
 	    if(ret.execute())
 	    {
 	    	ResultSet result = ret.getResultSet();
 	    	while (result.next())
 	    	{
-	    		String key = utfDecode(result.getString(1));
-	    		String value = utfDecode(result.getString(2));
+	    		String key = G.utfDecode(result.getString(1));
+	    		String value = result.getString(2);
+	    		String context = result.getString(3);
+	    		String comment = result.getString(4);
+	    		String collection = result.getString(5);
 	    		// this is based on the observation that the best and least
 	    		// confusing way to present language names is "in its own language".
 	    		// so while the database conains translations for the languages to the 
 	    		// translated language, the data file will always contain each language
 	    		// translated into its native spelling.
-	    		trans.put(key,value);    		
+	    		if(key!=null)
+	    			{ trans.put(key,new ValueSet(true,value,collection,context,comment,trans.get(key)));    
+	    			
+	    			}
 	    	};
 	    	
 	    }
@@ -180,11 +194,34 @@ public class downloadLanguages {
 	        	return(res);
 	    	}
 	    }
-	  public static void printKey(Writer out,String key,String val) throws IOException
+	  public static void writeMLvalue(Writer out,String prefix, String val) throws IOException
+	  {
+		  if(val!=null && !"".equals(val))
+		  {
+		  String spl[] = split(val,'\n');
+		  for(String str : spl)
+		  {	  String enc = utfEncode(str);
+			  out.write(prefix);
+			  out.write(enc);
+			  out.write("\n");
+		  }}
+	  }
+	  /*
+	   * K — key (English source, or the symbolic key)
+G — group/collection
+C — context, web-collection English rows only, cgi source location
+M — comment, free-form, any row
+V — translation/value
+S — untranslated (bare English, no translation yet)
+N — trailing count
+	   */
+	  public static void printKey(Writer out,boolean includeWeb,String key,ValueSet v) throws IOException
 	  {	String uKey = utfEncode(key);
+	  	String val = v.value;
 	  	if(key.indexOf('\n')>=0)
-	  		{ throw new Error("line break not allowed in key "+key); }
-	  	if(key.equals(val))
+	  		{ System.out.println("line break not allowed in key "+key); 
+	  		}
+	  	else if(key.equals(val))
 		  {
 			  out.write("S "+uKey);
 			  out.write("\n");
@@ -193,15 +230,16 @@ public class downloadLanguages {
 	  	{
 	  		  out.write("K "+uKey);
 			  out.write("\n");
-			  String spl[] = split(val,'\n');
-			  for(String str : spl)
-			  {	  String enc = utfEncode(str);
-				  out.write("V ");
-				  out.write(enc);
-				  out.write("\n");
-			  }
+			  writeMLvalue(out,"V ",val);
+	  	
 			 
 	 	}
+	  	if(includeWeb)
+	  	{
+	  		writeMLvalue(out,"G ",v.group);
+	  		writeMLvalue(out,"C ",v.context);
+	  		writeMLvalue(out,"M ",v.comment);
+	  	}
 	  }
 	  /**
 	   * this checks that the #1 #2 etc in translations are the same as they are in english.
@@ -228,7 +266,7 @@ public class downloadLanguages {
 		  	}
 	  }
 	  
-	  public static void saveStrings(String name,Hashtable<String,String>langKeys,Hashtable<String,String>backupKeys)
+	  public static void saveStrings(String name,boolean includeWeb,Hashtable<String,ValueSet>langKeys,Hashtable<String,ValueSet>backupKeys)
 	  {		if(backupKeys==null) { backupKeys = langKeys; }
 			try
 			{
@@ -244,9 +282,11 @@ public class downloadLanguages {
 			 int printed = 0;
 			 for(i=0;i<keyarr.length;i++)
 			 {	String key = keyarr[i];
-				String val = langKeys.get(key);
-				String backval = backupKeys.get(key);
-				if(val==null) { val=backval; }
+				ValueSet v = langKeys.get(key);
+				String val = v==null ? null : v.value;
+				ValueSet backv = backupKeys.get(key);
+				String backval = backv==null ? null : backv.value;
+				if(val==null) { v = backv; val=backval; }
 				else { checkPlaceholders(name,key,backval,val); }
 				
 				// always save languages with translations in their own language
@@ -254,10 +294,13 @@ public class downloadLanguages {
 	    		if(subst!=null) { 
 	    				val = subst;
 	    			}
-	    		
-				printKey(out,key,val);
+	    		while(v!=null)
+	    		{
+				printKey(out,includeWeb,key,v);
 				printed++;
-			 }
+				v = v.next;
+	    		}
+				}
 			 out.write("N "+printed+"\n");
 			 out.close();
 			 System.out.println(name + " "+printed);
@@ -313,7 +356,7 @@ public class downloadLanguages {
 		    	{
 		    	while (trans.next())
 		    	{
-		    		String value = utfDecode(trans.getString(1));
+		    		String value = G.utfDecode(trans.getString(1));
 		    		if(value!=null && !"".equals(value))
 		    		{
 		    			System.out.println("Name of "+lname+" is "+value);
@@ -340,56 +383,68 @@ public class downloadLanguages {
 		*/
 		  return((String[])languages.toArray(new String[languages.size()]));
 	  }
-	  public static void downloadData(String host,String database,String user,String password,String datadirs)
+	  public static void downloadData(String host,String database,boolean includeWeb,
+			  String user,String password,String datadirs,String only)
 	  {	
-		String dirs[] = G.split(datadirs,',');
 	    // output can be a comma separated list of directories, strings are saved to each
 	  	try {
 		  Connection conn = connect(host,database,user,password);
-		  Hashtable<String,String> englishKeys = downloadStrings(conn,"english");
-		  for(String datadir : dirs)
-		  {
-		  saveStrings(datadir+"english.data",englishKeys,null);
-		  }
-	  	  for(String lang : getLanguages(conn)) 
-		   		{ Hashtable<String,String> langKeys = downloadStrings(conn,lang);
-				  for(String datadir : dirs)
-				  {
-		   		  saveStrings(datadir+lang+".data",langKeys,englishKeys);
-				  }
-		   		}  
-	  }
-	  	catch (SQLException err)
-		  	{ 	System.out.println("Sql exception: "+err.toString());
-		  	}	  
-
-	  }
-	  
-	  public static void downloadDataWithSSh(String host,String sshUser,String sshPass,int sshPort,
-			  String database,String user,String password,String datadirs)
-	  {	String dirs[] = G.split(datadirs,',');
-	    // output can be a comma separated list of directories, strings are saved to each
-	  	try {
-		  Connection conn = connectWithSSH(host,sshUser,sshPort,sshPass,database,user,password);
-		  Hashtable<String,String> englishKeys = downloadStrings(conn,"english");
-		  for(String datadir : dirs)
-		  {
-		  saveStrings(datadir+(datadir.endsWith("/")?"":"/")+"english.data",englishKeys,null);
-		  }
-	  	  for(String lang : getLanguages(conn)) 
-		   		{ Hashtable<String,String> langKeys = downloadStrings(conn,lang);
-				  for(String datadir : dirs)
-				  {
-		   		  saveStrings(datadir+(datadir.endsWith("/")?"":"/")+lang+".data",langKeys,englishKeys);
-				  }
-		   		}  
-	  	  conn.close();
-	  	  if(session!=null) { session.disconnect(); session = null; }
+		  downloadStrings(conn,includeWeb,datadirs,only);
+		  conn.close();
 	  	}
 	  	catch (SQLException err)
-		  	{ 	System.out.println("Sql exception: "+err.toString());
-		  	}	  
-
+	  	{ 	System.out.println("Sql exception: "+err.toString());
+	  	}
+	  }
+	  public static void downloadStrings(Connection conn,boolean includeWeb,String datadirs,String only)
+	  {	  try {
+		  String dirs[] = G.split(datadirs,',');
+		  Hashtable<String,ValueSet> englishKeys = downloadStrings(conn,"english",includeWeb);
+		  HashSet<String>included = null;
+		  if(only!=null)
+		  {
+			  String languages[] = only.split(",");
+			  included = new HashSet<String>();
+			  for(String l : languages) { included.add(l.trim().toLowerCase());}
+			  
+		  }
+		  for(String datadir : dirs)
+		  {
+		  if(included==null || included.contains("english"))
+			  { saveStrings(datadir+(datadir.endsWith("/")?"":"/")+"english.data",includeWeb,englishKeys,null);
+			  }
+		  }
+	  	  for(String lang : getLanguages(conn)) 
+		   		{ if(included==null || included.contains(lang))
+		   		  {
+	  		  	  Hashtable<String,ValueSet> langKeys = downloadStrings(conn,lang,includeWeb);
+				  for(String datadir : dirs)
+				  {
+		   		  saveStrings(datadir+(datadir.endsWith("/")?"":"/")+lang+".data",includeWeb,langKeys,englishKeys);
+				  }}
+		   		}  
+	  }
+	  catch (Throwable err)
+	  {
+		System.out.println("error: "+err);
+	  }
+	  	  
+	  }
+	  public static void downloadDataWithSSh(String host,boolean includeWeb,
+			  String sshUser,String sshPass,int sshPort,
+			  String database,String user,String password,String datadirs,String only)
+	  {	
+		  // output can be a comma separated list of directories, strings are saved to each
+		try {
+			Connection conn = connectWithSSH(host,sshUser,sshPort,sshPass,database,user,password);
+			downloadStrings(conn,includeWeb,datadirs,only);
+			conn.close();
+			} 
+			catch (SQLException err)
+	  		{ 	System.out.println("Sql exception: "+err.toString());
+	  		}	
+  	  
+	  	  if(session!=null) { session.disconnect(); session = null; }
 	  }
  /**
   * -sshpass xxxx
@@ -401,30 +456,37 @@ public class downloadLanguages {
   */
 	  public static void main(String args[])
 	  {	  String pass = "";
-	  	  String host = "boardspace.net";
+	  	  String host = "unspecified host";
 	  	  String database = "boardspace";
 	  	  String user = "root";				// database user
 	  	  String sshUser = "boardspa";
+	  	  String task = args.length>0 ? args[0] : "DownloadStrings";
 	  	  String sshPass = null;
 	  	  int sshPort = 9130;
+	  	  boolean useSsh = true;
 	  	  String out = null;
 	  	  boolean download = true;
+	  	  String only = null;
+	  	  boolean includeWeb = false;
 	  	  Preferences prefs = Preferences.userRoot();
-	  	  String initialValue = prefs.get("DownloadStrings","");
-	  	  String pars = G.textAreaDialog(null,"Parameters for download strings",initialValue);
+	  	  String initialValue = prefs.get(task,"");
+	  	  String pars = G.textAreaDialog(null,"Parameters for "+task,initialValue);
 	  	  boolean trouble = true;
 	  	  if(pars!=null) 
 	  	  { 
 	  	  trouble = false;
-	  	  prefs.put("DownloadStrings",pars);
+	  	  prefs.put(task,pars);
 	  	  Tokenizer tok = new Tokenizer(pars);
 	  	  while(tok.hasMoreElements())
 	  	  {	String str = tok.nextToken();
 	  	  	String val = tok.hasMoreTokens() ? tok.nextToken() : "";
 	  	  	if(str.equals("-p")) { pass = val; }
+	  	  	else if("-usessh".equalsIgnoreCase(str)) { useSsh = Boolean.valueOf(val); }
 	  	  	else if("-sshuser".equalsIgnoreCase(str)) { sshUser = val; }
 	  	  	else if("-sshpass".equalsIgnoreCase(str)) { sshPass = val; }
 	  	  	else if("-sshport".equalsIgnoreCase(str)) { sshPort = Integer.parseInt(val); }
+	  	  	else if("-includeweb".equalsIgnoreCase(str)) { includeWeb = Boolean.valueOf(val); }
+	  	  	else if("-only".equalsIgnoreCase(str)) { only = val; }
 	  	  	else if(str.equals("-h")) { host = val; }
 	  	  	else if(str.equals("-u")) { user = val; }
 	  	  	else if(str.equals("-d")) { database = val; }
@@ -434,15 +496,15 @@ public class downloadLanguages {
 	  	  }}
 	  	  if(!download ) { trouble = true; }
 	  	  if(trouble) 
-	  	  	{ System.out.println("use: -sshuser user -sshpass pass -sshport port -h host -u user -p password -d database -o path -download");
+	  	  	{ System.out.println("use: \n -only <languages>\n -includeweb false -usessh true -sshuser user -sshpass pass -sshport port -h host -u user -p password -d database -o path -download");
 	  	  	}
 	  	  else {
 		  	  if(download) 
-		  	  	{ if(sshUser!=null) 
-		  	  		{ downloadDataWithSSh(host,sshUser,sshPass,sshPort,database,user,pass,out);
+		  	  	{ if(useSsh)
+		  	  		{ downloadDataWithSSh(host,includeWeb,sshUser,sshPass,sshPort,database,user,pass,out,only);
 		  	  		}
 			  	  	else 
-			  	  	{downloadData(host,database,user,pass,out); 
+			  	  	{downloadData(host,database,includeWeb,user,pass,out,only); 
 			  	  	}
 		  	  	}
 	  	  }

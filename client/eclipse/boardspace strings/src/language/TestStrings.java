@@ -131,7 +131,7 @@ public class TestStrings
   {	
 
   	System.out.println("Adding language "+language);
-	Hashtable<String,String> langKeys = lang.getTranslations(); 
+	Hashtable<String,String> langKeys = lang.getTranslations(); 			// plain string/translation pairs
   	Hashtable<String,String> langContexts = lang.getContexts();
   	int ok = 0;
   	int failed = 0;
