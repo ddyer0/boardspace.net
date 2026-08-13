@@ -1055,7 +1055,7 @@ public class FileSelector extends FullscreenPanel
 	}
 
     private static final String DirectoryMessage = "Current Directory:";
-    private static final String CurrentFileMessage = "Selected File: ";
+    private static final String CurrentFileMessage = "Selected File:";
     private static final String LoadGame = "Load Game";
     private static final String MakeDirectory = "Make Directory";
     private static final String Delete = "Delete";

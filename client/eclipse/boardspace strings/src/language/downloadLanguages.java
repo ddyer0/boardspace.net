@@ -29,13 +29,13 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.Tokenizer;
 
 class ValueSet
@@ -141,7 +141,17 @@ public class downloadLanguages {
 	    			
 	    			}
 	    	};
-	    	
+	    	for(String lname : getLanguages(conn))
+	    	{
+	    		String lkey = InternationalStrings.languageInLanguageKey(lname,language);
+	    		String translation = getLanguageInLanguage(conn,lname,language);
+	    		ValueSet lset = trans.get(lkey);
+	    		if(lset==null) 
+	    			{ lset = new ValueSet(false,translation,InternationalStrings.languageInLanguageCollection,null,null,null); 
+	    			  trans.put(lkey,lset);
+	    			}
+	    		else {		lset.value = translation; }
+	    	}
 	    }
 	   	return(trans);
 	  }	 
@@ -283,17 +293,11 @@ N — trailing count
 			 for(i=0;i<keyarr.length;i++)
 			 {	String key = keyarr[i];
 				ValueSet v = langKeys.get(key);
-				String val = v==null ? null : v.value;
 				ValueSet backv = backupKeys.get(key);
-				String backval = backv==null ? null : backv.value;
-				if(val==null) { v = backv; val=backval; }
-				else { checkPlaceholders(name,key,backval,val); }
+				if(v==null) { v = backv; }
+				else { checkPlaceholders(name,key,backv.value,v.value); }
 				
-				// always save languages with translations in their own language
-	    		String subst = languageNameTranslations.get(key);
-	    		if(subst!=null) { 
-	    				val = subst;
-	    			}
+
 	    		while(v!=null)
 	    		{
 				printKey(out,includeWeb,key,v);
@@ -311,78 +315,70 @@ N — trailing count
 			}
 
 	  }
+	  private static String[]allLanguages = null;
 	  
-	  //
-	  // this will hold the mapping of a language to its name in its own language.
-	  //
-	  static Hashtable<String,String>languageNameTranslations = new Hashtable<String,String>();
-	  
-	  public static String[] getLanguages(Connection conn) throws SQLException
+	  private static String[] getLanguages(Connection conn) throws SQLException
 	  {		  		
 	  // new version, get the languages list from the actual field
-	  		PreparedStatement ret = conn.prepareStatement("show columns from translation where field='language'");
+		  if(allLanguages!=null) { return allLanguages; }
+		  
+		  PreparedStatement ret = conn.prepareStatement("show columns from translation where field='language'");
 	  		if(ret.execute())
 	  		{
 	    	ResultSet result = ret.getResultSet();
 	    	result.next();
 	    	String all = result.getString(2);
-	    	
-	    	return buildLanguageList(conn,all);
-	  		}
-	  		else
-	  		return null;
-	  		}
-	  public static String[] buildLanguageList(Connection conn,String all)  throws SQLException
-	  {
-		  Vector<String>languages=new Vector<String>();	
-	  		languageNameTranslations.clear();
-	    	
 	    	int start = all.indexOf('(');
 	    	int end = all.indexOf(')');
 	    	String things = all.substring(start+1,end);
 	    	
-	    	String many[] = things.split(",");
-		    PreparedStatement gettrans = conn.prepareStatement("select translation from translation where language=? and keystring=?");
-	    	for(String m : many)
-	    	{	String lname = m.substring(1,m.length()-1);
-	    		languages.addElement(lname);
-	    		gettrans.setString(1,lname);
-	    		gettrans.setString(2,lname);
-		    	languageNameTranslations.put(lname, lname); 
-		    	if(gettrans.execute())
-		    	{
-		    	ResultSet trans = gettrans.getResultSet();
-		    	if(trans!=null)
-		    	{
-		    	while (trans.next())
-		    	{
-		    		String value = G.utfDecode(trans.getString(1));
-		    		if(value!=null && !"".equals(value))
-		    		{
-		    			System.out.println("Name of "+lname+" is "+value);
-		    			languageNameTranslations.put(lname, value);
-		    		}
-	    	}}}}
-	    	
-	
-	  /* this version downloaded only languages that actually have translations
-	   * which makes it less than useful when adding a new language
-	   
-	    	PreparedStatement ret = conn.prepareStatement("select distinct language from translation");
-		    if(ret.execute())
-		    {
-		    	ResultSet result = ret.getResultSet();
-		    	while (result.next())
-		    	{
-		    		String key = utfDecode(result.getString(1));
-		    		if(!"".equals(key)) { languages.addElement(key); }
-		    		
-		    	};
-		    	
-		    }
-		*/
-		  return((String[])languages.toArray(new String[languages.size()]));
+	    	String names[] = things.split(",");
+	    	for(int i=0;i<names.length;i++) { names[i] = names[i].substring(1,names[i].length()-1); }
+	    	return allLanguages = names;
+	  		}
+	  		else
+	  		return allLanguages = new String[] {};
 	  }
+	  
+	  private static String getLanguageInLanguage(Connection conn,String forLanguage,String inLanguage) throws SQLException
+	  {	String result = null;
+	  	String lkey = InternationalStrings.languageInLanguageKey(forLanguage,inLanguage);
+	  	  // prefer the key
+		  PreparedStatement op = conn.prepareStatement("select translation from translation where language=? and keystring=? and collection='" 
+				  	+ InternationalStrings.languageInLanguageCollection+"'");
+		  op.setString(1,inLanguage);
+		  op.setString(2,lkey);
+		  if(op.execute())
+		  {
+			  ResultSet trans = op.getResultSet();
+			  if(trans!=null && trans.next())
+			  {
+			  result = G.utfDecode(trans.getString(1));
+			  }
+		  }
+		  // second choice get something likely as the plain language name
+		  if(result == null || "".equals(result))
+		  {
+			  op = conn.prepareStatement("select translation from translation where language=? and keystring=?");
+			  op.setString(1,inLanguage);
+			  op.setString(2,forLanguage);
+			  if(op.execute())
+			  {
+				  ResultSet trans = op.getResultSet();
+				  while(trans!=null && trans.next())
+				  {
+				  String candidate = G.utfDecode(trans.getString(1));
+				  if(candidate!=null && !"".equals(candidate) && !forLanguage.equals(candidate))
+				  {
+					  result = candidate;
+					  break;
+				  }}
+			  }
+		  }
+		  if(result == null ) { result = forLanguage; }
+		  return result;
+	  }
+	  
 	  public static void downloadData(String host,String database,boolean includeWeb,
 			  String user,String password,String datadirs,String only)
 	  {	
@@ -396,6 +392,7 @@ N — trailing count
 	  	{ 	System.out.println("Sql exception: "+err.toString());
 	  	}
 	  }
+
 	  public static void downloadStrings(Connection conn,boolean includeWeb,String datadirs,String only)
 	  {	  try {
 		  String dirs[] = G.split(datadirs,',');
@@ -414,8 +411,9 @@ N — trailing count
 			  { saveStrings(datadir+(datadir.endsWith("/")?"":"/")+"english.data",includeWeb,englishKeys,null);
 			  }
 		  }
-	  	  for(String lang : getLanguages(conn)) 
-		   		{ if(included==null || included.contains(lang))
+
+		  for(String lang : getLanguages(conn)) 
+		   		{ if(!lang.equals("english") && (included==null || included.contains(lang)))
 		   		  {
 	  		  	  Hashtable<String,ValueSet> langKeys = downloadStrings(conn,lang,includeWeb);
 				  for(String datadir : dirs)

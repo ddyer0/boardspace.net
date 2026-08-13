@@ -908,7 +908,7 @@ public interface ViticultureConstants
 	Build2StructureFree(Activity.BuildStructure,"Build your first structure (you paid $8 for two)",true,true, UI.ShowBuildable),	// serve the stonemason
 	BuildStructure23Free(Activity.BuildStructure,"You may build any $2 or $2 $1 structrure for free",true,true, UI.ShowBuildable),
 	BuildStructureVP(Activity.BuildStructure,"You may build a structure, gain 2VP if you have at least 6",true,true, UI.ShowBuildable),
-	BuildAtDiscount2(Activity.BuildStructure,"You may build a structure with a $2 discount, if it is a $5 or $6 structure, gain 1VP ",true,true, UI.ShowBuildable),	// serve the yellow blacksmith
+	BuildAtDiscount2(Activity.BuildStructure,"You may build a structure with a $2 discount, if it is a $5 or $6 structure, gain 1VP",true,true, UI.ShowBuildable),	// serve the yellow blacksmith
 	BuildAtDiscount2forVP(Activity.BuildStructure,"You may build a structure with a $2 discount, #1 gets 1VP",true,true, UI.ShowBuildable),	// serve the handiman
 	BuildStructureForBeforePlant(Activity.BuildStructure,"You may build a structure at it's regular cost (then plant)",true,true, UI.ShowBuildable),	// serve the overseer
 	

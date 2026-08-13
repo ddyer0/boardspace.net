@@ -629,13 +629,16 @@ public static void emailGame(String to,String subject,String body)
  * @param str
  * @return
  */
-  static String utfEncode(String str)
-  {		int nchars = str.length();
+  public static String utfEncode(String str)
+  {		if(str!=null) 
+  		{
+	    int nchars = str.length();
   		StringBuffer out = new StringBuffer();
   		int idx = 0;
   		while(idx < nchars)
 	  		{
 	  		char ch = str.charAt(idx++);
+	  		// \ in the text will be encoded as \u005c
 	  		if((ch!='\\') && (ch<128)) { out.append(ch); }
 	  		else { 
 	  			//have a look at this chart (expand "latin 1 suppliment" and 
@@ -658,6 +661,8 @@ public static void emailGame(String to,String subject,String body)
 
 		 }
 		 return(out.toString());
+  }  
+  		return null;
   }  
 
 /*  */

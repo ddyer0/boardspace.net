@@ -1060,7 +1060,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 		}
                 	}
             }
-
             result = done;
             now += pausedTime;
             pausedTime = 0;

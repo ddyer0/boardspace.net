@@ -505,7 +505,7 @@ public abstract class commonCanvas extends exCanvas
     private static String ShowGridAction = "show grid";
     private static String TickTockAction = "Tick Tock sound";
 	private static String ExplainUndo = "Undo the last \"Done\" action";
-	private static String GameOverMessage = "Game Over!  Final scores ";
+	private static String GameOverMessage = "Game Over!  Final scores";
 	private static String ExplainEdit = "Stop playing, make changes without rules";
 	private static String ChoiceString = "#1{ Choices, Choice}";
     private static String StartPlayer = "Start #1";

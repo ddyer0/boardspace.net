@@ -452,7 +452,7 @@ public class commonChatApplet extends FullscreenPanel
      	String name = command.equals(ChatInterface.KEYWORD_LOBBY_CHAT)
      			? s.get("Lobby")
      			: (u==null)
-     						? s.get("User ") + userNum
+     						? s.get("User") + " "+userNum
      						: u.name();
      	
         if(KEYWORD_PPCHAT.equals(command) 

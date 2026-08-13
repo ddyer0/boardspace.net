@@ -1243,6 +1243,25 @@ graphics when using a touch screen.
     	addRect(name,b);
     	return(b);
     }
+    
+    /**
+     * add a text button that will have the standard button behavior
+     * 
+    * @param name 	the text for the button
+     * @param id	id when the button is clicked
+     * @param help	help text for mouse-over the button
+     * @param high	highlighted color
+     * @param back	background color
+     * @param idle	text color when inactive
+     * @return true of the button is hit
+     */
+    public TextButton addButton(String name,CellId id,String help,Color high,Color back,Color idle,Color text,Color idleText)
+    {
+    	TextButton b = new TextButton(s.get(name),id,s.get(help),high,back,idle,text,idleText); 
+    	addRect(name,b);
+    	return(b);
+    }
+    
     /**
      * add a text button that will have standard button behavior.
      * 

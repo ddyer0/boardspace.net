@@ -1909,7 +1909,7 @@ public static String expandClassName(String classname)
     			  idx = lim;
     			  out.append(ucodeToChar(v));
     			}}
-    	return(out.toString());
+    		return(out.toString());
     		}
     	return(null);
     }

@@ -315,7 +315,7 @@ public interface YspahanConstants
 	    CARD_PLACE_CUBE_SOUK(false,"Place a cube in any unclaimed souk"),
 	    CARD_TRADE_CAMELS_GOLD(false,"Trade camels for gold"),
 	    CARD_SCORE_CAMELS(false,"Trade up to 4 camels for 2 victory points each"),
-	    CARD_SCORE_GOLD(false,"Trade up to 10 gold for 1 victory point point each"),
+	    CARD_SCORE_GOLD(false,"Trade up to 10 gold for 1 victory point each"),
 	    CONFIRM_CARD_STATE(false,"Click on Done to confirm this card action"),
 	    
 	    DESIGNATE_CUBE_STATE(false,"Pick the first cube to send to the caravan"),

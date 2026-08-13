@@ -78,7 +78,7 @@ public interface EuphoriaConstants
 	static String PlaceAnotherState = "Place another worker, or click on DONE";
 	static String PlaceAnotherStateIIB = "Place another worker (and lose #1Morale), or click on Done";
 	static String PlaceNewState = "Place the new worker, or click on DONE";
-	static String PayCostState = "Pay #1 ";
+	static String PayCostState = "Pay #1";
 	static String PayCostOrDoneState = "Pay #1 or click on DONE";
 	static String CostPrompt = "Pay the cost of your placement";
 	static String ConfirmPayCostState = "Click on DONE to confirm your payment";
@@ -1336,7 +1336,7 @@ public interface EuphoriaConstants
 	    SelectDie6(null,"Die 6",false,false,false,true,	false,false,null),
 	    // special ID for using a recruit ability
 	    RecruitOption(null,"Use Recruit Ability",false,false,false,true,	false,false,null),
-	    RecruitFirstJuliaOption(null,"Keep ",false,false,false,true,	false,false,null),
+	    RecruitFirstJuliaOption(null,"Keep",false,false,false,true,	false,false,null),
 	    RecruitSecondJuliaOption(null,"Use the value of ",false,false,false,true,	false,false,null),
 	    ConfirmDiscard(null,"Confirm this discard",false,false,false,true,false,false,null),
 	    EConfirmDiscard(null,"Confirm this discard",false,false,false,true,false,false,null),

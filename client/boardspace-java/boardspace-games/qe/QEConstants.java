@@ -55,8 +55,8 @@ public interface QEConstants
 	static String HighBidMessage = "High Bid";
 	static String ScoreSummary = "Show a summary of the game scoring";
 	static String IsBidMessage = " is #1";
-	static String ByPlayerMessage = "By player ";
-	static String WinningBidMessage = "Winning bid for ";
+	static String ByPlayerMessage = "By player";
+	static String WinningBidMessage = "Winning bid for";
 	static String QEStrings[] = 
 	{  	ServiceName,
 		WinningBidMessage,

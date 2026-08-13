@@ -82,6 +82,13 @@ public abstract class InternationalStrings implements Config
   	public static Hashtable<String,String> strs = new Hashtable<String,String>();
     public static Hashtable<String,String> newkeys = new Hashtable<String,String>();
     
+    public static String languageInLanguageCollection = "Lobby";
+    
+    public static String languageInLanguageKey(String language,String forlanguage)
+	  {
+		  return language+"-thelanguage";
+	  }
+    
     public static void clearData()
     {
     	strs.clear();
@@ -299,7 +306,7 @@ public abstract class InternationalStrings implements Config
     		{ base = base.substring(0, index) + tok + base.substring(index + 2);
     		}
     		else
-    		{ Plog.log.addLog("missing index for ",target," in \"",sub,"\"");
+    		{ Plog.log.addLog("missing index in "+base+" for ",target," in \"",sub,"\"");
     		}
     	}
     	return(base);
@@ -623,7 +630,9 @@ public abstract class InternationalStrings implements Config
      	langField.add(m);
      	for(String lang : languages) 
 			 { if(!lang.equalsIgnoreCase(current))
-				 {JMenuItem mi = new JMenuItem(s.get(lang),lang);
+				 {String name = s.get(languageInLanguageKey(lang,"c"));
+				  if(name==null) { name = s.get(lang); }
+				  JMenuItem mi = new JMenuItem(s.get(lang),lang);
 			      mi.addActionListener(ev);
 			 	  langField.add(mi);
 				 }

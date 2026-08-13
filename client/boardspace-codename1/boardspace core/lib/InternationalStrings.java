@@ -83,6 +83,13 @@ public abstract class InternationalStrings implements Config
   	public static Hashtable<String,String> strs = new Hashtable<String,String>();
     public static Hashtable<String,String> newkeys = new Hashtable<String,String>();
     
+    public static String languageInLanguageCollection = "Lobby";
+    
+    public static String languageInLanguageKey(String language,String forlanguage)
+	  {
+		  return language+"-thelanguage";
+	  }
+    
     public static void clearData()
     {
     	strs.clear();

@@ -1042,7 +1042,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         long later = now;
         boolean cheer = G.isCheerpj();
         if (!finished)
-        {
+        {   
             Search_Result done = Search_Result.Active;
 
             for (int i = 0;
@@ -1060,7 +1060,6 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 		}
                 	}
             }
-
             result = done;
             now += pausedTime;
             pausedTime = 0;

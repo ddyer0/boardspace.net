@@ -35,7 +35,7 @@ public interface BlackDeathConstants
 	static final String BlackDeathFirstInfect = "Infection phase (spread only, no attacks) #1 infection attempts remaining";
 	static final String BlackDeathMovementState = "Movement phase, #1 movement points remaining";
 	static final String BlackDeathFirstMovement = "Movement phase, (your units only) #1 movement points remaining";
-	static final String BlackDeathWesternMovement = "Extra movement, Move a unit toward the west ";
+	static final String BlackDeathWesternMovement = "Extra movement, Move a unit toward the west";
 	static final String BlackDeathEasternMovement = "Movement phase, Move a unit toward Jerusalem";
 	
 	static final String BlackDeathInfectionState = "Infection phase, #1 infection attempts remaining";

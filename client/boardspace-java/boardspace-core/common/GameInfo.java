@@ -1328,7 +1328,7 @@ synchronized(allGames) {
 				gomokuTimes,
 				gomokuClass,gomokuRules,gomokuAbout,
 				gomokuVideo,false, BlackOverWhite));
-		put(new GameInfo(267,ES.test,132,"PE",NInARowGames,"Pente","Pente",
+		put(new GameInfo(267,ES.game,132,"PE",NInARowGames,"Gomoku","Pente",
 				OneBotPlus,
 				gomokuTimes,
 				gomokuClass,gomokuRules,gomokuAbout,

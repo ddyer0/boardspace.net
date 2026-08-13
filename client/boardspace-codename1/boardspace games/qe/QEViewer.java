@@ -38,6 +38,7 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import vnc.VNCService;
 
+// TODO: add proforma color to QE
 
 public class QEViewer extends CCanvas<QECell,QEBoard> implements QEConstants
 {	static final long serialVersionUID = 1000;
@@ -1053,10 +1054,10 @@ public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode repl
     	QEChip.Back.drawChip(gc,this,new Rectangle(bx,by,bw,bh),null);
 		GC.setFont(gc,largeBoldFont());
 		QEPlayer winningPlayer = bb.getPlayer(bid.player); 
-		Text msg1= icon(WinningBidMessage,bid.tileWon,"");
+		Text msg1= icon(s.get(WinningBidMessage)+" ",bid.tileWon,"");
 		FontMetrics gm = GC.getFontMetrics(gc);
 		int offset = msg1.height(gm);
-		Text msg2 = icon(ByPlayerMessage,winningPlayer.flag,s.get(IsBidMessage,""+bid.bid));
+		Text msg2 = icon(s.get(ByPlayerMessage)+" ",winningPlayer.flag,s.get(IsBidMessage,""+bid.bid));
 			GC.Text(gc,true,bx,by-offset/2,bw,bh,Color.black,null,msg1);
 			GC.Text(gc,true,bx,by+offset/2,bw,bh,Color.black,null,msg2);
 		}

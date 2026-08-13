@@ -32,6 +32,7 @@ public class TextButton extends ToggleButton
 	public Color backgroundColor = Color.white;
 	Color inactiveColor = Color.white;
 	public Color textColor = Color.black;
+	public Color idleTextColor = Color.black;
 	public Color frameColor = Color.black;
 	public boolean square;
 	private Text onText = TextChunk.create("button");
@@ -46,9 +47,21 @@ public class TextButton extends ToggleButton
 		offText = TextChunk.create(msg);
 	}
 
-	/* constructor */
+	/* constructor, on and off messages same */
 	public TextButton(String label,CellId code,String help,Color highlight,Color background,Color inactive)
 	{	this(label,code,help,label,code,help,highlight,background,inactive);
+	}
+	public TextButton(String label,CellId code,String help,Color highlight,Color background,Color inactive,Color text,Color idleText)
+	{	this(label,code,help,label,code,help,highlight,background,inactive,text,idleText);
+	}
+	
+
+	/* constructor */
+	public TextButton(String onLabel,CellId onCode,String onHelp,String offLabel,CellId offCode,String offHelp,
+			Color highlight,Color background,Color inactive,Color text,Color idleText)
+	{	this(onLabel,onCode,onHelp,offLabel,offCode,offHelp,highlight,background,inactive);
+		textColor = text;
+		idleTextColor = idleText;
 	}
 
 	/* constructor */
@@ -101,16 +114,17 @@ public class TextButton extends ToggleButton
 	{
 		boolean hit = false;
 		Text msg = isOn ? onText : offText;
+		boolean inactive = highlight==null;
 		if(square)
 		{  
-			hit = GC.handleSquareButton(gc,rot, r,highlight,msg, textColor, 
+			hit = GC.handleSquareButton(gc,rot, r,highlight,msg, inactive ? idleTextColor : textColor, 
 						frameColor ,isOn&&highlightWhenIsOn ? backgroundColor : highlightColor,
-						isOn&&highlightWhenIsOn ? highlightColor : highlight==null ? inactiveColor : backgroundColor);
+						isOn&&highlightWhenIsOn ? highlightColor : inactive ? inactiveColor : backgroundColor);
 		}
 		else
 		{
 			hit = GC.handleRoundButton(gc,rot, r, highlight,
-						msg, textColor, 
+						msg, inactive ? idleTextColor : textColor, 
 						frameColor, isOn&&highlightWhenIsOn? backgroundColor : highlightColor, 
 						isOn&&highlightWhenIsOn ? highlightColor : highlight==null ? inactiveColor : backgroundColor);
 		}

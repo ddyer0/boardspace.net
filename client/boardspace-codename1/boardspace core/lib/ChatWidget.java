@@ -89,7 +89,7 @@ public class ChatWidget
 	static private final String MESSAGETOPROMPT = "To #1:";
 	static private final String MESSAGEFROM = "From #1";
 	static private final String SENDPROMPT = "Send";
-	static private final String USERPROMPT = "User ";
+	static private final String USERPROMPT = "User";
     static private final String InitMessage = "Type your message here.";
     static private final String EditMessage = "Edit the text";
     static private final String TranslationLegend = "(#1 from #2)";

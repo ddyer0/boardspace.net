@@ -343,7 +343,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-     	G.SetRect(swapButton,boardX+CELLSIZE*2,boardY+CELLSIZE*2,CELLSIZE*4,CELLSIZE*2);
+     	G.SetRect(swapButton,boardX+CELLSIZE,boardY+CELLSIZE*2,CELLSIZE*3,CELLSIZE*3/2);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
