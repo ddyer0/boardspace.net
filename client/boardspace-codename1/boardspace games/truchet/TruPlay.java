@@ -232,7 +232,7 @@ public class TruPlay extends commonRobot<TruGameBoard> implements Runnable, TruC
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	boardSearchLevel = 1;
+ 	boardSearchLevel = 0;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
  	if (board.MandatoryDoneState())
     { // avoid problems with gameover by just supplying a done

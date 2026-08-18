@@ -86,7 +86,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     private int MAX_DEPTH = 8;						// search depth.
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
     @SuppressWarnings("unused")
-    private int boardSearchLevel = 1;				// the current search depth
+    private int boardSearchLevel = 0;				// the current search depth
   
     
      /**

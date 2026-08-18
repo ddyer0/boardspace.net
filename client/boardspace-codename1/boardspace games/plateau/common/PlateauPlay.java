@@ -68,7 +68,7 @@ public class PlateauPlay
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
-    private int boardSearchLevel = 1;				// the current search depth
+    private int boardSearchLevel = 0;				// the current search depth
     public boolean randomize = false;
     public boolean sort = false;
     public boolean useDelays = false;
@@ -447,7 +447,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
- 	boardSearchLevel = 1;
+ 	boardSearchLevel = 0;
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm

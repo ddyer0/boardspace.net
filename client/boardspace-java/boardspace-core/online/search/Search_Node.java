@@ -30,7 +30,6 @@ public class Search_Node implements Constants,Opcodes
     void setPV(Search_Node t) 
     {         principle_variation = t; 
     }
-    private CommonMoveStack  vmoves;			// the original vector of moves, from the robot
     private commonMove cmoves[];	// converted to an array of commonMove
     boolean some_terminals = false;		// some are depth limited or gameover
     boolean all_terminals = false;		// all are depth limited or gameover
@@ -68,7 +67,7 @@ public class Search_Node implements Constants,Opcodes
     {	if(!prepared) { PrepareNode(); }
       	return(cmoves);
     }
-    public commonMove next_candidate_move()	// get the current move
+    public commonMove next_candidate_move()// get the current move
     {
     	if (!prepared)  {   PrepareNode();   }
     	commonMove ccm = ((number_of_moves>0)&&(next_move_index<number_of_moves))
@@ -126,11 +125,11 @@ public class Search_Node implements Constants,Opcodes
         prepared = true;
 
         RobotProtocol rr = search_driver.robot;
-        vmoves=null;
+        CommonMoveStack vmoves=null;
         cmoves=null;
         number_of_moves=0;
         if(!rr.Game_Over_P())
-        {	vmoves = rr.List_Of_Legal_Moves();
+        {	vmoves = rr.List_Of_Legal_Moves(search_driver.threadPool);
         	number_of_moves = vmoves.size();
         	int extra = 0;
         	if((level==0) && (number_of_moves>0))

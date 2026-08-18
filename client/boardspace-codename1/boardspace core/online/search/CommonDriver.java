@@ -133,6 +133,8 @@ public abstract class CommonDriver implements TreeProviderProtocol {
      * @return a linked list of commonMove linked through the "next" element.
      */   
     public abstract commonMove getCurrent2PVariation();
+	protected abstract void pauseThreads();
+	protected abstract void resumeThreads();
     
 
 }

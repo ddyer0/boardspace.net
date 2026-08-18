@@ -78,7 +78,7 @@ public class TrikePlay extends commonRobot<TrikeBoard> implements Runnable, Trik
     private TrikeChip movingForPlayer = null;	// optional, some evaluators care
     
 	// alpha beta parameters
-    private int boardSearchLevel = 1;				// the current search depth
+    private int boardSearchLevel = 0;				// the current search depth
   
     // mcts parameters
     // also set MONTEBOT = true;
@@ -300,7 +300,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
- 	boardSearchLevel = 1;
+ 	boardSearchLevel = 0;
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm

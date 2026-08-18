@@ -64,6 +64,14 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     public HivePlay()
     {
     }
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	HivePlay cc = (HivePlay)c;
+    	cc.evaluator = evaluator;
+    	cc.Strategy = Strategy;
+    	
+    	return(c);
+    }
 
     public void initStats()
     {
@@ -431,6 +439,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
+            search_state.max_threads = 0;// DEPLOY_THREADS;
             //search_state.allow_killer = true;
             search_state.allow_best_killer = KILLER_HEURISTIC;
             search_state.save_top_digest=true;	// always on background check on the robot

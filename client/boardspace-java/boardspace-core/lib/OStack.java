@@ -301,6 +301,10 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 			  index++;			// do this as a second operation so readers will never see an empty slot
 			  return(this);
 			}
+		public synchronized StackIterator<T>parallelPush(T da)
+		{
+			return push(da);
+		}
 		/** remove an element from the stack, and shuffle the array contents 
 		 * return the stack (for compatibility with the StackInterator API)
 		 */

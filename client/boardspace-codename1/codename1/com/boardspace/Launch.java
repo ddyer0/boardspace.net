@@ -218,7 +218,7 @@ public class Launch extends Lifecycle implements stuff {
 	Form current = null;
 	public boolean isDevelopmentVersion() { return(false); }
 	public void runBoardspace()
-	{	//if(console || isDevelopmentVersion()) { G.createConsole(); }
+	{	if(console || isDevelopmentVersion()) { G.createConsole(); }
 		/*
 		new Thread(new Runnable() { public void run() {
 			while(true)

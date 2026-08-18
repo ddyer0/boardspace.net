@@ -4,7 +4,7 @@
     This file is part of the Boardspace project.
     
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
-    the GNU General Public License as published by the Free Software Foundation, 
+    the GNU General Public License as published by the Free Software Foundation,
     either version 3 of the License, or (at your option) any later version.
     
     Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -31,7 +31,7 @@ import lib.StackIterator;
 /**
  * driver for Alpha-Beta searches
  *
- * this is the overall controller for a search.  Although the actual structure
+ * this is the overall controller for an alpha-beta search.  Although the actual structure
  * of the search is a traditional alpha-beta driven evaluation, all the data
  * is maintained in this class and {@link Search_Node} classes, instead of the traditional
  * recursive stack based structure.  It's less efficient this way, but much easier
@@ -41,6 +41,8 @@ import lib.StackIterator;
  *  * @author ddyer
  *
  */
+
+
 public class Search_Driver extends CommonDriver implements Constants,Opcodes
 {	// if true, when there is a single choice just use it.  This is normally the correct thing,
 	// but might not be if the overall play depends on getting an accurate value for the moves
@@ -88,6 +90,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	
 	public void Make_Move(commonMove child)
 	{	currentMove = child;
+		makeThreadMoves(child);
 		if(save_digest)
 			{ BoardProtocol robo = robot.getBoard();
 			  long dig = robo.Digest(); 
@@ -116,6 +119,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	
 	public void Unmake_Move(commonMove child)
 	{	currentMove = null;
+		unmakeThreadMoves(child);
 		robot.Unmake_Move(child);
 		if(save_digest) 
               {	BoardProtocol b = robot.getBoard();
@@ -283,6 +287,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
      *    moves as the d's
      */
     public boolean allow_killer;	// if true, use the killer heuristic
+    
+    public int max_threads = -1;	// no threads
     /**
      * alternative to allow_killer, allow_best_killer promotes only the best of the cousin nodes
      * to be investigated first
@@ -302,7 +308,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     public int total_good_enough_cutoffs;
     public int total_searches;
     public int total_killers;
-
+    public int killer_helped;
     public Search_Driver()/* default constructor, for the summary module */
     {
     } 
@@ -755,7 +761,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {
             s.println(total_searches + " searches: ");
         }
-        String kill = (total_killers>0) ? (" Killers: "+total_killers) : "";
+        String kill = (total_killers>0) ? (" Killers: "+total_killers + " ("+(int)(killer_helped*100.0/total_killers)+"%)") : "";
         String nullm = use_nullmove? (" Null Promotions: "+nullmove_promotions) : "";
         int pc = (skipped_evals*100)/(skipped_evals+non_skipped_evals+1);
         String skipm = static_eval_optimization ? " Skipped Evals: "+skipped_evals+"("+pc+"%)" : "";
@@ -846,6 +852,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {
             total_evaluations += ss.total_evaluations;
             total_killers += ss.total_killers;
+            killer_helped += ss.killer_helped;
             total_time += ss.total_time;
             total_alpha_beta_cutoffs += ss.total_alpha_beta_cutoffs;
             total_alpha_beta_cost += ss.total_alpha_beta_cost;
@@ -856,7 +863,80 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         }
     }
     
-    public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[])
+    public Sthread threadPool[] = null;
+    public void createThreadPool()
+    {
+    	threadPool = null;
+    	if(max_threads>=1)
+    	{
+    		threadPool = new Sthread[max_threads];
+    		for(int i=0;i<max_threads;i++)
+    			{ threadPool[i] = new Sthread(this,robot.copyPlayer("alphabeta"),i );
+     			  threadPool[i].start(); }
+    	}
+    }
+    public void makeThreadMoves(commonMove ch)
+    {
+    	if(threadPool!=null)
+    	{
+    		for(Sthread s : threadPool) { s.makeMove(ch); }
+    	}
+    }
+    public void unmakeThreadMoves(commonMove ch)
+    {
+    	if(threadPool!=null)
+    	{
+    		for(Sthread s : threadPool) { s.unmakeMove(ch); }
+    	}
+    }
+    public void deleteThreadPool()
+    {	Sthread p[] = threadPool;
+    	threadPool = null;
+    	if(p!=null)
+    	{
+    		for(int i=0;i<p.length;i++)
+    		{
+    			p[i].setExit();
+    		}
+    	}
+    }
+    public void stopEvaling()
+    {
+    	Sthread p[] = threadPool;
+    	if(p!=null) { for(Sthread s : p) { s.stopEvaling(); }}
+    }
+    public void pauseThreads()
+    {	if(threadPool!=null)
+    	{
+    	for(Sthread s : threadPool) { s.setPaused(true); }
+    	}
+    }
+    public void resumeThreads()
+    {	if(threadPool!=null)
+    	{
+    	for(Sthread s : threadPool) { s.setPaused(false); }
+    	}
+    }
+    public boolean startEval(commonMove m)
+    {	
+    	for(int i=0;i<threadPool.length;i++)
+    	{
+    		boolean running = threadPool[i].startEval(m);
+    		if(running) { return true; }
+    	}
+    	return false;
+    }
+    public commonMove finishEval() throws Throwable
+    {	
+    	for(int i=0;i<threadPool.length;i++)
+    		{
+    		commonMove m = threadPool[i].finishEval();
+    		if(m!=null) { return m; }
+    		}
+    	return null;
+    }
+    
+    public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[]) 
     {	//boolean all_depth_limited = true;
     	boolean all_terminals = true;
     	//boolean some_depth_limited = false;
@@ -869,7 +949,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     				&& static_eval_optimization		// when we know alpha-beta will eliminate this node
     				&& (sz>0)
     				&& (pred != null)				// pred is null at top level
-    				&&(pred.best_move!=null);		// best_move is null when we're the leading edge
+    				&& (pred.best_move!=null);		// best_move is null when we're the leading edge
    		if(cutting)
         {
    			// transfer the alpha-beta information
@@ -881,12 +961,17 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             {
             	cutoff_limit = -pred.i_can_get;
             }
+           if(cutoff_limit==INFINITY)
+           {
+        	   cutting=false;	// no point
+           }
         }
     	int extra = 0;				// extra is the count of first moves not subject to sorting
         BoardProtocol b=null;
         int search_moven = 0;
         int search_whoseTurn=0;
         long search_digest = 0;
+        commonMove usedKiller = null;
         boolean has_nullmove = false;
         BoardProtocol search_board=null;
         // if we are not starting a new nullmove, propagate the nullmove from the parent.
@@ -919,11 +1004,12 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 
         if(check_duplicate_digests) { allDigests = new IntObjHashtable<commonMove>(); }
         
-        if(allow_best_killer)
+        if(allow_best_killer && cutting)
         {
         commonMove killerBest = sn.killer_best_move();
-        for(int idx=extra;killerBest!=null && idx<sz;idx++)
-            {
+        if(killerBest!=null && killerBest.local_evaluation()*2>cutoff_limit)
+        {for(int idx=extra;idx<sz;idx++)
+            {	
             	commonMove mm = mvec[idx];
             	if(mm.Same_Move_P(killerBest))
             	{	// make it first but otherwise do nothing
@@ -931,17 +1017,42 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
              	    mvec[extra]=mm;
              	    extra++;
              	    total_killers++;
-             	    killerBest = null;
+             	    usedKiller = mm;
+             	    idx = sz;	// terminate
             	}
-            }	       	
+            }	}       	
         }
         
-        for(int idx=has_nullmove?1:0;idx<sz;idx++)
-        {	commonMove mm = mvec[idx];
+        int startIndex = has_nullmove?1:0;
+        int finIndex = startIndex;
+        try {
+        while(finIndex<sz)	// finish early, still need to wait for laggers
+        {	
+        	int startIndex0 = startIndex;
+        	commonMove mm = null;
+   
+        	if(threadPool!=null)
         	{
-            total_evaluations++;
-            Static_Evaluate_Move(mm);
-            
+        	// separate starting and finishing so parallel threads can do the work
+        	if(startIndex<sz && startEval(mvec[startIndex0])) 
+        		{ startIndex++; total_evaluations++; }
+            	mm = finishEval();          
+        	}
+        	if(mm==null  && startIndex<sz && startIndex==startIndex0)
+        	{
+        	// all the threads are busy or fully loaded, do one ourselves
+        	// experiment shows that this helps.
+        	mm = mvec[startIndex0];
+        	startIndex++;
+        	total_evaluations++;
+    		Static_Evaluate_Move(mm);
+        	}
+        	if(mm!=null)
+        	{ finIndex++; 
+        	if(usedKiller==mm) 
+        	{
+        		killer_helped++;
+        	}
             if(cutting
             	  &&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)
            		  && (mm.local_evaluation()>=cutoff_limit)
@@ -949,15 +1060,22 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             {	// we hit a value that can cause an alpha-beta cutoff. 
           	// so skip the rest
            	//G.print("Skip "+pred.prepare_clock+" "+mm+" "+mm.local_evaluation+" > "+cutoff_limit);   
-          	skipped_evals += sz-idx-1;
-           	sz = idx+1;
+          	skipped_evals += sz-finIndex;
             non_skipped_evals += sz;
+            // we need to wait for active evals to finish
+            while(finIndex<startIndex)
+            {
+            	if(finishEval()!=null) { finIndex++; }
+            }
+           	sz = finIndex;
             }
             else if(allow_killer) 
               {    
             	boolean goDeeper = mm.searchDeeper() ;
                 if(goDeeper && !mm.gameover())
                 {
+                // find a sibling move the caused a cutoff, give us this evaluation which will adjust
+                // our position in the deeper searches
                	commonMove killer = sn.killer_evaluate_move(mm);
               
                 if((killer!=null) 
@@ -973,14 +1091,13 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 	// it merely flags moves that were originally positioned 
                 	// by the killer heuristic
                 	mm.set_local_evaluation(NaN);
-                	total_killers++;
                   }}
               }
 
               if((promoted!=null)
             		  && promoted.Same_Move_P(mm))
               {	// put the promoted move first, and exempt it from the sort
-             	  mvec[idx]=mvec[extra];
+             	  mvec[startIndex0]=mvec[extra];
             	  mvec[extra]=mm;
             	  promoted = null;		// only do it once
             	  nullmove_promotions++;
@@ -1003,6 +1120,13 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
               //all_depth_limited &= search_limit;
               //some_depth_limited |= search_limit;
         	}
+        }}
+        catch (Throwable err)
+        {
+    		Abort_Search_In_Progress("robot eval "+err.toString());
+        }
+        finally {
+        	stopEvaling();
         }
         sn.some_terminals = some_terminals;
         sn.all_terminals = all_terminals;
@@ -1100,7 +1224,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
      * @return a move selected as next
      */
     public commonMove Find_Static_Best_Move(int randomn,double dif)
-    {
+    {	createThreadPool();
         try
         {	
         	if(verbose>0)
@@ -1182,8 +1306,17 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             }
 
             return (null);
-        } /* try */finally
-        {	robot.setSearcher(null);
+        }
+        catch (Throwable err)
+        {
+        	if(G.debug()) { G.print("error in robot "+G.getStackTrace(err)); }
+        	return null;
+        }
+        /* try */finally
+         {	
+            deleteThreadPool();
+
+        	robot.setSearcher(null);
             // Describe_Search(); 
             robot.setProgress(0.0);
 			active = false;

@@ -536,6 +536,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     {	long pausedTime = 0;
     	if(pauseFlag)
     	{
+    	search_driver.pauseThreads();
     	while(pauseFlag) 
     		{ long pausedStart = G.Date();
     		  synchronized (this)
@@ -549,6 +550,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     		}
         	paused = false;	
    		}
+    	search_driver.resumeThreads();
+
     	}
     	return(pausedTime);
     }
@@ -926,6 +929,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	        
 	        Unmake_Move(mm);
 	        
+
 	        return (val);
 	    }
 	 public void prepareForDescent(UCTMoveSearcher m) { }

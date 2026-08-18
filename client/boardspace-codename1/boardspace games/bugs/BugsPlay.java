@@ -300,7 +300,7 @@ public void PrepareToMove(int playerIndex)
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
- 	boardSearchLevel = 1;
+ 	boardSearchLevel = 0;
  	UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this,true);
  	try {
          	// this is a test for the randomness of the random move selection.

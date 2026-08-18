@@ -17,6 +17,7 @@
 package online.search;
 
 
+import lib.G;
 import lib.Random;
 import online.game.CommonMoveStack;
 import online.game.Game;
@@ -105,7 +106,10 @@ public interface RobotProtocol extends SimpleRobotProtocol
     public void Update_Last_Reply(double value,int forPlayer,commonMove prev,commonMove cur);
     
     /** move list for next round of search */
-    public CommonMoveStack  List_Of_Legal_Moves();
+    public default CommonMoveStack List_Of_Legal_Moves() { throw G.Error("Must be supplied or bypassed"); }
+    /** this version used for parallel alpha-beta searches */ 
+    public default CommonMoveStack List_Of_Legal_Moves(Sthread[]threads) { return List_Of_Legal_Moves(); }
+    
     /** static evaluate the current board position from the viewpoint of "forplayer"
      * At this point the move has already been made.
      * The move spec is supplied so it can be used to store values of interest.
@@ -259,7 +263,7 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	public void setEvaluation(commonMove currentMoveOriginal, double newval);
 	public commonMove Random_Good_Move(Search_Driver search_Driver, int n, double dif);
 	
-
+	
 	
 	// *** TEMPORARILY RESTORED ***
 	   /** re-score the move/value for the new player

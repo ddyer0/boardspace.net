@@ -547,6 +547,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     {	long pausedTime = 0;
     	if(pauseFlag)
     	{
+    	search_driver.pauseThreads();
     	while(pauseFlag) 
     		{ long pausedStart = G.Date();
     		  synchronized (this)
@@ -560,6 +561,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     		}
         	paused = false;	
    		}
+    	search_driver.resumeThreads();
+
     	}
     	return(pausedTime);
     }
@@ -904,8 +907,8 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		 return Static_Evaluate_Search_Move(mm,current_depth,master);
 	 }
 	 public double Static_Evaluate_Search_Move(commonMove mm,int current_depth,CommonDriver master)
-	    {  
-	     	Make_Move(mm);
+	    { 
+		 	Make_Move(mm);
 	    	if(master.check_duplicate_digests)
 		    	{ 
 	    		// this is a debugging mode to detect duplicate moves by comparing digests
@@ -937,6 +940,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	        
 	        Unmake_Move(mm);
 	        
+
 	        return (val);
 	    }
 	 public void prepareForDescent(UCTMoveSearcher m) { }

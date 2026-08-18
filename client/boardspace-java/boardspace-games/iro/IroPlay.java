@@ -59,7 +59,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
-    private int boardSearchLevel = 1;				// the current search depth
+    private int boardSearchLevel = 0;				// the current search depth
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
@@ -232,7 +232,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
           	
                // it's important that the robot randomize the first few moves a little bit.
                int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
-               boardSearchLevel = 1;
+               boardSearchLevel = 0;
                IroState state = board.getState();
                int depth = state==IroState.Play ? MAX_DEPTH : MAX_DEPTH-2;	// search depth
                double time = state==IroState.Play ? ALPHABETA_TIME : 1;

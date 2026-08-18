@@ -307,7 +307,7 @@ public abstract class InternationalStrings implements Config
     		{ base = base.substring(0, index) + tok + base.substring(index + 2);
     		}
     		else
-    		{ Plog.log.addLog("missing index for ",target," in \"",sub,"\"");
+    		{ Plog.log.addLog("missing index in "+base+" for ",target," in \"",sub,"\"");
     		}
     	}
     	return(base);
