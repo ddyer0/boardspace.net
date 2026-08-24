@@ -112,8 +112,6 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	{	sz--;
     		commonMove target = mvec[sz];
     		// trim non-terminal moves back to a specified level
-    		if(target.depth_limited()==commonMove.EStatus.NOT_EVALUATED)
-    			{ G.print("off"); }
     		if(target.depth_limited()!=commonMove.EStatus.EVALUATED)
     			{ 
     			return(sz+1); 
@@ -141,7 +139,8 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	 	{ current_depth_limit--; 
     	 	}
     	}
-         return(depth_limited || ((board.robotDepth+1)>=current_depth_limit));	// ignore the real depth and use the depth we maintain
+    	boolean limit = depth_limited || ((board.robotDepth+1)>=current_depth_limit);
+    	return(limit);	// ignore the real depth and use the depth we maintain
    }
     
  /** undo the effect of a previous Make_Move.  These
@@ -162,12 +161,11 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	switch(m.op)
     	{ 
     	case MOVE_NULL: 
-    		board.robotDepth -= mm.to_row;
     		if(!nullmove_done && mm.best_move()!=null)
     		{	double scorechange = (baseline_score-mm.evaluation());
     			// after the nullmove is done, characterize the move as "casual" if nullmove doesn't produce
     			// much score change.  Similarly, call it "serious" if the score change is big.  These are
-    			// used to tweak the width limit and depth limit for the remainder of the search.
+    			// used to tweak the width limit and depthl imit for the remainder of the search.
     			nullmove_done = true;
     			if(scorechange<(VALUE_OF_RABBIT/2))
     				{
@@ -182,42 +180,26 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     			}
     		}
     		break;
-    	case MOVE_PASS: board.robotDepth -= mm.to_row;
+    	case MOVE_PASS: 
     		break;
     	case MOVE_PUSH:
-    	case MOVE_PULL:	board.robotDepth -= 2;
+    	case MOVE_PULL:	
     		break;
-    	default: board.robotDepth -= 1;
+    	default: 
     	}
     	depth_limited = false;
+    	board.UnExecute(mm);
     	if( board.robotDepth<=4)
     	{	board.repeatedPositions.removeFromRepeatedPositions(m);
     	}
-    	board.UnExecute(mm);
      }
 /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
     {   ArimaaMovespec mm = (ArimaaMovespec)m;
-    	int startstep = board.playStep;
     	int nreps = board.RobotExecute(mm,board.robotDepth<=4);
-     	depth_limited = (nreps>=3);
-    	switch(m.op)
-    	{ 
-    	case MOVE_NULL: 
-    	case MOVE_PASS:
-    		{
-    		int steps = 4-startstep;
-    		board.robotDepth += steps;
-    		mm.to_row = steps;
-    		}
-    		break;
-    	case MOVE_PUSH:
-    	case MOVE_PULL:	board.robotDepth += 2;
-    		break;
-    	default: board.robotDepth += 1;
-    	}
+    	depth_limited = nreps>=3;
     	}
 
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
@@ -362,15 +344,15 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
-        	BOTDEPTH = 8;
+        	BOTDEPTH = 7;
         	DEFAULT_DEPTH = 6;
         	break;
         case DUMBOT_LEVEL:
         case SMARTBOT_LEVEL:
-        	BOTDEPTH=9;
+        	BOTDEPTH=7;
         	break;
         case BESTBOT_LEVEL:
-        	BOTDEPTH = 13;
+        	BOTDEPTH = 8;
         	break;
         default: G.Error("Not expecting level", strategy);
         }
@@ -472,6 +454,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
             search_state.good_enough_to_quit = VALUE_OF_WIN;
             search_state.allow_good_enough = true;
             search_state.allow_killer = KILLER;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.verbose=0;					// debugging
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;			// debugging only

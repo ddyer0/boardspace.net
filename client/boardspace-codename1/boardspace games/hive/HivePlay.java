@@ -26,8 +26,7 @@ import lib.*;
  * hive uses only alpha-beta
  */
 
-public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, HiveConstants,
-    RobotProtocol
+public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, HiveConstants, RobotProtocol
 {	
 	private boolean KILLER_HEURISTIC = false;
 	private boolean SAVE_TREE = false;				// debug flag for the search driver
@@ -64,6 +63,14 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     public HivePlay()
     {
     }
+    public RobotProtocol copyPlayer(String from)	// from is the thread name
+    {	RobotProtocol c = super.copyPlayer(from);
+    	HivePlay cc = (HivePlay)c;
+    	cc.evaluator = evaluator;
+    	cc.Strategy = Strategy;
+    	
+    	return(c);
+    }
 
     public void initStats()
     {
@@ -92,6 +99,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  */
     public void Unmake_Move(commonMove m)
     {	Hivemovespec mm = (Hivemovespec)m;
+    	//Plog.log.addLog("U "+m);
         board.UnExecute(mm);
         extendedSearch = false;
         //G.print("U "+mm +" "+ mm.local_evaluation +" "+mm.evaluation);
@@ -105,6 +113,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     public void Make_Move(commonMove m)
     {   Hivemovespec mm = (Hivemovespec)m;
         //G.print("E "+mm);
+        //Plog.log.addLog("M "+m);
     	commonMove.EStatus stat = mm.depth_limited();
     	extendedSearch = stat==commonMove.EStatus.EVALUATED_CONTINUE;
         board.RobotExecute(mm);
@@ -116,10 +125,34 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
+    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {	movelist.clear();
+    	if(threads!=null)
     {
-        CommonMoveStack moves = board.GetListOfMoves(extendedSearch);
-        return moves;
+    	int n = threads.length;
+    	for(int i=1;i<=n;i++)
+    		{
+    		board.GetListOfMoves(movelist,extendedSearch,i,n+1);
+    		}
+    	board.GetListOfMoves(movelist,extendedSearch,n+1,n+1);
+    	Sthread.waitForIdle(threads);
+    	}
+    	else
+    	{
+        board.GetListOfMoves(movelist,extendedSearch,1,1);
+    	}
+    	/*
+        if(G.debug())
+        {
+        	CommonMoveStack all = new ParallelCommonMoveStack();
+        	board.GetListOfMoves(all,extendedSearch,1,1);
+        	G.Assert(all.size()==movelist.size(),"all moves generated");
+        }
+        */
+    	if(movelist.size()==0) { movelist.push(new Hivemovespec(board.whoseTurn,MOVE_PASS_DONE)); }
+
+        return movelist;
     }
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
@@ -242,7 +275,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	evaluator = new RevisedStandardEvaluator();
         	break;
         case DUMBOT_LEVEL:
-        	MAX_DEPTH = DUMBOT_DEPTH;
+        	MAX_DEPTH = DUMBOT_DEPTH ;
         	MONTEBOT = false;
            	KILLER_HEURISTIC = true;
            	evaluator = new RevisedStandardEvaluator();
@@ -252,7 +285,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	evaluator = new RevisedAugustEvaluator();
         	avoidSpiderOpening = true;
         	pushToWin = false;	// see comments, can't be used in its current form.
-           	MAX_DEPTH = DUMBOT_DEPTH;
+           	MAX_DEPTH = DUMBOT_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);
            	KILLER_HEURISTIC = true;
         	ProgressiveSearch = false;
         	MONTEBOT = false;
@@ -268,7 +301,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         	avoidSpiderOpening = true;
         	ProgressiveSearch = false;
         	pushToWin = false;	// see comments, can't be used in its current form.
-           	MAX_DEPTH = DUMBOT_DEPTH;
+           	MAX_DEPTH = DUMBOT_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);
            	sprintThreshold = 70;
            	KILLER_HEURISTIC = true;
            	sprintProgressThreshold = 10;
@@ -343,7 +376,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
 	do
 	{
 		selection = (Hivemovespec)super.Random_Good_Move(search,n,dif);
-		if(avoidSpiderOpening && board.moveNumber()<=4)
+		if(selection!=null && avoidSpiderOpening && board.moveNumber()<=4)
 		{
 				ok = selection.object.type!=PieceType.SPIDER;
 			}
@@ -431,6 +464,7 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
             search_state.verbose = verbose;
+            search_state.max_threads = DEPLOY_THREADS;
             //search_state.allow_killer = true;
             search_state.allow_best_killer = KILLER_HEURISTIC;
             search_state.save_top_digest=true;	// always on background check on the robot

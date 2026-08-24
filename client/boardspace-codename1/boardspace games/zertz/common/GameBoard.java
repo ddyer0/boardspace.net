@@ -316,8 +316,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         {
             return (-1);
         }
-        for(int i=0;i<6;i++) 
-        { zCell cn = c.exitTo(i);
+        for(int i=0;i<CELL_FULL_TURN;i++) 
+        { zCell cn = c.fastExitTo(i);
           char cc = (cn==null) ? NoSpace : cn.contents;
           if(cc!=NoSpace) { n++; }
         }
@@ -347,7 +347,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             c.contents=Marker; // temporarily change the marker 
 
             for (int dir = 0; dir < CELL_FULL_TURN; dir++)
-            {	zCell nc = c.exitTo(dir);
+            {	zCell nc = c.fastExitTo(dir);
             	if(IsViable(nc))
                 {
                     c.contents=contents; 	// skip bookkeeping, return to original state
@@ -387,7 +387,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             c.contents=Marker; // temporarily change the marker 
 
             for (int dir = 0; dir < CELL_FULL_TURN; dir++)
-            {	zCell nc = c.exitTo(dir);
+            {	zCell nc = c.fastExitTo(dir);
             	if(isViableWithout(nc,filled,removed))
                 {
                     c.contents=contents; 	// skip bookkeeping, return to original state
@@ -407,7 +407,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     boolean CanBeIsolated(zCell c)
     {	
         for (int dir = 0; dir < CELL_FULL_TURN; dir++)
-        {	zCell nc = c.exitTo(dir);
+        {	zCell nc = c.fastExitTo(dir);
         	char ncontents = (nc==null) ? NoSpace : nc.contents;
         	if((ncontents==Empty) && RingCanChange(nc) && !isViableWithout(c,c,nc)) { return(true); }
         }
@@ -425,12 +425,12 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     private boolean Capture_Is_Possible_Of_Cell(zCell c)
     {	int empties = 0;
     	zCell emptyCell = null;
-        for (int direction = 0; direction < 6; direction++)
-        {	zCell nc = c.exitTo(direction);
+        for (int direction = 0; direction < CELL_FULL_TURN; direction++)
+        {	zCell nc = c.fastExitTo(direction);
             char color2 = nc==null ? NoSpace : nc.contents; // adjacent tile contents
             if(color2==Empty) { empties++; emptyCell = nc; }
             else if(color2 !=NoSpace)
-            {	zCell nc2 = c.exitTo(direction+3);
+            {	zCell nc2 = c.exitTo((direction+CELL_HALF_TURN)%CELL_FULL_TURN);
                 char color3 = (nc2==null) ? NoSpace : nc2.contents;
                 if (color3 == Empty)
                 {
@@ -445,7 +445,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     private boolean Capture_Is_Possible_From_Cell(zCell c, char[] colors)
     {	
         for (int direction = 0; direction < 6; direction++)
-        {	zCell nc = c.exitTo(direction);
+        {	zCell nc = c.fastExitTo(direction);
             char color2 = nc==null ? NoSpace : nc.contents; // adjacent tile contents
             int cindex = -1;
             int len = colors.length;
@@ -461,7 +461,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
             }
 
             if (cindex >= 0)
-            {	zCell nc2 = nc.exitTo(direction);
+            {	zCell nc2 = nc.fastExitTo(direction);
                 char color3 = (nc2==null) ? NoSpace : nc2.contents;
                 if (color3 == Empty)
                 {
@@ -670,12 +670,12 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public boolean twoSides(zCell c)
     {
 
-        for (int i = 0; i < 6; i++)
-        {	zCell nc = c.exitTo(i);
+        for (int i = 0; i < CELL_FULL_TURN; i++)
+        {	zCell nc = c.fastExitTo(i);
         	char contents = (nc==null) ? NoSpace : nc.contents;
 
             if (contents == NoSpace)
-            {	zCell nc1 = c.exitTo(i+1);
+            {	zCell nc1 = c.fastExitTo((i+1)%CELL_FULL_TURN);
             	char contents1 = (nc1==null) ? NoSpace : nc1.contents;
                 if (contents1 == NoSpace)
                 {
@@ -689,7 +689,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public boolean isEdgeCell(zCell c)
     {	for(int dir=0;dir<6;dir++)
     	{
-    	zCell nc = c.exitTo(dir);
+    	zCell nc = c.fastExitTo(dir);
     	char con = (nc==null) ? NoSpace : c.contents;
     	if(con==NoSpace) { return(true); }
     	}
@@ -698,8 +698,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public boolean RingNextToBall(zCell c)
     {
 
-        for (int dir = 0; dir < 6; dir++)
-        {	zCell nc = c.exitTo(dir);
+        for (int dir = 0; dir < CELL_FULL_TURN; dir++)
+        {	zCell nc = c.fastExitTo(dir);
             char ch = (nc==null) ? NoSpace : nc.contents;
 
             if (!((ch == NoSpace) || (ch == Empty)))
@@ -771,10 +771,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         return (NoSpace);
     }
     public zCell MidBetween(zCell from,zCell to)
-    {	for(int dir=0;dir<6;dir++)
-    	{	zCell nc1 = from.exitTo(dir);
+    {	for(int dir=0;dir<CELL_FULL_TURN;dir++)
+    	{	zCell nc1 = from.fastExitTo(dir);
     		if(nc1!=null) 
-    		{	zCell nc2 = nc1.exitTo(dir);
+    		{	zCell nc2 = nc1.fastExitTo(dir);
     			if(nc2==to) { return(nc1); }
     		}
     	}
@@ -1364,7 +1364,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     /* return the index into the ball array if this is a captured ball color */
     public int CapturedColorIndex(char piece)
-    {
+    {	
         for (int c = 0, len = CapturedBallChars.length; c < len; c++)
         {
             if (piece == CapturedBallChars[c])
@@ -1558,7 +1558,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         		{	pickedSource = f;
         			pickedObject = f.topChip();
         			SetBoard(f,Empty);
-        		}
+         		}
         	}
         	break;
         case MOVE_BtoB:
@@ -1651,7 +1651,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_RESIGN:
             setState(unresign==null?ZertzState.RESIGN_STATE:unresign);
             break;
-            
+
 		case MOVE_LOSEGAMEONTIME:
 			win[whoseTurn^1] = true;
 			setState(ZertzState.GAMEOVER_STATE);
@@ -1680,8 +1680,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     private int removeCapturedAdjacent(zCell c)
     {
         int caps = 0;
-        for (int dir = 0; dir < 6; dir++)
-        {	zCell nc = c.exitTo(dir);
+        for (int dir = 0; dir < CELL_FULL_TURN; dir++)
+        {	zCell nc = c.fastExitTo(dir);
             char ch = (nc==null) ? NoSpace : nc.contents;
             int col = zChip.BallColorIndex(ch);
 
@@ -2076,8 +2076,8 @@ public void addCaptureMoves(CommonMoveStack  result)
     {	zCell c = ball_location[i];
     	if(BallCanMove(c))
     	{
-            for (int dir = 0; dir < 6; dir++)
-            {	zCell nc1 = c.exitTo(dir);
+            for (int dir = 0; dir < CELL_FULL_TURN; dir++)
+            {	zCell nc1 = c.fastExitTo(dir);
             	zCell nc2 = (nc1==null) ? null : nc1.exitTo(dir);
             	if(CaptureOccurs(c,c.topChip(),nc1,nc2,false))
             			{result.addElement(new movespec(whoseTurn, MOVE_BtoB,
@@ -2091,10 +2091,10 @@ public void addContinueCaptures(CommonMoveStack  result)
 // continue a capture in progress
 {
    zCell placed = ballPlaced;
-   for (int dir = 0; dir < 6; dir++)
+   for (int dir = 0; dir < CELL_FULL_TURN; dir++)
    {
-	zCell nx1 = placed.exitTo(dir);
-   	zCell nx2 = nx1==null ? null : nx1.exitTo(dir);
+	zCell nx1 = placed.fastExitTo(dir);
+   	zCell nx2 = nx1==null ? null : nx1.fastExitTo(dir);
        if (CaptureOccurs(placed,placed.topChip(),nx1,nx2, false))
        {
            result.addElement(new movespec(whoseTurn, MOVE_BtoB, 

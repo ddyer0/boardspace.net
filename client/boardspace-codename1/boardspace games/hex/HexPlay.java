@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package hex;
 
@@ -81,10 +81,13 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive
     private boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
-    private int MAX_DEPTH = 5;						// search depth.
+    private int MAX_DEPTH = 6;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN+0.25;	// good enough to stop looking
-	
+   	// the +0.25 works with the staticeval trick to favor quicker wins. This makes the quit happen
+	// only when an immediate win is found, not when a deep search finds a win.  This avoids the
+	// undedesirable behavior of not playing directly to a win when one is available.
+
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 
     private int Strategy = DUMBOT_LEVEL;
@@ -95,6 +98,7 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
     private boolean randomizePreventCuts = false;	// in the random phase, prevent cuts of bridges
     private double winRateWeight = 0;
     private boolean deadChildOptimization = true;
+    boolean useBlitz = true;
     /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -118,6 +122,8 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
     	cc.useUCTPriors = useUCTPriors;
     	cc.randomizePreventCuts = randomizePreventCuts;
     	cc.movingForPlayer = movingForPlayer; 
+    	cc.useBlitz = useBlitz;
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 
@@ -173,10 +179,36 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {
-        return(board.GetListOfMoves());
+    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {	movelist.clear();
+    	if(threads!=null)
+    	{
+    	int n = threads.length;
+    	for(int i=1;i<=n;i++)
+    		{
+    		board.getListOfMoves(movelist,i,n+1);
+    		}
+    	board.getListOfMoves(movelist,n+1,n+1);
+    	Sthread.waitForIdle(threads);
+    	}
+    	else
+    	{
+        board.getListOfMoves(movelist,1,1);
+    	}
+    	/*
+        if(G.debug())
+        {
+        	CommonMoveStack all = new ParallelCommonMoveStack();
+        	board.GetListOfMoves(all,extendedSearch,1,1);
+        	G.Assert(all.size()==movelist.size(),"all moves generated");
+        }
+        */
+
+        return movelist;
     }
+
+
     /**
     * this is the static evaluation used by Dumbot.  When testing a better
     * strategy, leave this untouched as a reference point.  The real meat
@@ -231,6 +263,7 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
      */
      private double ScoreForPlayer(HexGameBoard evboard,int player,boolean print)
     {	BlobStack blobs = new BlobStack();
+    	evboard.findBlobs(player,blobs);
 		double val = 0.0;
      	// if the position is not a win, then estimate the value of the position
     	switch(Strategy)
@@ -246,19 +279,19 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
        			val = dumbotEval(evboard,blobs,player,print);
        			break;
      	}
-     	return(val);
+      	return(val);
     }
 
     /**
      * this re-evaluates the current position from the viewpoint of forplayer.
      * for 2 player games this is to trivially negate the value, but for multiplayer
      * games it requires considering multiple player's values.
-  
+
     public double reScorePosition(commonMove m,int forplayer)
     {	return(m.reScorePosition(forplayer));
     }
-       */
-    /** this is called from the search driver to evaluate a particular position. The driver
+     */
+     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
      */
@@ -327,14 +360,22 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
         case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
-        case DUMBOT_LEVEL:
+		case DUMBOT_LEVEL:
            	MONTEBOT=true;
         	randomizePreventCuts = true;
         	ALPHA = 0.5;
         	BETA = 0.25;
         	CHILD_SHARE = 0.85;
         	break;
-        	
+		case TESTBOT_LEVEL_1:
+           	MONTEBOT=true;
+           	useBlitz = false;
+        	randomizePreventCuts = true;
+        	ALPHA = 0.5;
+        	BETA = 0.25;
+        	CHILD_SHARE = 0.85;
+        	break;
+   	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
         }
     }
@@ -378,6 +419,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     movingForPlayer = GameBoard.getCurrentPlayerChip();
+    board.initRobotValues(this);
 }
 
  public commonMove DoAlphaBetaFullMove()
@@ -395,7 +437,7 @@ public void PrepareToMove(int playerIndex)
             int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
             boardSearchLevel = 0;
 
-            int depth = MAX_DEPTH;	// search depth
+            int depth = MAX_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);	// search depth
             double dif = 0.0;		// stop randomizing if the value drops this much
             // if the "dif" and "randomn" arguments to Find_Static_Best_Move
             // are both > 0, then alpha-beta will be disabled to avoid randomly
@@ -412,6 +454,7 @@ public void PrepareToMove(int playerIndex)
             search_state.verbose = verbose;
             search_state.allow_killer = KILLER;
             search_state.allow_best_killer = false;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only
             search_state.check_duplicate_digests = false; 	// debugging only
@@ -432,8 +475,8 @@ public void PrepareToMove(int playerIndex)
             Finish_Search_In_Progress();
         }
         continuous &= move!=null;
-            return (move);
-        }
+        return (move);
+    }
 
  /**
  * get a random move by selecting a random one from the full list.
@@ -443,19 +486,19 @@ public void PrepareToMove(int playerIndex)
   * 
   */
  public commonMove Get_Random_Move(Random rand)
- 	{
+ {	
 	if(randomizePreventCuts)
 	{
 		return(board.Get_Localrandom_Hex_Move(rand));
 	}
  	if(useUCTPriors)
- 		{
+ 	{
  	return board.getUCTRandomMove(rand);
- 		}
- 	return(board.Get_Random_Hex_Move(rand));
  	}
+ 	return(board.Get_Random_Hex_Move(rand));
+ }
  
- 
+
  // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
@@ -492,7 +535,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.stored_child_limit = 100000;
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = false;			// for hex, blitz is 2/3 the speed of normal unwinds
+        monte_search_state.blitz = useBlitz;			// for hex, blitz is 2/3 the speed of normal unwinds
         monte_search_state.sort_moves = winRateWeight>0;
         monte_search_state.initialWinRateWeight = winRateWeight;
         monte_search_state.only_child_optimization = true;
@@ -502,7 +545,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.final_depth = 9999;		// probably not needed for games which are always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.maxThreads = DEPLOY_THREADS;
+        monte_search_state.maxThreads = -1;// DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
@@ -537,9 +580,9 @@ public void PrepareToMove(int playerIndex)
   */
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
- 	boolean win = board.hasWinningPath(player);
+ 	boolean win = board.win[player];
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
- 	boolean win2 = board.hasWinningPath(nextPlayer[player]);
+ 	boolean win2 = board.win[player^1];
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }

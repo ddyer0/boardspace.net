@@ -1254,7 +1254,7 @@ public abstract class commonCanvas extends exCanvas
 	    private void RedoStep(replayMode replay,commonMove m)
 	    {
 	        Execute(m,replay);
-	        if(m.digest==0) { m.digest = getBoard().Digest(); }
+	        if(m.digest()==0) { m.setDigest(getBoard().Digest()); }
 	        repeatedPositions.checkForRepetition(getBoard(),m);
 	        if(History.viewStep==-1) {  generalRefresh(); }
 	    }
@@ -1269,7 +1269,7 @@ public abstract class commonCanvas extends exCanvas
 	            commonMove m = History.top();
 	            rem = m.addVariation(rem);
 	        }
-	  	  rem.digest = 0;		// digest will be inaccurate when undoing out of order
+	  	  rem.setDigest(0);		// digest will be inaccurate when undoing out of order
 	  	  History.addToHistoryAndExtend(rem);
 	  	  return(val);
 	    }
@@ -5029,7 +5029,7 @@ public abstract class commonCanvas extends exCanvas
     public long setDigest(commonMove m)
     {
     	long dig = getBoard().Digest();
-    	m.digest = dig;
+    	m.setDigest(dig);  
     	return dig;
     }
     public commonMove EditHistory(commonMove m,boolean okSame)
@@ -5199,7 +5199,7 @@ public abstract class commonCanvas extends exCanvas
         else 
         	{ commonMove rem = popHistoryElement();
         	  commonMove val = popHistoryElement(idx);
-        	  rem.digest = 0;		// when this is put back, the digest won't be correct.
+        	  rem.setDigest(0);		// when this is put back, the digest won't be correct.
         	  if (History.size() > 0)
               {	
                   commonMove m = History.top();
@@ -8935,7 +8935,7 @@ public void canonicalizeHistory()
 		// this is a subtle point.  The now-non-epheral moves have been reordered,
 		// so the digests are invalid.  The invalid digests can trigger invalid removals
 		// due to "digest not changed" if there are undo/redo steps after.
-		m.digest = 0;
+		m.setDigest(0);
 		m.setIndex(h.size());
 		h.push(m);
 		}

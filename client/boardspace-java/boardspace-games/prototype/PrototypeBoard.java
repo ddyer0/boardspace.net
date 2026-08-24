@@ -878,11 +878,15 @@ void doSwap(replayMode replay)
  }
   
 
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ public CommonMoveStack  getListOfMoves()
+ {	return getListOfMoves(new CommonMoveStack(),1,1);
+ }
+ public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)
+ {
+ 	// one-of moves added by the first thread
  	if(board_state==PrototypeState.PlayOrSwap)
  	{
- 		all.addElement(new Prototypemovespec(SWAP,whoseTurn));
+ 		if(offset==1) { all.addElement(new Prototypemovespec(SWAP,whoseTurn)); }
  	}
  	switch(board_state)
  	{
@@ -890,19 +894,19 @@ void doSwap(replayMode replay)
  	case Play:
  	case Puzzle:
  		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
- 			for(PrototypeCell c = allCells;
- 			 	    c!=null;
- 			 	    c = c.next)
- 			 	{	if(c.topChip()==null)
- 			 		{all.addElement(new Prototypemovespec(op,c.col,c.row,whoseTurn));
- 			 		}
+ 		 cell<PrototypeCell> cells[] = getCellArray();
+ 		 // the rest of the moves added by the rest of the threads in turn
+ 		 for(int step = offset-1,last=cells.length; step<last; step+=skip)
+ 		 {	PrototypeCell c = (PrototypeCell)cells[step];
+ 			if(c.topChip()==null)
+ 				{all.push(new Prototypemovespec(op,c.col,c.row,whoseTurn));
  			 	}
- 		}
+ 		 }}
  		break;
 
  	
  	case Confirm:
- 		all.push(new Prototypemovespec(MOVE_DONE,whoseTurn));
+ 		if(offset==1) { all.push(new Prototypemovespec(MOVE_DONE,whoseTurn)); }
  		break;
  		
  	default:
@@ -949,7 +953,7 @@ void doSwap(replayMode replay)
  public Hashtable<PrototypeCell, Prototypemovespec> getTargets() 
  {
  	Hashtable<PrototypeCell,Prototypemovespec> targets = new Hashtable<PrototypeCell,Prototypemovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = getListOfMoves();
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Prototypemovespec m = (Prototypemovespec)all.elementAt(lim);
  		switch(m.op)

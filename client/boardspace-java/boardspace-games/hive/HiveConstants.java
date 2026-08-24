@@ -17,6 +17,7 @@
 package hive;
 
 import lib.InternationalStrings;
+import lib.OStack;
 import lib.Bitset;
 import lib.G;
 import lib.CellId;
@@ -111,6 +112,13 @@ public interface HiveConstants
     	
     }
     
+    class StateStack extends OStack<HiveState>
+    {
+		public HiveState[] newComponentArray(int sz) {
+			return new HiveState[sz];
+		}
+    	
+    }
 
     public enum HiveState implements BoardState
     {	PUZZLE_STATE(StateRole.Puzzle,PuzzleStateDescription),
@@ -172,7 +180,8 @@ public interface HiveConstants
     	BLANK(false,"?");
     	boolean standard;
     	String shortName;
-    	static PieceType find(int i) { for(PieceType v : values()) { if(v.ordinal()==i) { return(v); }} return(null); } 
+    	public static PieceType[]AllValues = values();
+    	static PieceType find(int i) { for(PieceType v : AllValues) { if(v.ordinal()==i) { return(v); }} return(null); } 
     	PieceType(boolean st,String ss) { standard = st; shortName=ss; }
     };
     public static String CarbonMessage = "Switch to Carbon Pieces";

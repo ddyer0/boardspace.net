@@ -256,17 +256,17 @@ public class Search_Node implements Constants,Opcodes
     initialize it's "moves" to a sorted list of legal moves,
     */
     double PercentDone()
-    {
+    {	
         double nm = number_of_moves;
         int nmi = next_move_index;
         Search_Node succ = successor;
         if ((nm > 0)&&(nmi>0))
         {
-             double sdone = ((succ != null) ? (succ.PercentDone() / nm)
-                                                : 0.0);
+             double sdone = (succ != null)
+            		 			? (succ.PercentDone() / nm)
+            		 			: 0.0;
             return (((nmi-1) / nm) + sdone);
         }
-
         return (0.0);
     }
-}
+    }

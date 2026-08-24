@@ -584,19 +584,32 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         if (gc != null)
         {
         int size = gb.cellSize();
+        int bottom = G.Bottom(brect);
+        int left =  G.Left(brect);
         for(hexCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
             boolean drawhighlight = (hitCell && (cell==closestCell)) 
    				|| gb.isDest(cell) 		// is legal for a "drop" operation
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-            int xpos = G.Left(brect) + gb.cellToX(cell);
+         	int ypos = bottom - gb.cellToY(cell);
+            int xpos = left + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
             	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,size,xpos,ypos,null);
+            hexCell p = cell.getUfParent();
+            if(p!=null)
+            {
+            	GC.setColor(gc,p.topChip()==hexChip.Black ? Color.green : Color.black);
+            	if(p==cell) { GC.Text(gc,""+cell.activeEdgeMask(),xpos,ypos); }
+            	//else { 
+            	//int x1 = left+gb.cellToX(p);
+            	//int y1 = bottom-gb.cellToY(p);
+            	//GC.drawArrow(gc,xpos,ypos,x1,y1,size/4,1); }
+            }
+            
             
             }
         numberMenu.drawSequenceNumbers(gc,size,labelFont,labelColor);

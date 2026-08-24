@@ -20,6 +20,8 @@ import java.security.AccessControlException;
 
 public interface MenuParentInterface
 {
+	@SuppressWarnings("removal")
 	public void show(MenuInterface menu,int x,int y) throws AccessControlException;
+	@SuppressWarnings("removal")
 	public void showNative(MenuInterface menu,int x,int y) throws AccessControlException;
 }

@@ -329,7 +329,7 @@ public abstract class cell<FINALTYPE
 	 * <p>
 	 * these adjacent cells are normally accessed by the exitToward method.
 	 */
-    private cell<FINALTYPE> adjacent[] = null;
+    private FINALTYPE adjacent[] = null;
     /**
      * get the number of cells adjacent to this one. Note that some of those
      * cells may be null at the edge of the board or in case of removed cells.
@@ -468,8 +468,8 @@ public abstract class cell<FINALTYPE
 	}
 	
 	@SuppressWarnings("unchecked")
-	public cell<FINALTYPE>[] newSelfArray(int n)
-	{	return((cell<FINALTYPE>[])new cell[n]);
+	public FINALTYPE[] newSelfArray(int n)
+	{	return((FINALTYPE[])new cell[n]);
 		//java.lang.reflect.Array.newInstance(getClass(),Math.max(0,geometry.n));
 	}
 
@@ -639,9 +639,17 @@ public abstract class cell<FINALTYPE
     {	if(geometry==Geometry.Standalone) { throw G.Error("%s has no exits",this); }
     	int len = adjacent.length;
     	int md = dir%len;				//modulo 0-n
-    	@SuppressWarnings("unchecked")
-		FINALTYPE ap = (FINALTYPE)adjacent[md<0 ? md+len : md];
+		FINALTYPE ap = adjacent[md<0 ? md+len : md];
      	return(ap);
+    }
+    /**
+     * exitTo if the direction is known to be well behaved.  Avoid the range modulo checks
+     * @param dir
+     * @return
+     */
+	public FINALTYPE fastExitTo(int dir)
+    {	
+		return adjacent[dir];
     }
     
     /** re-count the links */
@@ -663,7 +671,8 @@ public abstract class cell<FINALTYPE
      *  
      */
     public boolean isAdjacentTo(FINALTYPE c)
-    {	for(int i=0;i<geometry.n;i++) { if(adjacent[i]==c) { return(true); }}
+    {	int len = adjacent.length;
+    	for(int i=0;i<len;i++) { if(adjacent[i]==c) { return(true); }}
     	return(false);
     }
     /** 
@@ -739,7 +748,7 @@ public abstract class cell<FINALTYPE
     	G.Assert(geometry==Geometry.Network,"must be a network type");
     	if(!hasLink(to))
     	{	int plus = linkCount+1;
-			cell<FINALTYPE> newlinks[] = newSelfArray(plus);
+			FINALTYPE newlinks[] = newSelfArray(plus);
     		for(int i=0;i<linkCount;i++) { newlinks[i]=adjacent[i]; } 
     		newlinks[linkCount++] = to;
     		adjacent = newlinks;

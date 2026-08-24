@@ -82,7 +82,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 			{
 			int na = 0;
 			for(int i=0;i<3;i++) 
-			{ HiveCell ad = exitTo(i);
+			{ HiveCell ad = fastExitTo(i);
 			  if(ad!=null)
 			  {	long av = ad.simpleDigest();
 			    if(av!=0) { v = v*(i+4)+av; na++; }
@@ -107,7 +107,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 
 	public boolean isSurrounded()
 	{	for(int lim=geometry.n-1;lim>=0;lim--)
-		{ HiveCell c = exitTo(lim);
+		{ HiveCell c = fastExitTo(lim);
 		  if(c!=null && c.height()==0) { return(false); }
 		}
 		return(true);
@@ -116,7 +116,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	public int nOwnColorAdjacent(HiveId color)
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
-		{ HiveCell c = exitTo(lim);
+		{ HiveCell c = fastExitTo(lim);
 		  if(c!=null)
 		  {
 		  HivePiece bug = c.topChip();
@@ -129,7 +129,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	public int nOtherColorAdjacent(HiveId color)
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
-		{ HiveCell c = exitTo(lim);
+		{ HiveCell c = fastExitTo(lim);
 		  if(c!=null)
 		  {
 		  HivePiece bug = c.topChip();
@@ -142,7 +142,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	public int nOccupiedAdjacent()
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
-		{ HiveCell c = exitTo(lim);
+		{ HiveCell c = fastExitTo(lim);
 		  if(c!=null && c.height()>0) 
 		  	{ n++; 
 		  	}
@@ -155,7 +155,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
     {
     	for(int lim=geometry.n-1;lim>=0;lim--)
     	{
-    		HiveCell adj = exitTo(lim);
+    		HiveCell adj = fastExitTo(lim);
     		HivePiece top = adj!=null ?adj.topChip() : null;
     		if(top!=null && top.type==type) { return true; }
     	}
@@ -170,7 +170,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	{
 		for(int dir=0;dir<geometry.n;dir++)
 		{
-			HiveCell adj = exitTo(dir);
+			HiveCell adj = fastExitTo(dir);
 			int adjHeight = adj.height();
 			switch(adjHeight)
 			{
@@ -215,13 +215,28 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
     {
     	if(onBoard)
     	{
-		for(int lim=geometry.n;lim>=0;lim--) 
+		for(int lim=geometry.n-1;lim>=0;lim--) 
 			{
-			HiveCell adjto = exitTo(lim);
-			if(adjto!=null && (adjto.height() > 0) &&  (adjto!=empty) && s.isAdjacentTo(adjto)){ return(true); }
+			HiveCell adjtoUs = fastExitTo(lim);
+			if(adjtoUs!=null  && (adjtoUs!=empty) && (adjtoUs.height() > 0) && s.isAdjacentTo(adjtoUs)){ return(true); }
 			}
     	}
     	return(false);
+    }
+	/** true if there is a single occupied cell that connects S with this cell
+	 * 
+	 * @param s
+	 * @param empty
+	 * @return
+	 */
+    public boolean adjacentCell(HiveCell s)
+    {
+		for(int lim=geometry.n-1;lim>=0;lim--) 
+			{
+			HiveCell adjtoUs = fastExitTo(lim);
+			if(adjtoUs!=null  && (adjtoUs.height() > 0) && s.isAdjacentTo(adjtoUs)){ return(true); }
+			}
+     	return(false);
     }
     // 
     // true if this cell is adjacent to a pillbug of either color

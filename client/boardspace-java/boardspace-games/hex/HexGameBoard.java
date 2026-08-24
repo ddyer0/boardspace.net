@@ -22,7 +22,6 @@ import lib.Random;
 import online.game.*;
 import online.search.UCTMoveSearcher;
 import online.search.UCTNode;
-
 import static hex.Hexmovespec.*;
 
 /**
@@ -46,13 +45,21 @@ import static hex.Hexmovespec.*;
  * Note that none of this class shows through to the game controller.  It's purely
  * a private entity used by the viewer and the robot.
  * 
- * @author ddyer
+ * author ddyer
  *
  */
 
 class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstants
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
+	
+	enum Edges 
+	{ Left(1),Right(2),Down(4),Up(8);
+		int bit = 0;
+		Edges(int bi) { bit = bi; }
+		static int All[] = { Left.bit|Right.bit, Down.bit|Up.bit};
+	}
+
 
     static final String[] HEXGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
@@ -118,7 +125,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 
 	// factory method to generate a board cell
 	public hexCell newcell(char c,int r)
-	{	return(new hexCell(HexId.BoardLocation,c,r));
+	{	return(new hexCell(this,HexId.BoardLocation,c,r));
 	}
 	// constructor 
     public HexGameBoard(String init,int players,long key,int []map,int rev) // default constructor
@@ -127,9 +134,9 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
         Grid_Style = HEXGRIDSTYLE;
         setColorMap(map, players);
 		Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
-	    blackChipPool = new hexCell(r,HexId.Black_Chip_Pool);
+	    blackChipPool = new hexCell(this,r,HexId.Black_Chip_Pool);
 	    blackChipPool.addChip(hexChip.Black);
-	    whiteChipPool = new hexCell(r,HexId.White_Chip_Pool);
+	    whiteChipPool = new hexCell(this,r,HexId.White_Chip_Pool);
 	    whiteChipPool.addChip(hexChip.White);
         doInit(init,key,players,rev); // do the initialization
     }
@@ -145,6 +152,23 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	long ran = tok.hasMoreTokens() ? tok.longToken() : key;
     	int rev = tok.hasMoreTokens() ? tok.intToken() : revision;
     	doInit(typ,ran,np,rev);
+    }
+    private void setEdges(hexCell seed,int direction,Edges e)
+    {
+    	while(seed!=null) 
+    		{ seed.setEdgeMask(seed.edgeMask()|e.bit); 
+    		  seed = seed.fastExitTo(direction);
+    		}
+    }
+    
+    public void initBoard(int[] fc, int[] nc, int[] fcol)
+    {	super.initBoard(fc,nc,fcol);
+    	hexCell a1 = getCell('A',1);
+    	setEdges(a1,CELL_UP_LEFT,Edges.Left);
+    	setEdges(a1,CELL_UP_RIGHT,Edges.Down);
+    	hexCell z9 = getCell((char)('A'+ncols-1),ncols);
+    	setEdges(z9,CELL_DOWN_RIGHT,Edges.Right);
+    	setEdges(z9,CELL_DOWN_LEFT,Edges.Up	);
     }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
@@ -191,7 +215,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 		playerChip[1]=hexChip.Black;
 	    // set the initial contents of the board to all empty cells
 		emptyCells.clear();
-		for(hexCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
+		for(hexCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRPush(c); }
 		fullBoard = emptyCells.size();
         animationStack.clear();
         if(getColorMap()[0]!=0) { swapDetails(); }
@@ -235,7 +259,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && G.debug()) { sameboard(from_b); }
     }
 
     
@@ -373,7 +397,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	  {
     	   	blob.addCell(cell);
     	   	for(int dir = 0; dir<6; dir++)
-    		{	expandHexBlob(blob,cell.exitTo(dir));
+    		{	expandHexBlob(blob,cell.fastExitTo(dir));
     		}
     	  }
     	}
@@ -406,13 +430,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	}
        	return(all);
     }
-    // this method is also called by the robot to get the blobs as a side effect
-    public boolean winForPlayerNow(int player,BlobStack blobs)
-    {
-     	findBlobs(player,blobs);
-    	return(someBlobWins(blobs,player));
-   	
-    }
+
     public boolean someBlobWins(BlobStack blobs,int player)
     {	// if the span of any blobs is the whole board, we have a winner
     	// in Hex, there is only one winner.
@@ -439,7 +457,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	while(home!=null)
     	{	
     		if(winningPath(home,pch,sweep_counter)) { return true; }
-    		home = home.exitTo(scanDirection);
+    		home = home.fastExitTo(scanDirection);
         }	
     	return(false);
     }
@@ -451,7 +469,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	if((top==hexChip.White) ? c.col==('A'-1)+ncols : c.row==ncols) { return true; }
     	for(int dir=0;dir<6;dir++) 
     	{
-    		hexCell nx = c.exitTo(dir);
+    		hexCell nx = c.fastExitTo(dir);
     		if(nx !=null && winningPath(nx,top,sweep)) { return true; }
     	}
     	return false;
@@ -500,7 +518,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     	
     	for(int dir=0;dir<6;dir++) 
     	{
-    		hexCell nx = c.exitTo(dir);
+    		hexCell nx = c.fastExitTo(dir);
     		if(nx !=null)
     			{ newEdges = hasWinningPathFrom(nx,top,sweep,newEdges);
     			  if(newEdges==margin.hasBoth) { return newEdges; }
@@ -516,8 +534,8 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     {	hexChip old = c.chip;
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); c.lastPlaced = 0; }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); c.lastPlaced = moveNumber; }
+    	if(old!=null) { chips_on_board--;moveStack.QRRemove(c); emptyCells.QRPush(c); c.lastPlaced = 0; }
+     	if(ch!=null) { chips_on_board++; emptyCells.QRRemove(c); moveStack.QRPush(c); c.lastPlaced = moveNumber; }
     	}
        	c.chip = ch;
     	return(old);
@@ -705,8 +723,11 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
             setState(HexState.Gameover);
         }
         else
-        {	if(hasWinningPath(dest,whoseTurn)) 
-        		{ win[whoseTurn] = true;
+        {	
+        	if(dest!=null) { ufBookkeeping(dest,playerChip[whoseTurn]); }
+  
+        	if(win[whoseTurn]) 
+        		{ 
         		  setNextPlayer(replay);
         		  setState(HexState.Gameover);
         		}
@@ -768,7 +789,6 @@ void doSwap(replayMode replay)
 
         case MOVE_DROPB:
         	{
-			hexChip po = pickedObject;
 			hexCell src = getCell(m.source,m.to_col,m.to_row); 
 			hexCell dest =  getCell(HexId.BoardLocation,m.to_col,m.to_row);
 			
@@ -791,12 +811,14 @@ void doSwap(replayMode replay)
 				}
 				
 				pickObject(src);
+				hexChip po = pickedObject;
 				if(replay==replayMode.Live)
 				{
 		            lastDroppedObject = pickedObject.getAltDisplayChip(dest);
 		            G.print("drop ",lastDroppedObject);
 				}
 	            dropObject(dest);
+				
 	            /**
 	             * if the user clicked on a board space without picking anything up,
 	             * animate a stone moving in from the pool.  For Hex, the "picks" are
@@ -808,8 +830,7 @@ void doSwap(replayMode replay)
 	            	  animationStack.push(dest); 
 	            	}
 	            setNextStateAfterDrop(replay);
-				}
-        	}
+        	}}
              break;
 
         case MOVE_PICK:
@@ -924,6 +945,11 @@ void doSwap(replayMode replay)
         }
     }
     
+    HexPlay robot = null;
+    public void initRobotValues(HexPlay r)
+    {
+    	robot = r;
+    }
     
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -962,7 +988,7 @@ void doSwap(replayMode replay)
     // that the robot might actually make.
     //
     public void UnExecute(Hexmovespec m)
-    {
+    {	ufInvalid = true;
         //System.out.println("U "+m+" for "+whoseTurn);
     	HexState state = robotState.pop();
         switch (m.op)
@@ -1002,9 +1028,9 @@ void doSwap(replayMode replay)
 		hexCell bridge3 = null;
 		if(rv<0.99)
 		{
-		for(int dir = last.geometry.n-1; dir>=0; dir--)
+		for(int dir = CELL_FULL_TURN-1; dir>=0; dir--)
 		{
-			hexCell c = last.exitTo(dir);
+			hexCell c = last.fastExitTo(dir);
 			if((c!=null) && c.isEmpty() && c.isPossibleBridge(top))
 			{ count++; 
 			  bridge3 = bridge2;
@@ -1018,9 +1044,9 @@ void doSwap(replayMode replay)
 		default:
 			{
 			double r2 = rand.nextInt(count);
-			for(int dir = last.geometry.n-1; dir>=0; dir--)
+			for(int dir = CELL_FULL_TURN-1; dir>=0; dir--)
 			{
-				hexCell c = last.exitTo(dir);
+				hexCell c = last.fastExitTo(dir);
 				if((c!=null)&&c.isEmpty()&&c.isPossibleBridge(top))
 				{ if(r2==0) 
 					{ return(new Hexmovespec(MOVE_DROPB,c.col,c.row,playerColor[whoseTurn],whoseTurn));
@@ -1062,16 +1088,21 @@ void doSwap(replayMode replay)
  		G.Assert(empty.isEmpty(),"isn't empty");
  		return(new Hexmovespec(MOVE_DROPB,empty.col,empty.row,playerColor[whoseTurn],whoseTurn));
  }
- CommonMoveStack  GetListOfMoves()
+ CommonMoveStack  getListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
+ 	return getListOfMoves(all,1,1);
+ }
+ public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)
+ {
  	if(board_state==HexState.PlayOrSwap)
  	{
- 		all.addElement(new Hexmovespec(SWAP,whoseTurn));
+ 		if(offset==1) { all.addElement(new Hexmovespec(SWAP,whoseTurn)); }
  	}
- 	for(hexCell c = allCells;
- 	    c!=null;
- 	    c = c.next)
- 	{	if(c.isEmpty())
+ 	cell<hexCell> cells[] = getCellArray();
+ 	for(int step = offset-1,last=cells.length; step<last; step+=skip)
+ 	{
+	  hexCell c = (hexCell)cells[step];
+	  if(c.isEmpty())
  		{all.addElement(new Hexmovespec(MOVE_DROPB,c.col,c.row,playerColor[whoseTurn],whoseTurn));
  		}
  	}
@@ -1089,8 +1120,8 @@ void doSwap(replayMode replay)
  	{
  	int bd = 0;
      for(int direction=0;direction<6;direction++)
-     {		hexCell border0 = c.exitTo(direction);
-     		hexCell border1 = c.exitTo(direction+1); 
+     {		hexCell border0 = c.fastExitTo(direction);
+     		hexCell border1 = c.fastExitTo((direction+1)%CELL_FULL_TURN); 
      		// this is a little complex because the corner cells
      		// are part of two borders.
      		if((border0==null) && (border1==null))
@@ -1251,4 +1282,27 @@ void doSwap(replayMode replay)
  	}
 	 return(false);
  }
+ 
+ boolean ufInvalid = false;	// if unmake_move is called, all bets are off
+ public void ufBookkeeping(hexCell dest,hexChip po)
+ {	if(ufInvalid)
+ 	{
+	 win[whoseTurn] = hasWinningPath(dest,whoseTurn);
+ 	}
+ 	else
+ 	{
+		int mask = dest.ufBookkeeping(po);
+		int target = Edges.All[swapped ? whoseTurn^1 : whoseTurn];
+		boolean shouldbe = (mask&target) == target;
+		win[whoseTurn] = shouldbe;
+		/*
+		// testing
+		boolean win = hasWinningPath(dest,whoseTurn);
+		if(win!=shouldbe)
+		{
+			boolean win2 = hasWinningPath(dest,whoseTurn);
+			G.print("win mismatch ",win2," ",win," ",shouldbe);
+		}
+		*/
+ 	}}
 }

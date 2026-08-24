@@ -29,6 +29,7 @@ public class DStack {
 	
 	double data[] = new double[5];
 	int index = 0;
+	private double[] getRawData() { return data; }
 	public String toString() 
 	{
 		return("<DStack "+index+" ["+((index>0)?data[index-1]:"")+"]>");
@@ -148,10 +149,15 @@ public class DStack {
 	 * 
 	 * @param other
 	 */
-	public void copyFrom(DStack other)
-	{	clear();
-		for(int i=0,lim=other.size(); i<lim; i++)
-		{	push(other.elementAt(i));
+	public void copyFrom(DStack from)
+	{
+		int fromSize = from.size();
+		setSize(fromSize);
+		double dest[] = data;
+		double src[] = from.getRawData();
+	   	for(int i=0; i<fromSize; i++)
+	   	{
+	   		dest[i] = src[i];
 		}
 	}
 	/**

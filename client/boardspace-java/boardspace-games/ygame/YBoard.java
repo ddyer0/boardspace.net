@@ -21,6 +21,7 @@ import static ygame.Ymovespec.*;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
+
 import lib.*;
 import lib.Random;
 import online.game.*;
@@ -47,7 +48,16 @@ import online.game.*;
  */
 
 class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{
+	static int REVISION = 100;			// 100 represents the initial version of the game
+	
+	enum Edges 
+	{ Left(1),Right(2),Down(4);
+		int bit = 0;
+		Edges(int bi) { bit = bi; }
+		static int All = 7;
+	}
+	
 	int sweep_counter = 0;
 	public int getMaxRevisionLevel() { return(REVISION); }
 	YVariation variation = YVariation.Y;
@@ -70,6 +80,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 
     private YId playerColor[]={YId.White_Chip_Pool,YId.Black_Chip_Pool};    
     private YChip playerChip[]={YChip.White,YChip.Black};
+    private int playerIndex(YChip ch) { return 	(ch==playerChip[0]) ? 0 : 1;}
     private YCell playerCell[]=new YCell[2];
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
@@ -114,13 +125,13 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
  	}
 
     private CellStack emptyCells=new CellStack();
-    private CellStack occupiedCells = new CellStack();
+    private CellStack occupiedCells[] = {new CellStack(), new CellStack()};
     private YState resetState = YState.Puzzle; 
     public YChip lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
 	public YCell newcell(char c,int r)
-	{	return(new YCell(YId.BoardLocation,c,r));
+	{	return(new YCell(this,YId.BoardLocation,c,r));
 	}
 	// constructor 
     public YBoard(String init,int players,long key,int map[],int rev) // default constructor
@@ -189,12 +200,12 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     		}
     	}
      	// mark the edge properties of the cells
-     	for(YCell c : board[0]) { c.edgeMask |= 1; } 
+     	for(YCell c : board[0]) { c.setEdgeMask(Edges.Left.bit); } 
      	YCell last[] = board[board.length-1];
      	for(YCell c[] : board) 
-     		{ c[0].edgeMask|= 2;
-     		  if(c==last) { c[0].edgeMask |= 4; }
-     		  	else { c[c.length-1].edgeMask|= 4;}
+     		{ c[0].setEdgeMask(Edges.Right.bit|c[0].edgeMask());
+     		  if(c==last) { c[0].setEdgeMask(c[0].edgeMask()|Edges.Down.bit); }
+     		  	else { c[c.length-1].setEdgeMask(c[c.length-1].edgeMask()|Edges.Down.bit);}
      		}
      }
     /* initialize a board back to initial empty state */
@@ -218,9 +229,9 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 		allCells.setDigestChain(r);		// set the randomv for all cells on the board
  		
 	    
-	    blackChipPool = new YCell(r,YId.Black_Chip_Pool);
+	    blackChipPool = new YCell(this,r,YId.Black_Chip_Pool);
 	    blackChipPool.addChip(YChip.Black);
-	    whiteChipPool = new YCell(r,YId.White_Chip_Pool);
+	    whiteChipPool = new YCell(this,r,YId.White_Chip_Pool);
 	    whiteChipPool.addChip(YChip.White);
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
@@ -242,8 +253,10 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 		playerChip[map[0]]=YChip.Black;
 	    // set the initial contents of the board to all empty cells
 		emptyCells.clear();
-		occupiedCells.clear();
-		for(YCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
+		occupiedCells[0].clear();
+		occupiedCells[1].clear();
+
+		for(YCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRPush(c); }
 		fullBoard = emptyCells.size();
 		    
         animationStack.clear();
@@ -287,7 +300,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && G.debug()) { sameboard(from_b); }
     }
 
     
@@ -411,9 +424,9 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
-    
-    public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
+  
+    public boolean sweepWin(int player)
+    {
     	sweep_counter++;
     	int cc = edgeContactCount(player);
     	if(cc==3)
@@ -427,14 +440,14 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     public int contactCount[] = { 0, 1, 1, 2, 1, 2, 2, 3};	// index by the mask which is a bitmask
     //
     // return 0-3, the count of the number of edges this player contacts
-    // with their best group
+    // with their best group.  This is the ineffecient but sure method
     //
     public int edgeContactCount(int player)
     {	int best = 0;
-    	for(int lim=occupiedCells.size()-1; lim>=0; lim--)
+    	CellStack occupied = occupiedCells[player];
+    	for(int lim=occupied.size()-1; lim>=0; lim--)
     	{
-    		YCell seed = occupiedCells.elementAt(lim);
-    		if(seed.topChip().id==playerColor[player])
+    		YCell seed = occupied.elementAt(lim);
     		{
     		int mask = seed.sweepEdgeMask(0,sweep_counter);
     		if(mask==7) 
@@ -451,10 +464,11 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     // set the contents of a cell, and maintain the books
     public YChip SetBoard(YCell c,YChip ch)
     {	YChip old = c.chip;
+    	CellStack occupied = occupiedCells[playerIndex(ch)];
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); occupiedCells.remove(c,false); }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); occupiedCells.push(c); }
+    	if(old!=null) { chips_on_board--; occupied.QRRemove(c);emptyCells.QRPush(c);  }
+     	if(ch!=null) { chips_on_board++; emptyCells.QRRemove(c); occupied.QRPush(c); }
     	}
        	c.chip = ch;
     	return(old);
@@ -619,8 +633,8 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"empty cells incorrect");
-    	G.Assert(chips_on_board==occupiedCells.size(),"occupied cells incorrect");
+    {	//G.Assert(chips_on_board+emptyCells.size()==fullBoard,"empty cells incorrect");
+    	//G.Assert(chips_on_board==occupiedCells.size(),"occupied cells incorrect");
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
@@ -641,7 +655,8 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
        	resetState = board_state;
     }
     private void doDone(replayMode replay)
-    {
+    {	YCell dest = droppedDestStack.top();
+    
         acceptPlacement();
 
         if (board_state==YState.Resign)
@@ -650,9 +665,9 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     		setState(YState.Gameover);
         }
         else
-        {	if(winForPlayerNow(whoseTurn)) 
-        		{ win[whoseTurn]=true;
-        		  p1("gameOver");
+        {	ufBookkeeping(dest,playerChip[whoseTurn]);
+        	if(win[whoseTurn])
+        		{
         		  setState(YState.Gameover); 
         		}
         	else if(emptyCells.size()==0) 
@@ -676,6 +691,9 @@ void doSwap(replayMode replay)
 	YCell cc = playerCell[0];
 	playerCell[0]=playerCell[1];
 	playerCell[1]=cc;
+	CellStack t = occupiedCells[0];
+	occupiedCells[0] = occupiedCells[1];
+	occupiedCells[1] = t;
 	swapped = !swapped;
 	switch(board_state)
 	{	
@@ -726,7 +744,7 @@ void doSwap(replayMode replay)
 				{
 					pickObject(src=playerCell[whoseTurn]);
 				}
-				m.chip = pickedObject;
+				m.chip = po = pickedObject;
 	            dropObject(dest);
 	            /**
 	             * if the user clicked on a board space without picking anything up,
@@ -780,8 +798,8 @@ void doSwap(replayMode replay)
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
             setState(YState.Puzzle);	// standardize the current state
-            if((win[whoseTurn]=winForPlayerNow(whoseTurn))
-               ||(win[nextp]=winForPlayerNow(nextp)))
+            if((win[whoseTurn]=sweepWin(whoseTurn))
+               ||(win[nextp]=sweepWin(nextp)))
                	{ setState(YState.Gameover); 
                	}
             else {  setNextStateAfterDone(replay); }
@@ -899,6 +917,7 @@ void doSwap(replayMode replay)
     {
         //System.out.println("U "+m+" for "+whoseTurn);
     	YState state = robotState.pop();
+    	ufInvalid = true;
         switch (m.op)
         {
         default:
@@ -928,8 +947,9 @@ void doSwap(replayMode replay)
 	 YCell c = emptyCells.elementAt(r.nextInt(emptyCells.size()));
 	 return(new Ymovespec(MOVE_DROPB,c,whoseTurn));
  }
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+ 
+ CommonMoveStack  getListOfMoves(CommonMoveStack all,int offset,int skip)
+ {	
  	
  	switch(board_state)
  	{
@@ -937,15 +957,15 @@ void doSwap(replayMode replay)
  	case Confirm:
  	case Resign:
  	case ConfirmSwap:
- 		all.push(new Ymovespec(MOVE_DONE,whoseTurn));
+ 		if(offset==1) { all.push(new Ymovespec(MOVE_DONE,whoseTurn));}
  		break;
  	case PlayOrSwap:
- 		all.push(new Ymovespec(SWAP,whoseTurn));
+ 		if(offset==1) { all.push(new Ymovespec(SWAP,whoseTurn)); }
 		//$FALL-THROUGH$
 	case Play:
-	 	for(int lim = emptyCells.size()-1; lim>=0; lim--)
+	 	for(int idx= offset-1, lim = emptyCells.size(); idx<lim; idx += skip)
 	 	{
-	 	 YCell c = emptyCells.elementAt(lim);
+	 	 YCell c = emptyCells.elementAt(idx);
 	 	 all.addElement(new Ymovespec(MOVE_DROPB,c,whoseTurn));
 	 	}
 	 	break;
@@ -1076,4 +1096,28 @@ public int cellToY(YCell c) {
 		return((int)(scale*c.yloc+yoff));
 }
 	
+boolean ufInvalid = false;	// if unmake_move is called, all bets are off
+public void ufBookkeeping(YCell dest,YChip po)
+{	if(ufInvalid)
+	{
+	 win[whoseTurn] = sweepWin(whoseTurn);
+	}
+	else if(dest!=null)
+	{
+		int mask = dest.ufBookkeeping(po);
+		int target = Edges.All;
+		boolean shouldbe = (mask&target) == target;
+		win[whoseTurn] = shouldbe;
+		/*
+		 * 
+		 *   
+		// testing
+		boolean win = sweepWin(whoseTurn)
+		if(win!=shouldbe)
+		{
+			G.print("win mismatch ",win2," ",win," ",shouldbe);
+		}
+		*/
+	}
+}
 }

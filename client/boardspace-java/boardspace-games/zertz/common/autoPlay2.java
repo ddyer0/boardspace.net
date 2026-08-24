@@ -99,17 +99,17 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         			//"7.0E-4 -0.048126605478300846 -1.0 -0.49182134283163115 -0.1586914477736229 -0.08532858596948642 -0.014554380302798417 -0.06724392020627325 -0.031154863374711947 -1.9863870345002361 -1.0286723961058848 -0.45938880446440955 -0.41674561249950354 -0.34043774286452344 -0.21594002733728002 -0.03133256514261341"
         			" 7.0E-4 -0.1495280773603488 -1.009771345466307 -0.47653059298446837 -0.1584874230162723 -0.009522550000981891 0.014602388462273064 -0.06724392020627325 -0.028336058555932696 -2.0101426901962354 -1.0103105162295332 -0.45938880446440955 -0.3360437348314521 -0.34043774286452344 -0.19693850286095096 0.047062948116738015"
         			);
-        	MaxDepth = StandardDepth+1;
+        	MaxDepth = StandardDepth+1+(G.getAvailableProcessors()>2 ? 1 : 0);
         	break;
         case BESTBOT_LEVEL:
         	KILLER = true;
         	timeLimit = 30;	// 30 seconds
         	ALLOW_RESTRICTED_SACRIFICE = true;
-        	MaxDepth = StandardDepth+1;
+        	MaxDepth = StandardDepth+1+(G.getAvailableProcessors()>2 ? 1 : 0);
         	break;
 		case DUMBOT_LEVEL:
         default:
-        	MaxDepth = StandardDepth;
+        	MaxDepth = StandardDepth+(G.getAvailableProcessors()>2 ? 1 : 0);
         	KILLER = true;
         	break;
          }
@@ -170,16 +170,16 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         
     }
 
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {	
-    	CommonMoveStack  moves = new CommonMoveStack();
-    	boolean forme = (board.whoseTurn==searchForPlayer);
+   CommonMoveStack movelist = new ParallelCommonMoveStack();
+   public CommonMoveStack  List_Of_Legal_Moves()
+    {	// note that getBoardMoveList isn't trivial to parallelize
+	    movelist.clear();
+     	boolean forme = (board.whoseTurn==searchForPlayer);
     	boolean restricted = (boardSearchLevel > 0) && forme;
-        getBoardMoveList(restricted, moves);
+        getBoardMoveList(restricted, movelist);
 
-        return (moves);
+        return (movelist);
     }
-
 
 
     public commonMove ExtendSequence(commonMove m)
@@ -296,6 +296,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             search_state.verbose = verbose;
             search_state.save_all_variations = SAVE_TREES;
             search_state.allow_best_killer = KILLER;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.save_top_digest = true;
             search_state.save_digest = false;	// debugging only, stumbles over captures
             
@@ -327,7 +328,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         case DRAW_STATE:
         case DONE_STATE:
         case DONE_CAPTURE_STATE:
-            result.addElement(new movespec(p, MOVE_DONE));
+            result.addElement(new movespec(p, MOVE_DONE)); 
 
             break;
             
@@ -403,7 +404,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
             
         case SETRING_STATE:
         	if(board.rings_removed>25) 
-        		{ result.addElement(new movespec(p, MOVE_DONE));
+        		{ result.addElement(new movespec(p, MOVE_DONE)); 
         		  break; 
         		}
             board.addRingMoves(result,true);

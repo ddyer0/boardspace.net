@@ -27,10 +27,10 @@ import java.util.Iterator;
  *
  */
 public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
-{		
+{		public boolean useSingleIterator = false;
 		class InternalStackIterator implements Iterator<T>
 		{ int index = size()-1;
-
+		  public void reset() { index = size()-1; }
 		  public boolean hasNext() { return index>=0;  }
 		  
 		  public T next() {	return data[index--];  } 
@@ -39,6 +39,8 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		}
 		
 		protected T data[]=null;
+		private T[] getRawData() { return data; }
+		
 		//@SuppressWarnings("unchecked")
 		//private T[]newComponentArray(int sz)
 		//{	
@@ -125,12 +127,13 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		 * @param n
 		 */
 		public void setSize(int n)
-		{	if(n>index) { increaseSize(n); }
+		{	if(n>index) { increaseSize(n); index = n; }
 			else 
 				{ while(index>n)
 					{	data[--index] = null;	// clear memory to help the gc
 					}
 				}
+		
 		}
 		
 		/** clear the stack.  Actually clears them so the gc won't be encumbered with old items.
@@ -235,12 +238,16 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		 * @param o
 		 * @return true if the stack contains the <T>
 		 */
+
 		public boolean contains(T o)
-		{	for(int i=index-1; i>=0; i--) // backwards so recently pushed items are fastest 
+		{	// interesting - by actual measurement in use for Hive, manually unrolling
+			// this loop doesn't improve over what hotspot does.
+			for(int i=index-1; i>=0; i--) // backwards so recently pushed items are fastest 
 				{ if(eq(data[i],o))
 					{return(true); }}
 			return(false);
 		}
+
 		/**
 		 * find the index of the object, or -1
 		 * @param o
@@ -302,8 +309,18 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 			  return(this);
 			}
 		public synchronized StackIterator<T>parallelPush(T da)
-		{
-			return push(da);
+		{	// same as push, but synchronized
+			int len = (data==null)?0:data.length;
+			if(index>=len)
+				{ increaseSize((len+1)*2+1);
+				}
+			  //
+			  // is this x=index; index=index+1; data[x] = d;
+			  // or is this data[index] = d; index=index+1;
+			  //
+			  data[index] = da;
+			  index++;			// do this as a second operation so readers will never see an empty slot
+			  return(this);
 		}
 		/** remove an element from the stack, and shuffle the array contents 
 		 * return the stack (for compatibility with the StackInterator API)
@@ -361,9 +378,13 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		 * @param other
 		 */
 		public void copyFrom(OStack<T> other)
-		{	clear();
-			for(int i=0,lim=other.size(); i<lim; i++)
-			{	push(other.elementAt(i));
+		{	int fromSize = other.size();
+			setSize(fromSize);
+			T dest[] = data;
+			T src[] = other.getRawData();
+			
+			for(int i=0; i<fromSize; i++)
+			{	dest[i] = src[i];
 			}
 		}
 		/**
@@ -423,8 +444,20 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		public void shuffle(Random r)
 		{	r.shuffle(data,index);
 		}
-		
+	
+	private InternalStackIterator singleIterator = null;
+	
+	public Iterator<T> newIterator() {
+		return new InternalStackIterator();
+	}
+
 	public Iterator<T> iterator() {
+		if(useSingleIterator)
+		{
+		 if(singleIterator==null) { singleIterator = new InternalStackIterator(); }
+		 else { singleIterator.reset(); }
+		 return singleIterator;
+		}
 		return new InternalStackIterator();
 	}
 	

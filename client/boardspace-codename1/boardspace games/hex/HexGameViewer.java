@@ -140,6 +140,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     private HexGameBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
  
+    private Rectangle displayBoardRect = new Rectangle();
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
@@ -361,10 +362,10 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         int stateH = fh*5/2;
         placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	
+    	G.copy(displayBoardRect,boardRect);
     	if(rotate)
     	{
-    		G.setRotation(boardRect, -Math.PI/2);
+    		G.setRotation(displayBoardRect, -Math.PI/2);
     		contextRotation = -Math.PI/2;
     	}
     	// goal and bottom ornaments, depending on the rendering can share
@@ -471,7 +472,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     { // erase
     hexChip.backgroundTile.image.tileImage(gc, fullRect);   
       
-    	drawRotatedFixedBoard(gc, boardRect);
+    	drawRotatedFixedBoard(gc, displayBoardRect);
     }
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -585,19 +586,32 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         if (gc != null)
         {
         int size = gb.cellSize();
+        int bottom = G.Bottom(brect);
+        int left =  G.Left(brect);
         for(hexCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
             boolean drawhighlight = (hitCell && (cell==closestCell)) 
    				|| gb.isDest(cell) 		// is legal for a "drop" operation
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-            int xpos = G.Left(brect) + gb.cellToX(cell);
+         	int ypos = bottom - gb.cellToY(cell);
+            int xpos = left + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
             	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,size,xpos,ypos,null);
+            hexCell p = cell.getUfParent();
+            if(p!=null)
+            {
+            	GC.setColor(gc,p.topChip()==hexChip.Black ? Color.green : Color.black);
+            	if(p==cell) { GC.Text(gc,""+cell.activeEdgeMask(),xpos,ypos); }
+            	//else { 
+            	//int x1 = left+gb.cellToX(p);
+            	//int y1 = bottom-gb.cellToY(p);
+            	//GC.drawArrow(gc,xpos,ypos,x1,y1,size/4,1); }
+            }
+            
             
             }
         numberMenu.drawSequenceNumbers(gc,size,labelFont,labelColor);
@@ -637,7 +651,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
    			// note this gets called in the game loop as well as in the display loop
    			// and is pretty expensive, so we shouldn't do it in the mouse-only case
 
-       setDisplayParameters(gb,boardRect);
+       setDisplayParameters(gb,displayBoardRect);
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
@@ -656,8 +670,8 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
        
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
-       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       GC.setRotatedContext(gc,displayBoardRect,selectPos,contextRotation);
+       drawBoardElements(gc, gb, displayBoardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();

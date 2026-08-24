@@ -34,6 +34,7 @@ public class IStack implements Digestable
 	{
 		return("<IStack "+index+" ["+((index>0)?data[index-1]:"")+"]>");
 	}
+	private int[] getRawData() { return data;}
 	/**
 	 * produce an array of integers containing the elements of the stack
 	 * @return an array of int
@@ -156,12 +157,18 @@ public class IStack implements Digestable
 	 * 
 	 * @param other
 	 */
-	public void copyFrom(IStack other)
-	{	clear();
-		for(int i=0,lim=other.size(); i<lim; i++)
-		{	push(other.elementAt(i));
+	public void copyFrom(IStack from) 
+	   {
+		int fromSize = from.size();
+		setSize(fromSize);
+		int dest[] = data;
+		int src[] = from.getRawData();
+	   	for(int i=0; i<fromSize; i++)
+	   	{
+	   		dest[i] = src[i];
 		}
 	}
+	
 	/**
 	 * compare two IStacks 
 	 * @param other
@@ -227,6 +234,7 @@ public class IStack implements Digestable
 		return(-1);
 	}
 	
+
 
 	/**
 	 * insert a new element at index i.  The elements above the index

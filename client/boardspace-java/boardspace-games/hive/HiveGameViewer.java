@@ -384,7 +384,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int midr = G.centerY(r);
 		int pieceSize = RACKSCALE = (int)(cellW*3.5);
        int cellIndex = 0;
-       for(PieceType pt : PieceType.values())
+       for(PieceType pt : PieceType.AllValues)
         {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
@@ -446,7 +446,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int pieceSize = RACKSCALE = (int)(cellW*3.5);
         int cellIndex = 0;
 		int baseY = G.Bottom(r)-(int)(CELLSIZE*0.6);
-		for(PieceType pt : PieceType.values())
+		for(PieceType pt : PieceType.AllValues)
         {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
@@ -628,7 +628,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                 //	StockArt.SmallX.drawChip(gc,this,(int)(actCellSize*0.4),xp,yp,null);
                 //}
             	}
-             }
+               }
              else {
               	if(hitpoint && cell.closestPointToCell(ourTurnSelect, cellSize,
         				xpos,
@@ -656,6 +656,14 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
               	}*/
  
              }
+             /*
+             if(dest!=null)
+             { int distance = gb.hexDist(dest.col,dest.row,cell.col,cell.row);
+               GC.setColor(gc,Color.yellow);
+                 GC.Text(gc,""+distance,xpos,ypos);
+             }
+             */
+
              //if(G.debug() && (cell.topChip()==null))
              //{	// draw a grid of other cells
              //	 GC.setColor(gc,Color.yellow);
@@ -679,7 +687,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     public boolean canOfferDraw(HiveGameBoard gb)
     {
         int hsize = History.size();
-        long hdig = hsize>1 ? History.elementAt(hsize-2).digest : 0;
+        long hdig = hsize>1 ? History.elementAt(hsize-2).digest() : 0;
         return((repeatedPositions.numberOfRepeatedPositions(hdig)>=2) 
 				&& gb.canOfferDraw());
     }

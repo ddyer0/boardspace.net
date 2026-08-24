@@ -384,7 +384,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int midr = G.centerY(r);
 		int pieceSize = RACKSCALE = (int)(cellW*3.5);
        int cellIndex = 0;
-       for(PieceType pt : PieceType.values())
+       for(PieceType pt : PieceType.AllValues)
         {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
@@ -446,7 +446,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int pieceSize = RACKSCALE = (int)(cellW*3.5);
 		int cellIndex = 0;
  		int baseY = G.Bottom(r)-(int)(CELLSIZE*0.6);
- 		for(PieceType pt : PieceType.values())
+		for(PieceType pt : PieceType.AllValues)
         {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
@@ -510,7 +510,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      * in our cease, we draw the board and the chips on it. 
      * */
     public void drawFixedElements(Graphics gc)
-    { boolean reviewBackground = reviewMode()&&!mutable_game_record;
+    { 
+      boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : rackBackGroundColor);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
      textures[reviewBackground ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
@@ -531,6 +532,12 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      {	boolean rotate = currentRotation!=0;
     	double extra = rotate ? (2*Math.PI)*(currentRotation/360.0) : 0;
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
+      	//this gives the board area a green tint to verify where the clipping region
+      	//actually is.  It needs checking when zoom is in effect.
+     	//GC.setColor(gc,Color.green);
+     	//GC.setOpacity(gc,0.5);
+     	//GC.fillRect(gc,boardRect);
+     	//GC.setOpacity(gc,1.0);
         int csize = gb.cellSize();
      	stableCellSize = csize;
      	numberMenu.numberIcon = StockArt.DownArrowAbove;
@@ -649,6 +656,14 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
               	}*/
  
                  }
+             /*
+             if(dest!=null)
+             { int distance = gb.hexDist(dest.col,dest.row,cell.col,cell.row);
+               GC.setColor(gc,Color.yellow);
+                 GC.Text(gc,""+distance,xpos,ypos);
+             }
+             */
+
              //if(G.debug() && (cell.topChip()==null))
              //{	// draw a grid of other cells
              //	 GC.setColor(gc,Color.yellow);
@@ -672,7 +687,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     public boolean canOfferDraw(HiveGameBoard gb)
     {
         int hsize = History.size();
-        long hdig = hsize>1 ? History.elementAt(hsize-2).digest : 0;
+        long hdig = hsize>1 ? History.elementAt(hsize-2).digest() : 0;
         return((repeatedPositions.numberOfRepeatedPositions(hdig)>=2) 
 				&& gb.canOfferDraw());
     }
@@ -795,7 +810,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{
          PerformAndTransmit(PASS,true,replay); 
     	}
-       	if(m.op==MOVE_RESET && replay.isReplay) 
+       	if(m.op==MOVE_RESET && (replay.isReplay))
        		{ // this shouldn't occur, but there are a few damaged games
        		  return(true); 
        		} 

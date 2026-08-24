@@ -54,7 +54,6 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
     int to_row; // for from-to moves, the destination row
-    int undoInfo;	// the state of the move before state, for UNDO
     int pushPullDirection;
     boolean captures = false;
     ArimaaChip picked = null;
@@ -129,7 +128,6 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
         to.from_col = from_col;
         to.from_row = from_row;
         to.captures = captures;
-        to.undoInfo = undoInfo;
         to.source = source;
         to.picked = picked;
     }
@@ -225,7 +223,7 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
     	StockArt.SolidLeftArrow,
     	StockArt.SolidDownArrow};
     
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	double discScale[] = new double[]{1.5,1.5,0,-0.15};
     	boolean reverse = ((ArimaaViewer)v).reversed();
     	Text ms = (picked==null) 

@@ -412,7 +412,7 @@ public class UCTMoveSearcher extends CommonDriver
 
 			{
 			leadRobot.prepareForDescent(this);
-			CommonMoveStack moves = leadRobot.List_Of_Legal_Moves();
+			CommonMoveStack moves = leadRobot.List_Of_Legal_Moves(null);
 			top_level_moves = moves;
 			max_depth = final_depth;
 			

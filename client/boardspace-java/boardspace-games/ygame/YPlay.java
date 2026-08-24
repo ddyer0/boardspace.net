@@ -75,7 +75,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
     static final double VALUE_OF_WIN = 10000.0;
     int timePerMove = 10;
     boolean UCT_WIN_LOSS = false;
-    
+    boolean useBlitz = false;
     boolean EXP_MONTEBOT = false;
     double ALPHA = 1.0;
     double BETA = 0.25;
@@ -105,7 +105,8 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
     {	RobotProtocol c = super.copyPlayer(from);
     	YPlay cc = (YPlay)c;
     	cc.Strategy = Strategy;
-    	cc.movingForPlayer = movingForPlayer; 
+    	cc.movingForPlayer = movingForPlayer;
+    	cc.useBlitz = useBlitz;
     	cc.board.initRobotValues(cc);
     	return(c);
     }
@@ -147,11 +148,36 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {
-        return(board.GetListOfMoves());
-    }
 
+    ParallelCommonMoveStack movelist = new ParallelCommonMoveStack();
+    
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {	movelist.clear();
+    	if(threads!=null)
+    	{
+    	int n = threads.length;
+    	for(int i=1;i<=n;i++)
+    		{
+    		board.getListOfMoves(movelist,i,n+1);
+    		}
+    	board.getListOfMoves(movelist,n+1,n+1);
+    	Sthread.waitForIdle(threads);
+    	}
+    	else
+    	{
+        board.getListOfMoves(movelist,1,1);
+    	}
+    	/*
+        if(G.debug())
+        {
+        	CommonMoveStack all = new ParallelCommonMoveStack();
+        	board.GetListOfMoves(all,extendedSearch,1,1);
+        	G.Assert(all.size()==movelist.size(),"all moves generated");
+        }
+        */
+
+        return movelist;
+    }
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
  * are parameters from the applet that can be interpreted as desired.  The debugging 
@@ -177,6 +203,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
         case SMARTBOT_LEVEL:
         	NODE_EXPANSION_RATE = 0.25;
         	timePerMove = 15;
+        	useBlitz = true;	// blitz is better for us, optimized connection check wins hugely
         	ALPHA = 1.0;
          	break;
         case WEAKBOT_LEVEL:
@@ -185,14 +212,26 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
 		case DUMBOT_LEVEL:
         	ALPHA = 0.5;
         	BETA = 0.25;
+           	useBlitz = true;	// blitz is better for us, optimized connection check wins hugely
         	timePerMove = 10;
         	verbose=1;
         	CHILD_SHARE = 0.85;
         	break;
+
+		case TESTBOT_LEVEL_1:
+        	ALPHA = 0.5;
+        	BETA = 0.25;
+        	timePerMove = 10;
+        	verbose=1;
+        	useBlitz = false;		// baseline code that doesn't optimize the win check
+        	CHILD_SHARE = 0.85;
+        	break;
+
 		case BESTBOT_LEVEL:
         	ALPHA = 0.5;
         	BETA = 0.25;
         	verbose = 1;
+           	useBlitz = true;	// blitz is better for us, optimized connection check wins hugely
         	timePerMove = 20;
         	CHILD_SHARE = 0.85;
         	break;
@@ -249,7 +288,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.stored_child_limit = 100000;
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = false;			// for pushfight, blitz is 2/3 the speed of normal unwinds
+        monte_search_state.blitz = useBlitz;			// for pushfight, blitz is 2/3 the speed of normal unwinds
         monte_search_state.sort_moves = false;
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
@@ -259,8 +298,8 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 300000;		// 
-        monte_search_state.max_random_moves_per_second = 1000000;		// 
+        monte_search_state.random_moves_per_second = useBlitz ? 8000000 : WEAKBOT ? 15000 : 300000;		// 
+        monte_search_state.max_random_moves_per_second = useBlitz ? 30000000 : 4000000;		// 
         // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
@@ -299,9 +338,9 @@ public void PrepareToMove(int playerIndex)
   */
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
- 	boolean win = board.winForPlayerNow(player);
+ 	boolean win = board.win[player];
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/(1+boardSearchLevel)); }
- 	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
+ 	boolean win2 = board.win[player^1];
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/(1+boardSearchLevel)))); }
  	return(0);
  }

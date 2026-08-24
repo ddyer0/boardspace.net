@@ -130,7 +130,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     CellStack robotOStack = new CellStack();
     ChipStack robotPStack = new ChipStack();
     CellStack destStack = new CellStack();
-
+    IStack robotIStack = new IStack();
     private int stackIndex = 0;
     private ArimaaCell getDest()
     {  	if(stackIndex>0) { return(droppedDestStack[stackIndex-1]); }
@@ -208,7 +208,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
              	
         	for(int dir=CELL_FULL_TURN-1; dir>=0; dir--)
         	{
-        		ArimaaCell d = c.exitTo(dir);
+        		ArimaaCell d = c.fastExitTo(dir);
         		d.isTrapAdjacent = true;
         	}
         }
@@ -369,7 +369,6 @@ public long positionDigest()
     	variation = from_b.variation;
     	started = from_b.started;
         captured = from_b.captured;
-        robotDepth = from_b.robotDepth;
         robotGame = from_b.robotGame;
         robotState.copyFrom(from_b.robotState);
         lastAdvancementMoveNumber = from_b.lastAdvancementMoveNumber;
@@ -613,7 +612,7 @@ public long positionDigest()
     	c.sweep_counter = sweep;
     	trapmap[c.col-'A'][c.row-1] += steps[index];
      	for(int dir = ndirs; dir>=0; dir--)
-    	{	ArimaaCell nx = c.exitTo(dir);
+    	{	ArimaaCell nx = c.fastExitTo(dir);
     		visits = visits<<1;
     		if((nx!=null)&&(index<lim) && ((nx.sweep_counter!=sweep)))
     		{  	nx.sweep_counter = sweep;
@@ -622,7 +621,7 @@ public long positionDigest()
     	}
     	for(int dir = 0; dir<=ndirs; dir++)
     	{
-    		ArimaaCell nx = c.exitTo(dir);
+    		ArimaaCell nx = c.fastExitTo(dir);
     		if((visits&1)!=0)
     		{
     			markTrapsFrom(trapmap,nx,sweep,steps,index+1);
@@ -647,7 +646,7 @@ public long positionDigest()
     			trap.trap_adj[FIRST_PLAYER_INDEX] = trap.trap_adj[SECOND_PLAYER_INDEX] = 0;
     			for(int dir = 0;dir<CELL_FULL_TURN;dir++)
     			{
-    				ArimaaCell ex = trap.exitTo(dir);
+    				ArimaaCell ex = trap.fastExitTo(dir);
     				ArimaaChip top = ex.topChip();
     				if(top!=null)
     					{	trap.trap_adj[playerIndex(top)]++;
@@ -740,7 +739,7 @@ public long positionDigest()
     			{
     			if(dir!=retro_direction)
     			{
-     			ArimaaCell next = c.exitTo(dir);	// adjacent cell on the runway path
+     			ArimaaCell next = c.fastExitTo(dir);	// adjacent cell on the runway path
      			int val = baseval;
     			if(next!=null)
     			{
@@ -753,7 +752,7 @@ public long positionDigest()
     				
     				for(int dir2=CELL_FULL_TURN-1; dir2>=0; dir2--)
     				{
-    				ArimaaCell adj2 = next.exitTo(dir2);
+    				ArimaaCell adj2 = next.fastExitTo(dir2);
     				if(adj2!=null)
     				{	ArimaaChip top2 = adj2.topChip();
     					if(top2!=null) 
@@ -786,7 +785,7 @@ public long positionDigest()
     	ArimaaCell home = getCell('A',target_row);
     	while(home!=null)
     	{	if(home.topChip()==null) { markRunwaysFrom(forPlayer,home,100,15,10); }
-    		home = home.exitTo(CELL_RIGHT);
+    		home = home.fastExitTo(CELL_RIGHT);
     	}
     }
 
@@ -1980,7 +1979,7 @@ public long positionDigest()
     		{
         	ArimaaCell dest = getCell(m.to_col,m.to_row);
         	ArimaaCell src = getCell(m.from_col,m.from_row);
-        	ArimaaCell third = src.exitTo(m.pushPullDirection);
+        	ArimaaCell third = src.fastExitTo(m.pushPullDirection);
         	// a regular step
             if(replay.animate)
             {
@@ -2005,7 +2004,7 @@ public long positionDigest()
         	{
         	ArimaaCell dest = getCell(m.to_col,m.to_row);
         	ArimaaCell src = getCell(m.from_col,m.from_row);
-        	ArimaaCell third = dest.exitTo(m.pushPullDirection);
+        	ArimaaCell third = dest.fastExitTo(m.pushPullDirection);
         	// move the victim
             if(replay.animate)
             {
@@ -2268,18 +2267,19 @@ public long positionDigest()
     */
     public int RobotExecute(ArimaaMovespec m,boolean digest)
     {	int num=0;
-    	robotDepth++;
+    	robotIStack.push(robotDepth);
     	robotState.push(board_state);
-        m.undoInfo = 0; //record the starting state. The most reliable
-        m.undoInfo = (m.undoInfo<<1) | (started?1:0);
-        m.undoInfo = (m.undoInfo<<3)  | playStep;
+        int undoInfo = 0; //record the starting state. The most reliable
+        undoInfo = (undoInfo<<1) | (started?1:0);
+        undoInfo = (undoInfo<<3)  | playStep;
+        robotIStack.push(undoInfo);
         robotOStack.push(pushPullSource);
         robotOStack.push(pushPullDest);
         robotOStack.push(capturedLocation);
         robotPStack.push(capturedPiece);
         robotOStack.push(capturedLocation2);
         robotPStack.push(capturedPiece2);
-        m.digest = recentDigest;
+        m.setDigest(recentDigest);
         
         lastRobotMove = null;
         //G.print("R "+m);
@@ -2287,6 +2287,21 @@ public long positionDigest()
         
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
 
+     	switch(m.op)
+    	{ 
+    	case MOVE_NULL: 
+    	case MOVE_PASS:
+    		{
+    		int steps = 4-playStep;
+    		robotDepth += steps;
+     		}
+    		break;
+    	case MOVE_PUSH:
+    	case MOVE_PULL:	robotDepth += 2;
+    		break;
+    	default: robotDepth++;;
+    	}
+    	
         if (Execute(m,replayMode.Replay))
         {
 
@@ -2343,7 +2358,6 @@ public long positionDigest()
     {
         //G.print("U "+m+" for "+whoseTurn);
     	lastRobotMove = null;
-    	robotDepth--;
         switch (m.op)
         {
    	    default:
@@ -2369,7 +2383,7 @@ public long positionDigest()
        			undoCapture();
 		    	ArimaaCell dest = getCell(m.to_col,m.to_row);
 		    	ArimaaCell src = getCell(m.from_col,m.from_row);
-		    	ArimaaCell third = src.exitTo(m.pushPullDirection);
+		    	ArimaaCell third = src.fastExitTo(m.pushPullDirection);
 				ArimaaChip removed = removeChip(src);
 		    	addChip(third,removed);
 		    	
@@ -2387,7 +2401,7 @@ public long positionDigest()
         			undoCapture();
 			    	ArimaaCell dest = getCell(m.to_col,m.to_row);
 			    	ArimaaCell src = getCell(m.from_col,m.from_row);
-			    	ArimaaCell third = dest.exitTo(m.pushPullDirection);
+			    	ArimaaCell third = dest.fastExitTo(m.pushPullDirection);
 			    	// undo a regular step
 					pickObject(dest);
 					dropObject(src); 
@@ -2424,13 +2438,14 @@ public long positionDigest()
         capturedLocation = robotOStack.pop();
         pushPullDest = robotOStack.pop();
         pushPullSource = robotOStack.pop();
-        recentDigest = m.digest;
-        int undo = m.undoInfo;
+        recentDigest = m.digest();
+        int undo = robotIStack.pop();
         playStep = undo&0x7;
         undo = undo>>3;
         started = (undo&1)!=0;
         undo=undo>>1;
         setState(robotState.pop());
+        robotDepth = robotIStack.pop();
         if(whoseTurn!=m.player)
         {  	moveNumber--;
         	setWhoseTurn(m.player);
@@ -2518,7 +2533,7 @@ public long positionDigest()
 	int myPlayer = playerIndex(ch);
 	int otherPlayer = nextPlayer[myPlayer];
  	for(int dir=0;dir<CELL_FULL_TURN;dir++)
- 	{	ArimaaCell adj = from.exitTo(dir);
+ 	{	ArimaaCell adj = from.fastExitTo(dir);
  		if(adj!=null)
  		{
  			ArimaaChip aTop = adj.topChip();
@@ -2555,7 +2570,7 @@ public long positionDigest()
 	 	int myPlayer = playerIndex(piece);
 		 // look for push moves
 		for(int pushd = 0; pushd<CELL_FULL_TURN; pushd++)
-		{	ArimaaCell exitCell = src.exitTo(pushd);
+		{	ArimaaCell exitCell = src.fastExitTo(pushd);
 			if(exitCell!=null) 
 			{	ArimaaChip top = exitCell.topChip();	
 				if((top!=null) 
@@ -2595,7 +2610,7 @@ public long positionDigest()
  {	
 	 for(int dir = CELL_FULL_TURN-1; dir>=0; dir--)
 	 {
-		 ArimaaCell adj = from.exitTo(dir);
+		 ArimaaCell adj = from.fastExitTo(dir);
 		 if(adj!=null)
 			 {ArimaaChip top = adj.topChip();
 			 if(top!=null && playerIndex(top)!=player && top.isRabbit()) 
@@ -2609,7 +2624,7 @@ public long positionDigest()
 	 int count = 0;
 	 for(int dir = CELL_FULL_TURN-1; dir>=0 && count<2; dir--)
 	 {
-		 ArimaaCell adj = to.exitTo(dir);
+		 ArimaaCell adj = to.fastExitTo(dir);
 		 if(adj!=null)
 			 {ArimaaChip top = adj.topChip();
 			 if(top!=null && playerIndex(top)==player) 
@@ -2632,7 +2647,7 @@ public long positionDigest()
  	for(int dir=0; dir<CELL_FULL_TURN; dir++)
  		{	if((myPower!=ArimaaChip.RABBIT_POWER) || (dir!=backward_direction))
  			{
- 			ArimaaCell adj = from.exitTo(dir);
+ 			ArimaaCell adj = from.fastExitTo(dir);
  			if(adj!=null)
  			{
  			ArimaaChip aTop=adj.topChip();
@@ -2642,7 +2657,7 @@ public long positionDigest()
  			if( canPushPull && (aPlayer==otherPlayer)&&(aTop.chipPower()<myPower))
  			{	// push moves
  				for(int pushd = 0; pushd<CELL_FULL_TURN; pushd++)
- 				{	ArimaaCell exitCell = adj.exitTo(pushd);
+ 				{	ArimaaCell exitCell = adj.fastExitTo(pushd);
  					if((exitCell!=null) && (exitCell.height()==0))
  					{	if(!isRabbitSuicideMove(aTop,exitCell)  && !isSuicideMove(adj,myPlayer))
  						{
@@ -2670,7 +2685,7 @@ public long positionDigest()
  				if(canPushPull && ((fcode&FROZEN_CODE_PULL)!=0))
  				{
  	 				for(int pulld = 0; pulld<CELL_FULL_TURN; pulld++)
- 	 				{	ArimaaCell exitCell = from.exitTo(pulld);
+ 	 				{	ArimaaCell exitCell = from.fastExitTo(pulld);
  	 					if(exitCell!=null)
  	 					{
  	 					ArimaaChip exTop = exitCell.topChip();
@@ -2713,7 +2728,7 @@ public long positionDigest()
  			dirPerm[nDirs] = dir;
   			if((myPower!=ArimaaChip.RABBIT_POWER) || (dir!=backward_direction))
  			{
- 			ArimaaCell adj = from.exitTo(dir);
+ 			ArimaaCell adj = from.fastExitTo(dir);
  			if(adj!=null)
  			{
  			ArimaaChip aTop=adj.topChip();
@@ -2729,7 +2744,7 @@ public long positionDigest()
  					int pushd = pushPerm[pushd0];
  					pushPerm[pushd0] = pushPerm[nPush];
  					pushPerm[nPush] = pushd;
-   					ArimaaCell exitCell = adj.exitTo(pushd);
+   					ArimaaCell exitCell = adj.fastExitTo(pushd);
  					if((exitCell!=null) && exitCell.height()==0) 
  					{	if(!isRabbitSuicideMove(aTop,exitCell)  && !isSuicideMove(adj,myPlayer))
  						{
@@ -2749,7 +2764,7 @@ public long positionDigest()
  	 					int pulld = pullPerm[pulld0];
  	 					pullPerm[pulld0] = pullPerm[nPull];
  	 					pullPerm[nPull] = pulld;
- 						ArimaaCell exitCell = from.exitTo(pulld);
+ 						ArimaaCell exitCell = from.fastExitTo(pulld);
  	 					if(exitCell!=null)
  	 					{
  	 					ArimaaChip exTop = exitCell.topChip();
@@ -2804,7 +2819,7 @@ public long positionDigest()
 				h.put(pushPullSource,pushPullSource);
 				ArimaaCell src = getSource();
 				for(int dir=0; dir<CELL_FULL_TURN; dir++)
-		 		{	ArimaaCell ex = src.exitTo(dir);
+		 		{	ArimaaCell ex = src.fastExitTo(dir);
 		 			if((ex!=null)&&(ex.height()==0))
 		 					{	h.put(ex,ex);
 		 					}
@@ -2826,7 +2841,7 @@ public long positionDigest()
 	 		h.put(src,src);
 	 		for(int dir=0; dir<CELL_FULL_TURN; dir++)
 	 		{	if((chipPower!=ArimaaChip.RABBIT_POWER)||(dir!=backward_dir)||(whoseTurn!=playerIndex(pickedObject)))
-	 			{ArimaaCell ex = src.exitTo(dir);
+	 			{ArimaaCell ex = src.fastExitTo(dir);
 	 			if((ex!=null)&&(ex.height()==0))
 	 					{	h.put(ex,ex);
 	 					}}
@@ -2890,7 +2905,7 @@ public long positionDigest()
  	int victim_power = victim.chipPower();
 	 // find pieces that could have done the push, these are adjacent, not frozen, and stronget
 	 for(int dir=0;dir<CELL_FULL_TURN; dir++)
-	 {	ArimaaCell adj = src.exitTo(dir);
+	 {	ArimaaCell adj = src.fastExitTo(dir);
 	 	if((adj!=null) && (adj!=dest))
 	 	{
 	 		ArimaaChip top = adj.topChip();
@@ -2940,7 +2955,7 @@ public long positionDigest()
  	int puller_power = puller.chipPower();
 	 // find pieces that could have done the push, these are adjacent, not frozen, and stronger
 	 for(int dir=0;dir<CELL_FULL_TURN; dir++)
-	 {	ArimaaCell adj = src.exitTo(dir);
+	 {	ArimaaCell adj = src.fastExitTo(dir);
 	 	if((adj!=null) && (adj!=dest))
 	 	{
 	 		ArimaaChip top = adj.topChip();

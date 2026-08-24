@@ -941,7 +941,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
       public long setDigest(commonMove m)
       {
     	  long dig = bb.getPlayerBoard(m.player).Digest();
-    	  m.digest = dig;
+    	  m.setDigest(dig);
     	  return dig;
       }
     

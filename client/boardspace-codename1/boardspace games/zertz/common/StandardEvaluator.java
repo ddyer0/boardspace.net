@@ -88,7 +88,7 @@ public class StandardEvaluator extends DefaultEvaluator implements Evaluator,Gam
                     int adj = 0;
 
                     for (int dir = 0; dir < 6; dir++)
-                    {	zCell nc = ballc.exitTo(dir);
+                    {	zCell nc = ballc.fastExitTo(dir);
                         if (nc!=null)
                         {
                             char c = nc.contents;

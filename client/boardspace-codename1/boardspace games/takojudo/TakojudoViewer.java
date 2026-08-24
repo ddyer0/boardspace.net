@@ -402,7 +402,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
      	{	commonMove m = History.elementAt(lim);
      		if(m.op==MOVE_DECLINE_DRAW) { return(0); }
      		if((m.player==forPlayer) && (m.op==MOVE_BOARD_BOARD))
-     		{int nreps = repeatedPositions.numberOfRepeatedPositions(m.digest);
+     		{int nreps = repeatedPositions.numberOfRepeatedPositions(m.digest());
      		switch(nreps)
      		{
      		case 1: return(nreps);

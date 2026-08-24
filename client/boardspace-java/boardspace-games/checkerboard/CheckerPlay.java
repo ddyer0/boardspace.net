@@ -250,9 +250,10 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             board.robotDepth = 0;
-            Search_Driver search_state = Setup_For_Search(depth, false);
+            Search_Driver search_state = Setup_For_Search(depth+2, false);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
+            search_state.max_threads = DEPLOY_THREADS;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only

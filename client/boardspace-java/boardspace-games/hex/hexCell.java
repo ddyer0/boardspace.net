@@ -18,10 +18,11 @@ package hex;
 
 import lib.Random;
 import hex.HexConstants.HexId;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 
-class CellStack extends OStack<hexCell>
+class CellStack extends QRStack<hexCell>
 {
 	public hexCell[] newComponentArray(int n) { return(new hexCell[n]); }
 }
@@ -37,17 +38,23 @@ class CellStack extends OStack<hexCell>
  * @author ddyer
  *
  */
-public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvider
+public class hexCell extends edgeChipCell<hexCell,hexChip> implements PlacementProvider, PrivateIndex
 {	
 	hexblob blob;			// the blob which contains this cell
 	hexCell nextInBlob;		// a link to the next cell in this blob
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int borders = -1;		// bitmask of possible borders
 	int lastPlaced = -1;
-
-	public hexCell(Random r,HexId rack) { super(r,rack); }		// construct a cell not on the board
-	public hexCell(HexId rack,char c,int r) 		// construct a cell on the board
+	int privateIndex = -1;
+	HexGameBoard myBoard=null;
+	public hexCell getCell(hexCell c) { return myBoard.getCell(c); }
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex = n;}
+	
+	public hexCell(HexGameBoard b,Random r,HexId rack) { super(r,rack); myBoard = b; }		// construct a cell not on the board
+	public hexCell(HexGameBoard b,HexId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);
+		myBoard = b;
 	};
 	/** upcast racklocation to our local type */
 	public HexId rackLocation() { return((HexId)rackLocation); }
@@ -78,6 +85,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
+		privateIndex = ot.privateIndex;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -86,6 +94,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		privateIndex = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public hexCell(hexChip cont)
@@ -137,5 +146,6 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 		if(!empty) { return lastPlaced; }
 		return -1;
 	}
+
 
 }

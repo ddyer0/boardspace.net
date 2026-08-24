@@ -187,14 +187,50 @@ public class PrototypePlay
     {
     	// undo the damage done by startRandomDescent
     }
-    /** return a Vector of moves to consider at this point.  It doesn't have to be
+    /** return a CommonMoveStack of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
      * be evaluated and sorted, then used as fodder for the depth limited search
-     * pruned with alpha-beta.
+     * pruned with alpha-beta or mcts
      */
+    	/* this is the simple case 
         public CommonMoveStack  List_Of_Legal_Moves()
         {
-            return(board.GetListOfMoves());
+            return(board.getListOfMoves(movelist));
+        } */
+        /** this is the prototype for parallel threads with alpha beta search.
+         * 1) use ParallelCommonMoveStack instead of CommonMoveStack, and reuse the same object. its safe.
+         *    ParallelCommonMoveStack adds synchronization on "push" so multiple threads will not trash each other
+         * 2) do the actual move generation with offset+step, so each thread only does the n'th possibility in
+         *    move generation.  Most move generators iterate over some set of possibilities, so this is usually easy.
+         */
+        CommonMoveStack movelist = new ParallelCommonMoveStack();
+        
+        public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+        {	movelist.clear();
+        	if(threads!=null)
+        	{
+        	int n = threads.length;
+        	for(int i=1;i<=n;i++)
+        		{
+        		board.getListOfMoves(movelist,i,n+1);
+        		}
+        	board.getListOfMoves(movelist,n+1,n+1);
+        	Sthread.waitForIdle(threads);
+        	}
+        	else
+        	{
+            board.getListOfMoves(movelist,1,1);
+        	}
+        	/*
+            if(G.debug())
+            {
+            	CommonMoveStack all = new ParallelCommonMoveStack();
+            	board.GetListOfMoves(all,extendedSearch,1,1);
+            	G.Assert(all.size()==movelist.size(),"all moves generated");
+            }
+            */
+ 
+            return movelist;
         }
 
         /**
@@ -296,6 +332,7 @@ public class PrototypePlay
                search_state.verbose = verbose;
                search_state.allow_killer = KILLER;
                search_state.allow_best_killer = false;
+               search_state.max_threads = DEPLOY_THREADS;
                search_state.save_top_digest = true;	// always on as a background check
                search_state.save_digest=false;	// debugging only
                search_state.check_duplicate_digests = false; 	// debugging only
@@ -350,7 +387,7 @@ public class PrototypePlay
 			//$FALL-THROUGH$
 		case DUMBOT_LEVEL:
            	MONTEBOT=false;
-           	MAX_DEPTH = DUMBOT_DEPTH;
+           	MAX_DEPTH = DUMBOT_DEPTH + (G.getAvailableProcessors()>2 ? 1 : 0);
          	break;
         	
         case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;

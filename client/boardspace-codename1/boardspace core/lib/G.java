@@ -230,12 +230,11 @@ public class G extends Platform implements Timestamp
      *   @param condition a boolean that was evaluated in the caller's context
      *   @param message a message {@link #format} string
      *   @param args... optional args for the format string
-     *   @return true, or throws an error. 
+     *   @return true or throws an error. 
      */
     public static boolean Assert(boolean condition, String message)
     {	if (!condition)
-        {
-        	throw new ErrorX(message);
+        {	Error(message);
         }
         return (true);
     }
@@ -248,10 +247,39 @@ public class G extends Platform implements Timestamp
      *   @param args... optional args for the format string
      *   @return true or throws an error. 
      */
-    public static boolean Assert(boolean condition, String message,Object... args)
+    public static boolean Assert(boolean condition, String message,Object p0)
     {	if (!condition)
-        {	if(args!=null && args.length>0) { message = format(message,args); }
-        	throw new ErrorX(message);
+        {	Error(message,p0);
+        }
+        return (true);
+    }
+    /**
+     * G.Assert returns true, or throws an Error.  This provides a
+     *   convenient place to place a breakpoint for any kind of internally
+     *   detected error.  This should be the only "throw ErrorX" in the system.
+     *   @param condition a boolean that was evaluated in the caller's context
+     *   @param message a message {@link #format} string
+     *   @param args... optional args for the format string
+     *   @return true or throws an error. 
+     */
+   public static boolean Assert(boolean condition, String message,Object p0,Object p1)
+    {	if (!condition)
+        {	Error(message,p0,p1);
+        }
+        return (true);
+    }
+    /**
+     * G.Assert returns true, or throws an Error.  This provides a
+     *   convenient place to place a breakpoint for any kind of internally
+     *   detected error.  This should be the only "throw ErrorX" in the system.
+     *   @param condition a boolean that was evaluated in the caller's context
+     *   @param message a message {@link #format} string
+     *   @param args... optional args for the format string
+     *   @return true or throws an error. 
+     */
+   public static boolean Assert(boolean condition, String message,Object p0,Object p1,Object... args)
+    {	if (!condition)
+       {	Error(message,p0,p1,args);
         }
         return (true);
     }

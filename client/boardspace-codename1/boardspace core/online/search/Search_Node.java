@@ -262,11 +262,11 @@ public class Search_Node implements Constants,Opcodes
         Search_Node succ = successor;
         if ((nm > 0)&&(nmi>0))
         {
-             double sdone = ((succ != null) ? (succ.PercentDone() / nm)
-                                                : 0.0);
+             double sdone = (succ != null)
+            		 			? (succ.PercentDone() / nm)
+            		 			: 0.0;
             return (((nmi-1) / nm) + sdone);
         }
-
         return (0.0);
     }
-}
+    }

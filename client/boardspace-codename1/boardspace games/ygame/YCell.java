@@ -17,10 +17,11 @@
 package ygame;
 
 import lib.Random;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 
-class CellStack extends OStack<YCell>
+class CellStack extends QRStack<YCell>
 {
 	public YCell[] newComponentArray(int n) { return(new YCell[n]); }
 }
@@ -34,18 +35,21 @@ class CellStack extends OStack<YCell>
  * @author ddyer
  *
  */
-public class YCell extends chipCell<YCell,YChip> implements YConstants
+public class YCell extends edgeChipCell<YCell,YChip> implements YConstants,PrivateIndex
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	double yloc = 0.0;
 	double xloc = 0.0;
 	int cellNumber = 0;
-	int edgeMask = 0;
-	
+	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex=n; }
+	YBoard myBoard = null;
+	public YCell getCell(YCell c) { return myBoard.getCell(c); }
     // return a bitmask of edges contacted by same color from "from"
     public int sweepEdgeMask(int ior,int sweep)
     {
-    	ior |= edgeMask;
+    	ior |= edgeMask();
     	if(sweep_counter!=sweep)
     	{	
     		sweep_counter=sweep;
@@ -63,23 +67,13 @@ public class YCell extends chipCell<YCell,YChip> implements YConstants
     	return(ior);
     }
 
-	public YCell(Random r,YId rack) { super(r,rack); }		// construct a cell not on the board
-	public YCell(YId rack,char c,int r) 		// construct a cell on the board
+	public YCell(YBoard b,Random r,YId rack) { super(r,rack); myBoard = b; }		// construct a cell not on the board
+	public YCell(YBoard b,YId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Network,rack,c,r);
+		myBoard = b;
 	};
 	/** upcast racklocation to our local type */
 	public YId rackLocation() { return((YId)rackLocation); }
-	/** sameCell is called at various times as a consistency check
-	 * 
-	 * @param other
-	 * @return true if this cell is in the same location as other (but presumably on a different board)
-	 */
-	public boolean sameCell(YCell other)
-	{	return(super.sameCell(other)
-				// check the values of any variables that define "sameness"
-				// && (moveClaimed==other.moveClaimed)
-			); 
-	}
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public YCell(YChip cont)
@@ -92,6 +86,15 @@ public class YCell extends chipCell<YCell,YChip> implements YConstants
 	public YChip[] newComponentArray(int size) {
 		return(new YChip[size]);
 	}
-	
+	public void copyFrom(YCell other)
+	{
+		super.copyFrom(other);
+		privateIndex = other.privateIndex;
+	}
+	public void reInit()
+	{
+		super.reInit();
+		privateIndex = -1;
+	}
 	
 }

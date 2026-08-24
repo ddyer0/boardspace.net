@@ -47,7 +47,8 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
      * this is used to distinguish the true board from copies
      */
 	private String name = "main";
-	public String getName() { return(name); }
+	private int generation = 0;
+	public String getName() { return(generation>0 ? "copy("+generation+") "+name : name); }
 	public void setName(String s) { name = s; }
     /**
      * return true if we're an upside down view
@@ -56,7 +57,7 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	public boolean reverseView() { return false; }
 
 	@SuppressWarnings("deprecation")
-	public String toString() { return("<"+getClass().getName()+" "+name+">"); }
+	public String toString() { return("<"+getClass().getName()+" "+getName()+">"); }
 	
 	public int whoseTurn = -1; 		// player index who is to move next
 	public int players_in_game = 2; // 2-6 players are supported
@@ -178,8 +179,9 @@ public abstract class BaseBoard implements Opcodes,Digestable,BoardProtocol
 	 * @param from_b
 	 */
 	public void copyFrom(BaseBoard b)
-	{	G.Assert(b != this, "can clone from myself");
-		name = "copy "+b.name;
+	{	if(b == this) { G.Error("can't clone from myself"); }
+		name = b.name;
+		generation = b.generation+1;
 		players_in_game = b.players_in_game;
 		revision = b.revision;
 		simultaneousTurnsAllowed = b.simultaneousTurnsAllowed;

@@ -59,9 +59,6 @@ public class Hivemovespec extends commonMove implements HiveConstants
     int to_row; // for from-to moves, the destination row
     char from_col;
     int from_row;
-    HiveState state;	// the state of the move before state, for UNDO
-    HiveCell location; // source location for UNDO
-    HiveCell stun; 		// for undo
     String attachment = "";
     HivePiece attachObject = null;
     int attachDirection = 0;
@@ -84,7 +81,8 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	to_col = dest.col;
     	to_row = dest.row;
         source = HiveId.BoardLocation;
-        setAttachment(dest,bug,src);
+        // unnecessary for the robot 
+        // setAttachment(dest,bug,src);
     }
     public Hivemovespec(int who,int opcode)
     {	player = who;
@@ -111,8 +109,6 @@ public class Hivemovespec extends commonMove implements HiveConstants
 		to.from_col = from_col;
         to.to_col = to_col;
         to.to_row = to_row;
-        to.state = state;
-        to.location = location;
         to.source = source;
         to.attachment = attachment;
         to.attachDirection = attachDirection;
@@ -450,8 +446,8 @@ public class Hivemovespec extends commonMove implements HiveConstants
     
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v, Font font)
-    {	return(shortMoveText((HiveGameViewer)v,font));
+    public Text shortMoveText(commonCanvas v,Font f)
+    {	return(shortMoveText((HiveGameViewer)v,f));
     }
     public Text shortMoveText(HiveGameViewer v,Font f)
     {	if(v.useTextNotation)

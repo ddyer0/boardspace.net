@@ -72,6 +72,7 @@ class RobotProperties
 class HistoryProperties
 {
     int index = -1; 			// index in the history buffer
+    long digest = 0;			// digest after making this move through the ui
     String comment = null;
     String numString = null;
     boolean lineBreak = false;
@@ -89,6 +90,7 @@ class HistoryProperties
     	to.properties = properties;
     	to.elapsedTime = elapsedTime;
     	to.annotations = annotations;
+    	to.digest = digest;
     }
 }
 
@@ -120,19 +122,20 @@ public abstract class commonMove
 {	
 	public enum EStatus 
 	{
-		NOT_EVALUATED,					// not examined yet
-		EVALUATED,						// static evaluated
-		EVALUATED_CONTINUE,				// push another level
-		EVALUATED_DRAWN,				// evaluated as a draw
-		DEPTH_LIMITED_SEARCH,			// depth limited by search
-		DEPTH_LIMITED_GAMEOVER,			// depth limited because the game is over
-		DEPTH_LIMITED_TRANSPOSITION;	// depth limited by the transposition table
+		NOT_EVALUATED(false),					// not examined yet
+		EVALUATED(true),						// static evaluated
+		EVALUATED_CONTINUE(true),				// push another level
+		EVALUATED_DRAWN(true),				// evaluated as a draw
+		DEPTH_LIMITED_SEARCH(false),			// depth limited by search
+		DEPTH_LIMITED_GAMEOVER(false),			// depth limited because the game is over
+		DEPTH_LIMITED_TRANSPOSITION(false);	// depth limited by the transposition table
+		boolean search_deeper = false;
+		EStatus(boolean d) { search_deeper = d; }		
 	}
 	private HistoryProperties HProps=null;
 	private RobotProperties RProps=null;
-    public long digest = 0;			// digest after making this move through the ui
-	public long digest() { return(digest); }
-	public void setDigest(long v) { digest = v; }
+ 	public long digest() { return HProps==null ? 0 : H().digest; }
+	public void setDigest(long v) { if(v!=0||HProps!=null) { H().digest = v; }}
 	public static MoveFilter getFinalFilter() { return(new FinalFilter(true)); }
 	public static MoveFilter getEphemeralFilter() { return(new FinalFilter(false)); }
 	public MoveFilter finalFilter() { return(new FinalFilter(true)); }
@@ -179,8 +182,7 @@ public abstract class commonMove
      */
     public boolean searchDeeper()
     {
-    	EStatus lim = depth_limited();
-    	return lim==EStatus.EVALUATED || lim==EStatus.EVALUATED_CONTINUE || lim==EStatus.NOT_EVALUATED;
+    	return depth_limited().search_deeper;
     }
     public void set_depth_limited(EStatus v) { R().depth_limited = v; }
     public double local_evaluation() { return(R().local_evaluation); }
@@ -403,7 +405,7 @@ public abstract class commonMove
     	
         to.player = player;
         to.op = op;
-        to.digest = digest;
+        to.setDigest(digest());
     }
 
     // used in sorting move lists according to evaluation */

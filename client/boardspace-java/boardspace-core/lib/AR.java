@@ -189,13 +189,13 @@ public class AR {
 	    */
 	   static public void copy(Object to[],Object from[])
 	   {	int len = to.length;
-	   		G.Assert(len==from.length,"same length");
+	   		if(len!=from.length) { G.Error("should be same length"); }
 	   	    for(int i=0;i<len;i++) 
 	   	    { Object s = from[i];
 	   	      // limits to java type system.  Object[][] gets here too, and end up copying
 	   	      // the structure.  Trying to cast Object[][] to Object[] fails because arrays
 	   	      // are not the type of their contents.  The best we can do is scream.
-	   	      G.Assert(s==null || !s.getClass().isArray(),"can't be an array[][]");
+	   	      if(!(s==null || !s.getClass().isArray())) { G.Error("can't be an array[][]") ;}
 	   	      to[i]=from[i]; 
 	   	    }
 	   }
@@ -208,7 +208,7 @@ public class AR {
 	   static public void copy(int [][]to,int [][]from)
 	   {
 		   int len = to.length;
-		   G.Assert(len==from.length,"same length");
+		   if(len!=from.length) { G.Error("should be same length"); }
 		   for(int i=0;i<len;i++) { copy(to[i],from[i]); }
 	   }
 
@@ -287,7 +287,7 @@ public class AR {
 	    */
 	   static public void copy(boolean c1[],boolean c2[])
 	   {	int len = c1.length;
-	   		G.Assert(len==c2.length,"same length");
+	   		if(len!=c2.length) {G.Error("should be same length"); }
 	   	    for(int i=0;i<len;i++) { c1[i]=c2[i]; }
 	   }
 

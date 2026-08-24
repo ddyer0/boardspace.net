@@ -56,7 +56,7 @@ public class HivePiece extends chip<HivePiece>
 		-1,-1,-1,	// mosquito, ladybug,pillbug
 		-1		// blank
 	};
-	static final int NUMPIECETYPES=PieceType.values().length;		// 8 including pillbug   
+	static final int NUMPIECETYPES=PieceType.AllValues.length;		// 8 including pillbug   
 	
 	public HiveId color=null;							// owning player
 	public boolean potentiallyUnique = false;		// true if the starting set has just one of these

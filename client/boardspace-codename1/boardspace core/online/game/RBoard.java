@@ -206,9 +206,11 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      * @return null 
      */
     public CELLTYPE getCell(OStack<CELLTYPE>to,OStack<CELLTYPE> from)
-    {	to.clear();
-    	for(int i=0,lim=from.size(); i<lim; i++) { to.push(getCell(from.elementAt(i))); }
-    	return(null);
+    {	
+    	int fromSize = from.size();
+    	to.setSize(fromSize); 	// increase size or clear excess
+    	for(int i=0;i<fromSize;i++) { to.setElementAt(getCell(from.elementAt(i)),i); }
+    	return null;
     }
     
     /**
@@ -535,12 +537,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     * @param from
     */
    public void copyFrom(IStack to,IStack from) 
-   {
-	to.clear();
-   	for(int i=0,lim=from.size(); i<lim; i++)
-   	{
-   		to.push(from.elementAt(i));
-   	}
+   {	to.copyFrom(from);
    }
 
    /**

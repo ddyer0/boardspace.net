@@ -148,7 +148,7 @@ class UCTSPThread extends Thread implements Opcodes,UCTThread
 	//
 	private CommonMoveStack List_Of_Legal_Moves()
 	{
-		CommonMoveStack moves = robot.List_Of_Legal_Moves();
+		CommonMoveStack moves = robot.List_Of_Legal_Moves(null);
 		int sz = moves.size();
     	if((master.treeSize==0) && (sz>0))
 		{ // this is a construction check that the move specs are prepared for 

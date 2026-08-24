@@ -90,7 +90,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	
 	public void Make_Move(commonMove child)
 	{	currentMove = child;
-		makeThreadMoves(child);
+		
 		if(save_digest)
 			{ BoardProtocol robo = robot.getBoard();
 			  long dig = robo.Digest(); 
@@ -113,7 +113,22 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 			  {	ob.sameboard(robo);
 			  throw G.Error("board mismatch after make/unmake, digest mismatches but sameboard matches %s -> %s after %s",ob,robo,child);
 			  }
+			if(threadPool!=null)
+			{
+				makeThreadMoves(child);
+				waitForIdle();
+				long tdig = robo.Digest();
+				if(tdig!=dig)
+				{
+					G.Error("threads changed our digest");
+				}
 			}
+			
+			}
+		else
+		{
+		makeThreadMoves(child);
+		}
 		robot.Make_Move(child);
 	}
 	
@@ -935,7 +950,12 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		}
     	return null;
     }
-    
+    public void waitForIdle()
+    {	if(threadPool!=null)
+    	{
+    	for(Sthread s : threadPool) { s.waitForIdle();}
+    	}
+    }
     public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[]) 
     {	//boolean all_depth_limited = true;
     	boolean all_terminals = true;
@@ -1025,6 +1045,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         
         int startIndex = has_nullmove?1:0;
         int finIndex = startIndex;
+        commonMove best = null;
+        double bestEval = 0;
         try {
         while(finIndex<sz)	// finish early, still need to wait for laggers
         {	
@@ -1053,9 +1075,11 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	{
         		killer_helped++;
         	}
+        	double localEval = mm.local_evaluation();
+        	if(best==null || localEval>bestEval) { bestEval = localEval; best = mm; }
             if(cutting
             	  &&  (mm.depth_limited()!=commonMove.EStatus.EVALUATED)
-           		  && (mm.local_evaluation()>=cutoff_limit)
+           		  && (localEval>=cutoff_limit)
           		  )
             {	// we hit a value that can cause an alpha-beta cutoff. 
           	// so skip the rest
@@ -1097,10 +1121,21 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
               if((promoted!=null)
             		  && promoted.Same_Move_P(mm))
               {	// put the promoted move first, and exempt it from the sort
-             	  mvec[startIndex0]=mvec[extra];
+            	
+            	  int swapIndex = startIndex0;
+            	  if(threadPool!=null)
+            	  {
+            		// look back for the slot that mm came from.  If there are threads
+            		if(swapIndex>=sz) { swapIndex=sz-1; }
+            		while(swapIndex>extra && mvec[swapIndex]!=mm) { swapIndex--; }
+            	  }
+            	  if(swapIndex>extra)
+            	  {
+             	  mvec[swapIndex]=mvec[extra];
             	  mvec[extra]=mm;
             	  promoted = null;		// only do it once
             	  nullmove_promotions++;
+            	  }
             	  extra++;
               }
               if(save_digest) 
@@ -1144,9 +1179,17 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         
         // subtle point here.  If all the moves are terminals, we may apply the depth limit optimization
         // and if so, the first move must really be the best, not necessarily the best terminal
-        Sort.sort(mvec,extra,sz-1,!all_terminals);	// alternative sort, put terminals first unless all of them are terminals
+        if(all_terminals && best!=null && sz>2 && current_depth>1)
+        	{
+        	mvec[0] = best;
+        	mvec[1] = null;	// use this as a tripwire, the rest of these values should be ignored
+        	sz = 1;
+        	}
+        	else 
+        	{Sort.sort(mvec,extra,sz-1,!all_terminals);	// alternative sort, put terminals first unless all of them are terminals
+             sz = Width_Limit_Moves(mvec,sz);
+        	}
 
-        if(!all_terminals) { sz = Width_Limit_Moves(mvec,sz); }
         
         return(sz);
     }

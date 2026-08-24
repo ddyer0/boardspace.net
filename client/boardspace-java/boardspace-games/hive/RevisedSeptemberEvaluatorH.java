@@ -445,9 +445,9 @@ class RevisedSeptemberEvaluatorH extends DefaultEvaluator implements Evaluator
 							{ myQueenAdjacent++; 	// count the number of our pieces adjacent to the our q which are mobile
 							  pillbugAdjacent |= bugtype==PieceType.PILLBUG;
 							}
-						for(int dis = nmoves-1; dis>=0; dis--)
+						for(HiveCell c : tempDests)
 						{
-							mobile_queen_distance = Math.min(mobile_queen_distance,board.hex_cell_distance(oql,tempDests.elementAt(dis)));
+							mobile_queen_distance = Math.min(mobile_queen_distance,board.hex_cell_distance(oql,c));
 						}
 	
 						
