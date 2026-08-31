@@ -47,6 +47,7 @@ import lib.*;
  *
  * TODO: investigate using https://github.com/lightvector/arimaasharp as the basis for a better bot
  * 
+ * TODO: find a way to exclude "revert to same position" problem at step 4.  see experiments/illegalmovestate.sgf
  */
 public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, ArimaaConstants,
     RobotProtocol
@@ -63,7 +64,6 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
 	private int PUNISH_RABITS = 0;
 	private int BOTDEPTH = 9;
 	private int DEFAULT_DEPTH = 7;
-	private boolean LOCAL_NULLMOVE = false;
 	private boolean GLOBAL_NULLMOVE = true;
 	private IntObjHashtable<ArimaaMovespec> transpositions = new IntObjHashtable<ArimaaMovespec>();
 	private int transpositions_hit = 0;
@@ -202,22 +202,15 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
     	depth_limited = nreps>=3;
     	}
 
+    CommonMoveStack movelist =  new ParallelCommonMoveStack();
+    
 /** return an enumeration of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {  	CommonMoveStack  all = board.GetListOfMoves();
-    	if(LOCAL_NULLMOVE)
-    	{
-    	if((board.robotDepth==0)&&(board.board_state==ArimaaState.PLAY_STATE))
-    		{
-    		// add a nullmove to the list
-    		 all.addElement(new ArimaaMovespec(MOVE_NULL,board.whoseTurn));// null move first
-    		}
-    	}
-    	return(all);
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {  	return getMoveList(movelist,threads);
     }
     
     // randomplay results in approximately a 5x increase in random moves per second
@@ -503,18 +496,18 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
         if (search_move != null)
         {
             if(G.debug() && (search_move.op!=MOVE_DONE)) 
-            	{ search_move.showPV("exp final pv: ");
+            	{ 
             	  if(TRANSPOSITIONS)
-            		  {System.out.println("Transpositions: store "+transpositions_stored+" probe "+transpositions_probe+" hit "+transpositions_hit);
+            		  {G.print("Transpositions: store "+transpositions_stored+" probe "+transpositions_probe+" hit "+transpositions_hit);
             		  }
-            	search_state.Describe_Search(System.out); 
-            	System.out.flush();
+            	  search_state.showResult(search_move,true);
             	}
             // normal exit with a move
             transpositions = new IntObjHashtable<ArimaaMovespec>();	// help the garbage collector
         }
         if(move!=null)
-        	{return (move);
+        	{      	
+        	return (move);
         	}
         continuous = false;
         // abnormal exit

@@ -45,7 +45,6 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implement
 	public int player = -1;
 	public int lastPicked = -1;
 	public int lastDropped = -1;
-	MicropulCell nextOccupied = null;
 	boolean masked = false;	// true if contents painted as blank
 	static final int Jewel_None = 0;
 	static final int Jewel_Claimed_1 = 1;
@@ -67,7 +66,6 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implement
 	}
 	public void copyFrom(MicropulCell ot)
 	{	
-		nextOccupied = null;
 		super.copyFrom(ot);
 		lastPicked = ot.lastPicked;
 		lastDropped = ot.lastDropped;
@@ -234,7 +232,6 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip> implement
 		  for(int i=0;i<4;i++) { jewelStatus[i]=Jewel_None; }
 		  lastPicked = -1;
 		  lastDropped = -1;
-		  nextOccupied = null;
 		  masked = false;
 		}
 	public MicropulCell(Random r) { super(r); }		// construct a cell not on the board

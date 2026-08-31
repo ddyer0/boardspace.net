@@ -57,9 +57,15 @@ public class DStack {
 	 * @param n
 	 */
 	public void setSize(int n)
-	{	if(n>index) { increaseSize(n); }
-		index = n;
+	{	if(n>data.length) { increaseSize(n); }
+		if(n>index) { index = n; }
+		else 
+			{ while(index>n)
+				{	data[--index] = 0;	// clear memory to help the gc
+				}
+			}
 	}
+
 	/**
 	 * clear the stack
 	 */

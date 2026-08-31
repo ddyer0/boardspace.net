@@ -102,6 +102,7 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
     {	RobotProtocol c = super.copyPlayer(from);
     	BloomsPlay cc = (BloomsPlay)c;
     	cc.Strategy = Strategy;
+    	cc.board.initRobotValues(cc);
     	return(c);
     }
 
@@ -142,19 +143,21 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
+    private CommonMoveStack movelist = new CommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves()
     {	int player = board.simultaneousTurnsAllowed() ? forPlayer : board.whoseTurn;
+    	movelist.clear();
     	switch(Strategy)
     	{
     	default: throw G.Error("Not expecting strategy %s",Strategy);
     	case MONTEBOT_LEVEL:
     	case TESTBOT_LEVEL_1:
-    		return(board.GetListOfAnyMoves(player));
+    		return(board.GetListOfAnyMoves(movelist,player));
     	case TESTBOT_LEVEL_2:
     	case SMARTBOT_LEVEL:
     	case DUMBOT_LEVEL:
     	case WEAKBOT_LEVEL:
-    		return(board.GetListOfLegalMoves(player));
+    		return(board.GetListOfLegalMoves(movelist,player));
     	}
         
     }
@@ -225,6 +228,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     forPlayer = playerIndex;
+    board.initRobotValues(this);
 }
 
 

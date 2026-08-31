@@ -1015,7 +1015,10 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
  }
  public CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
- 	
+ 	return getMoveList(all,1,1);
+ }
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+ {
  	switch(board_state)
  	{
  	case Play:

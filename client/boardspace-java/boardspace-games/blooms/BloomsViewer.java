@@ -1012,10 +1012,9 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	super.ViewerRun(n);
     	if(bb.simultaneousTurnsAllowed())	// if allowed in the current state
     	{
-        if(!reviewOnly 
-      	 && !reviewMode() 
-      	 && (bb.allApproved())
-      	 && (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+        if(!reviewMode() 
+        		&& (bb.allApproved())
+        		&& (isOfflineGame()||(bb.whoseTurn == getActivePlayer().boardIndex)))
         	{	  
         	// this triggers the conversion from ephemeral state to running with a 
         	// particular endgame condition.

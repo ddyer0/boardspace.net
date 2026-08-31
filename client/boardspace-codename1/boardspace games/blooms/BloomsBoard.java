@@ -53,7 +53,7 @@ import online.game.*;
  *
  */
 
-class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
+class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol,Debuging
 {	static int REVISION = 101;			// 100 represents the initial version of the game
 										// 101 adds the endgame condition selection
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -123,7 +123,6 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	public void SetDrawState() { setState(BloomsState.Draw); };	
 	CellStack animationStack = new CellStack();
     int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
     public int chips[] = new int[2];
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -235,9 +234,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	    firstPlayedLocation = null;
 
 	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(BloomsCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
+		emptyCells.setSize(fullBoardSize);
+		int i=0;
+		for(BloomsCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRSet(c,i++); }
 		AR.setValue(score, 0);
         animationStack.clear();
         moveNumber = 1;
@@ -267,7 +266,6 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
         AR.copy(chips,from_b.chips);
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
@@ -286,7 +284,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         AR.copy(endgameApproved,from_b.endgameApproved);
         AR.copy(captured,from_b.captured);
         lastPlacement = from_b.lastPlacement;
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && G.debug()) { sameboard(from_b); }
     }
 
     
@@ -474,8 +472,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     {	BloomsChip old = c.chip;
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); chips[ownerIndex(old)]--; }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); chips[ownerIndex(ch)]++; }
+    	if(old!=null) { chips_on_board--;emptyCells.QRPush(c); chips[ownerIndex(old)]--; }
+     	if(ch!=null) { chips_on_board++; emptyCells.QRRemove(c); chips[ownerIndex(ch)]++; }
     	}
        	c.chip = ch;
     	return(old);
@@ -671,9 +669,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	int pl = ownerIndex(top);
     	boolean hasLibs = c.sweepHasLiberties(top,sweep);
     	StackIterator<BloomsCell>friendsInNeed = null;
-      	for(int dir=c.geometry.n; dir>0; dir--)
+      	for(int dir=c.geometry.n-1; dir>=0; dir--)
      	{
-     		BloomsCell adj = c.exitTo(dir);
+     		BloomsCell adj = c.fastExitTo(dir);
      		if((adj!=null) && (adj.getSweep()!=sweep))
      		{	BloomsChip atop = adj.topChip();
      			if((atop!=null) && (ownerIndex(atop)==pl))
@@ -708,7 +706,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     }
     
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	if(DEBUG) { G.Assert(chips_on_board+emptyCells.size()==fullBoardSize,"cells missing"); }
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state %s",board_state);
@@ -753,7 +751,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	BloomsChip top = seed.removeTop();
     	captureStack.push(seed);
     	chipStack.push(top);
-    	emptyCells.push(seed);
+    	emptyCells.QRPush(seed);
     	chips_on_board--;
     	int owner = ownerIndex(top);
     	chips[owner]--;
@@ -762,9 +760,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     		animationStack.push(seed);
     		animationStack.push(getCell(top.id));
     	}
-    	for(int dir = seed.geometry.n; dir>0; dir--)
+    	for(int dir = CELL_FULL_TURN-1; dir>=0; dir--)
     	{
-    		BloomsCell adj = seed.exitTo(dir);
+    		BloomsCell adj = seed.fastExitTo(dir);
     		if(adj!=null)
     		{
     			if(adj.topChip()==top)
@@ -800,9 +798,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
      	// this is also where we reject filling eyes
     	boolean hasFriends = false;
     	boolean hasDirectLiberties = false;
-    	for(int dir = n; dir>0; dir--)
+    	for(int dir = n-1; dir>=0; dir--)
     	{
-    		BloomsCell adj = c.exitTo(dir);
+    		BloomsCell adj = c.fastExitTo(dir);
     		if(adj==null) { borders++; }
     		else 
     		{	BloomsChip adjTop = adj.topChip();
@@ -829,9 +827,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	// sweep the central group for self atari
     	capturedFriend = doCaptureSweep(capturedFriend,c,top,capturedProbe);
     	// sweep adjacent groups for atari
-    	for(int dir = n; dir>0; dir--)
+    	for(int dir = n-1; dir>=0; dir--)
     	{
-    		BloomsCell adj = c.exitTo(dir);
+    		BloomsCell adj = c.fastExitTo(dir);
     		if(adj!=null)
     		{	
     			BloomsChip adjTop = adj.topChip();
@@ -859,9 +857,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
        		BloomsChip firstTop = first.topChip();      		
        		capturedFriend = doCaptureSweep(capturedFriend,first,firstTop,capturedProbe);
     		
-    		for(int dir = n; dir>0; dir--)
+    		for(int dir = n-1; dir>=0; dir--)
     		{
-    		BloomsCell adj = first.exitTo(dir);
+    		BloomsCell adj = first.fastExitTo(dir);
     		if(adj!=null)
     		{	
     			BloomsChip adjTop = adj.topChip();
@@ -1036,8 +1034,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 				}
 				pickObject(src);
 				m.target = pickedObject;
-				G.Assert((board_state==BloomsState.Puzzle)
-							|| (ownerIndex(pickedObject)==whoseTurn),"color mismatch");
+				//G.Assert((board_state==BloomsState.Puzzle)
+				//	|| (ownerIndex(pickedObject)==whoseTurn),"color mismatch");
 
 	            if(replay.animate && ((po==null) || (replay==replayMode.Single)))
 	            	{ animationStack.push(src);
@@ -1229,6 +1227,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         }
     }
     
+    BloomsPlay robot = null;
+    public void initRobotValues(BloomsPlay p)
+    {
+    	robot = p;
+    }
 
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -1313,9 +1316,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  	{
 	 BloomsCell c = getCell(m.to_col,m.to_row);
 	 BloomsChip ch = BloomsChip.getChip(m.source);
-	 for(int dir=c.geometry.n; dir>0; dir--)
+	 for(int dir=c.geometry.n-1; dir>=0; dir--)
 	 {
-		 BloomsCell adj = c.exitTo(dir);
+		 BloomsCell adj = c.fastExitTo(dir);
 		 if(adj!=null)
 		 {
 			 BloomsChip top = adj.topChip();
@@ -1343,8 +1346,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	 return(c);
  }
 
- CommonMoveStack  GetListOfAnyMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfAnyMoves(CommonMoveStack all,int who)
+ {	
  	switch(board_state)
  	{
  	default: throw G.Error("Not expecting state %s",board_state);
@@ -1393,8 +1396,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 			all.push(new Bloomsmovespec(SELECT,playerColor(who).id,endgameCondition,who));
 		}
  }
- CommonMoveStack  GetListOfLegalMoves(int who)
- {	CommonMoveStack all = new CommonMoveStack();
+ CommonMoveStack  GetListOfLegalMoves(CommonMoveStack all,int who)
+ {	
  	boolean mustCapture = false;
  	switch(board_state)
  	{

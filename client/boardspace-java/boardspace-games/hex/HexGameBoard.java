@@ -103,7 +103,6 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
     private int sweep_counter=0;			// used when scanning for blobs
     private int directionWhiteHome = -1;
     private int directionBlackHome = -1;
@@ -214,9 +213,9 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 		playerChip[0]=hexChip.White;
 		playerChip[1]=hexChip.Black;
 	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(hexCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRPush(c); }
-		fullBoard = emptyCells.size();
+		emptyCells.setSize(fullBoardSize);
+		int i=0;
+		for(hexCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRSet(c,i++); }
         animationStack.clear();
         if(getColorMap()[0]!=0) { swapDetails(); }
         swapped = false;
@@ -243,7 +242,6 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
         startingPlayer = from_b.startingPlayer;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
@@ -693,7 +691,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	G.Assert(chips_on_board+emptyCells.size()==fullBoardSize,"cells missing");
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state %s",board_state);
@@ -1090,9 +1088,9 @@ void doSwap(replayMode replay)
  }
  CommonMoveStack  getListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
- 	return getListOfMoves(all,1,1);
+ 	return getMoveList(all,1,1);
  }
- public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
  {
  	if(board_state==HexState.PlayOrSwap)
  	{

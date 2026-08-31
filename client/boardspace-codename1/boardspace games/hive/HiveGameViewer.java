@@ -540,6 +540,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	//GC.setOpacity(gc,1.0);
         int csize = gb.cellSize();
      	stableCellSize = csize;
+     	//gb.markConnectivity();
      	numberMenu.numberIcon = StockArt.DownArrowAbove;
       	boolean somehit = draggingBoard();
      	boolean dolift = !somehit && doLiftAnimation();
@@ -628,6 +629,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                 //	StockArt.SmallX.drawChip(gc,this,(int)(actCellSize*0.4),xp,yp,null);
                 //}
                  	}
+                //if(!cell.isMovableNow()) 
+                //{ StockArt.SmallO.draw(gc,this,(int)cellSize,xpos,ypos,null); }
+                //GC.setColor(gc,Color.green);
+                //GC.Text(gc,""+cell.tarjanDisc+"+"+cell.tarjanLow,xpos,ypos);
                  }
                  else {
                   	if(hitpoint && cell.closestPointToCell(ourTurnSelect, cellSize,

@@ -601,6 +601,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             	 StockArt.SmallO.draw(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
             cell.drawChip(gc,this,highlight,size,xpos,ypos,null);
+            /*
             hexCell p = cell.getUfParent();
             if(p!=null)
             {
@@ -611,7 +612,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             	//int y1 = bottom-gb.cellToY(p);
             	//GC.drawArrow(gc,xpos,ypos,x1,y1,size/4,1); }
             }
-            
+            */
             
             }
         numberMenu.drawSequenceNumbers(gc,size,labelFont,labelColor);

@@ -18,6 +18,7 @@ package online.game;
 
 import java.awt.Point;
 import lib.Digestable;
+import lib.G;
 import online.game.BaseBoard.BoardState;
 
 /**
@@ -251,7 +252,14 @@ public interface BoardProtocol extends Digestable
 	 */
 	public void setSimultaneousTurnsAllowed(boolean v);
 	
-	
+	/**
+	 * service for robots
+	 */
+	public default CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+	{
+		throw G.Error("implement this");
+	}
+
 	/**
 	 * true if the board has a reverse view
 	 */

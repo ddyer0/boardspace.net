@@ -126,7 +126,7 @@ public class G extends Platform implements Timestamp
 	}
 	// boolean so print can be used as a breakpoint test 
     public static boolean print(String msg) 
-    	{ 	if(printer!=null && !isSimulator()) { printer.println(msg); }
+    	{ 	if(printer!=null && (!isSimulator() || isIOS() || isAndroid())) { printer.println(msg); }
     		else { Plog.messages.addLog(msg); System.out.println(msg); } 
     		return(false);
     	} 
@@ -140,10 +140,8 @@ public class G extends Platform implements Timestamp
      */
 	public static boolean print(Object... msg)
 	{
-		if(printer!=null && !isSimulator())
-		{
-			printer.println(msg);
-		}
+		if(printer!=null && (!isSimulator() || isIOS() || isAndroid()))
+			{ printer.println(msg); }	
 		else
 		{ if(msg!=null) 
 			{ 

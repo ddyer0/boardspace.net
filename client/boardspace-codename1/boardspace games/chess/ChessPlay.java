@@ -63,13 +63,14 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
     // if using parallel search (ie MONTEBOT) copy any simple
     // variables that need to be copied when spawning a new player.
     //
-    //public RobotProtocol copyPlayer(String newName)
-    //{	RobotProtocol v = super.copyPlayer(newName);
+    public RobotProtocol copyPlayer(String newName)
+    {	RobotProtocol v = super.copyPlayer(newName);
     	// copy any instance variables that need to be copied.
-    	//ChessPlay c = (ChessPlay)v;
-  //  	return(v);
-  //  	
-    //}
+    	ChessPlay c = (ChessPlay)v;
+    	board.initRobotValues(c);
+    	return(v);
+    }
+ 
 
 /** undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence
@@ -91,15 +92,12 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
  * be evaluated and sorted, then used as fodder for the depth limited search
  * pruned with alpha-beta.
  */
-    public CommonMoveStack  List_Of_Legal_Moves()
-    {   CommonMoveStack all = board.GetListOfMoves(board.robotDepth==0);
-    	if(board.robotDepth==0)
-    	{	board.filterCheckMoves(all,board.whoseTurn);
-    		board.filterStalemateMoves(all);
-    		// we don't need to include draw offers at lower depths.
-    		if(all.size()==0) { all=board.GetListOfMoves(board.robotDepth==0); }
-    	}
-    	return(all);
+    public CommonMoveStack movelist = new ParallelCommonMoveStack();
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread p[])
+    {  	movelist.clear();
+    	board.offerDraw = board.robotDepth==0;
+    	CommonMoveStack all = getMoveList(movelist,p);
+    	return all;
     }
     
     

@@ -216,7 +216,7 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {	double scale[] = new double[]{1,0.9,0,-0.3};
         switch (op)
         {

@@ -127,8 +127,7 @@ class PrototypeBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() { setState(PrototypeState.Draw); }	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
-
+ 
     private boolean swapped = false;
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -227,9 +226,9 @@ class PrototypeBoard
 		playerChip[map[0]]=PrototypeChip.White;
 		playerChip[map[1]]=PrototypeChip.Black;
 	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(PrototypeCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
+		emptyCells.setSize(fullBoardSize);
+		int i=0;
+		for(PrototypeCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRSet(c,i++); }
 	    
         animationStack.clear();
         swapped = false;
@@ -254,7 +253,6 @@ class PrototypeBoard
     {
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
@@ -409,9 +407,11 @@ class PrototypeBoard
     {	PrototypeChip old = c.topChip();
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
+    	if(old!=null) { chips_on_board--;emptyCells.QRPush(c);  }
      	if(ch!=null)
-     		{ chips_on_board++; emptyCells.remove(c,false);  
+     		{ chips_on_board++;
+     		  // QRRemove doesn't have to scan the stack
+     		  emptyCells.QRRemove(c);  
      		}
     	}
        	if(old!=null) { c.removeTop();}
@@ -588,7 +588,7 @@ class PrototypeBoard
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	G.Assert(chips_on_board+emptyCells.size()==fullBoardSize,"cells missing");
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
@@ -879,9 +879,9 @@ void doSwap(replayMode replay)
   
 
  public CommonMoveStack  getListOfMoves()
- {	return getListOfMoves(new CommonMoveStack(),1,1);
+ {	return getMoveList(new CommonMoveStack(),1,1);
  }
- public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
  {
  	// one-of moves added by the first thread
  	if(board_state==PrototypeState.PlayOrSwap)

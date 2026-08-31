@@ -101,13 +101,12 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     {	Hivemovespec mm = (Hivemovespec)m;
     	//Plog.log.addLog("U "+m);
         board.UnExecute(mm);
-        extendedSearch = false;
+        board.extendedSearch = false;
         //G.print("U "+mm +" "+ mm.local_evaluation +" "+mm.evaluation);
         boardSearchLevel--;
     }
     
-    boolean extendedSearch = false;
-/** make a move, saving information needed to unmake the move later.
+ /** make a move, saving information needed to unmake the move later.
  * 
  */
     public void Make_Move(commonMove m)
@@ -115,7 +114,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
         //G.print("E "+mm);
         //Plog.log.addLog("M "+m);
     	commonMove.EStatus stat = mm.depth_limited();
-    	extendedSearch = stat==commonMove.EStatus.EVALUATED_CONTINUE;
+    	board.extendedSearch = stat==commonMove.EStatus.EVALUATED_CONTINUE;
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
@@ -127,32 +126,17 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
  */
     CommonMoveStack movelist = new ParallelCommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	movelist.clear();
-    	if(threads!=null)
-    {
-    	int n = threads.length;
-    	for(int i=1;i<=n;i++)
-    		{
-    		board.GetListOfMoves(movelist,extendedSearch,i,n+1);
-    		}
-    	board.GetListOfMoves(movelist,extendedSearch,n+1,n+1);
-    	Sthread.waitForIdle(threads);
-    	}
-    	else
-    	{
-        board.GetListOfMoves(movelist,extendedSearch,1,1);
-    	}
+    {	CommonMoveStack ml = getMoveList(movelist,threads);
     	/*
         if(G.debug())
         {
         	CommonMoveStack all = new ParallelCommonMoveStack();
-        	board.GetListOfMoves(all,extendedSearch,1,1);
+        	board.getMoveList(all,1,1);
         	G.Assert(all.size()==movelist.size(),"all moves generated");
         }
-        */
     	if(movelist.size()==0) { movelist.push(new Hivemovespec(board.whoseTurn,MOVE_PASS_DONE)); }
-
-        return movelist;
+		*/
+        return ml;
     }
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
@@ -204,7 +188,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
         	{	// a quick win is better than a slow one
         		return VALUE_OF_WIN+1.0/(1+boardSearchLevel);
         	}
-        	else if(board.WinForPlayerNow(nextPlayer[playerindex]))
+        	else if(board.WinForPlayerNow(playerindex^1))
         	{	// a slow loss is better than a quick one
         		return -(VALUE_OF_WIN+(1-1.0/(1+boardSearchLevel)));
         	}
@@ -212,9 +196,9 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
         	// the bot try something else rather than doing 3 reps
         	return VALUE_OF_DRAW;
         }
-
+        board.markConnectivity();
         double val0 = ScoreForPlayer(board,playerindex,false);
-        double val1 = ScoreForPlayer(board,nextPlayer[playerindex],false);
+        double val1 = ScoreForPlayer(board,playerindex^1,false);
         
          if(sprintEnabled)
          {
@@ -367,6 +351,7 @@ public void PrepareToMove(int playerIndex)
     board.robotCanOfferDraw = viewer.canOfferDraw(board);
     int movesRemaining = Math.max(10, 20-board.moveNumber());
     TIMEPERMOVE = adjustTime(TIMEPERMOVE,movesRemaining);
+    board.initRobotValues(this);
 }
 
 // this is a hack for improved bot openings, to avoid the spider-spider openings
@@ -429,6 +414,8 @@ public commonMove Random_Good_Move(Search_Driver search,int n,double dif)
 		 String comment = reportStats();
 		 if(comment!=null) { move.setComment(comment); }
 	 }
+	// G.print("tj ",HiveGameBoard.tjCost/1e9," ",HiveGameBoard.tjCost/HiveGameBoard.tjCount," ",HiveGameBoard.tjCount);
+	// G.print("sw ",HiveGameBoard.sweepCost/1e9," ",HiveGameBoard.sweepCost/HiveGameBoard.sweepCount," ",HiveGameBoard.sweepCount);
 	 return move;
  }
  private commonMove alphaBetaFullMove(double startEval,int repetitions)

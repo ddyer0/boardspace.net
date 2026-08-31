@@ -56,6 +56,7 @@ public class UCTMoveSearcher extends CommonDriver
 	 */
 	boolean MONITOR_SINGLE_THREAD = true;
 	boolean useMPThreads = false;
+	public boolean claudeMode = false;
 	
 	public UCTThread[] getThreads() 
 	{ 	return(threads); 
@@ -441,7 +442,7 @@ public class UCTMoveSearcher extends CommonDriver
 			int prevTraverseMoves = 0;
 			int peakRate = 0;
 			int rateStall = 0;
-			root = new UCTNode();
+			root = claudeMode ? new UCTNode_Claude() : new UCTNode();
 			treeSize++;
 			TreeViewerProtocol viewer = leadRobot.getTreeViewer();
 			active = true;
@@ -638,7 +639,7 @@ public class UCTMoveSearcher extends CommonDriver
 			int pan = (int)(node_expansion_size*10.0/node_expansions);
 			G.print("Total Expansion Nodes     = ", node_expansions," @ ",(pan/10),".",pan%10);
 			int mpsec = (int)(((randomMoves+traverseMoves)*1000.0)/Math.max(1,actualtime));
-			G.print("Moves per second          = ", mpsec);
+			G.print((claudeMode ? "Optimized ":"")+"Moves per second          = ", mpsec);
 			if(threads.length>1) { 
 				G.print("",threads.length," threads = ",mpsec/threads.length," per thread");
 			}

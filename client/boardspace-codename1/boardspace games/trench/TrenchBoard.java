@@ -272,12 +272,12 @@ class TrenchBoard
 			TrenchChip b = TrenchChip.getChip(TrenchId.Black,spec[0]);
 			TrenchCell c = getCell((char)spec[1],spec[2]);
 			c.addChip(b);
-			occupiedCells[FIRST_PLAYER_INDEX].push(c);
+			occupiedCells[FIRST_PLAYER_INDEX].QRPush(c);
 			
 			TrenchChip w = TrenchChip.getChip(TrenchId.White,spec[0]);
 			TrenchCell d = getCell((char)('A'+variation.size-(spec[1]-'A')-1),variation.size+1-spec[2]);
 			d.addChip(w);
-			occupiedCells[SECOND_PLAYER_INDEX].push(d);
+			occupiedCells[SECOND_PLAYER_INDEX].QRPush(d);
 		}
 	    
         animationStack.clear();
@@ -322,7 +322,7 @@ class TrenchBoard
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && G.debug()) { sameboard(from_b); }
     }
 
     
@@ -480,9 +480,9 @@ class TrenchBoard
     {	TrenchChip old = c.topChip();
     	if(c.onBoard)
     	{
-    	if(old!=null) { occupied(old).remove(c); c.lastEmptied = moveNumber; }
+    	if(old!=null) { occupied(old).QRRemove(c); c.lastEmptied = moveNumber; }
      	if(ch!=null) 
-     		{	occupied(ch).push(c);
+     		{	occupied(ch).QRPush(c);
      		    lastPlaced = c.lastPlaced;
      		    c.lastPlaced = moveNumber; 
      		}
@@ -708,7 +708,7 @@ class TrenchBoard
     	{
     		TrenchCell dest = captureStack.pop();
     		TrenchCell cap = captured(nextPlayer[who]);
-    		TrenchChip top = cap.removeTop();
+    		TrenchChip top = cap.popCaptured();
     		dest.lastCaptured = -1;
     		dest.lastContents = null;
     		SetBoard(dest,top);   		
@@ -722,7 +722,7 @@ class TrenchBoard
     	TrenchCell to = captured(top);
     	from.lastCaptured = moveNumber;
     	from.lastContents = top;
-    	to.addChip(top);
+    	to.pushCaptured(top);
     	if(replay.animate)
     	{
     		animationStack.push(from);
@@ -1019,17 +1019,17 @@ class TrenchBoard
         	setWhoseTurn(m.player);
         }
  }
- private void addPieceMoves(CommonMoveStack all,int who)
+ private void addPieceMoves(CommonMoveStack all,int offset,int skip,int who)
  {
 	 CellStack occupied = occupied(who);
 	 if(pickedObject==null)
 	 {
-	 for(int lim = occupied.size()-1; lim>=0; lim--)
+	 for(int lim = occupied.size()-offset; lim>=0; lim -= skip)
 	 {
 		 TrenchCell from = occupied.elementAt(lim);
 		 addPieceMoves(all,from,from.topChip(),who);
 	 }}
-	 else
+	 else if(offset==1)
 	 {
 		 addPieceMoves(all,pickedSourceStack.top(),pickedObject,who);
 	 }
@@ -1107,11 +1107,16 @@ class TrenchBoard
  }
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
-
+    return getMoveList(all,1,1);
+ }
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+ {
  	switch(board_state)
  	{
  	case Puzzle:
  		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
+ 			if(offset==1)
+ 			{
  			for(TrenchCell c = allCells;
  			 	    c!=null;
  			 	    c = c.next)
@@ -1119,11 +1124,12 @@ class TrenchBoard
  			 		{all.addElement(new Trenchmovespec(op,c.col,c.row,whoseTurn));
  			 		}
  			 	}
- 		}
+ 		}}
  		break;
  	case Play:
- 		addPieceMoves(all,whoseTurn);
- 		if(drawIsLikely()
+ 		addPieceMoves(all,offset,skip,whoseTurn);
+ 		if(offset==1
+ 				&& drawIsLikely()
  				&& (robotStack.size()==0)
  				&& canOfferDraw())
  		{
@@ -1135,14 +1141,17 @@ class TrenchBoard
  	case Draw:
  	case AcceptPending:
  	case Confirm:
- 		all.push(new Trenchmovespec(MOVE_DONE,whoseTurn));
+ 		if(offset==1) { all.push(new Trenchmovespec(MOVE_DONE,whoseTurn)); }
  		break;
  	case Gameover:
  	case Resign:
  		break;
  	case AcceptOrDecline:
+ 			 if(offset==1)
+ 			 {
 			 if(drawIsLikely()) { all.push(new Trenchmovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
 			 all.push(new Trenchmovespec(MOVE_DECLINE_DRAW,whoseTurn));
+ 			 }
 			 break;
 
  	default:
@@ -1225,16 +1234,19 @@ class TrenchBoard
 public int totalCaptured(int player)
 {
 	TrenchCell cap = captured(player);
+	/*
 	int sum = 0;
 	for(int lim=cap.height()-1; lim>=0; lim--)
 	{
 		sum += cap.chipAtIndex(lim).type.distance;
 	}
-	return sum;
+	G.Assert(cap.capturedSum==sum,"mismatch cap");
+	 */
+	return cap.capturedSum;
 }
 public double simpleScore(int player)
 {
-	double cap = totalCaptured(nextPlayer[player]);
+	double cap = totalCaptured(player^1);
 	return cap;
 }
 

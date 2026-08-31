@@ -20,7 +20,6 @@ package online.search;
 import online.game.*;
 import online.game.commonMove.EStatus;
 
-import java.io.*;
 import java.util.*;
 
 import lib.G;
@@ -71,6 +70,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 
 	public RobotProtocol robot = null;
 	public void setRobot(RobotProtocol r) { robot = r; }
+	public long evalAndSortTime = 0;
+	public long evalAndSortCalls = 0;
+	public long evalAndSortEval = 0;
 	
 	/**
 	 * the most recently made move, cleared by Unmake_Move.
@@ -90,7 +92,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	
 	public void Make_Move(commonMove child)
 	{	currentMove = child;
-		
+		try {
 		if(save_digest)
 			{ BoardProtocol robo = robot.getBoard();
 			  long dig = robo.Digest(); 
@@ -116,7 +118,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 			if(threadPool!=null)
 			{
 				makeThreadMoves(child);
-				waitForIdle();
+				Sthread.waitForIdle(threadPool);
 				long tdig = robo.Digest();
 				if(tdig!=dig)
 				{
@@ -130,6 +132,12 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 		makeThreadMoves(child);
 			}
 		robot.Make_Move(child);
+		Sthread.waitForIdle(threadPool);
+		}
+		catch (Throwable err)
+		{
+			Abort_Search_In_Progress(""+err);
+		}
 	}
 	
 	public void Unmake_Move(commonMove child)
@@ -581,8 +589,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	//cm.search_clock = search_clock; 
             if ((verbose > 1) && ((search_clock % 100000) == 0))
             {
-                Describe_Search(System.out);
-                System.out.flush();
+                Describe_Search();
             }
             if (search_clock == stop_at_search_clock)
 	            {
@@ -770,19 +777,26 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         return (null);
     }
 
-    public void Describe_Search(PrintStream s)
+    public void Describe_Search()
     {
         if (total_searches > 0)
         {
-            s.println(total_searches + " searches: ");
+            G.print(total_searches + " searches: ");
         }
         String kill = (total_killers>0) ? (" Killers: "+total_killers + " ("+(int)(killer_helped*100.0/total_killers)+"%)") : "";
         String nullm = use_nullmove? (" Null Promotions: "+nullmove_promotions) : "";
         int pc = (skipped_evals*100)/(skipped_evals+non_skipped_evals+1);
         String skipm = static_eval_optimization ? " Skipped Evals: "+skipped_evals+"("+pc+"%)" : "";
         String ab = " Alpha: "+total_alpha_beta_cutoffs+"("+total_alpha_beta_cost+")";
-        s.println("Nodes: " + search_clock + " Evals: " + total_evaluations + kill + ab + nullm + skipm +
+        G.print("Nodes: " + search_clock + " Evals: " + total_evaluations + kill + ab + nullm + skipm +
             " Time: " + total_time + "." + ((total_time * 1000) % 1000));
+        if(evalAndSortCalls>0)
+        {
+        G.print("EvalAndSort "
+        			+(evalAndSortTime/(evalAndSortCalls*1e3))+"uS/call "
+        			+evalAndSortCalls+" eval "+((evalAndSortEval*100)/evalAndSortTime)+"%"
+        			+((threadPool==null)?" no threads" : ""+threadPool.length+" threads"));
+        }
     }
     //
     // add one step in the progressive deepening search.
@@ -874,6 +888,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             total_good_enough_cutoffs += ss.total_good_enough_cutoffs;
             search_clock += ss.search_clock;
             total_searches++;
+            evalAndSortTime += ss.evalAndSortTime;
+            evalAndSortCalls += ss.evalAndSortCalls;
+            evalAndSortEval += ss.evalAndSortEval;
             ss.total_searches = -1; /* flag so we won't accumulate again */
         }
     }
@@ -891,21 +908,30 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     	}
     }
     public void makeThreadMoves(commonMove ch)
-    {
+    {	try {
     	if(threadPool!=null)
     	{
     		for(Sthread s : threadPool) { s.makeMove(ch); }
+    	}}
+    	catch (Throwable e)
+		{
+		Abort_Search_In_Progress(""+e);	
     	}
     }
     public void unmakeThreadMoves(commonMove ch)
-    {
+    {	try {
     	if(threadPool!=null)
     	{
     		for(Sthread s : threadPool) { s.unmakeMove(ch); }
+    	}}
+    	catch (Throwable e)
+    	{
+    		Abort_Search_In_Progress(""+e);	
     	}
     }
     public void deleteThreadPool()
-    {	Sthread p[] = threadPool;
+    {	try {
+    	Sthread p[] = threadPool;
     	threadPool = null;
     	if(p!=null)
     	{
@@ -913,12 +939,21 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		{
     			p[i].setExit();
     		}
+    	}}
+    	catch (Throwable e)
+    	{
+    		Abort_Search_In_Progress(""+e);	
     	}
     }
     public void stopEvaling()
-    {
+    {	try {
     	Sthread p[] = threadPool;
     	if(p!=null) { for(Sthread s : p) { s.stopEvaling(); }}
+    }
+    	catch (Throwable e)
+		{
+    		Abort_Search_In_Progress(""+e);	
+		}
     }
     public void pauseThreads()
     {	if(threadPool!=null)
@@ -932,33 +967,41 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     	for(Sthread s : threadPool) { s.setPaused(false); }
     	}
     }
+    int startOffset = 0;
     public boolean startEval(commonMove m)
     {	
-    	for(int i=0;i<threadPool.length;i++)
-    	{
-    		boolean running = threadPool[i].startEval(m);
+    	try {
+    	int nthreads = threadPool.length;
+    	for(int i=0;i<nthreads;i++)
+    	{	startOffset++;
+    		startOffset=startOffset%nthreads;
+    		boolean running = threadPool[startOffset].startEval(m);
     		if(running) { return true; }
     	}
+    	}
+    	catch (Throwable e)
+		{
+		Abort_Search_In_Progress(""+e);	
+		}
     	return false;
     }
+    int finishOffset = 0;
     public commonMove finishEval() throws Throwable
-    {	
+    {	int nthreads = threadPool.length;
     	for(int i=0;i<threadPool.length;i++)
     		{
-    		commonMove m = threadPool[i].finishEval();
+    		finishOffset++;
+    		finishOffset = finishOffset%nthreads;
+    		commonMove m = threadPool[finishOffset].finishEval();
     		if(m!=null) { return m; }
     		}
     	return null;
     }
-    public void waitForIdle()
-    {	if(threadPool!=null)
-    	{
-    	for(Sthread s : threadPool) { s.waitForIdle();}
-    	}
-    }
+
     public int Evaluate_And_Sort_Moves(Search_Node sn,commonMove mvec[])
     {	//boolean all_depth_limited = true;
     	boolean all_terminals = true;
+    	long startTime = G.nanoTime();
     	//boolean some_depth_limited = false;
     	sn.prepare_clock = search_clock;
     	boolean some_terminals = false;
@@ -1048,6 +1091,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         commonMove best = null;
         double bestEval = 0;
         try {
+        Sthread.waitForIdle(threadPool);
         while(finIndex<sz)	// finish early, still need to wait for laggers
         {	
         	int startIndex0 = startIndex;
@@ -1056,8 +1100,10 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	if(threadPool!=null)
         	{
         	// separate starting and finishing so parallel threads can do the work
-        	if(startIndex<sz && startEval(mvec[startIndex0])) 
-        		{ startIndex++; total_evaluations++; }
+        	while(startIndex<sz && startEval(mvec[startIndex])) 
+        		{ startIndex++; total_evaluations++;
+        		 
+        		}
             	mm = finishEval();          
         	}
         	if(mm==null  && startIndex<sz && startIndex==startIndex0)
@@ -1067,7 +1113,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	mm = mvec[startIndex0];
         	startIndex++;
             total_evaluations++;
+        	long now = G.nanoTime();
             Static_Evaluate_Move(mm);
+    		evalAndSortEval += G.nanoTime()-now;
         	}
         	if(mm!=null)
         	{ finIndex++; 
@@ -1189,7 +1237,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         	{Sort.sort(mvec,extra,sz-1,!all_terminals);	// alternative sort, put terminals first unless all of them are terminals
              sz = Width_Limit_Moves(mvec,sz);
         	}
-
+        evalAndSortTime += G.nanoTime()-startTime;
+        evalAndSortCalls++;
         
         return(sz);
     }
@@ -1374,9 +1423,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     		if(G.debug() && (move.op!=MOVE_DONE)) 
     		{ 
     		move.showPV("exp final pv: "); 
-    		if(detailed) { Describe_Search(System.out); } 
-    		System.out.flush();
-    		}
+    		if(detailed) { Describe_Search(); } 
+     		}
     	}
 	   }
     //

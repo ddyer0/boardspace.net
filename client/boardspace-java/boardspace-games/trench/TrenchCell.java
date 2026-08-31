@@ -20,10 +20,11 @@ import lib.Random;
 import lib.exCanvas;
 import lib.Graphics;
 import lib.HitPoint;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 
-class CellStack extends OStack<TrenchCell>
+class CellStack extends QRStack<TrenchCell>
 {
 	public TrenchCell[] newComponentArray(int n) { return(new TrenchCell[n]); }
 }
@@ -39,8 +40,10 @@ class CellStack extends OStack<TrenchCell>
  */
 public class TrenchCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<TrenchCell,TrenchChip>	 implements PlacementProvider,TrenchConstants
-{	
+	extends stackCell<TrenchCell,TrenchChip>	 implements PlacementProvider,TrenchConstants,PrivateIndex
+{	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex = n; }
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	TrenchId cellType = TrenchId.Single;
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
@@ -49,7 +52,7 @@ public class TrenchCell
 	int lastCaptured = -1;
 	int visibleFromTrench = 0;
 	TrenchChip lastContents = null;
-	
+	int capturedSum = 0;
 	public TrenchCell(Random r,TrenchId rack) { super(r,rack); }		// construct a cell not on the board
 	public TrenchCell(TrenchId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,rack,c,r);
@@ -80,9 +83,11 @@ public class TrenchCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		visibleFromTrench = ot.visibleFromTrench;
+		privateIndex = ot.privateIndex;
 		lastPlaced = ot.lastPlaced;
 		lastEmptied = ot.lastEmptied;
 		lastCaptured = ot.lastCaptured;
+		capturedSum = ot.capturedSum;
 		lastContents = ot.lastContents;
 	}
 	/**
@@ -92,9 +97,22 @@ public class TrenchCell
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		privateIndex = -1;
 		lastEmptied = -1;
 		lastCaptured = -1;
+		capturedSum = 0;
 		lastContents = null;
+	}
+	public void pushCaptured(TrenchChip c)
+	{
+		addChip(c);
+		capturedSum += c.type.distance;
+	}
+	public TrenchChip popCaptured()
+	{
+		TrenchChip c = removeTop();
+		capturedSum -= c.type.distance;
+		return c;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public TrenchCell(TrenchChip cont)

@@ -1050,14 +1050,17 @@ public boolean hasLegalMoves(MorelliCell c,MorelliChip top,int who)
  	}}
  	return(some);
  }
- CommonMoveStack GetListOfMoves()
+ public CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
- 	switch(board_state)
+ 	return getListOfMoves(all,1,1);
+ }
+ public CommonMoveStack getListOfMoves(CommonMoveStack all,int offset,int skip)
+ { 	switch(board_state)
  	{
  	default: throw G.Error("Not expecting state %s", board_state);
  	case Play:
- 		for(int lim=occupiedCells.size()-1; lim>=0; lim--)
- 		{	MorelliCell c = occupiedCells.elementAt(lim);
+ 		for(int i=offset-1,lim=occupiedCells.size(); i<lim; i+=skip)
+ 		{	MorelliCell c = occupiedCells.elementAt(i);
  			getMovesFor(all,c,c.topChip(),whoseTurn);
  		}
  		if(all.size()==0) { all.addElement(new MorelliMovespec(MOVE_GAMEOVER,whoseTurn)); }

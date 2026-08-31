@@ -19,10 +19,11 @@ package bug;
 import lib.Random;
 import bug.BugConstants.BugId;
 import bug.BugConstants.CC;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 
-class CellStack extends OStack<BugCell>
+class CellStack extends QRStack<BugCell>
 {
 	public BugCell[] newComponentArray(int n) { return(new BugCell[n]); }
 }
@@ -38,10 +39,14 @@ class CellStack extends OStack<BugCell>
  */
 public class BugCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<BugCell,BugChip>	 implements PlacementProvider
+	extends stackCell<BugCell,BugChip>	 implements PlacementProvider,PrivateIndex
 {	BugBoard myBoard = null;
 	Bug myCritter;
 	int sweep_counter = 0;
+	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex = n; }
+	
 	boolean designatedAsEmpty = false;
 	public Bug critter(BugBoard b)
 	{	BugChip top = topChip();
@@ -86,6 +91,7 @@ public class BugCell
 		//myCritter = ot.myCritter;
 		myCritter = null;
 		lastPlaced = ot.lastPlaced;
+		privateIndex = ot.privateIndex;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -95,6 +101,7 @@ public class BugCell
 	{	super.reInit();
 		myCritter = null;
 		lastPlaced = -1;
+		privateIndex = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public BugCell(BugChip cont)

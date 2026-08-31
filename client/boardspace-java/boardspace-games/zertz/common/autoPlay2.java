@@ -260,6 +260,7 @@ public class autoPlay2 extends commonRobot<GameBoard> implements Runnable, GameC
         sequence_board.copyFrom(GameBoard);
         searchForPlayer = playerindex;
         timeLimit = adjustTime(timeLimit,20-board.moveNumber());
+        board.initRobotValues(this);
     }
     public commonMove DoAlphaBetaFullMove()
     {

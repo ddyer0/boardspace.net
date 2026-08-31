@@ -2240,7 +2240,7 @@ addBug("8 7716485393248948135"); // 8#1448
 		c.myCritter = this;
 		for(int dir = 0; dir<6; dir++)
 		{
-			BugCell next = c.exitTo(dir);
+			BugCell next = c.fastExitTo(dir);
 			if(next!=null && next.myCritter!=this && next.topChip()==top)
 			{	findCritter(next);
 			}
@@ -2308,10 +2308,10 @@ addBug("8 7716485393248948135"); // 8#1448
 		}
 	}
 	public boolean isAdjacent(BugCell c)
-	{	G.Assert(c.myBoard==myBoard,"my bug");
+	{	//G.Assert(c.myBoard==myBoard,"my bug");
 		for(int dir = 0; dir<BugBoard.CELL_FULL_TURN; dir++)
 		{	
-			BugCell adj = c.exitTo(dir);
+			BugCell adj = c.fastExitTo(dir);
 			if(adj!=null)
 			{
 			if(contains(adj)) { return true; }

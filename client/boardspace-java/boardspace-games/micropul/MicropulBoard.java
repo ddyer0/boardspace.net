@@ -85,7 +85,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     public MicropulCell pickedSource = null; 
     public MicropulCell droppedDest = null;
     public MicropulChip lastDroppedDest = null;	// for image adjustment logic
-	private MicropulCell occupiedCells = null;
+	private CellStack occupiedCells = new CellStack();
 	public int placementIndex = -1;
 	public int jewelOwner(MicropulChip chip)
 	{
@@ -160,7 +160,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         // set the initial contents of the board to all empty cells
 		for(MicropulCell c = allCells; c!=null; c=c.next) 
 			{ c.reInit(); }
-	  occupiedCells = null;
+	  occupiedCells.clear();
 	  core.reInit();
 	  core.masked = true;
 	  
@@ -209,8 +209,8 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     }
 
     void clearJewels()
-    {	for(MicropulCell c = occupiedCells; c!=null; c=c.nextOccupied)
-    	{ c.clearJewels();
+    {	for(int lim=occupiedCells.size()-1; lim>=0; lim--)
+    	{ occupiedCells.elementAt(lim).clearJewels();
     	}
     	for(int i=0;i<2;i++)
     	{ claimedMicropul[i]=0;
@@ -221,8 +221,8 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     void sweepJewels()
     {
     	clearJewels();
-    	for(MicropulCell c = occupiedCells; c!=null; c=c.nextOccupied)
-    	{
+    	for(int lim=occupiedCells.size()-1; lim>=0; lim--)
+    	{	MicropulCell c = occupiedCells.elementAt(lim);
     		MicropulChip chip = c.topChip();
     		if(chip.isJewel())
     		{ c.markJewels(this);
@@ -247,7 +247,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         G.Assert(sameCells(supply,from_b.supply),"Supply matches");
         G.Assert(sameCells(jewels,from_b.jewels),"Jewels match");
         G.Assert(sameCells(rack,from_b.rack),"rack match");
-        G.Assert((occupiedCells==from_b.occupiedCells) || ((occupiedCells!=null) && occupiedCells.sameCell(from_b.occupiedCells)),"same occupied");
+        G.Assert(sameCells(occupiedCells,from_b.occupiedCells),"same occupied");
         G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
         // here, check any other state of the board to see if
         G.Assert(chips_on_board == from_b.chips_on_board , "chips_on_board not the same");
@@ -313,15 +313,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         pickedSource = getCell(from_b.pickedSource);
         placementIndex = from_b.placementIndex;
         lastPicked = null;
-        {
-            MicropulCell oo = from_b.occupiedCells;
-            MicropulCell ll = getCell(oo);
-            occupiedCells = ll;
-            while(oo!=null)
-            	{ oo = oo.nextOccupied;
-            	  ll = ll.nextOccupied = getCell(oo);
-             	}
-            }
+        getCell(occupiedCells,from_b.occupiedCells);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
 
@@ -446,23 +438,10 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
     	if(oldtop)
     	{	// old was occupied, new is not
     		chips_on_board--; 
-    		MicropulCell prev = null;
-    		MicropulCell curr = occupiedCells;
-    		while(curr!=null)
-    		{	if(curr==c)
-    		  	{ // remove from occupiedCells list
-    			  if(prev==null) 
-    		  			{ occupiedCells = curr.nextOccupied; curr.nextOccupied=null;}
-    		  			else 
-    		  			{ prev.nextOccupied = curr.nextOccupied; curr.nextOccupied = null; }
-    		  	 }
-    		  prev = curr;
-    		  curr = curr.nextOccupied;
-    		  }
-    		}
+    		occupiedCells.remove(c);
+    	}
     	else { chips_on_board++; 
-     		   c.nextOccupied = occupiedCells;
-     		   occupiedCells = c; 
+    		   occupiedCells.push(c);
      		 }
     	}}
   	
@@ -1153,13 +1132,18 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         }
  }
     
-    CommonMoveStack GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
- 	int sweep = ++sweep_counter;
+    public CommonMoveStack  GetListOfMoves()
+    {	CommonMoveStack all = new CommonMoveStack();
+    	return getMoveList(all,1,1);
+    }
+    public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+    {
+    int sweep = ++sweep_counter;
  	int who = whoseTurn;
  	// add "place a chip" moves
- 	for(MicropulCell c = occupiedCells; c!=null; c=c.nextOccupied)
- 	{
+ 	int ncells = occupiedCells.size();
+ 	for(int i=offset-1; i<ncells; i+=skip)
+ 	{	MicropulCell c = occupiedCells.elementAt(i);
  		for(int dir=0; dir<4; dir++)
  		{	MicropulCell nx = c.exitTo(dir);
  			if((nx.sweep_counter!=sweep) && (nx.topChip()==null))
@@ -1195,7 +1179,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
  	if(top!=null)
  		{
  		MicropulCell rr[] = rack[who];
- 		for(int idx=0;idx<rr.length;idx++)
+ 		for(int idx=offset-1;idx<rr.length;idx+=skip)
  			{
  			MicropulCell rc = rr[idx];
  			if(rc.topChip()==null)
@@ -1211,14 +1195,16 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
  	}
  	
  	// add move from jewel moves
+ 	if(offset==1)
  	{
  	 	MicropulCell sup = jewels[who];
  	 	MicropulChip top = sup.topChip();
  	 	sweepJewels();
 		if(top!=null)
 		{
-			for(MicropulCell c = occupiedCells; c!=null; c=c.nextOccupied)
-		 	{	if(!c.topChip().isJewel())
+			for(int idx=0; idx<ncells;idx++)
+		 	{	MicropulCell c = occupiedCells.elementAt(idx);
+		 		if(!c.topChip().isJewel())
 		 		{
 		 		for(int rot=0; rot<4; rot++)
 		 		{	if(c.topChip().legalToPlaceJewel(c,rot))

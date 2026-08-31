@@ -466,6 +466,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends fBoard<CEL
     {  
     	board = new cell[xdim][ydim];
     	allCells=null;
+    	fullBoardSize = 0;
     	forgetCellArray();
     }
     
@@ -523,6 +524,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends fBoard<CEL
 	
         nrows = from_b.nrows;
         ncols = from_b.ncols;
+        fullBoardSize = from_b.fullBoardSize;
         firstRowInCol = from_b.firstRowInCol;
         nInCol = from_b.nInCol;
       }
@@ -951,6 +953,5 @@ public int initialSize() { return ncols; }
 	{
 		return(lastRowInColumn(col));
 	}
-
 
 }

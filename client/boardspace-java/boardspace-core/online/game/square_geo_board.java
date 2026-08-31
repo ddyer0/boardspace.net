@@ -135,6 +135,7 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
 	    		SetBoardCell(col,row,nc);
 	    		nc.next = allCells;
 	    		allCells = nc;
+	    		fullBoardSize++;
 	    	}
     	}
     	G.Assert(geometry==allCells.geometry,"Board geometry is %s, but should match cell geometry %s",geometry,allCells.geometry);

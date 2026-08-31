@@ -279,6 +279,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
     	if(v!=isTorus)
     	{	isTorus = v;
     		allCells = null;
+    		fullBoardSize = 0;
     		reInitBoard(ncols,nrows);
     	}
     }

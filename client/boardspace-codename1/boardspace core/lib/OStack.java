@@ -127,13 +127,13 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		 * @param n
 		 */
 		public void setSize(int n)
-		{	if(n>index) { increaseSize(n); index = n; }
+		{	if(data==null || n>data.length) { increaseSize(n); }
+			if(n>index) { index = n; }
 			else 
 				{ while(index>n)
 					{	data[--index] = null;	// clear memory to help the gc
 					}
 				}
-		
 		}
 		
 		/** clear the stack.  Actually clears them so the gc won't be encumbered with old items.
@@ -287,7 +287,7 @@ public abstract class OStack<T> implements StackIterator<T>,Iterable<T>
 		private void increaseSize(int len)
 		{	T[] newdata = newComponentArray(len);
 			int lim = (len<index)?len:index;
-			for(int i=0;i<lim;i++) { newdata[i]=data[i]; }
+			if(data!=null) { for(int i=0;i<lim;i++) { newdata[i]=data[i]; } }
 			index = lim;
 			data = newdata;
 		}

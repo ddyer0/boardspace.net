@@ -17,11 +17,12 @@
 package prototype;
 
 import lib.Random;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 import prototype.PrototypeConstants.PrototypeId;
 
-class CellStack extends OStack<PrototypeCell>
+class CellStack extends QRStack<PrototypeCell>
 {
 	public PrototypeCell[] newComponentArray(int n) { return(new PrototypeCell[n]); }
 }
@@ -37,10 +38,12 @@ class CellStack extends OStack<PrototypeCell>
  */
 public class PrototypeCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<PrototypeCell,PrototypeChip>	 implements PlacementProvider
+	extends stackCell<PrototypeCell,PrototypeChip>	 implements PlacementProvider,PrivateIndex
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	
+	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int v) { privateIndex=v; }
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastDropped = -1;
 	int lastPicked = -1;

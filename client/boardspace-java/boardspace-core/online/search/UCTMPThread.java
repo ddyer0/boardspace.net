@@ -725,6 +725,11 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 	        		}
 	        	if(master.root.countActiveChildren()==1)
 	        		{
+	        		// this getChild(0) call depends on UCTNode maintaining children[0] as
+	        		// physically the most-visited child at all times (see UCTNode.updateChildUct's
+	        		// comment) - if only one child survives pruning, it's assumed to be the one
+	        		// left at index 0. Confirmed as a real, active dependency during a review of
+	        		// UCTNode's internal concurrency/performance characteristics.
 	        		master.decided = master.root.getChild(0); 
 	        		}
 	        }

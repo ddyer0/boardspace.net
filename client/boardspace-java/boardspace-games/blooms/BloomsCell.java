@@ -19,11 +19,11 @@ package blooms;
 import lib.Random;
 import lib.StackIterator;
 import blooms.BloomsConstants.BloomsId;
-import lib.G;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.*;
 
-class CellStack extends OStack<BloomsCell>
+class CellStack extends QRStack<BloomsCell>
 {
 	public BloomsCell[] newComponentArray(int n) { return(new BloomsCell[n]); }
 }
@@ -37,10 +37,13 @@ class CellStack extends OStack<BloomsCell>
  * @author ddyer
  *
  */
-public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements StackIterator<BloomsCell>,PlacementProvider
+public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements StackIterator<BloomsCell>,PlacementProvider,PrivateIndex
 {	
 	private int sweep_counter1;		// the sweep counter for which blob is accurate
 	public int lastPlaced = -1;
+	private int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex = n;}
 
 	public int getSweep() { return(sweep_counter1); }
 	public void setSweep(int n) 
@@ -56,9 +59,9 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 
 	public boolean hasImmediateLiberties()
 	{
-		for(int dir = geometry.n; dir>0; dir--)
+		for(int dir = geometry.n-1; dir>=0; dir--)
     	{
-    		BloomsCell adj = exitTo(dir);
+    		BloomsCell adj = fastExitTo(dir);
     		if((adj!=null))
     		{	BloomsChip adjTop = adj.topChip();
     			if(adjTop == null) { return(true); }		
@@ -72,9 +75,9 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	{
 		setSweep(sweep);
 		BloomsChip top = topChip();
-		for(int dir = geometry.n; dir>0; dir--)
+		for(int dir = geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if(adj!=null
 					&& (adj.getSweep()!=sweep)
 					&& (adj.topChip()==top))
@@ -85,14 +88,15 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	/*
 	 *  return true if the group adjacent to this has liberties.  Note that
 	 *  the entire group is swept, even if the result is known to be true. 
+	 *  marks cells as a side effect
 	 */
 	public boolean sweepHasLiberties(BloomsChip top,int sweep)
 	{
 		setSweep(sweep);
 		boolean some = false;
-		for(int dir=geometry.n; dir>0; dir--)
+		for(int dir=geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{	BloomsChip atop = adj.topChip();
 				if(atop==null) { some=true; }
@@ -105,12 +109,13 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	}
 	// sweep the members of the group containing top, and
 	// for all adjacent enemy groups, see if they have no liberties
-	// return true if at least one is captured
+	// return true if at least one is captured.
+	// marks cells as a side effect
 	public boolean sweepHasCaptures(BloomsChip top,int sweep,int tag)
 	{	boolean some = false;
-		for(int dir = geometry.n; dir>0; dir--)
+		for(int dir = geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{	BloomsChip atop = adj.topChip();
 				if((atop!=null) && (atop.colorSet!=top.colorSet))
@@ -129,12 +134,12 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	// by capturing one of the surrounding groups
 	public boolean sweepIsAdjacent(int sweep,int target)
 	{
-		G.Assert(sweep!=getSweep(),"shouldn't be the same");
+		//G.Assert(sweep!=getSweep(),"shouldn't be the same");
 		setSweep(sweep);
 		BloomsChip top = topChip();
-		for(int dir=geometry.n; dir>0; dir--)
+		for(int dir=geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{	BloomsChip atop = adj.topChip();
 				if(atop==null) {  }
@@ -158,13 +163,13 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	 */
 	public int sizeOfTerritory(BloomsChip.ColorSet forPlayer,int sweep)
 	{
-		G.Assert(sweep!=getSweep(),"shouldn't be the same");
+		//G.Assert(sweep!=getSweep(),"shouldn't be the same");
 		setSweep(sweep);
 		int totalsz = 1;
 		boolean poisoned = false;
-		for(int dir = geometry.n; dir>0; dir--)
+		for(int dir = geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{
 				BloomsChip ch = adj.topChip();
@@ -182,12 +187,12 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	// with "tag" so they are only counted once.
 	public int sweepCountLiberties(BloomsChip top,int sweep,int tag)
 	{
-		G.Assert(sweep!=getSweep(),"shouldn't be the same");
+		//G.Assert(sweep!=getSweep(),"shouldn't be the same");
 		setSweep(sweep);
 		int some = 0;
-		for(int dir=geometry.n; dir>0; dir--)
+		for(int dir=geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{	BloomsChip atop = adj.topChip();
 				if(atop==null) { if(adj.getSweep()!=tag) 
@@ -205,11 +210,11 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	// get some liberty of the group
 	public BloomsCell sweepGetLiberty(BloomsChip top,int sweep,int ignoreSweep)
 	{
-		G.Assert(sweep!=getSweep(),"shouldn't be the same");
+		//G.Assert(sweep!=getSweep(),"shouldn't be the same");
 		setSweep(sweep);
-		for(int dir=geometry.n; dir>0; dir--)
+		for(int dir=geometry.n-1; dir>=0; dir--)
 		{
-			BloomsCell adj = exitTo(dir);
+			BloomsCell adj = fastExitTo(dir);
 			if((adj!=null) && (adj.getSweep()!=sweep))
 			{	BloomsChip atop = adj.topChip();
 				if(atop==null) { if(adj.getSweep()!=ignoreSweep) { return(adj); }}
@@ -245,11 +250,13 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	{
 		super.reInit();
 		lastPlaced = -1;
+		privateIndex = -1;
 	}
 	public void copyFrom(BloomsCell other)
 	{
 		super.copyFrom(other);
 		lastPlaced = other.lastPlaced;
+		privateIndex = other.privateIndex;
 	}
 	public int getLastPlacement(boolean empty) {
 		

@@ -167,10 +167,10 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * be evaluated and sorted, then used as fodder for the depth limited search
      * pruned with alpha-beta.
      */
-        public CommonMoveStack  List_Of_Legal_Moves()
-        {
-            return(board.GetListOfMoves());
-        }
+    CommonMoveStack movelist = new ParallelCommonMoveStack();
+    public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
+    {	return getMoveList(movelist,threads);
+    }
 
         /**
          * this works very ineffeciently by generating all moves and picking one.
@@ -297,6 +297,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                search_state.allow_good_enough = true;
                search_state.verbose = verbose;
                search_state.allow_best_killer = true;
+               search_state.max_threads = DEPLOY_THREADS;
                search_state.save_top_digest = true;	// always on as a background check
                search_state.save_digest=false;	// debugging only
                search_state.check_duplicate_digests = false; 	// debugging only

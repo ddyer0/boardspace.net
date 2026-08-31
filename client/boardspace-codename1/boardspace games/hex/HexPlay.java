@@ -181,31 +181,16 @@ public class HexPlay extends commonRobot<HexGameBoard> implements Runnable,
  */
     CommonMoveStack movelist = new ParallelCommonMoveStack();
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	movelist.clear();
-    	if(threads!=null)
-    	{
-    	int n = threads.length;
-    	for(int i=1;i<=n;i++)
-    		{
-    		board.getListOfMoves(movelist,i,n+1);
-    		}
-    	board.getListOfMoves(movelist,n+1,n+1);
-    	Sthread.waitForIdle(threads);
-    	}
-    	else
-    	{
-        board.getListOfMoves(movelist,1,1);
-    	}
+    {	CommonMoveStack all = getMoveList(movelist,threads);
     	/*
         if(G.debug())
         {
-        	CommonMoveStack all = new ParallelCommonMoveStack();
-        	board.GetListOfMoves(all,extendedSearch,1,1);
-        	G.Assert(all.size()==movelist.size(),"all moves generated");
-        }
-        */
+        	CommonMoveStack all2 = new ParallelCommonMoveStack();
+        	board.getMoveList(all2,1,1);
+        	G.Assert(all2.size()==all.size(),"all moves generated");
+        }*/
 
-        return movelist;
+        return all;
     }
 
 

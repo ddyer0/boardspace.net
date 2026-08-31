@@ -109,7 +109,6 @@ class BugBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() { setState(BugState.Draw); }	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
 
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -226,9 +225,9 @@ class BugBoard
 		playerChip[map[0]]=BugChip.Black;
 		playerChip[map[1]]=BugChip.White;
 	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(BugCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
+		emptyCells.setSize(fullBoardSize);
+		int i=0;
+		for(BugCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRSet(c,i++); }
 	    latentCaptures[0].clear();
 	    latentCaptures[1].clear();
 	    pendingCaptures.clear();
@@ -258,7 +257,6 @@ class BugBoard
     {
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
@@ -280,7 +278,7 @@ class BugBoard
         latentCaptures[1].deepCopyFrom(this,from_b.latentCaptures[1]);
         AR.copy(playerChip,from_b.playerChip);
         growers.deepCopyFrom(this,from_b.growers);
-        if(G.debug()) { sameboard(from_b); }
+        if(robot==null && G.debug()) { sameboard(from_b); }
     }
     public Bug copy(Bug from)
     {
@@ -429,8 +427,8 @@ class BugBoard
     {	BugChip old = c.topChip();
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); c.myCritter=null; }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
+    	if(old!=null) { chips_on_board--;emptyCells.QRPush(c); c.myCritter=null; }
+     	if(ch!=null) { chips_on_board++; emptyCells.QRRemove(c);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
      		else { c.lastPlaced = lastPlaced; }
     	}
        	if(old!=null) { c.removeTop();  }
@@ -669,8 +667,8 @@ class BugBoard
     	for(int lim=myGroup.size()-1; lim>=0; lim--)
     	{
      		BugCell c = myGroup.elementAt(lim);
-    		for(int dir = 0; dir<6; dir++)
-    		{	BugCell adj = c.exitTo(dir);
+    		for(int dir = 0; dir<CELL_FULL_TURN; dir++)
+    		{	BugCell adj = c.fastExitTo(dir);
 				if(adj!=null)
 				{
     			Bug adjCritter = adj.critter(this);
@@ -1177,7 +1175,7 @@ class BugBoard
 		 Bug adjBug = null;
 		 for(int dir = 0;dir<CELL_FULL_TURN; dir++)
 		 {
-			 BugCell adj = c.exitTo(dir);
+			 BugCell adj = c.fastExitTo(dir);
 			 if(adj!=null)
 			 {
 			 Bug cr = adj.designatedAsEmpty ? null : adj.critter(this);
@@ -1222,9 +1220,8 @@ class BugBoard
 	 return null;
  }
  
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
-
+ CommonMoveStack  GetListOfMoves(CommonMoveStack all)
+ {	
  	switch(board_state)
  	{
  	case Puzzle:
@@ -1284,7 +1281,7 @@ class BugBoard
  public Hashtable<BugCell, BugMovespec> getTargets() 
  {
  	Hashtable<BugCell,BugMovespec> targets = new Hashtable<BugCell,BugMovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(new CommonMoveStack());
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	BugMovespec m = (BugMovespec)all.elementAt(lim);
  		switch(m.op)

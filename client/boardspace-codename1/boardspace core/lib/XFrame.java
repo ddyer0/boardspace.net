@@ -28,6 +28,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 01L;
     private JCheckBoxMenuItem soundCheckBox = null;
+    private boolean soundAdded = false;
     private JMenu options = null;
     private JMenu actions = null;
 	private TopFrameProtocol myFrame = null;
@@ -168,8 +169,9 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
  
 	public JCheckBoxMenuItem addOption(JMenu m, String text, boolean initial,DeferredEventManager e)
     {	
-		if(options.getItemCount()==0) 
-		{	options.add(soundCheckBox);		// always first
+		if(!soundAdded) 
+		{	soundAdded = true;
+			options.add(soundCheckBox);		// always first
 		}
 		JCheckBoxMenuItem b = new JCheckBoxMenuItem(text);
         b.setState(initial);
@@ -184,8 +186,9 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
         return (addOption(options, text, initial, e));
     }
     public JMenu addChoiceMenu(String text, DeferredEventManager e)
-    {	if(options.getItemCount()==0) 
-    	{	options.add(soundCheckBox);		// always first
+    {	if(!soundAdded) 
+    	{	soundAdded = true;
+    		options.add(soundCheckBox);		// always first
     	}
     	JMenu item = new XJMenu(text,false);
     	options.add(item);

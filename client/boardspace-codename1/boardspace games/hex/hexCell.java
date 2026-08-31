@@ -118,7 +118,7 @@ public class hexCell extends edgeChipCell<hexCell,hexChip> implements PlacementP
 		boolean hasNonAdjacent = false;
 		for(int dir = geometry.n-1; dir>=0; dir--)
 		{
-			hexCell some = exitTo(dir);
+			hexCell some = fastExitTo(dir);
 			if(some!=null)
 			{	hexChip stop = some.topChip();
 				if(stop==null) { hasEmpty = true; }

@@ -25,6 +25,22 @@ import online.game.*;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_game;
 
+class GetMoves implements Task
+{	int inc;
+		int off;
+		CommonMoveStack all;
+		BoardProtocol board;
+		public GetMoves(CommonMoveStack a,BoardProtocol b,int o,int i)
+		{	board = b;
+			all = a;
+			inc = i;
+			off = o;
+		}
+		public void doit()
+		{
+			board.getMoveList(all,off,inc);
+		}
+}
 
 
 /**
@@ -148,7 +164,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
     public String threadName = "main";
     public static final boolean DEPLOY_MONTEBOT = true;
     /**
-     * the maximum number of threads to use in a monte carlo seach.  Fewer may
+     * the maximum number of threads to use in a seach.  Fewer may
      * be used if the environment claims there are fewer available.
      */
     public static final int DEPLOY_THREADS = 4;
@@ -923,9 +939,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	
 	    	double val = depthLimited&&!gameOverNow ? Static_Evaluate_Depth_Limited_Position(mm) : Static_Evaluate_Position(mm);
 	    	
-	        mm.set_local_evaluation(val);
-	        mm.setEvaluation(val);
-	        mm.setGameover(gameOverNow);
+	        mm.setEvaluations(val,gameOverNow);
 	        
 	        Unmake_Move(mm);
 	        
@@ -1029,4 +1043,39 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 
 	       return (best);
 	   }
+	   
+
+
+	   /**
+	    * get the move list partitioned among the threads and the master thread
+	    * This is intended to be compatible
+	    * @param all
+	    * @param threads
+	    * @return
+	    */
+	   public CommonMoveStack  getMoveList(CommonMoveStack all,Sthread threads[])
+	    {	all.clear();
+	    	if(threads==null)
+	    	{
+	    		return board.getMoveList(all,1,1);
+	    	}
+	    	else
+	    	{
+	    	try {
+	    	int n = threads.length;
+	    	for(int i=1;i<=n;i++)
+	    		{
+	    		Sthread ex = threads[i-1];
+	    		ex.doSomething(new GetMoves(all,ex.getRobot().getBoard(),i,n+1));
+	    		}
+	    	board.getMoveList(all,n+1,n+1);
+	    	Sthread.waitForIdle(threads);
+	    	}
+	    	catch (Throwable e)
+	    	{
+	    		search_driver.Abort_Search_In_Progress(""+e);
+	    	}
+	        return all;
+	    	}
+	    }
 }

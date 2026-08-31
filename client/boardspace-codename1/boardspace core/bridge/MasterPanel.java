@@ -146,6 +146,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{ ((bridge.Container)cc).windowActivated(); 
 		}
 	}
+	
 	public Component getMyChildContaining(Component c)
 	{	return(MasterForm.getMyChildContaining(this, c));
 	}

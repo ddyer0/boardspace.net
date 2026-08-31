@@ -199,6 +199,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
             	CELLTYPE newc = newcell(thiscol,thisrow);
             	newc.next = allCells;
             	allCells = newc;
+            	fullBoardSize++;
             	SetBoardCell(thiscol,thisrow,newc);
             	
             	if(nInRow[thisrow-1]==0) 

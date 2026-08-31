@@ -56,7 +56,7 @@ public class LStack implements Digestable {
 	 * @param n
 	 */
 	public void setSize(int n)
-	{	if(n>index) { increaseSize(n); }
+	{	if(n>data.length) { increaseSize(n); }
 		index = n;
 	}
 	/**

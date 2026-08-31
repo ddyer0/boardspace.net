@@ -23,7 +23,6 @@ import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
 import lib.*;
-import lib.Random;
 import online.game.*;
 
 /**
@@ -100,7 +99,6 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
 
     private boolean swapped = false;
     // intermediate states in the process of an unconfirmed move should
@@ -175,6 +173,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     		  {	// this numbering scheme gives a-i across the bottom
     			// with row 1 at the bottom, row 2 above it and so on
     			  YCell c = row[j] = newcell((char)('A'+j),i+1);
+    			  fullBoardSize++;
     			  c.next = allCells;
     			  c.cellNumber = perm[idx];
     	     	  c.xloc = coords[idx][0];
@@ -252,12 +251,12 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 		playerChip[map[1]]=YChip.White;
 		playerChip[map[0]]=YChip.Black;
 	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
 		occupiedCells[0].clear();
 		occupiedCells[1].clear();
 
-		for(YCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRPush(c); }
-		fullBoard = emptyCells.size();
+		emptyCells.setSize(fullBoardSize);
+		int i=0;
+		for(YCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.QRSet(c,i++); }
 		    
         animationStack.clear();
         swapped = false;
@@ -283,7 +282,6 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     {
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
         getCell(occupiedCells,from_b.occupiedCells);
@@ -585,6 +583,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     private void pickObject(YCell c)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
+
         switch (c.rackLocation())
         {
         default:
@@ -948,7 +947,7 @@ void doSwap(replayMode replay)
 	 return(new Ymovespec(MOVE_DROPB,c,whoseTurn));
  }
  
- CommonMoveStack  getListOfMoves(CommonMoveStack all,int offset,int skip)
+ public CommonMoveStack  getMoveList(CommonMoveStack all,int offset,int skip)
  {	
  	
  	switch(board_state)

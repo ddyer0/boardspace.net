@@ -208,13 +208,13 @@ public class Bloomsmovespec extends commonMove implements BloomsConstants
 
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
-     * @param v
      * @see lib.Text
      * @see lib.TextGlyph 
      * @see lib.TextChunk
+     * @param v
      * @return a Text object
      */
-    public Text shortMoveText(commonCanvas v, Font font)
+    public Text shortMoveText(commonCanvas v,Font f)
     {  	switch (op)
     {
     	case SELECT:

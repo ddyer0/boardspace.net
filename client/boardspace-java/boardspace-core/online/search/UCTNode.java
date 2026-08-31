@@ -41,22 +41,22 @@ public class UCTNode {
 	//for deep debugging purposes, mark some node as special to watch
 	public static UCTNode marked = null;
 	//
-	private static final boolean HELPGC = true;					// clear pointers to help the gc when we kill children
-	private static final boolean PICK_RANDOM_UCT_CHILD = true;	// pick a random unexamined child, otherwise pick the next one.
-	private static final int ONLY_CHILD_SELECTED = -10000000;
+	protected static final boolean HELPGC = true;					// clear pointers to help the gc when we kill children
+	protected static final boolean PICK_RANDOM_UCT_CHILD = true;	// pick a random unexamined child, otherwise pick the next one.
+	protected static final int ONLY_CHILD_SELECTED = -10000000;
 	static final double new_child_uct = -100.0;
-	private UCTNode parent;				// parent node or null
-	private int visits; 				// number of visits this node
-	private double wins;				// win total this node (nominally a full win is 1.0, a full loss is -1.0)
-	private double bias_visits = 0;		// bias visits used to influence probabilities for a new node
-	private double bias_wins = 0;		// bias wins used to influence probabilities for a new node
+	protected UCTNode parent;				// parent node or null
+	protected volatile int visits; 				// number of visits this node
+	protected volatile double wins;				// win total this node (nominally a full win is 1.0, a full loss is -1.0)
+	protected double bias_visits = 0;		// bias visits used to influence probabilities for a new node
+	protected double bias_wins = 0;		// bias wins used to influence probabilities for a new node
 	public void setBiasVisits(double wins,double visits)
 	{
 		bias_visits = visits;
 		bias_wins = wins;
 	}
 	double uct;							// UCT term for this node 
-	private commonMove []children=null;	// all the children of this node
+	protected volatile commonMove []children=null;	// all the children of this node
 
 	public int getPlayer()
 	{	commonMove cc[]=children;
@@ -167,6 +167,10 @@ public class UCTNode {
 	}
 	// if this node as all terminals as children, return the first
 	// such child, which will be the most visited
+	// DEPENDENCY: this method's correctness relies on children[0] physically being the
+	// most-visited child, an invariant maintained by updateChildUct() via an O(1) indexed
+	// swap (see its comment). If that invariant is ever changed again, this method breaks
+	// silently - it has no way to detect that children[0] stopped being the leader.
 	public commonMove getTerminalChild()
 	{	commonMove ch[] = children;
 		if(ch!=null)
@@ -238,6 +242,11 @@ public class UCTNode {
 	// virtually remove this node.  Don't try to adjust parent counts,
 	// since that would require rescoring the moves which are not in hand.
 	//
+	// CONCURRENCY NOTE: left synchronized. `visits = -abs(visits==0?1:visits);` is a
+	// read-modify-write that needs atomicity, not just visibility, and this is not on the
+	// per-simulation hot path (it's called from pruning passes, not once per rollout), so
+	// there is little to gain from converting it to a CAS loop on an AtomicInteger versus
+	// the risk of getting the compound logic subtly wrong without a test to check it against.
 	synchronized int uncount()
 	{	
 		int killed = nodesBelow()+1;
@@ -255,6 +264,8 @@ public class UCTNode {
 	// virtually remove this node.  Don't try to adjust parent counts,
 	// since that would require rescoring the moves which are not in hand.
 	//
+	// CONCURRENCY NOTE: same reasoning as uncount() above - left synchronized.
+
 	synchronized void unVisit()
 	{	
 		visits = -abs(visits); 
@@ -415,7 +426,7 @@ public class UCTNode {
 		return uct;
 	}
 	// update the uct for this node, based on it's fair share of visits 
-	private void updateUct(double logParentVisits,double alpha)
+	protected void updateUct(double logParentVisits,double alpha)
 	{	if(visits==0) { uct = new_child_uct; }
 		else if(visits>0)
 		{
@@ -724,4 +735,11 @@ public class UCTNode {
 			}
 		}
 	}
+	// compatibility methods so UCTNode_Claude can coexist
+	protected void setSiblingIndex(int n) { G.Error("not called"); };
+	protected int siblingIndex() { G.Error("not called"); return 0; }
+	protected void updateChildUct(UCTNode uctNode_Claude, int newVisits, double alpha) 
+		{
+		G.Error("compatibility method, shouldn't be called");
+		};
 }

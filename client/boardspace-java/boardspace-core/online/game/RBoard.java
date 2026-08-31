@@ -75,6 +75,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     static final int GRID_RIGHT = 3;	// index for the right element of the grid style
     
     public CELLTYPE allCells;			// linked list of the whole board's cells
+    public int fullBoardSize = 0;		// always the same as the length of allCells
     public CELLTYPE allCells() { return allCells; }
     protected cell<CELLTYPE> hiddenCellArray[];			// a plain array of all cells.
     protected Rectangle boardRect=new Rectangle(0,0,100,100);
@@ -101,6 +102,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     public void initBoard()
     {
     	allCells = null;
+    	fullBoardSize = 0;
     	forgetCellArray();
     	boardRect = null;
     }
@@ -131,6 +133,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     {
     	c.next = allCells;
     	allCells = c;
+    	fullBoardSize++;
     	forgetCellArray();
     }
     
@@ -261,6 +264,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    		{
    		if(prev==null) { allCells = tc.next; } else { prev.next = tc.next; }
    		tc.unCrossLink();
+   		fullBoardSize--;
    		forgetCellArray();
    		C.onBoard = false;
    		return;

@@ -153,9 +153,9 @@ public class MorelliMovespec extends commonMove implements MorelliConstants
         }
     }
 
-    public Text shortMoveText(commonCanvas can, Font font)
+    public Text shortMoveText(commonCanvas can,Font f)
     {	// upcast the canvas
-    	return(shortMoveText((MorelliViewer)can,font));
+    	return(shortMoveText((MorelliViewer)can,f));
     }
     
     private Text coloredCoordinate(MorelliViewer v,char col,int row)

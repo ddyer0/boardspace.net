@@ -18,15 +18,16 @@ package chess;
 
 import lib.Random;
 import chess.ChessConstants.ChessId;
-import lib.OStack;
+import lib.PrivateIndex;
+import lib.QRStack;
 import online.game.PlacementProvider;
 import online.game.stackCell;
 
-class CellStack extends OStack<ChessCell>
+class CellStack extends QRStack<ChessCell>
 {
 	public ChessCell[] newComponentArray(int n) { return(new ChessCell[n]); }
 }
-public class ChessCell extends stackCell<ChessCell,ChessChip> implements PlacementProvider
+public class ChessCell extends stackCell<ChessCell,ChessChip> implements PlacementProvider,PrivateIndex
 {	int sweep_counter = 0;
 
 	// 
@@ -36,6 +37,9 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
 	int lastEmptied = -1;
 	int lastCaptured = -1;
 	ChessChip lastContents;
+	int privateIndex = -1;
+	public int getPrivateIndex() { return privateIndex; }
+	public void setPrivateIndex(int n) { privateIndex = n; }
 
     public ChessCell(ChessCell from)
     {
@@ -49,6 +53,7 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
     }
 	public void copyFrom(ChessCell ot)
 	{	super.copyFrom(ot);
+		privateIndex = ot.privateIndex;
 		lastPlaced = ot.lastPlaced;
 		lastEmptied = ot.lastEmptied;
 		lastCaptured = ot.lastCaptured;
@@ -64,6 +69,7 @@ public class ChessCell extends stackCell<ChessCell,ChessChip> implements Placeme
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		privateIndex = -1;
 		lastEmptied = -1;
 		lastCaptured = -1;
 		lastContents = null;

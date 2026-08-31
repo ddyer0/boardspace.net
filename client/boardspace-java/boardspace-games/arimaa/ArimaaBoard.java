@@ -525,7 +525,7 @@ public long positionDigest()
      		   && (playStep==0))
         {	checked = true;
         	CommonMoveStack all = new CommonMoveStack();
-        	getListOfMoves(all,whoseTurn,null,false);
+        	getListOfMoves(all,whoseTurn,null,false,1,1);
      	   if(all.size()==0)
      	   { setGameOver(false,true); 
      	   }
@@ -2864,7 +2864,7 @@ public long positionDigest()
 	 	case PLAY_STATE:
 	 	{
 	 		CommonMoveStack all = new CommonMoveStack();
-	 		getListOfMoves(all,whoseTurn,lastRobotMove,false);
+	 		getListOfMoves(all,whoseTurn,lastRobotMove,false,1,1);
 	 		h = new Hashtable<ArimaaCell,ArimaaCell>();
 	 		for(int i=all.size()-1;i>=0;i--)
 	 		{
@@ -3058,7 +3058,7 @@ public long positionDigest()
  }
 
  
- private void getListOfMoves(CommonMoveStack  all,int who,ArimaaMovespec lastMove,boolean forRobot)
+ private void getListOfMoves(CommonMoveStack  all,int who,ArimaaMovespec lastMove,boolean forRobot,int offset,int skip)
  {
 	 switch(board_state)
 	 {
@@ -3066,6 +3066,7 @@ public long positionDigest()
 	 case ILLEGAL_MOVE_STATE:
 		 return;
 	 case INITIAL_SETUP_STATE:
+	 	if(offset==1)
 	 	{
 	 	// without loss of generality, we can place the pieces in order, and just place all the rabbits
 	 	// in the remaining spaces.
@@ -3083,24 +3084,25 @@ public long positionDigest()
 	 		}}
 	 	// didn't find anything else, place a rabbits.  At this point there's one rabbit
 	 	// for each available cell, so no need to offer choices.
-	 	{
 	 	ArimaaCell c = row[ArimaaChip.RABBIT_INDEX];
 	 	int dest = (who==playerColor[FIRST_PLAYER_INDEX]) ? variation.nRows-1 : 1;
 	 	if(c.height()>0)
 	 	{
 	 	 placeInFirstRow(all,c,dest,who);
 	 	 return;
-	 	}}
+	 	}
 	 	throw G.Error("Shouldn't get here, all placed");
 	 	}
+	 	else { return; }
+	 	
 	 case PUSH_STATE:
-	 	{ getPushMoves(all,who,pushPullSource,pushPullDest);
-	 	}
-		 break;
+	 	if(offset==1) { getPushMoves(all,who,pushPullSource,pushPullDest);	}
+	 	break;
 	 case PLAY_STATE:
-
-	 	for(ArimaaCell c = allCells; c!=null; c=c.next)
-	 	{	ArimaaChip ch = c.topChip();
+		 cell<ArimaaCell> cells[] = getCellArray();
+		 for(int i=offset-1; i<fullBoardSize;i+=skip)
+		 {	ArimaaCell c = (ArimaaCell)cells[i];
+	 		ArimaaChip ch = c.topChip();
 	 		if((ch!=null) && playerIndex(ch)==who)
 	 		{
 	 		placeInSteps(all,c,ch,playStep,lastMove);
@@ -3110,12 +3112,11 @@ public long positionDigest()
 	 }
  }
  
- // this is the move generator entry point for the robot
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
+
+ public CommonMoveStack getMoveList(CommonMoveStack all,int offset,int skip)
+ {
     robotGame = true;
- 	getListOfMoves(all,whoseTurn,lastRobotMove,true);
-    if(all.size()==0) { all.addElement(new ArimaaMovespec(MOVE_RESIGN,whoseTurn)); }
+ 	getListOfMoves(all,whoseTurn,lastRobotMove,true,offset,skip);
   	return(all);
  }
 public boolean canPass() {

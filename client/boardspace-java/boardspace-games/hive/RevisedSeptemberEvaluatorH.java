@@ -264,9 +264,11 @@ class RevisedSeptemberEvaluatorH extends DefaultEvaluator implements Evaluator
 			{	HiveCell c = occupiedCells.elementAt(i);
 				for(int dir=0;dir<6;dir++)
 					{ HiveCell ca = c.exitTo(dir);
-					  if((ca.sweep_counter!=sweep) && board.legalDropDest(ca,targetColor)) 
-					  	{ int dis = board.hex_cell_distance(ca,q);
-					  	  val = Math.max(val,DropWeight*dropValue[Math.min(dis,dropValue.length-1)]);
+					  if(ca.sweep_counter!=sweep) 
+					  	{ if(ca.height()==0  && board.legalToDropAdjacent(ca,targetColor))
+					  		{int dis = board.hex_cell_distance(ca,q);
+					  		 val = Math.max(val,DropWeight*dropValue[Math.min(dis,dropValue.length-1)]);
+					  		}
 					  	  ca.sweep_counter=sweep; 
 					  	}
 					}
@@ -317,7 +319,7 @@ class RevisedSeptemberEvaluatorH extends DefaultEvaluator implements Evaluator
     	{
     		HiveCell sib = loc.exitTo(dir) ;
     		if(sib.height()==1)
-    		{	if(b.validHive(sib) && !b.validHive2(loc,sib)) { return(true); }
+    		{	if(b.validHiveMovegen(sib) && !b.validHive2(loc,sib)) { return(true); }
     		}
     		}
     	}

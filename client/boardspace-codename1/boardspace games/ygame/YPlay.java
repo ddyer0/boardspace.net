@@ -152,21 +152,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
     ParallelCommonMoveStack movelist = new ParallelCommonMoveStack();
     
     public CommonMoveStack  List_Of_Legal_Moves(Sthread threads[])
-    {	movelist.clear();
-    	if(threads!=null)
-    	{
-    	int n = threads.length;
-    	for(int i=1;i<=n;i++)
-    {
-    		board.getListOfMoves(movelist,i,n+1);
-    }
-    	board.getListOfMoves(movelist,n+1,n+1);
-    	Sthread.waitForIdle(threads);
-    	}
-    	else
-    	{
-        board.getListOfMoves(movelist,1,1);
-    	}
+    {	CommonMoveStack ml = getMoveList(movelist,threads);
     	/*
         if(G.debug())
         {
@@ -176,7 +162,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
         }
         */
 
-        return movelist;
+        return ml;
     }
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy

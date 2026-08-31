@@ -187,6 +187,12 @@ public abstract class commonMove
     public void set_depth_limited(EStatus v) { R().depth_limited = v; }
     public double local_evaluation() { return(R().local_evaluation); }
     public double set_local_evaluation(double v) { R().local_evaluation = v; return(v); }
+    public void setEvaluations(double v,boolean over)
+    {
+    	RobotProperties r = R();
+    	r.local_evaluation = r.evaluation = v;
+    	r.gameover = over;
+    }
     public double evaluation() { return R().evaluation; }
     public double setEvaluation(double v) { R().evaluation = v; return(v); }
 	public void setEvaluations(double v)
