@@ -50,7 +50,7 @@ import online.game.*;
  *
  */
 
-class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,HiveConstants,Debuging
+class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,HiveConstants
 { 	static final int REVISION = 102;		// 101 switches to an expandable board
 											// 102 switches smartbot to the revised September evaluator
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -448,7 +448,7 @@ public variation gamevariation = variation.hive;
     
     private void addDest(boolean fast,CellStack dests,HiveCell newdest,boolean pill, CellStack path)
     {	
-    	if(DEBUG && fast) {G.Assert(!dests.contains(newdest),"newdest %s shouldn't be included",newdest); }
+    	if(G.DEBUG && fast) {G.Assert(!dests.contains(newdest),"newdest %s shouldn't be included",newdest); }
   
     	if(!fast && dests.contains(newdest))
 			{ 

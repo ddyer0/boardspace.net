@@ -705,7 +705,7 @@ public abstract class exCanvas extends ProxyWindow
         }
        else if(target == l.debugSwitch)
        {
-       	G.putGlobal(G.DEBUG,""+!G.debug());
+    	G.DEBUG = !G.DEBUG;
        	return true;
        	     }
        else if(target==l.useKeyboard)

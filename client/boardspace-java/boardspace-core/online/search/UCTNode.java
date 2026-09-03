@@ -44,12 +44,16 @@ public class UCTNode {
 	protected static final boolean HELPGC = true;					// clear pointers to help the gc when we kill children
 	protected static final boolean PICK_RANDOM_UCT_CHILD = true;	// pick a random unexamined child, otherwise pick the next one.
 	protected static final int ONLY_CHILD_SELECTED = -10000000;
+	protected static final int KILLED_NODE = -12353526;
 	static final double new_child_uct = -100.0;
 	protected UCTNode parent;				// parent node or null
 	protected volatile int visits; 				// number of visits this node
 	protected volatile double wins;				// win total this node (nominally a full win is 1.0, a full loss is -1.0)
-	protected double bias_visits = 0;		// bias visits used to influence probabilities for a new node
+	protected volatile double bias_visits = 0;		// bias visits used to influence probabilities for a new node
 	protected double bias_wins = 0;		// bias wins used to influence probabilities for a new node
+	
+	public boolean isKilled() { return bias_visits == KILLED_NODE; }
+	
 	public void setBiasVisits(double wins,double visits)
 	{
 		bias_visits = visits;
@@ -67,10 +71,11 @@ public class UCTNode {
 	private synchronized void setParent(UCTNode n) { parent = n; }
 
 	public enum key { winrate, visits, uct } ;		// sort keys
-	public double getDisplayWinRate() { return(wins/max(1,abs(visits))); }
+	public double getDisplayWinRate() { return(wins/max(1,visits)); }
 	public String toString() 
 		{ double winrate = getDisplayWinRate();
 		  return("<n "
+			    + (isKilled() ? "killed " : "")
 				+"w "+((int)(winrate*1000)/1000.0)
 				+ " u "+ (((int)(uct*1000))/1000.0)
 				+" v " + visits
@@ -161,7 +166,7 @@ public class UCTNode {
 		{
 			commonMove child = ch[lim];
 			UCTNode node = child.uctNode();
-			if((node!=null)&&(node.visits>=0)) { n++; }
+			if((node!=null)&&(!isKilled())) { n++; }
 		}}
 		return(n);
 	}
@@ -182,7 +187,7 @@ public class UCTNode {
 				else {
 					UCTNode n = child.uctNode();	
 					// has no subtree, or has an active subtree
-					if(n==null || (n.getVisits()>=0)) { return(null); }
+					if(n==null || (!n.isKilled())) { return(null); }
 				}
 			}
 			return(child);
@@ -254,7 +259,7 @@ public class UCTNode {
 		// this interacts with the new child first visit
 		//if(visits>0) { Log.addLog("Uncount "+visits+" "+this); }
 		//if(marked==this) { G.print("Marked!");}
-		visits = -abs(visits==0?1:visits);
+		bias_visits = KILLED_NODE;
 		if(HELPGC && !G.debug()) 
 			{  setChildren(null); // help the gc
 			}
@@ -268,7 +273,7 @@ public class UCTNode {
 
 	synchronized void unVisit()
 	{	
-		visits = -abs(visits); 
+		bias_visits = KILLED_NODE;
 	}
 	public int countActiveChildren()
 	{	int active = 0;
@@ -280,7 +285,7 @@ public class UCTNode {
 				if(kid!=null)
 				{
 					UCTNode n = kid.uctNode();
-					if(n!=null && n.getVisits()>0) { active++; }
+					if(n!=null && !n.isKilled()) { active++; }
 				}
 			}
 		}
@@ -307,7 +312,7 @@ public class UCTNode {
 			if(node!=null)
 			{	synchronized(node)
 				{
-				if((node.visits>=0))
+				if(!node.isKilled())
 				{ 
 				  if((numActiveChildren==0) || (node.wins>maxWins))
 				  {	  
@@ -325,7 +330,7 @@ public class UCTNode {
 		for(int i=1;i<numOfChildren;i++)		// start at 1 so we don't kill the most active child
 		{	commonMove child = children[i];
 			UCTNode node = child.uctNode();
-			if((node!=null) && (node.visits>=0))
+			if((node!=null) && !node.isKilled())
 			{	
 			/*
 			 *  (wins+x)/(visits+x) = best
@@ -376,7 +381,7 @@ public class UCTNode {
 		for(int i=numOfChildren-1;(i>0) && (share<bestVisits);i--)		// start at 1 so we don't kill the most active child
 		{	commonMove child = children[i];
 			UCTNode node = child.uctNode();
-			if((node!=null) && (node.visits>=0))
+			if((node!=null) && !node.isKilled())
 			{	
 			if((node.visits+share<bestVisits)
 					// a former error trap actually hit this condition in a game 
@@ -407,7 +412,8 @@ public class UCTNode {
 	}
 	static UCTNode voidNode =  new UCTNode();
 	private UCTNode voidNode() 
-	{ 	voidNode.visits--;
+	{ 	voidNode.visits = 0;
+		voidNode.bias_visits = KILLED_NODE;
 		return(voidNode);
 	}
 	public double getWins() { return(wins); }
@@ -416,10 +422,14 @@ public class UCTNode {
 		wins=vv;
 		}
 	public double getWinrate() {
-		if(visits==0){
+		double bv = bias_visits;
+		int v = visits;
+		if(isKilled()) { return 0; }	// checks the value of bias_visits
+		
+		if(v==0){
 			return((parent==null) ? 0.0 : parent.getWinrate());
-		}	
-		return (wins+bias_wins)/(bias_visits+((visits>0)?visits:-visits));
+			}	
+		return (wins+bias_wins)/(bv+v);
 	}
 
 	public double getUct() {
@@ -427,11 +437,12 @@ public class UCTNode {
 	}
 	// update the uct for this node, based on it's fair share of visits 
 	protected void updateUct(double logParentVisits,double alpha)
-	{	if(visits==0) { uct = new_child_uct; }
-		else if(visits>0)
+	{	int v = visits;
+		if(v==0) { uct = new_child_uct; }
+		else if(!isKilled())
 		{
 		// winrate is 0-1 so uct should be in 0-2 for alpha=1
-		double exploration_term = alpha*sqrt(logParentVisits/(visits+1));
+		double exploration_term = alpha*sqrt(logParentVisits/(v+1));
 		double wrate = getWinrate()/2;
 		uct = wrate+0.5 + exploration_term;
 		if(Double.isNaN(uct)) { throw G.Error("oops, got NaN"); }
@@ -444,7 +455,7 @@ public class UCTNode {
 	private synchronized void updateChildUct(int nVisits,double alpha)
 	{	// if we are pre-scoring, the update cycle can run twice, and visits can be negative
 		// as a flag for a killed variation.
-		if(visits>=0)
+		if(!isKilled())
 		{
 		commonMove childArray[] = children;
 		if(childArray!=null)
@@ -476,7 +487,7 @@ public class UCTNode {
 		boolean visited = false;
 		synchronized(this)
 		{
-			if(visits>=0)
+			if(!isKilled())
 			{	// update visits if the node hasn't been killed (marked by negative visits)
 				wins += won*newVisits;
 				visits += newVisits;
@@ -538,7 +549,7 @@ public class UCTNode {
 					child.setUctNode(newChild);
 					return(child);
 				}
-				if(node.visits>=0)
+				if(!node.isKilled())
 				{	// previously explored node which hasn't been eliminated
 					if((bestMove==null) || (node.uct > bestUct))
 					{
@@ -583,7 +594,7 @@ public class UCTNode {
 	}
 	
 	public synchronized commonMove expandUctNode(UCTThread thread,RobotProtocol robot,Random rand)
-	{	if(visits>=0)
+	{	if(!isKilled())
 		{if(children==null)	// not null is an unusual case, it means the same node was selected simultaneously in two threads 
 			{ children = thread.getNewChildren();
 			}
@@ -601,7 +612,7 @@ public class UCTNode {
 		switch(name)
 		{
 		case winrate: return(getWinrate());
-		case visits: return(visits);
+		case visits: return(isKilled()?-visits : visits);
 		case uct: return(uct);
 		default: throw G.Error("undedefined key %s",name);
 		}
@@ -666,7 +677,7 @@ public class UCTNode {
 		if(target!=null)
 		{		
 			//Log.addLog("make only "+this+" "+target+" "+target.evaluation());
-			if(visits>=0)
+			if(!isKilled())
 				{	
 				commonMove newlist[] = new commonMove[1];
 				newlist[0] = target;
@@ -691,7 +702,7 @@ public class UCTNode {
 		{	// visits>0 checks that this node hasn't been uncounted by another thread
 			// the scenario is that one thread makes this node a terminal, while
 			// the this thread has selected it for dispatch but not run the simulation yet
-			if(visits>=0)
+			if(!isKilled())
 			{
 			 int val =  parent.makeOnlyChild(this); 
 			 return(val);
@@ -725,7 +736,9 @@ public class UCTNode {
 		{	commonMove child = getChild(i);
 			int visits = 0;
 			UCTNode node = child.uctNode();
-			if((node!=null)&&((visits=node.getVisits())>=visitThreshold))
+			if((node!=null)
+					&&!node.isKilled()
+					&&((visits=node.getVisits())>=visitThreshold))
 			{
 			commonMove cop = child.Copy(null);
 			cop.setIndex(moven);

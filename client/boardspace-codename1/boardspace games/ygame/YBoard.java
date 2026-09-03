@@ -587,6 +587,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     private void pickObject(YCell c)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
+
         switch (c.rackLocation())
         {
         default:

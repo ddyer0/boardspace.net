@@ -1770,7 +1770,7 @@ public class LeHavre implements LeHavreConstants
 		}
 	}
 
-	//================================================================================================= DEBUG METHODS
+	//================================================================================================= DEBUGWORD METHODS
 
 	/**
 	 *	Displays a complete summary of all game variables.

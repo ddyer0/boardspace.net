@@ -210,7 +210,7 @@ public void PrepareToMove(int playerIndex)
 		 parent.sortBy(UCTNode.key.visits);
 		 commonMove bestChild = parent.getChild(0);
 		 UCTNode node = bestChild.uctNode();
-		 if(node!=null && (node.getVisits()>=0))
+		 if(node!=null && !node.isKilled())
 		 {
 			double winrate = node.getWinrate();
 			// if we're losing, return the best move

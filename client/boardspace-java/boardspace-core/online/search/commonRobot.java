@@ -870,7 +870,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 			 commonMove child = parent.getChild(i);
 			 UCTNode node = child.uctNode();
 			 if(salvage==null) { salvage = child; }
-			 if(node!=null && (node.getVisits()>=0))
+			 if(node!=null && !node.isKilled())
 			 	{
 				 double win = r.nextDouble();	// assign a random win rate
 				 if((best==null) || (win>rate)) 
@@ -890,7 +890,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 					commonMove child = parent.getChild(i);
 					if(salvage==null) { salvage = child; }
 					UCTNode node = child.uctNode();
-					if(node!=null && (node.getVisits()>=0))
+					if(node!=null && !node.isKilled())
 					{
 					double win = node.getWinrate();
 					if(r!=null) { win +=r.nextDouble()*randomization; }

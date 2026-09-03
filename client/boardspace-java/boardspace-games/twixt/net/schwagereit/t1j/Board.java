@@ -141,7 +141,7 @@ public final class Board
     */
    public void setSize(final int xSize, final int ySize)
    {
-      if (xSize > MAXDIM || ySize > MAXDIM || xSize < MINDIM || ySize < MINDIM) // DEBUG?
+      if (xSize > MAXDIM || ySize > MAXDIM || xSize < MINDIM || ySize < MINDIM) // DEBUGWORD?
       {
          throw new IllegalArgumentException("Size has to be between " + MINDIM + " and "
                + MAXDIM + ".");
@@ -196,7 +196,7 @@ public final class Board
     */
    private void setBridge(final int x, final int y, final int direction)
    {
-      if (direction > 3 || direction < 0) //DEBUG?
+      if (direction > 3 || direction < 0) //DEBUGWORD?
       {
          throw new IllegalArgumentException("direction " + direction + " is not allowed.");
       }
@@ -475,7 +475,7 @@ public final class Board
    public boolean isConnected(final int xa, final int ya, final int xb, final int yb)
    {
       if (Math.abs(xa - xb) >= 3 || Math.abs(ya - yb) >= 3
-            || Math.abs(xa - xb) + Math.abs(ya - yb) != 3) //DEBUG?
+            || Math.abs(xa - xb) + Math.abs(ya - yb) != 3) //DEBUGWORD?
       {
          throw new IllegalArgumentException("Wrong distance");
       }
@@ -502,7 +502,7 @@ public final class Board
    public boolean isBridgeAllowed(final int xa, final int ya, final int xb, final int yb)
    {
       if (Math.abs(xa - xb) >= 3 || Math.abs(ya - yb) >= 3
-            || Math.abs(xa - xb) + Math.abs(ya - yb) != 3) //DEBUG?
+            || Math.abs(xa - xb) + Math.abs(ya - yb) != 3) //DEBUGWORD?
       {
          throw new IllegalArgumentException("Wrong distance");
       }

@@ -56,7 +56,7 @@ public class UCTMoveSearcher extends CommonDriver
 	 */
 	boolean MONITOR_SINGLE_THREAD = true;
 	boolean useMPThreads = false;
-	public boolean claudeMode = false;
+	public boolean claudeMode = true;
 	
 	public UCTThread[] getThreads() 
 	{ 	return(threads); 

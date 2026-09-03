@@ -79,6 +79,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
     boolean EXP_MONTEBOT = false;
     double ALPHA = 1.0;
     double BETA = 0.25;
+    boolean claudeMode = true;
     double NODE_EXPANSION_RATE = 1.0;
     double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive
     boolean SAVE_TREE = false;				// debug flag for the search driver.  Uses lots of memory. Set a breakpoint after the search.
@@ -207,9 +208,10 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
 		case TESTBOT_LEVEL_1:
         	ALPHA = 0.5;
         	BETA = 0.25;
+        	claudeMode = false;
+           	useBlitz = true;	// blitz is better for us, optimized connection check wins hugely
         	timePerMove = 10;
         	verbose=1;
-        	useBlitz = false;		// baseline code that doesn't optimize the win check
         	CHILD_SHARE = 0.85;
         	break;
 
@@ -273,6 +275,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.timePerMove = timePerMove;		// seconds per move
         monte_search_state.stored_child_limit = 100000;
         monte_search_state.verbose = verbose;
+        monte_search_state.claudeMode = claudeMode;
         monte_search_state.alpha = ALPHA;
         monte_search_state.blitz = useBlitz;			// for pushfight, blitz is 2/3 the speed of normal unwinds
         monte_search_state.sort_moves = false;

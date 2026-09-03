@@ -211,10 +211,10 @@ public class PasswordCollector extends JPanel
 	 private Choice<String> langField;				// preferred language
 	 private Choice<StringPair> linkField;				// site links
 	 private Choice<String> countryField;			// home country
-	 private XTextField nameField;			// user name
+	 private JTextField nameField;			// user name
 	 private JLabel nameLabel;
-	 private XTextField realNameField;		// real name, or whatever
-	 private XTextField emailField;			// email address
+	 private JTextField realNameField;		// real name, or whatever
+	 private JTextField emailField;			// email address
 	 private JPanel passPane;				// passpane can appear and disappear depending on "guest"
 	 private JButton registerAccountButton;	// switch to registeration
 	 private JButton reviewButton;
@@ -518,7 +518,7 @@ public class PasswordCollector extends JPanel
 		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
 		 nameLabel.setUIID("LoginLabel");
-		 realNameField = new XTextField(25);
+		 realNameField = new JTextField(25);
 		 realNameField.setUIID("LoginTextField");
 		 realNameField.setText(realName);
 		 panel.addC(nameLabel);
@@ -542,7 +542,7 @@ public class PasswordCollector extends JPanel
 		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
 		 nameLabel.setUIID("LoginLabel");
-		 emailField = new XTextField(25);
+		 emailField = new JTextField(25);
 		 emailField.setUIID("LoginTextField");
 
 		 emailField.setText(email);
@@ -570,7 +570,7 @@ public class PasswordCollector extends JPanel
 		 JPanel panel = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 nameLabel = new JLabel(s.get(YourName));
 		 nameLabel.setUIID("LoginLabel");
-		 nameField = new XTextField(13);
+		 nameField = new JTextField(13);
 		 nameField.setUIID("LoginTextField");
 		 Component.setSameHeight(nameLabel,nameField);
 		 

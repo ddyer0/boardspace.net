@@ -1677,17 +1677,18 @@ public double trainNetwork(GenericNetwork n,double inputs[],double values[],bool
     					  	
      							for(commonMove ch : children) 
     					  		{ UCTNode n = ch.uctNode();
-    					  		  if(n!=null)
+    					  		  if(n!=null && !n.isKilled())
     					  		  {
     					  		  int vis = n.getVisits();
     					  		  minv = Math.min(Math.max(0,vis),minv);
     					  		  maxv = Math.max(vis, maxv);
     					  		}}
-    						 
+     							 if(!node.isKilled())
+     							 {
     							 int vis = node.getVisits();
     							 if(vis>0)
     							 {	return((Math.max(0, vis)-minv)/(maxv-minv));
-    							 }
+    							 }}
      						 }
      						 return(0);
     					  }}

@@ -53,7 +53,7 @@ import online.game.*;
  *
  */
 
-class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol,Debuging
+class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 {	static int REVISION = 101;			// 100 represents the initial version of the game
 										// 101 adds the endgame condition selection
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -706,7 +706,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol,Debuging
     }
     
     private void setNextStateAfterDone(replayMode replay)
-    {	if(DEBUG) { G.Assert(chips_on_board+emptyCells.size()==fullBoardSize,"cells missing"); }
+    {	if(G.DEBUG) { G.Assert(chips_on_board+emptyCells.size()==fullBoardSize,"cells missing"); }
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state %s",board_state);

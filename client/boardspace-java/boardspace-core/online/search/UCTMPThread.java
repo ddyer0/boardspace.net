@@ -664,7 +664,7 @@ class UCTMPThread extends Thread implements Opcodes,UCTThread
 					}
 			}
 		}
-		else if(currentNode.getVisits()>=0)
+		else if(!currentNode.isKilled())
 		{
 			robot.Start_Simulation(master,currentNode);
 			double val0 =runSimulation(currentMove);

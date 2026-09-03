@@ -1260,7 +1260,7 @@ void doSwap(replayMode replay)
 		 {	XehCell childCell = getCell(child.to_col,child.to_row);
 			UCTNode childNode = child.uctNode();
 			double val = (last.isAdjacentTo(childCell) ? 0.5 : 0.0) + rand.nextDouble()*beta;
-			if(childNode!=null)
+			if(childNode!=null && !childNode.isKilled())
 			{
 			int childVisits = childNode.getVisits();
 			if(childVisits>=0)

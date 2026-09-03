@@ -110,7 +110,7 @@ class BoardspaceLauncher implements Runnable,stuff
         		 "development",""+develop,
         		 "extraactions",""+develop,
          		 //"playtable","true",
-        		 G.DEBUG,""+develop,
+        		 "debug",""+develop,
         		})
         		{ params.addElement(pv);   		
         		}
@@ -136,7 +136,7 @@ class BoardspaceLauncher implements Runnable,stuff
         String params[] = new String[]
         		{OnlineConstants.SERVERNAME,connectHost,
         		Config.PROTOCOL,(develop?"http":"https"),
-        		G.DEBUG,""+develop,
+        		"debug",""+develop,
         		OnlineConstants.EXTRAACTIONS,"true",
         		OnlineConstants.EXTRAMOUSE,"true",
         		GameInfo.GAMETYPE,game,

@@ -17,6 +17,7 @@
 package bridge;
 
 import com.codename1.ui.Font;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.events.ActionListener;
 
 import lib.FontManager;
@@ -80,7 +81,13 @@ public class JTextField extends  JTextComponent
 	}
 	public void requestFocusInWindow() {
 	}
-
+	
+	public void paint(Graphics g)
+	{	if(MasterForm.isInFront(this))
+		{	g.setFont(getFont());
+			super.paint(g);
+		}
+	}
 
 	//
 	// jan 2026, switch to this instead of deferring the settext to paint()

@@ -40,7 +40,6 @@ public class G extends Platform implements Timestamp
 	// names of constant strings used here.
 	public static final String CODEBASE = "codebase";
 	public static final String DOCUMENTBASE = "documentbase";
-	public static final String DEBUG = "debug";
 	public static final String VNCCLIENT = "vncclient";
 	public static final String ALLOWOFFLINEROBOTS = "allowofflinerobots";
 	public static final String PLAYTABLE = "playtable";
@@ -1740,7 +1739,8 @@ public static ExtendedHashtable getGlobals()
 public static void setGlobals(ExtendedHashtable e) 
 { globalsInstance = e; 
 }
-public static boolean debug() { return(getGlobals().getBoolean(DEBUG,false)); }
+public static boolean DEBUG = false;
+public static boolean debug() { return DEBUG; }
 private static boolean once = false;
 public static void setDebugOnce() { once = true; }
 public static boolean debugOnce() { boolean o = once; once = false; return(o); }
@@ -1748,6 +1748,7 @@ public static boolean debugOnce() { boolean o = once; once = false; return(o); }
 public static void putGlobal(String p,Object v) 
 { 
 	getGlobals().put(p, v);
+	if("debug".equalsIgnoreCase(p)) { DEBUG = getBoolean((String)v,true);}
 //G.print("put "+p+" "+v);
 }
 public static Object getGlobal(String p) { return(getGlobals().get(p)); }
