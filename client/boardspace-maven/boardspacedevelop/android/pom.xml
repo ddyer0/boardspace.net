@@ -2,15 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>dev.boardspace</groupId>
-      <artifactId>boardspacedevelop</artifactId>
+      <groupId>maven.boardspace</groupId>
+      <artifactId>develop</artifactId>
       <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>dev.boardspace</groupId>
-  <artifactId>boardspacedevelop-android</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>develop-android</artifactId>
 
-  <name>boardspacedevelop-android</name>
+  <name>develop-android</name>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,10 +30,20 @@
             </resource>
         </resources>
         <plugins>
+<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.codenameone</groupId>
                 <artifactId>codenameone-maven-plugin</artifactId>
-                <version>${cn1.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>build-android</id>
@@ -76,6 +84,17 @@
           <id>run-android</id>
           <build>
               <plugins>
+<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
                   <plugin>
                       <groupId>org.codehaus.mojo</groupId>
                       <artifactId>properties-maven-plugin</artifactId>
@@ -97,7 +116,6 @@
 
                   <plugin>
                       <artifactId>maven-antrun-plugin</artifactId>
-                      <version>3.0.0</version>
                       <executions>
                           <execution>
                               <id>adb-install</id>

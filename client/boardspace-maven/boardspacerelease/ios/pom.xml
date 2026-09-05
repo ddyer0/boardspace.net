@@ -3,14 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
       <groupId>com.boardspace</groupId>
-      <artifactId>boardspacerelease</artifactId>
+      <artifactId>release</artifactId>
       <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.boardspace</groupId>
-  <artifactId>boardspacerelease-ios</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>release-ios</artifactId>
 
-  <name>boardspacerelease-ios</name>
+  <name>release-ios</name>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,10 +28,20 @@
             </resource>
         </resources>
         <plugins>
+<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.codenameone</groupId>
                 <artifactId>codenameone-maven-plugin</artifactId>
-                <version>${cn1.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>build-ios</id>

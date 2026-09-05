@@ -20,11 +20,15 @@ goto :EOF
 
 goto :EOF
 :settings
-!MVNW! cn:settings -e
+!MVNW! cn1:settings -e
+
+goto :EOF
+:certificatewizard
+!MVNW! cn1:certificatewizard -e
 
 goto :EOF
 :update
-!MVNW! cn:update -U -e
+!MVNW! cn1:update -U -e
 
 goto :EOF
 :help
@@ -36,5 +40,7 @@ echo   desktop
 echo     Runs app as a desktop app.
 echo   settings
 echo     Opens Codename One settings
+echo   certificatewizard
+echo     Opens the iOS certificate wizard
 echo   update
 echo     Update Codename One libraries

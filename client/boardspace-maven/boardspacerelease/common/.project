@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>boardspacerelease-common</name>
+	<name>release-common</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -22,24 +22,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>boardspace core</name>
+			<name>boardspace-core</name>
 			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20core</locationURI>
+			<locationURI>coredir</locationURI>
 		</link>
 		<link>
-			<name>boardspace games</name>
+			<name>boardspace-games</name>
 			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/boardspace%20games</locationURI>
+			<locationURI>gamesdir</locationURI>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/boardspace-codename1/codename1</locationURI>
+			<locationURI>codename1</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1643353111887</id>
+			<id>1788273859580</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
@@ -47,5 +47,28 @@
 				<arguments>1.0-name-matches-false-false-*.bak</arguments>
 			</matcher>
 		</filter>
+		<filter>
+			<id>1788273859581</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-cvs</arguments>
+			</matcher>
+		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>codename1</name>
+			<value>file:/G:/share/projects/boardspace-codename1/codename1</value>
+		</variable>
+		<variable>
+			<name>coredir</name>
+			<value>file:/G:/share/projects/boardspace-codename1/boardspace%20core</value>
+		</variable>
+		<variable>
+			<name>gamesdir</name>
+			<value>file:/G:/share/projects/boardspace-codename1/boardspace%20games</value>
+		</variable>
+	</variableList>
 </projectDescription>

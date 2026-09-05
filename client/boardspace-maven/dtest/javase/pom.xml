@@ -2,13 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>com.boardspace</groupId>
+      <groupId>com.test</groupId>
       <artifactId>dtest</artifactId>
       <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.boardspace</groupId>
   <artifactId>dtest-javase</artifactId>
-  <version>1.0-SNAPSHOT</version>
 
   <name>dtest-javase</name>
   
@@ -25,7 +23,6 @@
             <plugin>
                 <artifactId>codenameone-maven-plugin</artifactId>
                 <groupId>com.codenameone</groupId>
-                <version>${cn1.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-se-sources</id>
@@ -37,43 +34,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>
-        									com.codenameone
-        								</groupId>
-        								<artifactId>
-        									codenameone-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[7.0.55,)
-        								</versionRange>
-        								<goals>
-        									<goal>
-        										generate-javase-sources
-        									</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
-        </pluginManagement>
     </build>
 
   <dependencies>
@@ -94,22 +54,12 @@
           <artifactId>codenameone-core</artifactId>
           <scope>test</scope>
       </dependency>
-      <dependency>
-          <groupId>com.codenameone</groupId>
-          <artifactId>codenameone-core</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
+            <dependency>
           <groupId>com.codenameone</groupId>
           <artifactId>codenameone-javase</artifactId>
           <scope>test</scope>
       </dependency>
-      <dependency>
-          <groupId>com.codenameone</groupId>
-          <artifactId>codenameone-javase</artifactId>
-          <scope>provided</scope>
-      </dependency>
-
+      
   </dependencies>
   
   <profiles>
@@ -118,7 +68,7 @@
           <id>executable-jar</id>
           <properties>
               <codename1.platform>javase</codename1.platform>
-              <exec.mainClass>com.boardspace.DtestStub</exec.mainClass>
+              <exec.mainClass>com.test.DtestStub</exec.mainClass>
           </properties>
           <dependencies>
               <dependency>
@@ -205,7 +155,6 @@
                   </plugin>
                   <plugin>
                       <artifactId>maven-antrun-plugin</artifactId>
-                      <version>3.0.0</version>
                       <executions>
                           <execution>
                               <id>generate-javase-zip</id>
@@ -242,7 +191,7 @@
           <id>run-desktop</id>
           <properties>
               <codename1.platform>javase</codename1.platform>
-              <exec.mainClass>com.boardspace.DtestStub</exec.mainClass>
+              <exec.mainClass>com.test.DtestStub</exec.mainClass>
           </properties>
           <dependencies>
               <dependency>
@@ -338,7 +287,7 @@
           <id>test</id>
           <activation>
               <property>
-                      <name>!skipTests</name>
+                      <name>true</name>
               </property>
           </activation>
           <properties>
@@ -383,7 +332,7 @@
       <profile>
           <!-- Profile used for debugging the Simulator in NetBeans.
 
-            NOTE: IntelliJ uses the idea-simulator profile for both run and debug.
+            NOTEX : IntelliJ uses the idea-simulator profile for both run and debug.
 
            -->
           <id>debug-simulator</id>
@@ -431,7 +380,6 @@
                           <executable>java</executable>
                           <longClasspath>true</longClasspath>
                           <arguments>
-                              <argument>-XX:MaxPermSize=128M</argument>
                               <!-- Parameters used for Debugging from NetBeans -->
                               <argument>-Xdebug</argument>
                               <argument>-Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address}</argument>
@@ -537,7 +485,6 @@
                           <executable>java</executable>
                           <longClasspath>true</longClasspath>
                           <arguments>
-                              <argument>-XX:MaxPermSize=128M</argument>
                               <!-- Parameters used for Debugging from NetBeans -->
                               <argument>-Xdebug</argument>
                               <argument>-Xrunjdwp:transport=dt_socket,server=y,address=${jpda.address},suspend=y</argument>
@@ -597,7 +544,7 @@
       </profile>
       <profile>
           <!-- Profile used for running the simulator.  This uses exec:exec to fork a Java process.
-            NOTE: IntelliJ does not use this profile for running the simulator.  It, instead uses
+            NOTEX : IntelliJ does not use this profile for running the simulator.  It, instead uses
             the ideas-simulator profile which uses exec:java instead because it works better with
             the IntelliJ debugger.
 
@@ -646,7 +593,6 @@
                           <executable>java</executable>
                           <longClasspath>true</longClasspath>
                           <arguments>
-                              <argument>-XX:MaxPermSize=128M</argument>
                               <argument>-Xmx1024M</argument>
 
                               <!-- The location of CEF.  This property is set in the

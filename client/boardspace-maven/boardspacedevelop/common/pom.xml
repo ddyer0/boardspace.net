@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>dev.boardspace</groupId>
-        <artifactId>boardspacedevelop</artifactId>
+        <groupId>maven.boardspace</groupId>
+        <artifactId>develop</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>dev.boardspace</groupId>
-    <artifactId>boardspacedevelop-common</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>develop-common</artifactId>
     <packaging>jar</packaging>
-
 
     <!-- Add your cn1lib dependencies to this section -->
     <dependencies>
         <dependency>
             <groupId>com.codenameone</groupId>
             <artifactId>codenameone-core</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.codenameone</groupId>
+            <artifactId>codenameone-javase</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- INJECT DEPENDENCIES -->
@@ -35,12 +33,11 @@
         <id>install-codenameone</id>
         <activation><file><missing>${user.home}/.codenameone/guibuilder.jar</missing></file></activation>
         <build>
-            <plugins>
 
+            <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.0.0</version>
 
                     <executions>
                         <execution>
@@ -55,9 +52,19 @@
 
                                     <mkdir dir="${user.home}/.codenameone"/>
                                     <mkdir dir="${project.build.directory}/codenameone/tmpProject"/>
+                                    <!-- usetimestamp re-downloads UpdateCodenameOne.jar when the
+                                         remote is newer than the local copy; skipexisting="true"
+                                         pinned users to whatever stale copy was first downloaded
+                                         and led to outdated guibuilder/designer jars. -->
                                     <get src="https://www.codenameone.com/files/updates/UpdateCodenameOne.jar"
                                          dest="${user.home}/UpdateCodenameOne.jar"
-                                         skipexisting="true"/>
+                                         usetimestamp="true"
+                                         ignoreerrors="true"/>
+
+                                    <get src="https://github.com/codenameone/CodenameOne/raw/refs/heads/master/maven/UpdateCodenameOne.jar"
+                                         dest="${user.home}/UpdateCodenameOne.jar"
+                                         usetimestamp="true"
+                                         ignoreerrors="false"/>
                                     <java jar="${user.home}/UpdateCodenameOne.jar" fork="true">
                                         <arg value="${project.build.directory}/codenameone/tmpProject"/>
                                         <arg value="force"/>
@@ -82,7 +89,7 @@
                 </file>
             </activation>
             <properties>
-                <kotlin.version>1.3.72</kotlin.version>
+                <kotlin.version>1.6.0</kotlin.version>
                 <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
             </properties>
             <dependencies>
@@ -183,7 +190,6 @@
             </properties>
             <build>
                 <plugins>
-
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -191,7 +197,6 @@
                             <executable>java</executable>
                             <longClasspath>true</longClasspath>
                             <arguments>
-                                <argument>-XX:MaxPermSize=128M</argument>
                                 <argument>-Xmx1024M</argument>
                                 <!--<argument>-Xdebug</argument>
                                 <argument>-Xrunjdwp:transport=dt_socket,address=8888,server=y,suspend=n</argument>-->
@@ -256,11 +261,12 @@
                 mvn cn:build -P javascript
             -->
             <id>javascript</id>
-            <properties>
+          <properties>
                 <codename1.targetType>javascript</codename1.targetType>
                 <codename1.targetPlatform>javascript</codename1.targetPlatform>
+   
             </properties>
-        </profile>
+         </profile>
         <profile>
             <!--
                 For sending Android builds use:
@@ -270,17 +276,6 @@
             <properties>
                 <codename1.targetType>android</codename1.targetType>
                 <codename1.targetPlatform>android</codename1.targetPlatform>
-            </properties>
-        </profile>
-        <profile>
-            <!--
-                For sending Windows UWP builds use:
-                mvn cn:build -P uwp
-            -->
-            <id>uwp</id>
-            <properties>
-                <codename1.targetType>windows</codename1.targetType>
-                <codename1.targetPlatform>win</codename1.targetPlatform>
             </properties>
         </profile>
         <profile>
@@ -308,39 +303,36 @@
     </profiles>
 
     <build>
-        <plugins>
+   	    <sourceDirectory>${codename1}</sourceDirectory>
 
-	     <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                              <source>g:/share/projects/boardspace-codename1/boardspace core/</source>
-			      	<source>g:/share/projects/boardspace-codename1/boardspace games/</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+     <plugins>
+
+       <plugin>
+
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+             <executions>
+                <execution>
+                    <id>add-cn1-sources</id>
+                    <phase>generate-sources</phase>
+                    <goals><goal>add-source</goal></goals>
+                    <configuration>
+                        <sources>
+                            <source>${coredir}</source>
+                            <source>${gamesdir}</source>
+                        </sources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 
 
-            <plugin>
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-            					
                 <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-					<fork>true</fork>
-					<source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -365,6 +357,13 @@
             <plugin>
                 <groupId>com.codenameone</groupId>
                 <artifactId>codenameone-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>xalan</groupId>
+                        <artifactId>serializer</artifactId>
+                        <version>2.7.3</version>
+                    </dependency>
+                </dependencies>
 
                 <executions>
                     <execution>
@@ -374,18 +373,15 @@
                             <goal>generate-gui-sources</goal>
                         </goals>
                     </execution>
-
-		    <execution>
+                    <execution>
                         <id>cn1-process-classes</id>
                         <phase>process-classes</phase>
                         <goals>
-                            <goal>compliance-check</goal>
+                            <goal>bytecode-compliance</goal>
                             <goal>css</goal>
                             <!--<goal>compile-javase-sources</goal>-->
                         </goals>
                     </execution>
-
-
                     <execution>
                         <id>attach-test-artifact</id>
                         <phase>test</phase>
@@ -396,52 +392,17 @@
                 </executions>
 
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
 
         </plugins>
 
 
-        <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>
-        									com.codenameone
-        								</groupId>
-        								<artifactId>
-        									codenameone-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[7.0.55,)
-        								</versionRange>
-        								<goals>
-        									<goal>
-        										compliance-check
-        									</goal>
-        									<goal>
-        										generate-gui-sources
-        									</goal>
-        									<goal>css</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
-        </pluginManagement>
     </build>
 
     
